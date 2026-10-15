@@ -1,4 +1,5 @@
 'use client';
+import {isStep} from '@/shared/pipeline-terms.mjs';
 import {useCallback,useEffect,useState} from 'react';
 import {StandLine} from '@/components/admin-stand';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
@@ -18,8 +19,8 @@ function stepNote(s:Step){
  if(x.skipped)return 'ausgelassen ('+x.skipped+')';
  if(!s.ok)return 'Fehler';
  if(s.name==='Zusammenfassungen'&&typeof x.summaries==='number')return n(x.summaries)+' neue von '+n(Number(x.withText)||0)+' mit Text';
- if(s.name==='Regeln je Bericht'&&typeof x.read==='number')return n(x.read)+' Berichte neu gelesen, davon '+n(Number(x.withText)||0)+' mit Text, '+n(Number(x.summaries)||0)+' mit Zusammenfassung';
- if(s.name==='Zahlen für plenara.X'&&typeof x.cases==='number')return n(x.cases)+' Vorgänge'+(x.unread?', davon '+n(Number(x.unread))+' ungelesen':'');
+ if(isStep(s.name,'rules')&&typeof x.read==='number')return n(x.read)+' Berichte neu gelesen, davon '+n(Number(x.withText)||0)+' mit Text, '+n(Number(x.summaries)||0)+' mit Zusammenfassung';
+ if(isStep(s.name,'xcases')&&typeof x.cases==='number')return n(x.cases)+' Vorgänge'+(x.unread?', davon '+n(Number(x.unread))+' ungelesen':'');
  return 'fertig';
 }
 const n=(v:number)=>v.toLocaleString('de-DE');
@@ -91,7 +92,7 @@ export function AdminRuleTexts(){
   {label:'Fassung der Regeln',value:facts?facts.version:job?'–':undefined,note:facts?(facts.stale?n(facts.stale)+' Berichte noch mit älterer Fassung':'alle Berichte in dieser Fassung')+'; gezählt '+when(job?.last?.finishedAt):undefined},
  ];
  /* Vorgänge je Thema und Berichte je Fakt aus dem letzten Lauf (Schritt „Zahlen für plenara.X“, scripts/plenara-x/build-x-cases.mjs) */
- const xs=job?.last?.steps.find(st=>st.name==='Zahlen für plenara.X')?.summary as {themes?:Record<string,number>;subs?:Record<string,number>;facts?:Record<string,number>;factPlaces?:{total:number;places:Record<string,number>}}|undefined;
+ const xs=job?.last?.steps.find(st=>isStep(st.name,'xcases'))?.summary as {themes?:Record<string,number>;subs?:Record<string,number>;facts?:Record<string,number>;factPlaces?:{total:number;places:Record<string,number>}}|undefined;
  const themeRows=xs?.themes?Object.entries(xs.themes).sort((a,b)=>b[1]-a[1]):[];
  const themeTotal=themeRows.reduce((a,[,v])=>a+v,0);
  const subsOf=(theme:string)=>SUBTOPICS.filter((u:{theme:string})=>u.theme===theme).map((u:{id:string;name:string})=>({name:u.name,n:xs?.subs?.[u.id]||0})).sort((a:{n:number},b:{n:number})=>b.n-a.n);

@@ -57,6 +57,15 @@ let signal='';for(const sig of ['SIGTERM','SIGINT'])process.on(sig,()=>{signal=s
 const code=await new Promise(resolve=>{child.on('error',e=>{console.error(e.message);resolve(127);});child.on('exit',(c,s)=>resolve(c??s));});
 const seconds=Math.round((Date.now()-started)/1000);
 record(job.id,r=>({...r,lastEnd:new Date().toISOString(),seconds,exit:code,result:signal?'stopped':code===0?'ok':'failed',running:null}));
+/* Laufbuch für die Debug-Seite (system_state 'schedule-log', neueste zuerst, höchstens 400 Läufe aller Jobs): welcher Job wann lief */
+try{
+ db.exec('BEGIN IMMEDIATE');
+ try{
+  const log=get('schedule-log')||[];
+  put('schedule-log',[{job:job.id,start:started.toISOString(),end:new Date().toISOString(),seconds,result:signal?'stopped':code===0?'ok':'failed',exit:code,trigger:force?'hand':wanted?'jetzt':'plan'},...log].slice(0,400));
+  db.exec('COMMIT');
+ }catch(e){db.exec('ROLLBACK');throw e;}
+}catch(e){console.error('Laufbuch:',e.message);}
 console.log(`${new Date().toISOString()} ${job.id} ${code===0?'fertig':signal?'angehalten':'mit Fehler '+code} nach ${seconds} s`);
 db.close();
 process.exit(typeof code==='number'?code:1);

@@ -1,4 +1,5 @@
 'use client';
+import {isStep,PDF_JOB_TERMS} from '@/shared/pipeline-terms.mjs';
 import {useCallback,useEffect,useState} from 'react';
 import Link from 'next/link';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
@@ -16,7 +17,7 @@ type Stats={at:string;seconds:number;linked:number;allPdfs:number;loaded:number;
  threshold?:{others:boolean;score?:number}|null;disk?:{free:number;total:number}|null;
  texts:{files:number;ocrWaiting:number;ocrPages?:number;ocrWaitingAll?:number;ocrPagesAll?:number;missing?:number;linked?:number;complete?:number};summaries?:{withText:number;done:number};
  others?:{linked:number;loaded:number;textOnly:number;failed:number;open:number;openBlocked?:number;withText:number;scans:number;reasons:Reason[];completeThrough?:string|null};
- quality?:Quality;months?:{primary:MonthRow[];others:MonthRow[]};hosts?:{total:number;blocked:number;top:Host[]};errorsCsv?:{rows:number}};
+ quality?:Quality;months?:{primary:MonthRow[];others:MonthRow[]};hosts?:{total:number;blocked:number;stages?:boolean;top:Host[]};errorsCsv?:{rows:number}};
 type Job={id:string;kind:'run'|'retry'|'others'|'texts'|'ocr';state:string;requestedAt:string;startedAt?:string;finishedAt?:string;exit?:number|string};
 type Progress={kind?:string;startedAt?:string;until?:string;step?:string;at:string;plan?:string[];stepIndex?:number;stepStartedAt?:string;stepUntil?:string;
  fetch?:{what:string;month:string;monthOpen:number;done:number;ok:number;unsupported:number;error:number;rate:number;bytes:number};
@@ -24,7 +25,7 @@ type Progress={kind?:string;startedAt?:string;until?:string;step?:string;at:stri
 type Lane='chain'|'ocr';
 type Data={stats:Stats|null;jobs:{queue:Job[];running:Record<Lane,Job|null>;recent:Job[]};progress:{chain:Progress|null;ocr:Progress|null};runs:Run[];
  stop:{chain?:{requestedAt:string};ocr?:{requestedAt:string}};count:{requestedAt:string;startedAt?:string;finishedAt?:string;ok?:boolean}|null;worker:boolean;error?:string};
-const JOB:Record<string,string>={run:'Lauf starten',retry:'Fehlgeschlagene erneut versuchen',others:'Übrige PDFs laden',texts:'Textebene lesen',ocr:'OCR starten'};
+const JOB:Record<string,string>=PDF_JOB_TERMS;
 /** Zwei Bahnen laufen nebeneinander, je Bahn ein Auftrag (server/integrations/pdf-store-admin.mjs, laneOf) */
 const LANE:Record<Lane,string>={chain:'Laden',ocr:'OCR'};
 const laneOf=(kind:string):Lane=>kind==='ocr'?'ocr':'chain';
@@ -81,7 +82,7 @@ export function AdminPdf(){
  const v=<T,>(f:(x:Stats)=>T):T|string|undefined=>s?f(s):data?'–':undefined;
  const stopping=(lane:'chain'|'ocr',p?:Progress|null)=>!!p?.startedAt&&!!data?.stop[lane]&&Date.parse(data.stop[lane]!.requestedAt)>=Date.parse(p.startedAt);
  const lastRun=data?.runs[0],ocrRate=ocr?.ocr?.perHour||(()=>{const st=data?.runs.find(r=>r.steps.some(x=>x.name==='OCR'&&x.seconds>600))?.steps.find(x=>x.name==='OCR');const f=Number(st?.summary?.files||0);return st&&f?Math.round(f/(st.seconds/3600)):null;})();
- const loadStep=lastRun?.steps.find(x=>x.name==='Laden'),keep=(loadStep?.summary?.keeper||null) as Record<string,number>|null;
+ const loadStep=lastRun?.steps.find(x=>isStep(x.name,'pdf')),keep=(loadStep?.summary?.keeper||null) as Record<string,number>|null;
  const pill='inline-flex h-10 items-center gap-2 rounded-full px-5 text-[14px] font-medium disabled:opacity-40';
  const textBtn='text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40';
  const canAct=!!data?.worker&&!busy;
@@ -113,15 +114,15 @@ export function AdminPdf(){
     {jobs?.recent[0]&&<li className="text-slate-500">Zuletzt: {KIND[jobs.recent[0].kind]}, {when(jobs.recent[0].startedAt||jobs.recent[0].requestedAt)} bis {clock(jobs.recent[0].finishedAt)}: {jobs.recent[0].exit==='abgebrochen'?'abgebrochen':jobs.recent[0].state==='done'?'fertig':'mit Fehlern beendet'}</li>}
    </ul>
    <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
-    <button type="button" className={pill+' bg-slate-900 text-white hover:bg-slate-700'} disabled={!canAct} onClick={()=>post({action:'queue',kind:'run'})}><Icon name="play" size={16}/>Lauf starten →</button>
-    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'retry'})}>Fehlgeschlagene erneut versuchen →</button>
-    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'others'})}>Übrige PDFs laden →</button>
-    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'texts'})}>Textebene lesen →</button>
-    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'ocr'})}>OCR starten →</button>
+    <button type="button" className={pill+' bg-slate-900 text-white hover:bg-slate-700'} disabled={!canAct} onClick={()=>post({action:'queue',kind:'run'})}><Icon name="play" size={16}/>{JOB.run} →</button>
+    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'retry'})}>{JOB.retry} →</button>
+    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'others'})}>{JOB.others} →</button>
+    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'texts'})}>{JOB.texts} →</button>
+    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'ocr'})}>{JOB.ocr} →</button>
     <button type="button" className={textBtn} disabled={!canAct||!!data?.count&&!data.count.finishedAt} onClick={()=>post({action:'count'})}>{data?.count&&!data.count.finishedAt?(data.count.startedAt?'Wird gezählt …':'Zählen angefordert …'):'Stand neu zählen →'}</button>
    </div>
    {note&&<p role="status" className="mt-3 text-[14px] text-slate-900">{note}</p>}
-   <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Kette wie nachts ohne OCR (neue und noch nicht versuchte Hauptdokumente, Textebene, Stand).':k==='retry'?'wie „Lauf starten“, dazu fehlgeschlagene Abrufe und ausgelassene Server; danach dasselbe für die übrigen PDFs (je die Hälfte der Ladezeit).':k==='texts'?'nichts laden; Textebene der abgelegten PDFs ohne Text, dann Stand.':k==='ocr'?'Seiten ohne Text aller PDFs per OCR lesen, Hauptdokumente und übrige; die mit den wenigsten Seiten zuerst, bei gleich vielen Hauptdokumente vor übrigen; braucht eine Datei über 5 Minuten, kommt sie ans Ende; schon gelöschte PDFs werden kurz nachgeladen und gleich wieder gelöscht.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Zwei Bahnen laufen nebeneinander: Laden (alle Knöpfe außer „OCR starten“) und OCR; je Bahn einer zur Zeit, höchstens 3 Stunden. „Stand neu zählen“ geht jederzeit (etwa eine Minute).</p>
+   <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Bestandsaufbau: Hauptdokumente Monat für Monat zurück, die noch nicht versucht wurden, Textebene, Stand.':k==='retry'?'macht alle wiederholbaren Abruffehler (Zeitüberschreitung, Server bremst, Zugriff verweigert) und wartenden Server sofort fällig; die Nacharbeit versucht sie in ihren Läufen, je Server erst mit einer Stichprobe. „Nicht gefunden“ und „kein PDF“ bleiben.':k==='texts'?'nichts laden; Textebene der abgelegten PDFs ohne Text, dann Stand.':k==='ocr'?'startet sofort den Job „OCR-Rückstand“ (eigene Einheit, 10 bis 22 Uhr): alle PDFs, Hauptdokumente vor Anlagen, abgelegte vor gelöschten, neueste Sitzung zuerst; Grenzen je Seite und Datei, was hängt, versucht die Nacharbeit später.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Bestandsaufträge laufen nur zwischen 10 und 22 Uhr (die Nacht gehört der Tagespipeline); außerhalb warten sie in der Reihe. Je Bahn einer zur Zeit, höchstens 3 Stunden. „Stand neu zählen“ geht jederzeit (etwa eine Minute).</p>
   </section>
 
   {/* Alle Dokumente: Hauptdokumente und übrige PDFs zusammen, je Adresse */}
@@ -209,12 +210,12 @@ export function AdminPdf(){
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="download" className="text-teal-600"/>So läuft der Import</h2>
    <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Jeder Schritt arbeitet nur mit dem, was der vorige abgelegt hat, und fasst nur Neues an. Haken: Regel; Uhr: Grenze. Rechts der aktuelle Stand.</p>
    <ProcessFlow steps={[
-    {icon:'report',title:'Bericht mit PDFs',what:'Der Abruf (Reiter Abruf & Verarbeitung) speichert je Bericht die Links auf seine Dokumente. Die PDFs selbst lädt erst dieser Import.',
+    {icon:'report',title:'Abruf',what:'Der Abruf speichert je Bericht die Links auf seine Dokumente. Die PDFs selbst lädt erst die Extraktion.',
      rules:['Hauptdokument: die Vorlage, sonst Beschlussvorschlag oder Bericht, sonst das erste PDF','Alle anderen PDFs eines Berichts sind „übrige PDFs“ (Anlagen, Pläne …)','Dieselbe Adresse wird nur einmal geladen, auch wenn mehrere Berichte sie verlinken'],
      value:s?`${n(s.linked)} Hauptdokumente, ${n(o?.linked)} übrige`:undefined},
-    {icon:'download',title:'Laden',what:'Monat für Monat ab der neuesten Sitzung zurück, mit der Kennung von Plenara, höflich gegenüber den Servern.',
-     rules:['Je Server höchstens 3 Abrufe gleichzeitig, 0,2 Sekunden Abstand','3 Fehler in Folge oder „überlastet“ (429/503): Server für diesen Monat ausgelassen','Server mit mindestens 10 Abrufen und mindestens 90 % Fehlern: ausgelassen, bis „Fehlgeschlagene erneut versuchen“','Fehlgeschlagene Abrufe werden nie von selbst wiederholt, nur mit „Fehlgeschlagene erneut versuchen“ (Hauptdokumente und übrige); sie stehen in der Fehlerliste'],
-     limits:['Je Datei höchstens 10 Sekunden und 30 MB','Nachts höchstens 72 Minuten Laden (40 % der Laufzeit), übrige PDFs bis 15 Minuten vor Laufende'],
+    {icon:'download',title:'PDF laden, Anlagen laden',what:'Nachts nur die PDFs der Berichte, die der Abruf seit dem letzten Lauf geschrieben hat: erst die Hauptdokumente, dann die Anlagen (die KI liest alle). Ältere Monate nur im Altbestand. Mit der Kennung von Plenara, höflich gegenüber den Servern.',
+     rules:['Je Server höchstens 3 Abrufe gleichzeitig, 0,2 Sekunden Abstand','Was scheitert, kommt mit seinem Grund in den Fehlerspeicher; die Nacharbeit versucht es tagsüber erneut (Sitzungen der letzten 7 Tage), Älteres der Altbestand','Ein Server, der bremst (429/503) oder 3-mal in Folge scheitert, wartet 1 Stunde bis 7 Tage und wird dann mit 3 Dokumenten geprüft','„Nicht gefunden“ und „kein PDF“ werden nicht wiederholt'],
+     limits:['Je Datei höchstens 10 Sekunden und 30 MB','Nachts höchstens 48 Minuten (Hauptdokumente 29, Anlagen 19)'],
      value:s?`${pct(s.loaded+s.textOnly,s.linked)} geladen`:undefined},
     {icon:'scale',title:'Bewerten und Grenze',what:'Jede neue Datei wird sofort bewertet. Ist die Grenze erreicht, verdrängt sie die am schlechtesten bewertete Datei, wenn sie besser ist; sonst bleibt sie selbst nur als Text.',
      rules:['Qualität 0 bis 100 % = Dokumentart × Formalie × Inhalt × Größe','Dokumentart: Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1; Formalie halber Wert','Dokumentart aus dem ersten Wort des Titels, berichtigt durch den Textanfang (steht dort „Beschlussvorlage“, „Vorlage-Nr.“ oder „Drucksache“, zählt die Datei als Vorlage)','Inhalt voll ab 4.000 Zeichen Text (Seiten, die auf OCR warten, vorläufig 800 Zeichen); Größe voll bis 100 KB, darüber langsam fallend','Scan oder Textebene und Alter zählen nicht','Übrige PDFs stehen immer unter allen Hauptdokumenten','Vor dem Löschen ist die Textebene gelesen; Seiten ohne Text liest später „OCR starten“ (lädt die Datei dafür kurz nach)'],
@@ -223,15 +224,15 @@ export function AdminPdf(){
     {icon:'text',title:'Text lesen',what:'Die Textebene jedes PDFs wird gleich beim Laden gelesen und als Textfassung neben dem PDF abgelegt; sie bleibt auch, wenn das PDF gelöscht wird.',
      rules:['Seiten mit weniger als 20 Zeichen gelten als Scan und warten auf OCR'],
      value:s?`${pct(s.texts.linked??0,s.linked)} mit Text`:undefined},
-    {icon:'scan',title:'OCR',what:'Liest Seiten ohne Textebene per Texterkennung (Deutsch), in der eigenen Bahn neben dem Laden.',
-     rules:['Hauptdokumente und übrige PDFs in einer Reihe: die mit den wenigsten Seiten zuerst, bei gleich vielen Hauptdokumente vor übrigen','Schon gelöschte PDFs werden kurz nachgeladen (dieselbe Datei), gelesen und gleich wieder gelöscht; scheitert das, kein neuer Versuch','Große Seiten werden verkleinert gelesen (höchstens 12 Megapixel)'],
-     limits:['3 Worker, je eine Datei','Je Datei höchstens 5 Minuten, sonst ans Ende der Reihe','Je Lauf höchstens 3 Stunden; nachts stellt die Kette ihn nach dem Laden an'],
+    {icon:'scan',title:'OCR',what:'Liest Seiten ohne Textebene per Texterkennung (Deutsch): nachts die neuen Dateien (bis 45 Minuten), was übrig bleibt der Job „OCR, tagsüber“; den Altbestand nur auf Anforderung (Seite Altbestand).',
+     rules:['Hauptdokumente vor Anlagen, abgelegte vor gelöschten, neueste Sitzung zuerst','Schon gelöschte PDFs werden kurz nachgeladen (dieselbe Datei), gelesen und gleich wieder gelöscht','Große Seiten werden verkleinert gelesen (höchstens 12 Megapixel)'],
+     limits:['2 Worker, je eine Datei','Je Seite höchstens 90 Sekunden, je Datei 5 Minuten; was länger braucht, kommt in den Fehlerspeicher („zu langsam“)','Ein Paket ohne Lebenszeichen über 3 Minuten wird beendet'],
      value:s?`${n(s.texts.ocrWaitingAll??s.texts.ocrWaiting)} Dateien warten`:undefined},
-    {icon:'gauge',title:'Stand',what:'Zählt alles auf dieser Seite neu: verlinkt, geladen, Text, Fehler, Server, Platz.',
+    {icon:'gauge',title:'Stand zählen',what:'Zählt alles auf dieser Seite neu: verlinkt, geladen, Text, Fehler, Server, Platz.',
      rules:['Am Ende jedes Laufs und mit „Stand neu zählen“'],value:s?`zuletzt ${when(s.at)}`:undefined},
-    {icon:'summary',title:'Weiter: Themen & Texte',what:'Aus den abgelegten Texten entstehen Zusammenfassungen, Fakten für plenara.X und die Wortliste der Suche. Das ist nicht Teil des PDF-Imports, sondern ein eigener Job im Reiter Themen & Texte.',
-     rules:['Direkt nach der Nachtkette (sie stößt den Job an), sonst zur Zeit aus Jobs & Zeitpläne (Standard 08:50 Uhr)','Oder dort per Knopf']},
-   ]} when={['Nachtkette: täglich zur Zeit aus dem Reiter Jobs & Zeitpläne (Standard 05:30 Uhr), höchstens 3 Stunden; danach ist der Abruf der Nacht (Standard 01:00 Uhr) durch. Nach dem Laden stellt sie „OCR starten“ an.','Zwei Bahnen nebeneinander: Laden (alle Aufträge außer OCR, auch die Nachtkette) und OCR; je Bahn einer zur Zeit, weitere warten in der Reihe ihrer Bahn und starten, sobald sie frei ist.','Übrige PDFs: nur von Hand („Übrige PDFs laden“, Fehler mit „Fehlgeschlagene erneut versuchen“), jeder Lauf macht dort weiter, wo der vorige aufgehört hat.']}/>
+    {icon:'summary',title:'Weiter: Verarbeitung',what:'Aus den abgelegten Texten entstehen Einordnung, Regel-Zusammenfassungen, Fakten, Suche und Zahlen für plenara.X (Job „Verarbeitung, nachts“, Reiter Themen & Texte); die KI liest dieselben Texte.',
+     rules:['Direkt nach „Extraktion, nachts“ (sie stößt ihn an), sonst zur Zeit aus Jobs & Zeitpläne','Oder dort per Knopf']},
+   ]} when={['Tagespipeline: „Extraktion, nachts“ zur Zeit aus dem Reiter Jobs & Zeitpläne (Standard 05:30 Uhr), höchstens 2 Stunden, nach „Abruf, nachts“ (Standard 01:00 Uhr).','Nacharbeit: tagsüber automatisch, für Sitzungen der letzten 7 Tage (frühestens 12.10.2026).','Altbestand: Aufträge hier und auf der Seite Altbestand, nur zwischen 10 und 22 Uhr; jeder Lauf macht dort weiter, wo der vorige aufgehört hat.']}/>
   </section>
 
   {/* F. Fehler und Server */}
@@ -256,7 +257,7 @@ export function AdminPdf(){
       <span className="text-right tabular-nums"><b className="font-semibold">{n(r.n)}</b><span className="ml-2 text-[12px] text-slate-500">{pct(r.n,total||0)}</span></span>
      </li>)}
     </ol>;})()}
-   {s?.hosts&&<><h3 className="mt-8 text-[18px] font-semibold">Server, die nicht liefern</h3><HostList hosts={s.hosts.top} total={s.hosts.total} blocked={s.hosts.blocked}/></>}
+   {s?.hosts&&<><h3 className="mt-8 text-[18px] font-semibold">Server, die nicht liefern</h3><HostList hosts={s.hosts.top} total={s.hosts.total} blocked={s.hosts.blocked} stages={!!s.hosts.stages}/></>}
   </section>
 
   {/* G. Läufe */}

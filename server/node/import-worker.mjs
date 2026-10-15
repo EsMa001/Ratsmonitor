@@ -7,6 +7,10 @@
  *   node dist/standalone/worker/import-worker.mjs --run                      offenen Auftrag abarbeiten, sonst Ende
  *   node dist/standalone/worker/import-worker.mjs --create sources --window 1w   Auftrag anlegen (wenn keiner offen ist) und abarbeiten
  *   RM_PDF_STORE=<Ordner>: Dokumente zuerst aus der lokalen PDF-Ablage lesen (scripts/pdf-store/fetch.mjs)
+ *   node dist/standalone/worker/import-worker.mjs --direct --regions id,id [--window 1w] [--origin daily|backlog]
+ *        genau diese Gebiete abrufen, ohne gespeicherten Auftrag (Job „nacharbeit“); Ausgänge in den Fehlerspeicher
+ *   --weekly-window 1m [--weekly-day 0]: mit --create am Wochentag (0 = Sonntag, deutsche Zeit) ein weiteres Fenster, damit
+ *        Nachträge zu älteren Sitzungen (später veröffentlichte Niederschriften, Beschlüsse) nicht dauerhaft fehlen
  *   Weitere Schalter: --lanes 24, --max-minutes 240, --no-catch-up, --regions id,id (mit --create)
  *
  * Die Datenbank kommt wie im Dienst über DATABASE_FILE (server/node/cloudflare-workers.mjs). Der Prozess wartet länger
@@ -21,7 +25,7 @@ import {env} from 'cloudflare:workers';
 import {runSync} from '@/server/services/sync';
 import {analysePending} from '@/server/integrations/manual-analysis.mjs';
 import {useDocumentStore} from '@/server/integrations/documents.mjs';
-import {workJob,ensureJob,currentJob,openJob,catchUp,parseArgs,importRunner} from '@/server/integrations/pipeline-worker.mjs';
+import {workJob,ensureJob,currentJob,openJob,catchUp,parseArgs,importRunner,runDirect,windowForTonight} from '@/server/integrations/pipeline-worker.mjs';
 
 const log=(...parts)=>console.log(new Date().toISOString(),'[import-worker]',...parts);
 const warn=(...parts)=>console.error(new Date().toISOString(),'[import-worker]',...parts);
@@ -36,12 +40,25 @@ const run=importRunner(db,{runSync,analysePending});
 const started=Date.now();
 const stop=()=>options.maxMinutes>0&&Date.now()-started>options.maxMinutes*60000;
 let exitCode=0;
+// --direct --regions a,b: genau diese Gebiete abrufen, ohne gespeicherten Auftrag (Job „nacharbeit“); Ausgänge in den Fehlerspeicher
+if(options.direct){
+ try{
+  const out=await runDirect(db,run,options.regions,{window:options.window,lanes:Math.min(options.lanes,8),origin:options.origin,stop});
+  const ok=out.filter(r=>r.status===200&&!r.refused).length;
+  log(`Direktabruf: ${out.length} Gebiete, ${ok} gelungen, ${out.length-ok} wieder im Fehlerspeicher`);
+  for(const r of out)if(!(r.status===200&&!r.refused))log(`  ${r.region}: ${r.refused?'Pause erbeten':r.error||'Status '+r.status}`);
+  console.log('DIRECT '+JSON.stringify({regions:out.length,ok}));
+ }catch(e){warn('Abbruch:',e?.stack||e);exitCode=1;}
+ try{db.close?.();}catch{/* schon zu */}
+ process.exit(exitCode);
+}
 try{
  let job=await currentJob(db);
  if(options.create){
-  const made=await ensureJob(db,{regions:options.regions||options.create,window:options.window});
+  const window=windowForTonight(options);
+  const made=await ensureJob(db,{regions:options.regions||options.create,window});
   job=made.job;
-  log(made.created?`Auftrag angelegt: ${job.id}, ${job.items.length} Gebiete, Fenster ${options.window}${made.replaced?' (ein pausierter oder liegen gebliebener Auftrag wurde beendet)':''}`:`offener Auftrag ${job.id} (${counts(job)}) wird fortgesetzt; kein neuer angelegt`);
+  log(made.created?`Auftrag angelegt: ${job.id}, ${job.items.length} Gebiete, Fenster ${window}${made.deferred?`, ${made.deferred} zurückgestellt (Fehlerspeicher)`:''}${made.replaced?' (ein pausierter oder liegen gebliebener Auftrag wurde beendet)':''}`:`offener Auftrag ${job.id} (${counts(job)}) wird fortgesetzt; kein neuer angelegt`);
  }
  // The job may be replaced by the page while this process works it: then the new one is taken up, a few times.
  for(let round=0;round<5;round++){

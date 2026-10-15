@@ -28,6 +28,8 @@ import {JOB_KEY,COUNT_KEY,HEARTBEAT_KEY,RECENT_MAX,LANES,LANE_LOCKS,laneOf,norma
 import {DISK_KEY,DISK_COUNT_KEY,diskDue} from '../../server/integrations/server-storage.mjs';
 import {databaseFile} from './state.mjs';
 import {BUDGET_GB} from '../../shared/pdf-rank.mjs';
+import {SCHEDULE_NOW_KEY,slotAt} from '../../server/integrations/schedules.mjs';
+import {triggerJob} from '../../server/integrations/job-trigger.mjs';
 
 const args=process.argv.slice(2),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
@@ -82,12 +84,17 @@ function maybeDisk(){
 }
 
 const started=Date.now(),serviceMs=Number(opt('service-minutes',720))*60000,jobMinutes=Number(opt('minutes','180'));
+/* Bestandsfenster (Betriebsplan 15.10.2026): Aufträge laufen von 10:00 bis 22:00 Uhr; --no-window hebt es auf (von Hand) */
+const BACKLOG_WINDOW=['10:00','22:00'];
+const inBacklogWindow=(t=Date.now())=>args.includes('--no-window')||t>=slotAt(t,BACKLOG_WINDOW[0])&&t<slotAt(t,BACKLOG_WINDOW[1])-30*60000;
+const hasFailures=!!db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='work_failures'").get();
 let stopping='';
 /* Auftrag in seiner Bahn starten: Kette (nightly.mjs) als Kindprozess; am Ende als fertig, mit Fehlern oder abgebrochen vermerkt */
 function run(lane,job){
  console.log(`Auftrag ${job.kind} vom ${job.requestedAt} startet (Bahn ${lane==='ocr'?'OCR':'Laden'})`);
  const child=spawn(process.execPath,['--no-warnings','scripts/pdf-store/nightly.mjs','--kind',job.kind,'--minutes',String(jobMinutes),'--budget-gb',opt('budget-gb',String(BUDGET_GB)),
-  ...(job.kind==='retry'?['--retry-errors']:[]),...(job.kind==='others'?['--others']:[]),...(job.kind==='texts'?['--texts']:[]),...(job.kind==='ocr'?['--ocr-only']:[]),...(args.includes('--dry-run')?['--dry-run']:[])],{cwd:root,stdio:'inherit',env:process.env});
+  ...(job.kind==='retry'?['--retry-errors']:[]),...(job.kind==='others'?['--others']:[]),...(job.kind==='texts'?['--texts']:[]),...(job.kind==='ocr'?['--ocr-only']:[]),
+  ...(args.includes('--no-window')?[]:['--until',BACKLOG_WINDOW[1]]),...(args.includes('--dry-run')?['--dry-run']:[])],{cwd:root,stdio:'inherit',env:process.env});
  const done=new Promise(resolve=>child.on('exit',(c,s)=>resolve(c??s))).then(code=>{
   const stopped=!!stopping||code===3;
   jobs(j=>finished(j,lane,j.running[lane]?.id===job.id?j.running[lane]:job,code===0?'done':'failed',stopped?'abgebrochen':code));
@@ -103,14 +110,44 @@ function startNext(){
   if(children[lane])continue;
   const pid=lanePid(lane);
   if(pid){continue;}
+  // Bestandsaufbau nur im Fenster 10:00 bis 22:00 Uhr (die Nacht gehört der Tagespipeline), mindestens 30 Minuten vor Schluss;
+  // „Fehlgeschlagene erneut versuchen“ und „OCR starten“ übergeben nur und gehen immer
+  const open=inBacklogWindow();
   let job=null;
   jobs(j=>{
    if(j.running[lane])return null;
-   const i=j.queue.findIndex(x=>laneOf(x.kind)===lane);if(i<0)return null;
+   const i=j.queue.findIndex(x=>laneOf(x.kind)===lane&&(open||x.kind==='ocr'||x.kind==='retry'&&hasFailures));if(i<0)return null;
    job={...j.queue[i],state:'running',startedAt:now(),updatedAt:now()};
    return {...j,queue:j.queue.filter((_,k)=>k!==i),running:{...j.running,[lane]:job}};
   });
-  if(job)run(lane,job);
+  if(!job)continue;
+  // „Fehlgeschlagene erneut versuchen“ mit Fehlerspeicher (Migration 0040): kein eigener Ladelauf mehr, sondern alle
+  // wiederholbaren Abruffehler (vorübergehend, blockiert, verweigert) und wartenden Server sind sofort fällig; die Nacharbeit
+  // arbeitet sie in ihren Läufen ab (je Server erst eine Stichprobe). Endgültige Fehler (404, kein PDF) bleiben.
+  if(job.kind==='retry'&&hasFailures){
+   // Die alten Abruffehler gehören fast alle zum Altbestand: „Alte Fehler erneut versuchen“ des Jobs „altbestand“ anfordern
+   const at=now();
+   const n=db.prepare("UPDATE work_failures SET next_try_at=?,tries=0 WHERE step IN ('pdf','ocr-fetch') AND class IN ('transient','denied','blocked')").run(at).changes;
+   const h=db.prepare("UPDATE source_hosts SET next_try_at=?,state=CASE WHEN state='pruefen' THEN 'gesperrt' ELSE state END,updated_at=? WHERE state<>'ok'").run(at,at).changes;
+   put('altbestand-requests',{...(get('altbestand-requests')||{}),rework:{requestedAt:at,by:'PDF-Import'}});
+   jobs(j=>finished(j,lane,job,'done',`${n} Einträge und ${h} Server an den Altbestand übergeben`));
+   console.log(`Auftrag retry: ${n} Einträge und ${h} Server sofort fällig; Altbestand „Alte Fehler erneut versuchen“ angefordert`);
+   triggerJob('altbestand').catch(()=>{});triggerJob('nacharbeit').catch(()=>{});
+   continue;
+  }
+  // Die OCR hat seit dem Betriebsplan (15.10.2026) einen eigenen Job mit eigener Einheit („ocr“, schedules.mjs): der Knopf
+  // „OCR starten“ fordert ihn nur an; so trifft Anhalten nur die OCR, nicht den Ladeauftrag
+  if(lane==='ocr'){
+   // „OCR des Altbestands“: Anforderung für den Job „OCR, tagsüber“, der nach dem Tagesbereich den Altbestand liest (10 bis 22 Uhr)
+   const now_=now();
+   put('altbestand-requests',{...(get('altbestand-requests')||{}),ocr:{requestedAt:now_,by:'PDF-Import'}});
+   put(SCHEDULE_NOW_KEY,{...(get(SCHEDULE_NOW_KEY)||{}),ocr:now_});
+   jobs(j=>finished(j,lane,job,'done','an den Job „OCR, tagsüber“ übergeben (Altbestand angefordert)'));
+   console.log('Auftrag ocr: OCR des Altbestands angefordert, Job „OCR, tagsüber“ übernimmt');
+   triggerJob('ocr').catch(()=>{});
+   continue;
+  }
+  run(lane,job);
  }
 }
 

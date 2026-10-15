@@ -72,14 +72,14 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   metaGet:db.prepare('SELECT value FROM meta WHERE key=?'),
   metaSet:db.prepare('INSERT INTO meta(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value'),
   textless:db.prepare(`SELECT DISTINCT p.sha256 AS sha FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok' AND (t.sha256 IS NULL OR t.version<?)`),
-  // OCR (Auftrag „OCR starten“, text.mjs --ocr): alle Dateien mit Seiten ohne Text, Hauptdokumente und übrige PDFs in einer Reihe.
-  // Leichte zuerst (wenigste Seiten für die OCR, so werden schnell viele Dateien vollständig), bei gleich vielen Hauptdokumente vor
-  // übrigen, abgelegte vor verdrängten ('text-only', werden kurz nachgeladen), dann kleinere; Dateien, deren OCR schon einmal über
-  // der Zeitgrenze lag (ocr_slow), ganz am Ende; ohne die, deren Nachladen schon einmal scheiterte (ocr_refetch)
-  ocrQueue:db.prepare(`SELECT t.sha256 AS sha,MAX(COALESCE(p.role,'')<>'other') AS main,MAX(p.status='ok') AS present,MAX(p.bytes) AS bytes,t.ocr_needed AS need
+  // OCR (text.mjs --ocr; Betriebsplan 15.10.2026): Dateien mit Seiten ohne Text. Hauptdokumente vor übrigen PDFs (übrige nur auf
+  // Wunsch, ?=1), abgelegte vor verdrängten ('text-only', werden kurz nachgeladen), darin die neueste Sitzung zuerst, dann wenigste
+  // OCR-Seiten. Dateien, deren OCR schon einmal über der Zeitgrenze lag (ocr_slow), ganz am Ende; ohne die, deren Nachladen schon
+  // einmal scheiterte (ocr_refetch). Mit Fehlerspeicher (Migration 0040) führt text.mjs beides dort und leert die Tabellen.
+  ocrQueue:db.prepare(`SELECT t.sha256 AS sha,MAX(COALESCE(p.role,'')<>'other') AS main,MAX(p.status='ok') AS present,MAX(p.bytes) AS bytes,t.ocr_needed AS need,MAX(p.event_date) AS eventDate
    FROM texts t JOIN pdfs p ON p.sha256=t.sha256 WHERE t.ocr_needed>0 AND p.status IN ('ok','text-only')
-   AND NOT EXISTS(SELECT 1 FROM ocr_refetch r WHERE r.sha256=t.sha256) GROUP BY t.sha256
-   ORDER BY EXISTS(SELECT 1 FROM ocr_slow s WHERE s.sha256=t.sha256),need,main DESC,present DESC,bytes,t.sha256`),
+   AND NOT EXISTS(SELECT 1 FROM ocr_refetch r WHERE r.sha256=t.sha256) GROUP BY t.sha256 HAVING main=1 OR ?
+   ORDER BY EXISTS(SELECT 1 FROM ocr_slow s WHERE s.sha256=t.sha256),main DESC,present DESC,coalesce(MAX(p.event_date),'') DESC,need,bytes,t.sha256`),
   slow:db.prepare('INSERT INTO ocr_slow(sha256,tried_at) VALUES(?,?) ON CONFLICT(sha256) DO UPDATE SET tried_at=excluded.tried_at'),
   urlsOf:db.prepare("SELECT url FROM pdfs WHERE sha256=? AND status IN ('ok','text-only') ORDER BY fetched_at DESC"),
   present:db.prepare("SELECT 1 FROM pdfs WHERE sha256=? AND status='ok' LIMIT 1"),
@@ -167,8 +167,9 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   setNote:(key,value)=>{q.metaSet.run(key,String(value));},
   /** Prüfsummen geladener PDFs ohne Textfassung der Fassung `version`. */
   textless:version=>q.textless.all(version).map(r=>r.sha),
-  /** Dateien mit Seiten, die auf OCR warten, in der Reihenfolge der OCR: [{sha, main (Hauptdokument), present (PDF liegt), need}]. */
-  ocrQueue:()=>q.ocrQueue.all().map(r=>({sha:r.sha,main:!!r.main,present:!!r.present,need:r.need})),
+  /** Dateien mit Seiten, die auf OCR warten, in der Reihenfolge der OCR: [{sha, main (Hauptdokument), present (PDF liegt), need,
+      eventDate}]. others:false nur Hauptdokumente. */
+  ocrQueue:({others=true}={})=>q.ocrQueue.all(others?1:0).map(r=>({sha:r.sha,main:!!r.main,present:!!r.present,need:r.need,eventDate:r.eventDate||null})),
   /** Adressen einer Datei (geladen oder nur noch als Text), die jüngste zuerst. */
   urlsOf:sha=>q.urlsOf.all(sha).map(r=>r.url),
   /** Liegt das PDF laut Eintrag (Status 'ok')? */

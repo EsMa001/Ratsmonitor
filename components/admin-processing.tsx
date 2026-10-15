@@ -18,7 +18,7 @@ import type {AdminDashboard,AdminSource,PipelineJob} from '@/shared/admin-types'
 const n=(v:number)=>v.toLocaleString('de-DE');
 const termHelp=(t:string)=>TERMS.find(x=>x.term===t)?.text;
 const date=(s:string|null|undefined)=>s?new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'}):'Noch nicht erfasst';
-const stateNames:Record<string,string>={queued:'Ausstehend',running:'Läuft',completed:'Gespeichert',partial:'Teilstand gespeichert',failed:'Fehlgeschlagen',unavailable:'Keine Quelle',unknown:'Ausgang prüfen',cancelled:'Beendet'};
+const stateNames:Record<string,string>={queued:'Ausstehend',running:'Läuft',completed:'Gespeichert',partial:'Teilstand gespeichert',failed:'Fehlgeschlagen',unavailable:'Keine Quelle',unknown:'Ausgang prüfen',cancelled:'Beendet',deferred:'Zurückgestellt'};
 // Look-back windows for stage 01; the same keys are validated on the server.
 const windowItems=Object.entries(HISTORY_WINDOWS).map(([id,w])=>[id,w.label]) as [string,string][];
 const windowLabel=(id?:string)=>windowItems.find(([key])=>key===id)?.[1]||'';
@@ -32,7 +32,7 @@ const MULTIPLEXED={requests:24,lanes:1};
 const multiplexed=()=>{try{return /^h[23]/.test((performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming|undefined)?.nextHopProtocol||'');}catch{return false;}};
 const runnerFor=(stage:string)=>stage==='metadata'&&multiplexed()?MULTIPLEXED:RUNNERS[stage]||RUNNERS.analysis;
 // Order of the areas in the result list of a job: what needs attention comes first. The list shows this many rows.
-const JOB_ORDER=['running','failed','unknown','partial','queued','completed','unavailable'],JOB_ROWS=60;
+const JOB_ORDER=['running','failed','unknown','partial','queued','deferred','completed','unavailable'],JOB_ROWS=60;
 // List filters; "filter" in the address of the page preselects one (links of the overview and quality pages).
 const FILTERS:[string,string][]=[['all','Alle Gebiete'],['connected','Mit angebundener Quelle'],['data','Mit Berichten'],['empty','Angebunden, ohne Berichte'],['issues','Mit Hinweisen oder Lücken'],['partial','Teilstand'],['stale','Älter als 7 Tage'],['failed','Letzter Abruf fehlgeschlagen'],['shallow','Berichte reichen unter 3 Monate zurück'],['quiet','Seit über 90 Tagen keine Sitzung'],['selected','Ausgewählt']];
 // "shallow" and "quiet" judge the meeting days of the stored reports (shared/coverage.mjs): candidates for a longer

@@ -1,4 +1,5 @@
-import {pipelineAction} from './pipeline-jobs.mjs';
+import {pipelineAction,selectedRegions,provider,noteImport,PER_PROVIDER} from './pipeline-jobs.mjs';
+import {hasFailureStore,hostStates,hostWaiting,currentRelease} from './work-failures.mjs';
 import {refreshStep} from './admin-refresh.mjs';
 /**
  * Drives the stored import job of the administration from a process of its own (server/node/import-worker.mjs, A14 of
@@ -29,8 +30,47 @@ export async function ensureJob(db,{regions='sources',window='1w',staleMs=6*3600
  const existing=await currentJob(db);
  const stale=openJob(existing)&&(existing.paused||now-Date.parse(existing.updatedAt||'')>staleMs);
  if(openJob(existing)&&!stale)return {job:existing,created:false,replaced:false};
- const job=await pipelineAction(db,{action:'create',stage:'metadata',regions,window,replace:true},()=>{throw Error('create runs nothing');});
- return {job,created:true,replaced:!!existing&&openJob(existing)};
+ const deferred=await deferredRegions(db,selectedRegions(regions),now);
+ const job=await pipelineAction(db,{action:'create',stage:'metadata',regions,window,replace:true,deferred},()=>{throw Error('create runs nothing');});
+ return {job,created:true,replaced:!!existing&&openJob(existing),deferred:Object.keys(deferred).length};
+}
+/**
+ * Gebiete, die der Nachtauftrag auslässt (Fehlerspeicher, Migration 0040): eigener Eintrag mit Termin in der Zukunft (die Nacharbeit
+ * versucht es dann) oder ihr Server wartet. Ein Eintrag ohne Termin (internal) hält den Nachtlauf nicht auf: der nächtliche Abruf ist
+ * dann selbst der Versuch, und kein Gebiet bleibt dauerhaft ausgelassen. {Gebiet: Hinweis}
+ */
+export async function deferredRegions(db,ids,now=Date.now()){
+ if(!await hasFailureStore(db))return {};
+ const {results}=await db.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step='import'").all();
+ const own=new Map((results||[]).map(r=>[r.key,r])),hosts=await hostStates(db),out={};
+ for(const id of ids){
+  const e=own.get(id),h=hosts.get(provider(id));
+  if(e?.next_try_at&&Date.parse(e.next_try_at)>now)out[id]=`Zurückgestellt (${e.class}); nächster Versuch ${e.next_try_at.slice(0,16).replace('T',' ')} über die Nacharbeit.`;
+  else if(hostWaiting(h,now))out[id]=`Server ${h.host} wartet (${h.state}) bis ${h.next_try_at?h.next_try_at.slice(0,16).replace('T',' '):'zur Prüfung'}; Abruf über die Nacharbeit.`;
+ }
+ return out;
+}
+/**
+ * Abruf genau dieser Gebiete ohne gespeicherten Auftrag (import-worker --direct, Job „nacharbeit“): höchstens `lanes`
+ * gleichzeitig, je Server höchstens PER_PROVIDER; jeder Ausgang geht in den Fehlerspeicher (noteImport). Rückgabe je Gebiet
+ * {region, status, refused, error}.
+ */
+export async function runDirect(db,run,regions,{window='1w',lanes=4,origin='daily',stop=()=>false}={}){
+ const queue=[...regions],busy=new Map(),out=[];
+ const lane=async()=>{
+  while(queue.length&&!stop()){
+   const i=queue.findIndex(r=>(busy.get(provider(r))||0)<PER_PROVIDER);
+   if(i<0){await pause(500);continue;}
+   const region=queue.splice(i,1)[0],server=provider(region);busy.set(server,(busy.get(server)||0)+1);
+   let result=null,failure='';
+   try{result=await run('metadata',region,window);}catch(e){failure=String(e?.message||e).slice(0,300);}
+   finally{busy.set(server,busy.get(server)-1);}
+   await noteImport(db,region,{result,failure,server,origin});
+   out.push({region,status:result?.status??null,refused:!!result?.data?.refused,error:failure||result?.data?.cause||result?.data?.error||null});
+  }
+ };
+ await Promise.all(Array.from({length:Math.max(1,lanes)},lane));
+ return out;
 }
 /** The import function as the route passes it (app/api/admin/pipeline/route.ts): rule labelling behind its cursor, imports with their window. */
 export const importRunner=(db,{runSync,analysePending})=>(stage,region,lookback,cursor)=>stage==='analysis'?analysePending(db,region,{after:cursor||''}):runSync('metadata',region,'manual',{window:lookback});
@@ -87,12 +127,18 @@ export async function catchUp(db,{maxSteps=400,budgetMs=5000,sleep=pause}={}){
  }
  return steps;
 }
+/** Fenster des Nachtlaufs: am Wochentag `weeklyDay` (deutsche Zeit, 0 = Sonntag) das weitere `weeklyWindow`, sonst `window` */
+export function windowForTonight({window,weeklyWindow,weeklyDay=0},now=new Date()){
+ if(!weeklyWindow)return window;
+ const day=['So','Mo','Di','Mi','Do','Fr','Sa'].indexOf(new Intl.DateTimeFormat('de-DE',{timeZone:'Europe/Berlin',weekday:'short'}).format(now).replace('.',''));
+ return day===weeklyDay?weeklyWindow:window;
+}
 /**
  * Command line of the import process: --run (default) | --create [sources|all] [--regions a,b] [--window 1w]
  * [--lanes 24] [--max-minutes 240] [--no-catch-up]. Throws on unusable values.
  */
 export function parseArgs(argv){
- const args=[...argv],out={create:null,regions:null,window:'1w',lanes:24,maxMinutes:0,catchUp:true};
+ const args=[...argv],out={create:null,direct:false,origin:'daily',regions:null,window:'1w',weeklyWindow:null,weeklyDay:0,lanes:24,maxMinutes:0,catchUp:true};
  const take=()=>{const v=args.shift();if(v===undefined||v.startsWith('--'))throw Error('Wert fehlt');return v;};
  while(args.length){
   const a=args.shift();
@@ -103,10 +149,17 @@ export function parseArgs(argv){
   else if(a==='--lanes'){out.lanes=Number(take());if(!Number.isInteger(out.lanes)||out.lanes<1||out.lanes>64)throw Error('--lanes: 1 bis 64');}
   else if(a==='--max-minutes'){out.maxMinutes=Number(take());if(!Number.isFinite(out.maxMinutes)||out.maxMinutes<0)throw Error('--max-minutes: Zahl');}
   else if(a==='--no-catch-up')out.catchUp=false;
+  else if(a==='--direct')out.direct=true;
+  // Wöchentlich ein weiteres Fenster (Nachträge zu älteren Sitzungen: später veröffentlichte Niederschriften und Beschlüsse)
+  else if(a==='--weekly-window')out.weeklyWindow=take();
+  else if(a==='--weekly-day'){out.weeklyDay=Number(take());if(!Number.isInteger(out.weeklyDay)||out.weeklyDay<0||out.weeklyDay>6)throw Error('--weekly-day: 0 (Sonntag) bis 6');}
+  else if(a==='--origin'){out.origin=take();if(!['daily','backlog'].includes(out.origin))throw Error('--origin: daily oder backlog');}
   else throw Error('Unbekannter Schalter: '+a);
  }
  if(out.create&&!['sources','all'].includes(out.create))throw Error('--create: sources oder all');
  if(!/^(1d|1w|1m|3m|12m|24m)$/.test(out.window))throw Error('--window: 1d, 1w, 1m, 3m, 12m oder 24m');
- if(out.regions&&!out.create)throw Error('--regions nur mit --create');
+ if(out.weeklyWindow&&!/^(1w|1m|3m|12m|24m)$/.test(out.weeklyWindow))throw Error('--weekly-window: 1w, 1m, 3m, 12m oder 24m');
+ if(out.direct&&(out.create||!out.regions))throw Error('--direct braucht --regions und kein --create');
+ if(out.regions&&!out.create&&!out.direct)throw Error('--regions nur mit --create oder --direct');
  return out;
 }

@@ -1,0 +1,11 @@
+# Sofortstart aus der Administration (server/integrations/job-trigger.mjs): ein Knopfdruck schreibt
+# /srv/ratsmonitor/data/trigger/altbestand, systemd startet dann ratsmonitor-altbestand.service.
+[Unit]
+Description=Ratsmonitor: altbestand sofort starten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/altbestand
+Unit=ratsmonitor-altbestand.service
+
+[Install]
+WantedBy=multi-user.target

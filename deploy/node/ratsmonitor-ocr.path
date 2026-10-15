@@ -1,0 +1,11 @@
+# Sofortstart aus der Administration (server/integrations/job-trigger.mjs): ein Knopfdruck schreibt
+# /srv/ratsmonitor/data/trigger/ocr, systemd startet dann ratsmonitor-ocr.service.
+[Unit]
+Description=Ratsmonitor: ocr sofort starten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/ocr
+Unit=ratsmonitor-ocr.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plenara Betriebsplan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: Kopf mit Steuerung, darunter zweispaltig: breites Ablaufbild (scrollt seitlich) und rechts ein Detailfeld; auf dem Handy untereinander. */
+:root{
+ --bg:#f2f4f5;--panel:#ffffff;--fg:#17222b;--muted:#5d6c78;--line:#cbd5dc;--line-strong:#9fb0bb;
+ --accent:#0f6e56;--night:#534ab7;--store:#185fa5;--fix:#c94f28;--backlog:#8a5410;--ki:#3b6d11;--neutral:#5f5e5a;
+ --night-bg:#eeedfe;--store-bg:#e6f1fb;--fix-bg:#faece7;--backlog-bg:#faeeda;--ki-bg:#eaf3de;--neutral-bg:#f1efe8;
+ --on:#0f6e56;--on-bg:#e1f5ee;
+ --font:"IBM Plex Sans",ui-sans-serif,system-ui,Segoe UI,Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#0f1417;--panel:#171d22;--fg:#e4e9ec;--muted:#9aa8b2;--line:#2c373f;--line-strong:#4b5962;
+ --accent:#5dcaa5;--night:#afa9ec;--store:#85b7eb;--fix:#f0997b;--backlog:#fac775;--ki:#c0dd97;--neutral:#b4b2a9;
+ --night-bg:#26215c;--store-bg:#0c447c;--fix-bg:#4a1b0c;--backlog-bg:#412402;--ki-bg:#27500a;--neutral-bg:#2c2c2a;
+ --on:#9fe1cb;--on-bg:#085041;color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#0f1417;--panel:#171d22;--fg:#e4e9ec;--muted:#9aa8b2;--line:#2c373f;--line-strong:#4b5962;
+ --accent:#5dcaa5;--night:#afa9ec;--store:#85b7eb;--fix:#f0997b;--backlog:#fac775;--ki:#c0dd97;--neutral:#b4b2a9;
+ --night-bg:#26215c;--store-bg:#0c447c;--fix-bg:#4a1b0c;--backlog-bg:#412402;--ki-bg:#27500a;--neutral-bg:#2c2c2a;
+ --on:#9fe1cb;--on-bg:#085041;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:12px 32px}
+h1{font-size:22px;font-weight:600;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h2{font-size:16px;font-weight:600;margin:0 0 6px}
+h3{font-size:13px;font-weight:600;margin:14px 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+p{margin:0 0 8px;max-width:68ch}
+code,.mono{font-family:var(--mono);font-size:.92em}
+.top{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:flex-end;justify-content:space-between;max-width:1480px;margin:0 auto 12px}
+.top .lead{max-width:62ch;color:var(--muted);margin:4px 0 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.layers{display:flex;flex-wrap:wrap;gap:6px 14px}
+.layers label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:14px}
+.layers input{accent-color:var(--accent)}
+.swatch{display:inline-block;width:22px;height:0;border-top:2px solid var(--accent)}
+.swatch.read{border-top-style:dashed;border-color:var(--line-strong)}
+.swatch.loop{border-color:var(--fix);border-top-width:2.5px}
+.swatch.trigger{border-top-style:dotted;border-color:var(--night)}
+.swatch.chain{border-color:var(--neutral)}
+.clock{display:flex;align-items:center;gap:10px;font-size:14px;flex-wrap:wrap}
+.clock input[type=range]{width:220px;accent-color:var(--accent)}
+.clock output{font-variant-numeric:tabular-nums;min-width:5ch;font-weight:500}
+button{font:inherit;font-size:14px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+button:hover{border-color:var(--line-strong)}
+button[aria-pressed="true"]{background:var(--on-bg);border-color:var(--on);color:var(--fg)}
+button:focus-visible,[tabindex]:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;max-width:1480px;margin:0 auto;align-items:start}
+@media (max-width:980px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.diagram{padding:10px 10px 12px;min-width:0}
+.scroll{overflow-x:auto;overscroll-behavior-x:contain}
+svg.map{display:block;min-width:1100px;width:100%;height:auto}
+.zoom{display:flex;gap:6px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 8px;color:var(--muted);font-size:13px}
+.zoom .b{display:flex;gap:6px}
+.readout{font-size:13px;color:var(--muted);margin-top:8px;min-height:1.5em}
+.readout b{color:var(--fg);font-weight:500}
+.loops{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.loops button{border-radius:999px;font-size:13px;padding:4px 11px}
+.loops button::before{content:"↻ ";color:var(--fix)}
+.panel{padding:14px 16px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;min-width:0}
+.panel .tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:middle}
+.panel ul{margin:0;padding-left:18px}
+.panel li{margin:2px 0}
+.panel .time{color:var(--muted);font-size:13px;margin:2px 0 8px}
+.panel .hint{color:var(--muted);font-size:13px}
+.panel .ctl{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+footer{max-width:1480px;margin:14px auto 0;color:var(--muted);font-size:13px}
+/* SVG */
+.cont{fill:none;stroke:var(--line-strong);stroke-width:1;stroke-dasharray:5 4}
+.cont-label{font-family:var(--font);font-size:12.5px;fill:var(--muted);letter-spacing:.03em;text-transform:uppercase}
+.node rect.body{stroke-width:1.2;rx:9}
+.node text{font-family:var(--font);fill:var(--fg)}
+.node .t{font-size:14.5px;font-weight:500}
+.node .s{font-size:12px;fill:var(--muted)}
+.node.store .s{font-family:var(--mono);font-size:11.5px}
+.node.store .t{font-family:var(--mono);font-size:13.5px}
+.node{cursor:pointer}
+.node rect.halo{fill:none;stroke:var(--on);stroke-width:2.5;rx:13;opacity:0;transition:opacity .25s}
+.node.on rect.halo{opacity:1}
+.node.on rect.body{stroke-width:2.2}
+.node.night rect.body{fill:var(--night-bg);stroke:var(--night)}
+.node.store rect.body{fill:var(--store-bg);stroke:var(--store)}
+.node.fix rect.body{fill:var(--fix-bg);stroke:var(--fix)}
+.node.backlog rect.body{fill:var(--backlog-bg);stroke:var(--backlog)}
+.node.ki rect.body{fill:var(--ki-bg);stroke:var(--ki)}
+.node.neutral rect.body{fill:var(--neutral-bg);stroke:var(--neutral)}
+.node.sel rect.body{stroke-width:2.6}
+.node.dim{opacity:.35}
+.e{cursor:pointer}
+.e path.hit{fill:none;stroke:transparent;stroke-width:14}
+.e path.vis{fill:none;stroke-width:1.4;stroke-linejoin:round}
+.e.write path.vis{stroke:var(--accent)}
+.e.read path.vis{stroke:var(--line-strong);stroke-dasharray:5 4}
+.e.loop path.vis{stroke:var(--fix);stroke-width:1.8}
+.e.trigger path.vis{stroke:var(--night);stroke-dasharray:2 4;stroke-linecap:round}
+.e.chain path.vis{stroke:var(--neutral);stroke-width:1.6}
+.e.hi path.vis{stroke-width:3}
+.e.dim{opacity:.12}
+.e.off{display:none}
+.loopmark{font-family:var(--font);font-size:13px;fill:var(--fix);font-weight:600}
+@media (prefers-reduced-motion:reduce){.node rect.halo{transition:none}}
+</style>
+
+<header class="top">
+ <div>
+  <h1>Plenara Betriebsplan</h1>
+  <p class="lead">Tagespipeline, Nacharbeit und Altbestand auf dem Server, mit denselben Namen wie in Code und Admin: drei Stufen je Bericht (Abruf, Extraktion, Verarbeitung), wer wann läuft, was gelesen und geschrieben wird und wo es Schleifen gibt. Stand 15.10.2026, umgesetzt auf dem Branch betriebsplan, noch nicht ausgerollt. Knoten und Linien sind anklickbar.</p>
+ </div>
+ <div class="controls">
+  <div class="layers" role="group" aria-label="Ebenen">
+   <label><input type="checkbox" id="layer-write" checked><span class="swatch"></span>schreibt</label>
+   <label><input type="checkbox" id="layer-read" checked><span class="swatch read"></span>liest</label>
+   <label><input type="checkbox" id="layer-loop" checked><span class="swatch loop"></span>Rekursion</label>
+   <label><input type="checkbox" id="layer-trigger" checked><span class="swatch trigger"></span>Auslöser</label>
+   <label><input type="checkbox" id="layer-chain" checked><span class="swatch chain"></span>Kette</label>
+  </div>
+  <div class="clock">
+   <label for="clock">Uhrzeit</label>
+   <input type="range" id="clock" min="0" max="24" step="0.25" value="5.5">
+   <output id="clock-out" for="clock">05:30</output>
+   <button type="button" id="play" aria-pressed="false">Tag abspielen</button>
+  </div>
+ </div>
+</header>
+
+<main class="wrap">
+ <section class="card diagram" aria-label="Ablaufbild">
+  <div class="zoom">
+   <span>Lila Tagespipeline · blau Speicher · rot Nacharbeit und OCR tagsüber · ocker Altbestand · grün KI. Pfeile zeigen die Richtung des Informationsflusses.</span>
+   <span class="b" role="group" aria-label="Größe"><button type="button" data-zoom="100%">Passend</button><button type="button" data-zoom="140%">Größer</button><button type="button" data-zoom="180%">Groß</button></span>
+  </div>
+  <div class="scroll"><svg class="map" viewBox="0 0 1240 800" role="img" aria-labelledby="map-title map-desc" id="map"><title id="map-title">Ablaufbild der Server-Prozesse</title><desc id="map-desc">Links die Quellen und der Zeitplaner, in der Mitte die nächtliche Tagespipeline, daneben die Speicher der Hauptdatenbank und der PDF-Ablage, rechts Nacharbeit, KI-Fenster und Bestandsaufbau. Pfeile für Lesen, Schreiben, Auslöser und Rekursionen.</desc></svg></div>
+  <div class="readout" id="readout" aria-live="polite"></div>
+  <div class="loops" id="loops" role="group" aria-label="Rekursionen"></div>
+ </section>
+ <aside class="card panel" id="panel" aria-live="polite"></aside>
+</main>
+<footer>Grundlage: <code>requirements/betriebsplan-konzept.md</code>; Namen aus <code>shared/pipeline-terms.mjs</code>. Zeiten in deutscher Zeit; Stundenangaben sind Standardeinstellungen des Zeitplaners.</footer>
+
+<script>
+(function(){
+'use strict';
+const NODES=[
+ {id:'zeitplaner',g:'neutral',x:30,y:30,w:180,h:64,t:'Zeitplaner',s:['alle 10 min: schedule.mjs','Timer, Knöpfe (.path)'],time:[0,24],d:{
+  was:'Jeder Job hat einen Timer, der alle 10 Minuten scripts/schedule.mjs <job> ruft. Der entscheidet nach der Einstellung im Reiter „Jobs & Zeitpläne“ (an/aus, Uhrzeit, Zeitfenster), ob der Job dran ist, startet ihn und vermerkt den Lauf im Laufbuch. Knöpfe starten den Job sofort.',
+  liest:["system_state 'schedules' (an/aus, Uhrzeit, Fenster)","'schedule-now' (Knopf)","'schedule-runs' (läuft der Job noch?)","'altbestand-requests' (gibt es eine Anforderung?)"],
+  schreibt:["'schedule-runs' (Start, Ende, Ergebnis)","'schedule-log' (Laufbuch für Pipeline-Debug)"],
+  grenzen:['Uhrzeiten in 10-Minuten-Schritten','ein verpasster Nachtlauf wird bis 3 h nachgeholt','Zeitfenster: Nacharbeit 9–23, OCR 7–23, Altbestand 10–22 Uhr'],
+  rek:['Die Schleife ist der Timer selbst: alle 10 Minuten fragen, sonst still enden.']}},
+ {id:'backups',g:'store',x:30,y:150,w:180,h:56,t:'backups/',s:['Sicherungen, 2 Stände'],d:{
+  was:'Ordner auf derselben Platte wie die Datenbank: gepackte Datenbank, Index und Texte der PDF-Ablage. Mit BACKUP_REMOTE zusätzlich außer Haus.',liest:[],schreibt:[],grenzen:['höchstens 2 Stände je Art'],rek:[]}},
+ {id:'quellen',g:'neutral',x:30,y:330,w:180,h:72,t:'Quellen im Internet',s:['RIS-Server: Sitzungen, Berichte','PDF-Server: Dokumente'],d:{
+  was:'4.043 Gebiete: 3.432 Scraper, 347 amtliche API, 260 OParl. Den Abruf liest die Stufe Abruf, die PDFs die Stufe Extraktion.',
+  liest:[],schreibt:[],
+  grenzen:['je Server höchstens 2 Abrufe von Gebieten, 3 PDF-Abrufe gleichzeitig','Quelle bremst (429/503) oder scheitert 3-mal: Server wartet 1 h bis 7 Tage, dann Stichprobe mit 3 Dokumenten'],
+  rek:['Eine Quelle, die blockt, wird über die Serverstufe im Fehlerspeicher zurückgestellt und erst nach ihrer Wartezeit mit einer Stichprobe wieder gefragt.']}},
+ {id:'backup',g:'night',x:260,y:150,w:210,h:56,t:'00:30 Sichern',s:['Datenbank, Index, Texte'],time:[0.5,0.75],d:{
+  was:'Schritt „Sichern“: in sich stimmige Kopie der Datenbank im laufenden Betrieb, dazu Index und Texte der PDF-Ablage (sonntags voll, sonst nur Neues).',
+  liest:['Datei ratsmonitor.sqlite (VACUUM INTO)','pdf-store/index.sqlite, files/**/*.txt'],
+  schreibt:['backups/ratsmonitor-<Tag>.sqlite.zst','backups/pdf-store-index-…, pdf-store-texts-…'],
+  grenzen:['braucht 1,5 × Datenbankgröße frei','höchstens 30 min'],rek:[]}},
+ {id:'import',g:'night',x:260,y:230,w:210,h:80,t:'01:00 Abruf, nachts',s:['Stufe Abruf: 1 Tag zurück','sonntags 1 Monat (Nachträge)'],time:[1,4],d:{
+  was:'Stufe Abruf der Tagespipeline: Sitzungen und Berichte des letzten Tages und schon angesetzte künftige, aus allen angebundenen Quellen. Gebiete und Server, die im Fehlerspeicher warten, werden zurückgestellt; die Nacharbeit holt sie nach.',
+  liest:["'admin-pipeline-job'",'source_coverage (voriger Stand)','topics des Gebiets (Bestand)',"'meeting-marks', 'meeting-list'",'work_failures, source_hosts (wer wartet?)','Quelle im Internet'],
+  schreibt:['topics (neu, geändert), article_versions','source_coverage, import_runs',"'meeting-marks', 'meeting-list', 'import-debug'",'per Trigger: search_cards; Suche, region_stats','work_failures (Stufe Abruf), source_hosts'],
+  grenzen:['1 Tag zurück; sonntags 1 Monat, damit spät veröffentlichte Niederschriften und Beschlüsse ankommen','höchstens 4 h, je Server 2 Bahnen'],
+  rek:['Teil n: ein Gebiet über der Zeitgrenze wird beim nächsten Lauf hinter seinem Cursor fortgesetzt.','Fehler → Fehlerspeicher (Tagesbereich) → Nacharbeit ruft das Gebiet erneut ab, mit Fenster seit dem ersten Fehlschlag.']}},
+ {id:'trends',g:'night',x:260,y:330,w:210,h:44,t:'05:10 Startseite',s:[],time:[5.17,5.33],d:{
+  was:'Karte und Trends der Startseite vorrechnen (30 s).',liest:['search_cards, topics'],schreibt:["'startseite-trends'"],grenzen:['höchstens 10 min'],rek:[]}},
+ {id:'pdf',g:'night',x:260,y:394,w:210,h:96,t:'05:30 Extraktion, nachts',s:['PDF laden · Anlagen laden','Text lesen · OCR (45 min)'],time:[5.5,7.5],d:{
+  was:'Stufe Extraktion der Tagespipeline: alle PDFs der Berichte, die der Abruf seit dem letzten Lauf geschrieben hat (Hauptdokument, dann Anlagen; die KI liest alle), Text lesen, OCR der neuen Dateien, Dokumentart, Stand zählen; stößt die Verarbeitung an.',
+  liest:["topics: seit 'pdf-daily-last' geschrieben oder Sitzung im Tagesbereich (zwei Indexabfragen)",'index.sqlite: pdfs, texts','source_hosts (wer wartet?)','PDF-Server'],
+  schreibt:['files/*.pdf, *.txt','pdfs, texts, head_type',"'pdf-store-runs', 'pdf-store-stats', 'pdf-daily-last'",'work_failures (Stufe Extraktion)'],
+  grenzen:['2 h; Laden 48 min (Hauptdokumente 29, Anlagen 19), OCR 45 min','feste Grenze der Ablage 80 GB; Anlagen stehen unter allen Hauptdokumenten','OCR: je Seite 90 s, je Datei 5 min, Wächter 3 min'],
+  rek:['Was die OCR in 45 min nicht schafft, liest „OCR, tagsüber“.','Fehler → Fehlerspeicher → Nacharbeit lädt nach, danach Text lesen, OCR und Regeln für die betroffenen Berichte.']}},
+ {id:'rules',g:'night',x:260,y:514,w:210,h:110,t:'Verarbeitung, nachts',s:['Titel einordnen · Regeln anwenden','Suche aktualisieren · Zahlen rechnen','KI-Stand · Wege zählen'],time:[7.5,8.5],d:{
+  was:'Stufe Verarbeitung der Tagespipeline, direkt nach der Extraktion: Sachgebiet nach der Titelregel, Regeln je Bericht (nur neue Eingaben), Suche, Zahlen für plenara.X; dann KI-Stand und Wege für Pipeline-Debug zählen.',
+  liest:['topics (Titel, documents)','report_rules (Schlüssel je Bericht)','Ablage: Text des Hauptdokuments','search_cards, ai_work_items'],
+  schreibt:['topics.payload: Einordnung, Art, Thema, Regel-Zusammenfassung','report_rules, topic_facts','Suche, x_cases',"'rule-texts-last', 'ai-counts', 'pipeline-trace'",'work_failures (Stufe Verarbeitung)'],
+  grenzen:['meist unter 1 h'],
+  rek:['Der Schlüssel je Bericht enthält den Textstand: kommt später Text dazu (OCR, Nacharbeit), wird der Bericht neu gelesen.']}},
+ {id:'topics',g:'store',x:560,y:56,w:240,h:56,t:'topics, article_versions',s:['Berichte und Vorfassungen'],d:{
+  was:'Alle Berichte (Payload: Titel, Dokumente, Sitzungen, Regel- und KI-Ergebnisse) und je Änderung eine Vorfassung.',liest:[],schreibt:[],grenzen:['1,4 Mio. Vorgänge'],rek:['Jede Änderung schreibt per Trigger search_cards mit.']}},
+ {id:'coverage',g:'store',x:560,y:132,w:240,h:56,t:'source_coverage, import_runs',s:['Quellenstand, Läufe'],d:{
+  was:'Je Gebiet der Stand der Quelle und das Protokoll der Abrufe.',liest:[],schreibt:[],grenzen:[],rek:[]}},
+ {id:'search',g:'store',x:560,y:208,w:240,h:56,t:'search_cards, search_words',s:['region_stats, x_cases'],d:{
+  was:'Suchkarten, Wortliste der Suche, Werte je Gebiet, Zahlen für plenara.X.',liest:[],schreibt:[],grenzen:[],rek:['Abruf und Verarbeitung führen die Suche nach.']}},
+ {id:'rulesdb',g:'store',x:560,y:284,w:240,h:56,t:'report_rules, topic_facts',s:['Schlüssel je Bericht, Fakten'],d:{
+  was:'Je Bericht der Schlüssel der letzten Regelauswertung und die Fakten.',liest:[],schreibt:[],grenzen:[],rek:['Anderer Schlüssel (neuer Text) → Bericht wird neu gelesen.']}},
+ {id:'ai',g:'store',x:560,y:360,w:240,h:56,t:'ai_work_items',s:['article_analyses, ai_usage'],d:{
+  was:'Arbeitsstand der KI je Bericht (Eingabehash, Reservierung, Versuche).',liest:[],schreibt:[],grenzen:['kein automatischer Modellaufruf'],rek:['Neuer Text ändert den Eingabehash → „veraltet“ → der Agent findet den Bericht wieder.']}},
+ {id:'failures',g:'store',x:560,y:436,w:240,h:56,t:'work_failures, source_hosts',s:['Fehlerspeicher: Tagesbereich | Altbestand'],d:{
+  was:'Ein Eintrag je Schritt und Gegenstand mit Grund, Versuchen, nächstem Termin, Sitzungstag und Stufe (Abruf, Extraktion, Verarbeitung). Tagesbereich: Sitzungen der letzten 7 Tage, frühestens 12.10.2026; alles Ältere und alle Fehler von vor dem 12.10. sind Altbestand. Dazu je Server die Stufe (liefert, bremst, gesperrt, prüfen).',
+  liest:[],schreibt:[],
+  grenzen:['Gründe: Quelle bremst, Zugriff verweigert, vorübergehend, fehlt dauerhaft, zu langsam, Sperre im Haus, Fehler im eigenen Code','Wartezeiten: vorübergehend 1 h → 6 h → 1 Tag → 3 Tage, dann wöchentlich; verweigert 7 → 30 Tage, dann monatlich; Server 1 h → 7 Tage, „prüfen“ mit Stichprobe alle 30 Tage','Endgültig nur: 404, kein PDF, zu groß, Datei geändert'],
+  rek:['Tagesbereich: automatisch von der Nacharbeit. Altbestand: nur auf Knopfdruck vom Job Altbestand.','Nach 7 Tagen wandert ein Eintrag des Tagesbereichs von selbst in den Altbestand.']}},
+ {id:'state',g:'store',x:560,y:512,w:240,h:56,t:'system_state',s:['Aufträge, Stände, Laufbuch'],d:{
+  was:'Aufträge, Fortschritt, Protokolle, Laufbuch, Anforderungen des Altbestands, Zähler.',liest:[],schreibt:[],grenzen:[],rek:[]}},
+ {id:'index',g:'store',x:560,y:656,w:240,h:48,t:'index.sqlite',s:['pdfs, texts'],d:{
+  was:'Index der PDF-Ablage: je Adresse Status und Art, je Datei die Textfassung mit OCR-Stand.',liest:[],schreibt:[],grenzen:['80 GB für PDFs und Texte'],rek:[]}},
+ {id:'files',g:'store',x:560,y:716,w:240,h:48,t:'files/ab/sha.pdf, .txt',s:['Originale, Textfassungen'],d:{
+  was:'Jede Datei einmal unter ihrer Prüfsumme; der Text bleibt, auch wenn das PDF der Grenze weicht.',liest:[],schreibt:[],grenzen:[],rek:[]}},
+ {id:'nacharbeit',g:'fix',x:900,y:36,w:300,h:84,t:'09–23 Uhr Nacharbeit',s:['Tagesbereich, alle 30 min, automatisch','Folgekette: Abruf → Extraktion','→ Verarbeitung'],time:[9,23],d:{
+  was:'Versucht fällige Einträge des Tagesbereichs erneut, Stufe für Stufe (erst Abruf, dann Extraktion, dann Verarbeitung), mit derselben Funktion wie nachts. Gelingt ein Abruf, laufen für die geschriebenen Berichte gleich PDF laden, Anlagen laden, Text lesen, OCR und Regeln anwenden; gelingt eine Extraktion, die Regeln.',
+  liest:['work_failures (Tagesbereich, fällig), source_hosts','je Schritt wie der Schritt selbst'],
+  schreibt:['work_failures (löschen oder neuer Termin), source_hosts',"'nacharbeit-last'",'dazu alles, was die wiederholten Schritte schreiben'],
+  grenzen:['20 min je Lauf, höchstens 500 Einträge, je Server 20 (fällige Server erst 3)','Reihenfolge: Stufe, neueste Sitzung, wenigste Versuche zuerst','lässt aus, wenn ein Altbestand-Auftrag lädt'],
+  rek:['Gelungen → Folgeschritte im selben Lauf. Gescheitert → neuer Termin nach dem Grund. Nicht drangekommen → eine Stunde weiter.']}},
+ {id:'ocrday',g:'fix',x:900,y:150,w:300,h:64,t:'07–23 Uhr OCR, tagsüber',s:['Rest der Nacht, danach Regeln','Altbestand, wenn angefordert'],time:[7,23],d:{
+  was:'Schritt OCR für den Tagesbereich: liest Seiten ohne Text, die „Extraktion, nachts“ nicht geschafft hat. Ist auf der Seite Altbestand die OCR angefordert, liest er danach (10–22 Uhr) auch den Altbestand. Eigene Einheit: Anhalten trifft nur die OCR.',
+  liest:['index.sqlite (OCR-Reihe: Hauptdokumente vor Anlagen, neueste Sitzung zuerst)','files/*.pdf; gelöschte PDFs kurz nachgeladen',"'altbestand-requests'"],
+  schreibt:['texts, files/*.txt','work_failures (zu langsam, OCR-Nachladen)',"'pdf-store-runs'",'danach über Regeln anwenden: topics.payload, report_rules, Suche'],
+  grenzen:['je Seite 90 s, je Datei 5 min (Altbestand 15 min), Wächter 3 min','2 Worker, Pakete zu 25 Dateien als eigene Prozesse'],
+  rek:['Zu langsam → zweiter Versuch mit 15 Minuten, danach bleibt die Textebene.','Folgekette: nach einem Lauf mit gelesenen Dateien gleich Regeln anwenden und Suche aktualisieren für die Berichte mit neuem Text.']}},
+ {id:'ki',g:'ki',x:900,y:250,w:300,h:72,t:'KI, von Hand',s:['Agent über MCP','ai_list → claim → submit'],time:[9,18],d:{
+  was:'Schritt KI der Stufe Verarbeitung: kein Hintergrundlauf. Ein Agent liest alle PDFs eines Berichts (Hauptdokument und Anlagen) aus der Ablage und speichert Kurzfassung, Langfassung und Einordnung gemeinsam. Pipeline-Debug und Altbestand zeigen, wie viele Berichte bereitstehen.',
+  liest:['ai_work_items (bereit, veraltet)','topics','Ablage: alle Textfassungen des Berichts'],
+  schreibt:['ai_work_items','topics.payload: Kurz- und Langfassung, KI-Einordnung','article_analyses, ai_usage'],
+  grenzen:['Eingabehash prüft die Quellen vor dem Speichern'],
+  rek:['Neuer Text (OCR, Nacharbeit, Altbestand) → „veraltet“ → der Bericht kommt wieder dran.']}},
+ {id:'altbestand',g:'backlog',x:900,y:360,w:300,h:120,t:'10–22 Uhr Altbestand',s:['nur auf Knopfdruck (Seite Altbestand)','rückwirkender Abruf in Paketen zu 8','alte Fehler · ältere Monate · Anlagen','OCR des Altbestands'],time:[10,22],d:{
+  was:'Alles, was älter ist als der Tagesbereich oder vor dem 12.10.2026 gescheitert ist. Job „Altbestand“: Gebiete rückwirkend abrufen (1 bis 24 Monate) mit Folgekette, alte Fehler Stufe für Stufe erneut versuchen. Job „PDF-Aufträge“: ältere Monate laden, Anlagen laden, Text lesen. Job „OCR, tagsüber“: OCR des Altbestands.',
+  liest:["'altbestand-requests' (was angefordert ist)",'work_failures (Altbestand)','index.sqlite, topics'],
+  schreibt:['topics, files, pdfs, texts, report_rules (über dieselben Schritte wie nachts)','work_failures (Herkunft Altbestand)',"'altbestand-last', Fortschritt in 'altbestand-requests'"],
+  grenzen:['nur 10–22 Uhr, je Lauf 2 h; die Nacharbeit hat Vorrang','fortsetzbar über Tage; anhaltbar'],
+  rek:['Paket für Paket: Abruf, dann Extraktion und Regeln der geschriebenen Berichte; erledigte Gebiete bleiben erledigt.']}}
+];
+const CONTAINERS=[
+ {id:'c-tp',x:245,y:120,w:240,h:520,label:'Tagespipeline, jede Nacht'},
+ {id:'c-db',x:540,y:20,w:280,h:570,label:'Hauptdatenbank ratsmonitor.sqlite'},
+ {id:'c-pdf',x:540,y:620,w:280,h:160,label:'PDF-Ablage RM_PDF_STORE'}
+];
+const EDGES=[
+ {id:'c1',k:'chain',f:'backup',t:'import',l:'Kette: nach „Sichern“ der Abruf',p:'M365 206 L365 228'},
+ {id:'c2',k:'chain',f:'import',t:'trends',l:'Kette: nach dem Abruf die Startseite',p:'M365 310 L365 328'},
+ {id:'c3',k:'chain',f:'trends',t:'pdf',l:'Kette: dann die Extraktion',p:'M365 374 L365 392'},
+ {id:'t3',k:'trigger',f:'pdf',t:'rules',l:'„Extraktion, nachts“ stößt „Verarbeitung, nachts“ an',p:'M365 490 L365 512'},
+ {id:'t1',k:'trigger',f:'zeitplaner',t:'backup',l:'Zeitplaner startet die Tagespipeline zu ihren Zeiten',p:'M210 62 L365 62 L365 148'},
+ {id:'t2',k:'trigger',f:'zeitplaner',t:'nacharbeit',l:'Zeitplaner startet die Nacharbeit alle 30 min zwischen 9 und 23 Uhr',p:'M210 50 L228 50 L228 8 L1050 8 L1050 34'},
+ {id:'t4',k:'trigger',f:'zeitplaner',t:'ocrday',l:'Zeitplaner startet „OCR, tagsüber“ alle 10 min zwischen 7 und 23 Uhr',p:'M210 50 L228 50 L228 8 L1214 8 L1214 182 L1202 182'},
+ {id:'t5',k:'trigger',f:'zeitplaner',t:'altbestand',l:'Zeitplaner startet „Altbestand“, wenn etwas angefordert ist (10–22 Uhr)',p:'M210 50 L228 50 L228 8 L1226 8 L1226 420 L1202 420'},
+ {id:'r1',k:'read',f:'quellen',t:'import',l:'Abruf liest Sitzungen und Berichte der Quellen (1 Tag zurück und angesetzte künftige)',p:'M210 350 L236 350 L236 280 L258 280'},
+ {id:'r2',k:'read',f:'quellen',t:'pdf',l:'Extraktion lädt PDFs vom PDF-Server (10 s je Abruf)',p:'M210 382 L240 382 L240 450 L258 450'},
+ {id:'r3',k:'read',f:'topics',t:'import',l:'Abruf liest den Bestand des Gebiets, um Neues und Geändertes zu erkennen',p:'M558 84 L520 84 L520 280 L472 280'},
+ {id:'r4',k:'read',f:'coverage',t:'import',l:'Abruf liest den vorigen Quellenstand (Cursor, Marken)',p:'M558 160 L512 160 L512 288 L472 288'},
+ {id:'r5',k:'read',f:'failures',t:'import',l:'Abruf stellt Gebiete und Server zurück, die im Fehlerspeicher warten',p:'M558 452 L528 452 L528 296 L472 296'},
+ {id:'r6',k:'read',f:'topics',t:'pdf',l:'Extraktion liest die Dokumentlisten der Berichte der Nacht',p:'M558 92 L500 92 L500 442 L472 442'},
+ {id:'r7',k:'read',f:'index',t:'pdf',l:'Extraktion prüft, was schon abgelegt ist und welcher Text fehlt',p:'M558 684 L508 684 L508 450 L472 450'},
+ {id:'r8',k:'read',f:'failures',t:'pdf',l:'Extraktion lässt Server aus, die bremsen oder gesperrt sind',p:'M558 458 L472 458'},
+ {id:'r9',k:'read',f:'topics',t:'rules',l:'Verarbeitung liest Titel und Dokumentliste jedes aktiven Berichts',p:'M558 100 L496 100 L496 574 L472 574'},
+ {id:'r10',k:'read',f:'rulesdb',t:'rules',l:'Regeln anwenden vergleicht den Schlüssel je Bericht (Textstand)',p:'M558 312 L516 312 L516 582 L472 582'},
+ {id:'r13',k:'read',f:'ai',t:'rules',l:'KI-Stand: Verarbeitung zählt bereit, veraltet, fertig',p:'M558 388 L512 388 L512 590 L472 590'},
+ {id:'r11',k:'read',f:'files',t:'rules',l:'Regeln anwenden liest den Text des Hauptdokuments',p:'M558 740 L504 740 L504 598 L472 598'},
+ {id:'r19',k:'read',f:'topics',t:'backup',l:'Sichern liest die ganze Hauptdatenbank',p:'M540 36 L492 36 L492 170 L472 170'},
+ {id:'r20',k:'read',f:'index',t:'backup',l:'Sichern liest Index und Texte der PDF-Ablage',p:'M540 630 L488 630 L488 186 L472 186'},
+ {id:'w1',k:'write',f:'backup',t:'backups',l:'Sichern schreibt die gepackten Stände nach backups/',p:'M258 178 L212 178'},
+ {id:'w2',k:'write',f:'import',t:'topics',l:'Abruf schreibt neue und geänderte Berichte',p:'M472 238 L536 238 L536 64 L558 64'},
+ {id:'w3',k:'write',f:'import',t:'coverage',l:'Abruf schreibt Quellenstand und Laufprotokoll',p:'M472 246 L532 246 L532 152 L558 152'},
+ {id:'w4',k:'write',f:'import',t:'search',l:'per Trigger search_cards; dann Suche und Werte je Gebiet',p:'M472 254 L546 254 L546 228 L558 228'},
+ {id:'w5',k:'write',f:'import',t:'state',l:'Abruf schreibt Auftrag, Sitzungsmarken, Cursor',p:'M472 262 L548 262 L548 540 L558 540'},
+ {id:'w6',k:'write',f:'import',t:'failures',l:'Abruf vermerkt Fehler je Gebiet (Stufe Abruf) und die Serverstufe',p:'M472 270 L552 270 L552 476 L558 476'},
+ {id:'w7',k:'write',f:'pdf',t:'index',l:'Extraktion schreibt pdfs und texts',p:'M472 402 L524 402 L524 668 L558 668'},
+ {id:'w8',k:'write',f:'pdf',t:'files',l:'Extraktion legt PDF und Textfassung ab',p:'M472 410 L518 410 L518 728 L558 728'},
+ {id:'w9',k:'write',f:'pdf',t:'state',l:'Extraktion schreibt Protokoll, Stand, pdf-daily-last',p:'M472 418 L546 418 L546 548 L558 548'},
+ {id:'w10',k:'write',f:'pdf',t:'failures',l:'Extraktion vermerkt Fehler beim Laden, Lesen, OCR (Stufe Extraktion)',p:'M472 426 L556 426 L556 484 L558 484'},
+ {id:'w11',k:'write',f:'rules',t:'topics',l:'Verarbeitung schreibt Einordnung, Art, Thema, Regel-Zusammenfassung',p:'M472 522 L538 522 L538 72 L558 72'},
+ {id:'w12',k:'write',f:'rules',t:'rulesdb',l:'Verarbeitung schreibt Schlüssel und Fakten je Bericht',p:'M472 530 L534 530 L534 300 L558 300'},
+ {id:'w13',k:'write',f:'rules',t:'search',l:'Verarbeitung aktualisiert Suche und Zahlen',p:'M472 538 L542 538 L542 236 L558 236'},
+ {id:'w14',k:'write',f:'rules',t:'state',l:'Verarbeitung schreibt rule-texts-last, ai-counts, pipeline-trace',p:'M472 546 L554 546 L554 556 L558 556'},
+ {id:'w15',k:'write',f:'rules',t:'failures',l:'Fehler im eigenen Code bei einer Regel (Stufe Verarbeitung)',p:'M472 554 L528 554 L528 488 L558 488'},
+ {id:'r14',k:'loop',f:'failures',t:'nacharbeit',l:'Nacharbeit holt fällige Einträge des Tagesbereichs',p:'M822 448 L854 448 L854 80 L898 80'},
+ {id:'w16',k:'loop',f:'nacharbeit',t:'failures',l:'Nacharbeit löscht Erledigtes, gibt Gescheitertem einen neuen Termin, führt die Serverstufe',p:'M898 104 L846 104 L846 464 L822 464'},
+ {id:'w17',k:'write',f:'nacharbeit',t:'state',l:'Nacharbeit schreibt nacharbeit-last',p:'M898 112 L838 112 L838 532 L822 532'},
+ {id:'l1',k:'loop',f:'nacharbeit',t:'import',l:'Folgekette 1: Abruf eines Gebiets erneut (Fenster seit dem ersten Fehlschlag)',p:'M898 60 L880 60 L880 16 L250 16 L250 300 L258 300'},
+ {id:'l2',k:'loop',f:'nacharbeit',t:'pdf',l:'Folgekette 2: Extraktion der Berichte (PDF laden, Anlagen laden, Text lesen, OCR)',p:'M898 60 L880 60 L880 16 L250 16 L250 478 L258 478'},
+ {id:'l3',k:'loop',f:'nacharbeit',t:'rules',l:'Folgekette 3: Regeln anwenden für die betroffenen Berichte',p:'M898 60 L880 60 L880 16 L250 16 L250 606 L258 606'},
+ {id:'o1',k:'read',f:'index',t:'ocrday',l:'OCR, tagsüber liest die OCR-Reihe (Tagesbereich, dann Altbestand)',p:'M822 670 L870 670 L870 190 L898 190'},
+ {id:'o2',k:'write',f:'ocrday',t:'files',l:'OCR, tagsüber schreibt die ergänzten Textfassungen',p:'M898 198 L866 198 L866 736 L822 736'},
+ {id:'o3',k:'loop',f:'ocrday',t:'failures',l:'Zu langsam oder Nachladen gescheitert → Fehlerspeicher (zweiter Versuch mit 15 min)',p:'M898 206 L862 206 L862 470 L822 470'},
+ {id:'o4',k:'loop',f:'ocrday',t:'rules',l:'Folgekette nach der OCR: Regeln anwenden und Suche aktualisieren für die Berichte mit neuem Text',p:'M898 166 L878 166 L878 14 L248 14 L248 616 L258 616'},
+ {id:'k1',k:'read',f:'ai',t:'ki',l:'Agent liest die Liste bereiter und veralteter Berichte',p:'M822 388 L858 388 L858 280 L898 280'},
+ {id:'k2',k:'read',f:'files',t:'ki',l:'Agent liest alle Textfassungen des Berichts (Hauptdokument und Anlagen)',p:'M822 744 L874 744 L874 296 L898 296'},
+ {id:'k3',k:'write',f:'ki',t:'ai',l:'Agent schreibt Arbeitsstand, Analysen und Verbrauch',p:'M898 288 L830 288 L830 380 L822 380'},
+ {id:'k4',k:'write',f:'ki',t:'topics',l:'Agent schreibt Kurz- und Langfassung und KI-Einordnung',p:'M898 272 L890 272 L890 68 L822 68'},
+ {id:'a1',k:'loop',f:'failures',t:'altbestand',l:'Altbestand holt alte Fehler, wenn „erneut versuchen“ angefordert ist',p:'M822 456 L850 456 L850 390 L898 390'},
+ {id:'a2',k:'loop',f:'altbestand',t:'failures',l:'Altbestand löscht Erledigtes und vermerkt neue Fehler mit Herkunft Altbestand',p:'M898 410 L842 410 L842 484 L822 484'},
+ {id:'a3',k:'read',f:'index',t:'altbestand',l:'Altbestand-Aufträge lesen, was fehlt (ältere Monate, Anlagen, Text)',p:'M822 684 L886 684 L886 430 L898 430'},
+ {id:'a4',k:'write',f:'altbestand',t:'files',l:'Altbestand-Aufträge legen PDFs und Textfassungen ab',p:'M898 450 L894 450 L894 724 L822 724'},
+ {id:'a5',k:'write',f:'altbestand',t:'state',l:'Altbestand schreibt Fortschritt und altbestand-last',p:'M898 460 L834 460 L834 548 L822 548'},
+ {id:'a6',k:'loop',f:'altbestand',t:'import',l:'Rückwirkender Abruf: dieselbe Funktion wie nachts, 1 bis 24 Monate, je 8 Gebiete; danach Extraktion und Regeln',p:'M898 470 L882 470 L882 12 L246 12 L246 290 L258 290'}
+];
+const LOOPS=[
+ {id:'L1',t:'Nacharbeit ↔ Fehlerspeicher',e:['r14','w16'],n:['nacharbeit','failures'],d:'Alle 30 Minuten (9 bis 23 Uhr): fällige Einträge des Tagesbereichs holen, den Schritt wiederholen; Erfolg löscht den Eintrag, Fehler gibt einen neuen Termin nach dem Grund. Ein Eintrag endet mit Erfolg oder „kein Versuch mehr“.'},
+ {id:'L2',t:'Folgekette Abruf → Extraktion → Verarbeitung',e:['l1','l2','l3'],n:['nacharbeit','import','pdf','rules'],d:'Gelingt ein erneuter Abruf, laufen für die Berichte, die er geschrieben hat, gleich PDF laden, Anlagen laden, Text lesen, OCR und Regeln anwenden. Gelingt eine Extraktion, laufen die Regeln für die betroffenen Berichte. Die KI startet nicht von selbst; die Seiten zeigen, wie viele Berichte bereitstehen.'},
+ {id:'L3',t:'Serverstufe und Stichprobe',e:['r5','r8','r14','w16','w6','w10'],n:['failures','quellen','import','pdf','nacharbeit'],d:'Bremst eine Quelle (429/503) oder scheitert sie dreimal in Folge, wartet der Server 1 h, 4 h, 12 h, 1 Tag, 3 Tage, 7 Tage; bei verweigertem Zugriff 7 und 30 Tage, dann „prüfen“. In der Wartezeit lassen alle Abrufe ihn aus. Danach eine Stichprobe von 3 Dokumenten: gelingt eine, liefert er wieder.'},
+ {id:'L4',t:'Abruf: Teil n hinter dem Cursor',e:['r4','w3','r1'],n:['import','coverage','quellen'],d:'Erreicht ein Gebiet die Zeitgrenze, setzt der nächste Abruf hinter dem Cursor der Sitzungsliste fort. Das ist kein Fehler im Sinn des Fehlerspeichers.'},
+ {id:'L5',t:'OCR: zu langsam → zweiter Versuch; neuer Text → Regeln',e:['o3','r14','o4'],n:['ocrday','failures','nacharbeit','rules'],d:'Braucht eine Seite über 90 Sekunden oder eine Datei über 5 Minuten, wird abgebrochen und nichts geschrieben; Grund „zu langsam“. Den zweiten Versuch mit 15 Minuten je Datei macht die Nacharbeit (Tagesbereich) bzw. der Altbestand; scheitert er auch, bleibt die Textebene. Hat ein Lauf von „OCR, tagsüber“ Dateien gelesen, laufen gleich Regeln anwenden und Suche aktualisieren für die Berichte mit neuem Text.'},
+ {id:'L6',t:'KI nach neuem Text',e:['w8','o2','k2','k1','k3'],n:['pdf','ocrday','files','ai','ki'],d:'Der Eingabehash eines Berichts enthält die Textfassungen aller seiner PDFs. Kommt Text dazu (OCR, Nacharbeit, Altbestand), wird der Bericht „veraltet“ und erscheint wieder in der Liste des Agenten.'},
+ {id:'L7',t:'Regeln bei neuem Text',e:['r10','r11','w12','w11'],n:['rules','rulesdb','files','topics'],d:'Der Schlüssel je Bericht enthält den Textstand des Hauptdokuments. Kommt Text dazu, liest „Regeln anwenden“ den Bericht beim nächsten Lauf neu; danach folgt immer „Suche aktualisieren“.'},
+ {id:'L8',t:'Zeitplaner alle 10 Minuten',e:['t1','t2','t4','t5'],n:['zeitplaner'],d:'Jeder Timer fragt alle 10 Minuten den Zeitplaner: dran (Uhrzeit, Fenster), per Knopf gewünscht oder angefordert? Dann Start und Eintrag im Laufbuch, sonst stilles Ende.'},
+ {id:'L9',t:'Fehler im eigenen Code: nach dem Deploy',e:['w15','w10','w6','r14'],n:['failures','nacharbeit','rules','pdf','import'],d:'Scheitert ein Schritt an unserem Code, bringt ein neuer Versuch nichts. Der Eintrag merkt sich den Programmstand und wird erst fällig, wenn ein anderer läuft. Die Liste ist die To-do-Liste der Entwicklung.'},
+ {id:'L10',t:'Altbestand: Anforderung → Pakete',e:['t5','a6','a5','a1','a2'],n:['altbestand','state','failures','import'],d:'Auf der Seite Altbestand angefordert, arbeitet der Job Altbestand erst alte Fehler ab, dann den rückwirkenden Abruf in Paketen zu 8 Gebieten, jedes mit Folgekette. Er macht Platz, wenn die Nacharbeit fällige Einträge hat, endet um 22 Uhr und setzt am nächsten Tag fort.'},
+ {id:'L11',t:'Grenze Tagesbereich / Altbestand',e:['r14','a1'],n:['failures','nacharbeit','altbestand'],d:'Ein Eintrag gehört zum Tagesbereich, solange seine Sitzung höchstens 7 Tage zurückliegt (frühestens 12.10.2026) und er nicht vor dem 12.10. entstand. Danach wandert er von selbst in den Altbestand; die Nacharbeit lässt ihn dann liegen.'},
+ {id:'L12',t:'Nichts wird dauerhaft vergessen',e:['r1','l1','r14','w16'],n:['import','nacharbeit','failures','quellen'],d:'Vorübergehende Fehler laufen nach ihrer Leiter wöchentlich weiter, verweigerter Zugriff monatlich, ein Server in „prüfen“ bekommt alle 30 Tage eine Stichprobe. Ein Eintrag ohne Termin hält den Nachtabruf nicht auf. Sonntags geht der Abruf einen Monat zurück, damit Nachträge zu älteren Sitzungen ankommen. Endgültig ist nur, was die Quelle nicht mehr hat.'}
+];
+const SVG='http://www.w3.org/2000/svg';
+const svg=document.getElementById('map');
+const byId=Object.fromEntries(NODES.map(n=>[n.id,n]));
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function build(){
+ let out='<defs>';
+ for(const [k,c] of [['write','var(--accent)'],['read','var(--line-strong)'],['loop','var(--fix)'],['trigger','var(--night)'],['chain','var(--neutral)']])
+  out+=`<marker id="m-${k}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1.5L8.5 5L1 8.5" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>`;
+ out+='</defs>';
+ for(const c of CONTAINERS)out+=`<rect class="cont" x="${c.x}" y="${c.y}" width="${c.w}" height="${c.h}" rx="14"/><text class="cont-label" x="${c.x+12}" y="${c.y+18}">${esc(c.label)}</text>`;
+ for(const e of EDGES)out+=`<g class="e ${e.k}" data-id="${e.id}" data-f="${e.f}" data-t="${e.t}" tabindex="0" role="button" aria-label="${esc(e.l)}"><title>${esc(e.l)}</title><path class="hit" d="${e.p}"/><path class="vis" d="${e.p}" marker-end="url(#m-${e.k})"/></g>`;
+ out+='<text class="loopmark" x="262" y="34">↻ Folgekette über die Schritte der Nacht</text>';
+ for(const n of NODES){
+  const cx=n.x+n.w/2,lines=n.s.length,top=n.y+(n.h-(22+lines*16))/2+15;
+  out+=`<g class="node ${n.g}" data-id="${n.id}" tabindex="0" role="button" aria-label="${esc(n.t)}"><rect class="halo" x="${n.x-5}" y="${n.y-5}" width="${n.w+10}" height="${n.h+10}"/><rect class="body" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}"/><text class="t" x="${cx}" y="${top}" text-anchor="middle">${esc(n.t)}</text>`;
+  n.s.forEach((s,i)=>{out+=`<text class="s" x="${cx}" y="${top+19+i*16}" text-anchor="middle">${esc(s)}</text>`;});
+  out+='</g>';
+ }
+ svg.innerHTML=out;
+}
+build();
+const panel=document.getElementById('panel'),readout=document.getElementById('readout'),loopsBox=document.getElementById('loops');
+let sel=null;
+const nodeEls=[...svg.querySelectorAll('.node')],edgeEls=[...svg.querySelectorAll('.e')];
+const edgeById=Object.fromEntries(EDGES.map(e=>[e.id,e]));
+function related(){
+ const edges=new Set(),nodes=new Set();
+ if(!sel)return null;
+ if(sel.type==='node'){nodes.add(sel.id);for(const e of EDGES)if(e.f===sel.id||e.t===sel.id){edges.add(e.id);nodes.add(e.f);nodes.add(e.t);}}
+ else if(sel.type==='edge'){const e=edgeById[sel.id];edges.add(e.id);nodes.add(e.f);nodes.add(e.t);}
+ else{const L=LOOPS.find(l=>l.id===sel.id);for(const id of L.e){edges.add(id);const e=edgeById[id];nodes.add(e.f);nodes.add(e.t);}for(const id of L.n)nodes.add(id);}
+ return {edges,nodes};
+}
+function layerOn(k){const el=document.getElementById('layer-'+k);return !el||el.checked;}
+function apply(){
+ const rel=related();
+ for(const g of edgeEls){const id=g.dataset.id,k=edgeById[id].k;g.classList.toggle('off',!layerOn(k));g.classList.toggle('hi',!!rel&&rel.edges.has(id));g.classList.toggle('dim',!!rel&&!rel.edges.has(id));}
+ for(const g of nodeEls){const id=g.dataset.id;g.classList.toggle('sel',!!sel&&sel.type==='node'&&sel.id===id);g.classList.toggle('dim',!!rel&&!rel.nodes.has(id));}
+ for(const b of loopsBox.querySelectorAll('button'))b.setAttribute('aria-pressed',String(!!sel&&sel.type==='loop'&&sel.id===b.dataset.id));
+ renderPanel();
+}
+const hhmm=h=>{const m=Math.round(h*60);return String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};
+const list=(title,items)=>items&&items.length?`<h3>${esc(title)}</h3><ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:'';
+const GROUP={night:'Tagespipeline',store:'Speicher',fix:'Nacharbeit',backlog:'Altbestand',ki:'KI (Verarbeitung)',neutral:'Rahmen'};
+function renderPanel(){
+ const ctl='<div class="ctl"><button type="button" id="clear">Auswahl aufheben</button></div>';
+ if(!sel){panel.innerHTML=`<h2>Übersicht</h2><p>Jeder Bericht durchläuft drei <b>Stufen</b>: Abruf (Sitzungen und Berichte von der Quelle), Extraktion (PDF laden, Anlagen laden, Text lesen, OCR) und Verarbeitung (Titel einordnen, Regeln anwenden, Suche aktualisieren, Zahlen rechnen, KI).</p><p>Drei <b>Abläufe</b> teilen sich die Speicher: Die <b>Tagespipeline</b> holt und verarbeitet jede Nacht, was neu ist. Was scheitert, kommt mit seinem Grund in den <b>Fehlerspeicher</b>; die <b>Nacharbeit</b> versucht es tagsüber erneut, Stufe für Stufe, mit Folgekette. Alles, was älter ist als der Tagesbereich (Sitzungen der letzten 7 Tage, frühestens 12.10.2026), bearbeitet nur der <b>Altbestand</b> auf Knopfdruck.</p><p class="hint">Klick auf einen Knoten zeigt, was er liest und schreibt, Grenzen und Schleifen; Klick auf eine Linie den einzelnen Fluss; die Rekursionen unter dem Bild heben alle beteiligten Linien hervor. Der Schieberegler zeigt, welche Jobs zu einer Uhrzeit laufen.</p>${list('Legende der Linien',['durchgezogen: schreibt','gestrichelt: liest','rot: Rekursion (Fehlerspeicher, Folgekette, Wiederholung)','gepunktet: Auslöser (Zeitplaner, Anstoßen)','grau: feste Reihenfolge der Tagespipeline'])}`;return;}
+ if(sel.type==='node'){const n=byId[sel.id],d=n.d;
+  panel.innerHTML=`<h2>${esc(n.t)}<span class="tag">${GROUP[n.g]}</span></h2>${n.time?`<p class="time">läuft ${hhmm(n.time[0])} bis ${hhmm(n.time[1])}</p>`:''}<p>${esc(d.was)}</p>${list('liest',d.liest)}${list('schreibt',d.schreibt)}${list('Grenzen',d.grenzen)}${list('Rekursion',d.rek)}${ctl}`;}
+ else if(sel.type==='edge'){const e=edgeById[sel.id],K={write:'schreibt',read:'liest',loop:'Rekursion',trigger:'Auslöser',chain:'Kette'};
+  panel.innerHTML=`<h2>${esc(byId[e.f].t)} → ${esc(byId[e.t].t)}<span class="tag">${K[e.k]}</span></h2><p>${esc(e.l)}</p>${ctl}`;}
+ else{const L=LOOPS.find(l=>l.id===sel.id);
+  panel.innerHTML=`<h2>↻ ${esc(L.t)}<span class="tag">Rekursion</span></h2><p>${esc(L.d)}</p>${list('beteiligt',L.n.map(id=>byId[id].t))}${ctl}`;}
+ document.getElementById('clear').addEventListener('click',()=>{sel=null;apply();});
+}
+for(const g of nodeEls){const pick=()=>{sel={type:'node',id:g.dataset.id};apply();};g.addEventListener('click',ev=>{ev.stopPropagation();pick();});g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();pick();}});}
+for(const g of edgeEls){const pick=()=>{sel={type:'edge',id:g.dataset.id};apply();};g.addEventListener('click',ev=>{ev.stopPropagation();pick();});g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();pick();}});}
+svg.addEventListener('click',()=>{sel=null;apply();});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'){sel=null;apply();}});
+for(const k of ['write','read','loop','trigger','chain'])document.getElementById('layer-'+k).addEventListener('change',apply);
+for(const L of LOOPS){const b=document.createElement('button');b.type='button';b.textContent=L.t;b.dataset.id=L.id;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{sel=sel&&sel.type==='loop'&&sel.id===L.id?null:{type:'loop',id:L.id};apply();});loopsBox.appendChild(b);}
+for(const b of document.querySelectorAll('[data-zoom]'))b.addEventListener('click',()=>{svg.style.width=b.dataset.zoom;for(const o of document.querySelectorAll('[data-zoom]'))o.setAttribute('aria-pressed',String(o===b));});
+/* Uhrzeit: welche Jobs laufen gerade */
+const clock=document.getElementById('clock'),clockOut=document.getElementById('clock-out');
+function tick(){
+ const h=Number(clock.value);clockOut.value=hhmm(h);
+ const on=[];
+ for(const g of nodeEls){const n=byId[g.dataset.id],a=!!n.time&&h>=n.time[0]&&h<n.time[1]&&n.id!=='zeitplaner';g.classList.toggle('on',a);if(a)on.push(n.t);}
+ readout.innerHTML=on.length?`Um <b>${hhmm(h)}</b> laufen: <b>${esc(on.join(' · '))}</b>${h>=9&&h<18?' <span>(KI nur, wenn ein Agent arbeitet)</span>':''}.`:`Um <b>${hhmm(h)}</b> läuft nichts Geplantes; der Zeitplaner fragt alle 10 Minuten, die Nacharbeit ist zwischen 23:00 und 09:00 aus.`;
+}
+clock.addEventListener('input',tick);tick();
+const play=document.getElementById('play');let timer=null;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function stop(){clearInterval(timer);timer=null;play.setAttribute('aria-pressed','false');play.textContent='Tag abspielen';}
+play.addEventListener('click',()=>{
+ if(timer){stop();return;}
+ play.setAttribute('aria-pressed','true');play.textContent='Anhalten';
+ if(Number(clock.value)>=24)clock.value=0;
+ timer=setInterval(()=>{let v=Number(clock.value)+(reduced?1:0.25);if(v>24){v=24;stop();}clock.value=v;tick();},reduced?700:180);
+});
+apply();
+})();
+</script>
+
+</head>
+<body></body>
+</html>

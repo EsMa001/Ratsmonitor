@@ -4,6 +4,8 @@ import {EventEmitter} from 'node:events';
 import {fileURLToPath} from 'node:url';
 
 const options=JSON.parse(process.argv[2]);
+// keine Hauptdatenbank: der Fehlerspeicher bleibt aus (failures.mjs öffnet nur vorhandene Dateien)
+process.env.DATABASE_FILE='/virtual/no-database.sqlite';
 const script=new URL('../../scripts/pdf-store/text.mjs',import.meta.url);
 const memoryFiles=new Map(),children=[],read=[],logs=[];
 const queue=[{sha:'first',main:true},{sha:'second',main:false},{sha:'third',main:false}];
@@ -39,6 +41,8 @@ function spawn(command,args,config){
 
 mock.module('node:fs',{defaultExport:fs});
 mock.module('node:child_process',{namedExports:{spawn}});
+// ohne Hauptdatenbank: kein Fehlerspeicher
+mock.module(new URL('../../scripts/pdf-store/failures.mjs',import.meta.url),{namedExports:{openFailures:async()=>null,seedFromStore:async()=>null,originOf:()=>'daily'}});
 mock.module(new URL('../../server/node/pdf-store.mjs',import.meta.url),{
  namedExports:{openPdfStore:()=>store,DEFAULT_PDF_STORE:store.dir},
 });

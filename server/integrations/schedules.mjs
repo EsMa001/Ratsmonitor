@@ -23,39 +23,57 @@ export const CATCH_UP_MS=3*3600000;
  * Standardzeiten wie vor dem Zeitplaner (deploy/node/*.timer, Cron).
  */
 export const JOBS=Object.freeze([
- {id:'import-nightly',label:'Berichte abrufen, nachts',icon:'moon',time:'01:00',
-  what:'Holt aus allen angebundenen Quellen die Berichte der letzten Woche: neue Vorgänge, geänderte Stände, neue Dokumente.',
-  steps:['Abruf für alle Quellen anlegen (Zeitraum 1 Woche)','Berichte je Gebiet in 24 Bahnen abrufen','Einordnen nach festen Regeln, Zusammenfassungen, Werte der Adminseiten nachführen'],
-  limits:'Höchstens 4 Stunden; was nicht fertig wird, holt der laufende Abruf nach.',
-  cmd:['node','--max-old-space-size=6144','dist/standalone/worker/import-worker.mjs','--create','sources','--window','1w','--max-minutes','240']},
- {id:'backup',label:'Datensicherung',icon:'shield',time:'00:30',
-  what:'Legt eine in sich stimmige Kopie der Datenbank an.',
-  steps:['Älteste Sicherung löschen, damit es nie mehr als 2 sind','Kopie per VACUUM INTO (die Website läuft weiter)','Bei Fehler bleibt die vorige Sicherung'],
+ /* Tagespipeline (jede Nacht, in dieser Reihenfolge): Sichern → Abruf → Extraktion → Verarbeitung. Namen: shared/pipeline-terms.mjs */
+ {id:'backup',label:'Sichern',flow:'tages',icon:'shield',time:'00:30',
+  what:'Legt eine in sich stimmige Kopie der Datenbank an, dazu Index und Texte der PDF-Ablage.',
+  steps:['Älteste Sicherung löschen, damit es nie mehr als 2 sind','Kopie per VACUUM INTO (die Website läuft weiter)','PDF-Ablage: Index und Texte (sonntags voll, sonst nur Neues), keine PDFs','Mit BACKUP_REMOTE (rclone): Kopie außer Haus','Bei Fehler bleibt die vorige Sicherung'],
   limits:'Braucht so viel freien Platz wie die Datenbank groß ist.',warn:'Ohne diesen Job gibt es keine neuen Sicherungen.',
   cmd:['bash','deploy/node/backup.sh']},
- {id:'startseite-trends',label:'Startseite: Karte und Trends',icon:'search',time:'05:10',
+ {id:'import-nightly',label:'Abruf, nachts',flow:'tages',icon:'moon',time:'01:00',
+  what:'Holt aus allen angebundenen Quellen die Sitzungen und Berichte des letzten Tages und die schon angesetzten künftigen; sonntags einen Monat zurück, damit Nachträge zu älteren Sitzungen (später veröffentlichte Niederschriften, Beschlüsse) nicht fehlen. Quellen, die gerade nicht abrufbar sind, holt die Nacharbeit nach.',
+  steps:['Abruf für alle Quellen anlegen (1 Tag zurück, sonntags 1 Monat); Gebiete und Server, die im Fehlerspeicher warten, zurückstellen','Berichte je Gebiet in 24 Bahnen abrufen; was scheitert, kommt in den Fehlerspeicher (Stufe Abruf)','Suche und Werte der Adminseiten je Gebiet nachführen'],
+  limits:'Höchstens 4 Stunden.',
+  cmd:['node','--max-old-space-size=6144','dist/standalone/worker/import-worker.mjs','--create','sources','--window','1d','--weekly-window','1m','--weekly-day','0','--max-minutes','240']},
+ {id:'startseite-trends',label:'Startseite: Karte und Trends',flow:'tages',icon:'search',time:'05:10',
   what:'Rechnet für die Startseite vor, wo die Beispielbegriffe (Wärmeplanung, Kita, …) zum ersten Mal beraten wurden und wie viele Gebiete je Monat dazukamen.',
   steps:['Je Begriff die Ausbreitung rechnen wie plenara.X','Je Kreis die erste Gemeinde und den Verlauf je Monat ablegen'],
   limits:'Wenige Minuten. Ohne diesen Job zeigt die Startseite den mitgelieferten Stand.',
   cmd:['node','--no-warnings','scripts/startseite-trends.mjs']},
- {id:'pdf-nightly',label:'PDF-Import, nachts',icon:'file',time:'05:30',
-  what:'Lädt die PDF-Hauptdokumente neuer Berichte und liest ihren Text (Reiter PDF-Import).',
-  steps:[`PDFs laden, neueste Sitzungen zuerst, feste Grenze ${BUDGET_GB} GB`,'Textebene lesen, Scans per OCR','Dokumentart nachtragen','Stand für den Reiter PDF-Import zählen'],
-  limits:'Höchstens 3 Stunden, Laden höchstens 72 Minuten.',
-  cmd:['node','--no-warnings','scripts/pdf-store/nightly.mjs','--kind','nightly','--minutes','180','--budget-gb',String(BUDGET_GB),'--ocr-workers','2']},
- {id:'rule-texts',label:'Themen & Texte',icon:'text',time:'08:50',
-  what:'Erzeugt aus den Texten der PDF-Ablage, was sich nach festen Regeln ableiten lässt (Reiter Themen & Texte).',
-  steps:['Regeln je Bericht: Art des Punkts, Thema, Was geschieht, Regel-Zusammenfassung, Fakten','Wortliste der Suche nachführen (auch Datum der Karten „Stand heute“; fehlen die vorberechneten Zahlen, voller Neuaufbau)','Zahlen für plenara.X (x_cases)'],
-  limits:'Meist wenige Minuten. Startet direkt nach der PDF-Nachtkette (sie stößt ihn an); 08:50 Uhr nur als Rückfall, nach ihrem spätesten Ende um 08:30 Uhr.',
+ {id:'pdf-nightly',label:'Extraktion, nachts',flow:'tages',icon:'file',time:'05:30',
+  what:'Lädt alle PDFs der Berichte, die der Abruf seit dem letzten Lauf geschrieben hat (Hauptdokument und Anlagen, die KI liest alle), liest ihren Text und die Seiten ohne Text per OCR (Reiter PDF-Import).',
+  steps:[`PDF laden: Hauptdokumente der Nacht, feste Grenze ${BUDGET_GB} GB; wartende Server auslassen`,'Anlagen laden: übrige PDFs derselben Berichte','Text lesen','OCR der neuen Dateien, Hauptdokumente zuerst (höchstens 45 Minuten; der Rest im Job „OCR, tagsüber“)','Dokumentart, Stand zählen','Verarbeitung anstoßen'],
+  limits:'Höchstens 2 Stunden, Laden höchstens 48 Minuten (Hauptdokumente 29, Anlagen 19). Was scheitert, kommt in den Fehlerspeicher (Stufe Extraktion).',
+  cmd:['node','--no-warnings','scripts/pdf-store/nightly.mjs','--kind','nightly','--daily','--minutes','120','--budget-gb',String(BUDGET_GB),'--ocr-workers','2']},
+ {id:'rule-texts',label:'Verarbeitung, nachts',flow:'tages',icon:'text',time:'08:50',
+  what:'Leitet aus Titeln und Texten ab, was nach festen Regeln geht (Reiter Themen & Texte), führt Suche und Zahlen nach und zählt, was für die KI bereitsteht.',
+  steps:['Titel einordnen (Sachgebiet nach der Titelregel)','Regeln anwenden: Art des Punkts, Thema, Regel-Zusammenfassung, Fakten (nur Berichte mit neuen Eingaben)','Suche aktualisieren','Zahlen rechnen (plenara.X)','KI-Stand zählen, Wege zählen (Pipeline-Debug)'],
+  limits:'Meist unter einer Stunde. Startet direkt nach „Extraktion, nachts“ (sie stößt ihn an); 08:50 Uhr nur als Rückfall.',
   cmd:['node','--no-warnings','scripts/rule-texts.mjs']},
- {id:'import',label:'Abrufaufträge',icon:'download',every:10,
+ /* Nacharbeit (tagsüber, automatisch, nur Tagesbereich) */
+ {id:'nacharbeit',label:'Nacharbeit',flow:'nacharbeit',icon:'clock',every:30,window:['09:00','23:00'],
+  what:'Versucht erneut, was in der Tagespipeline gescheitert ist (Tagesbereich: Sitzungen der letzten 7 Tage, frühestens 12.10.2026), sobald der Abbruchgrund es erlaubt. Eine Quelle, die blockt, wird erst nach ihrer Wartezeit und dann mit einer Stichprobe wieder gefragt.',
+  steps:['Fällige Einträge, erst Abruf, dann Extraktion, dann Verarbeitung; neueste Sitzung zuerst, je Server höchstens 20','Gelingt ein Abruf: für die geschriebenen Berichte gleich PDF laden, Anlagen laden, Text lesen, OCR, Regeln anwenden','Gescheitert: nächster Termin nach dem Grund'],
+  limits:'Nur zwischen 09:00 und 23:00 Uhr, je Lauf höchstens 20 Minuten und 500 Einträge; lässt aus, wenn ein Altbestand-Auftrag lädt.',
+  cmd:['node','--no-warnings','scripts/nacharbeit.mjs','--range','daily','--minutes','20']},
+ {id:'ocr',label:'OCR, tagsüber',flow:'nacharbeit',icon:'scan',every:10,window:['07:00','23:00'],
+  what:'Liest Seiten ohne Text (Scans) per OCR, die die Extraktion in der Nacht nicht geschafft hat (Tagesbereich): Hauptdokumente vor Anlagen, neueste Sitzung zuerst. Ist auf der Seite „Altbestand“ die OCR des Altbestands angefordert, liest er danach auch diesen (10 bis 22 Uhr).',
+  steps:['Reihe ohne Dateien, die im Fehlerspeicher warten','Pakete zu 25 Dateien als eigene Prozesse, Grenzen je Seite (90 s) und Datei (5 min), Wächter','Danach für die Berichte mit neuem Text gleich Regeln anwenden und Suche aktualisieren','Ist nichts zu lesen, endet der Job sofort'],
+  limits:'Nur zwischen 07:00 und 23:00 Uhr, je Lauf höchstens 3 Stunden; eigene Einheit, Anhalten trifft nur die OCR.',
+  cmd:['node','--no-warnings','scripts/pdf-store/nightly.mjs','--kind','ocr','--ocr-only','--range','daily','--minutes','180','--ocr-workers','2','--until','23:00']},
+ /* Altbestand und Aufträge (nur auf Knopfdruck) */
+ {id:'altbestand',label:'Altbestand',flow:'altbestand',icon:'archive',every:10,window:['10:00','22:00'],
+  what:'Führt aus, was auf der Seite „Altbestand“ angefordert ist: Gebiete rückwirkend abrufen (mit Extraktion und Verarbeitung der geschriebenen Berichte) und alte Fehler erneut versuchen. Ohne Anforderung endet er sofort.',
+  steps:['Alte Fehler: fällige Einträge des Altbestands, erst Abruf, dann Extraktion, dann Verarbeitung','Rückwirkender Abruf: je 8 Gebiete, danach PDF laden, Anlagen laden, Text lesen, OCR, Regeln anwenden'],
+  limits:'Nur zwischen 10:00 und 22:00 Uhr, je Lauf höchstens 2 Stunden; macht Platz, wenn die Nacharbeit fällige Einträge hat.',
+  cmd:['node','--max-old-space-size=4096','--no-warnings','scripts/altbestand.mjs','--minutes','120','--until','22:00']},
+ {id:'import',label:'Abrufaufträge',flow:'altbestand',icon:'download',every:10,
   what:'Arbeitet Abrufaufträge ab, die im Reiter „Abruf & Verarbeitung“ angelegt wurden („Im Hintergrund abrufen“).',
   steps:['Nachsehen, ob ein Auftrag offen ist','Wenn ja: abrufen wie nachts, sonst sofort fertig'],
   limits:'Höchstens 4 Stunden je Aufruf.',
   cmd:['node','--max-old-space-size=6144','dist/standalone/worker/import-worker.mjs','--run','--max-minutes','240']},
- {id:'pdf-job',label:'PDF-Aufträge und Messungen',icon:'inbox',every:10,
-  what:'Führt Aufträge aus dem Reiter PDF-Import aus, zählt dessen Stand auf Wunsch neu und misst stündlich den Speicher.',
-  steps:['Lebenszeichen für die Administration','Wartenden Auftrag starten (einer zur Zeit)','„Stand neu zählen“ und Speichermessung'],
+ {id:'pdf-job',label:'PDF-Aufträge und Messungen',flow:'altbestand',icon:'inbox',every:10,
+  what:'Führt Aufträge aus den Reitern PDF-Import und Altbestand aus (ältere Monate laden, Anlagen laden, Text lesen), zählt den Stand der Ablage auf Wunsch neu und misst stündlich den Speicher.',
+  steps:['Lebenszeichen für die Administration','Wartenden Auftrag starten (einer zur Zeit, 10 bis 22 Uhr)','„Stand neu zählen“ und Speichermessung'],
   limits:'Ein Auftrag höchstens 3 Stunden.',warn:'Ohne diesen Job starten die Knöpfe im Reiter PDF-Import nichts.',
   cmd:['node','--no-warnings','scripts/pdf-store/job.mjs','--minutes','180','--budget-gb',String(BUDGET_GB)]},
 ]);
@@ -80,10 +98,15 @@ export function slotAt(t,time,days=0){
  const guess=Date.UTC(local.getUTCFullYear(),local.getUTCMonth(),local.getUTCDate()+days,h,m);
  return guess-offsetMin(guess-off*60000)*60000;
 }
+/** Liegt `now` im Tagesfenster eines Jobs (window ['HH:MM','HH:MM'], deutsche Zeit)? Ohne Fenster immer */
+export function inWindow(job,now=Date.now()){
+ if(!job.window)return true;
+ return now>=slotAt(now,job.window[0])&&now<slotAt(now,job.window[1]);
+}
 /** Ist der Job jetzt dran? {due, slot} ohne Rücksicht auf ein/aus (das prüft der Aufrufer) */
 export function dueNow(job,setting,run,now=Date.now()){
  const last=run?.lastStart?Date.parse(run.lastStart):0;
- if(setting.every)return {due:!last||now-last>=(setting.every-1)*60000,slot:null};
+ if(setting.every)return {due:inWindow(job,now)&&(!last||now-last>=(setting.every-1)*60000),slot:null};
  const slot=slotAt(now,setting.time);
  return {due:now>=slot&&now-slot<CATCH_UP_MS&&last<slot,slot};
 }
@@ -91,7 +114,8 @@ export function dueNow(job,setting,run,now=Date.now()){
     zählt wie „jetzt ausführen“; der Schalter stoppt nur die geplanten Zeiten): beim Auftragsdienst „Stand neu zählen“,
     „Neu messen“, wartende Aufträge und ein als laufend vermerkter Auftrag (läuft der Dienst gar nicht, war er abgebrochen;
     job.mjs vermerkt ihn dann, statt dass er bis zum nächsten Einschalten als „läuft“ stehen bleibt). get: Schlüssel → Wert */
-export function pendingWork(id,get){
+export function pendingWork(id,get,now=Date.now()){
+ if(id==='altbestand'){const r=get('altbestand-requests')||{};return inWindow(JOBS.find(j=>j.id==='altbestand'),now)&&(!!r.import&&!r.import.finishedAt&&!r.import.stoppedAt||!!r.rework&&!r.rework.finishedAt);}
  if(id!=='pdf-job')return false;
  const open=x=>!!x?.requestedAt&&!x.startedAt,jobs=get('pdf-store-job');
  return open(get('pdf-store-count'))||open(get('server-disk-count'))||(Array.isArray(jobs?.queue)?jobs.queue.length>0:jobs?.state==='waiting')||jobs?.current?.state==='running'||
@@ -100,7 +124,11 @@ export function pendingWork(id,get){
 /** Nächster geplanter Start (ms) */
 export function nextRun(job,setting,run,now=Date.now()){
  if(!setting.enabled)return null;
- if(setting.every){const last=run?.lastStart?Date.parse(run.lastStart):0;return Math.max(now,last+setting.every*60000);}
+ if(setting.every){
+  const last=run?.lastStart?Date.parse(run.lastStart):0,next=Math.max(now,last+setting.every*60000);
+  if(!job.window||inWindow(job,next))return next;
+  const open=slotAt(next,job.window[0]);return next<open?open:slotAt(next,job.window[0],1);
+ }
  const today=slotAt(now,setting.time),last=run?.lastStart?Date.parse(run.lastStart):0;
  return now<today||last<today&&now-today<CATCH_UP_MS?today:slotAt(now,setting.time,1);
 }

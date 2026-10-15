@@ -1,0 +1,32 @@
+# OCR-Rückstand (scripts/pdf-store/nightly.mjs --ocr-only über den Zeitplaner, Job „ocr“ in server/integrations/schedules.mjs):
+# eigene Einheit seit dem Betriebsplan (15.10.2026), damit „Anhalten“ nur die OCR trifft. TimeoutStopSec=30: die Pakete
+# (text.mjs --child) lassen eine halb gelesene Datei in der Reihe, es geht nichts verloren.
+[Unit]
+Description=Ratsmonitor OCR-Rückstand (Bestandsaufbau, 10–22 Uhr)
+After=network-online.target ratsmonitor.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+Environment=IMPORT_BUSY_TIMEOUT_MS=30000
+Nice=15
+IOSchedulingClass=idle
+TimeoutStartSec=4h
+TimeoutStopSec=30
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs ocr
+MemoryHigh=6G
+MemoryMax=7G
+LimitNOFILE=65536
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes

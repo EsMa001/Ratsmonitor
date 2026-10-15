@@ -1,4 +1,5 @@
 'use client';
+import {isStep,RUN_KIND_TERMS} from '@/shared/pipeline-terms.mjs';
 import {useState} from 'react';
 import {Icon} from '@/components/admin-icons';
 
@@ -15,7 +16,7 @@ export const day=(d?:string|null)=>d?d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(
 export const month=(m?:string|null)=>m&&/^\d{4}-\d{2}$/.test(m)?m.slice(5,7)+'.'+m.slice(2,4):m||'–';
 export const dur=(s?:number|null)=>s==null?'–':s<90?`${s} s`:s<5400?`${Math.round(s/60)} min`:`${(s/3600).toLocaleString('de-DE',{maximumFractionDigits:1})} h`;
 /** Arten der Läufe und Aufträge */
-export const KIND:Record<string,string>={nightly:'Nachtkette',run:'Lauf von Hand',retry:'Erneuter Versuch',others:'Übrige PDFs',texts:'Textebene lesen',fetch:'Laden von Hand',ocr:'OCR',text:'Textebene von Hand'};
+export const KIND:Record<string,string>=RUN_KIND_TERMS;
 
 export type MonthRow={month:string;linked:number;ok:number;textOnly:number;failed:number;open:number;openBlocked?:number};
 const SEG:[keyof MonthRow,string,string][]=[['ok','bg-teal-600','als PDF'],['textOnly','bg-teal-300','nur Text'],['failed','bg-slate-400','fehlgeschlagen'],['open','bg-slate-200','offen']];
@@ -84,18 +85,18 @@ export function ProcessFlow({steps,when:timing}:{steps:Step[];when:string[]}){
  </div>;
 }
 
-export type Host={host:string;n:number;bad:number;open:number;lastOk:string|null;reason:string|null;blocked:boolean};
+export type Host={host:string;n:number;bad:number;open:number;lastOk:string|null;reason:string|null;blocked:boolean;state?:string;next?:string|null};
 /** Server mit Fehlern, nach offenen Dokumenten */
-export function HostList({hosts,total,blocked}:{hosts:Host[];total:number;blocked:number}){
+export function HostList({hosts,total,blocked,stages=false}:{hosts:Host[];total:number;blocked:number;stages?:boolean}){
  const [all,setAll]=useState(false),shown=all?hosts:hosts.slice(0,15);
  return <div className="mt-4 max-w-[1100px]">
-  <p className="text-[14px] text-slate-500">{n(total)} Server mit Fehlern, davon {n(blocked)} ausgelassen (mindestens 10 Abrufe, davon mindestens 90 % fehlgeschlagen; ihre Dokumente lädt nur „Fehlgeschlagene erneut versuchen“). Sortiert nach offenen Dokumenten.</p>
+  <p className="text-[14px] text-slate-500">{n(total)} Server mit Fehlern, davon {n(blocked)} gerade ausgelassen {stages?'(sie bremsen oder sind gesperrt und werden nach ihrer Wartezeit mit drei Dokumenten geprüft; freigeben auf der Seite Pipeline-Debug)':'(mindestens 10 Abrufe, davon mindestens 90 % fehlgeschlagen)'}. Sortiert nach offenen Dokumenten.</p>
   <div className="mt-3 hidden grid-cols-[minmax(0,2fr)_90px_90px_90px_minmax(0,2fr)_90px] gap-x-3 border-b border-slate-200 pb-2 text-[12px] text-slate-500 md:grid">
    <span>Server</span><span className="text-right">Abrufe</span><span className="text-right">Fehler</span><span className="text-right">offen</span><span>häufigster Grund</span><span className="text-right">zuletzt ok</span>
   </div>
   <ul className="m-0 list-none p-0">
    {shown.map(h=><li key={h.host} className="grid grid-cols-2 gap-x-3 gap-y-0.5 border-b border-slate-200 py-2.5 text-[14px] md:grid-cols-[minmax(0,2fr)_90px_90px_90px_minmax(0,2fr)_90px] md:items-baseline">
-    <span className="col-span-2 min-w-0 break-all font-medium md:col-span-1">{h.host}{h.blocked&&<span className="ml-2 text-[12px] font-normal text-slate-500">ausgelassen</span>}</span>
+    <span className="col-span-2 min-w-0 break-all font-medium md:col-span-1">{h.host}{h.blocked&&<span className="ml-2 text-[12px] font-normal text-slate-500" title={h.next?'nächste Prüfung '+when(h.next):undefined}>{h.state==='gesperrt'?'gesperrt, ':h.state==='pruefen'?'prüfen, ':h.state==='bremsen'?'bremst, ':''}ausgelassen</span>}</span>
     <span className="tabular-nums text-slate-500 md:text-right md:text-slate-900"><span className="md:hidden">Abrufe </span>{n(h.n)}</span>
     <span className="tabular-nums text-slate-500 md:text-right md:text-slate-900"><span className="md:hidden">Fehler </span>{pct(h.bad,h.n)}</span>
     <span className="tabular-nums text-slate-500 md:text-right md:text-slate-900"><span className="md:hidden">offen </span>{n(h.open)}</span>
@@ -115,9 +116,9 @@ const num=(v:unknown)=>typeof v==='number'?v:0;
 function stepText(s:RunStep){
  const x=s.summary||{};
  if(typeof x.skipped==='string')return 'übersprungen: '+x.skipped;
- if(s.name==='Laden'){const k=(x.keeper||{}) as Record<string,number>;return `${n(num(x.ok))} geladen, ${n(num(x.error))} Fehler${x.keeper?`; Grenze: ${n(k.kept)} behalten, ${n(k.swapped)} verdrängt, ${n(k.rejected)} nicht besser`:''}${x.lastMonth?`; bis ${month(String(x.lastMonth))}`:''}`;}
+ if(isStep(s.name,'pdf')||isStep(s.name,'others')){const k=(x.keeper||{}) as Record<string,number>;return `${n(num(x.ok))} geladen, ${n(num(x.error))} Fehler${x.keeper?`; Grenze: ${n(k.kept)} behalten, ${n(k.swapped)} verdrängt, ${n(k.rejected)} nicht besser`:''}${x.lastMonth?`; bis ${month(String(x.lastMonth))}`:''}`;}
  if(s.name==='OCR')return `${n(num(x.files))} Dateien${x.primary!=null?` (${n(num(x.primary))} Hauptdokumente)`:''}, ${n(num(x.pages))} Seiten${num(x.fetched)?`, ${n(num(x.fetched))} kurz nachgeladen`:''}${num(x.slow)?`, ${n(num(x.slow))} über der Zeitgrenze`:''}${num(x.open)?`, ${n(num(x.open))} offen`:''}${num(x.dropped)?`, ${n(num(x.dropped))} zu große PDFs gelöscht`:''}`;
- if(s.name==='Textebene')return `${n(num(x.files))} Dateien${num(x.waiting)?`, ${n(num(x.waiting))} mit Seiten für OCR`:''}${num(x.dropped)?`, ${n(num(x.dropped))} zu große PDFs gelöscht`:''}`;
+ if(isStep(s.name,'text'))return `${n(num(x.files))} Dateien${num(x.waiting)?`, ${n(num(x.waiting))} mit Seiten für OCR`:''}${num(x.dropped)?`, ${n(num(x.dropped))} zu große PDFs gelöscht`:''}`;
  if(s.name==='Zusammenfassungen')return `${n(num(x.summaries))} neue von ${n(num(x.withText))} mit Text`;
  return '';
 }
@@ -125,7 +126,7 @@ function stepText(s:RunStep){
 export function RunList({runs}:{runs:Run[]}){
  if(!runs.length)return <p className="mt-3 text-[14px] text-slate-500">Noch keine Läufe protokolliert (das Protokoll beginnt mit dem ersten Lauf nach dem Ausrollen).</p>;
  return <ul className="m-0 mt-3 max-w-[980px] list-none border-t border-slate-200 p-0">
-  {runs.slice(0,20).map(r=>{const load=r.steps.find(s=>s.name==='Laden'),secs=(Date.parse(r.finishedAt)-Date.parse(r.startedAt))/1000;
+  {runs.slice(0,20).map(r=>{const load=r.steps.find(s=>isStep(s.name,'pdf')),secs=(Date.parse(r.finishedAt)-Date.parse(r.startedAt))/1000;
    return <li key={r.startedAt} className="border-b border-slate-200">
     <details>
      <summary className="grid cursor-pointer grid-cols-[minmax(0,1fr)_auto] gap-x-3 py-2.5 text-[14px] md:grid-cols-[150px_140px_80px_minmax(0,1fr)_110px]">
