@@ -11,7 +11,8 @@
  * Kennzahl: Vorgänge (count) und Anteil an allen Sachvorgängen derselben Gruppe unter denselben Filtern ohne Thema,
  *   Unterthema und „Was geschieht“ (share).
  * Liste hinter einer Zahl: list=1&by=…&value=…&offset=…
- * Sammelansicht für den Atlas: view=atlas (Unterthemen oder Themen, Was geschieht, Monate, Orte, jüngste Vorgänge in einer Antwort);
+ * Sammelansicht für den Atlas: view=atlas (Unterthemen oder Themen, Monate, Orte, jüngste Vorgänge in einer Antwort);
+ * plenara.X Fakten: view=fakten (Orte und je freigegebenem Wert die Zahlen je Gebiet, MAP_FACTS);
  *   mit einem Ort (area=<Schlüssel eines Gebiets>) zusätzlich „Ort im Vergleich“ (compare): Anteil je Unterthema (ohne Thema:
  *   je Thema) an allen Sachvorgängen des eigenen Rats in den letzten 12 Monaten, eingeordnet in der Vergleichsgruppe (gleiche
  *   Art und Größe, zuerst im Land) mit den Regeln aus peer-norms.mjs (Wilson-Spanne gegen die Viertel der Gruppe).
@@ -33,32 +34,35 @@ import {STAGES,SONST,stageName} from '../../shared/stage.mjs';
 import {labelName} from '../../shared/labels.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {where as placeOf} from './member-place.mjs';
+import {POPULATION} from '../../shared/catalog.mjs';
 import {peerGroup,wilson,quantile,classify,windowOf,NORM_RULE} from './peer-norms.mjs';
 
 export const X_BY=['region','month','theme','sub','stage','status'];
-export const X_FACTS=['faction','annual_result','funding','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate','park_fee','ee_power','land_price','plot_price','dog_tax'];
-export const X_SUMS={housing:'Wohneinheiten',kita_places:'Kita-Plätze',funding_euro:'Förderbeträge in Euro'};
+export const X_FACTS=['faction','annual_result','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate','ee_power','land_price','plot_price','dog_tax','waste_fee','plan_area','wind_count','project','road','house_type','housing','budget','second_home_tax','amusement_tax'];
+export const X_SUMS={housing:'Wohneinheiten'};
 /* Werte aus den Unterlagen im Atlas je Thema, mit Qualitätstor (Konzept 7: gezeigt ab 90 % gemessener Genauigkeit).
    Messung 13.10.2026 (docs/qualitaet/plenara-x/): Verfahrensschritt Bauleitplanung, Hebesätze, Fraktion nahe 100 %;
-   Förderprogramme 85 %, Förderbeträge 83 %, Kita-Beiträge 75 %, Kita-Plätze 68 %; übrige noch nicht gemessen. */
+   Kita-Beiträge 75 %; übrige noch nicht gemessen. Förderung, Förderbeträge, Kita-Plätze und Parkgebühr seit 15.10.2026 verworfen. */
 export const X_FACT_NAMES={annual_result:'Jahresabschlüsse nach Ergebnis',plan:'Bauleitplanung nach Verfahrensschritt',plan_use:'Art des Plangebiets',hebesatz:'Hebesätze nach Steuerart',fee_rate:'Gebührensätze nach Art',
- heat_plan:'Kommunale Wärmeplanung nach Schritt',grant:'Zuschüsse an Vereine und Träger nach Zweck',kita_fee:'Kita-Beiträge nach Richtung',funding:'Förderprogramme',faction:'Anträge und Anfragen nach Fraktion',
- park_fee:'Parkgebühren je Stunde',ee_power:'Wind- und Solarvorhaben nach Art',land_price:'Preise für Gewerbegrundstücke',plot_price:'Preise für Wohnbauplätze',dog_tax:'Hundesteuer für den ersten Hund'};
-export const X_FACT_GATE={plan:true,hebesatz:true,faction:true,annual_result:true,funding:false,kita_fee:false,plan_use:true,fee_rate:true,heat_plan:true,grant:true,park_fee:false,ee_power:false,land_price:true,plot_price:false,dog_tax:false};
-export const X_SUM_GATE={housing:false,kita_places:false,funding_euro:false};
-const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['ee_power']],mobilitaet:[['park_fee']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
- bildung:[['kita_fee','kita_places']],'':[['funding','funding_euro']]};
+ heat_plan:'Kommunale Wärmeplanung nach Schritt',grant:'Zuschüsse an Vereine und Träger nach Zweck',kita_fee:'Kita-Beiträge nach Richtung',faction:'Anträge und Anfragen nach Fraktion',
+ ee_power:'Wind- und Solarvorhaben nach Art',land_price:'Preise für Gewerbegrundstücke',plot_price:'Preise für Wohnbauplätze',dog_tax:'Hundesteuer für den ersten Hund',waste_fee:'Abfallgebühren',plan_area:'Fläche der Plangebiete',wind_count:'Zahl der Windenergieanlagen',project:'Vorhaben (Bürgerbus, Carsharing, WLAN, Ladesäulen)',road:'Straßenbau nach Art',budget:'Haushalt (Aufwendungen, Investitionskredite)',second_home_tax:'Zweitwohnungsteuer',amusement_tax:'Vergnügungssteuer nach Maßstab',house_type:'Art der Wohnbebauung'};
+export const X_FACT_GATE={budget:false,second_home_tax:false,amusement_tax:false,house_type:false,road:false,project:false,wind_count:false,waste_fee:false,plan_area:false,plan:true,hebesatz:true,faction:true,annual_result:true,kita_fee:false,plan_use:true,fee_rate:true,heat_plan:true,grant:true,ee_power:false,land_price:true,plot_price:false,dog_tax:false};
+export const X_SUM_GATE={housing:false};
+const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plan_area'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['waste_fee'],['ee_power'],['wind_count']],mobilitaet:[['project'],['road']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
+ bildung:[['kita_fee']]};
+import {MAP_FACTS,MAP_FACT_NAMES} from '../../shared/map-facts.mjs';
+export {MAP_FACTS,MAP_FACT_NAMES};
 export const X_LIST_SIZE=50;
 /* Zahl hinter einem Wert (erstes Feld von detail) und ihre Einheit; Fakten ohne Eintrag sind nur Kategorien (Schritt, Fraktion).
    Gebührensätze tragen die Einheit im dritten Feld (m³ oder m²). Ein Zuschuss ohne Betrag hat keine Zahl. */
-const X_FACT_NUM={hebesatz:'%',fee_rate:'€/',annual_result:'€',park_fee:'€ je Stunde',ee_power:'MW',dog_tax:'€ im Jahr',land_price:'€/m²',plot_price:'€/m²',grant:'€',kita_fee:'€ im Monat'};
+const X_FACT_NUM={road:'€',plan_area:'ha',wind_count:'Anlagen',hebesatz:'%',fee_rate:'€/',annual_result:'€',ee_power:'MW',dog_tax:'€ im Jahr',land_price:'€/m²',plot_price:'€/m²',grant:'€',kita_fee:'€ im Monat',housing:'Wohneinheiten',budget:'€',waste_fee:'€ im Jahr',second_home_tax:'%',amusement_tax:'%'};
 const factNum=(kind,detail)=>{if(!X_FACT_NUM[kind])return null;const parts=String(detail??'').split('|'),v=Number(parts[0]);
  return parts[0]!==''&&Number.isFinite(v)&&!(kind==='grant'&&v===0)?{v,unit:kind==='fee_rate'?'€/'+(parts[2]||'m³'):X_FACT_NUM[kind]}:null;};
 const fmtNum=(v,unit)=>`${v.toLocaleString('de-DE',{maximumFractionDigits:Math.abs(v)>=100?0:2})} ${unit}`;
 const median=vs=>{const s=[...vs].sort((a,b)=>a-b),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
 const THEME_IDS=new Set([...THEMES.map(t=>t.id),'unklar']),SUB_BY_ID=new Map(SUBTOPICS.map(s=>[s.id,s]));
 const STAGE_IDS=new Set([...STAGES.map(s=>s.id),SONST]);
-const OWN=['theme','sub','stage','by','list','value','offset','view','sum'];
+const OWN=['theme','sub','stage','by','list','value','offset','view','sum','region'];
 
 /** Parameter prüfen: Filter der Suche plus Auswahl und Gliederung */
 export function parseX(params){
@@ -74,7 +78,7 @@ export function parseX(params){
  if(!X_BY.includes(by)&&!X_FACTS.includes(fact))throw new AnalyticsError('Unbekannte Gliederung.');
  const sum=params.get('sum')||'';if(sum&&!X_SUMS[sum])throw new AnalyticsError('Unbekannte Summe.');
  const offset=Math.max(0,Number(params.get('offset'))||0);
- return {f,theme:sub?SUB_BY_ID.get(sub).theme:theme,sub,stage,by,fact,sum,list:params.get('list')==='1',value:params.get('value')??'',offset};
+ return {f,theme:sub?SUB_BY_ID.get(sub).theme:theme,sub,stage,by,fact,sum,region:params.get('region')||'',list:params.get('list')==='1',value:params.get('value')??'',offset};
 }
 
 /* Gezählt wird in x_cases (eine Zeile je Sachvorgang, Migration 0036, gebaut von x-cases.mjs); stage '' = noch nicht gelesen */
@@ -88,24 +92,30 @@ const grouping=x=>x.fact?{key:'f.v',join:FACT_JOIN,jargs:[x.fact],perPart:true}
  :{key:KEY[x.by],join:x.by==='sub'?SUB_JOIN:'',jargs:[],perPart:x.by==='sub'};
 
 /** Stand der Zahlen (null: noch nie gebaut) */
-async function xState(db){
+export async function xState(db){
  try{const r=await db.prepare("SELECT value FROM system_state WHERE key='x-cases'").first();return r?JSON.parse(r.value):null;}catch{return null;}
 }
 /* FROM-Teil: die Vorgänge unter den Filtern der Suche. Ohne Suchbegriff gelten die Filter (Gebiet, Thema, Status, Zeitraum)
    direkt für x_cases (dieselben Spaltennamen); mit Suchbegriff sucht die Suche selbst die Karten (mit Wortliste und Volltext),
    gezählt werden deren Vorgänge. „Ohne Formalien“ ist immer erfüllt. */
-async function source(db,catalog,f){
+export async function source(db,catalog,f){
  const {page}=await searchFilters(db,catalog,{...f,noformal:false,part:'x'});
- if(!f.q)return {from:`(SELECT * FROM x_cases WHERE ${page.where}) x`,args:page.args};
+ // rid: Zeilennummer in x_cases, für gleichmäßige Stichproben (Trends)
+ if(!f.q)return {from:`(SELECT rowid rid,* FROM x_cases WHERE ${page.where}) x`,args:page.args};
  // Die Suche einmal je Anfrage: Vorgänge der gefundenen Karten als Liste, alle Zählungen lesen nur noch sie
  const {results}=await db.prepare(`SELECT DISTINCT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k FROM (SELECT id,region_id,title FROM search_cards WHERE ${page.where}) c LEFT JOIN report_rules r ON r.topic_id=c.id`).bind(...page.args).all();
- return {from:'(SELECT * FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))) x',args:[JSON.stringify(results.map(r=>r.k))]};
+ return {from:'(SELECT rowid rid,* FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))) x',args:[JSON.stringify(results.map(r=>r.k))]};
 }
+/** Erste Sitzung eines Vorgangs (x_cases speichert die letzte): früheste Karte desselben Vorgangs, sonst die Karte selbst.
+    Für Auswertungen über den ersten Auftritt (Ausbreitung); nur im Ausdruck über x (Zeile aus source()). */
+export const FIRST_DATE=`coalesce((SELECT min(c1.date) FROM report_rules r1 JOIN search_cards c1 ON c1.id=r1.topic_id WHERE r1.case_key=x.case_key AND c1.date<>''),x.date)`;
 function selection(x){
  const where=['1'],args=[];
  if(x.theme){where.push('x.label=?');args.push(x.theme);}
  if(x.sub){where.push("(','||x.subs||',') LIKE ?");args.push('%,'+x.sub+',%');}
  if(x.stage){where.push('x.stage=?');args.push(x.stage);}
+ /* Ein Gebiet (Schlüssel des Katalogs), etwa für die Vorgänge hinter einem Wert in plenara.X Fakten */
+ if(x.region){where.push('x.region_id=?');args.push(x.region);}
  return {where,args};
 }
 const nameOf=(by,key,byId)=>by==='region'?byId.get(key)?.name||key:by==='theme'?labelName(key):by==='sub'?subtopicName(key):by==='stage'?stageName(key||SONST):key;
@@ -118,6 +128,7 @@ export async function xQuery(db,catalog,params,opts={}){
  if(!state)throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut.',503);
  if(x.list)return xList(db,catalog,x,opts);
  if(params.get('view')==='atlas')return xAtlas(db,catalog,params,x,opts,state);
+ if(params.get('view')==='fakten')return xFakten(db,catalog,params,x,state);
  const {from,args}=opts.src||await source(db,catalog,x.f),sel=selection(x),{key,join,jargs,perPart}=grouping(x);
  const cond=sel.where.join(' AND '),hit=`CASE WHEN ${cond} THEN 1 ELSE 0 END`,unread=`CASE WHEN ${cond} THEN x.unread ELSE 0 END`;
  let hits,total,all=null;
@@ -181,11 +192,37 @@ async function xAtlas(db,catalog,params,x,opts,state){
  const at=(by,sum)=>{const p=new URLSearchParams(params);p.delete('view');p.set('by',by);if(sum)p.set('sum',sum);return xQuery(db,catalog,p,{src});};
  // Werte aus den Unterlagen: nur, was das Qualitätstor erreicht (gesperrte Summen entfallen, der Wert bleibt)
  const wanted=(ATLAS_FACTS[x.theme]||[]).filter(([k])=>X_FACT_GATE[k]).map(([k,sum])=>[k,sum&&X_SUM_GATE[sum]?sum:'']);
- const [parts,stages,months,regions,recent,maps,...facts]=await Promise.all([at(x.theme?'sub':'theme'),at('stage'),at('month'),at('region'),
+ const [parts,months,regions,recent,maps,...facts]=await Promise.all([at(x.theme?'sub':'theme'),at('month'),at('region'),
   xList(db,catalog,{...x,by:'region',value:'',offset:0},{count:false,src}),factMaps(db,catalog,src,x,wanted.map(([k])=>k)),...wanted.map(([k,sum])=>at('fact:'+k,sum))]);
- return {selection:parts.selection,total:stages.total,unread:stages.unread,builtAt:state.builtAt,parts:parts.rows,stages:stages.rows,months:months.rows,
+ return {selection:parts.selection,total:parts.total,unread:parts.unread,builtAt:state.builtAt,parts:parts.rows,months:months.rows,
   regions:regions.rows,recent:recent.items.slice(0,10),
   facts:facts.map((f,i)=>({kind:wanted[i][0],name:X_FACT_NAMES[wanted[i][0]],sum:f.sum||null,rows:f.rows,map:maps.get(wanted[i][0])||[]})).filter(f=>f.rows.length),compare:await xCompare(db,catalog,x,params,opts)};
+}
+
+/** plenara.X Fakten: Orte (für Schlüssel und Mitgliedsgemeinden) und je freigegebenem Fakt die Werte je Gebiet */
+async function xFakten(db,catalog,params,x,state){
+ const src=await source(db,catalog,x.f),kinds=MAP_FACTS.filter(([,,on])=>on);
+ const p=new URLSearchParams(params);p.delete('view');p.set('by','region');
+ const [regions,maps,we]=await Promise.all([xQuery(db,catalog,p,{src}),factMaps(db,catalog,src,x,kinds.map(([k])=>k).filter(k=>k!=='housing')),
+  kinds.some(([k])=>k==='housing')?housingMap(db,src,x):[]]);
+ if(we.length)maps.set('housing',we);
+ return {builtAt:state.builtAt,regions:regions.rows,facts:kinds.map(([kind,dir])=>({kind,dir,name:MAP_FACT_NAMES[kind],map:maps.get(kind)||[]})).filter(f=>f.map.length)};
+}
+
+/** Wohneinheiten je Gebiet: Summe der geplanten Wohneinheiten (je Vorgang der größte Wert; dieselbe Zahl in mehreren Schritten eines Plans zählt einmal), je 1.000 Einwohner; ohne Einwohnerzahl
+    kein Eintrag (sonst lägen große Städte immer vorn) */
+async function housingMap(db,src,x){
+ const sel=selection(x);
+ const {results}=await db.prepare(`SELECT x.region_id g,count(*) n,sum(DISTINCT sv.v) s FROM ${src.from} ${SUM_JOIN} WHERE ${sel.where.join(' AND ')} GROUP BY x.region_id`).bind(...src.args,'housing',...sel.args).all();
+ return results.filter(r=>POPULATION[r.g]).map(r=>({key:r.g,n:r.n,v:{Wohneinheiten:{n:r.n,median:Math.round(10000*r.s/POPULATION[r.g])/10,unit:'je 1.000 Einwohner',sum:r.s}}}));
+}
+
+/* Jüngster Wert (Median der Vorgänge am letzten Sitzungstag) und der davor (letzter Tag mit anderem Wert): für „steht heute“
+   und „steigt oder fällt“ in plenara.X Fakten */
+function latest(nums){
+ const days=[...new Set(nums.map(u=>u.dt))].sort().reverse(),at=d=>median(nums.filter(u=>u.dt===d).map(u=>u.v));
+ const last=at(days[0]),prevDay=days.slice(1).find(d=>at(d)!==last);
+ return {last,lastDate:days[0],...(prevDay?{prev:at(prevDay),prevDate:prevDay}:{})};
 }
 
 /** Karte der Werte: je Fakt und Gebiet die Zahl der Vorgänge mit Wert (n) und je Wert mit Zahl der Median (v: Wert → {n, median, unit}).
@@ -194,7 +231,7 @@ async function xAtlas(db,catalog,params,x,opts,state){
 async function factMaps(db,catalog,src,x,kinds){
  const out=new Map();if(!kinds.length)return out;
  const sel=selection(x),byId=new Map(catalog.map(r=>[r.id,r]));
- const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.case_key,x.region_id,x.card_id FROM ${src.from} WHERE ${sel.where.join(' AND ')}) SELECT s.region_id g,s.card_id card,rr.case_key ck,f.kind kind,f.value v,f.detail d FROM sel s JOIN report_rules rr ON rr.case_key=s.case_key JOIN topic_facts f ON f.topic_id=rr.topic_id WHERE f.kind IN (SELECT value FROM json_each(?))`).bind(...src.args,...sel.args,JSON.stringify(kinds)).all();
+ const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.case_key,x.region_id,x.card_id,x.date FROM ${src.from} WHERE ${sel.where.join(' AND ')}) SELECT s.region_id g,s.card_id card,s.date dt,rr.case_key ck,f.kind kind,f.value v,f.detail d FROM sel s JOIN report_rules rr ON rr.case_key=s.case_key JOIN topic_facts f ON f.topic_id=rr.topic_id WHERE f.kind IN (SELECT value FROM json_each(?))`).bind(...src.args,...sel.args,JSON.stringify(kinds)).all();
  // Mitgliedsgemeinde je Vorgang, nur in Verbänden
  const cards=[...new Set(results.filter(r=>byId.get(r.g)?.members?.length).map(r=>r.card))],member=new Map();
  if(cards.length){
@@ -205,9 +242,11 @@ async function factMaps(db,catalog,src,x,kinds){
  for(const r of results){
   const ags=member.get(r.card)||'',key=r.g+'|'+ags;
   const k=by.get(r.kind)||new Map();by.set(r.kind,k);const g=k.get(key)||{g:r.g,ags,cases:new Set(),v:new Map()};k.set(key,g);g.cases.add(r.ck);
-  const num=factNum(r.kind,r.d);if(!num)continue;const vv=g.v.get(r.v)||new Map();g.v.set(r.v,vv);if(!vv.has(r.ck))vv.set(r.ck,num);
+  let num=factNum(r.kind,r.d);if(!num)continue;
+  // Haushalt je Einwohner: nur mit Einwohnerzahl des Gebiets, nicht für genannte Mitgliedsgemeinden
+  if(r.kind==='budget'){if(ags||!POPULATION[r.g])continue;num={v:Math.round(num.v/POPULATION[r.g]),unit:'€ je Einwohner'};}const vv=g.v.get(r.v)||new Map();g.v.set(r.v,vv);if(!vv.has(r.ck))vv.set(r.ck,{...num,dt:String(r.dt||'').slice(0,10)});
  }
- for(const [kind,k] of by)out.set(kind,[...k.values()].map(({g,ags,cases,v})=>({key:g,...(ags?{ags}:{}),n:cases.size,v:Object.fromEntries([...v].map(([val,m])=>{const nums=[...m.values()],unit=nums[0].unit,vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [val,{n:vs.length,median:median(vs),unit}];}))})));
+ for(const [kind,k] of by)out.set(kind,[...k.values()].map(({g,ags,cases,v})=>({key:g,...(ags?{ags}:{}),n:cases.size,v:Object.fromEntries([...v].map(([val,m])=>{const nums=[...m.values()],unit=nums[0].unit,vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [val,{n:vs.length,median:median(vs),unit,...latest(nums.filter(u=>u.unit===unit))}];}))})));
  return out;
 }
 

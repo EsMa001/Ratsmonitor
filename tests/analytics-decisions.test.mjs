@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {buildXCases} from '../server/integrations/x-cases.mjs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {decisions,readResult} from '../server/integrations/analytics-decisions.mjs';
@@ -26,6 +27,7 @@ test('decisions count status and outcome exactly and read votes, amendments and 
  put('b','postponed','Rat der Stadt','bauen',[ev('2026-09-20','postponed','vertagt')]);
  put('b','consulting','Rat der Stadt','bauen',[ev('2026-09-20','consulting','')]);
  put('b','unknown','Rat der Stadt','bauen',[]);
+ buildXCases(sql,{today:'2026-10-15'});
  try{
   const d=await decisions(db,catalog,new URLSearchParams('to=2999-01-01'));
   assert.equal(d.totals.all,11);assert.equal(d.totals.known,10);assert.equal(d.totals.decided,9);

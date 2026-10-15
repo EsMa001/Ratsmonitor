@@ -70,7 +70,7 @@ function arrow(pts,kind='flow',label='',lp=null,{fs=14,end=true}={}){
 const lab=(x,y,t,{fs=14,color=C.muted,anchor='middle',weight=600}={})=>out.push(`<text x="${x}" y="${y}" font-size="${fs}" font-weight="${weight}" fill="${color}" text-anchor="${anchor}" stroke="#ffffff" stroke-width="6" paint-order="stroke">${esc(t)}</text>`);
 /** Bahn: farbiger Streifen links mit Namen, heller Hintergrund */
 function lane(y,h,title,sub,kind){
- const [fill,stroke,ink]=C[kind];
+ const [fill,stroke]=C[kind];
  out.push(`<rect x="30" y="${y}" width="${W-60}" height="${h}" rx="16" fill="${fill}" fill-opacity="0.35" stroke="${stroke}" stroke-width="2"/>`);
  out.push(`<rect x="30" y="${y}" width="270" height="${h}" rx="16" fill="${stroke}"/>`);
  textBlock(48,y+44,240,wrap(title,240,30),{fs:30,weight:700,color:'#ffffff',lh:1.15});
@@ -195,8 +195,8 @@ const BUS=L1+640; // Sammelleitung der Fehler zum Fehlerspeicher
  arrow([[dt.l,dt.cy],[2725,dt.cy],[2725,L1+205],[2810,L1+205],[2810,e4.b]],'loop','',null);lab(2734,L1+400,'nein: nächste Datei',{color:C.fail,fs:13,anchor:'start'});
 }
 {
- const v1=box(3220,L1+60,200,120,S('title'),'nur fehlende oder veraltete Einordnungen','night',{fs:18,sfs:14});
- const v2=box(3450,L1+60,230,120,S('rules'),'Art des Punkts, Thema, Regel-Zusammenfassung, Fakten','night',{fs:18,sfs:14});
+ const v1=box(3220,L1+60,200,120,S('title'),'Regel-Label: nur fehlende oder veraltete','night',{fs:18,sfs:14});
+ const v2=box(3450,L1+60,230,120,S('rules'),'Art des Punkts, Thema, Regel-Zusammenfassung, Fakten; KI-Felder unberührt','night',{fs:18,sfs:14});
  const v3=box(3710,L1+60,200,120,S('search'),'Wortliste nachführen','night',{fs:18,sfs:14});
  const v4=box(3940,L1+60,190,120,S('xcases'),'plenara.X','night',{fs:18,sfs:14});
  const v5=box(4160,L1+60,230,120,'KI-Stand, '+S('trace'),'Zähler für Pipeline-Debug und Altbestand','night',{fs:17,sfs:14});
@@ -226,7 +226,7 @@ lab(2500,BUS+22,'jeder Fehlschlag: recordFailure; jeder Erfolg löscht den Eintr
 lane(L2,560,'Fehler­speicher','work_failures und source_hosts (Migration 0040); entscheidet, wann erneut','fix');
 {
  const f0=box(340,L2+40,270,150,'Eintrag schreiben','Schritt, Gegenstand, Grund, Versuche, nächster Termin, Sitzungstag, Herkunft; ein neuer Fehlschlag ersetzt den alten','fix',{fs:18,sfs:13});
- const seed=box(340,L2+220,270,140,'Altfehler übertragen','beim ersten Lauf: alte Abruf- und OCR-Fehler der Ablage und die alte Serversperre, alle als Altbestand','fix',{fs:16,sfs:13,dash:true});
+ box(340,L2+220,270,140,'Altfehler übertragen','beim ersten Lauf: alte Abruf- und OCR-Fehler der Ablage und die alte Serversperre, alle als Altbestand','fix',{fs:16,sfs:13,dash:true});
  const dc=decision(735,L2+115,180,120,'Grund?');
  arrow([[f0.r,f0.cy-40],[dc.l,dc.cy]]);
  const cls=[['blocked','429, 503, Abweisung'],['denied','401, 403, 451'],['transient','Timeout, keine Antwort, 5xx'],['gone','404, 410, kein PDF, > 30 MB, geändert'],['slow','OCR über der Zeitgrenze'],['busy','409, Datenbank gesperrt'],['internal','Ausnahme im eigenen Code']];
@@ -357,7 +357,7 @@ lane(L4,560,FLOWS.altbestand.name,'nur auf Knopfdruck, 10 bis 22 Uhr; dieselben 
 
 /* ───────────── Bahn 5: KI ───────────── */
 const L5=3120;
-lane(L5,170,'KI','von Hand über den Agenten; keine automatische Modell-API','ki');
+lane(L5,170,'KI','eigenes Ergebnis neben den Regeln; von Hand über den Agenten, keine Modell-API','ki');
 {
  const k0=box(340,L5+30,300,110,'Liste: bereit, veraltet','ai_list; Zähler auf Pipeline-Debug und Altbestand','ki',{fs:18,sfs:13});
  const k1=box(690,L5+30,180,110,'claim','Reservierung','ki',{fs:18,sfs:13});
@@ -370,7 +370,7 @@ lane(L5,170,'KI','von Hand über den Agenten; keine automatische Modell-API','ki
  arrow([[dQ.cx,dQ.b],[dQ.cx,L5+160],[k4.cx,L5+160],[k4.cx,k4.b]],'flow','nein',[dQ.cx+24,dQ.b+14]);
  const k5=box(2340,L5+30,600,110,'neuer Text → „veraltet“','OCR, Nacharbeit oder Altbestand ergänzen Text → Eingabehash ändert sich → der Bericht kommt wieder in die Liste','ki',{fs:18,sfs:14});
  arrow([[k5.cx,k5.y],[k5.cx,L5+14],[k0.cx,L5+14],[k0.cx,k0.y]],'loop','↻ wieder bearbeiten',[1600,L5+8]);
- box(2990,L5+30,1740,110,'Ergebnis','topics.payload (Kurz- und Langfassung, KI-Einordnung), article_analyses, ai_usage; Regel-Zusammenfassung und manuelle Einordnungen bleiben erhalten','ki',{fs:20,sfs:18});
+ box(2990,L5+30,1740,110,'Ergebnis: getrennt von den Regeln','Kurzfassung (ein Satz), Langfassung und KI-Label in topics.payload, dazu article_analyses, ai_usage. Regel-Label, Regel-Zusammenfassung und Einordnung von Hand bleiben stehen; beim Label gilt: von Hand → KI-Label → Thema der Regeln → Titelregel','ki',{fs:20,sfs:18});
 }
 
 /* ───────────── Fuß: Speicher und Seiten ───────────── */

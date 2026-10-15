@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {buildXCases} from '../server/integrations/x-cases.mjs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {network,gremiumType} from '../server/integrations/analytics-network.mjs';
@@ -25,6 +26,7 @@ test('network counts hand-overs between consecutive committees and names the rol
  put('a','approved',[ev('2026-09-01','Gemeinderat')]);
  /* Zweimal dasselbe Gremium hintereinander wird zusammengefasst */
  put('a','recommended',[ev('2026-09-01','Hauptausschuss'),ev('2026-09-02','Hauptausschuss')]);
+ buildXCases(sql,{today:'2026-10-15'});
  try{
   const r=await network(db,catalog,new URLSearchParams('to=2999-01-01'));
   assert.equal(r.mode,'types');assert.equal(r.paths,7);

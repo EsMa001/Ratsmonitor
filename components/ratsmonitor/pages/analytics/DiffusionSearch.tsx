@@ -12,7 +12,7 @@ import { ActiveFilters } from "../../components/ActiveFilters";
 export type PlayState = "idle" | "loading" | "playing" | "paused";
 
 /** Suchleiste wie auf der Startseite (gleiche Suche, gleiche Filter), rechts der Start-Knopf der Analyse */
-export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false }: { play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
+export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false, noPlay = false }: { /** ohne Start-Knopf: der Filter steht links an seiner Stelle (plenara.X Signale rechnen von selbst) */ noPlay?: boolean; play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
   const { geo } = useData();
   const search = useSearch();
   const res = useSearchResults();
@@ -42,7 +42,8 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
   return (
     <div className="relative z-20">
       <div role="search" className="flex w-full items-center gap-2">
-        <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default`}>
+        {noPlay && <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} /> : filterBtn}</div>}
+        {!noPlay && <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default`}>
           {play === "loading" ? (
             <span role="status" aria-label="Wird berechnet" className="rm-spinner" />
           ) : play === "playing" ? (
@@ -50,11 +51,11 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
           ) : (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg>
           )}
-        </button>
+        </button>}
         <div className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white [&_input]:rounded-full">
           <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} />
         </div>
-        <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} /> : filterBtn}</div>
+        {!noPlay && <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} /> : filterBtn}</div>}
       </div>
       {/* Chips flach statt Milchglas und ohne Scrollbalken: die Zeile bricht um */}
       <div className="mt-2 flex pl-[52px] max-sm:pl-[56px] [&>div]:!my-0 [&>div]:!max-h-none [&>div]:!flex-wrap [&>div]:!overflow-visible [&>div]:!px-0 [&>div]:!py-0 [&_.rm-chip]:!border-slate-200 [&_.rm-chip]:!bg-white [&_.rm-chip]:!shadow-none [&_.rm-chip]:![backdrop-filter:none] [&_.rm-chip:hover]:!bg-slate-50">

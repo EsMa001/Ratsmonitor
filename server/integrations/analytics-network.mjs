@@ -1,12 +1,14 @@
-import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
+import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
+import {source,xState} from './plenara-x-query.mjs';
 
 /*
  * Plenara.X – Beratungswege: Welchen Weg nehmen Vorgänge durch die Gremien? Knoten sind Gremien, gerichtete Kanten zählen die Vorgänge, die von
  * einem Gremium zum nächsten gelaufen sind (aufeinanderfolgende Stationen eines Vorgangs, nach Datum geordnet). Ohne einzelnen Ort werden
  * die Gremien nach ihrer Art zusammengefasst (Rat, Hauptausschuss, Bauausschuss ...), weil jeder Ort seine eigenen Namen hat; mit genau einem
- * Ort gelten die echten Namen. Grundlage ist eine gleichmäßige Stichprobe von Vorgängen mit Beratung oder Entscheidung; nur Vorgänge mit mindestens
+ * Ort gelten die echten Namen. Grundlage ist wie überall in plenara.X die Auswahl über die Suche (source) und je Vorgang (x_cases, ohne
+ * Formalien) die Stationen seiner jüngsten Karte; eine gleichmäßige Stichprobe von Vorgängen mit Beratung oder Entscheidung; nur Vorgänge mit mindestens
  * zwei Stationen in verschiedenen Gremien tragen zum Netz bei.
  */
 const EXAMINE=10000,MAX_NODES=18,MAX_EDGES=60,ROUTES=10,MIN_EDGE=2;
@@ -47,11 +49,17 @@ const median=a=>{if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);return
 
 /* Stationsfolgen je Vorgang der Stichprobe: nach Datum (bei Gleichstand wie in der Quelle), gleiche Gremien hintereinander einmal */
 async function sequences(db,catalog,f){
- const {page}=await searchFilters(db,catalog,f);
- const where=page.where+" AND date<>'' AND status IN "+STATUSES;
- const pool=(await db.prepare('SELECT count(*) n FROM search_cards WHERE '+where).bind(...page.args).first())?.n||0;
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ const src=await source(db,catalog,f),where='x.status IN '+STATUSES;
+ const pool=(await db.prepare(`SELECT count(*) n FROM ${src.from} WHERE ${where}`).bind(...src.args).first())?.n||0;
  const k=Math.max(1,Math.ceil(pool/EXAMINE));
- const {results}=pool?await db.prepare(`SELECT c.id id,json_extract(e.value,'$.committee') g,substr(json_extract(e.value,'$.date'),1,10) d,e.key k FROM (SELECT id FROM search_cards WHERE ${where}${k>1?' AND rowid % ? = 0':''}) c JOIN topics t ON t.id=c.id, json_each(t.payload,'$.events') e WHERE json_array_length(t.payload,'$.events')>=2 ORDER BY c.id,e.key`).bind(...page.args,...(k>1?[k]:[])).all():{results:[]};
+ // Erst die Karten der Stichprobe, dann ihre Stationen (sonst plant SQLite die Payloads vor der Auswahl)
+ const {results:picked}=pool?await db.prepare(`SELECT x.card_id id FROM ${src.from} WHERE ${where}${k>1?' AND x.rid % ? = 0':''}`).bind(...src.args,...(k>1?[k]:[])).all():{results:[]};
+ const results=[];
+ for(let i=0;i<picked.length;i+=2000){
+  const {results:part}=await db.prepare(`SELECT t.id id,json_extract(e.value,'$.committee') g,substr(json_extract(e.value,'$.date'),1,10) d,e.key k FROM topics t, json_each(t.payload,'$.events') e WHERE t.id IN (SELECT value FROM json_each(?)) AND json_array_length(t.payload,'$.events')>=2 ORDER BY t.id,e.key`).bind(JSON.stringify(picked.slice(i,i+2000).map(r=>r.id))).all();
+  results.push(...part);
+ }
  /* Genau ein Ort: echte Namen; sonst nach Art zusammenfassen */
  const single=!!f.area&&f.more.length===0&&!f.within&&!f.without;
  const label=g=>single?String(g).replace(/\s+/g,' ').trim():gremiumType(g);

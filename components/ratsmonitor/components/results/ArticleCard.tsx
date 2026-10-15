@@ -1,4 +1,4 @@
-import { memo, useRef } from "react";
+import { memo, useRef, type ReactNode } from "react";
 import { STATUS_BY_ID, shownThema } from "../../lib/constants";
 import { MONTH_SHORT, fmtDate, highlightSegments, todayLocal } from "../../lib/text";
 import type { Article } from "../../types";
@@ -31,10 +31,12 @@ interface Props {
   onHover: (ags: string) => void;
   /** kompakte Ansicht: nur Datum, Titel, Ort und Gremium */
   compact?: boolean;
+  /** Zusatzzeile unter Ort und Gremium (plenara.X Signale: Stand und Kennzahlen) */
+  extra?: ReactNode;
 }
 
 /** Eintrag der Ergebnisliste: Überschrift, Unterzeile, Zusammenfassung; die ganze Karte ist klickbar */
-export const ArticleCard = memo(function ArticleCard({ article: a, index, terms, onOpen, onHover, compact = false }: Props) {
+export const ArticleCard = memo(function ArticleCard({ article: a, index, terms, onOpen, onHover, compact = false, extra }: Props) {
   const [y, m, d] = a.date.split("-");
   const sub = [a.gemeinde, a.gremium].filter(Boolean).join(" · ");
   const thema = shownThema(a.thema);
@@ -105,6 +107,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
           </span>
         )}
       </p>
+      {extra}
       {!compact && <p className="m-0 mt-1.5 line-clamp-4 max-w-[96ch] text-[14px] leading-[1.5] text-slate-600 sm:mt-0 sm:line-clamp-none sm:leading-[1.6]">
         <Highlight text={a.teaser} terms={terms} />
       </p>}

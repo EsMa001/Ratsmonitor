@@ -209,6 +209,18 @@ fordert dasselbe an.
 
 ## 8. KI
 
+**Regeln und KI sind zwei getrennte Ergebnisse.** Keines ersetzt oder überschreibt das andere:
+
+| | Regelbasiert (automatisch, „Verarbeitung, nachts“, Nacharbeit) | KI (von Hand über den Agenten) |
+|---|---|---|
+| Label | Titelregel (`classification`, Titel einordnen) und Thema mit Art des Punkts aus `readReport` (`payload.theme`, `itemKind`) | KI-Label |
+| Zusammenfassung | Regel-Zusammenfassung (`payload.ruleSummary`), dazu Fakten (`topic_facts`) | Kurzfassung (ein Satz) und Langfassung, immer zusammen mit dem KI-Label |
+| Wer schreibt | `reclassify-rules.mjs`, `read-reports.mjs`: lassen KI-Felder unberührt | `ai_submit`: lässt Regel-Zusammenfassung und Einordnungen von Hand stehen |
+
+Beim Label zeigt Plenara das erste vorhandene in der Rangfolge Einordnung von Hand → KI-Label → Thema aus den Regeln → Titelregel
+(`storedClassification`, View `topic_effective_labels`). Die Pipeline erzeugt nur die regelbasierten Ergebnisse; sie zählt, welche
+Berichte für die KI bereitstehen, startet sie aber nie.
+
 Die KI startet nicht von selbst (keine automatische Modell-API, `CLAUDE.md`). Ein Agent arbeitet über den internen MCP-Dienst
 (`ai_list` → `claim` → `read` → `submit`) und liest alle PDFs eines Berichts aus der Ablage, Hauptdokument und Anlagen. Der Eingabehash
 enthält die Textfassungen: kommt Text dazu (OCR, Nacharbeit, Altbestand), wird der Bericht „veraltet“ und erscheint wieder in der Liste.

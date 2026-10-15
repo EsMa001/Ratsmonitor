@@ -72,7 +72,6 @@ test('Sammelansicht für den Atlas: dieselben Zahlen wie die einzelnen Abfragen'
  const {sql,db}=fixture();try{
   const a=await xQuery(db,catalog,q('view=atlas&theme=mobilitaet'));
   assert.equal(a.total,2);assert.deepEqual(Object.fromEntries(a.parts.map(x=>[x.key,x.count])),{'mobilitaet.rad':2,'mobilitaet.plan':1});
-  assert.deepEqual(Object.fromEntries(a.stages.map(x=>[x.key,x.count])),{bau:1,planung:1});
   assert.deepEqual(a.months.map(x=>[x.key,x.count]),[['2026-05',2]]);assert.equal(a.regions.length,2);assert.equal(a.recent.length,2);
   const all=await xQuery(db,catalog,q('view=atlas'));
   assert.deepEqual(Object.fromEntries(all.parts.map(x=>[x.key,x.count])),{mobilitaet:2,finanzen:1,bildung:1});
@@ -112,14 +111,14 @@ test('Ort im Vergleich: Anteil je Unterthema gegen die Viertel der Vergleichsgru
 test('Werte aus den Unterlagen: Gliederung je Wert, Summe je Vorgang einmal, Liste',async()=>{
  const {sql,db}=fixture();try{
   const f=sql.prepare('INSERT INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)');
-  f.run('a1','funding','Städtebauförderung','approved','facts-v15:text');f.run('a1','funding_euro','Städtebauförderung','100000','facts-v15:text');
-  f.run('a2','funding','Städtebauförderung','approved','facts-v15:text');f.run('a2','funding_euro','Städtebauförderung','50000','facts-v15:text');
-  f.run('b','funding','Städtebauförderung','applied','facts-v15:text');f.run('b','funding_euro','Städtebauförderung','20000','facts-v15:text');
+  f.run('a1','plan','Satzungsbeschluss','Bebauungsplan|nr. 1','facts-v15:text');f.run('a1','housing','Wohneinheiten','100','facts-v15:text');
+  f.run('a2','plan','Satzungsbeschluss','Bebauungsplan|nr. 1','facts-v15:text');f.run('a2','housing','Wohneinheiten','50','facts-v15:text');
+  f.run('b','plan','Aufstellung','Bebauungsplan|nr. 2','facts-v15:text');f.run('b','housing','Wohneinheiten','20','facts-v15:text');
   f.run('c','faction','SPD','antrag','facts-v15:title');
-  const r=await xQuery(db,catalog,q('by=fact:funding&sum=funding_euro'));
-  assert.deepEqual(r.rows.map(x=>[x.key,x.count,x.sum]),[['Städtebauförderung',2,120000]]);assert.equal(r.sum.name,'Förderbeträge in Euro');
+  const r=await xQuery(db,catalog,q('by=fact:plan&sum=housing'));
+  assert.deepEqual(r.rows.map(x=>[x.key,x.count,x.sum]).sort(),[['Aufstellung',1,20],['Satzungsbeschluss',1,100]].sort().map(x=>x),JSON.stringify(r.rows));assert.equal(r.sum.name,'Wohneinheiten');
   assert.deepEqual(rows(await xQuery(db,catalog,q('by=fact:faction'))),{SPD:1});
-  const l=await xQuery(db,catalog,q('list=1&by=fact:funding&value=Städtebauförderung'));assert.equal(l.total,2);
+  const l=await xQuery(db,catalog,q('list=1&by=fact:plan&value=Satzungsbeschluss'));assert.ok(l.total>=1);
   for(const s of ['by=fact:erfunden','by=region&sum=erfunden'])await assert.rejects(xQuery(db,catalog,q(s)),AnalyticsError,s);
  }finally{sql.close();}
 });

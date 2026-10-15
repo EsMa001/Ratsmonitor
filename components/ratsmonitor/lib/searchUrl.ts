@@ -57,7 +57,7 @@ export function searchToUrl(s: SearchState): string {
   return readableQuery(p.toString());
 }
 
-/** Nur der Suchtext (Links aus E-Mails und von Lena: /?q=…): wird wie eine Eingabe im Feld übernommen, mit Ortserkennung */
+/** Nur der Suchtext (Links aus E-Mails: /?q=…): wird wie eine Eingabe im Feld übernommen, mit Ortserkennung */
 export const onlyText = (p: URLSearchParams) => !!p.get("q") && SEARCH_URL_KEYS.every((k) => k === "q" || !p.has(k));
 
 /**

@@ -1,7 +1,7 @@
 // Alle regelbasierten Ergebnisse je Bericht in einem Durchlauf (readReport, server/integrations/report-rules.mjs; Plan:
 // requirements/regel-schritt-plan.md): Art des Punkts, Thema und „Was geschieht“ (im Bericht: itemKind, theme, stage), Regel-Zusammenfassung kurz und
 // lang (ruleSummary) und Fakten (topic_facts). Liest nur Quellen: Titel, Dokumentliste und den Text des Hauptdokuments aus der
-// PDF-Ablage, ohne Internet und ohne KI. Ersetzt summaries.mjs und facts.mjs.
+// PDF-Ablage (für einzelne Fakten auch passender Anlagen, factAttachments), ohne Internet und ohne KI. Ersetzt summaries.mjs und facts.mjs.
 // Nur Berichte, deren Eingaben sich geändert haben: Schlüssel je Bericht in report_rules (Migration 0032), gebildet aus den
 // Regelfassungen, Titel, Hauptdokument, Sitzungsunterlage ja/nein und Stand der Textfassung. --all verwirft alle Schlüssel.
 // KI-Felder (shortSummary, longSummary, generatedBy, labelAssessments, contentAnalysis, article_analyses) bleiben unberührt.
@@ -17,7 +17,7 @@
 import {existsSync,readdirSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
-import {readReport,mainDocument,readKey,READ_VERSION} from '../../server/integrations/report-rules.mjs';
+import {readReport,mainDocument,factAttachments,readKey,READ_VERSION} from '../../server/integrations/report-rules.mjs';
 import {FACTS_VERSION,titleKey} from '../../shared/topic-facts.mjs';
 import {stepSummary} from './state.mjs';
 import {pdfUses} from './store-lib.mjs';
@@ -47,8 +47,9 @@ for(const r of db.prepare(`SELECT id,region_id,coalesce(json_extract(payload,'$.
  total++;let docs=[];try{docs=JSON.parse(r.docs||'[]');}catch{/* ohne Dokumente */}
  const {doc,session}=mainDocument(docs,{uses:U,hasText});
  const textSha=doc&&!session?store.textMark(doc.url)||'':'';
- const key=readKey({title:r.title,mainUrl:doc?.url,session,textSha});
- if(onlyIds||keys.get(r.id)!==key)todo.push([r.id,doc&&!session&&textSha?doc.url:null,textSha,r.region_id+'|'+titleKey(r.title)]);
+ const att=factAttachments(docs,doc?.url,{uses:U,hasText}).map(a=>({...a,textSha:store.textMark(a.url)||''}));
+ const key=readKey({title:r.title,mainUrl:doc?.url,session,textSha,attSha:att.map(a=>a.textSha).join(',')});
+ if(onlyIds||keys.get(r.id)!==key)todo.push([r.id,doc&&!session&&textSha?doc.url:null,textSha,r.region_id+'|'+titleKey(r.title),att.length?att:null]);
 }
 keys.clear();
 console.log(`${total} Berichte, ${todo.length} zu lesen (${READ_VERSION}, ${((Date.now()-t0)/1000).toFixed(0)} s)`);
@@ -72,14 +73,15 @@ const write=fn=>{pending.push(fn);if(pending.length>=500)flush();};
 const KEEP=new Set(['no-text','too-long','unreadable']);
 const at=new Date().toISOString(),c={read:0,withText:0,changed:0,summary:0,dropped:0,facts:0,issues:{},kinds:{},themes:{}};
 const F=dry?null:await openFailures(),failedIds=F?F.known('rules'):new Set();c.crashed=0;
-for(const [id,url,textSha,caseKey] of todo){
+for(const [id,url,textSha,caseKey,att] of todo){
  if(limit&&c.read>=limit)break;
  const row=get.get(id);if(!row)continue;
  let old,pages,r;
  try{
   old=JSON.parse(row.payload);
   pages=url?store.getText(url)?.pages||null:null;
-  r=readReport(old,{uses:U,hasText,pages,textSha:pages?textSha:'',at});
+  const attachments=(att||[]).map(a=>({...a,pages:store.getText(a.url)?.pages||null}));
+  r=readReport(old,{uses:U,hasText,pages,textSha:pages?textSha:'',attachments,at});
  }catch(e){c.crashed++;console.error('Regeln',id,e?.message||e);await F?.fail({step:'rules',key:id,cls:'internal',error:String(e?.stack||e).slice(0,300)});continue;}
  if(failedIds.has(id)){await F.ok({step:'rules',key:id});failedIds.delete(id);}
  c.read++;if(pages)c.withText++;

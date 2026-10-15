@@ -135,7 +135,7 @@ export async function nacharbeit({db,sql,exec=runNode,store=null,minutes=20,limi
    for(const e of list){
     const r=look.get(e.step,e.key);
     if(!r){out.ok++;okKeys.push(e.key);}
-    else if(r.last_at!==e.last_at)(r.next_try_at?out.again++:out.final++);
+    else if(r.last_at!==e.last_at){if(r.next_try_at)out.again++;else out.final++;}
     else{out.untouched++;if(!dry)sql.prepare('UPDATE work_failures SET next_try_at=? WHERE step=? AND key=? AND last_at=?').run(later,e.step,e.key,e.last_at);}
    }
    log(`${name}: ${out.ok} gelungen, ${out.again} wieder verschoben, ${out.final} endgültig, ${out.untouched} nicht versucht (eine Stunde weiter)`);

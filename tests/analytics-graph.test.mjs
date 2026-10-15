@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {buildXCases} from '../server/integrations/x-cases.mjs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {knowledgeGraph,parseGraph} from '../server/integrations/analytics-graph.mjs';
@@ -18,6 +19,7 @@ test('graph links terms, topics, committees and lands by co-occurrence and leave
  for(let i=0;i<6;i++)put('a','umwelt','Bauausschuss','Windenergie Flächennutzungsplan Änderung Sitzung Teil '+'ABCDEF'[i]);
  for(let i=0;i<4;i++)put('b','umwelt','Gemeinderat','Windenergie Artenschutz Gutachten '+'ABCD'[i]);
  put('b','unklar','Gemeinderat','Windenergie Sonstiges Thema');
+ buildXCases(sql,{today:'2026-10-15'});
  try{
   const g=await knowledgeGraph(db,catalog,new URLSearchParams('q=Windenergie&to=2999-01-01'));
   assert.equal(g.total,11);assert.equal(g.nodes[0].type,'center');

@@ -17,6 +17,6 @@ console.log(`plenara.X: ${r.cases} Vorgänge, davon ${r.unread} ungelesen, ${r.s
 const themes=Object.fromEntries(db.prepare('SELECT label,count(*) n FROM x_cases GROUP BY label').all().map(x=>[x.label,x.n]));
 const subs={};for(const x of db.prepare("SELECT subs FROM x_cases WHERE subs<>''").iterate())for(const u of x.subs.split(','))if(u)subs[u]=(subs[u]||0)+1;
 const facts=db.prepare("SELECT 1 FROM sqlite_master WHERE name='topic_facts'").get()?Object.fromEntries(db.prepare('SELECT kind,count(DISTINCT topic_id) n FROM topic_facts GROUP BY kind').all().map(x=>[x.kind,x.n])):{};
-// Abdeckung je Fakt: Gemeinden mit Wert von allen Gemeinden in Deutschland
+// Abdeckung je Fakt: Gemeinden mit Wert von allen Gemeinden mit Sachvorgängen
 const factPlaces=Object.keys(facts).length?factCoverage(db,CATALOG):null;
 stepSummary({...r,themes,subs,facts,factPlaces});db.close();

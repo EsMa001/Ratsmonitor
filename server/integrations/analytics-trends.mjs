@@ -1,17 +1,17 @@
 import {LABELS} from '../../shared/labels.mjs';
-import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
+import {parseMonitorSearch} from './monitor-search.mjs';
+import {source,xState} from './plenara-x-query.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {tokens,FORMAL_ALL} from './analytics-graph.mjs';
-import {routineTitle,privateBuild,titleKey} from '../../shared/topic-facts.mjs';
+import {privateBuild} from '../../shared/topic-facts.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
  * Plenara.X – Trends: Welche Begriffe nehmen gegenüber dem Zeitraum davor zu, ab oder tauchen neu auf?
- * Verglichen werden zwei gleich lange Zeitfenster (die letzten W Tage und die W Tage davor). Je Fenster werden die Einträge der
- * Suche (dieselben Filter wie die Suche, ohne eigenen Zeitraum) gezählt und gleichmäßig (jede k-te Zeile) auf höchstens CAP Einträge
- * heruntergerechnet. Verglichen werden Anteile an den Einträgen, nicht Rohzahlen; Maß ist ein Zwei-Stichproben-z-Test für Anteile.
- * Routinepunkte (Besetzungen, Wahlen, Fragestunden, „– Herr X“) und private Bauanträge zählen nicht; derselbe Titel je Gebiet
- * (mehrere Gremien) zählt einmal. Zahlen je Begriff sind Zahlen der Stichprobe (bei großen Auswahlen jede k-te Zeile).
+ * Verglichen werden zwei gleich lange Zeitfenster (die letzten W Tage und die W Tage davor). Gezählt werden Vorgänge wie überall in
+ * plenara.X: Auswahl über die Suche (source), gezählt in x_cases (ein Sachvorgang je Zeile, ohne Formalien, gleiche Titel je Gebiet
+ * einmal), Titel aus der Karte des Vorgangs. Je Fenster gleichmäßig (jeder k-te Vorgang) auf höchstens CAP heruntergerechnet. Verglichen werden Anteile an den Einträgen, nicht Rohzahlen; Maß ist ein Zwei-Stichproben-z-Test für Anteile.
+ * Private Bauanträge zählen nicht. Zahlen je Begriff sind Zahlen der Stichprobe (bei großen Auswahlen jede k-te Zeile).
  */
 const CAP=12000,WINDOWS=[30,90,180],MIN_RECENT=5,RATIO=1.4,Z_MIN=2.5,LIST=15;
 const DAY=86400000;
@@ -33,17 +33,21 @@ const labelName=id=>LABELS.find(l=>l.id===id)?.name||null;
 
 export async function trends(db,catalog,params,now=Date.now()){
  const {f,window:W}=parseTrends(params);
- const {page}=await searchFilters(db,catalog,f);
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ const src=await source(db,catalog,f);
  const end=iso(now+DAY),mid=iso(now+DAY-W*DAY),start=iso(now+DAY-2*W*DAY);
- const byId=new Map(catalog.map(r=>[r.id,r]));
- /* Je Fenster: Zahl der Einträge, dann gleichmäßige Stichprobe */
+ /* Je Fenster: alle Vorgänge (schmal), gleichmäßige Stichprobe, Titel nur für die Stichprobe */
  const load=async(a,b)=>{
-  const range=` AND date>=? AND date<? AND date<>''`;
-  const total=(await db.prepare('SELECT count(*) n FROM search_cards WHERE '+page.where+range).bind(...page.args,a,b).first())?.n||0;
+  const range='x.date>=? AND x.date<?';
+  const total=(await db.prepare(`SELECT count(*) n FROM ${src.from} WHERE ${range}`).bind(...src.args,a,b).first())?.n||0;
   const k=Math.max(1,Math.ceil(total/CAP));
-  const {results}=await db.prepare('SELECT date,region_id,label,title FROM search_cards WHERE '+page.where+range+(k>1?' AND rowid % ? = 0':'')).bind(...page.args,a,b,...(k>1?[k]:[])).all();
-  const seen=new Set(),rows=[];
-  for(const r of results){if(routineTitle(r.title)||privateBuild(r.title))continue;const key=r.region_id+'|'+titleKey(r.title);if(seen.has(key))continue;seen.add(key);rows.push(r);}
+  const {results:pick}=await db.prepare(`SELECT x.card_id id,x.date,x.region_id,x.label FROM ${src.from} WHERE ${range}${k>1?' AND x.rid % ? = 0':''}`).bind(...src.args,a,b,...(k>1?[k]:[])).all();
+  const titles=new Map();
+  for(let i=0;i<pick.length;i+=5000){const ids=pick.slice(i,i+5000).map(r=>r.id);
+   const {results}=await db.prepare('SELECT id,title FROM search_cards WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(ids)).all();
+   for(const r of results)titles.set(r.id,r.title);}
+  const rows=[];
+  for(const r of pick){const title=titles.get(r.id);if(!title||privateBuild(title))continue;rows.push({...r,title});}
   return {total,rows,k};
  };
  const [recent,prev]=[await load(mid,end),await load(start,mid)];
@@ -101,10 +105,11 @@ export async function trendList(db,catalog,params,now=Date.now()){
  const key=params.get('value')||'';
  if(params.get('by')!=='term'||key.length<3)throw new AnalyticsError('Unbekannte Liste.',400);
  const {f,window:W}=parseTrends(params);
- const {page}=await searchFilters(db,catalog,f);
+ const src=await source(db,catalog,f);
  const end=iso(now+DAY),mid=iso(now+DAY-W*DAY),start=iso(now+DAY-2*W*DAY);
  const [a,b]=params.get('span')==='prev'?[start,mid]:[mid,end];
- const {results}=await db.prepare(`SELECT id,region_id region,title,gremium,date,status FROM search_cards WHERE ${page.where} AND date>=? AND date<? AND date<>'' AND search LIKE ?`).bind(...page.args,a,b,'%'+key+'%').all();
- const rows=results.filter(r=>tokens(r.title).has(key)&&!routineTitle(r.title)&&!privateBuild(r.title));
+ // Dieselben Vorgänge wie in der Zählung (x_cases), Begriff im Titel
+ const {results}=await db.prepare(`SELECT c.id,x.region_id region,c.title,c.gremium,x.date,x.status FROM ${src.from} JOIN search_cards c ON c.id=x.card_id WHERE x.date>=? AND x.date<? AND c.search LIKE ? ORDER BY x.date DESC`).bind(...src.args,a,b,'%'+key+'%').all();
+ const rows=results.filter(r=>tokens(r.title).has(key)&&!privateBuild(r.title));
  return listPage(rows,catalog,offsetOf(params));
 }

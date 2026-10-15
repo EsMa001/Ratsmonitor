@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {buildXCases} from '../server/integrations/x-cases.mjs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {compare,parseCompare} from '../server/integrations/analytics-compare.mjs';
@@ -19,6 +20,7 @@ test('compare gives each place its own profile against all areas and finds typic
  for(let i=0;i<14;i++)put('a','2026-03-1'+(i%9),'mobilitaet',i%2?'approved':'consulting','Bauausschuss','Radweg Ausbau Klimaschutz '+i);
  for(let i=0;i<12;i++)put('b','2026-04-1'+(i%9),'bildung','approved','Schulausschuss','Schulbau Erweiterung Klimaschutz '+i);
  for(let i=0;i<30;i++)put('c','2026-04-0'+(1+i%9),i%2?'bauen':'bildung','info','Gemeinderat','Gewerbegebiet Planung Klimaschutz '+i);
+ buildXCases(sql,{today:'2026-10-15'});
  try{
   const r=await compare(db,catalog,new URLSearchParams('area=05558008&scope=only&more=05558012:only&to=2999-01-01'));
   assert.equal(r.places.length,2);

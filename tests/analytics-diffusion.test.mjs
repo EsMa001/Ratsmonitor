@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {diffusion,parseDiffusion} from '../server/integrations/analytics-diffusion.mjs';
+import {buildXCases} from '../server/integrations/x-cases.mjs';
 
 const catalog=[{id:'a',kind:'city',name:'Alt',ags:'05558008'},{id:'b',kind:'city',name:'Bett',ags:'05558012'},{id:'sg',kind:'city',name:'Samtgemeinde Sg',ags:'031550001',members:[{ags:'03155001',name:'Eins'},{ags:'03155002',name:'Zwei'}]},{id:'k',kind:'district',name:'Kreis',ags:'05558'}];
 test('parse rejects empty, short and malformed input',()=>{
@@ -13,14 +14,16 @@ test('parse rejects empty, short and malformed input',()=>{
 test('diffusion ignores future dates by default',async()=>{
  const sql=new DatabaseSync(':memory:');for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8').replaceAll('--> statement-breakpoint',''));
  sql.prepare("INSERT INTO search_cards (id,region_id,date,status,label,title,teaser,gremium,search) VALUES ('f','a','2999-01-01','info','x','t','','','warmeplanung')").run();
+ buildXCases(sql,{today:'2026-10-15'});
  try{assert.equal((await diffusion(sqliteAdapter(sql),catalog,new URLSearchParams('q=Wärmeplanung'))).regions.length,0);}finally{sql.close();}
 });
 test('diffusion reports first mention per area, assigns Samtgemeinde reports to members and builds the series',async()=>{
  const sql=new DatabaseSync(':memory:');
  for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8').replaceAll('--> statement-breakpoint',''));
  const db=sqliteAdapter(sql);
- const put=(id,region,date,search,gremium='')=>sql.prepare("INSERT INTO search_cards (id,region_id,date,status,label,title,teaser,gremium,search) VALUES (?,?,?,'info','x','t','',?,?)").run(id,region,date,gremium,search);
+ const put=(id,region,date,search,gremium='')=>sql.prepare("INSERT INTO search_cards (id,region_id,date,status,label,title,teaser,gremium,search) VALUES (?,?,?,'info','x',?,'',?,?)").run(id,region,date,'Titel '+id,gremium,search);
  put('1','a','2025-03-10','kommunale warmeplanung');put('2','a','2025-01-05','warmeplanung start');put('3','b','2025-03-20','warmeplanung');put('4','sg','2025-06-01','warmeplanung');put('5','k','2025-02-01','warmeplanung');put('6','b','2025-01-01','radweg');put('7','sg','2025-07-01','warmeplanung','Gemeinderat Zwei');
+ buildXCases(sql,{today:'2026-10-15'});
  try{
   const r=await diffusion(db,catalog,new URLSearchParams('q=Wärmeplanung'));
   /* Samtgemeinde ohne erkennbare Mitgliedsgemeinde: ein Gebiet (Karte bei allen Mitgliedern); mit Gemeinderat Zwei: die Gemeinde */

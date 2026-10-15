@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v25';
+export const FACTS_VERSION='facts-v27';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -64,162 +64,10 @@ export function factionsOf(title,head=''){
  return null;
 }
 
-/* Förderprogramme: Name und Muster. Gezählt nur in Sätzen, die auch von Förderung sprechen (FUND). */
-export const PROGRAMS=[
- ['Städtebauförderung',/Städtebauförder|Soziale Stadt|Lebendige Zentren|Sozialer Zusammenhalt|Wachstum und nachhaltige Erneuerung|Stadtumbau/i],
- ['Ganztagsausbau',/Ganztag/i],
- ['Klimaanpassung',/Klimaanpassung|Klimafolgenanpassung|Natürlicher Klimaschutz/i],
- ['Kommunalrichtlinie / NKI',/Kommunalrichtlinie|Nationale Klimaschutzinitiative|\bNKI\b/i],
- ['Radverkehr',/Radverkehr|Radwege|Stadt und Land|Radnetz|Nahmobilität/i],
- ['Denkmalförderung',/Denkmal/i],
- ['Sportstätten',/Sportstätte|Sportstättenförderung|Sportanlage|Investitionspakt Sport/i],
- ['Breitband und Digitales',/Breitband|Gigabit|Glasfaser|DigitalPakt|(?<!Bau und )Digitalisierung/i],
- ['EU-Fonds (EFRE, ELER, ESF)',/\bEFRE\b|\bELER\b|\bESF\+?\b|Europäische[nr]? Fonds|\bLIFE\b|\bInterreg\b/i],
- ['LEADER und ländliche Entwicklung',/LEADER|Dorferneuerung|Dorfbudget|Dorfentwicklung|ländliche[nr]? Entwicklung|GAK\b|Agrarstruktur|\bZILE\b|ländliche[nr]? Wegebau/i],
- ['KfW',/\bKfW\b/],
- ['ÖPNV und Straßenbau (GVFG u. a.)',/\bGVFG\b|ÖPNV-Förderung|Straßenbauförderung|Gemeindeverkehrsfinanzierung/i],
- ['Wirtschaftsförderung (GRW)',/\bGRW\b|Gemeinschaftsaufgabe(?![^.]{0,60}Agrarstruktur)|regionale[nr]? Wirtschaftsstruktur/i],
- ['Sondervermögen Infrastruktur',/Sondervermögen|Infrastrukturgesetz|Investitionsbudget|Infrastruktur und Klimaneutralität|MV-Plan|Kommunalinfrastruktur\w*|Infrastrukturförderungsgesetz|Infrastrukturfördergesetz|Kommunalinvestition\w*|NKomInvest|KInvFG/i],
- ['Kita und Schulbau',/Kita-Ausbau|Kindertagesbetreuung|Kitaausbau|Schulbau|Schulsanierung|Schulinfrastruktur/i],
- ['Wohnraumförderung',/Wohnraumförderung|soziale[nr]? Wohnungsbau|Mietwohnungsbau|Wohnungsbauförderung/i],
- ['Energie und Wärme',/Wärmeplanung|Wärmenetz|Energiemanagement|\bBEG\b|\bBEW\b|Energieeffizienz|Photovoltaik|Solar/i],
- ['Feuerwehr und Katastrophenschutz',/Feuerwehr|Katastrophenschutz/i],
-];
-// Nur Geldwörter: „Förderung“ allein meint oft Arbeits-, Sprach- oder Vereinsförderung
-const FUND=/(Antrag auf [\w-]*förderung|Förderung\w*\s+(?:wurde|ist|wurden)[^;!?]{0,40}(?:beantragt|bewilligt)|(?:beantragte|bewilligte|zugesagte)[nr]? Förderung|Förderung (?:in Höhe|von \d|zu beantragen|beantragt|bewilligt)|Fördermittel|Fördergeld|Förderprogramm|Förderantrag|Förderbescheid|Förderquote|Fördersumme|Förderbetrag|Förderzusage|Förderaufruf|Förderrichtlinie|Förderzuschuss|Zuwendungsbescheid|Zuwendung(?:en)? (?:des|der|aus|von|in Höhe)|Bundesmittel|Landesmittel|EU-Mittel|Bundesförderung|Landesförderung|Städtebaufördermittel|gefördert (?:mit|durch|aus|von))/i;
-/* Bewilligt: das Geld ist zugesagt oder fließt (Leitfaden 14.10.2026, docs/qualitaet/plenara-x/funding-x14.json); „erhalten“ nur mit
-   Geldwort davor („Hinweis erhalten“ ist kein Bescheid), „Bewilligung“ allein ist oft ein Termin im Zeitplan */
-const GRANTED=/(bewilligt|Zuwendungsbescheid|Förderbescheid|Fördermittelbescheid|Bewilligungsbescheid|Förderzusage|zugesagt|(?:Mittel|Zuwendung|Zuschuss|Förderung|Zusage)[^.]{0,40}\berhalten\b|erfolgreich.{0,80}(?:aufgenommen|ausgewählt)|(?:wurden?|ist|sind)\s+(?:\S+\s+){0,6}?(?:mit|durch|aus)\s+(?:\S+\s+){0,4}?gefördert worden|\berhielt\b)/i;
-// Eindeutig bewilligt: Bescheid mit Datum oder Vorliegen, „wurde bewilligt“, „bereits bewilligt“ (gilt auch unter Bedingungen im Satz)
-const GRANTED_SURE=/positiv beschieden|(?:Zuwendungs|Förder|Bewilligungs|Fördermittel)bescheid.{0,30}(?:vom\b|liegt vor|wurde|ist)|(?:wurden?|hat|haben|ist|sind)\b.{0,60}\bbewilligt|bereits bewilligt|bewilligt (?:wurde|worden)/i;
-// Beantragt: Antrag gestellt, eingereicht, beantragt oder die Antragstellung beschlossen; bloße Substantive („Antragstellung“,
-// „Förderantrag“) ohne Handlung zählen nicht (Workshops, „Frage einer Förderantragstellung“, Messung R11)
-const APPLIED=/(beantragt|\bbeantragen\b|(?:beschließt|beschlossen|erfolgt|wurde|z\.\s?Zt\.|derzeit|aktuell|läuft)[^.]{0,60}(?:Beantragung|Antragstellung|Antrag|Teilnahme|Interessenbekundung|zu beantragen|zu stellen)|Beantragung[^.]{0,80}(?:erfolgt|beschlossen|gestellt|eingereicht)|Antrag\w*\s+(?:\S+\s+){0,6}?(?:gestellt|eingereicht)|\bstell(?:t|en|te|ten)\b[^.]{0,80}[Aa]ntrag|\bzu beantragen\b|[Aa]ntrag\w* zu stellen|Mit (?:dem )?vorliegenden [^.]{0,40}soll[^.]{0,120}beantragt werden|eingereicht|Antragsfrist[^.]{0,40}(?:eingehalten|gewahrt))/i;
-const RANK={granted:3,applied:2,mentioned:1};
-// Formularfelder („Fördermittel beantragt: Nein Ja“, Ankreuzfelder) sagen nichts über den Vorgang
-const FUND_FORM=/☐|☒|Auswirkungen? auf den|beantragt\s*\/\s*bewilligt|\b(Nein\s+Ja|Ja\s+Nein)\b|:\s*(ja|nein)\b|\bja\s*\/\s*nein\b|fragt an|\?|Konten Bezeichnung|Plan \d{4} Prognose|\b\d{7}\s*-\s*Zuweisungen/i;
-// Kopfzeilen einer Vorlage (Titel, Nummer, Beratungsfolge) nennen das Programm, sagen aber nichts über den Stand
-const FUND_HEAD=/Tagesordnung|Seite \d+ von \d+|Vorlage-?(?:Nr|nummer)|Aktenzeichen|Beratungsfolge|Federführung|Sachgebiet:|Auskunft erteilt/i;
-// Bedingt bewilligt („vorbehaltlich der Förderzusage“, „sofern bewilligt“) ist noch nicht bewilligt
-// Ausgehende Zuschüsse (die Kommune fördert Vereine, Träger, Projekte) sind kein Fördergeld für die Kommune (Bewertung 11.10.2026)
-const OUTGOING=/\be\.\s?V\.|Bürgerstiftung|Zuwendungsempfänger|Zuwendungsempfangende|\b(?:Kreissportbund|Sportbund|Stadtsportbund)\b|städtische\w*\s+[\w-]*Förder|kommunale[nr]? Förderprogramm|Volkssolidarität|Betriebskostenzuschuss|\bVerein\w*\s+(hat|haben|beantragt|beantragen|erhält|erhalten)|Antragsteller|Antragstellende|Zuschussantrag|Sponsor|Bürgerbudget|Vereinsförder|institutionelle[nr]? Förderung|Projektförderung|Förderrichtlinie der (Stadt|Gemeinde)|Mitteln? des Ausschusses|gemeinnützige[nr]? (Verbände|Vereine)|Förderplan|städtische[nr]? Zuschuss|Zuschuss der (Stadt|Gemeinde)|gewährt (die|der) (Stadt|Gemeinde|Kreis|Landkreis)|Zuweisung an/i;
-const CONDITIONAL=/noch nicht vor|\bum\b[^.]{0,160}\bzu erhalten\b|nicht vorliegt|steht noch aus|stehen noch aus|noch ausstehend|im Gegenzug|Mit Antragstellung|vorbehaltlich|Vorbehalt|abhängig vo[mn]|sofern|falls|vorausgesetzt|im Falle|unter der Voraussetzung|nach Bewilligung|bei Bewilligung|nur nach|nach (?:Erhalt|Eingang|Vorliegen)|positive[nr]? (?:Förder)?(?:zusage|bescheid|bewilligung)|\bkann\b|\bkönnen\b|\bkönnte|\bsoll(?:en)?\b|\bwürde|zu erwarten|gerechnet|\bQ[1-4]\b|geplant|voraussichtlich|nicht bewilligt|zurückgefordert|mögliche[nr]?\b|Möglichkeit|beabsichtigt|\bbei einer\b|im Falle einer|einzuholen/i;
-/* Hintergrund statt neuer Förderung (Bewertung 11.10.2026): verfallende oder zurückzuzahlende Mittel, über Jahre erwartete Mittel
-   (Koblenz: Anteilsverkauf), und Bescheide aus früheren Jahren („Bescheid vom 18.12.2023“ in einer Vergabe 2026) */
-const BACKGROUND=/Verfall|Bislang wurde|Erfahrungen mit|am Beispiel|verfallen|zurückzuzahlen|Rückforderung|Rückzahlung|erwartet|über (die nächsten )?\d+ Jahre|in den (kommenden|nächsten) \d+ Jahren|seinerzeit|damals/i;
-// Nur bei Beträgen: geschätzte Mittel („Dem stehen voraussichtlich Fördermittel von etwa 23 Mio. € gegenüber“)
-const ESTIMATE=/voraussichtlich|in Aussicht gestellt|[Mm]ögliche Förderung|gegenüberstehen|stehen[^.]{0,80}gegenüber|Schätzung|geschätzt|prognostiziert|\bggf\.|gegebenenfalls|gerechnet werden|wären\b|könnte/i;
-const yearsOf=s=>(String(s).match(/\b20[1-3]\d\b/g)||[]).map(Number);
-// Jüngstes genanntes Jahr bis heute (Zieljahre wie „bis 2030“ zählen nicht)
-const latestYear=t=>Math.max(0,...yearsOf(t).filter(y=>y<=new Date().getFullYear()));
-const oldSentence=(s,latest)=>{const y=yearsOf(s);return !!y.length&&!!latest&&Math.max(...y)<=latest-2;};
-/* Mehrere Programme in einem Satz: das, dessen Name dem Förderwort am nächsten steht („Mittel der Städtebauförderung für das
-   Feuerwehrhaus“ ist Städtebauförderung) */
-/* Programm nur, wenn sein Name nah am Förderwort steht (höchstens NEAR Zeichen; eine Aufzählung „Gesundheitsplanung und
-   Klimaanpassung … Fördermittel“ ist kein Förderfall der Klimaanpassung); bei mehreren das nächste */
-const NEAR=150;
-const nearest=(s,names)=>{const at=s.search(FUND);const near=names.map(([n,re])=>[n,Math.abs(s.search(re)-at)]).filter(([,d])=>d<=NEAR).sort((a,b)=>a[1]-b[1]);return near.length?[near[0][0]]:[];};
-// Förderung Dritter (Träger, Vereine, Stationen beantragen oder erhalten selbst): für die Kommune nur eine Erwähnung
-const THIRD=/(?:Universität|Hochschule|Träger\w*|Verein\w*|Station|Initiative|Stiftung|Gesellschaft)\s+(?:\S+\s+){0,3}(?:hat|haben|stellt|stellen|stellte|beantragt|erhielt|erhalten|hat einen)|durch (?:die|den) (?:\p{Lu}{3,}|Träger)|seitens (?:der|des) (?:\w+ ){0,2}(?:Station|Träger|Vereins)/u;
-// Stand aus dem Titel: „Umsetzung des bewilligten Leader-Antrags“, „Zuwendung aus dem Dorferneuerungsprogramm“, „Beschluss über Antragstellung“
-const TITLE_GRANTED=/bewilligte[nrs]?\b|Bewilligung|Zuwendungsbescheid|Förderbescheid|Zuwendung aus(?!.*(?:Antrag|antragstellung))/i;
-const TITLE_APPLIED=/Beteiligung am (?:[\w-]+ )?Förderprogramm|Teilnahme am (?:Bundes|Landes)programm|Antragstellung|Beantragung|Förderantrag|Förderanträg|Antrag auf (?:Förderung|Zuwendung)|Einreichung|Bewerbung|Teilnahme am (?:Förder|Projekt)aufruf|Teilnahme (?:am|an der|an dem) [\w-]* ?[\w-]*Förder\w*|Interessenbekundung|Projektskizze/i;
-/** Förderprogramme eines Berichts: [{program, status:'granted'|'applied'|'mentioned'}], je Bericht aus allen Belegen bestimmt
- *  (Leitfaden 14.10.2026, docs/qualitaet/plenara-x/funding-x14.json): Belege je Satz (Programm, wenn genannt, und Stand), dazu
- *  der Titel als eigene Quelle; Belege ohne Programm gehören zu dem einen genannten Programm (bei mehreren zu dem im Titel);
- *  Förderung ohne erkennbares Programm als „Sonstige Förderung“, nur wenn bewilligt oder beantragt. */
-// Zuschüsse, Richtlinien und Förderpläne der Kommune selbst (an Vereine, Träger, Bürger) sind keine Förderung für sie
-const ownFunding=(title,text)=>!!grantOf(title,text)||/Richtlinie|Förderplan|Förderkonzept|Konzept zur Förderung|Betriebskostenzuschuss|Zuwendung zu[rm]?\b|Antrag auf Zuwendung|Kosten für den Erwerb|^Förderprogramme$|Institutionelle Förderung|Förderung von (?:Kultur|Kunst|Sport|Vereinen|Projekten)|für den Betrieb|Beratungsstelle|Kreiszuwendung|Bewilligungen von|Fördermittelmanagement|Fördermittelakquise|[Ff]örderantrag (?:des|der) |Behandlungsstelle|Selbsthilfe|Bewilligung des Zuschusses|Förderfonds|Innenentwicklungsfonds/i.test(String(title||'').trim());
-export function fundingOf(text,{title=''}={}){
- const found=new Map(),sureOf=new Set();let any=null,sure=false;
- const up=(name,status)=>{if(!found.has(name)||RANK[status]>RANK[found.get(name)])found.set(name,status);};
- // Silbentrennung am Zeilenende („erfolg- reich“) zusammenziehen
- const flat=String(text||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2'),latest=latestYear(flat);
- for(const s of flat.split(SENTENCE)){
-  if(!FUND.test(s)||FUND_FORM.test(s)||OUTGOING.test(s))continue;
-  const back=BACKGROUND.test(s)||oldSentence(s,latest)||FUND_HEAD.test(s)||THIRD.test(s);
-  // Beantragt nur, wenn der Antrag gestellt oder beschlossen ist, nicht ein künftiger oder geplanter
-  // Künftiges, Mögliches und Aufgabenlisten sind weder bewilligt noch beantragt („Mit einem Förderbescheid ist … zu rechnen“, „sollten nach Möglichkeit Fördermittel beantragt werden“)
-  const future=/zu rechnen|wird erwartet|erwarten|sollten|nach Möglichkeit|gehören insbesondere|Aufgaben (?:der|des)|Voraussetzung (?:für|zur)|politischen Willen/i.test(s);
-  // Künftiges, Mögliches und Bedingungen sind weder bewilligt noch beantragt (Messung R7–R11, 14.10.2026)
-  const cond=/\b[Ss]ollte\b/.test(s)||!/beantragte[nr]? Förderung|Mit (?:dem )?vorliegenden/i.test(s)&&(future||/(?:vorgesehen|beabsichtigt|Ziel ist)[^.]{0,120}(?:zu beantragen|zu stellen|beantragt|Einreichung)|\bwelche\b|\bob\b|inwieweit|\?|\bwäre\b|sobald|bereits vor den|\bbei (?:einem )?positive|im Falle|sofern|falls|muss bis|\bkann\b|können|in Kürze|voraussichtlich|vorbehaltlich|soll geprüft|zu prüfen/i.test(s));
-  const condA=!/beantragte[nr]? Förderung|Mit (?:dem )?vorliegenden/i.test(s)&&(future||/(?:vorgesehen|beabsichtigt|Ziel ist)[^.]{0,120}(?:zu beantragen|zu stellen|beantragt|Einreichung)|\bwelche\b|\bob\b|inwieweit|\?|\bwäre\b|im Falle|sofern|falls|muss bis|soll geprüft|zu prüfen/i.test(s));
-  const status=back?'mentioned':!cond&&(GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s)||GRANTED.test(s)&&!CONDITIONAL.test(s))?'granted':!condA&&APPLIED.test(s)&&!/künftig|später|sobald|Mit Antragstellung|(?<!vorliegenden [^.]{0,60})soll(?:en)?\s+(?:\S+\s+){0,4}(?:gestellt|eingereicht|beantragt) werden|(?:Antrag|Beantragung|Förderantrag)\w*.{0,40}(?:geplant|\bplant\b)|\bplant\b.{0,60}(?:Antrag|zu beantragen|zu stellen)|erforderlich\w* (?:Förder|Zuwendungs)?[Aa]ntr/.test(s)?'applied':'mentioned';
-  const names=nearest(s,PROGRAMS.filter(([,re])=>re.test(s))).map(x=>Array.isArray(x)?x[0]:x);
-  for(const name of names){up(name,status);if(!back&&!future&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sureOf.add(name);}
-  // Ohne Programm nur mit Geldgeber außerhalb der Kommune (wie bei den Beträgen): sonst fördert meist die Kommune selbst
-  if(!names.length&&EXTERNAL.test(s)&&(!any||RANK[status]>RANK[any]))any=status;
-  if(!names.length&&!back&&!future&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sure=true;
- }
- // Titel: Programm und Stand („Zuwendung aus dem Dorferneuerungsprogramm“); nur mit Förderwort oder Programm im Titel
- // Nur ein Titel, der selbst von Förderung spricht („Feuerwehrgerätehaus“ oder „Masterplan Radverkehr“ allein sind kein Förderfall)
- const t=/Förder|Zuwendung|Zuschuss|Zuschüsse|Bundesprogramm|Landesprogramm/i.test(String(title||''))?String(title):'';
- const tNames=PROGRAMS.filter(([,re])=>re.test(t)).map(([n])=>n);
- const tStatus=t?(TITLE_GRANTED.test(t)&&!/Erhöhung|Änderung|Verlängerung/i.test(t)?'granted':TITLE_APPLIED.test(t)?'applied':null):null;
- for(const n of tNames)up(n,tStatus||'mentioned');
- /* Ohne Programm im Satz: gehört zum einen genannten Programm, sonst zu dem im Titel; eindeutige Bescheide und der Stand des
-    Titels heben den Stand dieses Programms */
- const target=found.size===1?[...found.keys()][0]:tNames.length===1?tNames[0]:null;
- if(target){
-  if(sure){up(target,'granted');sureOf.add(target);}
-  if(tStatus)up(target,tStatus);
-  if(any&&any!=='mentioned'&&!tNames.length&&found.size===1)up(target,any);
- }
- const out=[...found].map(([program,status])=>({program,status,...(sureOf.has(program)?{sure:true}:{})}));
- // Förderung ohne Programmnamen zählt nur, wenn sie bewilligt oder beantragt ist (bloße Erwähnungen sind zu ungenau)
- const st=tStatus&&RANK[tStatus]>RANK[any||'mentioned']?tStatus:any;
- const own=ownFunding(title,text);
- // Nur erwähnte Programme verdecken nicht die eigene Antragstellung ohne Programmnamen
- if(!out.some(x=>x.status!=='mentioned')&&st&&st!=='mentioned'&&!own)out.push({program:'Sonstige Förderung',status:st,...(sure?{sure:true}:{})});
- return out;
-}
 
-/* Förderbeträge: nur ein Betrag, der unmittelbar an einem Förderwort hängt („Zuwendung in Höhe von 450.000 €“, „Fördermittel
-   von 1,2 Mio. Euro“, „120.000 € Landesmittel“). Nicht dazwischen: Gesamtkosten, Eigenanteil, förderfähige Kosten, Prozent. */
+/* Betrag in Euro (auch von anderen Regeln genutzt) und Höchstbeträge davor */
 const EURO_NUM=String.raw`(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d+)?)\s*(Mio\.?|Millionen|Mrd\.?|Milliarden|T€|TEUR|Tsd\.?\s*(?:€|Euro|EUR)|Tausend\s*(?:€|Euro))?\s*(€|Euro|EUR)?`;
-const FUND_WORD=String.raw`(?:Förder(?:summe|betrag|beträge|mittel|geld|ung|zuschuss|zusage|bescheid|antrag)|Zuwendung(?:en)?|Zuschuss|Zuschüsse|Zuschusses|Landesmittel|Bundesmittel|EU-Mittel|Landeszuschuss|Bundeszuschuss|gefördert|bewilligt)`;
-const EURO_AFTER=new RegExp(FUND_WORD+String.raw`([^.;€]{0,60}?)(?:€\s*)?`+EURO_NUM,'g');
-const EURO_BEFORE=new RegExp(EURO_NUM+String.raw`\s+(?:an\s+)?(?:Förder|Zuwendung|Zuschuss|Zuschüsse|Landesmittel|Bundesmittel|EU-Mittel|Landeszuschuss|Bundeszuschuss)`,'g');
-const NOT_FUND_AMOUNT=/[,&+]|^budget|Gesamtkosten|Kosten|Anteil|volumen|zwischen|nicht gedeckt|Restbetrag|Differenz|verbleibend|Eigenmittel|Eigenleistung|Investition|Ausgaben|Aufwand|förderfähig|zuwendungsfähig|Bemessungsgrundlage|Haushalt|Bagatellgrenze|mindestens|höchstens|maximal|bis zu|pro |je |Prozent|%/i;
-// Davor: Zuschüsse der Kommune selbst (an Vereine, Bäder, Stadtwerke) sind kein Fördergeld für sie
-const OWN_BEFORE=/städtisch|gemeindlich|kommunal|eigene|der Stadt\s*$|der Gemeinde\s*$/i;
-// Davor: Höchst- und Mindestbeträge einer Richtlinie
 const LIMIT_BEFORE=/maximal|\bmax\.|möglich|mögl\.|Höchst|höchstens|bis zu|mindestens|Mindest|\bmin\.|Bagatell|Wertgrenze|mehr als|über\s*$|Eigenanteil|Kofinanzierung|ehemals|statt|bisherige|ursprünglich|jährlich|monatlich/i;
-// Danach: Spannen, Beträge je Einheit oder Zeitraum, Deckelungen, Eigenleistungen („250.000 € bis 1,5 Mio.“, „8.000 € pro Schuljahr“)
-const AFTER_NOT=/^\s*((?:Euro\s+)?Eigen[a-zäöü]+\b(?!\s*\d)|bis\s+(zu\s+)?\d|pro\b|je\b|jährlich|monatlich|im (Monat|Jahr)\b|be-?\s?grenzt|aus Eigen)/i;
-/* Wer zahlt: ein Betrag zählt nur, wenn der Satz einen Geldgeber außerhalb der Kommune oder ein Förderverfahren nennt
-   (Land, Bund, EU, Ministerium, Bewilligungsbehörde, Bescheid, Förderprogramm). Ohne das ist „Zuschuss von 70.000 €“ fast immer
-   ein Zuschuss der Kommune selbst an Verein, Bad, Kirche oder Gesellschaft (Referenzsatz 13.10.2026: 20 von 39 Fehltreffern). */
-const EXTERNAL=/Förderung\w*\s+(?:wurde|ist|wurden)[^;!?]{0,40}(?:beantragt|bewilligt)|(?:Förderung|Zuschuss|Zuwendung)\w*[^;!?]{0,60}zu beantragen|beantragte[nr]? Förderung|Fördermittel|Fördergeld|Förderprogramm|Fördersumme|Förderbetrag|Förderquote|Förderbescheid|Fördermittelbescheid|Zuwendungsbescheid|Bescheid|Förderzusage|Förderantrag|Zuwendungsantrag|Antrag auf (Gewährung einer )?Zuwendung|Landesmittel|Bundesmittel|EU-Mittel|Landeszuschuss|Bundeszuschuss|des Landes|vom Land|vom Bund|des Bundes|Freistaat|Bundesprogramm|Landesprogramm|Förderaufruf|Ministerium|Landratsamt|Bezirksregierung|Regierungspräsidium|Kreisverwaltung|Landesverwaltungsamt|Bewilligungsbehörde|Projektträger|NRW\.BANK|\bBank\b|Regionalbudget|gefördert (mit|durch|aus|von)|Förderung (aus|durch) |Zuschuss vom Land|beantragte[n]? (Zuwendung|Förderung)|bewilligte[n]? Zuwendung|Zuwendung\w*(?:[^.]|\.\d){0,60}bewilligt|bewilligte[n]? Fördermittel/i;
-// Spenden und Sponsoring sind keine Förderung
-const DONATION=/Spende|Sponsoring|Schenkung/i;
-/* Ganze Sätze ohne Förderbetrag einer Kommune: Programmtöpfe und Aufrufe, Haushaltsformulare mit Ankreuzfeldern */
-const NOT_FUND_SENTENCE=/ohne Berücksichtigung der|Finanzbedarf|Gesamtinvestition|\bkeine (?:passenden |geeigneten )?(?:Förderprogramme|Fördermittel|Förderung|Fördermöglichkeit)|nicht förderfähig|Fördermittelberatung|stehen\b.{0,200}zur Verfügung|Projektaufruf|bundesweit|landesweit|Programmvolumen|Fördervolumen|Fördertopf|Gesamtvolumen|☐|☒|Sachkonto|Auszahlungen|Einzahlungen/i;
-const toEuro=(num,unit,cur)=>{
- let v=Number(num.replace(/\./g,'').replace(',','.'));
- if(/^(Mio|Millionen)/.test(unit||''))v*=1e6;else if(/^(Mrd|Milliarden)/.test(unit||''))v*=1e9;else if(/^(T€|TEUR|Tsd|Tausend)/.test(unit||''))v*=1e3;else if(!cur)return 0;
- return v>=1000&&v<=2e8?Math.round(v):0;
-};
-/** Förderbeträge je Programm: [{program, euro}] (je Programm der größte genannte Betrag; ohne Programm „Sonstige Förderung“) */
-export function fundingEuroOf(text){
- const out=new Map();
- // Silbentrennung am Zeilenende („Förder- mittel“) schließen, sonst greifen die Förderwörter nicht
- const flat=String(text||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2'),latest=latestYear(flat);
- for(const s of flat.split(SENTENCE)){
-  // Sehr lange „Sätze“ sind Kopfzeilen, Formulare oder Tabellen ohne Satzzeichen; Hintergrund (verfallende, erwartete, alte Mittel) zählt nicht
-  if(s.length>400||BACKGROUND.test(s)||/\bbisherige/i.test(s)||ESTIMATE.test(s)||oldSentence(s,latest)||!FUND.test(s)&&!/Zuwendung|Zuschuss|Landesmittel|Bundesmittel|Förderung (aus|durch) /.test(s)||NOT_FUND_SENTENCE.test(s)||OUTGOING.test(s)||DONATION.test(s))continue;
-  if(!EXTERNAL.test(s)&&!PROGRAMS.some(([,re])=>re.test(s)))continue;
-  let euro=0;
-  for(const m of s.matchAll(EURO_AFTER)){const before=s.slice(Math.max(0,m.index-30),m.index);if(NOT_FUND_AMOUNT.test(m[1])||LIMIT_BEFORE.test(before)||LIMIT_BEFORE.test(m[1].replace(/über\s*$/,''))||OWN_BEFORE.test(before)||AFTER_NOT.test(s.slice(m.index+m[0].length,m.index+m[0].length+20)))continue;const v=toEuro(m[2],m[3],m[4]);if(v>euro)euro=v;}
-  // „120.000 € Landesmittel“ nur in Fließtext: in Tabellen (drei und mehr Beträge) steht davor oft die Kostenzeile
-  const tabular=(s.match(/\d\s*(?:€|Euro|EUR)/g)||[]).length>=3;
-  if(!tabular)for(const m of s.matchAll(EURO_BEFORE)){if(LIMIT_BEFORE.test(s.slice(Math.max(0,m.index-30),m.index))||AFTER_NOT.test(s.slice(m.index+m[0].length,m.index+m[0].length+20))||/Gesamt|Kosten|Summe|Saldo|volumen/i.test(s.slice(Math.max(0,m.index-30),m.index)))continue;const v=toEuro(m[1],m[2],m[3]);if(v>euro)euro=v;}
-  if(!euro)continue;
-  const names=nearest(s,PROGRAMS.filter(([,re])=>re.test(s))).map(x=>Array.isArray(x)?x[0]:x);
-  for(const n of names.length?names:['Sonstige Förderung'])if(euro>(out.get(n)||0))out.set(n,euro);
- }
- return [...out].map(([program,euro])=>({program,euro}));
-}
 
 /* Bauleitplanung: Plan und Verfahrensschritt aus dem Titel, sonst aus dem Beschlussvorschlag („… beschließt …“), nicht aus dem
    ganzen Text (der Verfahrensübersichten mit allen früheren Schritten enthält). Bei mehreren Schritten zählt der weiteste. */
@@ -228,7 +76,7 @@ export const STAGES=[
  ['Aufstellung',/Aufstellungsbeschluss|Aufstellung (des|eines|der)|Einleitung des Verfahrens/i],
  ['Frühzeitige Beteiligung',/frühzeitige|Vorentwurf|§\s*3\s*Abs\.?\s*1|§\s*4\s*Abs\.?\s*1/i],
  ['Offenlage',/Offenlage|öffentliche Auslegung|Offenlegung|Veröffentlichung im Internet|Entwurfsbeschluss|Auslegungsbeschluss|erneute Beteiligung|§\s*3\s*Abs\.?\s*2|§\s*4\s*Abs\.?\s*2/i],
- ['Abwägung',/Abwägung/i],
+ ['Abwägung',/Abwägung|eingegangenen Stellungnahmen|Behandlung der (?:Stellungnahmen|Anregungen)|Prüfung der Stellungnahmen/i],
  ['Satzungsbeschluss',/Satzungsbeschluss|als Satzung|Feststellungsbeschluss|abschließende[nr]? Beschluss|§\s*10\s*Abs\.?\s*1/i],
 ];
 const REPEAL=/Aufhebung (des|eines|der)\s+(Bebauungsplan|B-Plan|vorhabenbezogenen)|Aufhebungsbeschluss|Aufhebungssatzung/i;
@@ -236,9 +84,10 @@ const decision=text=>(String(text||'').replace(/\s+/g,' ').match(/(Beschlussvors
 /** {stage, type, plan} oder null. type: 'Bebauungsplan' oder 'Flächennutzungsplan'; plan: Planbezeichnung (Nummer oder Name) zum Zusammenfassen. */
 // Bauanträge im Plangebiet und Sammelberichte nennen den Plan, sind aber kein Planverfahren
 // Ebenso Stellungnahmen zu Plänen der Nachbargemeinden (§ 2 Abs. 2 BauGB): dort geht es um fremde Pläne
-const NOT_PLAN=/Bauantrag|Bauvoranfrage|Vorbescheid|Einvernehmen|§\s*36\s*BauGB|Befreiung|Nutzungsänderung|Genehmigungsfreistellung|Stellungnahme|Nachbargemeinde|Nachbarkommune|benachbarte|§\s*2\s*Abs\.?\s*2\s*BauGB/i;
+const NOT_PLAN=/Bauantrag|Bauvoranfrage|Vorbescheid|Einvernehmen|§\s*36\s*BauGB|Befreiung|Nutzungsänderung|Genehmigungsfreistellung|Bauantr[aä]g|Nachbargemeinde|Nachbarkommune|benachbarte|§\s*2\s*Abs\.?\s*2\s*BauGB/i;
+const OWN_COMMENTS=/Abwägung|eingegangene|Behandlung|Prüfung der|Würdigung|Stellungnahmen (?:der|aus) (?:Träger|Behörden|Öffentlichkeit|frühzeitigen)/i;
 export function planOf(title,text=''){
- const t=String(title||'');if(!PLAN.test(t)||NOT_PLAN.test(t)||COLLECTIVE.test(t))return null;
+ const t=String(title||'');if(!PLAN.test(t)||NOT_PLAN.test(t)||COLLECTIVE.test(t)||/Fraktion|Sammelverfahren|Zuwendung/i.test(t)||/Stellungnahme/i.test(t)&&!OWN_COMMENTS.test(t))return null;
  const type=/Flächennutzungsplan|FNP/i.test(t)&&!/Bebauungsplan|B-Plan/i.test(t)?'Flächennutzungsplan':'Bebauungsplan';
  const pick=src=>{if(REPEAL.test(src))return 'Aufhebung';let best=null;for(const [name,re] of STAGES)if(re.test(src))best=name;return best;};
  const stage=pick(t)||pick(decision(text))||'Sonstiger Schritt';
@@ -249,24 +98,43 @@ export function planOf(title,text=''){
 /* Art des Plangebiets (Bauleitplanung): aus Titel und Planname, sonst aus dem Beschlussvorschlag. Ein Plan kann mehrere Arten
    haben („Gewerbe- und Industriegebiet“). Abkürzungen der BauNVO (GE, GI, SO, MI, WA) nur als ganze Wörter in Großschreibung. */
 export const PLAN_USES=[
- ['Industrie',/Industrie(?!-?\s*und\s*Handelskammer)|\bGI\b/i],
- ['Gewerbe',/Gewerbe(?!steuer)|gewerblich|\bGE\b|Betriebserweiterung|Betriebsgelände|Firmengelände|Handwerkerhof|Bauhof/i],
+ ['Industrie',/Industrie(?!-?\s*und\s*Handelskammer)/i,/\bGI\b/],
+ ['Gewerbe',/Gewerbe(?!steuer)|gewerblich|Betriebserweiterung|Betriebsgelände|Firmengelände|Handwerkerhof|Bauhof/i,/\bGE\b/],
  ['Logistik',/Logistik|Distributionszentrum|Verteilzentrum|Güterverkehrszentrum|\bGVZ\b|Speditio/i],
  ['Einzelhandel',/Einzelhandel|Nahversorg|Lebensmittel(markt|discounter|vollsortimenter)|Verbrauchermarkt|Fachmarkt|Supermarkt|Discounter|Einkaufszentrum|Baumarkt|Drogeriemarkt|großflächig|\b(?:EDEKA|REWE|Lidl|Aldi|Netto|Penny|Kaufland|Norma)\b/i],
  ['Energie',/Photovoltaik|Fotovoltaik|Solar|PV-|\bPV\b|Agri-?PV|Windenergie|Windpark|Windkraft|SO Wind|Vorrangfläche für Wind|Konzentrationszone|Batteriespeicher|Energiespeicher|Speicheranlage|Umspannwerk|Biogas|Elektrolyse|Wasserstoff|Energiepark|Erneuerbare|Energiegewinnung/i],
  ['Rechenzentrum',/Rechenzentr|Data ?Cent(er|re)/i],
+ ['Batteriespeicher und Wasserstoff',/Batteriespeicher|Energiespeicher|Stromspeicher|Großspeicher|\bBESS\b|Wasserstoff|Elektrolys/i],
+ ['Hotel, Camping und Freizeit',/Hotel|Camping|Wohnmobil|Ferienhaus|Ferienhäuser|Ferienwohnanlage|Feriendorf|Ferienpark|Freizeitpark|Freizeitanlage|Tourismus/i],
  ['Mischgebiet',/Mischgebiet|urbane[sn]? Gebiet|\bM[IUD]\b|Dorfgebiet/],
- ['Wohnen',/Wohn(gebiet|bau|baufläche|quartier|anlage|siedlung|park|ungen|en\b)|\bWA\b|Einfamilienh|Mehrfamilienh|Neubaugebiet|Baugebiet/i],
+ ['Wohnen',/Wohn(gebiet|bau|baufläche|quartier|anlage|siedlung|park|ungen|en\b)|[\p{L}]-?[Ss]iedlung\b|Einfamilienh|Mehrfamilienh|Neubaugebiet|Baugebiet|Wohnraum/iu,/\bWA\b/],
 ];
+const SINGLE_PLOT=/Ferienwohn|Ausschluss von|Straßenbezeichnung|Straßenname|Handwerk|Nachbargemeinde|isolierte Abweichung|Antrag auf (?:Abweichung|Änderung|Befreiung)|Ausnahmeregelung|Abweichung vom Gestaltung|Errichtung eine[sr] (?:Einfamilien|Mehrfamilien|Doppel|Wohn|Carport|Garage)|Fl\.?\s?-?Nr|Flst|Flurstück|Grundstück [\p{L}-]+(?:straße|weg|str\.) \d/iu;
 const INTERCOMMUNAL=/interkommunal|\bIKG\b|\bIGP\b|Zweckverband|gemeinsame[sn]? (Gewerbe|Industrie)/i;
 /** {uses:[…], inter} oder null */
 export function planUseOf(title,text=''){
  const t=String(title||'');if(!planOf(t,text))return null;
- const find=src=>PLAN_USES.filter(([,re])=>re.test(src)).map(([n])=>n);
+ // Einzelvorhaben in einem bestehenden Plan (ein Grundstück, eine Abweichung) und Aufhebungen sind kein neues Plangebiet
+ if(SINGLE_PLOT.test(t)||REPEAL.test(t))return null;
+ const find=src=>PLAN_USES.filter(([,re,abbr])=>re.test(src)||abbr?.test(src)).map(([n])=>n);
  let uses=find(t);
  if(!uses.length)uses=find(decision(text).slice(0,400));
+ // Weder Titel noch Beschlussvorschlag nennen die Nutzung: Anfang der Vorlage, nur wenn Wohnen klar überwiegt
+ if(!uses.length&&text){const head=String(text).replace(/\s+/g,' ').slice(0,3000);
+  const wohn=(head.match(/allgemeine[ns]? Wohngebiet|reine[ns]? Wohngebiet|Wohnbaufläche|Wohnbebauung|Wohnbauland|Wohnhäuser|Einfamilienh|Doppelh|Reihenh|Bauplätze|\bWA\b/g)||[]).length;
+  const other=(head.match(/Gewerbe|Industrie|Sondergebiet|Photovoltaik|Solar|Wind|Einzelhandel|Logistik|Camping|Ferien/g)||[]).length;
+  if(wohn>=2&&wohn>2*other)uses=['Wohnen'];}
  return uses.length?{uses,inter:INTERCOMMUNAL.test(t)}:null;
 }
+/* plenara.X Signale 2 (Neue Wohnbaugebiete): Art des Vorgangs aus dem Titel */
+export const WOHNBAU_ARTS=[
+ ['Bauplatzverkauf',/Vergabekriterien|Ausschreibung (?:der|von) [\p{L}-]*grundstücke|Grundstücksverk|Bauplatz|Bauplätze|Baugrundst|Wohnbaugrundst|Grundstücksvergabe|Konzeptvergabe|Vermarktung|Verkauf|Veräußerung|Kaufpreis|Verkaufspreis|Bodenpreis|Baulandpreis|Losverfahren|Vergaberichtlinie|Bieterverfahren/iu],
+ ['Erschließung',/Endausbau|Asphalt|Straßenbeleuchtung|Erschließung(?!splan)|Umlegung|Erschließungsvertrag|Ausgleichsmaßnahme/i],
+ ['Änderung',/Änderung|Teiländerung|Deckblatt|Ergänzung/i],
+ ['Erweiterung',/Erweiterung/i],
+ ['Neues Baugebiet',/./],
+];
+export function wohnbauArtOf(title){return WOHNBAU_ARTS.find(([,re])=>re.test(String(title||'')))[0];}
 /** Geplante Wohneinheiten (größte genannte Zahl in einem Satz mit Planungsbezug), sonst null */
 export function housingOf(text){
  let best=null;
@@ -279,6 +147,180 @@ export function housingOf(text){
  return best;
 }
 
+/* plenara.X Signale, Kategorien 4 bis 9 (docs/produkt/plenara-x-signale.md): je Vorgang ein Filterwert aus dem Titel, null wenn der
+   Vorgang nicht zur Kategorie gehört. Anfragen, Anträge von Fraktionen, Berichte und Einzelbauanträge Dritter zählen nicht. */
+const SIG_NOT=/(?<!Such)Anfrage|Beantwortung|Antrag (?:der|des) (?:Fraktion|Ratsmitglied|Stadtverordnet|Gemeinderat|Kreistag)|Fraktion|Bauantrag|Bauvoranfrage|Baugesuch|Nutzungsänderung/i;
+const firstOf=(list,t)=>list.find(([,re])=>re.test(t))?.[0]||null;
+/* 4 Windenergie: Art des Verfahrens */
+const WIND_TITLE=/Raumordnungsplan Wind|\bROPW\b|Windenergie|Windkraft|Windpark|Windrad|Windräder|\bWEA\b|Windenergieanlage|Windkraftanlage|Repowering(?![^]{0,30}Solar)/i;
+const WIND_STEPS=[
+ ['Regionalplanung',/Raumordnungsplan|Teilregionalplan|Sachliche[nr]? Teilplan|\bRROP\b|Planungsverband|Raumordnungsprogramm|Regionalplan|Raumentwi?c?klungsprogramm|Raumordnung|Landesentwicklungsplan|Regionales Raumordnungsprogramm/i],
+ ['Genehmigungsantrag (BImSchG)',/BImSchG|Errichtung (?:und Betrieb )?(?:von )?(?:\d+|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|insgesamt \d+) (?:Windenergie|Windkraft)|Genehmigungsverfahren|Immissionsschutz|Genehmigungsantrag|Vorbescheid|Antrag auf (?:Errichtung|Genehmigung)|Änderungsgenehmigung/i],
+ ['Bauleitplanung',/Bebauungsplan|B-Plan|Flächennutzungsplan|Sondergebiet|Konzentrationszone|Vorrang|Windenergiegebiet|Teilflächenplan|Positivplanung/i],
+ ['Bürger- und Kommunalbeteiligung',/Beteiligung (?:von|der) (?:Bürger|Kommune|Gemeinde)|finanzielle[nr]? Beteiligung|Beteiligung an Wind|Bürgerwind|Bürgerenergie|§\s?6\s*EEG|Akzeptanzabgabe|Beteiligungsgesellschaft|Genossenschaft/i],
+ ['Einvernehmen',/Einvernehmen|§\s?36\s*BauGB|Stellungnahme|Beteiligung als Träger|Träger öffentlicher Belange/i],
+];
+export function windStepOf(title){const t=String(title||'');if(!WIND_TITLE.test(t)||/Kleinwind|Bericht|Sachstand/i.test(t)||SIG_NOT.test(t)&&!/BImSchG|Immissionsschutz/i.test(t))return null;return firstOf(WIND_STEPS,t)||'Sonstiges';}
+/* 5 Solarenergie */
+const SOLAR=[
+ ['Agri-PV',/Agri[-\s]?PV|Agri-?Photovoltaik|Agrar-?PV/i],
+ ['Batteriespeicher',/Batteriespeicher|Stromspeicher|Energiespeicher|Großspeicher|\bBESS\b/i],
+ ['Freiflächen-PV',/Freiflächen|Solarpark|Photovoltaik-?Park|PV-?Park|Solarfeld|Floating|schwimmende|Freiflächenphotovoltaik|Sondergebiet (?:Photovoltaik|Solar|PV)|(?:Bebauungsplan|Flächennutzungsplan|B-Plan|FNP|Sondergebiet)[^]{0,120}(?:Photovoltaik|Solar|\bPV\b)|(?:Photovoltaik|Solar|\bPV\b)[^]{0,80}(?:Bebauungsplan|Flächennutzungsplan|Sondergebiet)/iu],
+ ['Dach-PV kommunal',/(?:PV|Photovoltaik|Solar)[\p{L}-]*(?:anlage)?\s+(?:auf|für)\s+(?:dem|den|der|das)?\s*(?:Dach|Dächer|Rathaus|Schule|Grundschule|Kita|Kindergarten|Feuerwehr|Feuerwache|Bauhof|Halle|Sporthalle|Turnhalle|Gebäude|Dorfgemeinschaftshaus|DGH|Kläranlage|Freibad)|Dach-?PV|Dachflächen|Balkonkraftwerk|(?:Haus|Halle|Hallenbad|Schule|Kita|Kindergarten|Gebäude|Rathaus|Carport|Dach|Bauhof|Freibad|Klärwerk|Feuer|Dorfladen|Gemeindezentrum|Festsaal|Bürgerhaus|Mehrzweckhalle)[\p{L}]*\b[^]{0,60}(?:Photovoltaik|PV)|(?:Photovoltaik|PV)[^]{0,60}(?:Haus|Halle|Schule|Kita|Gebäude|Rathaus|Dach)/iu],
+ ['Sonstige PV',/./],
+];
+export function solarOf(title){const t=String(title||'');if(!/Photovoltaik|Fotovoltaik|Solar|\bPV\b|PV-|Agri[-\s]?PV|Batteriespeicher|Stromspeicher|Energiespeicher|\bBESS\b/i.test(t)||/Solarium|Solarkataster|Bericht|Sachstand|Balkon|Mitgliedschaft|Verband|Baugenehmigung|Bauvorhaben|Befreiung|denkmalschutzrechtliche Erlaubnis|Solarfreibad|Kategorisierung der Dachfläche|Einfamilien|Wohnhaus|Bauort|Fl\.?\s?-?Nr|Flst|Abweichung|Zuschussantrag|e\.\s?V\.|Bündnis|Genehmigungsfreistellung/i.test(t)||SIG_NOT.test(t))return null;return firstOf(SOLAR,t);}
+/* 6 Wärme und Energieeffizienz (Wärmeplanung kommt aus heat_plan) */
+const ENERGY=[
+ ['Konzessionen',/Konzessionsvertr|Konzessionsvergabe|Konzessionsverfahren|Wegenutzungsvertr|(?:Strom|Gas|Wasser)konzession/i],
+ ['Wärmenetz und Fernwärme',/Wärmenetz|Nahwärme|Fernwärme|Wärmeverbund|Heizzentrale|Wärmeversorgung|Biomasseheiz|Heizwerk/i],
+ ['Heizungstausch',/Heizinstallation|Wärmetauscher|Heizung(?!sbau)|Heizverteilung|Heizhaus|Heiztechnik|Wärmeerzeugung|heizungstechnisch|Wärmepumpe|Heizanlage|Kesselanlage|Pelletheiz|Hackschnitzelheiz|Gasheizung|Ölheizung/i],
+ ['LED-Straßenbeleuchtung',/\bLED\b|(?:Straßen)?[Bb]eleuchtung[^]{0,60}(?:Umrüst|Austausch|Modernis|Erneuerung|energieeffizient|stromsparend)|(?:Umrüst|Austausch|Modernis|Erneuerung)[^]{0,60}[Bb]eleuchtung/],
+ ['Energetische Sanierung',/energetisch|Energieeffizien|Wärmedämm|Dämmung|Fenstertausch|Fassadendämm|Klimaschutzmaßnahme|Energieeinspar/i],
+];
+export function energyOf(title){const t=String(title||'');if(/Wärmeplan|Bericht|Sachstand|Befreiung|Bauvorhaben|Gestaltungssatzung|Baugenehmigung|Wartungsvertrag|Vortragsveranstaltung|Wintergarten|Einvernehmen|Grundstück|Wohnhaus|Betriebsleiter|Dunkle|Einfamilien|Zweifamilien|Flurstück|Fl\.?\s?Nr|isolierte Abweichung|e\.\s?V\.|Zuschüssen|Herrnhuter|Fahrradbügel|\bBA \d/i.test(t)||SIG_NOT.test(t))return null;return firstOf(ENERGY,t);}
+/* 2 und 3: Entwicklung eines Bau- oder Gewerbegebiets ohne Bebauungsplan im Titel (Erschließung, Vermarktung, Vorkaufsrecht,
+   Gesellschaft, Erweiterung); Bebauungspläne kommen über plan_use */
+const AREA_DEV=[
+ ['Industrie',/Industrie(?:gebiet|park|fläche)/i],
+ ['Gewerbe',/Gewerbe(?:gebiet|park|fläche|ansiedlung|grundstück)|interkommunale[sn]? Gewerbe/i],
+ ['Wohnen',/Neubaugebiet|Wohn(?:bau)?gebiet|Baugebiet|Wohnbaufläche|Wohnquartier|Bauplätze|Bauplatz|Baugrundstücke|Wohnbaugrundstück/i],
+];
+const AREA_ACT=/Erschließung|Entwicklung|Erweiterung|Vermarktung|Vergabe|Verkauf|Vorkaufsrecht|Ansiedlung|Ausweisung|Information|Gesellschaft|Zweckverband|neue[sn]?|Grunderwerb|Ankauf|Erwerb|Umlegung|Bauplatzpreis|Kaufpreis|Richtlinie/i;
+const AREA_NOT=/Ferienwohn|Straßenbezeichnung|Ausschluss von|Bebauungsplan|B-Plan|Flächennutzungsplan|FNP|Feuerwehr|Regenrückhalt|Widmung|Straßenname|Benennung|Kanal|Befreiung|Bauvorhaben|Baugenehmigung|Spielplatz|Kita|Kindergarten|Schule|Gewerbesteuer|Gewerbe und Meldewesen|Haushaltsplan|Handwerk|eines Baugrundstück|Baugrundstückes Nr|Zuwendung|ÖPNV|Wahl d|Ausgleich|Ersatzmaßnahme|Los \d|Veräußerung des Regen|Ankauf Landwirtschaft/i;
+export function areaDevOf(title){const t=String(title||'');if(!(AREA_ACT.test(t)||/^\s*(?:Neu)?[Bb]augebiet\b/.test(t))||AREA_NOT.test(t)||SIG_NOT.test(t))return null;return firstOf(AREA_DEV,t);}
+/* 7 Schulen, Kitas und Sportstätten: nur Bauvorhaben */
+const SCHOOL_BUILD=/Neubau|Ersatzneubau|Erweiterung|Sanierung|Generalsanierung|Umbau|Anbau|Modulbau|Container|Interim|Errichtung|Bau\s|Baumaßnahme|Neugestaltung|Modernisierung|Ertüchtigung/i;
+const SCHOOLS=[
+ ['Kita',/Kita|KiTa|Kindertages|Kindergarten|Krippe|Kinderhaus|\bHort\b|Familienzentrum/i],
+ ['Grundschule',/Grundschule|Primarschule/i],
+ ['Weiterführende Schule',/Gymnasium|Realschule|Gesamtschule|Oberschule|Mittelschule|Sekundarschule|Gemeinschaftsschule|Hauptschule|Berufsschule|Berufskolleg|Förderschule|Stadtteilschule|Schulzentrum|Schule/i],
+ ['Sporthalle und Sportplatz',/Sporthalle|Turnhalle|Mehrzweckhalle|Dreifeld|Sportplatz|Kunstrasen|Sportanlage|Stadion|Leichtathletik/i],
+ ['Schwimmbad',/Schwimmbad|Hallenbad|Freibad|Lehrschwimm|Kombibad|Naturbad/i],
+ ['Spielplatz',/Spielplatz|Spielgerät|Skatepark|Pumptrack|Bolzplatz|Mehrgenerationenpark/i],
+];
+export function schoolBuildOf(title){const t=String(title||'');if(!SCHOOL_BUILD.test(t)||SIG_NOT.test(t)||/Bericht|Sachstand|Satzung|Gebühr|Entgelt|Beitr[aä]g|Speisung|Verpflegung|Reinigung|Betreuungszeit|Genehmigung zur Errichtung|Schulart/i.test(t))return null;return /Grundschule/i.test(t)?'Grundschule':firstOf(SCHOOLS,t);}
+/* Signale Straßen (8), Wasser (9), Breitband (11): Art und Stand des Vorhabens aus dem Titel; detail = Stand */
+const PROJECT_STEPS=[
+ ['Abschluss',/Abnahme|Fertigstellung|Schlussrechnung|Abrechnung|Widmung|Inbetriebnahme|Einweihung|Verkehrsfreigabe/i],
+ ['Vergabe',/Vergabe|Auftrag|Ausschreibung|Submission|Zuschlag|Beauftragung/i],
+ ['Bau',/Baubeginn|Bauzeit|Bauarbeiten|Vollsperrung|Sperrung|Umleitung|Bauablauf|Nachtrag|Baufortschritt|Baustelle/i],
+ ['Beschluss und Förderung',/Baubeschluss|Ausführungsbeschluss|Maßnahmenbeschluss|Grundsatzbeschluss|Durchführungsbeschluss|Förder|Zuwendung|Finanzierung|Bauprogramm/i],
+ ['Planung',/Planung|Entwurf|Vorplanung|Konzept|Machbarkeit|Variante|Studie|Untersuchung|Gutachten|Vorstellung|Bürgerbeteiligung|Geplant/i],
+ ['Sachstand',/Sachstand|Information|Stand de[rs]|Bericht|\bInfo\b|aktuell|Zukunft/i],
+];
+const projectStep=t=>firstOf(PROJECT_STEPS,t)||'Sonstiges';
+const PROJECT_NOT=/Gebühr|Satzung|Abgabe|Beitr[aä]g|Kalkulation|Wirtschaftsplan|Jahresabschluss|Entgelt|Sachstandsbericht|Bauantrag|Bauvoranfrage|Baugesuch|Befreiung|Straßenname|Benennung|Umbenennung|Winterdienst|Reinigung|Kehrmaschine|Straßenkehr|Kehrwoche/i;
+const STREETS=[
+ ['Radweg',/Radweg|Radverkehrsanlage|Fahrradstraße|Radschnellweg|Radverkehrsverbindung/i],
+ ['Gehweg und Barrierefreiheit',/Gehweg|Bürgersteig|Fußweg|Bushaltestelle|barrierefrei/i],
+ ['Ortsdurchfahrt und Kreisverkehr',/Ortsdurchfahrt|Kreisverkehr|Kreuzung|Knotenpunkt|Lichtsignal|Ampel/i],
+ ['Brücke',/Brücke(?!nau)|Brücken(?!au)|Steg\b|Unterführung|Überführung/i],
+ ['Straßenausbau und -sanierung',/Verbreiterung|Neugestaltung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Deckenerneuerung|Deckensanierung|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung/i],
+];
+const STREET_WORK=/Maßnahme|Vorhaben|Projekt|Variante|Kosten|Förder|Vergabe|Auftrag|Instandhaltung|Ertüchtigung|Verkehrsführung|Fahrradstraße|Qualitätsstandard|Verbreiterung|Neugestaltung|Überführung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Decke|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung|Herstellung|Errichtung|Planung|Bau\b|Brücke|Radweg|Gehweg|Kreisverkehr|Ortsdurchfahrt|Unterführung/i;
+export function streetSignalOf(title){const t=String(title||'');if(!ROAD_TITLE.test(t)||!STREET_WORK.test(t)||NOT_ROAD.test(t)||PROJECT_NOT.test(t)||SIG_NOT.test(t)||/Erinnerung|Litfaß|Holzkreuz|Baugenehmigung|Wohnanlage|Pflegeheim|Pflanzung|Spielplatz|Quartierssanierung|Geschwindigkeit|Tempo|Mobilfunk|Funkmast|e\.\s?V\.|Sondermittel|Knöterich|Neophyt|Schulneubau|Schulgebäude|Sanierungsgebiet|Zustand de[sr] (?:Gehweg|Straße)/i.test(t))return null;const a=firstOf(STREETS,t);return a?{value:a,step:projectStep(t)}:null;}
+const WATERS=[
+ ['Hochwasser und Starkregen',/Hochwasser|Starkregen|Deich|Retention|Rückhaltebecken|Regenrückhalt|Flutmulde|Gewässerausbau|Renaturierung/i],
+ ['Kläranlage',/Kläranlage|Klärwerk|Abwasserbehandlung|Faulturm|Belebungsbecken/i],
+ ['Kanal und Abwasser',/Kanal|Abwasser|Schmutzwasser|Mischwasser|Regenwasser|Entwässerung|Pumpwerk|Pumpstation|Regenüberlauf/i],
+ ['Trinkwasser',/Trinkwasser|Wasserversorgung|Wasserleitung|Hochbehälter|Wasserwerk|Tiefbrunnen|Brunnenanlage|Wasserturm|Löschwasser/i],
+];
+const WATER_WORK=/Entschlammung|Rückhaltung|Eigenkontroll|Inspektion|Generalentwässerung|Einspeiseleitung|Neustrukturierung|Rückhaltebecken|Neubau|Erweiterung|Sanierung|Erneuerung|Ausbau|Bau\b|Errichtung|Planung|Konzept|Maßnahme|Ertüchtigung|Umbau|Vergabe|Herstellung|Studie|Machbarkeit|Förder|Verlegung|Instandsetzung|Modernisierung|Auftrag/i;
+export function waterSignalOf(title){const t=String(title||'');if(!WATER_WORK.test(t)&&!/Hochwasserschutz|Starkregen/i.test(t)||PROJECT_NOT.test(t.replace(/Sachstandsbericht/g,''))||SIG_NOT.test(t)||/Sondervermögen|Gewässerunterhaltung|Wasserverband.*Wahl|Energie|Strom|Vergleich|Bekanntgaben|Laufendes|Mäharbeit|Böschung|Straßenunterhaltung|Wirtschaftsprüf|Transporter|Mietangelegenheit|Brunnenstraße|Abbruch|Wasserschaden|Flst|Fl\.?\s?-?Nr|Pflanz|Zwischenbericht|Jahresergebnis/i.test(t))return null;const a=firstOf(WATERS,t);return a?{value:a,step:projectStep(t)}:null;}
+const BROADBANDS=[
+ ['Mobilfunk',/Mobilfunk|Funkmast|Sendemast|\b5G\b|Funkturm/i],
+ ['Glasfaser und Breitband',/Glasfaser|Breitband|Gigabit|\bFTT[HB]\b|Leerrohr/i],
+];
+export function broadbandSignalOf(title){const t=String(title||'');if(/Finanzprüfung|Müll|Gebühr|Satzung|Wirtschaftsplan|Jahresabschluss|Beteiligungsbericht|Wärme|Bauantrag/i.test(t)||SIG_NOT.test(t))return null;const a=firstOf(BROADBANDS,t);return a?{value:a,step:projectStep(t)}:null;}
+/* 8 Pflege und Gesundheit */
+const CARE=[
+ ['Pflegeheim',/Pflegeheim|Pflegeeinrichtung|Pflegezentrum|Altenheim|Altenpflegeheim|Seniorenheim|Seniorenzentrum|Pflege-?WG|(?<!Kinder)(?<!Kinder-)Tagespflege|Kurzzeitpflege/i],
+ ['Seniorenwohnen',/Seniorenwohn|Betreutes Wohnen|betreuten Wohnen|Servicewohnen|altersgerechte|barrierefreie Wohnungen/i],
+ ['Ärztehaus und MVZ',/Ärztehaus|Ärztezentrum|\bMVZ\b|Medizinisches Versorgungszentrum|Gesundheitszentrum|Arztpraxis|Hausarzt|Landarzt|Primärversorgungszentrum|Apotheke/i],
+ ['Krankenhaus',/Krankenhaus|Klinikum|(?<![\p{L}])Klinik(?!weg)|Hospital|Notaufnahme/iu],
+];
+export function careOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Grünpflege|Landschaftspflege|Pflegevertrag|Pflegearbeiten|Baumpflege|Denkmalpflege|Pflegeplan|Biotoppflege|Kindertages|Großtagespflege|Kita|Elternbeitr|Wahl|Bericht|Berichterstattung|Teddy|Rettungswache|Mietvertrag|Entlassmanagement|Delir|Fußweg|\be\.\s?V\.|Bus|Parken|Aufsichtsrat|Geschäftsführung|Catering|Stromliefer|Essen|Regionalplan|Tagespflegestelle|Hitzeschutz/i.test(t))return null;
+ // Signal für Bau und Betrieb: nur mit Vorhaben, Planung oder Standortfrage
+ if(!/Neubau|Errichtung|Erweiterung|Umbau|Ausbau|Sanierung|Bebauungsplan|Bauleitplan|Ansiedlung|Versorgungszentrum|Ärztehaus|MVZ|Standort|Nachfolge|Übernahme|Schließung|Bau\b|Gründung|Projekt|Konzept|Besichtigung|Grundstück/i.test(t))return null;
+ return firstOf(CARE,t);}
+/* 9 Einzelhandel und Nahversorgung */
+const RETAIL=[
+ ['Supermarkt und Discounter',/Supermarkt|Lebensmittel(?:markt|discounter|vollsortimenter|einzelhandel)|Discounter|Vollsortimenter|Nahversorg|\b(?:Aldi|Lidl|Netto|Penny|Edeka|EDEKA|Rewe|REWE|Kaufland|Norma|Tegut|Globus)\b|Dorfladen/],
+ ['Drogerie',/Drogerie|\bdm\b|Rossmann|Müller-Drogerie/],
+ ['Fachmarkt',/Fachmarkt|Baumarkt|Gartenmarkt|Gartencenter|Möbelmarkt|Möbelhaus|Fachmarktzentrum|Elektronikmarkt|Sonderposten|Einkaufszentrum|Factory Outlet/i],
+ ['Innenstadt und Leerstand',/(?<!Wohnungs)Leerstand(?!simmobilie)|Innenstadt[^]{0,60}(?:Handel|Geschäft|Belebung|Leerstand|Laden|Einkauf)|(?:Handel|Geschäft|Belebung|Laden|Einkauf)[^]{0,60}Innenstadt|Einzelhandelskonzept|Zentrenkonzept|Einzelhandels- und Zentren|Ladenlokal|Citymanagement|Zentrale Versorgungsbereich|Einzelhandel/i],
+];
+export function retailOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Wochenmarkt|Weihnachtsmarkt|Flohmarkt|Marktplatz|Bauernmarkt|Ladenschluss|verkaufsoffen|Sonntagsöffnung|Parken|Parkplätze|Lebensmittelausgabe|Statik/i.test(t))return null;return firstOf(RETAIL,t);}
+
+/* Ausschreibungen und Vergaben (plenara.X Signale, Kategorie 1, docs/produkt/plenara-x-signale.md): öffentliche Aufträge der Kommune,
+   nur aus dem Titel. Je Vorgang genau ein Filter in fester Reihenfolge (IT vor Planung vor Fahrzeugen vor Wasser vor Tiefbau vor
+   Hochbau vor Ausstattung), dazu der Stand: Ausschreibung (Einleitung, Ermächtigung), Nachtrag oder Vergabe. Nicht: Bauplätze,
+   Grundstücke, Pacht, Konzessionen, Marktstände, Fördermittel, Haushalt, Anfragen, Wettbewerbe, Personal. */
+const TENDER=/Vergabe|vergeben|Auftragsvergabe|Auftragserteilung|Auftrag (?:an|für|zur|über)|Beauftragung|\bbeauftragt\b|Ausschreibung|ausgeschrieben|Beschaffung|Anschaffung|Ersatzbeschaffung|Nachtragsangebot|Nachtragsauftrag|Bauleistung|Gewerk|\bLos\s?\d|Submission|Zuschlag\b(?!e)|Zuschlagserteilung|Rahmenvertrag/i;
+const NOT_TENDER=/überplanmäßig|Förderprogramm|Straßen- und Wegenamen|Straßenname|Vergaberecht|Zuständigkeit|Niederschrift|Beschlussfassung zu Vorlagen|Auftrag an das Amt|Vergabeausschuss|Ausschuss für|Antrag (?:der|des|von)|Fraktion|Satzung|Richtlinie|Mittelvergabe|Mitteln?\b|Konzeptvergabe|Bieterverfahren|landwirtschaftliche[rn]? Fläche|Haushaltsmittel|Schutzauftrag|Prüfauftrag|Kriterien|Namensrecht|Vorstellung|Bauplatz|Baugrundst|Grundstück|Pacht|Konzession|Zelt|Weihnachtsmarkt|Markt(?:stand|platz)|Kirmes|Kilwi|Förderantr|Fördermittel|Zuwendung|Zuschuss|Haushalt|Anfrage|Nachfrage|Wettbewerb|Auslobung|\bStelle\b|Stellenbesetzung|Personal|Ehrenamt|Beschaffungsinitiative|Kulturfläche|Wohnung|Kita-Platz|Kitaplatz|Platzvergabe|Vergabekriterien|Vergaberichtlinie|Vergabeordnung|Vergabestelle|Dienstanweisung|Bericht|Sachstand|Information/i;
+export const TENDER_KINDS=[
+ ['IT und Glasfaser',/\bIT\b|IT-|EDV|Software|Dokumenten-?Management|\bDMS\b|Tafelsystem|digitale Tafel|Hardware|\bServer|Glasfaser|Breitband|WLAN|Digital|Lizenz|Endgerät|Tablet|Laptop|Notebook|Netzwerk|Telefonanlage|Identity|Rechenzentrum/i],
+ ['Planungsleistungen',/Planungsleistung|Planerleistung|Beauftragung (?:des |eines )?Planer|Planungsbüro|Palnungsbüro|Vermessung|Ingenieurleistung|Ingenieurbüro|Planungsbüro|Architekt|HOAI|Leistungsphase|Objektplanung|Fachplanung|Tragwerksplanung|Gutachten|Bodenuntersuchung|Baugrund|Voruntersuchung|Projektsteuerung|Planung|Machbarkeitsstudie|Vermessung/i],
+ ['Fahrzeuge und Ausstattung',/Fahrzeug(?!halle)|Schneepflug|Spielgerät|Sitzbänk|Sitzbank|Defibrillator|Sirene|Fahrgestell|Löschfahrzeug|Gerätewagen|\bHLF\b|\bTLF\b|\bLF\s?\d|\bMLF\b|\bGW-|Drehleiter|Dienstwagen|Transporter|Geräteträger|Traktor|Schlepper|Unimog|Bagger|Radlader|Kehrmaschine|Kommunalfahrzeug|Bus\b|Mähroboter|Rasenmäher/i],
+ ['Wasser und Abwasser',/Flutmulde|Starkregen|Grabenräumung|Kanal(?!isation der Gemeindehalle)|Abwasser|Kläranlage|Klärwerk|Trinkwasser|Wasserleitung|Wasserversorgung|Hochbehälter|Wasserturm|Regenrückhalt|Regenüberlauf|Pumpwerk|Pumpstation|Brauchwasser|Hochwasser|(?<!Dach)[Ee]ntwässerung|Brunnen|Wasserwerk/i],
+ ['Tiefbau und Straße',/Straßenbau|Wendehammer|Straßenunterhalt|\b[LKB]\s?\d{2,4}\b|Landstraße|Kreisstraße|Stützmauer|Brücke|Ingenieurbauwerk|(?:Sanierung|Ausbau|Erneuerung|Instandsetzung)\s+(?:von\s+|der\s+)?Straßen\b|Gemeindeverbindungsstraße|Ortsdurchfahrt|(?:Ausbau|Erneuerung|Sanierung|Neubau|Umbau|Herstellung|Instandsetzung)\s+(?:der\s+|des\s+|von\s+)?[\p{L}-]*(?:straße|strasse|weg|wege|gasse|allee)\b(?!\s*\d)|Gehweg|Radweg|Fahrradstraße|Wirtschaftsweg|Feldweg|Brücke(?!nau)|Tiefbau|Fahrbahn|Trockenmauer|Asphalt|Deckschicht|Bushaltestelle|Kreisverkehr|Parkplatz|Erdarbeiten|Straßenbeleuchtung|Erschließung|Pflaster|Winterdienst|Lärmschutz/iu],
+ ['Sonstige Leistungen',/Baumkontrolle|Baumpflege|Grünpflege|Gutachten für den|Reinigung|Winterdienst|Sicherheitsdienst|Abschlepp|Essenslieferung|Prüfung der|Prüfung des Jahresabschlusses|Holzernte|Gasliefer|Stromliefer/i],
+ ['Hochbau',/Hochbau|Gebäudeautomation|Garage|Elektroarbeiten|Neubau|Umbau|Anbau|Sanierung|Erweiterung|Dach|Fassade|Fenster|Tischler|Schreiner|Trockenbau|Sanitär|Elektro|Heizung|Lüftung|Gewerk|Rohbau|Maler|Estrich|Fliesen|Bodenbelag|Aufzug|Brandschutz|Gerüst|Abbruch|Bauleistung|Baumaßnahme|Bauarbeiten/i],
+ ['Fahrzeuge und Ausstattung',/Ausstattung|Möbel|Mobiliar|Beschaffung|Anschaffung|Kleidung|Aggregat|Geräte(?!haus)|Spielgerät|Container|Lieferung/i],
+];
+/** {value: Filter oder 'Sonstige Leistungen', step: 'Ausschreibung'|'Vergabe'|'Nachtrag'} oder null */
+export function tenderOf(title){
+ // „Nachtrag: 02.06.2026 Nummer 1 …“ ist ein nachgereichter Tagesordnungspunkt, kein Nachtragsauftrag
+ const t=String(title||'').replace(/^\s*Nachtrag:?\s*\d{1,2}\.\d{1,2}\.\d{2,4}\s*(?:Nummer\s*\d+\s*)?/i,'');if(!TENDER.test(t)||NOT_TENDER.test(t))return null;
+ const kind=TENDER_KINDS.find(([,re])=>re.test(t))?.[0]||'Sonstige Leistungen';
+ const step=/Nachtragsangebot|Nachtragsauftrag|Nachtragsvereinbarung|Nachtrag(?:e?s)?\b(?!:)|Auftragserweiterung/i.test(t)?'Nachtrag':/Abschluss des Vergabeverfahrens|Zuschlag/i.test(t)?'Vergabe':/Einleitung|Ausschreibung|ausgeschrieben|Ermächtigung|Vergabeverfahren|Teilnahme an|Bündelausschreibung|Freigabe/i.test(t)?'Ausschreibung':'Vergabe';
+ return {value:kind,step};
+}
+/* Art der Wohnbebauung eines Plangebiets (Bauen, Bauleitplanung): welche Hausformen entstehen sollen, aus Titel, Vorlage und
+   Begründung. Nur Sätze über die Planung („vorgesehen“, „geplant“, „zulässig“, „ermöglicht“, „Festsetzung“, „Bebauung mit“), nicht
+   Bestand oder Umgebung („angrenzende“, „vorhandene“, „bestehende“). Mehrere Formen möglich. */
+export const HOUSE_TYPES=[
+ ['Einfamilienhäuser',/Einfamilienh|Einzelh(?:aus|äuser)|freistehende[nr]? (?:Wohn)?h(?:aus|äuser)|\bEFH\b|Eigenheim/i],
+ ['Doppel- und Reihenhäuser',/Doppelh(?:aus|äuser|aushälft)|\bDHH?\b|Reihenh(?:aus|äuser)|Hausgruppe|Kettenh(?:aus|äuser)|Stadthäuser|Townhouse/i],
+ ['Mehrfamilienhäuser',/Mehrfamilienh|Geschosswohnungsbau|Geschosswohnung|Mehrparteienh|Wohnblock|\bMFH\b|Stadtvill/i],
+ ['Geförderter Wohnungsbau',/geförderte[nr]? Wohn|sozialen? Wohnungsbau|mietpreisgebunden|Sozialwohnung/i],
+ ['Seniorenwohnen',/Seniorenwohn|betreutes Wohnen|altersgerecht|barrierefreie[ns]? Wohnungen|Pflegewohn/i],
+];
+const HOUSE_PLAN=/vorgesehen|geplant|plant|zulässig|zugelassen|ermöglich|Festsetzung|festgesetzt|Bebauung mit|bebaut|entstehen|errichte|Errichtung|Bau von|Neubau|realisier|Bauplätze für|Baugrundstücke für|Grundstücke für|Ziel/i;
+const HOUSE_NOT=/angrenzend|vorhandene|bestehende|Bestand|umliegend|Umgebung|benachbart|begrenzt|(?:nord|süd)?(?:öst|west)lich|nördlich|südlich|ehemalig|abgerissen|Abriss|realisiert|entstanden|entstand|errichtet worden|bisher|Ferienwohn|Camping|Caravan|Übernachtung|touris|Wohnungseigentum/i;
+// Einzelbauvorhaben (Bauantrag, Voranfrage, Abweichung, Befreiung) sind kein Baugebiet
+const HOUSE_SINGLE=/Bauantrag|Bauvoranfrage|Voranfrage|Baugenehmigung|Antrag auf (?:isolierte )?Abweichung|isolierte Abweichung|Befreiung|Baugesuch|Anfrage zur|Teilung eines|Nutzungsänderung|Vorbescheid|Fl\.-?\s?Nr/i;
+// „Einfamilien- und Doppelhäuser“: abgekürzte Wortteile ausschreiben
+const houseExpand=x=>String(x||'').replace(/(Einfamilien|Doppel|Reihen|Mehrfamilien|Zweifamilien)-\s*(?=(?:und|oder|bzw\.|sowie|,)\s)/g,'$1häuser ');
+export function houseTypesOf(title,text){
+ const out=new Set(),t=houseExpand(title);text=houseExpand(text);
+ if(HOUSE_SINGLE.test(t)||privateBuild(title))return [];
+ for(const [name,re] of HOUSE_TYPES)if(re.test(t))out.add(name);
+ for(const s of String(text||'').replace(/\s+/g,' ').split(SENTENCE)){
+  if(s.length>700)continue;
+  // Planungswort und Ausschlüsse nur im Umfeld des Treffers (Inhaltsverzeichnisse, Aufzählungen ohne Satzzeichen)
+  for(const [name,re] of HOUSE_TYPES){const m=re.exec(s);if(!m)continue;const w=s.slice(Math.max(0,m.index-120),m.index+m[0].length+80);
+   if(!HOUSE_PLAN.test(w)||HOUSE_NOT.test(s.slice(Math.max(0,m.index-70),m.index+m[0].length+30)))continue;out.add(name);}
+ }
+ return [...out];
+}
+/* Fläche des Plangebiets in ha (Bauen, Bauleitplanung), aus Vorlage oder Begründung: nur Sätze über das Plangebiet oder den
+   Geltungsbereich mit „umfasst“, „Größe“ oder „Fläche von“; die erste Zahl in ha (oder m², umgerechnet). Nicht Gemarkungs-, Schutz-,
+   Potenzial- oder Teilflächen („davon überbaubar“), nicht Flächennutzungspläne mit mehreren Änderungsbereichen. */
+const AREA_SENT=/(?:Plangebiet|Geltungsbereich|Planbereich|Plangeltungsbereich)\w*[^.;]{0,80}?(?:umfasst|Größe|groß|Fläche von|Gesamtfläche|beträgt|ca\.|rund|etwa)/i;
+const AREA_NUM=/(?<![\d.,])(\d{1,3}(?:\.\d{3})*(?:,\d{1,4})?|\d+(?:,\d{1,4})?)\s*(ha|Hektar|m²|qm|m2)(?![\p{L}\d])/u;
+const NOT_AREA=/Gemarkung(?:s)?fläche|Gemeindegebiet|Schutzgebiet|Vogelschutz|FFH|Potential|Potenzial|davon|überbaubar|versiegel|Ausgleich|Kompensation|Teilfläche|Änderungsbereich|Bereich\s+\d|Vorbehaltsgebiet|Vorranggebiet|Regionalplan|insgesamt\s+\d+\s+Bereiche/i;
+export function planAreaOf(text){
+ for(const s of String(text||'').replace(/\s+/g,' ').split(SENTENCE)){
+  if(s.length>600)continue;const a=AREA_SENT.exec(s);if(!a)continue;
+  const rest=s.slice(a.index,a.index+a[0].length+80);if(NOT_AREA.test(rest))continue;
+  const m=AREA_NUM.exec(s.slice(a.index));if(!m||m.index>a[0].length+60)continue;
+  let v=Number(m[1].replace(/\./g,'').replace(',','.'));if(/m|qm/.test(m[2]))v/=10000;
+  if(v>=0.05&&v<=1500)return Math.round(v*100)/100;
+ }
+ return null;
+}
 /* Kita: Beiträge nur in Sätzen mit Kita-Bezug (sonst Straßen-, Abwasser- oder Vereinsbeiträge) */
 const KITA=/Kindertages|Kita|KiTa|Kindergarten|Krippe|Kinderkrippe|Tagespflege|Kinderbetreuung|U3|Ü3|Hort\b/;
 const FEE=/Elternbeitr|[Kk]ostenfreie[nr]? (?:Kita|Kindergarten)|Kindergartengebühr|Krippengebühr|Hortgebühr|Kindergartenbeitr|Elternentgelt|Kita-Gebühr|Kitagebühr|Kita-Beitr|Kitabeitr|Betreuungsgebühr|Benutzungsgebühr|Gebührensatzung|Beitragssatzung|Beitragstabelle|Beitragsstaffel|Kostenbeitr|Beitragsfreiheit|beitragsfrei|gebührenfrei/i;
@@ -289,10 +331,12 @@ const FEE_RULES=/[Ss]atzung|Gebührenordnung|Beitragsordnung|Entgeltordnung|Beit
 /** Entscheidung zu Kita-Elternbeiträgen: {direction, euro} oder null. direction: Erhöhung, Senkung, Beitragsfreiheit, Verpflegung, Neufassung. */
 export function kitaFeeOf(title,text){
  const t=String(title||''),sents=[t,...String(text||'').replace(/\s+/g,' ').split(SENTENCE).slice(0,400)].filter(x=>FEE.test(x)&&(KITA.test(x)||KITA.test(t)));
+ // Essensgeld der Kita (Preis je Mahlzeit oder Monat für Verpflegung) ist kein Elternbeitrag: Art „Verpflegung“, ohne Betrag
+ if(KITA.test(t)&&MEAL.test(t)&&/Essensgeld|Eigenanteil|Eigenbeteiligung|Entgelt|Gebühr|Beitr|Kosten|Preis|Erhöhung|Anpassung|Satzung/i.test(t)&&!/Elternbeitr|Betreuungs|Benutzungs|Mittel\b|Vergabe|Ausschreibung|Caterer|Anfrage|Antrag (der|des)/i.test(t)&&!COLLECTIVE.test(t))return {direction:'Verpflegung',euro:''};
  if(!sents.length||COLLECTIVE.test(t))return null;
  // Nur Vorgänge über Kita-Gebühren selbst: Kita und Gebühr (oder Satzung) im Titel; nicht Mittelbereitstellung, Wirtschaftspläne
  // oder Sammelpunkte, deren Text nebenbei Elternbeiträge nennt (Messung 14.10.2026: Digitalisierung, Umsatzsteuer, Bibliothek)
- if(!(KITA.test(t)||/Kindertageseinr|Kinderbetreuungseinr|Tageseinrichtung|Elternbeitr|Kinderhaus/i.test(t))||!(FEE.test(t)||FEE_RULES.test(t)||/[Bb]eitr[aä]g|Gebühr|Entgelt/.test(t))||/Mittel\b|überplanmäßig|außerplanmäßig|Wirtschaftsplan|Bericht|Betriebskosten|Förderung der Kindertagespflege|Geldleistung|Rahmenvereinbarung|^(?:Anfrage|Bekanntgabe)\b/i.test(t))return null;
+ if(!(KITA.test(t)||/Kindertageseinr|Kinderbetreuungseinr|Tageseinrichtung|Elternbeitr|Kinderhaus/i.test(t))||!(FEE.test(t)||FEE_RULES.test(t)||/[Bb]eitr[aä]g|Gebühr|Entgelt|Mittagsverpflegung|Essen/.test(t))||/Mittel\b|überplanmäßig|außerplanmäßig|Wirtschaftsplan|Bericht|Betriebskosten|Förderung der Kindertagespflege|Geldleistung|Rahmenvereinbarung|^(?:Anfrage|Bekanntgabe)\b/i.test(t))return null;
  // Schulkind- und Ganztagsbetreuung ist keine Kita (eigenes Unterthema)
  if(/Schul|Schüler|OGS|Ganztag|Hort\b|Kernzeit/i.test(t)&&!KITA_PLACES.test(t.replace(/Hort\b/,'')))return null;
  const all=sents.join(' ');
@@ -310,6 +354,23 @@ export function kitaFeeOf(title,text){
  const eur=all.match(/(?<![\d.,])(\d{1,4}(?:,\d{2})?)\s*(?:€|Euro|EUR)/);
  return {direction,euro:eur?eur[1]:''};
 }
+/* Abfallgebühren (Umwelt, Abfall): Richtung der Entscheidung über die Gebühren der Gemeinde, aus Titel, sonst Beschlussvorschlag:
+   Erhöhung, Senkung, unverändert, sonst festgesetzt (Gebühren für ein Jahr oder neue Satzung ohne Richtung). Betrag nur, wenn
+   ausdrücklich die Jahresgebühr eines 120-l-Restabfallbehälters genannt ist. Gebühren je Liter, Tonne, Leerung oder Person sind
+   nicht vergleichbar. Nicht: Anfragen, Anträge, Bürgereingaben, Deponie- und Kreisgebühren im Text, Sperrmüll allein. */
+const WASTE_TITLE=/(Abfall|Müll|Restabfall)[\p{L}-]{0,30}(gebühr|entgelt)|Abfall(?:wirtschafts|entsorgungs|beseitigungs)?(?:gebühren)?satzung|Müllabfuhrgebühr|Abfallgebühr/iu;
+const WASTE_UP=/Erhöhung|Anhebung|erhöht|angehoben|steigen|steigt|Steigerung/i,WASTE_DOWN=/\bSenkung|Absenkung|gesenkt|Reduzierung der Gebühr|reduziert|sinken|sinkt/i,WASTE_SAME=/unverändert|stabil|bleiben gleich|gleichbleibend|keine Erhöhung|Beibehaltung/i;
+/** {value, euro} oder null */
+export function wasteFeeOf(title,text){
+ const t=String(title||'');
+ if(!(/Abfall|Müll/i.test(t)&&/Gebühr|Entgelt|Tarif/i.test(t))||/Abschluss|Kostenrechnung|Aufhebung|Jahresabschluss|Überschuss|Unterdeckung/i.test(t)||/Anfrage|Beantwortung|Antrag (der|des)|Änderungsantrag|Fraktion|Bürgereingabe|Eingabe|Petition|Sperrmüll(?!.*Abfall)|Kreistag|Nachkalkulation|Betriebsabrechnung|Ergebnis/i.test(t))return null;
+ const dec=decision(text).split(SENTENCE).filter(x=>/Gebühr|Entgelt/i.test(x)&&!/Deponie|Kreis(?:abfall)?gebühr|Landkreis|Vorjahr|damals/i.test(x)).join(' ');
+ const pick=x=>WASTE_SAME.test(x)?'unverändert':WASTE_UP.test(x)&&!WASTE_DOWN.test(x)?'Erhöhung':WASTE_DOWN.test(x)&&!WASTE_UP.test(x)?'Senkung':null;
+ const value=pick(t)||pick(dec)||'festgesetzt';
+ const m=String(text||'').replace(/\s+/g,' ').match(/120\s*(?:l|Liter|-l|-Liter)[\s-]*(?:Rest(?:abfall|müll)\w*)[^.€]{0,40}?(?:jährlich|Jahresgebühr|pro Jahr|im Jahr)\s*(?:von\s*)?(\d{2,3},\d{2})\s*(?:€|Euro|EUR)/i);
+ const euro=m&&Number(m[1].replace(',','.'))>=30?m[1]:'';
+ return {value,euro};
+}
 /* Jahresergebnis eines Jahresabschlusses (Finanzen, Jahresabschluss und Prüfung): Überschuss oder Fehlbetrag mit Betrag, zuerst
    aus dem Beschlussvorschlag, sonst aus dem Text. Nur der Abschluss selbst, nicht Vorjahre, Plan- oder Prognosewerte, nicht
    Prüfaufträge, Prüfberichte ohne Feststellung oder Rechnungsprüfungsordnungen. */
@@ -318,10 +379,63 @@ const NOT_RESULT_TITLE=/Wirtschaftsprüf|Abschlussprüfer|Rechnungsprüfungsordn
 const RESULT_NUM=String.raw`(-\s?)?(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d{1,2})?)\s*(Mio\.?|Millionen|TEUR|TEuro|T\s?€|Tsd\.?\s*(?:€|EUR|Euro))?\s*(€|EUR|Euro)?`;
 const RESULT_RE=new RegExp(String.raw`\b(Jahresüberschuss\w*|Jahresfehlbetrag\w*|Gesamtüberschuss\w*|Gesamtfehlbetrag\w*|Jahresgewinn\w*|Jahresverlust\w*|Jahresergebnis\w*|Bilanzgewinn\w*|Bilanzverlust\w*|(?:mit einem|einen|ein) (?:Überschuss|Fehlbetrag|Gewinn|Verlust)|(?:Überschuss|Fehlbetrag|Defizit)\w* (?:des|im) ordentlichen Ergebnis\w*)\b[^.;]{0,40}?(?:in Höhe von|von|:|betr[aä]g\w*|mit|(?<![\d.,])(?=\s*(?:EUR|€)?\s*-?\s?\d)(?!\s*(?:19|20)\d\d\b))\s*(?:EUR|€)?\s*`+RESULT_NUM,'gi');
 const NOT_RESULT_SENT=/Vorjahr|Plan(?:ansatz|wert|ung)?\b|geplant|prognos|erwartet|voraussichtlich|Wirtschaftsplan|Haushaltsplan|Prognose|aus dem Jahr|Vortrag aus|Gewinnvortrag|Verlustvortrag|kumuliert|verbesser|verschlechter|Abweichung|gegenüber|im Vergleich/i;
+// Lange „Sätze“ (Kopf der Vorlage ohne Punkt bis in den Beschluss): Fenster um jedes Ergebniswort statt den Satz zu verwerfen
+const resultWindows=s=>s.length<=1500?[s]:[...s.matchAll(/Jahresüberschuss|Jahresfehlbetrag|Jahresergebnis|Jahresgewinn|Jahresverlust|Bilanzgewinn|Bilanzverlust/gi)].slice(0,10).map(m=>s.slice(Math.max(0,m.index-150),m.index+250));
+/* Haushalt aus der Haushaltssatzung (§ 1, Ergebnishaushalt): Gesamtbetrag der Aufwendungen und Kredite für Investitionen in €.
+   Nachtragssatzungen nennen „bisher, Änderung, neu“: dann der neue Betrag. Nur Satzungen der Kommune selbst, keine Ortsgemeinden
+   (ohne Einwohnerzahl nicht vergleichbar), Eigenbetriebe, Zweckverbände, Genehmigungen oder Anträge. */
+const BUDGET_TITLE=/Haushaltssatzung|Haushaltsplan|Nachtragshaushalt/i;
+const NOT_BUDGET_TITLE=/Ortsgemeinde|\bOG\b|Genehmigung|Beanstandung|Widerspruch|Eckpunkte|Antrag|Anfrage|Stellungnahme|Kreisumlage|Zweckverband|Sondervermögen|Eigenbetrieb|Wirtschaftsplan|Stiftung|Schulverband|Bericht|Haushaltssicherung|Vollzug|Ausführung|Sachstand|Fraktion|Teilbudget|Teilhaushalt|Teilplan/i;
+const BUDGET_NUM=String.raw`(-?\s?\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|-?\d{4,}(?:,\d{1,2})?)`;
+const AUFW_RE=new RegExp(String.raw`Gesamtbetrag der (?:ordentlichen )?Aufwendungen(?:\s+(?:auf|von|mit|in Höhe von))?\s*(?:EUR|Euro|€)?\s*`+BUDGET_NUM+String.raw`(?:\s*(?:EUR|Euro|€))?(?:\s+`+BUDGET_NUM+String.raw`(?:\s*(?:EUR|Euro|€))?(?:\s+`+BUDGET_NUM+'(?:\\s*(?:EUR|Euro|€))?)?)?','i');
+const CREDIT_RE=new RegExp(String.raw`Kredite für Investitionen(?: und Investitionsförderungsmaßnahmen| und Investitionsfördermaßnahmen)?[^.§]{0,80}?(?:auf|in Höhe von|mit|von)\s*`+BUDGET_NUM+String.raw`\s*(?:EUR|Euro|€)`,'i');
+const euroOf=x=>Number(String(x).replace(/\s/g,'').replace(/\./g,'').replace(',','.'));
+export function budgetOf(title,text){
+ const t=String(title||'');if(!BUDGET_TITLE.test(t)||NOT_BUDGET_TITLE.test(t))return null;
+ const src=String(text||'').replace(/\s+/g,' ').replace(/(\d)- (\d)/g,'$1$2').replace(/fest- ?gesetzt/g,'festgesetzt');
+ const out=[];
+ const a=src.match(AUFW_RE);
+ if(a){let v=euroOf(a[1]);
+  // Nachtrag: bisher + Änderung = neu
+  if(a[3]!==undefined){const b=euroOf(a[2]),c=euroOf(a[3]);if(Math.abs(v+b-c)<=2)v=c;}
+  // Nachtrag mit zwei Spalten „von bisher … auf …“: der neue Betrag
+  else if(a[2]!==undefined&&/Nachtrag/i.test(t)&&/bisher/i.test(src.slice(Math.max(0,a.index-400),a.index)))v=euroOf(a[2]);
+  if(v>=100000&&v<5e10)out.push({value:'Aufwendungen',euro:Math.round(v)});}
+ if(/Kredite für Investitionen[^.§]{0,80}?(?:werden )?nicht (?:veranschlagt|vorgesehen|festgesetzt)/i.test(src))out.push({value:'Investitionskredite',euro:0});
+ else{const c=src.match(CREDIT_RE);if(c&&!/Verpflichtungsermächtigung/i.test(src.slice(Math.max(0,c.index-80),c.index))){
+  // „ändert sich von bisher X auf Y“
+  const later=src.slice(c.index,c.index+c[0].length+80).match(new RegExp(String.raw`von bisher\s*`+BUDGET_NUM+String.raw`\s*(?:EUR|Euro|€)?\s*auf\s*`+BUDGET_NUM));
+  const v=euroOf(later?later[2]:c[1]);if(v>=0&&v<5e10)out.push({value:'Investitionskredite',euro:Math.round(v)});}}
+ return out.length?out:null;
+}
+
+/* Steuersätze der Zweitwohnungsteuer (% der Nettokaltmiete) und der Vergnügungssteuer auf Spielgeräte (% vom Spieleinsatz oder
+   vom Einspielergebnis), zuerst aus dem Beschlussvorschlag. „von X % auf Y %“: der neue Satz. Keine Vergleiche mit anderen
+   Kommunen, Empfehlungen, Spannen oder bisherigen Sätze; keine Anträge und Anfragen von Fraktionen. */
+const TAXRATE_NUM=String.raw`(\d{1,2}(?:,\d{1,2})?)\s*(?:%|v\.\s?H\.|vom Hundert|Prozent)`;
+const TAXRATE_RES=[new RegExp(String.raw`von\s*(?:bisher\s*)?`+TAXRATE_NUM+String.raw`\s*(?:netto|brutto)?\s*(?:auf|zu)\s*`+TAXRATE_NUM,'gi'),
+ new RegExp(String.raw`(?:Steuersatz|Steuer beträgt|Prozentsatz|Steuersätze?|beträgt die Steuer|Steuer wird)[^.;%]{0,80}?(?:auf|beträgt|in Höhe von|von|mit)\s*`+TAXRATE_NUM,'gi')];
+// Listen anderer Orte („Konstanz 35 %“), groß geschrieben geprüft
+const CITY_RATE=/\p{Lu}\p{Ll}+ \d{1,2}(?:,\d)?\s?%/u;
+const NOT_TAXRATE=/Beispiel|Mobilheim|Camping|Wohnwagen|Wohnmobil|Ortschaftsrat|erhebt|vergleichbar|Vergleich|Umfrage|Städte|Kommunen|Gemeinden|Landkreis|Kreis \p{Lu}|empfohlen|empfiehlt|mindestens|höchstens|zwischen|bis zu|derzeit|bisher(?!\s*\d)|aktuell|damals|früher|Durchschnitt|Mittel|z\.\s?B\.|beispielsweise|Variante|Alternativ/iu;
+function rateOf(title,text,{titleRe,lo,hi,base}){
+ const t=String(title||'');if(!titleRe.test(t)||/Anfrage|Antrag (der|des)|Fraktion|Bericht|Aufkommen|Erlass von|Stundung/i.test(t))return null;
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2').split(SENTENCE)){if(s.length>1200)continue;
+  for(const [i,re] of TAXRATE_RES.entries())for(const m of s.matchAll(re)){
+   const near=s.slice(Math.max(0,m.index-120),m.index+m[0].length+40);const before=i===0?s.slice(Math.max(0,m.index-120),m.index):near;if(NOT_TAXRATE.test(before)||CITY_RATE.test(before))continue;
+   const v=Number((i===0?m[2]:m[1]).replace(',','.'));if(v<lo||v>hi)continue;
+   return {v,base:base?base(near,v):'Steuersatz'};}}
+  return null;};
+ const r=pick(decision(text))??pick(text);return r&&{value:r.base,rate:String(r.v)};
+}
+export const secondHomeTaxOf=(title,text)=>rateOf(title,text,{titleRe:/Zweitwohnung/i,lo:3,hi:40});
+export const amusementTaxOf=(title,text)=>rateOf(title,text,{titleRe:/Vergnügungssteuer/i,lo:2,hi:40,
+ base:(near,v)=>/Einspielergebnis|Bruttokasse/i.test(near)?'vom Einspielergebnis':/Spieleinsatz|Einsatz/i.test(near)?'vom Spieleinsatz':v<=10?'vom Spieleinsatz':'vom Einspielergebnis'});
+
 export function annualResultOf(title,text){
  const t=String(title||'');if(!RESULT_TITLE.test(t)||NOT_RESULT_TITLE.test(t))return null;
  // „i.H.v.“ würde den Satz an der Abkürzung trennen
- const pick=src=>{let fallback=null;for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bi\.\s?H\.\s?v\./g,'in Höhe von').replace(/\s?\((?:[EF]\s?\d+|Zeile\s?\d+|Nr\.\s?\d+)\)/g,'').split(SENTENCE)){if(s.length>1500)continue;
+ const pick=src=>{let fallback=null;for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bi\.\s?H\.\s?v\./g,'in Höhe von').replace(/\s?\((?:[EF]\s?\d+|Zeile\s?\d+|Nr\.\s?\d+)\)/g,'').split(SENTENCE).flatMap(resultWindows)){
   for(const m of s.matchAll(RESULT_RE)){const unit=m[4]||'',cur=m[5]||'';if(!unit&&!cur)continue;
    // Tabellen über mehrere Jahre („2019 2020 2021 … Jahresergebnis 298.923,20 €“) und lose „ein Fehlbetrag“ ohne Abschluss
    if(/(?:(?:19|20)\d\d\s+){3}/.test(s.slice(Math.max(0,m.index-120),m.index)))continue;
@@ -342,38 +456,9 @@ export function annualResultOf(title,text){
 /* Parkgebühr je Stunde (Mobilität, Parken): ausdrücklich genannter Satz in € je Stunde (halbe Stunde verdoppelt), bei Änderungen
    der neue Wert („von 1,00 € auf 1,50 €“, „1,00 €/Stunde → 1,20 €/Stunde“). Nicht Erhöhungsbeträge („um 0,50 €“), Mittelwerte,
    Mindestgebühren der Park-App, Vergleiche mit anderen Städten, Bewohnerparken, Monats- und Tagestickets. */
-const PARK_TITLE=/Park(?:geb|raum|entgelt|schein|tarif|haus|platz|ticket|en\b)|Stellpl[aä]tz|Tiefgarage/i;
-const NOT_PARK_TITLE=/Bewohnerpark|Anwohnerpark|Betrug|Car-?Sharing|Fahrrad|Wohnmobil|Pacht|vermiet/i;
 // „1,20 EUR für eine Stunde“, „0,50 € je angefangene ½ Stunde“, „2 Euro pro Stunde“ (ganze Euro nur mit Euro/EUR ausgeschrieben)
-const PARK_RE=/(?<![\d.,])(\d{1,2},\d{2}(?=\s*(?:€|Euro|EUR))|\d(?=\s*(?:€|Euro|EUR)\s*(?:\/|pro|je|für\s+eine)\s*Stunde))\s*(?:€|Euro|EUR)\s*(?:\/|pro|je|für\s+eine)\s*(angefangene[n]?\s+)?(halbe\s+Stunde|½\s*Stunde|30\s*Min\w*|Stunde|Std\.?|h\b)|(?<![\d.,])(\d{1,2},\d{2})\s*(?:€|Euro|EUR)\s*(in\s+der\s+ersten\s+Stunde)/gi;
 // Umgekehrte Reihenfolge („je angefangene Stunde 1,00 €“, „für jede weitere 30 Minuten 0,50 €“, „bis 1 Stunde 1,00 €“);
 // zwei Beträge hintereinander sind Spalten „bisher | neu“, dann gilt der zweite
-const PARK_RE2=/(?:je|pro|für jede|(?:in|für) de[nr] erste[n]?|(?<![\d,.])1)\s+(?:weitere\s+|angefangene[n]?\s+)*(halbe\s+Stunde|30\s*Min\w*|Stunden?)\s*(?:kosten\s*)?:?\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR)(?:\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR))?/gi;
-const NOT_PARK_SENT=/\b(?:um|statt|bisher\w*|bislang|derzeit\w*|aktuell|bleibt bei|weiterhin|damit)\s*$|durchschnitt|im Mittel|mindestens|Vergleich|andere[nr]? (Städte|Kommunen)|Nachbar|Bewohner|Anwohner|Wohnmobil|Bus(se)?\b|Lkw|Fahrrad/i;
-export function parkFeeOf(title,text){
- const t=String(title||'');if(!PARK_TITLE.test(t)||NOT_PARK_TITLE.test(t))return null;
- const pick=src=>{let best=null;
-  for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){if(s.length>1500||/[Vv]ergleich|Unterschied|Differenz/.test(s))continue;
-   // Alte Sätze: Bescheide und Änderungen früherer Jahre, „das bisherige Gebührensystem“
-   if(/\b(?:19\d\d|20[01]\d|202[0-3])\b/.test(s)||/\b(?:bisherige|derzeitige|geltende|alte)\w*\s+(?:Gebühr|Tarif|Satz|Sätze)/i.test(s))continue;
-   // Tabellen mit vielen Sätzen ohne Zone oder Parkplatz sind meist Vergleiche mit Nachbarorten
-   if([...s.matchAll(PARK_RE)].length>=4&&!/Zone|Tarif|Parkpl|Parkhaus|Tiefgarage|Parkdeck|Bereich/.test(s))continue;
-   for(const m0 of s.matchAll(PARK_RE)){const m=m0[4]?[m0[0],m0[4],'',m0[5]]:m0;m.index=m0.index;const before=s.slice(Math.max(0,m.index-60),m.index),after=s.slice(m.index+m[0].length,m.index+m[0].length+40);
-    if(NOT_PARK_SENT.test(before)||/^\s*(?:→|->|auf\s+\d)/.test(after)&&!/^\s*auf\s*$/.test(before.slice(-5)))continue;
-    if(/^\s*(?:→|->)\s*\d/.test(after)||/\bvon\s*$/i.test(before)&&/^\s*auf\s*\d+,\d+\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)/i.test(after))continue;
-    const to=/\bvon\s*(?:derzeit\s*|bislang\s*|bisher\s*)?$/i.test(before)&&after.match(/^\s*auf\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR)/);
-    // Geltender Satz („Derzeit beträgt die Parkgebühr 2,00 € je Stunde“, Spalte „aktuell“) und Schätzungen („etwa 2 €“)
-    if(!to&&!/\bauf\s*$/i.test(before)&&(/\b(?:derzeit|zurzeit|aktuell|bisher|bislang)\b/i.test(s.slice(0,m.index))||/\b(?:etwa|ca\.|rund|circa)\s*$/i.test(before)))continue;
-    let v=Number((to?to[1]:m[1]).replace(',','.'));if(/halbe|½|30/i.test(m[3]))v*=2;if(!v||v>10)continue;
-    best=Math.max(best||0,v);}
-   // Aufzählung der geltenden Sätze („derzeit folgende Gebühren erhoben: … je weitere 30 Minuten 0,50 €“) ist der alte Stand
-   for(const m of s.matchAll(PARK_RE2)){if(NOT_PARK_SENT.test(s.slice(Math.max(0,m.index-60),m.index))||/\b(derzeit|bisher|bislang|aktuell)\b[^.]{0,80}(erhoben|gelten|betragen)/i.test(s.slice(0,m.index)))continue;
-    let v=Number((m[3]||m[2]).replace(',','.'));if(/halbe|30/i.test(m[1]))v*=2;if(v&&v<=10)best=Math.max(best||0,v);}
-   if(best!==null)return best;}
-  return best;};
- const v=pick(decision(text))??pick(text);if(v===null)return null;
- return {value:v<=1?'bis 1 € je Stunde':v<=2?'über 1 bis 2 € je Stunde':'über 2 € je Stunde',euro:v.toFixed(2)};
-}
 
 /* Leistung von Wind- und Solarvorhaben (Umwelt, Erneuerbare): ausdrücklich genannte installierte Leistung oder Nennleistung des
    Vorhabens in MW (kWp umgerechnet). Nicht Strommengen (MWh), Leistung je Anlage, Leistungsklassen, Ziele, Netzanfragen. */
@@ -393,6 +478,50 @@ export function eePowerOf(title,text){
  return null;
 }
 
+/* Straßenbau (Mobilität, Straßen): Art der Maßnahme aus dem Titel (Ausbau, Sanierung, Radweg, Gehweg, Brücke) und Kosten aus dem
+   Beschlussvorschlag („Vergabe … in Höhe von 412.300,00 € brutto“, „Kosten von rund 1,2 Mio. €“). Nicht Straßenreinigung,
+   -benennung, -beleuchtung allein, Beiträge, Widmung, verkehrsrechtliche Anordnungen, Winterdienst. */
+const ROAD_TITLE=/Straße|Strasse|Str\.|Weg\b|wege?s?\b|Gehweg|Radweg|Brücke(?!nau)|Kreuzung|Kreisverkehr|Ortsdurchfahrt|Fahrbahn/i;
+const ROAD_WORK=[
+ ['Radweg',/Radweg|Radverkehrsanlage|Fahrradstraße|Radschnellweg/i],
+ ['Gehweg',/Gehweg|Bürgersteig|Fußweg/i],
+ ['Brücke',/Brücke(?!nau)|Brücken(?!au)/i],
+ ['Sanierung',/Sanierung|Erneuerung|Instandsetzung|Deckenerneuerung|Deckensanierung|Fahrbahndecke|grundhaft/i],
+ ['Ausbau oder Neubau',/Ausbau|Neubau|Umbau|Herstellung|Erschließung|Umgestaltung|Kreisverkehr/i],
+];
+const NOT_ROAD=/Wasserversorgung|Versorgungsleitung|Leitung|Mehrfamilienh|Doppelh|Einfamilienh|Reihenh|Angelegenheiten|Denkmalschutz|(?:straße|str\.|weg)\s+\d|Feuerwehr|Schule|Kita|Kindergarten|Gebäude|Rathaus|Halle\b|Wohnhaus|Bauantrag|Bauvoranfrage|Baugesuch|Nutzungsänderung|Reinigung|Benennung|Umbenennung|Beleuchtung|Beitr[aä]g|Widmung|Einziehung|verkehrsrechtlich|Anordnung|Winterdienst|Parkplatz|Bebauungsplan|Satzung|Anfrage|Antrag (der|des)|Fraktion|Geschwindigkeit|Tempo|Halteverbot|Kanal|Wasserleitung|Breitband|Glasfaser/i;
+const ROAD_EUR=/(?:in Höhe von|Höhe von|Auftragssumme|Angebotssumme|Angebotspreis|Kosten(?:\s+von)?|Gesamtkosten|brutto|Betrag von|zum Preis von|i\.\s?H\.\s?v\.)[^.;€]{0,40}?(?<![\d.,])(\d{1,3}(?:\.\d{3})+(?:,\d{2})?|\d+(?:,\d{1,2})?)\s*(Mio\.?|Millionen)?\s*(?:€|Euro|EUR)/i;
+export function roadWorkOf(title,text){
+ const t=String(title||'');if(!ROAD_TITLE.test(t)||NOT_ROAD.test(t))return null;
+ const w=ROAD_WORK.find(([,re])=>re.test(t));if(!w)return null;
+ const m=ROAD_EUR.exec(decision(text));let euro='';
+ if(m){let v=Number(m[1].replace(/\./g,'').replace(',','.'));if(m[2])v*=1e6;if(v>=5000&&v<=2e8)euro=String(Math.round(v));}
+ return {value:w[0],euro};
+}
+/* Vorhaben aus dem Titel (Mobilität, Digitales, Energie): ob eine Gemeinde über ein bestimmtes Angebot berät. Nur der Titel, nicht der
+   Text (dort sind solche Angebote oft nur erwähnt). Wie weit das Vorhaben ist, zeigt „Was geschieht“ (shared/stage.mjs). */
+export const PROJECTS=[
+ ['Bürgerbus oder Rufbus',/Bürger-?\s?bus|Rufbus|Anrufbus|Anruf-?\s?Sammel-?\s?Taxi|\bAST\b|On-?Demand-?(?:Verkehr|Shuttle|Angebot)|Bedarfsverkehr/i],
+ ['Carsharing',/Car-?\s?sharing|Dorfauto|E-?Auto-?Teilen|Autoteilen/i],
+ ['Öffentliches WLAN',/WLAN|W-LAN|Wi-?Fi|Freifunk|Internet-?Hotspot|WLAN-?Hotspot/i],
+ ['Ladesäulen',/(?<!Bike[- ]?|Fahrrad[- ]?|Rad[- ]?)(?:Ladesäule|Ladeinfrastruktur|Ladestation|Ladepunkt|Schnellladepark|E-Ladesäule)/i],
+ ['Mitfahrbank',/Mitfahrbank|Mitfahrbänke|Mitfahrerbank|Mitfahrpunkt/i],
+ ['Bike- oder Lastenradverleih',/Lastenrad-?\s?verleih|Bike-?\s?Sharing|Fahrradverleih|Leihrad|Leihfahrr/i],
+];
+export function projectsOf(title){const t=String(title||'');return PROJECTS.filter(([,re])=>re.test(t)).map(([name])=>name);}
+/* Zahl der Windenergieanlagen eines Vorhabens (Umwelt, Energie): „acht neue Windenergieanlagen“, „3 WEA“, in Sätzen über die
+   Errichtung oder Planung. Nicht Bestand, Rückbau, Anlagen anderer Orte, Kreise oder Länder, nicht Abstände („3 H“). */
+const WORDNUM={eine:1,einer:1,zwei:2,drei:3,vier:4,fünf:5,sechs:6,sieben:7,acht:8,neun:9,zehn:10,elf:11,zwölf:12};
+const WIND_RE=/(?<![\d.,])(\d{1,2}|eine[r]?|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf)\s+(?:neue[n]?\s+|weitere[n]?\s+|moderne[n]?\s+|zusätzliche[n]?\s+)?(?:Windenergieanlage|Windkraftanlage|WEA\b|Windräder|Windrad|Windturbine)/gi;
+const WIND_PLAN=/errichte|Errichtung|geplant|plant|vorgesehen|entstehen|Bau\b|bauen|Neubau|beantragt|Antrag|Genehmigung|Vorhaben|Repowering|ersetzt|realisier|Standort/i;
+const NOT_WIND=/genehmigt|in Betrieb|auf\s+(?:dem\s+)?\S*\s*Gebiet|Gemeindegebiet|Stadtgebiet|Planungsstadi|unterschiedlichen Planung|\d+\/\d+|maximal|höchstens|bestehende|vorhandene|bereits\s+(?:in Betrieb|errichtet|vorhanden)|Rückbau|abgebaut|zurückgebaut|Landkreis|Kreis\b|Bundesland|Deutschland|bundesweit|Region\b|Nachbar|insgesamt\s+(?:im|in)|Altanlagen|alte[n]?\s/i;
+export function windCountOf(title,text){
+ const t=String(title||'');if(!/Wind/i.test(t)||/Bericht|Sachstand|Anfrage|Studie|Konzept|Potenzial|Potential|Regionalplan|Raumordnung|Teilfortschreibung|Kleinwind|Aufhebung|Gesellschaft|Beteiligung von Bürgern|finanzielle Beteiligung|§\s?6\s*EEG|Flächennutzungsplan|Vorrangfläche|Standorte für/i.test(t))return null;
+ for(const s of [t,...String(text||'').replace(/\s+/g,' ').split(SENTENCE)]){if(s.length>800||!WIND_PLAN.test(s)&&s!==t)continue;
+  for(const m of s.matchAll(WIND_RE)){if(NOT_WIND.test(s.slice(Math.max(0,m.index-80),m.index+m[0].length+40)))continue;
+   const v=WORDNUM[m[1].toLowerCase()]??Number(m[1]);if(v>=1&&v<=60)return v;}}
+ return null;
+}
 /* Preis für Gewerbegrundstücke (Wirtschaft, Gewerbeflächen): Kauf- oder Verkaufspreis in € je m², den die Kommune festsetzt,
    verlangt oder zahlt, zuerst aus dem Beschlussvorschlag. Nicht Bodenrichtwerte, Rückkaufpreise, Erschließungskosten,
    Spannen, Vergleichspreise anderer Orte, frühere Preise. */
@@ -436,6 +565,8 @@ const DOG_RES=[
  // von X auf Y … Ersthund / Ersthund … von X auf Y
  new RegExp(String.raw`von\s+(?:derzeit\s+|bisher\s+|aktuell\s+)?`+DOG_AMT+String.raw`(?:\s*\/\s*Jahr)?\s+auf\s+(?:neu\s+)?`+DOG_AMT+String.raw`(?:\s*(?:pro|\/)\s*Jahr)?\s*(?:für\s+)?(?:den\s+)?`+DOG_FIRST,'gi'),
  new RegExp(DOG_FIRST+String.raw`[^.;\d]{0,60}?von\s+(?:derzeit\s+|bisher\s+|aktuell\s+)?`+DOG_AMT+String.raw`(?:\s*\/\s*Jahr)?\s+auf\s+(?:neu\s+|jetzt\s+)?`+DOG_AMT,'gi'),
+ // „Erhöhung des Steuersatzes von 70,00 € auf 90,00 €“ (ohne Ersthund; nicht, wenn der Satz weitere Hunde nennt, DOG_ONE)
+ new RegExp(String.raw`(?:Steuersatz|Steuersatzes|Hundesteuer|Steuer)[^.;\d]{0,40}?von\s+(?:derzeit\s+|bisher\s+)?`+DOG_AMT+String.raw`\s+auf\s+`+DOG_AMT,'gi'),
  // Tabelle „alt neu“: „Ersthund 72,00 € 108,00 €“ (nur mit „alt … neu“ davor, DOG_TABLE); „bisher 75,00 € ab 2027 83,00 €“;
  // „die Zahl „96,00“ durch die Zahl „120,00““ (HU3, 14.10.2026)
  new RegExp(DOG_FIRST+String.raw`\s*`+DOG_AMT+String.raw`\s*`+DOG_AMT,'gi'),
@@ -447,16 +578,20 @@ const DOG_RES=[
  new RegExp(DOG_FIRST+String.raw`[^.;\d]{0,40}?`+DOG_AMT,'gi'),
 ];
 // Alte Sätze nur bei bloßen Beträgen ausschließen; „von derzeit X auf Y“ nennt den neuen
+const DOG_ONE=/zweite|weitere|jeden weiteren|2\.\s*Hund|dritte|Zweithund/i;
 const DOG_TABLE=/\balt\b.{0,80}\bneu\b|bisher.{0,60}\bneu\b|Satzung alt/i;
 const DOG_OLD=/\baktuell|derzeit|\bbisher|damals|wurde\b|seitdem|unverändert/i;
-const NOT_DOG=/zwischen|damals|zuletzt|letztmal|erfolgte|So beträgt|beträgt (?:die Hundesteuer )?in \p{Lu}|\bIn \p{Lu}[\p{L}-]+ beträgt|gefährlich|Kampfhund|ermäßig|Ermäßigung|Rasse|Listenhund|Aufkommen|Mehreinnahm|Mehrertr|erhöht\s+um|um\s*$|Vergleich|Kommunen|Nachbar|höchsten|Durchschnitt|Landkreis|gegenwärtige|bleibt/iu;
+const NOT_DOG=/bestimmter Rassen|Kosten\s*(?:\/|je|pro)\s*Hund|zwischen|damals|zuletzt|letztmal|erfolgte|So beträgt|beträgt (?:die Hundesteuer )?in \p{Lu}|\bIn \p{Lu}[\p{L}-]+ beträgt|gefährlich|Kampfhund|ermäßig|Ermäßigung|Rasse|Listenhund|Aufkommen|Mehreinnahm|Mehrertr|erhöht\s+um|um\s*$|Vergleich|Kommunen|Nachbar|höchsten|Durchschnitt|Landkreis|gegenwärtige|bleibt/iu;
 export function dogTaxOf(title,text){
- const t=String(title||'');if(!DOG_TITLE.test(t)||/Hebesatz|Gewerbesteuer|Grundsteuer/i.test(t)&&!/Hundesteuer/i.test(t)||/gefährlich|Kampfhund|Rückblick|Anfrage|Antrag (der|des)|Fraktion|Hundekot|Hundewiese|Hundeauslauf|Hundetoilett/i.test(t))return null;
- const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2').replace(/stever/g,'steuer').split(SENTENCE)){if(s.length>1500)continue;
+ const t=String(title||'');
+ // Haushaltssatzungen (§ „Steuersätze“, v. a. Rheinland-Pfalz) nennen die Hundesteuer mit: dort nur Sätze, die „Hundesteuer“ nennen
+ const budget=/Haushaltssatzung|Haushaltsplan|Steuers[aä]tze|Hebes[aä]tz/i.test(t)&&!/Hund/i.test(t);
+ if(!(DOG_TITLE.test(t)||budget)||!budget&&/Hebesatz|Gewerbesteuer|Grundsteuer/i.test(t)&&!/Hundesteuer/i.test(t)||/gefährlich|Kampfhund|Rückblick|Anfrage|Antrag (der|des)|Fraktion|Anregung|Beschwerde|Hundekot|Hundewiese|Hundeauslauf|Hundetoilett/i.test(t))return null;
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2').replace(/stever/g,'steuer').split(SENTENCE)){if(s.length>1500||budget&&!/Hundesteuer/i.test(s))continue;
   for(const [i,re] of DOG_RES.entries())for(const m of s.matchAll(re)){
-   if(NOT_DOG.test(s.slice(Math.max(0,m.index-60),m.index+m[0].length+15))||i>5&&DOG_OLD.test(s.slice(Math.max(0,m.index-160),m.index+m[0].length)))continue;
-   if(i===3&&!DOG_TABLE.test(s.slice(Math.max(0,m.index-300),m.index)))continue;
-   const v=Number(i<6?m[2]:m[1]);if(v>=10&&v<=300)return v;}}
+   if(NOT_DOG.test(s.slice(Math.max(0,m.index-60),m.index+m[0].length+15))||i>6&&DOG_OLD.test(s.slice(Math.max(0,m.index-160),m.index+m[0].length)))continue;
+   if(i===2&&DOG_ONE.test(s)||i===4&&!DOG_TABLE.test(s.slice(Math.max(0,m.index-300),m.index)))continue;
+   const v=Number(i<7?m[2]:m[1]);if(v>=10&&v<=300)return v;}}
   return null;};
  const v=pick(decision(text))??pick(text);if(v===null)return null;
  return {value:v<=60?'bis 60 € im Jahr':v<=100?'61 bis 100 € im Jahr':'über 100 € im Jahr',euro:String(v)};
@@ -464,24 +599,11 @@ export function dogTaxOf(title,text){
 
 /** Neue Kita-Plätze (größte Zahl in einem Satz mit Kita-Bezug und Ausbau), sonst null */
 // Kein Ausbau: Schließung, Abbau, Unterkünfte für Geflüchtete (auch dort ist von Plätzen die Rede)
-const NOT_PLACES=/Rückbau|Ersatzneubau|Schließung|geschlossen|Abbau|abgebaut|Wegfall|Geflüchtete|Flüchtling|Asyl|Unterbringung|Unterkunft|Pflegeheim|Seniorenheim|Senior|Demenz|Pflegebedürft|Altenpflege|Tagespflege für (ältere|Senioren)/i;
 // Bestand statt neuer Plätze („verfügen derzeit über 100 Betreuungsplätze“)
-const PLACES_STOCK=/derzeit|aktuell|bisher|bislang|verfüg(en|t) (derzeit |aktuell )?über|bestehende[nr]?|vorhandene[nr]?|zur Zeit|zurzeit/i;
 // Tagespflege zählt nur als Kindertagespflege (sonst Senioren-Tagespflege)
 const KITA_PLACES=/Kindertages|Kita|KiTa|Kindergarten|Krippe|Kinderkrippe|Kinderbetreuung|U3|Ü3|Hort\b/;
 // Bedarfsplanungen und Berichte nennen den Gesamtbestand, keine neuen Plätze
-const PLACES_REPORT=/Bedarfsplan|Situationsbericht|Bericht|Fortschreibung|Jugendhilfeplanung|Übersicht|Sachstand/i;
 // Nur Vorgänge, die schon im Titel einen Ausbau nennen; sonst ist die Zahl meist der Bestand (Satzungen, Bedarfsanerkennung)
-const PLACES_TITLE=/Neubau|Erweiterung|Ausbau|Errichtung|Umbau|Anbau|neue[nr]?\s+(Kita|Kindertages|Krippe|Kindergarten|Gruppe)|zusätzliche|Gruppe|Container|Interim|Modulbau/i;
-export function kitaPlacesOf(title,text){
- const tt=String(title||'');if(COLLECTIVE.test(tt)||NOT_PLACES.test(tt)||/Tagespflege/.test(tt)&&!/Kinder/.test(tt)||/Anfrage|Beantwortung|Zuschuss nach|weniger als/i.test(tt)||PLACES_REPORT.test(tt)||!PLACES_TITLE.test(tt))return null;
- let best=null;
- for(const s of [String(title||''),...String(text||'').replace(/\s+/g,' ').split(SENTENCE)]){
-  if(!KITA_PLACES.test(s)||NOT_PLACES.test(s)||PLACES_STOCK.test(s)||!/(neu|zusätzlich|entsteh|schaffen|Schaffung|Erweiterung|erweitert|Neubau|Ausbau|errichtet|Errichtung)/i.test(s))continue;
-  for(const m of s.matchAll(/(?<![\d.,])(\d{1,4})\s*(?:neue[n]?\s+|zusätzliche[n]?\s+)?(Betreuungsplätze|Kita-Plätze|Kitaplätze|Krippenplätze|Kindergartenplätze|U3-Plätze|Ü3-Plätze|Plätze)/g)){const v=Number(m[1]);if(v>=5&&v<=2000&&!(v>=1990&&v<=2100))best=Math.max(best||0,v);}
- }
- return best;
-}
 
 /** Punkte ohne Sachthema für Begriffs- und Antragsauswertungen: alles, was shared/item-kind.mjs nicht als Sachpunkt einordnet
     (Formalien des Sitzungsbetriebs, Sammelpunkte, Routine wie Besetzungen, Wahlen, Fragestunden und einzeln geführte
@@ -521,8 +643,12 @@ export function hebesatzOf(title,text){
  const budget=/Haushalt/i.test(t),out=new Map();
  const scan=(src,prio)=>{
   // „v.H.“ vor der nächsten Steuerart ist kein Satzende; Satzungen ohne Satzzeichen je Paragraf („§ 4 Steuersätze …“) („Grundsteuer B auf 650 v.H. Gewerbesteuer auf 400 v.H.“)
-  for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bv\.\s?H\.(?=\s+(?:Grundsteuer|Gewerbesteuer))/g,'v.H').replace(/stever/g,'steuer').split(SENTENCE).flatMap(x=>x.split(/\s(?=§\s?\d+\s)/))){
+  for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bv\.\s?H\.(?=\s+(?:Grundsteuer|Gewerbesteuer))/g,'v.H')
+   // „auf 595 vom Hundert (Grundsteuer A)“: Steuerart nach dem Satz
+   .replace(/(auf\s+(?:\d\.\d{3}|\d{3,4})\s*(?:v\.\s?H\.?|vom Hundert|%))\s*\((Grundsteuer\s*[AB])\)/g,'$2 $1').replace(/stever/g,'steuer').split(SENTENCE).flatMap(x=>x.split(/\s(?=§\s?\d+\s)/))){
    if(s.length>(budget?900:500)||NOT_RATE.test(s)||budget&&!/Hebes|Steuers[aä]tze|Realsteuer/i.test(s))continue;
+   // Haushaltsjahr vor dem des Titels („für das Haushaltsjahr 2025“ in der Haushaltssatzung 2026): alter Satz; bei Doppelhaushalten (2026/2027) zählt das erste Jahr
+   {const ys=(t.match(/20\d\d/g)||[]).map(Number),ty=ys.length?Math.min(...ys):0,sy=/Haushaltsjahr(?:e)?\s+(20\d\d)/.exec(s);if(ty&&sy&&Number(sy[1])<ty)continue;}
    const marks=TAXES.flatMap(([tax,re])=>[...s.matchAll(re)].map(m=>({tax,at:m.index+m[0].length}))).sort((a,b)=>a.at-b.at);
    // „Grundsteuer A und B von 350 auf 475 v.H.“: A bekommt den Abschnitt von B
    const both=/Grundsteuer\s*A\s*(?:und|sowie|,)\s*B\b/.exec(s);if(both&&!marks.some(x=>x.tax==='Grundsteuer B')){marks.push({tax:'Grundsteuer B',at:both.index+both[0].length});marks.sort((a,b)=>a.at-b.at);}
@@ -530,6 +656,8 @@ export function hebesatzOf(title,text){
    marks.forEach((m,i)=>{
     if(both&&m.tax==='Grundsteuer A'&&m.at<=both.index+both[0].length)m={...m,at:both.index+both[0].length};
     const seg=s.slice(m.at,Math.min(m.at+180,marks[i+1]&&marks[i+1].at>m.at?marks[i+1].at-14:s.length)).replace(/^\s*(\(.{0,60}?\)|für\s+\S+(\s+\S+)?\s+Grundstücke)?/,'');
+    // Tabelle mit allen Sätzen am Ende („… Gewerbesteuer auf 642 v.H. 577 v.H. 485 v.H.“): Zuordnung unklar
+    if(new RegExp(String.raw`(?:`+RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`\s*){3}`).test(seg))return;
     const r=ratesIn(seg,unitless);if(!r)return;
     const eff=prio+(r.from?0.5:r.set?0.25:0);if(out.has(m.tax)&&out.get(m.tax).prio>=eff)return;
     const [lo,hi]=TAX_RANGE[m.tax],to=rateNum(r.to),from=r.from?rateNum(r.from):0;
@@ -561,7 +689,7 @@ const FEE_ANY=/(?<!Grund|Zähler|Bereitstellungs|Verwaltungs)(?:Gebühr(?:ensatz
 const SEWER_TITLE=/Abwasser|Entwässerung|Kanal|Schmutzwasser|Niederschlag|Klär/i,WATER_TITLE=/Wasserversorgung|Wasser(?:verbrauch|bezug|lieferung)|Trinkwasser|Wassergebühr|Wasserpreis/i;
 const FEE_NUM=String.raw`(\d{1,2},\d{2,4})`;
 const FEE_UNIT=String.raw`\s*(?:€|Euro|EUR)?\s*(?:\(?(?:netto|brutto)\)?\s*)?(?:/|je|pro)\s*(m³|m3|Kubikmeter|cbm|m²|m2|Quadratmeter|qm)`;
-const NOT_FEE=/Beitr[aä]g|Gruben|Kleinkläranlage|abflusslos|dezentral|Fäkal|Sammelgrube|Grundstücksentwässerungsanlage|Vergleich|Spanne|zwischen|Durchschnitt|Landkreis|Kommunen|Gemeinden|Städte|Wassercent|Entnahmeentgelt|Lippeverband|Emschergenossenschaft|\bLV\b|Verbandsumlage|Umsatzsteuer von|Zuschlag|Gewinn|Abweichung|Differenz|den (?:höchsten|niedrigsten)/i;
+const NOT_FEE=/\d\.\s*Schritt|Beitr[aä]g|Gruben|Kleinkläranlage|abflusslos|dezentral|Fäkal|Sammelgrube|Grundstücksentwässerungsanlage|Vergleich|Spanne|zwischen|Durchschnitt|Landkreis|Kommunen|Gemeinden|Städte|Wassercent|Entnahmeentgelt|Lippeverband|Emschergenossenschaft|\bLV\b|Verbandsumlage|Umsatzsteuer von|Zuschlag|Gewinn|Abweichung|Differenz|den (?:höchsten|niedrigsten)/i;
 const FEE_RANGE={Schmutzwasser:[0.3,12],Trinkwasser:[0.3,9],Niederschlagswasser:[0.05,6]};
 const unitOf=u=>/²|2$|Quadrat|qm/.test(u)?'m²':'m³';
 const feeNum=x=>Number(x.replace(',','.'));
@@ -575,6 +703,9 @@ function feeIn(seg,noPair=false,newFirst=false){
   ||(noPair?null:R(String.raw`(?<!um\s|(?:m³|m3|m²|m2|cbm|qm)\s*)`+FEE_NUM+FEE_UNIT+String.raw`\s*`+FEE_NUM+FEE_UNIT+String.raw`(?!\s*\d)`,m=>newFirst?{from:m[3],to:m[1],unit:m[2]}:{from:m[1],to:m[3],unit:m[4]}))
   ||R(String.raw`(?<!um\s)`+FEE_NUM+FEE_UNIT,m=>({from:'',to:m[1],unit:m[2]}));
 }
+// Lange „Sätze“ (Tabellen ohne Punkt): je Gebührenart ein Fenster von 250 Zeichen statt den ganzen Satz zu verwerfen
+const feeWindows=s=>s.length<=600?[s]:[...s.matchAll(/Schmutzwasser|Niederschlags\s?wasser|Abwassergebühr|Trinkwasser|Wassergebühr|Verbrauchsgebühr/gi)].slice(0,8).map(m=>s.slice(m.index,m.index+250)).filter(w=>!/(?:\d,\d{2}\s*(?:€|Euro|EUR)?\s*\/\s*(?:m³|m²|m3|m2)\s*){3}/.test(w));
+// (Mehrjahrestabellen mit drei und mehr Sätzen hintereinander bleiben draußen: welcher Satz der neue ist, steht nicht fest)
 /** [{kind, from, to, unit}] (Euro mit Komma als Text, from '' wenn nicht genannt) oder [] */
 export function feeRateOf(title,text){
  const t=String(title||'');
@@ -583,10 +714,11 @@ export function feeRateOf(title,text){
  const out=new Map(),named=FEE_KINDS.filter(([,re])=>t.match(re)),only=named.length===1?named[0][0]:null;
  const sewer=SEWER_TITLE.test(t),water=WATER_TITLE.test(t);
  const scan=(src,prio)=>{
-  for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){
-   if(s.length>600||NOT_FEE.test(s))continue;
+  // Einheit vor dem Satz: „Die Gebühr beträgt je m³ Schmutzwasser jährlich 4,35 €“ → „Schmutzwasser 4,35 €/m³“
+  for(const s of String(src||'').replace(/\s+/g,' ').replace(/(?:je|pro)\s*(m³|m3|cbm|m²|m2|qm)\s+(Schmutzwasser|Niederschlagswasser|Abwasser|Frischwasser|Trinkwasser|Wasser)?\s*(?:jährlich\s+)?(\d{1,2},\d{2,4})\s*(?:€|Euro|EUR)/g,'$2 $3 €/$1').split(SENTENCE).flatMap(feeWindows)){
+   if(NOT_FEE.test(s))continue;
    // „… €/m³ Frischwasser“ nennt den Maßstab, nicht die Gebührenart
-   const marks=[...FEE_KINDS,...(only?[[only,FEE_GENERIC]]:[]),...(!only&&!FEE_KINDS.some(([,re])=>s.search(re)>=0)&&(sewer||water)?[['?',FEE_ANY]]:[])].flatMap(([kind,re])=>[...s.matchAll(re)].filter(m=>!/(m³|m3|Kubikmeter)\s*$/.test(s.slice(Math.max(0,m.index-12),m.index))).map(m=>({kind,at:m.index+m[0].length}))).sort((a,b)=>a.at-b.at);
+   const marks=[...FEE_KINDS,...(only?[[only,FEE_GENERIC]]:[]),...(!only&&!FEE_KINDS.some(([,re])=>s.search(re)>=0)&&(sewer||water)?[['?',FEE_ANY]]:[])].flatMap(([kind,re])=>[...s.matchAll(re)].filter(m=>kind!=='Trinkwasser'||!/(m³|m3|Kubikmeter)\s*$/.test(s.slice(Math.max(0,m.index-12),m.index))).map(m=>({kind,at:m.index+m[0].length}))).sort((a,b)=>a.at-b.at);
    marks.forEach((m,i)=>{
     const r=feeIn(s.slice(m.at,Math.min(m.at+160,marks[i+1]?.at??s.length)),/brutto|Variante|Alternative/i.test(s),/\bneu\w*\s+(?:\S+\s+){0,2}(?:bisherig|alt)/i.test(s));if(!r||!r.unit)return;
     // Vorrang: Beschlussvorschlag, dann Änderung mit „bisher“, dann neu gesetzter Satz („auf 1,42 €“), dann bloße Nennung
@@ -687,36 +819,39 @@ export function grantOf(title,text){
 const ADVISE_REJECT=/(Antrag|Anträgen?|Anregung|Vorschlag)[^.]{0,120}\b(nicht\s+zu\s+folgen|nicht\s+zu\s+entsprechen|nicht\s+zuzustimmen|abzulehnen|zurückzuweisen|nicht\s+weiter\s+zu\s+verfolgen)|\b(lehnt|weist)\b[^.]{0,80}(Antrag|Anregung)[^.]{0,40}\b(ab|zurück)\b/i;
 /** Zeilen für topic_facts: {kind, value, detail} */
 export function factsOf(title,text){
- const rows=[],collective=COLLECTIVE.test(String(title||''))&&!/Förder|Zuwendung|Zuschuss/i.test(String(title||''));
- /* Zuschüsse der Kommune an Vereine, Träger oder Bürger (Titel): kein Fördergeld für die Kommune, sondern Fakt 'grant' (Messung 14.10.2026) */
- const outgoing=/e\.\s?V\.|Verein|Gewährung von Zuschüssen|Zuschüsse (?:an|für)|Sportförderung|Vereinsförderung|Bürgerbudget|Sponsor|Förderrichtlinie|Richtlinien? (?:zur|über die|für die) (?:\S+ )?Förderung|Kulturförder|Jugendförder|Jugendarbeit|Jugenderholung|Anträge zur Förderung|(?:städtische|kommunale|gemeindliche)[sn]? Förderprogramm|Spende|Qualifizierungsmaßnahme|Gewährung (?:eines|von) Zuschüss?e?s? an|freiwillige[nr]? (?:Förderungen|Leistungen|Zuschüsse)/i.test(String(title||''));
+ const rows=[];
  const f=factionsOf(title,text);
  if(f)for(const p of f.parties)rows.push({kind:'faction',value:p,detail:f.kind});
  /* Empfiehlt der Beschlussvorschlag, dem Antrag nicht zu folgen, ist „beschlossen“ kein Erfolg der Fraktion */
  if(f&&f.kind!=='anfrage'&&ADVISE_REJECT.test(decision(text)))rows.push({kind:'faction_advice',value:'ablehnen',detail:''});
- if(text&&!collective){
-  /* Anfragen, Übersichten über Fördermöglichkeiten und Evaluierungen sind kein Antrag und keine Bewilligung */
-  const asked=/Anfrage|Fördermöglichkeit|Förderm(ittel|öglichkeiten)übersicht|Evaluierung|Evaluation/i.test(String(title||''));
-  const fund=outgoing?[]:fundingOf(text,{title}).map(x=>asked?{...x,status:'mentioned'}:x);
-  for(const x of fund){rows.push({kind:'funding',value:x.program,detail:x.status});if(x.sure&&!asked)rows.push({kind:'funding_granted',value:x.program,detail:''});}
-  /* Betrag ohne Programm im selben Satz gehört zum Programm des Berichts, wenn er nur eines nennt */
-  const named=fund.filter(x=>x.program!=='Sonstige Förderung'),euro=new Map();
-  if(!ownFunding(title,text))for(const x of fundingEuroOf(text)){const p=x.program==='Sonstige Förderung'&&named.length===1?named[0].program:x.program;if(x.euro>(euro.get(p)||0))euro.set(p,x.euro);}
-  for(const [p,e] of euro)rows.push({kind:'funding_euro',value:p,detail:String(e)});
- }
  const plan=planOf(title,text);
- if(plan){rows.push({kind:'plan',value:plan.stage,detail:plan.type+'|'+plan.plan});const use=planUseOf(title,text);if(use)for(const u of use.uses)rows.push({kind:'plan_use',value:u,detail:use.inter?'interkommunal':''});const we=housingOf(text);if(we)rows.push({kind:'housing',value:'Wohneinheiten',detail:String(we)});}
+ if(plan){rows.push({kind:'plan',value:plan.stage,detail:plan.type+'|'+plan.plan});const use=planUseOf(title,text);if(use)for(const u of use.uses)rows.push({kind:'plan_use',value:u,detail:use.inter?'interkommunal':''});const we=housingOf(text);if(we)rows.push({kind:'housing',value:'Wohneinheiten',detail:String(we)});
+  // Hausformen nur bei Plänen mit Wohnen (oder Mischgebiet)
+  if(use&&use.uses.some(u=>u==='Wohnen'||u==='Mischgebiet'))for(const h of houseTypesOf(title,text))rows.push({kind:'house_type',value:h,detail:''});
+  // Flächennutzungspläne haben oft mehrere Änderungsbereiche: Fläche nur bei Bebauungsplänen
+  const ha=/Flächennutzungsplan/i.test(plan.type)?null:planAreaOf(text);if(ha)rows.push({kind:'plan_area',value:ha<1?'unter 1 ha':ha<5?'1 bis 5 ha':ha<20?'5 bis 20 ha':'über 20 ha',detail:String(ha)});}
  const fee=kitaFeeOf(title,text);if(fee)rows.push({kind:'kita_fee',value:fee.direction,detail:fee.euro});
- const places=kitaPlacesOf(title,text);if(places)rows.push({kind:'kita_places',value:'Plätze',detail:String(places)});
  for(const x of hebesatzOf(title,text))rows.push({kind:'hebesatz',value:x.tax,detail:`${x.to}|${x.from}`});
  for(const x of feeRateOf(title,text))rows.push({kind:'fee_rate',value:x.kind,detail:`${x.to}|${x.from}|${x.unit}`});
+ for(const p of projectsOf(title))rows.push({kind:'project',value:p,detail:''});
+ const tender=tenderOf(title);if(tender)rows.push({kind:'tender',value:tender.value,detail:tender.step});
+ // plenara.X Signale 4 bis 9: Filterwert aus dem Titel (Fakten wind_step, solar, energy, school_build, care, retail)
+ for(const [kind,fn] of [['wind_step',windStepOf],['area_dev',areaDevOf],['solar',solarOf],['energy',energyOf],['school_build',schoolBuildOf],['care',careOf],['retail',retailOf]]){const v=fn(title);if(v)rows.push({kind,value:v,detail:''});}
+ for(const [kind,fn] of [['street',streetSignalOf],['water',waterSignalOf],['broadband',broadbandSignalOf]]){const v=fn(title);if(v)rows.push({kind,value:v.value,detail:v.step});}
+ const road=roadWorkOf(title,text);if(road)rows.push({kind:'road',value:road.value,detail:road.euro});
+ const wind=windCountOf(title,text);if(wind)rows.push({kind:'wind_count',value:wind===1?'1 Anlage':wind<=4?'2 bis 4 Anlagen':wind<=9?'5 bis 9 Anlagen':'10 und mehr Anlagen',detail:String(wind)});
  const heat=heatPlanOf(title,text);if(heat)rows.push({kind:'heat_plan',value:heat,detail:''});
+ for(const [kind,fn] of [['second_home_tax',secondHomeTaxOf],['amusement_tax',amusementTaxOf]]){const r=fn(title,text);if(r)rows.push({kind,value:r.value,detail:r.rate});}
+ for(const b of budgetOf(title,text)||[])rows.push({kind:'budget',value:b.value,detail:String(b.euro)});
  const result=annualResultOf(title,text);if(result)rows.push({kind:'annual_result',value:result.value,detail:String(result.euro)});
- const park=parkFeeOf(title,text);if(park)rows.push({kind:'park_fee',value:park.value,detail:park.euro});
  const ee=eePowerOf(title,text);if(ee)rows.push({kind:'ee_power',value:ee.value,detail:String(ee.mw)});
  const dog=dogTaxOf(title,text);if(dog)rows.push({kind:'dog_tax',value:dog.value,detail:dog.euro});
  const land=landPriceOf(title,text);if(land)rows.push({kind:'land_price',value:land.value,detail:land.euro});
  const plot=plotPriceOf(title,text);if(plot)rows.push({kind:'plot_price',value:plot.value,detail:plot.euro});
+ // Abfallgebühr nur mit Betrag (Jahresgebühr der 120-l-Restmülltonne); die bloße Richtung nutzt niemand
+ const waste=wasteFeeOf(title,text);if(waste?.euro)rows.push({kind:'waste_fee',value:'120-l-Restmülltonne',detail:waste.euro});
  const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
+ // Signale 2: Art bei Wohnbaugebieten (Plan mit Wohnen, Baugebiet ohne Plan, Bauplatzpreis)
+ if(rows.some(r=>r.kind==='plan_use'&&(r.value==='Wohnen'||r.value==='Mischgebiet')||r.kind==='area_dev'&&r.value==='Wohnen'||r.kind==='plot_price'))rows.push({kind:'wohnbau_art',value:wohnbauArtOf(title),detail:''});
  return rows;
 }

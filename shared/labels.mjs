@@ -1,4 +1,4 @@
-// Katalog der Themen für Suche, Filter, Karte, Lena, Admin und plenara.X (seit labels-v3, 14.10.2026: die 10 Themen aus
+// Katalog der Themen für Suche, Filter, Karte, Admin und plenara.X (seit labels-v3, 14.10.2026: die 10 Themen aus
 // shared/themes.mjs plus „noch nicht eingeordnet“; Plan requirements/regel-schritt-plan.md, Schritt 5). Ältere Einordnungen
 // im Katalog labels-v2 (16 Labels, von Hand oder per KI) werden fest übersetzt (LEGACY_LABELS), auch im View
 // topic_effective_labels (drizzle/0034).
