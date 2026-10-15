@@ -11,10 +11,10 @@ import {RegionCatchUp} from '@/components/admin-catch-up';
 // Rahmen aller Adminseiten im Design der Startseite: Kopfzeile wie Header.tsx, darunter Reiter, Inhalt mit der Seitenbreite der
 // Startseite und eine Fußzeile. Die Seiten heißen in der Adresse nach ihrem Inhalt (?seite=abruf); die alten Nummern 1 bis 3
 // führen weiter dorthin. Die Startseite des Adminbereichs ist die Übersicht (ohne Parameter).
-export type AdminPage='todo'|'uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'regeltexte'|'social'|'pdf'|'speicher'|'zeitplaene';
+export type AdminPage='todo'|'uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'regeltexte'|'social'|'pdf'|'speicher'|'zeitplaene'|'debug'|'altbestand';
 /** Reiter in der Reihenfolge der Arbeit: was ist erreichbar (Lückenatlas), abrufen, PDFs holen, aufbereiten und prüfen,
     Betrieb (Qualität, Speicher), dann Auswertungen und Interna. */
-export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'uebersicht',label:'Übersicht'},{id:'atlas',label:'Lückenatlas'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'pdf',label:'PDF-Import'},{id:'regeltexte',label:'Themen & Texte'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'zeitplaene',label:'Jobs & Zeitpläne'},{id:'speicher',label:'Speicher & Sicherungen'},{id:'hochrechnung',label:'Hochrechnung'},{id:'social',label:'Social Media'},{id:'todo',label:'To-do-Liste'}];
+export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'uebersicht',label:'Übersicht'},{id:'atlas',label:'Lückenatlas'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'pdf',label:'PDF-Import'},{id:'regeltexte',label:'Themen & Texte'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'zeitplaene',label:'Jobs & Zeitpläne'},{id:'debug',label:'Pipeline-Debug'},{id:'altbestand',label:'Altbestand'},{id:'speicher',label:'Speicher & Sicherungen'},{id:'hochrechnung',label:'Hochrechnung'},{id:'social',label:'Social Media'},{id:'todo',label:'To-do-Liste'}];
 export const START_PAGE:AdminPage='uebersicht';
 /** Reiter der Administration, lokal und auf dem Server gleich. */
 export const VISIBLE_PAGES=ADMIN_PAGES;

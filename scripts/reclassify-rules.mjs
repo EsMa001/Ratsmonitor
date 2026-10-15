@@ -13,10 +13,11 @@ const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
 const file=process.env.DATABASE_FILE||dir+readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite');
 const sql=new DatabaseSync(file);sql.exec('PRAGMA busy_timeout=60000');
 const db=sqliteAdapter(sql);const t0=Date.now();
-let after='',batches=0,total=0;
+let after='',batches=0,total=0,busy=0;
 for(;;){
  const r=await analysePending(db,'all',{after});
- if(r.status!==200){console.log('Status',r.status,JSON.stringify(r.data).slice(0,200));if(r.status===409){await new Promise(x=>setTimeout(x,5000));continue}break}
+ // Sperre belegt (Import läuft): bis 10 Minuten warten, dann aufgeben (Exit 0; der nächste Lauf macht weiter)
+ if(r.status!==200){console.log('Status',r.status,JSON.stringify(r.data).slice(0,200));if(r.status===409&&++busy<=120){await new Promise(x=>setTimeout(x,5000));continue}break}
  batches++;total+=r.data.processed||0;after=r.data.cursor||'';
  console.log(JSON.stringify({batches,total,after:String(after).slice(0,24),more:r.data.more,s:Math.round((Date.now()-t0)/1000)}));
  if(!r.data.more)break;

@@ -17,6 +17,8 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  regeltexte:{title:'Themen & Texte',intro:'Was die festen Regeln aus Titeln und PDF-Texten erzeugen (Themen, Zusammenfassungen, Fakten, Signale) und wie gut sie gemessen sind. Die Seite zählt nur, was schon gespeichert ist.'},
  pdf:{title:'PDF-Import',intro:'Lädt die PDF-Dokumente der Berichte in die eigene Ablage, liest ihren Text und hält die feste Grenze von 80 GB ein. Zeigt, was gerade läuft, wie vollständig die Ablage ist, was fehlschlägt und warum, und startet Läufe von Hand.'},
  zeitplaene:{title:'Jobs & Zeitpläne',intro:'Zeigt alle Jobs, die auf dem Server von selbst laufen: was sie tun, wann sie zuletzt liefen, wie lange und mit welchem Ergebnis, wann sie das nächste Mal starten. Jobs lassen sich hier ein- und ausschalten, ihre Zeit ändern und einmal sofort starten.'},
+ debug:{title:'Pipeline-Debug',intro:'Vorübergehend, für den Aufbau der Tagespipeline: welcher Job wann lief, was die Läufe getan haben, welchen Weg die Berichte genommen haben und was im Fehlerspeicher des Tagesbereichs auf einen neuen Versuch wartet.'},
+ altbestand:{title:'Altbestand',intro:'Holt nach, was älter ist als der Tagesbereich oder vor dem 12.10.2026 gescheitert ist: Berichte rückwirkend abrufen, PDFs und Text extrahieren, alte Fehler erneut versuchen, Regeln neu anwenden. Nur auf Knopfdruck.'},
  speicher:{title:'Speicher & Sicherungen',intro:'Zeigt, was auf der Festplatte des Servers wie viel Platz belegt: Datenbank und ihre größten Tabellen, PDF-Ablage, Sicherungen, Programmstände, OCR-Werkzeuge. Dazu, welche Sicherungen es gibt, wie groß und wie alt sie sind.'},
 };
 export const FOOT:Record<AdminPage,string>={
@@ -30,6 +32,8 @@ export const FOOT:Record<AdminPage,string>={
  regeltexte:'Zahlen aus der Datenbank; „Jetzt erstellen“ startet den Job auf dem Server.',
  pdf:'Stand aus der letzten Zählung auf dem Server (scripts/pdf-store/stats.mjs), Fortschritt jede Minute. Die Knöpfe legen einen Auftrag an und stoßen den Server sofort an; ein weiterer Auftrag wartet, bis der laufende fertig ist.',
  zeitplaene:'Die Timer auf dem Server fragen alle 10 Minuten (scripts/schedule.mjs); „Jetzt ausführen“ und die Knöpfe der anderen Reiter starten den Job sofort, auch wenn er ausgeschaltet ist (der Schalter stoppt nur die geplanten Zeiten). Uhrzeiten in deutscher Zeit.',
+ altbestand:'Die Seite legt nur Wünsche ab; ausgeführt wird auf dem Server zwischen 10 und 22 Uhr (Jobs „Altbestand“, „OCR, tagsüber“, „PDF-Aufträge“). Vorübergehend im Debug-Bereich.',
+ debug:'Vorübergehende Seite (nicht langfristig gebraucht). Liest nur gespeicherte Stände: Laufbuch des Zeitplaners, Protokolle der Jobs, die Zählung der Wege (am Ende von „Verarbeitung, nachts“) und den Fehlerspeicher.',
  speicher:'Gemessen auf dem Server (scripts/server-disk.mjs) höchstens stündlich, Tabellen der Datenbank einmal am Tag. Die Seite löscht nichts.',
 };
 /** Stand-Zeile je Seite: Knopf, Hinweis und Zusatz hinter dem Datum („Stand … · Aktualisieren →“). */

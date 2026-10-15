@@ -41,12 +41,18 @@ import {BUDGET_GB} from '../../shared/pdf-rank.mjs';
 import {progress,stopRequested,onStop,readState,writeState,queueJob} from './state.mjs';
 import {RUNS_KEY,STATS_KEY,LANE_LOCKS} from '../../server/integrations/pdf-store-admin.mjs';
 import {triggerJob} from '../../server/integrations/job-trigger.mjs';
-import {JOBS,SCHEDULES_KEY,SCHEDULE_NOW_KEY,settingOf} from '../../server/integrations/schedules.mjs';
+import {stepName} from '../../shared/pipeline-terms.mjs';
+import {dailyBoundary} from '../../server/integrations/work-failures.mjs';
+import {JOBS,SCHEDULES_KEY,SCHEDULE_NOW_KEY,settingOf,slotAt} from '../../server/integrations/schedules.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const others=flag('others'),ocrOnly=!others&&flag('ocr-only'),texts=!others&&!ocrOnly&&flag('texts');
+// --daily: Tagespipeline pdf-daily (Job „pdf-nightly“): nur Berichte seit dem letzten Tageslauf ('pdf-daily-last'), mit OCR
+const daily=!others&&!ocrOnly&&!texts&&flag('daily'),DAILY_KEY='pdf-daily-last';
 const lane=ocrOnly?'ocr':'chain';
-const minutes=Number(opt('minutes',180)),budgetGb=Number(opt('budget-gb',BUDGET_GB)),months=Number(opt('months',240));
+// --until HH:MM (deutsche Zeit): spätestens dann enden (Job „ocr“ im Fenster bis 22:00)
+const untilAt=/^\d{2}:\d{2}$/.test(opt('until')||'')?slotAt(Date.now(),opt('until')):0;
+const minutes=Math.min(Number(opt('minutes',180)),untilAt?Math.max(0,Math.floor((untilAt-Date.now())/60000)):Infinity),budgetGb=Number(opt('budget-gb',BUDGET_GB)),months=Number(opt('months',240));
 const retryAll=flag('retry-errors')&&!flag('others')&&!flag('ocr-only')&&!flag('texts');
 const fetchShare=Number(opt('fetch-share',0.4)),reserve=Number(opt('reserve',25)),ocrWorkers=Number(opt('ocr-workers',3));
 const fileMinutes=String(opt('file-minutes',5));
@@ -133,40 +139,99 @@ const end=()=>{
  process.exit(stopped?3:failed.length?1:0);
 };
 
-const TAIL=['Art nachtragen','Stand'];
-plan=others?['Laden','Textebene','Art nachtragen','Stand']:ocrOnly?['OCR',...TAIL]:texts?['Textebene',...TAIL]:['Laden',...(retryAll?['Laden übrige']:[]),'Textebene',...TAIL];
+/* Schrittnamen: shared/pipeline-terms.mjs (gleich in Protokoll, Admin-Seiten, Konzept) */
+const N={pdf:stepName('pdf'),others:stepName('others'),text:stepName('text'),ocr:stepName('ocr'),doctype:stepName('doctype'),budget:stepName('budget'),stats:stepName('stats')};
+const TAIL=[N.doctype,N.stats];
+// OCR-Lauf (Job „ocr“, alle 10 Minuten im Fenster): ohne „Stand“ (zählt Minuten lang; das macht die Nachtkette), Art nur nach gelesenen Dateien
+plan=others?[N.others,N.text,N.doctype,N.stats]:ocrOnly?[N.ocr,N.doctype,stepName('rules'),stepName('search')]:texts?[N.text,...TAIL]:daily?[N.pdf,N.others,N.text,N.ocr,...TAIL]:[N.pdf,...(retryAll?[N.others]:[]),N.text,...TAIL];
 say(`Start${others?' (übrige PDFs)':ocrOnly?' (OCR)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
 
 if(ocrOnly){
- const ocr=Math.floor(left()-reserve);
- if(ocr>=5)await step('OCR','scripts/pdf-store/text.mjs',['--ocr','--workers',String(ocrWorkers),'--file-minutes',fileMinutes,'--max-minutes',String(ocr)]);
- else skip('OCR',`nur ${Math.max(0,ocr)} min übrig`);
-}else if(!texts){
- await step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare*(retryAll?0.5:1)))),'--report-mb','1000']);
- if(retryAll&&!stopped)await step('Laden übrige','scripts/pdf-store/fetch.mjs',['--others','--months',String(months),'--budget-gb',String(budgetGb),'--retry-days','0',...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare*0.5))),'--report-mb','1000']);
+ // Im Fenster (--until) keine Reserve für Folgeschritte: OCR bis kurz vor Schluss
+ const ocr=Math.floor(left()-(untilAt?2:reserve)),range=opt('range','all');
+ const ocrArgs=(r,min,fm=fileMinutes,slow=flag('include-slow'))=>['--ocr','--range',r,'--workers',String(ocrWorkers),'--file-minutes',String(fm),'--max-minutes',String(min),...(slow?['--include-slow']:[]),...(flag('main-only')?['--main-only']:[])];
+ if(ocr>=5)await step(N.ocr,'scripts/pdf-store/text.mjs',ocrArgs(range,ocr));
+ else skip(N.ocr,`nur ${Math.max(0,ocr)} min übrig`);
+ /* Tagesbereich fertig: hat die Seite „Altbestand“ die OCR des Altbestands angefordert, danach diese (10 bis 22 Uhr, längere
+    Zeitgrenze je Datei, auch zu langsame vom letzten Mal) */
+ const backlogAsked=readState('altbestand-requests')?.ocr,backlogOpen=!!backlogAsked&&!backlogAsked.stoppedAt;
+ const t=Date.now(),inBacklog=t>=slotAt(t,'10:00')&&t<slotAt(t,'22:00')-5*60000;
+ if(range==='daily'&&backlogOpen&&inBacklog&&!stopped&&!dry){
+  const rest=Math.min(Math.floor(left()-2),Math.floor((slotAt(t,'22:00')-t)/60000));
+  if(rest>=5){say('OCR des Altbestands (angefordert)');await step(N.ocr+' (Altbestand)','scripts/pdf-store/text.mjs',[...ocrArgs('backlog',rest,15,true),'--origin','backlog']);}
+ }
+ // Nichts gelesen (Reihe leer): kein Nachtrag und kein Protokolleintrag je 10 Minuten
+ if(!dry&&!stopped&&!steps.some(s=>s.summary?.files>0)){progress(lane,null);release();say('nichts zu lesen');process.exit(0);}
+ await step(N.doctype,'scripts/pdf-store/budget.mjs',['--backfill']);
+ /* Folgekette (Betriebsplan): Berichte, deren Text die OCR gerade ergänzt hat, gleich verarbeiten (Regeln anwenden, Suche
+    aktualisieren), statt bis zur nächsten Nacht zu warten. Nicht, solange „Verarbeitung, nachts“ läuft (dieselben Berichte). */
+ if(!dry&&!stopped){
+  const rt=(readState('schedule-runs')||{})['rule-texts']?.running,busy=!!rt?.pid&&(()=>{try{process.kill(rt.pid,0);return true;}catch(e){return e.code==='EPERM';}})();
+  const s=openPdfStore(dir);let ids=[];
+  try{ids=s.db.prepare("SELECT DISTINCT p.topic_id AS id FROM texts t JOIN pdfs p ON p.sha256=t.sha256 WHERE t.made_at>=? AND t.method IN ('ocr','mixed') AND p.topic_id IS NOT NULL").all(base.startedAt).map(r=>r.id);}finally{s.close();}
+  if(busy)skip(stepName('rules'),'„Verarbeitung, nachts“ läuft gerade; der neue Text kommt dort an');
+  else if(ids.length){
+   const idFile=path.join(dir,`ocr-ids-${process.pid}.txt`);fs.writeFileSync(idFile,ids.join('\n'));
+   await step(stepName('rules'),'scripts/pdf-store/read-reports.mjs',['--ids',idFile]);
+   try{fs.unlinkSync(idFile);}catch{/* weg */}
+   await step(stepName('search'),'scripts/refresh-search-words.mjs',['--quiet']);
+  }
+ }
+ end();
+}else if(daily){
+ /* Tagespipeline (Betriebsplan 15.10.2026): nur die PDFs der Berichte, die der Import seit dem letzten Tageslauf geschrieben
+    hat (Hauptdokumente, dann Anlagen); Fehler gehen als 'daily' in den Fehlerspeicher. Kein Laden älterer Monate (Bestandsaufbau, Auftrag „Laden“). */
+ const since=readState(DAILY_KEY)?.startedAt||new Date(t0-48*3600000).toISOString();
+ say(`Berichte geschrieben seit ${since}`);
+ const boundary=dailyBoundary(t0);
+ await step(N.pdf,'scripts/pdf-store/fetch.mjs',['--since-updated',since,'--event-from',boundary,'--origin','daily','--budget-gb',String(budgetGb),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare*0.6))),'--report-mb','1000']);
+ /* Anlagen derselben Berichte: die KI liest alle PDFs eines Berichts (ai-local-sources.mjs). In der Grenze stehen sie unter
+    allen Hauptdokumenten; was nicht passt, bleibt als Text. */
+ if(!stopped)await step(N.others,'scripts/pdf-store/fetch.mjs',['--others','--since-updated',since,'--event-from',boundary,'--origin','daily','--budget-gb',String(budgetGb),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare*0.4))),'--report-mb','1000']);
  if(sizeGb()>budgetGb){
-  await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
-  await step('Budget','scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
+  await step(N.doctype,'scripts/pdf-store/budget.mjs',['--backfill']);
+  await step(N.budget,'scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
  }
- /* Nachts: die OCR in ihrer eigenen Bahn anstoßen (läuft neben dem Rest der Kette) */
- if(kind==='nightly'&&!dry&&!stopped){
-  const queued=queueJob('ocr');
-  say(queued?'Auftrag „OCR starten“ angestellt':queued===false?'„OCR starten“ läuft oder wartet schon':'„OCR starten“ konnte nicht angestellt werden');
-  if(queued)await triggerJob('pdf-job');
+}else if(!texts){
+ await step(N.pdf,'scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare*(retryAll?0.5:1)))),'--report-mb','1000']);
+ if(retryAll&&!stopped)await step(N.others,'scripts/pdf-store/fetch.mjs',['--others','--months',String(months),'--budget-gb',String(budgetGb),'--retry-days','0',...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare*0.5))),'--report-mb','1000']);
+ if(sizeGb()>budgetGb){
+  await step(N.doctype,'scripts/pdf-store/budget.mjs',['--backfill']);
+  await step(N.budget,'scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
  }
+ /* Den OCR-Rückstand liest seit dem Betriebsplan (15.10.2026) der Job „ocr“ im Fenster 10 bis 22 Uhr; hier wird nichts angestellt */
 }
 if(others){
- await step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-5)))]);
- await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
- await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
+ await step(N.text,'scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-5)))]);
+ await step(N.doctype,'scripts/pdf-store/budget.mjs',['--backfill']);
+ await step(N.stats,'scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
  end();
 }
-if(!ocrOnly)await step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-reserve)))]);
+if(!ocrOnly)await step(N.text,'scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-reserve)))]);
+/* Tagespipeline: OCR der PDFs (Hauptdokumente zuerst, dann Anlagen), deren Textebene in diesem Lauf entstand und Seiten ohne Text
+   hat, vor den Regeln; höchstens --daily-ocr-minutes (45). Was an der Grenze scheitert, geht als slow in den Fehlerspeicher; was
+   in der Zeit nicht drankommt, liest der Job „ocr“ tagsüber (die Reihe nimmt die neuesten Sitzungen zuerst). */
+if(daily&&!stopped){
+ const shasFile=path.join(dir,`ocr-daily-${process.pid}.txt`);
+ let n=0;
+ if(!dry){const s=openPdfStore(dir);try{
+  const shas=s.db.prepare(`SELECT t.sha256 AS sha FROM texts t JOIN pdfs p ON p.sha256=t.sha256 WHERE t.status='ok' AND t.ocr_needed>0 AND t.made_at>=? GROUP BY t.sha256 ORDER BY MIN(coalesce(p.role,'')='other'),t.ocr_needed`).all(base.startedAt).map(r=>r.sha);
+  n=shas.length;fs.writeFileSync(shasFile,shas.join('\n'));
+ }finally{s.close();}}
+ const ocrMin=Math.min(Number(opt('daily-ocr-minutes',45)),Math.floor(left()-15));
+ if(dry)await step(N.ocr,'scripts/pdf-store/text.mjs',['--ocr','--shas','<Datei>','--origin','daily','--workers',String(ocrWorkers),'--file-minutes',fileMinutes,'--max-minutes',String(ocrMin)]);
+ else if(!n)skip(N.ocr,'keine neuen Seiten ohne Text');
+ else if(ocrMin<5)skip(N.ocr,`nur ${Math.max(0,ocrMin)} min übrig`);
+ else await step(N.ocr,'scripts/pdf-store/text.mjs',['--ocr','--shas',shasFile,'--origin','daily','--workers',String(ocrWorkers),'--file-minutes',fileMinutes,'--max-minutes',String(ocrMin)]);
+ try{fs.unlinkSync(shasFile);}catch{/* keine */}
+}
 /* Dokumentart und Art laut Textanfang für den Score (nur Fehlendes; nach neuen Regeln einmal alles) */
-await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
-await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
+await step(N.doctype,'scripts/pdf-store/budget.mjs',['--backfill']);
+await step(N.stats,'scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
 /* Nachts: danach gleich „Themen & Texte“ anstoßen (Regeln, Wortliste, Zahlen für plenara.X), statt bis zu seiner festen Zeit
    zu warten; nur wenn er eingeschaltet ist. Die feste Zeit bleibt als Rückfall (etwa bei ausgeschalteter Nachtkette). */
+/* Stand des Tageslaufs: Beginn des Laufs, damit der nächste die seitdem geschriebenen Berichte nimmt */
+if(daily&&!dry&&!stopped)writeState(DAILY_KEY,{startedAt:base.startedAt,finishedAt:new Date().toISOString(),failed});
 if(kind==='nightly'&&!dry&&!stopped){
  try{
   const job=JOBS.find(j=>j.id==='rule-texts');

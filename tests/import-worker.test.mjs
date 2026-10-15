@@ -115,8 +115,8 @@ test('ensureJob continues a fresh open job, but ends a paused or forgotten one f
 
 test('the command line is read strictly',async()=>{
  const {parseArgs}=await import('../server/integrations/pipeline-worker.mjs');
- assert.deepEqual(parseArgs([]),{create:null,regions:null,window:'1w',lanes:24,maxMinutes:0,catchUp:true});
- assert.deepEqual(parseArgs(['--run','--max-minutes','240','--lanes','12','--no-catch-up']),{create:null,regions:null,window:'1w',lanes:12,maxMinutes:240,catchUp:false});
+ assert.deepEqual(parseArgs([]),{create:null,direct:false,origin:'daily',regions:null,window:'1w',weeklyWindow:null,weeklyDay:0,lanes:24,maxMinutes:0,catchUp:true});
+ assert.deepEqual(parseArgs(['--run','--max-minutes','240','--lanes','12','--no-catch-up']),{create:null,direct:false,origin:'daily',regions:null,window:'1w',weeklyWindow:null,weeklyDay:0,lanes:12,maxMinutes:240,catchUp:false});
  assert.equal(parseArgs(['--create']).create,'sources');assert.equal(parseArgs(['--create','all','--window','1d']).window,'1d');
  assert.deepEqual(parseArgs(['--create','--regions','a, b']).regions,['a','b']);
  for(const bad of [['--lanes','abc'],['--lanes','0'],['--window','x'],['--create','foo'],['--regions','a'],['--nope'],['--window']])assert.throws(()=>parseArgs(bad),bad.join(' '));
@@ -134,4 +134,52 @@ test('two connections on one file: a writer holds the lock, the other waits its 
  await a.prepare('COMMIT').run();
  await b.prepare('INSERT INTO t VALUES(2)').run();assert.equal((await a.prepare('SELECT count(*) n FROM t').first()).n,1);
  a.close();b.close();fs.rmSync(dir,{recursive:true,force:true});
+});
+
+// Fehlerspeicher (Migration 0040, work-failures.mjs): Ausgänge der Importe, Rückstellung im Nachtauftrag, Direktabruf
+import {deferredRegions,runDirect} from '../server/integrations/pipeline-worker.mjs';
+import {provider} from '../server/integrations/pipeline-jobs.mjs';
+import {recordFailure} from '../server/integrations/work-failures.mjs';
+test('import outcomes go to the failure store; the nightly job defers waiting areas; --direct retries them',async()=>{
+ const {sql,db}=memoryDb();
+ const [a,b,c]=regions;
+ const outcome={[a]:{status:502,data:{error:'Import fehlgeschlagen',cause:'fetch failed'}},[b]:{status:200,data:{topics:0,refused:{retryAfterMs:7200000},coverage:{complete:false,issues:[]}}},[c]:done};
+ const job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[a,b,c],window:'1w'},()=>{});
+ const t0=Date.now();await workJob(db,async(stage,region)=>outcome[region],{lanes:2,sleep:()=>wait(5),tickMs:1e6,stop:()=>Date.now()-t0>400});
+ const rows=Object.fromEntries(sql.prepare("SELECT key,class,host FROM work_failures WHERE step='import'").all().map(r=>[r.key,r]));
+ assert.equal(rows[a].class,'transient');assert.equal(rows[b].class,'blocked');assert.equal(rows[b].host,provider(b));
+ assert.equal(rows[c],undefined);
+ assert.equal(sql.prepare('SELECT state FROM source_hosts WHERE host=?').get(provider(b)).state,'bremsen');
+ // next night: both are deferred, the third is queued
+ await pipelineAction(db,{action:'cancel',id:job.id},()=>{});
+ const deferred=await deferredRegions(db,[a,b,c]);
+ assert.deepEqual(Object.keys(deferred).sort(),[a,b].sort());
+ const made=await ensureJob(db,{regions:[a,b,c],window:'1w'});
+ assert.equal(made.deferred,2);
+ assert.deepEqual(made.job.items.map(i=>i.status).sort(),['deferred','deferred','queued']);
+ // a final entry (internal) does not hold the nightly run off: the night is the retry
+ await recordFailure(db,{step:'import',key:c,cls:'internal',error:'TypeError',release:'r'},Date.now());
+ assert.deepEqual(Object.keys(await deferredRegions(db,[c])),[],'kein Termin: nicht zurückgestellt');
+ // the nacharbeit retries a directly; success clears its entry
+ const out=await runDirect(db,async()=>done,[a],{lanes:1});
+ assert.deepEqual(out.map(r=>[r.region,r.status]),[[a,200]]);
+ assert.equal(sql.prepare("SELECT count(*) n FROM work_failures WHERE key=?").get(a).n,0);
+ sql.close();
+});
+test('weekly window: Sundays wider, otherwise the daily window',async()=>{
+ const {parseArgs,windowForTonight}=await import('../server/integrations/pipeline-worker.mjs');
+ const o=parseArgs(['--create','sources','--window','1d','--weekly-window','1m']);
+ assert.equal(o.weeklyWindow,'1m');assert.equal(o.weeklyDay,0);
+ assert.equal(windowForTonight(o,new Date('2026-10-18T00:30:00Z')),'1m','Sonntag 02:30 deutscher Zeit');
+ assert.equal(windowForTonight(o,new Date('2026-10-19T00:30:00Z')),'1d','Montag');
+ assert.equal(windowForTonight(parseArgs(['--create','sources','--window','1d']),new Date('2026-10-18T00:30:00Z')),'1d','ohne weiteres Fenster');
+ assert.throws(()=>parseArgs(['--weekly-window','1d']),/--weekly-window/);
+});
+
+test('--direct is read strictly',async()=>{
+ const {parseArgs}=await import('../server/integrations/pipeline-worker.mjs');
+ assert.throws(()=>parseArgs(['--direct']),/--direct braucht --regions/);
+ assert.throws(()=>parseArgs(['--direct','--create','sources','--regions','billerbeck']),/--direct/);
+ assert.deepEqual(parseArgs(['--direct','--regions','billerbeck,coesfeld','--origin','backlog']).regions,['billerbeck','coesfeld']);
+ assert.throws(()=>parseArgs(['--regions','billerbeck']),/--regions nur mit/);
 });

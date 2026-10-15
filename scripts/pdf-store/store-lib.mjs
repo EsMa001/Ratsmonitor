@@ -17,7 +17,10 @@ export function downloader({timeoutMs=10000,signal=null}={}){
  const request=(url,init)=>fetch(url,{...init,signal:AbortSignal.any([init.signal,AbortSignal.timeout(timeoutMs),signal].filter(Boolean)),headers:{'User-Agent':SOURCE_USER_AGENT}});
  return async url=>{
   const {response:r}=await fetchDocument(url,{request});
-  if(!r.ok){await r.body?.cancel().catch(()=>{});throw Object.assign(Error('HTTP '+r.status),{http:r.status});}
+  if(!r.ok){
+   // Retry-After (Sekunden oder Datum) geht an den Fehlerspeicher (work-failures.mjs), damit der Server so lange wartet
+   const ra=r.headers.get('retry-after'),sec=Number(ra),retryAfterMs=ra?Number.isFinite(sec)?sec*1000:Math.max(0,Date.parse(ra)-Date.now())||null:null;
+   await r.body?.cancel().catch(()=>{});throw Object.assign(Error('HTTP '+r.status),{http:r.status,retryAfterMs});}
   return bodyBytes(r,30*1048576,{message:'Dokument zu groß'});
  };
 }
@@ -60,7 +63,7 @@ const MAX_PIXELS=12e6;
     Speicher und CPU und hielt den Lauf an, 12.10.2026). halt(): vor jeder Gruppe gefragt; true bricht ab (Fehler mit halted),
     ohne etwas zu schreiben: Die Datei bleibt in der OCR-Reihe. deadline (ms seit 1970, 0 = keine): danach ebenso abbrechen,
     Fehler mit slow (OCR-Knöpfe: lieber viele leichte Dateien als eine schwere). */
-export async function ocrFile(store,sha,ocr,{halt,deadline=0}={}){
+export async function ocrFile(store,sha,ocr,{halt,deadline=0,pageMs=0,onGroup=()=>{}}={}){
  const pages=store.textPages(sha);if(!pages)return 0;
  const want=pages.map((p,i)=>needsOcr(p)?i:-1).filter(i=>i>=0);
  if(want.length){
@@ -69,12 +72,19 @@ export async function ocrFile(store,sha,ocr,{halt,deadline=0}={}){
    for(let k=0;k<want.length;k+=ocr.workers){
     if(halt?.())throw Object.assign(new Error('angehalten'),{halted:true});
     if(deadline&&Date.now()>deadline)throw Object.assign(new Error('Zeitgrenze je Datei'),{slow:true});
-    await Promise.all(want.slice(k,k+ocr.workers).map(async i=>{
+    onGroup(k);
+    // Zeitgrenze je Seite (Rendern + Erkennen): eine hängende Seite bricht die Datei ab (slow, stuck); der Aufrufer beendet dann
+    // seine OCR-Worker, weil der hängende Auftrag im Worker weiterläuft. Bei blockierter Ereignisschleife greift der Wächter
+    // des Treibers (text.mjs).
+    let timer;
+    const limit=pageMs?new Promise((_,reject)=>{timer=setTimeout(()=>reject(Object.assign(new Error(`Zeitgrenze je Seite (${Math.round(pageMs/1000)} s)`),{slow:true,stuck:true})),pageMs);}):null;
+    const group=Promise.all(want.slice(k,k+ocr.workers).map(async i=>{
      const page=await pdf.getPage(i+1),v=page.getViewport({scale:1});page.cleanup();
      const scale=Math.max(0.5,Math.min(OCR_SCALE,Math.sqrt(MAX_PIXELS/Math.max(1,v.width*v.height))));
      const png=await renderPageAsImage(pdf,i+1,{canvasImport:ocr.canvasImport,scale});
      pages[i]=(await ocr.scheduler.addJob('recognize',Buffer.from(png))).data.text;
     }));
+    try{await (limit?Promise.race([group,limit]):group);}finally{clearTimeout(timer);}
    }
   }finally{await pdf.loadingTask?.destroy?.();}
  }
@@ -91,25 +101,25 @@ export async function ocrFile(store,sha,ocr,{halt,deadline=0}={}){
  * oder Anhalten (halted()) lässt die Datei offen, jeder andere wird vermerkt (refetchFailed), sie kommt nicht wieder.
  * Rückgabe {pages, fetched, result}: 'ok' | 'changed' (unter der Adresse liegt heute eine andere Datei) | 'failed' | 'skipped'.
  */
-export async function ocrWithRefetch(store,sha,{download,read,halted=()=>false}){
+export async function ocrWithRefetch(store,sha,{download,read,halted=()=>false,failed=(s,error)=>store.refetchFailed(s,error)}){
  const file=store.file(sha);
  if(fs.existsSync(file)){
   try{return {pages:await read(sha),fetched:false,result:'ok'};}
   finally{if(!store.present(sha))fs.rmSync(file,{force:true});}
  }
- let error='keine Adresse',changed=false;
+ let error='keine Adresse',changed=false,last={};
  for(const url of store.urlsOf(sha)){
   let bytes;
   try{bytes=await download(url);}
-  catch(e){if(halted())throw Object.assign(new Error('angehalten'),{halted:true});if(e.skip)return {pages:0,fetched:false,result:'skipped'};error=e.message;continue;}
+  catch(e){if(halted())throw Object.assign(new Error('angehalten'),{halted:true});if(e.skip)return {pages:0,fetched:false,result:'skipped'};error=e.message;last={http:e.http??null,retryAfterMs:e.retryAfterMs??null,url};continue;}
   if(crypto.createHash('sha256').update(bytes).digest('hex')!==sha){changed=true;error='Datei geändert';continue;}
   fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes);
   // Löschen auch beim Anhalten oder bei einem Lesefehler; nur nicht, wenn die Datei inzwischen wirklich abgelegt ist
   try{return {pages:await read(sha),fetched:true,result:'ok'};}
   finally{if(!store.present(sha))fs.rmSync(file,{force:true});}
  }
- store.refetchFailed(sha,error);
- return {pages:0,fetched:false,result:changed?'changed':'failed'};
+ await failed(sha,error,{changed,...last});
+ return {pages:0,fetched:false,result:changed?'changed':'failed',error,...last};
 }
 
 // Eine Zeile je Datei (gleiche Datei unter mehreren Adressen: der höchste Wert zählt). other: nur als übriges PDF verlinkt

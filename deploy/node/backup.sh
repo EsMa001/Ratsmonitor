@@ -37,3 +37,38 @@ rm -f "$target.part"
 mv "$target.zst.part" "$target.zst"
 list | tail -n +$(( KEEP + 1 )) | xargs -r rm -f
 echo "$(date -Is) gesichert: $target.zst ($(du -h "$target.zst" | cut -f1) gepackt aus $(( need / 1073741824 )) GB, $(( $(date +%s) - started )) s)"
+
+# PDF-Ablage (Betriebsplan 15.10.2026): Index (index.sqlite, per .backup) und die Textfassungen (*.txt, die Rechenzeit vieler Nächte;
+# die PDFs selbst lassen sich neu laden und werden nicht gesichert). Texte sonntags (oder ohne vorhandene) voll, sonst nur die seit
+# der letzten Sicherung geänderten; behalten werden KEEP volle Stände und die Teilstände ab dem ältesten vollen. Scheitert etwas,
+# bleibt die Datenbanksicherung oben gültig (Exit 0 mit Meldung).
+STORE="${RM_PDF_STORE:-/srv/ratsmonitor/data/pdf-store}"
+if [ -f "$STORE/index.sqlite" ]; then
+ (
+  set -e
+  stamp=$(date +%F-%H%M); t0=$(date +%s)
+  rm -f "$DIR"/pdf-store-*.part
+  idx="$DIR/pdf-store-index-$stamp.sqlite"
+  nice -n 10 ionice -c2 -n7 sqlite3 "$STORE/index.sqlite" ".timeout 600000" ".backup '$idx.part'"
+  nice -n 10 ionice -c2 -n7 zstd -q -T2 -"$ZSTD_LEVEL" --rm "$idx.part" -o "$idx.zst.part" && mv "$idx.zst.part" "$idx.zst"
+  ls -1t "$DIR"/pdf-store-index-*.sqlite.zst 2>/dev/null | tail -n +$(( KEEP + 1 )) | xargs -r rm -f
+  marker="$DIR/.pdf-store-texts-stamp"
+  if [ "$(date +%u)" = 7 ] || ! ls "$DIR"/pdf-store-texts-full-*.tar.zst >/dev/null 2>&1 || [ ! -f "$marker" ]; then kind=full; else kind=inc; fi
+  out="$DIR/pdf-store-texts-$kind-$stamp.tar.zst"; touch "$marker.new"
+  if [ "$kind" = full ]; then (cd "$STORE" && find files -name '*.txt' -print0) ; else (cd "$STORE" && find files -name '*.txt' -newer "$marker" -print0); fi \
+   | (cd "$STORE" && nice -n 10 ionice -c2 -n7 tar --null -T - -cf -) | nice -n 10 zstd -q -T2 -"$ZSTD_LEVEL" -o "$out.part"
+  zstd -q -t "$out.part" && mv "$out.part" "$out" && mv "$marker.new" "$marker"
+  # Volle Stände: KEEP behalten; Teilstände älter als der älteste behaltene volle löschen
+  ls -1t "$DIR"/pdf-store-texts-full-*.tar.zst | tail -n +$(( KEEP + 1 )) | xargs -r rm -f
+  oldest=$(ls -1t "$DIR"/pdf-store-texts-full-*.tar.zst | tail -n 1)
+  find "$DIR" -maxdepth 1 -name 'pdf-store-texts-inc-*.tar.zst' ! -newer "$oldest" -delete
+  echo "$(date -Is) PDF-Ablage gesichert: Index $(du -h "$idx.zst" | cut -f1), Texte ($kind) $(du -h "$out" | cut -f1), $(( $(date +%s) - t0 )) s"
+ ) || echo "$(date -Is) Sicherung der PDF-Ablage fehlgeschlagen; die Datenbanksicherung gilt"
+fi
+
+# Stand außer Haus (offene Entscheidung im Betriebsplan): ist BACKUP_REMOTE gesetzt (rclone-Ziel, etwa „objekt:plenara-backups“) und
+# rclone installiert, gehen die neuen Sicherungen dorthin; die Aufbewahrung am Ziel regelt dessen Lebenszyklus.
+if [ -n "${BACKUP_REMOTE:-}" ] && command -v rclone >/dev/null 2>&1; then
+ rclone copy --max-age 2h --include 'ratsmonitor-*.sqlite.zst' --include 'pdf-store-*.zst' "$DIR" "$BACKUP_REMOTE" \
+  && echo "$(date -Is) nach $BACKUP_REMOTE kopiert" || echo "$(date -Is) Kopie nach $BACKUP_REMOTE fehlgeschlagen"
+fi

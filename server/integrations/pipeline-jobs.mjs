@@ -4,6 +4,7 @@ import {NRW_SOURCES} from './source-catalog.mjs';
 import {SOURCES} from './regions.mjs';
 import {serverOf,MUENSTER} from './source-servers.mjs';
 import {historyWindow,windowYears} from '../../shared/history-window.mjs';
+import {recordFailure,clearFailure,classify} from './work-failures.mjs';
 const known=new Set(regions.map(r=>r.id)),legacy=new Map(SOURCES.map(s=>[s.id,s])),catalog=new Map(NRW_SOURCES.map(s=>[s.id,s]));
 export const canImport=id=>id==='muenster'||legacy.has(id)||(catalog.has(id)&&catalog.get(id).method!=='pending');
 /** 'all': every area of the catalog. 'sources': every area with a connected source, whatever its state. Otherwise a list of ids. */
@@ -202,9 +203,27 @@ async function step(db,id,run){
   dropHolds(job,now);
   await save(db,stamp(job,at));return {job,claimed:true,finished:job.status==='completed'&&was!=='completed'};
  });
+ // Fehlerspeicher (Migration 0040): Ausgang des Imports vermerken; nie ein Grund, den Schritt scheitern zu lassen
+ if(claim.job.stage==='metadata')await noteImport(db,claim.region,{result,failure,server:provider(claim.region),origin:claim.job.origin});
  // The step that ends an import job brings the planner statistics up to date (the run changed many rows).
  if(stored.finished&&stored.job.stage==='metadata')await optimize(db);
  return stored;
+}
+/**
+ * Ausgang eines Imports im Fehlerspeicher (work-failures.mjs): Erfolg löscht den Eintrag des Gebiets und setzt den Server
+ * auf ok; die Quelle bat um Pause → blocked (Server wartet, Retry-After); Fehler → Klasse aus der Ursache (Ausnahme ohne
+ * erkennbaren Netzfehler: internal); 409 (Sperre im Haus) zählt nicht. Auch für import-worker --direct (Nacharbeit).
+ */
+export async function noteImport(db,region,{result,failure='',server=provider(region),origin='daily'}={}){
+ try{
+  const d=result?.data||{};
+  if(result?.status===409)return;
+  const f={step:'import',key:region,host:server,origin:origin==='backlog'?'backlog':'daily'};
+  if(!result)await recordFailure(db,{...f,cls:classify({error:failure,internal:true}),error:failure});
+  else if(d.refused)await recordFailure(db,{...f,cls:'blocked',error:d.cause||'Quelle bittet um Pause',retryAfterMs:d.refused.retryAfterMs});
+  else if(result.status!==200){const cause=String(d.cause||d.error||'');await recordFailure(db,{...f,cls:classify({error:cause,http:result.status>=500?null:result.status,internal:/TypeError|ReferenceError|SyntaxError|is not a function|Cannot read/.test(cause)}),error:cause});}
+  else await clearFailure(db,{...f});
+ }catch(e){console.error('[pipeline] Fehlerspeicher:',e?.message||e);}
 }
 /**
  * create | cancel | pause | resume | status | step | run.
@@ -233,7 +252,10 @@ export async function pipelineAction(db,body,run){
   const ids=selectedRegions(body.regions);
   // The look-back window is fixed when the job is created, so a resumed job keeps the period the operator chose.
   let lookback;if(imports){try{lookback=historyWindow(body.window);}catch{throw new AdminError(400,'Ungültiger Zeitraum für den Abruf.');}}
-  const created={id:crypto.randomUUID(),stage:body.stage,...(lookback?{window:lookback}:{}),...(typeof body.regions==='string'?{scope:body.regions}:{}),createdAt:at,updatedAt:at,status:'queued',items:ids.map(region=>{const open=!imports||canImport(region);return {region,status:open?'queued':'unavailable',processed:0,message:open?'':'Keine angebundene Quelle.',...(imports&&open?{server:provider(region)}:{})};})};
+  // deferred: Gebiete, die laut Fehlerspeicher noch warten (nächtlicher Auftrag, ensureJob); sie werden nicht abgerufen,
+  // die Nacharbeit holt sie, wenn sie fällig sind. {Gebiet: Hinweis}
+  const deferred=imports&&body.deferred&&typeof body.deferred==='object'?body.deferred:{};
+  const created={id:crypto.randomUUID(),stage:body.stage,...(lookback?{window:lookback}:{}),...(typeof body.regions==='string'?{scope:body.regions}:{}),createdAt:at,updatedAt:at,status:'queued',items:ids.map(region=>{const open=!imports||canImport(region),wait=open&&typeof deferred[region]==='string';return {region,status:!open?'unavailable':wait?'deferred':'queued',processed:0,message:!open?'Keine angebundene Quelle.':wait?deferred[region].slice(0,300):'',...(imports&&open?{server:provider(region)}:{})};})};
   await save(db,created);return view(created);
  });
  if(body.action==='cancel')return locked(db,async()=>{const job=await current(db,body.id);job.status='cancelled';delete job.paused;await save(db,stamp(job));return view(job,since);});

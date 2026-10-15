@@ -437,6 +437,51 @@ Lücken: Der Import legt das PDF ab, aber nicht den daraus gelesenen Text (die K
 OCR; der Job `rule-texts` liest danach jeden Bericht mit dem Text der Ablage. Nach einer Änderung an einer Regelfassung
 (`READ_VERSION` setzt sich aus allen zusammen) läuft das von selbst beim nächsten Job; nach `TEXT_VERSION` liest die Kette alle Texte neu (Nächte).
 
+## Betriebsplan: Tagespipeline, Nacharbeit, Altbestand (seit 15.10.2026)
+
+Konzept und Ablaufbild: `requirements/betriebsplan-konzept.md`, `requirements/betriebsplan-ablauf.html`. Namen aller Abläufe, Stufen und
+Schritte: `shared/pipeline-terms.mjs`.
+
+- **Tagespipeline** (jede Nacht, Stufen Abruf → Extraktion → Verarbeitung): `backup` „Sichern“ 00:30 → `import-nightly` „Abruf, nachts“
+  01:00 (alle Quellen, **1 Tag** zurück, sonntags 1 Monat für Nachträge; Gebiete und Server, die im Fehlerspeicher warten, „Zurückgestellt“) → `startseite-trends` 05:10 →
+  `pdf-nightly` „Extraktion, nachts“ 05:30 (`nightly.mjs --daily`: PDF laden und Anlagen laden für die Berichte seit `pdf-daily-last` und alle mit Sitzung im Tagesbereich,
+  Text lesen, OCR bis 45 min, Dokumentart, Stand zählen) → `rule-texts` „Verarbeitung, nachts“ (Titel einordnen, Regeln anwenden, Suche
+  aktualisieren, Zahlen rechnen, KI-Stand `ai-counts`, Wege zählen `pipeline-trace`).
+- **Tagesbereich und Altbestand:** Tagesbereich sind Sitzungen der letzten 7 Tage, frühestens 12.10.2026, deren Fehler nicht vor dem
+  12.10. entstanden. Nur ihn bearbeitet die Nacharbeit; alles Ältere ist Altbestand.
+- **Fehlerspeicher** (Migration `0040`, `server/integrations/work-failures.mjs`): Grund je Eintrag (Quelle bremst, Zugriff verweigert,
+  vorübergehend, fehlt dauerhaft, zu langsam, Sperre im Haus, Fehler im eigenen Code), Stufe, nächster Termin; `source_hosts` je Server
+  (liefert, bremst 1 h → 7 d, gesperrt 7 d → 30 d → prüfen mit Stichprobe alle 30 Tage). Nichts wird endgültig außer 404, „kein PDF“,
+  zu groß und geänderte Dateien; vorübergehende Fehler laufen wöchentlich weiter. Wartende Server lassen alle Abrufer aus; ein fälliger
+  bekommt erst eine Stichprobe von 3. Beim ersten Lauf überträgt `scripts/pdf-store/failures.mjs` die alten Fehler der Ablage als Altbestand.
+- **Nacharbeit** (Job `nacharbeit`, `scripts/nacharbeit.mjs --range daily`, alle 30 min von 09:00 bis 23:00): fällige Einträge Stufe
+  für Stufe; gelingt ein Abruf, laufen für die geschriebenen Berichte gleich Extraktion und Regeln (Folgekette).
+- **OCR, tagsüber** (Job `ocr`, eigene Einheit, 07:00 bis 23:00): Reste der Nacht im Tagesbereich; ist auf der Seite Altbestand die OCR
+  angefordert, danach (10 bis 22 Uhr) der Altbestand. Nach einem Lauf mit gelesenen Dateien gleich Regeln anwenden und Suche
+  aktualisieren für die Berichte mit neuem Text (nicht, solange „Verarbeitung, nachts“ läuft).
+- **Altbestand** (Seite `/admin?seite=altbestand`, Job `altbestand`, `scripts/altbestand.mjs`, 10:00 bis 22:00, nur mit Anforderung
+  in `altbestand-requests`): rückwirkender Abruf (1 bis 24 Monate, je 8 Gebiete, mit Folgekette), alte Fehler erneut versuchen; dazu die
+  Aufträge der PDF-Ablage (`pdf-job`: ältere Monate laden, Anlagen laden, Text lesen) im selben Fenster. Hat die Nacharbeit fällige
+  Einträge, lässt er aus. Die KI startet nie von selbst.
+- **Debug-Seite** (vorübergehend): `/admin?seite=debug`: Laufbuch des Zeitplaners (`schedule-log`), was die Läufe getan haben, Wege der
+  Berichte, Fehlerspeicher des Tagesbereichs mit „freigeben“ und „erneut“.
+
+**Einrichten** (einmal, als root, nach dem Deploy des Stands):
+
+```bash
+cd /srv/ratsmonitor/app/current
+systemctl stop ratsmonitor-import.timer ratsmonitor-import-nightly.timer
+sudo -u ratsmonitor node scripts/node-migrate.mjs /srv/ratsmonitor/data/ratsmonitor.sqlite   # 0040: zwei leere Tabellen
+cp deploy/node/ratsmonitor-ocr.* deploy/node/ratsmonitor-nacharbeit.* deploy/node/ratsmonitor-altbestand.* deploy/node/ratsmonitor-stop-ocr.path deploy/node/ratsmonitor-stop-nacharbeit.path deploy/node/ratsmonitor-stop-altbestand.path /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now ratsmonitor-ocr.timer ratsmonitor-ocr.path ratsmonitor-stop-ocr.path ratsmonitor-nacharbeit.timer ratsmonitor-nacharbeit.path ratsmonitor-stop-nacharbeit.path ratsmonitor-altbestand.timer ratsmonitor-altbestand.path ratsmonitor-stop-altbestand.path
+systemctl start ratsmonitor-import.timer ratsmonitor-import-nightly.timer
+install -m 755 deploy/node/backup.sh /usr/local/bin/ratsmonitor-backup   # nur, falls die Sicherung von dort läuft
+```
+
+Danach die Jobs im Reiter „Jobs & Zeitpläne“ einschalten. Der erste Lauf von `fetch.mjs` oder `text.mjs` überträgt die alten
+Fehler (einige Sekunden). Sicherung außer Haus: `BACKUP_REMOTE` (rclone-Ziel) in `ratsmonitor.env`, rclone installieren.
+
 ## Vor dem Öffnen für andere
 
 Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain erreichbar wird:

@@ -47,8 +47,14 @@ for(const r of db.prepare("SELECT event_date AS date,active,json_extract(payload
  if(r.active===1&&at.get(p.url)?.textStatus==='ok'){sumText++;if(r.sum)sumDone++;}
 }
 
-/* 3. Je Dokument einordnen: Hauptdokument oder übriges PDF, Monat, Stand; offen bei ausgelassenen Servern (fetch.mjs) getrennt */
-const isBlocked=h=>{const x=hosts.get(h);return !!x&&x.n>=BLOCK_MIN&&x.bad/x.n>=BLOCK_SHARE;};
+/* 3. Je Dokument einordnen: Hauptdokument oder übriges PDF, Monat, Stand; offen bei ausgelassenen Servern (fetch.mjs) getrennt.
+   Ausgelassen ist mit Fehlerspeicher (Migration 0040) ein Server, der laut source_hosts gerade wartet; ohne ihn die alte Regel
+   (mindestens BLOCK_MIN Abrufe, BLOCK_SHARE Fehler). */
+const waiting=new Map(),nowIso=new Date().toISOString();
+if(db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='source_hosts'").get())
+ for(const r of db.prepare("SELECT host,state,next_try_at FROM source_hosts WHERE state<>'ok'").all())if(!r.next_try_at||r.next_try_at>nowIso)waiting.set(r.host,r);
+const hasStages=db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='source_hosts'").get();
+const isBlocked=h=>{if(hasStages)return waiting.has(h);const x=hosts.get(h);return !!x&&x.n>=BLOCK_MIN&&x.bad/x.n>=BLOCK_SHARE;};
 const blank=()=>({linked:0,ok:0,textOnly:0,failed:0,open:0,openBlocked:0});
 const add=(c,s)=>{c.linked++;if(s==='ok')c.ok++;else if(s==='text-only')c.textOnly++;else if(s==='error'||s==='unsupported')c.failed++;else c.open++;};
 const P={...blank(),withText:0,complete:0,reasons:new Map(),oldestLoaded:'',oldestTried:'',oldestLinked:''};
@@ -93,7 +99,7 @@ let disk=null;try{const s=fs.statfsSync(store.dir);disk={free:s.bavail*s.bsize,t
 
 /* 5. Server, die nicht liefern: mit mindestens einem Fehler, nach offenen Dokumenten */
 const hostList=[...hosts].filter(([h,x])=>h&&x.bad>0).map(([host,x])=>({host,n:x.n,bad:x.bad,open:x.open,lastOk:x.lastOk.slice(0,10)||null,
- reason:list(x.reasons)[0]?.reason||null,blocked:x.n>=BLOCK_MIN&&x.bad/x.n>=BLOCK_SHARE}))
+ reason:list(x.reasons)[0]?.reason||null,blocked:isBlocked(host),...(waiting.has(host)?{state:waiting.get(host).state,next:waiting.get(host).next_try_at}:{})}))
  .sort((a,b)=>b.open-a.open||b.bad-a.bad);
 
 const pm=monthList(months.primary),om=monthList(months.others);
@@ -109,7 +115,7 @@ const stats={
  summaries:{withText:sumText,done:sumDone},
  others:{linked:O.linked,loaded:O.ok,textOnly:O.textOnly,failed:O.failed,open:O.open,openBlocked:O.openBlocked,withText:O.withText,scans:O.scans,reasons:list(O.reasons),completeThrough:completeThrough(om)},
  months:{primary:pm,others:om},
- hosts:{total:hostList.length,blocked:hostList.filter(h=>h.blocked).length,top:hostList.slice(0,100)},
+ hosts:{total:hostList.length,blocked:hostList.filter(h=>h.blocked).length,stages:!!hasStages,top:hostList.slice(0,100)},
 };
 
 /* 6. Fehlerliste je Dokument als CSV, gepackt, in Stücken (die Route setzt sie wieder zusammen) */

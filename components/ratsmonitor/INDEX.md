@@ -612,7 +612,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/admin/
-- page.tsx (64, ⚠4): dynamic, metadata, AdminPage
+- page.tsx (68, ⚠4): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -630,31 +630,34 @@ topic design-styles.css:140
 ### components/
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (114, ⚠8): AdminAiLocal
+- admin-altbestand.tsx (141, ⚠9): AdminAltbestand
 - admin-atlas.tsx (197, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
 - admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠14): AdminDashboardView
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-debug.tsx (160, ⚠9): AdminDebug
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
 - admin-loader.tsx (33): AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
-- admin-pdf-parts.tsx (168, ⚠7): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
-- admin-pdf.tsx (270, ⚠20): AdminPdf
+- admin-pdf-parts.tsx (169, ⚠10): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
+- admin-pdf.tsx (271, ⚠20): AdminPdf
+- admin-pipeline-parts.tsx (99, ⚠2): n, Step, FailRow, Glossary, stepSentence, StepList, result, Timeline, FailureTable, HostTable
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (186, ⚠21): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (223, ⚠11): AdminRuleTexts
+- admin-rule-texts.tsx (224, ⚠11): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
-- admin-schedules.tsx (115, ⚠4): AdminSchedules
+- admin-schedules.tsx (116, ⚠4): AdminSchedules
 - admin-social.tsx (135, ⚠1): AdminSocial
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
 - admin-stand.tsx (28): standText, StandLine
 - admin-storage.tsx (124, ⚠9): AdminStorage
 - admin-store.ts (96): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (502, ⚠5): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, RAHMEN
+- admin-texts.ts (506, ⚠5): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, RAHMEN
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-ui.tsx (87): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick

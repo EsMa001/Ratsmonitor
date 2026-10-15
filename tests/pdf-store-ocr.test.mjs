@@ -12,9 +12,9 @@ import {ocrWithRefetch} from '../scripts/pdf-store/store-lib.mjs';
 const bytes=name=>new Uint8Array(Buffer.from(`%PDF-1.4\n% ${name}\n%%EOF`,'latin1'));
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 /* Datei mit `pages` Seiten ohne Textebene ablegen; drop: danach verdrängen (nur noch Text); main: Hauptdokument statt übriges PDF */
-function file(store,name,{drop=false,main=false,pages=1}={}){
+function file(store,name,{drop=false,main=false,pages=1,date=null}={}){
  const b=bytes(name),url='https://x.test/'+name;
- store.put(url,b,{role:main?null:'other'});
+ store.put(url,b,{role:main?null:'other',eventDate:date});
  const s=sha(b);store.putText(s,['Seite eins mit Text.',...Array(pages).fill('')],{method:'text',version:1,ocrNeeded:pages});
  if(drop)store.dropPdf(s);
  return {b,s,url};
@@ -28,13 +28,13 @@ const withStore=fn=>async()=>{
  try{await fn(store);}finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 };
 
-test('OCR-Reihe: leichte zuerst, bei gleich vielen Seiten Hauptdokumente vor übrigen und abgelegte vor verdrängten; langsame ans Ende',withStore(async store=>{
- const heavyMain=file(store,'heavy-main',{main:true,pages:3}),lightOther=file(store,'light-other',{drop:true});
- const lightMainGone=file(store,'light-main-gone',{main:true,drop:true}),lightMain=file(store,'light-main',{main:true});
- assert.deepEqual(queue(store),[lightMain.s,lightMainGone.s,lightOther.s,heavyMain.s],'eine Seite vor drei, auch ein übriges PDF vor einem schweren Hauptdokument');
- assert.deepEqual(store.ocrQueue().map(x=>x.main),[true,true,false,true]);
- store.markSlow(lightMain.s);
- assert.deepEqual(queue(store),[lightMainGone.s,lightOther.s,heavyMain.s,lightMain.s],'über der Zeitgrenze: ans Ende');
+test('OCR-Reihe: Hauptdokumente vor übrigen, abgelegte vor verdrängten, neueste Sitzung zuerst, dann leichte; langsame ans Ende',withStore(async store=>{
+ const heavyNew=file(store,'heavy-new',{main:true,pages:3,date:'2026-10-10'}),lightOld=file(store,'light-old',{main:true,date:'2019-03-01'});
+ const lightOther=file(store,'light-other',{drop:true,date:'2026-10-12'}),mainGone=file(store,'main-gone',{main:true,drop:true,date:'2026-10-11'});
+ assert.deepEqual(queue(store),[heavyNew.s,lightOld.s,mainGone.s,lightOther.s],'ein schwerer Scan von letzter Woche vor einem Einseiter von 2019');
+ assert.deepEqual(store.ocrQueue({others:false}).map(x=>x.sha),[heavyNew.s,lightOld.s,mainGone.s],'übrige PDFs nur auf Wunsch');
+ store.markSlow(heavyNew.s);
+ assert.deepEqual(queue(store),[lightOld.s,mainGone.s,lightOther.s,heavyNew.s],'über der Zeitgrenze: ans Ende');
 }));
 
 test('OCR: abgelegte Datei gelesen, verdrängte kurz nachgeladen, gelesen und gleich wieder gelöscht, auch Hauptdokumente',withStore(async store=>{
@@ -56,8 +56,11 @@ test('OCR: abgelegte Datei gelesen, verdrängte kurz nachgeladen, gelesen und gl
 test('OCR: Fehler vermerkt ohne neuen Versuch, geänderte Datei nicht übernommen, ausgelassener Server und Anhalten lassen sie offen',withStore(async store=>{
  const fail=file(store,'fail',{drop:true}),changed=file(store,'changed',{drop:true}),skip=file(store,'skip',{drop:true}),stop=file(store,'stop',{drop:true});
  const {seen,read}=reader(store);
- assert.deepEqual(await ocrWithRefetch(store,fail.s,{download:async()=>{throw Error('HTTP 404');},read}),{pages:0,fetched:false,result:'failed'});
- assert.deepEqual(await ocrWithRefetch(store,changed.s,{download:async()=>bytes('heute anders'),read}),{pages:0,fetched:false,result:'changed'});
+ const noted=[],failed=(s,error,info)=>{noted.push([s,error,info.changed,info.http??null]);store.refetchFailed(s,error);};
+ const f1=await ocrWithRefetch(store,fail.s,{download:async()=>{throw Object.assign(Error('HTTP 404'),{http:404});},read,failed});
+ assert.deepEqual([f1.result,f1.fetched,f1.http],['failed',false,404]);
+ assert.equal((await ocrWithRefetch(store,changed.s,{download:async()=>bytes('heute anders'),read,failed})).result,'changed');
+ assert.deepEqual(noted.map(n=>[n[0],n[2],n[3]]),[[fail.s,false,404],[changed.s,true,null]],'Fehlschläge gehen an den Fehlerspeicher (failed) mit HTTP-Code und „geändert“');
  assert.ok(!fs.existsSync(store.file(changed.s))&&!fs.existsSync(store.file(sha(bytes('heute anders')))),'eine andere Datei wird nicht abgelegt');
  assert.deepEqual(await ocrWithRefetch(store,skip.s,{download:async()=>{throw Object.assign(Error('Server ausgelassen'),{skip:true});},read}),{pages:0,fetched:false,result:'skipped'});
  await assert.rejects(ocrWithRefetch(store,stop.s,{download:async()=>{throw Error('abgebrochen');},read,halted:()=>true}),e=>e.halted===true);

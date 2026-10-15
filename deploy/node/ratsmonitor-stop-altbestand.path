@@ -1,0 +1,11 @@
+# Anhalten aus der Administration (server/integrations/job-trigger.mjs): ein Knopfdruck schreibt
+# /srv/ratsmonitor/data/trigger/stop-altbestand, systemd hält dann ratsmonitor-altbestand.service an (ratsmonitor-stop@.service).
+[Unit]
+Description=Ratsmonitor: altbestand anhalten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/stop-altbestand
+Unit=ratsmonitor-stop@altbestand.service
+
+[Install]
+WantedBy=multi-user.target

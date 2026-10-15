@@ -1,0 +1,11 @@
+# Sofortstart aus der Administration (server/integrations/job-trigger.mjs): ein Knopfdruck schreibt
+# /srv/ratsmonitor/data/trigger/nacharbeit, systemd startet dann ratsmonitor-nacharbeit.service.
+[Unit]
+Description=Ratsmonitor: nacharbeit sofort starten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/nacharbeit
+Unit=ratsmonitor-nacharbeit.service
+
+[Install]
+WantedBy=multi-user.target

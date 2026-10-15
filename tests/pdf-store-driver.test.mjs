@@ -38,7 +38,7 @@ test('OCR driver continues after a partial batch and aggregates child summaries'
  const result=run({mode:'driver'});
  assert.equal(result.children.length,3,'two productive batches, followed by the empty queue check');
  assert.deepEqual(result.summary,{
-  files:3,primary:1,pages:6,failed:0,changed:0,fetched:1,skipped:0,dropped:1,
+  files:3,primary:1,pages:6,failed:0,changed:0,fetched:1,skipped:0,dropped:1,slow:0,killed:0,
   open:0,seconds:0,stopped:false,
  });
  assert.deepEqual(result.remaining,[]);

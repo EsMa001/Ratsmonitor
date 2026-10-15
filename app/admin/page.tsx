@@ -18,12 +18,14 @@ import {AdminSocial} from '@/components/admin-social';
 import {AdminPdf} from '@/components/admin-pdf';
 import {AdminStorage} from '@/components/admin-storage';
 import {AdminSchedules} from '@/components/admin-schedules';
+import {AdminDebug} from '@/components/admin-debug';
+import {AdminAltbestand} from '@/components/admin-altbestand';
 import {validRegion,REGIONS} from '@/shared/regions';
 export const dynamic='force-dynamic';
 export const metadata={title:'Administration · '+BRAND_NAME[DEFAULT_BRAND],robots:{index:false,follow:false}};
 // Pages by name; the numbers of the first version still lead to their page. "auswahl" (areas handed over by the
 // estimate) and "filter" (a list filter) open the import page. Without a page: the overview (START_PAGE).
-const PAGES:Record<string,AdminPage>={todo:'todo',uebersicht:'uebersicht',abruf:'abruf',atlas:'atlas',qualitaet:'qualitaet',hochrechnung:'hochrechnung',regeltexte:'regeltexte',social:'social',pdf:'pdf','pdf-import':'pdf',speicher:'speicher',zeitplaene:'zeitplaene',jobs:'zeitplaene','1':'abruf','2':'qualitaet','3':'hochrechnung'};
+const PAGES:Record<string,AdminPage>={todo:'todo',uebersicht:'uebersicht',abruf:'abruf',atlas:'atlas',qualitaet:'qualitaet',hochrechnung:'hochrechnung',regeltexte:'regeltexte',social:'social',pdf:'pdf','pdf-import':'pdf',speicher:'speicher',zeitplaene:'zeitplaene',jobs:'zeitplaene',debug:'debug',altbestand:'altbestand','1':'abruf','2':'qualitaet','3':'hochrechnung'};
 const FILTERS=['all','connected','data','empty','issues','partial','stale','failed','shallow','quiet','selected'];
 export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string;filter?:string}>}){const {seite,auswahl,filter}=await searchParams;
  // "auswahl" preselects areas on the import page; only known area ids are accepted.
@@ -54,6 +56,8 @@ async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobil
   if(page==='pdf')return frame(<AdminPdf/>);
   if(page==='speicher')return frame(<AdminStorage/>);
   if(page==='zeitplaene')return frame(<AdminSchedules/>);
+  if(page==='debug')return frame(<AdminDebug/>);
+  if(page==='altbestand')return frame(<AdminAltbestand/>);
   if(page==='hochrechnung')return frame(<AdminForecast/>);
   if(page==='atlas')return frame(<AdminAtlas/>);
   if(page==='uebersicht')return frame(<AdminOverview/>);

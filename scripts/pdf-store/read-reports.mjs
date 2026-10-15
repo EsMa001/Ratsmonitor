@@ -9,7 +9,10 @@
 // wenn der Text fehlt oder nicht lesbar ist (dann kann sie aus dem Import stammen).
 // Danach die Wortliste nachführen (node scripts/refresh-search-words.mjs, nach --all mit --full).
 //
-//   node scripts/pdf-store/read-reports.mjs [--dry-run] [--all] [--limit N]
+//   node scripts/pdf-store/read-reports.mjs [--dry-run] [--all] [--limit N] [--ids datei]
+//        --ids: nur diese Berichte (eine ID je Zeile), immer neu gelesen (Job „nacharbeit“)
+// Stürzt eine Regel bei einem Bericht ab, geht er als 'rules' mit Klasse internal in den Fehlerspeicher (Migration 0040) und der
+// Lauf geht weiter; ein Erfolg löscht einen solchen Eintrag.
 //        lokale Datenbank (DATABASE_FILE oder .wrangler/), Ablage RM_PDF_STORE
 import {existsSync,readdirSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
@@ -18,9 +21,12 @@ import {readReport,mainDocument,factAttachments,readKey,READ_VERSION} from '../.
 import {FACTS_VERSION,titleKey} from '../../shared/topic-facts.mjs';
 import {stepSummary} from './state.mjs';
 import {pdfUses} from './store-lib.mjs';
+import {readFileSync} from 'node:fs';
+import {openFailures} from './failures.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const dry=flag('dry-run'),all=flag('all'),limit=Number(opt('limit',0));
+const onlyIds=opt('ids')?new Set(readFileSync(opt('ids'),'utf8').split(/\s+/).map(x=>x.trim()).filter(Boolean)):null;
 const store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE);
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
 const local=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;
@@ -37,12 +43,13 @@ const keys=all||!has('report_rules')?new Map():new Map(db.prepare('SELECT topic_
 const todo=[];let total=0;
 for(const r of db.prepare(`SELECT id,region_id,coalesce(json_extract(payload,'$.officialTitle'),json_extract(payload,'$.title'),'') AS title,
   json_extract(payload,'$.documents') AS docs FROM topics WHERE active=1`).iterate()){
+ if(onlyIds&&!onlyIds.has(r.id))continue;
  total++;let docs=[];try{docs=JSON.parse(r.docs||'[]');}catch{/* ohne Dokumente */}
  const {doc,session}=mainDocument(docs,{uses:U,hasText});
  const textSha=doc&&!session?store.textMark(doc.url)||'':'';
  const att=factAttachments(docs,doc?.url,{uses:U,hasText}).map(a=>({...a,textSha:store.textMark(a.url)||''}));
  const key=readKey({title:r.title,mainUrl:doc?.url,session,textSha,attSha:att.map(a=>a.textSha).join(',')});
- if(keys.get(r.id)!==key)todo.push([r.id,doc&&!session&&textSha?doc.url:null,textSha,r.region_id+'|'+titleKey(r.title),att.length?att:null]);
+ if(onlyIds||keys.get(r.id)!==key)todo.push([r.id,doc&&!session&&textSha?doc.url:null,textSha,r.region_id+'|'+titleKey(r.title),att.length?att:null]);
 }
 keys.clear();
 console.log(`${total} Berichte, ${todo.length} zu lesen (${READ_VERSION}, ${((Date.now()-t0)/1000).toFixed(0)} s)`);
@@ -65,13 +72,18 @@ const write=fn=>{pending.push(fn);if(pending.length>=500)flush();};
 // Gründe ohne Zusammenfassung, bei denen eine vorhandene bleibt: Text fehlt oder ist nicht lesbar
 const KEEP=new Set(['no-text','too-long','unreadable']);
 const at=new Date().toISOString(),c={read:0,withText:0,changed:0,summary:0,dropped:0,facts:0,issues:{},kinds:{},themes:{}};
+const F=dry?null:await openFailures(),failedIds=F?F.known('rules'):new Set();c.crashed=0;
 for(const [id,url,textSha,caseKey,att] of todo){
  if(limit&&c.read>=limit)break;
  const row=get.get(id);if(!row)continue;
- const old=JSON.parse(row.payload);
- const pages=url?store.getText(url)?.pages||null:null;
- const attachments=(att||[]).map(a=>({...a,pages:store.getText(a.url)?.pages||null}));
- const r=readReport(old,{uses:U,hasText,pages,textSha:pages?textSha:'',attachments,at});
+ let old,pages,r;
+ try{
+  old=JSON.parse(row.payload);
+  pages=url?store.getText(url)?.pages||null:null;
+  const attachments=(att||[]).map(a=>({...a,pages:store.getText(a.url)?.pages||null}));
+  r=readReport(old,{uses:U,hasText,pages,textSha:pages?textSha:'',attachments,at});
+ }catch(e){c.crashed++;console.error('Regeln',id,e?.message||e);await F?.fail({step:'rules',key:id,cls:'internal',error:String(e?.stack||e).slice(0,300)});continue;}
+ if(failedIds.has(id)){await F.ok({step:'rules',key:id});failedIds.delete(id);}
  c.read++;if(pages)c.withText++;
  c.kinds[r.itemKind]=(c.kinds[r.itemKind]||0)+1;c.themes[r.theme.id]=(c.themes[r.theme.id]||0)+1;
  if(r.summaryIssue)c.issues[r.summaryIssue]=(c.issues[r.summaryIssue]||0)+1;else c.summary++;
@@ -93,5 +105,6 @@ flush();
 // Analysen lesen neu (Zwischenspeicher hängen am Datenstand), nur wenn sich etwas geändert hat
 if(!dry&&c.read)db.prepare("UPDATE data_revisions SET revision=revision+1 WHERE id='content'").run();
 console.log(JSON.stringify({berichte:total,...c,sekunden:Math.round((Date.now()-t0)/1000),geschrieben:!dry},null,1));
-if(!dry)stepSummary({all,read:c.read,withText:c.withText,summaries:c.summary,dropped:c.dropped,unchanged:total-todo.length,issues:c.issues});
+F?.close();
+if(!dry)stepSummary({all,crashed:c.crashed,read:c.read,withText:c.withText,summaries:c.summary,dropped:c.dropped,unchanged:total-todo.length,issues:c.issues});
 store.close();
