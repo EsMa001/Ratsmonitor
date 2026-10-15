@@ -3,6 +3,7 @@ import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {source,xState} from './plenara-x-query.mjs';
+import {parseSteps} from './x-cases.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
@@ -12,15 +13,17 @@ import {listPage,offsetOf} from './analytics-lists.mjs';
  * Begriffe werden nach Häufigkeit in der Auswahl gegenüber der Häufigkeit im ganzen Bestand gewichtet (wie tf-idf), damit
  * nicht Füllwörter („Antrag“, „Sitzung“) das Bild bestimmen.
  */
-const SAMPLE=3000,TERMS=22,PER_KIND=6,MIN_DF=3;
-/* Gesamtgraph (all=1, nur für das vorab berechnete Bild): größere, gleichmäßig über alle Karten verteilte Stichprobe, mehr Knoten */
-const SAMPLE_ALL=20000,TERMS_ALL=40,PER_KIND_ALL=8;
+const TERMS=22,PER_KIND=6,MIN_DF=3;
+/* Gesamtgraph (all=1): mehr Knoten */
+const TERMS_ALL=40,PER_KIND_ALL=8;
 const STOP=new Set('aber alle allen aller alles als also auch auf aus bei beim bis dass dem den der des die diese diesem diesen dieser dieses doch durch ein eine einem einen einer eines für gegen hat haben ihre ihrem ihren ihrer ist kann mit nach nicht noch nur oder ohne sich sind über und unter vom von vor wird wurde zum zur zwischen sowie sowohl weitere weiteren weiterer weiteres neue neuen neuer neues dazu hierzu hierfür dafür dagegen darüber darauf daraus davon damit wegen innerhalb außerhalb bezüglich betreffend gemäß nr nummer vom im am an zu so wie was wer wo wenn dann denn mehr sehr schon bereits'.split(' '));
 /* Formalien tragen nichts zum Thema bei */
 const FORMAL=new Set('sitzung sitzungen niederschrift niederschriften protokoll tagesordnung tagesordnungspunkt mitteilung mitteilungen anfrage anfragen anfragen antrag anträge antrags beschluss beschlüsse beschlussvorlage vorlage vorlagen vorlagenummer verschiedenes bekanntgaben bekanntgabe genehmigung feststellung eröffnung öffentlich öffentliche öffentlichen nichtöffentlich nichtöffentlichen teil ortsrat ortsrates gemeinderat gemeinderates stadtrat stadtrates kreistag kreistages rat rates ausschuss ausschusses fachausschuss einwohnerfragestunde fragestunde top punkt hier änderung beteiligung stellungnahme beratung entwurf gemeinde stadt gmbh sachlichen aufstellung beschlussfassung kenntnisnahme bericht berichte information informationen verfahren januar februar märz april mai juni juli august september oktober november dezember montag dienstag mittwoch donnerstag freitag samstag sonntag informativ beschliessend beschließend beschließende beschließender flst herr herrn frau fraktion fraktionen grünen grüne bündnis linke linken freie freien wähler wählergemeinschaft wählergruppe'.split(' '));
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
 /* Wörter des Sitzungsbetriebs, die über den ganzen Bestand ständig vorkommen und kein Thema sind (auch mit Begriff) */
 export const FORMAL_ALL=new Set('beschlussfähigkeit ordnungsgemäßen ordnungsgemäße ladung vorstellung öffentlicher öffentliche sachstand bürgermeisters bürgermeister begrüßung bestätigung wahl bestellung protokolls anwesenheit geschäftsordnung einladung fraktion fraktionen anregungen beschwerden verwaltung eröffnung feststellung genehmigung mitglieder mitglied beantwortung unterrichtung verpflichtung verabschiedung beschlussfassung ergänzung bekanntgabe entgegennahme sitzungsniederschrift gremium gremien ausschuss ausschusses rates gemeinderates stadtrates ortsgemeinderates verbandsgemeinde stadt gemeinde kreis ortsbeirat ortsbeirates niederschrift vorlage vorlagen beschluss beschlüsse bericht berichte aktuelle aktueller informationen information verschiedenes tagesordnungspunkte wortmeldungen einwohnerfragestunde einwohnerfrage teils letzten gefassten angelegenheiten sonstiges annahme nichtöffentlicher nichtöffentlichen sachstandsbericht ordnungsmäßigkeit änderungsanträge einwohner'.split(' ').map(w=>w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replaceAll('ß','ss')));
+/* Gremien eines Vorgangs aus seinen Stationen (x_cases.steps), ohne Platzhalter, je Gremium einmal */
+const gremienOf=steps=>[...new Set(parseSteps(steps).map(e=>e.g).filter(g=>g&&!PLACEHOLDER.test(g)).map(gremiumKey))];
 export const tokens=title=>{
  const found=new Map();
  for(const raw of String(title).split(/[^A-Za-zÀ-ÿ]+/)){
@@ -51,17 +54,10 @@ export async function knowledgeGraph(db,catalog,params){
     einmal); Titel und Gremium aus der Karte des Vorgangs */
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
  const src=await source(db,catalog,f);
- /* Gesamtgraph: jeder n-te Vorgang statt der jüngsten, damit die Auswahl den ganzen Bestand abbildet */
+ /* Alle Vorgänge der Auswahl, keine Stichprobe */
  const overall=!f.groups.length;
- const limit=overall?SAMPLE_ALL:SAMPLE;
- let where='1';const args=[...src.args];
- if(overall){
-  const top=(await db.prepare('SELECT max(rowid) n FROM x_cases').first())?.n||0;
-  const step=Math.max(1,Math.floor(top/limit));
-  if(step>1){where='x.rid % ? = 0';args.push(step);}
- }
- const {results:rows}=await db.prepare(`SELECT x.region_id,x.label,c.gremium,c.title FROM ${src.from} JOIN search_cards c ON c.id=x.card_id WHERE ${where} ORDER BY x.date DESC LIMIT ?`).bind(...args,limit+1).all();
- const capped=rows.length>limit;if(capped)rows.pop();
+ const {results:rows}=await db.prepare(`SELECT x.region_id,x.label,x.steps,c.title FROM ${src.from} JOIN search_cards c ON c.id=x.card_id`).bind(...src.args).all();
+ const capped=false,limit=rows.length;
  const total=rows.length;
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const exclude=new Set(f.groups.flat()),parts=[...exclude].map(norm);
@@ -72,7 +68,7 @@ export async function knowledgeGraph(db,catalog,params){
  const docs=rows.map(r=>{
   const region=byId.get(r.region_id),land=region?region.ags.slice(0,2):null;
   /* Wortteil-Treffer („vereinbarung“ bei „Verein“, „saarbrücken“ bei „Brücke“) sind kein eigener Begriff */
-  return {terms:new Map([...tokens(r.title)].filter(([k])=>!exclude.has(k)&&!FORMAL_ALL.has(k)&&!parts.some(p=>k.includes(p)))),label:r.label,gremium:PLACEHOLDER.test(r.gremium||'')?'':gremiumKey(r.gremium),land};
+  return {terms:new Map([...tokens(r.title)].filter(([k])=>!exclude.has(k)&&!FORMAL_ALL.has(k)&&!parts.some(p=>k.includes(p)))),label:r.label,gremien:gremienOf(r.steps),land};
  });
  /* Häufigkeit der Begriffe in der Auswahl; Gewichtung gegen den ganzen Bestand (search_words) */
  const df=new Map(),shown=new Map();
@@ -90,9 +86,10 @@ export async function knowledgeGraph(db,catalog,params){
  const chosen=cand.map(([k,n])=>({k,n,score:n*idf(k)})).sort((a,b)=>b.score-a.score).slice(0,overall?TERMS_ALL:TERMS);
  const termSet=new Set(chosen.map(c=>c.k));
  /* Themen, Gremien, Länder: je Art die häufigsten */
+ const countAll=pick=>{const m=new Map();for(const d of docs)for(const v of pick(d))m.set(v,(m.get(v)||0)+1);return [...m].sort((a,b)=>b[1]-a[1]).slice(0,overall?PER_KIND_ALL:PER_KIND);};
  const count=pick=>{const m=new Map();for(const d of docs){const v=pick(d);if(v)m.set(v,(m.get(v)||0)+1);}return [...m].sort((a,b)=>b[1]-a[1]).slice(0,overall?PER_KIND_ALL:PER_KIND);};
  const labelName=id=>LABELS.find(l=>l.id===id)?.name||null;
- const topics=count(d=>labelName(d.label)&&d.label!=='unklar'?d.label:null),committees=count(d=>d.gremium.length>=4?d.gremium:null),lands=count(d=>d.land);
+ const topics=count(d=>labelName(d.label)&&d.label!=='unklar'?d.label:null),committees=countAll(d=>d.gremien.filter(g=>g.length>=4)),lands=count(d=>d.land);
  const nodes=[{id:'q',type:'center',label:f.q||'Gesamter Datenbestand',count:total}];
  for(const c of chosen)nodes.push({id:'t:'+c.k,type:'term',label:shown.get(c.k),count:c.n});
  for(const [id,n] of topics)nodes.push({id:'k:'+id,type:'topic',label:labelName(id),count:n});
@@ -105,7 +102,7 @@ export async function knowledgeGraph(db,catalog,params){
  for(const d of docs){
   const ids=[...[...d.terms.keys()].filter(k=>termSet.has(k)).map(k=>'t:'+k)];
   if(size.has('k:'+d.label))ids.push('k:'+d.label);
-  if(size.has('g:'+d.gremium))ids.push('g:'+d.gremium);
+  for(const g of d.gremien)if(size.has('g:'+g))ids.push('g:'+g);
   if(size.has('l:'+d.land))ids.push('l:'+d.land);
   for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++)bump(ids[i],ids[j]);
  }
@@ -130,14 +127,14 @@ export async function knowledgeGraph(db,catalog,params){
  return {q:f.q,total,capped,sample:limit,partial:[...partial].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([w,n])=>({word:w,n})),nodes,edges:links,stats:{terms:chosen.length,topics:topics.length,committees:committees.length,lands:lands.length,links:links.length-nodes.length+1}};
 }
 
-/** Liste hinter einem Knoten: by=node&value=„t:Begriff“, „k:Thema“, „g:Gremium“ oder „l:Land“; aus denselben jüngsten SAMPLE Einträgen */
+/** Liste hinter einem Knoten: by=node&value=„t:Begriff“, „k:Thema“, „g:Gremium“ oder „l:Land“; alle Vorgänge der Auswahl */
 export async function graphList(db,catalog,params){
  const value=params.get('value')||'',kind=value[1]===':'?value[0]:'',id=value.slice(2);
  if(params.get('by')!=='node'||!'tkgl'.includes(kind)||!kind||!id)throw new AnalyticsError('Unbekannte Liste.',400);
  const f=parseGraph(params);
  const src=await source(db,catalog,f);
- const {results}=await db.prepare(`SELECT c.id,x.region_id region,x.label,c.gremium,c.title,x.date,x.status FROM ${src.from} JOIN search_cards c ON c.id=x.card_id ORDER BY x.date DESC LIMIT ?`).bind(...src.args,SAMPLE).all();
+ const {results}=await db.prepare(`SELECT c.id,x.region_id region,x.label,c.gremium,c.title,x.date,x.status,x.steps FROM ${src.from} JOIN search_cards c ON c.id=x.card_id ORDER BY x.date DESC`).bind(...src.args).all();
  const land=new Map(catalog.map(r=>[r.id,r.ags?.slice(0,2)]));
- const hit={t:r=>tokens(r.title).has(id),k:r=>r.label===id,g:r=>gremiumKey(r.gremium)===id,l:r=>land.get(r.region)===id}[kind];
+ const hit={t:r=>tokens(r.title).has(id),k:r=>r.label===id,g:r=>gremienOf(r.steps).includes(id),l:r=>land.get(r.region)===id}[kind];
  return listPage(results.filter(hit),catalog,offsetOf(params));
 }

@@ -18,7 +18,7 @@ test('decisions count status and outcome exactly and read votes, amendments and 
  const sql=new DatabaseSync(':memory:');
  for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8').replaceAll('--> statement-breakpoint',''));
  const db=sqliteAdapter(sql);let n=0;
- const put=(region,status,committee,label,events)=>{n++;const t={title:'Vorlage '+n,officialTitle:'Vorlage '+n,shortSummary:'x',committee,classification:{method:'title-rules-v2',version:'labels-v2',primary:label,evidence:'x'},events};sql.prepare('INSERT INTO topics VALUES(?,?,?,?,?,?,?)').run('t'+n,'city','2026-09-20','2026-09-20',status,JSON.stringify(t),region);};
+ const put=(region,status,committee,label,events)=>{n++;events=events.map(e=>({...e,committee:e.committee==='x'?committee:e.committee}));const t={title:'Vorlage '+n,officialTitle:'Vorlage '+n,shortSummary:'x',committee,classification:{method:'title-rules-v2',version:'labels-v2',primary:label,evidence:'x'},events};sql.prepare('INSERT INTO topics VALUES(?,?,?,?,?,?,?)').run('t'+n,'city','2026-09-20','2026-09-20',status,JSON.stringify(t),region);};
  const ev=(date,status,result)=>({date,committee:'x',status,result});
  for(let i=0;i<4;i++)put('a','approved','Rat der Stadt','bildung',[ev('2026-09-01','consulting',''),ev('2026-09-11','approved','einstimmig beschlossen')]);
  for(let i=0;i<2;i++)put('a','approved','Ausschuss für Bau','bildung',[ev('2026-09-20','approved','mehrheitlich beschlossen')]);

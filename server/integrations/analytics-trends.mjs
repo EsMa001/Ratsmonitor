@@ -10,10 +10,10 @@ import {listPage,offsetOf} from './analytics-lists.mjs';
  * Plenara.X – Trends: Welche Begriffe nehmen gegenüber dem Zeitraum davor zu, ab oder tauchen neu auf?
  * Verglichen werden zwei gleich lange Zeitfenster (die letzten W Tage und die W Tage davor). Gezählt werden Vorgänge wie überall in
  * plenara.X: Auswahl über die Suche (source), gezählt in x_cases (ein Sachvorgang je Zeile, ohne Formalien, gleiche Titel je Gebiet
- * einmal), Titel aus der Karte des Vorgangs. Je Fenster gleichmäßig (jeder k-te Vorgang) auf höchstens CAP heruntergerechnet. Verglichen werden Anteile an den Einträgen, nicht Rohzahlen; Maß ist ein Zwei-Stichproben-z-Test für Anteile.
- * Private Bauanträge zählen nicht. Zahlen je Begriff sind Zahlen der Stichprobe (bei großen Auswahlen jede k-te Zeile).
+ * einmal), Titel aus der Karte des Vorgangs. Alle Vorgänge je Fenster, keine Stichprobe. Verglichen werden Anteile an den Einträgen, nicht Rohzahlen; Maß ist ein Zwei-Stichproben-z-Test für Anteile.
+ * Private Bauanträge zählen nicht.
  */
-const CAP=12000,WINDOWS=[30,90,180],MIN_RECENT=5,RATIO=1.4,Z_MIN=2.5,LIST=15;
+const WINDOWS=[30,90,180],MIN_RECENT=5,RATIO=1.4,Z_MIN=2.5,LIST=15;
 const DAY=86400000;
 const iso=d=>new Date(d).toISOString().slice(0,10);
 
@@ -36,12 +36,12 @@ export async function trends(db,catalog,params,now=Date.now()){
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
  const src=await source(db,catalog,f);
  const end=iso(now+DAY),mid=iso(now+DAY-W*DAY),start=iso(now+DAY-2*W*DAY);
- /* Je Fenster: alle Vorgänge (schmal), gleichmäßige Stichprobe, Titel nur für die Stichprobe */
+ /* Je Fenster: alle Vorgänge, dazu ihre Titel */
  const load=async(a,b)=>{
   const range='x.date>=? AND x.date<?';
-  const total=(await db.prepare(`SELECT count(*) n FROM ${src.from} WHERE ${range}`).bind(...src.args,a,b).first())?.n||0;
-  const k=Math.max(1,Math.ceil(total/CAP));
-  const {results:pick}=await db.prepare(`SELECT x.card_id id,x.date,x.region_id,x.label FROM ${src.from} WHERE ${range}${k>1?' AND x.rid % ? = 0':''}`).bind(...src.args,a,b,...(k>1?[k]:[])).all();
+  // Alle Vorgänge des Fensters, keine Stichprobe
+  const {results:pick}=await db.prepare(`SELECT x.card_id id,x.date,x.region_id,x.label FROM ${src.from} WHERE ${range}`).bind(...src.args,a,b).all();
+  const total=pick.length,k=1;
   const titles=new Map();
   for(let i=0;i<pick.length;i+=5000){const ids=pick.slice(i,i+5000).map(r=>r.id);
    const {results}=await db.prepare('SELECT id,title FROM search_cards WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(ids)).all();
@@ -100,7 +100,7 @@ export async function trends(db,catalog,params,now=Date.now()){
  };
 }
 
-/** Liste hinter einem Begriff: by=term&value=Begriff (Schlüssel), span=recent (Standard) oder prev; alle Vorgänge, nicht die Stichprobe */
+/** Liste hinter einem Begriff: by=term&value=Begriff (Schlüssel), span=recent (Standard) oder prev; alle Vorgänge */
 export async function trendList(db,catalog,params,now=Date.now()){
  const key=params.get('value')||'';
  if(params.get('by')!=='term'||key.length<3)throw new AnalyticsError('Unbekannte Liste.',400);

@@ -2,27 +2,35 @@ import {LABELS} from '../../shared/labels.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
-import {offsetOf,LIST_SIZE} from './analytics-lists.mjs';
-import {where as placeOf} from './member-place.mjs';
+import {listPage,offsetOf} from './analytics-lists.mjs';
+import {parseSteps} from './x-cases.mjs';
 import {source,xState} from './plenara-x-query.mjs';
 import {atRevisionStale,paramsKey} from './revision-cache.mjs';
 
 /*
  * Plenara.X – Status und Beschlüsse: Wie stehen die Vorgänge, wie fallen Beschlüsse aus, wie einig sind die Gremien?
- * Exakt (alle passenden Einträge, search_cards): Stand der Vorgänge, Verlauf je Monat, Aufteilung nach Themenfeld, Gremienebene und Land.
- * Aus einer gleichmäßigen Stichprobe beschlossener Vorgänge (Stationen in topics.payload): Abstimmungsverhalten (einstimmig oder
+ * Vollständig (alle passenden Vorgänge, x_cases): Stand der Vorgänge, Verlauf je Monat, Aufteilung nach Themenfeld, Gremienebene und Land.
+ * Aus allen entschiedenen Vorgängen (Spalten vote, changed, days in x_cases): Abstimmungsverhalten (einstimmig oder
  * mehrheitlich), Änderungen am Beschlussvorschlag und Durchlaufzeit. Die Beschlussquote ist der Anteil „beschlossen“ an allen
  * Vorgängen mit Entscheidung (beschlossen, abgelehnt, vertagt). Die meisten Einträge haben keinen bekannten Status; das wird mit ausgewiesen.
- * Gezählt werden Vorgänge wie überall in plenara.X: Auswahl über die Suche (source), Vorgänge aus x_cases (ohne Formalien);
- * ausgewertet werden alle Karten eines Vorgangs (Ausschuss und Rat), je Vorgang und Status einmal (cardsOf). Ausschüsse empfehlen meist nur,
+ * Gezählt werden Vorgänge wie überall in plenara.X: Auswahl über die Suche (source), Vorgänge aus x_cases (ohne Formalien), vollständig,
+ * ohne Stichprobe. Stand, Quote, Themen, Länder: Endstand des Vorgangs; Gremienebene: jede Station (x_cases.steps, Ausschuss empfiehlt,
+ * Rat beschließt), je Vorgang, Ebene und Status einmal; Abstimmung, Änderung und Dauer: Spalten vote, changed, days (Bau, Migration 0040). Ausschüsse empfehlen meist nur,
  * deshalb keine Beschlussquote für sie. Je Themenfeld und Land steht dabei, ob die Quote vom Gesamtwert deutlich abweicht
  * (Wilson-Spanne 95 % schließt ihn aus); sonst gilt sie als üblich.
  */
-const SAMPLE=4000,MIN_TOPIC=20,MIN_LAND=60,MIN_VOTE=8;
+const MIN_TOPIC=20,MIN_LAND=60,MIN_VOTE=8;
 const DECIDED=['approved','rejected','postponed'];
 const STATUSES=['announced','consulting','recommended','approved','rejected','postponed','info','unknown'];
-/** Gremienebene aus dem Namen (SQL und JS gleich) */
-const KIND_SQL="CASE WHEN lower(gremium) LIKE 'ortsgemeinderat%' THEN 'ortsgemeinde' WHEN lower(gremium) LIKE '%ortsbeirat%' OR lower(gremium) LIKE '%ortsrat%' OR lower(gremium) LIKE '%bezirksvertretung%' OR lower(gremium) LIKE '%bezirksbeirat%' OR lower(gremium) LIKE '%stadtbezirk%' OR lower(gremium) LIKE '%ortschaftsrat%' THEN 'ortsebene' WHEN lower(gremium) LIKE '%ausschuss%' OR lower(gremium) LIKE '%kommission%' OR lower(gremium) LIKE '%beirat%' THEN 'ausschuss' WHEN lower(gremium) LIKE '%rat%' OR lower(gremium) LIKE '%kreistag%' OR lower(gremium) LIKE '%stadtverordneten%' OR lower(gremium) LIKE '%gemeindevertretung%' THEN 'rat' ELSE 'sonstige' END";
+/** Gremienebene aus dem Namen (Stationen aus x_cases.steps) */
+export function kindOf(gremium){
+ const g=String(gremium||'').toLowerCase();
+ if(g.startsWith('ortsgemeinderat'))return 'ortsgemeinde';
+ if(/ortsbeirat|ortsrat|bezirksvertretung|bezirksbeirat|stadtbezirk|ortschaftsrat/.test(g))return 'ortsebene';
+ if(/ausschuss|kommission|beirat/.test(g))return 'ausschuss';
+ if(/rat|kreistag|stadtverordneten|gemeindevertretung/.test(g))return 'rat';
+ return 'sonstige';
+}
 export const KINDS=[['rat','Rat und Kreistag'],['ortsgemeinde','Ortsgemeinderäte (in Verbandsgemeinden)'],['ausschuss','Ausschüsse und Beiräte'],['ortsebene','Orts- und Bezirksebene'],['sonstige','Sonstige']];
 const labelName=id=>LABELS.find(l=>l.id===id)?.name||id;
 
@@ -51,57 +59,39 @@ export async function decisions(db,catalog,params){
  const f=parseDecisions(params);
  return atRevisionStale(db,paramsKey('decisions',params),()=>computeDecisions(db,catalog,f));
 }
-/* Karten der ausgewählten Vorgänge (alle Sitzungen bis zur letzten; ungelesene Vorgänge nur mit ihrer Karte) als CTE „cards“ */
-async function cardsOf(db,catalog,f){
- if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const src=await source(db,catalog,f),cols='x.case_key ck,c.id,c.date,c.label,c.status,c.gremium,c.region_id,c.title';
- return {sql:`WITH cards AS MATERIALIZED (SELECT ${cols} FROM ${src.from} JOIN report_rules r ON r.case_key=x.case_key JOIN search_cards c ON c.id=r.topic_id WHERE c.date<>'' AND c.date<=x.date
-  UNION ALL SELECT ${cols} FROM ${src.from} JOIN search_cards c ON c.id=x.card_id WHERE x.unread=1)`,args:[...src.args,...src.args]};
-}
 async function computeDecisions(db,catalog,f){
- const C=await cardsOf(db,catalog,f);
- /* Eine Abfrage für Stand, Monat, Themenfeld und Gremienebene */
- const {results:cube}=await db.prepare(`${C.sql} SELECT substr(date,1,7) m,label,${KIND_SQL} kind,status,count(DISTINCT ck) n FROM cards GROUP BY 1,2,3,4`).bind(...C.args).all();
- const {results:perRegion}=await db.prepare(`${C.sql} SELECT region_id,status,count(DISTINCT ck) n FROM cards WHERE status IN ('approved','rejected','postponed') GROUP BY 1,2`).bind(...C.args).all();
- const status=blank(),months=new Map(),topics=new Map(),kinds=new Map();
- for(const r of cube){
-  status[r.status]=(status[r.status]||0)+r.n;
-  if(DECIDED.includes(r.status)){
-   if(!months.has(r.m))months.set(r.m,blank());months.get(r.m)[r.status]+=r.n;
-  }
-  if(!topics.has(r.label))topics.set(r.label,blank());topics.get(r.label)[r.status]+=r.n;
-  if(!kinds.has(r.kind))kinds.set(r.kind,blank());kinds.get(r.kind)[r.status]+=r.n;
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ const src=await source(db,catalog,f);
+ const {results:rows}=await db.prepare(`SELECT x.region_id g,x.month m,x.label l,x.status st,x.steps s,x.vote v,x.changed c,x.days d FROM ${src.from}`).bind(...src.args).all();
+ const status=blank(),months=new Map(),topics=new Map(),kinds=new Map(),lands=new Map();
+ const byId=new Map(catalog.map(r=>[r.id,r]));
+ const bump=(m,key,st)=>{if(!m.has(key))m.set(key,blank());m.get(key)[st]=(m.get(key)[st]||0)+1;};
+ const tally=()=>({n:0,vote:0,unanimous:0,change:0,changed:0});
+ const all=tally(),byTopic=new Map(),byKind=new Map(),spans=[],spanTopic=new Map();
+ const add=(m,key,fn)=>{if(!m.has(key))m.set(key,tally());fn(m.get(key));};
+ let decidedN=0;
+ for(const r of rows){
+  const st=STATUSES.includes(r.st)?r.st:'unknown';
+  status[st]++;bump(topics,r.l,st);
+  if(DECIDED.includes(st)){bump(months,r.m,st);const reg=byId.get(r.g);if(reg)bump(lands,reg.ags.slice(0,2),st);}
+  // Gremienebene: jede Station, je Vorgang, Ebene und Status einmal
+  const steps=parseSteps(r.s),seen=new Set();
+  for(const e of steps){if(!STATUSES.includes(e.st))continue;const k=kindOf(e.g)+'|'+e.st;if(seen.has(k))continue;seen.add(k);bump(kinds,kindOf(e.g),e.st);}
+  if(!DECIDED.includes(st))continue;
+  decidedN++;
+  const dec=[...steps].reverse().find(e=>DECIDED.includes(e.st)),kind=kindOf(dec?.g);
+  const apply=t=>{t.n++;if(r.v){t.vote++;if(r.v==='unanimous')t.unanimous++;}if(r.c){t.change++;if(r.c==='changed')t.changed++;}};
+  apply(all);add(byTopic,r.l,apply);add(byKind,kind,apply);
+  if(r.d!==null&&r.d!==undefined){spans.push(r.d);if(!spanTopic.has(r.l))spanTopic.set(r.l,[]);spanTopic.get(r.l).push(r.d);}
  }
- const total=Object.values(status).reduce((a,b)=>a+b,0),known=total-status.unknown;
+ const total=rows.length,known=total-status.unknown;
  const decided=DECIDED.reduce((a,k)=>a+status[k],0);
  const overall=rate(status);
  /* Weicht die Quote deutlich vom Gesamtwert ab? (Wilson-Spanne 95 %) */
  const differs=c=>{const d=c.approved+c.rejected+c.postponed;if(!d||overall===null)return false;const p=c.approved/d,z=1.96,den=1+z*z/d,mid=(p+z*z/(2*d))/den,h=z*Math.sqrt(p*(1-p)/d+z*z/(4*d*d))/den;return overall/100<mid-h||overall/100>mid+h;};
  const row=(id,name,c)=>({id,name,decided:c.approved+c.rejected+c.postponed,approved:c.approved,rejected:c.rejected,postponed:c.postponed,recommended:c.recommended,
   rate:id==='ausschuss'?null:rate(c),differs:id==='ausschuss'?false:differs(c),open:c.announced+c.consulting+c.recommended});
- /* Länder aus den Gebieten */
- const byId=new Map(catalog.map(r=>[r.id,r])),lands=new Map();
- for(const r of perRegion){const reg=byId.get(r.region_id);if(!reg)continue;const id=reg.ags.slice(0,2);if(!lands.has(id))lands.set(id,blank());lands.get(id)[r.status]+=r.n;}
- /* Stichprobe beschlossener Vorgänge: Stationen aus topics.payload (nur die nötigen Felder) */
- const decidedCount=(await db.prepare(`${C.sql} SELECT count(*) n FROM cards WHERE status IN ('approved','rejected','postponed')`).bind(...C.args).first())?.n||0;
- const k=Math.max(1,Math.ceil(decidedCount/SAMPLE));
- const {results:events}=decidedCount?await db.prepare(`${C.sql} SELECT c.id id,c.label label,c.kind kind,c.status final,json_extract(e.value,'$.status') st,json_extract(e.value,'$.result') res,substr(json_extract(e.value,'$.date'),1,10) d FROM (SELECT id,label,status,kind FROM (SELECT id,label,status,${KIND_SQL} kind,row_number() OVER (ORDER BY id) rn FROM cards WHERE status IN ('approved','rejected','postponed'))${k>1?' WHERE rn % ? = 0':''}) c JOIN topics t ON t.id=c.id, json_each(t.payload,'$.events') e`).bind(...C.args,...(k>1?[k]:[])).all():{results:[]};
- const cards=new Map();
- for(const e of events){if(!cards.has(e.id))cards.set(e.id,{label:e.label,kind:e.kind,final:e.final,ev:[]});cards.get(e.id).ev.push(e);}
- const tally=()=>({n:0,vote:0,unanimous:0,change:0,changed:0});
- const all=tally(),byTopic=new Map(),byKind=new Map(),spans=[],spanTopic=new Map();
- const add=(m,key,fn)=>{if(!m.has(key))m.set(key,tally());fn(m.get(key));};
- for(const c of cards.values()){
-  const dated=c.ev.filter(e=>e.d).sort((a,b)=>a.d.localeCompare(b.d));
-  /* Beschluss = letzte Station mit Entscheidung */
-  const dec=[...dated].reverse().find(e=>DECIDED.includes(e.st))||[...c.ev].reverse().find(e=>DECIDED.includes(e.st));
-  if(dec){
-   const r=readResult(dec.res);
-   const apply=t=>{t.n++;if(r.vote){t.vote++;if(r.vote==='unanimous')t.unanimous++;}if(r.change){t.change++;if(r.change==='changed')t.changed++;}};
-   apply(all);add(byTopic,c.label,apply);add(byKind,c.kind,apply);
-   if(dated.length>=2&&dec.d&&dated[0].d&&dec.d>=dated[0].d){const days=Math.round((Date.parse(dec.d)-Date.parse(dated[0].d))/86400000);spans.push(days);if(!spanTopic.has(c.label))spanTopic.set(c.label,[]);spanTopic.get(c.label).push(days);}
-  }
- }
+ const cards={size:decidedN},k=1,decidedCount=decidedN;
  spans.sort((a,b)=>a-b);
  const share=(a,b)=>b?Math.round((a/b)*1000)/10:null;
  const vrow=(id,name,t)=>({id,name,n:t.n,vote:t.vote,unanimous:share(t.unanimous,t.vote),changeN:t.change,changed:share(t.changed,t.change)});
@@ -132,16 +122,11 @@ export async function decisionList(db,catalog,params){
  if(!['label','kind','land'].includes(by)||!value||outcome&&!DECIDED.includes(outcome))throw new AnalyticsError('Unbekannte Liste.',400);
  const copy=new URLSearchParams(params);for(const k of ['by','value','offset','outcome'])copy.delete(k);
  const f=parseDecisions(copy);
- const C=await cardsOf(db,catalog,f),offset=offsetOf(params);
- const ids=by==='land'?catalog.filter(r=>r.ags?.startsWith(value)).map(r=>r.id):[];
- const cond={label:'label=?',kind:`${KIND_SQL}=?`,land:`region_id IN (SELECT value FROM json_each(?))`}[by];
- const sts=outcome?[outcome]:DECIDED,w=`status IN (${sts.map(()=>'?').join(',')}) AND ${cond}`,wa=[...sts,by==='land'?JSON.stringify(ids):value];
- // Je Vorgang eine Zeile (jüngste passende Karte), wie die Zahl
- const [{results},count]=await Promise.all([
-  db.prepare(`${C.sql} SELECT id,region_id region,title,gremium,max(date) date,status,count(*) times FROM cards WHERE ${w} GROUP BY ck ORDER BY date DESC LIMIT ? OFFSET ?`).bind(...C.args,...wa,LIST_SIZE,offset).all(),
-  db.prepare(`${C.sql} SELECT count(DISTINCT ck) n FROM cards WHERE ${w}`).bind(...C.args,...wa).first(),
- ]);
- const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
- return {offset,size:LIST_SIZE,total:Number(count?.n||0),
-  items:results.map(r=>({id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,times:r.times}))};
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ const src=await source(db,catalog,f),sts=outcome?[outcome]:DECIDED;
+ const ids=by==='land'?new Set(catalog.filter(r=>r.ags?.startsWith(value)).map(r=>r.id)):null;
+ // Wie die Zahl: Themen und Länder nach dem Endstand, Gremienebene nach den Stationen des Vorgangs
+ const {results}=await db.prepare(`SELECT c.id,x.region_id region,c.title,c.gremium,x.date,x.status,x.label,x.steps FROM ${src.from} JOIN search_cards c ON c.id=x.card_id ORDER BY x.date DESC`).bind(...src.args).all();
+ const rows=results.filter(r=>by==='kind'?parseSteps(r.steps).some(e=>kindOf(e.g)===value&&sts.includes(e.st)):sts.includes(r.status)&&(by==='label'?r.label===value:ids.has(r.region)));
+ return listPage(rows,catalog,offsetOf(params));
 }

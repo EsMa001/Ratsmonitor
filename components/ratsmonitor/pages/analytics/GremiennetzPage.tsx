@@ -66,7 +66,7 @@ export function GremiennetzPage() {
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {empty ? (
-            <p className="mt-10 max-w-[680px] text-[16px]">Für diese Auswahl gibt es zu wenige Vorgänge, die durch mehrere Gremien gelaufen sind ({n(res.paths)} in der Stichprobe). Mit einer weiteren Auswahl, etwa ohne Ort oder mit längerem Zeitraum, wird das Netz aussagekräftiger.</p>
+            <p className="mt-10 max-w-[680px] text-[16px]">Für diese Auswahl gibt es zu wenige Vorgänge, die durch mehrere Gremien gelaufen sind ({n(res.paths)}). Mit einer weiteren Auswahl, etwa ohne Ort oder mit längerem Zeitraum, wird das Netz aussagekräftiger.</p>
           ) : (
             <>
               <section className="relative mt-8 h-[520px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[640px]" aria-label="Beratungswege">
@@ -127,7 +127,7 @@ export function GremiennetzPage() {
                           <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(e.n)}</b><span className="block text-slate-500">{e.days === null ? "–" : `${e.days} Tage`}</span></span>
                           <span className="col-span-2 mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${Math.max(3, (e.n / maxEdge) * 100)}%` }} /></span>
                         </button>
-                        {edge === e.a + "|" + e.b && <RadarDrill base="/api/analytics/network?list=1" query={ranKey} by="edge" value={edge} label={`${e.a} → ${e.b}, Vorgänge der Stichprobe`} />}
+                        {edge === e.a + "|" + e.b && <RadarDrill base="/api/analytics/network?list=1" query={ranKey} by="edge" value={edge} label={`${e.a} → ${e.b}, Vorgänge`} />}
                       </li>
                     ))}
                   </ol>

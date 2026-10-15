@@ -2,16 +2,17 @@ import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 import {source,xState} from './plenara-x-query.mjs';
+import {parseSteps} from './x-cases.mjs';
 
 /*
  * Plenara.X – Beratungswege: Welchen Weg nehmen Vorgänge durch die Gremien? Knoten sind Gremien, gerichtete Kanten zählen die Vorgänge, die von
  * einem Gremium zum nächsten gelaufen sind (aufeinanderfolgende Stationen eines Vorgangs, nach Datum geordnet). Ohne einzelnen Ort werden
  * die Gremien nach ihrer Art zusammengefasst (Rat, Hauptausschuss, Bauausschuss ...), weil jeder Ort seine eigenen Namen hat; mit genau einem
  * Ort gelten die echten Namen. Grundlage ist wie überall in plenara.X die Auswahl über die Suche (source) und je Vorgang (x_cases, ohne
- * Formalien) die Stationen seiner jüngsten Karte; eine gleichmäßige Stichprobe von Vorgängen mit Beratung oder Entscheidung; nur Vorgänge mit mindestens
+ * Formalien) die Stationen seiner jüngsten Karte; alle Vorgänge mit Beratung oder Entscheidung, Stationen aus x_cases.steps; nur Vorgänge mit mindestens
  * zwei Stationen in verschiedenen Gremien tragen zum Netz bei.
  */
-const EXAMINE=10000,MAX_NODES=18,MAX_EDGES=60,ROUTES=10,MIN_EDGE=2;
+const MAX_NODES=18,MAX_EDGES=60,ROUTES=10,MIN_EDGE=2;
 const STATUSES="('consulting','recommended','approved','rejected','postponed')";
 
 /** Gremienart aus dem Namen; null = nicht erkennbar (dann „Sonstige“) */
@@ -47,13 +48,14 @@ export function parseNetwork(params){
 }
 const median=a=>{if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)];};
 
-/* Stationsfolgen je Vorgang der Stichprobe: nach Datum (bei Gleichstand wie in der Quelle), gleiche Gremien hintereinander einmal */
+/* Stationsfolgen je Vorgang: nach Datum (bei Gleichstand wie in der Quelle), gleiche Gremien hintereinander einmal */
 async function sequences(db,catalog,f){
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
  const src=await source(db,catalog,f),where='x.status IN '+STATUSES;
- const pool=(await db.prepare(`SELECT count(*) n FROM ${src.from} WHERE ${where}`).bind(...src.args).first())?.n||0;
- const k=Math.max(1,Math.ceil(pool/EXAMINE));
- const {results}=pool?await db.prepare(`SELECT c.id id,json_extract(e.value,'$.committee') g,substr(json_extract(e.value,'$.date'),1,10) d,e.key k FROM (SELECT x.card_id id FROM ${src.from} WHERE ${where}${k>1?' AND x.rid % ? = 0':''}) c JOIN topics t ON t.id=c.id, json_each(t.payload,'$.events') e WHERE json_array_length(t.payload,'$.events')>=2 ORDER BY c.id,e.key`).bind(...src.args,...(k>1?[k]:[])).all():{results:[]};
+ // Alle Vorgänge der Auswahl mit ihren Stationen (x_cases.steps, beim Bau ausgepackt), keine Stichprobe
+ const {results:all}=await db.prepare(`SELECT x.card_id id,x.steps FROM ${src.from} WHERE ${where}`).bind(...src.args).all();
+ const pool=all.length,k=1;
+ const results=all.flatMap(r=>parseSteps(r.steps).map((e,i)=>({id:r.id,g:e.g,d:e.d,k:i})));
  /* Genau ein Ort: echte Namen; sonst nach Art zusammenfassen */
  const single=!!f.area&&f.more.length===0&&!f.within&&!f.without;
  const label=g=>single?String(g).replace(/\s+/g,' ').trim():gremiumType(g);
@@ -69,7 +71,7 @@ async function sequences(db,catalog,f){
  return {seqs,pool,k,single};
 }
 
-/** Liste hinter einer Kante: by=edge&value=„Von|Nach“ (Vorgänge der Stichprobe, die direkt von einem Gremium zum nächsten liefen) */
+/** Liste hinter einer Kante: by=edge&value=„Von|Nach“ (Vorgänge, die direkt von einem Gremium zum nächsten liefen) */
 export async function networkList(db,catalog,params){
  const [from,to]=(params.get('value')||'').split('|');
  if(params.get('by')!=='edge'||!from||!to)throw new AnalyticsError('Unbekannte Liste.',400);
@@ -110,5 +112,5 @@ export async function network(db,catalog,params){
  });
  const outEdges=[...edges.values()].filter(e=>keep.has(e.a)&&keep.has(e.b)&&e.n>=MIN_EDGE).sort((a,b)=>b.n-a.n).slice(0,MAX_EDGES).map(e=>({a:e.a,b:e.b,n:e.n,days:median(e.days)}));
  const outRoutes=[...routes].filter(([,n])=>n>=MIN_EDGE).sort((a,b)=>b[1]-a[1]).slice(0,ROUTES).map(([r,n])=>({path:r.split('\u0001'),n}));
- return {q:f.q,mode:single?'names':'types',pool,examined:Math.min(pool,EXAMINE),capped:k>1,paths,nodes:outNodes,edges:outEdges,routes:outRoutes};
+ return {q:f.q,mode:single?'names':'types',pool,examined:pool,capped:false,paths,nodes:outNodes,edges:outEdges,routes:outRoutes};
 }
