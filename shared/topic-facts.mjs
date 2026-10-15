@@ -385,11 +385,11 @@ const resultWindows=s=>s.length<=1500?[s]:[...s.matchAll(/Jahresüberschuss|Jahr
    Nachtragssatzungen nennen „bisher, Änderung, neu“: dann der neue Betrag. Nur Satzungen der Kommune selbst, keine Ortsgemeinden
    (ohne Einwohnerzahl nicht vergleichbar), Eigenbetriebe, Zweckverbände, Genehmigungen oder Anträge. */
 const BUDGET_TITLE=/Haushaltssatzung|Haushaltsplan|Nachtragshaushalt/i;
-const NOT_BUDGET_TITLE=/Ortsgemeinde|\bOG\b|Genehmigung|Beanstandung|Widerspruch|Eckpunkte|Antrag|Anfrage|Stellungnahme|Kreisumlage|Zweckverband|Sondervermögen|Eigenbetrieb|Wirtschaftsplan|Stiftung|Schulverband|Bericht|Haushaltssicherung|Vollzug|Ausführung|Sachstand|Fraktion/i;
-const BUDGET_NUM=String.raw`(-?\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|-?\d{4,}(?:,\d{1,2})?)`;
-const AUFW_RE=new RegExp(String.raw`Gesamtbetrag der (?:ordentlichen )?Aufwendungen(?:\s+(?:auf|von|mit|in Höhe von))?\s*(?:EUR|Euro|€)?\s*`+BUDGET_NUM+String.raw`(?:\s*(?:EUR|Euro|€))?(?:\s+`+BUDGET_NUM+String.raw`\s+`+BUDGET_NUM+')?','i');
+const NOT_BUDGET_TITLE=/Ortsgemeinde|\bOG\b|Genehmigung|Beanstandung|Widerspruch|Eckpunkte|Antrag|Anfrage|Stellungnahme|Kreisumlage|Zweckverband|Sondervermögen|Eigenbetrieb|Wirtschaftsplan|Stiftung|Schulverband|Bericht|Haushaltssicherung|Vollzug|Ausführung|Sachstand|Fraktion|Teilbudget|Teilhaushalt|Teilplan/i;
+const BUDGET_NUM=String.raw`(-?\s?\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|-?\d{4,}(?:,\d{1,2})?)`;
+const AUFW_RE=new RegExp(String.raw`Gesamtbetrag der (?:ordentlichen )?Aufwendungen(?:\s+(?:auf|von|mit|in Höhe von))?\s*(?:EUR|Euro|€)?\s*`+BUDGET_NUM+String.raw`(?:\s*(?:EUR|Euro|€))?(?:\s+`+BUDGET_NUM+String.raw`(?:\s*(?:EUR|Euro|€))?(?:\s+`+BUDGET_NUM+'(?:\\s*(?:EUR|Euro|€))?)?)?','i');
 const CREDIT_RE=new RegExp(String.raw`Kredite für Investitionen(?: und Investitionsförderungsmaßnahmen| und Investitionsfördermaßnahmen)?[^.§]{0,80}?(?:auf|in Höhe von|mit|von)\s*`+BUDGET_NUM+String.raw`\s*(?:EUR|Euro|€)`,'i');
-const euroOf=x=>Number(String(x).replace(/\./g,'').replace(',','.'));
+const euroOf=x=>Number(String(x).replace(/\s/g,'').replace(/\./g,'').replace(',','.'));
 export function budgetOf(title,text){
  const t=String(title||'');if(!BUDGET_TITLE.test(t)||NOT_BUDGET_TITLE.test(t))return null;
  const src=String(text||'').replace(/\s+/g,' ').replace(/(\d)- (\d)/g,'$1$2').replace(/fest- ?gesetzt/g,'festgesetzt');
@@ -398,6 +398,8 @@ export function budgetOf(title,text){
  if(a){let v=euroOf(a[1]);
   // Nachtrag: bisher + Änderung = neu
   if(a[3]!==undefined){const b=euroOf(a[2]),c=euroOf(a[3]);if(Math.abs(v+b-c)<=2)v=c;}
+  // Nachtrag mit zwei Spalten „von bisher … auf …“: der neue Betrag
+  else if(a[2]!==undefined&&/Nachtrag/i.test(t)&&/bisher/i.test(src.slice(Math.max(0,a.index-400),a.index)))v=euroOf(a[2]);
   if(v>=100000&&v<5e10)out.push({value:'Aufwendungen',euro:Math.round(v)});}
  if(/Kredite für Investitionen[^.§]{0,80}?(?:werden )?nicht (?:veranschlagt|vorgesehen|festgesetzt)/i.test(src))out.push({value:'Investitionskredite',euro:0});
  else{const c=src.match(CREDIT_RE);if(c&&!/Verpflichtungsermächtigung/i.test(src.slice(Math.max(0,c.index-80),c.index))){
@@ -413,12 +415,14 @@ export function budgetOf(title,text){
 const TAXRATE_NUM=String.raw`(\d{1,2}(?:,\d{1,2})?)\s*(?:%|v\.\s?H\.|vom Hundert|Prozent)`;
 const TAXRATE_RES=[new RegExp(String.raw`von\s*(?:bisher\s*)?`+TAXRATE_NUM+String.raw`\s*(?:netto|brutto)?\s*(?:auf|zu)\s*`+TAXRATE_NUM,'gi'),
  new RegExp(String.raw`(?:Steuersatz|Steuer beträgt|Prozentsatz|Steuersätze?|beträgt die Steuer|Steuer wird)[^.;%]{0,80}?(?:auf|beträgt|in Höhe von|von|mit)\s*`+TAXRATE_NUM,'gi')];
-const NOT_TAXRATE=/vergleichbar|Vergleich|Umfrage|Städte|Kommunen|Gemeinden|Landkreis|Kreis \p{Lu}|empfohlen|empfiehlt|mindestens|höchstens|zwischen|bis zu|derzeit|bisher(?!\s*\d)|aktuell|damals|früher|Durchschnitt|Mittel|z\.\s?B\.|beispielsweise|Variante|Alternativ/iu;
+// Listen anderer Orte („Konstanz 35 %“), groß geschrieben geprüft
+const CITY_RATE=/\p{Lu}\p{Ll}+ \d{1,2}(?:,\d)?\s?%/u;
+const NOT_TAXRATE=/Beispiel|Mobilheim|Camping|Wohnwagen|Wohnmobil|Ortschaftsrat|erhebt|vergleichbar|Vergleich|Umfrage|Städte|Kommunen|Gemeinden|Landkreis|Kreis \p{Lu}|empfohlen|empfiehlt|mindestens|höchstens|zwischen|bis zu|derzeit|bisher(?!\s*\d)|aktuell|damals|früher|Durchschnitt|Mittel|z\.\s?B\.|beispielsweise|Variante|Alternativ/iu;
 function rateOf(title,text,{titleRe,lo,hi,base}){
  const t=String(title||'');if(!titleRe.test(t)||/Anfrage|Antrag (der|des)|Fraktion|Bericht|Aufkommen|Erlass von|Stundung/i.test(t))return null;
  const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2').split(SENTENCE)){if(s.length>1200)continue;
   for(const [i,re] of TAXRATE_RES.entries())for(const m of s.matchAll(re)){
-   const near=s.slice(Math.max(0,m.index-120),m.index+m[0].length+40);if(NOT_TAXRATE.test(i===0?s.slice(Math.max(0,m.index-120),m.index):near))continue;
+   const near=s.slice(Math.max(0,m.index-120),m.index+m[0].length+40);const before=i===0?s.slice(Math.max(0,m.index-120),m.index):near;if(NOT_TAXRATE.test(before)||CITY_RATE.test(before))continue;
    const v=Number((i===0?m[2]:m[1]).replace(',','.'));if(v<lo||v>hi)continue;
    return {v,base:base?base(near,v):'Steuersatz'};}}
   return null;};

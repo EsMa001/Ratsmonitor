@@ -50,12 +50,8 @@ export const X_FACT_GATE={budget:false,second_home_tax:false,amusement_tax:false
 export const X_SUM_GATE={housing:false};
 const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plan_area'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['waste_fee'],['ee_power'],['wind_count']],mobilitaet:[['project'],['road']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee']]};
-/* plenara.X Fakten (view=fakten): Werte für die Karte, Farbe nach Richtung (hoch ist schlecht: rot, hoch ist gut: grün).
-   Gezeigt nur ab 90 % gemessener Qualität (shared/rule-quality.json); die übrigen stehen bereit, bis sie das Ziel erreichen. */
-export const MAP_FACTS=[['hebesatz','bad',true],['housing','amount',false],['budget','amount',false],['second_home_tax','bad',false],['amusement_tax','bad',false],['fee_rate','bad',true],['annual_result','good',true],['land_price','bad',true],
- ['kita_fee','bad',false],['dog_tax','bad',false],['plot_price','bad',false],['grant','good',false],['ee_power','good',false]];
-export const MAP_FACT_NAMES={hebesatz:'Hebesätze',fee_rate:'Wasser- und Abwassergebühren',annual_result:'Jahresergebnis',land_price:'Gewerbegrundstücke (€/m²)',housing:'Geplante Wohneinheiten',budget:'Haushalt je Einwohner',second_home_tax:'Zweitwohnungsteuer',amusement_tax:'Vergnügungssteuer',
- kita_fee:'Kita-Gebühren',dog_tax:'Hundesteuer',plot_price:'Wohnbauplätze (€/m²)',grant:'Zuschüsse',ee_power:'Wind und Solar (MW)'};
+import {MAP_FACTS,MAP_FACT_NAMES} from '../../shared/map-facts.mjs';
+export {MAP_FACTS,MAP_FACT_NAMES};
 export const X_LIST_SIZE=50;
 /* Zahl hinter einem Wert (erstes Feld von detail) und ihre Einheit; Fakten ohne Eintrag sind nur Kategorien (Schritt, Fraktion).
    Gebührensätze tragen die Einheit im dritten Feld (m³ oder m²). Ein Zuschuss ohne Betrag hat keine Zahl. */

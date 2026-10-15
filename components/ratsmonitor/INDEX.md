@@ -646,7 +646,7 @@ topic design-styles.css:140
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (186, ⚠21): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (214, ⚠10): AdminRuleTexts
+- admin-rule-texts.tsx (223, ⚠11): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-schedules.tsx (115, ⚠4): AdminSchedules
 - admin-social.tsx (135, ⚠1): AdminSocial
@@ -803,7 +803,7 @@ topic design-styles.css:140
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
 - DiffusionSearch.tsx (67, ⚠2): PlayState, DiffusionSearch
-- FaktenPage.tsx (151, ⚠2): FaktenPage
+- FaktenPage.tsx (177, ⚠5): FaktenPage
 - FraktionenPage.tsx (151, ⚠5): FraktionenPage
 - GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (176, ⚠3): GremiennetzPage

@@ -6,6 +6,7 @@ import {when,dur} from '@/components/admin-pdf-parts';
 import type {Stand} from '@/shared/admin-types';
 import {THEMES,SUBTOPICS} from '@/shared/themes.mjs';
 import QUALITY from '@/shared/rule-quality.json';
+import {MAP_FACTS} from '@/shared/map-facts.mjs';
 type Counts={online:number;aiSummaries:number;ruleSummaries:number;ruleScoreSum:number;pdfArticles:number;aiLabels:number;unlabelled:number};
 type Summary={counts:Counts;stand?:Stand;statsPending?:number};
 type Step={name:string;seconds:number;ok:boolean;summary:Record<string,unknown>|null};
@@ -54,19 +55,18 @@ const Meter=({label,v,min}:{label:string;v:number|null;min:number})=>{const [ope
  {open&&hint&&<p className="m-0 mt-1 text-[12px] leading-snug text-slate-600">{hint}</p>}
 </div>;};
 /* Thema je Fakt wie im Atlas (ATLAS_FACTS in server/integrations/plenara-x-query.mjs) */
-const FACT_THEME:Record<string,string>={plan:'bauen',plan_use:'bauen',housing:'bauen',hebesatz:'finanzen',annual_result:'finanzen',dog_tax:'finanzen',waste_fee:'umwelt',plan_area:'bauen',wind_count:'umwelt',project:'mobilitaet',road:'mobilitaet',house_type:'bauen',heat_plan:'umwelt',fee_rate:'umwelt',ee_power:'umwelt',grant:'soziales',kita_fee:'bildung',land_price:'wirtschaft'};
+const FACT_THEME:Record<string,string>={plan:'bauen',plan_use:'bauen',housing:'bauen',hebesatz:'finanzen',annual_result:'finanzen',dog_tax:'finanzen',waste_fee:'umwelt',plan_area:'bauen',wind_count:'umwelt',project:'mobilitaet',road:'mobilitaet',house_type:'bauen',heat_plan:'umwelt',fee_rate:'umwelt',ee_power:'umwelt',grant:'soziales',kita_fee:'bildung',land_price:'wirtschaft',budget:'finanzen',second_home_tax:'finanzen',amusement_tax:'finanzen',plot_price:'bauen'};
 /* Ohne Abdeckung: jeder Bericht oder jedes PDF bekommt einen Wert (Unterthemen, Hauptdokument, Dokumentart) oder es ist eine Rangfolge (Social Media) */
 const NO_COVERAGE=new Set(['subs','main_doc','doc_type','social']);
-/* Fakten nach Art: Werte für die Karte von plenara.X Fakten (Zahl je Gemeinde, Abdeckung zählt als Anteil der Gemeinden),
-   Bausteine der Signale (Einordnungen für Stand, Auswahl und Kennzahlen dort), Fraktionen (Fraktionsprofil) */
+/* Fakten nach Verwendung: Werte für die Karte von plenara.X Fakten (Zahl je Gemeinde), Bausteine der Signale (Einordnungen für
+   Stand und Auswahl, keine Zahlen; stehen bei den Signalen), Fraktionsprofil (plenara.X Tools) */
 const SIGNAL_FACTS=new Set(['plan','plan_use','heat_plan','house_type','project']);
 const PROFILE_FACTS=new Set(['faction','faction_advice']);
 const factArt=(id:string)=>SIGNAL_FACTS.has(id)?'signal':PROFILE_FACTS.has(id)?'profil':'vergleich';
-const FACT_ARTS:[string,string,string][]=[
- ['vergleich','Werte für die Karte','Alle Zahlen für plenara.X Fakten (Karte rot bis grün), auch Kosten und ob Gebühren steigen oder fallen. Abdeckung: Anteil der Gemeinden mit mindestens einem Wert. Auf die Karte erst ab 90 % Qualität.'],
- ['signal','Bausteine der Signale','Einordnungen für Stand und Auswahl in plenara.X Signale, keine Zahlen. Gezeigt wird die Zahl der Berichte.'],
- ['profil','Fraktionen','Fraktion und Empfehlung im Beschlussvorschlag, für das Fraktionsprofil.'],
-];
+/* Auf der Karte von plenara.X Fakten (shared/map-facts.mjs) */
+/* Zeilen der Fakten (für die Bausteine bei den Signalen) */
+const FACT_ROWS=(QUALITY.groups.find(g=>g.id==='facts')?.rows??[]) as QualityRow[];
+const ON_MAP=new Set((MAP_FACTS as [string,string,boolean][]).filter(([,,on])=>on).map(([k])=>k));
 const shortDate=(d:string)=>d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4);
 const THEME_NAME:Record<string,string>={...Object.fromEntries(THEMES.map((t:{id:string;name:string})=>[t.id,t.name])),unklar:'Ohne Thema (noch nicht eingeordnet)'};
 const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:a/b<.01?2:a/b<.1?1:0})+' %':'–';
@@ -128,7 +128,7 @@ export function AdminRuleTexts(){
   {!!data?.statsPending&&<p role="status" className="mt-4 text-[14px] text-slate-500">Die Gebietszahlen werden noch nachgeführt ({n(data.statsPending)} Gebiete offen); die Werte können noch steigen.</p>}
   <section id="regeltexte-job" className="admin-section">
    <div className="admin-section-heading"><h2>Erstellen</h2></div>
-   <p className="admin-note">Drei Schritte nach festen Regeln, ohne KI: Regeln je Bericht (Thema, Zusammenfassung, Fakten), Wortliste der Suche, Zahlen für plenara.X (Atlas und Signale).</p>
+   <p className="admin-note">Drei Schritte nach festen Regeln, ohne KI: Regeln je Bericht (Thema, Zusammenfassung, Fakten), Wortliste der Suche, Zahlen für plenara.X (Atlas, Signale, Fakten).</p>
    {jobError&&<Alert onRetry={loadJob}>{jobError}</Alert>}
    <ul className="m-0 mt-4 list-none space-y-1.5 p-0 text-[14px] text-slate-700">
     <li>{running?`Läuft seit ${when(job?.run?.running?.startedAt)}.`:requested?'Start angefordert …':job?.run?.lastStart?`Zuletzt ${when(job.run.lastStart)}${job.last?.all?' (alle neu)':''}, ${RESULT[job.run.result||'']||'–'}, ${dur(job.run.seconds)}.`:job?'Noch nicht gelaufen.':'–'}
@@ -145,9 +145,9 @@ export function AdminRuleTexts(){
    <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen" items={sum}/></div>
   </section>
   <section id="regeltexte-fakten" className="admin-section">
-   <div className="admin-section-heading"><h2>Fakten</h2></div>
-   <p className="admin-note">Werte aus Titel, Hauptdokument und passenden Anlagen. Gezählt am Ende jedes Laufs.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Fakten" items={fac}/></div>
+   <div className="admin-section-heading"><h2>Fakten und Einordnungen</h2></div>
+   <p className="admin-note">Werte (für plenara.X Fakten) und Einordnungen (für Signale und Fraktionsprofil) aus Titel, Hauptdokument und passenden Anlagen. Gezählt am Ende jedes Laufs.</p>
+   <div className="mt-6"><Kpis label="Kennzahlen der Fakten und Einordnungen" items={fac}/></div>
   </section>
   <section id="regeltexte-themen" className="admin-section">
    <div className="admin-section-heading"><h2>Themen</h2></div>
@@ -160,18 +160,19 @@ export function AdminRuleTexts(){
   </section>
   <section id="regeltexte-qualitaet" className="admin-section">
    <div className="admin-section-heading"><h2>Qualität der Regeln</h2></div>
-   <p className="admin-note">Letzte ungesehene Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert beim Darüberfahren. Ziel: Qualität ab {QT.quality} %, Abdeckung ab {QT.coverage} %{xs?.factPlaces?` (Gemeinden: von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen)`:""}.</p>
+   <p className="admin-note">Letzte ungesehene Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert beim Antippen des Namens oder des „i“. Ziel: Qualität ab {QT.quality} %, Abdeckung ab {QT.coverage} %{xs?.factPlaces?` (Gemeinden: von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen)`:""}.</p>
    {QUALITY.groups.map(g=>{
-    const row=(r:QualityRow)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
+    const row=(r:QualityRow,gid:string=g.id)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
-       {g.id==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(r.quality!=null&&r.quality>=QT.quality?'bg-teal-50 text-teal-700':'bg-slate-100 text-slate-500')}>{r.quality==null?'nicht gemessen':r.quality>=QT.quality?'für die Karte':'unter '+QT.quality+' %'}</span>}</div>
-      <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),g.id==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
+       {gid==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':r.quality!=null&&r.quality<QT.quality?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte':r.quality==null?'nicht gemessen':r.quality<QT.quality?'unter '+QT.quality+' %':'noch gesperrt'}</span>}</div>
+      <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),gid==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
      </div>
      <Meter label="Qualität" v={r.quality} min={QT.quality}/>
-     {g.id==='facts'&&factArt(r.id)!=='vergleich'?<div className="min-w-0 text-[12px] text-slate-500">{xs?.facts?.[r.id]!==undefined?<><span className="block text-[18px] font-semibold tabular-nums text-slate-900">{n(xs.facts[r.id])}</span>Berichte</>:'noch kein Lauf'}</div>
-      :g.id==='facts'&&xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={QT.coverage}/>:r.id==='summary'&&c&&docs?<Meter label="Abdeckung" v={Math.round(100*(ai+rule)/docs)} min={QT.coverage}/>:NO_COVERAGE.has(r.id)?<div/>:<Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>}
+     {gid==='facts'&&factArt(r.id)!=='vergleich'?<div className="min-w-0 text-[12px] text-slate-500">{xs?.facts?.[r.id]!==undefined?<><span className="block text-[18px] font-semibold tabular-nums text-slate-900">{n(xs.facts[r.id])}</span>Berichte</>:'noch kein Lauf'}</div>
+      :gid==='facts'&&xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={QT.coverage}/>:r.id==='summary'&&c&&docs?<Meter label="Abdeckung" v={Math.round(100*(ai+rule)/docs)} min={QT.coverage}/>:NO_COVERAGE.has(r.id)?<div/>:<Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>}
     </li>;
+    const list=(rows:QualityRow[],gid:string=g.id)=><ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{rows.map(r=>row(r,gid))}</ul>;
     /* Signale: Kategorie mit Qualität der Zuordnung und Trefferquote, darunter die Filter mit eigener Qualität */
     if(g.id==='signals')return <div key={g.id} className="mt-8">
      <h3>{g.name}</h3>
@@ -193,16 +194,24 @@ export function AdminRuleTexts(){
        <span className={'tabular-nums '+(f.quality===null?'text-slate-400':f.quality>=QT.quality?'font-semibold text-teal-700':'font-semibold text-slate-900')}>{f.quality===null?'nicht gemessen':f.quality+' %'}</span>
       </li>)}</ul>}
      </li>)}</ul>
+     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Bausteine der Signale</h4>
+     <p className="admin-note mt-1">Einordnungen aus den Unterlagen für Stand und Auswahl der Signale (zum Beispiel Verfahrensschritt eines Bebauungsplans, Schritt der Wärmeplanung), keine Zahlen. Rechts die Zahl der Berichte im letzten Lauf.</p>
+     {list(FACT_ROWS.filter(r=>factArt(r.id)==='signal'),'facts')}
     </div>;
-    const list=(rows:QualityRow[])=><ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{rows.map(row)}</ul>;
     const rows=g.rows as QualityRow[];
-    /* Fakten nach Art (Vergleichswerte, Signale, Profil), darin nach dem Thema; Fraktion und Förderung gelten für alle Themen */
+    /* Fakten nach Thema; ohne Thema („Alle Themen“) etwa der Haushalt */
     const byTheme=(x:QualityRow[])=>[...THEMES.map((t:{id:string;name:string})=>[t.name,x.filter(r=>FACT_THEME[r.id]===t.id)] as [string,QualityRow[]]),['Alle Themen',x.filter(r=>!FACT_THEME[r.id])] as [string,QualityRow[]]].filter(([,y])=>y.length);
-    if(g.id==='facts')return <div key={g.id} className="mt-8">
-     <h3>{g.name}</h3>
-     {FACT_ARTS.map(([art,name,text])=>{const x=rows.filter(r=>factArt(r.id)===art);if(!x.length)return null;
-      return <div key={art} className="mt-6"><h4 className="mb-0 text-[16px] font-semibold text-slate-900">{name}</h4><p className="admin-note mt-1">{text}</p>
-       {byTheme(x).map(([t,y])=><div key={t} className="mt-4"><h5 className="mb-1 text-[13px] font-medium uppercase tracking-wide text-slate-500">{t}</h5>{list(y)}</div>)}</div>;})}
+    if(g.id==='facts')return <div key={g.id}>
+     <div className="mt-8">
+      <h3>{g.name}</h3>
+      <p className="admin-note mt-1">Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Auf die Karte kommt ein Wert erst ab {QT.quality} % Qualität.</p>
+      {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[13px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
+     </div>
+     <div className="mt-8">
+      <h3>Fraktionsprofil (plenara.X Tools)</h3>
+      <p className="admin-note mt-1">Welche Fraktion einen Antrag stellt und ob der Beschlussvorschlag empfiehlt, ihn abzulehnen. Rechts die Zahl der Berichte im letzten Lauf.</p>
+      {list(rows.filter(r=>factArt(r.id)==='profil'))}
+     </div>
     </div>;
     return <div key={g.id} className="mt-8">
      <h3>{g.name}</h3>
