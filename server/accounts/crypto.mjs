@@ -30,3 +30,25 @@ export async function hmacHex(secret,purpose,text){
  if(!secret||String(secret).length<32)throw new Error('ACCOUNTS_SECRET fehlt oder ist zu kurz (mindestens 32 Zeichen).');
  return hex(await crypto.subtle.sign('HMAC',await purposeKey(secret,purpose),enc.encode(String(text))));
 }
+const aesKeys=new Map();
+/** AES-GCM-Schlüssel für einen Zweck, abgeleitet aus ACCOUNTS_SECRET (HKDF-SHA-256) */
+async function aesKey(secret,purpose){
+ if(!secret||String(secret).length<32)throw new Error('ACCOUNTS_SECRET fehlt oder ist zu kurz (mindestens 32 Zeichen).');
+ const id=secret+'\u0000'+purpose;
+ if(aesKeys.has(id))return aesKeys.get(id);
+ const base=await crypto.subtle.importKey('raw',enc.encode(secret),'HKDF',false,['deriveKey']);
+ const key=await crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:enc.encode('plenara-accounts-v1'),info:enc.encode(purpose)},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+ aesKeys.set(id,key);return key;
+}
+const fromB64url=text=>Uint8Array.from(atob(String(text).replaceAll('-','+').replaceAll('_','/')),c=>c.charCodeAt(0));
+/** Verschlüsseln (AES-GCM, zufälliger IV): „iv.daten“ in base64url */
+export async function sealText(secret,purpose,text){
+ const iv=crypto.getRandomValues(new Uint8Array(12));
+ const data=await crypto.subtle.encrypt({name:'AES-GCM',iv},await aesKey(secret,purpose),enc.encode(text));
+ return b64url(iv)+'.'+b64url(new Uint8Array(data));
+}
+export async function openText(secret,purpose,sealed){
+ const [iv,data]=String(sealed).split('.');
+ const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64url(iv)},await aesKey(secret,purpose),fromB64url(data));
+ return new TextDecoder().decode(plain);
+}

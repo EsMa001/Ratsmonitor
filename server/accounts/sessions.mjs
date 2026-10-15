@@ -23,7 +23,7 @@ export async function createSession(db,{userId,adminHost=false,device=null,now=D
 export async function readSession(db,value,{now=Date.now()}={}){
  if(!db||!value||!/^[A-Za-z0-9_-]{43}$/.test(value))return null;
  const id=await sha256hex(value);
- const row=await db.prepare(`SELECT s.id,s.user_id,s.auth_at,s.last_seen_at,s.expires_at,s.absolute_expires_at,s.admin_host,
+ const row=await db.prepare(`SELECT s.id,s.user_id,s.auth_at,s.last_seen_at,s.expires_at,s.absolute_expires_at,s.admin_host,s.admin_verified_at,s.view_tier,
    u.email,u.name,u.status FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.id=?`).bind(id).first();
  const at=iso(now);
  if(!row||row.status!=='active'||row.expires_at<=at||row.absolute_expires_at<=at)return null;

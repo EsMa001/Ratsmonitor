@@ -22,6 +22,11 @@ export interface Me {
   tierSource: "beta" | "manual" | "stripe" | null;
   roles: string[];
   adminHere: boolean;
+  /** Nur für Admins: ok, totp (Code fehlt), setup (zweiter Faktor nicht eingerichtet), stale (neu anmelden) */
+  admin?: "ok" | "totp" | "setup" | "stale";
+  /** Nur für Admins: eigene Stufe und die gerade angesehene (null = eigene) */
+  realTier?: Tier;
+  viewTier?: Tier | null;
   /** Zugang des Servers, sofern /api/me ihn meldet (invite = geschlossene Testphase) */
   access?: "invite" | "open";
   /** Absenderadresse der Anmeldemails (aus MAIL_FROM), sofern der Server sie nennt */
@@ -160,6 +165,9 @@ export function loadMe(): Promise<void> {
         tierSource: (d.tierSource as Me["tierSource"]) ?? null,
         roles: Array.isArray(d.roles) ? (d.roles as string[]) : [],
         adminHere: d.adminHere === true,
+        admin: d.admin === "ok" || d.admin === "totp" || d.admin === "setup" || d.admin === "stale" ? d.admin : undefined,
+        realTier: d.realTier ? tierOf(d.realTier) : undefined,
+        viewTier: d.viewTier ? tierOf(d.viewTier) : null,
         access,
         sender,
         rev: (u?.id ?? null) !== before ? state.rev + 1 : state.rev,
@@ -203,6 +211,12 @@ export async function logout() {
   set({ ...INITIAL, ready: true, accounts: state.accounts, access: state.access, rev: state.rev + 1 });
   touchAccount();
   void loadMe();
+}
+
+/** Nur Admins: Seite mit den Rechten einer Stufe ansehen (null = eigene Stufe); gilt für diese Sitzung, auch serverseitig */
+export async function setViewTier(tier: Tier | null) {
+  await api("/api/me/view-tier", { method: "POST", body: { tier } });
+  await accountChanged();
 }
 
 /** Nur Entwicklung: Testkonto der Stufe anmelden (POST /api/dev/login), Gast = abmelden */

@@ -25,6 +25,12 @@ durch ein zweites Modell (Opus; Fable war am Limit) fand 25 Punkte; die Pflichtp
 (Datenschutz, AGB, FAQ; `PRIVACY_VERSION` erhöhen), Prüfung durch Fable und vor der Öffnung durch eine Fachperson (11.1),
 Gastgrenze über Filter (Gäste können mit Filtern weiterblättern), Push-Entscheidung, `weeklyDay` „täglich“.
 
+**Nachtrag 15.10.2026 (Branch `konten-admin`):** Zweiter Faktor umgesetzt (6.4): TOTP nach RFC 6238, Schlüssel
+verschlüsselt in `user_totp` (`drizzle-accounts/0002`), Code gilt 12 Stunden je Sitzung, jeder Code nur einmal, 5 Versuche
+je 15 Minuten. Einrichten nur über den Tunnel (Hinweis oben in `/admin`) oder per Kommandozeile (`totp-setup`,
+`totp-reset`). Die öffentliche Site sperrt `/admin*` nicht mehr; die App prüft Rolle, Anmeldung und Code. Admin-Symbol
+für alle Konten mit der Rolle admin, „Ansehen als“ (andere Stufe, gilt auch serverseitig) im Kontomenü.
+
 ## 1. Ziel und Abgrenzung
 
 **Ziel:** eine geschlossene Testphase mit 10 bis 30 eingeladenen Personen.
@@ -33,7 +39,7 @@ Gastgrenze über Filter (Gäste können mit Filtern weiterblättern), Push-Entsc
 - Sitzungen liegen auf dem Server. Es gibt Abmelden, eine Geräteliste und „überall abmelden“.
 - Die Stufe hängt am Konto, und der Server setzt die Grenzen durch. Registrierung und Einladung vergeben von selbst nie eine bezahlte Stufe.
 - Gespeicherte Suchen, gemerkte Artikel, Kalendergebiete und Wochenbericht-Einstellungen liegen im Konto. Was heute im Browser liegt, wird einmal übernommen.
-- Admin ist eine Rolle am Konto, für Max und Nico. Admin-Rechte gelten nur über den Tunnel. Die Kopfzeilen-Kennung aus Caddy und das gemeinsame Basic-Auth-Passwort entfallen auf dem Node-Server.
+- Admin ist eine Rolle am Konto, für Max und Nico. Über den Tunnel ohne weiteren Code, über die öffentliche Adresse mit zweitem Faktor (6.4, Entscheidung 15.10.2026). Die Kopfzeilen-Kennung aus Caddy und das gemeinsame Basic-Auth-Passwort entfallen auf dem Node-Server.
 - Datenauskunft und Konto löschen gehen in Selbstbedienung.
 - Mailversand für Anmeldung und Kontovorgänge, über einen Postausgang, der Neustarts übersteht.
 - Der Unterbau trägt Benachrichtigungen (Thema 2) und Bezahlung (Thema 3).
@@ -1170,7 +1176,7 @@ Die Inhaltsdatei und der Importprozess werden in keinem Schritt angefasst.
 | Verlust des Servers | Konten weg | tägliche verschlüsselte Sicherung, Pull außer Haus samt `deleted.log`, geübtes Rückspielen |
 | Verlust des `age`-Schlüssels | Sicherungen nicht lesbar | Schlüssel bei Max und Nico offline, Rückspielen einmal üben |
 | Hoster-Snapshots | Löschfristen nicht eingehalten | im hPanel prüfen, abschalten oder nennen |
-| Postfach eines Admins gekapert | Admin-Zugriff | Admin nur über den Tunnel (SSH-Schlüssel), 7-Tage-Regel, TOTP vor Admin über https |
+| Postfach eines Admins gekapert | Admin-Zugriff | über https nur mit TOTP (12 h je Sitzung), Einrichten nur im Tunnel oder per Kommandozeile, 7-Tage-Regel |
 | Falscher Rückweg | Seite offen oder Admin-Kennung wieder aktiv | Rückweg-Matrix, `features.json`, kein Rückweg hinter Schritt 0 |
 | Daten bleiben auf der alten Origin | Tester verlieren Suchen | Übergangsfenster auf sslip.io, Datei sichern und übernehmen |
 | Gespeicherte `query` veraltet | falsche Treffer in Thema 2 | `query_version`, neue Auflösung beim Öffnen |

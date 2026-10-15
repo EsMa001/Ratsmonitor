@@ -38,7 +38,7 @@ async function requestFromHeaders(){
  const host=(h.get('host')||'localhost').trim();
  return new Request(`${proto}://${host}/`,{headers:{cookie:h.get('cookie')||'','user-agent':h.get('user-agent')||''}});
 }
-export type AdminState={kind:'admin'|'anonymous'|'stale'|'denied'|'setup'|'unavailable';user?:{userId:string;displayName:string;email:string};legacy?:boolean};
+export type AdminState={kind:'admin'|'anonymous'|'stale'|'denied'|'setup'|'totp'|'totp-setup'|'unavailable';user?:{userId:string;displayName:string;email:string};legacy?:boolean;totpConfirmed?:boolean;adminHost?:boolean};
 /**
  * Die eine Prüfung für die Administration (Routen und Seite). Admin ist, wer eine Sitzung hat, die Rolle admin,
  * eine Anmeldung jünger als 7 Tage und über einen Admin-Host kommt (ADMIN_HOSTS, nur http im Tunnel).
@@ -54,10 +54,10 @@ export async function adminState():Promise<AdminState>{
    const ctx=context(await requestFromHeaders(),env,{cfg});
    const session=await currentSession(ctx);
    if(session){
-    const {roles,adminHere}=await accountState(ctx,session);
+    const {admin,totpConfirmed,adminHost}=await accountState(ctx,session);
     const user={userId:session.user_id,displayName:session.name||session.email,email:session.email};
-    if(adminHere)return {kind:'admin',user};
-    state={kind:roles.includes('admin')&&Date.parse(session.auth_at)<=Date.now()-7*86400000?'stale':'denied',user};
+    if(admin==='ok')return {kind:'admin',user,totpConfirmed,adminHost};
+    state={kind:admin==='stale'?'stale':admin==='totp'?'totp':admin==='setup'?'totp-setup':'denied',user};
    }
   }catch(error){if(!cfg.legacyHeader)return {kind:'unavailable'};console.error('[konten] Admin-Prüfung über Konten fehlgeschlagen:',error instanceof Error?error.message:String(error));}
  }
@@ -77,6 +77,8 @@ export async function requireAdmin(){
  if(state.kind==='unavailable')throw new AdminError(503,'Die Zugangsprüfung ist gerade nicht erreichbar.');
  if(state.kind==='anonymous')throw new AdminError(401,'Bitte anmelden.');
  if(state.kind==='stale')throw new AdminError(401,'Bitte neu anmelden (Admin-Anmeldung älter als 7 Tage).');
+ if(state.kind==='totp')throw new AdminError(401,'Bitte den Code aus der Authenticator-App eingeben (/admin).');
+ if(state.kind==='totp-setup')throw new AdminError(403,'Der zweite Faktor ist noch nicht eingerichtet (einmal über den Tunnel).');
  if(state.kind==='setup')throw new AdminError(403,'Der Admin-Zugang muss zuerst freigeschaltet werden.');
  throw new AdminError(403,'Kein Zugriff auf die Administration.');
 }
@@ -94,6 +96,7 @@ export async function requestTier(request:Request){
   const session=await currentSession(ctx);
   if(!session)return guest;
   const {tier}=await accountState(ctx,session);
+  // Admins mit „Ansehen als Stufe“ bekommen hier die angesehene Stufe (tier.tier), damit sie sehen, was Nutzer sehen
   return {accounts:true,tier:tier.tier,features:(FEATURES as Record<string,typeof FEATURES.guest>)[tier.tier],userId:session.user_id as string|null};
  }catch{return guest;}
 }

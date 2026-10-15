@@ -240,11 +240,28 @@ export async function refresh(ctx){
  return {response:respond({ok:true,renewed:await refreshSession(ctx.db,session,{now:ctx.now})})};
 }
 /** Stufe, Rollen und Rechte der Sitzung; null ohne Sitzung */
+/** Zweiter Faktor gilt in einer Sitzung so lange (einmal am Tag eingeben) */
+export const ADMIN_TOTP_MS=12*3600000;
+/**
+ * Stufe, Rollen und Admin-Zustand der Sitzung. admin: none (keine Rolle), stale (Anmeldung älter als 7 Tage), ok,
+ * totp (öffentliche Adresse, Code fehlt), setup (öffentliche Adresse, zweiter Faktor noch nicht eingerichtet).
+ * Über einen Admin-Host (Tunnel) ist der SSH-Schlüssel der zweite Faktor; sonst der Code aus der Authenticator-App.
+ * Admins können die Seite mit den Rechten einer anderen Stufe ansehen (view_tier); ihre Admin-Rechte bleiben.
+ */
 export async function accountState(ctx,session){
- const tier=await effectiveTier(ctx.db,session.user_id,{now:ctx.now});
+ const realTier=await effectiveTier(ctx.db,session.user_id,{now:ctx.now});
  const roles=await rolesOf(ctx.db,session.user_id);
- const adminHere=roles.includes('admin')&&isAdminHost(ctx)&&Date.parse(session.auth_at)>ctx.now-ADMIN_AUTH_MAX_MS;
- return {tier,roles,adminHere};
+ const isAdmin=roles.includes('admin');
+ const tier=isAdmin&&validTier(session.view_tier)?{tier:session.view_tier,until:null,source:'preview'}:realTier;
+ let admin='none',totpConfirmed=false;
+ if(isAdmin){
+  totpConfirmed=!!(await ctx.db.prepare('SELECT confirmed_at FROM user_totp WHERE user_id=?').bind(session.user_id).first())?.confirmed_at;
+  if(Date.parse(session.auth_at)<=ctx.now-ADMIN_AUTH_MAX_MS)admin='stale';
+  else if(isAdminHost(ctx))admin='ok';
+  else if(!totpConfirmed)admin='setup';
+  else admin=session.admin_verified_at&&Date.parse(session.admin_verified_at)>ctx.now-ADMIN_TOTP_MS?'ok':'totp';
+ }
+ return {tier,realTier,roles,admin,adminHere:admin==='ok',totpConfirmed,adminHost:isAdminHost(ctx)};
 }
 /** Absenderadresse aus MAIL_FROM („Name <adresse>“), für den Hinweis auf der Anmeldeseite */
 const senderOf=from=>String(from||'').match(/<([^>]+)>/)?.[1]||(/^[^\s<>]+@[^\s<>]+$/.test(String(from||''))?String(from):null);
@@ -252,9 +269,10 @@ export async function me(ctx){
  const session=await currentSession(ctx);
  const common={accounts:true,access:ctx.cfg.access??'open',sender:senderOf(ctx.cfg.mail.from)};
  if(!session)return {response:respond({...common,tier:'guest',features:FEATURES.guest,limits:limitsJson('guest')})};
- const {tier,roles,adminHere}=await accountState(ctx,session);
+ const {tier,realTier,roles,admin,adminHere,totpConfirmed}=await accountState(ctx,session);
  return {response:respond({...common,user:{id:session.user_id,email:session.email,name:session.name},
   tier:tier.tier,tierUntil:tier.until,tierSource:tier.source,roles,adminHere,
+  ...(roles.includes('admin')?{admin,totpConfirmed,realTier:realTier.tier,viewTier:session.view_tier??null}:{}),
   features:FEATURES[tier.tier],limits:limitsJson(tier.tier),renewAfter:renewDue(session,ctx.now)})};
 }
 /** Geräte: Liste und Beenden einzelner, anderer oder aller Sitzungen */

@@ -3,6 +3,7 @@ import {env} from 'cloudflare:workers';
 import '../admin.css';
 import {chatGPTSignInPath,chatGPTSignOutPath,chatGPTSignInAvailable} from '@/app/chatgpt-auth';
 import {adminState} from '@/server/services/session';
+import {AdminTotp,AdminTotpSetup} from '@/components/admin-totp';
 import {accountsConfig} from '@/server/accounts/config.mjs';
 import {AdminActivation} from '@/components/admin-activation';
 import {AdminFrame,START_PAGE,type AdminPage} from '@/components/admin-chrome';
@@ -48,14 +49,19 @@ async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobil
  if(state.kind==='unavailable')return gate(<>{title('Administration nicht erreichbar')}<p role="alert" className="mt-3 text-[16px] text-slate-500">Die Zugangsprüfung hat gerade nicht geantwortet. Bitte versuchen Sie es gleich noch einmal.</p><a className="btn-primary mt-6 inline-flex" href="/admin">Erneut versuchen</a></>);
  if(state.kind==='anonymous')return gate(<>{title('Geschützter Bereich')}{signIn?<>{text('Melden Sie sich mit ChatGPT an, um die Administration zu öffnen.')}<a target="_top" href={chatGPTSignInPath('/admin')} className="btn-primary mt-6 inline-flex">Mit ChatGPT anmelden</a></>:<>{text('Die Administration öffnet sich nach der Anmeldung mit einem Admin-Konto, nur über den Zugang auf dem Server selbst (Tunnel, http://127.0.0.1:8080). Im Tunnel mit dem Code aus der E-Mail anmelden; der Link darin führt zur öffentlichen Adresse.')}{signInLink}</>}</>);
  if(state.kind==='stale')return gate(<>{title('Bitte neu anmelden')}{text('Die Anmeldung für die Administration ist älter als sieben Tage.')}{signInLink}</>);
+ // Öffentliche Adresse: zweiter Faktor (Code aus der Authenticator-App, gilt 12 Stunden auf diesem Gerät)
+ if(state.kind==='totp')return gate(<>{title('Zweiter Faktor')}{text(<>Angemeldet als <strong>{state.user?.displayName}</strong>. Bitte den Code aus der Authenticator-App eingeben. Er gilt 12 Stunden auf diesem Gerät.</>)}<AdminTotp/></>);
+ if(state.kind==='totp-setup')return gate(<>{title('Zweiten Faktor einrichten')}{text(<>Angemeldet als <strong>{state.user?.displayName}</strong>. Über die öffentliche Adresse geht die Administration nur mit einem Code aus einer Authenticator-App. Bitte einmal über den Zugang auf dem Server einrichten (Tunnel, http://127.0.0.1:8080/admin), oder der Betreiber richtet ihn per Kommandozeile ein.</>)}</>);
  if(state.kind==='setup')return gate(<>{title('Admin-Zugang einrichten')}{text(<>Angemeldet als <strong>{state.user?.displayName}</strong>. Der einmalige Freischaltcode verknüpft die Administration dauerhaft mit diesem Konto.</>)}{env.ADMIN_SETUP_HASH?<AdminActivation/>:<p role="status" className="mt-4 text-[14px] text-slate-500">Die Freischaltung ist noch nicht eingerichtet: Der Betreiber muss den Hash des Freischaltcodes als ADMIN_SETUP_HASH hinterlegen.</p>}</>);
- if(state.kind!=='admin'||!state.user)return gate(<>{title('Kein Admin-Zugriff')}{text('Dieses Konto ist nicht für die Administration freigeschaltet, oder die Anfrage kam nicht über den Zugang auf dem Server (Tunnel).')}{signIn&&state.legacy&&<a className="mt-6 inline-flex text-[14px] text-teal-600" target="_top" href={chatGPTSignOutPath('/admin')}>Konto wechseln →</a>}</>);
+ if(state.kind!=='admin'||!state.user)return gate(<>{title('Kein Admin-Zugriff')}{text('Dieses Konto ist nicht für die Administration freigeschaltet.')}{signIn&&state.legacy&&<a className="mt-6 inline-flex text-[14px] text-teal-600" target="_top" href={chatGPTSignOutPath('/admin')}>Konto wechseln →</a>}</>);
  const user=state.user;
  try{
   // Abmelden: mit ChatGPT-Anmeldung über deren Weg, sonst über das Konto (POST /api/auth/logout)
   const signOutPath=state.legacy&&chatGPTSignInAvailable()?chatGPTSignOutPath('/'):undefined;
   const accountSignOut=!state.legacy;
-  const frame=(content:React.ReactNode)=><AdminFrame page={page} displayName={user.displayName} signOutPath={signOutPath} accountSignOut={accountSignOut}>{content}</AdminFrame>;
+  // Im Tunnel ohne zweiten Faktor: Einrichtung oben anbieten (danach geht die Administration auch über die öffentliche Adresse)
+  const setupBanner=!state.legacy&&state.adminHost&&!state.totpConfirmed?<AdminTotpSetup/>:null;
+  const frame=(content:React.ReactNode)=><AdminFrame page={page} displayName={user.displayName} signOutPath={signOutPath} accountSignOut={accountSignOut}>{setupBanner}{content}</AdminFrame>;
   // Abgespeckter Bereich fürs Handy (?seite=mobil): ohne Reiter, nur die Abdeckung des Lückenatlas.
   if(mobile)return <AdminFrame tabs={false} displayName={user.displayName} signOutPath={signOutPath} accountSignOut={accountSignOut}><AdminMobile/></AdminFrame>;
   if(page==='todo')return frame(<AdminTodo/>);

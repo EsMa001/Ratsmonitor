@@ -46,7 +46,9 @@
 	}
 }
 
-# Jede öffentliche Site: keine Admin-Kennung von außen, keine Administration, Sicherheitskopfzeilen
+# Jede öffentliche Site: keine Admin-Kennung und keine Prerender-Kopfzeilen von außen, Sicherheitskopfzeilen.
+# Die Administration prüft die App selbst: Rolle admin, Anmeldung jünger als 7 Tage und über die öffentliche Adresse der
+# zweite Faktor (Code aus der Authenticator-App, requirements/konten-konzept.md 6.4).
 (public_site) {
 	request_header -Oai-Authenticated-User-Id
 	request_header -Oai-Authenticated-User-Email
@@ -54,8 +56,6 @@
 	request_header -Oai-Authenticated-User-Full-Name-Encoding
 	request_header -X-Prerender-Revalidate
 	request_header -X-Prerender-Revalidate-If-Generated
-	@admin path /admin /admin/* /admin.rsc /api/admin /api/admin/*
-	respond @admin 404
 	header {
 		Content-Security-Policy "frame-ancestors 'none'"
 		X-Frame-Options DENY

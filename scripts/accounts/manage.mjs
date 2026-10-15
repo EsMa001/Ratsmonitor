@@ -11,6 +11,8 @@
  *   ratsmonitor-accounts list [--invites] [--full] | stats
  *   ratsmonitor-accounts login-link [--base http://127.0.0.1:8080] (--id | --email-stdin)     Notzugang ohne Mailversand
  *   ratsmonitor-accounts reapply-deletions        nach dem Rückspielen einer Sicherung: Löschungen aus deleted.log erneut
+ *   ratsmonitor-accounts totp-reset (--id | --email-stdin)   zweiten Faktor zurücksetzen (Handy verloren); beendet Sitzungen
+ *   ratsmonitor-accounts totp-setup (--id | --email-stdin)   zweiten Faktor einrichten ohne Tunnel: zeigt den Schlüssel einmal
  *
  * Umgebung: ACCOUNTS_FILE, ACCOUNTS_SECRET, SITE_URL, MAIL_* (der Wrapper deploy/node/ratsmonitor-accounts lädt
  * ratsmonitor.env und accounts.env). Lokal: ACCOUNTS_FILE=<lokale D1-Datei> node scripts/accounts/manage.mjs …
@@ -25,6 +27,7 @@ import {randomId,randomToken,sha256hex,hmacHex} from '../../server/accounts/cryp
 import {normalizeEmail,TOKEN_MS} from '../../server/accounts/login.mjs';
 import {effectiveTier,eventStatement,revokeAllStatements} from '../../server/accounts/sessions.mjs';
 import {removeUser,collectUserData} from '../../server/accounts/account.mjs';
+import {newSecret,base32Encode,otpauthUri,sealSecret} from '../../server/accounts/totp.mjs';
 import {sendMail,processOutbox} from '../../server/accounts/mail.mjs';
 import {validTier} from '../../shared/plans.mjs';
 
@@ -177,7 +180,27 @@ switch(command){
   console.log(`${removed} Konto/Konten erneut gelöscht.`);
   break;
  }
+ case 'totp-reset':{
+  const user=await target();
+  await db.batch([db.prepare('DELETE FROM user_totp WHERE user_id=?').bind(user.id),...revokeAllStatements(db,{userId:user.id,email:user.email}),eventStatement(db,{userId:user.id,kind:'totp_reset',detail:{by:'cli'},now})]);
+  console.log(`Zweiter Faktor für ${user.id} zurückgesetzt, Sitzungen beendet. Neu einrichten über den Tunnel (/admin) oder totp-setup.`);
+  break;
+ }
+ case 'totp-setup':{
+  const user=await target();
+  if(!sql.prepare("SELECT 1 FROM user_roles WHERE user_id=? AND role='admin'").get(user.id))fail('Nur für Konten mit der Rolle admin.');
+  if(sql.prepare('SELECT 1 FROM user_totp WHERE user_id=? AND confirmed_at IS NOT NULL').get(user.id))fail('Schon eingerichtet; vorher totp-reset.');
+  if(!cfg.secret)fail('ACCOUNTS_SECRET fehlt.');
+  const base32=base32Encode(newSecret());
+  // Per Kommandozeile gilt der Schlüssel sofort als bestätigt: die Person tippt ihn in die App und prüft den ersten Code in /admin
+  sql.prepare('INSERT INTO user_totp(user_id,secret,created_at,confirmed_at,last_step) VALUES(?,?,?,?,0) ON CONFLICT(user_id) DO UPDATE SET secret=excluded.secret,created_at=excluded.created_at,confirmed_at=excluded.confirmed_at,last_step=0')
+   .run(user.id,await sealSecret(cfg.secret,base32),iso(now),iso(now));
+  await audit(user.id,'totp_setup',{});
+  // Nur aufs Terminal: nicht in Protokolle oder Chats kopieren
+  process.stdout.write(`Schlüssel (in der Authenticator-App „manuell eingeben“): ${base32.match(/.{1,4}/g).join(' ')}\n${otpauthUri(base32,user.email)}\n`);
+  break;
+ }
  default:
-  fail('Befehle: invite, role, tier, block, unblock, revoke, delete, export, list, stats, login-link, reapply-deletions (Hilfe im Kopf der Datei).');
+  fail('Befehle: invite, role, tier, block, unblock, revoke, delete, export, list, stats, login-link, reapply-deletions, totp-reset, totp-setup (Hilfe im Kopf der Datei).');
 }
 sql.close();

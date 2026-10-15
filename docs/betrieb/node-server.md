@@ -539,9 +539,13 @@ ratsmonitor-accounts block --note "Grund" --id u_…  |  unblock  |  revoke  |  
 `node scripts/check-caddy.mjs /etc/caddy/Caddyfile`):
 
 1. Caddy Schritt 0 (`snippets.caddy` + `step0.caddy`, Hash von Hand): Admin-Kennung nur noch im Tunnel, die
-   öffentliche Site sperrt `/admin*`. Die mobile Administration über sslip.io entfällt damit.
+   öffentliche Site lässt niemanden mehr über das Passwort allein in die Administration. Über sslip.io geht die
+   Administration erst wieder mit Admin-Konto und zweitem Faktor (Schritt 3).
 2. Konten einrichten (oben), Release mit Konten ausrollen; `RM_ACCESS=open`, `ADMIN_LEGACY_HEADER=1`.
-3. Max und Nico einladen, `role admin`, im Tunnel unter `http://127.0.0.1:8080/anmelden` per Code anmelden.
+3. Max und Nico einladen, `role admin`, im Tunnel unter `http://127.0.0.1:8080/anmelden` per Code anmelden und in
+   `/admin` den zweiten Faktor einrichten (Authenticator-App). Danach geht die Administration auch über die öffentliche
+   Adresse: Admin-Symbol in der Kopfzeile, einmal am Tag der Code aus der App. Ohne Tunnel: `ratsmonitor-accounts
+   totp-setup --email-stdin` zeigt den Schlüssel einmal; Handy verloren: `totp-reset`.
 4. Umschalten: `ADMIN_LEGACY_HEADER=0`, Caddy `step2.caddy`, `RM_ADMIN_*` aus `/etc/default/caddy` löschen.
 5. `RM_ACCESS=invite`, Basic-Auth vorerst davor lassen, Sperre prüfen.
 6. Mit Domain, Mailanbieter und Rechtstexten: Caddy `step3.caddy`, `SITE_URL` auf die Domain, Tester in Wellen einladen.
@@ -559,7 +563,7 @@ im Dev-Server ohne Anmeldung offen.
 Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain erreichbar wird:
 
 - **Admin-Zugang trennen:** mit den Konten (Abschnitt „Konten“, Schritte 1 bis 4): Admin nur als Rolle am Konto über
-  den Tunnel, die öffentliche Site sperrt `/admin*`.
+  den Tunnel ohne weiteren Code, über die öffentliche Adresse mit zweitem Faktor (Authenticator-App).
 - **`SITE_URL`** auf die https-Adresse setzen, `VINEXT_TRUST_PROXY=1` bleibt.
 - **Ausgehende Verbindungen sperren**, die nicht ins Internet gehen (127.0.0.0/8, 10/8, 172.16/12, 192.168/16,
   169.254/16, ::1, fc00::/7) für den Benutzer `ratsmonitor`. `/api/dokument` lädt gespeicherte Quellenadressen; seit

@@ -1,5 +1,5 @@
-# Schritt 0 und 1 (sofort, und mit Release A): Admin-Kennung nur noch im Tunnel; die öffentliche Site sperrt die
-# Administration. Basic-Auth bleibt als äußerer Zaun, bis die Zugangssperre (RM_ACCESS=invite) geprüft ist.
+# Schritt 0 und 1 (sofort, und mit Release A): Admin-Kennung nur noch im Tunnel. Über die öffentliche Site prüft die App die
+# Administration selbst (Konto mit Rolle admin und zweitem Faktor). Basic-Auth bleibt als äußerer Zaun, bis die Zugangssperre (RM_ACCESS=invite) geprüft ist.
 http://localhost:8080, http://127.0.0.1:8080 {
 	bind 127.0.0.1
 	import app_proxy_legacy_identity

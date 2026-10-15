@@ -615,7 +615,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/admin/
-- page.tsx (76, ⚠6): dynamic, metadata, AdminPage
+- page.tsx (82, ⚠7): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -674,7 +674,7 @@ topic design-styles.css:140
 - App.tsx (71, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
-- AccountMenu.tsx (66, ⚠2): AccountMenu
+- AccountMenu.tsx (77, ⚠2): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
 - Brand.tsx (274): AnalyticsLogo, Brand
@@ -736,7 +736,7 @@ topic design-styles.css:140
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
 ### components/ratsmonitor/lib/
-- account.ts (264): Me, ACCOUNT_REV, getMe, AccountApiError, api, touchAccount, loadMe, accountChanged, logout, devLogin, useMe, onMe, shortDate
+- account.ts (278): Me, ACCOUNT_REV, getMe, AccountApiError, api, touchAccount, loadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
 - betreiber.ts (20): BETREIBER, betreiberAdresse
 - brand.ts (54): setLogo, useBrand, useBrandText, brandName
 - brands.ts (45): BrandId, BRAND_NAME, LogoId, LOGOS, LOGO_IDS, DEFAULT_LOGO, DEFAULT_BRAND, pageTitle
@@ -767,8 +767,6 @@ topic design-styles.css:140
 - radioKeys.ts (18): radioKeys, radioTab
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
-- routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
-- routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (166): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, useSavedArticles, useSavedArticlesReady
 - savedSearch.ts (162, ⚠1): SearchSnapshot, snapshotOf, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
@@ -786,8 +784,6 @@ topic design-styles.css:140
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (233, ⚠1): MainMenu
-- MainMenu.tsx (233, ⚠1): MainMenu
 - MainMenu.tsx (233, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/

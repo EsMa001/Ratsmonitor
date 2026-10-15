@@ -341,6 +341,7 @@ export async function collectUserData(db,userId,email){
   artikel:await all('SELECT topic_id,follow,active,snapshot,saved_at,last_seen_at FROM saved_articles WHERE user_id=?',userId),
   sitzungen:await all('SELECT device,created_at,auth_at,last_seen_at,expires_at FROM sessions WHERE user_id=?',userId),
   kalenderAbos:await all('SELECT created_at,revoked_at FROM calendar_feeds WHERE user_id=?',userId),
+  zweiterFaktor:await all('SELECT created_at,confirmed_at FROM user_totp WHERE user_id=?',userId),
   ereignisse:await all('SELECT at,kind,detail FROM auth_events WHERE user_id=? ORDER BY at',userId),
   mails:await all('SELECT created_at,template,status FROM mail_outbox WHERE user_id=? ORDER BY created_at',userId),
   adminAktionen:await all('SELECT at,method,path,action,count FROM admin_audit WHERE user_id=? ORDER BY at',userId),

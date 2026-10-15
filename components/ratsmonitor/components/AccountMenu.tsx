@@ -5,10 +5,11 @@ import {IconBookmark,IconCalendar,IconHeart,IconUser} from './icons';
 import {useDarkMode} from '../lib/useDarkMode';
 import {useSavedArticles} from '../lib/savedArticles';
 import {useAccount} from '../state/account';
-import {logout,useMe} from '../lib/account';
-import {IS_DEV} from '../lib/tier';
+import {logout,setViewTier,useMe} from '../lib/account';
+import {IS_DEV,TIER_LABEL,type Tier} from '../lib/tier';
 
-/** Symbole rechts in der Kopfzeile: Admin (nur mit Admin-Recht hier), gespeicherte Suchen, Kalender, gespeicherte Artikel, Konto (mit kleinem Menü) */
+/** Symbole rechts in der Kopfzeile: Admin (nur für Konten mit der Rolle admin; die Administration fragt bei Bedarf den
+ *  zweiten Faktor ab), gespeicherte Suchen, Kalender, gespeicherte Artikel, Konto (mit kleinem Menü, für Admins „Ansehen als“) */
 export function AccountMenu({currentPage}:{currentPage:string}){
  const {saved}=useAccount(),articles=useSavedArticles(),me=useMe();
  const router=useRouter();
@@ -30,9 +31,11 @@ export function AccountMenu({currentPage}:{currentPage:string}){
  const badge='absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-700 px-[3px] text-[12px] font-semibold leading-none text-white';
  const item='block rounded-lg px-3 py-2 text-[14px] text-slate-900 no-underline hover:bg-slate-100';
  const loggedIn=!!me.user;
+ const isAdmin=me.roles.includes('admin');
+ const VIEWS:[Tier|null,string][]=[[null,'eigene Stufe'],['guest','ohne Stufe (wie Gast)'],['basic',TIER_LABEL.basic],['pro',TIER_LABEL.pro],['enterprise',TIER_LABEL.enterprise]];
  const signOut=async()=>{setOpen(false);await logout();router.push('/');};
  return <nav aria-label="Konto" className="flex items-center gap-0.5">
-  {me.adminHere&&<Link href="/admin" title="Administration" aria-label="Administration" className={cls(false)}>
+  {isAdmin&&<Link href="/admin" title={me.adminHere?'Administration':'Administration (Code aus der Authenticator-App nötig)'} aria-label="Administration" className={cls(false)}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
   </Link>}
   <button type="button" title={dark?'Heller Modus':'Dunkler Modus'} aria-label={dark?'Heller Modus':'Dunkler Modus'} aria-pressed={dark} onClick={()=>setDark(!dark)} className={cls(false)}>
@@ -57,6 +60,14 @@ export function AccountMenu({currentPage}:{currentPage:string}){
     {loggedIn&&<p className="m-0 truncate px-3 pb-1 pt-2 text-[12px] text-slate-500" title={me.user?.email}>{me.user?.email}</p>}
     {!loggedIn&&me.accounts&&<Link role="menuitem" href="/anmelden" className={item} onClick={()=>setOpen(false)}>Anmelden</Link>}
     <Link role="menuitem" href="/konto/profil" className={item} onClick={()=>setOpen(false)}>Konto</Link>
+    {isAdmin&&<div className="border-t border-slate-100 px-3 pb-1 pt-2">
+     <label htmlFor="view-tier" className="block text-[12px] text-slate-500">Ansehen als</label>
+     <select id="view-tier" className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-[13px] text-slate-900" value={me.viewTier??''}
+      onChange={e=>{const v=e.target.value;void setViewTier(v?(v as Tier):null);}}>
+      {VIEWS.map(([t,label])=><option key={label} value={t??''}>{label}</option>)}
+     </select>
+     {me.viewTier&&<p className="m-0 mt-1 text-[12px] text-amber-700">Ansicht: {me.viewTier==='guest'?'ohne Stufe':TIER_LABEL[me.viewTier]}</p>}
+    </div>}
     {IS_DEV&&<Link role="menuitem" href="/konto/postfach" className={item} onClick={()=>setOpen(false)}>Dev-Postfach</Link>}
     {loggedIn&&<button role="menuitem" type="button" onClick={()=>void signOut()} className={`${item} w-full text-left`}>Abmelden</button>}
    </div>}
