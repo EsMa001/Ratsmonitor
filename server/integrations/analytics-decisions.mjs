@@ -61,7 +61,7 @@ export async function decisions(db,catalog,params){
 }
 async function computeDecisions(db,catalog,f){
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const src=await source(db,catalog,f);
+ const src=await source(db,catalog,f,{steps:true});
  const {results:rows}=await db.prepare(`SELECT x.region_id g,x.month m,x.label l,x.status st,x.steps s,x.vote v,x.changed c,x.days d FROM ${src.from}`).bind(...src.args).all();
  const status=blank(),months=new Map(),topics=new Map(),kinds=new Map(),lands=new Map();
  const byId=new Map(catalog.map(r=>[r.id,r]));
@@ -123,7 +123,7 @@ export async function decisionList(db,catalog,params){
  const copy=new URLSearchParams(params);for(const k of ['by','value','offset','outcome'])copy.delete(k);
  const f=parseDecisions(copy);
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const src=await source(db,catalog,f),sts=outcome?[outcome]:DECIDED;
+ const src=await source(db,catalog,f,{steps:true}),sts=outcome?[outcome]:DECIDED;
  const ids=by==='land'?new Set(catalog.filter(r=>r.ags?.startsWith(value)).map(r=>r.id)):null;
  // Wie die Zahl: Themen und Länder nach dem Endstand, Gremienebene nach den Stationen des Vorgangs
  const {results}=await db.prepare(`SELECT c.id,x.region_id region,c.title,c.gremium,x.date,x.status,x.label,x.steps FROM ${src.from} JOIN search_cards c ON c.id=x.card_id ORDER BY x.date DESC`).bind(...src.args).all();
