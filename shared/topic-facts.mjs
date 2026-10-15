@@ -848,7 +848,8 @@ export function factsOf(title,text){
  const dog=dogTaxOf(title,text);if(dog)rows.push({kind:'dog_tax',value:dog.value,detail:dog.euro});
  const land=landPriceOf(title,text);if(land)rows.push({kind:'land_price',value:land.value,detail:land.euro});
  const plot=plotPriceOf(title,text);if(plot)rows.push({kind:'plot_price',value:plot.value,detail:plot.euro});
- const waste=wasteFeeOf(title,text);if(waste)rows.push({kind:'waste_fee',value:waste.value,detail:waste.euro});
+ // Abfallgebühr nur mit Betrag (Jahresgebühr der 120-l-Restmülltonne); die bloße Richtung nutzt niemand
+ const waste=wasteFeeOf(title,text);if(waste?.euro)rows.push({kind:'waste_fee',value:'120-l-Restmülltonne',detail:waste.euro});
  const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
  // Signale 2: Art bei Wohnbaugebieten (Plan mit Wohnen, Baugebiet ohne Plan, Bauplatzpreis)
  if(rows.some(r=>r.kind==='plan_use'&&(r.value==='Wohnen'||r.value==='Mischgebiet')||r.kind==='area_dev'&&r.value==='Wohnen'||r.kind==='plot_price'))rows.push({kind:'wohnbau_art',value:wohnbauArtOf(title),detail:''});

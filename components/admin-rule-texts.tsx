@@ -24,7 +24,7 @@ function stepNote(s:Step){
  return 'fertig';
 }
 const n=(v:number)=>v.toLocaleString('de-DE');
-type QualityRow={id:string;name:string;version:string;quality:number|null;coverage:number|null;sample:string;date:string;note?:string;gate?:boolean;what?:string;
+type QualityRow={id:string;name:string;version:string;quality:number|null;coverage:number|null;sample:string;date:string;note?:string;gate?:boolean;what?:string;/* Grund, warum ein Wert trotz Messung nicht auf die Karte kommt */lock?:string;
  /* Signale: Trefferquote der Kategorie und Qualität je Filter (docs/produkt/plenara-x-signale.md) */ recall?:number|null;art?:number|null;phase?:number|null;phaseFrom?:string;filters?:{name:string;quality:number|null}[]};
 /* „i“ neben dem Namen: was bei der Regel gemessen wird (what in rule-quality.json); Klick öffnet, für Tastatur und Touch */
 const Info=({text}:{text:string})=>{const [open,setOpen]=useState(false);return <>
@@ -57,10 +57,10 @@ const Meter=({label,v,min}:{label:string;v:number|null;min:number})=>{const [ope
 /* Thema je Fakt wie im Atlas (ATLAS_FACTS in server/integrations/plenara-x-query.mjs) */
 const FACT_THEME:Record<string,string>={plan:'bauen',plan_use:'bauen',housing:'bauen',hebesatz:'finanzen',annual_result:'finanzen',dog_tax:'finanzen',waste_fee:'umwelt',plan_area:'bauen',wind_count:'umwelt',project:'mobilitaet',road:'mobilitaet',house_type:'bauen',heat_plan:'umwelt',fee_rate:'umwelt',ee_power:'umwelt',grant:'soziales',kita_fee:'bildung',land_price:'wirtschaft',budget:'finanzen',second_home_tax:'finanzen',amusement_tax:'finanzen',plot_price:'bauen'};
 /* Ohne Abdeckung: jeder Bericht oder jedes PDF bekommt einen Wert (Unterthemen, Hauptdokument, Dokumentart) oder es ist eine Rangfolge (Social Media) */
-const NO_COVERAGE=new Set(['subs','main_doc','doc_type','social']);
+const NO_COVERAGE=new Set(['stage','subs','main_doc','doc_type','social']);
 /* Fakten nach Verwendung: Werte für die Karte von plenara.X Fakten (Zahl je Gemeinde), Bausteine der Signale (Einordnungen für
    Stand und Auswahl, keine Zahlen; stehen bei den Signalen), Fraktionsprofil (plenara.X Tools) */
-const SIGNAL_FACTS=new Set(['plan','plan_use','heat_plan','house_type','project']);
+const SIGNAL_FACTS=new Set(['plan','plan_use','heat_plan','house_type','project','stage']);
 const PROFILE_FACTS=new Set(['faction','faction_advice']);
 const factArt=(id:string)=>SIGNAL_FACTS.has(id)?'signal':PROFILE_FACTS.has(id)?'profil':'vergleich';
 /* Auf der Karte von plenara.X Fakten (shared/map-facts.mjs) */
@@ -165,11 +165,11 @@ export function AdminRuleTexts(){
     const row=(r:QualityRow,gid:string=g.id)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
-       {gid==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':r.quality!=null&&r.quality<QT.quality?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte':r.quality==null?'nicht gemessen':r.quality<QT.quality?'unter '+QT.quality+' %':'noch gesperrt'}</span>}</div>
+       {gid==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':r.quality!=null&&r.quality<QT.quality?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte':r.quality==null?'nicht gemessen':r.quality<QT.quality?'unter '+QT.quality+' %':r.lock||'noch gesperrt'}</span>}</div>
       <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),gid==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
      </div>
      <Meter label="Qualität" v={r.quality} min={QT.quality}/>
-     {gid==='facts'&&factArt(r.id)!=='vergleich'?<div className="min-w-0 text-[12px] text-slate-500">{xs?.facts?.[r.id]!==undefined?<><span className="block text-[18px] font-semibold tabular-nums text-slate-900">{n(xs.facts[r.id])}</span>Berichte</>:'noch kein Lauf'}</div>
+     {gid==='facts'&&factArt(r.id)!=='vergleich'?<div className="min-w-0 text-[12px] text-slate-500">{xs?.facts?.[r.id]!==undefined?<><span className="block text-[18px] font-semibold tabular-nums text-slate-900">{n(xs.facts[r.id])}</span>Berichte</>:r.id==='stage'?'':'noch kein Lauf'}</div>
       :gid==='facts'&&xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={QT.coverage}/>:r.id==='summary'&&c&&docs?<Meter label="Abdeckung" v={Math.round(100*(ai+rule)/docs)} min={QT.coverage}/>:NO_COVERAGE.has(r.id)?<div/>:<Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>}
     </li>;
     const list=(rows:QualityRow[],gid:string=g.id)=><ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{rows.map(r=>row(r,gid))}</ul>;
@@ -204,7 +204,7 @@ export function AdminRuleTexts(){
     if(g.id==='facts')return <div key={g.id}>
      <div className="mt-8">
       <h3>{g.name}</h3>
-      <p className="admin-note mt-1">Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Auf die Karte kommt ein Wert erst ab {QT.quality} % Qualität.</p>
+      <p className="admin-note mt-1">Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Auf die Karte kommt ein Wert erst ab {QT.quality} % Qualität. Mengen je Vorhaben (Wohneinheiten, Fläche, Windanlagen) zählen dort als Summe je 1.000 Einwohner.</p>
       {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[13px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
      </div>
      <div className="mt-8">

@@ -6,4 +6,4 @@ export const MAP_FACTS=[['hebesatz','bad',true],['housing','amount',false],['bud
  ['waste_fee','bad',false],['plan_area','amount',false],['wind_count','amount',false],['road','amount',false]];
 export const MAP_FACT_NAMES={hebesatz:'Hebesätze',fee_rate:'Wasser- und Abwassergebühren',annual_result:'Jahresergebnis',land_price:'Gewerbegrundstücke (€/m²)',housing:'Geplante Wohneinheiten',budget:'Haushalt je Einwohner',second_home_tax:'Zweitwohnungsteuer',amusement_tax:'Vergnügungssteuer',
  kita_fee:'Kita-Gebühren',dog_tax:'Hundesteuer',plot_price:'Wohnbauplätze (€/m²)',grant:'Zuschüsse',ee_power:'Wind und Solar (MW)',
- waste_fee:'Abfallgebühren',plan_area:'Fläche der Plangebiete (ha)',wind_count:'Windenergieanlagen',road:'Kosten im Straßenbau'};
+ waste_fee:'Abfallgebühr (120-l-Tonne)',plan_area:'Fläche der Plangebiete (ha)',wind_count:'Windenergieanlagen',road:'Kosten im Straßenbau'};
