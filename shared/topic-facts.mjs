@@ -149,7 +149,7 @@ export function housingOf(text){
 
 /* plenara.X Signale, Kategorien 4 bis 9 (docs/produkt/plenara-x-signale.md): je Vorgang ein Filterwert aus dem Titel, null wenn der
    Vorgang nicht zur Kategorie gehört. Anfragen, Anträge von Fraktionen, Berichte und Einzelbauanträge Dritter zählen nicht. */
-const SIG_NOT=/Anfrage|Beantwortung|Antrag (?:der|des) (?:Fraktion|Ratsmitglied|Stadtverordnet|Gemeinderat|Kreistag)|Fraktion|Bauantrag|Bauvoranfrage|Baugesuch|Nutzungsänderung/i;
+const SIG_NOT=/(?<!Such)Anfrage|Beantwortung|Antrag (?:der|des) (?:Fraktion|Ratsmitglied|Stadtverordnet|Gemeinderat|Kreistag)|Fraktion|Bauantrag|Bauvoranfrage|Baugesuch|Nutzungsänderung/i;
 const firstOf=(list,t)=>list.find(([,re])=>re.test(t))?.[0]||null;
 /* 4 Windenergie: Art des Verfahrens */
 const WIND_TITLE=/Raumordnungsplan Wind|\bROPW\b|Windenergie|Windkraft|Windpark|Windrad|Windräder|\bWEA\b|Windenergieanlage|Windkraftanlage|Repowering(?![^]{0,30}Solar)/i;
@@ -206,10 +206,11 @@ const PROJECT_STEPS=[
  ['Vergabe',/Vergabe|Auftrag|Ausschreibung|Submission|Zuschlag|Beauftragung/i],
  ['Bau',/Baubeginn|Bauzeit|Bauarbeiten|Vollsperrung|Sperrung|Umleitung|Bauablauf|Nachtrag|Baufortschritt|Baustelle/i],
  ['Beschluss und Förderung',/Baubeschluss|Ausführungsbeschluss|Maßnahmenbeschluss|Grundsatzbeschluss|Durchführungsbeschluss|Förder|Zuwendung|Finanzierung|Bauprogramm/i],
- ['Planung',/Planung|Entwurf|Vorplanung|Konzept|Machbarkeit|Variante|Studie|Untersuchung|Gutachten|Vorstellung|Bürgerbeteiligung/i],
+ ['Planung',/Planung|Entwurf|Vorplanung|Konzept|Machbarkeit|Variante|Studie|Untersuchung|Gutachten|Vorstellung|Bürgerbeteiligung|Geplant/i],
+ ['Sachstand',/Sachstand|Information|Stand de[rs]|Bericht|\bInfo\b|aktuell|Zukunft/i],
 ];
 const projectStep=t=>firstOf(PROJECT_STEPS,t)||'Sonstiges';
-const PROJECT_NOT=/Gebühr|Satzung|Abgabe|Beitr[aä]g|Kalkulation|Wirtschaftsplan|Jahresabschluss|Entgelt|Sachstandsbericht|Bauantrag|Bauvoranfrage|Baugesuch|Befreiung|Straßenname|Benennung|Umbenennung|Winterdienst|Reinigung|Kehr/i;
+const PROJECT_NOT=/Gebühr|Satzung|Abgabe|Beitr[aä]g|Kalkulation|Wirtschaftsplan|Jahresabschluss|Entgelt|Sachstandsbericht|Bauantrag|Bauvoranfrage|Baugesuch|Befreiung|Straßenname|Benennung|Umbenennung|Winterdienst|Reinigung|Kehrmaschine|Straßenkehr|Kehrwoche/i;
 const STREETS=[
  ['Radweg',/Radweg|Radverkehrsanlage|Fahrradstraße|Radschnellweg|Radverkehrsverbindung/i],
  ['Gehweg und Barrierefreiheit',/Gehweg|Bürgersteig|Fußweg|Bushaltestelle|barrierefrei/i],
@@ -217,21 +218,21 @@ const STREETS=[
  ['Brücke',/Brücke(?!nau)|Brücken(?!au)|Steg\b|Unterführung|Überführung/i],
  ['Straßenausbau und -sanierung',/Verbreiterung|Neugestaltung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Deckenerneuerung|Deckensanierung|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung/i],
 ];
-const STREET_WORK=/Fahrradstraße|Qualitätsstandard|Verbreiterung|Neugestaltung|Überführung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Decke|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung|Herstellung|Errichtung|Planung|Bau\b|Brücke|Radweg|Gehweg|Kreisverkehr|Ortsdurchfahrt|Unterführung/i;
-export function streetSignalOf(title){const t=String(title||'');if(!ROAD_TITLE.test(t)||!STREET_WORK.test(t)||NOT_ROAD.test(t)||PROJECT_NOT.test(t)||SIG_NOT.test(t)||/Baugenehmigung|Wohnanlage|Pflegeheim|Pflanzung|Spielplatz|Quartierssanierung|Geschwindigkeit|Tempo/i.test(t))return null;const a=firstOf(STREETS,t);return a?{value:a,step:projectStep(t)}:null;}
+const STREET_WORK=/Maßnahme|Vorhaben|Projekt|Variante|Kosten|Förder|Vergabe|Auftrag|Instandhaltung|Ertüchtigung|Verkehrsführung|Fahrradstraße|Qualitätsstandard|Verbreiterung|Neugestaltung|Überführung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Decke|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung|Herstellung|Errichtung|Planung|Bau\b|Brücke|Radweg|Gehweg|Kreisverkehr|Ortsdurchfahrt|Unterführung/i;
+export function streetSignalOf(title){const t=String(title||'');if(!ROAD_TITLE.test(t)||!STREET_WORK.test(t)||NOT_ROAD.test(t)||PROJECT_NOT.test(t)||SIG_NOT.test(t)||/Erinnerung|Litfaß|Holzkreuz|Baugenehmigung|Wohnanlage|Pflegeheim|Pflanzung|Spielplatz|Quartierssanierung|Geschwindigkeit|Tempo|Mobilfunk|Funkmast|e\.\s?V\.|Sondermittel|Knöterich|Neophyt|Schulneubau|Schulgebäude|Sanierungsgebiet|Zustand de[sr] (?:Gehweg|Straße)/i.test(t))return null;const a=firstOf(STREETS,t);return a?{value:a,step:projectStep(t)}:null;}
 const WATERS=[
  ['Hochwasser und Starkregen',/Hochwasser|Starkregen|Deich|Retention|Rückhaltebecken|Regenrückhalt|Flutmulde|Gewässerausbau|Renaturierung/i],
  ['Kläranlage',/Kläranlage|Klärwerk|Abwasserbehandlung|Faulturm|Belebungsbecken/i],
  ['Kanal und Abwasser',/Kanal|Abwasser|Schmutzwasser|Mischwasser|Regenwasser|Entwässerung|Pumpwerk|Pumpstation|Regenüberlauf/i],
  ['Trinkwasser',/Trinkwasser|Wasserversorgung|Wasserleitung|Hochbehälter|Wasserwerk|Tiefbrunnen|Brunnenanlage|Wasserturm|Löschwasser/i],
 ];
-const WATER_WORK=/Neustrukturierung|Rückhaltebecken|Neubau|Erweiterung|Sanierung|Erneuerung|Ausbau|Bau\b|Errichtung|Planung|Konzept|Maßnahme|Ertüchtigung|Umbau|Vergabe|Herstellung|Studie|Machbarkeit|Förder|Verlegung|Instandsetzung|Modernisierung|Auftrag/i;
-export function waterSignalOf(title){const t=String(title||'');if(!WATER_WORK.test(t)||PROJECT_NOT.test(t)||SIG_NOT.test(t)||/Sondervermögen|Gewässerunterhaltung|Wasserverband.*Wahl|Wirtschaftsprüf|Transporter|Mietangelegenheit|Brunnenstraße|Abbruch/i.test(t))return null;const a=firstOf(WATERS,t);return a?{value:a,step:projectStep(t)}:null;}
+const WATER_WORK=/Entschlammung|Rückhaltung|Eigenkontroll|Inspektion|Generalentwässerung|Einspeiseleitung|Neustrukturierung|Rückhaltebecken|Neubau|Erweiterung|Sanierung|Erneuerung|Ausbau|Bau\b|Errichtung|Planung|Konzept|Maßnahme|Ertüchtigung|Umbau|Vergabe|Herstellung|Studie|Machbarkeit|Förder|Verlegung|Instandsetzung|Modernisierung|Auftrag/i;
+export function waterSignalOf(title){const t=String(title||'');if(!WATER_WORK.test(t)&&!/Hochwasserschutz|Starkregen/i.test(t)||PROJECT_NOT.test(t.replace(/Sachstandsbericht/g,''))||SIG_NOT.test(t)||/Sondervermögen|Gewässerunterhaltung|Wasserverband.*Wahl|Energie|Strom|Vergleich|Bekanntgaben|Laufendes|Mäharbeit|Böschung|Straßenunterhaltung|Wirtschaftsprüf|Transporter|Mietangelegenheit|Brunnenstraße|Abbruch|Wasserschaden|Flst|Fl\.?\s?-?Nr|Pflanz|Zwischenbericht|Jahresergebnis/i.test(t))return null;const a=firstOf(WATERS,t);return a?{value:a,step:projectStep(t)}:null;}
 const BROADBANDS=[
  ['Mobilfunk',/Mobilfunk|Funkmast|Sendemast|\b5G\b|Funkturm/i],
  ['Glasfaser und Breitband',/Glasfaser|Breitband|Gigabit|\bFTT[HB]\b|Leerrohr/i],
 ];
-export function broadbandSignalOf(title){const t=String(title||'');if(/Gebühr|Satzung|Wirtschaftsplan|Jahresabschluss|Beteiligungsbericht|Wärme|Bauantrag/i.test(t)||SIG_NOT.test(t))return null;const a=firstOf(BROADBANDS,t);return a?{value:a,step:projectStep(t)}:null;}
+export function broadbandSignalOf(title){const t=String(title||'');if(/Finanzprüfung|Müll|Gebühr|Satzung|Wirtschaftsplan|Jahresabschluss|Beteiligungsbericht|Wärme|Bauantrag/i.test(t)||SIG_NOT.test(t))return null;const a=firstOf(BROADBANDS,t);return a?{value:a,step:projectStep(t)}:null;}
 /* 8 Pflege und Gesundheit */
 const CARE=[
  ['Pflegeheim',/Pflegeheim|Pflegeeinrichtung|Pflegezentrum|Altenheim|Altenpflegeheim|Seniorenheim|Seniorenzentrum|Pflege-?WG|(?<!Kinder)(?<!Kinder-)Tagespflege|Kurzzeitpflege/i],

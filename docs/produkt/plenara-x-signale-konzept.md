@@ -73,3 +73,5 @@ Messung, zwei ungesehene Server-Läufe (Seeds 7373, 8484), eingetragen Lauf 2:
 - Straßen: Kategorie 83 %, Art 96 %, Stand 13/13; Trefferquote ca. 64 % (7/11) – zu niedrig, oft fehlt ein Bauwort im Titel.
 - Wasser: Kategorie 93 %, Art 96 %, Stand 16/17; Trefferquote ca. 64 % (9/14).
 - Breitband: Kategorie 100 %, Art 100 %, Trefferquote 95 %. Der Stand ist meist „Sonstiges“ (Sachstandsberichte).
+
+Optimierung (Lauf 3, Seed 9595, nach Korrekturen „Kreisverkehr“ fälschlich über „Kehr“ ausgeschlossen, Bauwörter ergänzt, Stand „Sachstand“): Straßen Kategorie 90 %, Trefferquote 3/4; Breitband 93 %, 18/19; Wasser 80 % (Strombeschaffung, Mäharbeiten, Vergleich), danach erneut korrigiert, nicht nachgemessen.
