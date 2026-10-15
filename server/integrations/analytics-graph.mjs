@@ -16,7 +16,7 @@ import {listPage,offsetOf} from './analytics-lists.mjs';
  * nicht Füllwörter („Antrag“, „Sitzung“) das Bild bestimmen.
  */
 const TERMS=22,PER_KIND=6,MIN_DF=3;
-/* Gesamtgraph (all=1): mehr Knoten */
+/* Gesamtgraph (ohne Begriff): mehr Knoten */
 const TERMS_ALL=40,PER_KIND_ALL=8;
 /* Wörter des Sitzungsbetriebs, die über den ganzen Bestand ständig vorkommen und kein Thema sind (auch mit Begriff) */
 export const FORMAL_ALL=new Set('beschlussfähigkeit ordnungsgemäßen ordnungsgemäße ladung vorstellung öffentlicher öffentliche sachstand bürgermeisters bürgermeister begrüßung bestätigung wahl bestellung protokolls anwesenheit geschäftsordnung einladung fraktion fraktionen anregungen beschwerden verwaltung eröffnung feststellung genehmigung mitglieder mitglied beantwortung unterrichtung verpflichtung verabschiedung beschlussfassung ergänzung bekanntgabe entgegennahme sitzungsniederschrift gremium gremien ausschuss ausschusses rates gemeinderates stadtrates ortsgemeinderates verbandsgemeinde stadt gemeinde kreis ortsbeirat ortsbeirates niederschrift vorlage vorlagen beschluss beschlüsse bericht berichte aktuelle aktueller informationen information verschiedenes tagesordnungspunkte wortmeldungen einwohnerfragestunde einwohnerfrage teils letzten gefassten angelegenheiten sonstiges annahme nichtöffentlicher nichtöffentlichen sachstandsbericht ordnungsmäßigkeit änderungsanträge einwohner'.split(' ').map(w=>w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replaceAll('ß','ss')));
@@ -25,11 +25,10 @@ const gremienOf=steps=>[...new Set(parseSteps(steps).map(e=>e.g).filter(g=>g&&!P
 const gremiumKey=g=>String(g||'').replace(/\s+/g,' ').trim();
 const jaccard=(c,a,b)=>c/(a+b-c);
 
-/** Gleiche Filter wie die Suche; Begriff erforderlich, außer für den Gesamtgraphen (all=1) */
+/** Gleiche Filter wie die Suche; ohne Begriff der Gesamtgraph über alle Vorgänge der Auswahl */
 export function parseGraph(params){
  let f;const copy=new URLSearchParams(params);for(const k of ['by','value','offset'])copy.delete(k);params=copy;
  try{f=parseMonitorSearch(params);}catch(e){throw new AnalyticsError(e.message,e.status||400);}
- if(!f.groups.length&&new URLSearchParams(params).get('all')!=='1')throw new AnalyticsError('Bitte einen Begriff eingeben.');
  if(f.groups.flat().some(w=>w.length<3))throw new AnalyticsError('Jedes Suchwort braucht mindestens 3 Buchstaben.');
  return f;
 }

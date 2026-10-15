@@ -8,8 +8,9 @@ import {knowledgeGraph,parseGraph,tokens} from '../server/integrations/analytics
 import {parseTerms} from '../server/integrations/x-terms.mjs';
 
 const catalog=[{id:'a',kind:'city',name:'Alt',ags:'05558008'},{id:'b',kind:'city',name:'Bett',ags:'03155012'}];
-test('graph needs a term of at least three letters',()=>{
- for(const q of ['q=','q=ab'])assert.throws(()=>parseGraph(new URLSearchParams(q)));
+test('graph without a term is the whole net; a term needs at least three letters',()=>{
+ assert.equal(parseGraph(new URLSearchParams('q=')).groups.length,0);
+ assert.throws(()=>parseGraph(new URLSearchParams('q=ab')));
 });
 test('graph links terms, topics, committees and lands by co-occurrence and leaves out the query and formalities',async()=>{
  const sql=new DatabaseSync(':memory:');

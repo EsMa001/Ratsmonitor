@@ -31,7 +31,7 @@ const pct = (v: number, total: number) => (total ? `${Math.max(1, Math.round((v 
 
 export function KnowledgeGraphPage() {
   const params = useSearchParams();
-  const { query, hasTerm, search } = useAnalyticsQuery();
+  const { query, search } = useAnalyticsQuery();
   // Liste der Vorgänge hinter dem gewählten Knoten
   const [showList, setShowList] = useState(false);
   const [selected, setSelected] = useState("");
@@ -39,17 +39,17 @@ export function KnowledgeGraphPage() {
   const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
 
-  /* Direktlink (?thema=) oder der Begriff, der schon in der Suche steht; ohne Begriff kein Beispiel, Start erst nach Eingabe */
+  /* Direktlink (?thema=) oder der Begriff, der schon in der Suche steht; ohne Begriff das ganze Netz */
   const [given] = useState(() => params.get("thema"));
   const { res: runRes, ranKey: runKey, loading: runLoading, error: runError, run, runAfterChange } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/graph?${query}`, initial: false, fallback: "Der Graph konnte nicht berechnet werden.", onDone: () => { setSelected(""); setPair(null); } });
   const res = runRes, ranKey = runKey, loading = runLoading;
   const [hint, setHint] = useState("");
   const error = hint || runError;
-  /* Neu erstellen; ohne Begriff warten, bis er in der Suche angekommen ist */
-  const start = () => { setHint(""); if (hasTerm) run(); else runAfterChange(); };
+  /* Neu erstellen; ohne Begriff das Netz über alle Vorgänge (wie Trends, Beratungswege und Beschlüsse) */
+  const start = () => { setHint(""); run(); };
 
   useEffect(() => {
-    if (!given) { if (hasTerm) run(); return; }
+    if (!given) { run(); return; }
     search.applySearch(given);
     runAfterChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,7 +58,6 @@ export function KnowledgeGraphPage() {
   const stale = !!res && ranKey !== query;
   const onPlay = () => {
     if (loading) return;
-    if (!hasTerm) return setHint("Bitte zuerst ein Thema in die Suche eingeben.");
     start();
   };
 
@@ -133,7 +132,7 @@ export function KnowledgeGraphPage() {
         <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:inset-x-3 max-sm:top-auto max-sm:bottom-3">
           {loading ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Graph wird berechnet …</span>
             : empty ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-900`}>Keine Treffer für diese Suche.</span>
-            : !res ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Thema suchen und auf Start drücken</span>
+            : !res ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Auf Start drücken</span>
             : !sel ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700 max-sm:hidden`}>Knoten anklicken oder ziehen</span> : null}
         </div>
 
