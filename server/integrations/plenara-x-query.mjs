@@ -101,13 +101,20 @@ export async function xState(db){
 /* Spalten von x_cases, die jede Auswertung bekommt (ohne die langen Stationen) */
 const X_COLS='case_key,region_id,date,month,label,stage,subs,status,card_id,cards,unread,first_date,days,vote,changed';
 export async function source(db,catalog,f,opts={}){
- const {page}=await searchFilters(db,catalog,{...f,noformal:false,part:'x'});
-// Schmale Spalten; die langen Stationen (steps) und Begriffe (terms) nur, wer sie braucht
- const cols=X_COLS+(opts.steps?',steps':'')+(opts.terms?',terms,private_build':'');
- if(!f.q)return {from:`(SELECT ${cols} FROM x_cases WHERE ${page.where}) x`,args:page.args};
+ // Ohne Zeitraum bis heute, wie die Suche ohne „Künftige Sitzungen zeigen“: künftige Vorgänge (x_cases) nur, wer ausdrücklich voraus fragt
+ const to=f.to||new Date().toISOString().slice(0,10);
+ // Mit facts ist die Menge vorab klein: dann die schlichte Suche über diese Karten statt Wortliste und Volltext
+ const {page}=await searchFilters(db,catalog,{...f,to,noformal:false,...(opts.facts?.length?{}:{part:'x'})});
+// Schmale Spalten; die langen Stationen (steps) und Begriffe (terms) nur, wer sie braucht.
+// noPrivate: ohne private Bauanträge (x_cases.private_build), einheitlich für Themennetz, Ortsvergleich und Trends
+ // facts: mit Begriff nur Karten durchsuchen, die einen dieser Fakten tragen (wer nur Vorgänge mit Fakt zählt, z. B. Fraktionsprofil)
+ const only=opts.facts?.length?`id IN (SELECT topic_id FROM topic_facts WHERE kind IN (${opts.facts.map(()=>'?').join(',')})) AND `:'';
+ const np=opts.noPrivate?' AND private_build=0':'';
+ const cols=X_COLS+(opts.steps?',steps':'')+(opts.terms?',terms':'');
+ if(!f.q)return {from:`(SELECT ${cols} FROM x_cases WHERE ${page.where}${np}) x`,args:page.args};
  // Die Suche einmal je Anfrage: Vorgänge der gefundenen Karten als Liste, alle Zählungen lesen nur noch sie
- const {results}=await db.prepare(`SELECT DISTINCT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k FROM (SELECT id,region_id,title FROM search_cards WHERE ${page.where}) c LEFT JOIN report_rules r ON r.topic_id=c.id`).bind(...page.args).all();
- return {from:`(SELECT ${cols} FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))) x`,args:[JSON.stringify(results.map(r=>r.k))]};
+ const {results}=await db.prepare(`SELECT DISTINCT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k FROM (SELECT id,region_id,title FROM search_cards WHERE ${only}${page.where}) c LEFT JOIN report_rules r ON r.topic_id=c.id`).bind(...(opts.facts||[]),...page.args).all();
+ return {from:`(SELECT ${cols} FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))${np}) x`,args:[JSON.stringify(results.map(r=>r.k))]};
 }
 /** Erste Sitzung eines Vorgangs (x_cases.first_date, beim Bau aus dem Zeitstrahl, Migration 0040); ohne Bau die letzte */
 export const FIRST_DATE=`coalesce(nullif(x.first_date,''),x.date)`;

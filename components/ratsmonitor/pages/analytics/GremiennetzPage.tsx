@@ -3,7 +3,7 @@ import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { NetView, ROLE, type NEdge, type NNode } from "./NetView";
@@ -19,22 +19,13 @@ const glass = "rm-glass";
 const n = (v: number) => v.toLocaleString("de-DE");
 
 export function GremiennetzPage() {
-  const { query, hasTerm, search } = useAnalyticsQuery();
+  const { query } = useAnalyticsQuery();
   const [selected, setSelected] = useState("");
-  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/network?${query}`, initial: hasTerm, fallback: "Das Netz konnte nicht berechnet werden.", onDone: () => setSelected("") });
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/network?${query}`, initial: true, fallback: "Das Netz konnte nicht berechnet werden.", onDone: () => setSelected("") });
   // Geöffnete Liste hinter einem Übergang („Von|Nach“)
   const [edge, setEdge] = useState("");
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
 
-  /* Ohne Begriff in der Suche: mit einem passenden Beispiel starten, damit die Seite nicht leer ist */
-  const given = useRef<string | null>(hasTerm ? null : "Photovoltaik");
-  useEffect(() => {
-    if (!given.current) return;
-    search.applySearch(given.current);
-    given.current = null;
-    run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
 
   const byId = useMemo(() => new Map((res?.nodes ?? []).map((x) => [x.id, x])), [res]);

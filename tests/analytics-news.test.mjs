@@ -63,3 +63,26 @@ test('outcomeOf liest Platzhalter der Importe nicht als Ergebnis',()=>{
  assert.equal(outcomeOf('Beschlussvorlage'),null);
  assert.equal(outcomeOf('Beschluss: einstimmig'),'einstimmig beschlossen');
 });
+
+test('Newsradar wählt wie alle plenara.X-Seiten über x_cases aus: künftige Vorgänge ja, private Bauanträge nein; andere Seiten nur bis heute',async()=>{
+ const fs=await import('node:fs'),{DatabaseSync}=await import('node:sqlite'),{sqliteAdapter}=await import('../scripts/ai-job.mjs');
+ const {buildXCases}=await import('../server/integrations/x-cases.mjs'),{news}=await import('../server/integrations/analytics-news.mjs'),{xQuery}=await import('../server/integrations/plenara-x-query.mjs');
+ const sql=new DatabaseSync(':memory:');
+ for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8').replaceAll('--> statement-breakpoint',''));
+ const day=d=>new Date(Date.now()+d*864e5).toISOString().slice(0,10);
+ let n=0;
+ const put=(title,date,status)=>{n++;const t={title,officialTitle:title,committee:'Rat',events:[{date,committee:'Rat',status}],
+  ruleSummary:{short:{sentences:['Der Rat soll über die Sanierung der Sporthalle an der Schule entscheiden, die Kosten liegen bei zwei Millionen Euro.']}}};
+  sql.prepare('INSERT INTO topics VALUES(?,?,?,?,?,?,?)').run('t'+n,'city',date,date,status,JSON.stringify(t),'a');};
+ put('Sanierung der Sporthalle',day(-3),'rejected');
+ put('Neubau der Feuerwache',day(5),'announced');
+ put('Bauantrag Carport, Flurstück 12',day(-2),'rejected');
+ buildXCases(sql,{today:day(0)});
+ const db=sqliteAdapter(sql),catalog=[{id:'a',kind:'city',name:'Stadt Alt',ags:'05558008'}];
+ const r=await news(db,catalog,new URLSearchParams(''));
+ const heads=r.items.map(i=>i.headline).join(' | ');
+ assert.match(heads,/Sporthalle/);assert.match(heads,/Feuerwache – kommt auf die Tagesordnung|Feuerwache kommt auf die Tagesordnung/);
+ assert.doesNotMatch(heads,/Carport/,'private Bauanträge zählen nicht');
+ const atlas=await xQuery(db,catalog,new URLSearchParams('view=atlas'));
+ assert.equal(atlas.total,2,'ohne Zeitraum bis heute: der künftige Vorgang zählt im Atlas nicht');
+});

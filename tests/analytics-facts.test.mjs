@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {buildXCases} from '../server/integrations/x-cases.mjs';
 import {factions} from '../server/integrations/analytics-factions.mjs';
 
 const catalog=[{id:'a',kind:'city',name:'Alt',ags:'05558008'},{id:'b',kind:'city',name:'Bett',ags:'03155012'}];
@@ -13,19 +14,21 @@ function setup(){
  let n=0;
  const put=(region,status,label,facts,same)=>{n++;const title=same||'Vorlage '+n,t={title,officialTitle:title,shortSummary:'x',committee:'Rat',classification:{method:'title-rules-v2',version:'labels-v2',primary:label,evidence:title},events:[{date:'2026-09-20',committee:'Rat',status}]};
   sql.prepare('INSERT INTO topics VALUES(?,?,?,?,?,?,?)').run('t'+n,'city','2026-09-20','2026-09-20',status,JSON.stringify(t),region);
+  sql.prepare('INSERT INTO report_rules(topic_id,key,version,read_at,case_key,item_kind,theme,subs,stage) VALUES(?,?,?,?,?,?,?,?,?)').run('t'+n,'k','v','2026-09-20',region+'|'+title.toLowerCase(),'subject',label,'','');
   for(const [kind,value,detail] of facts)sql.prepare('INSERT INTO topic_facts VALUES(?,?,?,?,?)').run('t'+n,kind,value,detail,'facts-v2:text');};
- return {db:sqliteAdapter(sql),sql,put};
+ return {db:sqliteAdapter(sql),sql,put,build:()=>buildXCases(sql,{today:'2026-10-15'})};
 }
 const q=s=>new URLSearchParams('to=2999-01-01&'+s);
 
 test('faction profile counts motions and questions, success rate and topic index',async()=>{
- const {db,put}=setup();
+ const {db,put,build}=setup();
  for(let i=0;i<8;i++)put('a','approved','umwelt',[['faction','Grüne','antrag']]);
  for(let i=0;i<2;i++)put('a','rejected','umwelt',[['faction','Grüne','antrag']]);
  put('a','consulting','bildung',[['faction','Grüne','anfrage']]);
  for(let i=0;i<10;i++)put('b','approved','bildung',[['faction','SPD','antrag']]);
  put('b','approved','bildung',[['faction','SPD','antrag'],['faction','CDU/CSU','antrag']]);
  put('b','approved','bildung',[]);
+ build();
  const r=await factions(db,catalog,q(''));
  assert.equal(r.totals.withFaction,22);
  const g=r.parties.find(p=>p.name==='Grüne'),s=r.parties.find(p=>p.name==='SPD');

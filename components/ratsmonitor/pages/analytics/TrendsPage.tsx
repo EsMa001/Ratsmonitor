@@ -39,10 +39,10 @@ const fmtRatio = (t: Trend) => (t.np === 0 ? "neu" : t.ratio >= 1 ? `×${t.ratio
 
 export function TrendsPage() {
   const params = useSearchParams();
-  const { query, hasTerm, search } = useAnalyticsQuery();
+  const { query, search } = useAnalyticsQuery();
   const [days, setDays] = useState<number>(90);
-  /* Beispielbegriff beim Öffnen (aus ?thema= oder Photovoltaik ohne eigenen Begriff); einmal festgelegt */
-  const [given] = useState(() => params.get("thema") || (hasTerm ? null : "Photovoltaik"));
+  /* Begriff aus einem Verweis (?thema=), sonst kein vorausgewählter Begriff; einmal festgelegt */
+  const [given] = useState(() => params.get("thema"));
   const [tab, setTab] = useState<"rising" | "emerging" | "falling">("rising");
   const [picked, setPicked] = useState("");
 

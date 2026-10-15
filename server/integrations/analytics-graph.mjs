@@ -40,7 +40,7 @@ export async function knowledgeGraph(db,catalog,params){
  /* Wie überall in plenara.X: Auswahl über die Suche, gezählt werden Vorgänge (x_cases: ohne Formalien, gleiche Titel je Gebiet
     einmal); Titel und Gremium aus der Karte des Vorgangs */
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const src=await source(db,catalog,f,{steps:true,terms:true});
+ const src=await source(db,catalog,f,{steps:true,terms:true,noPrivate:true});
  /* Alle Vorgänge der Auswahl, keine Stichprobe */
  const overall=!f.groups.length;
  const {results:rows}=await db.prepare(`SELECT x.region_id,x.label,x.steps,x.terms FROM ${src.from}`).bind(...src.args).all();
@@ -119,7 +119,7 @@ export async function graphList(db,catalog,params){
  const value=params.get('value')||'',kind=value[1]===':'?value[0]:'',id=value.slice(2);
  if(params.get('by')!=='node'||!'tkgl'.includes(kind)||!kind||!id)throw new AnalyticsError('Unbekannte Liste.',400);
  const f=parseGraph(params);
- const src=await source(db,catalog,f,{steps:true});
+ const src=await source(db,catalog,f,{steps:true,noPrivate:true});
  const {results}=await db.prepare(`SELECT c.id,x.region_id region,x.label,c.gremium,c.title,x.date,x.status,x.steps FROM ${src.from} JOIN search_cards c ON c.id=x.card_id ORDER BY x.date DESC`).bind(...src.args).all();
  const land=new Map(catalog.map(r=>[r.id,r.ags?.slice(0,2)]));
  const hit={t:r=>tokens(r.title).has(id),k:r=>r.label===id,g:r=>gremienOf(r.steps).includes(id),l:r=>land.get(r.region)===id}[kind];

@@ -16,13 +16,18 @@ const BUILD=`SELECT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k,c.re
  FROM search_cards c LEFT JOIN report_rules r ON r.topic_id=c.id
  WHERE c.date<>'' AND c.date<=? AND coalesce(r.item_kind,CASE WHEN c.formal=1 THEN 'formal' ELSE 'subject' END)='subject'
  GROUP BY k`;
+/* Künftige Vorgänge (wie in der Suche): nur angesetzt, noch keine Sitzung bis heute; Datum ist die erste anstehende Sitzung.
+   Alle Seiten sehen sie nur, wenn ihr Zeitraum über heute hinausgeht (source() setzt sonst „bis heute“), derzeit der Newsradar. */
+const FUTURE=BUILD.replace('max(c.date) d','min(c.date) d').replace('c.date<=?','c.date>?');
 
 /** @param {import('node:sqlite').DatabaseSync} sql  @returns {{cases:number,unread:number,seconds:number,today:string}} */
 export function buildXCases(sql,{today=new Date().toISOString().slice(0,10),dry=false}={}){
  const t0=Date.now();
- const rows=sql.prepare(BUILD).all(today);
+ const past=sql.prepare(BUILD).all(today),seen=new Set(past.map(r=>r.k));
+ const future=sql.prepare(FUTURE).all(today).filter(r=>!seen.has(r.k));
+ const rows=past.concat(future);
  const unread=rows.reduce((a,r)=>a+(r.un?1:0),0);
- const state={builtAt:new Date().toISOString(),today,cases:rows.length,unread};
+ const state={builtAt:new Date().toISOString(),today,cases:past.length,future:future.length,unread};
  if(!dry){
   sql.exec('BEGIN IMMEDIATE');
   try{

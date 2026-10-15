@@ -20,10 +20,11 @@ test('graph links terms, topics, committees and lands by co-occurrence and leave
  for(let i=0;i<6;i++)put('a','umwelt','Bauausschuss','Windenergie Flächennutzungsplan Änderung Sitzung Teil '+'ABCDEF'[i]);
  for(let i=0;i<4;i++)put('b','umwelt','Gemeinderat','Windenergie Artenschutz Gutachten '+'ABCD'[i]);
  put('b','unklar','Gemeinderat','Windenergie Sonstiges Thema');
+ put('a','umwelt','Bauausschuss','Bauantrag Windenergie Carport Flurstück 12');
  buildXCases(sql,{today:'2026-10-15'});
  try{
   const g=await knowledgeGraph(db,catalog,new URLSearchParams('q=Windenergie&to=2999-01-01'));
-  assert.equal(g.total,11);assert.equal(g.nodes[0].type,'center');
+  assert.equal(g.total,11,'private Bauanträge zählen nicht');assert.equal(g.nodes[0].type,'center');
   // Begriffe je Vorgang beim Bau abgelegt: dieselben wie aus dem Titel der Karte
   for(const r of sql.prepare('SELECT x.terms,c.title FROM x_cases x JOIN search_cards c ON c.id=x.card_id').all())assert.deepEqual(parseTerms(r.terms),tokens(r.title));
   const labels=g.nodes.map(x=>x.label);

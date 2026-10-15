@@ -27,7 +27,7 @@ plenara.X ist der Analyse-Teil von Plenara (Tarif Enterprise; frei sind nur die 
 | Tools: Ortsvergleich | `/analytics/vergleich` | Orte nebeneinander | `/api/analytics/compare` | `x_cases` (Titel aus der Karte) |
 | Tools: Beschlüsse | `/analytics/beschluesse` | Beschlussquote, Vertagungen, Dauer | `/api/analytics/decisions` | `x_cases`, Karten der Vorgänge, `topics` |
 | Tools: Beratungswege | `/analytics/gremien` | Weg der Vorgänge durch die Gremien | `/api/analytics/network` | `x_cases` (Titel aus der Karte) |
-| Tools: Fraktionsprofil | `/analytics/fraktionen` | Anträge je Fraktion und was aus ihnen wird | `/api/analytics/fraktionen` | `topic_facts` (`faction`, `faction_advice`) |
+| Tools: Fraktionsprofil | `/analytics/fraktionen` | Anträge je Fraktion und was aus ihnen wird | `/api/analytics/fraktionen` | `x_cases`, `report_rules`, `topic_facts` (`faction`, `faction_advice`) |
 | Tools: Newsradar | `/analytics/news` | berichtenswerte Vorgänge als Meldung mit Zitat | `/api/analytics/news` | `x_cases`, `report_rules`, `topic_facts` |
 
 Signale, Fakten und Atlas laufen über die vorberechneten Tabellen. Auch die Tools sind schnell (Server 15.10.2026: 0,1 bis 0,3 s mit einem seltenen Begriff, bis 3 s mit „Haushalt“; Newsradar und Fraktionsprofil 1 bis 3 s).
@@ -68,7 +68,7 @@ Jede Auswertung in plenara.X geht denselben Weg, ohne eigenes Datenmodell je Sei
 2. **Zählen** in `x_cases`: Vorgänge, keine Suchkarten; Formalien nie; derselbe Titel in mehreren Gremien eines Gebiets einmal.
 3. **Anreichern** aus `report_rules` (Thema, Art des Vorgangs) und `topic_facts` (Werte, Einordnungen); Signale zusätzlich über `x_signals`, das aus beiden gebaut wird.
 
-So arbeiten seit 15.10.2026 alle Seiten: Atlas, Signale, Fakten, Newsradar und alle Tools. Besonderheiten: Die Ausbreitung nimmt je Vorgang die erste Sitzung (`FIRST_DATE`, aus den Karten des Vorgangs), Ortsvergleich und Beschlüsse werten alle Karten eines Vorgangs aus (Ausschuss und Rat, je Vorgang und Status einmal), die Beratungswege die Stationen der jüngsten Karte. Der größte Teil der Zeit mit einem häufigen Begriff ist die Suche selbst und damit für alle Seiten gleich.
+So arbeiten seit 15.10.2026 alle Seiten: Atlas, Signale, Fakten, Newsradar und alle Tools. Besonderheiten: Die Ausbreitung nimmt je Vorgang die erste Sitzung (`FIRST_DATE`, aus den Karten des Vorgangs), Ortsvergleich und Beschlüsse werten alle Karten eines Vorgangs aus (Ausschuss und Rat, je Vorgang und Status einmal), die Beratungswege die Stationen der jüngsten Karte. Fraktionsprofil und Newsradar nehmen die Fakten aller Karten eines Vorgangs. Begriffe je Vorgang (`terms`) und private Bauanträge (`private_build`) legt der Bau ab; Themennetz, Ortsvergleich, Trends, Fraktionsprofil und Newsradar zählen private Bauanträge nicht. `x_cases` enthält auch künftige Vorgänge (nur angesetzt, wie in der Suche); ohne Zeitraum gilt überall „bis heute“, nur der Newsradar sieht 10 Tage voraus. Der größte Teil der Zeit mit einem häufigen Begriff ist die Suche selbst und damit für alle Seiten gleich.
 
 ## Bausteine und wer sie nutzt
 
