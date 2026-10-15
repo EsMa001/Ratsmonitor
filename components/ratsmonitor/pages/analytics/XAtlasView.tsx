@@ -9,11 +9,9 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { RadarDrill } from "./RadarDrill";
 import { RegionMap } from "./RegionMap";
-import { STATUS } from "../../lib/constants";
 import { plural } from "../../lib/text";
 import { prettyTerm } from "../../lib/terms";
 import { ThemeIcon } from "../../components/icons";
-import { StatusDot } from "./RadarDrill";
 
 /* plenara.X Atlas auf der einen Abfrage (GET /api/x?view=atlas, server/integrations/plenara-x-query.mjs): je Thema die
    Unterthemen, der Verlauf, die Orte und die jüngsten Vorgänge; ohne Thema die 10 Themen. Gezählt werden
@@ -28,8 +26,6 @@ interface Fact { kind: string; name: string; sum: { kind: string; name: string }
 const n = (v: number) => v.toLocaleString("de-DE");
 const num = (v: number) => v.toLocaleString("de-DE", { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 });
 const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-DE")} %`);
-const day = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "");
-const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
 /* Orte erst ab so vielen Sachvorgängen in der Rangliste nach Anteil (sonst führen Orte mit 2 von 3 Vorgängen) */
 const MIN_BASE = 30;
 /* Restposten („Noch nicht eingeordnet“, „Sonstiges“, „Sonstiger Schritt“): grau und ans Ende der Liste */
@@ -368,27 +364,15 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
                 </div>
               </div>
 
-              <section ref={bottomRef} className="mt-14 scroll-mt-4">
-                {all ? <>
+              {/* Ganze Liste nur nach „Alle … zeigen“; die neuesten Vorgänge stehen schon in der aufgeklappten Zeile rechts */}
+              <section ref={bottomRef} className="scroll-mt-4">
+                {all && <div className="mt-14">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                     <h2 className="text-[22px] font-semibold">Vorgänge: {all.label}</h2>
-                    <button type="button" onClick={() => setAll(null)} className="text-[14px] font-medium text-teal-700 hover:underline">Jüngste Vorgänge zeigen</button>
+                    <button type="button" onClick={() => setAll(null)} className="text-[14px] font-medium text-teal-700 hover:underline">Schließen</button>
                   </div>
                   <div className="mt-3"><RadarDrill base={partBase} query={listQuery} by={all.by} value={all.value} label={all.label} /></div>
-                </> : <>
-                  <h2 className="text-[22px] font-semibold">Jüngste Vorgänge</h2>
-                  <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">
-                    {res.recent.map((r) => (
-                      <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-                        <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
-                          <span className="block truncate text-[16px]">{r.title}</span>
-                          <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), r.times > 1 && `in ${r.times} Sitzungen`].filter(Boolean).join(" · ")}</span>
-                        </Link>
-                        <span className="self-center text-right text-[12px] text-slate-500"><StatusDot status={r.status} />{statusLabel(r.status)}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </>}
+                </div>}
               </section>
               {!SHOW_FACTS && <p className="mt-10 text-[14px] text-slate-500">Neue Baugebiete, Windparks, Wärmeplanung und mehr mit Stand und Kennzahlen: <Link href="/analytics/signale" className="font-medium text-teal-700 hover:underline">plenara.X Signale →</Link></p>}
 

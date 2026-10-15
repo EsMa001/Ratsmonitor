@@ -63,7 +63,8 @@ export function RadarDrill({ base, query, by, value, label, unit, limit, onAll, 
           {(limit ? items.slice(0, limit) : items).map((r) => (
             <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-t border-slate-200 py-2.5">
               <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
-                <span className="block text-[14px] leading-snug [overflow-wrap:anywhere] sm:truncate sm:text-[16px]">{r.title}</span>
+                {/* Handy: höchstens zwei Zeilen Titel, sonst füllt ein langer Titel den Bildschirm */}
+                <span className="line-clamp-2 text-[14px] leading-snug [overflow-wrap:anywhere] sm:block sm:truncate sm:text-[16px]">{r.title}</span>
                 <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), by !== "topic" && r.topics?.join(", "), r.times > 1 && (unit ? `${r.times} Vorgänge` : `in ${r.times} Sitzungen`)].filter(Boolean).join(" · ")}</span>
               </Link>
               <span className="self-center text-right text-[12px] text-slate-500">
