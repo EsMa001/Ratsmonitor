@@ -829,7 +829,7 @@ topic design-styles.css:140
 - SignalePage.tsx (259, ⚠2): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (475, ⚠2): XAtlasView
+- XAtlasView.tsx (466, ⚠2): XAtlasView
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 

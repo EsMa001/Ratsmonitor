@@ -12,6 +12,7 @@ import { RegionMap } from "./RegionMap";
 import { plural } from "../../lib/text";
 import { prettyTerm } from "../../lib/terms";
 import { ThemeIcon } from "../../components/icons";
+import { SubtopicIcon } from "../../components/SubtopicIcon";
 
 /* plenara.X Atlas auf der einen Abfrage (GET /api/x?view=atlas, server/integrations/plenara-x-query.mjs): je Thema die
    Unterthemen, der Verlauf, die Orte und die jüngsten Vorgänge; ohne Thema die 10 Themen. Gezählt werden
@@ -298,16 +299,6 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
   const partBy = theme ? "sub" : "theme";
   const parts = restLast(sub && siblings ? siblings : res?.parts ?? []).map((p) => (theme ? short(p) : p));
   const firstPart = parts.find((p) => !isRest(p))?.key ?? "";
-  /* Zahlen der Pillen: nur wenn die Antwort zum gewählten Thema gehört */
-  /* Mit Unterthema: Größe des Themas (für den Anteil) und die Unterthemen, die im selben Vorgang mit vorkommen (Antwort der Auswahl) */
-  /* Zahl des Unterthemas sofort nach dem Klick: aus der Antwort des Themas (vor dem Klick schon da), sonst aus der Auswahl selbst */
-  const [subCounts, setSubCounts] = useState<{ theme: string; rows: Row[] } | null>(null);
-  if (res && !res.selection.sub && res.selection.theme && subCounts?.rows !== res.parts) setSubCounts({ theme: res.selection.theme, rows: res.parts });
-  const known = subCounts?.theme === theme ? subCounts.rows : null;
-  const subCount = sub ? (siblings ?? known)?.find((p) => p.key === sub)?.count ?? (res?.selection.sub === sub ? total : undefined) : undefined;
-  const themeTotal = sub ? (siblings?.[0]?.base ?? known?.[0]?.base ?? 0) : 0;
-  const together = sub && res?.selection.sub === sub ? restLast(res.parts).map(short).filter((p) => p.key !== sub && !isRest(p) && p.count > 0).slice(0, 6).map((p) => ({ ...p, share: total ? Math.round((1000 * p.count) / total) / 10 : null })) : [];
-  const pillCount = new Map(res?.selection.theme === theme && (!sub || siblings) ? parts.map((p) => [p.key, p.count] as [string, number]) : []);
   const openPart = part === null ? (sub || firstPart) : part;
   /* Liste hinter einer Zeile: dieselbe Auswahl, aber ohne das gewählte Unterthema (sonst nur die Überschneidung) */
   const partBase = `/api/x?list=1${theme ? "&theme=" + theme : ""}`;
@@ -334,15 +325,15 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
 
   return (
     <section aria-label="Auswertung des Themas">
-      {/* Unterthemen als kleine Kacheln (Name, Zahl), durch eine Linie in Petrol von den Themen getrennt; Handy 4 je Reihe */}
+      {/* Unterthemen als kleine Kacheln (Icon, Name), durch eine Linie in Petrol von den Themen getrennt; Handy 4 je Reihe */}
       {theme && <nav aria-label="Unterthema" className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {SUBTOPICS.filter((x: { theme: string }) => x.theme === theme).map((x: { id: string; short: string }) => {
-            const on = x.id === sub, count = pillCount.get(x.id);
+            const on = x.id === sub;
             return <li key={x.id} className="sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => onSub(on ? "" : x.id)}
-              className={`flex h-[52px] w-full flex-col items-center justify-center rounded-lg px-1 text-center text-[12px] leading-tight ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
-              <span className="line-clamp-2">{x.short}</span>
-              {count !== undefined && <span className={`tabular-nums font-normal ${on ? "text-white/80" : "text-slate-500"}`}>{n(count)}</span>}</button></li>;
+              className={`flex h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
+              <SubtopicIcon id={x.id} size={20} className={on ? "text-white" : "text-slate-500"} />
+              <span className="line-clamp-2">{x.short}</span></button></li>;
           })}
         </ul>
       </nav>}
