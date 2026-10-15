@@ -20,6 +20,22 @@ const BUILD=`SELECT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k,c.re
    Alle Seiten sehen sie nur, wenn ihr Zeitraum über heute hinausgeht (source() setzt sonst „bis heute“), derzeit der Newsradar. */
 const FUTURE=BUILD.replace('max(c.date) d','min(c.date) d').replace('c.date<=?','c.date>?');
 
+/* Warmhalten: liest die Tabellen von plenara.X und ihre Indizes einmal ganz, damit sie im Arbeitsspeicher liegen (keine
+   Ergebnisse, nichts je Seite). Nach dem Bau und im Webserver alle 10 Minuten (server/node/serve.mjs). */
+export const X_WARM_SQL=[
+ "SELECT sum(length(case_key)+length(steps)+length(terms)+length(factions)) FROM x_cases",
+ "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_date WHERE date>=''",
+ "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_label WHERE label>=''",
+ "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_region WHERE region_id>=''",
+ "SELECT count(*) FROM x_signals",
+];
+/** @param {import('node:sqlite').DatabaseSync} sql */
+export function warmX(sql){
+ const t0=Date.now();
+ for(const q of X_WARM_SQL){try{sql.prepare(q).get();}catch{/* Tabelle oder Index fehlt (Migration): auslassen */}}
+ return Date.now()-t0;
+}
+
 /** @param {import('node:sqlite').DatabaseSync} sql  @returns {{cases:number,unread:number,seconds:number,today:string}} */
 export function buildXCases(sql,{today=new Date().toISOString().slice(0,10),dry=false}={}){
  const t0=Date.now();

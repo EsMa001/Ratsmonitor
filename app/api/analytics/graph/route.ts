@@ -1,4 +1,5 @@
 import {env} from 'cloudflare:workers';
+import {xCached} from '@/server/integrations/plenara-x-query.mjs';
 import {REGIONS} from '@/shared/regions';
 import {knowledgeGraph,graphList} from '@/server/integrations/analytics-graph.mjs';
 import {AnalyticsError} from '@/server/integrations/analytics-diffusion.mjs';
@@ -7,6 +8,6 @@ const CACHE='public, max-age=300, stale-while-revalidate=600';
 export async function GET(request:Request){
  try {const params=new URL(request.url).searchParams;
   // Mit by=…: die Vorgänge hinter einem Knoten
-  return Response.json(await (params.get('by')?graphList:knowledgeGraph)(env.DB,REGIONS,params),{headers:{'Cache-Control':CACHE}});}
+  return Response.json(await xCached(env.DB,params.get('by')?'graph-list':'graph',params,()=>(params.get('by')?graphList:knowledgeGraph)(env.DB,REGIONS,params)),{headers:{'Cache-Control':CACHE}});}
  catch(error){return Response.json({error:error instanceof AnalyticsError?error.message:'Der Datenbestand ist gerade nicht erreichbar. Bitte erneut versuchen.'},{status:error instanceof AnalyticsError?error.status:503,headers:{'Cache-Control':'no-store'}});}
 }

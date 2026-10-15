@@ -51,6 +51,8 @@ export const X_SUM_GATE={housing:false};
 const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plan_area'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['waste_fee'],['ee_power'],['wind_count']],mobilitaet:[['project'],['road']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee']]};
 import {MAP_FACTS,MAP_FACT_NAMES} from '../../shared/map-facts.mjs';
+import {atRevisionStale,paramsKey} from './revision-cache.mjs';
+import {X_REVISION_SQL} from './x-cases.mjs';
 export {MAP_FACTS,MAP_FACT_NAMES};
 export const X_LIST_SIZE=50;
 /* Zahl hinter einem Wert (erstes Feld von detail) und ihre Einheit; Fakten ohne Eintrag sind nur Kategorien (Schritt, Fraktion).
@@ -292,4 +294,10 @@ async function xCompare(db,catalog,x,params,opts={}){
    ratio:med>0&&(cls==='mehr'||cls==='weniger')?Math.round((k/own.n/med)*10)/10:null,class:cls};
  });
  return {...head,group:{label:group.label,n:group.regions.length},rows};
+}
+
+/** Ein Zwischenspeicher für alle plenara.X-Routen: je Art, Parameter und Bau von x_cases (X_REVISION_SQL) einmal gerechnet;
+    nach einem neuen Bau kommt kurz der alte Stand, während im Hintergrund neu gerechnet wird (atRevisionStale). */
+export function xCached(db,kind,params,compute){
+ return atRevisionStale(db,paramsKey(kind,params),compute,{revisionSql:X_REVISION_SQL});
 }

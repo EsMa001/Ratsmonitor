@@ -7,9 +7,9 @@
  * - keepAliveTimeout länger als der von Caddy: Sonst schließt Node eine Verbindung, die Caddy gerade wiederverwendet,
  *   und ein POST endet mit 502.
  * - Bei SIGTERM/SIGINT (systemctl stop/restart) laufende Anfragen kurz ausklingen lassen und die Datenbank schließen.
- * - Rechnet die Startansichten der Auswertungen vor (warm): 30 s nach dem Start und alle 10 Minuten fragt der Server sie
- *   selbst ab. Der Zwischenspeicher liegt im Speicher dieses Prozesses (revision-cache.mjs); nach einem Import liefert er
- *   den letzten Stand und rechnet im Hintergrund neu, so wartet kein Besucher auf die erste Rechnung. Aus: RM_SKIP_WARM=1.
+ * - Hält die Daten von plenara.X im Arbeitsspeicher (warmData): 5 s nach dem Start und alle 10 Minuten liest er x_cases und
+ *   seine Indizes einmal ganz, für alle Seiten gleich, ohne Ansichten vorzurechnen. Ergebnisse merkt sich jede Route je Bau
+ *   (xCached, revision-cache.mjs). Aus: RM_SKIP_WARM=1.
  * - Prüft vor dem Start die Datenbank. Ohne sie würden die Seiten still den mitgelieferten, alten Stand zeigen;
  *   deshalb startet der Server dann nicht (Ausnahme für Tests: RM_ALLOW_NO_DB=1).
  */
@@ -71,19 +71,24 @@ server.headersTimeout = 66_000;
 server.requestTimeout = 0; // Abrufe im Adminbereich dauern Minuten; Grenzen setzt Caddy
 console.log(`[ratsmonitor] Node ${process.version}, NODE_ENV=${process.env.NODE_ENV ?? '(leer)'}, TZ=${process.env.TZ ?? '(System)'}`);
 
-// Startansichten der Auswertungen nacheinander abfragen, damit ihr Zwischenspeicher gefüllt ist (siehe oben).
-// plenara.X Atlas: Startansicht und die 10 Themen (shared/themes.mjs) auf der einen Abfrage /api/x
-const THEMES = ['bauen', 'finanzen', 'mobilitaet', 'bildung', 'umwelt', 'soziales', 'kultur', 'sicherheit', 'verwaltung', 'wirtschaft'];
-const WARM = [...['decisions', 'news', 'network', 'trends'].map((name) => `/api/analytics/${name}`),
-  '/api/x?view=atlas&level=city', ...THEMES.map((id) => `/api/x?view=atlas&level=city&theme=${id}`)];
-async function warm() {
-  for (const path of WARM) {
-    if (stopping) return;
-    try { await (await fetch(`http://${host === '::1' ? '[::1]' : host}:${port}${path}`)).arrayBuffer(); } catch { /* nächster Lauf */ }
-  }
+// Daten von plenara.X im Arbeitsspeicher halten (nach Neustart, Bau oder großen Jobs), für alle Seiten gleich
+// Dieselben Abfragen wie X_WARM_SQL in server/integrations/x-cases.mjs (serve.mjs wird allein kopiert; Test: tests/x-warm.test.mjs)
+const X_WARM_SQL = [
+  "SELECT sum(length(case_key)+length(steps)+length(terms)+length(factions)) FROM x_cases",
+  "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_date WHERE date>=''",
+  "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_label WHERE label>=''",
+  "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_region WHERE region_id>=''",
+  "SELECT count(*) FROM x_signals",
+];
+function warmData() {
+  let db;
+  try {
+    db = new DatabaseSync(process.env.DATABASE_FILE, { readOnly: true });
+    for (const q of X_WARM_SQL) { try { db.prepare(q).get(); } catch { /* Tabelle oder Index fehlt (Migration) */ } }
+  } catch { /* nächster Lauf */ } finally { db?.close(); }
 }
 if (process.env.RM_SKIP_WARM !== '1') {
-  setTimeout(() => { warm(); setInterval(warm, 10 * 60e3).unref(); }, 30e3).unref();
+  setTimeout(() => { warmData(); setInterval(warmData, 10 * 60e3).unref(); }, 5e3).unref();
 }
 
 let stopping = false;

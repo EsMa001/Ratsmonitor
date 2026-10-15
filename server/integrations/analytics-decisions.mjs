@@ -5,7 +5,6 @@ import {AnalyticsError} from './analytics-diffusion.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 import {parseSteps} from './x-cases.mjs';
 import {source,xState} from './plenara-x-query.mjs';
-import {atRevisionStale,paramsKey} from './revision-cache.mjs';
 
 /*
  * Plenara.X – Status und Beschlüsse: Wie stehen die Vorgänge, wie fallen Beschlüsse aus, wie einig sind die Gremien?
@@ -54,10 +53,9 @@ export function readResult(text){
  return {vote,change};
 }
 
-/* Je Datenstand, Tag und Filter einmal gerechnet (lokal 10 bis 15 s je Aufruf); gehalten wird der zuletzt gefragte Filter */
+/* Zwischenspeicher je Bau: in der Route (xCached), wie alle plenara.X-Routen */
 export async function decisions(db,catalog,params){
- const f=parseDecisions(params);
- return atRevisionStale(db,paramsKey('decisions',params),()=>computeDecisions(db,catalog,f));
+ return computeDecisions(db,catalog,parseDecisions(params));
 }
 async function computeDecisions(db,catalog,f){
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
