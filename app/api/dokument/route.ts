@@ -1,3 +1,4 @@
+import {gated} from '@/server/services/session';
 import {getTopic} from '@/server/repositories/topics';
 import {fetchDocument,idleLimited,documentName,blockedTarget,VIEWABLE,MAX_BYTES} from '@/server/integrations/document-proxy.mjs';
 
@@ -8,7 +9,8 @@ import {fetchDocument,idleLimited,documentName,blockedTarget,VIEWABLE,MAX_BYTES}
  * keine beliebigen Adressen. Nicht anzeigbare oder sehr große Dateien, Adressen ohne https: Weiterleitung zur Quelle.
  * Der Abruf folgt Weiterleitungen nur mit Prüfung des Ziels (document-proxy.mjs): nie ins eigene Netz.
  */
-export async function GET(request:Request){
+export const GET=gated(dokumentGet);
+async function dokumentGet(request:Request){
  const p=new URL(request.url).searchParams,id=p.get('t')||'',i=Number(p.get('i'));
  if(!id||!Number.isInteger(i)||i<0)return new Response('Ungültige Anfrage.',{status:400});
  const topic=await getTopic(id).catch(()=>undefined);

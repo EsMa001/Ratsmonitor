@@ -12,6 +12,9 @@
  *   (xCached, revision-cache.mjs). Aus: RM_SKIP_WARM=1.
  * - Prüft vor dem Start die Datenbank. Ohne sie würden die Seiten still den mitgelieferten, alten Stand zeigen;
  *   deshalb startet der Server dann nicht (Ausnahme für Tests: RM_ALLOW_NO_DB=1).
+ * - Konten (requirements/konten-konzept.md, 6.5 und 13): RM_ACCESS ist open oder invite. Mit invite startet der Server
+ *   nur mit Kontendatei (ACCOUNTS_FILE, migriert), ACCOUNTS_SECRET und SITE_URL; fehlt RM_ACCESS, gilt open mit Warnung
+ *   (Stand vor den Konten, Basic-Auth davor). Jede Minute arbeitet er den Postausgang der Kontomails ab.
  */
 import fs from 'node:fs';
 import { isAbsolute, join } from 'node:path';
@@ -59,7 +62,41 @@ function checkDatabase() {
   } finally { db?.close(); }
   return null;
 }
-const problem = checkDatabase();
+function checkAccounts() {
+  const access = process.env.RM_ACCESS;
+  if (access && access !== 'open' && access !== 'invite') return `RM_ACCESS muss open oder invite sein, nicht ${access}.`;
+  const file = process.env.ACCOUNTS_FILE;
+  // Mit Konten muss der Zugang ausdrücklich gesetzt sein: eine verlorene Zeile darf die Seite nicht still öffnen
+  if (!access && file) return 'RM_ACCESS fehlt (open oder invite), obwohl Konten eingerichtet sind.';
+  if (!access) console.warn('[ratsmonitor] RM_ACCESS ist nicht gesetzt: die Seite ist offen (open), wie vor den Konten.');
+  if (!file) return access === 'invite' ? 'RM_ACCESS=invite braucht ACCOUNTS_FILE (Kontendatei).' : null;
+  if (!isAbsolute(file) || !fs.existsSync(file)) return `Kontendatei fehlt: ${file}`;
+  let db;
+  try {
+    db = new DatabaseSync(file, { readOnly: true });
+    const tables = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map((row) => row.name));
+    const missing = ['users', 'sessions', 'accounts_migrations'].filter((name) => !tables.has(name));
+    if (missing.length) return `Kontendatei ohne Tabellen ${missing.join(', ')} (Migration drizzle-accounts fehlt)`;
+  } catch (error) {
+    return `Kontendatei nicht lesbar: ${error.message}`;
+  } finally { db?.close(); }
+  if (access === 'invite' && (!process.env.ACCOUNTS_SECRET || process.env.ACCOUNTS_SECRET.length < 32)) return 'RM_ACCESS=invite braucht ACCOUNTS_SECRET (mindestens 32 Zeichen).';
+  if (access === 'invite' && !process.env.SITE_URL) return 'RM_ACCESS=invite braucht SITE_URL (Links in Mails).';
+  // Hinter Caddy kommt https nur über X-Forwarded-Proto an; ohne Vertrauen setzten die Routen Cookies ohne Secure
+  if (String(process.env.SITE_URL || '').startsWith('https:') && process.env.VINEXT_TRUST_PROXY !== '1') return 'SITE_URL ist https, aber VINEXT_TRUST_PROXY ist nicht 1 (Caddy davor).';
+  return null;
+}
+// Kontotabellen gehören nicht in die Inhaltsdatei (Entwicklerkopien, Export); nur warnen
+try {
+  const file = process.env.DATABASE_FILE;
+  if (file && fs.existsSync(file)) {
+    const db = new DatabaseSync(file, { readOnly: true });
+    if (db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name IN ('users','sessions') LIMIT 1").get()) console.warn('[ratsmonitor] Die Inhaltsdatei enthält Kontotabellen (users/sessions), etwa aus einer lokalen Kopie. Konten gehören in ACCOUNTS_FILE.');
+    if (process.env.ACCOUNTS_FILE && process.env.ADMIN_LEGACY_HEADER !== '1' && db.prepare("SELECT 1 FROM system_state WHERE key='admin-owner-v1'").get()) console.warn('[ratsmonitor] admin-owner-v1 (alter Admin-Weg) besteht noch, gilt aber nicht mehr (ADMIN_LEGACY_HEADER ist aus). Nach dem Übergang: ratsmonitor-accounts cleanup-legacy.');
+    db.close();
+  }
+} catch { /* nur ein Hinweis */ }
+const problem = checkDatabase() ?? checkAccounts();
 if (problem) {
   console.error(`[ratsmonitor] Start abgebrochen: ${problem}`);
   process.exit(1);
@@ -69,7 +106,10 @@ const { server } = await startProdServer({ port, host, outDir: join(import.meta.
 server.keepAliveTimeout = 65_000;
 server.headersTimeout = 66_000;
 server.requestTimeout = 0; // Abrufe im Adminbereich dauern Minuten; Grenzen setzt Caddy
-console.log(`[ratsmonitor] Node ${process.version}, NODE_ENV=${process.env.NODE_ENV ?? '(leer)'}, TZ=${process.env.TZ ?? '(System)'}`);
+console.log(`[ratsmonitor] Node ${process.version}, NODE_ENV=${process.env.NODE_ENV ?? '(leer)'}, TZ=${process.env.TZ ?? '(System)'}, Zugang ${process.env.RM_ACCESS || 'open'}`);
+const base = `http://${host === '::1' ? '[::1]' : host}:${port}`;
+// Interne Aufrufe weisen sich mit IMPORT_TOKEN aus: Zugangssperre und Stufen lassen sie durch
+const internal = process.env.IMPORT_TOKEN && process.env.IMPORT_TOKEN.length >= 16 ? { authorization: `Bearer ${process.env.IMPORT_TOKEN}` } : {};
 
 // Daten von plenara.X im Arbeitsspeicher halten (nach Neustart, Bau oder großen Jobs), für alle Seiten gleich
 // Dieselben Abfragen wie X_WARM_SQL in server/integrations/x-cases.mjs (serve.mjs wird allein kopiert; Test: tests/x-warm.test.mjs)
@@ -90,6 +130,14 @@ function warmData() {
 if (process.env.RM_SKIP_WARM !== '1') {
   setTimeout(() => { warmData(); setInterval(warmData, 10 * 60e3).unref(); }, 5e3).unref();
 }
+// Postausgang der Kontomails: beim Start und jede Minute (Mails überstehen so einen Neustart)
+async function outbox() {
+  if (stopping) return;
+  try { await (await fetch(`${base}/api/internal/outbox`, { method: 'POST', headers: internal })).arrayBuffer(); } catch { /* nächster Lauf */ }
+}
+if (process.env.ACCOUNTS_FILE && internal.authorization) {
+  setTimeout(() => { outbox(); setInterval(outbox, 60e3).unref(); }, 5e3).unref();
+} else if (process.env.ACCOUNTS_FILE) console.warn('[ratsmonitor] IMPORT_TOKEN fehlt: Kontomails werden nur direkt nach der Anfrage verschickt, nicht nachgeholt.');
 
 let stopping = false;
 // Beim Beenden nimmt Node auf offenen Keep-alive-Verbindungen (Caddy) weiter Anfragen an. Diese bekommen
@@ -104,6 +152,7 @@ function stop(signal) {
     if (finished) return;
     finished = true;
     try { globalThis[Symbol.for('ratsmonitor.node.database')]?.database?.close(); } catch { /* schon zu */ }
+    try { globalThis[Symbol.for('ratsmonitor.node.accounts')]?.database?.close(); } catch { /* schon zu */ }
     process.exit(0);
   };
   server.close(done);

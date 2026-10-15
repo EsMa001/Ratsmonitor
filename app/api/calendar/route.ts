@@ -1,3 +1,4 @@
+import {gated} from '@/server/services/session';
 import {env} from 'cloudflare:workers';
 import {REGIONS} from '@/shared/regions';
 import {validSpan,parseAgs,eventsSql} from '@/server/integrations/calendar-events.mjs';
@@ -5,7 +6,8 @@ import {validSpan,parseAgs,eventsSql} from '@/server/integrations/calendar-event
 /** Sitzungstermine für den Kalender: je Gebiet, Tag und Gremium mit Anzahl der beratenen Vorgänge.
  *  ?ags=05558012,05558&from=YYYY-MM-DD&to=YYYY-MM-DD (höchstens 200 Gebiete, höchstens ~3 Monate).
  *  Die Antwort darf fünf Minuten zwischengespeichert werden: Termine ändern sich nur mit dem Import. */
-export async function GET(request:Request){
+export const GET=gated(calendarGet,{feature:'calendar'});
+async function calendarGet(request:Request){
  const p=new URL(request.url).searchParams;
  const ags=parseAgs(p.get('ags'));
  const from=p.get('from')||'',to=p.get('to')||'';

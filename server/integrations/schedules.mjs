@@ -23,6 +23,11 @@ export const CATCH_UP_MS=3*3600000;
  * Standardzeiten wie vor dem Zeitplaner (deploy/node/*.timer, Cron).
  */
 export const JOBS=Object.freeze([
+ {id:'accounts',label:'Konten: Pflege und Sicherung',flow:'tages',icon:'shield',time:'00:10',
+  what:'Wendet die Löschfristen der Konten an, verschickt „Testzugang endet“ und Hinweise bei langer Inaktivität, prüft den Postausgang und sichert die Kontendatei verschlüsselt. Gehört nicht zur Abfolge der Tagespipeline.',
+  steps:['Abgelaufene Anmeldungen, Sitzungen und Einladungen löschen, Protokolle nach Frist','Hinweismails (Testzugang endet, Inaktivität)','Kontendatei verschlüsselt sichern (age, 7 Stände)'],
+  limits:'Wenige Sekunden. Ohne Kontendatei (ACCOUNTS_FILE) nichts zu tun.',warn:'Ohne diesen Job gelten keine Löschfristen und es gibt keine Sicherung der Konten.',
+  cmd:['bash','deploy/node/accounts-job.sh']},
  /* Tagespipeline (jede Nacht, in dieser Reihenfolge): Sichern → Abruf → Extraktion → Verarbeitung. Namen: shared/pipeline-terms.mjs */
  {id:'backup',label:'Sichern',flow:'tages',icon:'shield',time:'00:30',
   what:'Legt eine in sich stimmige Kopie der Datenbank an, dazu Index und Texte der PDF-Ablage.',

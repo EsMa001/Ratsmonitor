@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { DarkCta, PageHead, QaItem } from "./blocks";
 import { PRICE_FAQ } from "./content";
-import { LIMITS, PRO_PRICE, TIER_LABEL, type Tier } from "../lib/tier";
+import { LIMITS, priceLabel, TIER_LABEL, UPGRADE_TEXT, type Tier } from "../lib/tier";
 import { PlanCards } from "../components/PlanCards";
 
 const TIERS: Tier[] = ["guest", "basic", "pro", "enterprise"];
 const count = (n: number) => (n === 0 ? "–" : n > 1 ? `bis zu ${n}` : String(n));
 const COMPARE_ROWS: [string, (t: Tier) => string][] = [
-  ["Preis", (t) => (t === "guest" ? "0 €" : t === "basic" ? "0 €" : t === "pro" ? PRO_PRICE : "49,99 € / Monat")],
+  ["Preis", priceLabel],
   ["Treffer je Suche", (t) => (Number.isFinite(LIMITS[t].maxResults) ? String(LIMITS[t].maxResults) : "alle")],
   ["Filter (Gebiet, Zeitraum, Thema, Status)", (t) => (LIMITS[t].filters ? "✓" : "–")],
   ["Gespeicherte Suchen", (t) => count(LIMITS[t].savedSearches)],
@@ -78,11 +78,11 @@ export function PreisePage() {
         </div>
       </section>
       <DarkCta
-        title="Starten Sie kostenlos"
-        sub="Ohne Zahlungsdaten. Upgrade jederzeit möglich."
+        title="Plenara in der Testphase"
+        sub="Stufen schalten wir derzeit auf Anfrage frei. Die Preise folgen."
         action={
-          <Link href="/registrieren?tarif=free" className="ri-btn ri-btn--inv">
-            Konto erstellen
+          <Link href="/kontakt" className="ri-btn ri-btn--inv">
+            {UPGRADE_TEXT}
           </Link>
         }
       />

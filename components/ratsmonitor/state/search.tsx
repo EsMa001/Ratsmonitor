@@ -14,6 +14,8 @@ import { useData } from "./data";
 import { useFiltersOpen } from "../lib/filtersOpen";
 import { ApiError, errorText, fetchJson, fetchOrFail, readJson } from "../lib/fetchJson";
 import { usePhone } from "../lib/usePhone";
+import { useMe } from "../lib/account";
+import { openLimitGate } from "../components/GateDialog";
 
 export const INITIAL_SEARCH: SearchState = {
   level:"city", q: "", area: "", areaSrc: "", radius: null, thema: "", monat: "", von: "", bis: "", scope: "only", status: "", sort: "desc", placeOverrides: {}, placeIgnored: {}, placeScopes: {}, morePlaces: [], noformal: true,
@@ -323,7 +325,7 @@ export interface SearchResults {
 
 const SEARCH_FAILED='Die Suche konnte nicht geladen werden.';
 const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
-type ResponseData={articles:Article[];total:number;hasMore?:boolean;areaCounts:Record<string,number>;badgeCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
+type ResponseData={articles:Article[];total:number;hasMore?:boolean;/** Für Gäste gekürzt (höchstens 10 Treffer, Server) */guestLimit?:boolean;areaCounts:Record<string,number>;badgeCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
 type DataValue=ReturnType<typeof useData>;
 /* Fertige Antworten (5 Minuten) und laufende Anfragen, geteilt von der Übersicht und dem Vorausladen (z. B. beim Überfahren
    eines Vorschlags): gleiche Suche = eine Anfrage, und ein Klick trifft oft schon die fertige Antwort */
@@ -334,6 +336,8 @@ const FACETS_CACHE=new Map<string,{at:number;data:Facets}>();
 const freshFacets=(key:string)=>{const hit=FACETS_CACHE.get(key);return hit&&Date.now()-hit.at<300000?hit.data:null;};
 const searchKey=(key:string,page=1,attempt=0)=>key+'&page='+page+'&attempt='+attempt;
 const freshSearch=(requestKey:string)=>{const hit=SEARCH_CACHE.get(requestKey);return hit&&Date.now()-hit.at<300000?hit.data:null;};
+/** Treffer aus dem Zwischenspeicher, außer eine für Gäste gekürzte Antwort, wenn die Stufe mehr erlaubt */
+const usable=(data:ResponseData|null,limited:boolean)=>data&&data.guestLimit&&!limited?null:data;
 function rememberSearch(requestKey:string,data:ResponseData){SEARCH_CACHE.delete(requestKey);SEARCH_CACHE.set(requestKey,{at:Date.now(),data});if(SEARCH_CACHE.size>40)SEARCH_CACHE.delete(SEARCH_CACHE.keys().next().value as string);}
 async function fetchSearch(query:string,signal?:AbortSignal):Promise<ResponseData>{
  const data=await fetchJson<ResponseData>('/api/search?'+query,{signal},SEARCH_FAILED);
@@ -341,7 +345,7 @@ async function fetchSearch(query:string,signal?:AbortSignal):Promise<ResponseDat
 }
 /** Erste Seite als Strom (NDJSON): jede Etappe ruft onChunk auf, am Ende kommt end mit hasMore und Datenstand */
 type Known='yes'|'no'|'unknown';
-async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Article[],end:{hasMore:boolean;revision:string}|null,known?:Known,total?:number)=>void){
+async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Article[],end:{hasMore:boolean;revision:string;guestLimit?:boolean}|null,known?:Known,total?:number)=>void){
  const response=await fetchOrFail('/api/search?'+query,{signal});
  /* Fehler: Text und Status wie bei fetchJson */
  if(!response.ok||!response.body){await readJson(response,SEARCH_FAILED);throw new ApiError(SEARCH_FAILED,response.status);}
@@ -350,13 +354,13 @@ async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Articl
   const {done,value}=await reader.read();if(done)break;
   buffer+=decoder.decode(value,{stream:true});
   for(let i=buffer.indexOf('\n');i>=0;i=buffer.indexOf('\n')){
-   let line:{articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string;error?:string;known?:Known;total?:number};
+   let line:{articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string|null;error?:string;known?:Known;total?:number;guestLimit?:boolean};
    try{line=JSON.parse(buffer.slice(0,i));}catch{throw new ApiError(SEARCH_FAILED,response.status);}
    buffer=buffer.slice(i+1);
    if(line.error)throw new ApiError(line.error,response.status);
    if(line.known)onChunk([],null,line.known,line.total);
    if(line.articles)onChunk(line.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''})),null);
-   if(line.end)onChunk([],{hasMore:!!line.hasMore,revision:line.revision??''});
+   if(line.end)onChunk([],{hasMore:!!line.hasMore,revision:line.revision??'',guestLimit:!!line.guestLimit});
   }
  }
 }
@@ -451,6 +455,11 @@ function spreadAuto(list:Article[]|undefined,leer:boolean):Article[]{
 }
 function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveResults {
  const {geo,place}=useData();
+ /* Gäste (und Konten ohne freigeschaltete Stufe) sehen nur die erste Seite mit 10 Treffern; der Server kürzt selbst.
+    Eine für Gäste gekürzte Antwort im Zwischenspeicher gilt nach dem Anmelden nicht mehr (siehe unten). */
+ const limited=!Number.isFinite(useMe().limits.maxResults);
+ const limitedNow=useRef(limited);
+ useEffect(()=>{limitedNow.current=limited;},[limited]);
  const local=useMemo(()=>computeLocal(state,geo,place,pageSize),[state,geo,place,pageSize]);
  const [navigation,setNavigation]=useState({key:'',page:1}),[attempt,setAttempt]=useState(0);
  const page=navigation.key===local.key?navigation.page:1;
@@ -503,7 +512,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  },[]);
  useEffect(()=>{
   if(!active)return;
-  const hit=freshSearch(requestKey);
+  const hit=usable(freshSearch(requestKey),limitedNow.current);
   /* Aus dem Zwischenspeicher: die Antwort liest das Rendern selbst (cached), hier nur der Stand fürs Blättern */
   if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};return;}
   const abort=new AbortController();let timer=0,decide=0,started=false,streamed=false,finished=false;
@@ -528,7 +537,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
      const query=await buildQuery(page,streamed?'stream':'page',abort.signal);
      let ready:ResponseData;
      if(streamed){
-      let end={hasMore:false,revision:''};
+      let end:{hasMore:boolean;revision:string;guestLimit?:boolean}={hasMore:false,revision:''};
       await fetchStream(query,abort.signal,(items,last,known,total)=>{
        if(last){end=last;return;}
        /* Vorab-Prüfung der Wortliste: „ja“ heißt, es kommen Treffer, auch wenn noch keiner da ist; bei häufigen Wörtern ohne
@@ -538,7 +547,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
        acc.push(...items);
        if(!abort.signal.aborted)setRemote({key:requestKey,data:{articles:[...acc],total:0,revision:''} as unknown as ResponseData,error:'',final:false,known:knownNow,knownTotal});
       });
-      ready={articles:acc,total:0,hasMore:end.hasMore,revision:end.revision} as unknown as ResponseData;
+      ready={articles:acc,total:0,hasMore:end.hasMore,revision:end.revision,guestLimit:end.guestLimit} as unknown as ResponseData;
      }else{
       /* Läuft für dieselbe Suche schon eine Vorab-Anfrage (Tippen, Überfahren eines Vorschlags), wird deren Antwort genutzt */
       ready=await (INFLIGHT.get(requestKey)??fetchSearch(query,abort.signal));
@@ -548,7 +557,13 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
      revision.current={key:local.key,value:ready.revision};
      rememberSearch(requestKey,ready);
      setRemote({key:requestKey,data:ready,error:'',final:true,known:knownNow,knownTotal});
-    }catch(e){if(!abort.signal.aborted){finished=true;setRemote({key:requestKey,data:null,error:errorText(e,SEARCH_FAILED),final:true});}}
+    }catch(e){
+     if(abort.signal.aborted)return;
+     finished=true;
+     /* Weitere Seiten ohne freigeschaltete Stufe: der Server antwortet 403 {limit:'results'}; Hinweis statt Fehler, zurück auf Seite 1 */
+     if(e instanceof ApiError&&e.status===403&&page>1){openLimitGate('results');setNavigation({key:local.key,page:1});return;}
+     setRemote({key:requestKey,data:null,error:errorText(e,SEARCH_FAILED),final:true});
+    }
    })();
   };
   const typing=local.text!==lastText.current,t=local.text.trim();
@@ -564,7 +579,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  const modeNow=mode.key===requestKey?mode.value:null;
  /* Zähler starten erst, wenn die Seite fertig ist: die Zählabfrage teilt sich die Datenbank mit dem Strom und würde die Suche
     nach weiteren Treffern ausbremsen */
- const pageReady=(remote.key===requestKey&&remote.final&&!!remote.data)||(active&&!!freshSearch(requestKey));
+ const pageReady=(remote.key===requestKey&&remote.final&&!!remote.data)||(active&&!!usable(freshSearch(requestKey),limited));
  useEffect(()=>{
   if(!active||!pageReady)return;
   const hit=freshFacets(local.key);
@@ -585,7 +600,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  /* Zähler: geladen oder aus dem Zwischenspeicher (der wird beim Rendern gelesen, nicht im Effekt übernommen) */
  const exact=facets.key===local.key?facets.data:active?freshFacets(local.key):null;
  /* Liegt die Antwort schon im Zwischenspeicher, gilt sie sofort als fertig: kein „lädt“, kein Ring, kein Aufblitzen */
- const cached=active?freshSearch(requestKey):null;
+ const cached=active?usable(freshSearch(requestKey),limited):null;
  const rd=remote.key===requestKey?remote:null;
  /* Ring-Fall (Code-Analyse C10): Die fertige erste Seite erscheint sofort, die genaue Zahl folgt mit den Zählern (dann
     laufen Punkte an der Zahl, wie im partial-Fall). Früher wartete die Seite auf die Zähler. Ohne Treffer sofort „keine Treffer“. */
@@ -599,6 +614,9 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  if(!loading&&fresh&&lastGood!==fresh)setLastGood(fresh);
  /* Beim Nachladen die bisherigen Treffer stehen lassen, statt die Liste zu leeren */
  const data=loading?lastGood:fresh;
+ /* Angemeldet, während die gekürzte Gast-Antwort steht: je Suche einmal neu suchen (beim Rendern nachgezogen) */
+ const [unlockedFor,setUnlockedFor]=useState('');
+ if(!limited&&!loading&&data?.guestLimit&&unlockedFor!==local.key){setUnlockedFor(local.key);setAttempt(a=>a+1);}
  const setPage=useCallback((p:number)=>setNavigation({key:local.key,page:p}),[local.key]);
  const retry=useCallback(()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);},[local.key]);
  /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
@@ -613,7 +631,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  const hasMore=exact?page<Math.ceil(exact.total/pageSize):!!data?.hasMore;
  /* Nächste Seite still im Hintergrund holen, damit „Weiter“ sofort geht (die Anfrage nutzt dieselbe laufende Abfrage wie der Klick) */
  useEffect(()=>{
-  if(!active||!pageReady||!hasMore||loading)return;
+  /* Ohne freigeschaltete Stufe gibt es keine zweite Seite (403): nicht vorausladen */
+  if(!active||!pageReady||!hasMore||loading||limited)return;
   const next=searchKey(local.key,page+1,attempt);
   if(freshSearch(next)||INFLIGHT.has(next))return;
   const abort=new AbortController();
@@ -626,7 +645,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
    }catch{/* Vorladen ist nur eine Hilfe */}
   })();
   return()=>abort.abort();
- },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
+ },[active,pageReady,hasMore,loading,limited,page,attempt,local.key,buildQuery]);
  /* Gibt es Treffer? ja: mindestens einer ist da; nein: die Suche ist zu Ende ohne Treffer; unbekannt: sie läuft noch */
  const hits:'yes'|'no'|'unknown'=loading||!data?'unknown':data.articles.length>0||(rd?.known==='yes'&&!rd.final)?'yes':(cached||rd?.final)?'no':'unknown';
  return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:spreadAuto(data?.articles,local.leer),total,totalPending:pendingTotal,hasMore,areaCounts:exact?.areaCounts??EMPTY_MAP,badgeCounts:exact?.badgeCounts??EMPTY_MAP,themaCounts:exact?.themaCounts??EMPTY_MAP,monatCounts:exact?.monatCounts??EMPTY_MAP,statusCounts:exact?.statusCounts??EMPTY_MAP,statusTotal:Object.values(exact?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,exact,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);

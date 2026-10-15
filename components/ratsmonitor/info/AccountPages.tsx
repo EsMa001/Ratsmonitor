@@ -1,15 +1,16 @@
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useBrand } from "../lib/brand";
-import { PageHead, Rich, useOpenSearch } from "./blocks";
-import { PLANS, type PlanId } from "./content";
-import { useRouter } from "next/navigation";
-import { login, register, requestReset, TEST_PASSWORD } from "../lib/testAuth";
+import { PageHead } from "./blocks";
 import { IS_DEV } from "../lib/tier";
-import { Icon } from "./icons";
+import { AccountApiError, accountChanged, api, devLogin, logout, useMe } from "../lib/account";
+import { postponeImport } from "../lib/browserData";
+import { safeNext } from "@/shared/safe-next.mjs";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** Ziel nach der Anmeldung: dieselbe Prüfung wie auf dem Server (nach der Normalisierung, nur bekannte Pfade) */
+const nextOf = (v: string | null | undefined) => safeNext(v ?? "/");
 
 function Field({
   id,
@@ -20,6 +21,8 @@ function Field({
   error,
   help,
   autoComplete,
+  inputMode,
+  maxLength,
 }: {
   id: string;
   label: string;
@@ -29,267 +32,474 @@ function Field({
   error?: string;
   help?: string;
   autoComplete?: string;
+  inputMode?: "numeric" | "email" | "text";
+  maxLength?: number;
 }) {
-  /* Passwortfelder: Eingabe per Auge-Knopf ein- und ausblendbar */
-  const [shown, setShown] = useState(false);
-  const isPw = type === "password";
-  const input = (
-    <input
-      id={id}
-      type={isPw && shown ? "text" : type}
-      className="ri-input"
-      style={isPw ? { paddingRight: 52 } : undefined}
-      value={value}
-      autoComplete={autoComplete}
-      aria-invalid={error ? true : undefined}
-      aria-describedby={error ? id + "-err" : help ? id + "-help" : undefined}
-      onChange={(e) => onChange(e.target.value)}
-    />
-  );
+  const described = [error ? id + "-err" : "", help ? id + "-help" : ""].filter(Boolean).join(" ") || undefined;
   return (
     <div className="ri-field">
       <label htmlFor={id}>{label}</label>
-      {isPw ? (
-        <div style={{ position: "relative" }}>
-          {input}
-          <button
-            type="button"
-            onClick={() => setShown((v) => !v)}
-            aria-label={shown ? "Passwort verbergen" : "Passwort anzeigen"}
-            aria-pressed={shown}
-            title={shown ? "Passwort verbergen" : "Passwort anzeigen"}
-            style={{ position: "absolute", right: 4, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, display: "grid", placeItems: "center", border: 0, background: "transparent", color: "var(--rm-c500,#64748b)", cursor: "pointer", borderRadius: 10 }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
-              <circle cx="12" cy="12" r="3" />
-              {shown && <path d="M4 4l16 16" />}
-            </svg>
-          </button>
-        </div>
-      ) : (
-        input
+      <input
+        id={id}
+        type={type}
+        className="ri-input"
+        value={value}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+        maxLength={maxLength}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={described}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {help && (
+        <p id={id + "-help"} className="ri-help">
+          {help}
+        </p>
       )}
-      {error ? (
+      {error && (
         <p id={id + "-err"} role="alert" className="ri-err">
           {error}
         </p>
-      ) : (
-        help && (
-          <p id={id + "-help"} className="ri-help">
-            {help}
-          </p>
-        )
       )}
     </div>
   );
 }
 
-/** Bestätigungsseite nach einem simulierten Formularversand */
-export function DoneScreen({ title, children }: { title: string; children: ReactNode }) {
-  const openSearch = useOpenSearch();
-  return (
-    <section className="ri-done">
-      <span className="ri-done__icon">
-        <Icon name="circleCheck" size={26} />
-      </span>
-      <h1>{title}</h1>
-      <p>{children}</p>
-      <button type="button" className="ri-btn ri-btn--dark" onClick={() => openSearch()}>
-        Zur Suche
-      </button>
-      <span className="ri-proto">Testmodus: Gespeichert nur in diesem Browser, es wurde nichts versendet.</span>
-    </section>
-  );
+/** Zustimmungen bei der ersten Anmeldung (Registrierung): AGB in der Fassung des Servers, Volljährigkeit, Name freiwillig */
+interface Consent {
+  agb: boolean;
+  adult: boolean;
+  name: string;
 }
-
-const planOf = (v: string | null): PlanId => (v === "pro" || v === "enterprise" ? v : "free");
-
-/* TODO: Registrierung an das Backend anbinden (Doku Kap. 8); bisher nur Validierung im Frontend */
-export function RegisterPage() {
-  const params = useSearchParams();
-  const [plan, setPlan] = useState<PlanId>(() => planOf(params.get("tarif")));
-  const [f, setF] = useState({ name: "", org: "", email: "", password: "", terms: false });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [done, setDone] = useState(false);
-  const p = PLANS.find((x) => x.id === plan)!;
-  const set = (k: keyof typeof f) => (v: string | boolean) => setF((s) => ({ ...s, [k]: v }));
-
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    const err: Record<string, string> = {};
-    if (!f.name.trim()) err.name = "Bitte geben Sie Ihren Namen ein.";
-    if (plan === "enterprise" && !f.org.trim()) err.org = "Bitte geben Sie Ihre Organisation ein.";
-    if (!EMAIL.test(f.email.trim())) err.email = "Bitte geben Sie eine gültige E-Mail-Adresse ein.";
-    if (f.password.length < 8) err.password = "Das Passwort muss mindestens 8 Zeichen lang sein.";
-    if (!f.terms) err.terms = "Bitte akzeptieren Sie die AGB und die Datenschutzerklärung.";
-    setErrors(err);
-    if (Object.keys(err).length) {
-      document.getElementById("reg-" + Object.keys(err)[0])?.focus();
-      return;
-    }
-    /* Testmodus: Konto in diesem Browser anlegen, Bestätigungs-Mail ins Test-Postfach */
-    const fail = await register({ name: f.name, org: f.org, email: f.email, password: f.password, tier: plan === "free" ? "basic" : plan });
-    if (fail) {
-      setErrors({ email: fail });
-      return document.getElementById("reg-email")?.focus();
-    }
-    setDone(true);
-    window.scrollTo(0, 0);
-  };
-
-  if (done)
-    return <DoneScreen title="Konto angelegt">Sie sind angemeldet. Die Bestätigungs-E-Mail liegt im <Link href="/konto/postfach" className="ri-link">Test-Postfach</Link>.</DoneScreen>;
-
-  const form = (
-    <form className="ri-form" noValidate onSubmit={submit} aria-label="Registrierung">
-      <div className="ri-plans" role="group" aria-label="Tarif">
-        {PLANS.map((x) => (
-          <button key={x.id} type="button" className="ri-plan" aria-pressed={x.id === plan} onClick={() => setPlan(x.id)}>
-            <span className="ri-plan__name">{x.name}</span>
-            <span className="ri-plan__price">{x.short}</span>
-          </button>
-        ))}
-      </div>
-      <Field id="reg-name" label="Name" value={f.name} onChange={set("name")} error={errors.name} autoComplete="name" />
-      {plan === "enterprise" && <Field id="reg-org" label="Organisation" value={f.org} onChange={set("org")} error={errors.org} autoComplete="organization" />}
-      <Field id="reg-email" label="E-Mail-Adresse" type="email" value={f.email} onChange={set("email")} error={errors.email} autoComplete="email" />
-      <Field id="reg-password" label="Passwort" type="password" value={f.password} onChange={set("password")} error={errors.password} help="Mindestens 8 Zeichen" autoComplete="new-password" />
+const NO_CONSENT: Consent = { agb: false, adult: false, name: "" };
+function ConsentBlock({ id, value, onChange, errors }: { id: string; value: Consent; onChange: (c: Consent) => void; errors: { agb?: string; adult?: string } }) {
+  return (
+    <fieldset className="m-0 mt-5 border-0 p-0">
+      <legend className="text-[16px] font-semibold text-slate-900">Neues Konto</legend>
+      <p className="ri-help" style={{ marginTop: 4 }}>
+        Für diese Adresse gibt es noch kein Konto. Mit der Bestätigung legen Sie es an.
+      </p>
       <label className="ri-check">
-        <input id="reg-terms" type="checkbox" checked={f.terms} onChange={(e) => set("terms")(e.target.checked)} aria-invalid={errors.terms ? true : undefined} />
+        <input id={id + "-agb"} type="checkbox" checked={value.agb} onChange={(e) => onChange({ ...value, agb: e.target.checked })} aria-invalid={errors.agb ? true : undefined} aria-describedby={errors.agb ? id + "-agb-err" : undefined} />
         <span>
           Ich akzeptiere die{" "}
-          <Link href="/agb" className="ri-link">
+          <Link href="/agb" className="ri-link" target="_blank">
             AGB
-          </Link>{" "}
-          und habe die{" "}
-          <Link href="/datenschutz" className="ri-link">
+          </Link>
+          . Hinweise zur Verarbeitung meiner Daten stehen in der{" "}
+          <Link href="/datenschutz" className="ri-link" target="_blank">
             Datenschutzerklärung
-          </Link>{" "}
-          gelesen.
+          </Link>
+          .
         </span>
       </label>
-      {errors.terms && (
-        <p role="alert" className="ri-err">
-          {errors.terms}
+      {errors.agb && (
+        <p id={id + "-agb-err"} role="alert" className="ri-err">
+          {errors.agb}
         </p>
       )}
-      <button type="submit" className="ri-btn ri-btn--dark ri-btn--block ri-submit">
-        {p.submit}
-      </button>
-      <p className="ri-form__foot">
-        Bereits registriert?{" "}
-        <Link href="/anmelden" className="ri-link">
-          Anmelden
-        </Link>
-      </p>
-    </form>
-  );
-
-  return (
-    <PageHead icon="user" label="Konto" name="Registrierung" title="Konto erstellen" lead="In wenigen Sekunden startklar. Suchen speichern, Beschlüsse merken." small top aside={form}>
-      <div className="ri-chosen">
-        <h2 className="ri-pk__label">Gewählter Tarif</h2>
-        <div className="ri-chosen__head">
-          <span className="ri-chosen__name">{p.name}</span>
-          <span className="ri-chosen__price">
-            {p.amount} {p.unit}
-          </span>
-        </div>
-        <hr className="ri-pk__hr" />
-        <ul className="ri-checks">
-          {p.features.slice(0, 4).map((x) => (
-            <li key={x.text}>
-              <Icon name={x.plus ? "plus" : "check"} size={14} />
-              <span>
-                <Rich text={x.text} />
-              </span>
-            </li>
-          ))}
-        </ul>
-        <Link href="/preise" className="ri-chosen__change">
-          Tarif ändern
-        </Link>
+      <label className="ri-check">
+        <input id={id + "-adult"} type="checkbox" checked={value.adult} onChange={(e) => onChange({ ...value, adult: e.target.checked })} aria-invalid={errors.adult ? true : undefined} aria-describedby={errors.adult ? id + "-adult-err" : undefined} />
+        <span>Ich bin mindestens 18 Jahre alt.</span>
+      </label>
+      {errors.adult && (
+        <p id={id + "-adult-err"} role="alert" className="ri-err">
+          {errors.adult}
+        </p>
+      )}
+      <div style={{ marginTop: 18 }}>
+        <Field id={id + "-name"} label="Name (freiwillig)" value={value.name} onChange={(v) => onChange({ ...value, name: v })} autoComplete="name" maxLength={100} />
       </div>
-    </PageHead>
+    </fieldset>
+  );
+}
+/** Fehler der Zustimmungen; leer, wenn alles da ist */
+function consentErrors(c: Consent) {
+  return { ...(c.agb ? {} : { agb: "Bitte akzeptieren Sie die AGB." }), ...(c.adult ? {} : { adult: "Bitte bestätigen Sie, dass Sie mindestens 18 Jahre alt sind." }) };
+}
+const consentBody = (c: Consent, version: string) => ({ agb: version, adult: true, ...(c.name.trim() ? { name: c.name.trim() } : {}) });
+
+/** Hinweis in der geschlossenen Testphase (requirements/konten-konzept.md 6.5) */
+function InviteNote() {
+  return (
+    <p className="ri-help" style={{ marginTop: 16 }}>
+      Plenara ist in einer geschlossenen Testphase. Sie bekommen nur dann eine E-Mail, wenn diese Adresse eingeladen ist. Keine E-Mail? Adresse prüfen, Spam-Ordner ansehen oder{" "}
+      <Link href="/kontakt" className="ri-link">
+        Kontakt
+      </Link>
+      .
+    </p>
   );
 }
 
-/* Testmodus: Anmeldung gegen Testkonten in diesem Browser (lib/testAuth.ts), keine echten E-Mails */
+/** Absender der Anmeldemail: wie der Server ihn nennt (MAIL_FROM), sonst auf der eigenen Domain anmeldung@<domain>, sonst neutral */
+function senderText(sender?: string): string {
+  if (sender) return `von ${sender}`;
+  if (typeof window === "undefined") return "von Plenara";
+  const host = window.location.hostname.replace(/^www\./, "");
+  const own = host.includes(".") && !/^[\d.]+$/.test(host) && !host.endsWith("sslip.io") && !host.endsWith(".localhost") && !host.endsWith(".test");
+  return own ? `von anmeldung@${host}` : "von der Anmeldeadresse von Plenara";
+}
+
+const RESEND_SECONDS = 60;
+
+/** Anmelden und Registrieren in einem: Adresse eingeben, Link oder Code aus der E-Mail */
 export function LoginPage() {
   const router = useRouter();
-  const [f, setF] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [note, setNote] = useState("");
+  const params = useSearchParams();
+  const me = useMe();
+  const weiter = params.get("weiter");
+  const next = nextOf(weiter);
+  const [step, setStep] = useState<"email" | "wait">("email");
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState("");
+  const [wait, setWait] = useState(0);
+  const [consent, setConsent] = useState<{ version: string; value: Consent; errors: { agb?: string; adult?: string } } | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  /* Nach dem Wechsel zum Wartebildschirm (und zurück) die neue Überschrift ansagen */
+  useEffect(() => {
+    if (step === "wait") heading.current?.focus();
+    else if (sent) document.getElementById("login-email")?.focus();
+  }, [step, sent]);
+  /* Countdown für „Erneut senden“ */
+  useEffect(() => {
+    if (wait <= 0) return;
+    const t = setTimeout(() => setWait((w) => w - 1), 1000);
+    return () => clearTimeout(t);
+  }, [wait]);
 
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    const err: Record<string, string> = {};
-    if (!EMAIL.test(f.email.trim())) err.email = "Bitte geben Sie eine gültige E-Mail-Adresse ein.";
-    if (!f.password) err.password = "Bitte geben Sie Ihr Passwort ein.";
-    if (!Object.keys(err).length) {
-      const fail = await login(f.email, f.password);
-      if (!fail) return router.push("/");
-      err.password = fail;
+  const request = async (address: string) => {
+    setBusy(true);
+    try {
+      await api("/api/auth/link", { method: "POST", body: { email: address, next } });
+      setSent(address);
+      setStep("wait");
+      setWait(RESEND_SECONDS);
+      setStatus("");
+      return true;
+    } catch (e) {
+      const msg = (e as Error).message;
+      if (step === "email") setEmailError(msg);
+      else setStatus(msg);
+      return false;
+    } finally {
+      setBusy(false);
     }
-    setErrors(err);
-    if (err.email) document.getElementById("login-email")?.focus();
-    else if (err.password) document.getElementById("login-password")?.focus();
   };
-  const reset = async () => {
-    if (!EMAIL.test(f.email.trim())) {
-      setErrors({ email: "Bitte geben Sie zuerst Ihre E-Mail-Adresse ein." });
+  const submitEmail = async (e: FormEvent) => {
+    e.preventDefault();
+    const v = email.trim();
+    if (!EMAIL.test(v)) {
+      setEmailError("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
       return document.getElementById("login-email")?.focus();
     }
-    await requestReset(f.email);
-    setNote("Falls es ein Konto gibt, liegt die E-Mail jetzt im Test-Postfach.");
+    setEmailError("");
+    await request(v);
+  };
+  const resend = async () => {
+    if (wait > 0 || busy) return;
+    if (await request(sent)) setStatus("Neue E-Mail angefordert. Es gilt nur die neueste E-Mail.");
+  };
+  const submitCode = async (e: FormEvent) => {
+    e.preventDefault();
+    const digits = code.replace(/\D/g, "");
+    if (digits.length !== 8) {
+      setCodeError("Bitte den achtstelligen Code aus der E-Mail eingeben.");
+      return document.getElementById("login-code")?.focus();
+    }
+    let extra = {};
+    if (consent) {
+      const errors = consentErrors(consent.value);
+      if (Object.keys(errors).length) {
+        setConsent({ ...consent, errors });
+        return document.getElementById("login-consent-" + Object.keys(errors)[0])?.focus();
+      }
+      extra = consentBody(consent.value, consent.version);
+    }
+    setBusy(true);
+    setCodeError("");
+    try {
+      const r = await api<{ next?: string }>("/api/auth/code", { method: "POST", body: { code: digits, ...extra } });
+      await accountChanged();
+      router.push(nextOf(r.next ?? next));
+    } catch (err) {
+      if (err instanceof AccountApiError && err.status === 409 && err.data.needConsent) {
+        /* Richtiger Code für eine neue Adresse: Zustimmungen fehlen, derselbe Code gilt weiter */
+        setConsent({ version: String(err.data.agbVersion ?? ""), value: consent?.value ?? NO_CONSENT, errors: {} });
+        setTimeout(() => document.getElementById("login-consent-agb")?.focus(), 0);
+      } else {
+        setCodeError((err as Error).message);
+        document.getElementById("login-code")?.focus();
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const invite = me.access === "invite" || !!weiter;
+  const head = <PageHead icon="user" label="Konto" name="Anmelden" title={step === "wait" ? "E-Mail prüfen" : "Anmelden"} lead={step === "wait" ? undefined : "Mit Ihrer E-Mail-Adresse anmelden oder ein Konto anlegen. Sie bekommen einen Link und einen Code, ein Passwort gibt es nicht."} />;
+
+  if (me.ready && me.user)
+    return (
+      <>
+        {head}
+        <section className="ri-sec">
+          <div className="ri-form ri-form--center">
+            <p role="status" style={{ margin: 0, fontSize: 16 }}>
+              Sie sind angemeldet als <strong>{me.user.email}</strong>.
+            </p>
+            <Link href={next === "/" ? "/konto/profil" : next} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+              {next === "/" ? "Zum Konto" : "Weiter"}
+            </Link>
+            <p className="ri-form__foot">
+              <button type="button" className="ri-link max-sm:py-[10px]" onClick={() => void logout()}>
+                Abmelden
+              </button>
+            </p>
+          </div>
+        </section>
+      </>
+    );
+  if (me.ready && !me.accounts)
+    return (
+      <>
+        {head}
+        <section className="ri-sec">
+          <div className="ri-form ri-form--center">
+            <p role="status" style={{ margin: 0, fontSize: 16 }}>
+              Auf diesem Server gibt es keine Konten. Suche und Artikel sind ohne Anmeldung nutzbar.
+            </p>
+          </div>
+        </section>
+      </>
+    );
+
+  return (
+    <>
+      {head}
+      <section className="ri-sec">
+        {step === "email" ? (
+          <form className="ri-form ri-form--center" noValidate onSubmit={submitEmail} aria-label="Anmelden">
+            {weiter && (
+              <p role="status" style={{ margin: "0 0 16px", fontSize: 16 }}>
+                Bitte melden Sie sich an, um diese Seite zu öffnen.
+              </p>
+            )}
+            <Field id="login-email" label="E-Mail-Adresse" type="email" value={email} onChange={setEmail} error={emailError} autoComplete="email" inputMode="email" />
+            <button type="submit" disabled={busy} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+              {busy ? "Wird gesendet …" : "Link und Code anfordern"}
+            </button>
+            <p className="ri-help">
+              <Link href="/datenschutz" className="ri-link">
+                Hinweise zum Datenschutz
+              </Link>
+            </p>
+            {invite && <InviteNote />}
+            {IS_DEV && <DevLogin next={next} />}
+          </form>
+        ) : (
+          <div className="ri-form ri-form--center">
+            <h2 ref={heading} tabIndex={-1} className="m-0 text-[22px] font-semibold outline-none">
+              E-Mail an {sent}
+            </h2>
+            <p style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
+              Wenn die Adresse für Plenara freigeschaltet ist, kommt in wenigen Minuten eine E-Mail an <strong>{sent}</strong>, {senderText(me.sender)}. Sie enthält einen Link und einen Code. Es gilt nur die neueste E-Mail.
+            </p>
+            <p className="ri-help">Keine E-Mail? Bitte auch im Spam- oder Quarantäneordner nachsehen.</p>
+            <form noValidate onSubmit={submitCode} aria-label="Code eingeben" style={{ marginTop: 22 }}>
+              <Field id="login-code" label="Code aus der E-Mail" value={code} onChange={setCode} error={codeError} help="8 Ziffern. Der Code gilt 15 Minuten und nur in diesem Browser." autoComplete="one-time-code" inputMode="numeric" maxLength={12} />
+              {consent && <ConsentBlock id="login-consent" value={consent.value} onChange={(value) => setConsent({ ...consent, value, errors: {} })} errors={consent.errors} />}
+              <button type="submit" disabled={busy} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+                {busy ? "Wird geprüft …" : consent ? "Konto anlegen und anmelden" : "Anmelden"}
+              </button>
+            </form>
+            <p className="ri-form__foot" style={{ fontSize: 14 }}>
+              <button type="button" className="ri-link max-sm:py-[10px]" disabled={wait > 0 || busy} onClick={() => void resend()} aria-describedby="login-resend-help">
+                {wait > 0 ? `Erneut senden (in ${wait} s)` : "Erneut senden"}
+              </button>{" "}
+              ·{" "}
+              <button
+                type="button"
+                className="ri-link max-sm:py-[10px]"
+                onClick={() => {
+                  setStep("email");
+                  setCode("");
+                  setCodeError("");
+                  setConsent(null);
+                  setStatus("");
+                }}
+              >
+                Andere Adresse
+              </button>
+            </p>
+            <p id="login-resend-help" className="ri-help" style={{ textAlign: "center" }}>
+              Höchstens 3 Links in 15 Minuten.
+            </p>
+            {status && (
+              <p role="status" className="ri-help" style={{ textAlign: "center" }}>
+                {status}
+              </p>
+            )}
+            {invite && <InviteNote />}
+          </div>
+        )}
+      </section>
+    </>
+  );
+}
+
+/** Nur Entwicklung: als Testkonto anmelden, ohne E-Mail (POST /api/dev/login) */
+function DevLogin({ next }: { next: string }) {
+  const router = useRouter();
+  return (
+    <p className="ri-form__foot" style={{ fontSize: 14 }}>
+      Dev:{" "}
+      {(["basic", "pro", "enterprise"] as const).map((t, i) => (
+        <span key={t}>
+          {i > 0 && " · "}
+          <button type="button" className="ri-link max-sm:py-[10px]" onClick={() => void devLogin(t).then(() => router.push(next))}>
+            als {t}@plenara.test
+          </button>
+        </span>
+      ))}
+    </p>
+  );
+}
+
+/* Token aus dem Link (#t=…): einmal lesen und sofort aus der Adresse entfernen (auch bei doppeltem Effekt im Dev-Modus) */
+let linkToken: string | null = null;
+function takeToken(): string {
+  if (linkToken === null) {
+    const m = /(?:^#|&)t=([A-Za-z0-9_-]+)/.exec(window.location.hash);
+    linkToken = m ? m[1] : "";
+    if (window.location.hash) history.replaceState(history.state, "", window.location.pathname + window.location.search);
+  }
+  return linkToken;
+}
+type Peek = { valid: true; email: string; purpose: "login" | "signup"; sameBrowser: boolean; agbVersion?: string } | { valid: false; error: string };
+
+/** Bestätigungsseite für den Link aus der E-Mail. Sendet nichts von selbst: erst der Klick löst den Link ein (Mail-Scanner). */
+export function ConfirmLoginPage() {
+  const router = useRouter();
+  const [peek, setPeek] = useState<{ token: string; data: Peek } | null>(null);
+  const [consent, setConsent] = useState<Consent>(NO_CONSENT);
+  const [errors, setErrors] = useState<{ agb?: string; adult?: string }>({});
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState<string | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    const token = takeToken();
+    let live = true;
+    (token ? api<Peek>("/api/auth/peek", { method: "POST", body: { token } }) : Promise.resolve<Peek>({ valid: false, error: "In der Adresse fehlt der Anmeldelink. Bitte öffnen Sie den Link aus der E-Mail erneut oder geben Sie den Code ein." }))
+      .catch((e: Error) => ({ valid: false as const, error: e.message }))
+      .then((data) => live && setPeek({ token, data }));
+    return () => {
+      live = false;
+    };
+  }, []);
+  useEffect(() => {
+    if (peek || done) heading.current?.focus();
+  }, [peek, done]);
+
+  const data = peek?.data;
+  const confirm = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!peek || !data?.valid) return;
+    const signup = data.purpose === "signup";
+    if (signup) {
+      const errs = consentErrors(consent);
+      setErrors(errs);
+      if (Object.keys(errs).length) return document.getElementById("confirm-consent-" + Object.keys(errs)[0])?.focus();
+    }
+    setBusy(true);
+    setError("");
+    try {
+      const r = await api<{ next?: string }>("/api/auth/verify", { method: "POST", body: { token: peek.token, ...(signup ? consentBody(consent, data.agbVersion ?? "") : {}) } });
+      /* Anmeldung kam nicht aus diesem Browser: die Übernahme der Browserdaten nicht von selbst anbieten */
+      if (!data.sameBrowser) postponeImport();
+      await accountChanged();
+      setDone(nextOf(r.next ?? "/"));
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <>
-      <PageHead icon="user" label="Konto" name="Anmelden" title="Willkommen zurück" lead="Melden Sie sich an, um Ihre gespeicherten Suchen und Bookmarks zu sehen." />
+      <PageHead icon="user" label="Konto" name="Anmelden" title="Anmeldung bestätigen" />
       <section className="ri-sec">
-        <form className="ri-form ri-form--center" noValidate onSubmit={submit} aria-label="Anmelden">
-          <Field id="login-email" label="E-Mail-Adresse" type="email" value={f.email} onChange={(v) => setF((s) => ({ ...s, email: v }))} error={errors.email} autoComplete="email" />
-          <Field id="login-password" label="Passwort" type="password" value={f.password} onChange={(v) => setF((s) => ({ ...s, password: v }))} error={errors.password} autoComplete="current-password" />
-          <button type="submit" className="ri-btn ri-btn--dark ri-btn--block ri-submit">
-            Anmelden
-          </button>
-          {note && (
-            <p role="status" className="ri-help">
-              {note} <Link href="/konto/postfach" className="ri-link">Zum Test-Postfach</Link>
+        <div className="ri-form ri-form--center">
+          {!peek && (
+            <p role="status" style={{ margin: 0 }}>
+              Link wird geprüft …
             </p>
           )}
-          <p className="ri-form__foot">
-            <button type="button" className="ri-link max-sm:py-[10px]" onClick={reset}>
-              Passwort vergessen?
-            </button>{" "}
-            · Noch kein Konto?{" "}
-            <Link href="/registrieren?tarif=free" className="ri-link">
-              Registrieren
-            </Link>
-          </p>
-          {IS_DEV && (
-            <p className="ri-form__foot">
-              {/* Nur Entwicklung: ohne Zugangsdaten als Enterprise-Testkonto anmelden */}
-              <button
-                type="button"
-                className="ri-link max-sm:py-[10px]"
-                onClick={async () => {
-                  if (!(await login("enterprise@plenara.test", TEST_PASSWORD))) router.push("/");
-                }}
-              >
-                Dev: als Enterprise fortfahren
+          {done !== null ? (
+            <>
+              <h2 ref={heading} tabIndex={-1} className="m-0 text-[22px] font-semibold outline-none">
+                Angemeldet
+              </h2>
+              <p role="status" style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
+                Sie sind auf diesem Gerät angemeldet. Wollten Sie sich an einem anderen Gerät anmelden? Geben Sie dort den Code aus der E-Mail ein.
+              </p>
+              <button type="button" className="ri-btn ri-btn--dark ri-btn--block ri-submit" onClick={() => router.push(done)}>
+                Weiter
               </button>
-            </p>
-          )}
-          <p className="ri-help">
-            Testmodus: basic@plenara.test, pro@plenara.test oder enterprise@plenara.test, Passwort „{TEST_PASSWORD}“. Alles bleibt in diesem Browser, es werden keine E-Mails verschickt.
-          </p>
-        </form>
+            </>
+          ) : data && !data.valid ? (
+            <>
+              <h2 ref={heading} tabIndex={-1} className="m-0 text-[22px] font-semibold outline-none">
+                Link nicht gültig
+              </h2>
+              <p role="alert" style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
+                {data.error}
+              </p>
+              <Link href="/anmelden" className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+                Neuen Link anfordern
+              </Link>
+            </>
+          ) : data?.valid ? (
+            <form noValidate onSubmit={confirm} aria-label="Anmeldung bestätigen">
+              <h2 ref={heading} tabIndex={-1} className="m-0 text-[22px] font-semibold outline-none" style={{ overflowWrap: "anywhere" }}>
+                Anmelden als {data.email}
+              </h2>
+              {!data.sameBrowser && (
+                <p role="alert" style={{ margin: "12px 0 0", fontSize: 16, lineHeight: 1.5, color: "#92400e" }}>
+                  Diese Anmeldung wurde nicht in diesem Browser angefordert. Nur fortfahren, wenn Sie das selbst waren.
+                </p>
+              )}
+              {data.purpose === "signup" && <ConsentBlock id="confirm-consent" value={consent} onChange={(c) => { setConsent(c); setErrors({}); }} errors={errors} />}
+              {error && (
+                <p role="alert" className="ri-err">
+                  {error}
+                </p>
+              )}
+              <button type="submit" disabled={busy} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+                {busy ? "Wird angemeldet …" : data.purpose === "signup" ? "Konto anlegen und anmelden" : "Anmelden"}
+              </button>
+            </form>
+          ) : null}
+        </div>
       </section>
     </>
   );
+}
+
+/** Frühere Registrierung: Anmelden und Registrieren sind ein Weg (/anmelden); der Server leitet schon um */
+export function RegisterPage() {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace("/anmelden");
+  }, [router]);
+  return null;
 }
 
 /** Kontakt per E-Mail. Ein Formular gibt es erst, wenn es an das Backend angebunden ist (Doku Kap. 8):
@@ -304,7 +514,7 @@ export function KontaktPage() {
         label="Hilfe"
         name="Kontakt"
         title="Schreiben Sie uns"
-        lead={`Fragen zu ${name}, Ihrem Konto oder Enterprise? Wir antworten in der Regel innerhalb eines Werktags.`}
+        lead={`Fragen zu ${name}, Ihrem Konto oder einer Stufe für die Testphase? Wir antworten in der Regel innerhalb eines Werktags.`}
       />
       <section className="ri-sec">
         <div className="ri-form ri-form--center">

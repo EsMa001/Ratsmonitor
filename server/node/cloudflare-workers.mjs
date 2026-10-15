@@ -7,11 +7,16 @@
  *   Server-Paketen (rsc, ssr) landet (globalThis). Ohne DATABASE_FILE, oder wenn die Datei fehlt, ist `env.DB`
  *   undefined wie auf Cloudflare ohne Bindung. serve.mjs startet dann gar nicht erst (nur ohne DATABASE_FILE und mit
  *   RM_ALLOW_NO_DB=1 doch; dann steht es laut im Protokoll, denn die Seiten zeigen still den Stand vom September).
+ * - `env.ACCOUNTS`: die Kontendatei aus ACCOUNTS_FILE (eigene Datei, requirements/konten-konzept.md 3.2), eigener
+ *   globalThis-Schlüssel, secure_delete an. `env.ACCOUNTS_HOOKS`: Löschprotokoll neben der Datei (deleted.log) und
+ *   wal_checkpoint, nur hier im Node-Betrieb; unter Miniflare fehlen sie (die Kontomodule rufen sie optional auf).
  * - alle anderen Schlüssel (ADMIN_SETUP_HASH, IMPORT_TOKEN, OPENAI_API_KEY, VAPID_*, …) aus process.env,
  *   gelesen beim Zugriff. Leere Werte gelten als nicht gesetzt.
  *
  * Lokal (npm run dev) wird dieses Modul nicht benutzt; dort kommt `env` weiter von Miniflare.
  */
+import fs from 'node:fs';
+import path from 'node:path';
 import { openD1 } from './d1-sqlite.mjs';
 import { createLocalSourceReader } from './ai-local-sources.mjs';
 
@@ -43,10 +48,37 @@ function db() {
   return state.database;
 }
 
-/** Für den Server-Einstieg (server/node/serve.mjs): Verbindung beim Beenden sauber schließen. */
+const ACCOUNTS = Symbol.for('ratsmonitor.node.accounts');
+const accountState = (globalThis[ACCOUNTS] ??= { database: undefined, failedAt: 0 });
+function accounts() {
+  if (accountState.database || Date.now() - accountState.failedAt < RETRY_MS) return accountState.database;
+  const file = process.env.ACCOUNTS_FILE;
+  if (!file) return undefined;
+  try {
+    accountState.database = openD1(file, { busyTimeoutMs: Number(process.env.ACCOUNTS_BUSY_TIMEOUT_MS || 2000), secureDelete: true });
+    console.log('[ratsmonitor] Kontendatei geöffnet');
+  } catch (error) {
+    accountState.failedAt = Date.now();
+    console.error('[ratsmonitor] Kontendatei konnte nicht geöffnet werden:', error?.message ?? error);
+  }
+  return accountState.database;
+}
+const accountHooks = {
+  /** Eine Zeile je Löschung (Hash der Konto-ID, HMAC der Adresse), außerhalb der Datei und ihrer Sicherung */
+  async logDeletion({ userHash, emailHmac, at }) {
+    const file = process.env.ACCOUNTS_FILE;
+    if (!file) return;
+    fs.appendFileSync(path.join(path.dirname(file), 'deleted.log'), `${at} ${userHash} ${emailHmac}\n`, { mode: 0o600 });
+  },
+  async checkpoint() { await accounts()?.exec('PRAGMA wal_checkpoint(TRUNCATE)'); },
+};
+
+/** Für den Server-Einstieg (server/node/serve.mjs): Verbindungen beim Beenden sauber schließen. */
 export function closeDatabase() {
   try { state.database?.close(); } catch { /* schon zu */ }
   state.database = undefined;
+  try { accountState.database?.close(); } catch { /* schon zu */ }
+  accountState.database = undefined;
 }
 
 const value = (key) => {
@@ -59,11 +91,14 @@ export const env = new Proxy(Object.create(null), {
     if (typeof key !== 'string') return undefined;
     if (key === 'DB') return db();
     if (key === 'AI_LOCAL_SOURCES') return localSources();
+    if (key === 'ACCOUNTS') return accounts();
+    if (key === 'ACCOUNTS_HOOKS') return process.env.ACCOUNTS_FILE ? accountHooks : undefined;
     return value(key);
   },
   has(_target, key) {
     if (typeof key !== 'string') return false;
     if (key === 'AI_LOCAL_SOURCES') return true;
+    if (key === 'ACCOUNTS') return accounts() !== undefined;
     return key === 'DB' ? db() !== undefined : value(key) !== undefined;
   },
   set() { return false; },

@@ -5,6 +5,7 @@
  *
  *   node scripts/node-migrate.mjs /srv/ratsmonitor/data/ratsmonitor.sqlite          # anwenden
  *   node scripts/node-migrate.mjs /srv/ratsmonitor/data/ratsmonitor.sqlite --check  # nur anzeigen, was fehlt
+ *   node scripts/node-migrate.mjs <accounts.sqlite> --dir drizzle-accounts --table accounts_migrations   # Kontendatei
  *
  * Jede Datei läuft in einer eigenen Transaktion. Vorher eine Sicherung anlegen: Große Indizes über alle Vorgänge
  * brauchen Minuten und schreiben viel.
@@ -14,25 +15,26 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 
-export function pendingMigrations(db, dir) {
-  db.exec(`CREATE TABLE IF NOT EXISTS d1_migrations(
+export function pendingMigrations(db, dir, table = 'd1_migrations') {
+  if (!/^[a-z][a-z0-9_]*$/.test(table)) throw new Error(`Ungültiger Tabellenname: ${table}`);
+  db.exec(`CREATE TABLE IF NOT EXISTS ${table}(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE,
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
   )`);
-  const applied = new Set(db.prepare('SELECT name FROM d1_migrations').all().map((row) => row.name));
+  const applied = new Set(db.prepare(`SELECT name FROM ${table}`).all().map((row) => row.name));
   return fs.readdirSync(dir).filter((file) => /^\d{4}_.+\.sql$/.test(file)).sort().filter((file) => !applied.has(file));
 }
 
-export function applyMigrations(db, dir, { log = console.log } = {}) {
-  const pending = pendingMigrations(db, dir);
+export function applyMigrations(db, dir, { log = console.log, table = 'd1_migrations' } = {}) {
+  const pending = pendingMigrations(db, dir, table);
   for (const file of pending) {
     const sql = fs.readFileSync(path.join(dir, file), 'utf8');
     const started = Date.now();
     db.exec('BEGIN IMMEDIATE');
     try {
       db.exec(sql);
-      db.prepare('INSERT INTO d1_migrations(name) VALUES(?)').run(file);
+      db.prepare(`INSERT INTO ${table}(name) VALUES(?)`).run(file);
       db.exec('COMMIT');
     } catch (error) {
       db.exec('ROLLBACK');
@@ -44,20 +46,23 @@ export function applyMigrations(db, dir, { log = console.log } = {}) {
 }
 
 async function main() {
-  const [file, flag, ...rest] = process.argv.slice(2);
-  if (!file || rest.length || (flag && flag !== '--check')) throw new Error('Aufruf: node scripts/node-migrate.mjs <Datenbank.sqlite> [--check]');
-  const dir = fileURLToPath(new URL('../drizzle/', import.meta.url));
+  const args = process.argv.slice(2);
+  const option = (name) => { const i = args.indexOf(name); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
+  const dirName = option('--dir') ?? 'drizzle', table = option('--table') ?? 'd1_migrations';
+  const [file, flag, ...rest] = args;
+  if (!file || rest.length || (flag && flag !== '--check') || !/^[a-z-]+$/.test(dirName)) throw new Error('Aufruf: node scripts/node-migrate.mjs <Datenbank.sqlite> [--check] [--dir drizzle-accounts --table accounts_migrations]');
+  const dir = fileURLToPath(new URL(`../${dirName}/`, import.meta.url));
   const db = new DatabaseSync(path.resolve(file));
   try {
     db.exec('PRAGMA busy_timeout=15000');
     db.exec('PRAGMA journal_mode=WAL');
     if (flag === '--check') {
-      const pending = pendingMigrations(db, dir);
+      const pending = pendingMigrations(db, dir, table);
       console.log(pending.length ? `fehlen: ${pending.join(', ')}` : 'Datenbank ist auf dem neuesten Stand.');
       process.exitCode = pending.length ? 2 : 0;
       return;
     }
-    const applied = applyMigrations(db, dir);
+    const applied = applyMigrations(db, dir, { table });
     console.log(applied.length ? `${applied.length} Migration(en) angewendet.` : 'Nichts zu tun, Datenbank ist auf dem neuesten Stand.');
   } finally { db.close(); }
 }

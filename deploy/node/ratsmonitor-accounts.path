@@ -1,0 +1,10 @@
+# Sofortstart aus der Administration (server/integrations/job-trigger.mjs): /srv/ratsmonitor/data/trigger/accounts
+[Unit]
+Description=Ratsmonitor: accounts sofort starten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/accounts
+Unit=ratsmonitor-accounts.service
+
+[Install]
+WantedBy=multi-user.target

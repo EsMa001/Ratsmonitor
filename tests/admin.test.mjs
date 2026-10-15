@@ -183,12 +183,15 @@ test('CSV export neutralizes spreadsheet formulas and escapes delimiters and quo
 });
 
 const uri=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
-globalThis.adminFixture={user:null,env:{DB:db,ADMIN_SETUP_HASH:hash},reads:0,syncs:0,analyses:0,prepared:0};
+// Der alte Weg (Kopfzeilen, ChatGPT) gilt nur mit ADMIN_LEGACY_HEADER=1; Konten prüft tests/accounts-login.test.mjs und tests/accounts-totp.test.mjs.
+globalThis.adminFixture={user:null,env:{DB:db,ADMIN_SETUP_HASH:hash,ADMIN_LEGACY_HEADER:'1'},reads:0,syncs:0,analyses:0,prepared:0};
 const stubs={
  '@/server/integrations/pipeline-jobs.mjs':'export async function pipelineAction(){globalThis.adminFixture.syncs++;return {status:"queued"};}',
  '@/server/integrations/ai-jobs.mjs':'export async function getAiJob(){globalThis.adminFixture.reads++;return null;} export async function createAiJob(){globalThis.adminFixture.analyses++;return {};} export async function previewAiJob(){return {articles:0,steps:{},blocked:0,exported:0};} export async function applyAiResults(){globalThis.adminFixture.analyses++;return {};} export async function cancelAiJob(){globalThis.adminFixture.analyses++;return {};}',
 
  'server-only':'export {};',
+ 'next/headers':'export async function headers(){return new Headers();}',
+ 'next/server':'export function after(task){Promise.resolve().then(task);}',
  'cloudflare:workers':'export const env=globalThis.adminFixture.env;',
  '@/app/chatgpt-auth':'export async function getChatGPTUser(){return globalThis.adminFixture.user;}',
  '@/server/repositories/admin':'export async function getAdminDashboard(){globalThis.adminFixture.reads++;return {sources:[]};} export async function getAdminSummary(){globalThis.adminFixture.reads++;return {counts:{}};} export async function getAreaNotes(){globalThis.adminFixture.reads++;return {issues:[]};} export async function getAdminReview(){globalThis.adminFixture.reads++;return {};}',
