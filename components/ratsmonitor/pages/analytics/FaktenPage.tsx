@@ -7,15 +7,17 @@ import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
+import { RadarDrill } from "./RadarDrill";
 
 /* plenara.X Fakten (GET /api/x?view=fakten, server/integrations/plenara-x-query.mjs): Werte aus den Unterlagen je Gemeinde
    auf der Karte, rot bis grün. Nur Werte ab 90 % gemessener Qualität (MAP_FACTS). Filter: Fakt, Wert (z. B. Grundsteuer B),
    Ort über die Suche. */
 interface Row { key: string; name: string; count: number; ags?: string; members?: string[] }
-interface FactMap { key: string; ags?: string; n: number; v: Record<string, { n: number; median: number; unit: string }> }
-interface Fact { kind: string; dir: "bad" | "good"; name: string; map: FactMap[] }
+interface FactMap { key: string; ags?: string; n: number; v: Record<string, { n: number; median: number; unit: string; sum?: number }> }
+/* dir: hoch ist schlecht (rot), gut (grün) oder nur eine Menge (Wohneinheiten, ohne Wertung) */
+interface Fact { kind: string; dir: "bad" | "good" | "amount"; name: string; map: FactMap[] }
 interface Result { regions: Row[]; facts: Fact[] }
-interface Area { v: number; name: string; key: string; n: number }
+interface Area { v: number; name: string; key: string; n: number; sum?: number }
 
 /* Niedrig grün, hoch rot (Gebühren, Steuern, Preise); beim Jahresergebnis umgekehrt */
 const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
@@ -48,17 +50,17 @@ export function FaktenPage() {
     const regions = res?.regions ?? [];
     const unit = fact?.map.find((m) => m.v[metric])?.v[metric].unit ?? "";
     const rowOf = new Map(regions.map((r) => [r.key, r]));
-    const val = new Map<string, { v: number; n: number }>(), memberVal: [string, string, number, number][] = [];
-    for (const m of fact?.map ?? []) { const x = m.v[metric]; if (!x) continue; if (m.ags) memberVal.push([m.key, m.ags, x.median, x.n]); else val.set(m.key, { v: x.median, n: x.n }); }
+    const val = new Map<string, { v: number; n: number; sum?: number }>(), memberVal: [string, string, number, number][] = [];
+    for (const m of fact?.map ?? []) { const x = m.v[metric]; if (!x) continue; if (m.ags) memberVal.push([m.key, m.ags, x.median, x.n]); else val.set(m.key, { v: x.median, n: x.n, sum: x.sum }); }
     const area = new Map<string, Area>();
     if (level === "district") {
       /* Nur Werte der Kreise selbst (Kreistag), sonst färbte ein einzelner Ort den ganzen Kreis */
-      for (const [k, x] of val) { const r = rowOf.get(k); if (r?.ags?.length === 5) area.set(r.ags, { v: x.v, name: r.name, key: r.key, n: x.n }); }
+      for (const [k, x] of val) { const r = rowOf.get(k); if (r?.ags?.length === 5) area.set(r.ags, { v: x.v, name: r.name, key: r.key, n: x.n, sum: x.sum }); }
     } else {
       for (const [k, x] of val) {
         const r = rowOf.get(k); if (!r) continue;
         const own = r.ags?.length === 8 ? [r.ags] : [];
-        for (const a of [...own, ...(r.members ?? []).filter((m) => m.length === 8)]) if (!area.has(a) || own.includes(a)) area.set(a, { v: x.v, name: r.name, key: r.key, n: x.n });
+        for (const a of [...own, ...(r.members ?? []).filter((m) => m.length === 8)]) if (!area.has(a) || own.includes(a)) area.set(a, { v: x.v, name: r.name, key: r.key, n: x.n, sum: x.sum });
       }
       for (const [k, a, v, cnt] of memberVal) { const r = rowOf.get(k); if (r && a.length === 8) area.set(a, { v, name: `${r.name}: Mitgliedsgemeinde`, key: r.key, n: cnt }); }
     }
@@ -76,7 +78,14 @@ export function FaktenPage() {
 
   const sel = picked ? byAgs.get(picked) : undefined;
   const chip = (on: boolean) => `h-7 whitespace-nowrap rounded-full px-3 text-[12px] font-medium ${on ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`;
-  const valueText = (x: Area) => `${num(x.v)} ${unit}${x.n > 1 ? ` (Median aus ${x.n} Vorgängen)` : ""}`;
+  const amount = fact?.dir === "amount";
+  const valueText = (x: Area) => amount ? `${num(x.sum ?? 0)} Wohneinheiten in ${x.n} ${x.n === 1 ? "Vorgang" : "Vorgängen"}, ${num(x.v)} ${unit}` : `${num(x.v)} ${unit}${x.n > 1 ? ` (Median aus ${x.n} Vorgängen)` : ""}`;
+  /* Vorgänge hinter dem Wert eines Gebiets (Liste wie im Atlas, eingegrenzt auf das Gebiet) */
+  /* Liste unter der Karte (Klick in der Karte) oder in der Rangliste, nie beides */
+  const [listed, setListed] = useState(""), [listedIn, setListedIn] = useState<"map" | "list">("map");
+  const listedArea = listed ? [...byAgs.values()].find((x) => x.key === listed) : undefined;
+  const show = (key: string, where: "map" | "list") => { setListedIn(where); setListed(listed === key && listedIn === where ? "" : key); };
+  const listQuery = (() => { const p = new URLSearchParams(query); p.set("region", listed); return p.toString(); })();
   const [all, setAll] = useState(false);
   const shown = all ? ranked : ranked.slice(0, 10);
 
@@ -85,7 +94,7 @@ export function FaktenPage() {
       <PageBand>
         <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Fakten</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">plenara.X Fakten</h1>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Hebesätze, Gebühren, Jahresergebnisse und Preise aus den Vorlagen der Räte, je Gemeinde auf der Karte. Nur Werte, die in Stichproben zu mindestens 90 % stimmten.</p>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Hebesätze, Gebühren, Jahresergebnisse, Preise und geplante Wohneinheiten aus den Vorlagen der Räte, je Gemeinde auf der Karte, mit den Vorgängen dahinter. Nur Werte, die in Stichproben zu mindestens 90 % stimmten.</p>
       </PageBand>
 
       <nav aria-label="Fakt" className="print:hidden">
@@ -106,28 +115,34 @@ export function FaktenPage() {
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           <section className="mt-6">
             <RegionMap level={level} levels={levels} picked={picked} onPick={(a) => setPicked(picked === a ? "" : a)} legend={legend}
-              colors={fact.dir === "good" ? RED_GREEN : GREEN_RED}
-              note={`Viertel über alle Gebiete; ${fact.dir === "good" ? "grün: hoch" : "rot: hoch"}${level === "district" ? "; nur Werte der Kreise selbst" : ""}`}
+              colors={fact.dir === "good" ? RED_GREEN : fact.dir === "bad" ? GREEN_RED : undefined}
+              note={`Viertel über alle Gebiete${fact.dir === "good" ? "; grün: hoch" : fact.dir === "bad" ? "; rot: hoch" : ""}${level === "district" ? "; nur Werte der Kreise selbst" : ""}`}
               label={`Karte: ${fact.name}${metric ? ` „${metric}“` : ""} je ${level === "district" ? "Kreis" : "Gemeinde"}`}
-              info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{valueText(sel)}</span></>
+              info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{valueText(sel)}</span>
+                <br /><button type="button" onClick={() => show(sel.key, "map")} className="pointer-events-auto mt-1 text-[14px] font-medium text-teal-700 hover:underline">{listed === sel.key ? "Vorgänge ausblenden" : "Vorgänge zeigen →"}</button></>
                 : picked ? <span className="text-slate-500">Hier gibt es keinen Wert.</span> : undefined} />
             <div className="mt-3 flex flex-wrap items-center gap-2 text-[14px]" role="group" aria-label="Ebene der Karte">
               {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
               <span className="text-slate-500">{mid([...byAgs.values()].map((x) => x.v)) !== undefined && byAgs.size ? `Median ${num(mid([...byAgs.values()].map((x) => x.v)))} ${unit}, ${ranked.length.toLocaleString("de-DE")} Gebiete mit Wert` : "Keine Werte"}</span>
             </div>
+            {listedArea && listedIn === "map" && <div className="mt-4"><RadarDrill base="/api/x?list=1" query={listQuery} by={`fact:${fact.kind}`} value={metric} label={`${listedArea.name}: ${fact.name}${metric && metric !== "Wohneinheiten" ? ` „${metric}“` : ""}`} /></div>}
           </section>
 
           {ranked.length > 0 && <section className="mt-10">
             <h2 className="text-[22px] font-semibold">{fact.dir === "good" ? "Niedrigste Werte zuerst" : "Höchste Werte zuerst"}</h2>
+            <p className="mt-1 text-[14px] text-slate-500">Klick auf einen Ort zeigt die Vorgänge, aus denen der Wert stammt.</p>
             <ol className="m-0 mt-3 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">
-              {shown.map((x) => <li key={x.name} className="flex items-baseline justify-between gap-4 py-2 text-[14px]">
-                <span className="min-w-0 truncate">{x.name}</span>
-                <span className="shrink-0 tabular-nums text-slate-900">{num(x.v)} {unit}{x.n > 1 && <span className="text-slate-500"> · {x.n} Vorgänge</span>}</span>
+              {shown.map((x) => <li key={x.name}>
+                <button type="button" aria-expanded={listed === x.key && listedIn === "list"} onClick={() => show(x.key, "list")} className="flex w-full items-baseline justify-between gap-4 py-2 text-left text-[14px] hover:bg-slate-50">
+                  <span className="min-w-0 truncate text-teal-700">{x.name}</span>
+                  <span className="shrink-0 tabular-nums text-slate-900">{num(x.v)} {unit}{amount ? <span className="text-slate-500"> · {num(x.sum ?? 0)} WE</span> : x.n > 1 && <span className="text-slate-500"> · {x.n} Vorgänge</span>}</span>
+                </button>
+                {listed === x.key && listedIn === "list" && <div className="pb-3"><RadarDrill base="/api/x?list=1" query={listQuery} by={`fact:${fact.kind}`} value={metric} label={`${x.name}: ${fact.name}`} /></div>}
               </li>)}
             </ol>
             {ranked.length > 10 && <button type="button" onClick={() => setAll(!all)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{all ? "Weniger zeigen" : `Alle ${ranked.length.toLocaleString("de-DE")} zeigen`}</button>}
           </section>}
-          <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Je Gebiet der Median der genannten Werte aus den Vorlagen der Räte (beschlossen oder vorgeschlagen, keine Vergleichswerte). Farben: Viertel über alle Gebiete mit Wert. Eingrenzen nach Ort oder Begriff über die Suche.</p>
+          <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Je Gebiet der Median der genannten Werte aus den Vorlagen der Räte (beschlossen oder vorgeschlagen, keine Vergleichswerte); Wohneinheiten als Summe je 1.000 Einwohner. Farben: Viertel über alle Gebiete mit Wert. Eingrenzen nach Ort oder Begriff über die Suche.</p>
         </div>
       )}
     </main>

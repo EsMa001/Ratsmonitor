@@ -34,10 +34,11 @@ import {STAGES,SONST,stageName} from '../../shared/stage.mjs';
 import {labelName} from '../../shared/labels.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {where as placeOf} from './member-place.mjs';
+import {POPULATION} from '../../shared/catalog.mjs';
 import {peerGroup,wilson,quantile,classify,windowOf,NORM_RULE} from './peer-norms.mjs';
 
 export const X_BY=['region','month','theme','sub','stage','status'];
-export const X_FACTS=['faction','annual_result','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate','ee_power','land_price','plot_price','dog_tax','waste_fee','plan_area','wind_count','project','road','house_type'];
+export const X_FACTS=['faction','annual_result','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate','ee_power','land_price','plot_price','dog_tax','waste_fee','plan_area','wind_count','project','road','house_type','housing'];
 export const X_SUMS={housing:'Wohneinheiten'};
 /* Werte aus den Unterlagen im Atlas je Thema, mit Qualitätstor (Konzept 7: gezeigt ab 90 % gemessener Genauigkeit).
    Messung 13.10.2026 (docs/qualitaet/plenara-x/): Verfahrensschritt Bauleitplanung, Hebesätze, Fraktion nahe 100 %;
@@ -51,21 +52,21 @@ const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plan_area'],['plot_p
  bildung:[['kita_fee']]};
 /* plenara.X Fakten (view=fakten): Werte für die Karte, Farbe nach Richtung (hoch ist schlecht: rot, hoch ist gut: grün).
    Gezeigt nur ab 90 % gemessener Qualität (shared/rule-quality.json); die übrigen stehen bereit, bis sie das Ziel erreichen. */
-export const MAP_FACTS=[['hebesatz','bad',true],['fee_rate','bad',true],['annual_result','good',true],['land_price','bad',true],
+export const MAP_FACTS=[['hebesatz','bad',true],['housing','amount',false],['fee_rate','bad',true],['annual_result','good',true],['land_price','bad',true],
  ['kita_fee','bad',false],['dog_tax','bad',false],['plot_price','bad',false],['grant','good',false],['ee_power','good',false]];
-export const MAP_FACT_NAMES={hebesatz:'Hebesätze',fee_rate:'Wasser- und Abwassergebühren',annual_result:'Jahresergebnis',land_price:'Gewerbegrundstücke (€/m²)',
+export const MAP_FACT_NAMES={hebesatz:'Hebesätze',fee_rate:'Wasser- und Abwassergebühren',annual_result:'Jahresergebnis',land_price:'Gewerbegrundstücke (€/m²)',housing:'Geplante Wohneinheiten',
  kita_fee:'Kita-Gebühren',dog_tax:'Hundesteuer',plot_price:'Wohnbauplätze (€/m²)',grant:'Zuschüsse',ee_power:'Wind und Solar (MW)'};
 export const X_LIST_SIZE=50;
 /* Zahl hinter einem Wert (erstes Feld von detail) und ihre Einheit; Fakten ohne Eintrag sind nur Kategorien (Schritt, Fraktion).
    Gebührensätze tragen die Einheit im dritten Feld (m³ oder m²). Ein Zuschuss ohne Betrag hat keine Zahl. */
-const X_FACT_NUM={road:'€',plan_area:'ha',wind_count:'Anlagen',hebesatz:'%',fee_rate:'€/',annual_result:'€',ee_power:'MW',dog_tax:'€ im Jahr',land_price:'€/m²',plot_price:'€/m²',grant:'€',kita_fee:'€ im Monat'};
+const X_FACT_NUM={road:'€',plan_area:'ha',wind_count:'Anlagen',hebesatz:'%',fee_rate:'€/',annual_result:'€',ee_power:'MW',dog_tax:'€ im Jahr',land_price:'€/m²',plot_price:'€/m²',grant:'€',kita_fee:'€ im Monat',housing:'Wohneinheiten'};
 const factNum=(kind,detail)=>{if(!X_FACT_NUM[kind])return null;const parts=String(detail??'').split('|'),v=Number(parts[0]);
  return parts[0]!==''&&Number.isFinite(v)&&!(kind==='grant'&&v===0)?{v,unit:kind==='fee_rate'?'€/'+(parts[2]||'m³'):X_FACT_NUM[kind]}:null;};
 const fmtNum=(v,unit)=>`${v.toLocaleString('de-DE',{maximumFractionDigits:Math.abs(v)>=100?0:2})} ${unit}`;
 const median=vs=>{const s=[...vs].sort((a,b)=>a-b),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
 const THEME_IDS=new Set([...THEMES.map(t=>t.id),'unklar']),SUB_BY_ID=new Map(SUBTOPICS.map(s=>[s.id,s]));
 const STAGE_IDS=new Set([...STAGES.map(s=>s.id),SONST]);
-const OWN=['theme','sub','stage','by','list','value','offset','view','sum'];
+const OWN=['theme','sub','stage','by','list','value','offset','view','sum','region'];
 
 /** Parameter prüfen: Filter der Suche plus Auswahl und Gliederung */
 export function parseX(params){
@@ -81,7 +82,7 @@ export function parseX(params){
  if(!X_BY.includes(by)&&!X_FACTS.includes(fact))throw new AnalyticsError('Unbekannte Gliederung.');
  const sum=params.get('sum')||'';if(sum&&!X_SUMS[sum])throw new AnalyticsError('Unbekannte Summe.');
  const offset=Math.max(0,Number(params.get('offset'))||0);
- return {f,theme:sub?SUB_BY_ID.get(sub).theme:theme,sub,stage,by,fact,sum,list:params.get('list')==='1',value:params.get('value')??'',offset};
+ return {f,theme:sub?SUB_BY_ID.get(sub).theme:theme,sub,stage,by,fact,sum,region:params.get('region')||'',list:params.get('list')==='1',value:params.get('value')??'',offset};
 }
 
 /* Gezählt wird in x_cases (eine Zeile je Sachvorgang, Migration 0036, gebaut von x-cases.mjs); stage '' = noch nicht gelesen */
@@ -113,6 +114,8 @@ function selection(x){
  if(x.theme){where.push('x.label=?');args.push(x.theme);}
  if(x.sub){where.push("(','||x.subs||',') LIKE ?");args.push('%,'+x.sub+',%');}
  if(x.stage){where.push('x.stage=?');args.push(x.stage);}
+ /* Ein Gebiet (Schlüssel des Katalogs), etwa für die Vorgänge hinter einem Wert in plenara.X Fakten */
+ if(x.region){where.push('x.region_id=?');args.push(x.region);}
  return {where,args};
 }
 const nameOf=(by,key,byId)=>by==='region'?byId.get(key)?.name||key:by==='theme'?labelName(key):by==='sub'?subtopicName(key):by==='stage'?stageName(key||SONST):key;
@@ -200,8 +203,18 @@ async function xAtlas(db,catalog,params,x,opts,state){
 async function xFakten(db,catalog,params,x,state){
  const src=await source(db,catalog,x.f),kinds=MAP_FACTS.filter(([,,on])=>on);
  const p=new URLSearchParams(params);p.delete('view');p.set('by','region');
- const [regions,maps]=await Promise.all([xQuery(db,catalog,p,{src}),factMaps(db,catalog,src,x,kinds.map(([k])=>k))]);
+ const [regions,maps,we]=await Promise.all([xQuery(db,catalog,p,{src}),factMaps(db,catalog,src,x,kinds.map(([k])=>k).filter(k=>k!=='housing')),
+  kinds.some(([k])=>k==='housing')?housingMap(db,src,x):[]]);
+ if(we.length)maps.set('housing',we);
  return {builtAt:state.builtAt,regions:regions.rows,facts:kinds.map(([kind,dir])=>({kind,dir,name:MAP_FACT_NAMES[kind],map:maps.get(kind)||[]})).filter(f=>f.map.length)};
+}
+
+/** Wohneinheiten je Gebiet: Summe der geplanten Wohneinheiten (je Vorgang der größte Wert; dieselbe Zahl in mehreren Schritten eines Plans zählt einmal), je 1.000 Einwohner; ohne Einwohnerzahl
+    kein Eintrag (sonst lägen große Städte immer vorn) */
+async function housingMap(db,src,x){
+ const sel=selection(x);
+ const {results}=await db.prepare(`SELECT x.region_id g,count(*) n,sum(DISTINCT sv.v) s FROM ${src.from} ${SUM_JOIN} WHERE ${sel.where.join(' AND ')} GROUP BY x.region_id`).bind(...src.args,'housing',...sel.args).all();
+ return results.filter(r=>POPULATION[r.g]).map(r=>({key:r.g,n:r.n,v:{Wohneinheiten:{n:r.n,median:Math.round(10000*r.s/POPULATION[r.g])/10,unit:'je 1.000 Einwohner',sum:r.s}}}));
 }
 
 /** Karte der Werte: je Fakt und Gebiet die Zahl der Vorgänge mit Wert (n) und je Wert mit Zahl der Median (v: Wert → {n, median, unit}).
