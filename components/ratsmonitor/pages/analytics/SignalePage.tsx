@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Factory, FileSignature, Flame, House, Bus, School, ShoppingCart, Stethoscope, Sun, Wind, type LucideIcon } from "lucide-react";
+import { Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
@@ -21,12 +21,12 @@ interface Result { signals: Signal[]; signal: { id: string; name: string; who: s
 
 /* Signale und Zeiträume in derselben Reihenfolge wie im Backend; die Zahlen kommen mit der Antwort */
 const SIGNALE: [string, string][] = [
-  ["vergaben", "Ausschreibungen und Vergaben"], ["wohnbau", "Neue Wohnbaugebiete"], ["gewerbe", "Gewerbe und Industrie"], ["wind", "Windenergie"],
-  ["solar", "Solarenergie"], ["waerme", "Wärme und Effizienz"], ["schulen", "Schulen, Kitas, Sport"], ["pflege", "Pflege und Gesundheit"],
-  ["handel", "Einzelhandel"], ["mobil", "Mobilität"],
+  ["vergaben", "Ausschreibungen und Vergaben"], ["wohnbau", "Neue Wohnbaugebiete"], ["gewerbe", "Gewerbe, Industrie, Handel"], ["wind", "Windenergie"],
+  ["solar", "Solarenergie"], ["waerme", "Wärme und Netze"], ["schulen", "Schulen, Kitas, Sport"], ["strasse", "Straßen und Brücken"],
+  ["wasser", "Wasser und Hochwasser"], ["breitband", "Breitband und Mobilfunk"], ["mobil", "Mobilität"],
 ];
 /* Symbol je Kategorie (Reihenfolge wie SIGNALE) */
-const ICONS: Record<string, LucideIcon> = { vergaben: FileSignature, wohnbau: House, gewerbe: Factory, wind: Wind, solar: Sun, waerme: Flame, schulen: School, pflege: Stethoscope, handel: ShoppingCart, mobil: Bus };
+const ICONS: Record<string, LucideIcon> = { vergaben: FileSignature, wohnbau: House, gewerbe: Factory, wind: Wind, solar: Sun, waerme: Flame, schulen: School, strasse: Route, wasser: Droplets, breitband: RadioTower, mobil: Bus };
 const SIGNAL_IDS = new Set(SIGNALE.map(([id]) => id));
 const ZEITRAUM: [string, string][] = [["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], ["alle", "Alles"]];
 const n = (v: number) => v.toLocaleString("de-DE");

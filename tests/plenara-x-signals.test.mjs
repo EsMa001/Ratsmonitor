@@ -32,7 +32,7 @@ const q=s=>new URLSearchParams(s+'&to=2026-12-31');
 test('Signale: Zahl je Signal, Stand aus dem Plan, Kennzahlen',async()=>{
  const {sql,db}=fixture();try{
   const r=await xSignals(db,catalog,q('signal=wohnbau'));
-  assert.deepEqual(Object.fromEntries(r.signals.map(s=>[s.id,s.count])),{vergaben:0,wohnbau:1,gewerbe:1,wind:1,solar:0,waerme:0,schulen:0,pflege:0,handel:0,mobil:1});
+  assert.deepEqual(Object.fromEntries(r.signals.map(s=>[s.id,s.count])),{vergaben:0,wohnbau:1,gewerbe:1,wind:1,solar:0,waerme:0,schulen:0,strasse:0,wasser:0,breitband:0,mobil:1});
   assert.equal(r.total,1);assert.equal(r.items[0].phase,'Satzungsbeschluss');assert.equal(r.items[0].region,'Billerbeck');
   assert.deepEqual(r.items[0].facts.map(f=>f.text),['6,4 ha','40 Wohneinheiten']);
   const w=await xSignals(db,catalog,q('signal=wind'));

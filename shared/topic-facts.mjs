@@ -172,6 +172,7 @@ const SOLAR=[
 export function solarOf(title){const t=String(title||'');if(!/Photovoltaik|Fotovoltaik|Solar|\bPV\b|PV-|Agri[-\s]?PV|Batteriespeicher|Stromspeicher|Energiespeicher|\bBESS\b/i.test(t)||/Solarium|Solarkataster|Bericht|Sachstand|Balkon|Mitgliedschaft|Verband|Baugenehmigung|Bauvorhaben|Befreiung|denkmalschutzrechtliche Erlaubnis|Solarfreibad|Kategorisierung der Dachfläche|Einfamilien|Wohnhaus|Bauort|Fl\.?\s?-?Nr|Flst|Abweichung|Zuschussantrag|e\.\s?V\.|Bündnis|Genehmigungsfreistellung/i.test(t)||SIG_NOT.test(t))return null;return firstOf(SOLAR,t);}
 /* 6 Wärme und Energieeffizienz (Wärmeplanung kommt aus heat_plan) */
 const ENERGY=[
+ ['Konzessionen',/Konzessionsvertr|Konzessionsvergabe|Konzessionsverfahren|Wegenutzungsvertr|(?:Strom|Gas|Wasser)konzession/i],
  ['Wärmenetz und Fernwärme',/Wärmenetz|Nahwärme|Fernwärme|Wärmeverbund|Heizzentrale|Wärmeversorgung|Biomasseheiz|Heizwerk/i],
  ['Heizungstausch',/Heizinstallation|Wärmetauscher|Heizung(?!sbau)|Heizverteilung|Heizhaus|Heiztechnik|Wärmeerzeugung|heizungstechnisch|Wärmepumpe|Heizanlage|Kesselanlage|Pelletheiz|Hackschnitzelheiz|Gasheizung|Ölheizung/i],
  ['LED-Straßenbeleuchtung',/\bLED\b|(?:Straßen)?[Bb]eleuchtung[^]{0,60}(?:Umrüst|Austausch|Modernis|Erneuerung|energieeffizient|stromsparend)|(?:Umrüst|Austausch|Modernis|Erneuerung)[^]{0,60}[Bb]eleuchtung/],
@@ -196,8 +197,41 @@ const SCHOOLS=[
  ['Weiterführende Schule',/Gymnasium|Realschule|Gesamtschule|Oberschule|Mittelschule|Sekundarschule|Gemeinschaftsschule|Hauptschule|Berufsschule|Berufskolleg|Förderschule|Stadtteilschule|Schulzentrum|Schule/i],
  ['Sporthalle und Sportplatz',/Sporthalle|Turnhalle|Mehrzweckhalle|Dreifeld|Sportplatz|Kunstrasen|Sportanlage|Stadion|Leichtathletik/i],
  ['Schwimmbad',/Schwimmbad|Hallenbad|Freibad|Lehrschwimm|Kombibad|Naturbad/i],
+ ['Spielplatz',/Spielplatz|Spielgerät|Skatepark|Pumptrack|Bolzplatz|Mehrgenerationenpark/i],
 ];
 export function schoolBuildOf(title){const t=String(title||'');if(!SCHOOL_BUILD.test(t)||SIG_NOT.test(t)||/Bericht|Sachstand|Satzung|Gebühr|Entgelt|Beitr[aä]g|Speisung|Verpflegung|Reinigung|Betreuungszeit|Genehmigung zur Errichtung|Schulart/i.test(t))return null;return /Grundschule/i.test(t)?'Grundschule':firstOf(SCHOOLS,t);}
+/* Signale Straßen (8), Wasser (9), Breitband (11): Art und Stand des Vorhabens aus dem Titel; detail = Stand */
+const PROJECT_STEPS=[
+ ['Abschluss',/Abnahme|Fertigstellung|Schlussrechnung|Abrechnung|Widmung|Inbetriebnahme|Einweihung|Verkehrsfreigabe/i],
+ ['Vergabe',/Vergabe|Auftrag|Ausschreibung|Submission|Zuschlag|Beauftragung/i],
+ ['Bau',/Baubeginn|Bauzeit|Bauarbeiten|Vollsperrung|Sperrung|Umleitung|Bauablauf|Nachtrag|Baufortschritt|Baustelle/i],
+ ['Beschluss und Förderung',/Baubeschluss|Ausführungsbeschluss|Maßnahmenbeschluss|Grundsatzbeschluss|Durchführungsbeschluss|Förder|Zuwendung|Finanzierung|Bauprogramm/i],
+ ['Planung',/Planung|Entwurf|Vorplanung|Konzept|Machbarkeit|Variante|Studie|Untersuchung|Gutachten|Vorstellung|Bürgerbeteiligung/i],
+];
+const projectStep=t=>firstOf(PROJECT_STEPS,t)||'Sonstiges';
+const PROJECT_NOT=/Gebühr|Satzung|Abgabe|Beitr[aä]g|Kalkulation|Wirtschaftsplan|Jahresabschluss|Entgelt|Sachstandsbericht|Bauantrag|Bauvoranfrage|Baugesuch|Befreiung|Straßenname|Benennung|Umbenennung|Winterdienst|Reinigung|Kehr/i;
+const STREETS=[
+ ['Radweg',/Radweg|Radverkehrsanlage|Fahrradstraße|Radschnellweg|Radverkehrsverbindung/i],
+ ['Gehweg und Barrierefreiheit',/Gehweg|Bürgersteig|Fußweg|Bushaltestelle|barrierefrei/i],
+ ['Ortsdurchfahrt und Kreisverkehr',/Ortsdurchfahrt|Kreisverkehr|Kreuzung|Knotenpunkt|Lichtsignal|Ampel/i],
+ ['Brücke',/Brücke(?!nau)|Brücken(?!au)|Steg\b|Unterführung|Überführung/i],
+ ['Straßenausbau und -sanierung',/Verbreiterung|Neugestaltung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Deckenerneuerung|Deckensanierung|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung/i],
+];
+const STREET_WORK=/Fahrradstraße|Qualitätsstandard|Verbreiterung|Neugestaltung|Überführung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Decke|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung|Herstellung|Errichtung|Planung|Bau\b|Brücke|Radweg|Gehweg|Kreisverkehr|Ortsdurchfahrt|Unterführung/i;
+export function streetSignalOf(title){const t=String(title||'');if(!ROAD_TITLE.test(t)||!STREET_WORK.test(t)||NOT_ROAD.test(t)||PROJECT_NOT.test(t)||SIG_NOT.test(t)||/Baugenehmigung|Wohnanlage|Pflegeheim|Pflanzung|Spielplatz|Quartierssanierung|Geschwindigkeit|Tempo/i.test(t))return null;const a=firstOf(STREETS,t);return a?{value:a,step:projectStep(t)}:null;}
+const WATERS=[
+ ['Hochwasser und Starkregen',/Hochwasser|Starkregen|Deich|Retention|Rückhaltebecken|Regenrückhalt|Flutmulde|Gewässerausbau|Renaturierung/i],
+ ['Kläranlage',/Kläranlage|Klärwerk|Abwasserbehandlung|Faulturm|Belebungsbecken/i],
+ ['Kanal und Abwasser',/Kanal|Abwasser|Schmutzwasser|Mischwasser|Regenwasser|Entwässerung|Pumpwerk|Pumpstation|Regenüberlauf/i],
+ ['Trinkwasser',/Trinkwasser|Wasserversorgung|Wasserleitung|Hochbehälter|Wasserwerk|Tiefbrunnen|Brunnenanlage|Wasserturm|Löschwasser/i],
+];
+const WATER_WORK=/Neustrukturierung|Rückhaltebecken|Neubau|Erweiterung|Sanierung|Erneuerung|Ausbau|Bau\b|Errichtung|Planung|Konzept|Maßnahme|Ertüchtigung|Umbau|Vergabe|Herstellung|Studie|Machbarkeit|Förder|Verlegung|Instandsetzung|Modernisierung|Auftrag/i;
+export function waterSignalOf(title){const t=String(title||'');if(!WATER_WORK.test(t)||PROJECT_NOT.test(t)||SIG_NOT.test(t)||/Sondervermögen|Gewässerunterhaltung|Wasserverband.*Wahl|Wirtschaftsprüf|Transporter|Mietangelegenheit|Brunnenstraße|Abbruch/i.test(t))return null;const a=firstOf(WATERS,t);return a?{value:a,step:projectStep(t)}:null;}
+const BROADBANDS=[
+ ['Mobilfunk',/Mobilfunk|Funkmast|Sendemast|\b5G\b|Funkturm/i],
+ ['Glasfaser und Breitband',/Glasfaser|Breitband|Gigabit|\bFTT[HB]\b|Leerrohr/i],
+];
+export function broadbandSignalOf(title){const t=String(title||'');if(/Gebühr|Satzung|Wirtschaftsplan|Jahresabschluss|Beteiligungsbericht|Wärme|Bauantrag/i.test(t)||SIG_NOT.test(t))return null;const a=firstOf(BROADBANDS,t);return a?{value:a,step:projectStep(t)}:null;}
 /* 8 Pflege und Gesundheit */
 const CARE=[
  ['Pflegeheim',/Pflegeheim|Pflegeeinrichtung|Pflegezentrum|Altenheim|Altenpflegeheim|Seniorenheim|Seniorenzentrum|Pflege-?WG|(?<!Kinder)(?<!Kinder-)Tagespflege|Kurzzeitpflege/i],
@@ -751,6 +785,7 @@ export function factsOf(title,text){
  const tender=tenderOf(title);if(tender)rows.push({kind:'tender',value:tender.value,detail:tender.step});
  // plenara.X Signale 4 bis 9: Filterwert aus dem Titel (Fakten wind_step, solar, energy, school_build, care, retail)
  for(const [kind,fn] of [['wind_step',windStepOf],['area_dev',areaDevOf],['solar',solarOf],['energy',energyOf],['school_build',schoolBuildOf],['care',careOf],['retail',retailOf]]){const v=fn(title);if(v)rows.push({kind,value:v,detail:''});}
+ for(const [kind,fn] of [['street',streetSignalOf],['water',waterSignalOf],['broadband',broadbandSignalOf]]){const v=fn(title);if(v)rows.push({kind,value:v.value,detail:v.step});}
  const road=roadWorkOf(title,text);if(road)rows.push({kind:'road',value:road.value,detail:road.euro});
  const wind=windCountOf(title,text);if(wind)rows.push({kind:'wind_count',value:wind===1?'1 Anlage':wind<=4?'2 bis 4 Anlagen':wind<=9?'5 bis 9 Anlagen':'10 und mehr Anlagen',detail:String(wind)});
  const heat=heatPlanOf(title,text);if(heat)rows.push({kind:'heat_plan',value:heat,detail:''});

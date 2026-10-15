@@ -18,7 +18,8 @@ const F=`SELECT DISTINCT rr.case_key ck FROM topic_facts f JOIN report_rules rr 
 const A=(kind,{value='f.value',where=''}={})=>`SELECT rr.case_key ck,${value} a FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind='${kind}'${where?' AND '+where:''}`;
 /* Stand je Vorgang: Schritt eines Fakts (Wert oder Detail) oder „Was geschieht“ */
 const P=(kind,col='value')=>`(SELECT f.${col} FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE rr.case_key=x.case_key AND +f.kind='${kind}' LIMIT 1)`;
-const GEWERBE="('Gewerbe','Industrie','Logistik','Rechenzentrum','Batteriespeicher und Wasserstoff','Hotel, Camping und Freizeit')";
+const GEWERBE="('Gewerbe','Industrie','Logistik','Rechenzentrum','Batteriespeicher und Wasserstoff','Hotel, Camping und Freizeit','Einzelhandel')";
+const SHOPS="('Supermarkt und Discounter','Drogerie','Fachmarkt')";
 /* Die 10 Kategorien von docs/produkt/plenara-x-signale.md, in dieser Reihenfolge. phase: Stand (plan, heat_plan, tender-Detail oder stage). */
 export const SIGNALS=[
  {id:'vergaben',name:'Ausschreibungen und Vergaben',who:'Bauindustrie, Ingenieurbüros, Lieferanten, IT',
@@ -26,21 +27,23 @@ export const SIGNALS=[
  {id:'wohnbau',name:'Neue Wohnbaugebiete',who:'Fertighaus, Bauträger, Makler, Banken',
   cases:`${F} (f.kind='plan_use' AND f.value IN ('Wohnen','Mischgebiet')) OR f.kind='plot_price' OR (f.kind='area_dev' AND f.value='Wohnen')`,
   art:A('wohnbau_art'),artName:'Vorhaben',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.',show:['house_type','plan_area','housing','plot_price']},
- {id:'gewerbe',name:'Gewerbe- und Industrieflächen',who:'Projektentwicklung, Logistik, Handel, Wirtschaftsförderung',
-  cases:`${F} (f.kind='plan_use' AND f.value IN ${GEWERBE}) OR f.kind='land_price' OR (f.kind='area_dev' AND f.value IN ('Gewerbe','Industrie'))`,
-  art:`${A('plan_use',{where:'f.value IN '+GEWERBE})} UNION ALL ${A('area_dev',{where:"f.value IN ('Gewerbe','Industrie')"})} UNION ALL ${A('land_price',{value:"'Grundstücksverkauf'"})}`,artName:'Nutzung',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.',show:['plan_use','plan_area','land_price']},
+ {id:'gewerbe',name:'Gewerbe, Industrie und Handel',who:'Projektentwicklung, Logistik, Handel, Wirtschaftsförderung',
+  cases:`${F} (f.kind='plan_use' AND f.value IN ${GEWERBE}) OR f.kind='land_price' OR (f.kind='area_dev' AND f.value IN ('Gewerbe','Industrie')) OR (f.kind='retail' AND f.value IN ${SHOPS})`,
+  art:`${A('plan_use',{where:'f.value IN '+GEWERBE})} UNION ALL ${A('area_dev',{where:"f.value IN ('Gewerbe','Industrie')"})} UNION ALL ${A('retail',{value:"CASE f.value WHEN 'Supermarkt und Discounter' THEN 'Nahversorgung' ELSE 'Einzelhandel' END",where:'f.value IN '+SHOPS})} UNION ALL ${A('land_price',{value:"'Grundstücksverkauf'"})}`,artName:'Nutzung',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.',show:['plan_use','plan_area','land_price']},
  {id:'wind',name:'Windenergie',who:'Projektierer, Stadtwerke, Netzbetreiber, Bürgerenergie',
   cases:`${F} f.kind IN ('wind_step','wind_count') OR (f.kind='ee_power' AND f.value='Wind')`,art:A('wind_step'),artName:'Verfahren',phase:`(SELECT CASE f.value WHEN 'Bauleitplanung' THEN 'Planung' WHEN 'Regionalplanung' THEN 'Planung' WHEN 'Genehmigungsantrag (BImSchG)' THEN 'Genehmigung' WHEN 'Einvernehmen' THEN 'Genehmigung' WHEN 'Bürger- und Kommunalbeteiligung' THEN 'Beteiligung und Betrieb' ELSE 'Sonstiges' END FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE rr.case_key=x.case_key AND +f.kind='wind_step' LIMIT 1)`,phaseText:'Planung (Regional- und Bauleitplanung), Genehmigung (BImSchG, Einvernehmen) oder Beteiligung und Betrieb, aus dem Titel.',show:['wind_count','ee_power','plan_area']},
  {id:'solar',name:'Solarenergie',who:'Projektierer, Landwirtschaft, Netzbetreiber, Handwerk',
   cases:`${F} f.kind='solar' OR (f.kind='ee_power' AND f.value='Photovoltaik')`,art:A('solar'),artName:'Art',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.',show:['ee_power','plan_area']},
- {id:'waerme',name:'Wärme und Energieeffizienz',who:'Stadtwerke, Energieberatung, Heizungsbranche, Contracting',
+ {id:'waerme',name:'Wärme, Energieeffizienz und Netze',who:'Stadtwerke, Energieberatung, Heizungsbranche, Contracting',
   cases:`${F} f.kind IN ('heat_plan','energy')`,art:`${A('heat_plan',{value:"'Wärmeplanung'"})} UNION ALL ${A('energy')}`,artName:'Art',phase:`coalesce(${P('heat_plan')},'Maßnahme')`,phaseText:'Schritt der Wärmeplanung; Wärmenetze, Heizung, LED und Sanierung als Maßnahme.',show:['heat_plan']},
  {id:'schulen',name:'Schulen, Kitas und Sportstätten',who:'Bau, Modulbau, Ausstattung, Bäderbau',
   cases:`${F} f.kind='school_build'`,art:A('school_build'),artName:'Einrichtung',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.',show:[]},
- {id:'pflege',name:'Pflege und Gesundheit',who:'Pflegebetreiber, Projektentwicklung, Gesundheitswirtschaft',
-  cases:`${F} f.kind='care'`,art:A('care'),artName:'Einrichtung',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.',show:[]},
- {id:'handel',name:'Einzelhandel und Nahversorgung',who:'Handelsketten, Expansion, Makler',
-  cases:`${F} f.kind='retail'`,art:A('retail'),artName:'Art',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.',show:[]},
+ {id:'strasse',name:'Straßen, Brücken und Radwege',who:'Tiefbau, Ingenieurbüros, Verkehrsplanung',
+  cases:`${F} f.kind='street'`,art:A('street'),artName:'Vorhaben',phase:P('street','detail'),phaseText:'Planung, Beschluss und Förderung, Vergabe, Bau oder Abschluss, aus dem Titel.',show:['road']},
+ {id:'wasser',name:'Wasser, Abwasser und Hochwasserschutz',who:'Ingenieurbüros, Tiefbau, Anlagenbau',
+  cases:`${F} f.kind='water'`,art:A('water'),artName:'Vorhaben',phase:P('water','detail'),phaseText:'Planung, Beschluss und Förderung, Vergabe, Bau oder Abschluss, aus dem Titel.',show:[]},
+ {id:'breitband',name:'Breitband und Mobilfunk',who:'Telekommunikation, Tiefbau, Netzbetreiber',
+  cases:`${F} f.kind='broadband'`,art:A('broadband'),artName:'Vorhaben',phase:P('broadband','detail'),phaseText:'Planung, Beschluss und Förderung, Vergabe, Bau oder Abschluss, aus dem Titel.',show:[]},
  {id:'mobil',name:'Mobilität',who:'Mobilitätsanbieter, Ladeinfrastruktur, ÖPNV',
   cases:`${F} f.kind='project' AND f.value<>'Öffentliches WLAN'`,art:A('project',{where:"f.value<>'Öffentliches WLAN'"}),artName:'Angebot',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.',show:[]},
 ];
