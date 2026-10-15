@@ -66,3 +66,10 @@ Richtig = gehört zur Kategorie und der Filter stimmt. Eingetragen in `rule-qual
 ## Wohnbau optimiert (15.10.2026)
 
 Neue Art „Vorhaben“ aus dem Titel (`wohnbau_art`: Neues Baugebiet, Erweiterung, Änderung, Erschließung, Bauplatzverkauf); Nutzung Wohnen auch aus dem Anfang der Vorlage, wenn Wohnwörter klar überwiegen; ausgeschlossen Einzelgrundstücke, Handwerkerplätze, Ferienwohnungen, Straßenbenennung. Server ungesehen: Lauf 1 (Seed 3131) Kategorie 27/30, Art 24/27, Trefferquote ca. 7/9; nach Korrektur Lauf 2 (Seed 4747) Kategorie 29/30, Art 27/29. Die Trefferquote bleibt unsicher: viele Bebauungspläne nennen die Nutzung nur im Text, am Titel nicht prüfbar.
+
+## Messung 7–10 (15.10.2026, Server, ungesehen)
+
+- Schulen, Kitas und Sportstätten: Kategorie 28/30, Art 27/28, Trefferquote 5/5 (Seed 5858).
+- Pflege und Gesundheit: 16/30 (Kindertagespflege, Rettungswachen, Wahlen), nach Korrektur 20/30 (Seed 6969; Busse, Gremienwechsel, Catering); danach nur noch Vorhaben, Planung und Standortfragen, nicht neu gemessen.
+- Einzelhandel und Nahversorgung: 15/30 (jede „Innenstadt“), nach Korrektur 26/30, Art 24/26, Trefferquote 8/9.
+- Mobilität: Kategorie 29/30, Art 29/29, Trefferquote 19/20.

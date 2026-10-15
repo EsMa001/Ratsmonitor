@@ -197,23 +197,26 @@ const SCHOOLS=[
  ['Sporthalle und Sportplatz',/Sporthalle|Turnhalle|Mehrzweckhalle|Dreifeld|Sportplatz|Kunstrasen|Sportanlage|Stadion|Leichtathletik/i],
  ['Schwimmbad',/Schwimmbad|Hallenbad|Freibad|Lehrschwimm|Kombibad|Naturbad/i],
 ];
-export function schoolBuildOf(title){const t=String(title||'');if(!SCHOOL_BUILD.test(t)||SIG_NOT.test(t)||/Bericht|Sachstand|Satzung|Gebühr|Entgelt|Beitr[aä]g|Speisung|Verpflegung|Reinigung/i.test(t))return null;return firstOf(SCHOOLS,t);}
+export function schoolBuildOf(title){const t=String(title||'');if(!SCHOOL_BUILD.test(t)||SIG_NOT.test(t)||/Bericht|Sachstand|Satzung|Gebühr|Entgelt|Beitr[aä]g|Speisung|Verpflegung|Reinigung|Betreuungszeit|Genehmigung zur Errichtung|Schulart/i.test(t))return null;return /Grundschule/i.test(t)?'Grundschule':firstOf(SCHOOLS,t);}
 /* 8 Pflege und Gesundheit */
 const CARE=[
- ['Pflegeheim',/Pflegeheim|Pflegeeinrichtung|Pflegezentrum|Altenheim|Altenpflegeheim|Seniorenheim|Seniorenzentrum|Pflege-?WG|Tagespflege|Kurzzeitpflege/i],
+ ['Pflegeheim',/Pflegeheim|Pflegeeinrichtung|Pflegezentrum|Altenheim|Altenpflegeheim|Seniorenheim|Seniorenzentrum|Pflege-?WG|(?<!Kinder)(?<!Kinder-)Tagespflege|Kurzzeitpflege/i],
  ['Seniorenwohnen',/Seniorenwohn|Betreutes Wohnen|betreuten Wohnen|Servicewohnen|altersgerechte|barrierefreie Wohnungen/i],
  ['Ärztehaus und MVZ',/Ärztehaus|Ärztezentrum|\bMVZ\b|Medizinisches Versorgungszentrum|Gesundheitszentrum|Arztpraxis|Hausarzt|Landarzt|Primärversorgungszentrum|Apotheke/i],
- ['Krankenhaus',/Krankenhaus|Klinik|Klinikum|Hospital|Notaufnahme|Rettungswache/i],
+ ['Krankenhaus',/Krankenhaus|Klinikum|(?<![\p{L}])Klinik(?!weg)|Hospital|Notaufnahme/iu],
 ];
-export function careOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Grünpflege|Landschaftspflege|Pflegevertrag|Pflegearbeiten|Baumpflege|Denkmalpflege|Pflegeplan|Biotoppflege/i.test(t))return null;return firstOf(CARE,t);}
+export function careOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Grünpflege|Landschaftspflege|Pflegevertrag|Pflegearbeiten|Baumpflege|Denkmalpflege|Pflegeplan|Biotoppflege|Kindertages|Großtagespflege|Kita|Elternbeitr|Wahl|Bericht|Berichterstattung|Teddy|Rettungswache|Mietvertrag|Entlassmanagement|Delir|Fußweg|\be\.\s?V\.|Bus|Parken|Aufsichtsrat|Geschäftsführung|Catering|Stromliefer|Essen|Regionalplan|Tagespflegestelle|Hitzeschutz/i.test(t))return null;
+ // Signal für Bau und Betrieb: nur mit Vorhaben, Planung oder Standortfrage
+ if(!/Neubau|Errichtung|Erweiterung|Umbau|Ausbau|Sanierung|Bebauungsplan|Bauleitplan|Ansiedlung|Versorgungszentrum|Ärztehaus|MVZ|Standort|Nachfolge|Übernahme|Schließung|Bau\b|Gründung|Projekt|Konzept|Besichtigung|Grundstück/i.test(t))return null;
+ return firstOf(CARE,t);}
 /* 9 Einzelhandel und Nahversorgung */
 const RETAIL=[
  ['Supermarkt und Discounter',/Supermarkt|Lebensmittel(?:markt|discounter|vollsortimenter|einzelhandel)|Discounter|Vollsortimenter|Nahversorg|\b(?:Aldi|Lidl|Netto|Penny|Edeka|EDEKA|Rewe|REWE|Kaufland|Norma|Tegut|Globus)\b|Dorfladen/],
  ['Drogerie',/Drogerie|\bdm\b|Rossmann|Müller-Drogerie/],
  ['Fachmarkt',/Fachmarkt|Baumarkt|Gartenmarkt|Gartencenter|Möbelmarkt|Möbelhaus|Fachmarktzentrum|Elektronikmarkt|Sonderposten|Einkaufszentrum|Factory Outlet/i],
- ['Innenstadt und Leerstand',/Leerstand|Innenstadt|Einzelhandelskonzept|Zentrenkonzept|Einzelhandels- und Zentren|Ladenlokal|Citymanagement|Zentrale Versorgungsbereich|Einzelhandel/i],
+ ['Innenstadt und Leerstand',/(?<!Wohnungs)Leerstand(?!simmobilie)|Innenstadt[^]{0,60}(?:Handel|Geschäft|Belebung|Leerstand|Laden|Einkauf)|(?:Handel|Geschäft|Belebung|Laden|Einkauf)[^]{0,60}Innenstadt|Einzelhandelskonzept|Zentrenkonzept|Einzelhandels- und Zentren|Ladenlokal|Citymanagement|Zentrale Versorgungsbereich|Einzelhandel/i],
 ];
-export function retailOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Wochenmarkt|Weihnachtsmarkt|Flohmarkt|Marktplatz|Bauernmarkt|Ladenschluss|verkaufsoffen|Sonntagsöffnung/i.test(t))return null;return firstOf(RETAIL,t);}
+export function retailOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Wochenmarkt|Weihnachtsmarkt|Flohmarkt|Marktplatz|Bauernmarkt|Ladenschluss|verkaufsoffen|Sonntagsöffnung|Parken|Parkplätze|Lebensmittelausgabe|Statik/i.test(t))return null;return firstOf(RETAIL,t);}
 
 /* Ausschreibungen und Vergaben (plenara.X Signale, Kategorie 1, docs/produkt/plenara-x-signale.md): öffentliche Aufträge der Kommune,
    nur aus dem Titel. Je Vorgang genau ein Filter in fester Reihenfolge (IT vor Planung vor Fahrzeugen vor Wasser vor Tiefbau vor
