@@ -98,13 +98,16 @@ export async function xState(db){
 /* FROM-Teil: die Vorgänge unter den Filtern der Suche. Ohne Suchbegriff gelten die Filter (Gebiet, Thema, Status, Zeitraum)
    direkt für x_cases (dieselben Spaltennamen); mit Suchbegriff sucht die Suche selbst die Karten (mit Wortliste und Volltext),
    gezählt werden deren Vorgänge. „Ohne Formalien“ ist immer erfüllt. */
-export async function source(db,catalog,f){
+/* Spalten von x_cases, die jede Auswertung bekommt (ohne die langen Stationen) */
+const X_COLS='case_key,region_id,date,month,label,stage,subs,status,card_id,cards,unread,first_date,days,vote,changed';
+export async function source(db,catalog,f,opts={}){
  const {page}=await searchFilters(db,catalog,{...f,noformal:false,part:'x'});
- // rid: Zeilennummer in x_cases, für gleichmäßige Stichproben (Trends)
- if(!f.q)return {from:`(SELECT rowid rid,* FROM x_cases WHERE ${page.where}) x`,args:page.args};
+// Schmale Spalten; die langen Stationen (steps) nur, wer sie braucht (steps:true)
+ const cols=X_COLS+(opts.steps?',steps':'');
+ if(!f.q)return {from:`(SELECT ${cols} FROM x_cases WHERE ${page.where}) x`,args:page.args};
  // Die Suche einmal je Anfrage: Vorgänge der gefundenen Karten als Liste, alle Zählungen lesen nur noch sie
  const {results}=await db.prepare(`SELECT DISTINCT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k FROM (SELECT id,region_id,title FROM search_cards WHERE ${page.where}) c LEFT JOIN report_rules r ON r.topic_id=c.id`).bind(...page.args).all();
- return {from:'(SELECT rowid rid,* FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))) x',args:[JSON.stringify(results.map(r=>r.k))]};
+ return {from:`(SELECT ${cols} FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))) x`,args:[JSON.stringify(results.map(r=>r.k))]};
 }
 /** Erste Sitzung eines Vorgangs (x_cases.first_date, beim Bau aus dem Zeitstrahl, Migration 0040); ohne Bau die letzte */
 export const FIRST_DATE=`coalesce(nullif(x.first_date,''),x.date)`;

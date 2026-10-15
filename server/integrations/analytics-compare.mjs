@@ -68,13 +68,13 @@ export async function compare(db,catalog,params){
  const exclude=new Set(f.groups.flat());
  /* Vergleichsbasis: alle Gebiete (Gemeindeebene) mit denselben übrigen Filtern */
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const base=await cachedBase(db,await source(db,catalog,{...f,area:'',more:[],scope:'with',within:null,without:null}));
+ const base=await cachedBase(db,await source(db,catalog,{...f,area:'',more:[],scope:'with',within:null,without:null},{steps:true}));
  const bt=termStats(base.rows,exclude);
  const baseTopics=shares(base.rows,r=>REAL.includes(r.label)?r.label:null,REAL),baseStatus=shares(base.rows,r=>r.status,STATUSES);
  const out=[];
  for(const p of places){
   const pf={...f,area:p.ags,scope:p.scope,more:[],within:null,without:null};
-  const [{scopedIds,byId},src]=await Promise.all([searchFilters(db,catalog,{...pf,part:'x'}),source(db,catalog,pf)]);
+  const [{scopedIds,byId},src]=await Promise.all([searchFilters(db,catalog,{...pf,part:'x'}),source(db,catalog,pf,{steps:true})]);
   const s=await sample(db,src);
   const {results:monthRows}=await db.prepare(`SELECT x.month m,count(*) n FROM ${src.from} GROUP BY m ORDER BY m`).bind(...src.args).all();
   const regions=[...scopedIds].map(id=>byId.get(id)).filter(Boolean);
@@ -128,7 +128,7 @@ export async function compareList(db,catalog,params){
  if(!['all','label','committee','term'].includes(by)||by!=='all'&&!value)throw new AnalyticsError('Unbekannte Liste.',400);
  const {f,places}=parseCompare(params);
  const p=places.find(x=>x.ags===ags);if(!p)throw new AnalyticsError('Unbekannter Ort.',400);
- const src=await source(db,catalog,{...f,area:p.ags,scope:p.scope,more:[],within:null,without:null}),offset=offsetOf(params);
+ const src=await source(db,catalog,{...f,area:p.ags,scope:p.scope,more:[],within:null,without:null},{steps:true}),offset=offsetOf(params);
  const {results}=await db.prepare(`SELECT c.id,x.region_id region,x.label,c.title,c.gremium,x.date,x.status,x.case_key ck,x.steps FROM ${src.from} JOIN search_cards c ON c.id=x.card_id${by==='label'?' WHERE x.label=?':''} ORDER BY x.date DESC`).bind(...src.args,...(by==='label'?[value]:[])).all();
  const key=norm(value);
  let rows=results;

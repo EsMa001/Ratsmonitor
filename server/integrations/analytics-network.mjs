@@ -51,7 +51,7 @@ const median=a=>{if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);return
 /* Stationsfolgen je Vorgang: nach Datum (bei Gleichstand wie in der Quelle), gleiche Gremien hintereinander einmal */
 async function sequences(db,catalog,f){
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const src=await source(db,catalog,f),where='x.status IN '+STATUSES;
+ const src=await source(db,catalog,f,{steps:true}),where='x.status IN '+STATUSES;
  // Alle Vorgänge der Auswahl mit ihren Stationen (x_cases.steps, beim Bau ausgepackt), keine Stichprobe
  const {results:all}=await db.prepare(`SELECT x.card_id id,x.steps FROM ${src.from} WHERE ${where}`).bind(...src.args).all();
  const pool=all.length,k=1;
