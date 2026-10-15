@@ -83,7 +83,8 @@ async function computeDecisions(db,catalog,f){
  const byId=new Map(catalog.map(r=>[r.id,r])),lands=new Map();
  for(const r of perRegion){const reg=byId.get(r.region_id);if(!reg)continue;const id=reg.ags.slice(0,2);if(!lands.has(id))lands.set(id,blank());lands.get(id)[r.status]+=r.n;}
  /* Stichprobe beschlossener Vorgänge: Stationen aus topics.payload (nur die nötigen Felder) */
- const decidedCount=(await db.prepare(`${C.sql} SELECT count(*) n FROM cards WHERE status IN ('approved','rejected','postponed')`).bind(...C.args).first())?.n||0;
+ // Zahl für die Stichprobe aus dem Würfel (Vorgänge mit Entscheidung), ohne die Karten ein weiteres Mal zu lesen
+ const decidedCount=cube.filter(r=>DECIDED.includes(r.status)).reduce((a,r)=>a+r.n,0);
  const k=Math.max(1,Math.ceil(decidedCount/SAMPLE));
  const {results:events}=decidedCount?await db.prepare(`${C.sql} SELECT c.id id,c.label label,c.kind kind,c.status final,json_extract(e.value,'$.status') st,json_extract(e.value,'$.result') res,substr(json_extract(e.value,'$.date'),1,10) d FROM (SELECT id,label,status,kind FROM (SELECT id,label,status,${KIND_SQL} kind,row_number() OVER (ORDER BY id) rn FROM cards WHERE status IN ('approved','rejected','postponed'))${k>1?' WHERE rn % ? = 0':''}) c JOIN topics t ON t.id=c.id, json_each(t.payload,'$.events') e`).bind(...C.args,...(k>1?[k]:[])).all():{results:[]};
  const cards=new Map();
