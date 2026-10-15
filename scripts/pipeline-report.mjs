@@ -33,6 +33,24 @@ const sched=state('schedules')||{};
 const off=Object.entries(sched).filter(([,s])=>s?.enabled===false).map(([id])=>id);
 console.log(off.length?`aus: ${off.join(', ')}`:'alle Jobs an');
 
+/* Bestand: kleine Zählungen über Indizes, damit zwei Berichte (vorher, nachher) vergleichbar sind */
+head('Bestand (zum Vergleich vorher/nachher)');
+const boundary=(()=>{const d=new Date(Date.now()-7*86400000).toISOString().slice(0,10);return d>'2026-10-12'?d:'2026-10-12';})();
+const one=(sql,...p)=>{try{return Object.values(db.prepare(sql).get(...p)||{})[0];}catch(e){return 'Fehler: '+e.message;}};
+console.log(`Berichte: ${one('SELECT count(*) FROM topics')} gesamt, ${one('SELECT count(*) FROM topics WHERE active=1 AND updated_at>=?',since)} im Zeitraum geschrieben, ${one('SELECT count(*) FROM topics WHERE event_date>=?',boundary)} mit Sitzung ab ${boundary} (Tagesbereich)`);
+if(has('report_rules'))console.log(`Regeln gelesen: ${one('SELECT count(*) FROM report_rules')} gesamt, ${one('SELECT count(*) FROM report_rules WHERE read_at>=?',since)} im Zeitraum`);
+if(has('ai_work_items'))console.log('KI-Arbeitsstand:',db.prepare('SELECT state,count(*) n FROM ai_work_items GROUP BY 1').all().map(r=>`${r.state} ${r.n}`).join(', ')||'leer');
+if(has('data_revisions'))console.log('Datenstände:',db.prepare('SELECT id,revision FROM data_revisions ORDER BY id').all().map(r=>`${r.id} ${r.revision}`).join(', '));
+if(has('work_failures'))console.log('Fehlerspeicher:',db.prepare("SELECT origin,class,count(*) n FROM work_failures GROUP BY 1,2 ORDER BY 1,3 DESC").all().map(r=>`${r.origin}/${r.class} ${r.n}`).join(', '));
+const storeDir=(()=>{try{return fs.readFileSync('/srv/ratsmonitor/ratsmonitor.env','utf8').match(/^RM_PDF_STORE="?([^"\n]+)"?/m)?.[1];}catch{return process.env.RM_PDF_STORE;}})();
+if(storeDir&&fs.existsSync(storeDir+'/index.sqlite')){
+ const s=new DatabaseSync(storeDir+'/index.sqlite',{readOnly:true});s.exec('PRAGMA busy_timeout=20000');
+ try{
+  console.log('PDF-Ablage:',s.prepare("SELECT coalesce(role,'main') role,status,count(*) n FROM pdfs GROUP BY 1,2 ORDER BY 1,3 DESC").all().map(r=>`${r.role}/${r.status} ${r.n}`).join(', '));
+  console.log(`PDF-Ablage im Zeitraum geladen: ${s.prepare('SELECT count(*) n FROM pdfs WHERE fetched_at>=?').get(since).n}, Textfassungen: ${s.prepare('SELECT count(*) n FROM texts').get().n}`);
+ }catch(e){console.log('PDF-Ablage:',e.message);}finally{s.close();}
+}
+
 head('Laufbuch (schedule-log): Läufe je Job');
 const log=(state('schedule-log')||[]).filter(e=>e.start>=since);
 const byJob={};for(const e of log)(byJob[e.job]||=[]).push(e);
