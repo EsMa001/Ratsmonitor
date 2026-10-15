@@ -29,6 +29,15 @@ const glass = "rm-glass";
 const n = (v: number) => v.toLocaleString("de-DE");
 const pct = (v: number, total: number) => (total ? `${Math.max(1, Math.round((v / total) * 100))} %` : "–");
 
+/* Detailstufen: Begriffe, Themenfelder, Kanten je Knoten. Der Server liefert die Stufe „Detail“ (Knoten nach Rang),
+   kleinere Stufen sind ein Ausschnitt davon; Umschalten ohne neue Anfrage */
+type Level = "overview" | "normal" | "detail";
+const LEVELS: Record<Level, { label: string; terms: number; topics: number; per: number }> = {
+  overview: { label: "Überblick", terms: 12, topics: 4, per: 3 },
+  normal: { label: "Normal", terms: 22, topics: 6, per: 4 },
+  detail: { label: "Detail", terms: 45, topics: 8, per: 6 },
+};
+
 export function KnowledgeGraphPage() {
   const params = useSearchParams();
   const { query, search } = useAnalyticsQuery();
@@ -36,6 +45,7 @@ export function KnowledgeGraphPage() {
   const [showList, setShowList] = useState(false);
   const [selected, setSelected] = useState("");
   const [pair, setPair] = useState<GEdge | null>(null);
+  const [level, setLevel] = useState<Level>("normal");
   const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
 
@@ -74,6 +84,12 @@ export function KnowledgeGraphPage() {
       const c = { ...x, label: prettyTerm(x.label) };
       bySt.set(st, c); out.push(c);
     }
+    /* Detailstufe: die vorderen Begriffe (Rang aus der Antwort) und Themenfelder */
+    const L = LEVELS[level], rank = new Map(res.nodes.map((x, i) => [x.id, i]));
+    const terms = out.filter((x) => x.type === "term").sort((a, b) => rank.get(a.id)! - rank.get(b.id)!).slice(0, L.terms);
+    const topics = out.filter((x) => x.type === "topic").sort((a, b) => b.count - a.count).slice(0, L.topics);
+    const visible = new Set([...terms, ...topics].map((x) => x.id));
+    out.splice(0, out.length, ...out.filter((x) => x.type === "center" || visible.has(x.id)));
     const ids = new Set(out.map((x) => x.id)), em = new Map<string, GEdge>();
     for (const e of res.edges) {
       const a = idMap.get(e.a) ?? e.a, b = idMap.get(e.b) ?? e.b;
@@ -81,8 +97,15 @@ export function KnowledgeGraphPage() {
       const key = a < b ? a + "|" + b : b + "|" + a, old = em.get(key);
       if (old) { old.n = Math.min(res.total, old.n + e.n); old.w = Math.max(old.w, e.w); } else em.set(key, { ...e, a, b });
     }
-    return { nodes: out, edges: [...em.values()] };
-  }, [res]);
+    /* Je Knoten nur seine stärksten Kanten (Zahl je Stufe), damit das Bild lesbar bleibt; jeder Knoten hängt am Zentrum */
+    const per = new Map<string, number>(), kept: GEdge[] = [];
+    for (const e of [...em.values()].sort((a, b) => b.w - a.w)) {
+      if (e.center) { kept.push(e); continue; }
+      const ca = per.get(e.a) || 0, cb = per.get(e.b) || 0;
+      if (ca < L.per || cb < L.per) { kept.push(e); per.set(e.a, ca + 1); per.set(e.b, cb + 1); }
+    }
+    return { nodes: out, edges: kept };
+  }, [res, level]);
   const nodes = merged.nodes, edges = merged.edges;
   const byId = useMemo(() => new Map(nodes.map((x) => [x.id, x])), [nodes]);
   const sel = selected ? byId.get(selected) : undefined;
@@ -121,6 +144,11 @@ export function KnowledgeGraphPage() {
               <li key={t} className="flex items-center gap-2"><i className={`inline-block h-3 w-3 rounded-full ${t === "topic" ? "rm-gdot" : ""}`} style={{ background: KIND[t].fill, border: `2px solid ${KIND[t].stroke}` }} />{KIND[t].label}</li>
             ))}
           </ul>
+          <div role="group" aria-label="Detailstufe" className="mt-2 flex gap-1 border-t border-slate-200 pt-2">
+            {(Object.keys(LEVELS) as Level[]).map((l) => (
+              <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`rounded-full px-2 py-0.5 ${level === l ? "bg-teal-700 text-white" : "text-slate-700 hover:text-teal-700"}`}>{LEVELS[l].label}</button>
+            ))}
+          </div>
         </div>
 
         <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>

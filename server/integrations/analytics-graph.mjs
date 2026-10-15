@@ -15,9 +15,9 @@ import {listPage,offsetOf} from './analytics-lists.mjs';
  * Begriffe werden nach Häufigkeit in der Auswahl gegenüber der Häufigkeit im ganzen Bestand gewichtet (wie tf-idf), damit
  * nicht Füllwörter („Antrag“, „Sitzung“) das Bild bestimmen.
  */
-const TERMS=22,PER_KIND=6,MIN_DF=3;
-/* Gesamtgraph (ohne Begriff): mehr Knoten */
-const TERMS_ALL=40,PER_KIND_ALL=8;
+/* Detailstufe „Detail“: so viele Begriffe und Themen; die Seite blendet für „Überblick“ und „Normal“ die vorderen aus
+   (Reihenfolge der Knoten = Rang), Kanten je Knoten begrenzt sie ebenfalls selbst */
+const TERMS=45,PER_KIND=8,MIN_DF=3;
 /* Wörter des Sitzungsbetriebs, die über den ganzen Bestand ständig vorkommen und kein Thema sind (auch mit Begriff) */
 export const FORMAL_ALL=new Set('beschlussfähigkeit ordnungsgemäßen ordnungsgemäße ladung vorstellung öffentlicher öffentliche sachstand bürgermeisters bürgermeister begrüßung bestätigung wahl bestellung protokolls anwesenheit geschäftsordnung einladung fraktion fraktionen anregungen beschwerden verwaltung eröffnung feststellung genehmigung mitglieder mitglied beantwortung unterrichtung verpflichtung verabschiedung beschlussfassung ergänzung bekanntgabe entgegennahme sitzungsniederschrift gremium gremien ausschuss ausschusses rates gemeinderates stadtrates ortsgemeinderates verbandsgemeinde stadt gemeinde kreis ortsbeirat ortsbeirates niederschrift vorlage vorlagen beschluss beschlüsse bericht berichte aktuelle aktueller informationen information verschiedenes tagesordnungspunkte wortmeldungen einwohnerfragestunde einwohnerfrage teils letzten gefassten angelegenheiten sonstiges annahme nichtöffentlicher nichtöffentlichen sachstandsbericht ordnungsmäßigkeit änderungsanträge einwohner'.split(' ').map(w=>w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replaceAll('ß','ss')));
 /* Gremien eines Vorgangs aus seinen Stationen (x_cases.steps), ohne Platzhalter, je Gremium einmal */
@@ -40,7 +40,6 @@ export async function knowledgeGraph(db,catalog,params){
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
  const src=await source(db,catalog,f,{steps:true,terms:true,noPrivate:true});
  /* Alle Vorgänge der Auswahl, keine Stichprobe */
- const overall=!f.groups.length;
  const {results:rows}=await db.prepare(`SELECT x.region_id,x.label,x.steps,x.terms FROM ${src.from}`).bind(...src.args).all();
  const capped=false,limit=rows.length;
  const total=rows.length;
@@ -68,11 +67,11 @@ export async function knowledgeGraph(db,catalog,params){
   }catch{global=new Map();}
  }
  const idf=k=>global.size&&all?Math.log(1+all/Math.max(1,global.get(k)||df.get(k))):1;
- const chosen=cand.map(([k,n])=>({k,n,score:n*idf(k)})).sort((a,b)=>b.score-a.score).slice(0,overall?TERMS_ALL:TERMS);
+ const chosen=cand.map(([k,n])=>({k,n,score:n*idf(k)})).sort((a,b)=>b.score-a.score).slice(0,TERMS);
  const termSet=new Set(chosen.map(c=>c.k));
  /* Themen, Gremien, Länder: je Art die häufigsten */
- const countAll=pick=>{const m=new Map();for(const d of docs)for(const v of pick(d))m.set(v,(m.get(v)||0)+1);return [...m].sort((a,b)=>b[1]-a[1]).slice(0,overall?PER_KIND_ALL:PER_KIND);};
- const count=pick=>{const m=new Map();for(const d of docs){const v=pick(d);if(v)m.set(v,(m.get(v)||0)+1);}return [...m].sort((a,b)=>b[1]-a[1]).slice(0,overall?PER_KIND_ALL:PER_KIND);};
+ const countAll=pick=>{const m=new Map();for(const d of docs)for(const v of pick(d))m.set(v,(m.get(v)||0)+1);return [...m].sort((a,b)=>b[1]-a[1]).slice(0,PER_KIND);};
+ const count=pick=>{const m=new Map();for(const d of docs){const v=pick(d);if(v)m.set(v,(m.get(v)||0)+1);}return [...m].sort((a,b)=>b[1]-a[1]).slice(0,PER_KIND);};
  const labelName=id=>LABELS.find(l=>l.id===id)?.name||null;
  const topics=count(d=>labelName(d.label)&&d.label!=='unklar'?d.label:null),committees=countAll(d=>d.gremien.filter(g=>g.length>=4)),lands=count(d=>d.land);
  const nodes=[{id:'q',type:'center',label:f.q||'Gesamter Datenbestand',count:total}];
@@ -100,13 +99,8 @@ export async function knowledgeGraph(db,catalog,params){
   if(kinds!=='tt'&&!kinds.includes('t'))continue;
   if(n>=2&&w>=0.04)edges.push({a,b,w:Math.round(w*1000)/1000,n});
  }
- /* Je Knoten nur seine stärksten Kanten behalten, damit das Bild lesbar bleibt */
- const keep=new Set(),perNode=new Map();
- for(const e of edges.sort((x,y)=>y.w-x.w)){
-  const ca=perNode.get(e.a)||0,cb=perNode.get(e.b)||0;
-  if(ca<4||cb<4){keep.add(e);perNode.set(e.a,ca+1);perNode.set(e.b,cb+1);}
- }
- const links=[...keep];
+ /* Alle tragfähigen Kanten; wie viele je Knoten gezeigt werden, entscheidet die Detailstufe der Seite */
+ const links=edges.sort((x,y)=>y.w-x.w);
  /* Jeder Knoten hängt am Zentrum (Stärke: Anteil der Auswahl) */
  for(const n of nodes.slice(1))links.push({a:'q',b:n.id,w:Math.round((n.count/Math.max(1,total))*1000)/1000,n:n.count,center:true});
  return {q:f.q,total,capped,sample:limit,partial:[...partial].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([w,n])=>({word:w,n})),nodes,edges:links,stats:{terms:chosen.length,topics:topics.length,committees:committees.length,lands:lands.length,links:links.length-nodes.length+1}};
