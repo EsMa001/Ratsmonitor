@@ -39,29 +39,16 @@ export function KnowledgeGraphPage() {
   const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
 
-  /* Direktlink (?thema=) oder, ohne Link und ohne Begriff, das Beispiel „Photovoltaik“ mit vorab berechnetem Graphen (kein Warten) */
+  /* Direktlink (?thema=) oder der Begriff, der schon in der Suche steht; ohne Begriff kein Beispiel, Start erst nach Eingabe */
   const [given] = useState(() => params.get("thema"));
-  const [example] = useState(() => !given && !hasTerm);
-  const [pre, setPre] = useState<{ res: Result | null; loading: boolean }>({ res: null, loading: example });
   const { res: runRes, ranKey: runKey, loading: runLoading, error: runError, run, runAfterChange } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/graph?${query}`, initial: false, fallback: "Der Graph konnte nicht berechnet werden.", onDone: () => { setSelected(""); setPair(null); } });
-  /* Der vorab berechnete Graph gilt für die Suche, die beim Öffnen gesetzt wurde: nicht als veraltet anzeigen */
-  const [preKey, setPreKey] = useState("");
-  if (pre.res && !preKey && hasTerm) setPreKey(query);
-  const res = runRes ?? pre.res, ranKey = runKey || preKey, loading = runLoading || pre.loading;
+  const res = runRes, ranKey = runKey, loading = runLoading;
   const [hint, setHint] = useState("");
   const error = hint || runError;
   /* Neu erstellen; ohne Begriff warten, bis er in der Suche angekommen ist */
   const start = () => { setHint(""); if (hasTerm) run(); else runAfterChange(); };
 
   useEffect(() => {
-    if (example) {
-      search.applySearch("Photovoltaik");
-      fetch("/data/graph-photovoltaik.json")
-        .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<Result>; })
-        .then((r) => setPre({ res: r, loading: false }))
-        .catch(() => { setPre({ res: null, loading: false }); run(); });
-      return;
-    }
     if (!given) { if (hasTerm) run(); return; }
     search.applySearch(given);
     runAfterChange();
