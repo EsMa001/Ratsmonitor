@@ -53,13 +53,7 @@ async function sequences(db,catalog,f){
  const src=await source(db,catalog,f),where='x.status IN '+STATUSES;
  const pool=(await db.prepare(`SELECT count(*) n FROM ${src.from} WHERE ${where}`).bind(...src.args).first())?.n||0;
  const k=Math.max(1,Math.ceil(pool/EXAMINE));
- // Erst die Karten der Stichprobe, dann ihre Stationen (sonst plant SQLite die Payloads vor der Auswahl)
- const {results:picked}=pool?await db.prepare(`SELECT x.card_id id FROM ${src.from} WHERE ${where}${k>1?' AND x.rid % ? = 0':''}`).bind(...src.args,...(k>1?[k]:[])).all():{results:[]};
- const results=[];
- for(let i=0;i<picked.length;i+=2000){
-  const {results:part}=await db.prepare(`SELECT t.id id,json_extract(e.value,'$.committee') g,substr(json_extract(e.value,'$.date'),1,10) d,e.key k FROM topics t, json_each(t.payload,'$.events') e WHERE t.id IN (SELECT value FROM json_each(?)) AND json_array_length(t.payload,'$.events')>=2 ORDER BY t.id,e.key`).bind(JSON.stringify(picked.slice(i,i+2000).map(r=>r.id))).all();
-  results.push(...part);
- }
+ const {results}=pool?await db.prepare(`SELECT c.id id,json_extract(e.value,'$.committee') g,substr(json_extract(e.value,'$.date'),1,10) d,e.key k FROM (SELECT x.card_id id FROM ${src.from} WHERE ${where}${k>1?' AND x.rid % ? = 0':''}) c JOIN topics t ON t.id=c.id, json_each(t.payload,'$.events') e WHERE json_array_length(t.payload,'$.events')>=2 ORDER BY c.id,e.key`).bind(...src.args,...(k>1?[k]:[])).all():{results:[]};
  /* Genau ein Ort: echte Namen; sonst nach Art zusammenfassen */
  const single=!!f.area&&f.more.length===0&&!f.within&&!f.without;
  const label=g=>single?String(g).replace(/\s+/g,' ').trim():gremiumType(g);
