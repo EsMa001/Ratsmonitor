@@ -16,8 +16,8 @@ import type { Article } from "../../types";
 interface Signal { id: string; name: string; who: string; count: number }
 interface Phase { key: string; name: string; count: number }
 interface Place { region: string; name: string; ags: string; count: number; members?: string[] }
-/* Karte wie in der Trefferliste der Suche (cardsById), dazu Ort im Verband, Stand und Kennzahlen */
-interface Item extends Partial<Article> { id: string; title: string; region: string; date: string; status: Article["status"]; phase: string; facts: { kind: string; text: string }[] }
+/* Karte wie in der Trefferliste der Suche (cardsById), dazu Ort im Verband und Stand */
+interface Item extends Partial<Article> { id: string; title: string; region: string; date: string; status: Article["status"]; phase: string }
 interface Result { signals: Signal[]; signal: { id: string; name: string; who: string; phaseText: string; art: string | null }; arts: Phase[]; phases: Phase[]; places: Place[]; placeCount?: number; total: number; offset: number; size: number; builtAt: string; items: Item[] }
 
 /* Signale und Zeiträume in derselben Reihenfolge wie im Backend; die Zahlen kommen mit der Antwort */
@@ -74,8 +74,8 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "" }: { 
 };
 
 /**
- * plenara.X Signale (Konzept docs/produkt/plenara-x-fakten-konzept.md): neue Ereignisse je Branche als Liste, mit Ort, Stand und
- * Kennzahlen, statt Anteilen auf einer Karte. Signal, Stand und Zeitraum stehen in der Adresse (teilbar), Ort und Begriff in der Suche.
+ * plenara.X Signale (Konzept docs/produkt/plenara-x-fakten-konzept.md): neue Ereignisse je Branche als Liste, mit Ort und Stand
+ * (keine Kennzahlen, die stehen in plenara.X Fakten). Signal, Stand und Zeitraum stehen in der Adresse (teilbar), Ort und Begriff in der Suche.
  */
 /* Ausklappbare Karte: Vorgänge der Auswahl je Gemeinde (Verbände färben ihre Mitgliedsgemeinden) */
 const STUFE = (c: number) => (c >= 5 ? 4 : c >= 3 ? 3 : c);
@@ -149,7 +149,7 @@ export function SignalePage() {
       <PageBand>
         <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Signale</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">plenara.X Signale</h1>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen. Mit Ort, Stand des Verfahrens, Kennzahlen und Originalquelle.</p>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen. Mit Ort, Stand des Verfahrens und Originalquelle.</p>
       </PageBand>
 
       <nav aria-label="Signal" className="print:hidden">
@@ -234,9 +234,8 @@ export function SignalePage() {
               <div className="mt-2 flex flex-col">
                 {items.map((r, i) => {
                   const a: Article = { thema: "", gremium: "", teaser: "", ags: "", ...r, gemeinde: r.region, month: r.date.slice(0, 7), hay: "" };
-                  const facts = r.facts.filter((f) => f.text !== r.phase).map((f) => f.text);
                   return <ArticleCard key={r.id} article={a} index={i} terms={[]} onOpen={open} onHover={hover}
-                    extra={<p className="m-0 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] text-slate-900"><span className={`inline-flex h-6 items-center rounded-full px-2.5 text-[12px] font-semibold ${toneOf(r.phase, phaseOrder).tag}`}>{r.phase}</span>{facts.length > 0 && <span className="font-medium">{facts.join(" · ")}</span>}</p>} />;
+                    extra={<p className="m-0 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] text-slate-900"><span className={`inline-flex h-6 items-center rounded-full px-2.5 text-[12px] font-semibold ${toneOf(r.phase, phaseOrder).tag}`}>{r.phase}</span></p>} />;
                 })}
               </div>
               {extra.error && <p role="alert" className="mt-2 text-[14px]">{extra.error}</p>}

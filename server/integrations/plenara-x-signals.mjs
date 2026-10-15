@@ -1,7 +1,7 @@
 /*
  * plenara.X Signale (Kategorien und Filter: docs/produkt/plenara-x-signale.md): neue Ereignisse je Branche als Liste, nicht
- * als Anteil. 10 Kategorien, je Kategorie ein Filter („Art“) und der Stand. Route GET /api/x/signale. Je Signal die Sachvorgänge (x_cases) mit passenden Fakten (topic_facts aus readReport),
- * die jüngsten zuerst, mit Ort, Stand und Kennzahlen (Fläche, Wohneinheiten, Anlagen, Leistung, Preis, Kosten).
+ * als Anteil. 11 Kategorien, je Kategorie ein Filter („Art“) und der Stand. Route GET /api/x/signale. Je Signal die Sachvorgänge (x_cases) mit passenden Fakten (topic_facts aus readReport),
+ * die jüngsten zuerst, mit Ort und Stand. Keine Kennzahlen: Zahlen gehören zu plenara.X Fakten.
  *
  * Parameter: dieselben Filter wie die Suche (area, scope, from, to, q …), signal=<id>, phase=<Stand>, art=<Filterwert>, offset=<n>.
  * Stand: bei Bauleitplänen der Verfahrensschritt (Fakt plan), bei Vergaben Ausschreibung/Vergabe/Nachtrag, bei Wind Planung/Genehmigung/Betrieb, bei Wärme der Schritt der Wärmeplanung, sonst „Was geschieht“.
@@ -23,54 +23,32 @@ const SHOPS="('Supermarkt und Discounter','Drogerie','Fachmarkt')";
 /* Die 10 Kategorien von docs/produkt/plenara-x-signale.md, in dieser Reihenfolge. phase: Stand (plan, heat_plan, tender-Detail oder stage). */
 export const SIGNALS=[
  {id:'vergaben',name:'Ausschreibungen und Vergaben',who:'Bauindustrie, Ingenieurbüros, Lieferanten, IT',
-  cases:`${F} f.kind='tender'`,art:A('tender'),artName:'Leistung',phase:P('tender','detail'),phaseText:'Ausschreibung, Vergabe oder Nachtrag, aus dem Titel.',show:[]},
+  cases:`${F} f.kind='tender'`,art:A('tender'),artName:'Leistung',phase:P('tender','detail'),phaseText:'Ausschreibung, Vergabe oder Nachtrag, aus dem Titel.'},
  {id:'wohnbau',name:'Neue Wohnbaugebiete',who:'Fertighaus, Bauträger, Makler, Banken',
   cases:`${F} (f.kind='plan_use' AND f.value IN ('Wohnen','Mischgebiet')) OR f.kind='plot_price' OR (f.kind='area_dev' AND f.value='Wohnen')`,
-  art:A('wohnbau_art'),artName:'Vorhaben',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.',show:['house_type','plan_area','housing','plot_price']},
+  art:A('wohnbau_art'),artName:'Vorhaben',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.'},
  {id:'gewerbe',name:'Gewerbe, Industrie und Handel',who:'Projektentwicklung, Logistik, Handel, Wirtschaftsförderung',
   cases:`${F} (f.kind='plan_use' AND f.value IN ${GEWERBE}) OR f.kind='land_price' OR (f.kind='area_dev' AND f.value IN ('Gewerbe','Industrie')) OR (f.kind='retail' AND f.value IN ${SHOPS})`,
-  art:`${A('plan_use',{where:'f.value IN '+GEWERBE})} UNION ALL ${A('area_dev',{where:"f.value IN ('Gewerbe','Industrie')"})} UNION ALL ${A('retail',{value:"CASE f.value WHEN 'Supermarkt und Discounter' THEN 'Nahversorgung' ELSE 'Einzelhandel' END",where:'f.value IN '+SHOPS})} UNION ALL ${A('land_price',{value:"'Grundstücksverkauf'"})}`,artName:'Nutzung',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.',show:['plan_use','plan_area','land_price']},
+  art:`${A('plan_use',{where:'f.value IN '+GEWERBE})} UNION ALL ${A('area_dev',{where:"f.value IN ('Gewerbe','Industrie')"})} UNION ALL ${A('retail',{value:"CASE f.value WHEN 'Supermarkt und Discounter' THEN 'Nahversorgung' ELSE 'Einzelhandel' END",where:'f.value IN '+SHOPS})} UNION ALL ${A('land_price',{value:"'Grundstücksverkauf'"})}`,artName:'Nutzung',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.'},
  {id:'wind',name:'Windenergie',who:'Projektierer, Stadtwerke, Netzbetreiber, Bürgerenergie',
-  cases:`${F} f.kind IN ('wind_step','wind_count') OR (f.kind='ee_power' AND f.value='Wind')`,art:A('wind_step'),artName:'Verfahren',phase:`(SELECT CASE f.value WHEN 'Bauleitplanung' THEN 'Planung' WHEN 'Regionalplanung' THEN 'Planung' WHEN 'Genehmigungsantrag (BImSchG)' THEN 'Genehmigung' WHEN 'Einvernehmen' THEN 'Genehmigung' WHEN 'Bürger- und Kommunalbeteiligung' THEN 'Beteiligung und Betrieb' ELSE 'Sonstiges' END FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE rr.case_key=x.case_key AND +f.kind='wind_step' LIMIT 1)`,phaseText:'Planung (Regional- und Bauleitplanung), Genehmigung (BImSchG, Einvernehmen) oder Beteiligung und Betrieb, aus dem Titel.',show:['wind_count','ee_power','plan_area']},
+  cases:`${F} f.kind IN ('wind_step','wind_count') OR (f.kind='ee_power' AND f.value='Wind')`,art:A('wind_step'),artName:'Verfahren',phase:`(SELECT CASE f.value WHEN 'Bauleitplanung' THEN 'Planung' WHEN 'Regionalplanung' THEN 'Planung' WHEN 'Genehmigungsantrag (BImSchG)' THEN 'Genehmigung' WHEN 'Einvernehmen' THEN 'Genehmigung' WHEN 'Bürger- und Kommunalbeteiligung' THEN 'Beteiligung und Betrieb' ELSE 'Sonstiges' END FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE rr.case_key=x.case_key AND +f.kind='wind_step' LIMIT 1)`,phaseText:'Planung (Regional- und Bauleitplanung), Genehmigung (BImSchG, Einvernehmen) oder Beteiligung und Betrieb, aus dem Titel.'},
  {id:'solar',name:'Solarenergie',who:'Projektierer, Landwirtschaft, Netzbetreiber, Handwerk',
-  cases:`${F} f.kind='solar' OR (f.kind='ee_power' AND f.value='Photovoltaik')`,art:A('solar'),artName:'Art',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.',show:['ee_power','plan_area']},
+  cases:`${F} f.kind='solar' OR (f.kind='ee_power' AND f.value='Photovoltaik')`,art:A('solar'),artName:'Art',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.'},
  {id:'waerme',name:'Wärme, Energieeffizienz und Netze',who:'Stadtwerke, Energieberatung, Heizungsbranche, Contracting',
-  cases:`${F} f.kind IN ('heat_plan','energy')`,art:`${A('heat_plan',{value:"'Wärmeplanung'"})} UNION ALL ${A('energy')}`,artName:'Art',phase:`coalesce(${P('heat_plan')},'Maßnahme')`,phaseText:'Schritt der Wärmeplanung; Wärmenetze, Heizung, LED und Sanierung als Maßnahme.',show:['heat_plan']},
+  cases:`${F} f.kind IN ('heat_plan','energy')`,art:`${A('heat_plan',{value:"'Wärmeplanung'"})} UNION ALL ${A('energy')}`,artName:'Art',phase:`coalesce(${P('heat_plan')},'Maßnahme')`,phaseText:'Schritt der Wärmeplanung; Wärmenetze, Heizung, LED und Sanierung als Maßnahme.'},
  {id:'schulen',name:'Schulen, Kitas und Sportstätten',who:'Bau, Modulbau, Ausstattung, Bäderbau',
-  cases:`${F} f.kind='school_build'`,art:A('school_build'),artName:'Einrichtung',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.',show:[]},
+  cases:`${F} f.kind='school_build'`,art:A('school_build'),artName:'Einrichtung',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.'},
  {id:'strasse',name:'Straßen, Brücken und Radwege',who:'Tiefbau, Ingenieurbüros, Verkehrsplanung',
-  cases:`${F} f.kind='street'`,art:A('street'),artName:'Vorhaben',phase:P('street','detail'),phaseText:'Planung, Beschluss und Förderung, Vergabe, Bau, Abschluss oder Sachstand, aus dem Titel.',show:['road']},
+  cases:`${F} f.kind='street'`,art:A('street'),artName:'Vorhaben',phase:P('street','detail'),phaseText:'Planung, Beschluss und Förderung, Vergabe, Bau, Abschluss oder Sachstand, aus dem Titel.'},
  {id:'wasser',name:'Wasser, Abwasser und Hochwasserschutz',who:'Ingenieurbüros, Tiefbau, Anlagenbau',
-  cases:`${F} f.kind='water'`,art:A('water'),artName:'Vorhaben',phase:P('water','detail'),phaseText:'Planung, Beschluss und Förderung, Vergabe, Bau, Abschluss oder Sachstand, aus dem Titel.',show:[]},
+  cases:`${F} f.kind='water'`,art:A('water'),artName:'Vorhaben',phase:P('water','detail'),phaseText:'Planung, Beschluss und Förderung, Vergabe, Bau, Abschluss oder Sachstand, aus dem Titel.'},
  {id:'breitband',name:'Breitband und Mobilfunk',who:'Telekommunikation, Tiefbau, Netzbetreiber',
-  cases:`${F} f.kind='broadband'`,art:A('broadband'),artName:'Vorhaben',phase:P('broadband','detail'),phaseText:'Planung, Beschluss und Förderung, Vergabe, Bau, Abschluss oder Sachstand, aus dem Titel.',show:[]},
+  cases:`${F} f.kind='broadband'`,art:A('broadband'),artName:'Vorhaben',phase:P('broadband','detail'),phaseText:'Planung, Beschluss und Förderung, Vergabe, Bau, Abschluss oder Sachstand, aus dem Titel.'},
  {id:'mobil',name:'Mobilität',who:'Mobilitätsanbieter, Ladeinfrastruktur, ÖPNV',
-  cases:`${F} f.kind='project' AND f.value<>'Öffentliches WLAN'`,art:A('project',{where:"f.value<>'Öffentliches WLAN'"}),artName:'Angebot',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.',show:[]},
+  cases:`${F} f.kind='project' AND f.value<>'Öffentliches WLAN'`,art:A('project',{where:"f.value<>'Öffentliches WLAN'"}),artName:'Angebot',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.'},
 ];
 const BY_ID=new Map(SIGNALS.map(s=>[s.id,s]));
 export const SIGNAL_SIZE=50;
-const SHOW_KINDS=[...new Set(SIGNALS.flatMap(s=>s.show))];
-
-/* Kennzahl lesbar: Werte der Fakten wie im Atlas, Zahlen deutsch */
-const num=(v,d=2)=>Number(v).toLocaleString('de-DE',{maximumFractionDigits:d});
-const euro=v=>{const n=Number(v);return n>=1e6?`${num(n/1e6,1)} Mio. €`:`${num(n,0)} €`;};
-export function factText(kind,value,detail){
- const d=String(detail??''),first=d.split('|')[0];
- switch(kind){
-  case 'plan':return value;
-  case 'plan_use':return value;
-  case 'plan_area':return first?`${num(first)} ha`:'';
-  case 'housing':return first?`${num(first,0)} Wohneinheiten`:'';
-  case 'plot_price':case 'land_price':return first?`${num(first)} €/m²`:'';
-  case 'wind_count':return first?`${first} ${first==='1'?'Anlage':'Anlagen'}`:'';
-  case 'ee_power':return first?`${num(first,1)} MW`:'';
-  case 'heat_plan':return value;
-  case 'road':return first?`${value}, ${euro(first)}`:value;
-  case 'project':return value;
-  case 'house_type':return value;
-  default:return value;
- }
-}
 
 /* Schneller Weg über x_signals (Migration 0039, gebaut mit x_cases): Zahl je Signal in einer Abfrage, die Vorgänge des
    gewählten Signals einmal gelesen und in JS nach Stand, Art und Ort gezählt. null, solange die Tabelle fehlt oder leer ist. */
@@ -121,14 +99,8 @@ export async function xSignals(db,catalog,params){
  ]);
  return finish(db,catalog,{sig,state,offset,counts,phases:phases.results,arts:arts.results,places:places.results,total:Number(total?.n||0),page:page.results});
 }
-/* Antwort aus den gezählten Werten: Kennzahlen und Karten nur für die Vorgänge der Seite */
+/* Antwort aus den gezählten Werten: Karten nur für die Vorgänge der Seite */
 async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,total,page}){
- // Kennzahlen der Seite: alle angezeigten Fakten der Vorgänge
- const cks=page.map(r=>r.ck),facts=new Map();
- if(cks.length){
-  const {results}=await db.prepare(`SELECT rr.case_key ck,f.kind k,f.value v,f.detail d FROM report_rules rr JOIN topic_facts f ON f.topic_id=rr.topic_id WHERE rr.case_key IN (SELECT value FROM json_each(?)) AND +f.kind IN (SELECT value FROM json_each(?))`).bind(JSON.stringify(cks),JSON.stringify(SHOW_KINDS)).all();
-  for(const r of results){const m=facts.get(r.ck)||new Map();facts.set(r.ck,m);const t=factText(r.k,r.v,r.d);if(!t)continue;const l=m.get(r.k)||[];if(!l.includes(t))l.push(t);m.set(r.k,l);}
- }
  const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
  // Karte wie in der Trefferliste der Suche (Kurztext, Gremium, Thema, Verlauf)
  const cards=new Map((await cardsById(db,catalog,page.map(r=>r.id))).map(c=>[c.id,c]));
@@ -142,9 +114,8 @@ async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,tot
   // Alle Gebiete (für die ausklappbare Karte), Verbände mit den Schlüsseln ihrer Mitgliedsgemeinden
   places:places.map(r=>({region:r.k,name:name(r.k),ags:byId.get(r.k)?.ags||'',count:r.n,...(byId.get(r.k)?.members?.length?{members:byId.get(r.k).members.map(m=>m.ags).filter(Boolean)}:{})})),
   total,offset,size:SIGNAL_SIZE,builtAt:state.builtAt,
-  items:page.map(r=>{const m=facts.get(r.ck)||new Map();
-   const c=cards.get(r.id)||{};
+  items:page.map(r=>{const c=cards.get(r.id)||{};
    return {...c,id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),
-    status:r.status,phase:phaseName(r.ph||''),facts:sig.show.flatMap(k=>(m.get(k)||[]).slice(0,2).map(t=>({kind:k,text:t})))};}),
+    status:r.status,phase:phaseName(r.ph||'')};}),
  };
 }

@@ -803,7 +803,7 @@ topic design-styles.css:140
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
 - DiffusionSearch.tsx (67, ⚠2): PlayState, DiffusionSearch
-- FaktenPage.tsx (177, ⚠5): FaktenPage
+- FaktenPage.tsx (208, ⚠8): FaktenPage
 - FraktionenPage.tsx (151, ⚠5): FraktionenPage
 - GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (176, ⚠3): GremiennetzPage
@@ -816,7 +816,7 @@ topic design-styles.css:140
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (74): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (229, ⚠3): signaleHref, SignalePage
+- SignalePage.tsx (255, ⚠2): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
 - XAtlasView.tsx (347, ⚠3): XAtlasView

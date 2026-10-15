@@ -18,7 +18,7 @@ plenara.X ist der Analyse-Teil von Plenara (Tarif Enterprise; frei sind nur die 
 | Seite | Adresse | Was sie zeigt | Abfrage | Liest |
 |---|---|---|---|---|
 | Start | `/analytics/ueber` | Übersicht und Einstieg | – | – |
-| **Signale** | `/analytics/signale` | 11 Kategorien von Ereignissen (Vergaben, Wohnbau, Gewerbe, Wind, Solar, Wärme, Schulen, Straßen, Wasser, Breitband, Mobilität) mit Art (Filter), Stand und Kennzahlen; Liste, ausklappbare Karte | `/api/x/signale` (`plenara-x-signals.mjs`) | `x_signals`, `x_cases`, `topic_facts` |
+| **Signale** | `/analytics/signale` | 11 Kategorien von Ereignissen (Vergaben, Wohnbau, Gewerbe, Wind, Solar, Wärme, Schulen, Straßen, Wasser, Breitband, Mobilität) mit Art (Filter) und Stand; Liste, ausklappbare Karte. Keine Kennzahlen, Zahlen gehören zu Fakten | `/api/x/signale` (`plenara-x-signals.mjs`) | `x_signals`, `x_cases`, `topic_facts` |
 | **Fakten** | `/analytics/fakten` | Werte je Gemeinde auf der Karte, rot bis grün: jüngster Wert oder Veränderung, Kreis- und Landesmedian, Abdeckung, Vorgänge hinter jedem Wert | `/api/x?view=fakten` (`plenara-x-query.mjs`) | `x_cases`, `topic_facts` |
 | **Atlas** | `/analytics/atlas` | die 10 Themen der Suche: Unterthemen, Verlauf, Orte, Ort im Vergleich, jüngste Vorgänge | `/api/x?view=atlas` | `x_cases`, `report_rules` |
 | Tools: Ausbreitung | `/analytics/diffusion` | wie sich ein Begriff über Orte und Zeit ausbreitet | `/api/analytics/diffusion` | `search_cards` |
@@ -30,7 +30,7 @@ plenara.X ist der Analyse-Teil von Plenara (Tarif Enterprise; frei sind nur die 
 | Tools: Fraktionsprofil | `/analytics/fraktionen` | Anträge je Fraktion und was aus ihnen wird | `/api/analytics/fraktionen` | `topic_facts` (`faction`, `faction_advice`) |
 | Tools: Newsradar | `/analytics/news` | berichtenswerte Vorgänge als Meldung mit Zitat | `/api/analytics/news` | `x_cases`, `report_rules`, `topic_facts` |
 
-Signale, Fakten und Atlas laufen über die vorberechneten Tabellen und sind schnell (lokal 0,1 bis 2 s). Die Tools durchsuchen meist `search_cards` direkt und sind bei häufigen Begriffen langsamer.
+Signale, Fakten und Atlas laufen über die vorberechneten Tabellen. Die Tools durchsuchen `search_cards` direkt; auch sie sind schnell (Server 15.10.2026: 0,1 bis 0,3 s mit einem seltenen Begriff, bis 3 s mit „Haushalt“; Newsradar und Fraktionsprofil 1 bis 3 s).
 
 Entfernt (14./15.10.2026): Themenradare, Kita-, Bauleitplanungs- und Förderseiten, plenara.X Score, Lena, „Was geschieht“ im Atlas.
 
@@ -71,8 +71,8 @@ Alles regelbasiert; Messung und Freigabe stehen im Admin „Themen & Texte“ (`
 | Mitgliedsgemeinde im Verband | Gremium, Titel | Atlas, Signale, Fakten, Listen, Ausbreitung, Newsradar |
 | Art des Vorgangs (Antrag, Planung, Vergabe, Bau, Abgaben …) | Titel | Stand bei Signale Solar, Schulen, Mobilität; Newsradar |
 | Signal-Regeln (Vergabe, Straße, Wasser, Breitband, Solar …) | meist Titel | Signale |
-| Bausteine der Signale (Verfahrensschritt Bebauungsplan, Nutzung, Wärmeplanung, Hausform, Vorhaben) | Titel, Beschlussvorschlag, Text | Signale (Stand, Art, Kennzahl) |
-| Werte (Hebesätze, Gebühren, Haushalt, Jahresergebnis, Preise …) | Text des Hauptdokuments und Anlagen | Fakten, Kennzahlen bei Signale |
+| Bausteine der Signale (Verfahrensschritt Bebauungsplan, Nutzung, Wärmeplanung, Hausform, Vorhaben) | Titel, Beschlussvorschlag, Text | Signale (Stand, Art) |
+| Werte (Hebesätze, Gebühren, Haushalt, Jahresergebnis, Preise …) | Text des Hauptdokuments und Anlagen | Fakten |
 | Fraktion, Empfehlung „ablehnen“ | Titel, Beschlussvorschlag | Fraktionsprofil |
 | Ausgang der Sitzung | Ergebnis im Ratsinformationssystem | Newsradar |
 | Eignung für Social Media | Titel, Vorgang | Admin „Social Media“ |
@@ -89,12 +89,12 @@ Alles regelbasiert; Messung und Freigabe stehen im Admin „Themen & Texte“ (`
 
 **Gebraucht (Kern):** Import, PDF-Ablage mit Text und OCR, Job „Themen & Texte“ mit seinen drei Schritten, `report_rules`, `topic_facts`, `x_cases`, `x_signals`, die beiden Abfragen `/api/x` und `/api/x/signale`, Signale, Fakten, Atlas, Admin „Themen & Texte“.
 
-**Gebraucht, aber am Rand:** die Tools. Sie hängen nicht an den Regeln, sondern an der Suche; Fraktionsprofil und Newsradar nutzen einzelne Fakten. Sie sind langsamer und nicht gemessen.
+**Gebraucht, eigenständig:** die Tools. Sie hängen nicht an den Regeln, sondern an der Suche (Fraktionsprofil und Newsradar nutzen einzelne Regeln); ihre Ergebnisse sind Zählungen der Suche und brauchen keine eigene Messung.
 
 **Nicht mehr gebraucht oder nur Rückfall:**
 - `scripts/pdf-store/summaries.mjs` und `facts.mjs`: alter Weg vor `read-reports.mjs`, nur noch Rückfall.
 - `scripts/ai-job.mjs`: nur für vorbereitete Altaufträge.
-- „Kosten im Straßenbau“ (`road`): erscheint nur noch als Kennzahl in der Signale-Liste; die Kategorie Straßen zählt über eigene Regeln (`street`), auf der Karte ist der Wert gesperrt.
+- „Kosten im Straßenbau“ (`road`): keine Seite zeigt den Wert (Signale ohne Kennzahlen, Karte gesperrt); die Kategorie Straßen zählt über eigene Regeln (`street`).
 - Gliederung `stage` in `/api/x`: der Atlas fragt sie nicht mehr ab, die Abfrage kann sie noch (Listen, Ort im Vergleich).
 
 **Offen:**

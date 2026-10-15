@@ -34,9 +34,9 @@ test('Signale: Zahl je Signal, Stand aus dem Plan, Kennzahlen',async()=>{
   const r=await xSignals(db,catalog,q('signal=wohnbau'));
   assert.deepEqual(Object.fromEntries(r.signals.map(s=>[s.id,s.count])),{vergaben:0,wohnbau:1,gewerbe:1,wind:1,solar:0,waerme:0,schulen:0,strasse:0,wasser:0,breitband:0,mobil:1});
   assert.equal(r.total,1);assert.equal(r.items[0].phase,'Satzungsbeschluss');assert.equal(r.items[0].region,'Billerbeck');
-  assert.deepEqual(r.items[0].facts.map(f=>f.text),['6,4 ha','40 Wohneinheiten']);
+  assert.equal(r.items[0].facts,undefined);
   const w=await xSignals(db,catalog,q('signal=wind'));
-  assert.equal(w.items[0].phase,'Ohne Angabe');assert.deepEqual(w.items[0].facts.map(f=>f.text),['3 Anlagen']);
+  assert.equal(w.items[0].phase,'Ohne Angabe');
  }finally{sql.close();}
 });
 test('Signale: Filter nach Stand und Gebiet, unbekanntes Signal',async()=>{

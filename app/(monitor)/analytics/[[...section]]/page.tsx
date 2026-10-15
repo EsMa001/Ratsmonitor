@@ -14,7 +14,7 @@ const SEITEN:Record<string,[string,string]>={
  tools:['plenara.X Tools','Werkzeuge für eigene Fragen: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse und Beratungswege mit jedem Suchbegriff, dazu Fraktionsprofil und Newsradar.'],
  politik:['plenara.X Tools','Werkzeuge für eigene Fragen: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse und Beratungswege mit jedem Suchbegriff, dazu Fraktionsprofil und Newsradar.'],
  finanzen:['plenara.X Tools','Werkzeuge für eigene Fragen: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse und Beratungswege mit jedem Suchbegriff, dazu Fraktionsprofil und Newsradar.'],
- signale:['plenara.X Signale','Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen, mit Stand und Kennzahlen.'],
+ signale:['plenara.X Signale','Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen, mit Stand.'],
  fakten:['plenara.X Fakten','Hebesätze, Gebühren, Jahresergebnisse und Preise aus den Vorlagen der Räte, je Gemeinde auf der Karte.'],
  atlas:['plenara.X Atlas','Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und ein Ort im Vergleich mit ähnlichen Gemeinden.'],
 };
