@@ -217,13 +217,21 @@ async function housingMap(db,src,x){
  return results.filter(r=>POPULATION[r.g]).map(r=>({key:r.g,n:r.n,v:{Wohneinheiten:{n:r.n,median:Math.round(10000*r.s/POPULATION[r.g])/10,unit:'je 1.000 Einwohner',sum:r.s}}}));
 }
 
+/* Jüngster Wert (Median der Vorgänge am letzten Sitzungstag) und der davor (letzter Tag mit anderem Wert): für „steht heute“
+   und „steigt oder fällt“ in plenara.X Fakten */
+function latest(nums){
+ const days=[...new Set(nums.map(u=>u.dt))].sort().reverse(),at=d=>median(nums.filter(u=>u.dt===d).map(u=>u.v));
+ const last=at(days[0]),prevDay=days.slice(1).find(d=>at(d)!==last);
+ return {last,lastDate:days[0],...(prevDay?{prev:at(prevDay),prevDate:prevDay}:{})};
+}
+
 /** Karte der Werte: je Fakt und Gebiet die Zahl der Vorgänge mit Wert (n) und je Wert mit Zahl der Median (v: Wert → {n, median, unit}).
     In Gemeindeverbänden gehört ein Vorgang zur Mitgliedsgemeinde, die Gremium oder Titel nennen (where, wie in den Listen): dann
     ein eigener Eintrag mit ihrem Gemeindeschlüssel (ags), sonst gilt er für den Verband. */
 async function factMaps(db,catalog,src,x,kinds){
  const out=new Map();if(!kinds.length)return out;
  const sel=selection(x),byId=new Map(catalog.map(r=>[r.id,r]));
- const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.case_key,x.region_id,x.card_id FROM ${src.from} WHERE ${sel.where.join(' AND ')}) SELECT s.region_id g,s.card_id card,rr.case_key ck,f.kind kind,f.value v,f.detail d FROM sel s JOIN report_rules rr ON rr.case_key=s.case_key JOIN topic_facts f ON f.topic_id=rr.topic_id WHERE f.kind IN (SELECT value FROM json_each(?))`).bind(...src.args,...sel.args,JSON.stringify(kinds)).all();
+ const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.case_key,x.region_id,x.card_id,x.date FROM ${src.from} WHERE ${sel.where.join(' AND ')}) SELECT s.region_id g,s.card_id card,s.date dt,rr.case_key ck,f.kind kind,f.value v,f.detail d FROM sel s JOIN report_rules rr ON rr.case_key=s.case_key JOIN topic_facts f ON f.topic_id=rr.topic_id WHERE f.kind IN (SELECT value FROM json_each(?))`).bind(...src.args,...sel.args,JSON.stringify(kinds)).all();
  // Mitgliedsgemeinde je Vorgang, nur in Verbänden
  const cards=[...new Set(results.filter(r=>byId.get(r.g)?.members?.length).map(r=>r.card))],member=new Map();
  if(cards.length){
@@ -234,9 +242,9 @@ async function factMaps(db,catalog,src,x,kinds){
  for(const r of results){
   const ags=member.get(r.card)||'',key=r.g+'|'+ags;
   const k=by.get(r.kind)||new Map();by.set(r.kind,k);const g=k.get(key)||{g:r.g,ags,cases:new Set(),v:new Map()};k.set(key,g);g.cases.add(r.ck);
-  const num=factNum(r.kind,r.d);if(!num)continue;const vv=g.v.get(r.v)||new Map();g.v.set(r.v,vv);if(!vv.has(r.ck))vv.set(r.ck,num);
+  const num=factNum(r.kind,r.d);if(!num)continue;const vv=g.v.get(r.v)||new Map();g.v.set(r.v,vv);if(!vv.has(r.ck))vv.set(r.ck,{...num,dt:String(r.dt||'').slice(0,10)});
  }
- for(const [kind,k] of by)out.set(kind,[...k.values()].map(({g,ags,cases,v})=>({key:g,...(ags?{ags}:{}),n:cases.size,v:Object.fromEntries([...v].map(([val,m])=>{const nums=[...m.values()],unit=nums[0].unit,vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [val,{n:vs.length,median:median(vs),unit}];}))})));
+ for(const [kind,k] of by)out.set(kind,[...k.values()].map(({g,ags,cases,v})=>({key:g,...(ags?{ags}:{}),n:cases.size,v:Object.fromEntries([...v].map(([val,m])=>{const nums=[...m.values()],unit=nums[0].unit,vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [val,{n:vs.length,median:median(vs),unit,...latest(nums.filter(u=>u.unit===unit))}];}))})));
  return out;
 }
 
