@@ -7,6 +7,7 @@ import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
+import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { ArticleCard } from "../../components/results/ArticleCard";
 import type { Article } from "../../types";
@@ -14,7 +15,7 @@ import type { Article } from "../../types";
 /* Antwort von /api/x/signale (server/integrations/plenara-x-signals.mjs) */
 interface Signal { id: string; name: string; who: string; count: number }
 interface Phase { key: string; name: string; count: number }
-interface Place { region: string; name: string; ags: string; count: number }
+interface Place { region: string; name: string; ags: string; count: number; members?: string[] }
 /* Karte wie in der Trefferliste der Suche (cardsById), dazu Ort im Verband, Stand und Kennzahlen */
 interface Item extends Partial<Article> { id: string; title: string; region: string; date: string; status: Article["status"]; phase: string; facts: { kind: string; text: string }[] }
 interface Result { signals: Signal[]; signal: { id: string; name: string; who: string; phaseText: string; art: string | null }; arts: Phase[]; phases: Phase[]; places: Place[]; placeCount?: number; total: number; offset: number; size: number; builtAt: string; items: Item[] }
@@ -76,6 +77,31 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "" }: { 
  * plenara.X Signale (Konzept docs/produkt/plenara-x-fakten-konzept.md): neue Ereignisse je Branche als Liste, mit Ort, Stand und
  * Kennzahlen, statt Anteilen auf einer Karte. Signal, Stand und Zeitraum stehen in der Adresse (teilbar), Ort und Begriff in der Suche.
  */
+/* Ausklappbare Karte: Vorgänge der Auswahl je Gemeinde (Verbände färben ihre Mitgliedsgemeinden) */
+const STUFE = (c: number) => (c >= 5 ? 4 : c >= 3 ? 3 : c);
+function SignalMap({ places }: { places: Place[] }) {
+  const [open, setOpen] = useState(false), [picked, setPicked] = useState("");
+  const byAgs = new Map<string, Place>(), levels: Record<string, number> = {};
+  for (const p of places) {
+    const own = p.ags.length === 8 ? [p.ags] : [];
+    for (const a of [...own, ...(p.members ?? []).filter((m) => m.length === 8)]) if (!byAgs.has(a) || own.includes(a)) byAgs.set(a, p);
+  }
+  for (const [a, p] of byAgs) levels[a] = STUFE(p.count);
+  const sel = picked ? byAgs.get(picked) : undefined;
+  return (
+    <section className="mt-8 print:hidden" aria-label="Karte">
+      <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="text-[14px] font-medium text-teal-700 hover:underline">
+        {open ? "Karte ausblenden" : `Karte zeigen (${n(places.length)} ${places.length === 1 ? "Gebiet" : "Gebiete"})`}
+      </button>
+      {open && <div className="mt-3">
+        <RegionMap levels={levels} picked={picked} onPick={(a) => setPicked(picked === a ? "" : a)} legend={["1 Vorgang", "2 Vorgänge", "3 bis 4 Vorgänge", "5 und mehr"]}
+          note="ohne Farbe: keine Vorgänge" label="Karte: Vorgänge der Auswahl je Gemeinde"
+          info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{n(sel.count)} {sel.count === 1 ? "Vorgang" : "Vorgänge"}</span></> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
+      </div>}
+    </section>
+  );
+}
+
 export function SignalePage() {
   const params = useSearchParams(), router = useRouter(), path = usePathname();
   const signal = SIGNAL_IDS.has(params.get("signal") ?? "") ? params.get("signal")! : "vergaben";
@@ -200,6 +226,7 @@ export function SignalePage() {
             </section>
           )}
 
+          {res.places.length > 0 && <SignalMap places={res.places} />}
 
           {items.length > 0 && (
             <section className="mt-8" aria-label="Vorgänge">

@@ -5,7 +5,7 @@
  *
  * Parameter: dieselben Filter wie die Suche (area, scope, from, to, q …), signal=<id>, phase=<Stand>, art=<Filterwert>, offset=<n>.
  * Stand: bei Bauleitplänen der Verfahrensschritt (Fakt plan), bei Vergaben Ausschreibung/Vergabe/Nachtrag, bei Wind Planung/Genehmigung/Betrieb, bei Wärme der Schritt der Wärmeplanung, sonst „Was geschieht“.
- * Antwort: {signals:[{id,name,count}], signal, phases:[{key,name,count}], arts:[{key,name,count}], placeCount, places:[{region,name,ags,count}] (höchstens 300), total, items, builtAt}
+ * Antwort: {signals:[{id,name,count}], signal, phases:[{key,name,count}], arts:[{key,name,count}], placeCount, places:[{region,name,ags,count,members?}] (alle), total, items, builtAt}
  */
 import {parseX,source,xState} from './plenara-x-query.mjs';
 import {stageName} from '../../shared/stage.mjs';
@@ -139,7 +139,8 @@ async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,tot
   phases:phases.map(r=>({key:r.k||' ',name:phaseName(r.k),count:r.n})),
   arts:arts.map(r=>({key:r.k,name:r.k,count:r.n})),
   placeCount:places.length,
-  places:places.slice(0,300).map(r=>({region:r.k,name:name(r.k),ags:byId.get(r.k)?.ags||'',count:r.n})),
+  // Alle Gebiete (für die ausklappbare Karte), Verbände mit den Schlüsseln ihrer Mitgliedsgemeinden
+  places:places.map(r=>({region:r.k,name:name(r.k),ags:byId.get(r.k)?.ags||'',count:r.n,...(byId.get(r.k)?.members?.length?{members:byId.get(r.k).members.map(m=>m.ags).filter(Boolean)}:{})})),
   total,offset,size:SIGNAL_SIZE,builtAt:state.builtAt,
   items:page.map(r=>{const m=facts.get(r.ck)||new Map();
    const c=cards.get(r.id)||{};
