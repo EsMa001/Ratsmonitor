@@ -24,15 +24,3 @@ export function listPage(rows,catalog,offset,extra=()=>({})){
   items:all.slice(offset,offset+LIST_SIZE).map(r=>({id:r.id,title:r.title,region:where(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,times:r.times,...extra(r)}))};
 }
 
-/** Dieselbe Liste direkt in SQL (für große Mengen): cond ist eine Bedingung auf search_cards, gruppiert nach Gebiet und Titel;
-    die übrigen Spalten stammen aus der jüngsten Sitzung (SQLite: einziges max() bestimmt die Zeile) */
-export async function sqlList(db,catalog,cond,args,offset){
- const group="region_id||'|'||lower(title)";
- const [{results},count]=await Promise.all([
-  db.prepare(`SELECT id,region_id region,title,gremium,max(date) date,status,count(*) times FROM search_cards WHERE ${cond} GROUP BY ${group} ORDER BY date DESC LIMIT ? OFFSET ?`).bind(...args,LIST_SIZE,offset).all(),
-  db.prepare(`SELECT count(DISTINCT ${group}) n FROM search_cards WHERE ${cond}`).bind(...args).first(),
- ]);
- const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
- return {offset,size:LIST_SIZE,total:Number(count?.n||0),
-  items:results.map(r=>({id:r.id,title:r.title,region:where(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,times:r.times}))};
-}

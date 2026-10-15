@@ -3,7 +3,7 @@ import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { RadarDrill } from "./RadarDrill";
 import { STATUS } from "../../lib/constants";
 import { DEC_COLORS, DecisionRow, MonthColumns, type Cut, type Month } from "./DecisionCharts";
@@ -41,21 +41,12 @@ function Fold({ title, children }: { title: string; children: React.ReactNode })
 }
 
 export function BeschluessePage() {
-  const { query, hasTerm, search } = useAnalyticsQuery();
-  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/decisions?${query}`, initial: hasTerm });
+  const { query } = useAnalyticsQuery();
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/decisions?${query}`, initial: true });
   // Geöffnete Liste hinter einer Zeile („kind:rat“)
   const [open, setOpen] = useState("");
   const [cut, setCut] = useState<"topics" | "kinds" | "lands">("kinds");
 
-  /* Ohne Begriff in der Suche: mit einem passenden Beispiel starten, damit die Seite nicht leer ist */
-  const given = useRef<string | null>(hasTerm ? null : "Haushalt");
-  useEffect(() => {
-    if (!given.current) return;
-    search.applySearch(given.current);
-    given.current = null;
-    run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
 
   const statusRows = useMemo(() => (res ? res.status.filter((s) => s.id !== "unknown" && s.n > 0) : []), [res]);

@@ -16,13 +16,18 @@ const BUILD=`SELECT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k,c.re
  FROM search_cards c LEFT JOIN report_rules r ON r.topic_id=c.id
  WHERE c.date<>'' AND c.date<=? AND coalesce(r.item_kind,CASE WHEN c.formal=1 THEN 'formal' ELSE 'subject' END)='subject'
  GROUP BY k`;
+/* Künftige Vorgänge (wie in der Suche): nur angesetzt, noch keine Sitzung bis heute; Datum ist die erste anstehende Sitzung.
+   Alle Seiten sehen sie nur, wenn ihr Zeitraum über heute hinausgeht (source() setzt sonst „bis heute“), derzeit der Newsradar. */
+const FUTURE=BUILD.replace('max(c.date) d','min(c.date) d').replace('c.date<=?','c.date>?');
 
 /** @param {import('node:sqlite').DatabaseSync} sql  @returns {{cases:number,unread:number,seconds:number,today:string}} */
 export function buildXCases(sql,{today=new Date().toISOString().slice(0,10),dry=false}={}){
  const t0=Date.now();
- const rows=sql.prepare(BUILD).all(today);
+ const past=sql.prepare(BUILD).all(today),seen=new Set(past.map(r=>r.k));
+ const future=sql.prepare(FUTURE).all(today).filter(r=>!seen.has(r.k));
+ const rows=past.concat(future);
  const unread=rows.reduce((a,r)=>a+(r.un?1:0),0);
- const state={builtAt:new Date().toISOString(),today,cases:rows.length,unread};
+ const state={builtAt:new Date().toISOString(),today,cases:past.length,future:future.length,unread};
  if(!dry){
   sql.exec('BEGIN IMMEDIATE');
   try{
@@ -30,6 +35,7 @@ export function buildXCases(sql,{today=new Date().toISOString().slice(0,10),dry=
    const ins=sql.prepare('INSERT INTO x_cases(case_key,region_id,date,month,label,stage,subs,status,card_id,cards,unread) VALUES(?,?,?,?,?,?,?,?,?,?,?)');
    for(const r of rows)ins.run(r.k,r.g,r.d,String(r.d).slice(0,7),r.l,r.s,r.u,r.st,r.id,r.n,r.un?1:0);
    state.steps=buildXSteps(sql);
+   state.factions=buildXFactions(sql);
    state.signals=buildXSignals(sql);
    sql.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').run(X_CASES_KEY,JSON.stringify(state));
    sql.exec('COMMIT');
@@ -67,6 +73,21 @@ function buildXSteps(sql){
   let ev=[];try{ev=r.ev?JSON.parse(r.ev):[];}catch{/* kaputter Zeitstrahl: ohne Stationen */}
   const c=caseSteps(ev,{date:r.d,status:r.st,gremium:r.g||''});const more=terms?[termsText(r.ti||''),privateBuild(r.ti)?1:0]:[];up.run(c.first,c.steps,c.days,c.vote,c.changed,...more,r.k);n++;
  }
+ return n;
+}
+
+/* Fraktionen (Migration 0043): je Vorgang die Fraktionen aus den Fakten aller seiner Karten und ob eine Karte empfiehlt, dem
+   Antrag nicht zu folgen. Ohne Spalten (Migration fehlt) bleibt alles wie vorher. */
+function buildXFactions(sql){
+ const cols=new Set(sql.prepare("SELECT name FROM pragma_table_info('x_cases')").all().map(r=>r.name));
+ if(!cols.has('factions'))return null;
+ const by=new Map();
+ for(const r of sql.prepare("SELECT rr.case_key k,fa.kind kind,fa.value v,max(fa.detail) d FROM topic_facts fa JOIN report_rules rr ON rr.topic_id=fa.topic_id WHERE fa.kind IN ('faction','faction_advice') GROUP BY rr.case_key,fa.kind,fa.value").iterate()){
+  const c=by.get(r.k)||{list:[],advice:0};by.set(r.k,c);
+  if(r.kind==='faction')c.list.push(r.v+'\t'+(r.d||''));else c.advice=1;
+ }
+ const up=sql.prepare('UPDATE x_cases SET factions=?,faction_advice=? WHERE case_key=?');let n=0;
+ for(const [k,c] of by)n+=Number(up.run(c.list.join('\n'),c.advice,k).changes);
  return n;
 }
 

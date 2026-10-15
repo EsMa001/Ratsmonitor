@@ -1,10 +1,9 @@
-import {searchFilters} from './monitor-search.mjs';
+import {source,xState} from './plenara-x-query.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
 import {cleanTitle,matchTitle,evidenceOf} from './social-topics.mjs';
 import {where} from './member-place.mjs';
-import {titleKey} from '../../shared/topic-facts.mjs';
 
 /*
  * Plenara.X – Newsradar: berichtenswerte Vorgänge der letzten 30 und nächsten 10 Tage (dieselben Filter wie die Suche),
@@ -14,7 +13,7 @@ import {titleKey} from '../../shared/topic-facts.mjs';
  * (Gebühren, Haushaltssicherung, Steuern), Petitionen und Einwohneranträge aus dem Titel. Wohnungszahlen sind wie in der
  * Bauleitplanung ausgeblendet (zu oft Hintergrundwerte). Bei Gemeindeverbänden ist die Ortsmarke die Mitgliedsgemeinde,
  * deren Rat berät oder die der Titel nennt (where() wie in den Radaren).
- * Zwei Stufen: erst alle Vorgänge des Zeitraums aus search_cards und topic_facts vorbewerten (ohne Payload), dann nur für
+ * Zwei Stufen: erst alle Vorgänge des Zeitraums (source(), x_cases) mit topic_facts vorbewerten (ohne Payload), dann nur für
  * die besten CANDIDATES die Berichte lesen (Abstimmungsergebnis, Zusammenfassung, Sitzungen) und die Meldung bauen.
  * Nachrichtenwert: Konflikt (abgelehnt, vertagt, nur mehrheitlich), Tragweite (Förderung, Beiträge, Gebühren,
  * Bürgerbegehren), Alltagsnähe (Stichwörter aus social-topics), Aktualität; ohne zitierbaren Kern deutlich weniger.
@@ -23,13 +22,12 @@ import {titleKey} from '../../shared/topic-facts.mjs';
  */
 const BACK=30,SPANS=[30,90,365],AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
 // Förderung gibt es seit 15.10.2026 nicht mehr als Fakt (Stand bewilligt/beantragt war nur 36–64 % richtig)
-const FACT_KINDS=['faction','kita_fee','plan'];
+// Fraktion aus x_cases (factions), die übrigen aus topic_facts über die Karten des Vorgangs
+const FACT_KINDS=['kita_fee','plan'];
 /* Signale aus readReport (report_rules, Migration 0035): Unterthemen und „Was geschieht“; Richtung und Art aus dem Titel */
 const UP=/Erhöhung|Anhebung|erhöht|angehoben/i,DOWN=/Senkung|gesenkt|Reduzierung|Absenkung/i;
 const CITIZEN=/Petition|Einwohnerantr|Bürgerantr|Bürgerbegehren|Bürgerentscheid|Bürgereingabe|Anregungen und Beschwerden/i;
 const day=d=>new Date(Date.now()+d*864e5).toISOString().slice(0,10);
-// Private Bauanträge mit Grundstücksadresse sind keine Meldung
-const PRIVATE=/Bauantrag|Bauvorhaben|Bauvoranfrage|Flurstück|\bFlur\s+\d/i,ADDRESS=/\d+\s*(-\s*\d+)?\s*(,|$)|straße\s*\d|weg\s*\d/i;
 // Personal- und Besetzungsfragen der Gremien sind keine Meldung (Formalien, die „Formalien ausblenden“ nicht erfasst)
 const NOT_NEWS=/Schriftführ|Bestellung (einer|eines|des|der) |Wahl (der|des|eines|einer) (stellvertretend|Vorsitz|Mitglied|Schrift|sachkundig)|Benennung (von|der|des|eines|einer) |Besetzung (von|der|des) |Nachbesetzung|Umbesetzung|Ausschussumbesetzung/i;
 // Reste aus dem PDF (Seitenzähler, Kopfzeilen) machen einen Satz unzitierbar
@@ -164,24 +162,22 @@ export async function news(db,catalog,params){
  copy.set('noformal','1');
  const f=parseDecisions(copy);
  if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
- const {page}=await searchFilters(db,catalog,f);
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ /* Wie überall in plenara.X: Auswahl über source() (Sachvorgänge in x_cases, ohne private Bauanträge, mit künftigen Vorgängen,
+    weil der Zeitraum über heute hinausgeht); Unterthemen und „Was geschieht“ aus x_cases, Fakten aller Karten des Vorgangs */
+ const src=await source(db,catalog,f,{noPrivate:true,factions:true});
  const today=day(0),week=day(-7);
  /* Stufe 1: alle Vorgänge des Zeitraums mit ihren Fakten, ohne Payload */
- const {results:rows}=await db.prepare(`SELECT c.id id,c.region_id region,c.date date,c.status status,c.title title,c.gremium gremium
-  FROM search_cards c WHERE ${page.where} AND c.date<>''`).bind(...page.args).all();
- /* Signale je Vorgang aus x_cases (schmal, einmal täglich gebaut; report_rules wird während eines Laufs der Regeln neu
-    geschrieben und ist dann langsam zu lesen): nur Gebühren (stage abgaben) und Finanz-Unterthemen. Ohne Tabelle keine Signale. */
- let ruleRows=[];
- try{({results:ruleRows}=await db.prepare("SELECT case_key k,subs,stage FROM x_cases WHERE stage='abgaben' OR subs LIKE '%finanzen.%'").all());}catch{/* vor Migration 0036 */}
- const rulesOf=new Map(ruleRows.map(r=>[r.k,r]));
- const {results:factRows}=await db.prepare(`SELECT x.topic_id id,x.kind kind,x.value value,x.detail detail FROM topic_facts x WHERE x.kind IN (${FACT_KINDS.map(()=>'?').join(',')})
-  AND x.topic_id IN (SELECT c.id FROM search_cards c WHERE ${page.where} AND c.date<>'')`).bind(...FACT_KINDS,...page.args).all();
+ const {results:rows}=await db.prepare(`SELECT x.card_id id,x.region_id region,x.date date,x.status status,x.stage stage,x.subs subs,x.factions factions,c.title title,c.gremium gremium
+  FROM ${src.from} JOIN search_cards c ON c.id=x.card_id`).bind(...src.args).all();
+ const {results:factRows}=await db.prepare(`SELECT DISTINCT x.card_id id,fa.kind kind,fa.value value,fa.detail detail FROM ${src.from}
+  JOIN report_rules rr ON rr.case_key=x.case_key JOIN topic_facts fa ON fa.topic_id=rr.topic_id AND fa.kind IN (${FACT_KINDS.map(()=>'?').join(',')})`).bind(...src.args,...FACT_KINDS).all();
  const factsOf=new Map();for(const x of factRows){const l=factsOf.get(x.id)||[];l.push({kind:x.kind,value:x.value,detail:x.detail});factsOf.set(x.id,l);}
  const pre=[];
  for(const c of rows){
-  if(PRIVATE.test(c.title||'')&&ADDRESS.test(c.title||'')||NOT_NEWS.test(c.title||''))continue;
-  const facts=factsOf.get(c.id)||[];
-  const s=prescore({...c,...rulesOf.get(c.region+'|'+titleKey(c.title))},facts,today,week);pre.push({c,facts,...s});
+  if(NOT_NEWS.test(c.title||''))continue;
+  const facts=[...(c.factions?c.factions.split('\n').map(l=>{const [value,detail]=l.split('\t');return {kind:'faction',value,detail};}):[]),...(factsOf.get(c.id)||[])];
+  const s=prescore(c,facts,today,week);pre.push({c,facts,...s});
  }
  pre.sort((a,b)=>b.score-a.score);
  /* Stufe 2: Berichte der besten Kandidaten lesen */

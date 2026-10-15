@@ -2,7 +2,7 @@ import {LABELS} from '../../shared/labels.mjs';
 import {searchFilters} from './monitor-search.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
-import {routineTitle,titleKey} from '../../shared/topic-facts.mjs';
+import {source,xState} from './plenara-x-query.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
@@ -13,8 +13,8 @@ import {listPage,offsetOf} from './analytics-lists.mjs';
  * Themenprofil: Anteil eines Themenfelds an den Anträgen einer Fraktion gegenüber dem Anteil an allen Fraktionsanträgen
  * (Index 100 = wie alle). „Angenommen“: Anteil der Anträge, deren Beschlussvorschlag beschlossen wurde, an den Anträgen mit
  * Entscheidung (beschlossen, abgelehnt, vertagt). Empfiehlt der Beschlussvorschlag, dem Antrag nicht zu folgen (kind
- * 'faction_advice'), zählt „beschlossen“ als abgelehnt. Derselbe Titel je Gebiet (Ausschuss und Rat) zählt einmal, mit seiner
- * jüngsten Sitzung; Besetzungen, Wahlen und Umbesetzungen zählen nicht.
+ * 'faction_advice'), zählt „beschlossen“ als abgelehnt. Gezählt wird je Vorgang (x_cases: Ausschuss und Rat einmal, mit
+ * seinem Stand) über dieselbe Auswahl wie alle plenara.X-Seiten; Formalien, Besetzungen und private Bauanträge zählen nicht.
  */
 const MIN_PARTY=10,MIN_CELL=5,DECIDED=['approved','rejected','postponed'];
 /* Restkategorien der Themeneinordnung sind keine Sachthemen: nicht im Themenprofil */
@@ -28,36 +28,41 @@ export async function factsReady(db){
  try{await db.prepare('SELECT 1 FROM topic_facts LIMIT 0').all();return true;}catch(e){if(/no such table/i.test(String(e?.message||e)))return false;throw e;}
 }
 
-/* Alle Fraktionsvorgänge der Suche (ohne Routinepunkte); status: „beschlossen“ mit Empfehlung „nicht folgen“ zählt als abgelehnt */
+/* Alle Fraktionsvorgänge der Suche, wie überall in plenara.X: Auswahl über source() (Sachvorgänge in x_cases, ohne private
+   Bauanträge), Fraktionen des Vorgangs aus x_cases (beim Bau aus den Fakten aller seiner Karten); Status und Datum des Vorgangs.
+   status: „beschlossen“ mit Empfehlung „nicht folgen“ zählt als abgelehnt */
 async function load(db,catalog,params){
  const copy=new URLSearchParams(params);for(const k of ['by','value','offset','outcome'])copy.delete(k);
  const f=parseDecisions(copy);
  if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
- const {page}=await searchFilters(db,catalog,f);
- /* Nur die Karten mit Fraktion prüfen (über den Primärschlüssel), nicht alle: rund 0,5 s statt 24 s ohne Filter */
- const cards=`(SELECT id,region_id,title,gremium,label,status,date FROM search_cards WHERE id IN (SELECT topic_id FROM topic_facts WHERE kind='faction') AND ${page.where} AND date<>'')`;
- const {results}=await db.prepare(`SELECT c.id id,c.region_id region,c.title title,c.gremium gremium,x.value party,x.detail kind,c.label label,c.status status,c.date date,
-  EXISTS(SELECT 1 FROM topic_facts a WHERE a.topic_id=c.id AND a.kind='faction_advice') advice FROM ${cards} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind='faction'`).bind(...page.args).all();
- return {f,raw:results.filter(r=>!routineTitle(r.title)).map(r=>({...r,status:r.status==='approved'&&r.advice?'rejected':r.status}))};
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ const src=await source(db,catalog,f,{noPrivate:true,factions:true});
+ const {results}=await db.prepare(`SELECT x.case_key ck,x.card_id id,x.region_id region,x.label label,x.status status,x.date date,x.factions,x.faction_advice advice
+  FROM ${src.from} WHERE x.factions<>''`).bind(...src.args).all();
+ /* Je Vorgang und Fraktion eine Zeile */
+ const rows=results.flatMap(r=>r.factions.split('\n').map(l=>{const [party,kind]=l.split('\t');return {...r,party,kind};}));
+ return {f,raw:rows.map(r=>({...r,status:r.status==='approved'&&r.advice?'rejected':r.status}))};
 }
 
 /** Liste hinter einer Zahl: by=party&value=Fraktion, optional outcome=approved|rejected|postponed|decided|antrag|anfrage */
 export async function factionList(db,catalog,params){
  if(params.get('by')!=='party'||!params.get('value'))throw new AnalyticsError('Unbekannte Liste.',400);
  const {raw}=await load(db,catalog,params),party=params.get('value'),outcome=params.get('outcome')||'';
- /* Wie die Zahlen: je Gebiet und Titel der jüngste Stand, erst dann nach Ausgang filtern */
- const seen=new Set(),latest=[...raw].sort((a,b)=>b.date.localeCompare(a.date)).filter(r=>{if(r.party!==party)return false;const k=r.region+'|'+titleKey(r.title);if(seen.has(k))return false;seen.add(k);return true;});
+ /* Wie die Zahlen: je Vorgang einmal, mit seinem Stand */
+ const latest=raw.filter(r=>r.party===party).sort((a,b)=>b.date.localeCompare(a.date));
  const rows=latest.filter(r=>(!outcome||(outcome==='anfrage'?r.kind==='anfrage':outcome==='antrag'?r.kind!=='anfrage':outcome==='decided'?r.kind!=='anfrage'&&DECIDED.includes(r.status):r.kind!=='anfrage'&&r.status===outcome)));
- return listPage(rows,catalog,offsetOf(params));
+ /* Titel und Gremium zur Anzeige aus der Karte des Vorgangs */
+ const cards=new Map();
+ for(let i=0;i<rows.length;i+=5000){const {results}=await db.prepare('SELECT id,title,gremium FROM search_cards WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(rows.slice(i,i+5000).map(r=>r.id))).all();for(const c of results)cards.set(c.id,c);}
+ return listPage(rows.map(r=>({...r,title:cards.get(r.id)?.title||'',gremium:cards.get(r.id)?.gremium||''})),catalog,offsetOf(params));
 }
 
 export async function factions(db,catalog,params){
  const {f,raw}=await load(db,catalog,params);
- /* Je Gebiet, Titel und Fraktion ein Antrag mit seiner jüngsten Sitzung */
- raw.sort((a,b)=>b.date.localeCompare(a.date));
- const seen=new Set(),ids=new Set(),cube=[];
+ /* Je Vorgang und Fraktion ein Antrag (load gruppiert schon) */
+ const ids=new Set(),cube=[];
  for(const r of raw){
-  const k=r.region+'|'+titleKey(r.title)+'|'+r.party;if(seen.has(k))continue;seen.add(k);ids.add(r.region+'|'+titleKey(r.title));
+  ids.add(r.ck);
   cube.push({party:r.party,kind:r.kind,label:r.label,status:r.status,m:r.date.slice(0,7),n:1});
  }
  const total={withFaction:ids.size};

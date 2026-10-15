@@ -4,7 +4,6 @@ import {source,xState} from './plenara-x-query.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {tokens,FORMAL_ALL} from './analytics-graph.mjs';
 import {parseTerms} from './x-terms.mjs';
-import {privateBuild} from '../../shared/topic-facts.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
@@ -35,16 +34,16 @@ const labelName=id=>LABELS.find(l=>l.id===id)?.name||null;
 export async function trends(db,catalog,params,now=Date.now()){
  const {f,window:W}=parseTrends(params);
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const src=await source(db,catalog,f,{terms:true});
+ const src=await source(db,catalog,f,{terms:true,noPrivate:true});
  const end=iso(now+DAY),mid=iso(now+DAY-W*DAY),start=iso(now+DAY-2*W*DAY);
  /* Je Fenster: alle Vorgänge, dazu ihre Titel */
  const load=async(a,b)=>{
   const range='x.date>=? AND x.date<?';
   // Alle Vorgänge des Fensters, keine Stichprobe
-  // Begriffe und „privater Bauantrag“ liegen je Vorgang in x_cases (beim Bau aus dem Titel)
-  const {results:pick}=await db.prepare(`SELECT x.card_id id,x.date,x.region_id,x.label,x.terms,x.private_build pb FROM ${src.from} WHERE ${range}`).bind(...src.args,a,b).all();
+  // Begriffe liegen je Vorgang in x_cases (beim Bau aus dem Titel), private Bauanträge filtert source (noPrivate)
+  const {results:pick}=await db.prepare(`SELECT x.card_id id,x.date,x.region_id,x.label,x.terms FROM ${src.from} WHERE ${range}`).bind(...src.args,a,b).all();
   const total=pick.length,k=1;
-  const rows=pick.filter(r=>!r.pb);
+  const rows=pick;
   return {total,rows,k};
  };
  const [recent,prev]=[await load(mid,end),await load(start,mid)];
@@ -102,11 +101,11 @@ export async function trendList(db,catalog,params,now=Date.now()){
  const key=params.get('value')||'';
  if(params.get('by')!=='term'||key.length<3)throw new AnalyticsError('Unbekannte Liste.',400);
  const {f,window:W}=parseTrends(params);
- const src=await source(db,catalog,f);
+ const src=await source(db,catalog,f,{noPrivate:true});
  const end=iso(now+DAY),mid=iso(now+DAY-W*DAY),start=iso(now+DAY-2*W*DAY);
  const [a,b]=params.get('span')==='prev'?[start,mid]:[mid,end];
  // Dieselben Vorgänge wie in der Zählung (x_cases), Begriff im Titel
  const {results}=await db.prepare(`SELECT c.id,x.region_id region,c.title,c.gremium,x.date,x.status FROM ${src.from} JOIN search_cards c ON c.id=x.card_id WHERE x.date>=? AND x.date<? AND c.search LIKE ? ORDER BY x.date DESC`).bind(...src.args,a,b,'%'+key+'%').all();
- const rows=results.filter(r=>tokens(r.title).has(key)&&!privateBuild(r.title));
+ const rows=results.filter(r=>tokens(r.title).has(key));
  return listPage(rows,catalog,offsetOf(params));
 }
