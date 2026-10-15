@@ -267,10 +267,18 @@ export class MapEngine {
 
   /* ---------- Ansicht ---------- */
   private clampK(k: number, reserve = this.bottomInset ? this.bottomInset - 8 : 0) {
-    /* Höchstens so weit herauszoomen, dass Deutschland vollständig sichtbar ist */
+    /* Höchstens so weit herauszoomen, dass Deutschland die Karte gerade ausfüllt (nicht kleiner) */
     const bb = this.geo.germany.bb;
-    const kmin = 0.92 * Math.min((this.W - 32) / Math.max(bb[2] - bb[0], 1), (this.H - 32 - reserve) / Math.max(bb[3] - bb[1], 1));
+    const kmin = 0.98 * Math.min((this.W - 32) / Math.max(bb[2] - bb[0], 1), (this.H - 32 - reserve) / Math.max(bb[3] - bb[1], 1));
     return Math.max(kmin, Math.min(0.6, k));
+  }
+
+  /** Verschieben begrenzen: Deutschland füllt die Karte, am Rand bleiben höchstens 15 % leer; ist Deutschland kleiner als die
+      Karte (ganz herausgezoomt), steht es in der Mitte. Man kann die Karte nicht ins Leere ziehen. */
+  private clampCenter(v: View): View {
+    const bb = this.geo.germany.bb, hw = this.W / 2 / v.k, hh = this.H / 2 / v.k, mx = (this.W * 0.15) / v.k, my = (this.H * 0.15) / v.k;
+    const fit = (c: number, lo: number, hi: number) => (lo > hi ? (lo + hi) / 2 : Math.max(lo, Math.min(hi, c)));
+    return { k: v.k, cx: fit(v.cx, bb[0] - mx + hw, bb[2] + mx - hw), cy: fit(v.cy, bb[1] - my + hh, bb[3] + my - hh) };
   }
 
   /** Deutschland passt gerade noch vollständig hinein (kleiner Rand, mittig); unten etwas mehr Rand, damit der Quellentext der Karte (© GeoBasis-DE …) die Südspitze nicht überdeckt */
@@ -350,7 +358,7 @@ export class MapEngine {
   zoomAt(sx: number, sy: number, f: number) {
     const [x, y] = this.toData(sx, sy);
     const k = this.clampK(this.view!.k * f);
-    this.view = { k, cx: x - (sx - this.W / 2) / k, cy: y + (sy - this.H / 2) / k };
+    this.view = this.clampCenter({ k, cx: x - (sx - this.W / 2) / k, cy: y + (sy - this.H / 2) / k });
     this.interact();
   }
 
@@ -934,7 +942,7 @@ export class MapEngine {
           cancelAnimationFrame(this.anim);
         }
         if (drag.moved) {
-          this.view = { k: this.view.k, cx: drag.cx - dx / this.view.k, cy: drag.cy + dy / this.view.k };
+          this.view = this.clampCenter({ k: this.view.k, cx: drag.cx - dx / this.view.k, cy: drag.cy + dy / this.view.k });
           this.interact();
           return;
         }

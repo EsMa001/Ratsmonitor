@@ -302,6 +302,14 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
   const openPart = part === null ? (sub || firstPart) : part;
   /* Liste hinter einer Zeile: dieselbe Auswahl, aber ohne das gewählte Unterthema (sonst nur die Überschneidung) */
   const partBase = `/api/x?list=1${theme ? "&theme=" + theme : ""}`;
+  /* Mit Unterthema: Größe des Themas (für den Anteil) und die Unterthemen, die im selben Vorgang mit vorkommen (Antwort der Auswahl) */
+  /* Zahl des Unterthemas sofort nach dem Klick: aus der Antwort des Themas (vor dem Klick schon da), sonst aus der Auswahl selbst */
+  const [subCounts, setSubCounts] = useState<{ theme: string; rows: Row[] } | null>(null);
+  if (res && !res.selection.sub && res.selection.theme && subCounts?.rows !== res.parts) setSubCounts({ theme: res.selection.theme, rows: res.parts });
+  const known = subCounts?.theme === theme ? subCounts.rows : null;
+  const subCount = sub ? (siblings ?? known)?.find((p) => p.key === sub)?.count ?? (res?.selection.sub === sub ? total : undefined) : undefined;
+  const themeTotal = sub ? (siblings?.[0]?.base ?? known?.[0]?.base ?? 0) : 0;
+  const together = sub && res?.selection.sub === sub ? restLast(res.parts).map(short).filter((p) => p.key !== sub && !isRest(p) && p.count > 0).slice(0, 6).map((p) => ({ ...p, share: total ? Math.round((1000 * p.count) / total) / 10 : null })) : [];
   const allRegions = res?.regions ?? [];
   /* Ohne Auswahl ist der Anteil überall 100 %, mit nur einem Gebiet (Ort gewählt) gibt es nichts zu vergleichen */
   const rankRegions = !!(theme || sub) && allRegions.length > 1;
