@@ -4,6 +4,7 @@
 // Regeln wie bisher in plenara-x-query.mjs: Vorgang = report_rules.case_key, ungelesene Karte: Gebiet + Titel; nur Sachpunkte
 // (itemKind subject, ungelesen: keine Formalie nach search_cards.formal); Werte der Karte mit der letzten Sitzung bis zum Bautag.
 import {SIGNALS} from './plenara-x-signals.mjs';
+import {readResult} from './analytics-decisions.mjs';
 export const X_CASES_KEY='x-cases';
 /** Stand der Zahlen für den Zwischenspeicher der Route (atRevisionStale): ändert sich nur mit einem neuen Bau, nicht mit jedem Import */
 export const X_REVISION_SQL="SELECT coalesce((SELECT value FROM system_state WHERE key='x-cases'),'') AS revision";
@@ -26,12 +27,44 @@ export function buildXCases(sql,{today=new Date().toISOString().slice(0,10),dry=
    sql.exec('DELETE FROM x_cases');
    const ins=sql.prepare('INSERT INTO x_cases(case_key,region_id,date,month,label,stage,subs,status,card_id,cards,unread) VALUES(?,?,?,?,?,?,?,?,?,?,?)');
    for(const r of rows)ins.run(r.k,r.g,r.d,String(r.d).slice(0,7),r.l,r.s,r.u,r.st,r.id,r.n,r.un?1:0);
+   state.steps=buildXSteps(sql);
    state.signals=buildXSignals(sql);
    sql.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').run(X_CASES_KEY,JSON.stringify(state));
    sql.exec('COMMIT');
   }catch(e){sql.exec('ROLLBACK');throw e;}
  }
  return {...state,seconds:Math.round((Date.now()-t0)/1000)};
+}
+
+/* Verlauf je Vorgang (Migration 0041): aus dem Zeitstrahl der Karte (events) erste Sitzung, Stationen, Dauer bis zur Entscheidung,
+   Abstimmung und Änderung. Ohne Spalten (Migration fehlt) bleibt alles wie vorher. */
+const DECIDED=['approved','rejected','postponed'];
+const day=d=>String(d||'').slice(0,10);
+/** @param {{date?:string,status?:string,committee?:string,result?:string}[]} events
+    @param {string|{date:string,status:string,gremium:string}} card Karte des Vorgangs: ohne Zeitstrahl ihre Sitzung als einzige Station */
+export function caseSteps(events,card=''){
+ const c=typeof card==='string'?{date:card,status:'',gremium:''}:card,fallback=c.date;
+ if(!(Array.isArray(events)&&events.length)&&c.gremium)events=[{date:c.date,status:c.status,committee:c.gremium}];
+ const ev=(Array.isArray(events)?events:[]).map((e,i)=>({d:day(e?.date),st:String(e?.status||''),g:String(e?.committee||'').replace(/\s+/g,' ').trim(),res:e?.result,i}));
+ const dated=ev.filter(e=>e.d).sort((a,b)=>a.d.localeCompare(b.d)||a.i-b.i);
+ const ordered=[...dated,...ev.filter(e=>!e.d)];
+ // Entscheidung: letzte Station mit Entscheidung (datierte zuerst), wie bisher in den Beschlüssen
+ const dec=[...dated].reverse().find(e=>DECIDED.includes(e.st))||[...ev].reverse().find(e=>DECIDED.includes(e.st));
+ const r=dec?readResult(dec.res):{vote:null,change:null};
+ const days=dated.length>=2&&dec?.d&&dec.d>=dated[0].d?Math.round((Date.parse(dec.d)-Date.parse(dated[0].d))/864e5):null;
+ return {first:dated[0]?.d||day(fallback),steps:ordered.map(e=>[e.d,e.st,e.g.replace(/[\t\n]/g,' ')].join('\t')).join('\n'),days,vote:r.vote||'',changed:r.change||''};
+}
+/** Stationen „Datum<TAB>Status<TAB>Gremium“ je Zeile zurück in Objekte */
+export const parseSteps=s=>s?String(s).split('\n').map(l=>{const [d,st,g]=l.split('\t');return {d,st,g};}):[];
+function buildXSteps(sql){
+ const cols=new Set(sql.prepare("SELECT name FROM pragma_table_info('x_cases')").all().map(r=>r.name));
+ if(!cols.has('steps'))return null;
+ const up=sql.prepare('UPDATE x_cases SET first_date=?,steps=?,days=?,vote=?,changed=? WHERE case_key=?');let n=0;
+ for(const r of sql.prepare("SELECT x.case_key k,x.date d,x.status st,c.gremium g,json_extract(t.payload,'$.events') ev FROM x_cases x LEFT JOIN topics t ON t.id=x.card_id LEFT JOIN search_cards c ON c.id=x.card_id").iterate()){
+  let ev=[];try{ev=r.ev?JSON.parse(r.ev):[];}catch{/* kaputter Zeitstrahl: ohne Stationen */}
+  const c=caseSteps(ev,{date:r.d,status:r.st,gremium:r.g||''});up.run(c.first,c.steps,c.days,c.vote,c.changed,r.k);n++;
+ }
+ return n;
 }
 
 /* Signale (Migration 0039): je Kategorie die Vorgänge mit Art und Stand, aus denselben Abfragen wie plenara-x-signals.mjs.
