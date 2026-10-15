@@ -15,7 +15,7 @@ import {atRevisionStale,paramsKey} from './revision-cache.mjs';
  * Vorgängen mit Entscheidung (beschlossen, abgelehnt, vertagt). Die meisten Einträge haben keinen bekannten Status; das wird mit ausgewiesen.
  * Gezählt werden Vorgänge wie überall in plenara.X: Auswahl über die Suche (source), Vorgänge aus x_cases (ohne Formalien), vollständig,
  * ohne Stichprobe. Stand, Quote, Themen, Länder: Endstand des Vorgangs; Gremienebene: jede Station (x_cases.steps, Ausschuss empfiehlt,
- * Rat beschließt), je Vorgang, Ebene und Status einmal; Abstimmung, Änderung und Dauer: Spalten vote, changed, days (Bau, Migration 0040). Ausschüsse empfehlen meist nur,
+ * Rat beschließt), je Vorgang, Ebene und Status einmal; Abstimmung, Änderung und Dauer: Spalten vote, changed, days (Bau, Migration 0041). Ausschüsse empfehlen meist nur,
  * deshalb keine Beschlussquote für sie. Je Themenfeld und Land steht dabei, ob die Quote vom Gesamtwert deutlich abweicht
  * (Wilson-Spanne 95 % schließt ihn aus); sonst gilt sie als üblich.
  */

@@ -36,7 +36,7 @@ export function buildXCases(sql,{today=new Date().toISOString().slice(0,10),dry=
  return {...state,seconds:Math.round((Date.now()-t0)/1000)};
 }
 
-/* Verlauf je Vorgang (Migration 0040): aus dem Zeitstrahl der Karte (events) erste Sitzung, Stationen, Dauer bis zur Entscheidung,
+/* Verlauf je Vorgang (Migration 0041): aus dem Zeitstrahl der Karte (events) erste Sitzung, Stationen, Dauer bis zur Entscheidung,
    Abstimmung und Änderung. Ohne Spalten (Migration fehlt) bleibt alles wie vorher. */
 const DECIDED=['approved','rejected','postponed'];
 const day=d=>String(d||'').slice(0,10);
