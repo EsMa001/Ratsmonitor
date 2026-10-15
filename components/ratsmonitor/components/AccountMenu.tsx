@@ -1,15 +1,17 @@
 import Link from 'next/link';
+import {useRouter} from 'next/navigation';
 import {useEffect,useRef,useState} from 'react';
 import {IconBookmark,IconCalendar,IconHeart,IconUser} from './icons';
 import {useDarkMode} from '../lib/useDarkMode';
 import {useSavedArticles} from '../lib/savedArticles';
 import {useAccount} from '../state/account';
-import {useTier} from '../lib/tier';
-import {logout as testLogout,useTestMails} from '../lib/testAuth';
+import {logout,useMe} from '../lib/account';
+import {IS_DEV} from '../lib/tier';
 
-/** Symbole rechts in der Kopfzeile: Admin, gespeicherte Suchen, Kalender, gespeicherte Artikel, Konto (mit kleinem Menü) */
+/** Symbole rechts in der Kopfzeile: Admin (nur mit Admin-Recht hier), gespeicherte Suchen, Kalender, gespeicherte Artikel, Konto (mit kleinem Menü) */
 export function AccountMenu({currentPage}:{currentPage:string}){
- const {saved}=useAccount(),articles=useSavedArticles(),{tier}=useTier();
+ const {saved}=useAccount(),articles=useSavedArticles(),me=useMe();
+ const router=useRouter();
  const [dark,setDark]=useDarkMode();
  const [open,setOpen]=useState(false);
  const ref=useRef<HTMLDivElement>(null);
@@ -27,14 +29,12 @@ export function AccountMenu({currentPage}:{currentPage:string}){
  const cls=(on:boolean)=>`${base} ${on?'bg-teal-50 text-teal-700':'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`;
  const badge='absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-700 px-[3px] text-[12px] font-semibold leading-none text-white';
  const item='block rounded-lg px-3 py-2 text-[14px] text-slate-900 no-underline hover:bg-slate-100';
- const loggedIn=tier!=='guest';
- /* Testmodus: Abmelden beendet die Testsitzung in diesem Browser */
- const logout=()=>{setOpen(false);testLogout();};
- const unread=useTestMails().filter(m=>!m.read).length;
+ const loggedIn=!!me.user;
+ const signOut=async()=>{setOpen(false);await logout();router.push('/');};
  return <nav aria-label="Konto" className="flex items-center gap-0.5">
-  <Link href="/admin" title="Administration" aria-label="Administration" className={cls(false)}>
+  {me.adminHere&&<Link href="/admin" title="Administration" aria-label="Administration" className={cls(false)}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
-  </Link>
+  </Link>}
   <button type="button" title={dark?'Heller Modus':'Dunkler Modus'} aria-label={dark?'Heller Modus':'Dunkler Modus'} aria-pressed={dark} onClick={()=>setDark(!dark)} className={cls(false)}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{dark?<><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>:<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>}</svg>
   </button>
@@ -54,13 +54,11 @@ export function AccountMenu({currentPage}:{currentPage:string}){
     <IconUser size={19}/>
    </button>
    {open&&<div role="menu" onKeyDown={e=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}}} className="absolute right-0 top-[calc(100%+13px)] z-[1100] w-[220px] max-sm:w-[190px] sm:top-[calc(100%+17px)] rounded-2xl border border-slate-200 bg-white p-1.5 shadow-pop">
-    {!loggedIn&&<>
-     <Link role="menuitem" href="/anmelden" className={item} onClick={()=>setOpen(false)}>Anmelden</Link>
-     <Link role="menuitem" href="/registrieren" className={item} onClick={()=>setOpen(false)}>Registrieren</Link>
-    </>}
+    {loggedIn&&<p className="m-0 truncate px-3 pb-1 pt-2 text-[12px] text-slate-500" title={me.user?.email}>{me.user?.email}</p>}
+    {!loggedIn&&me.accounts&&<Link role="menuitem" href="/anmelden" className={item} onClick={()=>setOpen(false)}>Anmelden</Link>}
     <Link role="menuitem" href="/konto/profil" className={item} onClick={()=>setOpen(false)}>Konto</Link>
-    <Link role="menuitem" href="/konto/postfach" className={`${item} flex items-center justify-between`} onClick={()=>setOpen(false)}>Test-Postfach{unread>0&&<span className="text-[12px] text-teal-700">{unread} neu</span>}</Link>
-    {loggedIn&&<button role="menuitem" type="button" onClick={logout} className={`${item} w-full text-left`}>Abmelden</button>}
+    {IS_DEV&&<Link role="menuitem" href="/konto/postfach" className={item} onClick={()=>setOpen(false)}>Dev-Postfach</Link>}
+    {loggedIn&&<button role="menuitem" type="button" onClick={()=>void signOut()} className={`${item} w-full text-left`}>Abmelden</button>}
    </div>}
   </div>
  </nav>;

@@ -30,3 +30,5 @@ ProtectKernelTunables=yes
 ProtectKernelModules=yes
 ProtectControlGroups=yes
 RestrictSUIDSGID=yes
+# Konten: dieser Job sieht die Kontendatei nicht (requirements/konten-konzept.md 3.2)
+InaccessiblePaths=-/srv/ratsmonitor/accounts

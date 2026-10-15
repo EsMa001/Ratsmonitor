@@ -1,0 +1,10 @@
+# Anhalten aus der Administration (server/integrations/job-trigger.mjs, triggerStop): /srv/ratsmonitor/data/trigger/stop-accounts
+[Unit]
+Description=Ratsmonitor: accounts anhalten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/stop-accounts
+Unit=ratsmonitor-stop@accounts.service
+
+[Install]
+WantedBy=multi-user.target

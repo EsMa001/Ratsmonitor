@@ -11,3 +11,11 @@ export function memoryDb({migrations=true,skip=()=>false}={}){
  return {sql,db:sqliteAdapter(sql)};
 }
 export {sqliteAdapter};
+const ACCOUNT_MIGRATIONS=new URL('../../drizzle-accounts/',import.meta.url);
+/** Kontendatei im Speicher (drizzle-accounts/), wie auf dem Server getrennt von den Inhalten */
+export function accountsMemoryDb(){
+ const sql=new DatabaseSync(':memory:');
+ sql.exec('PRAGMA foreign_keys=ON');
+ for(const file of fs.readdirSync(ACCOUNT_MIGRATIONS).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL(file,ACCOUNT_MIGRATIONS),'utf8'));
+ return {sql,db:sqliteAdapter(sql)};
+}

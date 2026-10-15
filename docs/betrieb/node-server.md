@@ -484,13 +484,82 @@ install -m 755 deploy/node/backup.sh /usr/local/bin/ratsmonitor-backup   # nur, 
 Danach die Jobs im Reiter „Jobs & Zeitpläne“ einschalten. Der erste Lauf von `fetch.mjs` oder `text.mjs` überträgt die alten
 Fehler (einige Sekunden). Sicherung außer Haus: `BACKUP_REMOTE` (rclone-Ziel) in `ratsmonitor.env`, rclone installieren.
 
+## Konten (Thema 1, seit 13.10.2026 im Code, auf dem Server noch nicht eingerichtet)
+
+Konzept: `requirements/konten-konzept.md`. Anmeldung per E-Mail-Link oder achtstelligem Code, ohne Passwort. Admin ist
+eine Rolle am Konto und gilt nur über den Tunnel (`ADMIN_HOSTS`). Die Zugangssperre `RM_ACCESS=invite` ersetzt das
+Basic-Auth-Passwort, sobald sie geprüft ist.
+
+**Wo was liegt**
+
+| Pfad | Inhalt |
+|---|---|
+| `/srv/ratsmonitor/accounts/` | Kontenordner, `ratsmonitor`, Rechte 700; nur Webdienst und Kontojob sehen ihn (`InaccessiblePaths` in allen anderen Einheiten) |
+| `/srv/ratsmonitor/accounts/accounts.sqlite` | Kontendatei (eigene Datei, nie in Entwicklerkopien, Export oder MCP) |
+| `/etc/ratsmonitor/accounts.env` | `ACCOUNTS_FILE`, `ACCOUNTS_SECRET`, `MAIL_API_KEY`, `ACCOUNTS_AGE_RECIPIENT`; root, 600; Vorlage `deploy/node/accounts.env.example` |
+| `/srv/ratsmonitor/accounts/backups/` | verschlüsselte Sicherungen (`accounts-*.sqlite.zst.age`, 7 Stände) und `pre-<commit>` vor jeder Kontomigration |
+| `/srv/ratsmonitor/accounts/deleted.log` | Löschprotokoll (Hash der Konto-ID, HMAC der Adresse), für `reapply-deletions` nach dem Rückspielen |
+| `/srv/ratsmonitor/accounts/maintenance.log` | Protokoll des Kontojobs |
+
+**Einrichten (einmal, als root)**
+
+```bash
+apt install age sqlite3
+mkdir -p /srv/ratsmonitor/accounts/backups && chown -R ratsmonitor:ratsmonitor /srv/ratsmonitor/accounts && chmod -R 700 /srv/ratsmonitor/accounts
+mkdir -p /etc/ratsmonitor && chmod 700 /etc/ratsmonitor
+cp /srv/ratsmonitor/app/current/deploy/node/accounts.env.example /etc/ratsmonitor/accounts.env
+chmod 600 /etc/ratsmonitor/accounts.env      # ACCOUNTS_SECRET: openssl rand -base64 48
+# age-Schlüssel auf dem eigenen Rechner erzeugen (age-keygen -o plenara-konten.key), privaten Teil offline bei Max und
+# Nico ablegen, nur den öffentlichen (age1…) als ACCOUNTS_AGE_RECIPIENT eintragen
+sudo -u ratsmonitor node /srv/ratsmonitor/app/current/scripts/node-migrate.mjs /srv/ratsmonitor/accounts/accounts.sqlite --dir drizzle-accounts --table accounts_migrations
+install -m 755 /srv/ratsmonitor/app/current/deploy/node/ratsmonitor-accounts /usr/local/bin/ratsmonitor-accounts
+cd /srv/ratsmonitor/app/current/deploy/node && cp ratsmonitor.service ratsmonitor-*.service ratsmonitor-*.timer ratsmonitor-*.path /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now ratsmonitor-accounts.timer ratsmonitor-accounts.path ratsmonitor-stop-accounts.path
+mkdir -p /etc/systemd/journald.conf.d && cp journald-ratsmonitor.conf /etc/systemd/journald.conf.d/ratsmonitor.conf && systemctl restart systemd-journald
+```
+
+In `ratsmonitor.env` die Werte aus `ratsmonitor.env.example`, Abschnitt Konten, ergänzen (`RM_ACCESS`, `ADMIN_HOSTS`,
+`ADMIN_LEGACY_HEADER`, `MAIL_*`, `OPERATOR_EMAIL`, `SITE_URL`). `deploy/node/deploy.sh` sichert und migriert die
+Kontendatei danach bei jedem Stand selbst (nur additive Migrationen, `drizzle-accounts/`) und prüft `/api/internal/health`.
+
+**Kontenverwaltung** nur per Kommandozeile, Adressen immer über die Eingabe, nie als Argument:
+
+```bash
+ratsmonitor-accounts invite --email-stdin --note "Gespräch 14.10., Zustimmung" --tier pro --until 2027-01-31 --send
+ratsmonitor-accounts role admin --email-stdin          # Rolle beendet alle Sitzungen der Person
+ratsmonitor-accounts list            # Adressen gekürzt; --full zeigt sie ganz, --invites die Einladungen
+ratsmonitor-accounts login-link --base http://127.0.0.1:8080 --email-stdin   # Notzugang, wenn der Mailversand ausfällt
+ratsmonitor-accounts block --note "Grund" --id u_…  |  unblock  |  revoke  |  delete  |  export --out datei.json
+```
+
+`HISTCONTROL=ignoreboth` in der Shell von root setzen. Nach dem Rückspielen einer Sicherung der Kontendatei immer
+`ratsmonitor-accounts reapply-deletions`.
+
+**Umstellen ohne Ausfall** (Konzept 14.2, Caddy-Fassungen in `deploy/node/caddy/`, vor jedem Neuladen
+`node scripts/check-caddy.mjs /etc/caddy/Caddyfile`):
+
+1. Caddy Schritt 0 (`snippets.caddy` + `step0.caddy`, Hash von Hand): Admin-Kennung nur noch im Tunnel, die
+   öffentliche Site sperrt `/admin*`. Die mobile Administration über sslip.io entfällt damit.
+2. Konten einrichten (oben), Release mit Konten ausrollen; `RM_ACCESS=open`, `ADMIN_LEGACY_HEADER=1`.
+3. Max und Nico einladen, `role admin`, im Tunnel unter `http://127.0.0.1:8080/anmelden` per Code anmelden.
+4. Umschalten: `ADMIN_LEGACY_HEADER=0`, Caddy `step2.caddy`, `RM_ADMIN_*` aus `/etc/default/caddy` löschen.
+5. `RM_ACCESS=invite`, Basic-Auth vorerst davor lassen, Sperre prüfen.
+6. Mit Domain, Mailanbieter und Rechtstexten: Caddy `step3.caddy`, `SITE_URL` auf die Domain, Tester in Wellen einladen.
+
+Rückweg: `ADMIN_LEGACY_HEADER=1` (bis Schritt 4), Basic-Auth-Block wieder einsetzen. Ohne Kontendatei und ohne
+`ADMIN_LEGACY_HEADER` gilt der alte Admin-Weg automatisch weiter; ein Stand mit Konten sperrt sich also nicht selbst aus.
+
+**Lokal:** Der Dev-Start (`npm run dev`) spielt die Kontotabellen in die lokale D1-Datei und legt `basic@`, `pro@`,
+`enterprise@` und `admin@plenara.test` an (`scripts/accounts/dev-setup.mjs`, abschaltbar mit `RM_SKIP_ACCOUNTS=1`).
+Mails landen im Dev-Postfach (`/konto/postfach`), Anmelden ohne Mail über `/api/dev/login`. Die Administration bleibt
+im Dev-Server ohne Anmeldung offen.
+
 ## Vor dem Öffnen für andere
 
 Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain erreichbar wird:
 
-- **Admin-Zugang trennen.** Heute ist jeder mit Zugang Admin. Caddy darf die Admin-Kennung nur unter `/admin*` und
-  `/api/admin*` nach eigener Anmeldung setzen; der Rest wird ohne Anmeldung ausgeliefert. Abmelden geht mit
-  HTTP-Basic-Anmeldung nicht (der Browser schickt das Passwort weiter); dafür ein Anmeldedienst mit Sitzung.
+- **Admin-Zugang trennen:** mit den Konten (Abschnitt „Konten“, Schritte 1 bis 4): Admin nur als Rolle am Konto über
+  den Tunnel, die öffentliche Site sperrt `/admin*`.
 - **`SITE_URL`** auf die https-Adresse setzen, `VINEXT_TRUST_PROXY=1` bleibt.
 - **Ausgehende Verbindungen sperren**, die nicht ins Internet gehen (127.0.0.0/8, 10/8, 172.16/12, 192.168/16,
   169.254/16, ::1, fc00::/7) für den Benutzer `ratsmonitor`. `/api/dokument` lädt gespeicherte Quellenadressen; seit

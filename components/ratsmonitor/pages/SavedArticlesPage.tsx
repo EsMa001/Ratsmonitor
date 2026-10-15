@@ -1,26 +1,33 @@
 import Link from "next/link";
 import { IconBookmark } from "../components/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FilterSelect } from "../components/FilterSelect";
 import { StepTimeline } from "../components/results/ArticleCard";
 import type { Article } from "../types";
-import { removeSavedArticle, restoreSavedArticle, useSavedArticles } from "../lib/savedArticles";
+import { removeSavedArticle, restoreSavedArticle, useSavedArticles, useSavedArticlesReady } from "../lib/savedArticles";
 import { useToast } from "../state/toast";
 import { queue } from "../lib/queue";
 import { loadTopic } from "../lib/topicCache";
-import { FollowButton } from "../components/FollowButton";
+import { FollowButton, NOTIFY_LATER } from "../components/FollowButton";
 import { MONTH_SHORT, fmtDate } from "../lib/text";
 import { useEntitlements } from "../lib/entitlements";
-import { LoginRequired, UsagePill } from "../components/TierNotice";
+import { useCatalog } from "../lib/catalog";
+import { AccountLoading, LoginRequired, UsagePill } from "../components/TierNotice";
 import { PageHead } from "../info/blocks";
 
-/** Liste der gespeicherten Artikel (Lesezeichen) */
+/** Liste der gespeicherten Artikel (Lesezeichen) im Konto */
 export function SavedArticlesPage() {
-  const list = useSavedArticles();
+  const stored = useSavedArticles();
+  const loaded = useSavedArticlesReady();
   const toast = useToast();
-  const remove = (id: string) => {
-    const hit = removeSavedArticle(id);
-    if (hit) toast("Artikel entfernt.", { label: "Rückgängig", run: () => restoreSavedArticle(hit) });
+  /* Ort: von der Seite, auf der gespeichert wurde, sonst aus dem Gebiet des Servers (Katalog erst bei Bedarf) */
+  const regions = useCatalog(stored.some((a) => !a.gemeinde && a.region));
+  const list = useMemo(() => stored.map((a) => (a.gemeinde || !a.region ? a : { ...a, gemeinde: regions?.find((r) => r.id === a.region)?.name ?? "" })), [stored, regions]);
+  const remove = async (id: string) => {
+    const hit = stored.find((a) => a.id === id);
+    const err = await removeSavedArticle(id);
+    if (err) return toast(err);
+    if (hit) toast("Artikel entfernt.", { label: "Rückgängig", run: () => void restoreSavedArticle(hit).then((e) => e && toast(e)) });
   };
   /* Suchen, nach Benachrichtigung filtern und sortieren */
   const [find, setFind] = useState("");
@@ -30,25 +37,26 @@ export function SavedArticlesPage() {
   const shown = list
     .filter((a) => (only === "all" || a.follow) && (!n || [a.title, a.gemeinde, a.teaser].join(" ").toLowerCase().includes(n)))
     .sort((x, y) => (sort === "date" ? (y.date || "").localeCompare(x.date || "") : (y.savedAt || "").localeCompare(x.savedAt || "")));
-  const { tier, used, max } = useEntitlements();
-  if (tier === "guest")
+  const { tier, ready: tierReady, signedIn, used, max } = useEntitlements();
+  /* Ohne Anmeldung bzw. ohne freigeschaltete Stufe: Hinweis; gemerkte Artikel eines Kontos bleiben sichtbar */
+  if (!tierReady || (tier === "guest" && (!signedIn || (loaded && !list.length))))
     return (
       <>
         <PageHead icon="fileText" label="Artikel" name="Gespeicherte Artikel" />
         <section className="ri-sec ri-sec--tight">
-          <LoginRequired title="Artikel speichern" text="Melden Sie sich kostenlos an, um Artikel zu speichern und bei Neuigkeiten zu einem Vorgang benachrichtigt zu werden." />
+          {tierReady ? <LoginRequired title="Artikel speichern" text="Melden Sie sich an, um Artikel in Ihrem Konto zu speichern und später wiederzufinden." /> : <AccountLoading />}
         </section>
       </>
     );
   return (
     <>
-      <PageHead icon="fileText" label="Artikel" name={`Gespeicherte Artikel${list.length ? ` (${list.length})` : ""}`} title={<>Gemerkt.<br />Und nichts verpasst.</>} lead="Mit der Glocke werden Sie informiert, sobald es zu einem Vorgang Neuigkeiten gibt.">
+      <PageHead icon="fileText" label="Artikel" name={`Gespeicherte Artikel${list.length ? ` (${list.length})` : ""}`} title={<>Gemerkt.<br />Und nichts verpasst.</>} lead={`Ihre gemerkten Vorgänge mit ihrem Verlauf. Benachrichtigungen zu einem Vorgang: ${NOTIFY_LATER.toLowerCase()}.`}>
         <div className="mt-4 flex flex-wrap gap-2">
           <UsagePill label="Artikel" used={used.bookmarks} max={max.bookmarks} />
-          <UsagePill label="Benachrichtigungen" used={used.notifications} max={max.notifications} />
         </div>
       </PageHead>
       <section className="ri-sec ri-sec--tight">
+      {!loaded && <AccountLoading />}
 
       {list.length > 0 && (
         <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -64,14 +72,13 @@ export function SavedArticlesPage() {
         </div>
       )}
       {list.length > 0 && !shown.length && <p className="m-0 py-6 text-slate-500">Keine gespeicherten Artikel passen zu Ihrer Suche.</p>}
-      {!list.length && (
+      {loaded && !list.length && (
         <div className="flex flex-col items-center px-6 py-10 text-center">
           <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-700">
             <IconBookmark size={26} />
           </span>
           <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Artikel</h2>
           <p className="m-0 max-w-[44ch] text-slate-500">Tippen Sie bei einem Artikel auf das Lesezeichen, um ihn hier zu sammeln.</p>
-          <p className="m-0 mt-2 max-w-[48ch] text-[14px] text-slate-500">Mit der Glocke folgen Sie einem Vorgang: Sie werden benachrichtigt, sobald er weiter beraten oder beschlossen wird.</p>
           <Link className="btn-primary mt-5" href="/suche">
             Artikel entdecken
           </Link>
@@ -93,14 +100,15 @@ export function SavedArticlesPage() {
               </Link>
               <p className="m-0 mt-0.5 text-[14px] font-medium text-slate-500">{a.gemeinde}</p>
               {/^\d{4}-\d{2}-\d{2}/.test(a.date || "") && <p className="sr-only">Sitzung am {fmtDate(a.date)}</p>}
-              {a.follow && <p className="m-0 mt-1 text-[12px] text-teal-700">Sie werden über Neuigkeiten informiert</p>}
+              {a.follow && <p className="m-0 mt-1 text-[12px] text-slate-500">Benachrichtigung vorgemerkt ({NOTIFY_LATER.toLowerCase()})</p>}
+              {a.active === false && <p className="m-0 mt-1 text-[12px] text-amber-800">Nicht aktiv: über der Grenze Ihrer Stufe gespeichert.</p>}
               {/* Vorgangsverlauf: alle bisherigen Beratungen, der aktuelle Schritt rechts */}
               <Verlauf id={a.id} fallback={a.teaser} />
             </div>
             <FollowButton article={a} />
             <button
               type="button"
-              onClick={() => remove(a.id)}
+              onClick={() => void remove(a.id)}
               title="Entfernen"
               aria-label="Aus gespeicherten Artikeln entfernen"
               className="grid h-9 w-9 flex-none place-items-center rounded-lg text-teal-700 hover:bg-teal-50"

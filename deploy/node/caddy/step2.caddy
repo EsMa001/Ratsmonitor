@@ -1,0 +1,15 @@
+# Schritt 2 (Umschalten, ADMIN_LEGACY_HEADER=0): auch der Tunnel setzt keine Kennung mehr; Admin nur über das Konto.
+# Danach RM_ADMIN_* aus /etc/default/caddy entfernen.
+http://localhost:8080, http://127.0.0.1:8080 {
+	bind 127.0.0.1
+	import app_proxy
+}
+
+187-7-72-52.sslip.io {
+	header X-Robots-Tag "noindex, nofollow"
+	import public_site
+	basicauth {
+		plenara HASH_NUR_AUF_DEM_SERVER
+	}
+	import app_proxy
+}

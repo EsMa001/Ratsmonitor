@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DarkCta } from "../info/blocks";
-import { useTier } from "../lib/tier";
+import { useMe } from "../lib/account";
 import { useBrand, useBrandText } from "../lib/brand";
 
 const GROUPS: { title: string; links: [string, string][] }[] = [
@@ -17,14 +17,14 @@ export function Footer() {
   const { name } = useBrand();
   const brandText = useBrandText();
   const path = usePathname();
-  const { tier } = useTier();
+  const me = useMe();
   return (
     <>
     {/* Abstand, damit Inhalt wie die Seitenzahl nicht im Verlauf des Abschlusses steht */}
     {!OWN_CTA(path) && <div className="ri pt-16 print:hidden">{
-      /* Auf Konto-, Anmelde- und Registrierseiten steht die Aufforderung schon im Inhalt: dort kein zweites Mal */
-      tier === "guest" && !(path.startsWith("/konto/") || path === "/anmelden" || path === "/registrieren") ? (
-        <DarkCta title="Starten Sie kostenlos" sub="Alle Treffer und Filter, Suchen speichern. Ohne Zahlungsdaten." action={<Link href="/registrieren?tarif=free" className="ri-btn ri-btn--inv">Konto erstellen</Link>} />
+      /* Ohne Anmeldung: Hinweis auf das Konto (nicht auf Konto- und Anmeldeseiten, nicht in der geschlossenen Testphase) */
+      me.ready && me.accounts && !me.user && me.access !== "invite" && !(path.startsWith("/konto/") || path.startsWith("/anmelden") || path === "/registrieren") ? (
+        <DarkCta title="Mit Konto speichern" sub="Suchen und Artikel im Konto speichern. Anmeldung mit einem Link per E-Mail, ohne Passwort." action={<Link href="/anmelden" className="ri-btn ri-btn--inv">Anmelden</Link>} />
       ) : (
         <DarkCta title="Fragen oder Anregungen?" sub={`Wir freuen uns über Ihr Feedback zu ${name}.`} action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />
       )}</div>}

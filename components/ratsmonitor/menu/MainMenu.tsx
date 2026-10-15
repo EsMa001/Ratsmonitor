@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKe
 import { createPortal } from "react-dom";
 import { BRANCHEN } from "../info/content";
 import { Icon } from "../info/icons";
-import { useTier } from "../lib/tier";
+import { useMe } from "../lib/account";
 import { IconChevronDown } from "../components/icons";
 
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
@@ -50,7 +50,7 @@ export function MainMenu() {
   const [open, setOpen] = useState<false | "all" | "funktionen" | "analyse" | "usecases" | "info">(false);
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
-  const { tier } = useTier();
+  const me = useMe();
   /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
   const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/anwender/") ? "usecases" : path.startsWith("/analytics") ? "analyse" : ["/preise", "/videos", "/datenabdeckung", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -215,10 +215,10 @@ export function MainMenu() {
                   </ul>
                 )}
               </nav>
-              {open === "all" && tier === "guest" && (
+              {open === "all" && me.ready && me.accounts && !me.user && (
                 <div className="ri-menu__start">
-                  <Link href="/registrieren?tarif=free" className="btn-secondary w-full" onClick={pick}>
-                    Kostenlos starten
+                  <Link href="/anmelden" className="btn-secondary w-full" onClick={pick}>
+                    Anmelden
                   </Link>
                   <p>Suchen speichern und Beschlüsse merken.</p>
                 </div>

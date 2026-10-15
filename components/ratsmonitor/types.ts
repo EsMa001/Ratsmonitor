@@ -119,6 +119,12 @@ export interface SavedSearch {
   notify: { on: boolean; freq: NotifyFreq; mail?: boolean; email?: string; /** weitere Empfänger dieser Suche (Enterprise) */ recipients?: string[] };
   created: string; // ISO
   lastSeen: string; // ISO
+  /** Konto: false = über der Grenze der Stufe gespeichert (zählt nicht, benachrichtigt nicht) */
+  active?: boolean;
+  /** Konto: Listenplatz (für „Rückgängig“) */
+  position?: number;
+  /** Konto: gespeicherte Abfrage (savedSearchQuery); null = beim nächsten Öffnen nachtragen */
+  query?: string | null;
 }
 
 export interface Profile {

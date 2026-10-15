@@ -1,0 +1,12 @@
+# Alle 10 Minuten den Zeitplaner fragen (ratsmonitor-accounts.service); ob der Kontojob dran ist, steht im Admin-Reiter „Jobs & Zeitpläne“.
+[Unit]
+Description=Ratsmonitor accounts, Zeitplaner
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=false
+AccuracySec=1min
+Unit=ratsmonitor-accounts.service
+
+[Install]
+WantedBy=timers.target

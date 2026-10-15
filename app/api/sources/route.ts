@@ -1,3 +1,4 @@
+import {gated} from '@/server/services/session';
 import {env} from 'cloudflare:workers';
 import {getRegionCoverage} from '@/server/repositories/regions';
 import {atRevision} from '@/server/integrations/revision-cache.mjs';
@@ -34,7 +35,8 @@ async function sourcesSummary(){
 }
 
 /** Öffentliche Übersicht für „Quellen & Abdeckung“: nur angebundene Gebiete, kompakt, ohne Rohdaten */
-export async function GET(){
+export const GET=gated(sourcesGet);
+async function sourcesGet(){
  try{
   // Ändert sich nur mit Importen: gehalten, solange der Datenstand gleich bleibt, und im Browser kurz wiederverwendbar.
   const summary=env.DB?await atRevision(env.DB,'sources',sourcesSummary,{sources:true}):await sourcesSummary();

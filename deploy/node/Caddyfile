@@ -1,3 +1,6 @@
+# Caddy für den Node-Betrieb vor den Konten. Mit den Konten gelten die Fassungen in deploy/node/caddy/ (snippets.caddy
+# plus step0 … step3, requirements/konten-konzept.md 6.3); dieses Snippet setzt die Admin-Kennung für jede Site, die es
+# importiert, und darf nie für eine öffentliche Site benutzt werden (scripts/check-caddy.mjs prüft das).
 # Caddy für den Node-Betrieb: /etc/caddy/Caddyfile, danach `systemctl reload caddy`.
 #
 # Die App erkennt den Admin über die Kopfzeilen oai-authenticated-user-* (app/chatgpt-auth.ts).

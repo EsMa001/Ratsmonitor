@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const [command, ...args] = process.argv.slice(2);
@@ -27,6 +27,14 @@ if (command === "dev" && !process.env.RM_SKIP_ADMIN_REFRESH) {
 if (command === "dev" && !process.env.RM_SKIP_DEV_JOBS) {
   try {
     spawn(process.execPath, ["--no-warnings", fileURLToPath(new URL("./dev-jobs.mjs", import.meta.url)), String(process.pid)], { stdio: "ignore", detached: true, cwd: fileURLToPath(new URL("..", import.meta.url)) }).unref();
+  } catch { /* Hilfe beim Start, kein Muss */ }
+}
+
+// Dev: Kontotabellen (drizzle-accounts/) in die lokale D1-Datei einspielen und Testkonten anlegen (basic@, pro@,
+// enterprise@, admin@plenara.test; requirements/konten-konzept.md 13). Wenige Millisekunden, vor dem Start des Servers.
+if (command === "dev" && !process.env.RM_SKIP_ACCOUNTS) {
+  try {
+    spawnSync(process.execPath, ["--no-warnings", fileURLToPath(new URL("./accounts/dev-setup.mjs", import.meta.url))], { stdio: "inherit", cwd: fileURLToPath(new URL("..", import.meta.url)) });
   } catch { /* Hilfe beim Start, kein Muss */ }
 }
 

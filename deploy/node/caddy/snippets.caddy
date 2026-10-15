@@ -1,0 +1,65 @@
+# Gemeinsame Bausteine der Caddy-Fassungen (requirements/konten-konzept.md 6.3). Die Fassungen je Schritt importieren sie:
+#   cat deploy/node/caddy/snippets.caddy deploy/node/caddy/step0.caddy > /etc/caddy/Caddyfile   (Hash von Hand ergänzen)
+# Kein `encode`: vinext komprimiert selbst und lässt den Suchstrom (application/x-ndjson) bewusst unkomprimiert.
+
+# Proxy zur App mit den Cache-Regeln der statischen Dateien (siehe deploy/node/Caddyfile)
+(app_proxy) {
+	@static_data path /data/* /geo/*
+	header @static_data {
+		Cache-Control "public, max-age=86400, stale-while-revalidate=604800"
+		defer
+	}
+	@static_fonts path /fonts/*
+	header @static_fonts {
+		Cache-Control "public, max-age=2592000"
+		defer
+	}
+	reverse_proxy 127.0.0.1:3000 {
+		flush_interval -1
+		transport http {
+			keepalive 30s
+		}
+	}
+}
+
+# Übergang (Schritt 0 und 1): nur im Tunnel setzt Caddy noch die alte Admin-Kennung (ADMIN_LEGACY_HEADER)
+(app_proxy_legacy_identity) {
+	@static_data path /data/* /geo/*
+	header @static_data {
+		Cache-Control "public, max-age=86400, stale-while-revalidate=604800"
+		defer
+	}
+	@static_fonts path /fonts/*
+	header @static_fonts {
+		Cache-Control "public, max-age=2592000"
+		defer
+	}
+	reverse_proxy 127.0.0.1:3000 {
+		header_up Oai-Authenticated-User-Id {$RM_ADMIN_USER_ID}
+		header_up Oai-Authenticated-User-Email {$RM_ADMIN_EMAIL}
+		header_up -Oai-Authenticated-User-Full-Name
+		header_up -Oai-Authenticated-User-Full-Name-Encoding
+		flush_interval -1
+		transport http {
+			keepalive 30s
+		}
+	}
+}
+
+# Jede öffentliche Site: keine Admin-Kennung von außen, keine Administration, Sicherheitskopfzeilen
+(public_site) {
+	request_header -Oai-Authenticated-User-Id
+	request_header -Oai-Authenticated-User-Email
+	request_header -Oai-Authenticated-User-Full-Name
+	request_header -Oai-Authenticated-User-Full-Name-Encoding
+	request_header -X-Prerender-Revalidate
+	request_header -X-Prerender-Revalidate-If-Generated
+	@admin path /admin /admin/* /admin.rsc /api/admin /api/admin/*
+	respond @admin 404
+	header {
+		Content-Security-Policy "frame-ancestors 'none'"
+		X-Frame-Options DENY
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+}

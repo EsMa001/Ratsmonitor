@@ -19,3 +19,5 @@ StandardOutput=append:/srv/ratsmonitor/backups/backup.log
 StandardError=append:/srv/ratsmonitor/backups/backup.log
 NoNewPrivileges=yes
 PrivateTmp=yes
+# Konten: dieser Job sieht die Kontendatei nicht (requirements/konten-konzept.md 3.2)
+InaccessiblePaths=-/srv/ratsmonitor/accounts

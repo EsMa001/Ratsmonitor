@@ -25,3 +25,5 @@ PrivateTmp=yes
 ProtectSystem=strict
 ProtectHome=yes
 ReadWritePaths=/srv/ratsmonitor/data /srv/ratsmonitor/backups
+# Konten: dieser Job sieht die Kontendatei nicht (requirements/konten-konzept.md 3.2)
+InaccessiblePaths=-/srv/ratsmonitor/accounts

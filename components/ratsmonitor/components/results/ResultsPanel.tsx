@@ -26,7 +26,7 @@ export function ResultsPanel() {
   const view = useListView();
   const articlesReady=!res.loading;
   const { push } = useAppNav();
-  const { allowFeature, limits } = useEntitlements();
+  const { allowFeature, limits, ready } = useEntitlements();
   const pages = Math.max(1, Math.ceil(res.total / res.pageSize));
   /* Gleiche Grenze wie der Server (MAX_PAGE in monitor-search.mjs) */
   const MAX_PAGE = 250;
@@ -38,9 +38,9 @@ export function ResultsPanel() {
   };
   const pageNow = res.page, setPageNow = res.setPage;
   useEffect(() => {
-    if (!Number.isFinite(limits.maxResults) || pageNow <= 1) return;
+    if (!ready || !Number.isFinite(limits.maxResults) || pageNow <= 1) return;
     setPageNow(1);
-  }, [limits.maxResults, pageNow, setPageNow]);
+  }, [ready, limits.maxResults, pageNow, setPageNow]);
   const listRef = useRef<HTMLDivElement>(null);
   const [fade, setFade] = useState({ top: false, bottom: false, toTop: false });
 
@@ -95,7 +95,7 @@ export function ResultsPanel() {
           className={`flex flex-col px-[12px] max-sm:px-1 py-[12px] max-sm:py-0 outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
         >
           {res.results.length===0 && (!articlesReady || (res.totalPending && !res.error)) && <ResultsSkeleton />}
-          {(Number.isFinite(limits.maxResults) ? res.results.slice(0, limits.maxResults) : res.results).map((a, i) => (
+          {/* Der Server kürzt für Gäste selbst; hier nur zur Sicherheit, sobald die Stufe bekannt ist */(ready && Number.isFinite(limits.maxResults) ? res.results.slice(0, limits.maxResults) : res.results).map((a, i) => (
             <ArticleCard
               key={a.id}
               article={a}

@@ -2,7 +2,7 @@ import { useSearchParams } from "next/navigation";
 import { QuellenPage } from "./QuellenPage";
 import { BenachrichtigungenPage } from "./BenachrichtigungenPage";
 import { useEffect, type ComponentType } from "react";
-import { KontaktPage, LoginPage, RegisterPage } from "./AccountPages";
+import { ConfirmLoginPage, KontaktPage, LoginPage, RegisterPage } from "./AccountPages";
 import { BranchePage } from "./BranchenPages";
 import { brancheOf } from "../lib/routes";
 import { FaqPage } from "./FaqPage";
@@ -20,6 +20,7 @@ const PAGES: Record<string, ComponentType> = {
   "/funktionen/benachrichtigungen": BenachrichtigungenPage,
   "/preise": PreisePage,
   "/anmelden": LoginPage,
+  "/anmelden/bestaetigen": ConfirmLoginPage,
   "/kontakt": KontaktPage,
   "/agb": AgbPage,
   "/widerruf": WiderrufPage,
