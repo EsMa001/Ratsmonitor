@@ -492,6 +492,11 @@ ist, hat Gast-Rechte). Kontojob, Pfad- und Stopp-Einheiten aktiv, Sicherung mit 
 admin) angelegt; Nico fehlt noch. Sicherungen vor dem Umbau: `ratsmonitor.env.bak-vor-konten-20261015-1801`,
 `/etc/caddy/Caddyfile.bak-vor-konten-20261015-1801`, `/root/units-bak-vor-konten-20261015-1801/`.
 
+**Anmelden ohne Mailanbieter:** Mit `MAIL_TRANSPORT=log` bietet die Anmeldeseite keine Anmeldung per Mail an. Admins
+melden sich mit `LOGIN_TOTP=1` (in `ratsmonitor.env`) über E-Mail-Adresse und Code aus der Authenticator-App an
+(Konzept, Nachtrag 15.10. abends). Den zweiten Faktor einrichten: im Tunnel unter `/admin` oder
+`ratsmonitor-accounts totp-setup --id u_…` (zeigt den Schlüssel einmal im Terminal). Alle anderen: `login-link`.
+
 Konzept: `requirements/konten-konzept.md`. Anmeldung per E-Mail-Link oder achtstelligem Code, ohne Passwort. Admin ist
 eine Rolle am Konto und gilt nur über den Tunnel (`ADMIN_HOSTS`). Die Zugangssperre `RM_ACCESS=invite` ersetzt das
 Basic-Auth-Passwort, sobald sie geprüft ist.

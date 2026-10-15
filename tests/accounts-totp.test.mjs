@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {setup} from './helpers/accounts.mjs';
 import {requestLink,enterCode,me} from '../server/accounts/login.mjs';
-import {totpVerify,totpSetup,viewTier} from '../server/accounts/admin-factor.mjs';
+import {totpVerify,totpSetup,viewTier,totpLogin} from '../server/accounts/admin-factor.mjs';
 import {searchesWrite} from '../server/accounts/account.mjs';
 import {hotp,base32Decode,stepOf,matchStep} from '../server/accounts/totp.mjs';
 
@@ -109,4 +109,67 @@ test('Ohne zweiten Faktor (öffentliche Adresse) kein Ansehen als höhere Stufe;
  for(let i=0;i<20;i++)h.accounts.sql.prepare("INSERT INTO auth_events(at,user_id,kind) VALUES(?,?,'totp_failed')").run(new Date(h.now()).toISOString(),id);
  const r=await h.call(totpVerify,{body:{code:await codeAt(secret,h.now(),1)}});
  assert.equal(r.status,429);assert.match(r.body.error,/bis morgen/);
+});
+
+/** Admin mit eingerichtetem zweiten Faktor (über den Tunnel), danach ohne Sitzung; liefert den Schlüssel */
+async function adminWithApp(h,email){
+ await login(h,email,TUNNEL);
+ const secret=(await h.call(totpSetup,{body:{},...TUNNEL})).body.secret.replace(/\s/g,'');
+ await h.call(totpSetup,{body:{code:await codeAt(secret,h.now())},...TUNNEL});
+ h.jar.clear();h.tick(31000);
+ return secret;
+}
+/** Ein Code, der in keinem der drei gültigen Schritte passt */
+async function wrongCode(secret,now){
+ const valid=await Promise.all([-1,0,1].map(o=>codeAt(secret,now,o)));
+ return ['000000','111111','222222','333333'].find(c=>!valid.includes(c));
+}
+
+test('Anmelden mit E-Mail-Adresse und App-Code (LOGIN_TOTP=1): ohne Mail, Administration gleich frei, gleiche Antwort für Unbekannte',async()=>{
+ const h=setup({extraEnv:{LOGIN_TOTP:'1'}});h.addUser('max@example.org',{tier:'enterprise',admin:true});h.addUser('user@example.org',{tier:'pro'});
+ const secret=await adminWithApp(h,'max@example.org');
+ assert.deepEqual((await h.call(me,{method:'GET'})).body.login,{mail:true,totp:true});
+ const before=h.mails('max@example.org').length;
+ const ip='198.51.100.200';
+ const answers=[
+  await h.call(totpLogin,{body:{email:'nobody@example.org',code:'123456'},ip}),
+  await h.call(totpLogin,{body:{email:'user@example.org',code:'123456'},ip}),
+  await h.call(totpLogin,{body:{email:'max@example.org',code:await wrongCode(secret,h.now())},ip}),
+ ];
+ for(const r of answers){assert.equal(r.status,400);assert.equal(r.body.error,'E-Mail-Adresse oder Code stimmt nicht.');}
+ assert.equal(h.jar.size,0,'kein Cookie bei Fehlern');
+ const good=await codeAt(secret,h.now());
+ const ok=await h.call(totpLogin,{body:{email:' Max@Example.org',code:good.slice(0,3)+' '+good.slice(3),next:'/konto/profil'},ip:'198.51.100.201'});
+ assert.equal(ok.status,200);assert.equal(ok.body.next,'/konto/profil');
+ const state=(await h.call(me,{method:'GET'})).body;
+ assert.equal(state.user.email,'max@example.org');assert.equal(state.tier,'enterprise');
+ assert.equal(state.admin,'ok','zweiter Faktor mit der Anmeldung geprüft');assert.equal(state.adminHere,true);
+ assert.equal(h.mails('max@example.org').length,before,'keine Mail');
+ /* Derselbe Code nicht noch einmal, auch nicht in der Sitzung */
+ h.jar.clear();
+ assert.equal((await h.call(totpLogin,{body:{email:'max@example.org',code:good},ip:'198.51.100.202'})).status,400);
+ /* Nach 12 Stunden fragt die Administration in der Sitzung wieder nach dem Code */
+ await h.call(totpLogin,{body:{email:'max@example.org',code:await codeAt(secret,h.now(),1)},ip:'198.51.100.203'});
+ h.tick(12*3600000+1000);
+ assert.equal((await h.call(me,{method:'GET'})).body.admin,'totp');
+});
+
+test('Anmelden mit App-Code: Grenzen je Adresse (auch unbekannte), je Absender und Tagessperre des Kontos',async()=>{
+ const h=setup({extraEnv:{LOGIN_TOTP:'1'}});const id=h.addUser('max@example.org',{tier:'enterprise',admin:true});
+ const secret=await adminWithApp(h,'max@example.org');
+ for(let i=0;i<5;i++)assert.equal((await h.call(totpLogin,{body:{email:'ghost@example.org',code:'123456'},ip:'198.51.100.'+(10+i)})).status,400);
+ assert.equal((await h.call(totpLogin,{body:{email:'ghost@example.org',code:'123456'},ip:'198.51.100.20'})).status,429,'je Adresse 5 in 15 Minuten');
+ for(let i=0;i<10;i++)await h.call(totpLogin,{body:{email:`x${i}@example.org`,code:'123456'},ip:'198.51.100.30'});
+ assert.equal((await h.call(totpLogin,{body:{email:'max@example.org',code:await codeAt(secret,h.now())},ip:'198.51.100.30'})).status,429,'je Absender 10 in 15 Minuten');
+ for(let i=0;i<20;i++)h.accounts.sql.prepare("INSERT INTO auth_events(at,user_id,kind) VALUES(?,?,'totp_failed')").run(new Date(h.now()).toISOString(),id);
+ const locked=await h.call(totpLogin,{body:{email:'max@example.org',code:await codeAt(secret,h.now())},ip:'198.51.100.40'});
+ assert.equal(locked.status,429,'nach 20 Fehlversuchen am Tag gesperrt, auch mit richtigem Code');
+ assert.equal(h.jar.size,0);
+});
+
+test('Ohne Mailversand keine Anmeldung per Mail; ohne LOGIN_TOTP keine Anmeldung mit App-Code',async()=>{
+ const h=setup({extraEnv:{MAIL_TRANSPORT:'log'}});h.addUser('max@example.org',{tier:'enterprise',admin:true});
+ assert.deepEqual((await h.call(me,{method:'GET'})).body.login,{mail:false,totp:false});
+ assert.equal((await h.call(requestLink,{body:{email:'max@example.org'}})).status,503);
+ assert.equal((await h.call(totpLogin,{body:{email:'max@example.org',code:'123456'}})).status,404);
 });

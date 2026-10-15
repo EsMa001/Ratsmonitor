@@ -31,6 +31,8 @@ export interface Me {
   access?: "invite" | "open";
   /** Absenderadresse der Anmeldemails (aus MAIL_FROM), sofern der Server sie nennt */
   sender?: string;
+  /** Wege der Anmeldeseite: Link und Code per Mail (mail), E-Mail-Adresse und Code aus der Authenticator-App (totp) */
+  login?: { mail: boolean; totp: boolean };
   /** Zählt Anmelden, Abmelden und Änderungen aus anderen Tabs: Listen laden dann neu */
   rev: number;
 }
@@ -154,6 +156,8 @@ export function loadMe(): Promise<void> {
       const before = state.user?.id ?? null;
       const access = d.access === "invite" || d.access === "open" ? d.access : undefined;
       const sender = typeof d.sender === "string" && d.sender.includes("@") ? d.sender : undefined;
+      const way = d.login as { mail?: unknown; totp?: unknown } | undefined;
+      const login = way && typeof way === "object" ? { mail: way.mail !== false, totp: way.totp === true } : undefined;
       set({
         ready: true,
         accounts: true,
@@ -170,6 +174,7 @@ export function loadMe(): Promise<void> {
         viewTier: d.viewTier ? tierOf(d.viewTier) : null,
         access,
         sender,
+        login,
         rev: (u?.id ?? null) !== before ? state.rev + 1 : state.rev,
       });
       if (d.renewAfter === true && !renewed) {
@@ -188,7 +193,7 @@ export function loadMe(): Promise<void> {
 /** Eine Kontoroute meldet 401: sofort abgemeldet anzeigen (der nächste Abruf von /api/me bestätigt es) */
 function loggedOutHere() {
   if (!state.user) return;
-  set({ ...INITIAL, ready: true, accounts: state.accounts, access: state.access, rev: state.rev + 1 });
+  set({ ...INITIAL, ready: true, accounts: state.accounts, access: state.access, login: state.login, rev: state.rev + 1 });
 }
 
 /** Nach Anmelden oder einer Kontoänderung: neu laden, Listen auffrischen, andere Tabs benachrichtigen */
@@ -208,7 +213,7 @@ export async function logout() {
     /* auch ohne Antwort hier abmelden */
   }
   clearRecent();
-  set({ ...INITIAL, ready: true, accounts: state.accounts, access: state.access, rev: state.rev + 1 });
+  set({ ...INITIAL, ready: true, accounts: state.accounts, access: state.access, login: state.login, rev: state.rev + 1 });
   touchAccount();
   void loadMe();
 }

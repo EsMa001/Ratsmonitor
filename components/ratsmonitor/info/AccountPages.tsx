@@ -160,6 +160,13 @@ export function LoginPage() {
   const [status, setStatus] = useState("");
   const [wait, setWait] = useState(0);
   const [consent, setConsent] = useState<{ version: string; value: Consent; errors: { agb?: string; adult?: string } } | null>(null);
+  const [appCode, setAppCode] = useState("");
+  const [appError, setAppError] = useState("");
+  const [choice, setChoice] = useState<"mail" | "app" | null>(null);
+  /* Wege laut Server: ohne Mailversand nur E-Mail-Adresse und Code aus der Authenticator-App (Konten mit zweitem Faktor) */
+  const mailOn = me.login?.mail !== false;
+  const appOn = me.login?.totp === true;
+  const mode = choice ?? (mailOn || !appOn ? "mail" : "app");
   const heading = useRef<HTMLHeadingElement>(null);
   /* Nach dem Wechsel zum Wartebildschirm (und zurück) die neue Überschrift ansagen */
   useEffect(() => {
@@ -241,8 +248,38 @@ export function LoginPage() {
     }
   };
 
+  const submitApp = async (e: FormEvent) => {
+    e.preventDefault();
+    const v = email.trim();
+    if (!EMAIL.test(v)) {
+      setEmailError("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
+      return document.getElementById("login-email")?.focus();
+    }
+    setEmailError("");
+    const digits = appCode.replace(/\D/g, "");
+    if (digits.length !== 6) {
+      setAppError("Bitte den sechsstelligen Code aus der App eingeben.");
+      return document.getElementById("login-app-code")?.focus();
+    }
+    setBusy(true);
+    setAppError("");
+    try {
+      const r = await api<{ next?: string }>("/api/auth/totp-login", { method: "POST", body: { email: v, code: digits, next } });
+      await accountChanged();
+      router.push(nextOf(r.next ?? next));
+    } catch (err) {
+      /* Jeder Code gilt nur einmal: Feld leeren, auf den nächsten Code warten */
+      setAppError((err as Error).message);
+      setAppCode("");
+      document.getElementById("login-app-code")?.focus();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const invite = me.access === "invite" || !!weiter;
-  const head = <PageHead icon="user" label="Konto" name="Anmelden" title={step === "wait" ? "E-Mail prüfen" : "Anmelden"} lead={step === "wait" ? undefined : "Mit Ihrer E-Mail-Adresse anmelden oder ein Konto anlegen. Sie bekommen einen Link und einen Code, ein Passwort gibt es nicht."} />;
+  const lead = step === "wait" ? undefined : mode === "app" ? "Mit Ihrer E-Mail-Adresse und dem Code aus Ihrer Authenticator-App anmelden." : "Mit Ihrer E-Mail-Adresse anmelden oder ein Konto anlegen. Sie bekommen einen Link und einen Code, ein Passwort gibt es nicht.";
+  const head = <PageHead icon="user" label="Konto" name="Anmelden" title={step === "wait" ? "E-Mail prüfen" : "Anmelden"} lead={lead} />;
 
   if (me.ready && me.user)
     return (
@@ -278,12 +315,58 @@ export function LoginPage() {
         </section>
       </>
     );
+  if (me.ready && !mailOn && !appOn)
+    return (
+      <>
+        {head}
+        <section className="ri-sec">
+          <div className="ri-form ri-form--center">
+            <p role="status" style={{ margin: 0, fontSize: 16 }}>
+              Die Anmeldung ist noch nicht freigeschaltet. Suche und Artikel sind ohne Anmeldung nutzbar.
+            </p>
+          </div>
+        </section>
+      </>
+    );
 
   return (
     <>
       {head}
       <section className="ri-sec">
-        {step === "email" ? (
+        {mode === "app" && step === "email" ? (
+          <form className="ri-form ri-form--center" noValidate onSubmit={submitApp} aria-label="Anmelden mit Authenticator-App">
+            {weiter && (
+              <p role="status" style={{ margin: "0 0 16px", fontSize: 16 }}>
+                Bitte melden Sie sich an, um diese Seite zu öffnen.
+              </p>
+            )}
+            <Field id="login-email" label="E-Mail-Adresse" type="email" value={email} onChange={setEmail} error={emailError} autoComplete="email" inputMode="email" />
+            <Field id="login-app-code" label="Code aus der Authenticator-App" value={appCode} onChange={setAppCode} error={appError} help="6 Ziffern. Nur für freigeschaltete Konten mit eingerichteter App." autoComplete="one-time-code" inputMode="numeric" maxLength={7} />
+            <button type="submit" disabled={busy} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+              {busy ? "Wird geprüft …" : "Anmelden"}
+            </button>
+            {mailOn && (
+              <p className="ri-form__foot">
+                <button
+                  type="button"
+                  className="ri-link max-sm:py-[10px]"
+                  onClick={() => {
+                    setChoice("mail");
+                    setAppError("");
+                  }}
+                >
+                  Stattdessen Link per E-Mail
+                </button>
+              </p>
+            )}
+            <p className="ri-help">
+              <Link href="/datenschutz" className="ri-link">
+                Hinweise zum Datenschutz
+              </Link>
+            </p>
+            {IS_DEV && <DevLogin next={next} />}
+          </form>
+        ) : step === "email" ? (
           <form className="ri-form ri-form--center" noValidate onSubmit={submitEmail} aria-label="Anmelden">
             {weiter && (
               <p role="status" style={{ margin: "0 0 16px", fontSize: 16 }}>
@@ -294,6 +377,20 @@ export function LoginPage() {
             <button type="submit" disabled={busy} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
               {busy ? "Wird gesendet …" : "Link und Code anfordern"}
             </button>
+            {appOn && (
+              <p className="ri-form__foot">
+                <button
+                  type="button"
+                  className="ri-link max-sm:py-[10px]"
+                  onClick={() => {
+                    setChoice("app");
+                    setEmailError("");
+                  }}
+                >
+                  Mit Authenticator-App anmelden
+                </button>
+              </p>
+            )}
             <p className="ri-help">
               <Link href="/datenschutz" className="ri-link">
                 Hinweise zum Datenschutz

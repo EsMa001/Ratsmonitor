@@ -31,6 +31,15 @@ je 15 Minuten. Einrichten nur über den Tunnel (Hinweis oben in `/admin`) oder p
 `totp-reset`). Die öffentliche Site sperrt `/admin*` nicht mehr; die App prüft Rolle, Anmeldung und Code. Admin-Symbol
 für alle Konten mit der Rolle admin, „Ansehen als“ (andere Stufe, gilt auch serverseitig) im Kontomenü.
 
+**Nachtrag 15.10.2026, abends (Entscheidung Max):** Solange kein Mailanbieter eingerichtet ist, bietet die Anmeldeseite
+keine Anmeldung per Mail an (`MAIL_TRANSPORT=log`, `/api/auth/link` antwortet 503). Stattdessen mit `LOGIN_TOTP=1`:
+E-Mail-Adresse und Code aus der Authenticator-App (`POST /api/auth/totp-login`, nur Konten mit eingerichtetem zweiten
+Faktor, die Administration ist damit gleich 12 Stunden frei). Bewusst ein Faktor statt zwei (die Adresse ist kein
+Geheimnis), vertretbar nur hinter dem Passwort der Seite: gleiche Antwort für unbekannte Adressen und Konten ohne App,
+5 Versuche je Adresse (auch unbekannte) und 10 je Absender in 15 Minuten, 30 je Absender am Tag, nach 20 Fehlversuchen am
+Tag ist das Konto bis morgen gesperrt (gemeinsam mit der Code-Eingabe in `/admin`). Mit Mailanbieter `LOGIN_TOTP=0`
+setzen, dann gilt wieder Link aus der Mail plus App-Code.
+
 ## 1. Ziel und Abgrenzung
 
 **Ziel:** eine geschlossene Testphase mit 10 bis 30 eingeladenen Personen.

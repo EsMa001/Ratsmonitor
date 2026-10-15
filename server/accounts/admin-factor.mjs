@@ -2,9 +2,11 @@
 // Einrichten nur über einen Admin-Host (Tunnel: der SSH-Schlüssel schützt die Einrichtung) oder per Kommandozeile;
 // sonst könnte jemand mit Zugriff auf das Postfach eines Admins seinen eigenen zweiten Faktor hinterlegen.
 import {AccountError,respond,requireSameOrigin,readJson} from './http.mjs';
-import {currentSession,accountState,isAdminHost} from './login.mjs';
+import {currentSession,accountState,isAdminHost,completeLogin,normalizeEmail} from './login.mjs';
 import {eventStatement} from './sessions.mjs';
-import {limited} from './rate-limit.mjs';
+import {limited,limitedAll} from './rate-limit.mjs';
+import {hmacHex} from './crypto.mjs';
+import {safeNext} from '../../shared/safe-next.mjs';
 import {newSecret,base32Encode,otpauthUri,sealSecret,openSecret,matchStep} from './totp.mjs';
 import {validTier,rank} from '../../shared/plans.mjs';
 import {warnOperator} from './mail.mjs';
@@ -50,6 +52,46 @@ export async function totpVerify(ctx){
   eventStatement(db,{userId:session.user_id,kind:'totp_ok',now}),
  ]);
  return {response:respond({ok:true})};
+}
+
+const LOGIN_FAIL='E-Mail-Adresse oder Code stimmt nicht.';
+const TOO_MANY='Zu viele Versuche. Bitte in 15 Minuten erneut.';
+/**
+ * Anmelden mit E-Mail-Adresse und Code aus der Authenticator-App, ohne Mail (LOGIN_TOTP=1). Nur Konten mit eingerichtetem
+ * zweiten Faktor; die Administration ist damit gleich für 12 Stunden frei. Unbekannte Adressen, Konten ohne App und falsche
+ * Codes bekommen dieselbe Antwort; Grenzen je Absender und je Adresse (auch für unbekannte), dazu die Tagessperre des Kontos.
+ */
+export async function totpLogin(ctx){
+ requireSameOrigin(ctx.request);
+ const {db,now,cfg,ip}=ctx;
+ if(!cfg.totpLogin)throw new AccountError(404,'Diese Anmeldung ist nicht freigeschaltet.');
+ if(limitedAll('totp-login',ip,[{max:10,windowMs:15*60000},{max:30,windowMs:86400000}],now))throw new AccountError(429,TOO_MANY);
+ const body=await readJson(ctx.request,1024);
+ const email=normalizeEmail(body.email),code=cleanCode(body.code);
+ if(!email)throw new AccountError(400,'Bitte eine gültige E-Mail-Adresse eingeben.');
+ if(!/^\d{6}$/.test(code))throw new AccountError(400,'Bitte den sechsstelligen Code aus der App eingeben.');
+ if(limited('totp-login-email',await hmacHex(cfg.secret,'totp-login',email),{max:5,windowMs:15*60000,now}))throw new AccountError(429,TOO_MANY);
+ const row=await db.prepare("SELECT u.id,u.email,t.secret,t.last_step FROM users u JOIN user_totp t ON t.user_id=u.id WHERE u.email=? AND u.status='active' AND t.confirmed_at IS NOT NULL").bind(email).first();
+ if(!row){
+  // Gleicher Aufwand wie mit Konto, damit die Antwortzeit nichts verrät
+  await matchStep(new Uint8Array(20),code,{now,lastStep:0});
+  throw new AccountError(400,LOGIN_FAIL);
+ }
+ const fails=await db.prepare("SELECT count(*) n FROM auth_events WHERE user_id=? AND kind='totp_failed' AND at>?").bind(row.id,iso(now-86400000)).first();
+ if(Number(fails?.n||0)>=TOTP_DAILY_FAILS){
+  await warnOperator(db,cfg,`Die Anmeldung mit App-Code eines Kontos (${row.id}) ist nach ${TOTP_DAILY_FAILS} Fehlversuchen bis morgen gesperrt. Falls unerwartet: Sitzungen beenden (ratsmonitor-accounts revoke) und zweiten Faktor zurücksetzen (totp-reset).`,now);
+  throw new AccountError(429,TOO_MANY);
+ }
+ const step=await matchStep(await openSecret(cfg.secret,row.secret),code,{now,lastStep:row.last_step});
+ if(step===null){
+  await eventStatement(db,{userId:row.id,kind:'totp_failed',detail:{via:'login'},now}).run();
+  throw new AccountError(400,LOGIN_FAIL);
+ }
+ // Jeder Code nur einmal, auch über beide Wege (Anmelden und Freischalten in der Sitzung)
+ const used=await db.prepare('UPDATE user_totp SET last_step=? WHERE user_id=? AND last_step<? RETURNING user_id').bind(step,row.id,step).first();
+ if(!used)throw new AccountError(400,LOGIN_FAIL);
+ return completeLogin(ctx,{email:row.email,purpose:'login',user_id:row.id,next:safeNext(typeof body.next==='string'?body.next:'/')},{},
+  {adminVerified:true,extra:[eventStatement(db,{userId:row.id,kind:'totp_ok',detail:{via:'login'},now})]});
 }
 
 /** Einrichten: ohne code ein neuer Schlüssel (unbestätigt), mit code bestätigen. Nur über einen Admin-Host. */
