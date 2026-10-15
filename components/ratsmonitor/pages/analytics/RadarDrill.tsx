@@ -12,6 +12,10 @@ const n = (v: number) => v.toLocaleString("de-DE");
 /* Datum wie überall „05.10.26“; fehlt es oder ist es ungültig, bleibt es leer (statt die Seite mit einem Fehler abzubrechen) */
 const day = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "");
 const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
+/** Stand als kleiner farbiger Punkt vor dem Wort: Farbe nur als Punkt, kein buntes Abzeichen. Ergebnis grün/rot, offen blau,
+    unterwegs Petrol, vertagt gelb, zur Kenntnis und ohne Stand grau */
+const DOT: Record<string, string> = { approved: "bg-emerald-500", rejected: "bg-rose-500", announced: "bg-sky-500", consulting: "bg-teal-600", recommended: "bg-teal-600", postponed: "bg-amber-500", info: "bg-slate-400", unknown: "bg-slate-300" };
+export const StatusDot = ({ status }: { status: string }) => (DOT[status] ? <span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${DOT[status]}`} /> : null);
 
 /** base: Adresse der Auswertung mit Listenmodus (by=…), etwa /api/x?list=1. limit: nur so viele Einträge zeigen und statt
     „Weitere laden“ den Weg zur ganzen Liste (onAll); footer: weitere Wege unter der Liste (etwa „Auf … eingrenzen“). */
@@ -66,7 +70,7 @@ export function RadarDrill({ base, query, by, value, label, unit, limit, onAll, 
                 {r.value ? <b className="block text-[14px] font-semibold tabular-nums text-slate-900">{r.value}</b> : null}
                 {r.euro ? <b className="block text-[14px] font-semibold tabular-nums text-slate-900">{r.euro.toLocaleString("de-DE")} €</b> : null}
                 {r.signal && r.signal !== "Sonstiges" && by !== "signal" && <span className="block">{r.signal}</span>}
-                {statusLabel(r.status) && <span className="block">{statusLabel(r.status)}</span>}
+                {statusLabel(r.status) && <span className="block"><StatusDot status={r.status} />{statusLabel(r.status)}</span>}
               </span>
             </li>
           ))}

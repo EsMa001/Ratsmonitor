@@ -10,8 +10,10 @@ import { useAnalysisRun } from "./useAnalysisRun";
 import { RadarDrill } from "./RadarDrill";
 import { RegionMap } from "./RegionMap";
 import { STATUS } from "../../lib/constants";
-import { monthLabel, parseDate, plural } from "../../lib/text";
+import { plural } from "../../lib/text";
 import { prettyTerm } from "../../lib/terms";
+import { ThemeIcon } from "../../components/icons";
+import { StatusDot } from "./RadarDrill";
 
 /* plenara.X Atlas auf der einen Abfrage (GET /api/x?view=atlas, server/integrations/plenara-x-query.mjs): je Thema die
    Unterthemen, der Verlauf, die Orte und die jüngsten Vorgänge; ohne Thema die 10 Themen. Gezählt werden
@@ -26,7 +28,6 @@ interface Fact { kind: string; name: string; sum: { kind: string; name: string }
 const n = (v: number) => v.toLocaleString("de-DE");
 const num = (v: number) => v.toLocaleString("de-DE", { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 });
 const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-DE")} %`);
-const MONTH = new Intl.DateTimeFormat("de-DE", { month: "short", year: "2-digit" });
 const day = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "");
 const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
 /* Orte erst ab so vielen Sachvorgängen in der Rangliste nach Anteil (sonst führen Orte mit 2 von 3 Vorgängen) */
@@ -171,29 +172,50 @@ function Hint({ children }: { children: React.ReactNode }) {
   );
 }
 
-const KLASSE = { mehr: "häufiger als üblich", weniger: "seltener als üblich", ueblich: "im üblichen Bereich" };
 const ZU_WENIG = { items: "zu wenige Sachvorgänge", months: "zu wenige Monate mit Sitzungen", group: "keine ausreichend große Vergleichsgruppe" };
 
-/** Ort im Vergleich: Anteil je Unterthema (ohne Thema: je Thema) an allen Sachvorgängen des eigenen Rats, eingeordnet in der Gruppe */
-function OrtImVergleich({ c, theme }: { c: Compare; theme: string }) {
+/* Unsicherheit des Anteils k von n (Wilson, 95 %), in Prozent */
+const wilson = (k: number, n: number) => {
+  if (!n) return [0, 0];
+  const z = 1.96, p = k / n, d = 1 + (z * z) / n, c = (p + (z * z) / (2 * n)) / d, h = (z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n))) / d;
+  return [Math.max(0, c - h) * 100, Math.min(1, c + h) * 100];
+};
+const WORT = { mehr: "viel", weniger: "wenig", ueblich: "üblich" };
+
+/** Ort im Vergleich als Skala: je Thema bzw. Unterthema der übliche Bereich der Vergleichsgruppe (grauer Streifen, mittlere Hälfte),
+    der Ort als Punkt mit seiner Unsicherheit (Linie) und ein Wort. Reihenfolge wie die Liste darunter (nach Anzahl), damit nichts
+    springt; Auffälliges fett. Klick wählt das Thema bzw. Unterthema für den Ort. */
+function OrtImVergleich({ c, theme, onPick }: { c: Compare; theme: string; onPick: (key: string) => void }) {
   if (c.insufficient) return (
-    <section className="mt-10"><h2 className="text-[22px] font-semibold">{c.region} im Vergleich</h2>
+    <section><h2 className="text-[22px] font-semibold">{c.region} im Vergleich</h2>
       <p className="mt-2 max-w-[760px] text-[16px]">Keine Einordnung möglich: {ZU_WENIG[c.insufficient]} ({n(c.n)} Sachvorgänge in {n(c.months)} Monaten; nötig sind {n(c.rule.minItems)} in {n(c.rule.minMonths)} Monaten).</p></section>
   );
-  const rows = [...(c.rows ?? [])].sort((a, b) => (b.class === "mehr" ? 2 : b.class === "weniger" ? 1 : 0) - (a.class === "mehr" ? 2 : a.class === "weniger" ? 1 : 0) || b.share - a.share);
+  const rows = [...(c.rows ?? [])].sort((a, b) => b.k - a.k);
   return (
-    <section className="mt-10">
+    <section>
       <h2 className="text-[22px] font-semibold">{c.region} im Vergleich</h2>
-      <Hint>Anteil an allen {n(c.n)} Sachvorgängen des eigenen Rats in den letzten 12 Monaten, verglichen mit {n(c.group!.n)} {c.group!.label}. „Üblich“ ist die mittlere Hälfte der Gruppe; eingeordnet wird erst ab {n(c.rule.minTopic)} Vorgängen und nur bei klarem Abstand. Dieser Vergleich gilt immer für 12 Monate und nur den eigenen Rat; die Zahlen darunter folgen Zeitraum und Filtern der Suche und können deshalb abweichen.</Hint>
+      <p className="mb-1 mt-1 text-[14px] text-slate-500">Grau: üblich bei {n(c.group!.n)} {c.group!.label}. Punkt: {c.region}, Linie: Unsicherheit.</p>
+      <Hint>Anteil an allen {n(c.n)} Sachvorgängen des eigenen Rats in den letzten 12 Monaten. „Üblich“ ist die mittlere Hälfte der Gruppe; eingeordnet wird erst ab {n(c.rule.minTopic)} Vorgängen und nur, wenn die Unsicherheit klar außerhalb liegt.</Hint>
       <ol className="m-0 list-none border-t border-slate-200 p-0">
-        {rows.map((r) => (
-          <li key={r.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 border-b border-slate-200 py-2.5 sm:grid-cols-[260px_minmax(0,1fr)_auto]">
-            <span className="truncate text-[16px]">{r.name}</span>
-            <span className="order-3 col-span-2 text-[12px] text-slate-500 sm:order-none sm:col-span-1">üblich {pct(r.q1)} bis {pct(r.q3)}</span>
-            <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{pct(r.share)}</b>
-              <span className={`ml-2 ${r.class === "mehr" || r.class === "weniger" ? "text-slate-900" : "text-slate-500"}`}>{r.class ? KLASSE[r.class] + (r.ratio ? ` (${r.ratio.toLocaleString("de-DE")}-fach)` : "") : `${n(r.k)} Vorgänge`}</span></span>
-          </li>
-        ))}
+        {rows.map((r) => {
+          const [lo, hi] = wilson(r.k, c.n), max = Math.max(r.q3, hi, r.share) * 1.2 || 1, at = (v: number) => `${Math.min(100, (v / max) * 100)}%`;
+          const marked = r.class === "mehr" || r.class === "weniger";
+          return (
+            <li key={r.key} className="border-b border-slate-200">
+              <button type="button" onClick={() => onPick(r.key)} title={`${pct(r.share)}, üblich ${pct(r.q1)} bis ${pct(r.q3)}`}
+                className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,170px)_minmax(0,1fr)_88px]">
+                <span className={`text-[16px] leading-snug ${marked ? "font-semibold" : ""}`}>{r.name}</span>
+                <span className="relative order-3 col-span-2 block h-4 sm:order-none sm:col-span-1" aria-hidden="true">
+                  <span className="absolute inset-x-0 top-[7px] h-[2px] bg-slate-100" />
+                  <span className="absolute top-[3px] h-[10px] rounded-full bg-slate-300" style={{ left: at(r.q1), width: `calc(${at(r.q3)} - ${at(r.q1)})` }} />
+                  <span className="absolute top-[7px] h-[2px] bg-teal-700" style={{ left: at(lo), width: `calc(${at(hi)} - ${at(lo)})` }} />
+                  <span className="absolute top-[2px] -ml-[6px] h-3 w-3 rounded-full bg-teal-700" style={{ left: at(r.share) }} />
+                </span>
+                <span className={`text-right text-[14px] ${marked ? "font-semibold text-slate-900" : "text-slate-500"}`}>{r.class ? WORT[r.class] : "kaum Vorgänge"}<span className="block text-[12px] font-normal tabular-nums text-slate-500">{pct(r.share)}</span></span>
+              </button>
+            </li>
+          );
+        })}
       </ol>
       {!theme && <p className="mt-2 text-[12px] text-slate-500">Thema wählen, um die Unterthemen zu vergleichen.</p>}
     </section>
@@ -268,6 +290,8 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
   const partBy = theme ? "sub" : "theme";
   const parts = restLast(sub && siblings ? siblings : res?.parts ?? []);
   const firstPart = parts.find((p) => !isRest(p))?.key ?? "";
+  /* Zahlen der Pillen: nur wenn die Antwort zum gewählten Thema gehört */
+  const pillCount = new Map(res?.selection.theme === theme ? parts.map((p) => [p.key, p.count] as [string, number]) : []);
   const openPart = part === null ? (sub || firstPart) : part;
   /* Liste hinter einer Zeile: dieselbe Auswahl, aber ohne das gewählte Unterthema (sonst nur die Überschneidung) */
   const partBase = `/api/x?list=1${theme ? "&theme=" + theme : ""}`;
@@ -276,9 +300,6 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
   const rankRegions = !!(theme || sub) && allRegions.length > 1;
   const regions = rankRegions ? allRegions.filter((r) => r.base >= MIN_BASE).sort((a, b) => (b.share ?? 0) - (a.share ?? 0)) : [];
   const [moreRegions, setMoreRegions] = useState(false);
-  const month = opened("month");
-  /* Monatsachse: auf dem Handy nur jeder dritte Monat beschriftet (vom jüngsten aus gezählt), sonst wäre jeder Name abgeschnitten */
-  const nMonths = res?.months.length ?? 0;
   const where = allRegions.length === 1 ? `in ${allRegions[0].name}` : `in ${n(allRegions.length)} ${plural(allRegions.length, "Gebiet", "Gebieten")}`;
   /* Antwortzeile: Auswahl, Vorgänge, Gebiete und (mit Thema) Anteil an allen Sachvorgängen derselben Gebiete */
   const base = allRegions.reduce((s, r) => s + (r.base || 0), 0);
@@ -286,10 +307,25 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
   const rt = res?.selection.theme ?? "", rs = res?.selection.sub ?? "";
   const share = (rt || rs) && base ? Math.round((1000 * total) / base) / 10 : null;
   const what = [rt && THEMES.find((t: { id: string; name: string }) => t.id === rt)?.name, rs && SUBTOPICS.find((s: { id: string; name: string }) => s.id === rs)?.name].filter(Boolean).join(" › ");
-  const answer = `${what ? what + ": " : ""}${n(total)} ${plural(total, "Vorgang", "Vorgänge")} ${where}${share !== null ? `, ${pct(share)} aller Sachvorgänge` : ""}${res?.selection.q ? ` zur Suche „${prettyTerm(res.selection.q)}“` : ""}.`;
+  /* Mit Ort (Vergleich möglich): Ortssatz statt der allgemeinen Zeile */
+  const cmp = res?.compare && !res.compare.insufficient ? res.compare : null;
+  /* Gleicher Zeitraum wie der Vergleich (12 Monate); die Zahl der Auswahl steht in der Liste darunter */
+  const placeAnswer = cmp ? `${cmp.region}: ${n(cmp.n)} Sachvorgänge in den letzten 12 Monaten, verglichen mit ${n(cmp.group!.n)} ${cmp.group!.label}.` : "";
+  const answer = placeAnswer || `${what ? what + ": " : ""}${n(total)} ${plural(total, "Vorgang", "Vorgänge")} ${where}${share !== null ? `, ${pct(share)} aller Sachvorgänge` : ""}${res?.selection.q ? ` zur Suche „${prettyTerm(res.selection.q)}“` : ""}.`;
 
   return (
     <section aria-label="Auswertung des Themas">
+      {/* Unterthemen des Themas als Pillen mit Zahl (gleiche Zahlen wie die Liste rechts): gleich hier eingrenzen; brechen um, auch auf dem Handy */}
+      {theme && <nav aria-label="Unterthema" className="mt-3 print:hidden">
+        <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+          {SUBTOPICS.filter((x: { theme: string }) => x.theme === theme).map((x: { id: string; name: string }) => {
+            const on = x.id === sub, count = pillCount.get(x.id);
+            return <li key={x.id}><button type="button" aria-pressed={on} onClick={() => onSub(on ? "" : x.id)}
+              className={`flex h-8 items-center gap-1.5 rounded-full border px-3 text-[14px] ${on ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>
+              {x.name}{count !== undefined && <span className={`tabular-nums ${on ? "text-white/80" : "text-slate-500"}`}>{n(count)}</span>}{on && <span aria-hidden="true">✕</span>}</button></li>;
+          })}
+        </ul>
+      </nav>}
       <div className="mt-3 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
@@ -303,22 +339,17 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
               <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-10 lg:grid-cols-12">
                 <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-7 lg:self-start">
                   {allRegions.length > 0 && <AtlasMap regions={allRegions} facts={SHOW_FACTS ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
-                  {nMonths > 1 && <section className="mt-8">
-                    <h2 className="text-[22px] font-semibold">Im Zeitverlauf</h2>
-                    <TimeLine months={res.months} share={!!(rt || rs)} open={month} onOpen={(k) => toggle(`month:${k}`)} />
-                    {month && <div className="mt-3">{drill("month", res.months.find((m) => m.key === month)!, monthLabel(month))}</div>}
-                  </section>}
                 </div>
 
                 <div className="min-w-0 lg:col-span-5">
-                  {res.compare && <OrtImVergleich c={res.compare} theme={theme} />}
+                  {res.compare && <OrtImVergleich c={res.compare} theme={theme} onPick={(k) => (theme ? onSub(sub === k ? "" : k) : onTheme(k))} />}
 
                   <section className={res.compare ? "mt-10" : ""}>
-                    <h2 className="text-[22px] font-semibold">{theme ? `Unterthemen von ${themeName}` : "Themen"}</h2>
+                    <h2 className="flex items-center gap-2 text-[22px] font-semibold">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? `Unterthemen von ${themeName}` : "Themen"}</h2>
                     <p className="mb-3 mt-1 text-[14px] text-slate-500">Antippen zeigt die Vorgänge.</p>
-                    <PartList rows={parts} open={openPart} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
+                    <PartList rows={parts} icons={!theme} open={openPart} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
                       label={(r) => `${n(r.count)}${r.share !== null && theme && !sub ? ` · ${pct(r.share)}` : ""}`}
-                      drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={5}
+                      drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={3}
                         onAll={() => showAll(partBy, r.key, [themeName, r.name].filter(Boolean).join(" › "))}
                         footer={isRest(r) ? null : <button type="button" onClick={() => (theme ? onSub(sub === r.key ? "" : r.key) : onTheme(r.key))} className="mt-2 block text-[14px] font-medium text-teal-700 hover:underline">
                           {theme && sub === r.key ? "Eingrenzung aufheben" : `Auf „${r.name}“ eingrenzen →`}</button>} />} />
@@ -353,7 +384,7 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
                           <span className="block truncate text-[16px]">{r.title}</span>
                           <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), r.times > 1 && `in ${r.times} Sitzungen`].filter(Boolean).join(" · ")}</span>
                         </Link>
-                        <span className="self-center text-right text-[12px] text-slate-500">{statusLabel(r.status)}</span>
+                        <span className="self-center text-right text-[12px] text-slate-500"><StatusDot status={r.status} />{statusLabel(r.status)}</span>
                       </li>
                     ))}
                   </ol>
@@ -371,7 +402,7 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
 }
 
 /** Gliederung rechts: Zeilen zum Aufklappen (Pfeil, Zahl in Petrol, Zeile reagiert); das gewählte Unterthema ist hervorgehoben */
-function PartList({ rows, open, selected, onOpen, drill, label }: { rows: Row[]; open: string; selected: string; onOpen: (key: string) => void; drill: (r: Row) => React.ReactNode; label: (r: Row) => string }) {
+function PartList({ rows, open, selected, onOpen, drill, label, icons = false }: { rows: Row[]; open: string; selected: string; icons?: boolean; onOpen: (key: string) => void; drill: (r: Row) => React.ReactNode; label: (r: Row) => string }) {
   const max = Math.max(1, ...rows.map((r) => r.count));
   return (
     <ol className="m-0 list-none border-t border-slate-200 p-0">
@@ -381,7 +412,7 @@ function PartList({ rows, open, selected, onOpen, drill, label }: { rows: Row[];
           <li key={r.key} className="border-b border-slate-200">
             <button type="button" onClick={() => onOpen(r.key)} aria-expanded={on}
               className={`grid w-full grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto_16px] ${dim ? "opacity-70" : ""}`}>
-              <span className={`text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${on || picked ? "font-semibold" : ""}`}>{r.name}</span>
+              <span className={`flex items-center gap-2 text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${on || picked ? "font-semibold" : ""}`}>{icons && !rest && <ThemeIcon theme={r.key} size={18} className="shrink-0 text-slate-500" />}{r.name}</span>
               <span className="order-4 col-span-3 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1">
                 <span className={`block h-full rounded-full ${rest ? "bg-slate-300" : picked ? "bg-slate-900" : "bg-teal-600"}`} style={{ width: `${(r.count / max) * 100}%` }} />
               </span>
@@ -393,48 +424,5 @@ function PartList({ rows, open, selected, onOpen, drill, label }: { rows: Row[];
         );
       })}
     </ol>
-  );
-}
-
-/* Zeitverlauf als Linie mit heller Fläche, ein Punkt je Monat (Klick zeigt die Vorgänge). Mit Thema der Anteil an allen
-   Sachvorgängen des Monats (unabhängig davon, wie viele Räte schon erfasst sind), sonst die Anzahl. Der laufende Monat ist
-   gestrichelt, weil er noch nicht vollständig ist; darüber der letzte vollständige Monat als Satz. */
-function TimeLine({ months, share, open, onOpen }: { months: Row[]; share: boolean; open: string; onOpen: (key: string) => void }) {
-  const W = 600, H = 140, P = 8;
-  const now = new Date().toISOString().slice(0, 7);
-  const v = (m: Row) => (share ? m.share ?? 0 : m.count);
-  /* Achse vom kleinsten bis zum größten Wert (mit etwas Rand), damit der Verlauf sichtbar ist; die Zahlen stehen am Punkt */
-  const vs = months.map(v), hi = Math.max(...vs), lo0 = Math.min(...vs), pad = (hi - lo0) * 0.25 || hi * 0.1 || 1;
-  const lo = Math.max(0, lo0 - pad), top = hi + pad;
-  const pts = months.map((m, i) => ({ m, x: P + (i * (W - 2 * P)) / Math.max(1, months.length - 1), y: P + (H - 2 * P) * (1 - (v(m) - lo) / (top - lo)) }));
-  const running = pts.length > 1 && pts[pts.length - 1].m.key === now;
-  const done = running ? pts.slice(0, -1) : pts;
-  const line = (p: typeof pts) => p.map((q, i) => `${i ? "L" : "M"}${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(" ");
-  const last = done[done.length - 1]?.m;
-  const fmt = (m: Row) => (share ? `${n(m.count)} ${plural(m.count, "Vorgang", "Vorgänge")}, ${pct(m.share)} aller Sachvorgänge` : `${n(m.count)} ${plural(m.count, "Vorgang", "Vorgänge")}`);
-  return (
-    <>
-      {last && <p className="mb-2 mt-1 text-[16px]"><b className="font-semibold">{monthLabel(last.key)}:</b> {fmt(last)}</p>}
-      <div className="relative">
-        <svg viewBox={`0 0 ${W} ${H}`} className="block h-[140px] w-full" preserveAspectRatio="none" aria-hidden="true">
-          <path d={`${line(done)} L${done[done.length - 1].x},${H} L${done[0].x},${H} Z`} className="fill-teal-50" />
-          <path d={line(done)} fill="none" className="stroke-teal-700" strokeWidth="2.5" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          {running && <path d={line(pts.slice(-2))} fill="none" className="stroke-teal-700" strokeWidth="2.5" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />}
-        </svg>
-        {/* Punkte als Knöpfe über der Linie (rund bleiben trotz gestreckter Grafik) */}
-        {pts.map((q, i) => {
-          const on = open === q.m.key, cur = running && i === pts.length - 1;
-          return <button key={q.m.key} type="button" onClick={() => onOpen(q.m.key)} aria-expanded={on}
-            aria-label={`${monthLabel(q.m.key)}${cur ? " (laufend)" : ""}: ${fmt(q.m)}`} title={`${monthLabel(q.m.key)}: ${fmt(q.m)}`}
-            className="group absolute grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center"
-            style={{ left: `${(q.x / W) * 100}%`, top: `${(q.y / H) * 100}%` }}>
-            <span className={`block rounded-full border-2 border-teal-700 transition-transform group-hover:scale-125 ${on ? "h-3.5 w-3.5 bg-slate-900" : cur ? "h-2.5 w-2.5 bg-white" : "h-2.5 w-2.5 bg-teal-700"}`} />
-          </button>;
-        })}
-      </div>
-      <p className="mt-1 flex justify-between text-[12px] text-slate-500"><span>{MONTH.format(parseDate(months[0].key + "-01"))}</span>
-        <span>{share ? "Anteil je Monat" : "Vorgänge je Monat"}{running ? " · gestrichelt: laufender Monat" : ""} · Punkt zeigt die Vorgänge</span>
-        <span>{MONTH.format(parseDate(months[months.length - 1].key + "-01"))}</span></p>
-    </>
   );
 }

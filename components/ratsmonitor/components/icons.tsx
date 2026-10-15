@@ -238,3 +238,19 @@ export const IconCalendarSync = (p: IconProps) => (
     <path d="M14 20a4 4 0 0 0 6-1.5" />
   </Svg>
 );
+
+/* Icons der 10 Themen (shared/themes.mjs), gleicher feiner Strich wie oben; ThemeIcon wählt nach Themen-ID */
+const THEME_PATHS: Record<string, ReactNode> = {
+  alle: <><rect x="4" y="4" width="7" height="7" rx="1.5" /><rect x="13" y="4" width="7" height="7" rx="1.5" /><rect x="4" y="13" width="7" height="7" rx="1.5" /><rect x="13" y="13" width="7" height="7" rx="1.5" /></>,
+  bauen: <><path d="M3 11 12 4l9 7" /><path d="M5 10v10h14V10" /><path d="M10 20v-5h4v5" /></>,
+  finanzen: <><ellipse cx="12" cy="6" rx="7" ry="2.5" /><path d="M5 6v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6" /><path d="M5 12v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-6" /></>,
+  mobilitaet: <><rect x="5" y="3" width="14" height="13" rx="3" /><path d="M5 10h14" /><circle cx="9" cy="13" r="0.8" /><circle cx="15" cy="13" r="0.8" /><path d="m8 16-2 4M16 16l2 4" /></>,
+  bildung: <><path d="M3 9 12 5l9 4-9 4-9-4Z" /><path d="M7 11v4.5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V11" /><path d="M21 9v5" /></>,
+  umwelt: <><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14" /><path d="M5 19 13 11" /></>,
+  soziales: <><circle cx="9" cy="8" r="3" /><path d="M3.5 20c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6" /><circle cx="17" cy="9" r="2.3" /><path d="M16 14.2c2.7.3 4.5 2.6 4.5 5.8" /></>,
+  kultur: <><path d="M4 5h11v6a5.5 5.5 0 0 1-11 0V5Z" /><path d="M7 9h.01M12 9h.01M7.5 13c.8.8 2 1.2 3 1.2" /><path d="M15 8h5v5a5 5 0 0 1-6.5 4.8" /></>,
+  sicherheit: <><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6l-7-3Z" /><path d="m9 12 2 2 4-4" /></>,
+  verwaltung: <><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" /></>,
+  wirtschaft: <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /><path d="M3 12h18" /></>,
+};
+export const ThemeIcon = ({ theme, ...p }: IconProps & { theme: string }) => (THEME_PATHS[theme] ? <Svg {...p}>{THEME_PATHS[theme]}</Svg> : null);
