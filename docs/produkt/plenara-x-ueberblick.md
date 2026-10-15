@@ -23,7 +23,7 @@ plenara.X ist der Analyse-Teil von Plenara (Tarif Enterprise; frei sind nur die 
 | **Atlas** | `/analytics/atlas` | die 10 Themen der Suche: Unterthemen, Verlauf, Orte, Ort im Vergleich, jüngste Vorgänge | `/api/x?view=atlas` | `x_cases`, `report_rules` |
 | Tools: Ausbreitung | `/analytics/diffusion` | wie sich ein Begriff über Orte und Zeit ausbreitet | `/api/analytics/diffusion` | `search_cards` |
 | Tools: Themennetz | `/analytics/graph` | welche Begriffe zusammen vorkommen | `/api/analytics/graph` | `search_cards`, `search_words` |
-| Tools: Trends | `/analytics/trends` | Begriffe, die zu- oder abnehmen | `/api/analytics/trends` | `search_cards` |
+| Tools: Trends | `/analytics/trends` | Begriffe, die zu- oder abnehmen | `/api/analytics/trends` | `x_cases` (Titel aus `search_cards`) |
 | Tools: Ortsvergleich | `/analytics/vergleich` | Orte nebeneinander | `/api/analytics/compare` | `search_cards` |
 | Tools: Beschlüsse | `/analytics/beschluesse` | Beschlussquote, Vertagungen, Dauer | `/api/analytics/decisions` | `search_cards`, `topics` |
 | Tools: Beratungswege | `/analytics/gremien` | Weg der Vorgänge durch die Gremien | `/api/analytics/network` | `search_cards` |
@@ -59,6 +59,16 @@ In Worten:
 3. **Regeln je Bericht** (`read-reports.mjs`, `report-rules.mjs`): ein Durchlauf je Bericht, jede Regel liest nur Quellen (Titel, Beschlussvorschlag, Text des Hauptdokuments, passende Anlagen), nie das Ergebnis einer anderen Regel. Ergebnis: Art des Punkts (Sachpunkt oder Formalie), Thema und Unterthemen, Art des Vorgangs, Regel-Zusammenfassung und die Fakten (`topic_facts`). Neue Regelfassung → `FACTS_VERSION` bzw. Version der Regel erhöhen, dann „Alle neu erstellen“ (Server: etwa 40 Minuten für 1,5 Mio. Berichte).
 4. **Zahlen für plenara.X** (`x-cases.mjs`): `x_cases` fasst gleiche Titel je Gebiet zu einem Vorgang zusammen (nur Sachvorgänge), `x_signals` ordnet jeden Vorgang den Signalen zu. Alle plenara.X-Seiten zählen hier, nicht in den 14 GB `search_cards`.
 5. **Abfragen:** `/api/x` (Atlas, Fakten, Listen hinter jeder Zahl) und `/api/x/signale`. Mit Suchbegriff sucht zuerst die normale Suche, gezählt werden deren Vorgänge. Zwischengespeichert je Bau.
+
+## Ein Weg für alles
+
+Jede Auswertung in plenara.X geht denselben Weg, ohne eigenes Datenmodell je Seite:
+
+1. **Auswahl** über die normale Suche (`source()` in `plenara-x-query.mjs`: Filter, Wortliste, Volltext), dieselbe Logik wie auf der Startseite.
+2. **Zählen** in `x_cases`: Vorgänge, keine Suchkarten; Formalien nie; derselbe Titel in mehreren Gremien eines Gebiets einmal.
+3. **Anreichern** aus `report_rules` (Thema, Art des Vorgangs) und `topic_facts` (Werte, Einordnungen); Signale zusätzlich über `x_signals`, das aus beiden gebaut wird.
+
+So arbeiten Atlas, Signale, Fakten, Newsradar und seit 15.10.2026 Trends (lokal 28 s → 7 s ohne Begriff). Ausbreitung, Themennetz, Ortsvergleich, Beschlüsse und Beratungswege zählen noch Suchkarten; sie werden nach und nach umgestellt (Test je Tool). Der größte Teil der Zeit mit einem häufigen Begriff ist die Suche selbst und damit für alle Seiten gleich.
 
 ## Bausteine und wer sie nutzt
 

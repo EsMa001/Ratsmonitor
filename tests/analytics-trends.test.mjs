@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {trends,parseTrends} from '../server/integrations/analytics-trends.mjs';
+import {buildXCases} from '../server/integrations/x-cases.mjs';
 
 const catalog=[1,2,3,4,5].map(i=>({id:'r'+i,kind:'city',name:'Ort '+i,ags:'0555800'+i}));
 const NOW=Date.parse('2026-06-15T12:00:00Z'),day=n=>new Date(NOW-n*86400000).toISOString().slice(0,10);
@@ -25,6 +26,7 @@ test('trends separates rising, new and falling terms between two equal windows',
  for(let i=0;i<36;i++)put(i*2,'r'+(1+i%5),'umwelt','Solarpark Freifläche '+i);
  for(let i=0;i<8;i++)put(i*9,'r'+(1+i%5),'mobilitaet','Radweg Ausbau Nebenstraße '+i);
  for(let i=0;i<30;i++)put(i*3,'r'+(1+i%5),'bauen','Bebauungsplan Gewerbegebiet '+(100+i));
+ buildXCases(sql,{today:day(0)});
  try{
   const t=await trends(db,catalog,new URLSearchParams(''),NOW);
   assert.equal(t.window,90);assert.equal(t.totals.recent,88);assert.equal(t.totals.prev,82);assert.equal(t.totals.capped,false);

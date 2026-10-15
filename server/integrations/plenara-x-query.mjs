@@ -100,10 +100,11 @@ export async function xState(db){
    gezählt werden deren Vorgänge. „Ohne Formalien“ ist immer erfüllt. */
 export async function source(db,catalog,f){
  const {page}=await searchFilters(db,catalog,{...f,noformal:false,part:'x'});
- if(!f.q)return {from:`(SELECT * FROM x_cases WHERE ${page.where}) x`,args:page.args};
+ // rid: Zeilennummer in x_cases, für gleichmäßige Stichproben (Trends)
+ if(!f.q)return {from:`(SELECT rowid rid,* FROM x_cases WHERE ${page.where}) x`,args:page.args};
  // Die Suche einmal je Anfrage: Vorgänge der gefundenen Karten als Liste, alle Zählungen lesen nur noch sie
  const {results}=await db.prepare(`SELECT DISTINCT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k FROM (SELECT id,region_id,title FROM search_cards WHERE ${page.where}) c LEFT JOIN report_rules r ON r.topic_id=c.id`).bind(...page.args).all();
- return {from:'(SELECT * FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))) x',args:[JSON.stringify(results.map(r=>r.k))]};
+ return {from:'(SELECT rowid rid,* FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))) x',args:[JSON.stringify(results.map(r=>r.k))]};
 }
 function selection(x){
  const where=['1'],args=[];
