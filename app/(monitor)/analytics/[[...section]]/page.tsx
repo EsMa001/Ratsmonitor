@@ -2,11 +2,8 @@ import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
 /* Titel und Beschreibung je Analyse für Link-Vorschauen (die Seite selbst setzt den Titel im Browser) */
 const SEITEN:Record<string,[string,string]>={
- diffusion:['Ausbreitung · plenara.X','Wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte und wie es sich ausbreitet.'],
  graph:['Themennetz · plenara.X','Womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.'],
  trends:['Trends · plenara.X','Was in den Räten gerade aufkommt und wie es sich über die Gebiete ausbreitet: Begriffe, die zunehmen, und die Gebiete, die sie zum ersten Mal beraten.'],
- 'trends-alt':['Alt: Trends · plenara.X','Welche Begriffe in den Räten gerade aufkommen, zunehmen oder verschwinden.'],
- 'diffusion-alt':['Alt: Ausbreitung · plenara.X','Wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte und wie es sich ausbreitet.'],
  vergleich:['Vergleich · plenara.X','Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe.'],
  beschluesse:['Ausgang · plenara.X','Wie Vorgänge ausgehen: beschlossen, abgelehnt, vertagt, und wie lange es dauert.'],
  gremien:['Gremien · plenara.X','Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden.'],

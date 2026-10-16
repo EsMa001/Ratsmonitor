@@ -20,10 +20,10 @@ export default {
       await H.move(560, 300, 50);
     }, 4],
     ["artikel", async (H) => {
-      await H.hidden(async () => { await H.openFirstArticle(); await H.sleep(1200); });
+      await H.hidden(async () => { await H.openFirstArticle(); await H.page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {}); await H.sleep(1500); });  /* erst aufnehmen, wenn der Artikel fertig geladen ist (sonst Blitzbild) */
       await H.move(640, 330, 40); await H.sleep(1200);
       const y = await H.page.evaluate(() => { const e = [...document.querySelectorAll("h1,h2,h3")].find((x) => /^(Originalunterlagen|Unterlagen|Dokumente)/.test(x.innerText.trim())); const max = document.documentElement.scrollHeight - innerHeight - 260; return Math.max(0, Math.min(e ? e.getBoundingClientRect().top + scrollY - 140 : 900, max)); });
-      await H.scrollTo(y); await H.sleep(1500);
+      await H.hidden(async () => { await H.page.evaluate((top) => window.scrollTo({ top, behavior: "instant" }), y); await H.sleep(500); }); await H.move(500, 420, 30); await H.sleep(1200);  /* Sprung statt Scrollen (sonst Blitzbild) */
     }, 3],
   ],
 };

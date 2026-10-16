@@ -40,7 +40,7 @@ node $R/docs/videos/tools/facts.mjs                # echte Zahlen holen
 node $R/docs/videos/tools/build-video.mjs <video>  # z. B. probe; Ergebnis: out-web/<video>/<ausgabe>.mp4/.vtt/.jpg
 ```
 
-Optionen: `--refresh` nimmt alle Clips neu auf, `--only 2,3` baut nur diese Kapitel. Ablauf: Texte und Fakten, Kapitelkarten, Ton (Zwischenspeicher, nur geänderte Sätze werden neu gesprochen), Clips (nur wenn für Szene, Parameter und Format keiner da ist oder er veraltet ist), Zusammenbau je Satz, Gesamtvideo. Ein Satz bekommt die Zeit bis zum nächsten Satz; ist sie länger als die Schritte, bleibt das letzte Bild stehen, ist sie kürzer, läuft der Clip bis auf das Doppelte schneller.
+Optionen: `--refresh` nimmt alle Clips neu auf, `--only 2,3` baut nur diese Kapitel. Fertige Clips bleiben liegen und werden wiederverwendet; ein gescheiterter Clip wird im selben Bau bis zu zweimal neu versucht. plenara.X lokal besser gegen den Node-Server aufnehmen (`node scripts/node-local.mjs`, dann einmal `node tools/video-login.mjs <Anmeldelink> state.json` und `BASE=http://localhost:3000 VIDEO_STATE=state.json`), der Dev-Server bricht bei schweren Abfragen ab. Ablauf: Texte und Fakten, Kapitelkarten, Ton (Zwischenspeicher, nur geänderte Sätze werden neu gesprochen), Clips (nur wenn für Szene, Parameter und Format keiner da ist oder er veraltet ist), Zusammenbau je Satz, Gesamtvideo. Ein Satz bekommt die Zeit bis zum nächsten Satz; ist sie länger als die Schritte, bleibt das letzte Bild stehen, ist sie kürzer, läuft der Clip bis auf das Doppelte schneller.
 
 Die Kapitelkarte steht doppelt so lange wie der erste Satz (erst still zum Lesen, dann spricht der Satz darüber). Der Ton hat keine Pausen nach Kommata (0,8 s nach Sätzen).
 

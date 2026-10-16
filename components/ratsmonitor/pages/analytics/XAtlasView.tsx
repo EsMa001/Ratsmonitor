@@ -283,15 +283,17 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   }, []);
   /* Mit gewähltem Unterthema: alle Unterthemen des Themas mit ihren Zahlen (dieselbe Abfrage ohne Unterthema, Gliederung nach
      Unterthema); die Antwort der Auswahl selbst zählte nur die Überschneidungen mit dem gewählten */
-  const [siblings, setSiblings] = useState<Row[] | null>(null);
+  const [sib, setSib] = useState<{ key: string; rows: Row[] | null } | null>(null);
   const listQuery = (() => { const p = new URLSearchParams(ranKey.split("?")[1] ?? ""); for (const k of ["view", "theme", "sub"]) p.delete(k); return p.toString(); })();
   useEffect(() => {
-    if (!sub || !theme || !res) { setSiblings(null); return; }
-    const c = new AbortController();
-    fetch(`/api/x?theme=${theme}&by=sub&${listQuery}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ rows?: Row[] }>) : null)).then((b) => setSiblings(Array.isArray(b?.rows) ? b.rows : null)).catch(() => {});
+    if (!sub || !theme || !res) return;
+    const c = new AbortController(), key = `${theme}|${listQuery}`;
+    fetch(`/api/x?theme=${theme}&by=sub&${listQuery}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ rows?: Row[] }>) : null)).then((b) => setSib({ key, rows: Array.isArray(b?.rows) ? b.rows : null })).catch(() => {});
     return () => c.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [res, sub, theme]);
+  /* Antwort nur zur aktuellen Auswahl verwenden (ohne Unterthema keine) */
+  const siblings = sub && theme && res && sib?.key === `${theme}|${listQuery}` ? sib.rows : null;
   const [week, setWeek] = useState<number | null>(null);
   useEffect(() => {
     if (!res) return;

@@ -5,6 +5,7 @@ import type { Branche } from "./content";
 import { Icon } from "./icons";
 import { AnalyticsLogo } from "../components/Brand";
 import { LiveThumb } from "./BranchenLive";
+import { AnwenderLivePage } from "./AnwenderLive";
 import { Reveal } from "../pages/analytics/Reveal";
 import { useRouter } from "next/navigation";
 import { ANALYSEN, ENTERPRISE, NEU_HREF, PLENARAX_VORTEILE } from "./branchen-enterprise";
@@ -56,6 +57,12 @@ function EnterpriseSection({ terms }: { terms: string[] }) {
 }
 
 export function BranchePage({ b }: { b: Branche }) {
+  if (b.beleg) return <AnwenderLivePage b={b} />;
+  return <BranchePageAlt b={b} />;
+}
+
+/** Bisherige Anwenderseite (Seiten ohne Live-Kopf) */
+function BranchePageAlt({ b }: { b: Branche }) {
   const { name } = useBrand();
   const term = b.keywords[0];
   const openBenefit = useOpenSearch();

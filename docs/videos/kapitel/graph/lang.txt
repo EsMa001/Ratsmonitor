@@ -1,7 +1,0 @@
-# Plenara.X Knowledge Graph.
-@graph.start Womit hängt {{p.thema|text}} zusammen?
-*@graph.netz Der Knowledge Graph zeigt es als Netz aus verwandten Begriffen, Themenfeldern, Gremien und Ländern.
-@graph.knoten Die Knoten ziehen und anklicken können Sie selbst.
-@graph.gremien Auch Länder und Gremien sind Knoten, ein Klick zeigt Details.
-*@graph.zusammenhang So entdecken Sie Zusammenhänge, nach denen Sie nie gesucht hätten.
-@graph.hinweis Eine Verbindung bedeutet gemeinsames Vorkommen, keine Ursache.

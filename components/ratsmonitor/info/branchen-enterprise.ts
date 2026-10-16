@@ -13,9 +13,9 @@ export const GRUPPEN: Record<Exclude<AnalyseGruppe, "atlas">, { name: string; ku
 };
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {
-  diffusion: { href: "/analytics/diffusion-alt", name: "Alt: Ausbreitung", icon: "map", group: "tool" },
+  diffusion: { href: "/analytics/trends", name: "Ausbreitung", icon: "map", group: "tool" },
   graph: { href: "/analytics/graph", name: "Themennetz", icon: "network", group: "tool" },
-  trends: { href: "/analytics/trends-alt", name: "Alt: Trends", icon: "trendingUp", group: "tool" },
+  trends: { href: "/analytics/trends", name: "Trends", icon: "trendingUp", group: "tool" },
   vergleich: { href: "/analytics/vergleich", name: "Ortsvergleich", icon: "mapPin", group: "tool" },
   beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck", group: "tool" },
   gremien: { href: "/analytics/gremien", name: "Gremien", icon: "users", group: "tool" },
@@ -36,7 +36,7 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
 };
 
 /* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */
-/* Ausbreitung und Trends gehören jetzt zur Seite plenara.X Trends; die alten Tools (Alt: …) bleiben nur als Sicherung.
+/* Ausbreitung und Trends gehören jetzt zur Seite plenara.X Trends; die alten Tools gibt es nicht mehr.
    Wer von einer Branchenseite oder Vorschau kommt, landet auf der neuen Seite (Ausbreitung: gleich mit dem Beispielbegriff). */
 export const NEU_HREF: Partial<Record<AnalyseId, (term?: string) => string>> = {
   diffusion: (term) => `/analytics/trends${term ? `?begriff=${encodeURIComponent(term)}` : ""}`,

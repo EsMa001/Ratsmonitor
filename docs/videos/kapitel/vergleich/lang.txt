@@ -1,7 +1,0 @@
-# Plenara.X Gebietsvergleich.
-@vergleich.start Wie steht Ihr Ort im Vergleich?
-*@vergleich.orte Der Gebietsvergleich stellt zwei bis vier Orte nebeneinander, hier {{p.ort|text}} und {{p.ort2|text}}.
-*@vergleich.profil Sie vergleichen Themenprofil, Stand der Vorlagen und aktivste Gremien.
-@vergleich.begriffe Dazu kommen typische und gemeinsame Begriffe.
-@vergleich.massstab Als Maßstab dienen alle Gebiete.
-@vergleich.hinweis Die Zahlen zeigen, was im Bestand steht, nicht automatisch, wie aktiv die Politik vor Ort ist.

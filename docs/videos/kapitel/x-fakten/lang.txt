@@ -1,0 +1,4 @@
+# plenara.X Fakten (seit 16.10.2026).
+*@x-fakten.start Fakten liest Zahlen aus den Vorlagen der Räte, etwa Hebesätze.
+@x-fakten.karte Die Karte zeigt jede Gemeinde mit ihrem Wert.
+*@x-fakten.liste Ein Klick auf einen Ort zeigt die Vorlage, aus der der Wert stammt.

@@ -1,0 +1,35 @@
+{
+ "ausgabe": "plenara-x",
+ "karten": false,
+ "kapitel": [
+  {
+   "kapitel": "einleitung",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "x-atlas",
+   "text": "lang"
+  },
+  {
+   "kapitel": "x-signale",
+   "text": "lang"
+  },
+  {
+   "kapitel": "x-trends",
+   "text": "lang"
+  },
+  {
+   "kapitel": "x-fakten",
+   "text": "lang"
+  },
+  {
+   "kapitel": "x-einblicke",
+   "text": "lang"
+  },
+  {
+   "kapitel": "abschluss",
+   "text": "kurz"
+  }
+ ],
+ "vorteileMax": 3
+}

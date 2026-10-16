@@ -26,6 +26,6 @@ Gemeinsamer Kopf `XKopf` auf jeder Seite: „‹ Zurück“ statt Pfad, Titel mi
 
 ## Adressen
 
-Die Adressen der Tools bleiben (/analytics/vergleich, /beschluesse, /gremien, /fraktionen, /graph, /news). Übersichts- und Methodikseiten (/analytics, /ueber, /einblicke, /tools, /methodik, /politik, /finanzen) gibt es nicht mehr (404, keine Umleitung). Alt: Trends und Alt: Ausbreitung sind nicht im Menü, ihre Adressen bleiben vorerst erreichbar.
+Die Adressen der Tools bleiben (/analytics/vergleich, /beschluesse, /gremien, /fraktionen, /graph, /news). Übersichts- und Methodikseiten (/analytics, /ueber, /einblicke, /tools, /methodik, /politik, /finanzen) gibt es nicht mehr (404, keine Umleitung). Alt: Trends und Alt: Ausbreitung sind entfernt (16.10.2026).
 
 Kein neues Datenmodell; alles läuft weiter über `source()` und `x_cases`.

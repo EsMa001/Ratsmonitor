@@ -22,7 +22,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const cursor = `(()=>{const d=document.createElement('div');d.style.cssText='position:fixed;z-index:2147483647;width:18px;height:18px;border-radius:50%;background:rgba(13,148,136,.55);border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.35);pointer-events:none;left:-40px;top:-40px;transform:translate(-50%,-50%)';const add=()=>document.documentElement.appendChild(d);document.readyState==='loading'?document.addEventListener('DOMContentLoaded',add):add();addEventListener('mousemove',e=>{d.style.left=e.clientX+'px';d.style.top=e.clientY+'px'},true)})()`;
 rmSync(`${OUT}/raw`, { recursive: true, force: true }); mkdirSync(`${OUT}/raw`, { recursive: true });
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ colorScheme: THEME === "dunkel" ? "dark" : "light", viewport: { width: FORMATS[FORMAT].w, height: FORMATS[FORMAT].h }, deviceScaleFactor: 1, locale: "de-DE" });
+/* VIDEO_STATE: gespeicherte Anmeldung (Playwright storageState, z. B. vom lokalen Node-Server, tools/video-login.mjs); sonst Dev-Knopf */
+const STATE = process.env.VIDEO_STATE;
+const ctx = await browser.newContext({ ...(STATE ? { storageState: STATE } : {}), colorScheme: THEME === "dunkel" ? "dark" : "light", viewport: { width: FORMATS[FORMAT].w, height: FORMATS[FORMAT].h }, deviceScaleFactor: 1, locale: "de-DE" });
 await ctx.addInitScript(cursor);
 await ctx.addInitScript((d) => { window.__dunkel = d; }, THEME === "dunkel");
 await ctx.addInitScript(() => {
@@ -30,9 +32,9 @@ await ctx.addInitScript(() => {
   const st = document.createElement("style"); st.textContent = '[class*="border-dashed"][class*="border-amber-300"]{display:none!important}';
   const add = () => document.documentElement.appendChild(st); document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", add) : add();
 });
-const page = await ctx.newPage(); page.setDefaultTimeout(15000); page.setDefaultNavigationTimeout(40000);
+const page = await ctx.newPage(); page.setDefaultTimeout(15000); page.setDefaultNavigationTimeout(120000);  /* schwere plenara.X-Abfragen halten den Server lokal bis zu einer Minute */
 const loaded = async () => { await page.waitForFunction(() => { const el = [...document.querySelectorAll("span")].find((x) => /Treffer/.test(x.textContent || "")); return !!el && !(el.textContent || "").trim().startsWith("…") && !document.querySelector('[aria-busy="true"]'); }, null, { timeout: 40000 }); };
-const calc = async () => { await page.waitForFunction(() => !/wird berechnet|werden berechnet|Wird berechnet|wird erstellt|Wird erstellt/.test(document.body.innerText), null, { timeout: 60000 }).catch(() => {}); await sleep(500); };
+const calc = async () => { await page.waitForFunction(() => !document.querySelector(".animate-pulse") && !/wird berechnet|werden berechnet|Wird berechnet|wird erstellt|Wird erstellt/.test(document.body.innerText), null, { timeout: 60000 }).catch(() => {}); await sleep(500); };
 const go = async (path) => { await page.goto(BASE + path, { waitUntil: "load" }); await sleep(2200); };
 const home = () => go("/suche");
 let mx = 640, my = 360;
@@ -46,9 +48,10 @@ const click = async (target, { dx = 0, dy = 0 } = {}) => {
 const role = (r, name) => page.getByRole(r, { name });
 const clickRole = (r, name) => click(role(r, name));
 const clickText = (t) => click(page.getByText(t, { exact: false }));
-const type = async (term, delay = 90) => { await click("#q:visible"); await page.keyboard.type(term, { delay }); await page.keyboard.press("Enter"); await sleep(600); };
-const search = async (term) => { await click("#q:visible"); await page.keyboard.type(term, { delay: 0 }); await page.keyboard.press("Enter"); await loaded(); await page.evaluate(() => window.scrollTo(0, 0)); await sleep(500); };
-const scrollTo = (y) => page.evaluate((top) => window.scrollTo({ top, behavior: "smooth" }), y);
+const type = async (term, delay = 90) => { await click("input[data-search='q']:visible"); await page.keyboard.type(term, { delay }); await page.keyboard.press("Enter"); await sleep(600); };
+const search = async (term) => { await click("input[data-search='q']:visible"); await page.keyboard.type(term, { delay: 0 }); await page.keyboard.press("Enter"); await loaded(); await page.evaluate(() => window.scrollTo(0, 0)); await sleep(500); };
+/* Springen statt sanft scrollen, ohne Aufnahme: sanftes Scrollen erzeugt kurze Zwischenbilder (Blitzbild-Prüfung) */
+const scrollTo = async (y) => { paused = true; await sleep(150); await page.evaluate((top) => window.scrollTo({ top, behavior: "instant" }), y); await sleep(400); paused = false; };
 const openFirstArticle = async () => { const href = await page.locator("article a[href^='/beschluss/']").first().getAttribute("href"); await go(href); };
 const nodes = async () => { const loc = page.locator("[data-node]"); const n = await loc.count(); const out = []; for (let i = 0; i < n; i++) { const b = await loc.nth(i).boundingBox(); if (b && b.y > 110 && b.y + b.height < 690 && b.x > 60 && b.x + b.width < 1180) out.push({ b, a: b.width * b.height }); } return out.sort((x, y) => y.a - x.a); };
 const tapNode = async (rank) => { const o = (await nodes())[rank]; if (!o) return; await move(o.b.x + o.b.width / 2, o.b.y + o.b.height / 2); await sleep(250); await page.mouse.down(); await sleep(60); await page.mouse.up(); };
@@ -57,6 +60,11 @@ const dragNode = async (rank, dx, dy) => { const o = (await nodes())[rank]; if (
 const hidden = async (fn) => { paused = true; await sleep(250); try { await fn(); } finally { await sleep(150); paused = false; } };
 const H = { hidden, sleep, loaded, calc, go, home, move, click, role, clickRole, clickText, type, search, scrollTo, openFirstArticle, tapNode, dragNode, page, BASE };
 
+/* Dev-Server: Stufen liegen auf dem Server (Konten); der Dev-Knopf meldet die Aufnahme als Enterprise an, damit plenara.X offen ist */
+if (!STATE) { await go("/analytics/atlas"); await page.getByRole("button", { name: /als Enterprise fortfahren/ }).click({ timeout: 3000 }).then(() => sleep(1500)).catch(() => {}); } else await go("/suche");  /* mit gespeicherter Anmeldung erst eine Seite öffnen, damit das Zurücksetzen das Konto erreicht */
+/* Das Testkonto speichert auf dem Server: gespeicherte Suchen und Artikel früherer Aufnahmen entfernen, jede Szene beginnt leer */
+await page.evaluate(async () => { const h = { "content-type": "application/json" };
+  for (const [path, key] of [["/api/me/searches", "searches"], ["/api/me/articles", "articles"]]) { const r = await fetch(path).then((x) => (x.ok ? x.json() : {})).catch(() => ({})); for (const it of r[key] || []) await fetch(path, { method: "DELETE", headers: h, body: JSON.stringify({ id: it.id }) }); } }).catch(() => {});
 await home();
 await page.mouse.move(mx, my);  /* echte Mausposition = unsere Annahme (sonst startet die erste Bewegung bei 0,0 und öffnet das Menü oben links) */
 if (sc.setup) await sc.setup(H, P);

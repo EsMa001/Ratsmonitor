@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { Bell } from "lucide-react";
+import { useClient } from "../../lib/useClient";
 import { useUi } from "../../state/ui";
 
 const n = (v: number) => v.toLocaleString("de-DE");
@@ -103,8 +104,10 @@ const readOrt = (): { ags: string; name: string } | null => { try { const v = JS
  * current: der gewählte Ort (Schlüssel und Name) oder null.
  */
 export function MeinOrt({ current, onApply }: { current: { ags: string; name: string } | null; onApply: (ags: string) => void }) {
-  const [saved, setSaved] = useState<{ ags: string; name: string } | null>(null);
-  useEffect(() => { setSaved(readOrt()); }, []);
+  /* Gemerkter Ort aus dem Browser (beim Hydrieren leer), nach dem Merken der neue Wert */
+  const stored = useClient(() => { try { return localStorage.getItem(MEIN_ORT) || ""; } catch { return ""; } }, "");
+  const [own, setSaved] = useState<{ ags: string; name: string } | null | undefined>(undefined);
+  const saved = own !== undefined ? own : stored ? readOrt() : null;
   const save = (v: { ags: string; name: string } | null) => { try { if (v) localStorage.setItem(MEIN_ORT, JSON.stringify(v)); else localStorage.removeItem(MEIN_ORT); } catch { /* ohne Speicher geht es auch */ } setSaved(v); };
   if (current) {
     const mine = saved?.ags === current.ags;

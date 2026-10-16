@@ -128,8 +128,18 @@ function warmData() {
     for (const q of X_WARM_SQL) { try { db.prepare(q).get(); } catch { /* Tabelle oder Index fehlt (Migration) */ } }
   } catch { /* nächster Lauf */ } finally { db?.close(); }
 }
+// Auszüge der Anwenderseiten (/api/x/teaser) vorwärmen, damit der erste Besucher nach dem täglichen Bau nicht wartet; nacheinander,
+// liegt ein Auszug im Zwischenspeicher, kostet der Aufruf nichts. Liste = Schlüssel von TEASERS in server/integrations/plenara-x-teaser.mjs
+// (serve.mjs wird allein kopiert; Test: tests/plenara-x-teaser.test.mjs)
+const TEASER_IDS = ["wohnbau", "gewerbe", "waerme", "wind", "solar", "planung", "grundsteuer", "news-top", "trend-umwelt", "trend-alle", "netz", "ausgang", "gewerbesteuer", "vergaben", "schulen", "mobil"];
+async function warmTeasers() {
+  for (const id of TEASER_IDS) {
+    if (stopping) return;
+    try { await (await fetch(`${base}/api/x/teaser?id=${encodeURIComponent(id)}`, { headers: internal })).arrayBuffer(); } catch { /* nächster Lauf */ }
+  }
+}
 if (process.env.RM_SKIP_WARM !== '1') {
-  setTimeout(() => { warmData(); setInterval(warmData, 10 * 60e3).unref(); }, 5e3).unref();
+  setTimeout(() => { warmData(); void warmTeasers(); setInterval(() => { warmData(); void warmTeasers(); }, 10 * 60e3).unref(); }, 5e3).unref();
 }
 // Postausgang der Kontomails: beim Start und jede Minute (Mails überstehen so einen Neustart)
 async function outbox() {

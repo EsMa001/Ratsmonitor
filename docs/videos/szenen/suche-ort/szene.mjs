@@ -5,7 +5,7 @@ export default {
   start: "Startseite", ende: "Treffer des Ortes",
   setup: async (H) => { await H.sleep(500); },
   beats: (p) => [
-    ["tippen", async (H) => { await H.click("#q:visible"); await H.page.keyboard.type(p.ort, { delay: 120 }); }, 2.5],
+    ["tippen", async (H) => { await H.click("input[data-search='q']:visible"); await H.page.keyboard.type(p.ort, { delay: 120 }); }, 2.5],
     ["ergebnis", async (H) => { await H.hidden(async () => { await H.page.keyboard.press("Enter"); await H.loaded(); await H.sleep(2500); }); await H.sleep(900); await H.move(640, 330, 30); }, 3],  /* Flug der Karte zum Ort ohne Aufnahme (ruckelnde Zwischenbilder) */
   ],
 };

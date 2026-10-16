@@ -21,7 +21,7 @@ plenara.X ist der Analyse-Teil von Plenara (Tarif Enterprise; frei sind nur die 
 | **Signale** | `/analytics/signale` | 11 Kategorien von Ereignissen (Vergaben, Wohnbau, Gewerbe, Wind, Solar, Wärme, Schulen, Straßen, Wasser, Breitband, Mobilität) mit Art (Filter) und Stand; Liste, ausklappbare Karte. Keine Kennzahlen, Zahlen gehören zu Fakten | `/api/x/signale` (`plenara-x-signals.mjs`) | `x_signals`, `x_cases`, `topic_facts` |
 | **Fakten** | `/analytics/fakten` | Werte je Gemeinde auf der Karte, rot bis grün: jüngster Wert oder Veränderung, Kreis- und Landesmedian, Abdeckung, Vorgänge hinter jedem Wert | `/api/x?view=fakten` (`plenara-x-query.mjs`) | `x_cases`, `topic_facts` |
 | **Atlas** | `/analytics/atlas` | die 10 Themen der Suche: Unterthemen, Verlauf, Orte, Ort im Vergleich, jüngste Vorgänge | `/api/x?view=atlas` | `x_cases`, `report_rules` |
-| Tools: Ausbreitung | `/analytics/diffusion` | wie sich ein Begriff über Orte und Zeit ausbreitet | `/api/analytics/diffusion` | `x_cases` (Titel aus der Karte) |
+| Tools: Ausbreitung (in Trends) | `/analytics/trends` | wie sich ein Begriff über Orte und Zeit ausbreitet | `/api/analytics/diffusion` | `x_cases` (Titel aus der Karte) |
 | Tools: Themennetz | `/analytics/graph` | welche Begriffe zusammen vorkommen | `/api/analytics/graph` | `x_cases`, `search_words` |
 | Tools: Trends | `/analytics/trends` | Begriffe, die zu- oder abnehmen | `/api/analytics/trends` | `x_cases` (Titel aus `search_cards`) |
 | Tools: Ortsvergleich | `/analytics/vergleich` | Orte nebeneinander | `/api/analytics/compare` | `x_cases` (Titel aus der Karte) |

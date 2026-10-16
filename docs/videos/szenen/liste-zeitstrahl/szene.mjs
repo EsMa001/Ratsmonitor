@@ -20,8 +20,8 @@ export default {
       ["liste", async (H) => { await H.move(640, 300, 30); }, 2.5],
       ["zeile", async (H) => { const b = await demo(H).boundingBox(); await H.move(b.x + 160, b.y + 26, 40); }, 2.5],
       ["zeitstrahl", async (H) => { const b = await demo(H).boundingBox(); const y = b.y + b.height - 24; await H.move(b.x + 70, y, 40); await H.sleep(1400); await H.move(b.x + 320, y, 60); await H.sleep(1400); await H.move(b.x + 560, y, 60); }, 2.5],
-      ["artikel", async (H) => { const href = await demo(H).locator("a[href^='/beschluss/']").first().getAttribute("href"); await H.hidden(() => H.go(href)); }, 3],
-      ["verlauf", (H) => H.scrollTo(480), 4],
-      ["quelle", async (H) => { const y = await H.page.evaluate(() => { const e = [...document.querySelectorAll("h1,h2,h3")].find((x) => /^Originalunterlagen|^Unterlagen|^Dokumente/.test(x.innerText.trim())); const max = document.documentElement.scrollHeight - innerHeight - 260; return Math.max(0, Math.min(e ? e.getBoundingClientRect().top + scrollY - 140 : 1000, max)); }); await H.scrollTo(y); }, 4],
+      ["artikel", async (H) => { const href = await demo(H).locator("a[href^='/beschluss/']").first().getAttribute("href"); await H.hidden(async () => { await H.go(href); await H.page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {}); await H.sleep(800); }); }, 3],
+      ["verlauf", async (H) => { await H.hidden(async () => { await H.page.evaluate(() => window.scrollTo({ top: 480, behavior: "instant" })); await H.sleep(500); }); await H.move(640, 380, 30); }, 4],  /* Sprung statt Scrollen (sonst Blitzbild) */
+      ["quelle", async (H) => { const y = await H.page.evaluate(() => { const e = [...document.querySelectorAll("h1,h2,h3")].find((x) => /^Originalunterlagen|^Unterlagen|^Dokumente/.test(x.innerText.trim())); const max = document.documentElement.scrollHeight - innerHeight - 260; return Math.max(0, Math.min(e ? e.getBoundingClientRect().top + scrollY - 140 : 1000, max)); }); await await H.hidden(async () => { await H.page.evaluate((top) => window.scrollTo({ top, behavior: "instant" }), y); await H.sleep(500); }); await H.move(560, 420, 30); }, 4],
     ],
   };

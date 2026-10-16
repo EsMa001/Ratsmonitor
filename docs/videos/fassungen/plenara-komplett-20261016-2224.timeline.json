@@ -1,0 +1,1284 @@
+{
+ "folien": [
+  {
+   "name": "titel",
+   "start": 0.0,
+   "ende": 7.2
+  },
+  {
+   "name": "vorteile",
+   "start": 371.3,
+   "ende": 387.3
+  },
+  {
+   "name": "schluss",
+   "start": 387.3,
+   "ende": 394.6
+  }
+ ],
+ "kapitel": [
+  {
+   "nr": 1,
+   "id": "einleitung",
+   "kapitel": "Wissen, was vor Ort entschieden wird, bevor es bekannt ist",
+   "start": 7.2,
+   "ende": 38.2,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": false,
+     "text": "Was wird in Räten gerade beraten, das Ihr Vorhaben, Ihre Stadt oder Ihre Recherche betrifft?",
+     "start": 7.7,
+     "ende": 12.6,
+     "schritte": [
+      {
+       "szene": "startseite",
+       "schritt": "kopf",
+       "clip": "startseite"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": true,
+     "text": "Plenara zeigt, was in Ihren Kommunen beraten wird: Beschlüsse und Beratungen an einem Ort.",
+     "start": 13.4,
+     "ende": 18.5,
+     "schritte": [
+      {
+       "szene": "startseite",
+       "schritt": "marke",
+       "clip": "startseite"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": false,
+     "text": "Die Zahl zeigt, wie viele Berichte aus Räten und Ausschüssen in den letzten 30 Tagen dazugekommen sind.",
+     "start": 19.3,
+     "ende": 25.2,
+     "schritte": [
+      {
+       "szene": "startseite",
+       "schritt": "zahl",
+       "clip": "startseite"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": true,
+     "text": "Ein Begriff genügt, zum Beispiel Wärmeplanung, und die Karte zeigt sofort, wo darüber beraten wird.",
+     "start": 26.0,
+     "ende": 31.7,
+     "schritte": [
+      {
+       "szene": "startseite",
+       "schritt": "suche",
+       "clip": "startseite"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": true,
+     "text": "Jede Angabe führt zur Originalunterlage, und Alarme melden Neues per E-Mail.",
+     "start": 32.5,
+     "ende": 37.1,
+     "schritte": [
+      {
+       "szene": "startseite",
+       "schritt": "artikel",
+       "clip": "startseite"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 2,
+   "id": "suchen",
+   "kapitel": "Ein Begriff. Ganz Deutschland. Sofort auf der Karte.",
+   "start": 38.2,
+   "ende": 71.3,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": true,
+     "text": "Die Suche gilt immer für ganz Deutschland. Einen Ort können Sie aber wählen.",
+     "start": 38.7,
+     "ende": 42.6,
+     "schritte": [
+      {
+       "szene": "suche-eingabe",
+       "schritt": "eingabe",
+       "clip": "suche-eingabe@thema-waermeplanung@vorsuche-ja"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": false,
+     "text": "Die Karte zeigt, wo darüber beraten wird: in vierzehn Bundesländern.",
+     "start": 43.4,
+     "ende": 47.5,
+     "schritte": [
+      {
+       "szene": "suche-eingabe",
+       "schritt": "karte",
+       "clip": "suche-eingabe@thema-waermeplanung@vorsuche-ja"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": false,
+     "text": "Die Zahl an jedem Gebiet verrät, wie viele Einträge es dort gibt.",
+     "start": 48.3,
+     "ende": 51.8,
+     "schritte": [
+      {
+       "szene": "suche-eingabe",
+       "schritt": "karte",
+       "clip": "suche-eingabe@thema-waermeplanung@vorsuche-ja"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": true,
+     "text": "Ein Klick zeigt die Beschlüsse dieses Gebiets. In Stuttgart sind es dreizehn.",
+     "start": 52.6,
+     "ende": 56.6,
+     "schritte": [
+      {
+       "szene": "karte-gebiet",
+       "schritt": "zoom",
+       "clip": "karte-gebiet@ort-stuttgart@thema-waermeplanung"
+      },
+      {
+       "szene": "karte-gebiet",
+       "schritt": "klick",
+       "clip": "karte-gebiet@ort-stuttgart@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": false,
+     "text": "Die Heatmap zeigt auf einen Blick, wo sich ein Thema häuft.",
+     "start": 57.4,
+     "ende": 60.3,
+     "schritte": [
+      {
+       "szene": "karte-heatmap",
+       "schritt": "heatmap",
+       "clip": "karte-heatmap@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 6,
+     "kern": false,
+     "text": "Tippen Sie einen Ort, zum Beispiel Stuttgart, und Plenara erkennt ihn sofort.",
+     "start": 61.1,
+     "ende": 65.3,
+     "schritte": [
+      {
+       "szene": "suche-ort",
+       "schritt": "tippen",
+       "clip": "suche-ort@ort-stuttgart"
+      },
+      {
+       "szene": "suche-ort",
+       "schritt": "ergebnis",
+       "clip": "suche-ort@ort-stuttgart"
+      }
+     ]
+    },
+    {
+     "nr": 7,
+     "kern": false,
+     "text": "Von ganz Deutschland bis in Ihre Gemeinde. Eine Suche, eine Karte.",
+     "start": 66.1,
+     "ende": 70.2,
+     "schritte": [
+      {
+       "szene": "suche-ort",
+       "schritt": "ergebnis",
+       "clip": "suche-ort@ort-stuttgart"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 3,
+   "id": "liste-artikel",
+   "kapitel": "Aus über zehntausend Einträgen den Überblick behalten",
+   "start": 71.3,
+   "ende": 108.0,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": true,
+     "text": "Zu einem Thema gibt es mehr als eintausend Einträge, jeder mit Gremium und Datum.",
+     "start": 71.8,
+     "ende": 76.6,
+     "schritte": [
+      {
+       "szene": "liste-zeitstrahl",
+       "schritt": "liste",
+       "clip": "liste-zeitstrahl@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": false,
+     "text": "Jede Zeile sagt Ihnen, worum es geht, wer berät und wann.",
+     "start": 77.4,
+     "ende": 81.1,
+     "schritte": [
+      {
+       "szene": "liste-zeitstrahl",
+       "schritt": "zeile",
+       "clip": "liste-zeitstrahl@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Bei vielen Vorgängen sehen Sie sogar den Stand: jede Beratung mit Datum und Gremium.",
+     "start": 81.9,
+     "ende": 86.9,
+     "schritte": [
+      {
+       "szene": "liste-zeitstrahl",
+       "schritt": "zeitstrahl",
+       "clip": "liste-zeitstrahl@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": false,
+     "text": "Sortieren Sie nach Datum oder Relevanz, kompakt oder ausführlich.",
+     "start": 87.7,
+     "ende": 91.9,
+     "schritte": [
+      {
+       "szene": "liste-zeitstrahl",
+       "schritt": "liste",
+       "clip": "liste-zeitstrahl@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": false,
+     "text": "Ein Klick öffnet den ganzen Artikel.",
+     "start": 92.7,
+     "ende": 94.6,
+     "schritte": [
+      {
+       "szene": "liste-zeitstrahl",
+       "schritt": "artikel",
+       "clip": "liste-zeitstrahl@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 6,
+     "kern": false,
+     "text": "Eine Kurzfassung unter dem Titel sagt Ihnen sofort, worum es geht.",
+     "start": 95.4,
+     "ende": 99.1,
+     "schritte": [
+      {
+       "szene": "liste-zeitstrahl",
+       "schritt": "artikel",
+       "clip": "liste-zeitstrahl@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 7,
+     "kern": false,
+     "text": "Darunter stehen der Verlauf durch die Gremien und alle Unterlagen.",
+     "start": 99.9,
+     "ende": 103.2,
+     "schritte": [
+      {
+       "szene": "liste-zeitstrahl",
+       "schritt": "verlauf",
+       "clip": "liste-zeitstrahl@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 8,
+     "kern": false,
+     "text": "Vom Überblick zur Originalunterlage in wenigen Klicks.",
+     "start": 104.0,
+     "ende": 106.9,
+     "schritte": [
+      {
+       "szene": "liste-zeitstrahl",
+       "schritt": "quelle",
+       "clip": "liste-zeitstrahl@thema-waermeplanung"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 4,
+   "id": "filter",
+   "kapitel": "Gezielt eingrenzen, bis nur das Passende übrig bleibt",
+   "start": 108.0,
+   "ende": 140.0,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": true,
+     "text": "Zu viele Treffer? Dann grenzen Sie sie ein.",
+     "start": 108.5,
+     "ende": 111.0,
+     "schritte": [
+      {
+       "szene": "filter-fenster",
+       "schritt": "offen",
+       "clip": "filter-fenster"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": false,
+     "text": "Wollen Sie nur ganze Wörter, schalten Sie den exakten Begriff ein.",
+     "start": 111.8,
+     "ende": 115.4,
+     "schritte": [
+      {
+       "szene": "filter-fenster",
+       "schritt": "exakt",
+       "clip": "filter-fenster"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Wählen Sie Zeitraum, Thema und Status, zum Beispiel beschlossen oder in Beratung.",
+     "start": 116.2,
+     "ende": 120.9,
+     "schritte": [
+      {
+       "szene": "filter-fenster",
+       "schritt": "zeitraum",
+       "clip": "filter-fenster"
+      },
+      {
+       "szene": "filter-fenster",
+       "schritt": "thema",
+       "clip": "filter-fenster"
+      },
+      {
+       "szene": "filter-fenster",
+       "schritt": "status",
+       "clip": "filter-fenster"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": false,
+     "text": "Karte und Liste passen sich sofort an.",
+     "start": 121.7,
+     "ende": 123.9,
+     "schritte": [
+      {
+       "szene": "filter-fenster",
+       "schritt": "karte",
+       "clip": "filter-fenster"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": false,
+     "text": "Ihre Auswahl steht als Marken unter der Suchleiste, ein Klick entfernt sie wieder.",
+     "start": 124.7,
+     "ende": 129.3,
+     "schritte": [
+      {
+       "szene": "filter-fenster",
+       "schritt": "marken",
+       "clip": "filter-fenster"
+      }
+     ]
+    },
+    {
+     "nr": 6,
+     "kern": false,
+     "text": "Mehrere Begriffe verknüpfen Sie wahlweise mit „alle“ oder „einer davon“.",
+     "start": 130.1,
+     "ende": 133.9,
+     "schritte": [
+      {
+       "szene": "filter-fenster",
+       "schritt": "kombi",
+       "clip": "filter-fenster"
+      }
+     ]
+    },
+    {
+     "nr": 7,
+     "kern": false,
+     "text": "So wird aus mehr als eintausend Einträgen genau die Auswahl, die Sie brauchen.",
+     "start": 134.7,
+     "ende": 138.9,
+     "schritte": [
+      {
+       "szene": "filter-fenster",
+       "schritt": "marken",
+       "clip": "filter-fenster"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 5,
+   "id": "alarme",
+   "kapitel": "Nichts verpassen, ohne zu suchen",
+   "start": 140.0,
+   "ende": 167.5,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": false,
+     "text": "Sie wollen nichts verpassen, aber nicht jeden Tag suchen?",
+     "start": 140.5,
+     "ende": 143.2,
+     "schritte": [
+      {
+       "szene": "alarm",
+       "schritt": "herz",
+       "clip": "alarm@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": true,
+     "text": "Speichern Sie Ihre Suche mit dem Herz.",
+     "start": 144.0,
+     "ende": 146.0,
+     "schritte": [
+      {
+       "szene": "alarm",
+       "schritt": "herz",
+       "clip": "alarm@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": false,
+     "text": "Im Konto schalten Sie die Glocke ein.",
+     "start": 146.8,
+     "ende": 148.4,
+     "schritte": [
+      {
+       "szene": "alarm",
+       "schritt": "konto",
+       "clip": "alarm@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": true,
+     "text": "Ab jetzt kommt eine E-Mail, sobald es zu Ihrer Suche neue Treffer gibt.",
+     "start": 149.2,
+     "ende": 153.1,
+     "schritte": [
+      {
+       "szene": "alarm",
+       "schritt": "glocke",
+       "clip": "alarm@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": false,
+     "text": "Wie oft Sie benachrichtigt werden, legen Sie bei jeder Suche fest.",
+     "start": 153.9,
+     "ende": 157.3,
+     "schritte": [
+      {
+       "szene": "alarm",
+       "schritt": "glocke",
+       "clip": "alarm@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 6,
+     "kern": false,
+     "text": "Und am Tag einer Sitzung in Ihren Gebieten kommt eine E-Mail.",
+     "start": 158.1,
+     "ende": 161.6,
+     "schritte": [
+      {
+       "szene": "kalender",
+       "schritt": "abo",
+       "clip": "kalender"
+      }
+     ]
+    },
+    {
+     "nr": 7,
+     "kern": false,
+     "text": "So behalten Sie den Überblick, ohne zu suchen. Plenara meldet sich.",
+     "start": 162.4,
+     "ende": 166.3,
+     "schritte": [
+      {
+       "szene": "kalender",
+       "schritt": "abo",
+       "clip": "kalender"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 6,
+   "id": "export",
+   "kapitel": "Aus der Suche wird Ihre Auswertung",
+   "start": 167.5,
+   "ende": 195.8,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": false,
+     "text": "Sie brauchen die Treffer in Ihrer eigenen Auswertung oder im Bericht?",
+     "start": 168.0,
+     "ende": 171.4,
+     "schritte": [
+      {
+       "szene": "export",
+       "schritt": "fenster",
+       "clip": "export@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": true,
+     "text": "Über der Trefferliste exportieren Sie alle Treffer als Excel oder CSV.",
+     "start": 172.2,
+     "ende": 176.7,
+     "schritte": [
+      {
+       "szene": "export",
+       "schritt": "fenster",
+       "clip": "export@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Auch einen einzelnen Artikel geben Sie aus, als PDF, zum Drucken, als Excel oder CSV.",
+     "start": 177.5,
+     "ende": 183.3,
+     "schritte": [
+      {
+       "szene": "export",
+       "schritt": "artikel",
+       "clip": "export@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": false,
+     "text": "Das PDF eignet sich zum Weitergeben oder Ablegen.",
+     "start": 184.1,
+     "ende": 187.1,
+     "schritte": [
+      {
+       "szene": "export",
+       "schritt": "artikel",
+       "clip": "export@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": false,
+     "text": "Excel und CSV helfen, wenn Sie die Daten selbst auswerten wollen.",
+     "start": 187.9,
+     "ende": 191.7,
+     "schritte": [
+      {
+       "szene": "export",
+       "schritt": "artikel",
+       "clip": "export@thema-waermeplanung"
+      }
+     ]
+    },
+    {
+     "nr": 6,
+     "kern": false,
+     "text": "Von der Suche zur Datei in wenigen Klicks.",
+     "start": 192.5,
+     "ende": 194.7,
+     "schritte": [
+      {
+       "szene": "export",
+       "schritt": "fenster",
+       "clip": "export@thema-waermeplanung"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 7,
+   "id": "kalender",
+   "kapitel": "Keine Sitzung verpassen",
+   "start": 195.8,
+   "ende": 218.3,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": false,
+     "text": "Wann tagt der Rat, der Sie interessiert?",
+     "start": 196.3,
+     "ende": 198.3,
+     "schritte": [
+      {
+       "szene": "kalender",
+       "schritt": "oeffnen",
+       "clip": "kalender"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": true,
+     "text": "Im Kalender sehen Sie anstehende Sitzungen auf einen Blick.",
+     "start": 199.1,
+     "ende": 202.5,
+     "schritte": [
+      {
+       "szene": "kalender",
+       "schritt": "oeffnen",
+       "clip": "kalender"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": false,
+     "text": "Wählen Sie Ihre Gebiete, einen Ort oder Kreis, auch mehrere zugleich.",
+     "start": 203.3,
+     "ende": 207.2,
+     "schritte": [
+      {
+       "szene": "kalender",
+       "schritt": "gebiete",
+       "clip": "kalender"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": true,
+     "text": "Jeder Tag mit einer Sitzung ist markiert, ein Klick zeigt Gremium und Themen.",
+     "start": 208.0,
+     "ende": 212.4,
+     "schritte": [
+      {
+       "szene": "kalender",
+       "schritt": "tag",
+       "clip": "kalender"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": false,
+     "text": "Mit „Kalender abonnieren“ übernehmen Sie die Termine in Ihren eigenen Kalender.",
+     "start": 213.2,
+     "ende": 217.1,
+     "schritte": [
+      {
+       "szene": "kalender",
+       "schritt": "abo",
+       "clip": "kalender"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 8,
+   "id": "konto",
+   "kapitel": "Alles Gespeicherte an einem Ort",
+   "start": 218.3,
+   "ende": 241.6,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": false,
+     "text": "Ihre Suchen, Artikel und Alarme an einem Ort.",
+     "start": 218.8,
+     "ende": 221.9,
+     "schritte": [
+      {
+       "szene": "konto",
+       "schritt": "menue",
+       "clip": "konto"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": false,
+     "text": "Über das Personensymbol öffnen Sie Ihr Konto und die Abmeldung.",
+     "start": 222.7,
+     "ende": 226.2,
+     "schritte": [
+      {
+       "szene": "konto",
+       "schritt": "menue",
+       "clip": "konto"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Im Profil tragen Sie Name und E-Mail ein und sehen Ihren Tarif.",
+     "start": 227.0,
+     "ende": 230.8,
+     "schritte": [
+      {
+       "szene": "konto",
+       "schritt": "profil",
+       "clip": "konto"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": true,
+     "text": "Alles Gespeicherte erreichen Sie über die Symbole in der Kopfzeile: Suchen, Artikel und Kalender.",
+     "start": 231.6,
+     "ende": 236.9,
+     "schritte": [
+      {
+       "szene": "konto",
+       "schritt": "symbole",
+       "clip": "konto"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": false,
+     "text": "Es bleibt erhalten, auch wenn Sie später wiederkommen.",
+     "start": 237.7,
+     "ende": 240.5,
+     "schritte": [
+      {
+       "szene": "konto",
+       "schritt": "symbole",
+       "clip": "konto"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 9,
+   "id": "abdeckung",
+   "kapitel": "Ist Ihre Gemeinde dabei? Das sehen Sie offen",
+   "start": 241.6,
+   "ende": 269.0,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": false,
+     "text": "Ist Ihre Gemeinde dabei?",
+     "start": 242.1,
+     "ende": 243.7,
+     "schritte": [
+      {
+       "szene": "abdeckung",
+       "schritt": "seite",
+       "clip": "abdeckung"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": true,
+     "text": "Die Seite Datenabdeckung zeigt es offen.",
+     "start": 244.5,
+     "ende": 246.8,
+     "schritte": [
+      {
+       "szene": "abdeckung",
+       "schritt": "seite",
+       "clip": "abdeckung"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Heute sind es mehr als neunhunderttausend Einträge aus über sechstausend Gemeinden.",
+     "start": 247.5,
+     "ende": 252.1,
+     "schritte": [
+      {
+       "szene": "abdeckung",
+       "schritt": "seite",
+       "clip": "abdeckung"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": false,
+     "text": "Suchen Sie Ihre Gemeinde oder Ihren Kreis und sehen Sie, wie aktuell der Stand dort ist.",
+     "start": 252.9,
+     "ende": 257.7,
+     "schritte": [
+      {
+       "szene": "abdeckung",
+       "schritt": "suche",
+       "clip": "abdeckung"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": false,
+     "text": "Auch der letzte Abruf der Daten steht dabei.",
+     "start": 258.5,
+     "ende": 261.2,
+     "schritte": [
+      {
+       "szene": "abdeckung",
+       "schritt": "abruf",
+       "clip": "abdeckung"
+      }
+     ]
+    },
+    {
+     "nr": 6,
+     "kern": false,
+     "text": "Fehlt etwas, melden Sie es uns direkt.",
+     "start": 262.0,
+     "ende": 264.3,
+     "schritte": [
+      {
+       "szene": "abdeckung",
+       "schritt": "melden",
+       "clip": "abdeckung"
+      }
+     ]
+    },
+    {
+     "nr": 7,
+     "kern": false,
+     "text": "Wir sagen offen, was schon dabei ist und was noch fehlt.",
+     "start": 265.1,
+     "ende": 267.9,
+     "schritte": [
+      {
+       "szene": "abdeckung",
+       "schritt": "melden",
+       "clip": "abdeckung"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 10,
+   "id": "x-atlas",
+   "kapitel": "Wie viel? Der Atlas",
+   "start": 269.0,
+   "ende": 291.9,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": true,
+     "text": "Plenara X wertet die Beratungen aller Räte gemeinsam aus.",
+     "start": 269.5,
+     "ende": 272.9,
+     "schritte": [
+      {
+       "szene": "x-atlas",
+       "schritt": "start",
+       "clip": "x-atlas"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": false,
+     "text": "Der Atlas zeigt, worüber beraten wird, wo und wie viel, nach zehn Themen.",
+     "start": 273.7,
+     "ende": 278.5,
+     "schritte": [
+      {
+       "szene": "x-atlas",
+       "schritt": "start",
+       "clip": "x-atlas"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": false,
+     "text": "Ein Klick auf ein Thema färbt die Karte neu.",
+     "start": 279.3,
+     "ende": 281.6,
+     "schritte": [
+      {
+       "szene": "x-atlas",
+       "schritt": "thema",
+       "clip": "x-atlas"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": true,
+     "text": "Mit einem Suchbegriff wie Wärmeplanung zählt der Atlas nur die passenden Vorgänge.",
+     "start": 282.4,
+     "ende": 287.5,
+     "schritte": [
+      {
+       "szene": "x-atlas",
+       "schritt": "begriff",
+       "clip": "x-atlas"
+      }
+     ]
+    },
+    {
+     "nr": 5,
+     "kern": false,
+     "text": "Darunter stehen die Unterthemen mit ihren Zahlen.",
+     "start": 288.3,
+     "ende": 290.8,
+     "schritte": [
+      {
+       "szene": "x-atlas",
+       "schritt": "themen",
+       "clip": "x-atlas"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 11,
+   "id": "x-signale",
+   "kapitel": "Was entsteht? Signale",
+   "start": 291.9,
+   "ende": 311.2,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": true,
+     "text": "Signale zeigen einzelne Vorhaben mit Ort, Schritt und Quelle.",
+     "start": 292.4,
+     "ende": 296.2,
+     "schritte": [
+      {
+       "szene": "x-signale",
+       "schritt": "start",
+       "clip": "x-signale"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": false,
+     "text": "Jeder Vorgang steht mit Ort, Datum und Stand in der Liste.",
+     "start": 297.0,
+     "ende": 300.4,
+     "schritte": [
+      {
+       "szene": "x-signale",
+       "schritt": "liste",
+       "clip": "x-signale"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Erstmals hier zeigt Orte, die ein Thema zum ersten Mal beraten.",
+     "start": 301.2,
+     "ende": 304.8,
+     "schritte": [
+      {
+       "szene": "x-signale",
+       "schritt": "erstmals",
+       "clip": "x-signale"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": false,
+     "text": "Zur Wahl stehen Branchen wie Windenergie, Wohnbaugebiete oder Ausschreibungen.",
+     "start": 305.6,
+     "ende": 310.1,
+     "schritte": [
+      {
+       "szene": "x-signale",
+       "schritt": "wechsel",
+       "clip": "x-signale"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 12,
+   "id": "x-trends",
+   "kapitel": "Was verändert sich? Trends",
+   "start": 311.2,
+   "ende": 332.0,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": true,
+     "text": "Trends zeigt Begriffe, die in den Räten gerade zunehmen.",
+     "start": 311.7,
+     "ende": 314.8,
+     "schritte": [
+      {
+       "szene": "x-trends",
+       "schritt": "start",
+       "clip": "x-trends"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": false,
+     "text": "Jeder Begriff steht mit der Zahl seiner Vorgänge und dem Faktor des Anstiegs.",
+     "start": 315.6,
+     "ende": 319.7,
+     "schritte": [
+      {
+       "szene": "x-trends",
+       "schritt": "liste",
+       "clip": "x-trends"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Ein Begriff wie Wärmeplanung zeigt, wie er sich über die Gebiete ausbreitet.",
+     "start": 320.5,
+     "ende": 324.7,
+     "schritte": [
+      {
+       "szene": "x-trends",
+       "schritt": "begriff",
+       "clip": "x-trends"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": false,
+     "text": "Im Reiter Ausgang sehen Sie, wie Vorgänge ausgehen: beschlossen, vertagt oder abgelehnt.",
+     "start": 325.5,
+     "ende": 330.9,
+     "schritte": [
+      {
+       "szene": "x-trends",
+       "schritt": "ausgang",
+       "clip": "x-trends"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 13,
+   "id": "x-fakten",
+   "kapitel": "Welcher Wert? Fakten",
+   "start": 332.0,
+   "ende": 344.9,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": true,
+     "text": "Fakten liest Zahlen aus den Vorlagen der Räte, etwa Hebesätze.",
+     "start": 332.5,
+     "ende": 336.3,
+     "schritte": [
+      {
+       "szene": "x-fakten",
+       "schritt": "start",
+       "clip": "x-fakten"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": false,
+     "text": "Die Karte zeigt jede Gemeinde mit ihrem Wert.",
+     "start": 337.1,
+     "ende": 339.6,
+     "schritte": [
+      {
+       "szene": "x-fakten",
+       "schritt": "karte",
+       "clip": "x-fakten"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Ein Klick auf einen Ort zeigt die Vorlage, aus der der Wert stammt.",
+     "start": 340.4,
+     "ende": 343.8,
+     "schritte": [
+      {
+       "szene": "x-fakten",
+       "schritt": "liste",
+       "clip": "x-fakten"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 14,
+   "id": "x-einblicke",
+   "kapitel": "Wer berät was? Einblicke",
+   "start": 344.9,
+   "ende": 359.3,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": true,
+     "text": "Gremien zeigt, welchen Weg Vorgänge durch Ausschüsse und Rat nehmen.",
+     "start": 345.4,
+     "ende": 349.1,
+     "schritte": [
+      {
+       "szene": "x-einblicke",
+       "schritt": "gremien",
+       "clip": "x-einblicke"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": false,
+     "text": "Das Themennetz zeigt, womit ein Thema zusammenhängt.",
+     "start": 349.9,
+     "ende": 352.7,
+     "schritte": [
+      {
+       "szene": "x-einblicke",
+       "schritt": "netz",
+       "clip": "x-einblicke"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Aktuelles sammelt, was gerade berichtenswert ist, je Vorgang mit Zitat und Quelle.",
+     "start": 353.5,
+     "ende": 358.1,
+     "schritte": [
+      {
+       "szene": "x-einblicke",
+       "schritt": "aktuelles",
+       "clip": "x-einblicke"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nr": 15,
+   "id": "abschluss",
+   "kapitel": "Jetzt selbst ausprobieren",
+   "start": 359.3,
+   "ende": 371.3,
+   "saetze": [
+    {
+     "nr": 1,
+     "kern": false,
+     "text": "Suchen Sie jetzt ein Thema, das für Sie wichtig ist.",
+     "start": 359.8,
+     "ende": 362.3,
+     "schritte": [
+      {
+       "szene": "abschluss",
+       "schritt": "suche",
+       "clip": "abschluss"
+      }
+     ]
+    },
+    {
+     "nr": 2,
+     "kern": true,
+     "text": "Die Suche können Sie kostenlos und ohne Anmeldung nutzen.",
+     "start": 363.1,
+     "ende": 366.5,
+     "schritte": [
+      {
+       "szene": "abschluss",
+       "schritt": "suche",
+       "clip": "abschluss"
+      }
+     ]
+    },
+    {
+     "nr": 3,
+     "kern": true,
+     "text": "Plenara. Besser verstehen, was vor Ort beraten wird.",
+     "start": 367.3,
+     "ende": 370.2,
+     "schritte": [
+      {
+       "szene": "abschluss",
+       "schritt": "logo",
+       "clip": "abschluss"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "datei": "plenara-komplett.mp4",
+ "dauer": 394.6
+}

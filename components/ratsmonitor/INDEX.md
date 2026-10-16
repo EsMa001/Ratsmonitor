@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (492 Zeilen, ⚠13)
+- app/ratsmonitor-info.css (498 Zeilen, ⚠13)
 - app/ratsmonitor.css (211 Zeilen, ⚠14)
 
 admin-access admin.css:6
@@ -264,15 +264,15 @@ figure design-styles.css:197
 font-bold ratsmonitor.css:63
 font-medium ratsmonitor.css:65
 font-semibold ratsmonitor.css:64
-gap-10 ratsmonitor-info.css:448
-gap-6 ratsmonitor-info.css:486
-gap-8 ratsmonitor-info.css:485
-gap-y-12 ratsmonitor-info.css:436
-gap-y-14 ratsmonitor-info.css:480
-gap-y-6 ratsmonitor-info.css:483
-gap-y-8 ratsmonitor-info.css:437
+gap-10 ratsmonitor-info.css:454
+gap-6 ratsmonitor-info.css:492
+gap-8 ratsmonitor-info.css:491
+gap-y-12 ratsmonitor-info.css:442
+gap-y-14 ratsmonitor-info.css:486
+gap-y-6 ratsmonitor-info.css:489
+gap-y-8 ratsmonitor-info.css:443
 group ratsmonitor.css:159
-h-16 ratsmonitor-info.css:458
+h-16 ratsmonitor-info.css:464
 has-data analyse-admin.css:56
 heading-m design-styles.css:44
 heading-m ratsmonitor.css:58
@@ -308,19 +308,19 @@ is-stored analyse-admin.css:81
 legend design-styles.css:251
 link-btn ratsmonitor.css:17
 map-canvas analyse-admin.css:66
-mb-6 ratsmonitor-info.css:450
-mb-8 ratsmonitor-info.css:471
+mb-6 ratsmonitor-info.css:456
+mb-8 ratsmonitor-info.css:477
 mix-values analyse-admin.css:46
 monthly-mix analyse-admin.css:46
-mt-10 ratsmonitor-info.css:475
-mt-12 ratsmonitor-info.css:474
-mt-14 ratsmonitor-info.css:473
-mt-16 ratsmonitor-info.css:472
-mt-3 ratsmonitor-info.css:454
-mt-4 ratsmonitor-info.css:453
-mt-5 ratsmonitor-info.css:439
-mt-6 ratsmonitor-info.css:451
-mt-8 ratsmonitor-info.css:476
+mt-10 ratsmonitor-info.css:481
+mt-12 ratsmonitor-info.css:480
+mt-14 ratsmonitor-info.css:479
+mt-16 ratsmonitor-info.css:478
+mt-3 ratsmonitor-info.css:460
+mt-4 ratsmonitor-info.css:459
+mt-5 ratsmonitor-info.css:445
+mt-6 ratsmonitor-info.css:457
+mt-8 ratsmonitor-info.css:482
 needs-attention admin.css:6
 no-data analyse-admin.css:57
 notice analyse-admin.css:13
@@ -330,7 +330,7 @@ page design-styles.css:34
 page-error-action analyse-admin.css:89
 page-note design-styles.css:36
 page-note ratsmonitor.css:58
-pb-10 ratsmonitor-info.css:470
+pb-10 ratsmonitor-info.css:476
 pl-cta ratsmonitor-info.css:428
 pl-footer-accent ratsmonitor-info.css:419
 popover ratsmonitor.css:49
@@ -344,12 +344,12 @@ process__step--open design-styles.css:122
 prose analyse-admin.css:15
 prose design-styles.css:201
 prose ratsmonitor.css:58
-pt-10 ratsmonitor-info.css:469
-py-10 ratsmonitor-info.css:489
-py-2 ratsmonitor-info.css:456
-py-3 ratsmonitor-info.css:455
-py-6 ratsmonitor-info.css:457
-py-8 ratsmonitor-info.css:490
+pt-10 ratsmonitor-info.css:475
+py-10 ratsmonitor-info.css:495
+py-2 ratsmonitor-info.css:462
+py-3 ratsmonitor-info.css:461
+py-6 ratsmonitor-info.css:463
+py-8 ratsmonitor-info.css:496
 ratsmonitor ratsmonitor-info.css:260
 ratsmonitor ratsmonitor.css:2
 region-data-badge analyse-admin.css:55
@@ -367,8 +367,8 @@ related-topics analyse-admin.css:26
 ri ratsmonitor-info.css:13
 ri ratsmonitor.css:149
 ri-actions ratsmonitor-info.css:29
-ri-anw ratsmonitor-info.css:433
-ri-bcard ratsmonitor-info.css:441
+ri-anw ratsmonitor-info.css:432
+ri-bcard ratsmonitor-info.css:447
 ri-bid ratsmonitor-info.css:35
 ri-bid__icon ratsmonitor-info.css:36
 ri-bid__label ratsmonitor-info.css:37
@@ -421,7 +421,7 @@ ri-head__grid ratsmonitor-info.css:33
 ri-head__grid--top ratsmonitor-info.css:34
 ri-help ratsmonitor-info.css:213
 ri-input ratsmonitor-info.css:207
-ri-konto ratsmonitor-info.css:446
+ri-konto ratsmonitor-info.css:452
 ri-lead ratsmonitor-info.css:41
 ri-link ratsmonitor-info.css:217
 ri-menu ratsmonitor-info.css:13
@@ -491,7 +491,7 @@ ri-tl__title ratsmonitor-info.css:69
 ri-tl__title ratsmonitor.css:147
 ri-topnav ratsmonitor-info.css:392
 ri-two ratsmonitor-info.css:136
-rm-analytics ratsmonitor-info.css:469
+rm-analytics ratsmonitor-info.css:475
 rm-chip ratsmonitor.css:88
 rm-dark admin.css:461
 rm-dark ratsmonitor-info.css:415
@@ -531,8 +531,8 @@ setting__name design-styles.css:213
 share-button design-styles.css:82
 skip-link analyse-admin.css:6
 skip-link ratsmonitor.css:127
-space-y-6 ratsmonitor-info.css:438
-space-y-8 ratsmonitor-info.css:487
+space-y-6 ratsmonitor-info.css:444
+space-y-8 ratsmonitor-info.css:493
 steps design-styles.css:114
 steps__bar design-styles.css:115
 steps__bar--done design-styles.css:116
@@ -558,7 +558,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (25): generateMetadata, Page
+- page.tsx (22): generateMetadata, Page
 
 ### app/(monitor)/anmelden/bestaetigen/
 - page.tsx (2): Page
@@ -567,7 +567,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/anwender/[slug]/
-- page.tsx (9): Page
+- page.tsx (16): generateMetadata, Page
 
 ### app/(monitor)/beschluss/[id]/
 - page.tsx (35): generateMetadata, Page
@@ -618,9 +618,6 @@ topic design-styles.css:140
 
 ### app/admin/
 - page.tsx (82, ⚠7): dynamic, metadata, AdminPage
-
-### app/analysen/
-- page.tsx (5): Page
 
 ### app/
 - chatgpt-auth.ts (92): ChatGPTUser, getChatGPTUser, chatGPTSignInAvailable, chatGPTSignInPath, chatGPTSignOutPath
@@ -721,7 +718,7 @@ topic design-styles.css:140
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenLive.tsx (245): LiveThumb
-- BranchenPages.tsx (114): BranchePage
+- BranchenPages.tsx (121): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (46): InfoPages
 - LegalText.tsx (20): H2, P, Ul
@@ -731,12 +728,12 @@ topic design-styles.css:140
 - StartseitePage.tsx (495, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
-- VideosPage.tsx (154): VideosPage
+- VideosPage.tsx (157): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
-- anwender-beispiele.ts (824): BEISPIELE
-- blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
+- anwender-beispiele.ts (37, ⚠21): BEISPIELE
+- blocks.tsx (216, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (112): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
-- content.ts (418, ⚠28): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
+- content.ts (280, ⚠26): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
@@ -771,7 +768,7 @@ topic design-styles.css:140
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
-- routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
+- routes.ts (10): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (166): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, useSavedArticles, useSavedArticlesReady
 - savedSearch.ts (162, ⚠1): SearchSnapshot, snapshotOf, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
@@ -804,8 +801,8 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (227, ⚠25): ANALYSE_THUMBS, MethodikText
-- AnalyticsLocked.tsx (54): AnalyticsLocked
-- AnalyticsPages.tsx (79, ⚠1): AnalyticsPages
+- AnalyticsLocked.tsx (51): AnalyticsLocked
+- AnalyticsPages.tsx (57): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
 - AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (73): Befund, zuThema, Leer, Fehler
@@ -815,13 +812,12 @@ topic design-styles.css:140
 - ComparePage.tsx (304, ⚠10): ComparePage
 - DecisionCharts.tsx (65, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
-- DiffusionPage.tsx (252, ⚠7): DiffusionPage
 - DiffusionSearch.tsx (68, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (311, ⚠3): FaktenPage
 - FraktionenPage.tsx (151, ⚠5): FraktionenPage
 - GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (171, ⚠3): GremiennetzPage
-- Kennzahlen.tsx (127): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
+- Kennzahlen.tsx (130): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
 - KnowledgeGraphPage.tsx (228, ⚠3): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
@@ -833,10 +829,9 @@ topic design-styles.css:140
 - Reveal.tsx (16): Reveal
 - SignalePage.tsx (331, ⚠6): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
-- TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (570, ⚠9): XAtlasView
-- XKopf.tsx (171): XKopf, XWeiter, ThemenLeiste
-- XTrendsPage.tsx (340, ⚠4): XTrendsPage
+- XAtlasView.tsx (572, ⚠9): XAtlasView
+- XKopf.tsx (170): XKopf, XWeiter, ThemenLeiste
+- XTrendsPage.tsx (338, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery

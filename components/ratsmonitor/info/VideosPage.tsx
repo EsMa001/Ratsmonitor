@@ -7,7 +7,7 @@ import { useDarkMode } from "../lib/useDarkMode";
    Dateien in public/videos/: <name>.mp4, .jpg (Vorschau), .vtt (Untertitel). Kapitelzeiten stammen aus docs/videos/fassungen/*.timeline.json
    (Sekunden); bei einer neuen Fassung hier die Zeiten und die Dauer nachziehen. */
 const PITCH = "plenara-pitch";
-const FULL = "plenara-komplett";
+const FULL = "plenara-komplett"; /* seit 16.10.26 mit den neuen plenara.X-Kapiteln, vorerst nur hell (dunkle Fassung hat noch die alten Kapitel) */
 /* Im Dark Mode der App laufen die dunklen Fassungen (<name>-dunkel, gleiche Kapitelzeiten) */
 const variant = (base: string, dark: boolean) => (dark ? `${base}-dunkel` : base);
 
@@ -17,22 +17,31 @@ const PLENARA: Chapter[] = [
   { t: 38, title: "Suchen", what: "Ein Begriff, ganz Deutschland, sofort auf der Karte." },
   { t: 71, title: "Liste und Artikel", what: "Den Stand jedes Vorgangs auf einen Blick." },
   { t: 108, title: "Filter", what: "Eingrenzen, bis nur das Passende übrig bleibt." },
-  { t: 140, title: "Alarme", what: "Per E-Mail informiert werden, ohne zu suchen." },
-  { t: 178, title: "Export", what: "Aus der Suche wird Ihre Auswertung." },
-  { t: 206, title: "Kalender", what: "Keine Sitzung verpassen." },
-  { t: 229, title: "Konto", what: "Alles Gespeicherte an einem Ort." },
-  { t: 252, title: "Datenabdeckung", what: "Ist Ihre Gemeinde dabei? Das sehen Sie offen." },
+  { t: 140, title: "Alarme", what: "Nichts verpassen, ohne zu suchen." },
+  { t: 168, title: "Export", what: "Aus der Suche wird Ihre Auswertung." },
+  { t: 196, title: "Kalender", what: "Keine Sitzung verpassen." },
+  { t: 218, title: "Konto", what: "Alles Gespeicherte an einem Ort." },
+  { t: 242, title: "Datenabdeckung", what: "Ist Ihre Gemeinde dabei? Das sehen Sie offen." },
 ];
 const ANALYSE: Chapter[] = [
-  { t: 280, title: "Ausbreitung", what: "Sehen, wie sich ein Thema ausbreitet." },
-  { t: 320, title: "Entscheidungen", what: "Wie Vorgänge ausgehen." },
-  { t: 352, title: "Trends", what: "Neues früh erkennen." },
-  { t: 374, title: "Orte vergleichen", what: "Zwei Kommunen nebeneinander." },
-  { t: 401, title: "Zusammenhänge", what: "Themen und Orte als Netz." },
-  { t: 427, title: "Weg durch die Gremien", what: "Wie ein Thema durch die Gremien läuft." },
+  { t: 269, title: "Atlas", what: "Wie viel wo beraten wird, nach zehn Themen." },
+  { t: 292, title: "Signale", what: "Einzelne Vorhaben mit Ort, Schritt und Quelle." },
+  { t: 311, title: "Trends", what: "Begriffe, die gerade zunehmen." },
+  { t: 332, title: "Fakten", what: "Werte aus den Vorlagen, je Gemeinde." },
+  { t: 345, title: "Einblicke", what: "Gremien, Themennetz und Aktuelles." },
 ];
-const ALL = [...PLENARA, ...ANALYSE, { t: 457, title: "Jetzt ausprobieren", what: "" }];
-const LENGTH = 492;
+const ALL = [...PLENARA, ...ANALYSE, { t: 359, title: "Jetzt ausprobieren", what: "" }];
+const LENGTH = 395;
+
+/* plenara.X allein und je Anwenderseite ein Video (videos/plenarax.json, videos/anwender-*.json; vorerst nur hell) */
+const PLENARAX = "plenara-x";
+const ANWENDER: { slug: string; name: string; text: string }[] = [
+  { slug: "immobilien", name: "Immobilien", text: "Bebauungspläne finden, bevor Flächen am Markt sind." },
+  { slug: "versorgung", name: "Versorgung", text: "Wärmeplanung und Netze früh im Blick." },
+  { slug: "planung", name: "Planung", text: "Radwege und Bauprogramme der Region früh kennen." },
+  { slug: "verbaende", name: "Verbände", text: "Ausschreibungen und Beschlüsse für Ihre Mitglieder einordnen." },
+  { slug: "oeffentlichkeit", name: "Öffentlichkeit", text: "Den Haushalt und Beschlüsse vor der Sitzung kennen." },
+];
 
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
 
@@ -93,13 +102,6 @@ function ChapterList({ title, items, now, go }: { title: string; items: Chapter[
   );
 }
 
-const HOOKS: { title: string; text: string; t: number }[] = [
-  { title: "Früher erfahren, was beraten wird", text: "Ein Begriff, und die Karte zeigt, wo darüber beraten wird.", t: 38 },
-  { title: "Alarme statt tägliches Suchen", text: "plenara meldet sich per E-Mail, wenn es Neues gibt.", t: 140 },
-  { title: "Stand jedes Vorgangs auf einen Blick", text: "Der Verlauf steht schon in der Trefferliste.", t: 71 },
-  { title: "Wie sich ein Thema ausbreitet", text: "plenara.X zeigt Ausbreitung, Entscheidungen und Trends.", t: 280 },
-];
-
 export function VideosPage() {
   const [dark] = useDarkMode();
   const [now, setNow] = useState(0);
@@ -122,29 +124,30 @@ export function VideosPage() {
           </div>
         </div>
       </section>
-      <section className="ri-sec">
-        <h2 className="m-0 text-[22px] font-semibold text-slate-900">Was Sie sehen werden</h2>
-        <p className="mb-6 mt-1 text-[16px] text-slate-500">Ein Klick springt direkt zur passenden Stelle im ganzen Video.</p>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {HOOKS.map((h) => (
-            <button key={h.title} type="button" onClick={() => go(h.t)} className="cursor-pointer rounded-xl border border-slate-200 bg-white p-4 text-left transition hover:border-teal-600 hover:shadow-md">
-              <span className="block text-[16px] font-semibold text-slate-900">{h.title}</span>
-              <span className="mt-1 block text-[14px] text-slate-500">{h.text}</span>
-              <span className="mt-3 block text-[14px] font-semibold text-teal-700">Ab {mmss(h.t)} ansehen →</span>
-            </button>
-          ))}
-        </div>
-      </section>
       <section className="ri-sec" ref={full}>
-        <p className="m-0 text-[14px] font-semibold uppercase tracking-wide text-teal-700">Rund acht Minuten</p>
+        <p className="m-0 text-[14px] font-semibold uppercase tracking-wide text-teal-700">Gut sechs Minuten</p>
         <h2 className="m-0 mt-1 text-[22px] font-semibold text-slate-900">Alle Funktionen von plenara und plenara.X</h2>
         <p className="mb-6 mt-1 text-[16px] text-slate-500">Von der ersten Suche bis zur Analyse. Untertitel lassen sich im Player zuschalten.</p>
         <div className="grid items-start gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-10">
-          <Player base={variant(FULL, dark)} poster={variant(FULL, dark)} label="Vollständiges Video abspielen" onTime={(t) => setNow(Math.floor(t))} seekRef={ctlRef} />
+          <Player base={FULL} poster={FULL} label="Vollständiges Video abspielen" onTime={(t) => setNow(Math.floor(t))} seekRef={ctlRef} />
           <div className="grid gap-5 sm:grid-cols-2 lg:max-h-[34rem] lg:grid-cols-1 lg:overflow-y-auto">
             <ChapterList title="plenara" items={PLENARA} now={now} go={go} />
             <ChapterList title="plenara.X Analysen" items={ANALYSE} now={now} go={go} />
           </div>
+        </div>
+      </section>
+      <section className="ri-sec">
+        <h2 className="m-0 text-[22px] font-semibold text-slate-900">Weitere Videos</h2>
+        <p className="mb-6 mt-1 text-[16px] text-slate-500">plenara.X und je Anwendergruppe ein kurzes Video mit einem passenden Begriff.</p>
+        <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+          {[{ base: PLENARAX, name: "plenara.X", text: "Atlas, Signale, Trends, Fakten und Einblicke.", href: "/analytics/atlas", link: "Zum Atlas" },
+            ...ANWENDER.map((a) => ({ base: `plenara-anwender-${a.slug}`, name: a.name, text: a.text, href: `/anwender/${a.slug}`, link: `Zur Seite ${a.name}` }))].map((v) => (
+            <div key={v.base}>
+              <Player base={v.base} poster={v.base} label={`Video abspielen: ${v.name}`} />
+              <p className="m-0 mt-3 text-[16px] font-semibold text-slate-900">{v.name}</p>
+              <p className="m-0 mt-0.5 text-[14px] text-slate-500">{v.text} <Link href={v.href} className="text-teal-700 hover:underline">{v.link} →</Link></p>
+            </div>
+          ))}
         </div>
       </section>
       <DarkCta title="Gesehen, was plenara kann?" sub="Probieren Sie es mit Ihrem Thema aus oder schreiben Sie uns, wenn Sie Fragen haben." action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />

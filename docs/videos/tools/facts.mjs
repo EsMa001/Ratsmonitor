@@ -1,12 +1,16 @@
 /* Fragt echte Zahlen aus der laufenden App ab und schreibt docs/videos/facts.json: node facts.mjs   (BASE = Adresse der App)
-   THEMEN = Themen, für die Zahlen geholt werden (Standard: Klimaschutz,Wärmeplanung,Hitzeschutz; das erste ist das Standardthema), ORT = Beispielort (Standard Münster).
+   THEMEN = Themen, für die Zahlen geholt werden (Standard: Klimaschutz,Wärmeplanung,Hitzeschutz und die Begriffe der Anwendervideos; das erste ist das Standardthema), ORT = Beispielort (Standard Münster).
    Die Skripte nutzen sie als {{schlüssel|format}} (siehe fmt.mjs); je Kapitel gilt das Thema aus kapitel.json/Parameter "thema" ("t.*"), ein zweites Thema "thema2" liefert "u.*". So veralten Zahlen im Video nie und werden nie erfunden. */
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 const BASE = process.env.BASE || "http://localhost:5173";
 const OUT = fileURLToPath(new URL("../facts.json", import.meta.url));
-const get = async (path) => { const r = await fetch(BASE + path); if (!r.ok) throw new Error(path + " " + r.status); return r.json(); };
-const THEMEN = (process.env.THEMEN || "Klimaschutz,Wärmeplanung,Hitzeschutz").split(",").map((s) => s.trim()), ORT = process.env.ORT || "Münster";
+/* plenara.X braucht eine Anmeldung mit Stufe Enterprise: im Dev-Server das Testkonto (wie der Dev-Knopf), Sitzung als Cookie */
+const login = await fetch(BASE + "/api/dev/login", { method: "POST", headers: { "content-type": "application/json", origin: BASE }, body: JSON.stringify({ email: "enterprise@plenara.test" }) });
+const cookie = (login.headers.getSetCookie?.() || []).map((c) => c.split(";")[0]).join("; ");
+if (!login.ok || !cookie) console.error("WARNUNG: Dev-Anmeldung fehlgeschlagen (" + login.status + "), plenara.X-Zahlen fehlen vermutlich");
+const get = async (path) => { const r = await fetch(BASE + path, { headers: { cookie } }); if (!r.ok) throw new Error(path + " " + r.status); return r.json(); };
+const THEMEN = (process.env.THEMEN || "Klimaschutz,Wärmeplanung,Hitzeschutz,Bebauungsplan,Radweg,Ausschreibung,Haushalt,Aufstellungsbeschluss,Haushaltssatzung").split(",").map((s) => s.trim()), ORT = process.env.ORT || "Münster";
 const ORTE = (process.env.ORTE || "Münster,Freiburg,Leipzig,Köln,Hannover,Dresden,Mainz,Kiel,Osnabrück,Stuttgart,Hamburg,Berlin,Erfurt,Rostock").split(",").map((x) => x.trim());
 const q = (s) => encodeURIComponent(s);
 const months = (a, b) => Math.round((new Date(b) - new Date(a)) / (30.44 * 864e5));
@@ -31,8 +35,18 @@ async function thema(T) {
 }
 const src = await get("/api/sources");
 const cov = { "cov.entries": src.totals.articles, "cov.municipalities": src.reach.municipalities.covered, "cov.populationPct": Math.round((100 * src.reach.population.covered) / src.reach.population.total) };
+/* Ersatz, wenn plenara.X für einen häufigen Begriff nicht antwortet (lokale Größengrenze des Dev-Servers): Einträge und Einträge je Beispielort
+   aus der normalen Suche (Zähler je Kreis); reicht für die Kernsätze der Anwendervideos (t.entries, t.orte) */
+const { CATALOG } = await import(new URL("../../../shared/catalog.mjs", import.meta.url));
+async function ersatz(T) {
+  const f = await get(`/api/search?q=${q(T)}&part=facets&scope=with`);
+  const ags = (o) => (CATALOG.find((r) => r.name === `Stadt ${o}`) || CATALOG.find((r) => r.name.startsWith(o + " ")) || {}).ags || "";
+  const orte = Object.fromEntries(ORTE.map((o) => [o, ags(o) ? f.areaCounts?.[ags(o).slice(0, 5)] ?? 0 : 0]));
+  console.error(`WARNUNG: plenara.X ohne Antwort für ${T}, nur Einträge und Orte aus der Suche`);
+  return { "t.entries": f.total, "t.orte": orte };
+}
 const sets = {};
-for (const T of THEMEN) sets[T] = await thema(T);
+for (const T of THEMEN) sets[T] = await thema(T).catch(() => ersatz(T));
 writeFileSync(OUT, JSON.stringify({ asOf: new Date().toISOString().slice(0, 10), thema: THEMEN[0], ort: ORT, values: { ...cov, ...sets[THEMEN[0]] }, cov, sets }, null, 1) + "\n");
 for (const T of THEMEN) console.log(T, JSON.stringify(sets[T]));
 if (sets[THEMEN[0]]["t.orte"][ORT] < 5) { console.error(`WARNUNG: ${ORT} hat nur ${sets[THEMEN[0]]["t.orte"][ORT]} Einträge zu ${THEMEN[0]} (unter 5). Anderes Thema oder anderen Ort wählen, sonst taugt das Beispiel nicht.`); process.exit(1); }

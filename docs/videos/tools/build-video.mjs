@@ -32,12 +32,14 @@ const runAsync = (cmd, args) => new Promise((res) => { let out = ""; const c = s
 mkdirSync(O, { recursive: true });
 const chapters = [];
 /* Es gibt ein vollständiges Video (komplett.json). Kleinere Videos wählen nur Kapitel und Sätze daraus: Parameter und Format stehen allein dort, Texte allein in lang.txt (kein eigener Text je Video), damit keins vom vollständigen abweicht. */
-const MASTER = JSON.parse(readFileSync(`${V}videos/komplett.json`, "utf8")), isMaster = video === "komplett";
+/* Ausnahme "vorlage": "eigen" (Anwendervideos, videos/anwender-*.json): eigene Begriffe und Orte ("parameter" für das ganze Video,
+   je Kapitel überschreibbar), aber dieselben Kapitel, Szenen und Sätze wie das vollständige Video; nicht Teil davon. */
+const MASTER = JSON.parse(readFileSync(`${V}videos/komplett.json`, "utf8")), isMaster = video === "komplett", eigen = def.vorlage === "eigen";
 for (const [i, k0] of def.kapitel.entries()) {
   const mk = MASTER.kapitel.find((x) => x.kapitel === k0.kapitel);
   if (!mk) throw new Error(`Kapitel "${k0.kapitel}" steht nicht in komplett.json: erst dort aufnehmen`);
-  if (!isMaster && (k0.parameter || k0.format)) throw new Error(`Kapitel "${k0.kapitel}": Parameter und Format stehen nur in komplett.json`);
-  const k = { ...k0, parameter: mk.parameter, format: mk.format };
+  if (!isMaster && !eigen && (k0.parameter || k0.format)) throw new Error(`Kapitel "${k0.kapitel}": Parameter und Format stehen nur in komplett.json`);
+  const k = eigen ? { ...k0, parameter: { ...(mk.parameter || {}), ...(def.parameter || {}), ...(k0.parameter || {}) }, format: k0.format || mk.format } : { ...k0, parameter: mk.parameter, format: mk.format };
   const dir = `${V}kapitel/${k.kapitel}`, kj = JSON.parse(readFileSync(`${dir}/kapitel.json`, "utf8"));
   const want = k.text || "lang", file = `${dir}/lang.txt`;
   if (want !== "lang" && want !== "kurz") throw new Error(`Kapitel "${k.kapitel}": text muss "lang" oder "kurz" sein (kein eigener Text je Video); einzelne Sätze mit "saetze": [2, 4]`);
@@ -91,7 +93,9 @@ for (const c of sel) for (const [id, { key, params, full }] of Object.entries(c.
 }
 console.log(`Clips: ${todo.size} neu aufzunehmen (parallel ${jobs}), Rest wird wiederverwendet`);
 const queue = [...todo.values()]; let bad = 0;
-await Promise.all(Array.from({ length: Math.min(jobs, queue.length) }, async () => { while (queue.length) { if (await runAsync("node", queue.shift())) bad++; } }));
+/* Gescheiterte Clips bis zu zweimal neu versuchen (lokal brechen schwere Seiten gelegentlich mit Zeitüberschreitung ab); fertige Clips bleiben ohnehin liegen */
+const TRIES = 3;
+await Promise.all(Array.from({ length: Math.min(jobs, queue.length) }, async () => { while (queue.length) { const job = queue.shift(); let failed = true; for (let t = 1; t <= TRIES && failed; t++) { if (t > 1) console.log(`Neuer Versuch ${t}/${TRIES}: ${job[1]}`); failed = !!(await runAsync("node", job)); } if (failed) bad++; } }));
 if (bad) { console.error(`${bad} Clip(s) fehlgeschlagen, Abbruch`); process.exit(1); }
 for (const c of sel) run("python3", [`${T}compose.py`, `${O}/c${pad(c.nr)}`, `c${pad(c.nr)}`]);
 /* Titelfolie (kurz, ohne Ton), Vorteilsfolie mit Zusammenfassung, Schlussfolie mit Logo und Slogan (docs/produkt/slogan.json); abschaltbar mit "titel": false / "ende": false, Anzahl Vorteile mit "vorteileMax" (Standard 5, 0 = keine Vorteilsfolie) */

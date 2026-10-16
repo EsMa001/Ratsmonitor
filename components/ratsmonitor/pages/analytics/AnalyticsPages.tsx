@@ -1,8 +1,6 @@
 import { useEffect, type ComponentType } from "react";
-import { DiffusionPage } from "./DiffusionPage";
 import { BeschluessePage } from "./BeschluessePage";
 import { ComparePage } from "./ComparePage";
-import { TrendsPage } from "./TrendsPage";
 import { GremiennetzPage } from "./GremiennetzPage";
 import { KnowledgeGraphPage } from "./KnowledgeGraphPage";
 import { FraktionenPage } from "./FraktionenPage";
@@ -14,29 +12,9 @@ import { XTrendsPage } from "./XTrendsPage";
 import { GRUPPEN } from "../../info/branchen-enterprise";
 import { AnalyticsLocked } from "./AnalyticsLocked";
 import { useTier } from "../../lib/tier";
-import { useRouter } from "next/navigation";
-
-/** Frühere Adresse: ersetzt sie im Verlauf durch die neue (Lesezeichen und alte Links funktionieren weiter) */
-function Umleiten({ to }: { to: string }) {
-  const router = useRouter();
-  useEffect(() => { router.replace(to, { scroll: false }); }, [router, to]);
-  return null;
-}
-
-/** Alte Adresse der Ausbreitung: auf plenara.X Trends, ein mitgegebener Begriff öffnet dort seinen Steckbrief */
-function ZuTrends() {
-  const t = typeof window === "undefined" ? null : new URLSearchParams(window.location.search);
-  const begriff = t?.get("thema") || t?.get("q") || "";
-  return <Umleiten to={`/analytics/trends${begriff ? `?begriff=${encodeURIComponent(begriff)}` : ""}`} />;
-}
 
 /** plenara.X: Übersicht und je Funktion eine Unterseite */
 const PAGES: Record<string, ComponentType> = {
-  /* Frühere Adresse der Ausbreitung: jetzt Teil von plenara.X Trends (Begriff aus ?thema= oder ?q= wird gewählt) */
-  "/analytics/diffusion": () => <ZuTrends />,
-  /* Die alten Werkzeuge bleiben unverändert als Sicherung */
-  "/analytics/diffusion-alt": DiffusionPage,
-  "/analytics/trends-alt": TrendsPage,
   "/analytics/graph": KnowledgeGraphPage,
   /* plenara.X Trends: Trends und Ausbreitung auf einer Seite */
   "/analytics/trends": XTrendsPage,
@@ -64,7 +42,7 @@ export function AnalyticsPages({ path }: { path: string }) {
   useEffect(() => {
     window.scrollTo(0, 0);
     const gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
-    const TITEL: Record<string, string> = { "/analytics/atlas": "Atlas · plenara.X", "/analytics/signale": "Signale · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Aktuelles · plenara.X", "/analytics/diffusion-alt": "Alt: Ausbreitung · plenara.X", "/analytics/trends-alt": "Alt: Trends · plenara.X",
+    const TITEL: Record<string, string> = { "/analytics/atlas": "Atlas · plenara.X", "/analytics/signale": "Signale · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Aktuelles · plenara.X", 
       "/analytics/graph": "Themennetz · plenara.X", "/analytics/gremien": "Gremien · plenara.X", "/analytics/beschluesse": "Ausgang · plenara.X",
       "/analytics/vergleich": "Vergleich · plenara.X", "/analytics/trends": "Trends · plenara.X", "/analytics/fraktionen": "Fraktionen · plenara.X" };
     document.title = TITEL[path] ?? (gruppe ? gruppe.name : "plenara.X");

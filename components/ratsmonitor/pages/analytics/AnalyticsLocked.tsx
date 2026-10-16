@@ -7,11 +7,8 @@ import { ANALYSEN, NEU_NAME, type AnalyseId } from "../../info/branchen-enterpri
 
 /* Was eine gesperrte Analyse zeigt: Pfad, Analyse, Beispielbegriff der Vorschau und ein Satz dazu */
 const VORSCHAU: Record<string, { id: AnalyseId; term: string; text: string }> = {
-  "/analytics/diffusion": { id: "diffusion", term: "Photovoltaik", text: "Zeigt, wie sich ein Thema über die Gebiete ausbreitet: wer zuerst dran war, wie schnell andere folgten und wo es noch fehlt. Als Zeitraffer auf der Karte." },
-  "/analytics/diffusion-alt": { id: "diffusion", term: "Photovoltaik", text: "Zeigt, wie sich ein Thema über die Gebiete ausbreitet: wer zuerst dran war, wie schnell andere folgten und wo es noch fehlt. Als Zeitraffer auf der Karte." },
   "/analytics/graph": { id: "graph", term: "Photovoltaik", text: "Zeigt, womit ein Thema zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz." },
   "/analytics/trends": { id: "trends", term: "Photovoltaik", text: "Zeigt, welche Begriffe gerade aufkommen, zunehmen oder verschwinden, mit Verlaufskurven." },
-  "/analytics/trends-alt": { id: "trends", term: "Photovoltaik", text: "Zeigt, welche Begriffe gerade aufkommen, zunehmen oder verschwinden, mit Verlaufskurven." },
   "/analytics/vergleich": { id: "vergleich", term: "Köln und Dortmund", text: "Stellt zwei Orte nebeneinander: Themenprofil, Verlauf, aktivste Gremien und typische Begriffe." },
   "/analytics/beschluesse": { id: "beschluesse", term: "Photovoltaik", text: "Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen, Ablehnungen und die Dauer bis zur Entscheidung." },
   "/analytics/gremien": { id: "gremien", term: "Photovoltaik", text: "Zeigt, welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },

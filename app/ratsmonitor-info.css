@@ -428,6 +428,12 @@ html.rm-dark footer.pl-footer-accent{border-top-color:#0d9488 !important}
 html.rm-dark .pl-cta{background:#0f766e !important;color:#fff !important}
 html.rm-dark .ri-bid__label{color:#5eead4}
 
+/* Anwenderseiten kompakter, auch am Desktop: Abschnitte enger, Kopf flacher */
+.ri-anw .ri-sec{padding-top:44px;padding-bottom:44px}
+.ri-anw .ri-sec--tight{padding-top:32px;padding-bottom:32px}
+.ri-anw .ri-head{padding-bottom:36px}
+.ri-anw .ri-sub{margin-top:6px}
+
 /* Anwenderseiten auf dem Handy kompakter: weniger Weißraum zwischen Abschnitten und Kacheln */
 @media (max-width:640px){
   .ri-anw .ri-sec{padding-top:28px !important;padding-bottom:28px !important}

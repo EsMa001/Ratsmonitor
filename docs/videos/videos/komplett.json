@@ -62,41 +62,30 @@
    "text": "lang"
   },
   {
-   "kapitel": "diffusion",
+   "kapitel": "x-atlas",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
+  },
+  {
+   "kapitel": "x-signale",
    "text": "lang"
   },
   {
-   "kapitel": "entscheidungen",
+   "kapitel": "x-trends",
    "text": "lang",
    "parameter": {
     "thema": "Wärmeplanung"
    }
   },
   {
-   "kapitel": "trends",
+   "kapitel": "x-fakten",
    "text": "lang"
   },
   {
-   "kapitel": "vergleich",
-   "text": "lang",
-   "parameter": {
-    "ort": "Münster",
-    "ort2": "Köln"
-   }
-  },
-  {
-   "kapitel": "graph",
-   "text": "lang",
-   "parameter": {
-    "thema": "Wärmeplanung"
-   }
-  },
-  {
-   "kapitel": "gremiennetz",
-   "text": "lang",
-   "parameter": {
-    "thema": "Wärmeplanung"
-   }
+   "kapitel": "x-einblicke",
+   "text": "lang"
   },
   {
    "kapitel": "abschluss",

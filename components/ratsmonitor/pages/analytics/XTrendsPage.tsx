@@ -18,7 +18,7 @@ import { useCatalog } from "../../lib/catalog";
 /*
  * plenara.X Trends: Trends und Ausbreitung auf einer Seite. Die Liste rechnet wie das Tool Trends (/api/analytics/trends),
  * je Begriff dazu die neu erreichten Gebiete (part=spread); ein Klick zeigt die Ausbreitung des Begriffs wie das Tool
- * Ausbreitung (/api/analytics/diffusion). Die alten Tools bleiben unter /analytics/trends-alt und /analytics/diffusion-alt.
+ * Ausbreitung (/api/analytics/diffusion). Die alten Tools sind entfernt.
  * Karte und Ausbreitung gelten für ganz Deutschland (ein gewählter Ort wird markiert), Liste und Zahlen für die Auswahl.
  */
 interface Result {

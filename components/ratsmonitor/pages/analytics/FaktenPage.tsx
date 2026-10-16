@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Befund, Fehler } from "./Befund";
 import { XKopf, XWeiter } from "./XKopf";
@@ -70,7 +70,7 @@ export function FaktenPage() {
   const change = !overview && params.get("ansicht") === "veraenderung";
   /* Reihenfolge der Liste: niedrigste zuerst (Standard, wenn niedrig gut ist) oder höchste zuerst */
   const low = params.get("sortierung") === "niedrig" || (!params.get("sortierung") && facts.find((f) => f.kind === params.get("fakt"))?.dir === "good") || (!params.get("sortierung") && !params.get("fakt") && facts[0]?.dir === "good");
-  const { levels, byAgs, legend, unit, ranked } = useMemo(() => {
+  const { levels, byAgs, legend, unit, ranked } = (() => {
     const regions = res?.regions ?? [];
     const unit = overview ? "" : fact?.map.find((m) => m.v[metric])?.v[metric].unit ?? "";
     const rowOf = new Map(regions.map((r) => [r.key, r]));
@@ -117,7 +117,7 @@ export function FaktenPage() {
     for (const x of area.values()) if (!seen.has(x.name)) seen.set(x.name, x);
     const ranked = [...seen.values()].sort((a, b) => (low && !change && !overview ? a.v - b.v : b.v - a.v));
     return { levels, byAgs: area, legend, unit, ranked };
-  }, [res, fact, metric, level, change, overview, allFacts, facts, low]);
+  })();
   /* Abdeckung: Gebiete mit Wert von allen Gebieten mit Sachvorgängen in der Auswahl */
   const regionCount = res?.regions.length ?? 0;
 

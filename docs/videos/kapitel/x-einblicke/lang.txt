@@ -1,0 +1,4 @@
+# plenara.X Einblicke: Gremien, Themennetz, Aktuelles (seit 16.10.2026).
+*@x-einblicke.gremien Gremien zeigt, welchen Weg Vorgänge durch Ausschüsse und Rat nehmen.
+@x-einblicke.netz Das Themennetz zeigt, womit ein Thema zusammenhängt.
+*@x-einblicke.aktuelles Aktuelles sammelt, was gerade berichtenswert ist, je Vorgang mit Zitat und Quelle.

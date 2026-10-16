@@ -1,0 +1,6 @@
+# plenara.X Atlas (seit 16.10.2026). Keine festen Zahlen im Text.
+*@x-atlas.start Plenarra X wertet die Beratungen aller Räte gemeinsam aus.
+@x-atlas.start Der Atlas zeigt, worüber beraten wird, wo und wie viel, nach zehn Themen.
+@x-atlas.thema Ein Klick auf ein Thema färbt die Karte neu.
+*@x-atlas.begriff Mit einem Suchbegriff wie {{p.thema|text}} zählt der Atlas nur die passenden Vorgänge.
+@x-atlas.themen Darunter stehen die Unterthemen mit ihren Zahlen.

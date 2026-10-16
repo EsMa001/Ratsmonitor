@@ -4,7 +4,8 @@ export default {
   meta: { bereich: "kalender", dauer: "18-20 s", zeigt: "Kalender, Ort wählen, Tag mit Sitzungen, Kalender abonnieren", tags: ["anleitung", "webinar"] },
   parameter: { ort: "Münster" },
   start: "Kalender ohne Gebiet", ende: "Abo und E-Mail sichtbar",
-  setup: async (H) => { await H.go("/konto/kalender"); await H.sleep(800); },
+  /* Das Dev-Testkonto speichert Gebiete auf dem Server: vorher alle entfernen, damit der Ort neu gewählt werden kann */
+  setup: async (H) => { await H.go("/konto/kalender"); await H.sleep(800); for (let i = 0; i < 20; i++) { const b = H.page.locator("button[aria-label$=' entfernen']").first(); if (!(await b.count())) break; await b.click(); await H.sleep(400); } await H.sleep(600); },
   beats: (p) => [
     ["oeffnen", async (H) => { await zu(H, "Oktober 2026", 110); await H.move(640, 330, 30); }, 3.5],
     ["gebiete", async (H) => { await zu(H, "Meine Gebiete", 200); await H.click(H.page.getByPlaceholder(/Ort oder Kreis/)); await H.page.keyboard.type(p.ort, { delay: 90 }); await H.sleep(1500); await H.click(H.page.getByRole("button", { name: new RegExp(`^Stadt ${p.ort}$`) })); await H.sleep(1500); }, 2],
