@@ -76,7 +76,7 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   // Wunsch, ?=1), abgelegte vor verdrängten ('text-only', werden kurz nachgeladen), darin die neueste Sitzung zuerst, dann wenigste
   // OCR-Seiten. Dateien, deren OCR schon einmal über der Zeitgrenze lag (ocr_slow), ganz am Ende; ohne die, deren Nachladen schon
   // einmal scheiterte (ocr_refetch). Mit Fehlerspeicher (Migration 0040) führt text.mjs beides dort und leert die Tabellen.
-  ocrQueue:db.prepare(`SELECT t.sha256 AS sha,MAX(COALESCE(p.role,'')<>'other') AS main,MAX(p.status='ok') AS present,MAX(p.bytes) AS bytes,t.ocr_needed AS need,MAX(p.event_date) AS eventDate
+  ocrQueue:db.prepare(`SELECT t.sha256 AS sha,MAX(COALESCE(p.role,'')<>'other') AS main,MAX(p.status='ok') AS present,MAX(p.bytes) AS bytes,t.ocr_needed AS need,MAX(p.event_date) AS eventDate,MAX(p.fetched_at) AS fetchedAt
    FROM texts t JOIN pdfs p ON p.sha256=t.sha256 WHERE t.ocr_needed>0 AND p.status IN ('ok','text-only')
    AND NOT EXISTS(SELECT 1 FROM ocr_refetch r WHERE r.sha256=t.sha256) GROUP BY t.sha256 HAVING main=1 OR ?
    ORDER BY EXISTS(SELECT 1 FROM ocr_slow s WHERE s.sha256=t.sha256),main DESC,present DESC,coalesce(MAX(p.event_date),'') DESC,need,bytes,t.sha256`),

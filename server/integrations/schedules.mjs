@@ -14,6 +14,21 @@ export const SCHEDULES_KEY='schedules',SCHEDULE_RUNS_KEY='schedule-runs',SCHEDUL
 export const RULE_TEXTS_KEY='rule-texts-last';
 /** Wunsch „Alle neu erstellen“ ({requestedAt}); der nächste Lauf von scripts/rule-texts.mjs rechnet dann alles neu und löscht ihn */
 export const RULE_TEXTS_ALL_KEY='rule-texts-all';
+/**
+ * Zustand der systemd-Auslöser ({at, units:{name:'active'|'inactive'|…}}), geschrieben von scripts/schedule.mjs bei jedem Aufruf,
+ * höchstens alle 9 Minuten. Ein von Hand gestoppter Timer (16.10.2026: `systemctl stop ratsmonitor-ocr.timer`) fällt sonst
+ * niemandem auf, der Job läuft dann nie wieder. Die Debug-Seite und der Nachtbericht zeigen inaktive Einheiten.
+ */
+export const UNITS_KEY='systemd-units',UNITS_EVERY_MS=9*60000,UNITS_STALE_MS=30*60000;
+/** Einheiten, die aktiv sein müssen: Timer und Pfad je Job, dazu der Stopp-Pfad */
+export const unitNames=(jobs=JOBS)=>jobs.flatMap(j=>[`ratsmonitor-${j.id}.timer`,`ratsmonitor-${j.id}.path`,`ratsmonitor-stop-${j.id}.path`]);
+/** Warnung für Seite und Bericht: inaktive Einheiten, oder der Stand selbst ist veraltet (kein Aufruf des Zeitplaners mehr) */
+export function unitsWarning(state,now=Date.now()){
+ if(!state?.at||typeof state.units!=='object')return null;
+ const inactive=Object.entries(state.units).filter(([,v])=>v!=='active').map(([k])=>k);
+ const stale=now-Date.parse(state.at)>UNITS_STALE_MS;
+ return {at:state.at,inactive,stale};
+}
 export const ZONE='Europe/Berlin',STEP_MIN=10;
 /** Ein täglicher Job, der zur Zeit nicht laufen konnte (Server aus), wird so lange danach noch nachgeholt */
 export const CATCH_UP_MS=3*3600000;

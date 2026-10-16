@@ -48,7 +48,12 @@ scheiterte. Den Altbestand bearbeitet ein eigener Ablauf auf Knopfdruck.
 ## 2. Jobs und Zeitplan
 
 Alle Jobs starten über den Zeitplaner (`scripts/schedule.mjs`, Einstellungen im Reiter „Jobs & Zeitpläne“, Uhrzeiten deutsche Zeit).
-Jeder Lauf steht im Laufbuch `schedule-log` (Seite Pipeline-Debug).
+Jeder Lauf steht im Laufbuch `schedule-log` (Seite Pipeline-Debug). Jobs werden nur über „Anhalten“ (Dienst) oder den Schalter im
+Zeitplaner gestoppt, nie mit `systemctl stop …timer`: ein gestoppter Timer startet den Job nie wieder (16.10.2026: OCR 17 Stunden
+aus). Der Zeitplaner vermerkt alle 9 Minuten den Zustand aller Timer und Pfade (`systemd-units`); Debug-Seite und Nachtbericht warnen
+bei inaktiven Einheiten. Seine Laufeinträge schreibt er mit Geduld (bis 6 Anläufe à 10 s), weil die Verarbeitung die Schreibsperre
+länger als die 30 s `busy_timeout` halten kann. Die Zählschritte am Ende der Verarbeitung („Wege zählen“) sind nicht fatal: ein Fehler
+dort steht im Ergebnis (`warnings`), beendet den Job aber mit Exit 0, damit der Rückfall um 08:50 nicht grundlos läuft.
 
 | Job (`id`) | Name | Ablauf | Zeit | Grenze |
 |---|---|---|---|---|
@@ -74,7 +79,10 @@ neue PDFs); Text und OCR vor der Verarbeitung (die Regeln haben morgens den ganz
 Niederschriften und Beschlüsse, die Wochen nach der Sitzung erscheinen, ankommen. Gebiete mit einem Eintrag im Fehlerspeicher, dessen
 Termin noch nicht erreicht ist, und Gebiete auf Servern, die warten, stehen im Auftrag als „Zurückgestellt“ (`deferredRegions`); die
 Nacharbeit holt sie. Ein Eintrag ohne Termin hält den Nachtabruf nicht auf. 24 Bahnen, je Server höchstens 2. Jeder Ausgang geht in den
-Fehlerspeicher (`noteImport` in `pipeline-jobs.mjs`): Erfolg löscht den Eintrag und setzt den Server auf „liefert“.
+Fehlerspeicher (`noteImport` in `pipeline-jobs.mjs`): Erfolg löscht den Eintrag und setzt den Server auf „liefert“. Der Nachtauftrag
+trägt `owner: nightly`; der Job „Abrufaufträge“ lässt ihn aus, solange er sich bewegt (`nightlyBusy`, 10 Minuten ohne Stand), sonst
+arbeiteten zwei Prozesse mit je 24 Bahnen daran und die Grenze je Server verdoppelte sich (Befund 16.10.2026). Bleibt der Nachtlauf
+stehen, übernimmt der Job.
 
 **Extraktion, nachts** (`nightly.mjs --daily`):
 1. PDF laden: Hauptdokumente aller Berichte, die seit dem letzten Lauf (`pdf-daily-last`) geschrieben wurden, und aller Berichte mit
@@ -161,7 +169,7 @@ Job `nacharbeit` (`scripts/nacharbeit.mjs --range daily`), alle 30 Minuten zwisc
   | Schritt | Befehl |
   |---|---|
   | Abruf | `import-worker.mjs --direct --regions … --window <seit dem ersten Fehlschlag, mindestens 1 Woche>` |
-  | PDF laden | `fetch.mjs --urls …` |
+  | PDF laden | `fetch.mjs --urls …` (Hauptdokumente und Anlagen der Berichte, die Adresse entscheidet; die Rolle bleibt) |
   | Text lesen | `text.mjs --shas …` |
   | OCR, OCR-Nachladen | `text.mjs --ocr --include-slow --shas … --file-minutes 15` |
   | Regeln anwenden | `read-reports.mjs --ids …` |
@@ -182,7 +190,8 @@ Job `nacharbeit` (`scripts/nacharbeit.mjs --range daily`), alle 30 Minuten zwisc
    zu langsame vom letzten Mal). Ist nichts zu lesen, endet der Job sofort.
 3. **Reihenfolge** (`ocrQueue`): alle PDFs eines Berichts; Hauptdokumente vor Anlagen, abgelegte vor gelöschten (die werden kurz
    nachgeladen und gleich wieder gelöscht), darin neueste Sitzung zuerst, dann wenigste Seiten. Dateien mit wartendem Eintrag im
-   Fehlerspeicher stehen nicht in der Reihe. Dateien ohne Sitzungstag zählen zum Tagesbereich.
+   Fehlerspeicher stehen nicht in der Reihe. Dateien ohne Sitzungstag zählen zum Tagesbereich, wenn sie seit dem Stichtag geladen
+   wurden (`ocrRange` in `store-lib.mjs`); ältere ohne Datum gehören zum Altbestand (sonst standen 43.000 alte Anlagen im Tagesbereich).
 4. **Grenzen:** je Seitengruppe 90 s (hängt eine Seite, endet das Paket sofort), je Datei 5 Minuten, Pakete zu 25 Dateien oder 2,5 GB
    als eigene Prozesse, 2 Worker. Ein **Wächter** beendet ein Paket ohne Lebenszeichen nach 3 Minuten; seine laufenden Dateien gelten
    als zu langsam.

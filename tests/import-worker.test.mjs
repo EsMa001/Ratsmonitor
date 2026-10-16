@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {memoryDb} from './helpers/d1.mjs';
-import {workJob,ensureJob,currentJob,openJob,catchUp} from '../server/integrations/pipeline-worker.mjs';
+import {workJob,ensureJob,currentJob,openJob,catchUp,nightlyBusy,NIGHTLY_FRESH_MS} from '../server/integrations/pipeline-worker.mjs';
 import {pipelineAction} from '../server/integrations/pipeline-jobs.mjs';
 
 const regions=['billerbeck','coesfeld','nrw-05334002','nrw-05554004','nrw-05974004','nrw-05558004'];
@@ -182,4 +182,21 @@ test('--direct is read strictly',async()=>{
  assert.throws(()=>parseArgs(['--direct','--create','sources','--regions','billerbeck']),/--direct/);
  assert.deepEqual(parseArgs(['--direct','--regions','billerbeck,coesfeld','--origin','backlog']).regions,['billerbeck','coesfeld']);
  assert.throws(()=>parseArgs(['--regions','billerbeck']),/--regions nur mit/);
+});
+
+test('Nachtauftrag (owner nightly): der Job „Abrufaufträge“ lässt ihn aus, solange er sich bewegt; ein stehender wird übernommen',async()=>{
+ const {sql,db}=memoryDb();
+ const made=await ensureJob(db,{regions:['billerbeck','coesfeld'],window:'1d',owner:'nightly'});
+ assert.equal(made.job.owner,'nightly');
+ const stored=await currentJob(db);
+ assert.equal(stored.owner,'nightly','im Auftrag gespeichert');
+ const now=Date.parse(stored.updatedAt);
+ assert.equal(nightlyBusy(stored,now+60000),true);
+ assert.equal(nightlyBusy(stored,now+NIGHTLY_FRESH_MS+1),false,'nach 10 Minuten ohne Bewegung hilft der Job');
+ assert.equal(nightlyBusy({...stored,owner:undefined},now+60000),false,'Aufträge der Seite wie bisher');
+ await workJob(db,async()=>done,{lanes:2});
+ assert.equal(nightlyBusy(await currentJob(db),now+60000),false,'fertig: nichts mehr zu schützen');
+ const plain=await ensureJob(db,{regions:['billerbeck'],window:'1w'});
+ assert.equal(plain.job.owner,undefined);
+ sql.close();
 });

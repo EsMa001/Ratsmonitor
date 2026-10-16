@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {triggerJob,triggerStop,triggerDir,TRIGGER_JOBS} from '../server/integrations/job-trigger.mjs';
-import {JOBS,pendingWork,requestScheduleStop,schedulesState} from '../server/integrations/schedules.mjs';
+import {JOBS,pendingWork,requestScheduleStop,schedulesState,unitNames,unitsWarning} from '../server/integrations/schedules.mjs';
 import {memoryDb} from './helpers/d1.mjs';
 
 test('trigger file next to the database, one per job; none without a place',async()=>{
@@ -47,4 +47,15 @@ test('stop request per job is recorded and shown',async()=>{
  const s=await schedulesState(db);
  assert.equal(s.jobs.find(j=>j.id==='backup').stop,'2026-10-12T10:00:00.000Z');
  assert.equal(s.jobs.find(j=>j.id==='import').stop,null);
+});
+
+test('Auslöser-Wache: inaktive Timer und Pfade werden gemeldet, ein alter Stand gilt als Ausfall des Zeitplaners',()=>{
+ const names=unitNames([{id:'ocr'},{id:'backup'}]);
+ assert.deepEqual(names,['ratsmonitor-ocr.timer','ratsmonitor-ocr.path','ratsmonitor-stop-ocr.path','ratsmonitor-backup.timer','ratsmonitor-backup.path','ratsmonitor-stop-backup.path']);
+ const now=Date.parse('2026-10-16T14:00:00Z');
+ assert.equal(unitsWarning(null,now),null);
+ const fresh={at:'2026-10-16T13:55:00Z',units:{'ratsmonitor-ocr.timer':'inactive','ratsmonitor-ocr.path':'active','ratsmonitor-backup.timer':'active'}};
+ assert.deepEqual(unitsWarning(fresh,now),{at:fresh.at,inactive:['ratsmonitor-ocr.timer'],stale:false});
+ const old={at:'2026-10-16T13:00:00Z',units:{'ratsmonitor-ocr.timer':'active'}};
+ assert.deepEqual(unitsWarning(old,now),{at:old.at,inactive:[],stale:true});
 });

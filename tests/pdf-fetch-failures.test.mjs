@@ -16,7 +16,7 @@ function setup(topics){
  for(const f of fs.readdirSync(MIG).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL(f,MIG),'utf8'));
  const ins=sql.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)');
  for(const t of topics)ins.run(t.id,'billerbeck','test',t.date,t.updated||'2026-10-14T01:00:00Z','consulting',JSON.stringify({id:t.id,title:'Vorlage '+t.id,officialTitle:'Vorlage '+t.id,
-  documents:[{kind:'application/pdf',url:t.url,title:'Vorlage'}],events:[],longSummary:[],sourceText:''}));
+  documents:t.docs||[{kind:'application/pdf',url:t.url,title:'Vorlage'}],events:[],longSummary:[],sourceText:''}));
  sql.close();
  return dir;
 }
@@ -80,4 +80,26 @@ test('--since-updated takes reports written since then; --event-from adds the wh
  assert.deepEqual(r.calls,['https://d.de/new.pdf']);
  const r2=run(dir,['--since-updated','2026-10-15T00:00:00Z','--event-from',recent,'--gap-ms','0']);
  assert.deepEqual(r2.calls.sort(),['https://d.de/old.pdf'],'new ist schon geladen; old hat eine Sitzung im Tagesbereich; alt nicht');
+});
+
+test('--urls (Nacharbeit) lädt auch Anlagen: ihr Fehlschlag steht unter demselben Schritt pdf, die Rolle bleibt other',()=>{
+ const dir=setup([{id:'d1',url:'https://d.de/haupt.pdf',date:recent,docs:[{kind:'application/pdf',url:'https://d.de/haupt.pdf',title:'Vorlage'},{kind:'application/pdf',url:'https://d.de/anlage.pdf',title:'Anlage 1'}]}]);
+ // Nacht: Hauptdokument kommt, die Anlage scheitert vorübergehend (Anlagen laden = --others)
+ run(dir,['--concurrency','1','--per-host','1','--gap-ms','0'],{});
+ run(dir,['--others','--concurrency','1','--per-host','1','--gap-ms','0'],{'https://d.de/anlage.pdf':500});
+ let s=db(dir);
+ const entry=s.prepare("SELECT key,step,class FROM work_failures WHERE key='https://d.de/anlage.pdf'").get();
+ assert.equal(entry.step,'pdf');assert.equal(entry.class,'transient');
+ s.prepare("UPDATE work_failures SET next_try_at='2000-01-01T00:00:00Z'").run();s.prepare("UPDATE source_hosts SET next_try_at='2000-01-01T00:00:00Z',state='ok'").run();s.close();
+ // Nacharbeit: nur die Adresse, ohne --others; vorher traf das keinen Eintrag (0 zu laden), die Anlage blieb liegen
+ fs.writeFileSync(path.join(dir,'urls.txt'),'https://d.de/anlage.pdf\n');
+ const again=run(dir,['--concurrency','1','--per-host','1','--gap-ms','0','--urls',path.join(dir,'urls.txt')],{});
+ assert.deepEqual(again.calls,['https://d.de/anlage.pdf']);
+ s=db(dir);
+ assert.equal(s.prepare("SELECT count(*) n FROM work_failures").get().n,0,'Eintrag weg');
+ s.close();
+ const store=new DatabaseSync(path.join(dir,'store','index.sqlite'),{readOnly:true});
+ assert.equal(store.prepare("SELECT status,role FROM pdfs WHERE url='https://d.de/anlage.pdf'").get().role,'other');
+ assert.equal(store.prepare("SELECT role FROM pdfs WHERE url='https://d.de/haupt.pdf'").get().role,null);
+ store.close();
 });

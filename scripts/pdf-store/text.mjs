@@ -36,7 +36,7 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
-import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile,ocrWithRefetch,downloader,dropIfTooBig} from './store-lib.mjs';
+import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile,ocrWithRefetch,downloader,dropIfTooBig,ocrRange} from './store-lib.mjs';
 import {progress,onStop,stepSummary,lane} from './state.mjs';
 import {openFailures,seedFromStore,originOf} from './failures.mjs';
 import {dailyBoundary} from '../../server/integrations/work-failures.mjs';
@@ -94,10 +94,10 @@ if(!flag('ocr')){
   for(const r of F.sql.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step IN ('ocr','ocr-fetch')").all())
    if(r.class==='slow'?!flag('include-slow')||!r.next_try_at:!r.next_try_at||r.next_try_at>now)waitingKeys.add(r.key);
  }
- // --range daily: nur Dateien von Sitzungen im Tagesbereich (dailyBoundary); backlog: nur ältere oder ohne Sitzungstag; sonst alle
+ // --range daily: nur Dateien von Sitzungen im Tagesbereich (dailyBoundary), ohne Sitzungstag die seit dem Stichtag geladenen;
+ // backlog: der Rest; sonst alle (ocrRange in store-lib.mjs)
  const range=opt('range','all'),boundary=dailyBoundary();
- // ohne Sitzungstag (etwa vom Importprozess abgelegt): zum Tagesbereich, damit die Datei nicht liegen bleibt
- const inRange=x=>range==='daily'?!x.eventDate||x.eventDate.slice(0,10)>=boundary:range==='backlog'?!!x.eventDate&&x.eventDate.slice(0,10)<boundary:true;
+ const inRange=x=>ocrRange(x,range,boundary);
  const queueNow=()=>store.ocrQueue({others:!flag('main-only')}).filter(x=>(!onlyShas||onlyShas.has(x.sha))&&!waitingKeys.has(x.sha)&&inRange(x));
  // OCR: nur Seiten ohne Textebene, jede Seite einzeln gerendert; die übrigen Seiten bleiben, wie pdf.js sie liest.
  // Sperre: Datei mit der Prozessnummer; eine verwaiste (Prozess läuft nicht mehr) wird übernommen

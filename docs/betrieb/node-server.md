@@ -466,7 +466,11 @@ Schritte: `shared/pipeline-terms.mjs`.
 - **Debug-Seite** (vorübergehend): `/admin?seite=debug`: Laufbuch des Zeitplaners (`schedule-log`), was die Läufe getan haben, Wege der
   Berichte, Fehlerspeicher des Tagesbereichs mit „freigeben“ und „erneut“.
 - **Nachtbericht** (nur lesend, ohne Deploy): `ssh ratsmonitor 'node --input-type=module - --hours 30' < scripts/pipeline-report.mjs`: Schalter,
-  Laufbuch je Job, Abruf, Extraktion, Verarbeitung, Nacharbeit, Fehlerspeicher (neu, fällig, Gründe), Server und auffällige Journalzeilen je Einheit.
+  Laufbuch je Job, Abruf, Extraktion, Verarbeitung, Nacharbeit, Fehlerspeicher (neu, fällig, Gründe), Server und auffällige Journalzeilen je Einheit;
+  dazu der Zustand der Auslöser (Timer und Pfade, `systemd-units`).
+- **Jobs anhalten:** nur über „Anhalten“ in der Administration (stoppt den Dienst) oder den Schalter im Zeitplaner. Nie
+  `systemctl stop ratsmonitor-<job>.timer`: der Job startet dann nie wieder, bis jemand den Timer startet (16.10.2026: OCR 17 Stunden
+  aus, Fund erst am Nachmittag). Ist es doch passiert: `systemctl start ratsmonitor-<job>.timer ratsmonitor-<job>.path`.
 
 **Einrichten** (einmal, als root, nach dem Deploy des Stands):
 
