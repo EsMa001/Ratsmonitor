@@ -3,6 +3,20 @@ import { errorText, fetchJson } from "../../lib/fetchJson";
 
 const FAILED = "Die Auswertung konnte nicht berechnet werden.";
 
+/* Letzte Ergebnisse je Adresse (10 Minuten, höchstens 30): Wer zwischen Reitern oder Seiten wechselt und zurückkommt,
+   sieht das Ergebnis sofort, statt neu zu rechnen. Nur im Browser, nur für diese Sitzung. */
+const KEEP_MS = 10 * 60_000;
+const recent = new Map<string, { at: number; res: unknown; key: string }>();
+const remembered = (url: string) => {
+  const r = recent.get(url);
+  return r && Date.now() - r.at < KEEP_MS ? r : null;
+};
+const remember = (url: string, key: string, res: unknown) => {
+  recent.delete(url);
+  recent.set(url, { at: Date.now(), res, key });
+  if (recent.size > 30) recent.delete(recent.keys().next().value!);
+};
+
 /**
  * Eine Auswertung auf Knopfdruck (plenara.X): Ergebnis, Stand (ranKey), Laden und Fehler.
  * - run(): mit der Abfrage nach diesem Klick rechnen (Knopf „Auswerten“, auch zusammen mit applySearch im selben Klick).
@@ -12,12 +26,14 @@ const FAILED = "Die Auswertung konnte nicht berechnet werden.";
  * Zustand gesetzt, nur in den Antworten des Abrufs.
  * key: woran das Ergebnis hängt (für „veraltet“), url: was abgerufen wird.
  */
-export function useAnalysisRun<T>({ key, url, initial, fallback = FAILED, onDone }: { key: string; url: string; initial: boolean; fallback?: string; onDone?: (r: T) => void }) {
+export function useAnalysisRun<T>({ key, url, initial, fallback = FAILED, onDone, keep = true }: { key: string; url: string; initial: boolean; fallback?: string; onDone?: (r: T) => void; /** false: kein Ergebnis aus recent (onDone braucht das Ergebnis) */ keep?: boolean }) {
+  /* Schon berechnet (siehe recent): gleich als erledigter Wunsch übernehmen, kein Abruf */
+  const [hit] = useState(() => (initial && keep ? remembered(url) : null));
   const [ask, setAsk] = useState<{ n: number; after: string | null }>({ n: initial ? 1 : 0, after: null });
-  const [done, setDone] = useState<{ n: number; res: T | null; ranKey: string; error: string }>({ n: 0, res: null, ranKey: "", error: "" });
+  const [done, setDone] = useState<{ n: number; res: T | null; ranKey: string; error: string }>(() => (hit ? { n: 1, res: hit.res as T, ranKey: hit.key, error: "" } : { n: 0, res: null, ranKey: "", error: "" }));
   const abortRef = useRef<AbortController | null>(null);
   /* Jeder Wunsch startet höchstens einen Abruf, auch wenn die Abfrage danach weiter wechselt */
-  const startedRef = useRef(0);
+  const startedRef = useRef(hit ? 1 : 0);
   const onDoneRef = useRef(onDone);
   useEffect(() => {
     onDoneRef.current = onDone;
@@ -33,6 +49,7 @@ export function useAnalysisRun<T>({ key, url, initial, fallback = FAILED, onDone
     fetchJson<T>(url, { signal: ctrl.signal }, fallback)
       .then((r) => {
         setDone({ n, res: r, ranKey: key, error: "" });
+        remember(url, key, r);
         onDoneRef.current?.(r);
       })
       .catch((e) => {

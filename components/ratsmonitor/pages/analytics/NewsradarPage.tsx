@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Segmented } from "./Kennzahlen";
 import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
@@ -61,6 +62,12 @@ export function NewsradarPage() {
   const { query } = useAnalyticsQuery();
   const [days, setDays] = useState(30);
   const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: `${query}&days=${days}`, url: `/api/analytics/news?${query}&days=${days}`, initial: true });
+  /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
+  useEffect(() => {
+    if (!stale || loading) return;
+    const tm = setTimeout(() => run(), 400);
+    return () => clearTimeout(tm);
+  }, [stale, loading, run]);
 
   const own = !!new URLSearchParams(query).get("from");
 
@@ -68,30 +75,25 @@ export function NewsradarPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="news" />
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
+      <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden" role="group" aria-label="Zeitraum">
         {own ? (
           <p className="m-0 text-[14px] text-slate-700">Zeitraum aus dem Filter{res?.own ? `: ${datum(res.from)} bis ${datum(res.to)}` : ""}</p>
         ) : (
           <>
-            <span className="text-[14px] text-slate-500">Zeitraum:</span>
-            {SPANS.map(([d, label]) => (
-              <button key={d} type="button" aria-pressed={days === d} disabled={loading} onClick={() => { if (d !== days) { setDays(d); run(); } }}
-                className={`h-9 rounded-full border px-4 text-[14px] transition-colors ${days === d ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`}>{label}</button>
-            ))}
+            <Segmented label="Zeitraum" options={SPANS.map(([d, l]) => [String(d), l] as [string, string])} value={String(days)} onPick={(k) => setDays(+k)} />
             <span className="text-[12px] text-slate-500">und die nächsten 10 Tage</span>
           </>
         )}
       </div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
-      {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Vorgänge werden bewertet …" />}
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {res.items.length === 0 ? <p className="mt-10 text-[16px]">Für diese Suche gibt es im Zeitraum keinen Vorgang mit zitierbarer Zusammenfassung.</p> : (
             <>
-              <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt das Newsradar die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
+              <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
               <Reveal><section className="mt-6 border-t border-slate-200">
                 {res.items.map((i) => <Meldung key={i.id} i={i} />)}
               </section></Reveal>

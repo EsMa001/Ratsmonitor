@@ -7,14 +7,19 @@ export interface Month { m: string; approved: number; rejected: number; postpone
 const nf = (v: number) => v.toLocaleString("de-DE");
 const mlabel = (m: string) => `${m.slice(5, 7)}/${m.slice(2, 4)}`;
 
-/** Monatssäulen der Entscheidungen (beschlossen, vertagt, abgelehnt) mit der Beschlussquote als Linie */
+/** Entscheidungen je Monat als gestapelte Flächen mit Linie (beschlossen, vertagt, abgelehnt; keine Säulen im Zeitverlauf),
+ *  dazu die Beschlussquote gestrichelt auf der rechten Achse */
 export function MonthColumns({ months }: { months: Month[] }) {
-  if (!months.length) return null;
+  if (months.length < 2) return null;
   const W = 1000, H = 240, max = Math.max(...months.map((m) => m.approved + m.rejected + m.postponed), 1);
-  const slot = W / months.length, bw = Math.min(46, slot * 0.58);
+  const x = (i: number) => (i / (months.length - 1)) * W;
   const y = (v: number) => H - 4 - (v / max) * (H - 18);
-  const rates = months.map((m, i) => (m.rate === null ? null : [i * slot + slot / 2, 8 + (1 - m.rate / 100) * (H - 22)] as [number, number]));
-  const pts = rates.filter(Boolean) as [number, number][];
+  /* Obergrenzen der drei Schichten je Monat */
+  const tops = months.map((m) => [m.approved, m.approved + m.postponed, m.approved + m.postponed + m.rejected]);
+  const line = (k: number) => tops.map((t, i) => `${x(i)},${y(t[k])}`).join(" ");
+  const band = (k: number) => `${line(k)} ${tops.map((t, i) => [i, k ? t[k - 1] : 0] as const).reverse().map(([i, v]) => `${x(i)},${y(v)}`).join(" ")}`;
+  const layers = [[DEC_COLORS.approved, 0.14], [DEC_COLORS.postponed, 0.22], [DEC_COLORS.rejected, 0.12]] as const;
+  const pts = months.map((m, i) => (m.rate === null ? null : `${x(i)},${8 + (1 - m.rate / 100) * (H - 22)}`)).filter(Boolean);
   return (
     <figure className="m-0">
       <div className="relative ml-12 mr-12" style={{ height: H }}>
@@ -25,21 +30,12 @@ export function MonthColumns({ months }: { months: Month[] }) {
           </div>
         ))}
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="absolute inset-0 h-full w-full" role="img" aria-label="Entscheidungen je Monat und Beschlussquote">
-          {months.map((m, i) => {
-            const x0 = i * slot + (slot - bw) / 2;
-            const hA = (m.approved / max) * (H - 18), hP = (m.postponed / max) * (H - 18), hR = (m.rejected / max) * (H - 18);
-            return (
-              <g key={m.m}>
-                <rect x={x0} y={H - 4 - hA} width={bw} height={hA} fill={DEC_COLORS.approved} fillOpacity=".85" />
-                <rect x={x0} y={H - 4 - hA - hP} width={bw} height={hP} fill={DEC_COLORS.postponed} />
-                <rect x={x0} y={H - 4 - hA - hP - hR} width={bw} height={hR} fill={DEC_COLORS.rejected} />
-              </g>
-            );
-          })}
-          {pts.length > 1 && <polyline points={pts.map((p) => p.join(",")).join(" ")} fill="none" stroke="#0f172a" strokeWidth="2" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />}
+          {layers.map(([c, o], k) => <polygon key={k} points={band(k)} fill={c} fillOpacity={o} />)}
+          {layers.map(([c], k) => <polyline key={k} points={line(k)} fill="none" stroke={c} strokeWidth="1.8" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />)}
+          {pts.length > 1 && <polyline points={pts.join(" ")} fill="none" stroke="#0f172a" strokeWidth="1.5" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />}
         </svg>
       </div>
-      <figcaption className="ml-12 mr-12 mt-1 flex justify-between text-[12px] text-slate-500"><span>{mlabel(months[0].m)}</span><span>Säulen: Entscheidungen · gestrichelt: Beschlussquote</span><span>{mlabel(months[months.length - 1].m)}</span></figcaption>
+      <figcaption className="ml-12 mr-12 mt-1 flex justify-between text-[12px] text-slate-500"><span>{mlabel(months[0].m)}</span><span>Flächen: Entscheidungen · gestrichelt: Beschlussquote</span><span>{mlabel(months[months.length - 1].m)}</span></figcaption>
     </figure>
   );
 }

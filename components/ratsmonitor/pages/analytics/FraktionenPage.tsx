@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
@@ -32,6 +32,12 @@ const cellColor = (i: number | null) => (i === null ? "transparent" : i >= 100 ?
 export function FraktionenPage() {
   const { query } = useAnalyticsQuery();
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/fraktionen?${query}`, initial: true });
+  /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
+  useEffect(() => {
+    if (!stale || loading) return;
+    const tm = setTimeout(() => run(), 400);
+    return () => clearTimeout(tm);
+  }, [stale, loading, run]);
   // Geöffnete Liste hinter einer Zahl („all:SPD“, „decided:SPD“)
   const [open, setOpen] = useState("");
   const toggle = (k: string) => setOpen(open === k ? "" : k);
@@ -50,9 +56,8 @@ export function FraktionenPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="fraktionen" />
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
+      <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
-      {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
       {res && (

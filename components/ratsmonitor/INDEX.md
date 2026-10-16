@@ -787,7 +787,7 @@ topic design-styles.css:140
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (258, ⚠1): MainMenu
+- MainMenu.tsx (259, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (178, ⚠11): DetailPage
@@ -801,29 +801,29 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (242): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (340, ⚠21): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
+- AnalyticsAbout.tsx (351, ⚠21): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (54): AnalyticsLocked
 - AnalyticsPages.tsx (88, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
 - AtlasPage.tsx (65): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (52): Befund, zuThema
-- BeschluessePage.tsx (186, ⚠7): BeschluessePage
+- BeschluessePage.tsx (191, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (302, ⚠11): ComparePage
-- DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
+- ComparePage.tsx (306, ⚠11): ComparePage
+- DecisionCharts.tsx (65, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
 - DiffusionSearch.tsx (67, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (315, ⚠3): FaktenPage
-- FraktionenPage.tsx (148, ⚠5): FraktionenPage
+- FraktionenPage.tsx (153, ⚠5): FraktionenPage
 - GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (164, ⚠3): GremiennetzPage
+- GremiennetzPage.tsx (169, ⚠3): GremiennetzPage
 - Kennzahlen.tsx (126): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (218, ⚠2): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (224, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (107, ⚠1): NewsradarPage
+- NewsradarPage.tsx (109, ⚠1): NewsradarPage
 - PageBand.tsx (19): PageBand
 - RadarDrill.tsx (90): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
@@ -833,9 +833,10 @@ topic design-styles.css:140
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
 - XAtlasView.tsx (569, ⚠9): XAtlasView
+- XKopf.tsx (62): XKopf, XWeiter
 - XTrendsPage.tsx (357, ⚠4): XTrendsPage
 - XTrendsParts.tsx (147, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
-- useAnalysisRun.ts (53): useAnalysisRun
+- useAnalysisRun.ts (70): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery
 
 ### components/ratsmonitor/services/

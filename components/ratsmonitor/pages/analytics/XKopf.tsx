@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { PageBand } from "./PageBand";
 
 /*
@@ -15,15 +15,18 @@ const SEITEN: Record<string, Seite> = {
   atlas: { gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen.", reiter: ATLAS },
   vergleich: { gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist.", reiter: ATLAS },
   trends: { gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten.", reiter: TRENDS },
-  beschluesse: { gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Wie es ausgeht: Beschlussquote, Vertagungen, Ablehnungen, Einigkeit und Dauer.", reiter: TRENDS },
+  beschluesse: { gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Wie die Vorgänge zum gewählten Begriff ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf.", reiter: TRENDS },
   fraktionen: { gruppe: "Einblicke", titel: "Fraktionen", frage: "Wer will was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
   gremien: { gruppe: "Einblicke", titel: "Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   graph: { gruppe: "Einblicke", titel: "Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
-  news: { gruppe: "Einblicke", titel: "News", frage: "Was ist diese Woche?", text: "Was in den Räten berichtenswert ist: je Vorgang eine Meldung mit wörtlichem Zitat und Quelle." },
+  news: { gruppe: "Einblicke", titel: "Aktuelles", frage: "Was ist berichtenswert?", text: "Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit wörtlichem Zitat und Quelle. Für Vorhaben nach Branche und Stand: Signale." },
 };
 
 export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   const s = SEITEN[seite], path = usePathname();
+  /* Ort zwischen Atlas und Vergleich mitnehmen (?ort=) */
+  const ort = useSearchParams().get("ort");
+  const mit = (href: string) => (ort && s.reiter === ATLAS ? `${href}?ort=${ort}` : href);
   const teil = s.reiter?.find(([h]) => h === path)?.[1];
   return (
     <PageBand compact>
@@ -38,7 +41,7 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
       {s.reiter && (
         <nav aria-label="Ansicht" className="-mb-4 mt-3 flex gap-6 print:hidden">
           {s.reiter.map(([href, name]) => (
-            <Link key={href} href={href} aria-current={href === path ? "page" : undefined} scroll={false}
+            <Link key={href} href={mit(href)} aria-current={href === path ? "page" : undefined} scroll={false}
               className={`border-b-2 pb-2 text-[15px] ${href === path ? "border-teal-700 font-semibold text-slate-900" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{name}</Link>
           ))}
         </nav>

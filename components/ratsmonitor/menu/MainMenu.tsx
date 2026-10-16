@@ -40,7 +40,7 @@ const EINBLICKE: XEintrag[] = [
   { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer will was?" },
   { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
   { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
-  { href: "/analytics/news", label: "News", icon: "newspaper", hint: "Was ist diese Woche?" },
+  { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },
 ];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
@@ -197,16 +197,17 @@ export function MainMenu() {
                 </button>}
                 {show("analyse") && (
                   <ul className="ri-menu__subs">
-                    {([["Analysen", ANALYSE], ["Einblicke", EINBLICKE]] as const).map(([name, list]) => (
+                    {([["Analysen", ANALYSE, "/analytics/ueber"], ["Einblicke", EINBLICKE, "/analytics/einblicke"]] as const).map(([name, list, href]) => (
                       <li key={name}>
-                        <div className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{name}</div>
+                        {/* Abschnittsname führt zur Übersicht des Abschnitts */}
+                        <Link href={href} onClick={pick} className="block px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-slate-400 hover:text-teal-700">{name}</Link>
                         <ul>
                           {list.map((f) => (
                             <li key={f.href}>
                               <Link href={f.href} className="ri-menu__sub min-w-[250px]" aria-current={current(f.href)} onClick={pick}>
                                 <Icon name={f.icon} size={15} />
                                 <span>{f.label}</span>
-                                {f.hint && <span className="ml-auto pl-4 text-[12px] font-normal text-slate-400">{f.hint}</span>}
+                                {f.hint && <span className="ml-auto whitespace-nowrap pl-4 text-[12px] max-sm:hidden font-normal text-slate-400">{f.hint}</span>}
                               </Link>
                             </li>
                           ))}

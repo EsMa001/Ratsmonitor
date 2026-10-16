@@ -3,7 +3,7 @@ import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { RadarDrill } from "./RadarDrill";
 import { STATUS } from "../../lib/constants";
 import { DEC_COLORS, DecisionRow, MonthColumns, type Cut, type Month } from "./DecisionCharts";
@@ -43,6 +43,12 @@ function Fold({ title, children }: { title: string; children: React.ReactNode })
 export function BeschluessePage() {
   const { query } = useAnalyticsQuery();
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/decisions?${query}`, initial: true });
+  /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
+  useEffect(() => {
+    if (!stale || loading) return;
+    const tm = setTimeout(() => run(), 400);
+    return () => clearTimeout(tm);
+  }, [stale, loading, run]);
   // Geöffnete Liste hinter einer Zeile („kind:rat“)
   const [open, setOpen] = useState("");
   const [cut, setCut] = useState<"topics" | "kinds" | "lands">("kinds");
@@ -58,9 +64,8 @@ export function BeschluessePage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="beschluesse" />
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
+      <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
-      {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
       {res && (

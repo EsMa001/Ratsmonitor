@@ -66,6 +66,13 @@ export function KnowledgeGraphPage() {
   }, []);
 
   const stale = !!res && ranKey !== query;
+  /* Wie die übrigen Seiten: geänderte Suche oder Filter erstellen das Netz nach kurzer Pause von selbst neu */
+  useEffect(() => {
+    if (!stale || loading) return;
+    const tm = setTimeout(() => start(), 400);
+    return () => clearTimeout(tm);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stale, loading]);
   const onPlay = () => {
     if (loading) return;
     start();
@@ -127,9 +134,8 @@ export function KnowledgeGraphPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="graph" />
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} startLabel="Graph erstellen" /></div>
+      <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
-      {stale && !loading && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu erstellen.</p>}
 
       <section ref={graphRef} className="relative mt-6 h-[520px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[620px]" aria-label="Themennetz">
         {res && !empty ? <GraphView nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="absolute inset-0 bg-map-ground" />}

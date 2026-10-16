@@ -9,7 +9,7 @@ export type AnalyseGruppe = "tool" | "atlas";
 
 /* Gruppen mit Übersichtsseite (Menü „Analysen“, Brotkrumen der einzelnen Analysen) */
 export const GRUPPEN: Record<Exclude<AnalyseGruppe, "atlas">, { name: string; kurz: string; href: string; text: string }> = {
-  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/einblicke", text: "Wer beteiligt ist und was zusammenhängt: Fraktionen und ihre Anträge, die Wege durch die Gremien, das Netz verwandter Themen und was diese Woche berichtenswert ist." },
+  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/einblicke", text: "Wer beteiligt ist und was zusammenhängt: Fraktionen und ihre Anträge, die Wege durch die Gremien, das Netz verwandter Themen und was gerade berichtenswert ist." },
 };
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {
@@ -32,7 +32,7 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   klima: { href: "/analytics/atlas?thema=umwelt&sub=umwelt.klimaschutz", name: "Klimaschutz und Energieeffizienz", icon: "zap", group: "atlas" },
   finanzlage: { href: "/analytics/atlas?thema=finanzen", name: "Finanzen & Haushalt", icon: "layers", group: "atlas" },
   beteiligung: { href: "/analytics/atlas?thema=verwaltung&sub=verwaltung.beteil", name: "Bürgerbeteiligung und Beiräte", icon: "megaphone", group: "atlas" },
-  news: { href: "/analytics/news", name: "News", icon: "newspaper", group: "tool" },
+  news: { href: "/analytics/news", name: "Aktuelles", icon: "newspaper", group: "tool" },
 };
 
 /* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */
@@ -42,7 +42,7 @@ export const NEU_HREF: Partial<Record<AnalyseId, (term?: string) => string>> = {
   diffusion: (term) => `/analytics/trends${term ? `?begriff=${encodeURIComponent(term)}` : ""}`,
   trends: () => "/analytics/trends",
 };
-export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "Vergleich im plenara.X Atlas", beschluesse: "Ausgang in plenara.X Trends", gremien: "Gremien", fraktionen: "Fraktionen", news: "News" };
+export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "Vergleich im plenara.X Atlas", beschluesse: "Ausgang in plenara.X Trends", gremien: "Gremien", fraktionen: "Fraktionen", news: "Aktuelles" };
 /** Seiten der Gruppe plenara.X Einblicke (Übersicht /analytics/einblicke); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
 export const EINBLICKE: AnalyseId[] = ["fraktionen", "gremien", "graph", "news"];
 

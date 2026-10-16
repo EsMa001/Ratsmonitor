@@ -143,7 +143,7 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "atlas", name: "plenara.X Atlas", href: "/analytics/atlas", kurz: "Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und die Vorgänge hinter jeder Zahl." },
   { id: "signale", name: "plenara.X Signale", href: "/analytics/signale", kurz: "Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, mit Stand des Verfahrens." },
   { id: "fakten", name: "plenara.X Fakten", href: "/analytics/fakten", kurz: "Hebesätze, Gebühren, Jahresergebnisse und Preise aus den Vorlagen, je Gemeinde auf der Karte, rot bis grün." },
-  { id: "news", name: "News", href: "/analytics/news", kurz: "Was gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle." },
+  { id: "news", name: "Aktuelles", href: "/analytics/news", kurz: "Was gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle." },
 ];
 
 const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
@@ -215,9 +215,11 @@ const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
 };
 
 function Karten({ group }: { group: AnalyseGruppe }) {
+  /* Frage je Einblick, wie im Menü und im Kopf der Seite */
+  const FRAGE: Partial<Record<AnalyseId, string>> = { fraktionen: "Wer will was?", gremien: "Wer berät was?", graph: "Was hängt zusammen?", news: "Was ist berichtenswert?" };
   const list = EINBLICKE.map((id) => ANALYSEN_KARTEN.find((a) => a.id === id)!).filter((a) => ANALYSEN[a.id].group === group);
   return (
-    <ul className="m-0 mt-8 grid list-none gap-x-10 gap-y-14 p-0 sm:grid-cols-2 xl:grid-cols-3">
+    <ul className="m-0 mt-8 grid list-none gap-x-8 gap-y-14 p-0 sm:grid-cols-2 xl:grid-cols-4">
       {list.map((a, i) => (
         <li key={a.id}>
           <Reveal delay={(i % 3) * 90}>
@@ -229,7 +231,7 @@ function Karten({ group }: { group: AnalyseGruppe }) {
               <span className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-700">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
               {/* Auf dem Handy steht die Überschrift über dem Vorschaubild, sonst ist unklar, wozu das Bild gehört */}
               <h3 className="mt-2 text-[22px] font-semibold max-sm:order-first max-sm:mb-2 max-sm:mt-0">{a.name}</h3>
-              <p className="mt-1 text-[16px] text-slate-500">{a.kurz}</p>
+              <p className="mt-1 text-[16px] text-slate-500">{FRAGE[a.id] && <b className="font-semibold text-slate-700">{FRAGE[a.id]} </b>}{a.kurz}</p>
             </Link>
           </Reveal>
         </li>
@@ -286,13 +288,22 @@ export function AnalyticsAbout() {
             <h1 className="mt-6 max-w-[16ch] text-[28px] font-semibold leading-[1.1] sm:text-[44px]">Besser verstehen, was vor Ort beraten wird.</h1>
             <p className="mt-5 max-w-[560px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte, jede Zahl mit den Vorgängen und Originalquellen dahinter.</p>
             <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
-              <Link href="/analytics/diffusion" className="inline-flex h-12 items-center gap-2 rounded-full bg-slate-900 px-7 text-[16px] font-medium text-white transition-opacity after:content-['→'] hover:opacity-85">Analyse starten</Link>
-              <a href="#analysen" className="text-[16px] font-medium text-teal-700">Alle Analysen ↓</a>
+              <Link href="/analytics/atlas" className="inline-flex h-12 items-center gap-2 rounded-full bg-slate-900 px-7 text-[16px] font-medium text-white transition-opacity after:content-['→'] hover:opacity-85">Analyse starten</Link>
+              <a href="#atlas" className="text-[16px] font-medium text-teal-700">Alle Analysen ↓</a>
             </div>
           </div>
-          <Link href="/analytics/diffusion" aria-label="Ausbreitung öffnen" className="hidden xl:block xl:w-full xl:max-w-[560px] xl:justify-self-end"><LiveThumb id="diffusion" term={BEISPIEL} /></Link>
+          <Link href="/analytics/trends" aria-label="plenara.X Trends öffnen" className="hidden xl:block xl:w-full xl:max-w-[560px] xl:justify-self-end"><LiveThumb id="trends" term={BEISPIEL} /></Link>
         </div>
       </PageBand>
+
+      {/* Der Atlas hat eine eigene Seite mit Themenleiste; hier nur der Verweis */}
+      <section id="atlas" className="scroll-mt-24">
+        <div className="mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+          <h2 className="text-[28px] font-semibold">plenara.X Atlas</h2>
+          <Link href="/analytics/atlas" className="text-[16px] font-medium text-teal-700">Zum plenara.X Atlas →</Link>
+        </div>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Worüber die Räte beraten, nach den 10 Themen der Suche: Bauen und Wohnen, Finanzen, Mobilität, Bildung, Umwelt und Energie, Soziales, Kultur und Sport, Sicherheit, Verwaltung, Wirtschaft. Je Thema Unterthemen, was geschieht und wo ein Thema viel Raum hat; mit einem Ort der Vergleich mit ähnlichen Gemeinden.</p>
+      </section>
 
       {/* Signale: eigene Seite, hier nur der Verweis */}
       <section id="signale" className="scroll-mt-24">
@@ -301,6 +312,15 @@ export function AnalyticsAbout() {
           <Link href="/analytics/signale" className="text-[16px] font-medium text-teal-700">Zu den Signalen →</Link>
         </div>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo gerade etwas entsteht: neue Wohn- und Gewerbegebiete, Windenergie und Solarparks, Wärmeplanung, Straßen und Mobilitätsangebote. Je Vorgang Ort, Stand des Verfahrens und Originalquelle.</p>
+      </section>
+
+      {/* Trends: eigene Seite mit den Reitern Verlauf und Ausgang, hier nur der Verweis */}
+      <section id="trends" className="scroll-mt-24">
+        <div className="mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+          <h2 className="text-[28px] font-semibold">plenara.X Trends</h2>
+          <Link href="/analytics/trends" className="text-[16px] font-medium text-teal-700">Zu den Trends →</Link>
+        </div>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was sich verändert: Begriffe, die zunehmen, wie sie sich über die Gebiete ausbreiten und wie die Vorgänge dazu ausgehen.</p>
       </section>
 
       {/* Fakten: eigene Seite, hier nur der Verweis */}
@@ -313,7 +333,7 @@ export function AnalyticsAbout() {
       </section>
 
       {(["tool"] as const).map((group, gi) => (
-        <section key={group} id={gi ? group : "analysen"} className="scroll-mt-24">
+        <section key={group} id={gi ? group : "einblicke"} className="scroll-mt-24">
           <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
             <h2 className="text-[28px] font-semibold">{GRUPPEN[group].name}</h2>
             <span className="flex flex-wrap gap-x-6 gap-y-1">
@@ -324,15 +344,6 @@ export function AnalyticsAbout() {
           <Karten group={group} />
         </section>
       ))}
-      {/* Der Atlas hat eine eigene Seite mit Themenleiste; hier nur der Verweis */}
-      <section id="atlas" className="scroll-mt-24">
-        <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <h2 className="text-[28px] font-semibold">plenara.X Atlas</h2>
-          <Link href="/analytics/atlas" className="text-[16px] font-medium text-teal-700">Zum plenara.X Atlas →</Link>
-        </div>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Worüber die Räte beraten, nach den 10 Themen der Suche: Bauen und Wohnen, Finanzen, Mobilität, Bildung, Umwelt und Energie, Soziales, Kultur und Sport, Sicherheit, Verwaltung, Wirtschaft. Je Thema Unterthemen, was geschieht und wo ein Thema viel Raum hat; mit einem Ort der Vergleich mit ähnlichen Gemeinden.</p>
-      </section>
-
       <Methodik />
     </main>
   );

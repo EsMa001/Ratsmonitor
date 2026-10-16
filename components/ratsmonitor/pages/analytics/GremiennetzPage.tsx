@@ -3,7 +3,7 @@ import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { NetView, ROLE, type NEdge, type NNode } from "./NetView";
@@ -22,6 +22,12 @@ export function GremiennetzPage() {
   const { query } = useAnalyticsQuery();
   const [selected, setSelected] = useState("");
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/network?${query}`, initial: true, fallback: "Das Netz konnte nicht berechnet werden.", onDone: () => setSelected("") });
+  /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
+  useEffect(() => {
+    if (!stale || loading) return;
+    const tm = setTimeout(() => run(), 400);
+    return () => clearTimeout(tm);
+  }, [stale, loading, run]);
   // Geöffnete Liste hinter einem Übergang („Von|Nach“)
   const [edge, setEdge] = useState("");
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
@@ -45,9 +51,8 @@ export function GremiennetzPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="gremien" />
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Netz berechnen" /></div>
+      <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
-      {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu berechnen.</p>}
       {loading && !res && <Laden text="Netz wird berechnet …" />}
 
       {res && (

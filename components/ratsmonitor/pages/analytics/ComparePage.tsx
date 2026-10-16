@@ -55,8 +55,12 @@ function datenlage(p: Place): string[] {
 
 export function ComparePage() {
   const { geo } = useData();
-  const [ort1, setOrt1] = useState<PlaceEntry | null>(() => asPlace(ORT.koeln));
-  const [ort2, setOrt2] = useState<PlaceEntry | null>(() => asPlace(ORT.dortmund));
+  /* Vom Atlas mit gewähltem Ort (?ort=): dieser Ort ist Ort 1, verglichen mit Köln (bzw. Dortmund); sonst Köln und Dortmund */
+  const [von] = useState(() => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("ort") ?? "").match(/^\d{5,9}$/)?.[0] ?? "");
+  const [ort1, setOrt1] = useState<PlaceEntry | null>(() => (von ? asPlace({ ags: von, name: geo?.info(von)?.name ?? "" }) : asPlace(ORT.koeln)));
+  const [ort2, setOrt2] = useState<PlaceEntry | null>(() => asPlace(von === ORT.koeln.ags ? ORT.dortmund : von ? ORT.koeln : ORT.dortmund));
+  /* Name des mitgebrachten Orts, sobald die Gebiete geladen sind */
+  if (ort1 && !ort1.name && geo?.info(ort1.ags)) setOrt1(asPlace({ ags: ort1.ags, name: geo.info(ort1.ags)!.name }));
   const [thema, setThema] = useState("");
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
