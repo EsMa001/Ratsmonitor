@@ -11,7 +11,8 @@ export const DAY = 86400000;
 export const toDay = (iso: string) => Math.floor(Date.parse(iso.slice(0, 10) + "T00:00:00Z") / DAY);
 export const toIso = (d: number) => new Date(d * DAY).toISOString().slice(0, 10);
 export const fmt = (iso: string | null | undefined) => (iso ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "–");
-const glass = "rm-glass";
+/* Rahmenlos wie die übrigen plenara.X-Seiten (rm-legend statt rm-glass) */
+const glass = "rm-legend";
 /* Wie die Ausbreitung: je länger die erste Erwähnung her ist, desto dunkler */
 export const AGE_LEGEND: [string, string][] = [["#b3dfda", "bis 1 Monat"], ["#8ccdc7", "bis 3 Monate"], ["#6ebfb8", "bis 6 Monate"], ["#0f766e", "länger"]];
 const levelAt = (first: string, today: number) => { const age = today - toDay(first); return age < 0 ? 0 : age <= 31 ? 1 : age <= 92 ? 2 : age <= 183 ? 3 : 4; };

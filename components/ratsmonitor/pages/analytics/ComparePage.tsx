@@ -3,7 +3,7 @@ import { prettyTerm } from "../../lib/terms";
 import { Segmented } from "./Kennzahlen";
 import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
-import { Befund } from "./Befund";
+import { Befund, Fehler } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
@@ -158,7 +158,7 @@ export function ComparePage() {
           <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-full bg-slate-900 text-white transition-opacity hover:opacity-85 disabled:opacity-60 md:justify-self-auto">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" /></svg>}</button>
         </div>
       </section>
-      {error && <p role="alert" className="mt-4 text-[14px] font-medium text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Orte oder Thema wurden geändert. Mit „Vergleichen“ neu berechnen.</p>}
       {loading && !res && <Laden text="Vergleich wird berechnet …" />}
 

@@ -7,7 +7,8 @@ import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 
 /* Karte für plenara.X-Radare mit derselben Engine wie Suche und Ausbreitung: Gemeinden in Stufen 1 bis 4 eingefärbt
    (levels: Gemeindeschlüssel → Stufe), Klick wählt eine Gemeinde. Lage nur auf Gemeindeebene. */
-const glass = "rm-glass";
+/* Rahmenlos wie die übrigen plenara.X-Seiten (rm-legend statt rm-glass) */
+const glass = "rm-legend";
 
 export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors, tall = false, pins, dots }: {
   /* Einzelne Vorgänge als Punkte statt eingefärbter Flächen (Signale): Gebietsschlüssel → Zahl der Punkte */ dots?: Record<string, number>;

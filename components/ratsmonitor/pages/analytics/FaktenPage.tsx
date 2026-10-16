@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Befund } from "./Befund";
+import { Befund, Fehler } from "./Befund";
 import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -188,7 +188,7 @@ export function FaktenPage() {
 
       <div className="mt-4 print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
-      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Fakten werden geladen …" />}
       {res && !fact && !allFacts && <p className="mt-6 text-[14px] text-slate-500">Für diese Auswahl liegen keine geprüften Werte vor.</p>}
       {res && (fact || allFacts) && (

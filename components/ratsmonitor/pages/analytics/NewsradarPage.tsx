@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Segmented } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
-import { Befund } from "./Befund";
+import { Befund, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
@@ -87,12 +87,12 @@ export function NewsradarPage() {
           </>
         )}
       </div>
-      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Vorgänge werden bewertet …" />}
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
-          {res.items.length === 0 ? <p className="mt-10 text-[16px]">Für diese Suche gibt es im Zeitraum keinen Vorgang mit zitierbarer Zusammenfassung.</p> : (
+          {res.items.length === 0 ? <Leer tipp="Einen längeren Zeitraum wählen oder den Suchbegriff kürzen; gezeigt werden nur Vorgänge mit zitierbarer Zusammenfassung.">Keine berichtenswerten Vorgänge in diesem Zeitraum.</Leer> : (
             <>
               <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
               <Reveal><section className="mt-6 border-t border-slate-200">

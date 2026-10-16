@@ -94,22 +94,33 @@ export function XWeiter({ links }: { links: [string, string][] }) {
 export function ThemenLeiste() {
   const search = useSearch();
   return (
-    <nav aria-label="Thema" className="mb-4 print:hidden">
-      <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
-        {[{ id: "alle", name: "" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.id, name: t.name }))].map((t) => {
-          const on = search.state.thema === t.name;
-          return (
-            <li key={t.id} className="sm:w-[104px]">
-              <button type="button" aria-pressed={on} onClick={() => search.setThema(t.name)}
-                className={`flex h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
-                <ThemeIcon theme={t.id} size={22} className={on ? "text-teal-700" : "text-slate-500"} />
-                <span className="line-clamp-2">{t.name || "Alle Themen"}</span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+    <>
+      {/* Handy: Auswahlfeld statt drei Reihen Kacheln */}
+      <label className="mb-3 block sm:hidden print:hidden">
+        <span className="sr-only">Thema</span>
+        <select value={search.state.thema} onChange={(e) => search.setThema(e.target.value)} className="select-base h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
+          <option value="">Alle Themen</option>
+          {THEMES.map((t: { id: string; name: string }) => <option key={t.id} value={t.name}>{t.name}</option>)}
+        </select>
+      </label>
+      {/* Ab Tablet Kacheln; ab Desktop alle 11 in einer Reihe (Breite teilt sich auf) */}
+      <nav aria-label="Thema" className="mb-4 hidden sm:block print:hidden">
+        <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
+          {[{ id: "alle", name: "" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.id, name: t.name }))].map((t) => {
+            const on = search.state.thema === t.name;
+            return (
+              <li key={t.id}>
+                <button type="button" aria-pressed={on} onClick={() => search.setThema(t.name)}
+                  className={`flex h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                  <ThemeIcon theme={t.id} size={22} className={on ? "text-teal-700" : "text-slate-500"} />
+                  <span className="line-clamp-2">{t.name || "Alle Themen"}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </>
   );
 }
 

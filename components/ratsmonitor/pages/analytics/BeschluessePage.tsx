@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Kennzahlen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
-import { Befund, zuThema } from "./Befund";
+import { Befund, zuThema, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useMemo, useState, useEffect } from "react";
 import { RadarDrill } from "./RadarDrill";
@@ -28,6 +28,16 @@ interface Result {
 const STATUS_COLOR: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0" };
 const n = (v: number) => v.toLocaleString("de-DE");
 const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-DE")} %`);
+
+/** Offener Abschnitt mit Überschrift wie auf den übrigen plenara.X-Seiten (Wichtiges sichtbar, Nebensachen in Fold) */
+function Abschnitt({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mt-12">
+      <h2 className="text-[22px] font-semibold">{title}</h2>
+      {children}
+    </section>
+  );
+}
 
 function Fold({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -67,12 +77,12 @@ export function BeschluessePage() {
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
-      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
-          {res.totals.all === 0 ? <p className="mt-10 text-[16px]">Keine Einträge für diese Suche.</p> : (
+          {res.totals.all === 0 ? <Leer>Keine Vorgänge für diese Auswahl.</Leer> : (
             <>
               <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} werden ${pct(res.rates.approval)} der ${n(res.totals.decided)} Entscheidungen beschlossen, ${pct(res.rates.postponement)} vertagt und ${pct(res.rates.rejection)} abgelehnt.${res.duration.median !== null ? ` Im Median dauert es ${res.duration.median} Tage bis zur Entscheidung.` : ""}`}</Befund>
               <p className="mt-2 max-w-[760px] text-[14px] text-slate-500">Grundlage: {n(res.totals.decided)} Vorgänge mit bekannter Entscheidung, das sind {n(res.totals.known)} von {n(res.totals.all)} Einträgen mit bekanntem Status{res.totals.knownShare !== null ? ` (${pct(res.totals.knownShare)} aller Einträge)` : ""}. Die übrigen Einträge zeigen keinen Status.</p>
@@ -95,8 +105,7 @@ export function BeschluessePage() {
 
 
 
-              <div className="mt-12 border-t border-slate-200">
-              <Fold title="Aufteilung">
+              <Abschnitt title="Aufteilung">
               <div className="pb-6 pt-2">
                 <div role="tablist" aria-label="Aufteilung" className="flex gap-6 border-b border-slate-200">
                   {([["kinds", "Gremienebene"], ["topics", "Themenfeld"], ["lands", "Bundesland"]] as const).map(([id, l]) => (
@@ -106,7 +115,30 @@ export function BeschluessePage() {
                 <p className="mb-2 mt-3 text-[14px] text-slate-500">Beschlussquote und Anteil vertagt und abgelehnt{cut === "topics" ? `. Nur ${n(res.totals.decided - res.unclassified.decided)} der ${n(res.totals.decided)} Entscheidungen sind einem Themenfeld zugeordnet.` : cut === "kinds" ? ". Ausschüsse empfehlen meist nur, der Rat beschließt: Für sie steht deshalb keine Quote, sondern die Zahl der Empfehlungen." : "."}{cut !== "kinds" ? " Grau: Quote im üblichen Rahmen, keine deutliche Abweichung vom Gesamtwert." : ""}</p>
                 {cuts.length === 0 ? <p className="py-4 text-[14px] text-slate-500">Zu wenige Entscheidungen für diese Aufteilung.</p> : <ol className="m-0 list-none border-t border-slate-200 p-0">{cuts.map((c) => { const by = { kinds: "kind", topics: "label", lands: "land" }[cut], k = `${by}:${c.id}`; return <DecisionRow key={c.id} cut={c} onToggle={() => setOpen(open === k ? "" : k)} expanded={open === k} drill={open === k && <RadarDrill base="/api/analytics/decisions?list=1" query={ranKey} by={by} value={c.id} label={`${c.name}, Vorgänge mit Entscheidung`} />} />; })}</ol>}
               </div>
-              </Fold>
+              </Abschnitt>
+              <Abschnitt title="Durchlaufzeit">
+              <div className="pb-6 pt-2">
+                <p className="mb-4 mt-1 text-[14px] text-slate-500">Tage von der ersten Station eines Vorgangs bis zur Entscheidung. Nur Vorgänge mit mindestens zwei datierten Stationen ({n(res.duration.n)}).</p>
+                {res.duration.median === null ? <p className="text-[14px] text-slate-500">Zu wenige Vorgänge mit mehreren Stationen.</p> : (
+                  <>
+                    {/* Als Satz statt einer zweiten Zahlenzeile (die Kennzahlen stehen oben) */}
+                    <p className="m-0 text-[18px] font-semibold leading-snug text-slate-900">Im Mittel {res.duration.median} Tage bis zur Entscheidung<span className="font-normal text-slate-600">; die Hälfte zwischen {res.duration.p25} und {res.duration.p75} Tagen, neun von zehn bis {res.duration.p90} Tage.</span></p>
+                    {res.duration.topics.length > 0 && (
+                      <ol className="m-0 mt-6 list-none border-t border-slate-200 p-0">
+                        {res.duration.topics.map((t) => (
+                          <li key={t.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-slate-200 py-3 sm:grid-cols-[220px_minmax(0,1fr)_150px]">
+                            <span className="truncate text-[16px] text-slate-900">{t.name}</span>
+                            <span className="relative order-3 col-span-2 block h-[6px] rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="absolute left-0 top-0 block h-full rounded-full bg-teal-600" style={{ width: `${Math.min(100, (t.median / dmax) * 100)}%` }} /><span className="absolute top-[-3px] block h-[12px] w-px bg-slate-900/70" style={{ left: `${Math.min(100, (t.p90 / dmax) * 100)}%` }} /></span>
+                            <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{t.median} Tage</b><span className="ml-2 text-slate-500">{t.n}</span></span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </>
+                )}
+              </div>
+              </Abschnitt>
+              <div className="mt-12 border-t border-slate-200">
               <Fold title="Abstimmung und Änderungen">
               <div className="pb-6 pt-2">
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Aus dem Ergebnistext der Beschlüsse gelesen; das nennen nur manche Ratsinformationssysteme, die Werte gelten nur für Vorgänge mit Angabe. Grundlage: alle {n(res.votes.of)} Vorgänge mit Entscheidung.</p>
@@ -138,31 +170,6 @@ export function BeschluessePage() {
                     </div>
                   ))}
                 </div>
-              </div>
-              </Fold>
-              <Fold title="Durchlaufzeit">
-              <div className="pb-6 pt-2">
-                <p className="mb-4 mt-1 text-[14px] text-slate-500">Tage von der ersten Station eines Vorgangs bis zur Entscheidung. Nur Vorgänge mit mindestens zwei datierten Stationen ({n(res.duration.n)}).</p>
-                {res.duration.median === null ? <p className="text-[14px] text-slate-500">Zu wenige Vorgänge mit mehreren Stationen.</p> : (
-                  <>
-                    <dl className="grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-                      {[["Mittlere Dauer", `${res.duration.median} Tage`], ["Die Hälfte zwischen", `${res.duration.p25} und ${res.duration.p75} Tagen`], ["Neun von zehn bis", `${res.duration.p90} Tage`], ["Vorgänge", n(res.duration.n)]].map(([k, v], i) => (
-                        <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
-                      ))}
-                    </dl>
-                    {res.duration.topics.length > 0 && (
-                      <ol className="m-0 mt-6 list-none border-t border-slate-200 p-0">
-                        {res.duration.topics.map((t) => (
-                          <li key={t.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-slate-200 py-3 sm:grid-cols-[220px_minmax(0,1fr)_150px]">
-                            <span className="truncate text-[16px] text-slate-900">{t.name}</span>
-                            <span className="relative order-3 col-span-2 block h-[6px] rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="absolute left-0 top-0 block h-full rounded-full bg-teal-600" style={{ width: `${Math.min(100, (t.median / dmax) * 100)}%` }} /><span className="absolute top-[-3px] block h-[12px] w-px bg-slate-900/70" style={{ left: `${Math.min(100, (t.p90 / dmax) * 100)}%` }} /></span>
-                            <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{t.median} Tage</b><span className="ml-2 text-slate-500">{t.n}</span></span>
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-                  </>
-                )}
               </div>
               </Fold>
               <Fold title="Stand der Vorgänge und Datenlage">

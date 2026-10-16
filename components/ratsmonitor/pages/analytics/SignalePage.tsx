@@ -9,7 +9,7 @@ import { useAnalysisRun } from "./useAnalysisRun";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
-import { Befund } from "./Befund";
+import { Fehler, Leer } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
@@ -220,14 +220,20 @@ export function SignalePage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="signale" />
 
-      {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy 4 je Reihe */}
-      <nav aria-label="Signal" className="print:hidden">
-        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
+      {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy: Auswahlfeld */}
+      <label className="block sm:hidden print:hidden">
+        <span className="sr-only">Signal</span>
+        <select value={signal} onChange={(e) => pick({ signal: e.target.value === "vergaben" ? "" : e.target.value, phase: "", art: "" })} className="select-base h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
+          {SIGNALE.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+        </select>
+      </label>
+      <nav aria-label="Signal" className="hidden sm:block print:hidden">
+        <ul className="m-0 grid list-none grid-cols-5 gap-1 p-0 lg:grid-cols-10">
           {SIGNALE.map(([id, label]) => {
             const on = id === signal;
             const Icon = ICONS[id];
             return (
-              <li key={id} className="sm:w-[104px]">
+              <li key={id}>
                 <button type="button" aria-pressed={on} onClick={() => pick({ signal: id === "vergaben" ? "" : id, phase: "", art: "" })}
                   className={`flex h-[76px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   {Icon && <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
@@ -253,12 +259,12 @@ export function SignalePage() {
       </nav>}
       <div className="mt-4 print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
-      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Signale werden geladen …" />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
-          {res.total === 0 ? <Befund link={false} tight>{`${res.signal.name}: keine Vorgänge${zeit !== "alle" ? ` in den letzten ${zeit} Monaten` : ""} für diese Auswahl.`}</Befund>
+          {res.total === 0 ? <Leer tipp="Einen längeren Zeitraum, eine andere Art oder „Alle Themen“ wählen, oder den Ort entfernen.">{`Keine Vorgänge für diese Auswahl: ${res.signal.name}${zeit !== "alle" ? `, letzte ${zeit} Monate` : ""}.`}</Leer>
             : <Kennzahlen week={week} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
               <span>{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
               <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
@@ -293,7 +299,7 @@ export function SignalePage() {
                     {res.firstCount !== undefined && (res.firstCount > 0 || !!erstmals) && <Segmented label="Auswahl" value={erstmals ? "erst" : "neu"} onPick={(k) => pick({ erstmals: k === "erst" ? "1" : "" })}
                       options={[["neu", "Neueste"], ["erst", `Erstmals hier${res.firstCount ? ` (${n(res.firstCount)})` : ""}`, "Nur Vorgänge, die in ihrem Ort die ersten dieser Art sind (Bestand des Orts seit mindestens einem Jahr davor)"]]} />}
                   </div>
-                  {items.length === 0 && <p className="mt-3 text-[16px] text-slate-500">In dieser Auswahl ist kein Vorgang der erste seiner Art im Ort.</p>}
+                  {items.length === 0 && <Leer tipp="„Erstmals hier“ zählt nur Gebiete mit mindestens 12 Monaten Daten davor; „Neueste“ zeigt alle Vorgänge.">In dieser Auswahl ist kein Vorgang der erste seiner Art im Ort.</Leer>}
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
                     {items.slice(0, shown).map((r) => (
                       <li key={r.id} onMouseEnter={() => setHoverPlace(r.place ?? "")} onMouseLeave={() => setHoverPlace("")} onFocus={() => setHoverPlace(r.place ?? "")} onBlur={() => setHoverPlace("")} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">
@@ -305,7 +311,7 @@ export function SignalePage() {
                       </li>
                     ))}
                   </ol>
-                  {extra.error && <p role="alert" className="mt-2 text-[14px]">{extra.error}</p>}
+                  {extra.error && <Fehler>{extra.error}</Fehler>}
                   {shown < res.total && (
                     <button type="button" disabled={extra.loading} onClick={showMore} className="mt-3 text-[14px] font-medium text-teal-700 hover:underline">
                       {extra.loading ? "Wird geladen …" : `Weitere ${n(Math.min(10, res.total - shown))} zeigen →`}

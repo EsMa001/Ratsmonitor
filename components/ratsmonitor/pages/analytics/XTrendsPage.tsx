@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Befund } from "./Befund";
+import { Befund, Fehler, Leer } from "./Befund";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -181,7 +181,7 @@ export function XTrendsPage() {
       <ThemenLeiste />
       <div className="mt-4 print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
-      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Trends werden berechnet …" />}
       {res && lists && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
@@ -231,7 +231,7 @@ export function XTrendsPage() {
                   {overview ? (
                     <div className="mt-4"><TrendMap items={[...lists.up, ...lists.down, ...lists.more]} selected="" onSelect={(t) => pick({ begriff: t })} /></div>
                   ) : rows.length === 0 ? (
-                    <p className="mt-6 text-[16px] text-slate-500">{sort === "aus" && !sp ? "Ausbreitung wird berechnet …" : `Keine Begriffe in dieser Auswahl. Ein längerer Zeitraum oder „Alle Themen“ zeigen mehr.`}</p>
+                    sort === "aus" && !sp ? <p className="mt-6 text-[16px] text-slate-500">Ausbreitung wird berechnet …</p> : <Leer tipp="Einen längeren Zeitraum oder „Alle Themen“ wählen.">Keine Begriffe in dieser Auswahl.</Leer>
                   ) : (
                     <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0" onMouseLeave={() => setHover("")}>
                       {rows.slice(0, shown).map((t) => {
@@ -283,9 +283,9 @@ function Steckbrief({ begriff, row, spread, df, error, firsts, day, onDay, playi
     <section ref={ref} aria-label={`Steckbrief ${name}`} className="scroll-mt-4">
       <button type="button" onClick={onBack} className="h-8 rounded-full px-2 text-[14px] font-medium text-teal-700 hover:bg-teal-50">← Alle Trends</button>
       <h2 className="mt-2 text-[28px] font-semibold leading-tight">{name}</h2>
-      {error && <p role="alert" className="mt-3 text-[14px]">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {!df && !error && <Laden text="Ausbreitung wird berechnet …" />}
-      {df && (df.stats.regions === 0 ? <p className="mt-3 text-[16px] text-slate-500">Keine Vorgänge zu diesem Begriff.</p> : <>
+      {df && (df.stats.regions === 0 ? <Leer>Keine Vorgänge zu diesem Begriff.</Leer> : <>
         <p className="mt-2 text-[18px] leading-snug">
           {row ? <>{row.np === 0 ? "Neu aufgekommen" : <><b className="font-semibold text-teal-700">{ratio(row)}</b> gegenüber den {zeitText} davor</>}{spread ? <>, <b className="font-semibold">+{n(spread.added)} Gebiete</b> neu</> : null}; </> : null}
           seit {fmt(df.stats.first)} in <b className="font-semibold">{n(df.stats.regions)}</b> {df.stats.regions === 1 ? "Gebiet" : "Gebieten"}.

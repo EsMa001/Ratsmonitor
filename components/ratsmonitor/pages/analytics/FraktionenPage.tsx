@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Kennzahlen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
-import { Befund, zuThema } from "./Befund";
+import { Befund, zuThema, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
 import { DEC_COLORS, DecisionRow } from "./DecisionCharts";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -59,12 +59,12 @@ export function FraktionenPage() {
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
-      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
-          {parties.length === 0 ? <p className="mt-10 text-[16px]">Für diese Suche sind keine Anträge oder Anfragen einer Fraktion erkannt.</p> : (
+          {parties.length === 0 ? <Leer>Keine Anträge oder Anfragen einer Fraktion für diese Auswahl.</Leer> : (
             <>
               <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.withFaction)} Anträge und Anfragen einer Fraktion zugeordnet. Die meisten stellt ${busiest.name} (${n(busiest.n)}).`}</Befund>
               <Kennzahlen items={([

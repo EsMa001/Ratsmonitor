@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Kennzahlen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
-import { Befund } from "./Befund";
+import { Befund, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
@@ -16,7 +16,8 @@ interface Result {
   q: string; mode: "types" | "names"; pool: number; examined: number; capped: boolean; paths: number;
   nodes: NNode[]; edges: NEdge[]; routes: { path: string[]; n: number }[];
 }
-const glass = "rm-glass";
+/* Rahmenlos wie die übrigen plenara.X-Seiten (rm-legend statt rm-glass) */
+const glass = "rm-legend";
 const n = (v: number) => v.toLocaleString("de-DE");
 
 export function GremiennetzPage() {
@@ -54,16 +55,23 @@ export function GremiennetzPage() {
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
-      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Netz wird berechnet …" />}
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {empty ? (
-            <p className="mt-10 max-w-[680px] text-[16px]">Für diese Auswahl gibt es zu wenige Vorgänge, die durch mehrere Gremien gelaufen sind ({n(res.paths)}). Mit einer weiteren Auswahl, etwa ohne Ort oder mit längerem Zeitraum, wird das Netz aussagekräftiger.</p>
+            <Leer tipp={"Mit einer weiteren Auswahl, etwa ohne Ort oder mit längerem Zeitraum, wird das Netz aussagekräftiger."}>Zu wenige Vorgänge, die durch mehrere Gremien gelaufen sind ({n(res.paths)}).</Leer>
           ) : (
             <>
-              <section className="relative mt-8 h-[520px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[640px]" aria-label="Beratungswege">
+              {res.routes[0] && <Befund>Der häufigste Weg: {res.routes[0].path.join(" → ")} ({n(res.routes[0].n)} Vorgänge).</Befund>}
+              <Kennzahlen items={([
+                  ["Vorgänge mit mehreren Gremien", n(res.paths)],
+                  [res.mode === "types" ? "Gremienarten" : "Gremien", n(res.nodes.length)],
+                  ["Vorgänge im häufigsten Übergang", top ? n(top.n) : "–"],
+                  ["Tage im Mittel je Übergang", lag === null ? "–" : String(lag)]
+                ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
+              <section className="relative mt-8 h-[360px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[640px]" aria-label="Beratungswege">
                 <NetView nodes={res.nodes} edges={res.edges} selected={selected} onSelect={setSelected} zoomRef={zoomRef} />
                 <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
                   <ul className="m-0 flex list-none flex-col gap-1 p-0">
@@ -97,13 +105,6 @@ export function GremiennetzPage() {
                 )}
               </section>
 
-              {res.routes[0] && <Befund>Der häufigste Weg: {res.routes[0].path.join(" → ")} ({n(res.routes[0].n)} Vorgänge).</Befund>}
-              <Kennzahlen items={([
-                  ["Vorgänge mit mehreren Gremien", n(res.paths)],
-                  [res.mode === "types" ? "Gremienarten" : "Gremien", n(res.nodes.length)],
-                  ["Häufigster Übergang", top ? `${n(top.n)} Vorgänge` : "–"],
-                  ["Mittlere Zeit je Übergang", lag === null ? "–" : `${lag} Tage`]
-                ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
 
               <div className="mt-12 grid gap-12 lg:grid-cols-2">
                 <section>

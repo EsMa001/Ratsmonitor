@@ -18,14 +18,15 @@ export const NeuMark = ({ date }: { date: string }) => (isNew(date) ? <span clas
 export function Kennzahlen({ items, week, children }: { items: { value: string; label: string }[]; week?: number | null; children?: ReactNode }) {
   return (
     <div className="mt-4">
-      <div className="flex flex-wrap items-end gap-x-10 gap-y-3">
+      {/* Handy: zwei Zahlen je Reihe und etwas kleiner, sonst stehen vier große Zahlen untereinander */}
+      <div className="grid grid-cols-2 items-end gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-10">
         {items.map((k) => (
           <div key={k.label}>
-            <p className="m-0 text-[44px] font-semibold leading-none tabular-nums text-teal-700">{k.value}</p>
+            <p className="m-0 text-[32px] font-semibold leading-none tabular-nums text-teal-700 sm:text-[44px]">{k.value}</p>
             <p className="m-0 mt-1 text-[14px] text-slate-500">{k.label}</p>
           </div>
         ))}
-        {week ? <p className="m-0 mb-6 rounded-full bg-teal-50 px-3 py-1 text-[14px] font-medium text-teal-800">+{n(week)} in den letzten 7 Tagen beraten</p> : null}
+        {week ? <p className="col-span-2 m-0 justify-self-start rounded-full sm:mb-6 bg-teal-50 px-3 py-1 text-[14px] font-medium text-teal-800">+{n(week)} in den letzten 7 Tagen beraten</p> : null}
       </div>
       {children && <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[16px] text-slate-700">{children}</div>}
     </div>

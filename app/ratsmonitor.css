@@ -79,6 +79,10 @@ body h1,body h2,body h3{font-weight:600}
 /* Milchglas (Liquid Glass) für Suchleiste und runde Knöpfe auf der Karte */
 .rm-glass{background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(240,253,250,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(15,23,42,.1),inset 0 1px 0 rgba(255,255,255,.75)}
 .rm-glass:hover{background:linear-gradient(135deg,rgba(255,255,255,.65),rgba(240,253,250,.55))}
+/* plenara.X: Legenden und Knöpfe auf Karten und Netzen ohne Rahmen und Schatten (Linien statt Kästen) */
+.rm-legend{background:rgba(255,255,255,.9);border:0;box-shadow:none}
+.rm-dark .rm-legend{background:rgba(15,23,42,.85);color:#e2e8f0}
+.rm-dark .rm-legend button{color:#e2e8f0}
 /* Filterfenster: Felder und aufklappende Listen ebenfalls Milchglas */
 #filter-body .select-base{height:32px;padding-left:12px;padding-right:28px;border-radius:12px;font-size:14px;background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.75);box-shadow:inset 0 1px 2px rgba(15,23,42,.04);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 @media(max-width:639px){#filter-body .select-base{height:36px}}
@@ -116,7 +120,7 @@ input[data-search="q"]:-webkit-autofill,input[data-search="q"]:-webkit-autofill:
   @page { size: A4; margin: 16mm 14mm; }
   html, body { background:var(--rm-white,#fff) !important; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  header, footer, .ri-menu, .skip-link, .rm-glass button, .rm-glass[class*="absolute"] { display: none !important; }
+  header, footer, .ri-menu, .skip-link, .rm-glass button, .rm-glass[class*="absolute"], .rm-legend button, .rm-legend[class*="absolute"] { display: none !important; }
   main { padding-left: 0 !important; padding-right: 0 !important; }
   main section, main li, main figure, main dl > div, main details { break-inside: avoid; }
   main h1, main h2, main h3 { break-after: avoid; }

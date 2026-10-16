@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
-import { Befund } from "./Befund";
+import { Befund, Fehler } from "./Befund";
 import { RadarDrill } from "./RadarDrill";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -25,7 +25,8 @@ interface Result {
   stats: { terms: number; topics: number; committees: number; lands: number; links: number };
 }
 
-const glass = "rm-glass";
+/* Rahmenlos wie die übrigen plenara.X-Seiten (rm-legend statt rm-glass) */
+const glass = "rm-legend";
 const n = (v: number) => v.toLocaleString("de-DE");
 const pct = (v: number, total: number) => (total ? `${Math.max(1, Math.round((v / total) * 100))} %` : "–");
 
@@ -136,9 +137,11 @@ export function KnowledgeGraphPage() {
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} /></div>
-      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
 
-      <section ref={graphRef} className="relative mt-6 h-[520px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[620px]" aria-label="Themennetz">
+      {/* Antwort zuerst, dann das Netz */}
+      {res && !empty && strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
+      <section ref={graphRef} className="relative mt-6 h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[620px]" aria-label="Themennetz">
         {res && !empty ? <GraphView nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="absolute inset-0 bg-map-ground" />}
 
         <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
@@ -162,7 +165,7 @@ export function KnowledgeGraphPage() {
 
         <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:inset-x-3 max-sm:top-auto max-sm:bottom-3">
           {loading ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Graph wird berechnet …</span>
-            : empty ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-900`}>Keine Treffer für diese Suche.</span>
+            : empty ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-900`}>Keine Vorgänge für diese Auswahl.</span>
             : !res ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Auf Start drücken</span>
             : !sel ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700 max-sm:hidden`}>Knoten anklicken oder ziehen</span> : null}
         </div>
@@ -193,7 +196,6 @@ export function KnowledgeGraphPage() {
           {!!res.partial?.length && (
             <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); start(); }} className="font-medium text-teal-700">Nur ganze Wörter →</button></p>
           )}
-          {strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
           <div className="mt-10 max-w-[820px]">
             <section>
               <h2 className="text-[22px] font-semibold">Stärkste Verbindungen</h2>

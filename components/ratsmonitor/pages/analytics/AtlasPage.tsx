@@ -44,11 +44,17 @@ export function AtlasPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="atlas" />
-      {/* Handy: 4 Kacheln je Reihe; breiter: eine Reihe, auf dem Tablet umbrechend (nie waagerecht scrollen) */}
-      <nav aria-label="Thema des Atlas" className="mt-2 print:hidden">
-        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
+      {/* Handy: Auswahlfeld; Tablet 6 Kacheln je Reihe; Desktop alle in einer Reihe (nie waagerecht scrollen) */}
+      <label className="mt-2 block sm:hidden print:hidden">
+        <span className="sr-only">Thema des Atlas</span>
+        <select value={thema} onChange={(e) => pick(e.target.value ? { thema: e.target.value } : {})} className="select-base h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
+          {ATLAS_THEMEN.map(([id, label]) => <option key={id || "alle"} value={id}>{label}</option>)}
+        </select>
+      </label>
+      <nav aria-label="Thema des Atlas" className="mt-2 hidden sm:block print:hidden">
+        <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {ATLAS_THEMEN.map(([id, label]) => (
-            <li key={id || "alle"} className="sm:w-[92px]">
+            <li key={id || "alle"}>
               {/* Kacheln ohne Rahmen: Icon über dem Namen, nur das gewählte Thema mit heller Fläche (Linien statt Kästen) */}
               <button type="button" aria-pressed={id === thema} onClick={() => pick(id ? { thema: id } : {})}
                 className={`flex h-[76px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${id === thema ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>

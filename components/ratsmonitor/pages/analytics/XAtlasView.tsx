@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
-import { Befund } from "./Befund";
+import { Befund, Fehler } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -429,12 +429,13 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
         </ul>
       </nav>}
       <div className="mt-2 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
-      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
-          {res.total === 0 ? <div className="mt-10">
-            <p className="text-[16px]">Für diese Auswahl gibt es keine Vorgänge.</p>
+          {res.total === 0 ? <div role="status" className="mt-6 max-w-[760px] border-l-2 border-slate-300 py-1 pl-4">
+            {/* Wie Leer (Befund.tsx), aber mit Knöpfen statt Tipp */}
+            <p className="m-0 text-[18px] font-semibold leading-snug text-slate-900">Keine Vorgänge für diese Auswahl.</p>
             <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[14px] font-medium text-teal-700">
               {sub && <button type="button" onClick={() => onSub("")}>Unterthema entfernen →</button>}
               {!sub && theme && <button type="button" onClick={() => onTheme("")}>Alle Themen zeigen →</button>}
