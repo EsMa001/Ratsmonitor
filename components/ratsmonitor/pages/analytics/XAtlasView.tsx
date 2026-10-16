@@ -78,7 +78,7 @@ const HIGH_BAD = new Set(["hebesatz", "fee_rate", "dog_tax", "kita_fee", "land_p
 const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
 const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
-function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode }) {
+function AtlasMap({ regions, facts, onList, listed, drill, onPlace }: { regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void }) {
   const [level, setLevel] = useState<"city" | "district">("city");
   const [picked, setPicked] = useState("");
   const [kind, setKind] = useState("");
@@ -126,9 +126,10 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
   const what = !fact ? "Vorgänge der Auswahl" : metricOn ? `Median „${metricOn}“ der Vorgänge` : `Vorgänge mit Wert „${fact.name}“`;
   const valueText = (x: { v: number; count: number }) => metricOn ? `Median ${num(x.v)} ${unit}` : `${n(x.v)} ${plural(x.v, "Vorgang", "Vorgänge")}`;
   return (
-    <section className="mt-6">
+    <section>
       <div className="relative">
-        <RegionMap tall level={level} levels={levels} picked={picked} onPick={(a) => setPicked(picked === a ? "" : a)} legend={legend} colors={colors}
+        {/* Klick wählt das Gebiet als Ort (wie in den Signalen): Gemeinde oder, auf Kreisebene, Kreis */}
+        <RegionMap tall level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={legend} colors={colors}
           note={metricOn ? `Viertel über alle Gebiete${HIGH_BAD.has(kind) ? "; rot: hoch" : ""}${level === "district" ? "; nur Werte der Kreise selbst" : ""}` : "ohne Farbe: keine Vorgänge"}
           label={`Karte: ${what} je ${level === "district" ? "Kreis" : "Gemeinde"}`}
           info={sel ? <>
@@ -137,10 +138,15 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
             {sel.key && <><br /><button type="button" onClick={() => onList(sel.key)} className="pointer-events-auto mt-1 text-[14px] font-medium text-teal-700 hover:underline">{listed === sel.key ? "Vorgänge ausblenden" : "Vorgänge zeigen →"}</button></>}
           </> : picked ? <span className="text-slate-500">Hier gibt es keine Werte zur Auswahl.</span> : undefined} />
       </div>
-      <p className="mb-2 mt-3 text-[14px] text-slate-500">Die Karte zeigt {what} je {level === "district" ? "Kreis" : "Gemeinde"}. Klick auf ein Gebiet zeigt den Wert und die Vorgänge.</p>
-      <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mb-2 text-[14px] font-medium text-teal-700 hover:underline">
-        {more ? "Karte anpassen ausblenden" : `Karte anpassen: ${fact ? fact.name : "Alle Vorgänge"}, ${level === "district" ? "Kreise" : "Gemeinden"}`}
-      </button>
+      {/* Ebene sichtbar (nicht mehr unter „Karte anpassen“): Kreise wählen beim Klick den ganzen Kreis */}
+      <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
+        <span className="text-[14px] text-slate-500">Ebene</span>
+        {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
+        <span className="text-[14px] text-slate-500">· Gebiet antippen wählt den Ort</span>
+      </div>
+      {facts.length > 0 && <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mb-2 mt-2 text-[14px] font-medium text-teal-700 hover:underline">
+        {more ? "Werte ausblenden" : `Karte zeigt: ${fact ? fact.name : "Alle Vorgänge"}`}
+      </button>}
       {more && <>
       <div className={row} role="group" aria-label="Was die Karte zeigt">
         <button type="button" aria-pressed={!fact} onClick={() => { setKind(""); setMetric(""); setPicked(""); }} className={chip(!fact)}>Alle Vorgänge</button>
@@ -150,9 +156,6 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
         <button type="button" aria-pressed={!metricOn} onClick={() => setMetric("")} className={chip(!metricOn)}>Anzahl</button>
         {metrics.map((m) => <button key={m} type="button" aria-pressed={metricOn === m} onClick={() => setMetric(m)} className={chip(metricOn === m)}>{m}</button>)}
       </div>}
-      <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Ebene der Karte">
-        {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
-      </div>
       </>}
       {listedRow && <div className="mt-3">{drill(listedRow)}</div>}
     </section>
@@ -227,8 +230,22 @@ function OrtImVergleich({ c, theme, onPick }: { c: Compare; theme: string; onPic
    haben die Seite /analytics/signale, Vergleichswerte kommen in den Ortsvergleich. Regeln, Daten und by=fact bleiben; true zeigt sie wieder. */
 const SHOW_FACTS = false;
 
-export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string; sub: string; term: string | null; onTheme: (id: string) => void; onSub: (id: string) => void }) {
-  const { query, search } = useAnalyticsQuery();
+/* Signale zu Themen und Unterthemen (Hinweis unter der Antwortzeile); umgekehrt ATLAS_OF in SignalePage */
+const SIGNAL_OF: Record<string, [string, string][]> = {
+  bauen: [["wohnbau", "Neue Wohnbaugebiete"]], "bauen.plan": [["wohnbau", "Neue Wohnbaugebiete"], ["gewerbe", "Gewerbe, Industrie, Handel"]],
+  wirtschaft: [["gewerbe", "Gewerbe, Industrie, Handel"]],
+  umwelt: [["wind", "Windenergie"], ["solar", "Solarenergie"], ["waerme", "Wärme und Netze"], ["wasser", "Wasser und Hochwasser"]],
+  "umwelt.ee": [["wind", "Windenergie"], ["solar", "Solarenergie"]], "umwelt.waerme": [["waerme", "Wärme und Netze"]], "umwelt.klimaschutz": [["waerme", "Wärme und Netze"]],
+  "umwelt.wasser": [["wasser", "Wasser und Hochwasser"]], "umwelt.anpass": [["wasser", "Wasser und Hochwasser"]],
+  mobilitaet: [["strasse", "Straßen und Brücken"], ["mobil", "Mobilität"]], "mobilitaet.strasse": [["strasse", "Straßen und Brücken"]], "mobilitaet.rad": [["strasse", "Straßen und Brücken"]],
+  bildung: [["schulen", "Schulen, Kitas, Sport"]], "kultur.sport": [["schulen", "Schulen, Kitas, Sport"]],
+  "verwaltung.breit": [["breitband", "Breitband und Mobilfunk"]], "verwaltung.digital": [["breitband", "Breitband und Mobilfunk"]],
+};
+
+export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit }: { theme: string; sub: string; zeit?: string; term: string | null; onTheme: (id: string) => void; onSub: (id: string) => void; onZeit: (z: string) => void }) {
+  const { query: baseQuery, search } = useAnalyticsQuery();
+  /* Zeitraum der Seite (Monate zurück ab heute) ersetzt den der Suche nur, wenn die Suche selbst keinen hat (wie in den Signalen) */
+  const query = (() => { const q = new URLSearchParams(baseQuery); if (zeit && !q.get("from")) { const d = new Date(); d.setMonth(d.getMonth() - Number(zeit)); q.set("from", d.toISOString().slice(0, 10)); } return q.toString(); })();
   const sel = [theme && `theme=${theme}`, sub && `sub=${sub}`].filter(Boolean).join("&");
   const url = `/api/x?view=atlas${sel ? "&" + sel : ""}&${query}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: !term, onDone: () => { setOpen(""); setPart(null); setAll(null); } });
@@ -329,7 +346,9 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
   const placeAnswer = cmp ? `${cmp.region}: ${n(cmp.n)} Sachvorgänge in den letzten 12 Monaten, verglichen mit ${n(cmp.group!.n)} ${cmp.group!.label}.` : "";
   /* Gewählter Ort (Filter der Suche): mit ✕ an der Antwortzeile, damit man ihn dort sieht und entfernen kann */
   const place = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ? (cmp?.region ?? res?.compare?.region ?? (allRegions.length === 1 ? allRegions[0].name : "")) : "";
-  const answer = placeAnswer || `${what ? what + ": " : ""}${n(total)} ${plural(total, "Vorgang", "Vorgänge")} ${where}${share !== null ? `; das sind ${pct(share)} aller Sachvorgänge dieser Räte` : ""}${res?.selection.q ? ` zur Suche „${prettyTerm(res.selection.q)}“` : ""}.`;
+  /* Passende Signale zur Auswahl (Unterthema genauer als Thema) */
+  const related = SIGNAL_OF[sub] ?? SIGNAL_OF[theme] ?? [];
+  const answer = placeAnswer || `${what ? what + ": " : ""}${n(total)} ${plural(total, "Vorgang", "Vorgänge")} ${where}${share !== null ? `; das sind ${pct(share)} aller Sachvorgänge dieser Räte` : ""}${res?.selection.q ? ` zur Suche „${prettyTerm(res.selection.q)}“` : ""}${zeit ? ` in den letzten ${zeit} Monaten` : ""}.`;
 
   return (
     <section aria-label="Auswertung des Themas">
@@ -363,10 +382,18 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
               {/* Mit Ort: der Ort als Chip mit ✕ am Satzanfang (dort sieht man ihn und kann ihn entfernen) */}
               <Befund link={false} tight>{place && cmp ? <><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest}</> : <>{answer}{place && <> <PlaceChip name={place} onClear={() => search.clearArea()} /></>}</>}</Befund>
 
+              {related.length > 0 && <p className="mt-1 text-[14px] text-slate-500">Dazu in den Signalen, mit Stand des Verfahrens: {related.map(([id, name], i) => <span key={id}>{i > 0 && " · "}<Link href={`/analytics/signale?signal=${id}`} className="font-medium text-teal-700 hover:underline">{name} →</Link></span>)}</p>}
+              <div className="mt-3 flex flex-wrap items-center gap-1.5 print:hidden" role="group" aria-label="Zeitraum">
+                <span className="mr-1 text-[14px] text-slate-500">Zeitraum</span>
+                {([["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], ["", "Alles"]] as const).map(([k, l]) => (
+                  <button key={k || "alle"} type="button" aria-pressed={k === zeit} onClick={() => onZeit(k)}
+                    className={`inline-flex h-8 items-center rounded-full border px-3 text-[14px] ${k === zeit ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>
+                ))}
+              </div>
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
                 <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-                  {allRegions.length > 0 && <AtlasMap regions={allRegions} facts={SHOW_FACTS ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+                  {allRegions.length > 0 && <AtlasMap onPlace={(ags) => search.setArea(ags, "map")} regions={allRegions} facts={SHOW_FACTS ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
                 </div>
 
                 <div className="min-w-0 lg:col-span-6">

@@ -70,7 +70,20 @@ const toneOf = (name: string, order: string[]) => {
 const ART_SHORT: Record<string, string> = { Planungsleistungen: "Planung", "Fahrzeuge und Ausstattung": "Fahrzeuge", "Sonstige Leistungen": "Sonstige", "Tiefbau und Straße": "Tiefbau", "Wasser und Abwasser": "Wasser", "IT und Glasfaser": "IT", "Batteriespeicher und Wasserstoff": "Speicher und Wasserstoff", "Hotel, Camping und Freizeit": "Hotel und Camping", "Bike- oder Lastenradverleih": "Radverleih", "Bürgerbus oder Rufbus": "Bürgerbus", "Sporthalle und Sportplatz": "Sport", "Weiterführende Schule": "Weiterf. Schule", "Gehweg und Barrierefreiheit": "Gehweg", "Ortsdurchfahrt und Kreisverkehr": "Ortsdurchfahrt", "Straßenausbau und -sanierung": "Straßenausbau", "Wärmenetz und Fernwärme": "Wärmenetz", "LED-Straßenbeleuchtung": "LED-Licht", "Hochwasser und Starkregen": "Hochwasser", "Bürger- und Kommunalbeteiligung": "Beteiligung", "Genehmigungsantrag (BImSchG)": "Genehmigung", "Glasfaser und Breitband": "Glasfaser" };
 const artShort = (a: string) => ART_SHORT[a] ?? a;
 /* Farbe des Stand-Punkts: die Flächenfarbe des Tons (bg-…-700) */
-const dotOf = (name: string, order: string[]) => toneOf(name, order).on.split(" ")[0];
+const STEP_DOTS = ["bg-sky-600", "bg-violet-600", "bg-amber-500", "bg-indigo-600", "bg-cyan-600", "bg-fuchsia-600", "bg-orange-500", "bg-blue-800"];
+const dotOf = (name: string, order: string[]) => {
+  if (/^Sonstig|Ohne Angabe|Noch nicht/.test(name)) return "bg-slate-400";
+  const i = name in FIXED ? FIXED[name] : Math.max(0, order.indexOf(name));
+  return STEP_DOTS[i % STEP_DOTS.length];
+};
+
+/* Thema (und Unterthema) im Atlas zur Kategorie: Hinweis unter der Antwortzeile */
+const ATLAS_OF: Record<string, [string, string, string]> = {
+  wohnbau: ["bauen", "bauen.wohnen", "Wohnungsbau"], gewerbe: ["wirtschaft", "wirtschaft.gewerbe", "Gewerbegebiete"], wind: ["umwelt", "umwelt.ee", "Erneuerbare"],
+  solar: ["umwelt", "umwelt.ee", "Erneuerbare"], waerme: ["umwelt", "umwelt.waerme", "Wärme"], schulen: ["bildung", "", "Bildung & Betreuung"],
+  strasse: ["mobilitaet", "mobilitaet.strasse", "Straßen und Brücken"], wasser: ["umwelt", "umwelt.wasser", "Wasser"], breitband: ["verwaltung", "verwaltung.breit", "Breitband"],
+  mobil: ["mobilitaet", "", "Mobilität & Verkehr"],
+};
 
 export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "" }: { signal?: string; phase?: string; art?: string; zeit?: string }) => {
   const p = new URLSearchParams();
@@ -88,19 +101,27 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "" }: { 
 /* Ausklappbare Karte: Vorgänge der Auswahl je Gemeinde (Verbände färben ihre Mitgliedsgemeinden) */
 const STUFE = (c: number) => (c >= 5 ? 4 : c >= 3 ? 3 : c);
 function SignalMap({ places, onPlace }: { places: Place[]; onPlace: (ags: string) => void }) {
-  const [picked, setPicked] = useState("");
-  const byAgs = new Map<string, Place>(), levels: Record<string, number> = {};
+  const [picked, setPicked] = useState(""), [level, setLevel] = useState<"city" | "district">("city");
+  /* Gemeinden: Vorgänge je Gemeinde (Verbände färben ihre Mitgliedsgemeinden); Kreise: Summe aller Gebiete im Kreis */
+  const byAgs = new Map<string, { name: string; count: number }>(), levels: Record<string, number> = {};
   for (const p of places) {
     const own = p.ags.length === 8 ? [p.ags] : [];
+    if (level === "district") { const k = p.ags.slice(0, 5); if (k.length === 5) { const o = byAgs.get(k); byAgs.set(k, { name: p.ags.length === 5 ? p.name : o?.name ?? `Kreis ${k}`, count: (o?.count ?? 0) + p.count }); } continue; }
     for (const a of [...own, ...(p.members ?? []).filter((m) => m.length === 8)]) if (!byAgs.has(a) || own.includes(a)) byAgs.set(a, p);
   }
   for (const [a, p] of byAgs) levels[a] = STUFE(p.count);
   const sel = picked ? byAgs.get(picked) : undefined;
   return (
     <section className="print:hidden" aria-label="Karte">
-      <RegionMap tall levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); const p = byAgs.get(a); if (p?.ags && picked !== a) onPlace(p.ags); }} legend={["1 Vorgang", "2 Vorgänge", "3 bis 4 Vorgänge", "5 und mehr"]}
-        note="Gebiet antippen: Vorgänge dort zeigen" label="Karte: Vorgänge der Auswahl je Gemeinde"
+      {/* Klick wählt das Gebiet als Ort (Gemeinde oder Kreis), wie im Atlas */}
+      <RegionMap tall level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={["1 Vorgang", "2 Vorgänge", "3 bis 4 Vorgänge", "5 und mehr"]}
+        note="ohne Farbe: keine Vorgänge" label={`Karte: Vorgänge der Auswahl je ${level === "district" ? "Kreis" : "Gemeinde"}`}
         info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{n(sel.count)} {sel.count === 1 ? "Vorgang" : "Vorgänge"}</span></> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
+      <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
+        <span className="text-[14px] text-slate-500">Ebene</span>
+        {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={PILL(level === k)}>{l}</button>)}
+        <span className="text-[14px] text-slate-500">· Gebiet antippen wählt den Ort</span>
+      </div>
     </section>
   );
 }
@@ -213,8 +234,9 @@ export function SignalePage() {
           {/* Antwort zuerst, über die ganze Breite */}
           <Befund link={false} tight>{res.total === 0
             ? `${res.signal.name}: keine Vorgänge${zeit !== "alle" ? ` in den letzten ${zeit} Monaten` : ""} für diese Auswahl.`
-            : `${res.signal.name}: ${n(res.total)} ${res.total === 1 ? "Vorgang" : "Vorgänge"} in ${n(res.placeCount ?? res.places.length)} ${(res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebieten"}${zeit !== "alle" ? ` in den letzten ${zeit} Monaten` : ""}${phase ? `, Stand „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}.`}</Befund>
+            : `${res.signal.name}: ${n(res.total)} ${res.total === 1 ? "Vorgang" : "Vorgänge"} in ${n(res.placeCount ?? res.places.length)} ${(res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebieten"}${zeit !== "alle" ? ` in den letzten ${zeit} Monaten` : ""}${phase ? `, Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}.`}</Befund>
 
+          {ATLAS_OF[signal] && <p className="mt-1 text-[14px] text-slate-500">Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 hover:underline">{ATLAS_OF[signal][2]} im Atlas →</Link></p>}
           {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 1024 px nebeneinander */}
           <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
             <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
@@ -225,7 +247,7 @@ export function SignalePage() {
                 <FilterRow label="Zeitraum">
                   {ZEITRAUM.map(([k, label]) => <button key={k} type="button" aria-pressed={k === zeit} onClick={() => pick({ zeit: k === "6" ? "" : k })} className={PILL(k === zeit)}>{label}</button>)}
                 </FilterRow>
-                {res.phases.length > 0 && <FilterRow label="Stand">
+                {res.phases.length > 0 && <FilterRow label="Schritt">
                   <button type="button" aria-pressed={!phase} onClick={() => pick({ phase: "" })} className={PILL(!phase)}>Alle</button>
                   {res.phases.map((p) => <button key={p.key} type="button" aria-pressed={p.key === phase} onClick={() => pick({ phase: p.key === phase ? "" : p.key })} className={PILL(p.key === phase)}>
                     <span aria-hidden="true" className={`inline-block h-2 w-2 rounded-full ${dotOf(p.name, phaseOrder)}`} />{p.name}<span className={`tabular-nums ${p.key === phase ? "text-white/80" : "text-slate-500"}`}>{n(p.count)}</span></button>)}
