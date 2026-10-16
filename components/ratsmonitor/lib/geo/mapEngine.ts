@@ -186,6 +186,14 @@ export class MapEngine {
   }
 
   /* ---------- Zustand von außen ---------- */
+  /** Hervorgehobene Orte (Gemeindeschlüssel): Name als kleines Schild auf der Karte, auf jeder Zoomstufe (Atlas: Orte mit viel Raum) */
+  private pins: string[] = [];
+  setPins(ags: string[]) {
+    if (ags.join() === this.pins.join()) return;
+    this.pins = ags;
+    this.requestDraw();
+  }
+
   update(counts: Record<string, number>, area: string, radius: Radius | null, coverage:string[]=[], level:"city"|"district"="city") {
     // Geändert? Erst die Referenzen, dann Feld für Feld; früher JSON.stringify über rund 11.000 Schlüssel bei jedem Aufruf.
     const changed = !this.updated || level !== this.level || !sameList(coverage, this.coverage) || !sameCounts(counts, this.counts);
@@ -505,6 +513,7 @@ export class MapEngine {
     if (points && this.style === "heat") this.drawHeat(ctx);
     if (points && this.style === "punkte") this.drawDots(ctx);
     this.drawLabels(ctx);
+    this.drawPins(ctx);
     /* Blasen über den Ortsnamen, damit die Zahlen lesbar bleiben */
     if (points && this.style === "blasen") this.drawBubbles(ctx);
     this.drawSums(ctx);
@@ -767,6 +776,31 @@ export class MapEngine {
       if (placed.some((q) => !(r[2] < q[0] || r[0] > q[2] || r[3] < q[1] || r[1] > q[3]))) continue;
       placed.push(r);
       this.pill(ctx, n, x, y, fam, maxSum);
+    }
+  }
+
+  private drawPins(ctx: CanvasRenderingContext2D) {
+    const L = this.geo.gem;
+    if (!this.pins.length || !L.lp) return;
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.font = "600 12px " + getComputedStyle(document.body).fontFamily;
+    for (const a of this.pins) {
+      const i = L.idx.get(a);
+      if (i === undefined || !this.inView(L.bb[i])) continue;
+      const [sx, sy] = this.toScreen(L.lp[2 * i], L.lp[2 * i + 1]);
+      const label = L.name[i], tw = ctx.measureText(label).width;
+      /* Punkt am Ort, daneben das Schild (weiß, Rand und Schrift Petrol) */
+      ctx.fillStyle = "#0f766e";
+      ctx.beginPath(); ctx.arc(sx, sy, 3.5, 0, Math.PI * 2); ctx.fill();
+      const x = sx + 7, y = sy, h = 20, w = tw + 14;
+      ctx.fillStyle = "rgba(255,255,255,0.94)";
+      ctx.strokeStyle = "#0f766e";
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.roundRect(x, y - h / 2, w, h, 10); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#0f766e";
+      ctx.fillText(label, x + 7, y + 0.5);
     }
   }
 

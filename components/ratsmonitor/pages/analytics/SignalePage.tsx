@@ -10,6 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Befund } from "./Befund";
+import { Kennzahlen, NeuMark, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import type { Article } from "../../types";
@@ -173,6 +174,15 @@ export function SignalePage() {
   };
 
   const items = [...(res?.items ?? []), ...extra.items];
+  /* Vorgänge der letzten 7 Tage in derselben Auswahl (nur die Zahl) */
+  const [week, setWeek] = useState<number | null>(null);
+  useEffect(() => {
+    if (!res) return;
+    const c = new AbortController();
+    fetch(`${url.replace(/&from=[^&]*/, "")}&from=${weekAgo()}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : null)).then((b) => setWeek(typeof b?.total === "number" ? b.total : null)).catch(() => {});
+    return () => c.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [res]);
   /* Zuerst 10 zeigen; „Weitere“ zeigt die schon geladenen, dann lädt es nach */
   const [shownFor, setShownFor] = useState({ url: "", n: 10 });
   const shown = shownFor.url === url ? shownFor.n : 10;
@@ -231,10 +241,11 @@ export function SignalePage() {
       {loading && !res && <Laden text="Signale werden geladen …" />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
-          {/* Antwort zuerst, über die ganze Breite */}
-          <Befund link={false} tight>{res.total === 0
-            ? `${res.signal.name}: keine Vorgänge${zeit !== "alle" ? ` in den letzten ${zeit} Monaten` : ""} für diese Auswahl.`
-            : `${res.signal.name}: ${n(res.total)} ${res.total === 1 ? "Vorgang" : "Vorgänge"} in ${n(res.placeCount ?? res.places.length)} ${(res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebieten"}${zeit !== "alle" ? ` in den letzten ${zeit} Monaten` : ""}${phase ? `, Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}.`}</Befund>
+          {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
+          {res.total === 0 ? <Befund link={false} tight>{`${res.signal.name}: keine Vorgänge${zeit !== "alle" ? ` in den letzten ${zeit} Monaten` : ""} für diese Auswahl.`}</Befund>
+            : <Kennzahlen week={week} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
+              {res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}{zeit !== "alle" ? ` · letzte ${zeit} Monate` : ""}
+            </Kennzahlen>}
 
           {ATLAS_OF[signal] && <p className="mt-1 text-[14px] text-slate-500">Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 hover:underline">{ATLAS_OF[signal][2]} im Atlas →</Link></p>}
           {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 1024 px nebeneinander */}
@@ -262,7 +273,7 @@ export function SignalePage() {
                       <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">
                         <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
                           <span className="line-clamp-2 text-[14px] leading-snug sm:text-[16px]">{r.title}</span>
-                          <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), (r.status === "announced" || r.status === "consulting") && (r.status === "announced" ? "angekündigt" : "in Beratung"), r.gremium].filter(Boolean).join(" · ")}</span>
+                          <span className="block truncate text-[12px] text-slate-500"><NeuMark date={r.date} />{[r.region, day(r.date), (r.status === "announced" || r.status === "consulting") && (r.status === "announced" ? "angekündigt" : "in Beratung"), r.gremium].filter(Boolean).join(" · ")}</span>
                         </Link>
                         <span className="self-center whitespace-nowrap text-right text-[12px] text-slate-500"><span className="block"><span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${dotOf(r.phase, phaseOrder)}`} />{r.phase}</span>{r.arts?.length ? <span className="block text-slate-900">{r.arts.map(artShort).join(", ")}</span> : null}</span>
                       </li>

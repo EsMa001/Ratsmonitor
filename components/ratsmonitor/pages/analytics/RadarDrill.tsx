@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
 import { ApiError, errorText, fetchOrFail } from "../../lib/fetchJson";
+import { NeuMark } from "./Kennzahlen";
 
 /* Die Vorgänge hinter einer Zahl einer Auswertung (Listenmodus by=…&value=…, etwa /api/x?list=1): Lädt beim Öffnen,
    weitere Einträge auf Knopfdruck. */
@@ -65,7 +66,7 @@ export function RadarDrill({ base, query, by, value, label, unit, limit, onAll, 
               <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
                 {/* Handy: höchstens zwei Zeilen Titel, sonst füllt ein langer Titel den Bildschirm */}
                 <span className="line-clamp-2 text-[14px] leading-snug [overflow-wrap:anywhere] sm:block sm:truncate sm:text-[16px]">{r.title}</span>
-                <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), by !== "topic" && r.topics?.join(", "), r.times > 1 && (unit ? `${r.times} Vorgänge` : `in ${r.times} Sitzungen`)].filter(Boolean).join(" · ")}</span>
+                <span className="block truncate text-[12px] text-slate-500"><NeuMark date={r.date} />{[r.region, day(r.date), by !== "topic" && r.topics?.join(", "), r.times > 1 && (unit ? `${r.times} Vorgänge` : `in ${r.times} Sitzungen`)].filter(Boolean).join(" · ")}</span>
               </Link>
               <span className="self-center text-right text-[12px] text-slate-500">
                 {r.value ? <b className="block text-[14px] font-semibold tabular-nums text-slate-900">{r.value}</b> : null}

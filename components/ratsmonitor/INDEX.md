@@ -678,6 +678,7 @@ topic design-styles.css:140
 - AccountMenu.tsx (77, ⚠2): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
+- ArtIcon.tsx (71, ⚠1): ArtIcon
 - Brand.tsx (274): AnalyticsLogo, Brand
 - CalendarFeed.tsx (106): CalendarFeed
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
@@ -757,7 +758,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (360): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (1029): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1063): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
@@ -804,7 +805,7 @@ topic design-styles.css:140
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (73): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
-- AtlasPage.tsx (65): ATLAS_THEMEN, atlasHref, AtlasPage
+- AtlasPage.tsx (68): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (52): Befund, zuThema
 - BeschluessePage.tsx (189, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
@@ -823,14 +824,14 @@ topic design-styles.css:140
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (19): PageBand
-- RadarDrill.tsx (90): DrillItem, StatusDot, RadarDrill
+- RadarDrill.tsx (91): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
-- RegionMap.tsx (74, ⚠1): RegionMap
+- RegionMap.tsx (77, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (265, ⚠3): signaleHref, SignalePage
+- SignalePage.tsx (298, ⚠4): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (474, ⚠2): XAtlasView
+- XAtlasView.tsx (514, ⚠5): XAtlasView
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 

@@ -9,9 +9,9 @@ import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
    (levels: Gemeindeschlüssel → Stufe), Klick wählt eine Gemeinde. Lage nur auf Gemeindeebene. */
 const glass = "rm-glass";
 
-export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors, tall = false }: {
+export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors, tall = false, pins }: {
   levels: Record<string, number>; legend: string[]; label: string; picked: string; onPick: (ags: string) => void; info?: React.ReactNode;
-  /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string; /* eigene Farben je Stufe (sonst Abdeckung) */ colors?: string[]; /* höher auf breiten Bildschirmen (Atlas: halbe Breite) */ tall?: boolean;
+  /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string; /* eigene Farben je Stufe (sonst Abdeckung) */ colors?: string[]; /* höher auf breiten Bildschirmen (Atlas: halbe Breite) */ tall?: boolean; /* Gemeindeschlüssel, deren Namen als Schild auf der Karte stehen */ pins?: string[];
 }) {
   const { geo } = useData();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -26,6 +26,9 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   // Die Karte ruft select erst bei einem Klick auf, nicht beim Rendern
   // eslint-disable-next-line react-hooks/refs
   const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: select, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo, select]);
+  const pinKey = pins?.join() ?? "";
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { engine?.setPins(pins ?? []); }, [engine, pinKey]);
   const dark = useDarkMode()[0];
   useEffect(() => { engine?.setDark(dark); }, [engine, dark]);
   const colorKey = colors?.join() ?? "";
