@@ -47,9 +47,9 @@ export function AtlasPage() {
           <p className="text-[16px] text-slate-500">Worüber die Räte beraten, nach 10 Themen.</p>
         </div>
       </PageBand>
-      {/* Handy: 4 Kacheln je Reihe untereinander, kein waagerechtes Scrollen; ab sm eine Reihe */}
-      <nav aria-label="Thema des Atlas" className="mt-2 sm:-mx-[max(1vw,16px)] sm:overflow-x-auto sm:px-[max(1vw,16px)] print:hidden">
-        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:w-max">
+      {/* Handy: 4 Kacheln je Reihe; breiter: eine Reihe, auf dem Tablet umbrechend (nie waagerecht scrollen) */}
+      <nav aria-label="Thema des Atlas" className="mt-2 print:hidden">
+        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {ATLAS_THEMEN.map(([id, label]) => (
             <li key={id || "alle"} className="sm:w-[92px]">
               {/* Kacheln ohne Rahmen: Icon über dem Namen, nur das gewählte Thema mit heller Fläche (Linien statt Kästen) */}

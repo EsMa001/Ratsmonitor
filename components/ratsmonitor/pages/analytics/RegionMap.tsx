@@ -11,7 +11,7 @@ const glass = "rm-glass";
 
 export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors, tall = false, pins }: {
   levels: Record<string, number>; legend: string[]; label: string; picked: string; onPick: (ags: string) => void; info?: React.ReactNode;
-  /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string; /* eigene Farben je Stufe (sonst Abdeckung) */ colors?: string[]; /* höher auf breiten Bildschirmen (Atlas: halbe Breite) */ tall?: boolean; /* Gemeindeschlüssel, deren Namen als Schild auf der Karte stehen */ pins?: string[];
+  /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string; /* eigene Farben je Stufe (sonst Abdeckung) */ colors?: string[]; /* höher auf breiten Bildschirmen (Atlas: halbe Breite) */ tall?: boolean; /* Orte als Schild auf der Karte: Gemeindeschlüssel (Verband: Mitglieder) und Name */ pins?: { ags: string[]; label: string }[];
 }) {
   const { geo } = useData();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   // Die Karte ruft select erst bei einem Klick auf, nicht beim Rendern
   // eslint-disable-next-line react-hooks/refs
   const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: select, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo, select]);
-  const pinKey = pins?.join() ?? "";
+  const pinKey = pins?.map((p) => p.label + p.ags.join()).join("|") ?? "";
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { engine?.setPins(pins ?? []); }, [engine, pinKey]);
   const dark = useDarkMode()[0];
@@ -43,8 +43,20 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   }, [engine]);
   const all = useMemo(() => (geo ? [...(level === "district" ? geo.krs : geo.gem).idx.keys()] : []), [geo, level]);
   const shown = useMemo(() => Object.keys(levels).filter((a) => levels[a] > 0), [levels]);
+  /* Sanfter Wechsel: das alte Bild liegt kurz als Kopie über der Karte und blendet aus, statt dass die Farben hart umspringen */
+  const ghostRef = useRef<HTMLCanvasElement>(null);
+  const fadeOut = () => {
+    const g = ghostRef.current, b = baseRef.current;
+    if (!g || !b || !b.width || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    g.width = b.width; g.height = b.height;
+    g.getContext("2d")?.drawImage(b, 0, 0);
+    g.style.transition = "none"; g.style.opacity = "1";
+    requestAnimationFrame(() => requestAnimationFrame(() => { g.style.transition = "opacity 380ms ease-out"; g.style.opacity = "0"; }));
+  };
+  const firstDraw = useRef(true);
   useEffect(() => {
     if (!engine) return;
+    if (firstDraw.current) firstDraw.current = false; else fadeOut();
     const v: Record<string, number> = {};
     for (const a of all) v[a] = 0;
     Object.assign(v, levels);
@@ -56,6 +68,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     <div className={`relative h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
       <div ref={stageRef} className="absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
+        <canvas ref={ghostRef} aria-hidden="true" className="pointer-events-none absolute left-0 top-0 block h-full w-full opacity-0" />
         <canvas ref={overRef} role="img" aria-label={label} className="absolute left-0 top-0 block h-full w-full" />
         {!geo && <div className="absolute inset-0 grid place-items-center text-[14px] text-slate-500">Karte wird aufgebaut …</div>}
       </div>

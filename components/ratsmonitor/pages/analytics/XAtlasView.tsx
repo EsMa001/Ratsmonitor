@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
-import { Kennzahlen, ZeitPills, countScale } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, weekAgo } from "./Kennzahlen";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
@@ -78,7 +78,7 @@ const HIGH_BAD = new Set(["hebesatz", "fee_rate", "dog_tax", "kita_fee", "land_p
 const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
 const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
-function AtlasMap({ regions, facts, onList, listed, drill, onPlace, pins }: { regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; pins?: string[] }) {
+function AtlasMap({ regions, facts, onList, listed, drill, onPlace, pins }: { regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; pins?: { ags: string[]; label: string }[] }) {
   const [level, setLevel] = useState<"city" | "district">("city");
   const [picked, setPicked] = useState("");
   const [kind, setKind] = useState("");
@@ -205,13 +205,15 @@ function OrtImVergleich({ c, theme, onPick }: { c: Compare; theme: string; onPic
           return (
             <li key={r.key} className="border-b border-slate-200">
               <button type="button" onClick={() => onPick(r.key)} title={`${pct(r.share)}, üblich ${pct(r.q1)} bis ${pct(r.q3)}`}
-                className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,170px)_minmax(0,1fr)_88px]">
+                className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 pb-6 pt-2.5 sm:pb-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,170px)_minmax(0,1fr)_88px]">
                 <span className={`text-[16px] leading-snug ${marked ? "font-semibold" : ""}`}>{r.name}</span>
                 <span className="relative order-3 col-span-2 block h-4 sm:order-none sm:col-span-1" aria-hidden="true">
                   <span className="absolute inset-x-0 top-[7px] h-[2px] bg-slate-100" />
                   <span className="absolute top-[3px] h-[10px] rounded-full bg-slate-300" style={{ left: at(r.q1), width: `calc(${at(r.q3)} - ${at(r.q1)})` }} />
                   <span className="absolute top-[7px] h-[2px] bg-teal-700" style={{ left: at(lo), width: `calc(${at(hi)} - ${at(lo)})` }} />
                   <span className="absolute top-[2px] -ml-[6px] h-3 w-3 rounded-full bg-teal-700" style={{ left: at(r.share) }} />
+                  {/* Handy: kein Darüberfahren, darum die Zahlen unter der Skala */}
+                  <span className="absolute left-0 top-[18px] text-[12px] text-slate-500 sm:hidden">üblich {pct(r.q1)} bis {pct(r.q3)}</span>
                 </span>
                 <span className={`text-right text-[14px] ${marked ? "font-semibold text-slate-900" : "text-slate-500"}`}>{r.class ? WORT[r.class] : "kaum Vorgänge"}<span className="block text-[12px] font-normal tabular-nums text-slate-500">{pct(r.share)}</span></span>
               </button>
@@ -293,7 +295,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   const [week, setWeek] = useState<number | null>(null);
   useEffect(() => {
     if (!res) return;
-    const q = new URLSearchParams(listQuery); const d = new Date(); d.setDate(d.getDate() - 7); q.set("from", d.toISOString().slice(0, 10));
+    const q = new URLSearchParams(listQuery); q.set("from", weekAgo());
     const c = new AbortController();
     fetch(`/api/x?by=theme${sel ? "&" + sel : ""}&${q}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : null)).then((b) => setWeek(typeof b?.total === "number" ? b.total : null)).catch(() => {});
     return () => c.abort();
@@ -355,6 +357,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   /* Gleicher Zeitraum wie der Vergleich (12 Monate); die Zahl der Auswahl steht in der Liste darunter */
   const placeRest = cmp ? `: ${n(cmp.n)} Sachvorgänge in den letzten 12 Monaten, verglichen mit ${n(cmp.group!.n)} ${cmp.group!.label}.` : "";
   const placeAnswer = cmp ? `${cmp.region}: ${n(cmp.n)} Sachvorgänge in den letzten 12 Monaten, verglichen mit ${n(cmp.group!.n)} ${cmp.group!.label}.` : "";
+  const areaAgs = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ?? "";
   /* Gewählter Ort (Filter der Suche): mit ✕ an der Antwortzeile, damit man ihn dort sieht und entfernen kann */
   const place = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ? (cmp?.region ?? res?.compare?.region ?? (allRegions.length === 1 ? allRegions[0].name : "")) : "";
   /* Passende Signale zur Auswahl (Unterthema genauer als Thema) */
@@ -391,11 +394,13 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           </div> : (
             <>
               {/* Mit Ort: der Ort als Chip mit ✕ am Satzanfang (dort sieht man ihn und kann ihn entfernen); sonst große Kennzahlen */}
-              {place && cmp ? <Befund link={false} tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest}</Befund>
+              {place && cmp ? <Befund link={false} tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest} <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} /></Befund>
                 : <Kennzahlen week={week} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }, { value: n(allRegions.length), label: plural(allRegions.length, "Gebiet", "Gebiete") }, ...(share !== null ? [{ value: pct(share), label: "aller Sachvorgänge dieser Räte" }] : [])]}>
                   <span>{what || "Alle Themen"}{res.selection.q ? ` · Suche „${prettyTerm(res.selection.q)}“` : ""}</span>
                   {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
                   <ZeitPills value={zeit} onPick={onZeit} />
+                  <MeinOrt current={areaAgs && place ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} />
+                  <Folgen before={() => { if (theme) search.setThema(theme); }} hint="Neue Vorgänge zu Thema, Ort und Suche per Mail (Unterthemen werden nicht gespeichert)" />
                 </Kennzahlen>}
 
               {related.length > 0 && <p className="mt-1 text-[14px] text-slate-500">Dazu in den Signalen, mit Stand des Verfahrens: {related.map(([id, name], i) => <span key={id}>{i > 0 && " · "}<Link href={`/analytics/signale?signal=${id}`} className="font-medium text-teal-700 hover:underline">{name} →</Link></span>)}</p>}
@@ -403,7 +408,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
                 <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-                  {allRegions.length > 0 && <AtlasMap pins={regions.slice(0, 5).map((r) => (r.ags?.length === 8 ? r.ags : r.ags?.length === 5 ? r.ags + "000" : "")).filter(Boolean)} onPlace={(ags) => search.setArea(ags, "map")} regions={allRegions} facts={SHOW_FACTS ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+                  {allRegions.length > 0 && <AtlasMap pins={regions.slice(0, 5).map((r) => ({ label: r.name.replace(/^(Stadt|Gemeinde|Markt|Ortsgemeinde) /, ""), ags: r.members?.length ? r.members : r.ags?.length === 8 ? [r.ags] : r.ags?.length === 5 ? [r.ags + "000"] : [] })).filter((p) => p.ags.length)} onPlace={(ags) => search.setArea(ags, "map")} regions={allRegions} facts={SHOW_FACTS ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
                 </div>
 
                 <div className="min-w-0 lg:col-span-6">

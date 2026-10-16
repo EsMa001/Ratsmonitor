@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Befund } from "./Befund";
-import { Kennzahlen, ZeitPills, countScale, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import type { Article } from "../../types";
@@ -173,8 +173,9 @@ export function SignalePage() {
       .catch((e) => setMore((m) => ({ ...m, loading: false, error: errorText(e, "Die Liste konnte nicht geladen werden.") })));
   };
 
+  const areaAgs = new URLSearchParams(query).get("area") ?? "";
   const items = [...(res?.items ?? []), ...extra.items];
-  /* Vorgänge der letzten 7 Tage in derselben Auswahl (nur die Zahl) */
+  /* In den letzten 7 Tagen beraten (Sitzungsdatum), in derselben Auswahl (nur die Zahl) */
   const [week, setWeek] = useState<number | null>(null);
   useEffect(() => {
     if (!res) return;
@@ -246,6 +247,8 @@ export function SignalePage() {
             : <Kennzahlen week={week} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
               <span>{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
               <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
+              <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
+              <Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (die Signalkategorie wird noch nicht gespeichert)" />
             </Kennzahlen>}
 
           {ATLAS_OF[signal] && <p className="mt-1 text-[14px] text-slate-500">Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 hover:underline">{ATLAS_OF[signal][2]} im Atlas →</Link></p>}

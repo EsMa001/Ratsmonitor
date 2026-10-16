@@ -186,11 +186,13 @@ export class MapEngine {
   }
 
   /* ---------- Zustand von außen ---------- */
-  /** Hervorgehobene Orte (Gemeindeschlüssel): Name als kleines Schild auf der Karte, auf jeder Zoomstufe (Atlas: Orte mit viel Raum) */
-  private pins: string[] = [];
-  setPins(ags: string[]) {
-    if (ags.join() === this.pins.join()) return;
-    this.pins = ags;
+  /** Hervorgehobene Orte als Schild auf der Karte, auf jeder Zoomstufe (Atlas: Orte mit viel Raum). Je Ort Gemeindeschlüssel
+      (bei Verbänden die Mitgliedsgemeinden: das Schild steht an der flächengrößten) und der Name auf dem Schild. */
+  private pins: { ags: string[]; label: string }[] = [];
+  setPins(pins: { ags: string[]; label: string }[]) {
+    const key = (p: typeof pins) => p.map((x) => x.label + ":" + x.ags.join()).join("|");
+    if (key(pins) === key(this.pins)) return;
+    this.pins = pins;
     this.requestDraw();
   }
 
@@ -786,11 +788,14 @@ export class MapEngine {
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     ctx.font = "600 12px " + getComputedStyle(document.body).fontFamily;
-    for (const a of this.pins) {
-      const i = L.idx.get(a);
-      if (i === undefined || !this.inView(L.bb[i])) continue;
+    for (const pin of this.pins) {
+      const area = (j: number) => { const b = L.bb[j]; return (b[2] - b[0]) * (b[3] - b[1]); };
+      const cand = pin.ags.map((a) => L.idx.get(a)).filter((j): j is number => j !== undefined);
+      if (!cand.length) continue;
+      const i = cand.reduce((x, y) => (area(y) > area(x) ? y : x));
+      if (!this.inView(L.bb[i])) continue;
       const [sx, sy] = this.toScreen(L.lp[2 * i], L.lp[2 * i + 1]);
-      const label = L.name[i], tw = ctx.measureText(label).width;
+      const label = pin.label, tw = ctx.measureText(label).width;
       /* Punkt am Ort, daneben das Schild (weiß, Rand und Schrift Petrol) */
       ctx.fillStyle = "#0f766e";
       ctx.beginPath(); ctx.arc(sx, sy, 3.5, 0, Math.PI * 2); ctx.fill();

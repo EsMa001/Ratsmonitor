@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Bell } from "lucide-react";
+import { useUi } from "../../state/ui";
 
 const n = (v: number) => v.toLocaleString("de-DE");
 
@@ -10,7 +12,7 @@ export const NeuMark = ({ date }: { date: string }) => (isNew(date) ? <span clas
 
 /**
  * Antwort als große Kennzahlen (Atlas, Signale): Zahl groß in Petrol, Bedeutung klein darunter; daneben, wie viele Vorgänge
- * in den letzten 7 Tagen beraten wurden. Darunter in einer Zeile, worauf sich die Zahlen beziehen.
+ * in den letzten 7 Tagen beraten wurden (Sitzungsdatum; nicht der Abruf: ein spät gefundener alter Bericht ist nicht neu). Darunter in einer Zeile, worauf sich die Zahlen beziehen.
  */
 export function Kennzahlen({ items, week, children }: { items: { value: string; label: string }[]; week?: number | null; children?: ReactNode }) {
   return (
@@ -22,7 +24,7 @@ export function Kennzahlen({ items, week, children }: { items: { value: string; 
             <p className="m-0 mt-1 text-[14px] text-slate-500">{k.label}</p>
           </div>
         ))}
-        {week ? <p className="m-0 mb-6 rounded-full bg-teal-50 px-3 py-1 text-[14px] font-medium text-teal-800">+{n(week)} in den letzten 7 Tagen</p> : null}
+        {week ? <p className="m-0 mb-6 rounded-full bg-teal-50 px-3 py-1 text-[14px] font-medium text-teal-800">+{n(week)} in den letzten 7 Tagen beraten</p> : null}
       </div>
       {children && <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[16px] text-slate-700">{children}</div>}
     </div>
@@ -55,4 +57,35 @@ export function ZeitPills({ value, all = "", onPick }: { value: string; all?: st
         className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === value ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>)}
     </span>
   );
+}
+
+/* Eigener Ort, im Browser gemerkt (nur Bequemlichkeit, kein Konto nötig) */
+const MEIN_ORT = "plenara.meinOrt";
+const readOrt = (): { ags: string; name: string } | null => { try { const v = JSON.parse(localStorage.getItem(MEIN_ORT) || "null"); return v?.ags ? v : null; } catch { return null; } };
+
+/**
+ * „Mein Ort“: Ist ein Ort gewählt, lässt er sich merken (Stern); ist keiner gewählt, setzt ein Klick den gemerkten Ort.
+ * current: der gewählte Ort (Schlüssel und Name) oder null.
+ */
+export function MeinOrt({ current, onApply }: { current: { ags: string; name: string } | null; onApply: (ags: string) => void }) {
+  const [saved, setSaved] = useState<{ ags: string; name: string } | null>(null);
+  useEffect(() => { setSaved(readOrt()); }, []);
+  const save = (v: { ags: string; name: string } | null) => { try { if (v) localStorage.setItem(MEIN_ORT, JSON.stringify(v)); else localStorage.removeItem(MEIN_ORT); } catch { /* ohne Speicher geht es auch */ } setSaved(v); };
+  if (current) {
+    const mine = saved?.ags === current.ags;
+    return <button type="button" onClick={() => save(mine ? null : current)} aria-pressed={mine} className="inline-flex h-7 items-center gap-1 rounded-full px-2 text-[14px] text-teal-700 hover:bg-teal-50 print:hidden">
+      <span aria-hidden="true">{mine ? "★" : "☆"}</span>{mine ? "Mein Ort" : "Als meinen Ort merken"}</button>;
+  }
+  return saved ? <button type="button" onClick={() => onApply(saved.ags)} className="inline-flex h-7 items-center gap-1 rounded-full px-2 text-[14px] text-teal-700 hover:bg-teal-50 print:hidden"><span aria-hidden="true">★</span>Mein Ort: {saved.name} →</button> : null;
+}
+
+/**
+ * „Folgen“: speichert die aktuelle Suche (Begriff, Ort, Filter, Thema) im Konto, dort mit Mail-Benachrichtigung bei neuen
+ * Vorgängen (derselbe Dialog wie „Suche speichern“). before: vorher die Auswahl der Seite in die Suche übernehmen (Atlas: Thema).
+ */
+export function Folgen({ before, hint }: { before?: () => void; hint?: string }) {
+  const { openSaveDialog } = useUi();
+  return <button type="button" title={hint ?? "Neue Vorgänge zu dieser Auswahl per Mail"} onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }}
+    className="inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-700 px-3 text-[14px] font-medium text-teal-700 hover:bg-teal-50 print:hidden">
+    <Bell size={14} strokeWidth={1.5} aria-hidden="true" />Folgen</button>;
 }
