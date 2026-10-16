@@ -237,5 +237,5 @@ export function MainMenu() {
 /** Name der Gruppe Analysen mit dem kleinen Logo plenara.X: „Analysen by plenara.X“ */
 function AnalysenBy() {
   /* Logo etwas größer als der Text (sonst verschwimmt das X) und an die Grundlinie von „Analysen“ gerückt */
-  return <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">Analysen <span className="text-[12px] font-normal text-slate-400">by</span><span aria-label="plenara.X" className="relative top-[2px] inline-flex"><AnalyticsLogo size={16} /></span></span>;
+  return <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">Analysen <span className="text-[12px] font-normal text-slate-400">by</span><span aria-label="plenara.X" className="relative top-[2px] inline-flex"><AnalyticsLogo size={16} plainP /></span></span>;
 }

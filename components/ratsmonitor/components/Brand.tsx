@@ -234,11 +234,11 @@ function AnalyticsX() {
 }
 
 /** Logo „Plenara ■ X“ für plenara.X (Seitenkopf) */
-export function AnalyticsLogo({ size = 64 }: { size?: number }) {
+export function AnalyticsLogo({ size = 64, plainP = false }: { size?: number; /* „p“ als normaler Buchstabe statt des Punkte-p (klein im Menü) */ plainP?: boolean }) {
   return (
     <div className="rm-logo rm-logo--big" role="img" aria-label="plenara.X" style={{ display: "inline-flex", alignItems: "center", fontSize: size }}>
       <span style={{ fontSize: size }}>
-        <PlenaraV2 square size={size} noDot />
+        {plainP ? <span style={{ fontSize: size, letterSpacing: "-.015em" }}><span className="rm-logo__text">plenara</span></span> : <PlenaraV2 square size={size} noDot />}
       </span>
       <AnalyticsX />
     </div>
