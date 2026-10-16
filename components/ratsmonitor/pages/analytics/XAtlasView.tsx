@@ -78,7 +78,7 @@ const HIGH_BAD = new Set(["hebesatz", "fee_rate", "dog_tax", "kita_fee", "land_p
 const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
 const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
-function AtlasMap({ regions, facts, onList, listed, drill, onPlace, pins, preview }: { /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; pins?: { ags: string[]; label: string }[] }) {
+function AtlasMap({ regions, facts, onList, listed, drill, onPlace, preview }: { /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void }) {
   const [level, setLevel] = useState<"city" | "district">("city");
   const [picked, setPicked] = useState("");
   const [kind, setKind] = useState("");
@@ -131,7 +131,7 @@ function AtlasMap({ regions, facts, onList, listed, drill, onPlace, pins, previe
     <section>
       <div className="relative">
         {/* Klick wählt das Gebiet als Ort (wie in den Signalen): Gemeinde oder, auf Kreisebene, Kreis */}
-        <RegionMap tall pins={level === "city" ? pins : []} level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={legend} colors={colors}
+        <RegionMap tall level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={legend} colors={colors}
           note={preview ? `Vorschau: ${preview}` : metricOn ? `Viertel über alle Gebiete${HIGH_BAD.has(kind) ? "; rot: hoch" : ""}${level === "district" ? "; nur Werte der Kreise selbst" : ""}` : "ohne Farbe: keine Vorgänge"}
           label={`Karte: ${what} je ${level === "district" ? "Kreis" : "Gemeinde"}`}
           info={sel ? <>
@@ -460,7 +460,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
                 <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-                  {allRegions.length > 0 && <AtlasMap pins={shownPreview ? [] : regions.slice(0, 5).map((r) => ({ label: r.name.replace(/^(Stadt|Gemeinde|Markt|Ortsgemeinde) /, ""), ags: r.members?.length ? r.members : r.ags?.length === 8 ? [r.ags] : r.ags?.length === 5 ? [r.ags + "000"] : [] })).filter((p) => p.ags.length)} onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+                  {allRegions.length > 0 && <AtlasMap onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
                 </div>
 
                 <div className="min-w-0 lg:col-span-6">

@@ -119,9 +119,9 @@ export function SpreadChart({ firsts, day, onPick, window: win }: { firsts: numb
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="h-[160px] w-full cursor-ew-resize touch-none sm:h-[200px]" role="img"
         aria-label={`Erreichte Gebiete im Zeitverlauf: ${total.toLocaleString("de-DE")} seit ${fmt(toIso(t0))}, am ${fmt(toIso(day))} ${reached.toLocaleString("de-DE")}`}
         onPointerDown={(e) => { drag.current = true; e.currentTarget.setPointerCapture(e.pointerId); at(e); }} onPointerMove={(e) => drag.current && at(e)} onPointerUp={() => { drag.current = false; }}>
-        <rect x={x(win[0])} y={0} width={Math.max(2, x(win[1]) - x(win[0]))} height={H} className="fill-slate-100" />
-        <path d={`${path} L${W},${H} L0,${H} Z`} className="fill-teal-100" />
-        <path d={path} fill="none" className="stroke-teal-700" strokeWidth={2.5} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+        <rect x={x(win[0])} y={0} width={Math.max(2, x(win[1]) - x(win[0]))} height={H} className="fill-slate-400/10" />
+        <path d={`${path} L${W},${H} L0,${H} Z`} className="fill-teal-600/10" />
+        <path d={path} fill="none" className="stroke-teal-600" strokeWidth={2} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
         <line x1={x(day)} x2={x(day)} y1={0} y2={H} className="stroke-slate-900" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
       </svg>
       <figcaption className="mt-1 flex justify-between text-[12px] tabular-nums text-slate-500">
@@ -139,7 +139,7 @@ export function MiniCurve({ curve }: { curve: number[] }) {
   const line = pts.map(([a, b], i) => `${i ? "L" : "M"}${a.toFixed(1)},${b.toFixed(1)}`).join(" ");
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} aria-hidden="true" className="shrink-0">
-      <path d={`${line} L${W},${H} L0,${H} Z`} className="fill-teal-50" />
+      <path d={`${line} L${W},${H} L0,${H} Z`} className="fill-teal-600/10" />
       <path d={line} fill="none" className="stroke-teal-600" strokeWidth={1.5} strokeLinejoin="round" />
     </svg>
   );
