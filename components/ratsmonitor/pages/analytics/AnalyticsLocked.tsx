@@ -30,7 +30,7 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
         <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Die Analysen von plenara.X gehören zum Tarif Enterprise, für Organisationen, in denen mehrere Personen informiert werden sollen.</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Link href="/kontakt" className="btn-primary">Enterprise: {UPGRADE_TEXT}</Link>
-          <Link href="/analytics/ueber" className="btn-secondary">Was kann plenara.X?</Link>
+          <Link href="/preise" className="btn-secondary">Was kann plenara.X?</Link>
           {IS_DEV && (
             <button type="button" onClick={() => setTier("enterprise")} className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
               Dev: als Enterprise fortfahren

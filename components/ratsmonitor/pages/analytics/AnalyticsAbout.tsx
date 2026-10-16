@@ -3,7 +3,6 @@ import Link from "next/link";
 import { PageBand } from "./PageBand";
 import { Reveal } from "./Reveal";
 import type { ReactNode } from "react";
-import { AnalyticsLogo } from "../../components/Brand";
 import { ANALYSEN, EINBLICKE, GRUPPEN, type AnalyseId, type AnalyseGruppe } from "../../info/branchen-enterprise";
 import { Icon } from "../../info/icons";
 import { RADAR_THUMBS } from "./RadarThumbs";
@@ -146,6 +145,9 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "news", name: "Aktuelles", href: "/analytics/news", kurz: "Was gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle." },
 ];
 
+/* Reihenfolge der Methodik-Seite wie im Menü (Reiter unter ihrer Seite), nur Analysen mit Methodik-Text */
+const REIHE: [AnalyseId, string][] = [["atlas", "Atlas"], ["vergleich", "Atlas · Vergleich"], ["signale", "Signale"], ["trends", "Trends"], ["diffusion", "Trends · Ausbreitung"], ["beschluesse", "Trends · Ausgang"], ["fakten", "Fakten"], ["fraktionen", "Fraktionen"], ["gremien", "Gremien"], ["graph", "Themennetz"], ["news", "Aktuelles"]];
+
 const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
   diffusion: (
     <>
@@ -196,6 +198,22 @@ const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird nur, was ausdrücklich als Antrag einer Fraktion dasteht, ein kleiner Teil aller Einträge. Sammelpunkte wie „Beantwortung von Anfragen“ zählen nicht. Der Status ist nur bei einem Teil der Anträge bekannt; die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei. Wie viele Volltexte vorliegen, unterscheidet sich je Gebiet.</p>
     </>
   ),
+  signale: (
+    <>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt einzelne Vorhaben, die gerade entstehen, in 10 Kategorien für Branchen: Vergaben, Wohnbaugebiete, Gewerbeflächen, Windenergie, Solarenergie, Wärme, Schulen und Kitas, Pflege, Einzelhandel und Mobilität. Je Vorgang Ort, Stand des Verfahrens und Originalquelle.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Jede Kategorie und jeder Filter („Art“) hat eine eigene feste Regel, die Titel, Betreff und Beschlussvorschlag liest; der Stand (etwa Antrag, Planung, Beschluss, Vergabe) ebenso. Gezählt werden Vorgänge wie im Atlas: derselbe Titel in mehreren Gremien eines Gebiets ist ein Vorgang, Formalien zählen nicht. „Neueste“ ordnet nach der letzten Sitzung. „Erstmals hier“ heißt: In diesem Gebiet gab es vorher keinen Vorgang derselben Kategorie, und für das Gebiet liegen davor mindestens 12 Monate Daten vor; sonst ließe sich „erstmals“ nicht belegen.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Gemessen wird je Kategorie an ungesehenen Stichproben: ob ein Vorgang wirklich dazugehört (Ziel mindestens 90 %) und ob die passenden Vorgänge gefunden werden. Eine Kategorie wird erst freigegeben, wenn die Messung das Ziel erreicht.</p>
+      <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird über Wörter; was weder im Titel noch im Beschlussvorschlag steht (etwa die Nutzung eines Bebauungsplans), wird nicht gefunden. „Erstmals hier“ ist selten, solange viele Gebiete erst kurz erfasst sind.</p>
+    </>
+  ),
+  fakten: (
+    <>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt Werte aus den Vorlagen der Räte je Gemeinde auf der Karte, rot bis grün: derzeit Hebesätze, Haushalt je Einwohner, Wasser- und Abwassergebühren, Jahresergebnis und Preise für Gewerbegrundstücke.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Gelesen werden nur ausdrücklich genannte Werte aus dem Text des Hauptdokuments, mit festen Regeln und ohne KI; nicht übernommen werden empfohlene, geschätzte, Vergleichs- oder Höchstwerte. Je Gemeinde zählt der jüngste Wert, daneben der vorige, wenn es ihn gibt („Veränderung“). Die Farbe folgt der Richtung des Werts: Bei Steuern und Gebühren ist hoch rot, beim Jahresergebnis grün. „Üblich“ ist die mittlere Hälfte aller Gemeinden mit Wert, der Median die Mitte. Jeder Wert führt zur Vorlage, aus der er stammt.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Ein Wert erscheint nur, wenn eine Messung an ungesehenen Stichproben mindestens 90 % richtig gelesene Werte ergab. Weitere Werte (etwa Hundesteuer, Kita-Gebühren, Zuschüsse) sind gebaut und kommen dazu, sobald sie das Ziel erreichen.</p>
+      <p className="mt-3 text-[14px] text-slate-500">Grenzen: Es gibt nur Werte, die in einer gespeicherten Vorlage stehen; fehlt eine Gemeinde, hat sie den Wert nicht beraten oder die Vorlage war nicht lesbar. Ein Wert kann veraltet sein, wenn die letzte Beratung länger zurückliegt.</p>
+    </>
+  ),
   atlas: (
     <>
       <p className="mt-3 text-[16px] text-slate-500">Zeigt, worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, was geschieht, den Verlauf je Monat, wo ein Thema viel Raum hat, einen Ort im Vergleich und die Vorgänge hinter jeder Zahl.</p>
@@ -240,13 +258,13 @@ function Karten({ group }: { group: AnalyseGruppe }) {
   );
 }
 
-function Methodik({ group }: { group?: AnalyseGruppe }) {
+function Methodik({ group, ohneTitel = false }: { group?: AnalyseGruppe; ohneTitel?: boolean }) {
   return (
     <>
-      <h2 id="methodik" className="mt-16 scroll-mt-24 text-[28px] font-semibold">Methodik</h2>
-      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was jede Analyse zeigt, worauf sie beruht und wo ihre Grenzen liegen.</p>
+      {ohneTitel ? null : <h2 id="methodik" className="mt-16 scroll-mt-24 text-[28px] font-semibold">Methodik</h2>}
+      <p className={`${ohneTitel ? "" : "mt-2 "}max-w-[680px] text-[16px] text-slate-500`}>Was jede Analyse zeigt, worauf sie beruht und wo ihre Grenzen liegen.</p>
       <div className="mt-6 max-w-[900px] border-t border-slate-200">
-        {ANALYSEN_KARTEN.filter((a) => !group || ANALYSEN[a.id].group === group).map((a) => (
+        {(ohneTitel ? REIHE.map(([id, name]) => ({ id, name })) : ANALYSEN_KARTEN.filter((a) => (!group || ANALYSEN[a.id].group === group) && !a.name.startsWith("Alt:"))).filter((a) => METHODIK[a.id]).map((a) => (
           <details key={a.id} className="group border-b border-slate-200">
             <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-[18px] font-semibold [&::-webkit-details-marker]:hidden">
               {a.name}
@@ -266,7 +284,7 @@ export function AnalyticsGroupPage({ group }: { group: Exclude<AnalyseGruppe, "a
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-16 text-slate-900">
       <PageBand>
-        <p className="m-0 text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / {g.kurz}</p>
+        <p className="m-0 text-[14px] text-slate-500">plenara.X / {g.kurz}</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">{g.name}</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{g.text}</p>
       </PageBand>
@@ -276,75 +294,15 @@ export function AnalyticsGroupPage({ group }: { group: Exclude<AnalyseGruppe, "a
   );
 }
 
-export function AnalyticsAbout() {
+/** Methodik aller Analysen auf einer eigenen Seite (/analytics/methodik, nicht im Menü; „Methodik“ unter jeder Auswertung führt hierher) */
+export function MethodikPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-16 text-slate-900">
-      <PageBand>
-        <div className="grid items-center gap-10 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] xl:gap-16">
-          <div>
-            <p className="m-0 text-[14px] text-slate-500">plenara.X</p>
-            <span aria-hidden="true" className="mt-3 block max-sm:hidden"><AnalyticsLogo size={56} /></span>
-            <span aria-hidden="true" className="mt-3 hidden max-sm:block"><AnalyticsLogo size={40} /></span>
-            <h1 className="mt-6 max-w-[16ch] text-[28px] font-semibold leading-[1.1] sm:text-[44px]">Besser verstehen, was vor Ort beraten wird.</h1>
-            <p className="mt-5 max-w-[560px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte, jede Zahl mit den Vorgängen und Originalquellen dahinter.</p>
-            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
-              <Link href="/analytics/atlas" className="inline-flex h-12 items-center gap-2 rounded-full bg-slate-900 px-7 text-[16px] font-medium text-white transition-opacity after:content-['→'] hover:opacity-85">Analyse starten</Link>
-              <a href="#atlas" className="text-[16px] font-medium text-teal-700">Alle Analysen ↓</a>
-            </div>
-          </div>
-          <Link href="/analytics/trends" aria-label="plenara.X Trends öffnen" className="hidden xl:block xl:w-full xl:max-w-[560px] xl:justify-self-end"><LiveThumb id="trends" term={BEISPIEL} /></Link>
-        </div>
+      <PageBand compact>
+        <p className="m-0 text-[14px] text-slate-500">plenara.X / Methodik</p>
+        <h1 className="mt-1 text-[28px] font-semibold leading-tight">Methodik</h1>
       </PageBand>
-
-      {/* Der Atlas hat eine eigene Seite mit Themenleiste; hier nur der Verweis */}
-      <section id="atlas" className="scroll-mt-24">
-        <div className="mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <h2 className="text-[28px] font-semibold">plenara.X Atlas</h2>
-          <Link href="/analytics/atlas" className="text-[16px] font-medium text-teal-700">Zum plenara.X Atlas →</Link>
-        </div>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Worüber die Räte beraten, nach den 10 Themen der Suche: Bauen und Wohnen, Finanzen, Mobilität, Bildung, Umwelt und Energie, Soziales, Kultur und Sport, Sicherheit, Verwaltung, Wirtschaft. Je Thema Unterthemen, was geschieht und wo ein Thema viel Raum hat; mit einem Ort der Vergleich mit ähnlichen Gemeinden.</p>
-      </section>
-
-      {/* Signale: eigene Seite, hier nur der Verweis */}
-      <section id="signale" className="scroll-mt-24">
-        <div className="mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <h2 className="text-[28px] font-semibold">plenara.X Signale</h2>
-          <Link href="/analytics/signale" className="text-[16px] font-medium text-teal-700">Zu den Signalen →</Link>
-        </div>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo gerade etwas entsteht: neue Wohn- und Gewerbegebiete, Windenergie und Solarparks, Wärmeplanung, Straßen und Mobilitätsangebote. Je Vorgang Ort, Stand des Verfahrens und Originalquelle.</p>
-      </section>
-
-      {/* Trends: eigene Seite mit den Reitern Verlauf und Ausgang, hier nur der Verweis */}
-      <section id="trends" className="scroll-mt-24">
-        <div className="mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <h2 className="text-[28px] font-semibold">plenara.X Trends</h2>
-          <Link href="/analytics/trends" className="text-[16px] font-medium text-teal-700">Zu den Trends →</Link>
-        </div>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was sich verändert: Begriffe, die zunehmen, wie sie sich über die Gebiete ausbreiten und wie die Vorgänge dazu ausgehen.</p>
-      </section>
-
-      {/* Fakten: eigene Seite, hier nur der Verweis */}
-      <section id="fakten" className="scroll-mt-24">
-        <div className="mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <h2 className="text-[28px] font-semibold">plenara.X Fakten</h2>
-          <Link href="/analytics/fakten" className="text-[16px] font-medium text-teal-700">Zu den Fakten →</Link>
-        </div>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Hebesätze, Wasser- und Abwassergebühren, Jahresergebnisse und Preise für Gewerbegrundstücke aus den Vorlagen der Räte, je Gemeinde auf der Karte. Nur Werte, die in Stichproben zu mindestens 90 % stimmten.</p>
-      </section>
-
-      {(["tool"] as const).map((group, gi) => (
-        <section key={group} id={gi ? group : "einblicke"} className="scroll-mt-24">
-          <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-            <h2 className="text-[28px] font-semibold">{GRUPPEN[group].name}</h2>
-            <span className="flex flex-wrap gap-x-6 gap-y-1">
-              <Link href={GRUPPEN[group].href} className="text-[16px] font-medium text-teal-700">Zu {GRUPPEN[group].name} →</Link>
-            </span>
-          </div>
-          <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{GRUPPEN[group].text}</p>
-          <Karten group={group} />
-        </section>
-      ))}
-      <Methodik />
+      <Methodik ohneTitel />
     </main>
   );
 }

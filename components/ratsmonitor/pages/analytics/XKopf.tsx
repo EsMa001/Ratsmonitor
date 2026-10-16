@@ -38,11 +38,11 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   return (
     <PageBand compact>
       <p className="text-[14px] text-slate-500">
-        <Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link>
+        plenara.X
         {s.gruppe === "Einblicke" ? <> / <Link href="/analytics/einblicke" className="text-teal-700">Einblicke</Link> / {s.titel.replace("plenara.X ", "")}</> : <> / {s.titel.replace("plenara.X ", "")}{teil && teil !== s.reiter![0][1] ? ` / ${teil}` : ""}</>}
       </p>
       <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        {/* Titel kurz, die Marke als kleines Abzeichen daneben (führt zur Übersicht von plenara.X) */}
+        {/* Titel kurz, die Marke als kleines Abzeichen daneben  */}
         <h1 className="flex items-baseline gap-2.5 text-[28px] font-semibold leading-tight">
           {s.titel.replace("plenara.X ", "")}
           <MarkenAbzeichen />
@@ -116,8 +116,8 @@ export function ThemenLeiste() {
 /** Marke neben dem Seitentitel: graues Abzeichen „plenara.X“, Text auf der Grundlinie von Titel und Frage */
 function MarkenAbzeichen() {
   return (
-    <Link href="/analytics/ueber" aria-label="plenara.X" className="inline-flex items-baseline rounded-md bg-slate-100 px-[7px] pb-[3px] pt-[2px] text-[14px] font-semibold leading-none text-slate-700 hover:bg-slate-200">
+    <span role="img" aria-label="plenara.X" className="inline-flex items-baseline rounded-md bg-slate-100 px-[7px] pb-[3px] pt-[2px] text-[14px] font-semibold leading-none text-slate-700">
       <span style={{ letterSpacing: "-.015em" }}>plenara</span><span className="inline-block self-center" style={{ lineHeight: 0 }}><AnalyticsX centered /></span>
-    </Link>
+    </span>
   );
 }

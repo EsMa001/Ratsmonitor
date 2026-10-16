@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
 /* Titel und Beschreibung je Analyse für Link-Vorschauen (die Seite selbst setzt den Titel im Browser) */
 const SEITEN:Record<string,[string,string]>={
- ueber:['plenara.X','Besser verstehen, was vor Ort beraten wird: Analysen auf dem gesamten Datenbestand der Räte.'],
+ methodik:['Methodik · plenara.X','Was jede Analyse von plenara.X zeigt, worauf sie beruht und wo ihre Grenzen liegen.'],
  diffusion:['Ausbreitung · plenara.X','Wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte und wie es sich ausbreitet.'],
  graph:['Themennetz · plenara.X','Womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.'],
  trends:['plenara.X Trends','Was in den Räten gerade aufkommt und wie es sich über die Gebiete ausbreitet: Begriffe, die zunehmen, und die Gebiete, die sie zum ersten Mal beraten.'],
@@ -22,8 +22,8 @@ const SEITEN:Record<string,[string,string]>={
  atlas:['plenara.X Atlas','Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und ein Ort im Vergleich mit ähnlichen Gemeinden.'],
 };
 export async function generateMetadata({params}:{params:Promise<{section?:string[]}>}):Promise<Metadata>{
- const {section=[]}=await params;const s=SEITEN[section[0]||'ueber'];if(!s)return {};
+ const {section=[]}=await params;const s=section[0]?SEITEN[section[0]]:undefined;if(!s)return {};
  const bild={url:'/og.png',width:1200,height:630,alt:'plenara: Besser verstehen, was vor Ort beraten wird.'};
  return {title:s[0],description:s[1],openGraph:{type:'website',locale:'de_DE',siteName:'plenara',title:s[0],description:s[1],images:[bild]},twitter:{card:'summary_large_image',title:s[0],description:s[1],images:['/og.png']}};
 }
-export default async function Page({params}:{params:Promise<{section?:string[]}>}){const {section=[]}=await params;if(section.length>1||(section[0]&&!SEITEN[section[0]]))notFound();return null;}
+export default async function Page({params}:{params:Promise<{section?:string[]}>}){const {section=[]}=await params;if(section.length!==1||!SEITEN[section[0]])notFound();return null;}

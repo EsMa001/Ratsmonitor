@@ -801,7 +801,7 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (242): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (351, ⚠21): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
+- AnalyticsAbout.tsx (309, ⚠26): ANALYSE_THUMBS, AnalyticsGroupPage, MethodikPage
 - AnalyticsLocked.tsx (54): AnalyticsLocked
 - AnalyticsPages.tsx (88, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame

@@ -243,7 +243,7 @@ export function DiffusionPage() {
               </ol>
             </section>
           </div>
-          <p className="mt-10 text-[12px] text-slate-500">Als erste Erwähnung gilt das Datum des frühesten Eintrags im Datenbestand, der zur Suche passt. Gebiete mit unvollständigem Datenbestand können später erscheinen, als das Thema dort tatsächlich aufkam. Der Bestand reicht rund ein Jahr zurück: Ein Datum zu Beginn dieses Zeitraums heißt „schon zu Beginn des Bestands“, nicht „zuerst überhaupt“. Samtgemeinden zählen für alle ihre Mitgliedsgemeinden. <Link href="/analytics/ueber" className="text-teal-700">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">Als erste Erwähnung gilt das Datum des frühesten Eintrags im Datenbestand, der zur Suche passt. Gebiete mit unvollständigem Datenbestand können später erscheinen, als das Thema dort tatsächlich aufkam. Der Bestand reicht rund ein Jahr zurück: Ein Datum zu Beginn dieses Zeitraums heißt „schon zu Beginn des Bestands“, nicht „zuerst überhaupt“. Samtgemeinden zählen für alle ihre Mitgliedsgemeinden. <Link href="/analytics/methodik" className="text-teal-700">Methode →</Link></p>
         </>
       )}
     </main>
