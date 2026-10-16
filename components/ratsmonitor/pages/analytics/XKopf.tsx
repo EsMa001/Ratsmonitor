@@ -16,6 +16,9 @@ type Seite = { icon: IconName; gruppe: "Analysen" | "Einblicke"; titel: string; 
 const ATLAS: [string, string][] = [["/analytics/atlas", "Überblick"], ["/analytics/vergleich", "Vergleich"]];
 const TRENDS: [string, string][] = [["/analytics/trends", "Verlauf"], ["/analytics/beschluesse", "Ausgang"]];
 
+/* Reiter haben die Frage ihrer Seite im Kopf; als Kachel brauchen sie eine eigene */
+const KACHEL_FRAGE: Record<string, string> = { "/analytics/vergleich": "Mit anderem Ort vergleichen", "/analytics/beschluesse": "Wie geht es aus?" };
+
 const SEITEN: Record<string, Seite> = {
   atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen.", reiter: ATLAS },
   vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist.", reiter: ATLAS },
@@ -71,7 +74,7 @@ export function XWeiter({ links }: { links: [string, string][] }) {
         {links.map(([href, name]) => {
           /* Seite und Frage aus SEITEN (überall gleich); eigener Text nur, wenn die Seite dort fehlt */
           const z = SEITEN[href.split("/").pop()!];
-          const m = z ? [, (href === "/analytics/vergleich" ? "Mit anderem Ort vergleichen" : z.frage), z.titel.replace("plenara.X ", "") + (z.reiter && z.reiter[0][0] !== href ? ` · ${z.reiter.find(([h]) => h === href)?.[1]}` : "")] : name.match(/^(.*) \((.*)\)$/);
+          const m = z ? [, (KACHEL_FRAGE[href] ?? z.frage), z.titel.replace("plenara.X ", "") + (z.reiter && z.reiter[0][0] !== href ? ` · ${z.reiter.find(([h]) => h === href)?.[1]}` : "")] : name.match(/^(.*) \((.*)\)$/);
           return (
             <li key={href}>
               <Link href={href} className="group flex h-full items-center gap-3 rounded-xl bg-slate-50 px-4 py-3 transition-colors hover:bg-teal-50">
