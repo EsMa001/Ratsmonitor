@@ -209,8 +209,9 @@ async function xAtlas(db,catalog,params,x,opts,state){
  const src=await source(db,catalog,x.f);
  const memo=new Map(),pre=await groupsAtOnce(db,src,x,x.theme?['month','region']:['theme','month','region']);
  const at=(by,sum)=>{const p=new URLSearchParams(params);p.delete('view');p.set('by',by);if(sum)p.set('sum',sum);return xQuery(db,catalog,p,{src,memo,...(sum?{}:{pre})});};
- // Werte aus den Unterlagen: nur, was das Qualitätstor erreicht (gesperrte Summen entfallen, der Wert bleibt)
- const wanted=(ATLAS_FACTS[x.theme]||[]).filter(([k])=>X_FACT_GATE[k]).map(([k,sum])=>[k,sum&&X_SUM_GATE[sum]?sum:'']);
+ // Werte aus den Unterlagen: nur auf Anfrage (facts=1; die Seite zeigt sie seit 14.10.2026 nicht, SHOW_FACTS in XAtlasView.tsx)
+ // und nur, was das Qualitätstor erreicht (gesperrte Summen entfallen, der Wert bleibt)
+ const wanted=params.get('facts')!=='1'?[]:(ATLAS_FACTS[x.theme]||[]).filter(([k])=>X_FACT_GATE[k]).map(([k,sum])=>[k,sum&&X_SUM_GATE[sum]?sum:'']);
  const [parts,months,regions,recent,maps,...facts]=await Promise.all([at(x.theme?'sub':'theme'),at('month'),at('region'),
   xList(db,catalog,{...x,by:'region',value:'',offset:0},{count:false,src}),factMaps(db,catalog,src,x,wanted.map(([k])=>k)),...wanted.map(([k,sum])=>at('fact:'+k,sum))]);
  return {selection:parts.selection,total:parts.total,unread:parts.unread,builtAt:state.builtAt,parts:parts.rows,months:months.rows,

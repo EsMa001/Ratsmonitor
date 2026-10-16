@@ -126,8 +126,9 @@ test('Atlas zeigt Werte aus den Unterlagen nur über dem Qualitätstor',async()=
  const {sql,db}=fixture();try{
   const f=sql.prepare('INSERT INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)');
   f.run('c','hebesatz','Grundsteuer B','550|500','facts-v15:text');f.run('e','kita_fee','Erhöhung','','facts-v15:text');
-  const fin=await xQuery(db,catalog,q('view=atlas&theme=finanzen'));
+  assert.deepEqual((await xQuery(db,catalog,q('view=atlas&theme=finanzen'))).facts,[],'ohne facts=1 keine Werte (Atlas zeigt sie nicht)');
+  const fin=await xQuery(db,catalog,q('view=atlas&theme=finanzen&facts=1'));
   assert.deepEqual(fin.facts.map(x=>[x.kind,x.rows.map(r=>[r.key,r.count])]),[['hebesatz',[['Grundsteuer B',1]]]]);
-  assert.deepEqual((await xQuery(db,catalog,q('view=atlas&theme=bildung'))).facts,[],'Kita-Beiträge unter dem Tor');
+  assert.deepEqual((await xQuery(db,catalog,q('view=atlas&theme=bildung&facts=1'))).facts,[],'Kita-Beiträge unter dem Tor');
  }finally{sql.close();}
 });
