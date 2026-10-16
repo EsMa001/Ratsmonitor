@@ -30,6 +30,9 @@ export function kindOf(gremium){
  if(/rat|kreistag|stadtverordneten|gemeindevertretung/.test(g))return 'rat';
  return 'sonstige';
 }
+/* Gremienebene je Name einmal (dieselben Gremien kommen in hunderttausenden Stationen vor) */
+const kinds1=new Map();
+const kindOfCached=g=>{let k=kinds1.get(g);if(k===undefined){k=kindOf(g);if(kinds1.size<50000)kinds1.set(g,k);}return k;};
 export const KINDS=[['rat','Rat und Kreistag'],['ortsgemeinde','Ortsgemeinderäte (in Verbandsgemeinden)'],['ausschuss','Ausschüsse und Beiräte'],['ortsebene','Orts- und Bezirksebene'],['sonstige','Sonstige']];
 const labelName=id=>LABELS.find(l=>l.id===id)?.name||id;
 
@@ -74,10 +77,10 @@ async function computeDecisions(db,catalog,f){
   if(DECIDED.includes(st)){bump(months,r.m,st);const reg=byId.get(r.g);if(reg)bump(lands,reg.ags.slice(0,2),st);}
   // Gremienebene: jede Station, je Vorgang, Ebene und Status einmal
   const steps=parseSteps(r.s),seen=new Set();
-  for(const e of steps){if(!STATUSES.includes(e.st))continue;const k=kindOf(e.g)+'|'+e.st;if(seen.has(k))continue;seen.add(k);bump(kinds,kindOf(e.g),e.st);}
+  for(const e of steps){if(!STATUSES.includes(e.st))continue;const kind=kindOfCached(e.g),k=kind+'|'+e.st;if(seen.has(k))continue;seen.add(k);bump(kinds,kind,e.st);}
   if(!DECIDED.includes(st))continue;
   decidedN++;
-  const dec=[...steps].reverse().find(e=>DECIDED.includes(e.st)),kind=kindOf(dec?.g);
+  const dec=steps.findLast(e=>DECIDED.includes(e.st)),kind=kindOfCached(dec?.g);
   const apply=t=>{t.n++;if(r.v){t.vote++;if(r.v==='unanimous')t.unanimous++;}if(r.c){t.change++;if(r.c==='changed')t.changed++;}};
   apply(all);add(byTopic,r.l,apply);add(byKind,kind,apply);
   if(r.d!==null&&r.d!==undefined){spans.push(r.d);if(!spanTopic.has(r.l))spanTopic.set(r.l,[]);spanTopic.get(r.l).push(r.d);}

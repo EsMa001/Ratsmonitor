@@ -81,9 +81,7 @@ const FTS_TERM=/^[a-z0-9]{3,}$/;
 /* Bei sehr häufigen Begriffen ist der Index langsamer als der alte Weg (rat: Seite 3,8 s statt Millisekunden, weil der alte
    Weg nach 20 Treffern über den Datumsindex aufhört; Zähler 8 s). Ein Vorabtest mit Obergrenze (höchstens rund 10 bzw. 110 ms)
    entscheidet je Begriff: Seite und Strom nur bis FTS_PAGE_MAX Treffer; Zähler und plenara.X immer über den Index. */
-export const FTS_PAGE_MAX=3000,FTS_ALL_MAX=400000;
-/* Treffer eines Worts laut Wortliste (Karten mit dem Wort als Teil des Texts, beide Ebenen); 0, wenn es dort nicht steht */
-const wordHits=async(db,t)=>{try{const r=await db.prepare('SELECT coalesce(hits_city,0)+coalesce(hits_district,0) n FROM search_words WHERE word=?').bind(t).first();return Number(r?.n||0);}catch{return 0;}};
+export const FTS_PAGE_MAX=3000;
 const ftsCount=async(db,t,max)=>Number((await db.prepare('SELECT count(*) n FROM (SELECT rowid FROM search_fts WHERE search LIKE ? LIMIT ?)').bind('%'+t+'%',max+1).first())?.n??max+1);
 /*
  * Gebiet als SQL-Bedingung. Eine lange Einschlussliste (ohne Ort: alle 5.030 Gemeinden) zwingt SQLite, über den
@@ -175,12 +173,10 @@ export async function searchFilters(db,catalog,f){
  const precomputable=(f.part==='facets'||f.part==='')&&plainSearch&&!f.exact&&f.groups.length===1&&f.groups[0].length===1;
  /* Begriffe, die über den Volltextindex eingeschränkt werden: ohne Kandidaten der Wortliste und unter der Obergrenze */
  /* Zähler (facets) und plenara.X (part x, plenara-x-query.mjs) lesen alle Treffer ohne Seitengrenze: dort ist der Index immer
-    schneller (Server 16.10.2026: haushalt 0,4 statt 3,1 s, rat mit 790.000 Treffern 2,2 statt 9,1 s), also ohne Obergrenze und
-    ohne Vorabtest; bei den Zählern lesen Massenwörter (rat, gemeinde: über FTS_ALL_MAX Treffer laut Wortliste) alle Karten, das ist dort
-    schneller (Zähler rat 1,5 statt 2,5 s; antrag mit 146.000 Treffern 0,8 statt 3,0 s über den Index). Seite und Strom prüfen
-    die Obergrenze (sie hören nach einer Seite auf). */
- const ftsTerms=new Set();
- if(ftsReady&&!cand&&!(precomputable&&await listCurrent(db)))for(const t of new Set((f.groups||[f.terms]).flat()))if(FTS_TERM.test(t)&&(f.part==='x'||(f.part==='facets'?await wordHits(db,t)<=FTS_ALL_MAX:await ftsCount(db,t,FTS_PAGE_MAX)<=FTS_PAGE_MAX)))ftsTerms.add(t);
+    schneller oder gleich (Server 16.10.2026: haushalt 0,4 statt 1,6 s, antrag 0,8 statt 3,0 s), also ohne Obergrenze und ohne
+    Vorabtest. Nur Seite und Strom prüfen die Obergrenze (sie hören nach einer Seite auf). */
+ const ftsTerms=new Set(),allHits=f.part==='facets'||f.part==='x';
+ if(ftsReady&&!cand&&!(precomputable&&await listCurrent(db)))for(const t of new Set((f.groups||[f.terms]).flat()))if(FTS_TERM.test(t)&&(allHits||await ftsCount(db,t,FTS_PAGE_MAX)<=FTS_PAGE_MAX))ftsTerms.add(t);
  const labelId=f.label?LABELS.find(l=>l.name===f.label).id:null;
  /* Ergebnisseite: Gebiet, Thema und Status als Bedingung */
  const page=(()=>{const b=base(),region=regionCondition([...scopedIds],catalog),where=[region.sql,...b.where],args=[region.arg,...b.args];

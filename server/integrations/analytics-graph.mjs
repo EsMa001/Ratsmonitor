@@ -4,7 +4,7 @@ import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {source,xState,PLACEHOLDER} from './plenara-x-query.mjs';
 import {parseSteps} from './x-cases.mjs';
-import {tokens,norm,parseTerms} from './x-terms.mjs';
+import {tokens,norm} from './x-terms.mjs';
 export {tokens};
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
@@ -45,18 +45,24 @@ export async function knowledgeGraph(db,catalog,params){
  const total=rows.length;
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const exclude=new Set(f.groups.flat()),parts=[...exclude].map(norm);
- /* Wörter, in denen der Begriff nur als Teil steckt: Hinweis auf „genaues Wort“ */
- const partial=new Map();
- if(!f.exact)for(const r of rows)for(const [k,w] of parseTerms(r.terms))if(!exclude.has(k)&&parts.some(p=>k.includes(p)&&!k.startsWith(p+'s')&&k!==p))partial.set(w,(partial.get(w)||0)+1);
- /* Je Karte: Begriffe, Thema, Gremium, Land */
- const docs=rows.map(r=>{
-  const region=byId.get(r.region_id),land=region?region.ags.slice(0,2):null;
-  /* Wortteil-Treffer („vereinbarung“ bei „Verein“, „saarbrücken“ bei „Brücke“) sind kein eigener Begriff */
-  return {terms:new Map([...parseTerms(r.terms)].filter(([k])=>!exclude.has(k)&&!FORMAL_ALL.has(k)&&!parts.some(p=>k.includes(p)))),label:r.label,gremien:gremienOf(r.steps),land};
- });
+ /* Ein Durchgang über die Vorgänge: Wortteil-Hinweise, Begriffe je Vorgang (als schlanke Liste, keine Map je Vorgang: bei
+    600.000 Vorgängen sonst Sekunden für Aufbau und Speicherbereinigung), Häufigkeit der Begriffe. Gleiche Reihenfolge wie vorher.
+    Wörter, in denen der Begriff nur als Teil steckt: Hinweis auf „genaues Wort“. Wortteil-Treffer („vereinbarung“ bei „Verein“,
+    „saarbrücken“ bei „Brücke“) sind kein eigener Begriff. */
+ const partial=new Map(),df=new Map(),shown=new Map(),docs=new Array(rows.length);
+ for(let i=0;i<rows.length;i++){
+  const r=rows[i],region=byId.get(r.region_id),keys=[];
+  if(r.terms)for(const line of String(r.terms).split('\n')){
+   const tab=line.indexOf('\t'),k=tab<0?line:line.slice(0,tab),w=tab<0?undefined:line.slice(tab+1);
+   if(exclude.has(k))continue;
+   const inPart=parts.length?parts.some(p=>k.includes(p)):false;
+   if(!f.exact&&inPart&&parts.some(p=>k.includes(p)&&!k.startsWith(p+'s')&&k!==p))partial.set(w,(partial.get(w)||0)+1);
+   if(FORMAL_ALL.has(k)||inPart)continue;
+   keys.push(k);df.set(k,(df.get(k)||0)+1);if(!shown.has(k))shown.set(k,w);
+  }
+  docs[i]={keys,label:r.label,gremien:gremienOf(r.steps),land:region?region.ags.slice(0,2):null};
+ }
  /* Häufigkeit der Begriffe in der Auswahl; Gewichtung gegen den ganzen Bestand (search_words) */
- const df=new Map(),shown=new Map();
- for(const d of docs)for(const [k,w] of d.terms){df.set(k,(df.get(k)||0)+1);if(!shown.has(k))shown.set(k,w);}
  const cand=[...df].filter(([,n])=>n>=Math.min(MIN_DF,Math.max(2,Math.floor(total*0.02)))).sort((a,b)=>b[1]-a[1]).slice(0,120);
  let global=new Map(),all=0;
  if(cand.length){
@@ -84,7 +90,7 @@ export async function knowledgeGraph(db,catalog,params){
  const co=new Map();
  const bump=(a,b)=>{if(a===b)return;const key=a<b?a+'|'+b:b+'|'+a;co.set(key,(co.get(key)||0)+1);};
  for(const d of docs){
-  const ids=[...[...d.terms.keys()].filter(k=>termSet.has(k)).map(k=>'t:'+k)];
+  const ids=[];for(const k of d.keys)if(termSet.has(k))ids.push('t:'+k);
   if(size.has('k:'+d.label))ids.push('k:'+d.label);
   for(const g of d.gremien)if(size.has('g:'+g))ids.push('g:'+g);
   if(size.has('l:'+d.land))ids.push('l:'+d.land);

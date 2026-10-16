@@ -33,7 +33,9 @@ const NOT_NEWS=/Schriftführ|Bestellung (einer|eines|des|der) |Wahl (der|des|ein
 // Reste aus dem PDF (Seitenzähler, Kopfzeilen) machen einen Satz unzitierbar
 const PDF_NOISE=/Seite\s*-?\s*\d+\s*-?\s*(von\s*\d+)?|^\s*-\s*\d+\s*-|Drucksache|DS Seite|Vorlage\s*(Nr\.?|Nummer)|Sitzungsvorlage|Beratungsfolge|☐|☒/i;
 export const PARTY={'CDU/CSU':'der CDU-Fraktion','SPD':'der SPD-Fraktion','Grüne':'der Fraktion der Grünen','FDP':'der FDP-Fraktion','AfD':'der AfD-Fraktion','Linke':'der Fraktion Die Linke','Freie Wähler und Wählergruppen':'einer Wählergemeinschaft','Volt':'der Volt-Fraktion','BSW':'der BSW-Fraktion','ÖDP':'der ÖDP-Fraktion','Die PARTEI':'der Fraktion Die PARTEI'};
-const longDay=d=>new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(d.slice(0,10)+'T12:00:00Z'));
+// Ein Format für alle und je Tag einmal: ein neues Intl.DateTimeFormat je Aufruf kostete bei allen Vorgängen eines Zeitraums ¼ s
+const LONG_DAY=new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}),longDays=new Map();
+const longDay=d=>{const k=d.slice(0,10);let v=longDays.get(k);if(v===undefined){v=LONG_DAY.format(new Date(k+'T12:00:00Z'));longDays.set(k,v);}return v;};
 
 /** Ortsangabe: Genitiv („der Stadt Coesfeld“) und kurz („Coesfeld“) */
 export function place(name){

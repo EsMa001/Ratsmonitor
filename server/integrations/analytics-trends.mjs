@@ -3,7 +3,6 @@ import {parseMonitorSearch} from './monitor-search.mjs';
 import {source,xState,FIRST_DATE} from './plenara-x-query.mjs';
 import {AnalyticsError,dataStarts} from './analytics-diffusion.mjs';
 import {tokens,FORMAL_ALL} from './analytics-graph.mjs';
-import {parseTerms} from './x-terms.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
@@ -52,21 +51,18 @@ export async function trends(db,catalog,params,now=Date.now()){
  const weeks=Math.ceil(2*W/7),t0=Date.parse(start+'T00:00:00Z');
  const bucket=d=>Math.min(weeks-1,Math.max(0,Math.floor((Date.parse(d.slice(0,10)+'T00:00:00Z')-t0)/(7*DAY))));
  const sizes=Array(weeks).fill(0);
- /* Begriffe: Karten je Fenster, Gebiete je Fenster, Karten je Woche */
+ /* Begriffe: Karten je Fenster, Gebiete je Fenster, Karten je Woche. Erst nur zählen (ohne Gebiete und Wochen je Begriff: bei
+    zehntausenden seltenen Wörtern sonst Sekunden für Aufbau und Speicherbereinigung), dann Gebiete und Wochen nur für Begriffe,
+    die überhaupt in Frage kommen (ab MIN_RECENT). Gleiche Reihenfolge und Zahlen wie vorher. */
  const stat=new Map();
- const scan=(rows,which)=>{
-  for(const r of rows){
-   const b=bucket(r.date);sizes[b]++;
-   for(const [key,word] of parseTerms(r.terms)){
-    // Wörter des Sitzungsbetriebs (Wahl, Bestellung, Sachstand …) sind kein Trend
-    if(exclude.has(key)||FORMAL_ALL.has(key))continue;
-    let s=stat.get(key);if(!s){s={word,nr:0,np:0,rr:new Set(),rp:new Set(),wk:Array(weeks).fill(0)};stat.set(key,s);}
-    if(which==='r'){s.nr++;s.rr.add(r.region_id);}else{s.np++;s.rp.add(r.region_id);}
-    s.wk[b]++;
-   }
-  }
- };
- scan(recent.rows,'r');scan(prev.rows,'p');
+ for(const [rows,which] of [[recent.rows,'r'],[prev.rows,'p']])for(const r of rows){r.b=bucket(r.date);sizes[r.b]++;const keys=r.keys=[];
+  if(r.terms)for(const line of String(r.terms).split('\n')){const tab=line.indexOf('\t'),key=tab<0?line:line.slice(0,tab);
+   // Wörter des Sitzungsbetriebs (Wahl, Bestellung, Sachstand …) sind kein Trend
+   if(exclude.has(key)||FORMAL_ALL.has(key))continue;
+   let s=stat.get(key);if(!s){s={word:tab<0?undefined:line.slice(tab+1),nr:0,np:0,rr:null,rp:null,wk:null};stat.set(key,s);}
+   if(which==='r')s.nr++;else s.np++;keys.push(s);}}
+ for(const s of stat.values())if(s.nr+s.np>=MIN_RECENT){s.rr=new Set();s.rp=new Set();s.wk=Array(weeks).fill(0);}
+ for(const [rows,which] of [[recent.rows,'r'],[prev.rows,'p']])for(const r of rows)for(const s of r.keys)if(s.wk){(which==='r'?s.rr:s.rp).add(r.region_id);s.wk[r.b]++;}
  const regionsRecent=new Set(recent.rows.map(r=>r.region_id)).size;
  const minRegions=Math.min(3,regionsRecent);
  const one=(key,s)=>{
