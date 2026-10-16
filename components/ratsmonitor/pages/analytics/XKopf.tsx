@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { cameFromApp, useAppNav } from "../../state/nav";
+import { IconChevronLeft } from "../../components/icons";
 import { useEffect, useState } from "react";
 import { PageBand } from "./PageBand";
 import { MethodikText } from "./AnalyticsAbout";
@@ -44,6 +46,7 @@ const SEITEN: Record<string, Seite> = {
 
 export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   const s = SEITEN[seite], path = usePathname();
+  const router = useRouter(), { goBack } = useAppNav();
   /* Methodik: kleiner Info-Knopf neben der Frage; „Methodik“ unter den Ergebnissen (#methodik) öffnet dasselbe Feld */
   const [info, setInfo] = useState(false);
   useEffect(() => {
@@ -55,14 +58,10 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   /* Ort zwischen Atlas und Vergleich mitnehmen (?ort=) */
   const ort = useSearchParams().get("ort");
   const mit = (href: string) => (ort && s.reiter === ATLAS ? `${href}?ort=${ort}` : href);
-  const teil = s.reiter?.find(([h]) => h === path)?.[1];
   return (
     <PageBand compact>
-      <p className="text-[14px] text-slate-500">
-        plenara.X
-        {/* Überall gleich: plenara.X / Gruppe (wie im Menü) / Seite / Reiter; ohne Links (keine Übersichtsseiten) */}
-        {` / ${s.gruppe} / ${s.titel.replace("plenara.X ", "")}${teil && s.reiter && teil !== s.reiter[0][1] ? ` / ${teil}` : ""}`}
-      </p>
+      {/* Kein Pfad, nur Zurück wie auf den übrigen Seiten (Artikel) */}
+      <button type="button" className="back-btn -ml-1.5 mb-1 print:hidden" onClick={() => (cameFromApp() ? router.back() : goBack())}><IconChevronLeft />Zurück</button>
       <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
         {/* Titel kurz, die Marke als kleines Abzeichen daneben  */}
         <h1 className="flex items-baseline gap-2.5 text-[28px] font-semibold leading-tight">
