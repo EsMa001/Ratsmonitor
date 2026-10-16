@@ -9,7 +9,8 @@ import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
    (levels: Gemeindeschlüssel → Stufe), Klick wählt eine Gemeinde. Lage nur auf Gemeindeebene. */
 const glass = "rm-glass";
 
-export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors, tall = false, pins }: {
+export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors, tall = false, pins, dots }: {
+  /* Einzelne Vorgänge als Punkte statt eingefärbter Flächen (Signale): Gebietsschlüssel → Zahl der Punkte */ dots?: Record<string, number>;
   levels: Record<string, number>; legend: string[]; label: string; picked: string; onPick: (ags: string) => void; info?: React.ReactNode;
   /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string; /* eigene Farben je Stufe (sonst Abdeckung) */ colors?: string[]; /* höher auf breiten Bildschirmen (Atlas: halbe Breite) */ tall?: boolean; /* Orte als Schild auf der Karte: Gemeindeschlüssel (Verband: Mitglieder) und Name */ pins?: { ags: string[]; label: string }[];
 }) {
@@ -41,6 +42,10 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     engine.setExplore(true, null);
     return detach;
   }, [engine]);
+  /* Nach dem Anhängen (das den Kartenmodus ohne Punkte setzt): Punkte je Gebiet */
+  const dotKey = dots ? Object.entries(dots).map(([a, k]) => a + ":" + k).join() : "";
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!engine) return; engine.setStyle(dots ? "punkte" : "flaechen"); engine.setExplore(true, dots ?? null); }, [engine, dotKey]);
   const all = useMemo(() => (geo ? [...(level === "district" ? geo.krs : geo.gem).idx.keys()] : []), [geo, level]);
   const shown = useMemo(() => Object.keys(levels).filter((a) => levels[a] > 0), [levels]);
   /* Sanfter Wechsel: das alte Bild liegt kurz als Kopie über der Karte und blendet aus, statt dass die Farben hart umspringen */

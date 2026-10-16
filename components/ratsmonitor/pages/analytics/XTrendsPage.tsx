@@ -15,6 +15,7 @@ import { MiniCurve, SpreadChart, SpreadMap, fmt, keysOf, toDay, type SpreadRegio
 import { ThemeIcon } from "../../components/icons";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { isFiller, prettyTerm } from "../../lib/terms";
+import { useCatalog } from "../../lib/catalog";
 
 /*
  * plenara.X Trends: Trends und Ausbreitung auf einer Seite. Die Liste rechnet wie das Tool Trends (/api/analytics/trends),
@@ -71,17 +72,26 @@ export function XTrendsPage() {
     return () => clearTimeout(t);
   }, [stale, loading, url, run]);
 
+  /* Ortsnamen sind kein Trend („Köln“, „Lübeck“ steigen, wenn dort viel beraten wird): einteilige Namen der Gebiete ohne
+     Zusatz wie „Stadt“, in der Schreibweise der Begriffe (klein, ohne Umlaute); nur auf dieser Seite, das alte Tool bleibt gleich */
+  const catalog = useCatalog(true);
+  const placeWords = useMemo(() => {
+    const norm = (w: string) => w.toLowerCase().replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss");
+    const set = new Set<string>();
+    for (const r of catalog ?? []) { const core = r.name.replace(/^(Stadt|Gemeinde|Markt|Ortsgemeinde|Samtgemeinde|Verbandsgemeinde|Verwaltungsgemeinschaft|Amt|Landkreis|Kreis|Hansestadt|Universitätsstadt|Kreisstadt|Große Kreisstadt|Flecken) /, "").trim(); if (!/[\s-]/.test(core) && core.length >= 4) set.add(norm(core)); }
+    return set;
+  }, [catalog]);
   /* Liste wie das Tool Trends: ohne Füllwörter; Aufsteiger und Neues erst ab 3 Gebieten (ein einzelnes Dokument ist kein Trend) */
   const lists = useMemo(() => {
     if (!res) return null;
     const min = Math.min(3, res.totals.regions);
-    const ok = (l: Trend[], kind: TrendKind, many: boolean): Row[] => l.filter((t) => !isFiller(t.term) && (!many || t.regions >= min)).map((t) => ({ ...t, kind, key: t.key ?? t.term }));
+    const ok = (l: Trend[], kind: TrendKind, many: boolean): Row[] => l.filter((t) => !isFiller(t.term) && !placeWords.has(t.key ?? t.term) && (!many || t.regions >= min)).map((t) => ({ ...t, kind, key: t.key ?? t.term }));
     const up = [...ok(res.emerging, "emerging", true), ...ok(res.rising, "rising", true)].sort((a, b) => b.z - a.z);
     const down = ok(res.falling, "falling", false);
     const seen = new Set([...up, ...down].map((t) => t.key));
     const more = ok(res.all, "steady", false).filter((t) => !seen.has(t.key)).slice(0, Math.max(0, 40 - seen.size));
     return { up, down, more };
-  }, [res]);
+  }, [res, placeWords]);
 
   /* Ausbreitung der gezeigten Begriffe (eine Abfrage für alle), lädt nach der Liste */
   const keys = lists ? [...lists.up, ...lists.down, ...lists.more].map((t) => t.key).slice(0, 40) : [];

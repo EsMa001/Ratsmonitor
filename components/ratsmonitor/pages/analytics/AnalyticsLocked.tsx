@@ -3,7 +3,7 @@ import { AnalyticsLogo } from "../../components/Brand";
 import { IS_DEV, setTier, UPGRADE_TEXT } from "../../lib/tier";
 import { PageBand } from "./PageBand";
 import { LiveThumb } from "../../info/BranchenLive";
-import { ANALYSEN, type AnalyseId } from "../../info/branchen-enterprise";
+import { ANALYSEN, NEU_NAME, type AnalyseId } from "../../info/branchen-enterprise";
 
 /* Was eine gesperrte Analyse zeigt: Pfad, Analyse, Beispielbegriff der Vorschau und ein Satz dazu */
 const VORSCHAU: Record<string, { id: AnalyseId; term: string; text: string }> = {
@@ -20,6 +20,8 @@ const VORSCHAU: Record<string, { id: AnalyseId; term: string; text: string }> = 
 /** Hinweis statt Analyse für alle ohne Enterprise (der Server antwortet ihnen mit 403) */
 export function AnalyticsLocked({ path = "" }: { path?: string }) {
   const v = VORSCHAU[path];
+  /* Neue Seite plenara.X Trends unter der früheren Adresse der Trends: ihr Name, nicht „Alt: …“ */
+  const title = v ? (!path.endsWith("-alt") && NEU_NAME[v.id]) || ANALYSEN[v.id].name : "";
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-12 text-slate-900">
       <PageBand>
@@ -37,9 +39,9 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
         </div>
       </PageBand>
       {v && (
-        <section className="mt-10 grid items-start gap-8 md:grid-cols-[minmax(0,1fr)_320px]" aria-label={`Vorschau: ${ANALYSEN[v.id].name}`}>
+        <section className="mt-10 grid items-start gap-8 md:grid-cols-[minmax(0,1fr)_320px]" aria-label={`Vorschau: ${title}`}>
           <div>
-            <h2 className="m-0 text-[22px] font-semibold">{ANALYSEN[v.id].name}</h2>
+            <h2 className="m-0 text-[22px] font-semibold">{title}</h2>
             <p className="mt-2 max-w-[560px] text-[16px] leading-relaxed text-slate-500">{v.text}</p>
             <p className="mt-4 max-w-[560px] text-[14px] text-slate-500">Rechts sehen Sie eine Vorschau mit echten Daten. Mit dem Tarif Enterprise starten Sie die Analyse für jedes eigene Thema.</p>
           </div>

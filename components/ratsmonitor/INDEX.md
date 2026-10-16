@@ -733,7 +733,7 @@ topic design-styles.css:140
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
-- branchen-enterprise.ts (102): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- branchen-enterprise.ts (110): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (418, ⚠28): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
@@ -802,7 +802,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (340, ⚠21): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
-- AnalyticsLocked.tsx (52): AnalyticsLocked
+- AnalyticsLocked.tsx (54): AnalyticsLocked
 - AnalyticsPages.tsx (86, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
 - AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
@@ -827,13 +827,13 @@ topic design-styles.css:140
 - PageBand.tsx (19): PageBand
 - RadarDrill.tsx (90): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
-- RegionMap.tsx (90, ⚠1): RegionMap
+- RegionMap.tsx (95, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (325, ⚠6): signaleHref, SignalePage
+- SignalePage.tsx (330, ⚠6): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
 - XAtlasView.tsx (569, ⚠9): XAtlasView
-- XTrendsPage.tsx (352, ⚠3): XTrendsPage
+- XTrendsPage.tsx (362, ⚠4): XTrendsPage
 - XTrendsParts.tsx (147, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery

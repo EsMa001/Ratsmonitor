@@ -7,7 +7,7 @@ import { AnalyticsLogo } from "../components/Brand";
 import { LiveThumb } from "./BranchenLive";
 import { Reveal } from "../pages/analytics/Reveal";
 import { useRouter } from "next/navigation";
-import { ANALYSEN, ENTERPRISE, PLENARAX_VORTEILE } from "./branchen-enterprise";
+import { ANALYSEN, ENTERPRISE, NEU_HREF, PLENARAX_VORTEILE } from "./branchen-enterprise";
 
 function Timeline({ b }: { b: Branche }) {
   const first = Math.min(...b.reported);
@@ -42,7 +42,7 @@ function EnterpriseSection({ terms }: { terms: string[] }) {
       <div className="grid gap-x-10 gap-y-8 sm:grid-cols-3" style={{ marginTop: 24 }}>
         {PLENARAX_VORTEILE.map(([id, title, text], i) => (
           <Reveal key={title} delay={i * 110}>
-            <button type="button" onClick={() => router.push(ANALYSEN[id].href)} className="group flex w-full flex-col justify-start text-left">
+            <button type="button" onClick={() => router.push(NEU_HREF[id]?.(terms[0]) ?? ANALYSEN[id].href)} className="group flex w-full flex-col justify-start text-left">
               <h3 className="m-0 text-[16px] font-semibold text-slate-900">{title}</h3>
               <div className="mt-3 w-full transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={id} term={terms[0]} /></div>
               <p className="m-0 mt-4 text-[16px] leading-relaxed text-slate-500">{text}</p>

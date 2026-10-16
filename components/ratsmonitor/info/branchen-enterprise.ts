@@ -36,6 +36,14 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
 };
 
 /* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */
+/* Ausbreitung und Trends gehören jetzt zur Seite plenara.X Trends; die alten Tools (Alt: …) bleiben nur als Sicherung.
+   Wer von einer Branchenseite oder Vorschau kommt, landet auf der neuen Seite (Ausbreitung: gleich mit dem Beispielbegriff). */
+export const NEU_HREF: Partial<Record<AnalyseId, (term?: string) => string>> = {
+  diffusion: (term) => `/analytics/trends${term ? `?begriff=${encodeURIComponent(term)}` : ""}`,
+  trends: () => "/analytics/trends",
+};
+export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends" };
+
 export const PLENARAX_VORTEILE: [AnalyseId, string, string][] = [
   ["diffusion", "Ausbreitung sehen", "Wo ein Begriff zuerst auftaucht und in welchen Kommunen er danach folgt."],
   ["beschluesse", "Beschlüsse einordnen", "Quote, Vertagungen und Dauer zeigen, wie zügig eine Kommune entscheidet."],

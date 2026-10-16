@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Befund } from "./Befund";
-import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitPills, countScale, useOrtInAdresse, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import type { Article } from "../../types";
@@ -109,14 +109,19 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort 
 function SignalMap({ places, onPlace, hover = "" }: { places: Place[]; onPlace: (ags: string) => void; /* Gebiet der überfahrenen Zeile (Schlüssel des Katalogs): auf der Karte hervorgehoben */ hover?: string }) {
   const [own, setPicked] = useState(""), [level, setLevel] = useState<"city" | "district">("city");
   /* Gemeinden: Vorgänge je Gemeinde (Verbände färben ihre Mitgliedsgemeinden); Kreise: Summe aller Gebiete im Kreis */
-  const byAgs = new Map<string, { name: string; count: number }>(), levels: Record<string, number> = {};
+  const byAgs = new Map<string, { name: string; count: number }>();
   for (const p of places) {
     const own = p.ags.length === 8 ? [p.ags] : [];
     if (level === "district") { const k = p.ags.slice(0, 5); if (k.length === 5) { const o = byAgs.get(k); byAgs.set(k, { name: p.ags.length === 5 ? p.name : o?.name ?? `Kreis ${k}`, count: (o?.count ?? 0) + p.count }); } continue; }
     for (const a of [...own, ...(p.members ?? []).filter((m) => m.length === 8)]) if (!byAgs.has(a) || own.includes(a)) byAgs.set(a, p);
   }
-  const scale = countScale([...byAgs.values()].map((p) => p.count));
-  for (const [a, p] of byAgs) levels[a] = scale.level(p.count);
+  /* Ein Punkt je Vorgang (Signale zeigen einzelne Vorhaben, der Atlas Mengen als Flächen); Verbände verteilen ihre Punkte auf die Mitglieder */
+  const dots: Record<string, number> = {};
+  for (const p of places) {
+    if (level === "district") { const k = p.ags.slice(0, 5); if (k.length === 5) dots[k] = (dots[k] ?? 0) + p.count; continue; }
+    const keys = p.ags.length === 8 ? [p.ags] : (p.members ?? []).filter((m) => m.length === 8);
+    keys.forEach((a, i) => { const k = Math.floor(p.count / keys.length) + (i < p.count % keys.length ? 1 : 0); if (k) dots[a] = (dots[a] ?? 0) + k; });
+  }
   /* Vorschau: das Gebiet der überfahrenen Zeile (bei Verbänden die erste Mitgliedsgemeinde, auf Kreisebene der Kreis) */
   const hov = hover ? places.find((p) => p.region === hover) : undefined;
   const hovAgs = hov ? (level === "district" ? hov.ags.slice(0, 5) : hov.ags.length === 8 ? hov.ags : hov.members?.[0] ?? "") : "";
@@ -125,8 +130,8 @@ function SignalMap({ places, onPlace, hover = "" }: { places: Place[]; onPlace: 
   return (
     <section className="print:hidden" aria-label="Karte">
       {/* Klick wählt das Gebiet als Ort (Gemeinde oder Kreis), wie im Atlas */}
-      <RegionMap tall level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={scale.legend}
-        note="ohne Farbe: keine Vorgänge" label={`Karte: Vorgänge der Auswahl je ${level === "district" ? "Kreis" : "Gemeinde"}`}
+      <RegionMap tall level={level} levels={{}} dots={dots} colors={["#0d9488"]} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={["1 Punkt = 1 Vorgang"]}
+        note="Punkte liegen zufällig im Gebiet" label={`Karte: Vorgänge der Auswahl je ${level === "district" ? "Kreis" : "Gemeinde"}`}
         info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{n(sel.count)} {sel.count === 1 ? "Vorgang" : "Vorgänge"}</span></> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
       <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
         <span className="text-[14px] text-slate-500">Ebene</span>
