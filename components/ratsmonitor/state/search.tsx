@@ -51,6 +51,8 @@ interface SearchActions {
   setAllterms: (v: boolean) => void;
   setExact: (v: boolean) => void;
   resetAll: () => void;
+  /** Ganzen Suchstand zurücksetzen (Zurück-Taste auf den plenara.X-Seiten, useAnalyticsQuery) */
+  restoreState: (s: SearchState) => void;
   /** Gespeicherte Suche anwenden; false, solange die Karte für einen Umkreis noch lädt */
   applySaved: (s: SavedSearch) => boolean;
   /** Sucht im Voraus (ohne Anzeige), z. B. beim Überfahren eines Vorschlags */
@@ -219,6 +221,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       setNoformal: (v) => commit({ ...ref.current, noformal: v }),
       setAllterms: (v) => commit({ ...ref.current, allterms: v }),
       setExact: (v) => commit({ ...ref.current, exact: v }),
+      restoreState(s) {
+        commit(s);
+      },
       resetAll() {
         commit({ ...INITIAL_SEARCH, sort: ref.current.sort });
         setPopupState("");
