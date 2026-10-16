@@ -1,0 +1,40 @@
+{
+ "ausgabe": "plenara-anwender-immobilien-dunkel",
+ "theme": "dunkel",
+ "vorlage": "eigen",
+ "parameter": {
+  "thema": "Bebauungsplan",
+  "ort": "Stuttgart"
+ },
+ "karten": false,
+ "vorteileMax": 3,
+ "kapitel": [
+  {
+   "kapitel": "einleitung",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "suchen",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "liste-artikel",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "alarme",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "x-atlas",
+   "text": "kurz",
+   "parameter": {
+    "thema": "Aufstellungsbeschluss"
+   }
+  },
+  {
+   "kapitel": "abschluss",
+   "text": "kurz"
+  }
+ ]
+}

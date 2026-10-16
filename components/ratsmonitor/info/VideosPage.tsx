@@ -7,7 +7,7 @@ import { useDarkMode } from "../lib/useDarkMode";
    Dateien in public/videos/: <name>.mp4, .jpg (Vorschau), .vtt (Untertitel). Kapitelzeiten stammen aus docs/videos/fassungen/*.timeline.json
    (Sekunden); bei einer neuen Fassung hier die Zeiten und die Dauer nachziehen. */
 const PITCH = "plenara-pitch";
-const FULL = "plenara-komplett"; /* seit 16.10.26 mit den neuen plenara.X-Kapiteln, vorerst nur hell (dunkle Fassung hat noch die alten Kapitel) */
+const FULL = "plenara-komplett";
 /* Im Dark Mode der App laufen die dunklen Fassungen (<name>-dunkel, gleiche Kapitelzeiten) */
 const variant = (base: string, dark: boolean) => (dark ? `${base}-dunkel` : base);
 
@@ -33,7 +33,7 @@ const ANALYSE: Chapter[] = [
 const ALL = [...PLENARA, ...ANALYSE, { t: 359, title: "Jetzt ausprobieren", what: "" }];
 const LENGTH = 395;
 
-/* plenara.X allein und je Anwenderseite ein Video (videos/plenarax.json, videos/anwender-*.json; vorerst nur hell) */
+/* plenara.X allein und je Anwenderseite ein Video (videos/plenarax.json, videos/anwender-*.json, je mit dunkler Fassung) */
 const PLENARAX = "plenara-x";
 const ANWENDER: { slug: string; name: string; text: string }[] = [
   { slug: "immobilien", name: "Immobilien", text: "Bebauungspläne finden, bevor Flächen am Markt sind." },
@@ -129,7 +129,7 @@ export function VideosPage() {
         <h2 className="m-0 mt-1 text-[22px] font-semibold text-slate-900">Alle Funktionen von plenara und plenara.X</h2>
         <p className="mb-6 mt-1 text-[16px] text-slate-500">Von der ersten Suche bis zur Analyse. Untertitel lassen sich im Player zuschalten.</p>
         <div className="grid items-start gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-10">
-          <Player base={FULL} poster={FULL} label="Vollständiges Video abspielen" onTime={(t) => setNow(Math.floor(t))} seekRef={ctlRef} />
+          <Player base={variant(FULL, dark)} poster={variant(FULL, dark)} label="Vollständiges Video abspielen" onTime={(t) => setNow(Math.floor(t))} seekRef={ctlRef} />
           <div className="grid gap-5 sm:grid-cols-2 lg:max-h-[34rem] lg:grid-cols-1 lg:overflow-y-auto">
             <ChapterList title="plenara" items={PLENARA} now={now} go={go} />
             <ChapterList title="plenara.X Analysen" items={ANALYSE} now={now} go={go} />
@@ -143,7 +143,7 @@ export function VideosPage() {
           {[{ base: PLENARAX, name: "plenara.X", text: "Atlas, Signale, Trends, Fakten und Einblicke.", href: "/analytics/atlas", link: "Zum Atlas" },
             ...ANWENDER.map((a) => ({ base: `plenara-anwender-${a.slug}`, name: a.name, text: a.text, href: `/anwender/${a.slug}`, link: `Zur Seite ${a.name}` }))].map((v) => (
             <div key={v.base}>
-              <Player base={v.base} poster={v.base} label={`Video abspielen: ${v.name}`} />
+              <Player base={variant(v.base, dark)} poster={variant(v.base, dark)} label={`Video abspielen: ${v.name}`} />
               <p className="m-0 mt-3 text-[16px] font-semibold text-slate-900">{v.name}</p>
               <p className="m-0 mt-0.5 text-[14px] text-slate-500">{v.text} <Link href={v.href} className="text-teal-700 hover:underline">{v.link} →</Link></p>
             </div>

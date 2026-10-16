@@ -170,9 +170,9 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
 
       {b.beleg && <Beleg b={b.beleg} />}
 
-      {/* Video der Seite (Feld `video` in content.ts: Pfad ohne Endung, .mp4/.jpg/.vtt), direkt nach dem Beleg. Bisher nur helle
-         Fassungen: im Dark Mode kein Video. Ohne Video nur im Dev-Server ein kleiner Platzhalter. */}
-      {(b.video ? !dark : IS_DEV) && (
+      {/* Video der Seite (Feld `video` in content.ts: Pfad ohne Endung, .mp4/.jpg/.vtt), direkt nach dem Beleg. Im Dark Mode die dunkle
+         Fassung (<Pfad>-dunkel). Ohne Video nur im Dev-Server ein kleiner Platzhalter. */}
+      {(b.video || IS_DEV) && (
         <section className="ri-sec ri-sec--tight">
           <div className="grid items-center gap-x-12 gap-y-6 lg:grid-cols-[minmax(0,1fr)_440px]">
             <div>
@@ -180,9 +180,9 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
               <p className="ri-sub">Suchen, Stand verfolgen, Treffer merken, mit einem Begriff aus Ihrem Alltag.</p>
             </div>
             {b.video
-              ? <video controls preload="metadata" playsInline poster={`${b.video}.jpg`} className="aspect-video w-full rounded-xl bg-slate-100" aria-label={`Video: Plenara für ${b.name}`}>
-                  <source src={`${b.video}.mp4`} type="video/mp4" />
-                  <track kind="subtitles" src={`${b.video}.vtt`} srcLang="de" label="Deutsch" />
+              ? <video key={dark ? "d" : "h"} controls preload="metadata" playsInline poster={`${b.video}${dark ? "-dunkel" : ""}.jpg`} className="aspect-video w-full rounded-xl bg-slate-100" aria-label={`Video: Plenara für ${b.name}`}>
+                  <source src={`${b.video}${dark ? "-dunkel" : ""}.mp4`} type="video/mp4" />
+                  <track kind="subtitles" src={`${b.video}${dark ? "-dunkel" : ""}.vtt`} srcLang="de" label="Deutsch" />
                 </video>
               : <div className="flex aspect-video w-full items-center justify-center rounded-xl border-2 border-dashed border-slate-200 p-4 text-center text-[14px] text-slate-500">Video „{b.name}“ (nur im Dev sichtbar)</div>}
           </div>
