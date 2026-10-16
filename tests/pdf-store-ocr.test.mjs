@@ -89,3 +89,13 @@ test('OCR-Bereich: Sitzung ab dem Stichtag ist Tagesbereich; ohne Sitzungstag zÃ
  for(const x of [{eventDate:'2026-10-10'},{eventDate:'2026-10-01'},{eventDate:null,fetchedAt:'2026-10-15'},{eventDate:null,fetchedAt:'2026-09-01'}])assert.equal(backlog(x),!daily(x));
  assert.equal(ocrRange({eventDate:null,fetchedAt:null},'all',b),true);
 });
+
+test('ocrDone: wahr, sobald keine Seite mehr auf OCR wartet (veraltete EintrÃ¤ge im Fehlerspeicher erkennen)',withStore(async store=>{
+ const open=file(store,'open',{pages:2});
+ assert.equal(store.ocrDone(open.s),false,'zwei Seiten warten');
+ store.putText(open.s,['Seite eins mit Text.','Seite zwei per OCR.','Seite drei per OCR.'],{method:'mixed',version:1,ocrPages:2,ocrNeeded:0});
+ assert.equal(store.ocrDone(open.s),true);
+ assert.equal(store.ocrDone('0000'),false,'unbekannt');
+ store.failText(open.s,'kaputt',{version:1});
+ assert.equal(store.ocrDone(open.s),false,'Textfassung fehlerhaft');
+}));

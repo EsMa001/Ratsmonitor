@@ -182,6 +182,16 @@ if(!flag('ocr')){
   try{const b=await get(url);fails.set(host,0);if(F?.hosts.has(host))await F.hostOk(host);return b;}catch(e){if(!halted)fails.set(host,(fails.get(host)||0)+1);throw e;}
  };
  const knownOcr=F?F.known('ocr'):new Set(),knownFetch=F?F.known('ocr-fetch'):new Set();
+ // Veraltete Einträge: die Datei braucht keine OCR mehr (das Paket hatte sie fertig, bevor Wächter oder Zeitgrenze zuschlugen).
+ // Eintrag weg, sonst versucht die Nacharbeit sie jede Stunde erneut und findet nichts zu lesen (Befund 16.10.2026).
+ if(F&&!flag('child')){
+  let stale=0;
+  for(const [set,step] of [[knownOcr,'ocr'],[knownFetch,'ocr-fetch']])for(const sha of [...set]){
+   if(onlyShas&&!onlyShas.has(sha))continue;
+   if(store.ocrDone(sha)){await F.ok({step,key:sha});set.delete(sha);stale++;}
+  }
+  if(stale)console.log(`${stale} Einträge im Fehlerspeicher veraltet (Datei schon vollständig gelesen), gelöscht`);
+ }
  // Nachladen gescheitert: mit Fehlerspeicher dort (Klasse aus HTTP-Code, „geändert“ endgültig), sonst ocr_refetch
  const refetchFailed=async(sha,error,info={})=>{
   if(!F){store.refetchFailed(sha,error);return;}

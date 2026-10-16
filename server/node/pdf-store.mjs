@@ -151,6 +151,8 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   /** Eingaben der letzten Fakten je Bericht (facts.mjs): Map topic_id → key, und Schreiben. */
   factsKeys(){return new Map(db.prepare('SELECT topic_id,key FROM facts_keys').all().map(r=>[r.topic_id,r.key]));},
   setFactsKey:(()=>{let st;return (id,key)=>{st??=db.prepare('INSERT INTO facts_keys(topic_id,key) VALUES(?,?) ON CONFLICT(topic_id) DO UPDATE SET key=excluded.key');st.run(id,key);};})(),
+  /** Textfassung vollständig, keine Seite wartet mehr auf OCR (ein Eintrag im Fehlerspeicher dazu ist dann veraltet). */
+  ocrDone(sha){const t=q.text.get(sha);return !!t&&t.status==='ok'&&!(t.ocrNeeded>0);},
   /** Seiten der Textfassung zu einer Prüfsumme (für die OCR-Runde) oder null. */
   textPages(sha){try{return fs.readFileSync(fileOf(sha,'.txt'),'utf8').split('\f');}catch{return null;}},
   /** Legt die Textfassung ab (Seiten ohne \f). */
