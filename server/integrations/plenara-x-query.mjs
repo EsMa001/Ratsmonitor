@@ -90,6 +90,10 @@ const SUB_JOIN=`JOIN json_each('["'||replace(x.subs,',','","')||'"]') s ON s.val
 const FACT_JOIN=`JOIN (SELECT DISTINCT rr.case_key ck,f.value v FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=?) f ON f.ck=x.case_key`;
 const SUM_JOIN=`JOIN (SELECT rr.case_key ck,max(CAST(sv.detail AS REAL)) v FROM topic_facts sv JOIN report_rules rr ON rr.topic_id=sv.topic_id WHERE sv.kind=? GROUP BY rr.case_key) sv ON sv.ck=x.case_key`;
 /* Gruppenschlüssel, nötige Verknüpfung und ihre Parameter; perPart: ein Vorgang kann in mehreren Gruppen stehen */
+/* Hat ein Vorgang in mehreren Berichten verschiedene Werte, gilt der aus der jüngsten Sitzung (zuletzt beratener Stand);
+   bei gleichem Tag entscheidet der Bericht, damit es immer derselbe ist. Für Karte, Median und Listen gleich. */
+const NEWEST_JOIN='LEFT JOIN search_cards nc ON nc.id=f.topic_id',NEWEST_ORDER='ORDER BY nc.date DESC,f.topic_id,f.value,f.detail';
+const SEL_COLS='x.case_key,x.subs,x.region_id,x.month,x.label,x.stage,x.status';
 const grouping=x=>x.fact?{key:'f.v',join:FACT_JOIN,jargs:[x.fact],perPart:true}
  :{key:KEY[x.by],join:x.by==='sub'?SUB_JOIN:'',jargs:[],perPart:x.by==='sub'};
 
@@ -142,14 +146,20 @@ export async function xQuery(db,catalog,params,opts={}){
  let hits,total,all=null;
  if(!perPart){
   // Ein Durchlauf: je Gruppe Vorgänge der Auswahl (n), alle Sachvorgänge der Gruppe unter denselben Filtern (b) und ungelesene
-  const {results}=await db.prepare(`SELECT ${key} k,sum(${hit}) n,count(*) b,sum(${unread}) u FROM ${from} GROUP BY k`).bind(...sel.args,...sel.args,...args).all();
+  // (opts.pre: schon gezählt von groupsAtOnce, für den Atlas)
+  const {results}=opts.pre?.[x.by]?{results:opts.pre[x.by]}:await db.prepare(`SELECT ${key} k,sum(${hit}) n,count(*) b,sum(${unread}) u FROM ${from} GROUP BY k`).bind(...sel.args,...sel.args,...args).all();
   hits=results.filter(r=>r.n>0);total={n:results.reduce((a,r)=>a+r.n,0),u:results.reduce((a,r)=>a+r.u,0)};
  }else{
   // Unterthemen und Werte: Nenner sind alle Sachvorgänge der Auswahl ohne sie (bei Unterthemen: des Themas)
-  const t=await db.prepare(`SELECT sum(${hit}) n,sum(${unread}) u,${x.theme?'sum(CASE WHEN x.label=? THEN 1 ELSE 0 END)':'count(*)'} a FROM ${from}`).bind(...sel.args,...sel.args,...(x.theme?[x.theme]:[]),...args).first();
+  // opts.memo (Atlas): Unterthemen und jeder Wert brauchen dieselbe Gesamtzahl, sie wird je Anfrage nur einmal gezählt
+  const tSql=`SELECT sum(${hit}) n,sum(${unread}) u,${x.theme?'sum(CASE WHEN x.label=? THEN 1 ELSE 0 END)':'count(*)'} a FROM ${from}`,tArgs=[...sel.args,...sel.args,...(x.theme?[x.theme]:[]),...args];
+  const tKey=tSql+JSON.stringify(tArgs),total1=()=>db.prepare(tSql).bind(...tArgs).first();
+  if(opts.memo&&!opts.memo.has(tKey))opts.memo.set(tKey,total1());
+  const t=await (opts.memo?opts.memo.get(tKey):total1());
   total={n:Number(t?.n||0),u:Number(t?.u||0)};all={n:x.fact?total.n:Number(t?.a||0)};
   // Erst die Auswahl als Zwischenmenge, dann aufteilen (sonst teilt SQLite jede Zeile vor dem Filtern auf: Sekunden statt 0,1 s)
-  const cte=`WITH sel AS MATERIALIZED (SELECT x.* FROM ${from} WHERE ${cond})`;
+  /* Nur die Spalten, die Gliederung, Werte und Summen lesen (nicht x.*) */
+  const cte=`WITH sel AS MATERIALIZED (SELECT ${SEL_COLS} FROM ${from} WHERE ${cond})`;
   hits=(await (x.fact
    ?db.prepare(`${cte} SELECT f.value k,count(DISTINCT rr.case_key) n FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=? AND rr.case_key IN (SELECT case_key FROM sel) GROUP BY k`).bind(...args,...sel.args,x.fact)
    :db.prepare(`${cte} SELECT ${key} k,count(*) n FROM sel x ${join} GROUP BY k`).bind(...args,...sel.args,...jargs)).all()).results;
@@ -158,12 +168,12 @@ export async function xQuery(db,catalog,params,opts={}){
  // Zahlenwerte: je Vorgang und Wert die erste Zahl, je Gruppe der Median (nur Fakten mit Zahl)
  let medians=null;
  if(x.fact&&X_FACT_NUM[x.fact]){
-  const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.* FROM ${from} WHERE ${cond}) SELECT f.value k,rr.case_key ck,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=? AND f.detail<>'' AND rr.case_key IN (SELECT case_key FROM sel)`).bind(...args,...sel.args,x.fact).all();
+  const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT ${SEL_COLS} FROM ${from} WHERE ${cond}) SELECT f.value k,rr.case_key ck,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id ${NEWEST_JOIN} WHERE f.kind=? AND f.detail<>'' AND rr.case_key IN (SELECT case_key FROM sel) ${NEWEST_ORDER}`).bind(...args,...sel.args,x.fact).all();
   const per=new Map();for(const r of results){const num=factNum(x.fact,r.d);if(!num)continue;const g=per.get(r.k)||new Map();if(!g.has(r.ck))g.set(r.ck,num);per.set(r.k,g);}
   medians=new Map([...per].map(([k,g])=>{const nums=[...g.values()],units=new Map();for(const u of nums)units.set(u.unit,(units.get(u.unit)||0)+1);
    const unit=[...units].sort((a,b)=>b[1]-a[1])[0][0],vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [k,{median:median(vs),unit,n:vs.length}];}));
  }
- const sums=x.sum?new Map((await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.* FROM ${from} WHERE ${cond}) SELECT k,sum(v) v FROM (SELECT ${key} k,x.case_key cs,max(sv.v) v FROM sel x ${join} ${SUM_JOIN} GROUP BY k,cs) GROUP BY k`).bind(...args,...sel.args,...jargs,x.sum).all()).results.map(r=>[r.k,r.v])):null;
+ const sums=x.sum?new Map((await db.prepare(`WITH sel AS MATERIALIZED (SELECT ${SEL_COLS} FROM ${from} WHERE ${cond}) SELECT k,sum(v) v FROM (SELECT ${key} k,x.case_key cs,max(sv.v) v FROM sel x ${join} ${SUM_JOIN} GROUP BY k,cs) GROUP BY k`).bind(...args,...sel.args,...jargs,x.sum).all()).results.map(r=>[r.k,r.v])):null;
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const rows=hits.map(h=>{const b=perPart?Number(all?.n||0):h.b||0;
   return {key:h.k??'',name:nameOf(x.by,h.k,byId),...(x.by==='region'?{ags:byId.get(h.k)?.ags||'',...(byId.get(h.k)?.members?.length?{members:byId.get(h.k).members.map(m=>m.ags).filter(Boolean)}:{})}:{}),count:h.n,base:b,share:b?Math.round(1000*h.n/b)/10:null,...(sums?{sum:sums.get(h.k)??0}:{}),...(medians?.has(h.k)?{median:medians.get(h.k)}:{})};})
@@ -186,7 +196,7 @@ async function xList(db,catalog,x,{count:counted=true,src=null}={}){
  // Wert des Vorgangs zum gewählten Fakt (bei mehreren, etwa Grundsteuer A und B, alle verschiedenen)
  const values=new Map();
  if(x.fact&&X_FACT_NUM[x.fact]&&results.length){
-  const {results:fs}=await db.prepare(`SELECT rr.case_key ck,f.value v,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=? AND rr.case_key IN (SELECT value FROM json_each(?))${x.value!==''?' AND f.value=?':''}`).bind(x.fact,JSON.stringify(results.map(r=>r.ck)),...(x.value!==''?[x.value]:[])).all();
+  const {results:fs}=await db.prepare(`SELECT rr.case_key ck,f.value v,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id ${NEWEST_JOIN} WHERE f.kind=? AND rr.case_key IN (SELECT value FROM json_each(?))${x.value!==''?' AND f.value=?':''} ${NEWEST_ORDER}`).bind(x.fact,JSON.stringify(results.map(r=>r.ck)),...(x.value!==''?[x.value]:[])).all();
   for(const f of fs){const num=factNum(x.fact,f.d);if(!num)continue;const t=fmtNum(num.v,num.unit),l=values.get(f.ck)||[];if(!l.includes(t))l.push(t);values.set(f.ck,l);}
  }
  return {offset:x.offset,size:X_LIST_SIZE,total:Number(count?.n||0),
@@ -197,7 +207,8 @@ async function xList(db,catalog,x,{count:counted=true,src=null}={}){
 /** Atlas: alle Gliederungen einer Auswahl in einer Antwort (ohne Thema: je Thema, mit Thema: je Unterthema) */
 async function xAtlas(db,catalog,params,x,opts,state){
  const src=await source(db,catalog,x.f);
- const at=(by,sum)=>{const p=new URLSearchParams(params);p.delete('view');p.set('by',by);if(sum)p.set('sum',sum);return xQuery(db,catalog,p,{src});};
+ const memo=new Map(),pre=await groupsAtOnce(db,src,x,x.theme?['month','region']:['theme','month','region']);
+ const at=(by,sum)=>{const p=new URLSearchParams(params);p.delete('view');p.set('by',by);if(sum)p.set('sum',sum);return xQuery(db,catalog,p,{src,memo,...(sum?{}:{pre})});};
  // Werte aus den Unterlagen: nur, was das Qualitätstor erreicht (gesperrte Summen entfallen, der Wert bleibt)
  const wanted=(ATLAS_FACTS[x.theme]||[]).filter(([k])=>X_FACT_GATE[k]).map(([k,sum])=>[k,sum&&X_SUM_GATE[sum]?sum:'']);
  const [parts,months,regions,recent,maps,...facts]=await Promise.all([at(x.theme?'sub':'theme'),at('month'),at('region'),
@@ -205,6 +216,19 @@ async function xAtlas(db,catalog,params,x,opts,state){
  return {selection:parts.selection,total:parts.total,unread:parts.unread,builtAt:state.builtAt,parts:parts.rows,months:months.rows,
   regions:regions.rows,recent:recent.items.slice(0,10),
   facts:facts.map((f,i)=>({kind:wanted[i][0],name:X_FACT_NAMES[wanted[i][0]],sum:f.sum||null,rows:f.rows,map:maps.get(wanted[i][0])||[]})).filter(f=>f.rows.length),compare:await xCompare(db,catalog,x,params,opts)};
+}
+
+/* Mehrere einfache Gliederungen (Thema, Monat, Ort) in einem Durchgang: die Auswahl einmal lesen (über den schlanken Index
+   idx_x_cases_atlas, drizzle/0045), dann je Gliederung zählen. Dieselben Zahlen wie je Gliederung einzeln, statt dreimal
+   alle Vorgänge zu lesen (Server 16.10.2026: ohne Begriff 1,0 statt 0,35 s, rat 2,0 statt 0,8 s). */
+async function groupsAtOnce(db,src,x,bys){
+ const sel=selection(x),cond=sel.where.join(' AND ');
+ const cols=[...new Set(bys.map(b=>KEY[b]))].map(c=>`${c} ${c.slice(2)}`).join(',');
+ const parts=bys.map(b=>`SELECT '${b}' g,${KEY[b].slice(2)} k,sum(h) n,count(*) b,sum(h*unread) u FROM s GROUP BY k`).join(' UNION ALL ');
+ const {results}=await db.prepare(`WITH s AS MATERIALIZED (SELECT ${cols},x.unread unread,CASE WHEN ${cond} THEN 1 ELSE 0 END h FROM ${src.from}) ${parts}`).bind(...sel.args,...src.args).all();
+ const out=Object.fromEntries(bys.map(b=>[b,[]]));
+ for(const r of results)out[r.g].push({k:r.k,n:r.n,b:r.b,u:r.u});
+ return out;
 }
 
 /** plenara.X Fakten: Orte (für Schlüssel und Mitgliedsgemeinden) und je freigegebenem Fakt die Werte je Gebiet */
@@ -239,7 +263,9 @@ function latest(nums){
 async function factMaps(db,catalog,src,x,kinds){
  const out=new Map();if(!kinds.length)return out;
  const sel=selection(x),byId=new Map(catalog.map(r=>[r.id,r]));
- const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.case_key,x.region_id,x.card_id,x.date FROM ${src.from} WHERE ${sel.where.join(' AND ')}) SELECT s.region_id g,s.card_id card,s.date dt,rr.case_key ck,f.kind kind,f.value v,f.detail d FROM sel s JOIN report_rules rr ON rr.case_key=s.case_key JOIN topic_facts f ON f.topic_id=rr.topic_id WHERE f.kind IN (SELECT value FROM json_each(?))`).bind(...src.args,...sel.args,JSON.stringify(kinds)).all();
+ /* Von den Fakten aus (wenige) und je Fakt den Vorgang über seinen Schlüssel nachschlagen, statt erst alle Vorgänge der Auswahl
+    abzulegen und dafür jedes Mal ein Hilfsregister zu bauen (Server 16.10.2026: 2,0 s). CROSS JOIN hält die Reihenfolge fest. Je Vorgang zählt der Wert der jüngsten Sitzung (NEWEST_ORDER). */
+ const {results}=await db.prepare(`SELECT x.region_id g,x.card_id card,x.date dt,rr.case_key ck,f.kind kind,f.value v,f.detail d FROM topic_facts f CROSS JOIN report_rules rr ON rr.topic_id=f.topic_id CROSS JOIN ${src.from} ON x.case_key=rr.case_key ${NEWEST_JOIN} WHERE f.kind IN (SELECT value FROM json_each(?)) AND ${sel.where.join(' AND ')} ${NEWEST_ORDER}`).bind(...src.args,JSON.stringify(kinds),...sel.args).all();
  // Mitgliedsgemeinde je Vorgang, nur in Verbänden
  const cards=[...new Set(results.filter(r=>byId.get(r.g)?.members?.length).map(r=>r.card))],member=new Map();
  if(cards.length){

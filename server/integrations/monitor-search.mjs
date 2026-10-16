@@ -172,8 +172,10 @@ export async function searchFilters(db,catalog,f){
  const plainSearch=!f.label&&!f.status&&!f.month&&!f.from&&!f.noformal&&(placeScoped||(!f.area&&!f.more.length&&!f.within&&!f.without));
  const precomputable=(f.part==='facets'||f.part==='')&&plainSearch&&!f.exact&&f.groups.length===1&&f.groups[0].length===1;
  /* Begriffe, die über den Volltextindex eingeschränkt werden: ohne Kandidaten der Wortliste und unter der Obergrenze */
- const ftsTerms=new Set(),ftsMax=f.part==='facets'||f.part==='x'?FTS_FACETS_MAX:FTS_PAGE_MAX; // x: Zählungen für plenara.X (plenara-x-query.mjs)
- if(ftsReady&&!cand&&!(precomputable&&await listCurrent(db)))for(const t of new Set((f.groups||[f.terms]).flat()))if(FTS_TERM.test(t)&&await ftsCount(db,t,ftsMax)<=ftsMax)ftsTerms.add(t);
+ /* plenara.X (part x, plenara-x-query.mjs) liest alle Treffer ohne Seitengrenze: dort ist der Index immer schneller (Server 16.10.2026:
+    haushalt 0,4 statt 3,1 s, rat mit 790.000 Treffern 2,2 statt 9,1 s), also ohne Obergrenze und ohne Vorabtest */
+ const ftsTerms=new Set(),ftsMax=f.part==='facets'?FTS_FACETS_MAX:FTS_PAGE_MAX;
+ if(ftsReady&&!cand&&!(precomputable&&await listCurrent(db)))for(const t of new Set((f.groups||[f.terms]).flat()))if(FTS_TERM.test(t)&&(f.part==='x'||await ftsCount(db,t,ftsMax)<=ftsMax))ftsTerms.add(t);
  const labelId=f.label?LABELS.find(l=>l.name===f.label).id:null;
  /* Ergebnisseite: Gebiet, Thema und Status als Bedingung */
  const page=(()=>{const b=base(),region=regionCondition([...scopedIds],catalog),where=[region.sql,...b.where],args=[region.arg,...b.args];

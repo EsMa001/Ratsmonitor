@@ -118,6 +118,7 @@ const X_WARM_SQL = [
   "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_date WHERE date>=''",
   "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_label WHERE label>=''",
   "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_region WHERE region_id>=''",
+  "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_atlas WHERE date>=''",
   "SELECT count(*) FROM x_signals",
 ];
 function warmData() {
