@@ -11,6 +11,7 @@ import { NewsradarPage } from "./NewsradarPage";
 import { AtlasPage } from "./AtlasPage";
 import { SignalePage } from "./SignalePage";
 import { FaktenPage } from "./FaktenPage";
+import { XTrendsPage } from "./XTrendsPage";
 import { GRUPPEN } from "../../info/branchen-enterprise";
 import { AnalyticsLocked } from "./AnalyticsLocked";
 import { useTier } from "../../lib/tier";
@@ -23,13 +24,25 @@ function Umleiten({ to }: { to: string }) {
   return null;
 }
 
+/** Alte Adresse der Ausbreitung: auf plenara.X Trends, ein mitgegebener Begriff öffnet dort seinen Steckbrief */
+function ZuTrends() {
+  const t = typeof window === "undefined" ? null : new URLSearchParams(window.location.search);
+  const begriff = t?.get("thema") || t?.get("q") || "";
+  return <Umleiten to={`/analytics/trends${begriff ? `?begriff=${encodeURIComponent(begriff)}` : ""}`} />;
+}
+
 /** plenara.X: Übersicht und je Funktion eine Unterseite */
 const PAGES: Record<string, ComponentType> = {
   "/analytics": AnalyticsAbout,
   "/analytics/ueber": AnalyticsAbout,
-  "/analytics/diffusion": DiffusionPage,
+  /* Frühere Adresse der Ausbreitung: jetzt Teil von plenara.X Trends (Begriff aus ?thema= oder ?q= wird gewählt) */
+  "/analytics/diffusion": () => <ZuTrends />,
+  /* Die alten Werkzeuge bleiben unverändert als Sicherung */
+  "/analytics/diffusion-alt": DiffusionPage,
+  "/analytics/trends-alt": TrendsPage,
   "/analytics/graph": KnowledgeGraphPage,
-  "/analytics/trends": TrendsPage,
+  /* plenara.X Trends: Trends und Ausbreitung auf einer Seite */
+  "/analytics/trends": XTrendsPage,
   "/analytics/vergleich": ComparePage,
   "/analytics/beschluesse": BeschluessePage,
   "/analytics/gremien": GremiennetzPage,
@@ -58,9 +71,9 @@ export function AnalyticsPages({ path }: { path: string }) {
   useEffect(() => {
     window.scrollTo(0, 0);
     const gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
-    const TITEL: Record<string, string> = { "/analytics/atlas": "plenara.X Atlas", "/analytics/signale": "Signale · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Newsradar · plenara.X", "/analytics/diffusion": "Ausbreitung · plenara.X",
+    const TITEL: Record<string, string> = { "/analytics/atlas": "plenara.X Atlas", "/analytics/signale": "Signale · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Newsradar · plenara.X", "/analytics/diffusion-alt": "Alt: Ausbreitung · plenara.X", "/analytics/trends-alt": "Alt: Trends · plenara.X",
       "/analytics/graph": "Themennetz · plenara.X", "/analytics/gremien": "Beratungswege · plenara.X", "/analytics/beschluesse": "Beschlüsse · plenara.X",
-      "/analytics/vergleich": "Ortsvergleich · plenara.X", "/analytics/trends": "Trends · plenara.X", "/analytics/fraktionen": "Fraktionsprofil · plenara.X", "/analytics/tools": "plenara.X Tools" };
+      "/analytics/vergleich": "Ortsvergleich · plenara.X", "/analytics/trends": "plenara.X Trends", "/analytics/fraktionen": "Fraktionsprofil · plenara.X", "/analytics/tools": "plenara.X Tools" };
     document.title = TITEL[path] ?? (gruppe ? gruppe.name : "Über plenara.X · plenara");
   }, [path]);
   const Page = PAGES[path];

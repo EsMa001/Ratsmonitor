@@ -556,7 +556,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (27): generateMetadata, Page
+- page.tsx (29): generateMetadata, Page
 
 ### app/(monitor)/anmelden/bestaetigen/
 - page.tsx (2): Page
@@ -758,7 +758,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (360): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (1063): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1068): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
@@ -787,7 +787,7 @@ topic design-styles.css:140
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (233, ⚠1): MainMenu
+- MainMenu.tsx (234, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (179, ⚠11): DetailPage
@@ -802,8 +802,8 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (340, ⚠21): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
-- AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (73): AnalyticsPages
+- AnalyticsLocked.tsx (52): AnalyticsLocked
+- AnalyticsPages.tsx (86, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
 - AtlasPage.tsx (68): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (52): Befund, zuThema
@@ -819,21 +819,22 @@ topic design-styles.css:140
 - FraktionenPage.tsx (151, ⚠5): FraktionenPage
 - GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (167, ⚠3): GremiennetzPage
+- Kennzahlen.tsx (92): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, MeinOrt, Folgen
 - KnowledgeGraphPage.tsx (221, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (19): PageBand
-- RadarDrill.tsx (91): DrillItem, StatusDot, RadarDrill
+- RadarDrill.tsx (90): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
-- RegionMap.tsx (77, ⚠1): RegionMap
+- RegionMap.tsx (90, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (298, ⚠4): signaleHref, SignalePage
+- SignalePage.tsx (299, ⚠3): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (514, ⚠5): XAtlasView
+- XAtlasView.tsx (516, ⚠5): XAtlasView
 - useAnalysisRun.ts (53): useAnalysisRun
-- useAnalyticsQuery.ts (28): useAnalyticsQuery
+- useAnalyticsQuery.ts (81): useAnalyticsQuery
 
 ### components/ratsmonitor/services/
 - api.ts (9, ⚠1): SAVED_SEARCHES_KEY, readSavedSearches, writeSavedSearches
@@ -842,7 +843,7 @@ topic design-styles.css:140
 - account.tsx (108): AccountProvider, useAccount, useSavedStats
 - data.tsx (36, ⚠1): DataProvider, useData
 - nav.ts (17): View, viewOf, noteRoute, cameFromApp, overviewScroll, useAppNav
-- search.tsx (654, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
+- search.tsx (659, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 

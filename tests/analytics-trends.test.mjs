@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
-import {trends,parseTrends} from '../server/integrations/analytics-trends.mjs';
+import {trends,parseTrends,trendSpread} from '../server/integrations/analytics-trends.mjs';
 import {buildXCases} from '../server/integrations/x-cases.mjs';
 
 const catalog=[1,2,3,4,5].map(i=>({id:'r'+i,kind:'city',name:'Ort '+i,ags:'0555800'+i}));
@@ -39,5 +39,27 @@ test('trends separates rising, new and falling terms between two equal windows',
   /* Filter wie die Suche: nur ein Gebiet */
   const one=await trends(db,catalog,new URLSearchParams('area=05558001&scope=only'),NOW);
   assert.ok(one.totals.recent<t.totals.recent);
+ }finally{sql.close();}
+});
+
+test('trend spread counts regions reached for the first time in the window, not newly connected ones',async()=>{
+ const sql=new DatabaseSync(':memory:');
+ for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8').replaceAll('--> statement-breakpoint',''));
+ const db=sqliteAdapter(sql);let n=0;
+ const put=(age,region,title)=>{n++;sql.prepare("INSERT INTO search_cards (id,region_id,date,status,label,title,teaser,gremium,search) VALUES (?,?,?,'info','umwelt',?, '', '', ?)").run('c'+n,region,day(age),title,title.toLowerCase());};
+ /* r1 bis r4 seit langem im Bestand, r5 erst seit 30 Tagen */
+ for(const r of ['r1','r2','r3','r4'])put(400,r,'Friedhof Satzung');
+ put(300,'r1','Wasserstoff Studie');
+ put(120,'r2','Wasserstoff Tankstelle');
+ put(20,'r3','Wasserstoff Elektrolyseur');put(10,'r4','Wasserstoff Busse');put(5,'r5','Wasserstoff Konzept');
+ buildXCases(sql,{today:day(0)});
+ try{
+  const s=await trendSpread(db,catalog,new URLSearchParams('keys=wasserstoff,unbekannt'),NOW);
+  const w=s.terms.find(t=>t.key==='wasserstoff');
+  assert.equal(w.reached,5);assert.equal(w.added,2,'r3 und r4, nicht das neu angebundene r5');
+  assert.equal(w.first,day(300));assert.equal(w.curve.length,12);assert.equal(w.curve.at(-1),5);
+  assert.deepEqual(s.moving,{r3:1,r4:1});assert.deepEqual(s.places.r1.ags,['05558001']);
+  assert.equal(s.terms.find(t=>t.key==='unbekannt').reached,0);
+  await assert.rejects(trendSpread(db,catalog,new URLSearchParams('keys=a;b'),NOW));
  }finally{sql.close();}
 });

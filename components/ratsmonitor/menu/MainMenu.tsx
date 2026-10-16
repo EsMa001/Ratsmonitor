@@ -29,6 +29,7 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
 const ANALYSE = [
   { href: "/analytics/ueber", label: "plenara.X Start", icon: "plenaraX" as const },
   { href: "/analytics/signale", label: "plenara.X Signale", icon: "zap" as const },
+  { href: "/analytics/trends", label: "plenara.X Trends", icon: "trendingUp" as const },
   { href: "/analytics/fakten", label: "plenara.X Fakten", icon: "map" as const },
   { href: "/analytics/tools", label: "plenara.X Tools", icon: "layoutGrid" as const },
   { href: "/analytics/atlas", label: "plenara.X Atlas", icon: "map" as const },

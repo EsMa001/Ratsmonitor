@@ -13,9 +13,9 @@ export const GRUPPEN: Record<Exclude<AnalyseGruppe, "atlas">, { name: string; ku
 };
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {
-  diffusion: { href: "/analytics/diffusion", name: "Ausbreitung", icon: "map", group: "tool" },
+  diffusion: { href: "/analytics/diffusion-alt", name: "Alt: Ausbreitung", icon: "map", group: "tool" },
   graph: { href: "/analytics/graph", name: "Themennetz", icon: "network", group: "tool" },
-  trends: { href: "/analytics/trends", name: "Trends", icon: "trendingUp", group: "tool" },
+  trends: { href: "/analytics/trends-alt", name: "Alt: Trends", icon: "trendingUp", group: "tool" },
   vergleich: { href: "/analytics/vergleich", name: "Ortsvergleich", icon: "mapPin", group: "tool" },
   beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck", group: "tool" },
   gremien: { href: "/analytics/gremien", name: "Beratungswege", icon: "users", group: "tool" },

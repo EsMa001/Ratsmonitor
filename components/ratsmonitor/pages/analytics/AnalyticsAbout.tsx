@@ -133,9 +133,9 @@ const BEISPIEL = "Photovoltaik";
 const VERGLEICH_BEISPIEL = "Köln und Dortmund";
 
 const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string }[] = [
-  { id: "diffusion", name: "Ausbreitung", href: "/analytics/diffusion", kurz: "Wer zuerst dran war, wie schnell andere folgten und wo ein Thema noch fehlt." },
+  { id: "diffusion", name: "Alt: Ausbreitung", href: "/analytics/diffusion-alt", kurz: "Wer zuerst dran war, wie schnell andere folgten und wo ein Thema noch fehlt." },
   { id: "graph", name: "Themennetz", href: "/analytics/graph", kurz: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
-  { id: "trends", name: "Trends", href: "/analytics/trends", kurz: "Welche Begriffe gerade aufkommen, zunehmen oder verschwinden." },
+  { id: "trends", name: "Alt: Trends", href: "/analytics/trends-alt", kurz: "Welche Begriffe gerade aufkommen, zunehmen oder verschwinden." },
   { id: "vergleich", name: "Ortsvergleich", href: "/analytics/vergleich", kurz: "Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe." },
   { id: "beschluesse", name: "Beschlüsse", href: "/analytics/beschluesse", kurz: "Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer." },
   { id: "gremien", name: "Beratungswege", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },

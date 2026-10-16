@@ -1,7 +1,7 @@
 import {LABELS} from '../../shared/labels.mjs';
 import {parseMonitorSearch} from './monitor-search.mjs';
-import {source,xState} from './plenara-x-query.mjs';
-import {AnalyticsError} from './analytics-diffusion.mjs';
+import {source,xState,FIRST_DATE} from './plenara-x-query.mjs';
+import {AnalyticsError,dataStarts} from './analytics-diffusion.mjs';
 import {tokens,FORMAL_ALL} from './analytics-graph.mjs';
 import {parseTerms} from './x-terms.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
@@ -18,7 +18,7 @@ const DAY=86400000;
 const iso=d=>new Date(d).toISOString().slice(0,10);
 
 export function parseTrends(params){
- const copy=new URLSearchParams(params);for(const k of ['by','value','offset','span'])copy.delete(k);
+ const copy=new URLSearchParams(params);for(const k of ['by','value','offset','span','part','keys'])copy.delete(k);
  /* Der Zeitraum kommt aus dem Fenster, nicht aus der Suche */
  for(const k of ['from','to','month'])copy.delete(k);
  let f;
@@ -108,4 +108,54 @@ export async function trendList(db,catalog,params,now=Date.now()){
  const {results}=await db.prepare(`SELECT c.id,x.region_id region,c.title,c.gremium,x.date,x.status FROM ${src.from} JOIN search_cards c ON c.id=x.card_id WHERE x.date>=? AND x.date<? AND c.search LIKE ? ORDER BY x.date DESC`).bind(...src.args,a,b,'%'+key+'%').all();
  const rows=results.filter(r=>tokens(r.title).has(key));
  return listPage(rows,catalog,offsetOf(params));
+}
+
+/**
+ * Ausbreitung je Begriff für die Seite Trends (part=spread&keys=a,b,…): je Begriff und Gebiet die erste Sitzung des frühesten
+ * Vorgangs mit dem Begriff im Titel (FIRST_DATE, wie die Ausbreitung), über den ganzen Bestand bis heute, gleiche Auswahl wie die
+ * Trends (Suche, ohne private Bauanträge). „Neu erreicht“ zählt ein Gebiet, dessen erste Sitzung im aktuellen Zeitraum liegt und
+ * dessen Bestand vor dem Zeitraum davor beginnt (neu angebundene Gebiete wären sonst überall „neu“).
+ */
+const CHUNK=20000;
+const KEY=/^[\p{L}\d][\p{L}\d-]{2,40}$/u,MAX_KEYS=40;
+export async function trendSpread(db,catalog,params,now=Date.now()){
+ const {f,window:W}=parseTrends(params);
+ const keys=[...new Set((params.get('keys')||'').split(',').filter(k=>KEY.test(k)))].slice(0,MAX_KEYS);
+ if(!keys.length)throw new AnalyticsError('Keine Begriffe.',400);
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ const src=await source(db,catalog,f,{terms:true,noPrivate:true});
+ const end=iso(now+DAY),mid=iso(now+DAY-W*DAY),start=iso(now+DAY-2*W*DAY);
+ // Begriffe stehen je Vorgang als Zeilen „Schlüssel<TAB>Wort“ in x_cases.terms. Ein Durchgang in Stücken (nach case_key) und
+ // der Abgleich in JS ist um ein Vielfaches schneller als je Begriff eine Textsuche über alle Vorgänge.
+ const want=new Set(keys),first=new Map(keys.map(k=>[k,new Map()]));
+ const scan=async()=>{
+  let after='';
+  for(;;){
+   const {results}=await db.prepare(`SELECT x.case_key c,x.region_id r,substr(${FIRST_DATE},1,10) d,x.terms t FROM ${src.from} WHERE x.case_key>? AND x.terms<>'' ORDER BY x.case_key LIMIT ${CHUNK}`).bind(...src.args,after).all();
+   for(const row of results)for(const line of row.t.split('\n')){
+    const k=line.slice(0,line.indexOf('\t'));if(!want.has(k))continue;
+    const m=first.get(k),o=m.get(row.r);if(!o||row.d<o)m.set(row.r,row.d);
+   }
+   if(results.length<CHUNK)break;
+   after=results.at(-1).c;
+  }
+ };
+ const [,starts]=await Promise.all([scan(),dataStarts(db)]);
+ /* Zwölf Monatsenden bis heute: erreichte Gebiete kumuliert */
+ const months=[];for(let i=11;i>=0;i--){const d=new Date(now);d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()-i+1);d.setUTCDate(0);months.push(iso(Math.min(d.getTime(),now)));}
+ const byKey=new Map();
+ for(const [k,m] of first)byKey.set(k,[...m]);
+ const fresh=(r,d)=>d>=mid&&d<end&&(starts.get(r)||'9999').slice(0,10)<start;
+ const moving=new Map(),seen=new Set();
+ const terms=keys.map(k=>{
+  const list=byKey.get(k).sort((a,b)=>a[1].localeCompare(b[1]));
+  const added=list.filter(([r,d])=>fresh(r,d));
+  for(const [r] of added)moving.set(r,(moving.get(r)||0)+1);
+  for(const [r] of list)seen.add(r);
+  return {key:k,reached:list.length,added:added.length,first:list[0]?.[1]||null,curve:months.map(m=>list.filter(([,d])=>d<=m).length),regions:list};
+ });
+ /* Gebiete: Schlüssel des Katalogs → Name und Kartenflächen (Gemeinden, bei Verbänden die Mitglieder) */
+ const byId=new Map(catalog.map(r=>[r.id,r])),places={};
+ for(const id of seen){const r=byId.get(id);if(r)places[id]={name:r.name,ags:r.members?.length?r.members.map(m=>m.ags):r.formerAgs??[r.ags]};}
+ return {window:W,ranges:{prevStart:start,start:mid,end:iso(now)},months,terms,moving:Object.fromEntries(moving),places};
 }

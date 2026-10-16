@@ -30,7 +30,7 @@ export function parseDiffusion(params){
 }
 
 /* Beginn des Bestands je Gebiet (erste Sitzung), je Datenstand einmal gerechnet */
-const dataStarts=db=>atRevision(db,'diffusion-starts',async()=>{
+export const dataStarts=db=>atRevision(db,'diffusion-starts',async()=>{
  const {results}=await db.prepare("SELECT region_id r,min(date) d FROM search_cards WHERE date<>'' GROUP BY region_id").all();
  return new Map(results.map(x=>[x.r,x.d]));
 });
