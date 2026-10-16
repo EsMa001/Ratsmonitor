@@ -56,12 +56,12 @@ const MENU_GAP = 6;
 
 export function MainMenu() {
   /* "all" = Dreistrichmenü; "funktionen"/"usecases" = Aufklappliste der breiten Kopfzeile */
-  const [open, setOpen] = useState<false | "all" | "funktionen" | "analyse" | "usecases" | "info">(false);
+  const [open, setOpen] = useState<false | "all" | "funktionen" | "analyse" | "einblicke" | "usecases" | "info">(false);
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
   const me = useMe();
   /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
-  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/anwender/") ? "usecases" : path.startsWith("/analytics") ? "analyse" : ["/preise", "/videos", "/datenabdeckung", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
+  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/anwender/") ? "usecases" : EINBLICKE.some((e) => e.href === path) || path === "/analytics/einblicke" ? "einblicke" : path.startsWith("/analytics") ? "analyse" : ["/preise", "/videos", "/datenabdeckung", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
   const btnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -121,7 +121,7 @@ export function MainMenu() {
     close();
     window.scrollTo(0, 0);
   };
-  const toggle = (which: "all" | "funktionen" | "analyse" | "usecases" | "info", el: HTMLElement | null) => {
+  const toggle = (which: "all" | "funktionen" | "analyse" | "einblicke" | "usecases" | "info", el: HTMLElement | null) => {
     if (open === which) return close();
     const btn = el?.getBoundingClientRect();
     const head = btnRef.current?.closest("header")?.getBoundingClientRect();
@@ -140,9 +140,9 @@ export function MainMenu() {
       </button>
       {/* Breite Bildschirme: Menüpunkte direkt in der Kopfzeile, Funktionen und Use Cases klappen auf */}
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
-        {(["usecases", "funktionen", "analyse", "info"] as const).map((g) => (
+        {(["usecases", "funktionen", "analyse", "einblicke", "info"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : g === "analyse" ? <AnalysenBy /> : g === "usecases" ? "Anwender" : "Informationen"}
+            {g === "funktionen" ? "Funktionen" : g === "analyse" ? <XGruppe name="Analysen" /> : g === "einblicke" ? <XGruppe name="Einblicke" /> : g === "usecases" ? "Anwender" : "Informationen"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
@@ -192,26 +192,35 @@ export function MainMenu() {
                   </ul>
                 )}
                 {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "analyse"} onClick={() => setOpenGroup(openGroup === "analyse" ? "" : "analyse")}>
-                  <AnalysenBy />
+                  <XGruppe name="Analysen" />
                   <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "analyse" ? "rotate-180" : ""}`} />
                 </button>}
                 {show("analyse") && (
                   <ul className="ri-menu__subs">
-                    {([["Analysen", ANALYSE, "/analytics/ueber"], ["Einblicke", EINBLICKE, "/analytics/einblicke"]] as const).map(([name, list, href]) => (
-                      <li key={name}>
-                        {/* Abschnittsname führt zur Übersicht des Abschnitts */}
-                        <Link href={href} onClick={pick} className="block px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-slate-400 hover:text-teal-700">{name}</Link>
-                        <ul>
-                          {list.map((f) => (
-                            <li key={f.href}>
-                              <Link href={f.href} className="ri-menu__sub min-w-[250px]" aria-current={current(f.href)} onClick={pick}>
-                                <Icon name={f.icon} size={15} />
-                                <span>{f.label}</span>
-                                {f.hint && <span className="ml-auto whitespace-nowrap pl-4 text-[12px] max-sm:hidden font-normal text-slate-400">{f.hint}</span>}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
+                    {ANALYSE.map((f) => (
+                      <li key={f.href}>
+                        <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
+                          <Icon name={f.icon} size={15} />
+                          <span>{f.label}</span>
+                          {f.hint && <span className="ml-auto whitespace-nowrap pl-5 text-[12px] font-normal text-slate-400 max-sm:hidden">{f.hint}</span>}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "einblicke"} onClick={() => setOpenGroup(openGroup === "einblicke" ? "" : "einblicke")}>
+                  <XGruppe name="Einblicke" />
+                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "einblicke" ? "rotate-180" : ""}`} />
+                </button>}
+                {show("einblicke") && (
+                  <ul className="ri-menu__subs">
+                    {EINBLICKE.map((f) => (
+                      <li key={f.href}>
+                        <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
+                          <Icon name={f.icon} size={15} />
+                          <span>{f.label}</span>
+                          {f.hint && <span className="ml-auto whitespace-nowrap pl-5 text-[12px] font-normal text-slate-400 max-sm:hidden">{f.hint}</span>}
+                        </Link>
                       </li>
                     ))}
                   </ul>
@@ -249,10 +258,14 @@ export function MainMenu() {
   );
 }
 
-/** Name der Gruppe: das Logo plenara.X als Schriftzug (über den Abschnitten Analysen und Einblicke) */
-function AnalysenBy() {
-  /* Fließtext in einer Zeile: alle Wörter auf derselben Grundlinie und in derselben Größe, das X mit vertical-align: middle auf
-     der halben x-Höhe, also auf der Mittellinie der Kleinbuchstaben */
-  return <span className="whitespace-nowrap">
-    <span aria-label="plenara.X" role="img"><span className="text-slate-900" style={{ letterSpacing: "-.015em" }}>plenara</span><span className="inline-block align-middle" style={{ fontSize: "1em", lineHeight: 0 }}><AnalyticsX centered /></span></span></span>;
+/** Gruppenname mit grauem Abzeichen plenara.X (wie neben den Seitentiteln), alles auf einer Grundlinie */
+function XGruppe({ name }: { name: string }) {
+  return (
+    <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
+      {name}
+      <span aria-label="plenara.X" role="img" className="inline-flex items-baseline rounded-md bg-slate-100 px-[6px] pb-[3px] pt-[2px] text-[11px] font-semibold leading-none text-slate-700">
+        <span style={{ letterSpacing: "-.015em" }}>plenara</span><span className="inline-block self-center" style={{ lineHeight: 0 }}><AnalyticsX centered /></span>
+      </span>
+    </span>
+  );
 }

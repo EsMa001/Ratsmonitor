@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { XKopf, XWeiter } from "./XKopf";
+import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Befund } from "./Befund";
 import { RadarDrill } from "./RadarDrill";
 import { useSearchParams } from "next/navigation";
@@ -134,6 +134,7 @@ export function KnowledgeGraphPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="graph" />
 
+      <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { XKopf, XWeiter } from "./XKopf";
+import { Kennzahlen } from "./Kennzahlen";
+import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -64,6 +65,7 @@ export function BeschluessePage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="beschluesse" />
 
+      <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
@@ -74,16 +76,12 @@ export function BeschluessePage() {
             <>
               <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} werden ${pct(res.rates.approval)} der ${n(res.totals.decided)} Entscheidungen beschlossen, ${pct(res.rates.postponement)} vertagt und ${pct(res.rates.rejection)} abgelehnt.${res.duration.median !== null ? ` Im Median dauert es ${res.duration.median} Tage bis zur Entscheidung.` : ""}`}</Befund>
               <p className="mt-2 max-w-[760px] text-[14px] text-slate-500">Grundlage: {n(res.totals.decided)} Vorgänge mit bekannter Entscheidung, das sind {n(res.totals.known)} von {n(res.totals.all)} Einträgen mit bekanntem Status{res.totals.knownShare !== null ? ` (${pct(res.totals.knownShare)} aller Einträge)` : ""}. Die übrigen Einträge zeigen keinen Status.</p>
-              <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-                {[
+              <Kennzahlen items={([
                   ["Beschlussquote", pct(res.rates.approval)],
                   ["Vertagt", pct(res.rates.postponement)],
                   ["Abgelehnt", pct(res.rates.rejection)],
-                  ["Entscheidungen", n(res.totals.decided)],
-                ].map(([k, v], i) => (
-                  <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
-                ))}
-              </dl>
+                  ["Entscheidungen", n(res.totals.decided)]
+                ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
 
 
               <Reveal><section className="mt-12">

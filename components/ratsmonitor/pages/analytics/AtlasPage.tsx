@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { XKopf } from "./XKopf";
+import { XKopf, XWeiter } from "./XKopf";
 import { XAtlasView } from "./XAtlasView";
 import { ThemeIcon } from "../../components/icons";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
@@ -59,6 +59,7 @@ export function AtlasPage() {
         </ul>
       </nav>
       <XAtlasView theme={thema} sub={sub} zeit={zeit} term={term} onTheme={(id) => pick({ thema: id })} onSub={(id) => pick({ thema, sub: id })} onZeit={(z) => pick({ thema, sub, zeit: z })} />
+    <XWeiter links={[["/analytics/trends", "Was verändert sich? (Trends)"], ["/analytics/vergleich", "Mit anderem Ort vergleichen"], ["/analytics/gremien", "Wo wird das beraten? (Gremien)"]]} />
     </main>
   );
 }

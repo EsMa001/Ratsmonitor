@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { PageBand } from "./PageBand";
+import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
@@ -218,13 +218,7 @@ export function SignalePage() {
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand compact>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Signale</p>
-        <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <h1 className="text-[28px] font-semibold leading-tight">plenara.X Signale</h1>
-          <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">Was entsteht?</b> Einzelne Vorhaben mit Ort, Schritt und Quelle.</p>
-        </div>
-      </PageBand>
+      <XKopf seite="signale" />
 
       {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy 4 je Reihe */}
       <nav aria-label="Signal" className="print:hidden">
@@ -324,6 +318,7 @@ export function SignalePage() {
           </div>
         </div>
       )}
+    <XWeiter links={[["/analytics/news", "Was ist berichtenswert? (Aktuelles)"], ["/analytics/atlas", "Wie viel? (Atlas)"]]} />
     </main>
   );
 }

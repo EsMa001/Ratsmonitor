@@ -122,7 +122,7 @@ function AtlasMap({ regions, facts, onList, listed, drill, onPlace, preview }: {
     return { levels, byAgs, legend, unit, colors: metricOn && HIGH_BAD.has(kind) ? GREEN_RED : undefined };
   }, [regions, facts, metricOn, level, kind]);
   const sel = picked ? byAgs.get(picked) : undefined;
-  const chip = (on: boolean) => `h-9 shrink-0 whitespace-nowrap rounded-full border px-4 text-[14px] transition-colors ${on ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`;
+  const chip = (on: boolean) => `h-8 shrink-0 whitespace-nowrap rounded-full border px-3 text-[14px] transition-colors ${on ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`;
   const row = "-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0";
   const listedRow = listed ? regions.find((r) => r.key === listed) : undefined;
   const what = !fact ? "Vorgänge der Auswahl" : metricOn ? `Median „${metricOn}“ der Vorgänge` : `Vorgänge mit Wert „${fact.name}“`;

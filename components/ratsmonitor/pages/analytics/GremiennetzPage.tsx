@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { XKopf, XWeiter } from "./XKopf";
+import { Kennzahlen } from "./Kennzahlen";
+import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -51,6 +52,7 @@ export function GremiennetzPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="gremien" />
 
+      <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {loading && !res && <Laden text="Netz wird berechnet …" />}
@@ -96,16 +98,12 @@ export function GremiennetzPage() {
               </section>
 
               {res.routes[0] && <Befund>Der häufigste Weg: {res.routes[0].path.join(" → ")} ({n(res.routes[0].n)} Vorgänge).</Befund>}
-              <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-                {[
+              <Kennzahlen items={([
                   ["Vorgänge mit mehreren Gremien", n(res.paths)],
                   [res.mode === "types" ? "Gremienarten" : "Gremien", n(res.nodes.length)],
                   ["Häufigster Übergang", top ? `${n(top.n)} Vorgänge` : "–"],
-                  ["Mittlere Zeit je Übergang", lag === null ? "–" : `${lag} Tage`],
-                ].map(([k, v], i) => (
-                  <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
-                ))}
-              </dl>
+                  ["Mittlere Zeit je Übergang", lag === null ? "–" : `${lag} Tage`]
+                ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
 
               <div className="mt-12 grid gap-12 lg:grid-cols-2">
                 <section>

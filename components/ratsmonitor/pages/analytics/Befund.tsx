@@ -40,8 +40,9 @@ function AnalyseLeiste({ link = true }: { link?: boolean }) {
 /** link: „Link kopieren“ zeigen (der Atlas verzichtet darauf) */
 export function Befund({ children, link = true, tight = false }: { children: ReactNode; link?: boolean; tight?: boolean }) {
   return (
-    <div className={tight ? "mt-4" : "mt-8"}>
-      <p className={`m-0 text-[22px] font-medium leading-snug text-slate-900 ${tight ? "" : "max-w-[860px]"}`}>{children}</p>
+    <div className={tight ? "mt-4" : "mt-6"}>
+      {/* Eine Größe für alle plenara.X-Seiten (wie Trends und Fakten) */}
+      <p className={`m-0 text-[20px] font-semibold leading-snug text-slate-900 ${tight ? "" : "max-w-[900px]"}`}>{children}</p>
       <AnalyseLeiste link={link} />
     </div>
   );

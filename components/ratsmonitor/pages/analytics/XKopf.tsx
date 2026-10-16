@@ -1,25 +1,32 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { PageBand } from "./PageBand";
+import { Icon, type IconName } from "../../info/icons";
+import { AnalyticsX } from "../../components/Brand";
+import { ThemeIcon } from "../../components/icons";
+import { useSearch } from "../../state/search";
+import { THEMES } from "@/shared/themes.mjs";
 
 /*
  * Kopf der plenara.X-Seiten: Brotkrumen, Titel, Frage und (bei Atlas und Trends) die Reiter. Ein Reiter ist eine eigene Adresse
  * mit der bisherigen Auswertung (Ortsvergleich, Beschlüsse); Suchbegriff und Ort gelten seitenübergreifend (gemeinsame Suche).
  */
-type Seite = { gruppe: "Analysen" | "Einblicke"; titel: string; frage: string; text: string; reiter?: [string, string][] };
+type Seite = { icon: IconName; gruppe: "Analysen" | "Einblicke"; titel: string; frage: string; text: string; reiter?: [string, string][] };
 
 const ATLAS: [string, string][] = [["/analytics/atlas", "Überblick"], ["/analytics/vergleich", "Vergleich"]];
 const TRENDS: [string, string][] = [["/analytics/trends", "Verlauf"], ["/analytics/beschluesse", "Ausgang"]];
 
 const SEITEN: Record<string, Seite> = {
-  atlas: { gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen.", reiter: ATLAS },
-  vergleich: { gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist.", reiter: ATLAS },
-  trends: { gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten.", reiter: TRENDS },
-  beschluesse: { gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Wie die Vorgänge zum gewählten Begriff ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf.", reiter: TRENDS },
-  fraktionen: { gruppe: "Einblicke", titel: "Fraktionen", frage: "Wer will was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
-  gremien: { gruppe: "Einblicke", titel: "Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
-  graph: { gruppe: "Einblicke", titel: "Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
-  news: { gruppe: "Einblicke", titel: "Aktuelles", frage: "Was ist berichtenswert?", text: "Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit wörtlichem Zitat und Quelle. Für Vorhaben nach Branche und Stand: Signale." },
+  atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen.", reiter: ATLAS },
+  vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist.", reiter: ATLAS },
+  signale: { icon: "zap", gruppe: "Analysen", titel: "plenara.X Signale", frage: "Was entsteht?", text: "Einzelne Vorhaben mit Ort, Schritt und Quelle." },
+  fakten: { icon: "tag", gruppe: "Analysen", titel: "plenara.X Fakten", frage: "Welcher Wert?", text: "Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle." },
+  trends: { icon: "trendingUp", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten.", reiter: TRENDS },
+  beschluesse: { icon: "circleCheck", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Wie die Vorgänge zum gewählten Begriff ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf.", reiter: TRENDS },
+  fraktionen: { icon: "landmark", gruppe: "Einblicke", titel: "plenara.X Fraktionen", frage: "Wer will was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
+  gremien: { icon: "users", gruppe: "Einblicke", titel: "plenara.X Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
+  graph: { icon: "network", gruppe: "Einblicke", titel: "plenara.X Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
+  news: { icon: "newspaper", gruppe: "Einblicke", titel: "plenara.X Aktuelles", frage: "Was ist berichtenswert?", text: "Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit wörtlichem Zitat und Quelle. Für Vorhaben nach Branche und Stand: Signale." },
 };
 
 export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
@@ -32,10 +39,14 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
     <PageBand compact>
       <p className="text-[14px] text-slate-500">
         <Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link>
-        {s.gruppe === "Einblicke" ? <> / <Link href="/analytics/einblicke" className="text-teal-700">Einblicke</Link> / {s.titel}</> : <> / {s.titel.replace("plenara.X ", "")}{teil && teil !== s.reiter![0][1] ? ` / ${teil}` : ""}</>}
+        {s.gruppe === "Einblicke" ? <> / <Link href="/analytics/einblicke" className="text-teal-700">Einblicke</Link> / {s.titel.replace("plenara.X ", "")}</> : <> / {s.titel.replace("plenara.X ", "")}{teil && teil !== s.reiter![0][1] ? ` / ${teil}` : ""}</>}
       </p>
       <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <h1 className="text-[28px] font-semibold leading-tight">{s.titel}</h1>
+        {/* Titel kurz, die Marke als kleines Abzeichen daneben (führt zur Übersicht von plenara.X) */}
+        <h1 className="flex items-baseline gap-2.5 text-[28px] font-semibold leading-tight">
+          {s.titel.replace("plenara.X ", "")}
+          <MarkenAbzeichen />
+        </h1>
         <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">{s.frage}</b> {s.text}</p>
       </div>
       {s.reiter && (
@@ -50,12 +61,63 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   );
 }
 
-/** Querverweise unter einer Auswertung: dieselbe Suche auf einer anderen Seite weiterverfolgen */
+/** Querverweise unter einer Auswertung: dieselbe Suche auf einer anderen Seite weiterverfolgen. Als Kacheln, damit man sie sieht;
+ *  „Frage (Seite)“ wird zu Frage groß und Seite klein darüber */
 export function XWeiter({ links }: { links: [string, string][] }) {
   return (
-    <p className="mt-10 flex flex-wrap gap-x-6 gap-y-1 border-t border-slate-100 pt-4 text-[14px] text-slate-500 print:hidden">
-      <span>Weiter mit derselben Suche:</span>
-      {links.map(([href, name]) => <Link key={href} href={href} className="font-medium text-teal-700">{name} →</Link>)}
-    </p>
+    <nav aria-label="Weiter mit derselben Suche" className="mt-12 border-t border-slate-200 pt-6 print:hidden">
+      <p className="m-0 text-[14px] font-semibold text-slate-700">Weiter mit derselben Suche</p>
+      <ul className="m-0 mt-3 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {links.map(([href, name]) => {
+          /* Seite und Frage aus SEITEN (überall gleich); eigener Text nur, wenn die Seite dort fehlt */
+          const z = SEITEN[href.split("/").pop()!];
+          const m = z ? [, (href === "/analytics/vergleich" ? "Mit anderem Ort vergleichen" : z.frage), z.titel.replace("plenara.X ", "") + (z.reiter && z.reiter[0][0] !== href ? ` · ${z.reiter.find(([h]) => h === href)?.[1]}` : "")] : name.match(/^(.*) \((.*)\)$/);
+          return (
+            <li key={href}>
+              <Link href={href} className="group flex h-full items-center gap-3 rounded-xl bg-slate-50 px-4 py-3 transition-colors hover:bg-teal-50">
+                {z && <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-teal-700"><Icon name={z.icon} size={18} /></span>}
+                <span className="mr-auto">
+                  {m && <span className="block text-[12px] font-medium uppercase tracking-wide text-slate-500">{m[2]}</span>}
+                  <span className="block text-[16px] font-semibold text-slate-900 group-hover:text-teal-800">{m ? m[1] : name}</span>
+                </span>
+                <span aria-hidden="true" className="text-[18px] text-teal-700 transition-transform group-hover:translate-x-1">→</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+
+/** Die 10 Themen als Kacheln (Filter „Thema“ der gemeinsamen Suche), gleich auf Trends, Ausgang und den Einblicken */
+export function ThemenLeiste() {
+  const search = useSearch();
+  return (
+    <nav aria-label="Thema" className="mb-4 print:hidden">
+      <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
+        {[{ id: "alle", name: "" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.id, name: t.name }))].map((t) => {
+          const on = search.state.thema === t.name;
+          return (
+            <li key={t.id} className="sm:w-[104px]">
+              <button type="button" aria-pressed={on} onClick={() => search.setThema(t.name)}
+                className={`flex h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                <ThemeIcon theme={t.id} size={22} className={on ? "text-teal-700" : "text-slate-500"} />
+                <span className="line-clamp-2">{t.name || "Alle Themen"}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+
+/** Marke neben dem Seitentitel: graues Abzeichen „plenara.X“, Text auf der Grundlinie von Titel und Frage */
+function MarkenAbzeichen() {
+  return (
+    <Link href="/analytics/ueber" aria-label="plenara.X" className="inline-flex items-baseline rounded-md bg-slate-100 px-[7px] pb-[3px] pt-[2px] text-[14px] font-semibold leading-none text-slate-700 hover:bg-slate-200">
+      <span style={{ letterSpacing: "-.015em" }}>plenara</span><span className="inline-block self-center" style={{ lineHeight: 0 }}><AnalyticsX centered /></span>
+    </Link>
   );
 }

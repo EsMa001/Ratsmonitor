@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { THEMES } from "@/shared/themes.mjs";
-import { XKopf, XWeiter } from "./XKopf";
+import { Befund } from "./Befund";
+import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
@@ -12,7 +12,6 @@ import { RadarDrill } from "./RadarDrill";
 import { TrendMap, type Trend, type TrendKind } from "./TrendViews";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, countScale, useOrtInAdresse } from "./Kennzahlen";
 import { MiniCurve, SpreadChart, SpreadMap, fmt, keysOf, toDay, type SpreadRegion } from "./XTrendsParts";
-import { ThemeIcon } from "../../components/icons";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { isFiller, prettyTerm } from "../../lib/terms";
 import { useCatalog } from "../../lib/catalog";
@@ -179,23 +178,7 @@ export function XTrendsPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="trends" />
 
-      {/* Themen als Filter gegen das Rauschen der Begriffe (Filter „Thema“ der Suche) */}
-      <nav aria-label="Thema" className="print:hidden">
-        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
-          {[{ id: "alle", name: "" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.id, name: t.name }))].map((t) => {
-            const on = search.state.thema === t.name;
-            return (
-              <li key={t.id} className="sm:w-[104px]">
-                <button type="button" aria-pressed={on} onClick={() => search.setThema(t.name)}
-                  className={`flex h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
-                  <ThemeIcon theme={t.id} size={22} className={on ? "text-teal-700" : "text-slate-500"} />
-                  <span className="line-clamp-2">{t.name || "Alle Themen"}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+      <ThemenLeiste />
       <div className="mt-4 print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
@@ -203,10 +186,10 @@ export function XTrendsPage() {
       {res && lists && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst */}
-          {top && <p className="mt-6 max-w-[900px] text-[20px] font-semibold leading-snug">
+          {top && <Befund link={false}>
             Am stärksten zugenommen: „{prettyTerm(top.term)}“ ({ratio(top)}{wide?.s && wide.t.key === top.key && wide.s.added > 0 ? `, +${n(wide.s.added)} Gebiete, die meisten neuen` : ""})
             {wide?.s && wide.t.key !== top.key && wide.s.added > 0 ? <>, am meisten neue Gebiete: „{prettyTerm(wide.t.term)}“ (+{n(wide.s.added)})</> : null}.
-          </p>}
+          </Befund>}
           <Kennzahlen items={[
             { value: n(lists.up.length), label: "aufsteigende Begriffe" },
             { value: n(lists.up.filter((t) => t.kind === "emerging").length), label: "neu aufgekommen" },

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { PageBand } from "./PageBand";
+import { Befund } from "./Befund";
+import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
@@ -155,13 +156,7 @@ export function FaktenPage() {
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand compact>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Fakten</p>
-        <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <h1 className="text-[28px] font-semibold leading-tight">plenara.X Fakten</h1>
-          <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">Welcher Wert?</b> Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle.</p>
-        </div>
-      </PageBand>
+      <XKopf seite="fakten" />
 
       {/* Fakten als Kacheln wie die Themen im Atlas: Icon über dem Namen; Handy 4 je Reihe */}
       <nav aria-label="Fakt" className="print:hidden">
@@ -199,10 +194,10 @@ export function FaktenPage() {
       {res && (fact || allFacts) && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst */}
-          {plain && ranked.length > 0 && <p className="mt-6 max-w-[900px] text-[20px] font-semibold leading-snug">
+          {plain && ranked.length > 0 && <Befund link={false}>
             {titleName}: üblich {num(quart(lasts, 0.25))} bis {num(quart(lasts, 0.75))} {unit}, Median {num(mid(lasts))} {unit}
             {withPrev.length > 0 && <span className="font-normal text-slate-600">; seit dem vorigen Wert {up} {up === 1 ? "Gebiet" : "Gebiete"} höher, {down} niedriger</span>}.
-          </p>}
+          </Befund>}
           <Kennzahlen items={overview ? [{ value: n(ranked.length), label: "Gebiete mit Werten" }]
             : amount ? [{ value: num(ranked.reduce((a, x) => a + (x.sum ?? x.v), 0)), label: `${unit || "insgesamt"}` }, { value: n(ranked.length), label: "Gebiete" }]
             : change ? [{ value: n(ranked.filter((x) => x.v > 0).length), label: "Gebiete gestiegen" }, { value: n(ranked.filter((x) => x.v < 0).length), label: "gesunken" }]
@@ -264,6 +259,7 @@ export function FaktenPage() {
           </div>
         </div>
       )}
+    <XWeiter links={[["/analytics/atlas", "Wie viel? (Atlas)"], ["/analytics/signale", "Was entsteht? (Signale)"]]} />
     </main>
   );
 }

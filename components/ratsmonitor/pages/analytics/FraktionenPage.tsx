@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { XKopf, XWeiter } from "./XKopf";
+import { Kennzahlen } from "./Kennzahlen";
+import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -56,6 +57,7 @@ export function FraktionenPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="fraktionen" />
 
+      <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
@@ -65,16 +67,12 @@ export function FraktionenPage() {
           {parties.length === 0 ? <p className="mt-10 text-[16px]">Für diese Suche sind keine Anträge oder Anfragen einer Fraktion erkannt.</p> : (
             <>
               <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.withFaction)} Anträge und Anfragen einer Fraktion zugeordnet. Die meisten stellt ${busiest.name} (${n(busiest.n)}).`}</Befund>
-              <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-                {[
+              <Kennzahlen items={([
                   ["Vorgänge mit Fraktion", n(res.totals.withFaction)],
                   ["Fraktionen", n(parties.length)],
                   ["Anträge", n(parties.reduce((a, p) => a + p.antrag, 0))],
-                  ["Anfragen", n(parties.reduce((a, p) => a + p.anfrage, 0))],
-                ].map(([k, v], i) => (
-                  <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
-                ))}
-              </dl>
+                  ["Anfragen", n(parties.reduce((a, p) => a + p.anfrage, 0))]
+                ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Anträge und Anfragen je Fraktion</h2>

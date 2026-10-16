@@ -40,6 +40,7 @@ export function SpreadMap({ regions, day, firstDay, lastDay, onDay, playing, onT
     const detach = engine.attach(stageRef.current!, baseRef.current!, overRef.current!);
     engine.setLocked(false);
     engine.setExplore(true, null);
+    engine.setWheelGuard(true);
     engine.setBottomInset(76);
     return detach;
   }, [engine]);

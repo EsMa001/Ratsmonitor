@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prettyTerm } from "../../lib/terms";
+import { Segmented } from "./Kennzahlen";
 import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
@@ -14,7 +15,6 @@ import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
 import { RadarDrill } from "./RadarDrill";
 import { todayLocal } from "../../lib/text";
 import { errorText, fetchJson } from "../../lib/fetchJson";
-import { radioKeys, radioTab } from "../../lib/radioKeys";
 
 interface Share { id: string; n: number; share: number }
 interface Place {
@@ -147,7 +147,7 @@ export function ComparePage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="vergleich" />
 
-      <section aria-label="Vergleich einstellen" className="print:hidden mt-6 rounded-[20px] border border-slate-200 bg-white p-5 sm:p-6">
+      <section aria-label="Vergleich einstellen" className="print:hidden mt-2 border-b border-slate-200 pb-5">
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
           <PlaceField label="Ort 1" color={PLACE_COLORS[0]} value={ort1} onChange={setOrt1} onEnter={() => run()} />
           <PlaceField label="Ort 2" color={PLACE_COLORS[1]} value={ort2} onChange={setOrt2} onEnter={() => run()} />
@@ -216,9 +216,7 @@ export function ComparePage() {
           <section className="mt-12">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div><h2 className="text-[22px] font-semibold">Verlauf</h2><p className="mt-1 text-[14px] text-slate-500">Vorgänge je Monat.</p></div>
-              <div role="radiogroup" aria-label="Maß" onKeyDown={radioKeys} className="flex gap-1 text-[14px]">
-                {([[false, "Anzahl"], [true, "je 1.000 Einwohner"]] as const).map(([v, l]) => <button key={l} type="button" role="radio" aria-checked={perHead === v} tabIndex={radioTab(perHead === v)} onClick={() => setPerHead(v)} className={`h-8 rounded-full border px-3.5 ${perHead === v ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{l}</button>)}
-              </div>
+              <Segmented label="Maß" options={[["anzahl", "Anzahl"], ["kopf", "je 1.000 Einwohner"]]} value={perHead ? "kopf" : "anzahl"} onPick={(k) => setPerHead(k === "kopf")} />
             </div>
             <div className="my-3">{legend}</div>
             <CompareLines months={res.months} series={lines} />

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useDarkMode } from "../../lib/useDarkMode";
 import { MapEngine } from "../../lib/geo/mapEngine";
 import { MAP_COLORS } from "../../lib/constants";
@@ -24,9 +24,16 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   });
   /* Stabiler Weg zum aktuellen onPick, die Karte wird nur einmal je Geodaten gebaut */
   const select = useCallback((a: string) => pickRef.current(a), []);
+  /* Hinweis, wenn jemand über der Karte scrollt, ohne sie gewählt zu haben: die Seite scrollt weiter, die Karte zoomt nicht */
+  const [hint, setHint] = useState(false);
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hintRef = useRef(() => {});
+  useEffect(() => {
+    hintRef.current = () => { setHint(true); if (hintTimer.current) clearTimeout(hintTimer.current); hintTimer.current = setTimeout(() => setHint(false), 1400); };
+  });
   // Die Karte ruft select erst bei einem Klick auf, nicht beim Rendern
   // eslint-disable-next-line react-hooks/refs
-  const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: select, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo, select]);
+  const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: select, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => hintRef.current() }) : null), [geo, select]);
   const pinKey = pins?.map((p) => p.label + p.ags.join()).join("|") ?? "";
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { engine?.setPins(pins ?? []); }, [engine, pinKey]);
@@ -40,6 +47,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     const detach = engine.attach(stageRef.current!, baseRef.current!, overRef.current!);
     engine.setLocked(false);
     engine.setExplore(true, null);
+    engine.setWheelGuard(true);
     return detach;
   }, [engine]);
   /* Nach dem Anhängen (das den Kartenmodus ohne Punkte setzt): Punkte je Gebiet */
@@ -76,6 +84,9 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
         <canvas ref={ghostRef} aria-hidden="true" className="pointer-events-none absolute left-0 top-0 block h-full w-full opacity-0" />
         <canvas ref={overRef} role="img" aria-label={label} className="absolute left-0 top-0 block h-full w-full" />
         {!geo && <div className="absolute inset-0 grid place-items-center text-[14px] text-slate-500">Karte wird aufgebaut …</div>}
+        <div aria-hidden="true" className={`pointer-events-none absolute inset-0 grid place-items-center bg-slate-900/25 transition-opacity duration-200 ${hint ? "opacity-100" : "opacity-0"}`}>
+          <span className="rounded-full bg-white px-4 py-2 text-[14px] font-medium text-slate-900 shadow">Zum Zoomen in die Karte klicken oder Strg/⌘ + Scrollen</span>
+        </div>
       </div>
       <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
         <ul className="m-0 flex list-none flex-col gap-1 p-0">

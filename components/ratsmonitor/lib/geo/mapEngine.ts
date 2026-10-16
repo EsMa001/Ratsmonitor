@@ -82,6 +82,11 @@ export class MapEngine {
   private cleanup: (() => void) | null = null;
   /** Kartenmodus: Mausrad zoomt ohne vorherigen Klick */
   private freeWheel = false;
+  /** Mausrad zoomt nur nach einem Klick in die Karte oder mit Strg/⌘, sonst scrollt die Seite (Karten in plenara.X) */
+  private wheelGuard = false;
+  setWheelGuard(v: boolean) {
+    this.wheelGuard = v;
+  }
   /** Trefferzahl je Gemeinde als Abzeichen unter dem Namen (nur im Kartenmodus) */
   private badges: Record<string, number> | null = null;
   /** Darstellung im Kartenmodus: Flächen einfärben, Heatmap oder Blasen je Gemeinde */
@@ -1027,6 +1032,7 @@ export class MapEngine {
       if (!el.contains(e.target as Node)) engaged = false;
     };
     const wheel = (e: WheelEvent) => {
+      if (this.wheelGuard && !engaged && !e.ctrlKey && !e.metaKey) return void this.cb.onWheelHint();
       if (this.locked) {
         e.preventDefault();
         this.unlock();
