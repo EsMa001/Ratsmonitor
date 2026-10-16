@@ -700,6 +700,7 @@ topic design-styles.css:140
 - SearchFilterPanel.tsx (87): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - ShareButton.tsx (40): ShareButton
+- SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
 - TierNotice.tsx (67): AccountLoading, LoginRequired, UsagePill
 - TopicSeed.tsx (11): TopicSeed
 - icons.tsx (257): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync, ThemeIcon
@@ -756,7 +757,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (360): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (1021): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1029): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
@@ -821,15 +822,15 @@ topic design-styles.css:140
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
-- PageBand.tsx (18): PageBand
+- PageBand.tsx (19): PageBand
 - RadarDrill.tsx (90): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (74, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (259, ⚠2): signaleHref, SignalePage
+- SignalePage.tsx (265, ⚠3): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (466, ⚠2): XAtlasView
+- XAtlasView.tsx (474, ⚠2): XAtlasView
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 

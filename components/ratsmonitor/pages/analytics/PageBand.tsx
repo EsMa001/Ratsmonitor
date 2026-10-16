@@ -11,7 +11,8 @@ export function PageBand({ children, compact = false }: { children: ReactNode; c
       style={{ background: "radial-gradient(ellipse 1000px 520px at 88% -15%,rgba(13,148,136,.10),rgba(13,148,136,0) 70%)" }}
     >
       <div className="mb-6 hidden print:block"><AnalyticsLogo size={30} /></div>
-      <Reveal>{children}</Reveal>
+      {/* Kompakt ohne Einblenden: Titel und Satz sind sofort da */}
+      {compact ? children : <Reveal>{children}</Reveal>}
     </div>
   );
 }

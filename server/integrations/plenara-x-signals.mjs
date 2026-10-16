@@ -95,7 +95,7 @@ export async function xSignals(db,catalog,params){
   db.prepare(`${sel} SELECT av.a k,count(DISTINCT av.ck) n FROM (${sig.art}) av WHERE av.ck IN (SELECT case_key FROM sel${condPh}) GROUP BY k ORDER BY n DESC`).bind(...args,...paPh).all(),
   db.prepare(`${sel} SELECT region_id k,count(*) n FROM sel${cond} GROUP BY k ORDER BY n DESC`).bind(...args,...pa).all(),
   db.prepare(`${sel} SELECT count(*) n FROM sel${cond}`).bind(...args,...pa).first(),
-  db.prepare(`${sel} SELECT p.case_key ck,p.card_id id,p.region_id region,c.title,c.gremium,p.date,p.status,p.stage,p.ph FROM (SELECT * FROM sel${cond} ORDER BY date DESC,case_key LIMIT ? OFFSET ?) p JOIN search_cards c ON c.id=p.card_id ORDER BY p.date DESC,p.case_key`).bind(...args,...pa,SIGNAL_SIZE,offset).all(),
+  db.prepare(`${sel} SELECT p.case_key ck,p.card_id id,p.region_id region,c.title,c.gremium,p.date,p.status,p.stage,p.ph,(SELECT json_group_array(DISTINCT av.a) FROM (${sig.art}) av WHERE av.ck=p.case_key) arts FROM (SELECT * FROM sel${cond} ORDER BY date DESC,case_key LIMIT ? OFFSET ?) p JOIN search_cards c ON c.id=p.card_id ORDER BY p.date DESC,p.case_key`).bind(...args,...pa,SIGNAL_SIZE,offset).all(),
  ]);
  return finish(db,catalog,{sig,state,offset,counts,phases:phases.results,arts:arts.results,places:places.results,total:Number(total?.n||0),page:page.results});
 }
@@ -116,6 +116,8 @@ async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,tot
   total,offset,size:SIGNAL_SIZE,builtAt:state.builtAt,
   items:page.map(r=>{const c=cards.get(r.id)||{};
    return {...c,id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),
-    status:r.status,phase:phaseName(r.ph||'')};}),
+    status:r.status,phase:phaseName(r.ph||''),
+    // Filterwerte des Vorgangs (Leistung, Vorhaben …), sortiert; aus x_signals als Menge, ohne Tabelle als JSON-Liste
+    arts:(r.arts instanceof Set?[...r.arts]:JSON.parse(r.arts||'[]')).filter(Boolean).sort()};}),
  };
 }
