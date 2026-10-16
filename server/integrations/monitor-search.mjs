@@ -80,8 +80,10 @@ async function ftsTable(db){
 const FTS_TERM=/^[a-z0-9]{3,}$/;
 /* Bei sehr häufigen Begriffen ist der Index langsamer als der alte Weg (rat: Seite 3,8 s statt Millisekunden, weil der alte
    Weg nach 20 Treffern über den Datumsindex aufhört; Zähler 8 s). Ein Vorabtest mit Obergrenze (höchstens rund 10 bzw. 110 ms)
-   entscheidet je Begriff: Seite und Strom nur bis FTS_PAGE_MAX Treffer, Zähler bis FTS_FACETS_MAX. */
-export const FTS_PAGE_MAX=3000,FTS_FACETS_MAX=60000;
+   entscheidet je Begriff: Seite und Strom nur bis FTS_PAGE_MAX Treffer; Zähler und plenara.X immer über den Index. */
+export const FTS_PAGE_MAX=3000,FTS_ALL_MAX=400000;
+/* Treffer eines Worts laut Wortliste (Karten mit dem Wort als Teil des Texts, beide Ebenen); 0, wenn es dort nicht steht */
+const wordHits=async(db,t)=>{try{const r=await db.prepare('SELECT coalesce(hits_city,0)+coalesce(hits_district,0) n FROM search_words WHERE word=?').bind(t).first();return Number(r?.n||0);}catch{return 0;}};
 const ftsCount=async(db,t,max)=>Number((await db.prepare('SELECT count(*) n FROM (SELECT rowid FROM search_fts WHERE search LIKE ? LIMIT ?)').bind('%'+t+'%',max+1).first())?.n??max+1);
 /*
  * Gebiet als SQL-Bedingung. Eine lange Einschlussliste (ohne Ort: alle 5.030 Gemeinden) zwingt SQLite, über den
@@ -172,10 +174,13 @@ export async function searchFilters(db,catalog,f){
  const plainSearch=!f.label&&!f.status&&!f.month&&!f.from&&!f.noformal&&(placeScoped||(!f.area&&!f.more.length&&!f.within&&!f.without));
  const precomputable=(f.part==='facets'||f.part==='')&&plainSearch&&!f.exact&&f.groups.length===1&&f.groups[0].length===1;
  /* Begriffe, die über den Volltextindex eingeschränkt werden: ohne Kandidaten der Wortliste und unter der Obergrenze */
- /* plenara.X (part x, plenara-x-query.mjs) liest alle Treffer ohne Seitengrenze: dort ist der Index immer schneller (Server 16.10.2026:
-    haushalt 0,4 statt 3,1 s, rat mit 790.000 Treffern 2,2 statt 9,1 s), also ohne Obergrenze und ohne Vorabtest */
- const ftsTerms=new Set(),ftsMax=f.part==='facets'?FTS_FACETS_MAX:FTS_PAGE_MAX;
- if(ftsReady&&!cand&&!(precomputable&&await listCurrent(db)))for(const t of new Set((f.groups||[f.terms]).flat()))if(FTS_TERM.test(t)&&(f.part==='x'||await ftsCount(db,t,ftsMax)<=ftsMax))ftsTerms.add(t);
+ /* Zähler (facets) und plenara.X (part x, plenara-x-query.mjs) lesen alle Treffer ohne Seitengrenze: dort ist der Index immer
+    schneller (Server 16.10.2026: haushalt 0,4 statt 3,1 s, rat mit 790.000 Treffern 2,2 statt 9,1 s), also ohne Obergrenze und
+    ohne Vorabtest; bei den Zählern lesen Massenwörter (rat, gemeinde: über FTS_ALL_MAX Treffer laut Wortliste) alle Karten, das ist dort
+    schneller (Zähler rat 1,5 statt 2,5 s; antrag mit 146.000 Treffern 0,8 statt 3,0 s über den Index). Seite und Strom prüfen
+    die Obergrenze (sie hören nach einer Seite auf). */
+ const ftsTerms=new Set();
+ if(ftsReady&&!cand&&!(precomputable&&await listCurrent(db)))for(const t of new Set((f.groups||[f.terms]).flat()))if(FTS_TERM.test(t)&&(f.part==='x'||(f.part==='facets'?await wordHits(db,t)<=FTS_ALL_MAX:await ftsCount(db,t,FTS_PAGE_MAX)<=FTS_PAGE_MAX)))ftsTerms.add(t);
  const labelId=f.label?LABELS.find(l=>l.name===f.label).id:null;
  /* Ergebnisseite: Gebiet, Thema und Status als Bedingung */
  const page=(()=>{const b=base(),region=regionCondition([...scopedIds],catalog),where=[region.sql,...b.where],args=[region.arg,...b.args];
@@ -190,7 +195,10 @@ export async function searchMonitor(db,catalog,params){
  const {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page,placeScoped,plainSearch,formalReady}=await searchFilters(db,catalog,f);
  /* Relevanz: Treffer im Titel zählen dreifach, im übrigen Text einfach; bei Gleichstand das Neueste zuerst */
  const rterms=f.sort==='relevance'?[...new Set(f.terms||[])]:[];
- const order=rterms.length?{sql:`ORDER BY (${rterms.map(()=>'(instr(lower(title),?)>0)*3+(instr(search,?)>0)').join('+')}) DESC,date DESC,id ASC LIMIT ? OFFSET ?`,args:rterms.flatMap(t=>[t,t])}:{sql:`ORDER BY date ${f.sort==='asc'?'ASC':'DESC'},id ASC LIMIT ? OFFSET ?`,args:[]};
+ /* LIMIT und OFFSET als Kommazahl: Als Ganzzahl (so bindet der Node-Server, d1-sqlite.mjs) kennt SQLite die Seitengröße und
+    liest dann alle Karten und sortiert sie, statt über den Datumsindex nach einer Seite aufzuhören (Server 16.10.2026: Seite 2
+    ohne Begriff 0,6 bis 3,4 s statt 15 ms). Gleiches Ergebnis. */
+ const order=rterms.length?{sql:`ORDER BY (${rterms.map(()=>'(instr(lower(title),?)>0)*3+(instr(search,?)>0)').join('+')}) DESC,date DESC,id ASC LIMIT CAST(? AS REAL) OFFSET CAST(? AS REAL)`,args:rterms.flatMap(t=>[t,t])}:{sql:`ORDER BY date ${f.sort==='asc'?'ASC':'DESC'},id ASC LIMIT CAST(? AS REAL) OFFSET CAST(? AS REAL)`,args:[]};
  /* Facetten: alle Gebiete der Ebene (mit Ort der ganze Katalog, dann ohne Gebietsbedingung) */
  const facet=(()=>{const b=base(),where=[...b.where],args=[...b.args];
   if(regions.length<catalog.length){where.unshift('region_id IN (SELECT value FROM json_each(?))');args.unshift(JSON.stringify(regions.map(r=>r.id)));}
