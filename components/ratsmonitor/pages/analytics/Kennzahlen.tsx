@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import { Bell } from "lucide-react";
 import { useUi } from "../../state/ui";
 
@@ -57,6 +58,29 @@ export function ZeitPills({ value, all = "", onPick }: { value: string; all?: st
         className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === value ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>)}
     </span>
   );
+}
+
+/**
+ * Gewählter Ort in der Adresse (?ort=<Schlüssel>), damit sich jede Ansicht als Link teilen lässt: beim Öffnen setzt ?ort den Ort
+ * der Suche; ändert sich der Ort (oder die Adresse durch eine andere Auswahl), wird ?ort nachgezogen, ohne neuen Verlaufseintrag.
+ */
+export function useOrtInAdresse(area: string, setArea: (ags: string) => void) {
+  const params = useSearchParams().toString();
+  const pending = useRef<string | null>(null), started = useRef(false);
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    const o = new URLSearchParams(window.location.search).get("ort") ?? "";
+    if (/^\d{5,9}$/.test(o) && o !== area) { pending.current = o; setArea(o); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (pending.current !== null) { if (area !== pending.current) return; pending.current = null; }
+    const u = new URL(window.location.href);
+    if ((u.searchParams.get("ort") ?? "") === area) return;
+    if (area) u.searchParams.set("ort", area); else u.searchParams.delete("ort");
+    window.history.replaceState(window.history.state, "", u.toString());
+  }, [area, params]);
 }
 
 /* Eigener Ort, im Browser gemerkt (nur Bequemlichkeit, kein Konto nötig) */

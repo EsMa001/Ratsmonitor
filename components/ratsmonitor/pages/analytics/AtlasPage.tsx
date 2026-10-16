@@ -11,11 +11,14 @@ export const ATLAS_THEMEN: [string, string][] = [["", "Alle Themen"], ...THEMES.
 const THEME_IDS = new Set(THEMES.map((t: { id: string }) => t.id));
 const SUB_IDS = new Map(SUBTOPICS.map((s: { id: string; theme: string }) => [s.id, s.theme]));
 
-export const atlasHref = ({ thema = "", sub = "", zeit = "" }: { thema?: string; sub?: string; zeit?: string }) => {
+/* Ort aus der Adresse (useOrtInAdresse hält ?ort aktuell, auch ohne den Router) */
+const ortNow = () => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("ort") ?? "");
+export const atlasHref = ({ thema = "", sub = "", zeit = "", ort = "" }: { thema?: string; sub?: string; zeit?: string; ort?: string }) => {
   const p = new URLSearchParams();
   if (thema) p.set("thema", thema);
   if (sub) p.set("sub", sub);
   if (zeit) p.set("zeit", zeit);
+  if (ort) p.set("ort", ort);
   return `/analytics/atlas${p.size ? "?" + p : ""}`;
 };
 
@@ -30,14 +33,15 @@ export function AtlasPage() {
   const sub = SUB_IDS.get(subRaw) === thema ? subRaw : "";
   /* Zeitraum wie in den Signalen (3, 6, 12 Monate); ohne Angabe der ganze Bestand */
   const zeit = ["3", "6", "12"].includes(params.get("zeit") ?? "") ? params.get("zeit")! : "";
-  const target = atlasHref({ thema, sub, zeit });
+  const ort = /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "";
+  const target = atlasHref({ thema, sub, zeit, ort });
   /* Suchbegriff aus einem geteilten Link (?q=, von „Link kopieren“): einmal beim Öffnen, XAtlasView übernimmt ihn in die Suche */
   const [term] = useState(() => params.get("q")?.trim() || null);
   // Ungültige Auswahl und ?q=: auf die gültige Atlas-Adresse umstellen (ohne neuen Verlaufseintrag)
   const current = path + (params.size ? "?" + params : "");
   useEffect(() => { if (current !== target) router.replace(target, { scroll: false }); }, [current, target, router]);
   /* Eine Wahl ist ein Schritt im Verlauf: Zurück führt zur vorigen Auswahl */
-  const pick = (next: { thema?: string; sub?: string; zeit?: string }) => router.push(atlasHref({ zeit, ...next }), { scroll: false });
+  const pick = (next: { thema?: string; sub?: string; zeit?: string }) => router.push(atlasHref({ zeit, ort: ortNow(), ...next }), { scroll: false });
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand compact>

@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { RadarDrill } from "./RadarDrill";
 import { TrendMap, type Trend, type TrendKind } from "./TrendViews";
-import { Folgen, Kennzahlen, MeinOrt, countScale } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, countScale, useOrtInAdresse } from "./Kennzahlen";
 import { MiniCurve, SpreadChart, SpreadMap, fmt, keysOf, toDay, type SpreadRegion } from "./XTrendsParts";
 import { ThemeIcon } from "../../components/icons";
 import { errorText, fetchJson } from "../../lib/fetchJson";
@@ -109,6 +109,7 @@ export function XTrendsPage() {
 
   /* Gewählter Ort der Suche (Gemeinde, 8 Stellen): auf der Karte markiert */
   const area = new URLSearchParams(query).get("area") ?? "";
+  useOrtInAdresse(area, (a) => search.setArea(a, "ui"));
   const areaName = useMemo(() => { if (!sp || !area) return ""; for (const p of Object.values(sp.places)) if (p.ags.includes(area)) return p.name; return ""; }, [sp, area]);
 
   /* Steckbrief: Ausbreitung des gewählten Begriffs wie im Tool Ausbreitung */

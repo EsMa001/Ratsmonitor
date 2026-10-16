@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
-import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
@@ -78,7 +78,7 @@ const HIGH_BAD = new Set(["hebesatz", "fee_rate", "dog_tax", "kita_fee", "land_p
 const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
 const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
-function AtlasMap({ regions, facts, onList, listed, drill, onPlace, pins }: { regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; pins?: { ags: string[]; label: string }[] }) {
+function AtlasMap({ regions, facts, onList, listed, drill, onPlace, pins, preview }: { /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; pins?: { ags: string[]; label: string }[] }) {
   const [level, setLevel] = useState<"city" | "district">("city");
   const [picked, setPicked] = useState("");
   const [kind, setKind] = useState("");
@@ -132,7 +132,7 @@ function AtlasMap({ regions, facts, onList, listed, drill, onPlace, pins }: { re
       <div className="relative">
         {/* Klick wählt das Gebiet als Ort (wie in den Signalen): Gemeinde oder, auf Kreisebene, Kreis */}
         <RegionMap tall pins={level === "city" ? pins : []} level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={legend} colors={colors}
-          note={metricOn ? `Viertel über alle Gebiete${HIGH_BAD.has(kind) ? "; rot: hoch" : ""}${level === "district" ? "; nur Werte der Kreise selbst" : ""}` : "ohne Farbe: keine Vorgänge"}
+          note={preview ? `Vorschau: ${preview}` : metricOn ? `Viertel über alle Gebiete${HIGH_BAD.has(kind) ? "; rot: hoch" : ""}${level === "district" ? "; nur Werte der Kreise selbst" : ""}` : "ohne Farbe: keine Vorgänge"}
           label={`Karte: ${what} je ${level === "district" ? "Kreis" : "Gemeinde"}`}
           info={sel ? <>
             <b className="font-semibold">{sel.name}</b><br />
@@ -331,6 +331,56 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   const firstPart = parts.find((p) => !isRest(p))?.key ?? "";
   const openPart = part === null ? (sub || firstPart) : part;
   /* Liste hinter einer Zeile: dieselbe Auswahl, aber ohne das gewählte Unterthema (sonst nur die Überschneidung) */
+  /* Richtung je Zeile: Anteil in den letzten N Monaten (Zeitraum der Seite, sonst 6) gegenüber den N Monaten davor; gezeigt nur,
+     wenn sich der Anteil deutlich ändert (Faktor ab 1,25, z ab 2, mindestens 5 Vorgänge), sonst nichts */
+  const span = Number(zeit) || 6;
+  const [dirs, setDirs] = useState<{ for: string; v: Map<string, number> } | null>(null);
+  const dirFor = `${partBy}|${theme}|${baseQuery}|${span}`;
+  useEffect(() => {
+    if (!res || new URLSearchParams(baseQuery).get("from")) return;
+    const ago = (m: number) => { const d = new Date(); d.setMonth(d.getMonth() - m); return d.toISOString().slice(0, 10); };
+    const get = (from: string, to: string) => { const q = new URLSearchParams(baseQuery); q.set("from", from); if (to) q.set("to", to); return fetch(`/api/x?by=${partBy}${theme ? "&theme=" + theme : ""}&${q}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ rows?: Row[] }>) : null)).then((b) => b?.rows ?? []); };
+    const c = new AbortController();
+    Promise.all([get(ago(span), ""), get(ago(2 * span), ago(span))]).then(([a, b]) => {
+      const sum = (l: Row[]) => l.filter((r) => !isRest(r)).reduce((x, r) => x + r.count, 0), A = sum(a), B = sum(b), prev = new Map(b.map((r) => [r.key, r.count]));
+      const v = new Map<string, number>();
+      if (A && B) for (const r of a) {
+        if (isRest(r)) continue;
+        const k = r.count, j = prev.get(r.key) ?? 0, pa = k / A, pb = j / B, pool = (k + j) / (A + B);
+        const z = (pa - pb) / (Math.sqrt(pool * (1 - pool) * (1 / A + 1 / B)) || 1e-9), ratio = (pa + 0.5 / A) / (pb + 0.5 / B);
+        if (k + j >= 5 && Math.abs(z) >= 2 && (ratio >= 1.25 || ratio <= 0.8)) v.set(r.key, ratio);
+      }
+      setDirs({ for: dirFor, v });
+    }).catch(() => {});
+    return () => c.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [res, dirFor]);
+  const dirOf = (r: Row) => { const x = dirs?.for === dirFor ? dirs.v.get(r.key) : undefined; if (!x) return null;
+    const up = x >= 1, f = (up ? x : 1 / x).toLocaleString("de-DE", { maximumFractionDigits: 1 });
+    return <span title={`Anteil der letzten ${span} Monate gegenüber den ${span} Monaten davor`} className={`ml-1 whitespace-nowrap text-[12px] font-medium tabular-nums ${up ? "text-teal-700" : "text-slate-500"}`}>{up ? "↑" : "↓"} {up ? "×" : "÷"}{f}</span>; };
+  /* Vorschau auf der Karte beim Überfahren einer Zeile (Thema oder Unterthema): deren Gebiete, nach kurzer Pause geladen */
+  const [hoverKey, setHoverKey] = useState("");
+  const [preview, setPreview] = useState<{ key: string; rows: Row[] } | null>(null);
+  useEffect(() => {
+    if (!hoverKey || isRest({ key: hoverKey } as Row)) return;
+    const c = new AbortController();
+    const t = setTimeout(() => {
+      const p = new URLSearchParams(listQuery);
+      fetch(`/api/x?by=region&${theme ? `theme=${theme}&sub=${hoverKey}` : `theme=${hoverKey}`}&${p}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ rows?: Row[] }>) : null))
+        .then((b) => { if (b?.rows) setPreview({ key: hoverKey, rows: b.rows }); }).catch(() => {});
+    }, 220);
+    return () => { clearTimeout(t); c.abort(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hoverKey]);
+  /* Antwort mit Namen: die (bis zu drei) Zeilen mit dem deutlichsten Zuwachs */
+  const growth = (() => { if (dirs?.for !== dirFor) return null; const g = parts.filter((p) => (dirs.v.get(p.key) ?? 0) >= 1).sort((a, b) => dirs.v.get(b.key)! - dirs.v.get(a.key)!).slice(0, 3);
+    return g.length ? g.map((p) => ({ key: p.key, name: p.name, f: dirs.v.get(p.key)!.toLocaleString("de-DE", { maximumFractionDigits: 1 }) })) : null; })();
+  useOrtInAdresse(new URLSearchParams(baseQuery).get("area") ?? "", (a) => search.setArea(a, "ui"));
+  /* Auf dem Handy steht der Inhalt des Unterthemas unter der Karte: nach der Wahl dorthin scrollen */
+  const subRef = useRef<HTMLElement>(null);
+  const lastSub = useRef(sub);
+  useEffect(() => { if (sub && sub !== lastSub.current && window.innerWidth < 1024) subRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); lastSub.current = sub; }, [sub, res]);
+  const shownPreview = hoverKey && preview?.key === hoverKey ? preview : null;
   const partBase = `/api/x?list=1${theme ? "&theme=" + theme : ""}`;
   /* Mit Unterthema: Größe des Themas (für den Anteil) und die Unterthemen, die im selben Vorgang mit vorkommen (Antwort der Auswahl) */
   /* Zahl des Unterthemas sofort nach dem Klick: aus der Antwort des Themas (vor dem Klick schon da), sonst aus der Auswahl selbst */
@@ -403,12 +453,13 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                   <Folgen before={() => { if (theme) search.setThema(theme); }} hint="Neue Vorgänge zu Thema, Ort und Suche per Mail (Unterthemen werden nicht gespeichert)" />
                 </Kennzahlen>}
 
+              {growth && <p className="mt-3 text-[18px] font-semibold leading-snug">Am stärksten gewachsen: {growth.map((g, i) => <span key={g.key}>{i ? (i === growth.length - 1 ? " und " : ", ") : ""}<button type="button" onClick={() => (theme ? onSub(g.key) : onTheme(g.key))} className="font-semibold text-teal-700 hover:underline">{g.name}</button> <span className="font-normal text-slate-500">(×{g.f})</span></span>)}<span className="font-normal text-slate-500"> · letzte {span} Monate gegenüber den {span} davor</span></p>}
               {related.length > 0 && <p className="mt-1 text-[14px] text-slate-500">Dazu in den Signalen, mit Stand des Verfahrens: {related.map(([id, name], i) => <span key={id}>{i > 0 && " · "}<Link href={`/analytics/signale?signal=${id}`} className="font-medium text-teal-700 hover:underline">{name} →</Link></span>)}</p>}
               {place && cmp && <div className="mt-2"><ZeitPills value={zeit} onPick={onZeit} /></div>}
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
                 <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-                  {allRegions.length > 0 && <AtlasMap pins={regions.slice(0, 5).map((r) => ({ label: r.name.replace(/^(Stadt|Gemeinde|Markt|Ortsgemeinde) /, ""), ags: r.members?.length ? r.members : r.ags?.length === 8 ? [r.ags] : r.ags?.length === 5 ? [r.ags + "000"] : [] })).filter((p) => p.ags.length)} onPlace={(ags) => search.setArea(ags, "map")} regions={allRegions} facts={SHOW_FACTS ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+                  {allRegions.length > 0 && <AtlasMap pins={shownPreview ? [] : regions.slice(0, 5).map((r) => ({ label: r.name.replace(/^(Stadt|Gemeinde|Markt|Ortsgemeinde) /, ""), ags: r.members?.length ? r.members : r.ags?.length === 8 ? [r.ags] : r.ags?.length === 5 ? [r.ags + "000"] : [] })).filter((p) => p.ags.length)} onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
                 </div>
 
                 <div className="min-w-0 lg:col-span-6">
@@ -416,15 +467,16 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
 
                   {sub ? <>
                     {/* Mit Unterthema: rechts sein Inhalt statt der Liste aller Unterthemen (zum Wechseln dienen die Pillen oben) */}
-                    <section className={res.compare ? "mt-8" : ""}>
+                    <section ref={subRef} className={`scroll-mt-4 ${res.compare ? "mt-8" : ""}`}>
                       <h2 className="flex items-center gap-2 text-[22px] font-semibold"><ThemeIcon theme={theme} size={24} className="shrink-0 text-teal-700" />{subName}</h2>
                       <p className="mb-3 mt-1 text-[14px] text-slate-500">{subCount !== undefined ? `${n(subCount)} ${plural(subCount, "Vorgang", "Vorgänge")}${themeTotal ? `, ${pct(Math.round((1000 * subCount) / themeTotal) / 10)} von ${themeName}` : ""}. ` : ""}Die neuesten:</p>
                       <RadarDrill base={partBase} query={listQuery} by="sub" value={sub} label={subName} limit={3} onAll={() => showAll("sub", sub, [themeName, subName].join(" › "))} />
+                      <p className="mt-3 text-[14px] text-slate-500">Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(subName)}`} className="font-medium text-teal-700 hover:underline">„{subName}“ in den Trends →</Link></p>
                     </section>
                   </> : <section className={res.compare ? "mt-8" : ""}>
                     <h2 className="flex items-center gap-2 text-[22px] font-semibold">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? `Unterthemen von ${themeName}` : "Themen"}</h2>
-                    <p className="mb-3 mt-1 text-[14px] text-slate-500">Antippen zeigt die Vorgänge.</p>
-                    <PartList rows={parts} icons={!theme} open={openPart} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
+                    <p className="mb-3 mt-1 text-[14px] text-slate-500">Antippen zeigt die Vorgänge, Überfahren zeigt sie auf der Karte. ↑ ↓: Anteil der letzten {span} Monate gegenüber den {span} davor, nur deutliche Änderungen.</p>
+                    <PartList rows={parts} icons={!theme} open={openPart} dir={dirOf} onHover={setHoverKey} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
                       label={(r) => `${n(r.count)}${r.share !== null && theme && !sub ? ` · ${pct(r.share)}` : ""}`}
                       drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={3}
                         onAll={() => showAll(partBy, r.key, [themeName, r.name].filter(Boolean).join(" › "))}
@@ -472,7 +524,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
 }
 
 /** Gliederung rechts: Zeilen zum Aufklappen (Pfeil, Zahl in Petrol, Zeile reagiert); das gewählte Unterthema ist hervorgehoben */
-function PartList({ rows, open, selected, onOpen, drill, label, icons = false }: { rows: Row[]; open: string; selected: string; icons?: boolean; onOpen: (key: string) => void; drill: (r: Row) => React.ReactNode; label: (r: Row) => string }) {
+function PartList({ rows, open, selected, onOpen, drill, label, icons = false, dir, onHover }: { /* Richtung gegenüber dem Zeitraum davor */ dir?: (r: Row) => React.ReactNode; /* Überfahren (Maus, Tastaturfokus): Vorschau auf der Karte; "" = keine */ onHover?: (key: string) => void; rows: Row[]; open: string; selected: string; icons?: boolean; onOpen: (key: string) => void; drill: (r: Row) => React.ReactNode; label: (r: Row) => string }) {
   /* Restposten („Sonstiges“) nicht als gleichrangige Zeile: klein darunter, aufklappbar wie die anderen */
   const main = rows.filter((r) => !isRest(r)), rests = rows.filter(isRest);
   const max = Math.max(1, ...main.map((r) => r.count));
@@ -483,9 +535,9 @@ function PartList({ rows, open, selected, onOpen, drill, label, icons = false }:
         const rest = isRest(r), on = open === r.key, picked = selected === r.key, dim = !!selected && !picked;
         return (
           <li key={r.key} className="border-b border-slate-200">
-            <button type="button" onClick={() => onOpen(r.key)} aria-expanded={on}
+            <button type="button" onClick={() => onOpen(r.key)} aria-expanded={on} onMouseEnter={() => onHover?.(r.key)} onMouseLeave={() => onHover?.("")} onFocus={() => onHover?.(r.key)} onBlur={() => onHover?.("")}
               className={`grid w-full grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto_16px] ${dim ? "opacity-70" : ""}`}>
-              <span className={`flex items-center gap-2 text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${on || picked ? "font-semibold" : ""}`}>{icons && !rest && <ThemeIcon theme={r.key} size={18} className="shrink-0 text-slate-500" />}{r.name}</span>
+              <span className={`flex items-center gap-2 text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${on || picked ? "font-semibold" : ""}`}>{icons && !rest && <ThemeIcon theme={r.key} size={18} className="shrink-0 text-slate-500" />}{r.name}{dir?.(r)}</span>
               <span className="order-4 col-span-3 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1">
                 <span className={`block h-full rounded-full ${rest ? "bg-slate-300" : picked ? "bg-slate-900" : "bg-teal-600"}`} style={{ width: `${(r.count / max) * 100}%` }} />
               </span>

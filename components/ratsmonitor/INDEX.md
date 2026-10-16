@@ -805,7 +805,7 @@ topic design-styles.css:140
 - AnalyticsLocked.tsx (52): AnalyticsLocked
 - AnalyticsPages.tsx (86, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
-- AtlasPage.tsx (68): ATLAS_THEMEN, atlasHref, AtlasPage
+- AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (52): Befund, zuThema
 - BeschluessePage.tsx (189, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
@@ -819,7 +819,7 @@ topic design-styles.css:140
 - FraktionenPage.tsx (151, ⚠5): FraktionenPage
 - GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (167, ⚠3): GremiennetzPage
-- Kennzahlen.tsx (92): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, MeinOrt, Folgen
+- Kennzahlen.tsx (116): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
 - KnowledgeGraphPage.tsx (221, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
@@ -829,11 +829,11 @@ topic design-styles.css:140
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (90, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (299, ⚠3): signaleHref, SignalePage
+- SignalePage.tsx (317, ⚠5): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (516, ⚠5): XAtlasView
-- XTrendsPage.tsx (354, ⚠3): XTrendsPage
+- XAtlasView.tsx (568, ⚠9): XAtlasView
+- XTrendsPage.tsx (355, ⚠3): XTrendsPage
 - XTrendsParts.tsx (147, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery

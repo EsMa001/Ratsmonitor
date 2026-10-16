@@ -9,7 +9,7 @@
  */
 import {parseX,source,xState} from './plenara-x-query.mjs';
 import {stageName} from '../../shared/stage.mjs';
-import {AnalyticsError} from './analytics-diffusion.mjs';
+import {AnalyticsError,dataStarts} from './analytics-diffusion.mjs';
 import {where as placeOf} from './member-place.mjs';
 import {cardsById} from './monitor-search.mjs';
 
@@ -104,6 +104,7 @@ async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,tot
  const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
  // Karte wie in der Trefferliste der Suche (Kurztext, Gremium, Thema, Verlauf)
  const cards=new Map((await cardsById(db,catalog,page.map(r=>r.id))).map(c=>[c.id,c]));
+ const first=await firstHere(db,sig.id,page);
  const phaseName=k=>sig.phase==='x.stage'?(k?stageName(k):'Noch nicht eingeordnet'):(k||'Ohne Angabe');
  return {
   signals:SIGNALS.map((s,i)=>({id:s.id,name:s.name,who:s.who,count:Number(counts[i]?.n||0)})),
@@ -115,9 +116,26 @@ async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,tot
   places:places.map(r=>({region:r.k,name:name(r.k),ags:byId.get(r.k)?.ags||'',count:r.n,...(byId.get(r.k)?.members?.length?{members:byId.get(r.k).members.map(m=>m.ags).filter(Boolean)}:{})})),
   total,offset,size:SIGNAL_SIZE,builtAt:state.builtAt,
   items:page.map(r=>{const c=cards.get(r.id)||{};
-   return {...c,id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),
+   return {...c,id:r.id,place:r.region,firstHere:first.has(r.ck),title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),
     status:r.status,phase:phaseName(r.ph||''),
     // Filterwerte des Vorgangs (Leistung, Vorhaben …), sortiert; aus x_signals als Menge, ohne Tabelle als JSON-Liste
     arts:(r.arts instanceof Set?[...r.arts]:JSON.parse(r.arts||'[]')).filter(Boolean).sort()};}),
  };
+}
+
+/**
+ * „Erstmals hier“: Vorgänge der Seite, vor denen ihr Gebiet noch keinen Vorgang dieses Signals hatte (Sitzungsdatum, x_cases.date).
+ * Nur wenn der Bestand des Gebiets mindestens ein Jahr vor dem Vorgang beginnt; sonst wäre bei neu angebundenen Gebieten
+ * alles „erstmals“. Ohne Tabelle x_signals (Rückfall) eine leere Menge.
+ */
+async function firstHere(db,signal,page){
+ if(!page.length)return new Set();
+ try{
+  const starts=await dataStarts(db);
+  const year=d=>{const x=new Date(String(d).slice(0,10)+'T00:00:00Z');x.setUTCFullYear(x.getUTCFullYear()-1);return x.toISOString().slice(0,10);};
+  const rows=page.filter(r=>r.ck&&(starts.get(r.region)||'9999').slice(0,10)<=year(r.date)).map(r=>[r.ck,r.region,String(r.date).slice(0,10)]);
+  if(!rows.length)return new Set();
+  const {results}=await db.prepare(`SELECT j.value->>0 ck FROM json_each(?) j WHERE NOT EXISTS (SELECT 1 FROM x_cases x JOIN x_signals s ON s.case_key=x.case_key AND s.signal=? WHERE x.region_id=j.value->>1 AND x.date<j.value->>2 AND x.case_key<>j.value->>0)`).bind(JSON.stringify(rows),signal).all();
+  return new Set(results.map(r=>r.ck));
+ }catch{return new Set();}
 }

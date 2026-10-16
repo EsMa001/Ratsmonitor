@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Befund } from "./Befund";
-import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import type { Article } from "../../types";
@@ -20,7 +20,7 @@ interface Signal { id: string; name: string; who: string; count: number }
 interface Phase { key: string; name: string; count: number }
 interface Place { region: string; name: string; ags: string; count: number; members?: string[] }
 /* Karte wie in der Trefferliste der Suche (cardsById), dazu Ort im Verband und Stand */
-interface Item extends Partial<Article> { id: string; title: string; region: string; date: string; status: Article["status"]; phase: string; arts?: string[] }
+interface Item extends Partial<Article> { id: string; title: string; region: string; date: string; status: Article["status"]; phase: string; arts?: string[]; /* Schlüssel des Gebiets */ place?: string; /* erster Vorgang dieses Signals im Gebiet */ firstHere?: boolean }
 interface Result { signals: Signal[]; signal: { id: string; name: string; who: string; phaseText: string; art: string | null }; arts: Phase[]; phases: Phase[]; places: Place[]; placeCount?: number; total: number; offset: number; size: number; builtAt: string; items: Item[] }
 
 /* Signale und Zeiträume in derselben Reihenfolge wie im Backend; die Zahlen kommen mit der Antwort */
@@ -79,6 +79,8 @@ const dotOf = (name: string, order: string[]) => {
 };
 
 /* Thema (und Unterthema) im Atlas zur Kategorie: Hinweis unter der Antwortzeile */
+/* Begriff je Signal für die Ausbreitung in plenara.X Trends */
+const TRENDS_OF: Record<string, string> = { vergaben: "Vergabe", wohnbau: "Baugebiet", gewerbe: "Gewerbegebiet", wind: "Windenergie", solar: "Photovoltaik", waerme: "Wärmeplanung", schulen: "Schulsanierung", strasse: "Straßenausbau", wasser: "Hochwasserschutz", breitband: "Glasfaser", mobil: "Bürgerbus" };
 const ATLAS_OF: Record<string, [string, string, string]> = {
   wohnbau: ["bauen", "bauen.wohnen", "Wohnungsbau"], gewerbe: ["wirtschaft", "wirtschaft.gewerbe", "Gewerbegebiete"], wind: ["umwelt", "umwelt.ee", "Erneuerbare"],
   solar: ["umwelt", "umwelt.ee", "Erneuerbare"], waerme: ["umwelt", "umwelt.waerme", "Wärme"], schulen: ["bildung", "", "Bildung & Betreuung"],
@@ -86,12 +88,15 @@ const ATLAS_OF: Record<string, [string, string, string]> = {
   mobil: ["mobilitaet", "", "Mobilität & Verkehr"],
 };
 
-export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "" }: { signal?: string; phase?: string; art?: string; zeit?: string }) => {
+/* Ort aus der Adresse (useOrtInAdresse hält ?ort aktuell, auch ohne den Router) */
+const ortNow = () => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("ort") ?? "");
+export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort = "" }: { signal?: string; phase?: string; art?: string; zeit?: string; ort?: string }) => {
   const p = new URLSearchParams();
   if (signal) p.set("signal", signal);
   if (phase) p.set("stand", phase);
   if (art) p.set("art", art);
   if (zeit) p.set("zeit", zeit);
+  if (ort) p.set("ort", ort);
   return `/analytics/signale${p.size ? "?" + p : ""}`;
 };
 
@@ -100,8 +105,8 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "" }: { 
  * (keine Kennzahlen, die stehen in plenara.X Fakten). Signal, Stand und Zeitraum stehen in der Adresse (teilbar), Ort und Begriff in der Suche.
  */
 /* Ausklappbare Karte: Vorgänge der Auswahl je Gemeinde (Verbände färben ihre Mitgliedsgemeinden) */
-function SignalMap({ places, onPlace }: { places: Place[]; onPlace: (ags: string) => void }) {
-  const [picked, setPicked] = useState(""), [level, setLevel] = useState<"city" | "district">("city");
+function SignalMap({ places, onPlace, hover = "" }: { places: Place[]; onPlace: (ags: string) => void; /* Gebiet der überfahrenen Zeile (Schlüssel des Katalogs): auf der Karte hervorgehoben */ hover?: string }) {
+  const [own, setPicked] = useState(""), [level, setLevel] = useState<"city" | "district">("city");
   /* Gemeinden: Vorgänge je Gemeinde (Verbände färben ihre Mitgliedsgemeinden); Kreise: Summe aller Gebiete im Kreis */
   const byAgs = new Map<string, { name: string; count: number }>(), levels: Record<string, number> = {};
   for (const p of places) {
@@ -111,6 +116,10 @@ function SignalMap({ places, onPlace }: { places: Place[]; onPlace: (ags: string
   }
   const scale = countScale([...byAgs.values()].map((p) => p.count));
   for (const [a, p] of byAgs) levels[a] = scale.level(p.count);
+  /* Vorschau: das Gebiet der überfahrenen Zeile (bei Verbänden die erste Mitgliedsgemeinde, auf Kreisebene der Kreis) */
+  const hov = hover ? places.find((p) => p.region === hover) : undefined;
+  const hovAgs = hov ? (level === "district" ? hov.ags.slice(0, 5) : hov.ags.length === 8 ? hov.ags : hov.members?.[0] ?? "") : "";
+  const picked = hovAgs || own;
   const sel = picked ? byAgs.get(picked) : undefined;
   return (
     <section className="print:hidden" aria-label="Karte">
@@ -144,9 +153,9 @@ export function SignalePage() {
   const art = params.get("art") ?? "";
   const zeitRaw = params.get("zeit");
   const zeit = zeitRaw === null ? "6" : ZEITRAUM.some(([k]) => k === zeitRaw) ? zeitRaw : "6";
-  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string }) => router.push(signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ...next }), { scroll: false });
+  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string }) => router.push(signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), ...next }), { scroll: false });
   // Ungültige Werte in der Adresse still berichtigen
-  const target = signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit });
+  const target = signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
   const current = path + (params.size ? "?" + params : "");
   useEffect(() => { if (current !== target && (params.has("signal") || params.has("zeit"))) router.replace(target, { scroll: false }); }, [current, target, router, params]);
 
@@ -193,6 +202,10 @@ export function SignalePage() {
     if (next > items.length && items.length < (res?.total ?? 0)) loadMore();
   };
   const zeitText = ZEITRAUM.find(([k]) => k === zeit)?.[1];
+  const [hoverPlace, setHoverPlace] = useState("");
+  useOrtInAdresse(areaAgs, (a) => search.setArea(a, "ui"));
+  /* Antwort mit Namen: die Orte mit den meisten Vorgängen */
+  const topPlaces = res ? [...res.places].sort((a, b) => b.count - a.count).slice(0, 3) : [];
   const phaseOrder = (res?.phases ?? []).map((p) => p.name);
 
   return (
@@ -251,11 +264,16 @@ export function SignalePage() {
               <Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (die Signalkategorie wird noch nicht gespeichert)" />
             </Kennzahlen>}
 
-          {ATLAS_OF[signal] && <p className="mt-1 text-[14px] text-slate-500">Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 hover:underline">{ATLAS_OF[signal][2]} im Atlas →</Link></p>}
+          {topPlaces.length > 1 && res.total > 0 && <p className="mt-3 text-[18px] font-semibold leading-snug">Am meisten in {topPlaces.map((p, i) => <span key={p.region}>{i ? (i === topPlaces.length - 1 ? " und " : ", ") : ""}<button type="button" onClick={() => search.setArea(p.ags || p.members?.[0] || "", "ui")} className="font-semibold text-teal-700 hover:underline">{p.name}</button> ({n(p.count)})</span>)}.</p>}
+          {(ATLAS_OF[signal] || TRENDS_OF[signal]) && <p className="mt-1 text-[14px] text-slate-500">
+            {ATLAS_OF[signal] && <>Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 hover:underline">{ATLAS_OF[signal][2]} im Atlas →</Link></>}
+            {ATLAS_OF[signal] && TRENDS_OF[signal] && " · "}
+            {TRENDS_OF[signal] && <>Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="font-medium text-teal-700 hover:underline">„{TRENDS_OF[signal]}“ in den Trends →</Link></>}
+          </p>}
           {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 1024 px nebeneinander */}
           <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
             <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-              {res.places.length > 0 ? <SignalMap places={res.places} onPlace={(ags) => search.setArea(ags, "map")} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
+              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
             </div>
             <div className="min-w-0 lg:col-span-6">
               <div className="flex flex-col gap-2 print:hidden">
@@ -271,9 +289,9 @@ export function SignalePage() {
                   <h2 className="text-[22px] font-semibold">Neueste Vorgänge</h2>
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
                     {items.slice(0, shown).map((r) => (
-                      <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">
+                      <li key={r.id} onMouseEnter={() => setHoverPlace(r.place ?? "")} onMouseLeave={() => setHoverPlace("")} onFocus={() => setHoverPlace(r.place ?? "")} onBlur={() => setHoverPlace("")} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">
                         <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
-                          <span className="line-clamp-2 text-[14px] leading-snug sm:text-[16px]">{r.title}</span>
+                          <span className="line-clamp-2 text-[14px] leading-snug sm:text-[16px]">{r.firstHere && <span title="Der erste Vorgang dieser Art in diesem Ort (Bestand seit mindestens einem Jahr davor)" className="mr-1.5 rounded-full bg-teal-50 px-2 py-0.5 align-[1px] text-[12px] font-medium text-teal-800">erstmals hier</span>}{r.title}</span>
                           <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), (r.status === "announced" || r.status === "consulting") && (r.status === "announced" ? "angekündigt" : "in Beratung"), r.gremium].filter(Boolean).join(" · ")}</span>
                         </Link>
                         <span className="self-center whitespace-nowrap text-right text-[12px] text-slate-500"><span className="block"><span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${dotOf(r.phase, phaseOrder)}`} />{r.phase}</span>{r.arts?.length ? <span className="block text-slate-900">{r.arts.map(artShort).join(", ")}</span> : null}</span>

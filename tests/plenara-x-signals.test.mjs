@@ -9,7 +9,7 @@ import {buildXCases} from '../server/integrations/x-cases.mjs';
 import {THEMES_VERSION} from '../shared/themes.mjs';
 
 const catalog=[{id:'billerbeck',kind:'city',name:'Billerbeck',ags:'05558008'},{id:'other',kind:'city',name:'Anderer Ort',ags:'05558012'}];
-function fixture(){
+function fixture(extra=[]){
  const sql=new DatabaseSync(':memory:');
  for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8'));
  const put=(id,region,title,date,stage,facts)=>{
@@ -24,6 +24,7 @@ function fixture(){
  put('c','other','Windpark Ost Einvernehmen','2026-07-01','bauantrag',[['wind_count','2 bis 4 Anlagen','3']]);
  put('d','billerbeck','Einführung Bürgerbus','2026-08-01','planung',[['project','Bürgerbus oder Rufbus','']]);
  put('e','billerbeck','Freies WLAN in der Innenstadt','2026-08-02','antrag',[['project','Öffentliches WLAN','']]);
+ for(const e of extra)put(...e);
  buildXCases(sql,{today:'2026-12-31'});
  return {sql,db:sqliteAdapter(sql)};
 }
@@ -58,4 +59,19 @@ test('Signale: vorberechnete Tabelle x_signals ergibt dasselbe wie die Abfrage �
  const fast=[];for(const c of cases)fast.push(await xSignals(db,catalog,q(c)));
  sql.exec('DROP TABLE x_signals');
  for(const [i,c] of cases.entries())assert.deepEqual(await xSignals(db,catalog,q(c)),fast[i],c);
+});
+
+test('Signale: „erstmals hier“ nur beim ersten Vorgang des Signals im Gebiet und mit Bestand ab einem Jahr davor',async()=>{
+ const {sql,db}=fixture([
+  ['old','billerbeck','Friedhofssatzung','2024-01-10','planung',[]],
+  ['d2','billerbeck','Bürgerbus Fahrplan','2026-09-01','planung',[['project','Bürgerbus oder Rufbus','']]],
+  ['n','other','Rufbus Einführung','2026-09-05','planung',[['project','Bürgerbus oder Rufbus','']]],
+ ]);try{
+  const r=await xSignals(db,catalog,q('signal=mobil'));
+  const by=Object.fromEntries(r.items.map(i=>[i.id,i.firstHere]));
+  assert.equal(by.d,true,'erster Bürgerbus in Billerbeck');
+  assert.equal(by.d2,false,'zweiter Vorgang im selben Ort');
+  assert.equal(by.n,false,'Bestand des anderen Orts beginnt erst 2026');
+  assert.equal(r.items.find(i=>i.id==='d').place,'billerbeck');
+ }finally{sql.close();}
 });
