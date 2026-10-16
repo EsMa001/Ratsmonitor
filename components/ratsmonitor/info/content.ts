@@ -285,7 +285,7 @@ export const PRICE_FAQ: Qa[] = [
   { q: "Kann ich später upgraden?", a: "Ja, ein Wechsel auf einen höheren Tarif ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
   { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit Basic eine Suche, einen Artikel und eine Benachrichtigung. Mit Pro und Enterprise jeweils bis zu 100 gespeicherte Suchen, bis zu 100 gespeicherte Artikel und bis zu 100 aktive Benachrichtigungen." },
   { q: "Welcher Tarif enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo ist nur im Tarif Enterprise enthalten. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
-  { q: "Was ist plenara.X und welcher Tarif enthält es?", a: "plenara.X sind die Analysen zu plenara: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse, Beratungswege, Fraktionsprofil, Newsradar und der Atlas mit den 10 Themen. Sie sind nur im Tarif Enterprise enthalten. In Basic und Pro bleibt die Suche mit allen Treffern und Benachrichtigungen." },
+  { q: "Was ist plenara.X und welcher Tarif enthält es?", a: "plenara.X sind die Analysen und Einblicke zu plenara: Atlas mit Ortsvergleich, Signale, Trends mit Ausgang der Vorgänge und Fakten aus den Unterlagen, dazu Fraktionen, Gremien, Themennetz und Aktuelles. Sie sind nur im Tarif Enterprise enthalten. In Basic und Pro bleibt die Suche mit allen Treffern und Benachrichtigungen." },
 ];
 
 export type PlanId = "free" | "pro" | "enterprise";
@@ -355,7 +355,7 @@ export const PLANS: Plan[] = [
     items: [["map", "Suche in allen angebundenen Gebieten"], ["user", "Ihre Adresse + bis zu 5 weitere Empfänger"]],
     features: [
       { plus: true, text: "**Alles aus Pro**, zusätzlich:" },
-      { text: "**plenara.X**: Analysen zu Ausbreitung, Beschlüssen und Trends" },
+      { text: "**plenara.X**: Atlas, Signale, Trends, Fakten und Einblicke" },
       { text: "**Sitzungskalender** für Ihre Gebiete, auch mit Umkreis" },
       { text: "Benachrichtigungen an **bis zu 5 Kolleginnen und Kollegen**" },
     ],

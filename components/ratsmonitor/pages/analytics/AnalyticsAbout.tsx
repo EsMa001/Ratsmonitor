@@ -54,11 +54,11 @@ function TrendThumb() {
   );
 }
 
-/** Vorschaubild des Ortsvergleichs: Schmetterlingsdiagramm, links ein Ort, rechts der andere, in der Mitte die Themen */
+/** Vorschaubild des Vergleichs: Schmetterlingsdiagramm, links ein Ort, rechts der andere, in der Mitte die Themen */
 function CompareThumb() {
   const rows: [number, number][] = [[96, 40], [64, 88], [44, 52], [78, 24], [30, 70]];
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Ortsvergleichs: Balken zweier Orte gegenüber, links der eine, rechts der andere" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Vergleichs: Balken zweier Orte gegenüber, links der eine, rechts der andere" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
       <line x1="160" x2="160" y1="16" y2="140" stroke="#cbd5e1" />
       <circle cx="40" cy="18" r="4" fill="#0d9488" /><circle cx="280" cy="18" r="4" fill="#0f172a" />
       {rows.map(([l, r], i) => (
@@ -95,12 +95,12 @@ function DecisionThumb() {
   );
 }
 
-/** Vorschaubild der Beratungswege: gerichtete Pfeile von Einstiegs-Gremien zu einem Entscheidungs-Gremium */
+/** Vorschaubild der Gremien: gerichtete Pfeile von Einstiegs-Gremien zu einem Entscheidungs-Gremium */
 function NetThumb() {
   const nodes: [number, number, number, string, string][] = [[40, 36, 9, "#cbd5e1", "#94a3b8"], [40, 80, 11, "#cbd5e1", "#94a3b8"], [40, 122, 8, "#cbd5e1", "#94a3b8"], [150, 60, 14, "#cbd5e1", "#94a3b8"], [150, 118, 8, "#5eead4", "#0d9488"], [272, 78, 20, "#0f766e", "#0f766e"]];
   const links: [number, number, number][] = [[0, 3, 2], [1, 3, 3.5], [2, 4, 1.5], [3, 5, 6], [1, 5, 2], [4, 5, 2.5]];
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Beratungswege: Pfeile von Ausschüssen zum Rat" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Gremien: Pfeile von Ausschüssen zum Rat" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
       <defs><marker id="nt" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L9 5L0 9z" fill="#64748b" /></marker></defs>
       {links.map(([a, b, w]) => {
         const A = nodes[a], B = nodes[b], dx = B[0] - A[0], dy = B[1] - A[1], d = Math.hypot(dx, dy), ux = dx / d, uy = dy / d;
@@ -161,7 +161,7 @@ const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
   gremien: (
     <>
       <p className="mt-3 text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange ein Übergang dauert. Als Netz mit Pfeilen, mit denselben Suchen und Filtern wie auf der Startseite.</p>
-      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Die Beratungswege bilden ein gerichtetes Netz: Gremien sind Knoten, ein Pfeil bedeutet, dass Vorgänge von einem Gremium an das nächste gingen (Newman, „Networks“, 2018). Aus der Zahl eingehender und ausgehender Pfeile ergibt sich die Rolle: Einstieg (überwiegend ausgehend), Entscheidung (überwiegend eingehend) und Durchgang. Der Durchsatz ist eine einfache Form der Zentralität; wer viele Wege verbindet, hat eine Brückenstellung (Freeman, „A Set of Measures of Centrality Based on Betweenness“, 1977). Die Anordnung von links nach rechts folgt der mittleren Stufe im Beratungsweg, ähnlich einer geschichteten Zeichnung hierarchischer Systeme (Sugiyama et al., 1981). Ohne einzelnen Ort werden Gremien nach ihrer Art zusammengefasst, weil jeder Ort seine eigenen Namen hat.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Die Wege durch die Gremien bilden ein gerichtetes Netz: Gremien sind Knoten, ein Pfeil bedeutet, dass Vorgänge von einem Gremium an das nächste gingen (Newman, „Networks“, 2018). Aus der Zahl eingehender und ausgehender Pfeile ergibt sich die Rolle: Einstieg (überwiegend ausgehend), Entscheidung (überwiegend eingehend) und Durchgang. Der Durchsatz ist eine einfache Form der Zentralität; wer viele Wege verbindet, hat eine Brückenstellung (Freeman, „A Set of Measures of Centrality Based on Betweenness“, 1977). Die Anordnung von links nach rechts folgt der mittleren Stufe im Beratungsweg, ähnlich einer geschichteten Zeichnung hierarchischer Systeme (Sugiyama et al., 1981). Ohne einzelnen Ort werden Gremien nach ihrer Art zusammengefasst, weil jeder Ort seine eigenen Namen hat.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Nur Vorgänge mit Stationen in mindestens zwei verschiedenen Gremien tragen bei, das ist ein kleiner Teil. Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab. Die Gremienart wird aus dem Namen abgeleitet und kann im Einzelfall danebenliegen. Ausgewertet werden höchstens rund 10.000 Vorgänge.</p>
     </>
   ),

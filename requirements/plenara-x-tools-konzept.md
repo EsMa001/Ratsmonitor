@@ -1,53 +1,31 @@
-# plenara.X Tools neu ordnen (Konzept 16.10.2026, nicht umgesetzt)
+# plenara.X Tools neu ordnen (Konzept 16.10.2026, umgesetzt)
 
 ## Ziel
 
-Alle Tools bleiben, keines wird gestrichen oder versteckt. Die Sammelseite „Tools“ fällt weg; jedes Tool bekommt einen festen, sichtbaren Platz.
+Alle Tools bleiben, keines wird gestrichen oder versteckt. Die Sammelseite „Tools“ ist weg; jedes Tool hat einen festen, sichtbaren Platz.
 
 ## Menü
 
-**Analysen by plenara.X** (Mengen und Entwicklung)
-- Atlas – Wie viel? · neuer Reiter *Vergleich* (bisher Ortsvergleich)
-- Signale – Was entsteht? · neuer Reiter *Diese Woche* (bisher Newsradar)
-- Trends – Was verändert sich? · neuer Reiter *Ausgang* (bisher Beschlüsse)
+Zwei Gruppen, jede mit grauem Abzeichen „plenara.X“:
+
+**Analysen** (Mengen und Entwicklung)
+- Atlas – Wie viel? · Reiter *Überblick · Vergleich* (bisher Ortsvergleich)
+- Signale – Was entsteht?
+- Trends – Was verändert sich? · Reiter *Verlauf · Ausgang* (bisher Beschlüsse)
 - Fakten – Welcher Wert?
 
-**Akteure by plenara.X** (wer beteiligt ist, was zusammenhängt; Name offen: Alternative „Einblicke“)
+**Einblicke** (wer beteiligt ist, was zusammenhängt)
 - Fraktionen – Wer will was? (bisher Fraktionsprofil)
-- Gremien – Wer berät was, auf welchem Weg? (bisher Beratungswege)
-- Themennetz – Was hängt zusammen? (groß, volle Breite, wie heute)
+- Gremien – Wer berät was? (bisher Beratungswege)
+- Themennetz – Was hängt zusammen?
+- Aktuelles – Was ist berichtenswert? (bisher Newsradar)
 
-Darstellung: beide Gruppen mit Logo, oder einmal „by plenara.X“ über beiden Gruppen – im Menü vergleichen.
+## Seitenkopf
 
-## Querverweise
+Gemeinsamer Kopf `XKopf` auf jeder Seite: „‹ Zurück“ statt Pfad, Titel mit Abzeichen, Frage, Info-Knopf mit der Methodik der Seite, Reiter wo vorhanden. Querverweise unten als Kacheln („Weiter mit derselben Suche“), Texte zentral aus `SEITEN`.
 
-- Fraktion irgendwo angeklickt → Fraktionen
-- „Wo wird das beraten?“ (Trends, Atlas-Vorgang) → Gremien
-- „Zusammenhänge zu diesem Begriff“ (Trends) → Themennetz
-- Akteursseiten verlinken zurück auf Atlas und Trends (Ort, Begriff werden mitgegeben)
+## Adressen
 
-## Reiter
-
-- Volle Breite, Ort bzw. Begriff der Seite wird übernommen, Adresse merkt den Reiter (wie ?ort=).
-- Inhalt = das heutige Tool, Funktion unverändert; nur Kopf und Auswahl an die Seite angepasst.
-
-## Alte Adressen
-
-/analytics/vergleich, /news, /beschluesse, /gremien, /fraktionen, /graph, /tools leiten auf das neue Ziel um.
-Alt: Trends und Alt: Ausbreitung raus aus dem Menü, Adressen bleiben vorerst erreichbar; später entfernen.
-
-## Schritte
-
-1. Menü: zwei Gruppen, Akteursseiten als eigene Einträge mit Frage, Tools-Seite weg (Umleitung).
-2. Reiter *Vergleich* im Atlas.
-3. Reiter *Diese Woche* in Signale.
-4. Reiter *Ausgang* in Trends.
-5. Querverweise in beide Richtungen.
-6. Branchenseiten, Über-Seite, Sperrseite (AnalyticsLocked) und FRONTEND.md nachziehen.
+Die Adressen der Tools bleiben (/analytics/vergleich, /beschluesse, /gremien, /fraktionen, /graph, /news). Übersichts- und Methodikseiten (/analytics, /ueber, /einblicke, /tools, /methodik, /politik, /finanzen) gibt es nicht mehr (404, keine Umleitung). Alt: Trends und Alt: Ausbreitung sind nicht im Menü, ihre Adressen bleiben vorerst erreichbar.
 
 Kein neues Datenmodell; alles läuft weiter über `source()` und `x_cases`.
-
-## Offen
-
-- Gruppenname: „Akteure“ (Favorit) oder „Einblicke“.
-- Logo zweimal oder einmal über beiden Gruppen.

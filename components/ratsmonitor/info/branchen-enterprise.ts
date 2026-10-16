@@ -47,8 +47,8 @@ export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbre
 export const EINBLICKE: AnalyseId[] = ["fraktionen", "gremien", "graph", "news"];
 
 export const PLENARAX_VORTEILE: [AnalyseId, string, string][] = [
-  ["diffusion", "Ausbreitung sehen", "Wo ein Begriff zuerst auftaucht und in welchen Kommunen er danach folgt."],
-  ["beschluesse", "Beschlüsse einordnen", "Quote, Vertagungen und Dauer zeigen, wie zügig eine Kommune entscheidet."],
+  ["diffusion", "Ausbreitung in Trends sehen", "Wo ein Begriff zuerst auftaucht und in welchen Kommunen er danach folgt."],
+  ["beschluesse", "Ausgang einordnen", "Quote, Vertagungen und Dauer zeigen, wie zügig eine Kommune entscheidet."],
   ["gremien", "Den Weg durch die Gremien verstehen", "Welche Ausschüsse einen Beschluss vorbereiten, bevor der Rat entscheidet."],
 ];
 

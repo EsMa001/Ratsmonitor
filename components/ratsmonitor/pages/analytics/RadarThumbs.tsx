@@ -51,7 +51,7 @@ function ThemeRadarThumb({ id, name }: { id: keyof typeof SHAPE; name: string })
 function FactionThumb() {
   const rows: [number, number][] = [[6719, 0.8], [6599, 0.745], [5503, 0.71], [2217, 0.715], [1899, 0.56], [1804, 0.41]];
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Fraktionsprofils: Anträge je Fraktion, davon beschlossen" className={FRAME}>
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Fraktionen: Anträge je Fraktion, davon beschlossen" className={FRAME}>
       {rows.map(([n, rate], i) => {
         const w = (220 * n) / rows[0][0];
         return (
@@ -90,7 +90,7 @@ function PlanningThumb() {
 /** Newsradar: Meldungen als Spalten mit Überschrift, Zitatbalken und Zeilen */
 function NewsThumb() {
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Newsradars: Meldungen mit Überschrift, Zitat und Text" className={FRAME}>
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau von Aktuelles: Meldungen mit Überschrift, Zitat und Text" className={FRAME}>
       {[0, 1, 2].map((k) => (
         <g key={k} transform={`translate(${24 + k * 96} 26)`}>
           <rect width="80" height="9" rx="4.5" fill={k ? MUTED : "#0f172a"} />
