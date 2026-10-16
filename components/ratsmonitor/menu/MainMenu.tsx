@@ -6,7 +6,7 @@ import { BRANCHEN } from "../info/content";
 import { Icon } from "../info/icons";
 import { useMe } from "../lib/account";
 import { IconChevronDown } from "../components/icons";
-import { AnalyticsLogo } from "../components/Brand";
+import { AnalyticsX } from "../components/Brand";
 
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
 const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" | "circleHelp" }[] = [
@@ -236,6 +236,8 @@ export function MainMenu() {
 
 /** Name der Gruppe Analysen mit dem kleinen Logo plenara.X: „Analysen by plenara.X“ */
 function AnalysenBy() {
-  /* Alles an einer gemeinsamen Mittellinie: Text, „by“, Schriftzug und X stehen in einer Flexzeile mit items-center, gleiche Zeilenhöhe */
-  return <span className="inline-flex items-center gap-1.5 whitespace-nowrap leading-none">Analysen <span className="text-[12px] font-normal leading-none text-slate-400">by</span><span aria-label="plenara.X" className="inline-flex items-center leading-none"><AnalyticsLogo size={15} plainP /></span></span>;
+  /* Fließtext in einer Zeile: alle Wörter auf derselben Grundlinie und in derselben Größe, das X mit vertical-align: middle auf
+     der halben x-Höhe, also auf der Mittellinie der Kleinbuchstaben */
+  return <span className="whitespace-nowrap">Analysen <span className="text-[12px] font-normal text-slate-400">by</span>{" "}
+    <span aria-label="plenara.X" role="img"><span className="text-slate-900" style={{ letterSpacing: "-.015em" }}>plenara</span><span className="inline-block align-middle" style={{ fontSize: "1em", lineHeight: 0 }}><AnalyticsX centered /></span></span></span>;
 }

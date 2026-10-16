@@ -221,7 +221,7 @@ const X_SQUARES: [number, number, number, number][] = [1, -1].flatMap((dx) =>
     Array.from({ length: 6 }, (_, i) => [50 + dx * (18 + i * 10.5), 50 + dy * (18 + i * 10.5), Math.max(0.12, 0.85 - i * 0.13), Math.max(4, 6.5 - i * 0.5)] as [number, number, number, number]),
   ),
 );
-function AnalyticsX({ centered = false }: { centered?: boolean }) {
+export function AnalyticsX({ centered = false }: { centered?: boolean }) {
   const dot = (0.15 / X_H) * 100;
   return (
     <svg viewBox="0 0 100 100" aria-hidden="true" style={{ ...INLINE, height: `${X_H}em`, width: `${X_H}em`, verticalAlign: centered ? "middle" : `${-(X_H / 2 - 0.075)}em`, marginLeft: ".05em", ...(centered ? { display: "block" } : {}), overflow: "visible" }}>
