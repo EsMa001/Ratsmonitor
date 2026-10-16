@@ -83,6 +83,16 @@ export function useOrtInAdresse(area: string, setArea: (ags: string) => void) {
   }, [area, params]);
 }
 
+/** Umschalter für die Sortierung einer Liste (Trends, Fakten): helle Fläche, gewählte Wahl weiß hervorgehoben */
+export function Segmented<K extends string>({ options, value, onPick, label }: { options: [K, string, string?][]; value: K | ""; onPick: (k: K) => void; label: string }) {
+  return (
+    <div role="tablist" aria-label={label} className="inline-flex max-w-full overflow-x-auto rounded-full bg-slate-100 p-1">
+      {options.map(([k, l, hint]) => <button key={k} role="tab" type="button" aria-selected={k === value} title={hint} onClick={() => onPick(k)}
+        className={`h-8 shrink-0 whitespace-nowrap rounded-full px-3 text-[14px] ${k === value ? "bg-white font-semibold text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>)}
+    </div>
+  );
+}
+
 /* Eigener Ort, im Browser gemerkt (nur Bequemlichkeit, kein Konto nötig) */
 const MEIN_ORT = "plenara.meinOrt";
 const readOrt = (): { ags: string; name: string } | null => { try { const v = JSON.parse(localStorage.getItem(MEIN_ORT) || "null"); return v?.ags ? v : null; } catch { return null; } };

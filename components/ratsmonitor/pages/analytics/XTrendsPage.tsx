@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { RadarDrill } from "./RadarDrill";
 import { TrendMap, type Trend, type TrendKind } from "./TrendViews";
-import { Folgen, Kennzahlen, MeinOrt, countScale, useOrtInAdresse } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, Segmented, countScale, useOrtInAdresse } from "./Kennzahlen";
 import { MiniCurve, SpreadChart, SpreadMap, fmt, keysOf, toDay, type SpreadRegion } from "./XTrendsParts";
 import { ThemeIcon } from "../../components/icons";
 import { errorText, fetchJson } from "../../lib/fetchJson";
@@ -236,10 +236,7 @@ export function XTrendsPage() {
               ) : (
                 <>
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div role="tablist" aria-label="Sortierung" className="inline-flex rounded-full bg-slate-100 p-1">
-                      {SORTS.map(([k, l, hint]) => <button key={k} role="tab" type="button" aria-selected={k === sort && !overview} title={hint} onClick={() => { setOverview(false); pick({ sort: k }); }}
-                        className={`h-8 rounded-full px-3 text-[14px] ${k === sort && !overview ? "bg-white font-semibold text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>)}
-                    </div>
+                    <Segmented label="Sortierung" options={SORTS} value={overview ? "" : sort} onPick={(k) => { setOverview(false); pick({ sort: k }); }} />
                     <button type="button" aria-pressed={overview} onClick={() => setOverview((o) => !o)} className="h-8 rounded-full px-3 text-[14px] text-teal-700 hover:bg-teal-50">{overview ? "Liste" : "Übersicht"}</button>
                   </div>
                   <p className="mt-2 text-[14px] text-slate-500">{SORTS.find(([k]) => k === sort)![2]}. <span className="max-sm:hidden">×2,3: Anteil im Zeitraum gegenüber davor · +34: Gebiete zum ersten Mal dabei.</span></p>

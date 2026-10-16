@@ -8,7 +8,7 @@ import { useAnalysisRun } from "./useAnalysisRun";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { RadarDrill } from "./RadarDrill";
-import { Folgen, Kennzahlen, MeinOrt, useOrtInAdresse } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, Segmented, useOrtInAdresse } from "./Kennzahlen";
 import { Baby, Banknote, Building2, Coins, Dog, Droplets, Factory, HandCoins, House, LayoutGrid, Map as MapIcon, Percent, Route, Ticket, Trash2, Wind, type LucideIcon } from "lucide-react";
 
 /* plenara.X Fakten (GET /api/x?view=fakten, server/integrations/plenara-x-query.mjs): Werte aus den Unterlagen je Gemeinde
@@ -58,7 +58,7 @@ export function FaktenPage() {
   const allMetrics = !allFacts && params.get("wert") === "alle";
   const metric = allMetrics ? "" : metrics.includes(params.get("wert") ?? "") ? params.get("wert")! : metrics[0] ?? "";
   const overview = allFacts || allMetrics;
-  const pick = (next: { fakt?: string; wert?: string; ansicht?: string }) => {
+  const pick = (next: { fakt?: string; wert?: string; ansicht?: string; sortierung?: string }) => {
     const p = new URLSearchParams(params);
     for (const [k, v] of Object.entries(next)) { if (v) p.set(k, v); else p.delete(k); }
     setPicked("");
@@ -67,6 +67,8 @@ export function FaktenPage() {
 
   /* Stand heute (jüngster Wert) oder Veränderung zum vorigen Wert */
   const change = !overview && params.get("ansicht") === "veraenderung";
+  /* Reihenfolge der Liste: niedrigste zuerst (Standard, wenn niedrig gut ist) oder höchste zuerst */
+  const low = params.get("sortierung") === "niedrig" || (!params.get("sortierung") && facts.find((f) => f.kind === params.get("fakt"))?.dir === "good") || (!params.get("sortierung") && !params.get("fakt") && facts[0]?.dir === "good");
   const { levels, byAgs, legend, unit, ranked } = useMemo(() => {
     const regions = res?.regions ?? [];
     const unit = overview ? "" : fact?.map.find((m) => m.v[metric])?.v[metric].unit ?? "";
@@ -112,9 +114,9 @@ export function FaktenPage() {
     /* Liste: jedes Gebiet einmal (ein Verband färbt mehrere Gemeinden) */
     const seen = new Map<string, Area>();
     for (const x of area.values()) if (!seen.has(x.name)) seen.set(x.name, x);
-    const ranked = [...seen.values()].sort((a, b) => (fact?.dir === "good" && !change && !overview ? a.v - b.v : b.v - a.v));
+    const ranked = [...seen.values()].sort((a, b) => (low && !change && !overview ? a.v - b.v : b.v - a.v));
     return { levels, byAgs: area, legend, unit, ranked };
-  }, [res, fact, metric, level, change, overview, allFacts, facts]);
+  }, [res, fact, metric, level, change, overview, allFacts, facts, low]);
   /* Abdeckung: Gebiete mit Wert von allen Gebieten mit Sachvorgängen in der Auswahl */
   const regionCount = res?.regions.length ?? 0;
 
@@ -206,10 +208,6 @@ export function FaktenPage() {
             : change ? [{ value: n(ranked.filter((x) => x.v > 0).length), label: "Gebiete gestiegen" }, { value: n(ranked.filter((x) => x.v < 0).length), label: "gesunken" }]
             : [{ value: ranked.length ? `${num(mid(lasts))}` : "–", label: `Median${unit ? ` (${unit})` : ""}` }, { value: n(ranked.length), label: ranked.length === 1 ? "Gebiet mit Wert" : "Gebiete mit Wert" }, { value: n(up), label: "seit dem vorigen Wert höher" }]}>
             <span>{titleName}</span>
-            {!amount && fact && !overview && <span className="inline-flex gap-1 print:hidden" role="group" aria-label="Ansicht">
-              {([["", "Stand heute"], ["veraenderung", "Veränderung"]] as const).map(([k, l]) => <button key={k || "stand"} type="button" aria-pressed={change === !!k} onClick={() => pick({ ansicht: k })}
-                className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${change === !!k ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>)}
-            </span>}
             <MeinOrt current={areaAgs && focus && focus.ags === areaAgs ? { ags: areaAgs, name: focus.name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
             <Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (der Fakt wird noch nicht gespeichert)" />
           </Kennzahlen>
@@ -238,7 +236,12 @@ export function FaktenPage() {
               {plain && focus && listedArea && listedIn === "map" && <div className="mt-3"><RadarDrill base="/api/x?list=1" query={listQuery} by={`fact:${fact!.kind}`} value={metric} label={`${listedArea.name}: ${factName}`} limit={5} /></div>}
 
               {ranked.length > 0 && <section className={plain && focus ? "mt-8" : ""}>
-                <h2 className="text-[22px] font-semibold">{overview ? `Meiste ${allFacts ? "Fakten" : "Werte"} zuerst` : change ? "Stärkster Anstieg zuerst" : fact?.dir === "good" ? "Niedrigste Werte zuerst" : "Höchste Werte zuerst"}</h2>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="text-[22px] font-semibold">{overview ? `Meiste ${allFacts ? "Fakten" : "Werte"} zuerst` : amount ? "Größte zuerst" : "Gebiete"}</h2>
+                  {fact && !overview && !amount && <Segmented label="Sortierung" value={change ? "veraenderung" : low ? "niedrig" : "hoch"}
+                    options={[["hoch", "Höchste"], ["niedrig", "Niedrigste"], ["veraenderung", "Stärkster Anstieg", "Jüngster Wert gegen den vorigen; die Karte zeigt dann die Veränderung"]]}
+                    onPick={(k) => pick(k === "veraenderung" ? { ansicht: "veraenderung", sortierung: "" } : { ansicht: "", sortierung: k })} />}
+                </div>
                 <p className="mt-1 text-[14px] text-slate-500">Antippen zeigt die Vorgänge, aus denen der Wert stammt; Überfahren zeigt den Ort auf der Karte.{plain ? " Pfeil: gegenüber dem vorigen Wert." : ""}</p>
                 <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0" onMouseLeave={() => setHover("")}>
                   {shown.map((x) => <li key={x.name} className="border-b border-slate-200">

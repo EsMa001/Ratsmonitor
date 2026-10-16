@@ -787,7 +787,7 @@ topic design-styles.css:140
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (234, ⚠1): MainMenu
+- MainMenu.tsx (235, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (178, ⚠11): DetailPage
@@ -815,11 +815,11 @@ topic design-styles.css:140
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
 - DiffusionSearch.tsx (67, ⚠2): PlayState, DiffusionSearch
-- FaktenPage.tsx (312, ⚠3): FaktenPage
+- FaktenPage.tsx (315, ⚠3): FaktenPage
 - FraktionenPage.tsx (151, ⚠5): FraktionenPage
 - GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (167, ⚠3): GremiennetzPage
-- Kennzahlen.tsx (116): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
+- Kennzahlen.tsx (126): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
 - KnowledgeGraphPage.tsx (221, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
@@ -832,8 +832,8 @@ topic design-styles.css:140
 - SignalePage.tsx (317, ⚠5): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (568, ⚠9): XAtlasView
-- XTrendsPage.tsx (355, ⚠3): XTrendsPage
+- XAtlasView.tsx (569, ⚠9): XAtlasView
+- XTrendsPage.tsx (352, ⚠3): XTrendsPage
 - XTrendsParts.tsx (147, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery
