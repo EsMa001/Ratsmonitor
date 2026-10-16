@@ -190,7 +190,7 @@ export function MainMenu() {
                 </button>}
                 {show("analyse") && (
                   <ul className="ri-menu__subs">
-                    <li aria-hidden="true" className="px-3 pb-1 pt-1"><AnalyticsLogo size={15} /></li>
+                    <li aria-hidden="true" className="mb-1 flex items-center gap-2 border-b border-slate-100 px-3 pb-2 pt-1"><AnalyticsLogo size={14} /><span className="text-[12px] text-slate-400">Auswertungen über alle Räte</span></li>
                     {ANALYSE.map((f) => (
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub min-w-[230px]" aria-current={current(f.href)} onClick={pick}>
