@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Befund, Fehler, Leer } from "./Befund";
@@ -255,7 +254,7 @@ export function XTrendsPage() {
                   )}
                   {!overview && rows.length > shown && <button type="button" onClick={() => setLimit({ for: url + sort, n: shown + 10 })} className="mt-3 h-9 rounded-full border border-slate-300 px-4 text-[14px] text-slate-700 hover:border-slate-400">Weitere {Math.min(10, rows.length - shown)} zeigen</button>}
                   {res.q.trim() && <p className="mt-4 text-[14px]"><button type="button" onClick={() => pick({ begriff: res.q.trim() })} className="font-medium text-teal-700">Ausbreitung von „{prettyTerm(res.q.trim())}“ ansehen →</button></p>}
-                  <p className="mt-6 text-[12px] text-slate-500">Gezählt werden Sachvorgänge ohne private Bauanträge. „+N Gebiete“ zählt Gebiete in ganz Deutschland, die den Begriff im Zeitraum zum ersten Mal im Titel hatten; neu angebundene Gebiete zählen nicht. Die alten Werkzeuge: <Link href="/analytics/trends-alt" className="text-teal-700">Alt: Trends</Link> · <Link href="/analytics/diffusion-alt" className="text-teal-700">Alt: Ausbreitung</Link>.</p>
+                  <p className="mt-6 text-[12px] text-slate-500">Gezählt werden Sachvorgänge ohne private Bauanträge. „+N Gebiete“ zählt Gebiete in ganz Deutschland, die den Begriff im Zeitraum zum ersten Mal im Titel hatten; neu angebundene Gebiete zählen nicht.</p>
                 </>
               )}
             </div>
@@ -320,7 +319,6 @@ function Steckbrief({ begriff, row, spread, df, error, firsts, day, onDay, playi
         </ol>
 
         {row && <div className="mt-8"><RadarDrill base="/api/analytics/trends?list=1" query={listQuery} by="term" value={row.key} label={`Vorgänge mit „${name}“ im Zeitraum`} limit={5} /></div>}
-        <p className="mt-6 text-[14px]"><Link href={`/analytics/diffusion-alt?thema=${encodeURIComponent(begriff)}`} className="text-teal-700">Im alten Werkzeug Ausbreitung öffnen →</Link></p>
       </>)}
     </section>
   );
