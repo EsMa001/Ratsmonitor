@@ -61,6 +61,7 @@ mock.module(new URL('../../scripts/pdf-store/store-lib.mjs',import.meta.url),{na
  ocrWithRefetch:async(_store,sha,{read})=>({pages:await read(sha),fetched:false,result:'ok'}),
  downloader:()=>async()=>{throw Error('unexpected network access');},
  dropIfTooBig:()=>false,
+ ocrRange:()=>true,
 }});
 mock.module(new URL('../../scripts/pdf-store/state.mjs',import.meta.url),{namedExports:{
  progress:()=>{},onStop:()=>{},stepSummary:value=>{summary=value;},lane:value=>value,
