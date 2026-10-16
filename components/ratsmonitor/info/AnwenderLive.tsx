@@ -153,7 +153,7 @@ function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
 export function AnwenderLivePage({ b }: { b: Branche }) {
   const term = b.keywords[0];
   const [pick, setPick] = useState(0);
-  const dark = useDarkMode();
+  const [dark] = useDarkMode();
   const href = suchLink(term);
   return (
     <>
