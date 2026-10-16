@@ -1,0 +1,55 @@
+{
+  "name": "Plenara",
+  "stand": "2026-10-16",
+  "quelle": "docs/design/corporate-design.md (verbindliche Regeln); diese Datei ist die maschinenlesbare Fassung für Vorlagen und Skripte",
+  "slogan": "Besser verstehen, was vor Ort beraten wird.",
+  "schreibweise": { "produkt": "Plenara", "analysen": "Plenara.X", "logo": "plenara (Kleinschreibung nur im Schriftzug)" },
+  "farben": {
+    "tinte": { "hex": "#0f172a", "verwendung": "Überschriften, Logo-Schrift, wichtiger Text, Hauptaktion" },
+    "dunkel": { "hex": "#0b1220", "verwendung": "dunkle Flächen: Titel- und Schlussfolien, Hinweiskarten, Enterprise" },
+    "grau": { "hex": "#64748b", "verwendung": "Fließtext, Erläuterungen, Meta" },
+    "grauHell": { "hex": "#94a3b8", "verwendung": "Platzhalter, Fußnoten, Seitenzahlen" },
+    "teal": { "hex": "#0d9488", "verwendung": "Akzent: Logo, Symbole, Flächen, Markierungen, Schrift ab 24 px" },
+    "tealDunkel": { "hex": "#0f766e", "verwendung": "kleiner Text in Teal (Links, Eyebrows), Flächen mit weißer Schrift" },
+    "tealHell": { "hex": "#f0fdfa", "verwendung": "zarte Teal-Flächen, Symbolkreise, Hinweisboxen" },
+    "weiss": { "hex": "#ffffff", "verwendung": "Hintergrund" },
+    "flaeche": { "hex": "#f8fafc", "verwendung": "Karten, Bänder" },
+    "linie": { "hex": "#e2e8f0", "verwendung": "Rahmen von Feldern und Karten, Trennlinien" },
+    "linieKarte": { "hex": "#e8edf2", "verwendung": "Rahmen von Bildern und Karten" }
+  },
+  "schrift": {
+    "familie": "IBM Plex Sans",
+    "lizenz": "SIL OFL 1.1, Dateien in public/fonts",
+    "gewichte": { "text": "Regular 400", "hervorhebung": "SemiBold 600", "menue": "Medium 500" },
+    "windowsNamen": { "regular": "IBM Plex Sans", "semibold": "IBM Plex Sans SmBld" },
+    "rueckfall": "Segoe UI, Calibri, systemeigene Sans-Serif",
+    "groessenWeb": [12, 14, 16, 18, 22, 28, 44]
+  },
+  "logo": {
+    "ordner": "docs/design/logo",
+    "dateien": {
+      "wortmarke": "plenara-logo.svg / .png (auf Weiß, transparent)",
+      "wortmarkeDunkel": "plenara-logo-dunkel.svg / .png (auf Dunkel #0b1220)",
+      "bildmarke": "plenara-bildmarke.svg / .png",
+      "bildmarkeDunkel": "plenara-bildmarke-dunkel.svg",
+      "plenaraX": "plenara-x-logo.svg / .png",
+      "plenaraXDunkel": "plenara-x-logo-dunkel.svg / .png",
+      "profilbild": "plenara-profilbild.png, plenara-profilbild-dunkel.png (1024 × 1024)"
+    },
+    "schutzraum": "mindestens die Höhe des Buchstabens l auf allen Seiten",
+    "mindestgroesse": { "wortmarke": "Schrifthöhe 20 px bzw. 6 mm", "bildmarke": "16 px bzw. 5 mm" },
+    "aufDunkel": "Schriftzug Weiß, Bildmarke und Quadrat bleiben Teal",
+    "verboten": ["strecken oder drehen", "andere Farben als Teal, Tinte und Weiß", "Schatten oder Verläufe", "Schriftzug neu setzen"],
+    "erzeugt": "node docs/design/tools/export-logos.mjs (aus der Geometrie in components/ratsmonitor/components/Brand.tsx)"
+  },
+  "praesentation": {
+    "vorlage": "docs/design/praesentation/plenara-firmenpraesentation.pptx",
+    "format": "16:9, 10 × 5,625 Zoll",
+    "thema": { "name": "Plenara", "dk1": "0F172A", "lt1": "FFFFFF", "dk2": "0B1220", "lt2": "F8FAFC", "accent1": "0D9488", "accent2": "0F766E", "accent3": "64748B", "accent4": "94A3B8", "accent5": "F0FDFA", "accent6": "E2E8F0", "hlink": "0F766E" },
+    "layouts": { "HELL": "weiße Inhaltsfolie: Eyebrow (10 pt, Teal dunkel, gesperrt), Titel (24 pt SemiBold), Logo unten links, Seitenzahl unten rechts", "DUNKEL": "Titel und Schluss: Dunkel mit Punktraster, Logo-Fassung dunkel", "TRENNER": "Abschnittsfolie: Dunkel, Titel 36 pt Weiß, Untertitel 16 pt" },
+    "groessen": { "titel": 24, "zwischenueberschrift": "12,5 bis 15 SemiBold", "text": "10 bis 13", "fussnote": "9 bis 9,5", "kennzahl": "24 bis 32 SemiBold" },
+    "elemente": ["Teal-Quadrat als Aufzählungszeichen (0,1 Zoll)", "Karten: Fläche #f8fafc, Rahmen #e2e8f0, Radius 0,1 Zoll", "Symbole: Feather-Linien in Teal dunkel auf Kreis Teal hell", "Screenshots in weißem Rahmen mit weichem Schatten", "Diagramme nativ, eine Farbe (Teal), Beschriftung 10 pt Grau"],
+    "nichtErlaubt": ["Farbbalken und Akzentstreifen", "Linien unter Titeln", "Fotos aus Bilddatenbanken", "Verläufe außer dem zarten Teal-Schimmer", "mehr als eine Akzentfarbe"],
+    "bauen": "cd docs/design/tools && npm install && node screenshots.mjs (Tunnel zum Server) && node build-praesentation.mjs && node render-praesentation.mjs"
+  }
+}

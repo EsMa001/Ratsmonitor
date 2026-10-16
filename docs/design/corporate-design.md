@@ -1,6 +1,6 @@
 # Corporate Design Plenara
 
-Stand: 08.10.2026. Abgeleitet aus der öffentlichen Webseite, so wie sie heute ist (ohne Admin-Bereich). **Ist-Stand** heißt: so steht es im Code und sieht man auf der Seite. **Vorschlag** heißt: von mir ergänzt, damit das Design vollständig wird, bitte freigeben oder ändern.
+Stand: 16.10.2026 (Logo-Dateien, Präsentation und Werkzeuge ergänzt; erste Fassung 08.10.2026). Abgeleitet aus der öffentlichen Webseite, so wie sie heute ist (ohne Admin-Bereich). **Ist-Stand** heißt: so steht es im Code und sieht man auf der Seite. **Vorschlag** heißt: von mir ergänzt, damit das Design vollständig wird, bitte freigeben oder ändern.
 
 Die Ansicht dazu: [`styleguide.html`](styleguide.html) (im Browser öffnen). Quellen im Code: `app/styles/*.css` (Farben in `tokens.css`), `components/ratsmonitor/components/Brand.tsx`, `components/ratsmonitor/lib/constants.ts`, `components/ratsmonitor/FRONTEND.md`.
 
@@ -22,12 +22,14 @@ Die Ansicht dazu: [`styleguide.html`](styleguide.html) (im Browser öffnen). Que
 - Auf schmalen Handys (unter 440 px) zeigt die Kopfzeile nur die Bildmarke ohne Schriftzug.
 - Im Code liegen weitere Entwürfe (Quorumo, Parlamo, ältere Plenara-Varianten). Sie gehören **nicht** zum Auftritt und werden nicht verwendet.
 
-**Vorschlag (noch nicht festgelegt):**
+**Festgelegt (16.10.2026):**
 
 - Schutzraum um das Logo: mindestens die Höhe des Buchstabens „l“ auf allen Seiten.
-- Mindestgröße: Schriftzug nicht kleiner als 20 px Schrifthöhe, Bildmarke allein nicht kleiner als 16 px.
-- Nicht erlaubt: Logo strecken, drehen, andere Farben als Teal und Tinte, Schatten oder Verläufe, Schrift ersetzen.
-- Logo-Dateien (SVG, PNG) aus dem Code exportieren und ablegen, bisher gibt es sie nur als Komponente.
+- Mindestgröße: Schriftzug nicht kleiner als 20 px Schrifthöhe (Druck 6 mm), Bildmarke allein nicht kleiner als 16 px (5 mm).
+- Auf dunklem Grund (`#0b1220`): Schriftzug Weiß, Bildmarke und Schlussquadrat bleiben Teal `#0d9488`.
+- Nicht erlaubt: Logo strecken, drehen, andere Farben als Teal, Tinte und Weiß, Schatten oder Verläufe, Schriftzug neu setzen.
+- **Logo-Dateien** liegen in `docs/design/logo/` (Schriftzug als Pfade, keine Schrift nötig): `plenara-logo.svg/.png` (auf Weiß), `plenara-logo-dunkel.svg/.png`, `plenara-bildmarke.svg/.png`, `plenara-bildmarke-dunkel.svg`, `plenara-x-logo.svg/.png`, `plenara-x-logo-dunkel.svg/.png`, Profilbilder `plenara-profilbild.png` und `plenara-profilbild-dunkel.png` (1024 × 1024). Erzeugt aus der Geometrie in `Brand.tsx` mit `node docs/design/tools/export-logos.mjs`; nach Änderungen am Logo im Code dort neu erzeugen.
+- Maschinenlesbare Fassung aller Festlegungen (Farben, Schrift, Logo, Präsentation): `docs/design/brand.json`.
 
 ## 3. Farben
 
@@ -108,7 +110,7 @@ Warnhinweise nutzen Amber (Tailwind `amber-50` Fläche, `amber-200` Rand, `amber
 
 **Ist-Stand:** Es gibt keine Fotos. Die Bildwelt besteht aus Punkten und Linien: Sitzpunkte (Logo), Diffusionsanalyse als Punktfeld in Teal-Abstufungen, Knowledge Graph als Netz aus Teal-Knoten mit grauen Linien, die Karte mit Teal-Stufen. Grafiken stehen auf Weiß in Karten mit zarter Linie.
 
-**Vorschlag:** Auch für Videos, Social Media und Werbung bei diesem Vokabular bleiben (Punkte, Linien, Karte, Teal auf Weiß), keine Stockfotos, keine Verläufe außer dem zarten Teal-Schimmer. Eigene Screenshots der Seite sind die wichtigste Bildquelle.
+**Festgelegt (16.10.2026):** Auch für Präsentationen, Videos, Social Media und Werbung bei diesem Vokabular bleiben (Punkte, Linien, Karte, Teal auf Weiß), keine Stockfotos, keine Verläufe außer dem zarten Teal-Schimmer. Eigene Screenshots der Seite sind die wichtigste Bildquelle.
 
 ## 8. Ton und Sprache
 
@@ -140,8 +142,28 @@ Warnhinweise nutzen Amber (Tailwind `amber-50` Fläche, `amber-200` Rand, `amber
 
 ## 10. Offene Entscheidungen
 
-1. Logo-Dateien (SVG, PNG, Schutzraum, Mindestgröße) festlegen und exportieren.
-2. Kontrast der Akzentfarbe (Teal oder dunkleres Teal für kleinen Text).
-3. Vorlagen für Visitenkarte, E-Mail-Signatur, Social-Media-Profilbild, Präsentation und Videos (Videos haben bereits ein eigenes System in `docs/videos`).
-4. E-Mail-Layout (die Vorlagen liegen in `lib/mails.ts`) im gleichen Stil gestalten.
-5. Wie das Logo auf dunklem Grund aussieht (heute gibt es nur die Fassung auf Weiß).
+Erledigt am 16.10.2026: Logo-Dateien, Schutzraum und Mindestgröße (Abschnitt 2), Kontrast der Akzentfarbe (Abschnitt 3), Logo auf dunklem Grund (Abschnitt 2), Profilbild und Präsentation (Abschnitt 11).
+
+1. Vorlagen für Visitenkarte und E-Mail-Signatur im Stil von Abschnitt 11.
+2. E-Mail-Layout (die Vorlagen liegen in `lib/mails.ts`) im gleichen Stil gestalten.
+
+## 11. Präsentationen
+
+**Festgelegt (16.10.2026).** Die Firmenpräsentation `docs/design/praesentation/plenara-firmenpraesentation.pptx` (18 Folien: Plenara auf einen Blick, Datenfluss, Zielgruppen, Suche, Trefferliste, Artikel, Benachrichtigungen, plenara.X mit Signalen, Tools, Ausbreitung und Fakten, Qualität, Stufen) ist zugleich die Vorlage: Thema, Layouts und Bausteine daraus gelten für alle Präsentationen.
+
+- **Format** 16:9 (10 × 5,625 Zoll). **Thema „Plenara“** mit den Farben aus Abschnitt 3: Text Tinte, Hintergrund Weiß, zweite Fläche `#f8fafc`, dunkle Fläche `#0b1220`, Akzent 1 Teal `#0d9488`, Akzent 2 Teal dunkel `#0f766e`, Akzent 3 Grau, Akzent 4 Grau hell, Akzent 5 Teal hell `#f0fdfa`, Akzent 6 Linie `#e2e8f0`. Alle Elemente nutzen Themenfarben; wer das Thema ändert, ändert die ganze Präsentation.
+- **Schrift** IBM Plex Sans; Überschriften SemiBold (Windows-Name der Schrift: „IBM Plex Sans SmBld“), Text Regular. Die Schrift muss auf dem Rechner installiert sein (`public/fonts`, OFL); ohne sie fällt PowerPoint auf eine Systemschrift zurück.
+- **Drei Layouts:** HELL (Inhaltsfolie: Eyebrow 10 pt in Teal dunkel gesperrt, Titel 24 pt SemiBold, Logo unten links, Seitenzahl unten rechts), DUNKEL (Titel- und Schlussfolie mit Punktraster, Logo-Fassung dunkel, Slogan 32 pt Weiß), TRENNER (Abschnitt: Titel 36 pt Weiß, Untertitel 16 pt Grau hell).
+- **Größen:** Titel 24, Zwischenüberschriften 12,5 bis 15 SemiBold, Text 10 bis 13, Fußnoten 9 bis 9,5 in Grau hell, Kennzahlen 24 bis 32 SemiBold. Ränder 0,5 Zoll, Inhalt zwischen 1,45 und 5,05 Zoll Höhe.
+- **Bausteine:** Teal-Quadrat als Aufzählungszeichen (wie das Schlussquadrat im Logo), Karten mit Fläche `#f8fafc` und Rahmen `#e2e8f0` (Radius 0,1 Zoll), Symbole im Linienstil (Feather) in Teal dunkel auf Kreis in Teal hell, Hinweisboxen in Teal hell mit Text in Teal dunkel, Screenshots der echten Seite in weißem Rahmen mit weichem Schatten, Kennzahlen groß mit kleiner Erläuterung, Diagramme nativ in einer Farbe (Teal) mit Beschriftung 10 pt Grau.
+- **Nicht erlaubt:** Farbbalken und Akzentstreifen, Linien unter Titeln, Fotos aus Bilddatenbanken, mehr als eine Akzentfarbe, Verläufe (außer dem Teal-Schimmer der Webseite), Text ohne Beleg. Jede Zahl trägt ihren Stand („Stand 15.10.26“).
+- **Inhalt:** Aussagen nur aus `docs/produkt/vorteile.json` (Stufe A in Überschriften), Zahlen von der Seite selbst (Startseite, `/analytics/ueber`) oder aus `docs/videos/facts.json`; der Slogan steht auf Titel- und Schlussfolie.
+
+**Werkzeuge** (`docs/design/tools/`, eigenes `package.json`, einmal `npm install` dort):
+
+| Befehl | Zweck |
+|---|---|
+| `node export-logos.mjs` | Logo-Dateien aus `Brand.tsx` neu erzeugen (SVG mit Pfaden, PNG) |
+| `BASE=http://localhost:18080 node screenshots.mjs` | Screenshots der öffentlichen Seiten (Tunnel zum Server, siehe `docs/betrieb/node-server.md`) nach `praesentation/screenshots/` |
+| `node build-praesentation.mjs` | Präsentation neu bauen (pptxgenjs); Texte und Folien stehen im Skript |
+| `node render-praesentation.mjs` | Folien ohne PowerPoint als PNG nach `tmp/praesentation-vorschau/` rendern (echte Plex-Schriften, meldet Textüberläufe; Diagramme nur als Rahmen) |
