@@ -221,10 +221,10 @@ const X_SQUARES: [number, number, number, number][] = [1, -1].flatMap((dx) =>
     Array.from({ length: 6 }, (_, i) => [50 + dx * (18 + i * 10.5), 50 + dy * (18 + i * 10.5), Math.max(0.12, 0.85 - i * 0.13), Math.max(4, 6.5 - i * 0.5)] as [number, number, number, number]),
   ),
 );
-function AnalyticsX() {
+function AnalyticsX({ centered = false }: { centered?: boolean }) {
   const dot = (0.15 / X_H) * 100;
   return (
-    <svg viewBox="0 0 100 100" aria-hidden="true" style={{ ...INLINE, height: `${X_H}em`, width: `${X_H}em`, verticalAlign: `${-(X_H / 2 - 0.075)}em`, marginLeft: ".05em", overflow: "visible" }}>
+    <svg viewBox="0 0 100 100" aria-hidden="true" style={{ ...INLINE, height: `${X_H}em`, width: `${X_H}em`, verticalAlign: centered ? "middle" : `${-(X_H / 2 - 0.075)}em`, marginLeft: ".05em", ...(centered ? { display: "block" } : {}), overflow: "visible" }}>
       {X_SQUARES.map(([x, y, o, w]) => (
         <rect key={`${x}-${y}`} x={x - w / 2} y={y - w / 2} width={w} height={w} fill={TEAL} fillOpacity={o} />
       ))}
@@ -237,10 +237,10 @@ function AnalyticsX() {
 export function AnalyticsLogo({ size = 64, plainP = false }: { size?: number; /* „p“ als normaler Buchstabe statt des Punkte-p (klein im Menü) */ plainP?: boolean }) {
   return (
     <div className="rm-logo rm-logo--big" role="img" aria-label="plenara.X" style={{ display: "inline-flex", alignItems: "center", fontSize: size }}>
-      <span style={{ fontSize: size }}>
-        {plainP ? <span style={{ fontSize: size, letterSpacing: "-.015em" }}><span className="rm-logo__text">plenara</span></span> : <PlenaraV2 square size={size} noDot />}
+      <span style={{ fontSize: size, ...(plainP ? { display: "flex", alignItems: "center" } : {}) }}>
+        {plainP ? <span className="rm-logo__text" style={{ display: "block", fontSize: size, letterSpacing: "-.015em", lineHeight: 1 }}>plenara</span> : <PlenaraV2 square size={size} noDot />}
       </span>
-      <AnalyticsX />
+      <AnalyticsX centered={plainP} />
     </div>
   );
 }
