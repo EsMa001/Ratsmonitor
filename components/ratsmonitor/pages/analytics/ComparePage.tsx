@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prettyTerm } from "../../lib/terms";
-import { PageBand } from "./PageBand";
+import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -141,11 +141,7 @@ export function ComparePage() {
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Ortsvergleich</p>
-      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Ortsvergleich</h1>
-      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Stellt zwei Orte nebeneinander: womit sie sich beschäftigen, wie Vorlagen ausgehen und was für den jeweiligen Ort typisch ist. Als Maßstab dienen alle Gebiete.</p>
-      </PageBand>
+      <XKopf seite="vergleich" />
 
       <section aria-label="Vergleich einstellen" className="print:hidden mt-6 rounded-[20px] border border-slate-200 bg-white p-5 sm:p-6">
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
@@ -299,6 +295,7 @@ export function ComparePage() {
           <p className="mt-10 text-[12px] text-slate-500">Maßstab sind alle Gebiete der Gemeindeebene mit denselben Filtern ({n(res.base.total)} Vorgänge). Jeder Ort zählt nur seinen eigenen Rat (eine Gemeinde ohne Kreistag, ein Kreis ohne seine Gemeinden); derselbe Titel in mehreren Gremien zählt einmal, einzeln geführte Einwohnerfragen und Besetzungen zählen nicht. Alle Zahlen zählen alle passenden Vorgänge; Gremien aus den Stationen jedes Vorgangs. „Typisch“ verlangt mindestens den 1,8-fachen Anteil und einen deutlichen Unterschied (z-Wert ab 3). Unterschiede im Datenbestand (z. B. wie vollständig ein Ratsinformationssystem erfasst ist) wirken auf die Zahlen; Vorgänge je 1.000 Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. <Link href="/analytics/ueber" className="text-teal-700">Methode →</Link></p>
         </div>
       )}
+    <XWeiter links={[["/analytics/fraktionen", "Fraktionen"], ["/analytics/gremien", "Gremien"]]} />
     </main>
   );
 }

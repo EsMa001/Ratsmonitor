@@ -54,26 +54,28 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/signale": SignalePage,
   /* plenara.X Fakten: Werte aus den Unterlagen je Gemeinde auf der Karte (/api/x?view=fakten) */
   "/analytics/fakten": FaktenPage,
-  "/analytics/tools": () => <AnalyticsGroupPage group="tool" />,
+  /* plenara.X Einblicke: Fraktionen, Gremien, Themennetz, News (Übersicht); die frühere Seite Tools leitet hierher */
+  "/analytics/einblicke": () => <AnalyticsGroupPage group="tool" />,
+  "/analytics/tools": () => <Umleiten to="/analytics/einblicke" />,
   // Frühere Gruppen plenara.X Politik und Finanzen (Fraktionsprofil und Newsradar stehen jetzt bei den Tools)
-  "/analytics/politik": () => <Umleiten to="/analytics/tools" />,
-  "/analytics/finanzen": () => <Umleiten to="/analytics/tools" />,
+  "/analytics/politik": () => <Umleiten to="/analytics/einblicke" />,
+  "/analytics/finanzen": () => <Umleiten to="/analytics/einblicke" />,
 };
 
 // Die Adressen stehen in lib/routes.ts (App.tsx braucht sie, ohne diese Seiten zu laden); PAGES muss sie alle bedienen.
 export { isAnalyticsPath } from "../../lib/routes";
 
 /** Nur die Übersichten (Start, Tools) sind frei; die Analysen gehören zu Enterprise */
-const FREE = new Set(["/analytics", "/analytics/ueber", "/analytics/tools", "/analytics/politik", "/analytics/finanzen"]);
+const FREE = new Set(["/analytics", "/analytics/ueber", "/analytics/tools", "/analytics/einblicke", "/analytics/politik", "/analytics/finanzen"]);
 
 export function AnalyticsPages({ path }: { path: string }) {
   const { tier, ready } = useTier();
   useEffect(() => {
     window.scrollTo(0, 0);
     const gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
-    const TITEL: Record<string, string> = { "/analytics/atlas": "plenara.X Atlas", "/analytics/signale": "Signale · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Newsradar · plenara.X", "/analytics/diffusion-alt": "Alt: Ausbreitung · plenara.X", "/analytics/trends-alt": "Alt: Trends · plenara.X",
-      "/analytics/graph": "Themennetz · plenara.X", "/analytics/gremien": "Beratungswege · plenara.X", "/analytics/beschluesse": "Beschlüsse · plenara.X",
-      "/analytics/vergleich": "Ortsvergleich · plenara.X", "/analytics/trends": "plenara.X Trends", "/analytics/fraktionen": "Fraktionsprofil · plenara.X", "/analytics/tools": "plenara.X Tools" };
+    const TITEL: Record<string, string> = { "/analytics/atlas": "plenara.X Atlas", "/analytics/signale": "Signale · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "News · plenara.X", "/analytics/diffusion-alt": "Alt: Ausbreitung · plenara.X", "/analytics/trends-alt": "Alt: Trends · plenara.X",
+      "/analytics/graph": "Themennetz · plenara.X", "/analytics/gremien": "Gremien · plenara.X", "/analytics/beschluesse": "Ausgang · plenara.X Trends",
+      "/analytics/vergleich": "Vergleich · plenara.X Atlas", "/analytics/trends": "plenara.X Trends", "/analytics/fraktionen": "Fraktionen · plenara.X" };
     document.title = TITEL[path] ?? (gruppe ? gruppe.name : "Über plenara.X · plenara");
   }, [path]);
   const Page = PAGES[path];

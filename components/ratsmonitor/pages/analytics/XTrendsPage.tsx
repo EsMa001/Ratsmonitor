@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { THEMES } from "@/shared/themes.mjs";
-import { PageBand } from "./PageBand";
+import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
@@ -177,13 +177,7 @@ export function XTrendsPage() {
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand compact>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Trends</p>
-        <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <h1 className="text-[28px] font-semibold leading-tight">plenara.X Trends</h1>
-          <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">Was verändert sich?</b> Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten.</p>
-        </div>
-      </PageBand>
+      <XKopf seite="trends" />
 
       {/* Themen als Filter gegen das Rauschen der Begriffe (Filter „Thema“ der Suche) */}
       <nav aria-label="Thema" className="print:hidden">
@@ -285,6 +279,7 @@ export function XTrendsPage() {
           </div>
         </div>
       )}
+    <XWeiter links={[["/analytics/gremien", "Wo wird das beraten? (Gremien)"], ["/analytics/graph", "Was hängt damit zusammen? (Themennetz)"], ["/analytics/fraktionen", "Wer beantragt das? (Fraktionen)"]]} />
     </main>
   );
 }

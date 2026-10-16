@@ -27,13 +27,20 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Verbände", slug: "verbaende" },
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
 ];/* Analyse: Start (Übersicht), Signale (was entsteht), Tools (alle Werkzeuge), Atlas (worüber beraten wird); die einzelnen Analysen stehen auf diesen Seiten */
-/* Analyse („Analysen by plenara.X“): die vier Seiten mit ihrer Frage (leise rechts daneben), zuletzt die Tools */
-const ANALYSE: { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid"; hint?: string }[] = [
+/* plenara.X (Logo als Gruppenname) mit zwei Abschnitten: Analysen (die vier Seiten) und Einblicke, je Eintrag die Frage leise rechts daneben */
+type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper"; hint?: string };
+const ANALYSE: XEintrag[] = [
   { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
   { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
   { href: "/analytics/trends", label: "Trends", icon: "trendingUp", hint: "Was verändert sich?" },
   { href: "/analytics/fakten", label: "Fakten", icon: "map", hint: "Welcher Wert?" },
-  { href: "/analytics/tools", label: "Tools", icon: "layoutGrid", hint: "Eigene Fragen" },
+];
+/* Einblicke: wer beteiligt ist und was zusammenhängt (die früheren Tools; Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends) */
+const EINBLICKE: XEintrag[] = [
+  { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer will was?" },
+  { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
+  { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
+  { href: "/analytics/news", label: "News", icon: "newspaper", hint: "Was ist diese Woche?" },
 ];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
@@ -190,13 +197,20 @@ export function MainMenu() {
                 </button>}
                 {show("analyse") && (
                   <ul className="ri-menu__subs">
-                                        {ANALYSE.map((f) => (
-                      <li key={f.href}>
-                        <Link href={f.href} className="ri-menu__sub min-w-[230px]" aria-current={current(f.href)} onClick={pick}>
-                          <Icon name={f.icon} size={15} />
-                          <span>{f.label}</span>
-                          {f.hint && <span className="ml-auto pl-4 text-[12px] font-normal text-slate-400">{f.hint}</span>}
-                        </Link>
+                    {([["Analysen", ANALYSE], ["Einblicke", EINBLICKE]] as const).map(([name, list]) => (
+                      <li key={name}>
+                        <div className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{name}</div>
+                        <ul>
+                          {list.map((f) => (
+                            <li key={f.href}>
+                              <Link href={f.href} className="ri-menu__sub min-w-[250px]" aria-current={current(f.href)} onClick={pick}>
+                                <Icon name={f.icon} size={15} />
+                                <span>{f.label}</span>
+                                {f.hint && <span className="ml-auto pl-4 text-[12px] font-normal text-slate-400">{f.hint}</span>}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
                       </li>
                     ))}
                   </ul>
@@ -234,10 +248,10 @@ export function MainMenu() {
   );
 }
 
-/** Name der Gruppe Analysen mit dem kleinen Logo plenara.X: „Analysen by plenara.X“ */
+/** Name der Gruppe: das Logo plenara.X als Schriftzug (über den Abschnitten Analysen und Einblicke) */
 function AnalysenBy() {
   /* Fließtext in einer Zeile: alle Wörter auf derselben Grundlinie und in derselben Größe, das X mit vertical-align: middle auf
      der halben x-Höhe, also auf der Mittellinie der Kleinbuchstaben */
-  return <span className="whitespace-nowrap">Analysen <span className="text-[12px] font-normal text-slate-400">by</span>{" "}
+  return <span className="whitespace-nowrap">
     <span aria-label="plenara.X" role="img"><span className="text-slate-900" style={{ letterSpacing: "-.015em" }}>plenara</span><span className="inline-block align-middle" style={{ fontSize: "1em", lineHeight: 0 }}><AnalyticsX centered /></span></span></span>;
 }

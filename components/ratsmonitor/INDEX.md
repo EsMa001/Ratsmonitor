@@ -556,7 +556,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (29): generateMetadata, Page
+- page.tsx (30): generateMetadata, Page
 
 ### app/(monitor)/anmelden/bestaetigen/
 - page.tsx (2): Page
@@ -679,7 +679,7 @@ topic design-styles.css:140
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
 - ArtIcon.tsx (71, ⚠1): ArtIcon
-- Brand.tsx (274): AnalyticsLogo, Brand
+- Brand.tsx (274): AnalyticsX, AnalyticsLogo, Brand
 - CalendarFeed.tsx (106): CalendarFeed
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - CountDots.tsx (9): CountDots
@@ -733,7 +733,7 @@ topic design-styles.css:140
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
-- branchen-enterprise.ts (110): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- branchen-enterprise.ts (112): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (418, ⚠28): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
@@ -787,7 +787,7 @@ topic design-styles.css:140
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (237, ⚠1): MainMenu
+- MainMenu.tsx (258, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (178, ⚠11): DetailPage
@@ -803,27 +803,27 @@ topic design-styles.css:140
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (340, ⚠21): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (54): AnalyticsLocked
-- AnalyticsPages.tsx (86, ⚠1): AnalyticsPages
+- AnalyticsPages.tsx (88, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
-- AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
+- AtlasPage.tsx (65): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (52): Befund, zuThema
-- BeschluessePage.tsx (189, ⚠7): BeschluessePage
+- BeschluessePage.tsx (186, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (305, ⚠11): ComparePage
+- ComparePage.tsx (302, ⚠11): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
 - DiffusionSearch.tsx (67, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (315, ⚠3): FaktenPage
-- FraktionenPage.tsx (151, ⚠5): FraktionenPage
+- FraktionenPage.tsx (148, ⚠5): FraktionenPage
 - GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (167, ⚠3): GremiennetzPage
+- GremiennetzPage.tsx (164, ⚠3): GremiennetzPage
 - Kennzahlen.tsx (126): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (221, ⚠2): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (218, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (110, ⚠1): NewsradarPage
+- NewsradarPage.tsx (107, ⚠1): NewsradarPage
 - PageBand.tsx (19): PageBand
 - RadarDrill.tsx (90): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
@@ -833,7 +833,7 @@ topic design-styles.css:140
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
 - XAtlasView.tsx (569, ⚠9): XAtlasView
-- XTrendsPage.tsx (362, ⚠4): XTrendsPage
+- XTrendsPage.tsx (357, ⚠4): XTrendsPage
 - XTrendsParts.tsx (147, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery

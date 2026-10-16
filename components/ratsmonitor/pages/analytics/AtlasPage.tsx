@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { PageBand } from "./PageBand";
+import { XKopf } from "./XKopf";
 import { XAtlasView } from "./XAtlasView";
 import { ThemeIcon } from "../../components/icons";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
@@ -44,13 +43,7 @@ export function AtlasPage() {
   const pick = (next: { thema?: string; sub?: string; zeit?: string }) => router.push(atlasHref({ zeit, ort: ortNow(), ...next }), { scroll: false });
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand compact>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Atlas</p>
-        <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <h1 className="text-[28px] font-semibold leading-tight">plenara.X Atlas</h1>
-          <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">Wie viel?</b> Worüber die Räte beraten, wo und wie viel, nach 10 Themen.</p>
-        </div>
-      </PageBand>
+      <XKopf seite="atlas" />
       {/* Handy: 4 Kacheln je Reihe; breiter: eine Reihe, auf dem Tablet umbrechend (nie waagerecht scrollen) */}
       <nav aria-label="Thema des Atlas" className="mt-2 print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">

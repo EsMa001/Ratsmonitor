@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageBand } from "./PageBand";
+import { XKopf, XWeiter } from "./XKopf";
 import { Befund } from "./Befund";
 import { RadarDrill } from "./RadarDrill";
 import { useSearchParams } from "next/navigation";
@@ -125,11 +125,7 @@ export function KnowledgeGraphPage() {
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Themennetz</p>
-      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Themennetz</h1>
-      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.</p>
-      </PageBand>
+      <XKopf seite="graph" />
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} startLabel="Graph erstellen" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
@@ -215,6 +211,7 @@ export function KnowledgeGraphPage() {
           <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage sind alle ${n(res.total)} Vorgänge${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind alle ${n(res.total)} passenden Vorgänge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="/analytics/ueber" className="text-teal-700">Methode →</Link></p>
         </>
       )}
+    <XWeiter links={[["/analytics/trends", "plenara.X Trends"], ["/analytics/atlas", "plenara.X Atlas"]]} />
     </main>
   );
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageBand } from "./PageBand";
+import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -56,11 +56,7 @@ export function BeschluessePage() {
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Beschlüsse</p>
-      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Beschlüsse</h1>
-      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wie Gremien entscheiden: Beschlussquote, Vertagungen und Ablehnungen, Einigkeit und Dauer.</p>
-      </PageBand>
+      <XKopf seite="beschluesse" />
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
@@ -183,6 +179,7 @@ export function BeschluessePage() {
           )}
         </div>
       )}
+    <XWeiter links={[["/analytics/gremien", "Gremien"], ["/analytics/fraktionen", "Fraktionen"]]} />
     </main>
   );
 }

@@ -60,7 +60,7 @@ const FACT_THEME:Record<string,string>={plan:'bauen',plan_use:'bauen',housing:'b
 /* Ohne Abdeckung: jeder Bericht oder jedes PDF bekommt einen Wert (Unterthemen, Hauptdokument, Dokumentart) oder es ist eine Rangfolge (Social Media) */
 const NO_COVERAGE=new Set(['stage','subs','main_doc','doc_type','social']);
 /* Fakten nach Verwendung: Werte für die Karte von plenara.X Fakten (Zahl je Gemeinde), Bausteine der Signale (Einordnungen für
-   Stand und Auswahl, keine Zahlen; stehen bei den Signalen), Fraktionsprofil (plenara.X Tools) */
+   Stand und Auswahl, keine Zahlen; stehen bei den Signalen), Fraktionsprofil (plenara.X Einblicke) */
 const SIGNAL_FACTS=new Set(['plan','plan_use','heat_plan','house_type','project','stage']);
 const PROFILE_FACTS=new Set(['faction','faction_advice']);
 const factArt=(id:string)=>SIGNAL_FACTS.has(id)?'signal':PROFILE_FACTS.has(id)?'profil':'vergleich';
@@ -209,7 +209,7 @@ export function AdminRuleTexts(){
       {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[13px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
      </div>
      <div className="mt-8">
-      <h3>Fraktionsprofil (plenara.X Tools)</h3>
+      <h3>Fraktionsprofil (plenara.X Einblicke)</h3>
       <p className="admin-note mt-1">Welche Fraktion einen Antrag stellt und ob der Beschlussvorschlag empfiehlt, ihn abzulehnen. Rechts die Zahl der Berichte im letzten Lauf.</p>
       {list(rows.filter(r=>factArt(r.id)==='profil'))}
      </div>

@@ -4,7 +4,7 @@ import { PageBand } from "./PageBand";
 import { Reveal } from "./Reveal";
 import type { ReactNode } from "react";
 import { AnalyticsLogo } from "../../components/Brand";
-import { ANALYSEN, GRUPPEN, type AnalyseId, type AnalyseGruppe } from "../../info/branchen-enterprise";
+import { ANALYSEN, EINBLICKE, GRUPPEN, type AnalyseId, type AnalyseGruppe } from "../../info/branchen-enterprise";
 import { Icon } from "../../info/icons";
 import { RADAR_THUMBS } from "./RadarThumbs";
 
@@ -138,12 +138,12 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "trends", name: "Alt: Trends", href: "/analytics/trends-alt", kurz: "Welche Begriffe gerade aufkommen, zunehmen oder verschwinden." },
   { id: "vergleich", name: "Ortsvergleich", href: "/analytics/vergleich", kurz: "Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe." },
   { id: "beschluesse", name: "Beschlüsse", href: "/analytics/beschluesse", kurz: "Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer." },
-  { id: "gremien", name: "Beratungswege", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
-  { id: "fraktionen", name: "Fraktionsprofil", href: "/analytics/fraktionen", kurz: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
+  { id: "gremien", name: "Gremien", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
+  { id: "fraktionen", name: "Fraktionen", href: "/analytics/fraktionen", kurz: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
   { id: "atlas", name: "plenara.X Atlas", href: "/analytics/atlas", kurz: "Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und die Vorgänge hinter jeder Zahl." },
   { id: "signale", name: "plenara.X Signale", href: "/analytics/signale", kurz: "Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, mit Stand des Verfahrens." },
   { id: "fakten", name: "plenara.X Fakten", href: "/analytics/fakten", kurz: "Hebesätze, Gebühren, Jahresergebnisse und Preise aus den Vorlagen, je Gemeinde auf der Karte, rot bis grün." },
-  { id: "news", name: "Newsradar", href: "/analytics/news", kurz: "Was gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle." },
+  { id: "news", name: "News", href: "/analytics/news", kurz: "Was gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle." },
 ];
 
 const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
@@ -215,7 +215,7 @@ const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
 };
 
 function Karten({ group }: { group: AnalyseGruppe }) {
-  const list = ANALYSEN_KARTEN.filter((a) => ANALYSEN[a.id].group === group);
+  const list = EINBLICKE.map((id) => ANALYSEN_KARTEN.find((a) => a.id === id)!).filter((a) => ANALYSEN[a.id].group === group);
   return (
     <ul className="m-0 mt-8 grid list-none gap-x-10 gap-y-14 p-0 sm:grid-cols-2 xl:grid-cols-3">
       {list.map((a, i) => (

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useState } from "react";
-import { PageBand } from "./PageBand";
+import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -66,11 +66,7 @@ export function NewsradarPage() {
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Newsradar</p>
-        <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Newsradar</h1>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was in den Räten gerade berichtenswert ist: Vorgänge der letzten Wochen und der nächsten 10 Tage, nach Nachrichtenwert geordnet, je Vorgang eine Meldung mit wörtlichem Zitat aus der Vorlage und Quelle.</p>
-      </PageBand>
+      <XKopf seite="news" />
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden" role="group" aria-label="Zeitraum">
@@ -104,6 +100,7 @@ export function NewsradarPage() {
           )}
         </div>
       )}
+    <XWeiter links={[["/analytics/signale", "plenara.X Signale"], ["/analytics/trends", "plenara.X Trends"]]} />
     </main>
   );
 }
