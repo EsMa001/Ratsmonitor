@@ -6,6 +6,7 @@ import { BRANCHEN } from "../info/content";
 import { Icon } from "../info/icons";
 import { useMe } from "../lib/account";
 import { IconChevronDown } from "../components/icons";
+import { AnalyticsLogo } from "../components/Brand";
 
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
 const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" | "circleHelp" }[] = [
@@ -26,14 +27,13 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Verbände", slug: "verbaende" },
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
 ];/* Analyse: Start (Übersicht), Signale (was entsteht), Tools (alle Werkzeuge), Atlas (worüber beraten wird); die einzelnen Analysen stehen auf diesen Seiten */
-/* Die vier Seiten je mit ihrer Frage (Abgrenzung): Atlas wie viel, Signale was entsteht, Trends was sich verändert, Fakten welcher Wert */
-const ANALYSE: { href: string; label: string; icon: "plenaraX" | "map" | "zap" | "trendingUp" | "layoutGrid"; hint?: string }[] = [
-  { href: "/analytics/ueber", label: "plenara.X Start", icon: "plenaraX" },
-  { href: "/analytics/atlas", label: "plenara.X Atlas", icon: "map", hint: "Wie viel? Themen je Ort" },
-  { href: "/analytics/signale", label: "plenara.X Signale", icon: "zap", hint: "Was entsteht? Einzelne Vorhaben" },
-  { href: "/analytics/trends", label: "plenara.X Trends", icon: "trendingUp", hint: "Was verändert sich? Aufkommen, Ausbreitung" },
-  { href: "/analytics/fakten", label: "plenara.X Fakten", icon: "map", hint: "Welcher Wert? Hebesätze, Gebühren …" },
-  { href: "/analytics/tools", label: "plenara.X Tools", icon: "layoutGrid" },
+/* Analyse: oben einmal das Logo plenara.X, darunter die vier Seiten mit ihrer Frage (leise rechts daneben), zuletzt die Tools */
+const ANALYSE: { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid"; hint?: string }[] = [
+  { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
+  { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
+  { href: "/analytics/trends", label: "Trends", icon: "trendingUp", hint: "Was verändert sich?" },
+  { href: "/analytics/fakten", label: "Fakten", icon: "map", hint: "Welcher Wert?" },
+  { href: "/analytics/tools", label: "Tools", icon: "layoutGrid", hint: "Eigene Fragen" },
 ];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
@@ -190,11 +190,13 @@ export function MainMenu() {
                 </button>}
                 {show("analyse") && (
                   <ul className="ri-menu__subs">
+                    <li aria-hidden="true" className="px-3 pb-1 pt-1"><AnalyticsLogo size={15} /></li>
                     {ANALYSE.map((f) => (
                       <li key={f.href}>
-                        <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
+                        <Link href={f.href} className="ri-menu__sub min-w-[230px]" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />
-                          {f.hint ? <span className="flex flex-col leading-tight"><span>{f.label}</span><span className="text-[12px] font-normal text-slate-500">{f.hint}</span></span> : f.label}
+                          <span>{f.label}</span>
+                          {f.hint && <span className="ml-auto pl-4 text-[12px] font-normal text-slate-400">{f.hint}</span>}
                         </Link>
                       </li>
                     ))}

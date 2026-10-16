@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Befund } from "./Befund";
-import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitPills, countScale, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import type { Article } from "../../types";
@@ -21,7 +21,7 @@ interface Phase { key: string; name: string; count: number }
 interface Place { region: string; name: string; ags: string; count: number; members?: string[] }
 /* Karte wie in der Trefferliste der Suche (cardsById), dazu Ort im Verband und Stand */
 interface Item extends Partial<Article> { id: string; title: string; region: string; date: string; status: Article["status"]; phase: string; arts?: string[]; /* Schlüssel des Gebiets */ place?: string; /* erster Vorgang dieses Signals im Gebiet */ firstHere?: boolean }
-interface Result { signals: Signal[]; signal: { id: string; name: string; who: string; phaseText: string; art: string | null }; arts: Phase[]; phases: Phase[]; places: Place[]; placeCount?: number; total: number; offset: number; size: number; builtAt: string; items: Item[] }
+interface Result { signals: Signal[]; signal: { id: string; name: string; who: string; phaseText: string; art: string | null }; arts: Phase[]; phases: Phase[]; places: Place[]; placeCount?: number; /* Vorgänge, die in ihrem Ort die ersten dieses Signals sind (ohne den Filter) */ firstCount?: number; total: number; offset: number; size: number; builtAt: string; items: Item[] }
 
 /* Signale und Zeiträume in derselben Reihenfolge wie im Backend; die Zahlen kommen mit der Antwort */
 const SIGNALE: [string, string][] = [
@@ -90,12 +90,13 @@ const ATLAS_OF: Record<string, [string, string, string]> = {
 
 /* Ort aus der Adresse (useOrtInAdresse hält ?ort aktuell, auch ohne den Router) */
 const ortNow = () => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("ort") ?? "");
-export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort = "" }: { signal?: string; phase?: string; art?: string; zeit?: string; ort?: string }) => {
+export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort = "", erstmals = "" }: { signal?: string; phase?: string; art?: string; zeit?: string; ort?: string; erstmals?: string }) => {
   const p = new URLSearchParams();
   if (signal) p.set("signal", signal);
   if (phase) p.set("stand", phase);
   if (art) p.set("art", art);
   if (zeit) p.set("zeit", zeit);
+  if (erstmals) p.set("erstmals", erstmals);
   if (ort) p.set("ort", ort);
   return `/analytics/signale${p.size ? "?" + p : ""}`;
 };
@@ -153,9 +154,11 @@ export function SignalePage() {
   const art = params.get("art") ?? "";
   const zeitRaw = params.get("zeit");
   const zeit = zeitRaw === null ? "6" : ZEITRAUM.some(([k]) => k === zeitRaw) ? zeitRaw : "6";
-  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string }) => router.push(signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), ...next }), { scroll: false });
+  /* Nur Vorgänge, die in ihrem Ort die ersten dieses Signals sind */
+  const erstmals = params.get("erstmals") === "1" ? "1" : "";
+  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string; erstmals?: string }) => router.push(signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), erstmals, ...next }), { scroll: false });
   // Ungültige Werte in der Adresse still berichtigen
-  const target = signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
+  const target = signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
   const current = path + (params.size ? "?" + params : "");
   useEffect(() => { if (current !== target && (params.has("signal") || params.has("zeit"))) router.replace(target, { scroll: false }); }, [current, target, router, params]);
 
@@ -163,7 +166,7 @@ export function SignalePage() {
   /* Zeitraum der Seite ersetzt den der Suche nur, wenn die Suche selbst keinen hat */
   const q = new URLSearchParams(query);
   if (fromOf(zeit) && !q.get("from")) q.set("from", fromOf(zeit));
-  const url = `/api/x/signale?signal=${signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}&${q}`;
+  const url = `/api/x/signale?signal=${signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}&${q}`;
   const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
   /* Auswahl, Stand, Zeitraum oder Suche geändert: neu rechnen (Auswahl sofort, Suche nach kurzer Pause) */
   useEffect(() => {
@@ -284,9 +287,14 @@ export function SignalePage() {
                 </FilterRow>}
               </div>
 
-              {items.length > 0 && (
+              {(items.length > 0 || !!erstmals) && (
                 <section className="mt-6" aria-label="Vorgänge">
-                  <h2 className="text-[22px] font-semibold">Neueste Vorgänge</h2>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h2 className="text-[22px] font-semibold">{erstmals ? "Erstmals im Ort" : "Neueste Vorgänge"}</h2>
+                    {res.firstCount !== undefined && (res.firstCount > 0 || !!erstmals) && <Segmented label="Auswahl" value={erstmals ? "erst" : "neu"} onPick={(k) => pick({ erstmals: k === "erst" ? "1" : "" })}
+                      options={[["neu", "Neueste"], ["erst", `Erstmals hier${res.firstCount ? ` (${n(res.firstCount)})` : ""}`, "Nur Vorgänge, die in ihrem Ort die ersten dieser Art sind (Bestand des Orts seit mindestens einem Jahr davor)"]]} />}
+                  </div>
+                  {items.length === 0 && <p className="mt-3 text-[16px] text-slate-500">In dieser Auswahl ist kein Vorgang der erste seiner Art im Ort.</p>}
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
                     {items.slice(0, shown).map((r) => (
                       <li key={r.id} onMouseEnter={() => setHoverPlace(r.place ?? "")} onMouseLeave={() => setHoverPlace("")} onFocus={() => setHoverPlace(r.place ?? "")} onBlur={() => setHoverPlace("")} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">

@@ -56,7 +56,8 @@ test('Signale: vorberechnete Tabelle x_signals ergibt dasselbe wie die Abfrage �
  const {sql,db}=fixture();
  const cases=['signal=wohnbau','signal=gewerbe&phase=Aufstellung','signal=gewerbe&art=Gewerbe','signal=mobil','signal=wind','signal=wohnbau&area=05558012'];
  assert.ok(sql.prepare('SELECT count(*) n FROM x_signals').get().n>0);
- const fast=[];for(const c of cases)fast.push(await xSignals(db,catalog,q(c)));
+ // firstCount (Filter „erstmals hier“) gibt es nur auf dem schnellen Weg
+ const fast=[];for(const c of cases){const r=await xSignals(db,catalog,q(c));delete r.firstCount;fast.push(r);}
  sql.exec('DROP TABLE x_signals');
  for(const [i,c] of cases.entries())assert.deepEqual(await xSignals(db,catalog,q(c)),fast[i],c);
 });
@@ -73,5 +74,11 @@ test('Signale: „erstmals hier“ nur beim ersten Vorgang des Signals im Gebiet
   assert.equal(by.d2,false,'zweiter Vorgang im selben Ort');
   assert.equal(by.n,false,'Bestand des anderen Orts beginnt erst 2026');
   assert.equal(r.items.find(i=>i.id==='d').place,'billerbeck');
+  assert.equal(r.firstCount,1);
+  const only=await xSignals(db,catalog,q('signal=mobil&first=1'));
+  assert.deepEqual(only.items.map(i=>i.id),['d']);assert.equal(only.total,1);
+  /* Mit Zeitraum bleibt „erstmals“ auf den ganzen Bestand bezogen: d2 ist auch ab August nicht der erste */
+  const later=await xSignals(db,catalog,new URLSearchParams('signal=mobil&from=2026-08-15&to=2026-12-31'));
+  assert.equal(later.items.find(i=>i.id==='d2').firstHere,false);
  }finally{sql.close();}
 });

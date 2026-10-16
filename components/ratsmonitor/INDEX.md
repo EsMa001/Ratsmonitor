@@ -787,7 +787,7 @@ topic design-styles.css:140
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (235, ⚠1): MainMenu
+- MainMenu.tsx (237, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (178, ⚠11): DetailPage
@@ -829,7 +829,7 @@ topic design-styles.css:140
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (90, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (317, ⚠5): signaleHref, SignalePage
+- SignalePage.tsx (325, ⚠6): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
 - XAtlasView.tsx (569, ⚠9): XAtlasView
