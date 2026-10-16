@@ -149,7 +149,7 @@ Erledigt am 16.10.2026: Logo-Dateien, Schutzraum und Mindestgröße (Abschnitt 2
 
 ## 11. Präsentationen
 
-**Festgelegt (16.10.2026).** Die Firmenpräsentation `docs/design/praesentation/plenara-firmenpraesentation.pptx` (18 Folien: Plenara auf einen Blick, Datenfluss, Zielgruppen, Suche, Trefferliste, Artikel, Benachrichtigungen, plenara.X mit Signalen, Tools, Ausbreitung und Fakten, Qualität, Stufen) ist zugleich die Vorlage: Thema, Layouts und Bausteine daraus gelten für alle Präsentationen.
+**Festgelegt (16.10.2026).** Es gibt zwei Fassungen auf derselben Vorlage: die Investorenpräsentation `docs/design/praesentation/plenara-investoren.pptx` (12 Folien, wenige Worte, große Aussagen) und die ausführliche Produktfassung `plenara-firmenpraesentation.pptx` (18 Folien: Plenara auf einen Blick, Datenfluss, Zielgruppen, Suche, Trefferliste, Artikel, Benachrichtigungen, plenara.X mit Signalen, Tools, Ausbreitung und Fakten, Qualität, Stufen) ist zugleich die Vorlage: Thema, Layouts und Bausteine daraus gelten für alle Präsentationen.
 
 - **Format** 16:9 (10 × 5,625 Zoll). **Thema „Plenara“** mit den Farben aus Abschnitt 3: Text Tinte, Hintergrund Weiß, zweite Fläche `#f8fafc`, dunkle Fläche `#0b1220`, Akzent 1 Teal `#0d9488`, Akzent 2 Teal dunkel `#0f766e`, Akzent 3 Grau, Akzent 4 Grau hell, Akzent 5 Teal hell `#f0fdfa`, Akzent 6 Linie `#e2e8f0`. Alle Elemente nutzen Themenfarben; wer das Thema ändert, ändert die ganze Präsentation.
 - **Schrift** IBM Plex Sans; Überschriften SemiBold (Windows-Name der Schrift: „IBM Plex Sans SmBld“), Text Regular. Die Schrift muss auf dem Rechner installiert sein (`public/fonts`, OFL); ohne sie fällt PowerPoint auf eine Systemschrift zurück.
@@ -165,5 +165,6 @@ Erledigt am 16.10.2026: Logo-Dateien, Schutzraum und Mindestgröße (Abschnitt 2
 |---|---|
 | `node export-logos.mjs` | Logo-Dateien aus `Brand.tsx` neu erzeugen (SVG mit Pfaden, PNG) |
 | `BASE=http://localhost:18080 node screenshots.mjs` | Screenshots der öffentlichen Seiten (Tunnel zum Server, siehe `docs/betrieb/node-server.md`) nach `praesentation/screenshots/` |
-| `node build-praesentation.mjs` | Präsentation neu bauen (pptxgenjs); Texte und Folien stehen im Skript |
+| `node build-praesentation.mjs` | Produktfassung (18 Folien, ausführlich) neu bauen; Texte und Folien stehen im Skript, die Vorlage in `deck-lib.mjs` |
+| `node build-investoren.mjs` | Investorenfassung `plenara-investoren.pptx` (12 Folien: Problem, Lösung, Stand, Produkt, plenara.X, Markt, Geschäftsmodell, Warum Plenara, Warum jetzt, nächste Schritte); Plan und Preise aus `docs/strategie`, als Plan gekennzeichnet |
 | `node render-praesentation.mjs` | Folien ohne PowerPoint als PNG nach `tmp/praesentation-vorschau/` rendern (echte Plex-Schriften, meldet Textüberläufe; Diagramme nur als Rahmen) |

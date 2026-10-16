@@ -43,13 +43,13 @@
     "erzeugt": "node docs/design/tools/export-logos.mjs (aus der Geometrie in components/ratsmonitor/components/Brand.tsx)"
   },
   "praesentation": {
-    "vorlage": "docs/design/praesentation/plenara-firmenpraesentation.pptx",
+    "vorlage": "docs/design/tools/deck-lib.mjs (Thema, Layouts, Bausteine); Fassungen: plenara-investoren.pptx (12 Folien, Investoren) und plenara-firmenpraesentation.pptx (18 Folien, Produkt) in docs/design/praesentation",
     "format": "16:9, 10 × 5,625 Zoll",
     "thema": { "name": "Plenara", "dk1": "0F172A", "lt1": "FFFFFF", "dk2": "0B1220", "lt2": "F8FAFC", "accent1": "0D9488", "accent2": "0F766E", "accent3": "64748B", "accent4": "94A3B8", "accent5": "F0FDFA", "accent6": "E2E8F0", "hlink": "0F766E" },
     "layouts": { "HELL": "weiße Inhaltsfolie: Eyebrow (10 pt, Teal dunkel, gesperrt), Titel (24 pt SemiBold), Logo unten links, Seitenzahl unten rechts", "DUNKEL": "Titel und Schluss: Dunkel mit Punktraster, Logo-Fassung dunkel", "TRENNER": "Abschnittsfolie: Dunkel, Titel 36 pt Weiß, Untertitel 16 pt" },
     "groessen": { "titel": 24, "zwischenueberschrift": "12,5 bis 15 SemiBold", "text": "10 bis 13", "fussnote": "9 bis 9,5", "kennzahl": "24 bis 32 SemiBold" },
     "elemente": ["Teal-Quadrat als Aufzählungszeichen (0,1 Zoll)", "Karten: Fläche #f8fafc, Rahmen #e2e8f0, Radius 0,1 Zoll", "Symbole: Feather-Linien in Teal dunkel auf Kreis Teal hell", "Screenshots in weißem Rahmen mit weichem Schatten", "Diagramme nativ, eine Farbe (Teal), Beschriftung 10 pt Grau"],
     "nichtErlaubt": ["Farbbalken und Akzentstreifen", "Linien unter Titeln", "Fotos aus Bilddatenbanken", "Verläufe außer dem zarten Teal-Schimmer", "mehr als eine Akzentfarbe"],
-    "bauen": "cd docs/design/tools && npm install && node screenshots.mjs (Tunnel zum Server) && node build-praesentation.mjs && node render-praesentation.mjs"
+    "bauen": "cd docs/design/tools && npm install && node screenshots.mjs (Tunnel zum Server) && node build-investoren.mjs && node build-praesentation.mjs && node render-praesentation.mjs [datei]"
   }
 }
