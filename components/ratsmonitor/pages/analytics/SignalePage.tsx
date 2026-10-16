@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Befund } from "./Befund";
-import { Kennzahlen, NeuMark, weekAgo } from "./Kennzahlen";
+import { Kennzahlen, ZeitPills, countScale, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import type { Article } from "../../types";
@@ -100,7 +100,6 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "" }: { 
  * (keine Kennzahlen, die stehen in plenara.X Fakten). Signal, Stand und Zeitraum stehen in der Adresse (teilbar), Ort und Begriff in der Suche.
  */
 /* Ausklappbare Karte: Vorgänge der Auswahl je Gemeinde (Verbände färben ihre Mitgliedsgemeinden) */
-const STUFE = (c: number) => (c >= 5 ? 4 : c >= 3 ? 3 : c);
 function SignalMap({ places, onPlace }: { places: Place[]; onPlace: (ags: string) => void }) {
   const [picked, setPicked] = useState(""), [level, setLevel] = useState<"city" | "district">("city");
   /* Gemeinden: Vorgänge je Gemeinde (Verbände färben ihre Mitgliedsgemeinden); Kreise: Summe aller Gebiete im Kreis */
@@ -110,12 +109,13 @@ function SignalMap({ places, onPlace }: { places: Place[]; onPlace: (ags: string
     if (level === "district") { const k = p.ags.slice(0, 5); if (k.length === 5) { const o = byAgs.get(k); byAgs.set(k, { name: p.ags.length === 5 ? p.name : o?.name ?? `Kreis ${k}`, count: (o?.count ?? 0) + p.count }); } continue; }
     for (const a of [...own, ...(p.members ?? []).filter((m) => m.length === 8)]) if (!byAgs.has(a) || own.includes(a)) byAgs.set(a, p);
   }
-  for (const [a, p] of byAgs) levels[a] = STUFE(p.count);
+  const scale = countScale([...byAgs.values()].map((p) => p.count));
+  for (const [a, p] of byAgs) levels[a] = scale.level(p.count);
   const sel = picked ? byAgs.get(picked) : undefined;
   return (
     <section className="print:hidden" aria-label="Karte">
       {/* Klick wählt das Gebiet als Ort (Gemeinde oder Kreis), wie im Atlas */}
-      <RegionMap tall level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={["1 Vorgang", "2 Vorgänge", "3 bis 4 Vorgänge", "5 und mehr"]}
+      <RegionMap tall level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={scale.legend}
         note="ohne Farbe: keine Vorgänge" label={`Karte: Vorgänge der Auswahl je ${level === "district" ? "Kreis" : "Gemeinde"}`}
         info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{n(sel.count)} {sel.count === 1 ? "Vorgang" : "Vorgänge"}</span></> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
       <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
@@ -244,7 +244,8 @@ export function SignalePage() {
           {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
           {res.total === 0 ? <Befund link={false} tight>{`${res.signal.name}: keine Vorgänge${zeit !== "alle" ? ` in den letzten ${zeit} Monaten` : ""} für diese Auswahl.`}</Befund>
             : <Kennzahlen week={week} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
-              {res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}{zeit !== "alle" ? ` · letzte ${zeit} Monate` : ""}
+              <span>{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
+              <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
             </Kennzahlen>}
 
           {ATLAS_OF[signal] && <p className="mt-1 text-[14px] text-slate-500">Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 hover:underline">{ATLAS_OF[signal][2]} im Atlas →</Link></p>}
@@ -255,9 +256,6 @@ export function SignalePage() {
             </div>
             <div className="min-w-0 lg:col-span-6">
               <div className="flex flex-col gap-2 print:hidden">
-                <FilterRow label="Zeitraum">
-                  {ZEITRAUM.map(([k, label]) => <button key={k} type="button" aria-pressed={k === zeit} onClick={() => pick({ zeit: k === "6" ? "" : k })} className={PILL(k === zeit)}>{label}</button>)}
-                </FilterRow>
                 {res.phases.length > 0 && <FilterRow label="Schritt">
                   <button type="button" aria-pressed={!phase} onClick={() => pick({ phase: "" })} className={PILL(!phase)}>Alle</button>
                   {res.phases.map((p) => <button key={p.key} type="button" aria-pressed={p.key === phase} onClick={() => pick({ phase: p.key === phase ? "" : p.key })} className={PILL(p.key === phase)}>
@@ -273,7 +271,7 @@ export function SignalePage() {
                       <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">
                         <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
                           <span className="line-clamp-2 text-[14px] leading-snug sm:text-[16px]">{r.title}</span>
-                          <span className="block truncate text-[12px] text-slate-500"><NeuMark date={r.date} />{[r.region, day(r.date), (r.status === "announced" || r.status === "consulting") && (r.status === "announced" ? "angekündigt" : "in Beratung"), r.gremium].filter(Boolean).join(" · ")}</span>
+                          <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), (r.status === "announced" || r.status === "consulting") && (r.status === "announced" ? "angekündigt" : "in Beratung"), r.gremium].filter(Boolean).join(" · ")}</span>
                         </Link>
                         <span className="self-center whitespace-nowrap text-right text-[12px] text-slate-500"><span className="block"><span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${dotOf(r.phase, phaseOrder)}`} />{r.phase}</span>{r.arts?.length ? <span className="block text-slate-900">{r.arts.map(artShort).join(", ")}</span> : null}</span>
                       </li>

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
-import { Kennzahlen } from "./Kennzahlen";
+import { Kennzahlen, ZeitPills, countScale } from "./Kennzahlen";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
@@ -74,7 +74,6 @@ function Bars({ rows, mode, open = "", onOpen, drill = () => null, value = (r) =
    oder, bei Beträgen und Sätzen, der Median im Gebiet, in Vierteln über alle Gebiete eingefärbt; wo hohe Werte Kosten für die
    Bürger sind (Steuern, Gebühren, Beiträge, Preise), von grün nach rot. Gemeindeverbände färben ihre Mitgliedsgemeinden, die
    Kreise fassen alle Gebiete im Kreis zusammen (Summe, bei Kennzahlen der Median der Gebiete). */
-const STUFE = (c: number) => (c >= 5 ? 4 : c >= 3 ? 3 : c);
 const HIGH_BAD = new Set(["hebesatz", "fee_rate", "dog_tax", "kita_fee", "land_price", "plot_price"]);
 const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
 const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
@@ -114,10 +113,12 @@ function AtlasMap({ regions, facts, onList, listed, drill, onPlace, pins }: { re
       for (const [k, a, v] of memberVal) { const r = rowOf.get(k); if (r && a.length === 8) area.set(a, { v, name: `${r.name}: Mitgliedsgemeinde`, key: r.key, count: r.count, share: r.share, base: r.base }); }
     }
     const vs = [...area.values()].map((x) => x.v);
-    let cut: number[] = [], legend = ["1 Vorgang", "2 Vorgänge", "3 bis 4 Vorgänge", "5 und mehr"];
+    /* Anzahl: Stufen nach Vierteln der Gebiete (countScale), damit die Karte über ganz Deutschland unterscheidet */
+    const scale = countScale(vs);
+    let cut: number[] = [], legend = scale.legend;
     if (metricOn && vs.length) { cut = [quart(vs, 0.25), quart(vs, 0.5), quart(vs, 0.75)]; legend = [`bis ${num(cut[0])}`, `bis ${num(cut[1])}`, `bis ${num(cut[2])}`, `über ${num(cut[2])}`].map((l) => `${l} ${unit}`); }
     const levels: Record<string, number> = {}, byAgs = new Map<string, { v: number; name: string; key: string; count: number; share: number | null; base: number }>();
-    for (const [a, x] of area) { levels[a] = metricOn ? (x.v <= cut[0] ? 1 : x.v <= cut[1] ? 2 : x.v <= cut[2] ? 3 : 4) : STUFE(x.v); byAgs.set(a, x); }
+    for (const [a, x] of area) { levels[a] = metricOn ? (x.v <= cut[0] ? 1 : x.v <= cut[1] ? 2 : x.v <= cut[2] ? 3 : 4) : scale.level(x.v); byAgs.set(a, x); }
     return { levels, byAgs, legend, unit, colors: metricOn && HIGH_BAD.has(kind) ? GREEN_RED : undefined };
   }, [regions, facts, metricOn, level, kind]);
   const sel = picked ? byAgs.get(picked) : undefined;
@@ -392,17 +393,13 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
               {/* Mit Ort: der Ort als Chip mit ✕ am Satzanfang (dort sieht man ihn und kann ihn entfernen); sonst große Kennzahlen */}
               {place && cmp ? <Befund link={false} tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest}</Befund>
                 : <Kennzahlen week={week} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }, { value: n(allRegions.length), label: plural(allRegions.length, "Gebiet", "Gebiete") }, ...(share !== null ? [{ value: pct(share), label: "aller Sachvorgänge dieser Räte" }] : [])]}>
-                  {what || "Alle Themen"}{res.selection.q ? ` · Suche „${prettyTerm(res.selection.q)}“` : ""}{zeit ? ` · letzte ${zeit} Monate` : ""}{place && <> · <PlaceChip name={place} onClear={() => search.clearArea()} /></>}
+                  <span>{what || "Alle Themen"}{res.selection.q ? ` · Suche „${prettyTerm(res.selection.q)}“` : ""}</span>
+                  {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
+                  <ZeitPills value={zeit} onPick={onZeit} />
                 </Kennzahlen>}
 
               {related.length > 0 && <p className="mt-1 text-[14px] text-slate-500">Dazu in den Signalen, mit Stand des Verfahrens: {related.map(([id, name], i) => <span key={id}>{i > 0 && " · "}<Link href={`/analytics/signale?signal=${id}`} className="font-medium text-teal-700 hover:underline">{name} →</Link></span>)}</p>}
-              <div className="mt-3 flex flex-wrap items-center gap-1.5 print:hidden" role="group" aria-label="Zeitraum">
-                <span className="mr-1 text-[14px] text-slate-500">Zeitraum</span>
-                {([["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], ["", "Alles"]] as const).map(([k, l]) => (
-                  <button key={k || "alle"} type="button" aria-pressed={k === zeit} onClick={() => onZeit(k)}
-                    className={`inline-flex h-8 items-center rounded-full border px-3 text-[14px] ${k === zeit ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>
-                ))}
-              </div>
+              {place && cmp && <div className="mt-2"><ZeitPills value={zeit} onPick={onZeit} /></div>}
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
                 <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
