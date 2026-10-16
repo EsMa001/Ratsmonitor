@@ -27,7 +27,7 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Verbände", slug: "verbaende" },
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
 ];/* Analyse: Start (Übersicht), Signale (was entsteht), Tools (alle Werkzeuge), Atlas (worüber beraten wird); die einzelnen Analysen stehen auf diesen Seiten */
-/* Analyse: oben einmal das Logo plenara.X, darunter die vier Seiten mit ihrer Frage (leise rechts daneben), zuletzt die Tools */
+/* Analyse („Analysen by plenara.X“): die vier Seiten mit ihrer Frage (leise rechts daneben), zuletzt die Tools */
 const ANALYSE: { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid"; hint?: string }[] = [
   { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
   { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
@@ -135,7 +135,7 @@ export function MainMenu() {
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
         {(["usecases", "funktionen", "analyse", "info"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : g === "analyse" ? "Analysen" : g === "usecases" ? "Anwender" : "Informationen"}
+            {g === "funktionen" ? "Funktionen" : g === "analyse" ? <AnalysenBy /> : g === "usecases" ? "Anwender" : "Informationen"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
@@ -185,13 +185,12 @@ export function MainMenu() {
                   </ul>
                 )}
                 {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "analyse"} onClick={() => setOpenGroup(openGroup === "analyse" ? "" : "analyse")}>
-                  Analysen
+                  <AnalysenBy />
                   <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "analyse" ? "rotate-180" : ""}`} />
                 </button>}
                 {show("analyse") && (
                   <ul className="ri-menu__subs">
-                    <li aria-hidden="true" className="mb-1 flex items-center gap-2 border-b border-slate-100 px-3 pb-2 pt-1"><AnalyticsLogo size={14} /><span className="text-[12px] text-slate-400">Auswertungen über alle Räte</span></li>
-                    {ANALYSE.map((f) => (
+                                        {ANALYSE.map((f) => (
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub min-w-[230px]" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />
@@ -233,4 +232,9 @@ export function MainMenu() {
         )}
     </>
   );
+}
+
+/** Name der Gruppe Analysen mit dem kleinen Logo plenara.X: „Analysen by plenara.X“ */
+function AnalysenBy() {
+  return <span className="inline-flex items-center gap-1.5">Analysen <span className="text-[12px] font-normal text-slate-400">by</span><span aria-label="plenara.X" className="inline-flex"><AnalyticsLogo size={13} /></span></span>;
 }
