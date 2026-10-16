@@ -749,7 +749,7 @@ topic design-styles.css:140
 - clipboard.ts (26): copyText
 - constants.ts (66, ⚠1): THEMEN, shownThema, StatusInfo, STATUS, STATUS_BY_ID, TEASER_MAX_SENTENCES, isCovered, MAP_COLORS, MAP_COLORS_DARK, colorForCoverageDark, colorForCoverage, colorForCount
 - entitlements.ts (50): useEntitlements
-- exportArticle.ts (402): ArticleExport, exportArticleTable, printArticle, exportArticlePdf
+- exportArticle.ts (93): ArticleExport, exportArticleTable, printArticle
 - exportResults.ts (35): EXPORT_MAX, ExportFormat, exportResults
 - favicon.ts (39, ⚠1): faviconHref, setFavicon
 - fetchJson.ts (44): ApiError, fetchJson, readJson, fetchOrFail, errorText
@@ -790,7 +790,7 @@ topic design-styles.css:140
 - MainMenu.tsx (234, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (179, ⚠11): DetailPage
+- DetailPage.tsx (178, ⚠11): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (64): OverviewPage
@@ -833,6 +833,8 @@ topic design-styles.css:140
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
 - XAtlasView.tsx (516, ⚠5): XAtlasView
+- XTrendsPage.tsx (354, ⚠3): XTrendsPage
+- XTrendsParts.tsx (147, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery
 

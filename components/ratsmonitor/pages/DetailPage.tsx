@@ -12,7 +12,7 @@ import {ShareButton} from '../components/ShareButton';
 import {SaveArticleButton} from '../components/SaveArticleButton';
 import {FollowButton} from '../components/FollowButton';
 import {ExportMenu} from '../components/ExportMenu';
-import {exportArticlePdf,exportArticleTable,printArticle} from '../lib/exportArticle';
+import {exportArticleTable,printArticle} from '../lib/exportArticle';
 import {loadTopic,peekTopic,TopicError} from '../lib/topicCache';
 const NOT_FOUND_TEXT='Dieser Vorgang wurde nicht gefunden.';
 import {todayLocal} from '../lib/text';
@@ -88,12 +88,11 @@ export function DetailPage(){
               title="Exportieren"
               tone="text-teal-700 hover:bg-teal-50 hover:text-teal-800"
               options={[
-                {id:'pdf',label:'PDF',desc:'Übersicht mit Logo als Datei zum Weitergeben oder Ablegen'},
                 {id:'print',label:'Drucken',desc:'Druckfertige Seite mit Logo, direkt zum Drucker'},
                 {id:'xlsx',label:'Excel (.xlsx)',desc:'Eckdaten, Verlauf und Unterlagen als Tabelle'},
                 {id:'csv',label:'CSV (.csv)',desc:'Für andere Programme, z. B. CRM'},
               ]}
-              onExport={async f=>{const a={t,place:region?.name||'',docs:docs.map(d=>({...d,url:window.location.origin+d.url})),events:sorted};if(f==='pdf')await exportArticlePdf(a);else if(f==='print')printArticle(a);else exportArticleTable(a,f as 'csv'|'xlsx');}}
+              onExport={async f=>{const a={t,place:region?.name||'',docs:docs.map(d=>({...d,url:window.location.origin+d.url})),events:sorted};if(f==='print')printArticle(a);else exportArticleTable(a,f as 'csv'|'xlsx');}}
             />
           </span>
         </div>
