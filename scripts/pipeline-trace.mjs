@@ -40,7 +40,7 @@ const c=Object.fromEntries(windows.map(([k])=>[k,empty()]));
 const add=(k,f)=>{for(const [w] of windows)if(k>=since[w])f(c[w]);};
 
 const q=db.prepare(`SELECT id,updated_at AS at,json_extract(payload,'$.documents') AS docs,json_extract(payload,'$.classification.version') AS label
- FROM topics INDEXED BY idx_topics_canonical_updated WHERE json_extract(payload,'$.identity.mergedInto') IS NULL AND updated_at>=?`);
+ FROM topics INDEXED BY idx_topics_canonical_updated WHERE active=1 AND updated_at>=?`);
 let n=0;
 for(const r of q.iterate(oldest)){
  n++;
