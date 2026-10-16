@@ -145,7 +145,7 @@ test('search materializes only the bounded page before reading payloads and aggr
   await service.searchReports({...WINDOW,limit:1});await service.aggregateReports({...WINDOW,groupBy:'region'});
   const [search,aggregate]=queries;
   const page=search.sql.slice(0,search.sql.indexOf(') SELECT'));
-  assert.match(page,/WITH page AS MATERIALIZED/u);assert.match(page,/ORDER BY sc.date DESC,sc.id ASC LIMIT \?/u);
+  assert.match(page,/WITH page AS MATERIALIZED/u);assert.match(page,/ORDER BY sc.date DESC,sc.id ASC LIMIT CAST\(\? AS REAL\)/u);
   assert.equal(search.args.at(-1),2);
   assert.doesNotMatch(page,/payload|json_extract/iu);
   assert.match(search.sql,/\) SELECT[\s\S]+json_extract\(t.payload[\s\S]+FROM page sc JOIN topics t/u);

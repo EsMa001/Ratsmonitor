@@ -141,8 +141,10 @@ export function createCustomerData(db,{customerId,allowedRegionIds,allowSourceTe
         const edge=cursor(input.cursor,f.fingerprint);
         where+=' AND (sc.date<? OR (sc.date=? AND sc.id>?))';args.push(edge.date,edge.date,edge.id);
       }
+      /* LIMIT als Kommazahl wie in der Suche (monitor-search.mjs): als Ganzzahl liest SQLite alle Karten statt über den Datumsindex
+         nach einer Seite aufzuhören (Server 16.10.2026: 800 statt 1 ms). Gleiches Ergebnis. */
       const {results}=await db.prepare(`WITH page AS MATERIALIZED (
-        SELECT ${CARD_COLUMNS} FROM search_cards sc WHERE ${where} ORDER BY sc.date DESC,sc.id ASC LIMIT ?
+        SELECT ${CARD_COLUMNS} FROM search_cards sc WHERE ${where} ORDER BY sc.date DESC,sc.id ASC LIMIT CAST(? AS REAL)
       ) SELECT ${CARD_SELECT} FROM page sc JOIN topics t ON t.id=sc.id AND t.region_id=sc.region_id ORDER BY sc.date DESC,sc.id ASC`).bind(...args,f.limit+1).all();
       const rows=results.slice(0,f.limit);
       return {reports:rows.map(card),nextCursor:results.length > f.limit ? encodeCursor(rows.at(-1),f.fingerprint) : null,scope:f.scope};
