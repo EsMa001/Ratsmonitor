@@ -1,5 +1,4 @@
 import { useEffect, type ComponentType } from "react";
-import { AnalyticsGroupPage, MethodikPage } from "./AnalyticsAbout";
 import { DiffusionPage } from "./DiffusionPage";
 import { BeschluessePage } from "./BeschluessePage";
 import { ComparePage } from "./ComparePage";
@@ -33,8 +32,6 @@ function ZuTrends() {
 
 /** plenara.X: Übersicht und je Funktion eine Unterseite */
 const PAGES: Record<string, ComponentType> = {
-  /* Methodik aller Analysen (verlinkt unter jeder Auswertung); eine Übersichtsseite /analytics gibt es nicht mehr */
-  "/analytics/methodik": MethodikPage,
   /* Frühere Adresse der Ausbreitung: jetzt Teil von plenara.X Trends (Begriff aus ?thema= oder ?q= wird gewählt) */
   "/analytics/diffusion": () => <ZuTrends />,
   /* Die alten Werkzeuge bleiben unverändert als Sicherung */
@@ -54,19 +51,13 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/signale": SignalePage,
   /* plenara.X Fakten: Werte aus den Unterlagen je Gemeinde auf der Karte (/api/x?view=fakten) */
   "/analytics/fakten": FaktenPage,
-  /* plenara.X Einblicke: Fraktionen, Gremien, Themennetz, News (Übersicht); die frühere Seite Tools leitet hierher */
-  "/analytics/einblicke": () => <AnalyticsGroupPage group="tool" />,
-  "/analytics/tools": () => <Umleiten to="/analytics/einblicke" />,
-  // Frühere Gruppen plenara.X Politik und Finanzen (Fraktionsprofil und Newsradar stehen jetzt bei den Tools)
-  "/analytics/politik": () => <Umleiten to="/analytics/einblicke" />,
-  "/analytics/finanzen": () => <Umleiten to="/analytics/einblicke" />,
 };
 
 // Die Adressen stehen in lib/routes.ts (App.tsx braucht sie, ohne diese Seiten zu laden); PAGES muss sie alle bedienen.
 export { isAnalyticsPath } from "../../lib/routes";
 
 /** Nur die Übersichten (Start, Tools) sind frei; die Analysen gehören zu Enterprise */
-const FREE = new Set(["/analytics/methodik", "/analytics/tools", "/analytics/einblicke", "/analytics/politik", "/analytics/finanzen"]);
+const FREE = new Set<string>();
 
 export function AnalyticsPages({ path }: { path: string }) {
   const { tier, ready } = useTier();
@@ -76,7 +67,7 @@ export function AnalyticsPages({ path }: { path: string }) {
     const TITEL: Record<string, string> = { "/analytics/atlas": "plenara.X Atlas", "/analytics/signale": "Signale · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Aktuelles · plenara.X", "/analytics/diffusion-alt": "Alt: Ausbreitung · plenara.X", "/analytics/trends-alt": "Alt: Trends · plenara.X",
       "/analytics/graph": "Themennetz · plenara.X", "/analytics/gremien": "Gremien · plenara.X", "/analytics/beschluesse": "Ausgang · plenara.X Trends",
       "/analytics/vergleich": "Vergleich · plenara.X Atlas", "/analytics/trends": "plenara.X Trends", "/analytics/fraktionen": "Fraktionen · plenara.X" };
-    document.title = TITEL[path] ?? (gruppe ? gruppe.name : path === "/analytics/methodik" ? "Methodik · plenara.X" : "plenara.X");
+    document.title = TITEL[path] ?? (gruppe ? gruppe.name : "plenara.X");
   }, [path]);
   const Page = PAGES[path];
   if (!Page) return null;

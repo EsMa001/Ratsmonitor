@@ -2,7 +2,6 @@ import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
 /* Titel und Beschreibung je Analyse für Link-Vorschauen (die Seite selbst setzt den Titel im Browser) */
 const SEITEN:Record<string,[string,string]>={
- methodik:['Methodik · plenara.X','Was jede Analyse von plenara.X zeigt, worauf sie beruht und wo ihre Grenzen liegen.'],
  diffusion:['Ausbreitung · plenara.X','Wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte und wie es sich ausbreitet.'],
  graph:['Themennetz · plenara.X','Womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.'],
  trends:['plenara.X Trends','Was in den Räten gerade aufkommt und wie es sich über die Gebiete ausbreitet: Begriffe, die zunehmen, und die Gebiete, die sie zum ersten Mal beraten.'],
@@ -13,10 +12,6 @@ const SEITEN:Record<string,[string,string]>={
  gremien:['Gremien · plenara.X','Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden.'],
  fraktionen:['Fraktionen · plenara.X','Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird.'],
  news:['Aktuelles · plenara.X','Was in den Räten gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle.'],
- einblicke:['plenara.X Einblicke','Wer beteiligt ist und was zusammenhängt: Fraktionen, Gremien, Themennetz und Aktuelles aus den Vorlagen der Räte.'],
- tools:['plenara.X Einblicke','Wer beteiligt ist und was zusammenhängt: Fraktionen, Gremien, Themennetz und Aktuelles aus den Vorlagen der Räte.'],
- politik:['plenara.X Einblicke','Wer beteiligt ist und was zusammenhängt: Fraktionen, Gremien, Themennetz und Aktuelles aus den Vorlagen der Räte.'],
- finanzen:['plenara.X Einblicke','Wer beteiligt ist und was zusammenhängt: Fraktionen, Gremien, Themennetz und Aktuelles aus den Vorlagen der Räte.'],
  signale:['plenara.X Signale','Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen, mit Stand.'],
  fakten:['plenara.X Fakten','Hebesätze, Gebühren, Jahresergebnisse und Preise aus den Vorlagen der Räte, je Gemeinde auf der Karte.'],
  atlas:['plenara.X Atlas','Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und ein Ort im Vergleich mit ähnlichen Gemeinden.'],

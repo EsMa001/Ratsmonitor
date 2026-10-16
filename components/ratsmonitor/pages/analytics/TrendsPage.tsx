@@ -81,7 +81,7 @@ export function TrendsPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Trends</p>
+      <p className="text-[14px] text-slate-500">plenara.X / Trends</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Trends</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, welche Begriffe in den Räten gerade aufkommen, zunehmen oder verschwinden. Verglichen wird der aktuelle Zeitraum mit dem gleich langen davor.</p>
       </PageBand>
@@ -180,7 +180,7 @@ export function TrendsPage() {
               </Reveal>
             </>
           )}
-          <p className="mt-10 text-[12px] text-slate-500">Verglichen werden zwei gleich lange Zeiträume ({d(res.ranges.prevStart)} bis {d(res.ranges.start)} und {d(res.ranges.start)} bis {d(res.ranges.end)}). {res.totals.capped ? `Bei großen Auswahlen werden je Zeitraum gleichmäßig rund ${n(res.totals.sampledRecent)} Einträge ausgewertet; ` : ""}Verglichen werden Anteile an allen Einträgen, nicht Rohzahlen. „Aufsteigend“ verlangt mindestens ×1,4 und einen deutlichen Unterschied (z-Wert ab 2,5); „neu“ heißt: davor kaum vorhanden, jetzt in mehreren Gebieten. Begriffe stammen aus den Titeln; Formalien, Füllwörter, Besetzungen und Wahlen, Fragestunden und private Bauanträge bleiben außen vor, derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Ein Trend ist ein Hinweis, keine Entscheidung. <Link href="/analytics/methodik" className="text-teal-700">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">Verglichen werden zwei gleich lange Zeiträume ({d(res.ranges.prevStart)} bis {d(res.ranges.start)} und {d(res.ranges.start)} bis {d(res.ranges.end)}). {res.totals.capped ? `Bei großen Auswahlen werden je Zeitraum gleichmäßig rund ${n(res.totals.sampledRecent)} Einträge ausgewertet; ` : ""}Verglichen werden Anteile an allen Einträgen, nicht Rohzahlen. „Aufsteigend“ verlangt mindestens ×1,4 und einen deutlichen Unterschied (z-Wert ab 2,5); „neu“ heißt: davor kaum vorhanden, jetzt in mehreren Gebieten. Begriffe stammen aus den Titeln; Formalien, Füllwörter, Besetzungen und Wahlen, Fragestunden und private Bauanträge bleiben außen vor, derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Ein Trend ist ein Hinweis, keine Entscheidung. <Link href="#methodik" className="text-teal-700">Methode →</Link></p>
         </div>
       )}
     </main>

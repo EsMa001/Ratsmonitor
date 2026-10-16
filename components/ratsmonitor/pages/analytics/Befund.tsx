@@ -30,7 +30,7 @@ function AnalyseLeiste({ link = true }: { link?: boolean }) {
     <p className="m-0 mt-2 hidden text-[14px] text-slate-500 print:block">{text.trim() ? `Suchbegriff „${prettyTerm(text.trim())}“ · ` : ""}Berechnet am {heute()} aus den Ratsinformationssystemen der Kommunen · plenara.X</p>
     <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] print:hidden">
       {link && <button type="button" onClick={kopieren} className="font-medium text-teal-700">Link kopieren</button>}
-      <span className="text-slate-500">Berechnet am {heute()} aus den Ratsinformationssystemen der Kommunen · <Link href="/analytics/methodik" className="text-teal-700">Methodik</Link></span>
+      <span className="text-slate-500">Berechnet am {heute()} aus den Ratsinformationssystemen der Kommunen · <Link href="#methodik" className="text-teal-700">Methodik</Link></span>
     </div>
     </>
   );

@@ -139,7 +139,7 @@ export function FraktionenPage() {
                 )}
               </section></Reveal>
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Die Fraktion wird aus der Antragswendung in Titel oder Textanfang gelesen („Antrag der SPD-Fraktion“); lokale Wählergruppen sind zusammengefasst. Sammelpunkte wie „Beantwortung von Anfragen“ zählen nicht. Der Status ist nur bei einem Teil der Anträge bekannt; die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei. <Link href="/analytics/methodik" className="text-teal-700">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Die Fraktion wird aus der Antragswendung in Titel oder Textanfang gelesen („Antrag der SPD-Fraktion“); lokale Wählergruppen sind zusammengefasst. Sammelpunkte wie „Beantwortung von Anfragen“ zählen nicht. Der Status ist nur bei einem Teil der Anträge bekannt; die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei. <Link href="#methodik" className="text-teal-700">Methode →</Link></p>
             </>
           )}
         </div>

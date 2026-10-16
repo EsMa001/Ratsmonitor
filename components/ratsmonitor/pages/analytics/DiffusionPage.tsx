@@ -134,7 +134,7 @@ export function DiffusionPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Ausbreitung</p>
+      <p className="text-[14px] text-slate-500">plenara.X / Ausbreitung</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Ausbreitung</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte, und wie es sich von dort ausbreitete.</p>
       </PageBand>
@@ -243,7 +243,7 @@ export function DiffusionPage() {
               </ol>
             </section>
           </div>
-          <p className="mt-10 text-[12px] text-slate-500">Als erste Erwähnung gilt das Datum des frühesten Eintrags im Datenbestand, der zur Suche passt. Gebiete mit unvollständigem Datenbestand können später erscheinen, als das Thema dort tatsächlich aufkam. Der Bestand reicht rund ein Jahr zurück: Ein Datum zu Beginn dieses Zeitraums heißt „schon zu Beginn des Bestands“, nicht „zuerst überhaupt“. Samtgemeinden zählen für alle ihre Mitgliedsgemeinden. <Link href="/analytics/methodik" className="text-teal-700">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">Als erste Erwähnung gilt das Datum des frühesten Eintrags im Datenbestand, der zur Suche passt. Gebiete mit unvollständigem Datenbestand können später erscheinen, als das Thema dort tatsächlich aufkam. Der Bestand reicht rund ein Jahr zurück: Ein Datum zu Beginn dieses Zeitraums heißt „schon zu Beginn des Bestands“, nicht „zuerst überhaupt“. Samtgemeinden zählen für alle ihre Mitgliedsgemeinden. <Link href="#methodik" className="text-teal-700">Methode →</Link></p>
         </>
       )}
     </main>

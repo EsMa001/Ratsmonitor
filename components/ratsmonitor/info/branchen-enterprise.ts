@@ -9,7 +9,7 @@ export type AnalyseGruppe = "tool" | "atlas";
 
 /* Gruppen mit Übersichtsseite (Menü „Analysen“, Brotkrumen der einzelnen Analysen) */
 export const GRUPPEN: Record<Exclude<AnalyseGruppe, "atlas">, { name: string; kurz: string; href: string; text: string }> = {
-  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/einblicke", text: "Wer beteiligt ist und was zusammenhängt: Fraktionen und ihre Anträge, die Wege durch die Gremien, das Netz verwandter Themen und was gerade berichtenswert ist." },
+  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/fraktionen", text: "Wer beteiligt ist und was zusammenhängt: Fraktionen und ihre Anträge, die Wege durch die Gremien, das Netz verwandter Themen und was gerade berichtenswert ist." },
 };
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {
@@ -43,7 +43,7 @@ export const NEU_HREF: Partial<Record<AnalyseId, (term?: string) => string>> = {
   trends: () => "/analytics/trends",
 };
 export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "Vergleich im plenara.X Atlas", beschluesse: "Ausgang in plenara.X Trends", gremien: "Gremien", fraktionen: "Fraktionen", news: "Aktuelles" };
-/** Seiten der Gruppe plenara.X Einblicke (Übersicht /analytics/einblicke); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
+/** Seiten der Gruppe plenara.X Einblicke (keine eigene Übersichtsseite); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
 export const EINBLICKE: AnalyseId[] = ["fraktionen", "gremien", "graph", "news"];
 
 export const PLENARAX_VORTEILE: [AnalyseId, string, string][] = [

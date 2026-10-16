@@ -40,7 +40,8 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
   );
   const label = play === "loading" ? "Wird berechnet" : play === "playing" ? "Pause" : startLabel;
   return (
-    <div className="relative z-20">
+    /* rm-solid: Filter und Vorschläge flach statt Milchglas (ratsmonitor.css) */
+    <div className="rm-solid relative z-20">
       <div role="search" className="flex w-full items-center gap-2">
         {noPlay && <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} /> : filterBtn}</div>}
         {!noPlay && <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default`}>

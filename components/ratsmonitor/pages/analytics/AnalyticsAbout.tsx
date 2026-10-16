@@ -1,10 +1,6 @@
-import { LiveThumb } from "../../info/BranchenLive";
-import Link from "next/link";
-import { PageBand } from "./PageBand";
-import { Reveal } from "./Reveal";
+import { useState } from "react";
 import type { ReactNode } from "react";
-import { ANALYSEN, EINBLICKE, GRUPPEN, type AnalyseId, type AnalyseGruppe } from "../../info/branchen-enterprise";
-import { Icon } from "../../info/icons";
+import { type AnalyseId } from "../../info/branchen-enterprise";
 import { RADAR_THUMBS } from "./RadarThumbs";
 
 /** Vorschaubild der Ausbreitung: Wellen von Punkten um einen Ursprung und die S-Kurve */
@@ -126,28 +122,6 @@ export const ANALYSE_THUMBS = {
   ...RADAR_THUMBS,
 };
 
-/* Beispielbegriff der Vorschauen; Daten kommen aus dem Schnappschuss (scripts/build-branchen-ausschnitte.mjs) */
-const BEISPIEL = "Photovoltaik";
-/* Der Ortsvergleich hat im Schnappschuss ein eigenes Beispiel: zwei Orte statt eines Begriffs */
-const VERGLEICH_BEISPIEL = "Köln und Dortmund";
-
-const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string }[] = [
-  { id: "diffusion", name: "Alt: Ausbreitung", href: "/analytics/diffusion-alt", kurz: "Wer zuerst dran war, wie schnell andere folgten und wo ein Thema noch fehlt." },
-  { id: "graph", name: "Themennetz", href: "/analytics/graph", kurz: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
-  { id: "trends", name: "Alt: Trends", href: "/analytics/trends-alt", kurz: "Welche Begriffe gerade aufkommen, zunehmen oder verschwinden." },
-  { id: "vergleich", name: "Ortsvergleich", href: "/analytics/vergleich", kurz: "Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe." },
-  { id: "beschluesse", name: "Beschlüsse", href: "/analytics/beschluesse", kurz: "Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer." },
-  { id: "gremien", name: "Gremien", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
-  { id: "fraktionen", name: "Fraktionen", href: "/analytics/fraktionen", kurz: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
-  { id: "atlas", name: "plenara.X Atlas", href: "/analytics/atlas", kurz: "Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und die Vorgänge hinter jeder Zahl." },
-  { id: "signale", name: "plenara.X Signale", href: "/analytics/signale", kurz: "Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, mit Stand des Verfahrens." },
-  { id: "fakten", name: "plenara.X Fakten", href: "/analytics/fakten", kurz: "Hebesätze, Gebühren, Jahresergebnisse und Preise aus den Vorlagen, je Gemeinde auf der Karte, rot bis grün." },
-  { id: "news", name: "Aktuelles", href: "/analytics/news", kurz: "Was gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle." },
-];
-
-/* Reihenfolge der Methodik-Seite wie im Menü (Reiter unter ihrer Seite), nur Analysen mit Methodik-Text */
-const REIHE: [AnalyseId, string][] = [["atlas", "Atlas"], ["vergleich", "Atlas · Vergleich"], ["signale", "Signale"], ["trends", "Trends"], ["diffusion", "Trends · Ausbreitung"], ["beschluesse", "Trends · Ausgang"], ["fakten", "Fakten"], ["fraktionen", "Fraktionen"], ["gremien", "Gremien"], ["graph", "Themennetz"], ["news", "Aktuelles"]];
-
 const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
   diffusion: (
     <>
@@ -232,77 +206,21 @@ const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
   ),
 };
 
-function Karten({ group }: { group: AnalyseGruppe }) {
-  /* Frage je Einblick, wie im Menü und im Kopf der Seite */
-  const FRAGE: Partial<Record<AnalyseId, string>> = { fraktionen: "Wer will was?", gremien: "Wer berät was?", graph: "Was hängt zusammen?", news: "Was ist berichtenswert?" };
-  const list = EINBLICKE.map((id) => ANALYSEN_KARTEN.find((a) => a.id === id)!).filter((a) => ANALYSEN[a.id].group === group);
-  return (
-    <ul className="m-0 mt-8 grid list-none gap-x-8 gap-y-14 p-0 sm:grid-cols-2 xl:grid-cols-4">
-      {list.map((a, i) => (
-        <li key={a.id}>
-          <Reveal delay={(i % 3) * 90}>
-            <Link href={a.href} aria-label={`${a.name} öffnen`} className="group flex flex-col">
-              <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1">{a.id in ANALYSE_THUMBS ? <LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} showStand={false} /> : (
-                /* Analysen ohne Schnappschuss-Vorschau: ruhige Kachel mit Symbol */
-                <div aria-hidden="true" className="flex aspect-[16/10] items-center justify-center bg-slate-50 text-teal-700"><Icon name={ANALYSEN[a.id].icon} size={56} /></div>
-              )}</div>
-              <span className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-700">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
-              {/* Auf dem Handy steht die Überschrift über dem Vorschaubild, sonst ist unklar, wozu das Bild gehört */}
-              <h3 className="mt-2 text-[22px] font-semibold max-sm:order-first max-sm:mb-2 max-sm:mt-0">{a.name}</h3>
-              <p className="mt-1 text-[16px] text-slate-500">{FRAGE[a.id] && <b className="font-semibold text-slate-700">{FRAGE[a.id]} </b>}{a.kurz}</p>
-            </Link>
-          </Reveal>
-        </li>
-      ))}
-    </ul>
-  );
-}
 
-function Methodik({ group, ohneTitel = false }: { group?: AnalyseGruppe; ohneTitel?: boolean }) {
+/** Methodik einer Analyse (oder mehrerer, etwa Trends und Ausbreitung) für den Info-Knopf im Seitenkopf (XKopf) */
+export function MethodikText({ ids }: { ids: [AnalyseId, string][] }) {
+  const da = ids.filter(([id]) => METHODIK[id]);
+  /* Kurz: je Analyse nur der erste Absatz (was sie zeigt); „Mehr lesen“ zeigt Grundlage, Messung und Grenzen */
+  const [alles, setAlles] = useState(false);
   return (
     <>
-      {ohneTitel ? null : <h2 id="methodik" className="mt-16 scroll-mt-24 text-[28px] font-semibold">Methodik</h2>}
-      <p className={`${ohneTitel ? "" : "mt-2 "}max-w-[680px] text-[16px] text-slate-500`}>Was jede Analyse zeigt, worauf sie beruht und wo ihre Grenzen liegen.</p>
-      <div className="mt-6 max-w-[900px] border-t border-slate-200">
-        {(ohneTitel ? REIHE.map(([id, name]) => ({ id, name })) : ANALYSEN_KARTEN.filter((a) => (!group || ANALYSEN[a.id].group === group) && !a.name.startsWith("Alt:"))).filter((a) => METHODIK[a.id]).map((a) => (
-          <details key={a.id} className="group border-b border-slate-200">
-            <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-[18px] font-semibold [&::-webkit-details-marker]:hidden">
-              {a.name}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
-            </summary>
-            <div className="pb-6">{METHODIK[a.id]}</div>
-          </details>
-        ))}
-      </div>
+      {da.map(([id, name]) => (
+        <div key={id} className={alles ? "" : "[&>p:not(:first-of-type)]:hidden"}>
+          {da.length > 1 && <h3 className="mt-4 text-[16px] font-semibold first:mt-0">{name}</h3>}
+          {METHODIK[id]}
+        </div>
+      ))}
+      <button type="button" onClick={() => setAlles(!alles)} aria-expanded={alles} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{alles ? "Weniger" : "Mehr lesen: Grundlage, Messung, Grenzen"}</button>
     </>
-  );
-}
-
-/** Übersicht einer Gruppe (plenara.X Tools oder Themen) */
-export function AnalyticsGroupPage({ group }: { group: Exclude<AnalyseGruppe, "atlas"> }) {
-  const g = GRUPPEN[group];
-  return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-16 text-slate-900">
-      <PageBand>
-        <p className="m-0 text-[14px] text-slate-500">plenara.X / {g.kurz}</p>
-        <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">{g.name}</h1>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{g.text}</p>
-      </PageBand>
-      <Karten group={group} />
-      <Methodik group={group} />
-    </main>
-  );
-}
-
-/** Methodik aller Analysen auf einer eigenen Seite (/analytics/methodik, nicht im Menü; „Methodik“ unter jeder Auswertung führt hierher) */
-export function MethodikPage() {
-  return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-16 text-slate-900">
-      <PageBand compact>
-        <p className="m-0 text-[14px] text-slate-500">plenara.X / Methodik</p>
-        <h1 className="mt-1 text-[28px] font-semibold leading-tight">Methodik</h1>
-      </PageBand>
-      <Methodik ohneTitel />
-    </main>
   );
 }

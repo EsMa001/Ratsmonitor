@@ -83,6 +83,10 @@ body h1,body h2,body h3{font-weight:600}
 .rm-legend{background:rgba(255,255,255,.9);border:0;box-shadow:none}
 .rm-dark .rm-legend{background:rgba(15,23,42,.85);color:#e2e8f0}
 .rm-dark .rm-legend button{color:#e2e8f0}
+/* plenara.X: Suche und Filter ohne Milchglas (flach, weiß, feine Linie); die Startseite behält das Glas */
+.rm-solid .rm-glass,.rm-solid .rm-glass:hover,.rm-solid .rm-glass-pop,.rm-solid .rm-glass-pop:hover{background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-color:#e2e8f0!important;box-shadow:0 8px 24px rgba(15,23,42,.08)!important}
+.rm-solid .rm-chip,.rm-solid .rm-chip:hover,.rm-solid #filter-body .select-base,.rm-solid #filter-body .select-base:hover{background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-color:#e2e8f0!important;box-shadow:none!important}
+html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-dark .rm-solid .rm-glass-pop,html.rm-dark .rm-solid .rm-glass-pop:hover,html.rm-dark .rm-solid .rm-chip,html.rm-dark .rm-solid #filter-body .select-base{background:#0f172a!important;border-color:rgba(148,163,184,.22)!important}
 /* Filterfenster: Felder und aufklappende Listen ebenfalls Milchglas */
 #filter-body .select-base{height:32px;padding-left:12px;padding-right:28px;border-radius:12px;font-size:14px;background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.75);box-shadow:inset 0 1px 2px rgba(15,23,42,.04);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 @media(max-width:639px){#filter-body .select-base{height:36px}}

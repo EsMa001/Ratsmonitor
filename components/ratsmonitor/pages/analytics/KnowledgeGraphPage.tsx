@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Segmented } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Befund, Fehler } from "./Befund";
 import { RadarDrill } from "./RadarDrill";
@@ -40,6 +41,7 @@ const LEVELS: Record<Level, { label: string; terms: number; topics: number; per:
 };
 
 export function KnowledgeGraphPage() {
+  const [netz, setNetz] = useState(false);
   const params = useSearchParams();
   const { query, search } = useAnalyticsQuery();
   // Liste der Vorgänge hinter dem gewählten Knoten
@@ -141,7 +143,11 @@ export function KnowledgeGraphPage() {
 
       {/* Antwort zuerst, dann das Netz */}
       {res && !empty && strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
-      <section ref={graphRef} className="relative mt-6 h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[620px]" aria-label="Themennetz">
+      {/* Detailstufe über dem Netz, als Umschalter wie auf den übrigen Seiten */}
+      {res && !empty && <div className={`${netz ? "" : "max-sm:hidden"} mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
+      {/* Handy: Netz erst auf Wunsch (zu klein zum Lesen); die Listen darunter tragen die Antwort */}
+      <button type="button" onClick={() => setNetz(!netz)} aria-expanded={netz} className="mt-6 text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
+      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} relative mt-3 h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[620px]`} aria-label="Themennetz">
         {res && !empty ? <GraphView nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="absolute inset-0 bg-map-ground" />}
 
         <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
@@ -150,11 +156,6 @@ export function KnowledgeGraphPage() {
               <li key={t} className="flex items-center gap-2"><i className={`inline-block h-3 w-3 rounded-full ${t === "topic" ? "rm-gdot" : ""}`} style={{ background: KIND[t].fill, border: `2px solid ${KIND[t].stroke}` }} />{KIND[t].label}</li>
             ))}
           </ul>
-          <div role="group" aria-label="Detailstufe" className="mt-2 flex gap-1 border-t border-slate-200 pt-2">
-            {(Object.keys(LEVELS) as Level[]).map((l) => (
-              <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`rounded-full px-2 py-0.5 ${level === l ? "bg-teal-700 text-white" : "text-slate-700 hover:text-teal-700"}`}>{LEVELS[l].label}</button>
-            ))}
-          </div>
         </div>
 
         <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
@@ -203,7 +204,7 @@ export function KnowledgeGraphPage() {
               <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {strongest.map((e, i) => (
                   <li key={e.a + e.b} className="border-b border-slate-200">
-                    <button type="button" onClick={() => { setSelected(e.a); setPair(e); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className="group grid w-full cursor-pointer grid-cols-[28px_1fr_auto_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
+                    <button type="button" onClick={() => { setNetz(true); setSelected(e.a); setPair(e); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className="group grid w-full cursor-pointer grid-cols-[28px_1fr_auto_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
                       <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
                       <span className="min-w-0">
                         <span className="block truncate text-[16px] text-slate-900">{byId.get(e.a)?.label} · {byId.get(e.b)?.label}</span>
@@ -217,7 +218,7 @@ export function KnowledgeGraphPage() {
               </ol>
             </section>
           </div>
-          <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage sind alle ${n(res.total)} Vorgänge${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind alle ${n(res.total)} passenden Vorgänge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="/analytics/methodik" className="text-teal-700">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage sind alle ${n(res.total)} Vorgänge${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind alle ${n(res.total)} passenden Vorgänge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="#methodik" className="text-teal-700">Methode →</Link></p>
         </>
       )}
     <XWeiter links={[["/analytics/trends", "plenara.X Trends"], ["/analytics/atlas", "plenara.X Atlas"]]} />

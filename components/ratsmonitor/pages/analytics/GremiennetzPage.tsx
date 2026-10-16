@@ -21,6 +21,7 @@ const glass = "rm-legend";
 const n = (v: number) => v.toLocaleString("de-DE");
 
 export function GremiennetzPage() {
+  const [netz, setNetz] = useState(false);
   const { query } = useAnalyticsQuery();
   const [selected, setSelected] = useState("");
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/network?${query}`, initial: true, fallback: "Das Netz konnte nicht berechnet werden.", onDone: () => setSelected("") });
@@ -71,7 +72,9 @@ export function GremiennetzPage() {
                   ["Vorgänge im häufigsten Übergang", top ? n(top.n) : "–"],
                   ["Tage im Mittel je Übergang", lag === null ? "–" : String(lag)]
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
-              <section className="relative mt-8 h-[360px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[640px]" aria-label="Beratungswege">
+              {/* Handy: Netz erst auf Wunsch (zu klein zum Lesen); die Listen darunter tragen die Antwort */}
+              <button type="button" onClick={() => setNetz(!netz)} aria-expanded={netz} className="mt-6 text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
+              <section className={`${netz ? "" : "max-sm:hidden"} relative mt-8 h-[360px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
                 <NetView nodes={res.nodes} edges={res.edges} selected={selected} onSelect={setSelected} zoomRef={zoomRef} />
                 <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
                   <ul className="m-0 flex list-none flex-col gap-1 p-0">
@@ -158,7 +161,7 @@ export function GremiennetzPage() {
               </Reveal>
             </>
           )}
-          <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Grundlage sind {n(res.examined)}{res.capped ? ` gleichmäßig ausgewählte von ${n(res.pool)}` : ""} Vorgängen mit Beratung oder Entscheidung. Nur Vorgänge, die in mindestens zwei verschiedenen Gremien behandelt wurden, bilden Übergänge ({n(res.paths)}). Stationen werden nach Datum geordnet, aufeinanderfolgende Stationen im selben Gremium zählen einmal. {res.mode === "types" ? "Ohne einzelnen Ort sind die Gremien nach ihrer Art aus dem Namen zusammengefasst (zum Beispiel Haupt- und Verwaltungsausschuss), weil jeder Ort eigene Namen hat. " : "Mit einem Ort gelten dessen echte Gremiennamen. "}Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab; die Zeit je Übergang ist der Abstand der Sitzungstermine. <Link href="/analytics/methodik" className="text-teal-700">Methode →</Link></p>
+          <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Grundlage sind {n(res.examined)}{res.capped ? ` gleichmäßig ausgewählte von ${n(res.pool)}` : ""} Vorgängen mit Beratung oder Entscheidung. Nur Vorgänge, die in mindestens zwei verschiedenen Gremien behandelt wurden, bilden Übergänge ({n(res.paths)}). Stationen werden nach Datum geordnet, aufeinanderfolgende Stationen im selben Gremium zählen einmal. {res.mode === "types" ? "Ohne einzelnen Ort sind die Gremien nach ihrer Art aus dem Namen zusammengefasst (zum Beispiel Haupt- und Verwaltungsausschuss), weil jeder Ort eigene Namen hat. " : "Mit einem Ort gelten dessen echte Gremiennamen. "}Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab; die Zeit je Übergang ist der Abstand der Sitzungstermine. <Link href="#methodik" className="text-teal-700">Methode →</Link></p>
         </div>
       )}
     <XWeiter links={[["/analytics/beschluesse", "Ausgang"], ["/analytics/fraktionen", "Fraktionen"], ["/analytics/atlas", "plenara.X Atlas"]]} />

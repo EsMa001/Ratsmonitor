@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { PageBand } from "./PageBand";
+import { MethodikText } from "./AnalyticsAbout";
+import type { AnalyseId } from "../../info/branchen-enterprise";
 import { Icon, type IconName } from "../../info/icons";
 import { AnalyticsX } from "../../components/Brand";
 import { ThemeIcon } from "../../components/icons";
@@ -19,6 +22,13 @@ const TRENDS: [string, string][] = [["/analytics/trends", "Verlauf"], ["/analyti
 /* Reiter haben die Frage ihrer Seite im Kopf; als Kachel brauchen sie eine eigene */
 const KACHEL_FRAGE: Record<string, string> = { "/analytics/vergleich": "Mit anderem Ort vergleichen", "/analytics/beschluesse": "Wie geht es aus?" };
 
+/* Methodik je Seite (Texte in AnalyticsAbout.tsx); Trends erklärt auch die Ausbreitung */
+const METHODIK_VON: Record<string, [AnalyseId, string][]> = {
+  atlas: [["atlas", "Atlas"]], vergleich: [["vergleich", "Vergleich"]], signale: [["signale", "Signale"]], fakten: [["fakten", "Fakten"]],
+  trends: [["trends", "Verlauf"], ["diffusion", "Ausbreitung"]], beschluesse: [["beschluesse", "Ausgang"]], fraktionen: [["fraktionen", "Fraktionen"]],
+  gremien: [["gremien", "Gremien"]], graph: [["graph", "Themennetz"]], news: [["news", "Aktuelles"]],
+};
+
 const SEITEN: Record<string, Seite> = {
   atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen.", reiter: ATLAS },
   vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist.", reiter: ATLAS },
@@ -34,6 +44,14 @@ const SEITEN: Record<string, Seite> = {
 
 export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   const s = SEITEN[seite], path = usePathname();
+  /* Methodik: kleiner Info-Knopf neben der Frage; „Methodik“ unter den Ergebnissen (#methodik) öffnet dasselbe Feld */
+  const [info, setInfo] = useState(false);
+  useEffect(() => {
+    const auf = () => { if (location.hash === "#methodik") { setInfo(true); document.getElementById("methodik")?.scrollIntoView({ behavior: "smooth", block: "start" }); } };
+    auf();
+    window.addEventListener("hashchange", auf);
+    return () => window.removeEventListener("hashchange", auf);
+  }, []);
   /* Ort zwischen Atlas und Vergleich mitnehmen (?ort=) */
   const ort = useSearchParams().get("ort");
   const mit = (href: string) => (ort && s.reiter === ATLAS ? `${href}?ort=${ort}` : href);
@@ -42,7 +60,8 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
     <PageBand compact>
       <p className="text-[14px] text-slate-500">
         plenara.X
-        {s.gruppe === "Einblicke" ? <> / <Link href="/analytics/einblicke" className="text-teal-700">Einblicke</Link> / {s.titel.replace("plenara.X ", "")}</> : <> / {s.titel.replace("plenara.X ", "")}{teil && teil !== s.reiter![0][1] ? ` / ${teil}` : ""}</>}
+        {/* Überall gleich: plenara.X / Gruppe (wie im Menü) / Seite / Reiter; ohne Links (keine Übersichtsseiten) */}
+        {` / ${s.gruppe} / ${s.titel.replace("plenara.X ", "")}${teil && s.reiter && teil !== s.reiter[0][1] ? ` / ${teil}` : ""}`}
       </p>
       <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
         {/* Titel kurz, die Marke als kleines Abzeichen daneben  */}
@@ -50,8 +69,22 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
           {s.titel.replace("plenara.X ", "")}
           <MarkenAbzeichen />
         </h1>
-        <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">{s.frage}</b> {s.text}</p>
+        <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">{s.frage}</b> {s.text}
+          <button type="button" onClick={() => setInfo(!info)} aria-expanded={info} aria-controls="methodik" title="Methodik: worauf die Zahlen beruhen"
+            className="ml-2 inline-flex h-6 w-6 translate-y-[3px] items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-teal-700 print:hidden">
+            <Icon name="circleHelp" size={16} /><span className="sr-only">Methodik</span>
+          </button>
+        </p>
       </div>
+      {info && METHODIK_VON[seite] && (
+        <div id="methodik" className="mt-4 max-w-[900px] scroll-mt-24 border-l-2 border-teal-600 pl-4">
+          <div className="flex items-baseline justify-between gap-4">
+            <p className="m-0 text-[14px] font-semibold text-slate-900">Methodik</p>
+            <button type="button" onClick={() => { setInfo(false); if (location.hash === "#methodik") history.replaceState(history.state, "", location.pathname + location.search); }} className="text-[14px] text-slate-500 hover:text-slate-900">Schließen</button>
+          </div>
+          <MethodikText ids={METHODIK_VON[seite]} />
+        </div>
+      )}
       {s.reiter && (
         <nav aria-label="Ansicht" className="-mb-4 mt-3 flex gap-6 print:hidden">
           {s.reiter.map(([href, name]) => (
