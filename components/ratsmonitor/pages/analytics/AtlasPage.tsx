@@ -48,7 +48,7 @@ export function AtlasPage() {
         <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Atlas</p>
         <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <h1 className="text-[28px] font-semibold leading-tight">plenara.X Atlas</h1>
-          <p className="text-[16px] text-slate-500">Worüber die Räte beraten, nach 10 Themen.</p>
+          <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">Wie viel?</b> Worüber die Räte beraten, wo und wie viel, nach 10 Themen.</p>
         </div>
       </PageBand>
       {/* Handy: 4 Kacheln je Reihe; breiter: eine Reihe, auf dem Tablet umbrechend (nie waagerecht scrollen) */}

@@ -26,13 +26,14 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Verbände", slug: "verbaende" },
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
 ];/* Analyse: Start (Übersicht), Signale (was entsteht), Tools (alle Werkzeuge), Atlas (worüber beraten wird); die einzelnen Analysen stehen auf diesen Seiten */
-const ANALYSE = [
-  { href: "/analytics/ueber", label: "plenara.X Start", icon: "plenaraX" as const },
-  { href: "/analytics/signale", label: "plenara.X Signale", icon: "zap" as const },
-  { href: "/analytics/trends", label: "plenara.X Trends", icon: "trendingUp" as const },
-  { href: "/analytics/fakten", label: "plenara.X Fakten", icon: "map" as const },
-  { href: "/analytics/tools", label: "plenara.X Tools", icon: "layoutGrid" as const },
-  { href: "/analytics/atlas", label: "plenara.X Atlas", icon: "map" as const },
+/* Die vier Seiten je mit ihrer Frage (Abgrenzung): Atlas wie viel, Signale was entsteht, Trends was sich verändert, Fakten welcher Wert */
+const ANALYSE: { href: string; label: string; icon: "plenaraX" | "map" | "zap" | "trendingUp" | "layoutGrid"; hint?: string }[] = [
+  { href: "/analytics/ueber", label: "plenara.X Start", icon: "plenaraX" },
+  { href: "/analytics/atlas", label: "plenara.X Atlas", icon: "map", hint: "Wie viel? Themen je Ort" },
+  { href: "/analytics/signale", label: "plenara.X Signale", icon: "zap", hint: "Was entsteht? Einzelne Vorhaben" },
+  { href: "/analytics/trends", label: "plenara.X Trends", icon: "trendingUp", hint: "Was verändert sich? Aufkommen, Ausbreitung" },
+  { href: "/analytics/fakten", label: "plenara.X Fakten", icon: "map", hint: "Welcher Wert? Hebesätze, Gebühren …" },
+  { href: "/analytics/tools", label: "plenara.X Tools", icon: "layoutGrid" },
 ];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
@@ -193,7 +194,7 @@ export function MainMenu() {
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />
-                          {f.label}
+                          {f.hint ? <span className="flex flex-col leading-tight"><span>{f.label}</span><span className="text-[12px] font-normal text-slate-500">{f.hint}</span></span> : f.label}
                         </Link>
                       </li>
                     ))}

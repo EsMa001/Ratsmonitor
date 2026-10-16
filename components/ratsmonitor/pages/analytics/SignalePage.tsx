@@ -214,7 +214,7 @@ export function SignalePage() {
         <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Signale</p>
         <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <h1 className="text-[28px] font-semibold leading-tight">plenara.X Signale</h1>
-          <p className="text-[16px] text-slate-500">Wo gerade etwas entsteht, mit Ort, Stand und Quelle.</p>
+          <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">Was entsteht?</b> Einzelne Vorhaben mit Ort, Schritt und Quelle.</p>
         </div>
       </PageBand>
 

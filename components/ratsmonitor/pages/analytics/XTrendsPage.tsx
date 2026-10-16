@@ -171,7 +171,7 @@ export function XTrendsPage() {
         <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Trends</p>
         <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <h1 className="text-[28px] font-semibold leading-tight">plenara.X Trends</h1>
-          <p className="text-[16px] text-slate-500">Was gerade aufkommt und wie es sich über die Gebiete ausbreitet.</p>
+          <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">Was verändert sich?</b> Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten.</p>
         </div>
       </PageBand>
 

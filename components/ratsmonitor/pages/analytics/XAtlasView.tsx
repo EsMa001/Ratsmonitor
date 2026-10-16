@@ -453,7 +453,8 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                   <Folgen before={() => { if (theme) search.setThema(theme); }} hint="Neue Vorgänge zu Thema, Ort und Suche per Mail (Unterthemen werden nicht gespeichert)" />
                 </Kennzahlen>}
 
-              {growth && <p className="mt-3 text-[18px] font-semibold leading-snug">Am stärksten gewachsen: {growth.map((g, i) => <span key={g.key}>{i ? (i === growth.length - 1 ? " und " : ", ") : ""}<button type="button" onClick={() => (theme ? onSub(g.key) : onTheme(g.key))} className="font-semibold text-teal-700 hover:underline">{g.name}</button> <span className="font-normal text-slate-500">(×{g.f})</span></span>)}<span className="font-normal text-slate-500"> · letzte {span} Monate gegenüber den {span} davor</span></p>}
+              {/* Veränderung gehört zu den Trends: hier nur ein kurzer Hinweis, der Atlas zeigt Menge und Vergleich */}
+              {growth && <p className="mt-1 text-[14px] text-slate-500">Deutlich gewachsen: {growth.map((g, i) => <span key={g.key}>{i ? ", " : ""}{g.name} (×{g.f})</span>)}. <Link href={`/analytics/trends?begriff=${encodeURIComponent(growth[0].name)}`} className="font-medium text-teal-700 hover:underline">Was sich verändert, in den Trends →</Link></p>}
               {related.length > 0 && <p className="mt-1 text-[14px] text-slate-500">Dazu in den Signalen, mit Stand des Verfahrens: {related.map(([id, name], i) => <span key={id}>{i > 0 && " · "}<Link href={`/analytics/signale?signal=${id}`} className="font-medium text-teal-700 hover:underline">{name} →</Link></span>)}</p>}
               {place && cmp && <div className="mt-2"><ZeitPills value={zeit} onPick={onZeit} /></div>}
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
