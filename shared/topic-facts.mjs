@@ -215,7 +215,7 @@ const STREETS=[
  ['Radweg',/Radweg|Radverkehrsanlage|Fahrradstraße|Radschnellweg|Radverkehrsverbindung/i],
  ['Gehweg und Barrierefreiheit',/Gehweg|Bürgersteig|Fußweg|Bushaltestelle|barrierefrei/i],
  ['Ortsdurchfahrt und Kreisverkehr',/Ortsdurchfahrt|Kreisverkehr|Kreuzung|Knotenpunkt|Lichtsignal|Ampel/i],
- ['Brücke',/Brücke(?!nau)|Brücken(?!au)|Steg\b|Unterführung|Überführung/i],
+ ['Brücke',/(?<!Saar)Brücke(?!nau)|(?<!Saar)Brücken(?!au)|Steg\b|Unterführung|Überführung/i],
  ['Straßenausbau und -sanierung',/Verbreiterung|Neugestaltung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Deckenerneuerung|Deckensanierung|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung/i],
 ];
 const STREET_WORK=/Maßnahme|Vorhaben|Projekt|Variante|Kosten|Förder|Vergabe|Auftrag|Instandhaltung|Ertüchtigung|Verkehrsführung|Fahrradstraße|Qualitätsstandard|Verbreiterung|Neugestaltung|Überführung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Decke|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung|Herstellung|Errichtung|Planung|Bau\b|Brücke|Radweg|Gehweg|Kreisverkehr|Ortsdurchfahrt|Unterführung/i;
@@ -481,11 +481,11 @@ export function eePowerOf(title,text){
 /* Straßenbau (Mobilität, Straßen): Art der Maßnahme aus dem Titel (Ausbau, Sanierung, Radweg, Gehweg, Brücke) und Kosten aus dem
    Beschlussvorschlag („Vergabe … in Höhe von 412.300,00 € brutto“, „Kosten von rund 1,2 Mio. €“). Nicht Straßenreinigung,
    -benennung, -beleuchtung allein, Beiträge, Widmung, verkehrsrechtliche Anordnungen, Winterdienst. */
-const ROAD_TITLE=/Straße|Strasse|Str\.|Weg\b|wege?s?\b|Gehweg|Radweg|Brücke(?!nau)|Kreuzung|Kreisverkehr|Ortsdurchfahrt|Fahrbahn/i;
+const ROAD_TITLE=/Straße|Strasse|Str\.|Weg\b|wege?s?\b|Gehweg|Radweg|(?<!Saar)Brücke(?!nau)|Kreuzung|Kreisverkehr|Ortsdurchfahrt|Fahrbahn/i;
 const ROAD_WORK=[
  ['Radweg',/Radweg|Radverkehrsanlage|Fahrradstraße|Radschnellweg/i],
  ['Gehweg',/Gehweg|Bürgersteig|Fußweg/i],
- ['Brücke',/Brücke(?!nau)|Brücken(?!au)/i],
+ ['Brücke',/(?<!Saar)Brücke(?!nau)|(?<!Saar)Brücken(?!au)/i],
  ['Sanierung',/Sanierung|Erneuerung|Instandsetzung|Deckenerneuerung|Deckensanierung|Fahrbahndecke|grundhaft/i],
  ['Ausbau oder Neubau',/Ausbau|Neubau|Umbau|Herstellung|Erschließung|Umgestaltung|Kreisverkehr/i],
 ];

@@ -239,6 +239,7 @@ test('Windenergieanlagen und Vorhaben aus dem Titel (facts-v26)', () => {
 test('Straßenbau: Art aus dem Titel, Kosten aus dem Beschluss (facts-v26)', () => {
   assert.deepEqual(roadWorkOf('Grundhafte Erneuerung der Hauptstraße; Vergabe der Bauleistungen', 'Beschlussvorschlag: Der Gemeinderat vergibt die Bauleistungen an die Firma X zum Angebotspreis von 412.300,00 € brutto.'), {value: 'Sanierung', euro: '412300'});
   assert.equal(roadWorkOf('Neubau Radweg entlang der L 123', 'Beschlussvorschlag: Der Rat stimmt dem Bau mit Kosten von rund 1,2 Mio. € zu.').euro, '1200000');
+  assert.equal(roadWorkOf('Mündlicher Bericht über das Filmhaus Saarbrücken', ''), null);
   assert.equal(roadWorkOf('Umbau Feuerwehrhaus Hauptstraße 5', ''), null);
   assert.equal(roadWorkOf('Straßenreinigungssatzung', ''), null);
 });
