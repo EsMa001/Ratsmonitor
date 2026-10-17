@@ -47,7 +47,8 @@ export const nightlyBusy=(job,now=Date.now())=>!!job&&job.owner==='nightly'&&ope
  */
 export async function deferredRegions(db,ids,now=Date.now()){
  if(!await hasFailureStore(db))return {};
- const {results}=await db.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step='import'").all();
+ // Einträge „teilweise:“ halten den Nachtlauf nicht auf: das Gebiet liefert, nur ein Teil fehlte; die Nacharbeit holt den Rest
+ const {results}=await db.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step='import' AND coalesce(reason,'') NOT LIKE 'teilweise: %'").all();
  const own=new Map((results||[]).map(r=>[r.key,r])),hosts=await hostStates(db),out={};
  for(const id of ids){
   const e=own.get(id),h=hosts.get(provider(id));

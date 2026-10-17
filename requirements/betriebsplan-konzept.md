@@ -79,7 +79,11 @@ neue PDFs); Text und OCR vor der Verarbeitung (die Regeln haben morgens den ganz
 Niederschriften und Beschlüsse, die Wochen nach der Sitzung erscheinen, ankommen. Gebiete mit einem Eintrag im Fehlerspeicher, dessen
 Termin noch nicht erreicht ist, und Gebiete auf Servern, die warten, stehen im Auftrag als „Zurückgestellt“ (`deferredRegions`); die
 Nacharbeit holt sie. Ein Eintrag ohne Termin hält den Nachtabruf nicht auf. 24 Bahnen, je Server höchstens 2. Jeder Ausgang geht in den
-Fehlerspeicher (`noteImport` in `pipeline-jobs.mjs`): Erfolg löscht den Eintrag und setzt den Server auf „liefert“. Der Nachtauftrag
+Fehlerspeicher (`noteImport` in `pipeline-jobs.mjs`): Erfolg löscht den Eintrag und setzt den Server auf „liefert“. Ein teilweiser
+Abruf, bei dem ein Teil am Netz scheiterte (fetch failed, Zeitüberschreitung, 5xx; `partialCause`), steht als vorübergehend mit Grund
+„teilweise: …“ im Fehlerspeicher, ohne Server (keine Bremse) und ohne den Nachtlauf zurückzustellen; die Nacharbeit holt den Rest
+(seit 17.10.2026; vorher galt er als Erfolg und wurde nie wiederholt). Teilweise ohne Netzfehler (gesperrter Monat, nicht öffentlich,
+Grenze des Lesers) gilt weiter als Erfolg. Der Nachtauftrag
 trägt `owner: nightly`; der Job „Abrufaufträge“ lässt ihn aus, solange er sich bewegt (`nightlyBusy`, 10 Minuten ohne Stand), sonst
 arbeiteten zwei Prozesse mit je 24 Bahnen daran und die Grenze je Server verdoppelte sich (Befund 16.10.2026). Bleibt der Nachtlauf
 stehen, übernimmt der Job.

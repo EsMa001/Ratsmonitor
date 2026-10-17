@@ -138,7 +138,7 @@ test('two connections on one file: a writer holds the lock, the other waits its 
 
 // Fehlerspeicher (Migration 0040, work-failures.mjs): Ausgänge der Importe, Rückstellung im Nachtauftrag, Direktabruf
 import {deferredRegions,runDirect} from '../server/integrations/pipeline-worker.mjs';
-import {provider} from '../server/integrations/pipeline-jobs.mjs';
+import {provider,partialCause} from '../server/integrations/pipeline-jobs.mjs';
 import {recordFailure} from '../server/integrations/work-failures.mjs';
 test('import outcomes go to the failure store; the nightly job defers waiting areas; --direct retries them',async()=>{
  const {sql,db}=memoryDb();
@@ -198,5 +198,27 @@ test('Nachtauftrag (owner nightly): der Job „Abrufaufträge“ lässt ihn aus,
  assert.equal(nightlyBusy(await currentJob(db),now+60000),false,'fertig: nichts mehr zu schützen');
  const plain=await ensureJob(db,{regions:['billerbeck'],window:'1w'});
  assert.equal(plain.job.owner,undefined);
+ sql.close();
+});
+
+test('teilweise mit Netzfehler: vermerkt für die Nacharbeit, ohne Server-Bremse, Nachtlauf nicht zurückgestellt; vollständig löscht',async()=>{
+ const {sql,db}=memoryDb();
+ const [a,b,c]=regions;
+ const partial=issues=>({status:200,data:{topics:3,coverage:{complete:false,issues}}});
+ const outcome={[a]:partial(['Kalender 11/2026: fetch failed','Noch keine Artikel erfolgreich erfasst.']),[b]:partial(['Sitzungsliste 12/2026: Quelle antwortet mit HTTP 403']),[c]:partial(['Teilnahmeangaben: Quelle antwortet mit HTTP 500'])};
+ await pipelineAction(db,{action:'create',stage:'metadata',regions:[a,b,c],window:'1w'},()=>{});
+ const t0=Date.now();await workJob(db,async(stage,region)=>outcome[region],{lanes:2,sleep:()=>wait(5),tickMs:1e6,stop:()=>Date.now()-t0>400});
+ const rows=Object.fromEntries(sql.prepare("SELECT key,class,host,reason,next_try_at FROM work_failures WHERE step='import'").all().map(r=>[r.key,r]));
+ assert.equal(rows[a].class,'transient');assert.equal(rows[a].host,null,'keine Server-Bremse');assert.match(rows[a].reason,/^teilweise: Kalender 11\/2026: fetch failed/);
+ assert.ok(rows[a].next_try_at,'Termin für die Nacharbeit');
+ assert.equal(rows[b],undefined,'gesperrter künftiger Monat ist kein Netzfehler');
+ assert.match(rows[c].reason,/HTTP 500/);
+ assert.equal(sql.prepare('SELECT count(*) n FROM source_hosts').get().n,0);
+ assert.deepEqual(Object.keys(await deferredRegions(db,[a,b,c])),[],'der Nachtlauf ruft sie trotzdem ab');
+ // die Nacharbeit holt a vollständig: Eintrag weg
+ await runDirect(db,async()=>done,[a],{lanes:1});
+ assert.equal(sql.prepare("SELECT count(*) n FROM work_failures WHERE key=?").get(a).n,0);
+ assert.equal(partialCause({coverage:{complete:true,issues:['fetch failed']}}),null);
+ assert.equal(partialCause({attemptComplete:true,coverage:{complete:false,issues:['fetch failed']}}),null,'Versuch vollständig');
  sql.close();
 });
