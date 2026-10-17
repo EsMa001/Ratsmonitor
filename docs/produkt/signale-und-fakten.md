@@ -81,3 +81,10 @@ Neu denkbar (jeweils erst Regel bauen und messen):
 
 - Ein Fakt gilt, wenn die Qualität mindestens 90 % beträgt und wir für mindestens **20 %** der Gemeinden einen Wert haben (statt der früher angenommenen 80 %). Signale unverändert: Qualität, Art, Stand ab 90 %, Trefferquote ab 80 %.
 - Stand nach dieser Grenze: Jahresergebnis (100 % Qualität, 36 % der Gemeinden) erfüllt sie. Zuschüsse (89 %, 40 %) liegen knapp unter 90 % Qualität. Hebesatz (90 %, 15 %) liegt knapp unter 20 % der Gemeinden; mehr Quellen (Haushaltssatzungen) könnten ihn darüber bringen.
+
+## Entscheidung 17.10.2026 (später): Größen sind Fakten, nicht Signalangaben
+
+- Zahlen wie Fläche (`plan_area`), Wohneinheiten (`housing`), Anlagenzahl (`wind_count`) und Leistung (`ee_power`) gehören zu den **Fakten**. Ein Signal wird nur aufgelistet, nicht gezählt oder mit Werten versehen. Der frühere Abschnitt „Angaben am Signal (Größe)“ entfällt.
+- Bei den Signalen bleiben Art (Filter) und Stand (Verfahrensschritt) als Beschreibung des Vorgangs.
+- Nach der 20-%-Grenze liegen die vier Größen darunter (Fläche 15 %, Wohneinheiten 9 %, Leistung 8 %, Anlagenzahl 8 %), sind also „nicht frei“.
+- Admin „Themen & Texte“ (17.10.2026): eine Seite mit Inhaltsverzeichnis und Übersichtstabelle oben (Signale und Fakten mit Status), darunter Signale, Fakten, Grundregeln, dann Lauf und Zahlen.

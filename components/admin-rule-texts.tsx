@@ -37,6 +37,7 @@ const QT=QUALITY.target;
 /* Messwert als Balken mit Zielmarke; unter dem Ziel orange */
 /* Signale: offen erst, wenn alles gemessen ist: Qualität, Art und Stand ab 90 %, Trefferquote ab 80 % */
 const SIGNAL_RECALL=80;
+const GROUP_ORDER=['signals','facts','read','other'];
 /* Fakten: Anteil der Gemeinden mit mindestens einem Wert, ab dem ein Fakt gilt (Entscheidung 17.10.2026) */
 const FACT_PLACES=20;
 const signalGate=(r:QualityRow)=>{const v=[r.quality,r.recall,r.art,r.phase];return v.some(x=>x===null||x===undefined)?'unmeasured':[r.quality,r.art,r.phase].every(x=>(x as number)>=QT.quality)&&(r.recall as number)>=SIGNAL_RECALL?'open':'closed';};
@@ -66,11 +67,10 @@ const NO_COVERAGE=new Set(['stage','subs','main_doc','doc_type','social']);
 /* Konzept docs/produkt/signale-und-fakten.md: Fakt = Zahlenwert zum Vergleich; Signal = Ereignis mit Art, Stand und optional Größe */
 const SIGNAL_STAND=new Set(['plan','heat_plan','stage']);
 const SIGNAL_ART=new Set(['plan_use','house_type','road','project']);
-const SIGNAL_GROESSE=new Set(['plan_area','housing','wind_count','ee_power']);
 /* Ereignis statt Zahl: gehört zu den Signalen (Kita-Gebühren erhöht oder neu gefasst) */
 const SIGNAL_EREIGNIS=new Set(['kita_fee']);
 const PROFILE_FACTS=new Set(['faction','faction_advice']);
-const factArt=(id:string)=>SIGNAL_STAND.has(id)?'stand':SIGNAL_ART.has(id)?'art':SIGNAL_GROESSE.has(id)?'groesse':SIGNAL_EREIGNIS.has(id)?'ereignis':PROFILE_FACTS.has(id)?'profil':'vergleich';
+const factArt=(id:string)=>SIGNAL_STAND.has(id)?'stand':SIGNAL_ART.has(id)?'art':SIGNAL_EREIGNIS.has(id)?'ereignis':PROFILE_FACTS.has(id)?'profil':'vergleich';
 /* Neue Signale, noch nicht gebaut (Konzept, Abschnitt „Kategorien: Was neu heißt“) */
 const SIGNAL_IDEAS:{name:string;what:string}[]=[
  {name:'Schrittwechsel eines Vorhabens',what:'Meldung, wenn der Stand eines bekannten Vorhabens wechselt („geht in die Auslegung“, „Satzungsbeschluss“). Braucht ein Gedächtnis je Vorhaben (Vorgang über mehrere Sitzungen).'},
@@ -137,46 +137,34 @@ export function AdminRuleTexts(){
  const themeRows=xs?.themes?Object.entries(xs.themes).sort((a,b)=>b[1]-a[1]):[];
  const themeTotal=themeRows.reduce((a,[,v])=>a+v,0);
  const subsOf=(theme:string)=>SUBTOPICS.filter((u:{theme:string})=>u.theme===theme).map((u:{id:string;name:string})=>({name:u.name,n:xs?.subs?.[u.id]||0})).sort((a:{n:number},b:{n:number})=>b.n-a.n);
+ const sigTable=(QUALITY.groups.find(g=>g.id==='signals')?.rows??[]) as QualityRow[];
+ const factTable=FACT_ROWS.filter(r=>factArt(r.id)==='vergleich');
  return <>
   <AdminPageHead page="regeltexte"><StandLine stand={data?.stand} busy={busy} action="Aktualisieren" onAction={load}/></AdminPageHead>
   {error&&<Alert onRetry={load}>{error}</Alert>}
   {!!data?.statsPending&&<p role="status" className="mt-4 text-[14px] text-slate-500">Die Gebietszahlen werden noch nachgeführt ({n(data.statsPending)} Gebiete offen); die Werte können noch steigen.</p>}
-  <section id="regeltexte-job" className="admin-section">
-   <div className="admin-section-heading"><h2>Erstellen</h2></div>
-   <p className="admin-note">Drei Schritte nach festen Regeln, ohne KI: Regeln je Bericht (Thema, Zusammenfassung, Fakten), Wortliste der Suche, Zahlen für plenara.X (Atlas, Signale, Fakten).</p>
-   {jobError&&<Alert onRetry={loadJob}>{jobError}</Alert>}
-   <ul className="m-0 mt-4 list-none space-y-1.5 p-0 text-[14px] text-slate-700">
-    <li>{running?`Läuft seit ${when(job?.run?.running?.startedAt)}.`:requested?'Start angefordert …':job?.run?.lastStart?`Zuletzt ${when(job.run.lastStart)}${job.last?.all?' (alle neu)':''}, ${RESULT[job.run.result||'']||'–'}, ${dur(job.run.seconds)}.`:job?'Noch nicht gelaufen.':'–'}
-     {job&&(job.setting.enabled?` Nächster Start ${when(job.next)} (täglich ${job.setting.time} Uhr, einstellbar unter Jobs & Zeitpläne).`:' Zeitplan ausgeschaltet (Jobs & Zeitpläne).')}</li>
-    {job?.last?.steps.map(st=><li key={st.name}><span className="text-slate-500">{st.name}: </span>{stepNote(st)}, {dur(st.seconds)}</li>)}
-   </ul>
-   <button type="button" className="mt-4 inline-flex h-10 items-center rounded-full bg-teal-700 px-5 text-[14px] font-medium text-white hover:bg-teal-800 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start()}>Jetzt erstellen →</button>
-   <button type="button" className="ml-3 mt-4 inline-flex h-10 items-center rounded-full px-5 text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start(true)}>Alle neu erstellen →</button>
-   <p className="mt-2 text-[12px] text-slate-500">„Jetzt erstellen“: nur Neues. „Alle neu erstellen“: alles mit den heutigen Regeln, etwa nach Regeländerungen.{job?.all&&requested?' Neu erstellen angefordert.':''}</p>
+  <nav aria-label="Inhalt" className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
+   {[['uebersicht','Übersicht'],['signale','Signale'],['fakten','Fakten'],['grundregeln','Grundregeln'],['job','Erstellen'],['zusammenfassungen','Zusammenfassungen'],['themen','Themen']].map(([id,t])=><a key={id} href={'#regeltexte-'+id} className="text-teal-700 hover:text-teal-800">{t}</a>)}
+  </nav>
+  <section id="regeltexte-uebersicht" className="admin-section">
+   <div className="admin-section-heading"><h2>Übersicht: Was ist frei?</h2></div>
+   <p className="admin-note">Qualität und Trefferquote aus der letzten ungesehenen Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert bei den Abschnitten darunter, beim Antippen des „i“. Signale zählen nach Qualität (ab {QT.quality} %) und Trefferquote (ab {SIGNAL_RECALL} %). Fakten nehmen wir nur auf, wenn wir sie für viele Gemeinden haben (ab {FACT_PLACES} % der Gemeinden{xs?.factPlaces?`, von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen`:""}) und die Werte stimmen (Qualität ab {QT.quality} %).</p>
+   <h3 className="mt-6">Signale</h3>
+   <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[560px] border-collapse text-left text-[14px]">
+    <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Signal</th><th className="px-2 font-medium">Qualität</th><th className="px-2 font-medium">Treffer</th><th className="px-2 font-medium">Art</th><th className="px-2 font-medium">Stand</th><th className="pl-2 font-medium">Status</th></tr></thead>
+    <tbody>{sigTable.map(r=>{const g=signalGate(r);const miss=[['Qualität',r.quality,QT.quality],['Trefferquote',r.recall,SIGNAL_RECALL],['Art',r.art,QT.quality],['Stand',r.phase,QT.quality]].filter(([,v,t])=>v==null||(v as number)<(t as number)).map(([k])=>k);
+     const cell=(v:number|null|undefined,t:number)=><td className={'px-2 tabular-nums '+(v==null?'text-slate-400':(v as number)>=t?'text-teal-700':'text-amber-700')}>{v==null?'–':v+' %'}</td>;
+     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900">{r.name}</td>{cell(r.quality,QT.quality)}{cell(r.recall,SIGNAL_RECALL)}{cell(r.art,QT.quality)}{cell(r.phase,QT.quality)}<td className={'pl-2 '+(g==='open'?'font-semibold text-teal-700':'text-slate-500')}>{g==='open'?'frei':'fehlt: '+miss.join(', ')}</td></tr>;})}</tbody>
+   </table></div>
+   <h3 className="mt-6">Fakten</h3>
+   <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[460px] border-collapse text-left text-[14px]">
+    <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Fakt</th><th className="px-2 font-medium">Qualität</th><th className="px-2 font-medium">Gemeinden</th><th className="pl-2 font-medium">Status</th></tr></thead>
+    <tbody>{factTable.map(r=>{const pl=xs?.factPlaces?Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10:null;const ok=r.quality!=null&&r.quality>=QT.quality&&pl!=null&&pl>=FACT_PLACES;
+     const why=r.quality==null?'nicht gemessen':r.quality<QT.quality?'Qualität unter '+QT.quality+' %':pl==null?'Gemeinden nach dem Lauf':pl<FACT_PLACES?'Gemeinden unter '+FACT_PLACES+' %':'';
+     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900">{r.name}</td><td className={'px-2 tabular-nums '+(r.quality==null?'text-slate-400':r.quality>=QT.quality?'text-teal-700':'text-amber-700')}>{r.quality==null?'–':r.quality+' %'}</td><td className={'px-2 tabular-nums '+(pl==null?'text-slate-400':pl>=FACT_PLACES?'text-teal-700':'text-amber-700')}>{pl==null?'–':pl.toLocaleString('de-DE')+' %'}</td><td className={'pl-2 '+(ok?'font-semibold text-teal-700':'text-slate-500')}>{ok?'frei':why}</td></tr>;})}</tbody>
+   </table></div>
   </section>
-  <section id="regeltexte-zusammenfassungen" className="admin-section">
-   <div className="admin-section-heading"><h2>Zusammenfassungen</h2></div>
-   <p className="admin-note">Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst die regelbasierte, sonst der Platzhalter.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen" items={sum}/></div>
-  </section>
-  <section id="regeltexte-fakten" className="admin-section">
-   <div className="admin-section-heading"><h2>Fakten und Einordnungen</h2></div>
-   <p className="admin-note">Werte (für plenara.X Fakten) und Einordnungen (für Signale und Fraktionsprofil) aus Titel, Hauptdokument und passenden Anlagen. Gezählt am Ende jedes Laufs.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Fakten und Einordnungen" items={fac}/></div>
-  </section>
-  <section id="regeltexte-themen" className="admin-section">
-   <div className="admin-section-heading"><h2>Themen</h2></div>
-   <p className="admin-note">Anteil der Sachvorgänge je Thema (Formalien, Sammelpunkte und Routine zählen nicht), darunter die Unterthemen; ein Vorgang kann mehrere Unterthemen haben. Gezählt am Ende jedes Laufs{job?.last?.finishedAt?', zuletzt '+when(job.last.finishedAt):''}.</p>
-   {!themeRows.length?<p className="admin-empty">Nach dem nächsten Lauf von „Themen & Texte“.</p>:<div className="mt-4">{themeRows.map(([id,v])=><div key={id} className="admin-bar-row">
-    <div><span>{THEME_NAME[id]||id}</span><span>{pct(v,themeTotal)} · {n(v)}</span></div>
-    <div className="admin-bar"><span style={{width:(100*v/themeTotal)+'%'}}/></div>
-    {id!=='unklar'&&<small className="mt-1 block text-[12px] text-slate-500">{subsOf(id).map((u:{name:string;n:number})=>u.name+' '+pct(u.n,v)).join(' · ')}</small>}
-   </div>)}</div>}
-  </section>
-  <section id="regeltexte-qualitaet" className="admin-section">
-   <div className="admin-section-heading"><h2>Qualität der Regeln</h2></div>
-   <p className="admin-note">Letzte ungesehene Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert beim Antippen des Namens oder des „i“. Signale zählen nach Qualität (ab {QT.quality} %) und Trefferquote (ab {SIGNAL_RECALL} %). Fakten nehmen wir nur auf, wenn wir sie für viele Gemeinden haben (ab {FACT_PLACES} % der Gemeinden{xs?.factPlaces?`, von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen`:""}) und die Werte stimmen (Qualität ab {QT.quality} %).</p>
-   {QUALITY.groups.map(g=>{
+   {[...QUALITY.groups].sort((a,b)=>GROUP_ORDER.indexOf(a.id)-GROUP_ORDER.indexOf(b.id)).map(g=>{
     const row=(r:QualityRow,gid:string=g.id)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
@@ -189,9 +177,9 @@ export function AdminRuleTexts(){
     </li>;
     const list=(rows:QualityRow[],gid:string=g.id)=><ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{rows.map(r=>row(r,gid))}</ul>;
     /* Signale: Kategorie mit Qualität der Zuordnung und Trefferquote, darunter die Filter mit eigener Qualität */
-    if(g.id==='signals')return <div key={g.id} className="mt-8">
-     <h3>{g.name}</h3>
-     <p className="admin-note mt-1">Ein Signal ist ein Ereignis, das eine Branche wissen will („Wo entsteht gerade etwas Neues?“), mit Art, Stand und optional Größe. Ein Fakt dagegen ist ein Zahlenwert zum Vergleich von Orten (siehe unten). Konzept: docs/produkt/signale-und-fakten.md.</p>
+    if(g.id==='signals')return <div key={g.id} id="regeltexte-signale" className="admin-section">
+     <div className="admin-section-heading"><h2>{g.name}</h2></div>
+     <p className="admin-note mt-1">Ein Signal ist ein Ereignis, das eine Branche wissen will („Wo entsteht gerade etwas Neues?“), mit Art und Stand. Zahlen wie Fläche oder Anlagenzahl gehören zu den Fakten, nicht zu den Signalen. Ein Fakt dagegen ist ein Zahlenwert zum Vergleich von Orten (siehe unten). Konzept: docs/produkt/signale-und-fakten.md.</p>
      <p className="admin-note mt-1">Qualität: von den Vorgängen, die die Regel einer Kategorie oder einem Filter zuordnet, gehören so viele wirklich dazu. Trefferquote: von den Vorgängen, die dazugehören, findet die Regel so viele. Offen erst, wenn Qualität, Art und Stand je mindestens {QT.quality} % und die Trefferquote mindestens {SIGNAL_RECALL} % erreichen. Kategorien, Filter und Vorgehen: docs/produkt/plenara-x-signale.md.</p>
      <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{(g.rows as QualityRow[]).map(r=><li key={r.id} className="py-3 text-[14px]">
       <div className="grid gap-x-6 gap-y-2 md:grid-cols-[minmax(0,1fr)_120px_120px_120px_120px]">
@@ -216,9 +204,6 @@ export function AdminRuleTexts(){
      <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Art der Signale</h4>
      <p className="admin-note mt-1">Was für ein Vorhaben es ist (Nutzung im Plan, Hausformen, Straßenbau, Mobilitätsprojekte). Sie bilden die Filter der Kategorien.</p>
      {list(FACT_ROWS.filter(r=>factArt(r.id)==='art'),'facts')}
-     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Angaben am Signal (Größe)</h4>
-     <p className="admin-note mt-1">Fläche, Wohneinheiten, Anlagenzahl, Leistung. Sie hängen am Signal und blockieren es nicht; angezeigt werden sie nur, wenn sie im Text belegt sind. Ihre Qualität wird getrennt gemessen.</p>
-     {list(FACT_ROWS.filter(r=>factArt(r.id)==='groesse'),'facts')}
      <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Gebührenänderungen (Ereignisse)</h4>
      <p className="admin-note mt-1">Kein Zahlenwert, sondern ein Ereignis: Gebühren erhöht oder neu gefasst. Gehört zu den Signalen; das Signal selbst gibt es noch nicht.</p>
      {list(FACT_ROWS.filter(r=>factArt(r.id)==='ereignis'),'facts')}
@@ -229,10 +214,10 @@ export function AdminRuleTexts(){
     const rows=g.rows as QualityRow[];
     /* Fakten nach Thema; ohne Thema („Alle Themen“) etwa der Haushalt */
     const byTheme=(x:QualityRow[])=>[...THEMES.map((t:{id:string;name:string})=>[t.name,x.filter(r=>FACT_THEME[r.id]===t.id)] as [string,QualityRow[]]),['Alle Themen',x.filter(r=>!FACT_THEME[r.id])] as [string,QualityRow[]]].filter(([,y])=>y.length);
-    if(g.id==='facts')return <div key={g.id}>
-     <div className="mt-8">
-      <h3>{g.name}</h3>
-      <p className="admin-note mt-1">Ein Fakt ist ein Zahlenwert mit Einheit, vergleichbar über Orte und Zeit: Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Größen von Vorhaben sind keine Fakten, sondern Angaben am Signal (oben). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Ein Fakt gilt als frei, wenn die Qualität bei mindestens {QT.quality} % und der Anteil der Gemeinden bei mindestens {FACT_PLACES} % liegt. Auf der Karte stehen heute Fakten ab {QT.quality} % Qualität.</p>
+    if(g.id==='facts')return <div key={g.id} id="regeltexte-fakten" className="admin-section">
+     <div className="admin-section-heading"><h2>{g.name}</h2></div>
+     <div>
+      <p className="admin-note mt-1">Ein Fakt ist ein Zahlenwert mit Einheit, vergleichbar über Orte und Zeit: Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …).  Auch Größen von Vorhaben (Fläche, Wohneinheiten, Anlagenzahl, Leistung) sind Fakten. Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Ein Fakt gilt als frei, wenn die Qualität bei mindestens {QT.quality} % und der Anteil der Gemeinden bei mindestens {FACT_PLACES} % liegt. Auf der Karte stehen heute Fakten ab {QT.quality} % Qualität.</p>
       {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[14px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
      </div>
      <div className="mt-8">
@@ -241,10 +226,41 @@ export function AdminRuleTexts(){
       {list(rows.filter(r=>factArt(r.id)==='profil'))}
      </div>
     </div>;
-    return <div key={g.id} className="mt-8">
-     <h3>{g.name}</h3>
+    return <div key={g.id} id={'regeltexte-'+(g.id==='read'?'grundregeln':g.id)} className="admin-section">
+     <div className="admin-section-heading"><h2>{g.id==='read'?'Grundregeln (für alle Seiten)':g.name}</h2></div>
      {list(rows)}
     </div>;})}
+  <section id="regeltexte-job" className="admin-section">
+   <div className="admin-section-heading"><h2>Erstellen</h2></div>
+   <p className="admin-note">Drei Schritte nach festen Regeln, ohne KI: Regeln je Bericht (Thema, Zusammenfassung, Fakten), Wortliste der Suche, Zahlen für plenara.X (Atlas, Signale, Fakten).</p>
+   {jobError&&<Alert onRetry={loadJob}>{jobError}</Alert>}
+   <ul className="m-0 mt-4 list-none space-y-1.5 p-0 text-[14px] text-slate-700">
+    <li>{running?`Läuft seit ${when(job?.run?.running?.startedAt)}.`:requested?'Start angefordert …':job?.run?.lastStart?`Zuletzt ${when(job.run.lastStart)}${job.last?.all?' (alle neu)':''}, ${RESULT[job.run.result||'']||'–'}, ${dur(job.run.seconds)}.`:job?'Noch nicht gelaufen.':'–'}
+     {job&&(job.setting.enabled?` Nächster Start ${when(job.next)} (täglich ${job.setting.time} Uhr, einstellbar unter Jobs & Zeitpläne).`:' Zeitplan ausgeschaltet (Jobs & Zeitpläne).')}</li>
+    {job?.last?.steps.map(st=><li key={st.name}><span className="text-slate-500">{st.name}: </span>{stepNote(st)}, {dur(st.seconds)}</li>)}
+   </ul>
+   <button type="button" className="mt-4 inline-flex h-10 items-center rounded-full bg-teal-700 px-5 text-[14px] font-medium text-white hover:bg-teal-800 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start()}>Jetzt erstellen →</button>
+   <button type="button" className="ml-3 mt-4 inline-flex h-10 items-center rounded-full px-5 text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start(true)}>Alle neu erstellen →</button>
+   <p className="mt-2 text-[12px] text-slate-500">„Jetzt erstellen“: nur Neues. „Alle neu erstellen“: alles mit den heutigen Regeln, etwa nach Regeländerungen.{job?.all&&requested?' Neu erstellen angefordert.':''}</p>
+  </section>
+  <section id="regeltexte-zusammenfassungen" className="admin-section">
+   <div className="admin-section-heading"><h2>Zusammenfassungen</h2></div>
+   <p className="admin-note">Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst die regelbasierte, sonst der Platzhalter.</p>
+   <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen" items={sum}/></div>
+  </section>
+  <section id="regeltexte-fakten-lauf" className="admin-section">
+   <div className="admin-section-heading"><h2>Fakten und Einordnungen</h2></div>
+   <p className="admin-note">Werte (für plenara.X Fakten) und Einordnungen (für Signale und Fraktionsprofil) aus Titel, Hauptdokument und passenden Anlagen. Gezählt am Ende jedes Laufs.</p>
+   <div className="mt-6"><Kpis label="Kennzahlen der Fakten und Einordnungen" items={fac}/></div>
+  </section>
+  <section id="regeltexte-themen" className="admin-section">
+   <div className="admin-section-heading"><h2>Themen</h2></div>
+   <p className="admin-note">Anteil der Sachvorgänge je Thema (Formalien, Sammelpunkte und Routine zählen nicht), darunter die Unterthemen; ein Vorgang kann mehrere Unterthemen haben. Gezählt am Ende jedes Laufs{job?.last?.finishedAt?', zuletzt '+when(job.last.finishedAt):''}.</p>
+   {!themeRows.length?<p className="admin-empty">Nach dem nächsten Lauf von „Themen & Texte“.</p>:<div className="mt-4">{themeRows.map(([id,v])=><div key={id} className="admin-bar-row">
+    <div><span>{THEME_NAME[id]||id}</span><span>{pct(v,themeTotal)} · {n(v)}</span></div>
+    <div className="admin-bar"><span style={{width:(100*v/themeTotal)+'%'}}/></div>
+    {id!=='unklar'&&<small className="mt-1 block text-[12px] text-slate-500">{subsOf(id).map((u:{name:string;n:number})=>u.name+' '+pct(u.n,v)).join(' · ')}</small>}
+   </div>)}</div>}
   </section>
  </>;
 }
