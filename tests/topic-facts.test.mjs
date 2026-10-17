@@ -388,3 +388,13 @@ test('Signal Wärme: private Neubauten mit Heizung und Verwaltungsräte (Stichpr
   assert.equal(m.energyOf('Verwaltungsräte im Kommunalunternehmen "Fernwärmeversorgung Grabenstätt-Süd AöR"'), null);
   assert.ok(m.energyOf('Erneuerung der Heizungsanlage an der Grundschule Burgrieden – Grundsatzbeschluss'));
 });
+
+test('Signale: Aufsichtsräte, Bestellungen und Besetzungen sind keine Vorhaben (Vorher-nachher 17.10.2026)', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.energyOf('Bestellung von Aufsichtsratsmitgliedern der Gemeinde in der Nahwärmegesellschaft'), null);
+  assert.equal(m.solarOf('Bestellung der Mitglieder in die juristische Person Solarpark Hohenburg GmbH'), null);
+  assert.equal(m.waterSignalOf('Besetzung der Mitglieder in die Verbandsversammlung Abwasser'), null);
+  assert.equal(m.careOf('Neubesetzung MVZ GmbH'), null);
+  assert.equal(m.streetSignalOf('Unterhaltung der Waldwege im Privatwald'), null);
+  assert.ok(m.energyOf('Erneuerung der Heizungsanlage im Rathaus'));
+});
