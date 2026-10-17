@@ -1,7 +1,6 @@
 /** Farben der Orte (bis vier): Akzentfarbe, Schwarz, Grau, helle Akzentfarbe */
 export const PLACE_COLORS = ["var(--rm-fill)", "var(--rm-c900)", "var(--rm-c400)", "var(--color-teal-300)"];
 
-export interface CMonth { m: string; n: number }
 const mfmt = (m: string) => `${m.slice(5, 7)}/${m.slice(2, 4)}`;
 
 /** Verlauf je Monat: eine Linie je Ort. Werte auf die Monate der gesamten Auswahl ausgerichtet; Monate ohne Einträge zählen 0 */
@@ -30,31 +29,6 @@ export function CompareLines({ months, series }: { months: string[]; series: { c
   );
 }
 
-/** Ein Themenfeld: je Ort ein dünner Balken (Anteil unter den eingeordneten Einträgen), dazu eine Marke für alle Gebiete */
-export function TopicRow({ name, shares, base, max, onPick }: { name: string; shares: number[]; base: number; max: number; onPick?: () => void }) {
-  const pct = (v: number) => `${Math.min(100, (v / max) * 100)}%`;
-  return (
-    <li className="grid grid-cols-[minmax(0,1fr)] gap-2 border-b border-slate-200 py-3 sm:grid-cols-[220px_minmax(0,1fr)] sm:items-center sm:gap-6">
-      {onPick ? (
-        <button type="button" onClick={onPick} title={`Nur „${name}“ vergleichen`} className="group flex min-w-0 items-center gap-1.5 text-left text-[16px] text-slate-900 hover:text-teal-700">
-          <span className="truncate group-hover:underline">{name}</span>
-          <span aria-hidden="true" className="shrink-0 text-teal-700 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:opacity-100">→</span>
-        </button>
-      ) : (
-        <span className="truncate text-[16px] text-slate-900">{name}</span>
-      )}
-      <span className="relative block">
-        {shares.map((v, i) => (
-          <span key={i} className="mb-1 flex items-center gap-2 last:mb-0">
-            <span className="relative block h-[6px] flex-1 rounded-full bg-slate-100"><span className="absolute left-0 top-0 block h-full rounded-full" style={{ width: pct(v), background: PLACE_COLORS[i] }} /></span>
-            <span className="w-[52px] text-right text-[12px] tabular-nums text-slate-500">{v.toLocaleString("de-DE", { maximumFractionDigits: 1 })} %</span>
-          </span>
-        ))}
-        <span className="pointer-events-none absolute -bottom-0.5 -top-0.5 w-px bg-slate-900/70" style={{ left: `calc((100% - 60px) * ${Math.min(1, base / max)})` }} title={`Alle Gebiete: ${base.toLocaleString("de-DE", { maximumFractionDigits: 1 })} %`} />
-      </span>
-    </li>
-  );
-}
 
 
 /** Themenzeile als Gegenüberstellung: links der erste Ort, rechts der zweite, in der Mitte das Themenfeld; die Marke zeigt „alle Gebiete“ */

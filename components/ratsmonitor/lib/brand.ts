@@ -49,5 +49,3 @@ export function useBrandText(): (text: string) => string {
   return (text) => text.replaceAll("Ratsmonitor", name);
 }
 
-/** Produktname außerhalb von React (z. B. für E-Mails) */
-export const brandName = () => BRAND_NAME[LOGOS[read()].brand];

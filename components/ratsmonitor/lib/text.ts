@@ -64,13 +64,6 @@ export function highlightSegments(str: string, ts: string[]): Segment[] {
   return out;
 }
 
-export function limitSentences(text: string, max: number): string {
-  return text
-    .trim()
-    .split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ„0-9])/)
-    .slice(0, max)
-    .join(" ");
-}
 
 export const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 
@@ -97,9 +90,6 @@ export function todayLocal(days = 0): string {
 
 export const MONTH_FMT = new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" });
 export const MONTH_SHORT = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
-export const DAY_FMT = new Intl.DateTimeFormat("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
-export const TIME_FMT = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" });
 
 export const monthLabel = (ym: string) => MONTH_FMT.format(parseDate(ym + "-01"));
 
-export const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;

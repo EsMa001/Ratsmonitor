@@ -8,8 +8,6 @@ export const shownThema=(thema?:string)=>thema&&thema!==OHNE_THEMA&&THEMEN.inclu
 export interface StatusInfo {id:StatusId;label:string;badge:string;dot:string}
 export const STATUS:StatusInfo[]=Object.entries(SOURCE_STATUS).map(([id,s])=>({id:id as StatusId,label:s.label,badge:id==='approved'?'bg-sky-50 text-sky-900 border-sky-200':id==='rejected'?'bg-amber-50 text-amber-700 border-amber-200':'bg-slate-100 text-slate-600 border-slate-200',dot:id==='approved'?'bg-sky-900':id==='rejected'?'bg-amber-700':'bg-slate-300'}));
 export const STATUS_BY_ID=Object.fromEntries(STATUS.map(s=>[s.id,s])) as Record<StatusId,StatusInfo>;
-export const TEASER_MAX_SENTENCES=4;
-export const isCovered=(ags:string,coverage:{ags:string}[])=>coverage.some(r=>r.ags===ags||r.ags.startsWith(ags));
 /** Kartenstufen, identisch mit tailwind.preset (colors.map) */
 export const MAP_COLORS = {
   ground: "#ffffff",
@@ -59,10 +57,6 @@ export function colorForCoverage(level: number): string {
   return level >= 4 ? MAP_COLORS.scale[3] : level === 3 ? MAP_COLORS.scale[2] : level === 2 ? MAP_COLORS.scale[1] : MAP_COLORS.scale[0];
 }
 
-export function colorForCount(c: number): string {
-  const s = MAP_COLORS.scale;
-  return c === 0 ? MAP_COLORS.zero : c <= 25 ? s[0] : c <= 100 ? s[1] : c <= 500 ? s[2] : s[3];
-}
 
 /** Farben je Status für Balken und Legenden (Farbkonzept: beschlossen Dunkelblau, in Arbeit Blaugrau, abgelehnt Orange-Braun) */
 export const STATUS_COLOR: Record<string, string> = { approved: "var(--rm-ok)", recommended: "var(--rm-ok2)", consulting: "var(--rm-ok3)", announced: "var(--rm-c300)", rejected: "var(--rm-no)", postponed: "var(--rm-c400)", info: "var(--rm-c200)", unknown: "var(--rm-c100)" };

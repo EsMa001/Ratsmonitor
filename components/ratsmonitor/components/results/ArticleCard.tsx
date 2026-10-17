@@ -13,15 +13,6 @@ export function Highlight({ text, terms }: { text: string; terms: string[] }) {
   );
 }
 
-export function StatusBadge({ status, className = "" }: { status: Article["status"]; className?: string }) {
-  const st = STATUS_BY_ID[status];
-  return (
-    <span className={`inline-flex h-6 items-center gap-1.5 rounded-full border px-[9px] text-[12px] font-semibold ${st.badge} ${className}`}>
-      <span className="h-1.5 w-1.5 rounded-full bg-current" />
-      {st.label}
-    </span>
-  );
-}
 
 interface Props {
   article: Article;

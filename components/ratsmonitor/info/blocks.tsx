@@ -4,7 +4,7 @@ import { StepTimeline } from "../components/results/ArticleCard";
 import { useBrandText } from "../lib/brand";
 import { cameFromApp, useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
-import { STATUS_LABEL, type Example, type Qa, type Rich as RichText, type Status } from "./content";
+import type { Example, Qa, Rich as RichText } from "./content";
 import { Icon, type IconName } from "./icons";
 import { IconChevronLeft } from "../components/icons";
 import { Reveal } from "../pages/analytics/Reveal";
@@ -113,10 +113,6 @@ export function SearchTermButton({ term, light }: { term: string; light?: boolea
   );
 }
 
-export function StatusPill({ status }: { status: Status }) {
-  /* Stand als schlichter grauer Text (keine bunten Abzeichen) */
-  return <span style={{ fontSize: 12, color: "var(--rm-c500)", whiteSpace: "nowrap" }}>{STATUS_LABEL[status]}</span>;
-}
 
 export function PlacePill({ place }: { place: string }) {
   return (

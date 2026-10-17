@@ -268,10 +268,6 @@ export class PlaceIndex {
   static clean = clean;
 }
 
-/** Text der Suche ohne die als Gebiet übernommenen Orte */
-export function textPart(q: string, area: string, areaSrc: string, pq: ParseResult): string {
-  return pq.place && areaSrc === "search" && area === pq.place.ags ? (pq.restAll ?? pq.rest) : q;
-}
 
 /** Entfernt einen Ortsnamen aus der Eingabe (z. B. beim Löschen seines Filter-Chips) */
 export function removePhrase(q: string, phraseRaw: string): string {

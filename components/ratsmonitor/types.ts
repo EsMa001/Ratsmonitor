@@ -127,9 +127,3 @@ export interface SavedSearch {
   query?: string | null;
 }
 
-export interface Profile {
-  first: string;
-  last: string;
-  email: string;
-  org: string;
-}

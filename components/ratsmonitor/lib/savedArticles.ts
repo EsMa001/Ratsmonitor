@@ -111,21 +111,6 @@ export function toggleSavedArticle(a: Omit<SavedArticle, "savedAt">): Promise<st
   return list.some((x) => x.id === a.id) ? removeSavedArticle(a.id) : add(a, false);
 }
 
-/** Vorgang folgen bzw. entfolgen; folgen speichert den Artikel mit (Benachrichtigung in Thema 1 nur vorgemerkt) */
-export async function toggleFollow(a: Omit<SavedArticle, "savedAt" | "follow">): Promise<string | null> {
-  const hit = list.find((x) => x.id === a.id);
-  if (!hit) return add(a, true);
-  const follow = !hit.follow;
-  put(list.map((x) => (x.id === a.id ? { ...x, follow } : x)));
-  try {
-    await api("/api/me/articles", { method: "PATCH", body: { id: a.id, follow } });
-    touchAccount();
-    return null;
-  } catch (e) {
-    put(list.map((x) => (x.id === a.id ? { ...x, follow: hit.follow } : x)));
-    return failure(e);
-  }
-}
 
 /** Entfernt den Artikel (sofort in der Anzeige, bei Fehler wieder da) */
 export async function removeSavedArticle(id: string): Promise<string | null> {

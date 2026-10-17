@@ -122,13 +122,6 @@ export function rangeLabel(von = "", bis = ""): string {
   return von && bis ? `${deDate(von)} – ${deDate(bis)}` : von ? `ab ${deDate(von)}` : `bis ${deDate(bis)}`;
 }
 
-/** Beschriftung des Gebietsumfangs, z. B. „inkl. Gemeinden“ oder „inkl. Kreis Coesfeld“ */
-export function scopeLabel(area: string, scope: "only" | "with" = "with", geo: GeoModel | null): string {
-  if (!hasScope(area, geo)) return "";
-  if (scope === "only") return area.length === 5 ? "nur Kreisebene" : "nur Gemeinde";
-  if (area.length === 5) return "inkl. Gemeinden";
-  return `inkl. ${geo ? geo.info(area.slice(0, 5)).name : "Kreis"}`;
-}
 
 /** Umfang ist nur bei Kreisen und kreisangehörigen Gemeinden sinnvoll, nicht bei kreisfreien Städten */
 export function hasScope(area: string, geo: GeoModel | null): boolean {

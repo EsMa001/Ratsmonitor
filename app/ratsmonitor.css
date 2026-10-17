@@ -55,7 +55,7 @@
   }
 }
 
-@layer base {.ratsmonitor .analysis-provenance,.ratsmonitor .prose{margin-top:28px}.ratsmonitor .heading-m{font-size:18px;line-height:1.4}.ratsmonitor .facts__row{padding:10px 0}.ratsmonitor .page-note{font-size:14px;line-height:1.6;margin-top:10px}}
+@layer base {.ratsmonitor .prose{margin-top:28px}.ratsmonitor .page-note{font-size:14px;line-height:1.6;margin-top:10px}}
 @media(prefers-reduced-motion:reduce){.ratsmonitor *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 /* Eigener Leeren-Button im Suchfeld: den des Browsers ausblenden */
 input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
@@ -171,7 +171,7 @@ html.rm-dark .ratsmonitor .bg-teal-700{background-color:var(--rm-btn)}
 html.rm-dark{--rm-btn:#268478;--rm-btn2:#2f9688;--color-slate-50:#1b2120;--color-slate-100:#212827;--color-slate-200:#323a39;--color-slate-300:#3d4544;--color-slate-400:#9a9ca2;--color-slate-500:#b4b5ba;--color-slate-600:#c4c5ca;--color-slate-700:#d0d1d5;--color-slate-800:#dfe0e3;--color-slate-900:#ececee;--color-slate-950:#f0f0f2;--color-teal-50:#173531;--color-teal-100:#1e4540;--color-teal-200:#265852;--color-teal-300:#367d74;--color-teal-400:#46a498;--color-teal-500:#46a498;--color-teal-600:#268478;--color-teal-700:#7ac6bc;--color-teal-800:#a8dcd5;--color-teal-900:#c9ece7;--color-teal-950:#e0f4f1;--color-sky-50:#17212a;--color-sky-100:#1e2c38;--color-sky-200:#2c3f50;--color-sky-300:#3e5870;--color-sky-400:#56738b;--color-sky-500:#6f93ad;--color-sky-600:#8fb0c8;--color-sky-700:#8fb8d6;--color-sky-800:#b0cde2;--color-sky-900:#cfe0ec;--color-sky-950:#e3eef5;--color-amber-50:#2a1f16;--color-amber-100:#3a2a1c;--color-amber-200:#5a3d22;--color-amber-300:#8a5a30;--color-amber-400:#b5753f;--color-amber-500:#e09a5c;--color-amber-600:#f0a868;--color-amber-700:#fdba74;--color-amber-800:#fdcb98;--color-amber-900:#fee0c0;--color-amber-950:#fff0e0}
 html.rm-dark .text-white{color:#fff}html.rm-dark .bg-slate-900{background-color:var(--rm-fill)}html.rm-dark .bg-slate-900:hover,html.rm-dark .hover\:bg-slate-800:hover{background-color:var(--rm-btn2)}
 /* Dunkel: Trennlinie unter der obersten Kachel (Karte, Seitenkopf) in Akzentfarbe */
-html.rm-dark .rm-flat>section:first-child,html.rm-dark .ri-head,html.rm-dark .ri-done,html.rm-dark .rm-topline{border-bottom-color:var(--rm-fill)}
+html.rm-dark .rm-flat>section:first-child,html.rm-dark .ri-head,html.rm-dark .rm-topline{border-bottom-color:var(--rm-fill)}
 html.rm-dark .page-note{color:var(--rm-c500)}
 html.rm-dark .btn-primary,html.rm-dark .ri-btn--dark,html.rm-dark .bg-slate-900{background-color:var(--rm-btn);background:var(--rm-btn)}
 html.rm-dark .btn-primary:hover,html.rm-dark .ri-btn--dark:hover,html.rm-dark .bg-slate-900:hover{background:var(--rm-btn2);background-color:var(--rm-btn2)}

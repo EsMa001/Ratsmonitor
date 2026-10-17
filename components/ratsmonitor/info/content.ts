@@ -57,7 +57,6 @@ export interface Branche {
   keywords: string[];
 }
 
-export const STATUS_LABEL: Record<Status, string> = { ok: "Beschlossen", wait: "Vertagt" };
 
 
 

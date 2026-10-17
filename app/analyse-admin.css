@@ -4,62 +4,29 @@
 
 
 .skip-link{position:absolute;top:-80px;left:20px;background:var(--rm-white);color:var(--rm-ac);padding:12px;z-index:100}.skip-link:focus{top:10px}
-
-
-
-
-.process-note{font-size:14px;line-height:21px;color:var(--color-meta);margin-top:14px}
-
-.notification-panel{margin:24px 0}.notification-panel .setting{gap:20px}.notification-panel .notice{margin:16px 0}
 .tag{white-space:normal}.tabs button{cursor:pointer}
 .prose p+p{margin-top:18px}
 button:disabled{cursor:wait;opacity:.6}
-@media(max-width:360px){.process__label{font-size:12px}}
 
 .tabs[data-slot="toggle-group"]{width:100%;justify-content:flex-start;border-radius:0;gap:24px}
 
-
-
-
-
-.region-trigger{width:100%;min-height:48px;font-size:16px;background:var(--rm-white);border:1px solid var(--rm-c400);border-radius:6px}
-.related-topics{padding:28px 20px;border-top:3px solid var(--rm-c900)}.related-topics h3{font-size:18px;margin:24px 0 12px;font-weight:500}.related-count{font-size:18px;line-height:1.5}.comparison-counts{display:grid;grid-template-columns:1fr 1fr;gap:16px;border-block:1px solid var(--rm-c200);padding:20px 0;margin:16px 0}.comparison-counts strong{display:block;font-size:32px;line-height:1.2}.comparison-counts span{font-size:14px}.comparison-warning{background:var(--rm-c100);padding:16px;font-size:14px;line-height:1.5;margin:16px 0}.related-group{border-bottom:1px solid var(--rm-c200);padding:14px 0}.related-group summary,.related-method summary{cursor:pointer;min-height:44px;padding:10px 0;font-weight:500}.related-item{padding:14px 0}.related-item>a:first-child{font-weight:500;font-size:17px;color:var(--rm-link)}.related-item p,.related-method p{font-size:14px;line-height:1.5;margin:8px 0}.related-method{margin-top:20px}
-
 /* Analysen: same editorial type and cobalt accent, wider working surface. */
 .eyebrow{font-size:.875rem;letter-spacing:.07em;color:var(--rm-link);font-weight:500}
-@media(max-width:760px){.analysis-controls>.analysis-field:nth-child(5),.analysis-controls>.analysis-field:nth-child(6){grid-column:1/-1}}
 
 /* NRW: one searchable location control for feed, analysis and map. */
-.region-search-trigger{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:44px;padding:10px 12px;background:var(--rm-white);color:var(--rm-c900);border:1px solid var(--rm-c400);border-radius:6px;text-align:left;font:inherit;cursor:pointer}
-.region-search-popover{width:min(390px,calc(100vw - 32px));padding:4px;background:var(--rm-white);color:var(--rm-c900);z-index:100;border:1px solid var(--rm-c300);box-shadow:0 8px 28px #0002}
-.region-search-popover small{display:block;color:var(--rm-c500);font-size:11px;margin-top:3px}
-.region-search-popover [cmdk-item]{min-height:48px}
-
-
-.region-search-trigger:focus-visible{outline:3px solid var(--rm-link);outline-offset:3px}
 
 /* Question-led analyses, using the existing editorial type and blue accent. */
 
 
 
 
-.monthly-mix{margin-top:12px}.mix-values th:not(:first-child){min-width:130px}
+.monthly-mix{margin-top:12px}
 /* Independent usability review: concise entry, explicit filters, consistent navigation. */
-.region-search-popover small{font-size:.8125rem}
 
 
 
 
 /* Source availability in every territory picker; text carries the meaning. */
-.region-option-text{min-width:0;flex:1;overflow-wrap:anywhere}
-.region-data-badge{display:inline-block;font-size:.875rem;line-height:1.45;padding:2px 7px;margin-top:5px;border-radius:3px;font-weight:500}
-.region-data-badge.has-data{background:var(--color-sky-100);color:var(--color-sky-900)}
-.region-data-badge.no-data{background:var(--rm-c100);color:var(--rm-c600)}
-.region-trigger-count{display:block;font-size:.875rem;font-weight:400;margin-top:3px;color:var(--rm-c600)}
-.region-data-hint{padding:8px 10px;margin:0;border-bottom:1px solid var(--rm-c200);font-size:.875rem;line-height:1.45;color:var(--rm-c600)}
-.region-search-popover [cmdk-item]{align-items:flex-start;padding-block:10px;white-space:normal}
-.region-search-popover [cmdk-item]>svg{flex:none;margin-top:3px}
-.region-search-trigger>svg{flex:none}
 
 
 /* Map views share the editorial type and spacing of the analysis workspace. */
@@ -67,8 +34,7 @@ button:disabled{cursor:wait;opacity:.6}
 
 
 
-/* Content provenance and weighted terms follow the existing article typography. */
-.analysis-provenance {border-top:1px solid var(--border);padding-top:1.5rem}.analysis-provenance summary,.session-details summary{cursor:pointer;font-weight:500}.analysis-provenance li{margin:1rem 0}.session-details{margin:1rem 0;font-size:1rem}.session-details p{margin:.5rem 0}.session-details ul{padding-left:1.3rem}
+/* Content provenance and weighted terms follow the existing article typography. */.session-details summary{cursor:pointer;font-weight:500}.session-details{margin:1rem 0;font-size:1rem}.session-details p{margin:.5rem 0}.session-details ul{padding-left:1.3rem}
 
 
 }

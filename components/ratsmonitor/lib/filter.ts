@@ -22,10 +22,6 @@ export function matches(a: Article, f: FilterSpec, skip?: FilterKey): boolean {
   return true;
 }
 
-/** Zählt einen Treffer für Gemeinde, Kreis, Land und Gesamt */
-export function addCount(obj: Record<string, number>, ags: string) {
-  for (const k of new Set([ags, ags.slice(0, 5), ags.slice(0, 2), ""])) obj[k] = (obj[k] || 0) + 1;
-}
 
 export function countBy(articles: Article[], f: FilterSpec, key: FilterKey, field: (a: Article) => string): Record<string, number> {
   const c: Record<string, number> = {};
