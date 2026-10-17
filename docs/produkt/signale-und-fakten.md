@@ -42,7 +42,11 @@ Neu denkbar (jeweils erst Regel bauen und messen):
 3. Das Tor `X_FACT_GATE` gilt nur für Fakten auf der Karte; Signale haben ihr eigenes Tor (`gate` je Kategorie).
 4. Mehr Abdeckung lohnt sich vor allem bei den echten Fakten (`fee_rate` 69 %, `faction` 65 %, `plan` 79 %).
 
+## Entschieden (17.10.2026)
+
+- `plan` ist der **Stand** eines Signals (Verfahrensschritt), `plan_use` die **Art** (Wohnen, Gewerbe, Industrie …). Beide sind keine Fakten für die Karte: Sie beschreiben ein Vorhaben, einen Vergleichswert zwischen Orten liefern sie nicht. In `rule-quality.json` wandern sie in die Gruppe „Signale“ (Zeilen „Stand“ und „Art“), im Tor `X_FACT_GATE` bleiben sie vorerst, bis die Signale ihr eigenes Tor haben.
+- Gleiches gilt für `heat_plan` (Stand der Wärmeplanung).
+
 ## Offen
 
-- Gehören `plan` und `plan_use` für dich eher zu Signalen (Stand, Art) oder zu Fakten (Karte)?
 - Schrittwechsel-Meldung: braucht ein Gedächtnis je Vorhaben; Vorgang-ID über Sitzungen (`case_key`) liegt vor.
