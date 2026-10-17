@@ -796,7 +796,7 @@ topic design-styles.css:140
 - SignalePage.tsx (349, ⚠7): signaleHref, SignalePage
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (550, ⚠7): XAtlasView
-- XKopf.tsx (167): XKopf, XWeiter, ThemenLeiste
+- XKopf.tsx (166): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (346, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun

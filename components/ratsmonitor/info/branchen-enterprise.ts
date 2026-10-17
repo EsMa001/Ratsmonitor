@@ -43,7 +43,7 @@ export const NEU_HREF: Partial<Record<AnalyseId, (term?: string) => string>> = {
   diffusion: (term) => `/analytics/trends${term ? `?begriff=${encodeURIComponent(term)}` : ""}`,
   trends: () => "/analytics/trends",
 };
-export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "Vergleich im plenara.X Atlas", beschluesse: "Ausgang in plenara.X Trends", gremien: "Gremien", fraktionen: "Fraktionen", news: "Aktuelles" };
+export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "Vergleich im plenara.X Atlas", beschluesse: "Ausgang im plenara.X Atlas", gremien: "Gremien", fraktionen: "Fraktionen", news: "Aktuelles" };
 /** Seiten der Gruppe plenara.X Einblicke (keine eigene Übersichtsseite); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
 export const EINBLICKE: AnalyseId[] = ["signale", "ausschreibungen", "news", "fraktionen"];
 
