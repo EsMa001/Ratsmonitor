@@ -54,9 +54,9 @@ export function Footer() {
       </div>
       <div className="mx-auto max-w-page border-t border-slate-100 py-2 text-[12px] text-slate-500">© {new Date().getFullYear()} {name}</div>
     </footer>
-    <nav aria-label="Rechtliches" className="border-t border-slate-200 px-4 py-4 text-center text-[12px] text-slate-500 sm:hidden print:hidden">
+    <nav aria-label="Rechtliches" className="border-t border-slate-200 px-4 py-1 text-center text-[12px] text-slate-500 sm:hidden print:hidden">
       {[["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"], ["/agb", "AGB"], ["/kontakt", "Kontakt"]].map(([href, label], i) => (
-        <span key={href}>{i > 0 && " · "}<Link href={href} className="text-slate-500 no-underline">{label}</Link></span>
+        <span key={href}>{i > 0 && " · "}<Link href={href} className="inline-block min-h-[44px] px-1.5 leading-[44px] text-slate-500 no-underline">{label}</Link></span>
       ))}
     </nav>
     </>

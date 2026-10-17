@@ -90,7 +90,7 @@ export function AdminDashboardView({initial}:{initial:AdminDashboard;displayName
     {reviewError?<Alert>{reviewError}</Alert>:<div className={'mt-4'+(reviewBusy?' opacity-60 transition-opacity':'')} aria-busy={reviewBusy}>
      {reviewBusy&&<p role="status" className="admin-note">Prüfliste wird geladen …</p>}
      <p className="admin-note">{reviewTotal===null?<>{QUALITY_TEXT.trefferOffen}{(review.pending||0)>0&&` Noch ${n(review.pending||0)} geänderte Gebiete offen.`}</>:QUALITY_TEXT.treffer(n(reviewTotal))}</p>
-     <ol className="admin-review-list">{review.articles.map(a=><li key={a.id}><div><a href={'/thema/'+a.id} target="_blank" rel="noreferrer">{a.title} <ArrowUpRight size={15}/></a><small>{regionName(a.regionId)} · Aktualisiert {date(a.updatedAt)}</small></div></li>)}</ol>
+     <ol className="admin-review-list">{review.articles.map(a=><li key={a.id}><div><a href={'/beschluss/'+a.id} target="_blank" rel="noreferrer">{a.title} <ArrowUpRight size={15}/></a><small>{regionName(a.regionId)} · Aktualisiert {date(a.updatedAt)}</small></div></li>)}</ol>
      {!review.articles.length&&<p className="admin-empty">Keine Treffer für diesen Prüfgrund.</p>}</div>}
     <SectionTodo id="qualitaet.inhalt"/>
    </section>

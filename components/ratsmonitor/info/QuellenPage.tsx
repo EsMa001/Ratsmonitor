@@ -64,7 +64,7 @@ export function QuellenPage() {
         label="Informationen"
         name="Datenabdeckung"
         title={<>Kommunalpolitik aus ganz Deutschland.</>}
-        lead="Beschlüsse, Vorlagen und Beratungen aus den offiziellen Ratsinformationssystemen der Kommunen, an einem Ort durchsuchbar und mit Verweis auf die Originalquelle. Die Abdeckung wächst laufend."
+        lead="Beschlüsse, Vorlagen und Beratungen der Kommunen, jeweils mit Verweis auf die Originalquelle. Die Abdeckung wächst laufend."
       />
       <section className="ri-sec ri-sec--tight">
         {error && <p role="alert" className="text-slate-600">{error}</p>}
@@ -149,12 +149,6 @@ export function QuellenPage() {
           </ol>
         </section>
       )}
-
-
-      <section className="ri-sec ri-sec--tight">
-        <h2 className="ri-h2">Hinter den Kulissen</h2>
-        <p className="m-0 mt-3 max-w-[760px] text-[16px] leading-relaxed text-slate-500">Wortlisten und vorberechnete Zahlen halten fast eine Million Vorgänge sofort durchsuchbar; sie sind auch die Grundlage für <Link href="/analytics/atlas" className="text-teal-700">plenara.X</Link>.</p>
-      </section>
 
       <DarkCta
         title="Ihre Kommune fehlt?"

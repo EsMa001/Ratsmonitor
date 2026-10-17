@@ -11,7 +11,7 @@ export function BottomNav() {
   const me = useMe();
   const tabs: { href: string; label: string; Icon: LucideIcon; on: boolean }[] = [
     { href: "/", label: "Start", Icon: House, on: p === "/" },
-    { href: "/suche", label: "Suche", Icon: Search, on: p === "/suche" || p.startsWith("/beschluss/") || p.startsWith("/thema/") },
+    { href: "/suche", label: "Suche", Icon: Search, on: p === "/suche" || p.startsWith("/beschluss/") },
     { href: "/konto/suchen", label: "Gespeichert", Icon: Heart, on: p === "/konto/suchen" || p === "/konto/artikel" || p === "/konto/kalender" },
     { href: "/analytics/atlas", label: "plenara.X", Icon: Sparkles, on: isAnalyticsPath(p) },
     { href: me.user ? "/konto/profil" : "/anmelden", label: "Konto", Icon: User, on: p === "/konto/profil" || p.startsWith("/anmelden") },

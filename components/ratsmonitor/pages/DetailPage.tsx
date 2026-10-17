@@ -27,9 +27,16 @@ function OriginalQuote({evidence,topic}:{evidence:ContentEvidence;topic:TopicDet
   <figcaption className="mt-2 break-words text-[12px] text-slate-500">{url?<a href={url} className="text-teal-700 no-underline hover:underline" target="_blank" rel="noopener noreferrer">{title} ↗</a>:title}{location&&' · '+location}</figcaption>
  </figure>;
 }
+/* Der lange Auszug beginnt oft mit den Sätzen, die oben schon stehen: sie nicht noch einmal zeigen */
+function withoutLead(long:{sentences:string[];gaps?:boolean[]},lead?:{sentences:string[]}){
+  const n=lead?.sentences.length||0;
+  if(!n||long.sentences.length<=n||lead!.sentences.some((x,i)=>x!==long.sentences[i]))return long;
+  return {sentences:long.sentences.slice(n),gaps:long.gaps?.slice(n).map((g,i)=>i?g:false)};
+}
 /* Auszug aus der Vorlage: nur Originalsätze, wörtlich; „[…]“ steht, wo im Dokument etwas dazwischen liegt */
 function Excerpt({text,source,size}:{text:{sentences:string[];gaps?:boolean[]};source?:{url:string;title:string};size:'short'|'long'}){
-  const body=text.sentences.map((s,k)=>(k?(text.gaps?.[k]?' […] ':' '):'')+s).join('');
+  /* Aufzählungszeichen aus PDFs (Privatbereich) erscheinen sonst als Kästchen */
+  const body=text.sentences.map((s,k)=>(k?(text.gaps?.[k]?' […] ':' '):'')+s).join('').replace(/[\uE000-\uF8FF]/g,'•');
   const url=sourceLink(source?.url);
   return <figure className="m-0">
     <blockquote className={`m-0 max-w-none border-l-2 border-teal-600 pl-4 leading-relaxed ${size==='short'?'text-[16px] text-slate-500 sm:text-[18px]':'text-[16px] text-slate-900'}`}>„{body}“</blockquote>
@@ -107,7 +114,7 @@ export function DetailPage(){
                 }} className={'-mb-px min-h-[44px] border-b-2 px-0 py-2 text-left text-[14px] outline-offset-4 focus-visible:outline-2 focus-visible:outline-teal-600 '+(view===key?'border-teal-600 font-semibold text-slate-900':'border-transparent text-slate-500 hover:text-slate-900')}>{label}</button>)}
               </div>}
               <div id={'summary-'+(showRule?'rule':'ai')+'-view'} role={both?'tabpanel':undefined} aria-labelledby={both?'summary-'+view+'-tab':undefined} tabIndex={both?0:undefined}>
-                {showRule?<div className="mb-4"><Excerpt text={rule.long} source={excerptSource} size="long"/></div>:<>
+                {showRule?<div className="mb-4"><Excerpt text={withoutLead(rule.long,!isAi?rule.short:undefined)} source={excerptSource} size="long"/></div>:<>
                   {isAi&&t.contentAnalysis?.status==='stale'&&<p role="status" className="mb-4 border-l-2 border-slate-300 pl-4 text-[14px] leading-relaxed text-slate-500">Die Quelldaten haben sich geändert. Diese KI-Zusammenfassung wurde noch nicht aktualisiert.</p>}
                   {isAi&&coverage&&(coverage.partial||coverage.missing>0)&&<div className="mb-5 border-l-2 border-slate-300 pl-4 text-[14px] leading-relaxed text-slate-500"><p className="m-0">Unvollständige Quellenlage: {coverage.available} von {coverage.total} Unterlagen mit gespeichertem Sachtext.{coverage.partial?' Einige Texte sind nur teilweise lesbar.':''}</p>
                     {!!t.contentAnalysis?.gaps?.length&&<details className="mt-2"><summary className="cursor-pointer text-teal-700">Fehlende Unterlagen ({t.contentAnalysis.gaps.length})</summary><ul className="m-0 mt-2 list-none space-y-3 p-0">{t.contentAnalysis.gaps.map((gap,index)=>{const url=sourceLink(gap.url);return <li key={index}>{url?<a href={url} target="_blank" rel="noopener noreferrer" className="break-words text-teal-700 hover:underline">{gap.title||'Originalunterlage'} ↗</a>:<span className="break-words">{gap.title||'Originalunterlage'}</span>}<span className="block text-[12px]">{gap.reason}</span></li>;})}</ul></details>}

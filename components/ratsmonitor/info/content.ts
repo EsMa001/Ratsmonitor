@@ -72,7 +72,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
     group: "Grundlagen",
     items: [
       {
-        q: "Was ist Ratsmonitor?",
+        q: "Was ist plenara?",
         a: "plenara bündelt die Ratsinformationssysteme der Kommunen in einer Suche. Vorlagen, Tagesordnungen und Beschlüsse finden Sie an einem Ort, jeweils mit Kommune, Gremium, Datum und Link zu den Originalunterlagen. Die Abdeckung wird laufend ausgebaut.",
       },
       { q: "Wie aktuell sind die Daten?", a: "Die Daten werden regelmäßig direkt aus den offiziellen Ratsinformationssystemen abgerufen. Den genauen Stand sehen Sie in der Suche neben der Trefferzahl („Datenstand“ mit Datum und Uhrzeit). Welche Kommunen erfasst sind und wo es Lücken gibt, steht unter „Datenabdeckung“." },

@@ -629,7 +629,7 @@ topic design-styles.css:140
 ### app/(monitor)/
 - layout.tsx (3): MonitorLayout
 - not-found.tsx (4): metadata, NotFound
-- page.tsx (2): Page
+- page.tsx (11): Page
 
 ### app/(monitor)/preise/
 - page.tsx (2): Page
@@ -641,7 +641,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/thema/[id]/
-- page.tsx (2): Page
+- page.tsx (8): Page
 
 ### app/(monitor)/videos/
 - page.tsx (2): Page
@@ -659,9 +659,6 @@ topic design-styles.css:140
 - layout.tsx (10, ⚠2): metadata, RootLayout
 - not-found.tsx (4): metadata, NotFound
 
-### app/thema/[id]/
-- related-topics.tsx (11, ⚠3): RelatedTopics
-
 ### components/
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (114, ⚠8): AdminAiLocal
@@ -671,7 +668,7 @@ topic design-styles.css:140
 - admin-chrome.tsx (66, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠14): AdminDashboardView
-- admin-debug.tsx (160, ⚠9): AdminDebug
+- admin-debug.tsx (164, ⚠10): AdminDebug
 - admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
@@ -730,7 +727,7 @@ topic design-styles.css:140
 - GateDialog.tsx (148): GateFeature, openGate, openLimitGate, GateDialog
 - Header.tsx (64): Header
 - ImportDialog.tsx (151): ImportDialog
-- PlanCards.tsx (153, ⚠1): PlanCards, PlanSummary
+- PlanCards.tsx (154, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (550, ⚠1): isSearchInput, focusSearch, SearchBox
@@ -754,7 +751,7 @@ topic design-styles.css:140
 - AccountPages.tsx (633): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - AnwenderLive.tsx (162): AnwenderLivePage
-- BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
+- BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
 - BranchenLive.tsx (244): LiveThumb
 - BranchenPages.tsx (121): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
@@ -762,8 +759,8 @@ topic design-styles.css:140
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (86): PreisePage
-- QuellenPage.tsx (171, ⚠3): QuellenPage
-- StartseitePage.tsx (490, ⚠3): StartseitePage
+- QuellenPage.tsx (165, ⚠3): QuellenPage
+- StartseitePage.tsx (491, ⚠3): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (157): VideosPage
@@ -772,7 +769,7 @@ topic design-styles.css:140
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
 - blocks.tsx (218, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (112): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
-- content.ts (280, ⚠26): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
+- content.ts (283, ⚠27): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
@@ -804,7 +801,7 @@ topic design-styles.css:140
 - iconStroke.ts (3): iconStroke
 - listView.ts (47): ListView, setListView, useListView
 - otherTab.ts (11): onOtherTab
-- pageTitle.ts (40): pageName, tabTitle
+- pageTitle.ts (39): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
@@ -830,7 +827,7 @@ topic design-styles.css:140
 - MainMenu.tsx (272, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (178, ⚠11): DetailPage
+- DetailPage.tsx (182, ⚠11): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (64): OverviewPage
@@ -873,7 +870,7 @@ topic design-styles.css:140
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (550, ⚠7): XAtlasView
 - XKopf.tsx (166): XKopf, XWeiter, ThemenLeiste
-- XTrendsPage.tsx (338, ⚠3): XTrendsPage
+- XTrendsPage.tsx (341, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery
@@ -885,7 +882,7 @@ topic design-styles.css:140
 - account.tsx (108): AccountProvider, useAccount, useSavedStats
 - data.tsx (36, ⚠1): DataProvider, useData
 - nav.ts (17): View, viewOf, noteRoute, cameFromApp, overviewScroll, useAppNav
-- search.tsx (659, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
+- search.tsx (665, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 

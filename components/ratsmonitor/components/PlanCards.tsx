@@ -16,11 +16,11 @@ const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
   { label: "plenara.X", tiers: { guest: null, basic: null, pro: null, enterprise: "plenara.X: Analysen zu Ausbreitung, Beschlüssen und Trends" } },
   { label: "Bis zu 5 E-Mail-Empfänger", tiers: { guest: null, basic: null, pro: null, enterprise: "Bis zu 5 E-Mail-Empfänger je Benachrichtigung" } },
 ];
-const PLANS: { tier: Tier; note: string }[] = [
-  { tier: "guest", note: "Ohne Anmeldung" },
-  { tier: "basic", note: "Mit Konto" },
-  { tier: "pro", note: "monatlich kündbar" },
-  { tier: "enterprise", note: "für Teams · monatlich kündbar" },
+const PLANS: { tier: Tier; note: string; nutzen: string }[] = [
+  { tier: "guest", note: "Ohne Anmeldung", nutzen: "Reinschauen: ein Begriff, ganz Deutschland." },
+  { tier: "basic", note: "Mit Konto", nutzen: "Ein Thema per E-Mail im Blick behalten." },
+  { tier: "pro", note: "monatlich kündbar", nutzen: "Viele Themen per E-Mail verfolgen, statt täglich zu suchen." },
+  { tier: "enterprise", note: "für Teams · monatlich kündbar", nutzen: "Im Team informiert bleiben, mit Analysen und Kalender." },
 ];
 
 /* Wie im übrigen Design: schwarze Pille mit Pfeil für die Hauptaktion, sonst Petrol-Text mit Pfeil */
@@ -74,6 +74,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
               </div>
               <p className="m-0 mt-2 text-[22px] font-bold tracking-tight">{priceLabel(plan.tier)}</p>
               <p className="m-0 text-[12px] text-slate-500">{plan.note}</p>
+              <p className="m-0 mt-3 text-[14px] font-medium leading-snug text-slate-900">{plan.nutzen}</p>
               <ul className="m-0 mt-4 flex-1 list-none space-y-1.5 p-0 text-[14px]">
                 {FEATURES.map((f) => {
                   const text = f.tiers[plan.tier];

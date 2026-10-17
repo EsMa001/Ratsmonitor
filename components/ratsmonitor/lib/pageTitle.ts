@@ -27,7 +27,6 @@ const NAMES: Record<string, string> = {
 export function pageName(path: string, brancheName?: string): string {
   if (path.startsWith("/anwender/")) return brancheName ?? "Anwender";
   if (path.startsWith("/beschluss/")) return "Beschluss";
-  if (path.startsWith("/thema/")) return "Thema";
   if (path.startsWith("/konto")) return NAMES[path.replace(/\/$/, "")] ?? "Konto";
   return NAMES[path] ?? "";
 }
