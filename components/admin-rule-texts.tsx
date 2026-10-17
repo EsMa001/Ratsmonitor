@@ -37,6 +37,9 @@ const QT=QUALITY.target;
 /* Messwert als Balken mit Zielmarke; unter dem Ziel orange */
 /* Signale: offen erst, wenn alles gemessen ist: Qualität, Art und Stand ab 90 %, Trefferquote ab 80 % */
 const SIGNAL_RECALL=80;
+/* Signale, für die es noch keine Kategorie im Frontend gibt (Regel gemessen, Qualität unter 90 %) */
+const NO_CATEGORY=new Set(['sig_pflege','sig_handel']);
+const TAB_IDS=['uebersicht','signale','fakten','lauf'];
 const GROUP_ORDER=['read','other','signals','facts'];
 const TABS:[string,string][]=[['uebersicht','Übersicht und Grundregeln'],['signale','Signale'],['fakten','Fakten'],['lauf','Lauf und Zahlen']];
 const TAB_OF:Record<string,string>={read:'uebersicht',other:'uebersicht',signals:'signale',facts:'fakten'};
@@ -140,33 +143,44 @@ export function AdminRuleTexts(){
  const themeTotal=themeRows.reduce((a,[,v])=>a+v,0);
  const subsOf=(theme:string)=>SUBTOPICS.filter((u:{theme:string})=>u.theme===theme).map((u:{id:string;name:string})=>({name:u.name,n:xs?.subs?.[u.id]||0})).sort((a:{n:number},b:{n:number})=>b.n-a.n);
  const [tab,setTab]=useState<'uebersicht'|'signale'|'fakten'|'lauf'>('uebersicht');
- const sigTable=(QUALITY.groups.find(g=>g.id==='signals')?.rows??[]) as QualityRow[];
+ /* Reiter in der Adresse (#fakten): bleibt beim Neuladen und lässt sich teilen */
+ const pick=(id:string)=>{setTab(id as typeof tab);try{window.history.replaceState(null,'','#'+id);}catch{/* ohne Adresszeile egal */}};
+ useEffect(()=>{const read=()=>{const h=window.location.hash.slice(1);if(TAB_IDS.includes(h))setTab(h as typeof tab);};const t=setTimeout(read,0);window.addEventListener('hashchange',read);return ()=>{clearTimeout(t);window.removeEventListener('hashchange',read);};},[]);
+ const allSig=(QUALITY.groups.find(g=>g.id==='signals')?.rows??[]) as QualityRow[];
+ const sigTable=allSig.filter(r=>!NO_CATEGORY.has(r.id));
+ const sigNoCat=allSig.filter(r=>NO_CATEGORY.has(r.id));
  const factTable=FACT_ROWS.filter(r=>factArt(r.id)==='vergleich');
  return <>
   <AdminPageHead page="regeltexte"><StandLine stand={data?.stand} busy={busy} action="Aktualisieren" onAction={load}/></AdminPageHead>
   {error&&<Alert onRetry={load}>{error}</Alert>}
   {!!data?.statsPending&&<p role="status" className="mt-4 text-[14px] text-slate-500">Die Gebietszahlen werden noch nachgeführt ({n(data.statsPending)} Gebiete offen); die Werte können noch steigen.</p>}
   <div role="tablist" aria-label="Themen & Texte" className="scroll-thin mt-6 flex gap-1 overflow-x-auto border-b border-slate-200">
-   {TABS.map(([id,t])=><button key={id} type="button" role="tab" id={'regeltexte-tab-'+id} aria-selected={tab===id} aria-controls={'regeltexte-panel'} onClick={()=>setTab(id as typeof tab)}
+   {TABS.map(([id,t])=><button key={id} type="button" role="tab" id={'regeltexte-tab-'+id} aria-selected={tab===id} aria-controls={'regeltexte-panel'} onClick={()=>pick(id)}
     className={'inline-flex h-10 shrink-0 items-center whitespace-nowrap border-b-2 px-3 text-[14px] '+(tab===id?'border-teal-600 font-medium text-slate-900':'border-transparent text-slate-500 hover:text-slate-900')}>{t}</button>)}
   </div>
   <div role="tabpanel" id="regeltexte-panel" aria-labelledby={'regeltexte-tab-'+tab}>
   {tab==='uebersicht'&&<section id="regeltexte-uebersicht" className="admin-section">
    <div className="admin-section-heading"><h2>Übersicht: Was ist frei?</h2></div>
    <p className="admin-note">Qualität und Trefferquote aus der letzten ungesehenen Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert bei den Abschnitten darunter, beim Antippen des „i“. Signale zählen nach Qualität (ab {QT.quality} %) und Trefferquote (ab {SIGNAL_RECALL} %). Fakten nehmen wir nur auf, wenn wir sie für viele Gemeinden haben (ab {FACT_PLACES} % der Gemeinden{xs?.factPlaces?`, von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen`:""}) und die Werte stimmen (Qualität ab {QT.quality} %).</p>
-   <h3 className="mt-6">Signale</h3>
+   <h3 className="mt-6">Signale mit Kategorie im Frontend ({sigTable.length})</h3>
    <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[560px] border-collapse text-left text-[14px]">
     <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Signal</th><th className="px-2 font-medium">Qualität</th><th className="px-2 font-medium">Treffer</th><th className="px-2 font-medium">Art</th><th className="px-2 font-medium">Stand</th><th className="pl-2 font-medium">Status</th></tr></thead>
     <tbody>{sigTable.map(r=>{const g=signalGate(r);const miss=[['Qualität',r.quality,QT.quality],['Trefferquote',r.recall,SIGNAL_RECALL],['Art',r.art,QT.quality],['Stand',r.phase,QT.quality]].filter(([,v,t])=>v==null||(v as number)<(t as number)).map(([k])=>k);
      const cell=(v:number|null|undefined,t:number)=><td className={'px-2 tabular-nums '+(v==null?'text-slate-400':(v as number)>=t?'text-teal-700':'text-amber-700')}>{v==null?'–':v+' %'}</td>;
-     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900">{r.name}</td>{cell(r.quality,QT.quality)}{cell(r.recall,SIGNAL_RECALL)}{cell(r.art,QT.quality)}{cell(r.phase,QT.quality)}<td className={'pl-2 '+(g==='open'?'font-semibold text-teal-700':'text-slate-500')}>{g==='open'?'frei':'fehlt: '+miss.join(', ')}</td></tr>;})}</tbody>
+     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900"><span className="inline-flex flex-wrap items-center gap-2">{r.name}{r.what&&<Info text={r.what}/>}</span></td>{cell(r.quality,QT.quality)}{cell(r.recall,SIGNAL_RECALL)}{cell(r.art,QT.quality)}{cell(r.phase,QT.quality)}<td className={'pl-2 '+(g==='open'?'font-semibold text-teal-700':'text-slate-500')}>{g==='open'?'frei':'fehlt: '+miss.join(', ')}</td></tr>;})}</tbody>
    </table></div>
+   {sigNoCat.length>0&&<><h3 className="mt-6">Signale ohne Kategorie im Frontend ({sigNoCat.length})</h3>
+   <p className="admin-note mt-1">Die Regel ist gemessen, aber die Qualität liegt unter {QT.quality} %. Eine Kategorie im Frontend (Signale-Seite) entsteht erst, wenn sie darüber liegt.</p>
+   <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[460px] border-collapse text-left text-[14px]">
+    <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Signal</th><th className="px-2 font-medium">Qualität</th><th className="pl-2 font-medium">Status</th></tr></thead>
+    <tbody>{sigNoCat.map(r=><tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900"><span className="inline-flex flex-wrap items-center gap-2">{r.name}{r.what&&<Info text={r.what}/>}</span></td><td className={'px-2 tabular-nums '+(r.quality==null?'text-slate-400':r.quality>=QT.quality?'text-teal-700':'text-amber-700')}>{r.quality==null?'–':r.quality+' %'}</td><td className="pl-2 text-slate-500">{r.quality!=null&&r.quality>=QT.quality?'bereit für eine Kategorie':'Qualität unter '+QT.quality+' %, keine Kategorie'}</td></tr>)}</tbody>
+   </table></div></>}
    <h3 className="mt-6">Fakten</h3>
    <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[460px] border-collapse text-left text-[14px]">
     <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Fakt</th><th className="px-2 font-medium">Qualität</th><th className="px-2 font-medium">Gemeinden</th><th className="pl-2 font-medium">Status</th></tr></thead>
     <tbody>{factTable.map(r=>{const pl=xs?.factPlaces?Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10:null;const ok=r.quality!=null&&r.quality>=QT.quality&&pl!=null&&pl>=FACT_PLACES;
      const why=r.quality==null?'nicht gemessen':r.quality<QT.quality?'Qualität unter '+QT.quality+' %':pl==null?'Gemeinden nach dem Lauf':pl<FACT_PLACES?'Gemeinden unter '+FACT_PLACES+' %':'';
-     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900">{r.name}</td><td className={'px-2 tabular-nums '+(r.quality==null?'text-slate-400':r.quality>=QT.quality?'text-teal-700':'text-amber-700')}>{r.quality==null?'–':r.quality+' %'}</td><td className={'px-2 tabular-nums '+(pl==null?'text-slate-400':pl>=FACT_PLACES?'text-teal-700':'text-amber-700')}>{pl==null?'–':pl.toLocaleString('de-DE')+' %'}</td><td className={'pl-2 '+(ok?'font-semibold text-teal-700':'text-slate-500')}>{ok?'frei':why}</td></tr>;})}</tbody>
+     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900"><span className="inline-flex flex-wrap items-center gap-2">{r.name}{r.what&&<Info text={r.what}/>}</span></td><td className={'px-2 tabular-nums '+(r.quality==null?'text-slate-400':r.quality>=QT.quality?'text-teal-700':'text-amber-700')}>{r.quality==null?'–':r.quality+' %'}</td><td className={'px-2 tabular-nums '+(pl==null?'text-slate-400':pl>=FACT_PLACES?'text-teal-700':'text-amber-700')}>{pl==null?'–':pl.toLocaleString('de-DE')+' %'}</td><td className={'pl-2 '+(ok?'font-semibold text-teal-700':'text-slate-500')}>{ok?'frei':why}</td></tr>;})}</tbody>
    </table></div>
   </section>}
    {[...QUALITY.groups].filter(g=>TAB_OF[g.id]===tab).sort((a,b)=>GROUP_ORDER.indexOf(a.id)-GROUP_ORDER.indexOf(b.id)).map(g=>{
@@ -184,6 +198,7 @@ export function AdminRuleTexts(){
     /* Signale: Kategorie mit Qualität der Zuordnung und Trefferquote, darunter die Filter mit eigener Qualität */
     if(g.id==='signals')return <div key={g.id} id="regeltexte-signale" className="admin-section">
      <div className="admin-section-heading"><h2>{g.name}</h2></div>
+     <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[14px]">{[['signale','Kategorien'],['sig-stand','Stand'],['sig-art','Art'],['sig-gebuehr','Gebührenänderungen'],['sig-weitere','Weitere Signale']].map(([id,t])=><button key={id} type="button" className="text-teal-700 hover:text-teal-800" onClick={()=>document.getElementById('regeltexte-'+id)?.scrollIntoView({behavior:'smooth',block:'start'})}>{t}</button>)}</div>
      <p className="admin-note mt-1">Ein Signal ist ein Ereignis, das eine Branche wissen will („Wo entsteht gerade etwas Neues?“), mit Art und Stand. Zahlen wie Fläche oder Anlagenzahl gehören zu den Fakten, nicht zu den Signalen. Ein Fakt dagegen ist ein Zahlenwert zum Vergleich von Orten (siehe unten). Konzept: docs/produkt/signale-und-fakten.md.</p>
      <p className="admin-note mt-1">Qualität: von den Vorgängen, die die Regel einer Kategorie oder einem Filter zuordnet, gehören so viele wirklich dazu. Trefferquote: von den Vorgängen, die dazugehören, findet die Regel so viele. Offen erst, wenn Qualität, Art und Stand je mindestens {QT.quality} % und die Trefferquote mindestens {SIGNAL_RECALL} % erreichen. Kategorien, Filter und Vorgehen: docs/produkt/plenara-x-signale.md.</p>
      <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{(g.rows as QualityRow[]).map(r=><li key={r.id} className="py-3 text-[14px]">
@@ -203,16 +218,16 @@ export function AdminRuleTexts(){
        <span className={'tabular-nums '+(f.quality===null?'text-slate-400':f.quality>=QT.quality?'font-semibold text-teal-700':'font-semibold text-slate-900')}>{f.quality===null?'nicht gemessen':f.quality+' %'}</span>
       </li>)}</ul>}
      </li>)}</ul>
-     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Stand der Signale</h4>
+     <h4 id="regeltexte-sig-stand" className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Stand der Signale</h4>
      <p className="admin-note mt-1">Verfahrensschritt eines Vorhabens (zum Beispiel eines Bebauungsplans oder der Wärmeplanung), keine Zahl. Rechts die Zahl der Berichte im letzten Lauf.</p>
      {list(FACT_ROWS.filter(r=>factArt(r.id)==='stand'),'facts')}
-     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Art der Signale</h4>
+     <h4 id="regeltexte-sig-art" className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Art der Signale</h4>
      <p className="admin-note mt-1">Was für ein Vorhaben es ist (Nutzung im Plan, Hausformen, Straßenbau, Mobilitätsprojekte). Sie bilden die Filter der Kategorien.</p>
      {list(FACT_ROWS.filter(r=>factArt(r.id)==='art'),'facts')}
-     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Gebührenänderungen (Ereignisse)</h4>
+     <h4 id="regeltexte-sig-gebuehr" className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Gebührenänderungen (Ereignisse)</h4>
      <p className="admin-note mt-1">Kein Zahlenwert, sondern ein Ereignis: Gebühren erhöht oder neu gefasst. Gehört zu den Signalen; das Signal selbst gibt es noch nicht.</p>
      {list(FACT_ROWS.filter(r=>factArt(r.id)==='ereignis'),'facts')}
-     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Weitere Signale (noch nicht gebaut)</h4>
+     <h4 id="regeltexte-sig-weitere" className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Weitere Signale (noch nicht gebaut)</h4>
      <p className="admin-note mt-1">Vorschläge aus dem Konzept. Jedes bekommt erst eine Regel, dann eine Messung, dann ein Tor.</p>
      <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{SIGNAL_IDEAS.map(i=><li key={i.name} className="py-3 text-[14px]"><div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{i.name}</span><span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">geplant</span></div><small className="mt-1 block text-[12px] leading-snug text-slate-500">{i.what}</small></li>)}</ul>
     </div>;
@@ -255,9 +270,9 @@ export function AdminRuleTexts(){
    <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen" items={sum}/></div>
   </section>
   <section id="regeltexte-fakten-lauf" className="admin-section">
-   <div className="admin-section-heading"><h2>Fakten und Einordnungen</h2></div>
+   <div className="admin-section-heading"><h2>Berichte mit Fakten</h2></div>
    <p className="admin-note">Werte (für plenara.X Fakten) und Einordnungen (für Signale und Fraktionsprofil) aus Titel, Hauptdokument und passenden Anlagen. Gezählt am Ende jedes Laufs.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Fakten und Einordnungen" items={fac}/></div>
+   <div className="mt-6"><Kpis label="Kennzahlen der Berichte mit Fakten" items={fac}/></div>
   </section>
   <section id="regeltexte-themen" className="admin-section">
    <div className="admin-section-heading"><h2>Themen</h2></div>
