@@ -149,7 +149,7 @@ export function housingOf(text){
 
 /* plenara.X Signale, Kategorien 4 bis 9 (docs/produkt/plenara-x-signale.md): je Vorgang ein Filterwert aus dem Titel, null wenn der
    Vorgang nicht zur Kategorie gehört. Anfragen, Anträge von Fraktionen, Berichte und Einzelbauanträge Dritter zählen nicht. */
-const SIG_NOT=/(?<!Such)Anfrage|Beantwortung|Antrag (?:der|des) (?:Fraktion|Ratsmitglied|Stadtverordnet|Gemeinderat|Kreistag)|Fraktion|Bauantrag|Bauvoranfrage|Baugesuch|Nutzungsänderung/i;
+const SIG_NOT=/(?<!Such)Anfrage|Beantwortung|Antrag (?:der|des) (?:Fraktion|Ratsmitglied|Stadtverordnet|Gemeinderat|Kreistag)|Fraktion|Antrag (?:der|des|von)\s+(?:CDU|CSU|SPD|FDP|AfD|BSW|Linke|Grünen|GRÜNE|FW|FWG|UWG|Bündnis)|Bauantrag|Bauvoranfrage|Baugesuch|Nutzungsänderung/i;
 const firstOf=(list,t)=>list.find(([,re])=>re.test(t))?.[0]||null;
 /* 4 Windenergie: Art des Verfahrens */
 const WIND_TITLE=/Raumordnungsplan Wind|\bROPW\b|Windenergie|Windkraft|Windpark|Windrad|Windräder|\bWEA\b|Windenergieanlage|Windkraftanlage|Repowering(?![^]{0,30}Solar)/i;
@@ -178,7 +178,7 @@ const ENERGY=[
  ['LED-Straßenbeleuchtung',/\bLED\b|(?:Straßen)?[Bb]eleuchtung[^]{0,60}(?:Umrüst|Austausch|Modernis|Erneuerung|energieeffizient|stromsparend)|(?:Umrüst|Austausch|Modernis|Erneuerung)[^]{0,60}[Bb]eleuchtung/],
  ['Energetische Sanierung',/energetisch|Energieeffizien|Wärmedämm|Dämmung|Fenstertausch|Fassadendämm|Klimaschutzmaßnahme|Energieeinspar/i],
 ];
-export function energyOf(title){const t=String(title||'');if(/Wärmeplan|Bericht|Sachstand|Befreiung|Bauvorhaben|Gestaltungssatzung|Baugenehmigung|Wartungsvertrag|Vortragsveranstaltung|Wintergarten|Einvernehmen|Grundstück|Wohnhaus|Betriebsleiter|Weihnachts|Möbel|Aufhebung des vorhabenbezogenen|Rohstoff|Regionalplan|Raumordnung|Tekturplanung|Wegfall|Denkmalschutz|denkmalschutzrechtlich|Polizei|Landschaftsschutz|Mega-Light|Ströer|Zwerchgiebel|Mehrfamilienhaus|Tierhaltung|Deckenbeleuchtung|Verfahrensfrei|Abweichung|Dunkle|Einfamilien|Zweifamilien|Flurstück|Fl\.?\s?Nr|isolierte Abweichung|e\.\s?V\.|Zuschüssen|Herrnhuter|Fahrradbügel|\bBA \d/i.test(t)||SIG_NOT.test(t))return null;return firstOf(ENERGY,t);}
+export function energyOf(title){const t=String(title||'');if(/Wärmeplan|Bericht|Sachstand|Befreiung|Bauvorhaben|Gestaltungssatzung|Baugenehmigung|Wartungsvertrag|Vortragsveranstaltung|Wintergarten|Einvernehmen|Grundstück|Wohnhaus|Betriebsleiter|Geheimsache|Erker|Antrag auf Einbau|Weihnachts|Möbel|Aufhebung des vorhabenbezogenen|Rohstoff|Regionalplan|Raumordnung|Tekturplanung|Wegfall|Denkmalschutz|denkmalschutzrechtlich|Polizei|Landschaftsschutz|Mega-Light|Ströer|Zwerchgiebel|Mehrfamilienhaus|Tierhaltung|Deckenbeleuchtung|Verfahrensfrei|Abweichung|Dunkle|Einfamilien|Zweifamilien|Flurstück|Fl\.?\s?Nr|isolierte Abweichung|e\.\s?V\.|Zuschüssen|Herrnhuter|Fahrradbügel|\bBA \d/i.test(t)||SIG_NOT.test(t))return null;return firstOf(ENERGY,t);}
 /* 2 und 3: Entwicklung eines Bau- oder Gewerbegebiets ohne Bebauungsplan im Titel (Erschließung, Vermarktung, Vorkaufsrecht,
    Gesellschaft, Erweiterung); Bebauungspläne kommen über plan_use */
 const AREA_DEV=[
@@ -240,7 +240,7 @@ const CARE=[
  ['Ärztehaus und MVZ',/Ärztehaus|Ärztezentrum|\bMVZ\b|Medizinisches Versorgungszentrum|Gesundheitszentrum|Arztpraxis|Hausarzt|Landarzt|Primärversorgungszentrum|Apotheke/i],
  ['Krankenhaus',/Krankenhaus|Klinikum|(?<![\p{L}])Klinik(?!weg)|Hospital|Notaufnahme/iu],
 ];
-export function careOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Krankenhausstraße|Radständer|Bürgersteig|Gehweg|Tierarzt|Tiergesundheit|Tierklinik|Werbebeschild|Werbeanlage|Anzeige|Satteldach|Wärmeschutz|Jahresabschluss|Grünpflege|Landschaftspflege|Pflegevertrag|Pflegearbeiten|Baumpflege|Denkmalpflege|Pflegeplan|Biotoppflege|Kindertages|Großtagespflege|Kita|Elternbeitr|Wahl|Bericht|Berichterstattung|Teddy|Rettungswache|Mietvertrag|Entlassmanagement|Delir|Fußweg|\be\.\s?V\.|Bus|Parken|Aufsichtsrat|Geschäftsführung|Catering|Stromliefer|Essen|Regionalplan|Tagespflegestelle|Hitzeschutz/i.test(t))return null;
+export function careOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Antrag auf Baugenehmigung|Globalmiet|Carport|Haltestelle|Ausfallbürgschaft|Finanzprüfung|Umbau von Werkstatt|Krankenhausstraße|Radständer|Bürgersteig|Gehweg|Tierarzt|Tiergesundheit|Tierklinik|Werbebeschild|Werbeanlage|Anzeige|Satteldach|Wärmeschutz|Jahresabschluss|Grünpflege|Landschaftspflege|Pflegevertrag|Pflegearbeiten|Baumpflege|Denkmalpflege|Pflegeplan|Biotoppflege|Kindertages|Großtagespflege|Kita|Elternbeitr|Wahl|Bericht|Berichterstattung|Teddy|Rettungswache|Mietvertrag|Entlassmanagement|Delir|Fußweg|\be\.\s?V\.|Bus|Parken|Aufsichtsrat|Geschäftsführung|Catering|Stromliefer|Essen|Regionalplan|Tagespflegestelle|Hitzeschutz/i.test(t))return null;
  // Signal für Bau und Betrieb: nur mit Vorhaben, Planung oder Standortfrage
  if(!/Neubau|Errichtung|Erweiterung|Umbau|Ausbau|Sanierung|Bebauungsplan|Bauleitplan|Ansiedlung|Versorgungszentrum|Ärztehaus|MVZ|Standort|Nachfolge|Übernahme|Schließung|Bau\b|Gründung|Projekt|Konzept|Besichtigung|Grundstück/i.test(t))return null;
  return firstOf(CARE,t);}
@@ -251,7 +251,7 @@ const RETAIL=[
  ['Fachmarkt',/Fachmarkt|Baumarkt|Gartenmarkt|Gartencenter|Möbelmarkt|Möbelhaus|Fachmarktzentrum|Elektronikmarkt|Sonderposten|Einkaufszentrum|Factory Outlet/i],
  ['Innenstadt und Leerstand',/(?<!Wohnungs)Leerstand(?!simmobilie)|Innenstadt[^]{0,60}(?:Handel|Geschäft|Belebung|Leerstand|Laden|Einkauf)|(?:Handel|Geschäft|Belebung|Laden|Einkauf)[^]{0,60}Innenstadt|Einzelhandelskonzept|Zentrenkonzept|Einzelhandels- und Zentren|Ladenlokal|Citymanagement|Zentrale Versorgungsbereich|Einzelhandel/i],
 ];
-export function retailOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Bauzaun|Verkehrsschild|Bachlauf|Freiraumprofil|Zuwendung|Veranstaltung|Befreiung|Bürohochhaus|Kappungsgrenze|Aldi-Kreisel|Wochenmarkt|Weihnachtsmarkt|Flohmarkt|Marktplatz|Bauernmarkt|Ladenschluss|verkaufsoffen|Sonntagsöffnung|Parken|Parkplätze|Lebensmittelausgabe|Statik/i.test(t))return null;return firstOf(RETAIL,t);}
+export function retailOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Mitfahrbank|Haltestelle|Zebrastreifen|Querung|Fußgängerüberweg|Bordsteinabsenkung|Straßenübergang|Fußweg|Parkhaus|Spende|spendet|Reinigung|Aufsichtsrat|Wohnraum|Wohnimmobilien|Vonovia|Kreuzung|Beleuchtung|stadteigener|Bauzaun|Verkehrsschild|Bachlauf|Freiraumprofil|Zuwendung|Veranstaltung|Befreiung|Bürohochhaus|Kappungsgrenze|Aldi-Kreisel|Wochenmarkt|Weihnachtsmarkt|Flohmarkt|Marktplatz|Bauernmarkt|Ladenschluss|verkaufsoffen|Sonntagsöffnung|Parken|Parkplätze|Lebensmittelausgabe|Statik/i.test(t))return null;return firstOf(RETAIL,t);}
 
 /* Ausschreibungen und Vergaben (plenara.X Signale, Kategorie 1, docs/produkt/plenara-x-signale.md): öffentliche Aufträge der Kommune,
    nur aus dem Titel. Je Vorgang genau ein Filter in fester Reihenfolge (IT vor Planung vor Fahrzeugen vor Wasser vor Tiefbau vor
