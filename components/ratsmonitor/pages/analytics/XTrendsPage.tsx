@@ -127,21 +127,26 @@ export function XTrendsPage() {
   /* Steckbrief: Ausbreitung des gewählten Begriffs wie im Tool Ausbreitung */
   const diffUrl = begriff ? `/api/analytics/diffusion?${(() => { const p = new URLSearchParams(nationwide(query)); p.set("q", begriff); return p; })()}` : "";
   const [diff, setDiff] = useState<{ url: string; data: Diffusion | null; error: string }>({ url: "", data: null, error: "" });
+  const [dayState, setDayState] = useState<{ for: string; d: number }>({ for: "", d: 0 });
+  const [playing, setPlaying] = useState(false);
   useEffect(() => {
     if (!diffUrl) return;
     const c = new AbortController();
     fetchJson<Diffusion>(diffUrl, { signal: c.signal }, "Die Ausbreitung konnte nicht berechnet werden.")
-      .then((data) => setDiff({ url: diffUrl, data, error: "" }))
+      .then((data) => {
+        setDiff({ url: diffUrl, data, error: "" });
+        /* Zeitraffer läuft beim Öffnen eines Begriffs einmal von selbst (nicht bei „Bewegung reduzieren“); danach hält er am Endstand */
+        const reduced = typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        if (!reduced && data.regions.length > 1) { setDayState({ for: diffUrl, d: Math.min(...data.regions.map((r) => toDay(r.first))) }); setPlaying(true); }
+      })
       .catch((e) => { if (!c.signal.aborted) setDiff({ url: diffUrl, data: null, error: errorText(e, "Die Ausbreitung konnte nicht berechnet werden.") }); });
     return () => c.abort();
   }, [diffUrl]);
   const df = diff.url === diffUrl ? diff.data : null;
   const firsts = useMemo(() => (df?.regions ?? []).map((r) => toDay(r.first)).sort((a, b) => a - b), [df]);
   const firstDay = firsts[0] ?? 0, lastDay = Math.max(firsts.at(-1) ?? 0, toDay(new Date().toISOString()));
-  const [dayState, setDayState] = useState<{ for: string; d: number }>({ for: "", d: 0 });
   const day = dayState.for === diffUrl ? dayState.d : lastDay;
   const setDay = (d: number) => setDayState({ for: diffUrl, d: Math.min(lastDay, Math.max(firstDay, d)) });
-  const [playing, setPlaying] = useState(false);
   useEffect(() => {
     if (!playing || !df) return;
     const step = Math.max(1, Math.round((lastDay - firstDay) / 150));

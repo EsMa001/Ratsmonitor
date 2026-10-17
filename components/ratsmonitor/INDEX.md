@@ -726,7 +726,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (360): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (1074): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1083): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
@@ -797,7 +797,7 @@ topic design-styles.css:140
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (550, ⚠7): XAtlasView
 - XKopf.tsx (167): XKopf, XWeiter, ThemenLeiste
-- XTrendsPage.tsx (341, ⚠3): XTrendsPage
+- XTrendsPage.tsx (346, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery
