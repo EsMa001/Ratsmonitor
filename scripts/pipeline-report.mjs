@@ -32,6 +32,13 @@ head('Schalter im Zeitplaner (aus = läuft nicht nach Plan)');
 const sched=state('schedules')||{};
 const off=Object.entries(sched).filter(([,s])=>s?.enabled===false).map(([id])=>id);
 console.log(off.length?`aus: ${off.join(', ')}`:'alle Jobs an');
+/* Auslöser (systemd-Timer und Pfade, Stand aus scripts/schedule.mjs): ein von Hand gestoppter Timer lässt den Job nie wieder starten */
+const units=state('systemd-units');
+if(!units?.at)console.log('Auslöser: kein Stand (Zeitplaner noch nie mit dieser Fassung gelaufen)');
+else{
+ const inactive=Object.entries(units.units||{}).filter(([,v])=>v!=='active').map(([k,v])=>`${k} (${v})`);
+ console.log(`Auslöser (Stand ${local(units.at)}): ${inactive.length?'INAKTIV: '+inactive.join(', '):'alle aktiv'}`);
+}
 
 /* Bestand: kleine Zählungen über Indizes, damit zwei Berichte (vorher, nachher) vergleichbar sind */
 head('Bestand (zum Vergleich vorher/nachher)');

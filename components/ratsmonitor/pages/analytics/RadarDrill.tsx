@@ -2,15 +2,15 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
 import { ApiError, errorText, fetchOrFail } from "../../lib/fetchJson";
+import { DateBadge } from "../../components/DateBadge";
 
 /* Die Vorgänge hinter einer Zahl einer Auswertung (Listenmodus by=…&value=…, etwa /api/x?list=1): Lädt beim Öffnen,
    weitere Einträge auf Knopfdruck. */
-export interface DrillItem { id: string; title: string; region: string; date: string; status: string; times: number; signal?: string; topics?: string[]; euro?: number; /* Wert aus den Unterlagen, schon formatiert („465 %“) */ value?: string }
+export interface DrillItem { id: string; title: string; region: string; date: string; status: string; times: number; gremium?: string; signal?: string; topics?: string[]; euro?: number; /* Wert aus den Unterlagen, schon formatiert („465 %“) */ value?: string }
 interface List { total: number; size: number; items: DrillItem[] }
 
 const n = (v: number) => v.toLocaleString("de-DE");
 /* Datum wie überall „05.10.26“; fehlt es oder ist es ungültig, bleibt es leer (statt die Seite mit einem Fehler abzubrechen) */
-const day = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "");
 const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
 /** Stand als kleiner farbiger Punkt vor dem Wort: Farbe nur als Punkt, kein buntes Abzeichen. Ergebnis grün/rot, offen blau,
     unterwegs Petrol, vertagt gelb, zur Kenntnis und ohne Stand grau */
@@ -61,11 +61,12 @@ export function RadarDrill({ base, query, by, value, label, unit, limit, onAll, 
       {items.length > 0 && (
         <ol className="m-0 mt-2 list-none p-0">
           {(limit ? items.slice(0, limit) : items).map((r) => (
-            <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-t border-slate-200 py-2.5">
+            <li key={r.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 border-t border-slate-200 py-2.5">
+              <DateBadge iso={r.date} />
               <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
                 {/* Höchstens zwei Zeilen Titel, wie in den Listen der Signale */}
                 <span className="line-clamp-2 text-[14px] leading-snug [overflow-wrap:anywhere] sm:text-[16px]">{r.title}</span>
-                <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), by !== "topic" && r.topics?.join(", "), r.times > 1 && (unit ? `${r.times} Vorgänge` : `in ${r.times} Sitzungen`)].filter(Boolean).join(" · ")}</span>
+                <span className="block truncate text-[12px] text-slate-500">{[r.region, r.gremium, by !== "topic" && r.topics?.join(", "), r.times > 1 && (unit ? `${r.times} Vorgänge` : `in ${r.times} Sitzungen`)].filter(Boolean).join(" · ")}</span>
               </Link>
               <span className="self-center text-right text-[12px] text-slate-500">
                 {r.value ? <b className="block text-[14px] font-semibold tabular-nums text-slate-900">{r.value}</b> : null}

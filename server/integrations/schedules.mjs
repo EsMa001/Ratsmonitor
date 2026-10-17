@@ -14,6 +14,21 @@ export const SCHEDULES_KEY='schedules',SCHEDULE_RUNS_KEY='schedule-runs',SCHEDUL
 export const RULE_TEXTS_KEY='rule-texts-last';
 /** Wunsch „Alle neu erstellen“ ({requestedAt}); der nächste Lauf von scripts/rule-texts.mjs rechnet dann alles neu und löscht ihn */
 export const RULE_TEXTS_ALL_KEY='rule-texts-all';
+/**
+ * Zustand der systemd-Auslöser ({at, units:{name:'active'|'inactive'|…}}), geschrieben von scripts/schedule.mjs bei jedem Aufruf,
+ * höchstens alle 9 Minuten. Ein von Hand gestoppter Timer (16.10.2026: `systemctl stop ratsmonitor-ocr.timer`) fällt sonst
+ * niemandem auf, der Job läuft dann nie wieder. Die Debug-Seite und der Nachtbericht zeigen inaktive Einheiten.
+ */
+export const UNITS_KEY='systemd-units',UNITS_EVERY_MS=9*60000,UNITS_STALE_MS=30*60000;
+/** Einheiten, die aktiv sein müssen: Timer und Pfad je Job, dazu der Stopp-Pfad */
+export const unitNames=(jobs=JOBS)=>jobs.flatMap(j=>[`ratsmonitor-${j.id}.timer`,`ratsmonitor-${j.id}.path`,`ratsmonitor-stop-${j.id}.path`]);
+/** Warnung für Seite und Bericht: inaktive Einheiten, oder der Stand selbst ist veraltet (kein Aufruf des Zeitplaners mehr) */
+export function unitsWarning(state,now=Date.now()){
+ if(!state?.at||typeof state.units!=='object')return null;
+ const inactive=Object.entries(state.units).filter(([,v])=>v!=='active').map(([k])=>k);
+ const stale=now-Date.parse(state.at)>UNITS_STALE_MS;
+ return {at:state.at,inactive,stale};
+}
 export const ZONE='Europe/Berlin',STEP_MIN=10;
 /** Ein täglicher Job, der zur Zeit nicht laufen konnte (Server aus), wird so lange danach noch nachgeholt */
 export const CATCH_UP_MS=3*3600000;
@@ -49,7 +64,7 @@ export const JOBS=Object.freeze([
   steps:[`PDF laden: Hauptdokumente der Nacht, feste Grenze ${BUDGET_GB} GB; wartende Server auslassen`,'Anlagen laden: übrige PDFs derselben Berichte','Text lesen','OCR der neuen Dateien, Hauptdokumente zuerst (höchstens 45 Minuten; der Rest im Job „OCR, tagsüber“)','Dokumentart, Stand zählen','Verarbeitung anstoßen'],
   limits:'Höchstens 2 Stunden, Laden höchstens 48 Minuten (Hauptdokumente 29, Anlagen 19). Was scheitert, kommt in den Fehlerspeicher (Stufe Extraktion).',
   cmd:['node','--no-warnings','scripts/pdf-store/nightly.mjs','--kind','nightly','--daily','--minutes','120','--budget-gb',String(BUDGET_GB),'--ocr-workers','2']},
- {id:'rule-texts',label:'Verarbeitung, nachts',flow:'tages',icon:'text',time:'08:50',
+ {id:'rule-texts',label:'Verarbeitung, nachts',flow:'tages',icon:'text',time:'08:50',fallback:true,
   what:'Leitet aus Titeln und Texten ab, was nach festen Regeln geht (Reiter Themen & Texte), führt Suche und Zahlen nach und zählt, was für die KI bereitsteht.',
   steps:['Titel einordnen (Sachgebiet nach der Titelregel)','Regeln anwenden: Art des Punkts, Thema, Regel-Zusammenfassung, Fakten (nur Berichte mit neuen Eingaben)','Suche aktualisieren','Zahlen rechnen (plenara.X)','KI-Stand zählen, Wege zählen (Pipeline-Debug)'],
   limits:'Meist unter einer Stunde. Startet direkt nach „Extraktion, nachts“ (sie stößt ihn an); 08:50 Uhr nur als Rückfall.',
@@ -113,7 +128,10 @@ export function dueNow(job,setting,run,now=Date.now()){
  const last=run?.lastStart?Date.parse(run.lastStart):0;
  if(setting.every)return {due:inWindow(job,now)&&(!last||now-last>=(setting.every-1)*60000),slot:null};
  const slot=slotAt(now,setting.time);
- return {due:now>=slot&&now-slot<CATCH_UP_MS&&last<slot,slot};
+ // fallback: die Uhrzeit ist nur der Rückfall; lief der Job heute schon (angestoßen von der Nachtkette), ist er nicht dran
+ // (17.10.2026: Verarbeitung 06:34 fertig und um 08:50 noch einmal 25 Minuten für nichts)
+ const since=job.fallback?slotAt(now,'00:00'):slot;
+ return {due:now>=slot&&now-slot<CATCH_UP_MS&&last<since,slot};
 }
 /** Offene Wünsche aus der Administration, die ein Job gleich erledigen soll, auch wenn er ausgeschaltet ist (ein Knopfdruck
     zählt wie „jetzt ausführen“; der Schalter stoppt nur die geplanten Zeiten): beim Auftragsdienst „Stand neu zählen“,

@@ -14,6 +14,7 @@ import { MiniCurve, SpreadChart, SpreadMap, fmt, keysOf, toDay, type SpreadRegio
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { isFiller, prettyTerm } from "../../lib/terms";
 import { useCatalog } from "../../lib/catalog";
+import { MethodikNote } from "./Methodik";
 
 /*
  * plenara.X Trends: Trends und Ausbreitung auf einer Seite. Die Liste rechnet wie das Tool Trends (/api/analytics/trends),
@@ -192,12 +193,11 @@ export function XTrendsPage() {
             Am stärksten zugenommen: „{prettyTerm(top.term)}“ ({ratio(top)}{wide?.s && wide.t.key === top.key && wide.s.added > 0 ? `, +${n(wide.s.added)} Gebiete, die meisten neuen` : ""})
             {wide?.s && wide.t.key !== top.key && wide.s.added > 0 ? <>, am meisten neue Gebiete: „{prettyTerm(wide.t.term)}“ (+{n(wide.s.added)})</> : null}.
           </Befund>}
-          <Kennzahlen items={[
+          <Kennzahlen scope={`aus ${n(res.totals.recent)} Vorgängen`} period={`${zeitText} gegenüber den ${zeitText} davor`} items={[
             { value: n(lists.up.length), label: "aufsteigende Begriffe" },
             { value: n(lists.up.filter((t) => t.kind === "emerging").length), label: "neu aufgekommen" },
             { value: moving === null ? "…" : n(moving), label: "Gebiete mit neuen Themen" },
           ]}>
-            <span>{zeitText} gegenüber den {zeitText} davor · {n(res.totals.recent)} Vorgänge</span>
             <span className="inline-flex flex-wrap gap-1 print:hidden" role="group" aria-label="Zeitraum">
               {WINDOWS.map(([k, l]) => <button key={k} type="button" aria-pressed={k === zeit} onClick={() => pick({ zeit: k })}
                 className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === zeit ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>)}
@@ -257,7 +257,7 @@ export function XTrendsPage() {
                   )}
                   {!overview && rows.length > shown && <button type="button" onClick={() => setLimit({ for: url + sort, n: shown + 10 })} className="mt-3 h-9 rounded-full border border-slate-300 px-4 text-[14px] text-slate-700 hover:border-slate-400">Weitere {Math.min(10, rows.length - shown)} zeigen</button>}
                   {res.q.trim() && <p className="mt-4 text-[14px]"><button type="button" onClick={() => pick({ begriff: res.q.trim() })} className="font-medium text-teal-700">Ausbreitung von „{prettyTerm(res.q.trim())}“ ansehen →</button></p>}
-                  <p className="mt-6 text-[12px] text-slate-500">Gezählt werden Sachvorgänge ohne private Bauanträge. „+N Gebiete“ zählt Gebiete in ganz Deutschland, die den Begriff im Zeitraum zum ersten Mal im Titel hatten; neu angebundene Gebiete zählen nicht.</p>
+                  <MethodikNote>Gezählt werden Sachvorgänge ohne private Bauanträge. „+N Gebiete“ zählt Gebiete in ganz Deutschland, die den Begriff im Zeitraum zum ersten Mal im Titel hatten; neu angebundene Gebiete zählen nicht.</MethodikNote>
                 </>
               )}
             </div>

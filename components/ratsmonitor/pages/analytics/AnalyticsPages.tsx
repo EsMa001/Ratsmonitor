@@ -12,6 +12,7 @@ import { XTrendsPage } from "./XTrendsPage";
 import { GRUPPEN } from "../../info/branchen-enterprise";
 import { AnalyticsLocked } from "./AnalyticsLocked";
 import { useTier } from "../../lib/tier";
+import { MethodikUnten } from "./Methodik";
 
 /** plenara.X: Übersicht und je Funktion eine Unterseite */
 const PAGES: Record<string, ComponentType> = {
@@ -49,7 +50,7 @@ export function AnalyticsPages({ path }: { path: string }) {
   }, [path]);
   const Page = PAGES[path];
   if (!Page) return null;
-  if (FREE.has(path) || tier === "enterprise") return <Page />;
+  if (FREE.has(path) || tier === "enterprise") return <><Page /><MethodikUnten seite={path.split("/").pop() ?? ""} /></>;
   /* Bis /api/me antwortet: neutral laden, nicht sperren */
   if (!ready) return <main id="inhalt" aria-busy="true" className="min-h-[60vh] w-full px-[max(1vw,16px)] pb-12" />;
   return <AnalyticsLocked path={path} />;

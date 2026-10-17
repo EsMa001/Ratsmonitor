@@ -26,14 +26,20 @@ export const openJob=job=>!!job&&!['completed','cancelled'].includes(job.status)
  * paused or has not moved for `staleMs` (a job someone paused and forgot must not stop the nightly run for good);
  * such a job is ended by the new one. Returns {job, created, replaced}.
  */
-export async function ensureJob(db,{regions='sources',window='1w',staleMs=6*3600000,now=Date.now()}={}){
+export async function ensureJob(db,{regions='sources',window='1w',staleMs=6*3600000,owner=null,now=Date.now()}={}){
  const existing=await currentJob(db);
  const stale=openJob(existing)&&(existing.paused||now-Date.parse(existing.updatedAt||'')>staleMs);
  if(openJob(existing)&&!stale)return {job:existing,created:false,replaced:false};
  const deferred=await deferredRegions(db,selectedRegions(regions),now);
  const job=await pipelineAction(db,{action:'create',stage:'metadata',regions,window,replace:true,deferred},()=>{throw Error('create runs nothing');});
+ // owner 'nightly': der Nachtlauf bearbeitet den Auftrag allein (nightlyBusy); der Job „Abrufaufträge“ lässt ihn aus
+ if(owner){await db.prepare("UPDATE system_state SET value=json_set(value,'$.owner',?) WHERE key=?").bind(owner,JOB_KEY).run();job.owner=owner;}
  return {job,created:true,replaced:!!existing&&openJob(existing),deferred:Object.keys(deferred).length};
 }
+/** Ein Auftrag des Nachtlaufs, der sich noch bewegt (jede Minute ein Stand): kein zweiter Prozess soll ihn mit abarbeiten, sonst
+ * gilt die Grenze „je Server höchstens 2“ je Prozess (16.10.2026: 48 Bahnen auf dem Nachtauftrag). Bleibt er stehen, hilft der Job. */
+export const NIGHTLY_FRESH_MS=10*60000;
+export const nightlyBusy=(job,now=Date.now())=>!!job&&job.owner==='nightly'&&openJob(job)&&now-Date.parse(job.updatedAt||'')<NIGHTLY_FRESH_MS;
 /**
  * Gebiete, die der Nachtauftrag auslässt (Fehlerspeicher, Migration 0040): eigener Eintrag mit Termin in der Zukunft (die Nacharbeit
  * versucht es dann) oder ihr Server wartet. Ein Eintrag ohne Termin (internal) hält den Nachtlauf nicht auf: der nächtliche Abruf ist
@@ -41,7 +47,8 @@ export async function ensureJob(db,{regions='sources',window='1w',staleMs=6*3600
  */
 export async function deferredRegions(db,ids,now=Date.now()){
  if(!await hasFailureStore(db))return {};
- const {results}=await db.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step='import'").all();
+ // Einträge „teilweise:“ halten den Nachtlauf nicht auf: das Gebiet liefert, nur ein Teil fehlte; die Nacharbeit holt den Rest
+ const {results}=await db.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step='import' AND coalesce(reason,'') NOT LIKE 'teilweise: %'").all();
  const own=new Map((results||[]).map(r=>[r.key,r])),hosts=await hostStates(db),out={};
  for(const id of ids){
   const e=own.get(id),h=hosts.get(provider(id));
