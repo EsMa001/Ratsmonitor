@@ -10,8 +10,6 @@ import {cameFromApp,useAppNav} from '../state/nav';
 import {ShareButton} from '../components/ShareButton';
 import {SaveArticleButton} from '../components/SaveArticleButton';
 import {FollowButton} from '../components/FollowButton';
-import {ExportMenu} from '../components/ExportMenu';
-import {exportArticleTable,printArticle} from '../lib/exportArticle';
 import {loadTopic,peekTopic,TopicError} from '../lib/topicCache';
 const NOT_FOUND_TEXT='Dieser Vorgang wurde nicht gefunden.';
 import {todayLocal} from '../lib/text';
@@ -83,21 +81,11 @@ export function DetailPage(){
         {/* Kopf: Ort, Thema, Stand als Textzeile; Aktionen rechts */}
         <div className="flex flex-wrap items-center gap-2 text-[14px] text-slate-500">
           <span>{regionName||'Gebiet nicht zugeordnet'} · {t.category} · <span className="text-teal-700">{status.label}</span></span>
-          {/* Aktionen als Symbole: Teilen, Folgen, Speichern, Exportieren */}
+          {/* Aktionen als Symbole: Teilen, Folgen, Speichern */}
           <span className="ml-auto flex flex-wrap items-center gap-1">
             <ShareButton title={t.title} url={typeof window!=='undefined'?window.location.origin+'/beschluss/'+t.id:''}/>
             <FollowButton article={article} size={20}/>
             <SaveArticleButton article={article} size={20}/>
-            <ExportMenu
-              title="Exportieren"
-              tone="text-teal-700 hover:bg-teal-50 hover:text-teal-800"
-              options={[
-                {id:'print',label:'Drucken',desc:'Druckfertige Seite mit Logo, direkt zum Drucker'},
-                {id:'xlsx',label:'Excel (.xlsx)',desc:'Eckdaten, Verlauf und Unterlagen als Tabelle'},
-                {id:'csv',label:'CSV (.csv)',desc:'Für andere Programme, z. B. CRM'},
-              ]}
-              onExport={async f=>{const a={t,place:regionName,docs:docs.map(d=>({...d,url:window.location.origin+d.url})),events:sorted};if(f==='print')printArticle(a);else exportArticleTable(a,f as 'csv'|'xlsx');}}
-            />
           </span>
         </div>
         <h1 lang="de" className="mb-3 mt-3 max-w-[64ch] hyphens-auto text-[22px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-[28px]">{t.title}</h1>

@@ -1,9 +1,7 @@
 import { setListView, useListView } from "../lib/listView";
-import { EXPORT_MAX, exportResults, type ExportFormat } from "../lib/exportResults";
 import { useSearch, useSearchResults } from "../state/search";
 import { useToast } from "../state/toast";
 import { useEntitlements } from "../lib/entitlements";
-import { ExportMenu } from "./ExportMenu";
 import { FilterSelect } from "./FilterSelect";
 import { CountDots } from "./CountDots";
 import { IconViewCompact, IconViewFull } from "./icons";
@@ -46,29 +44,6 @@ export function SearchFilterPanel() {
             highlight={false}
             className="ml-auto [&_button]:!w-auto [&_button]:!min-w-0 [&_button]:!border-transparent [&_button]:!bg-transparent [&_button]:!font-normal [&_button]:!text-slate-500 [&_button]:!shadow-none [&_button:hover]:!text-slate-900"
           />
-          {/* Export der Trefferliste: Format wählen, Hinweis auf die Höchstzahl */}
-          <div className="max-sm:hidden">
-          <ExportMenu
-            title="Exportieren"
-            disabled={!res.total}
-            options={[
-              { id: "xlsx", label: "Excel (.xlsx)", desc: "Tabelle mit Spalten, direkt in Excel oder Numbers" },
-              { id: "csv", label: "CSV (.csv)", desc: "Für andere Programme, z. B. CRM oder Datenbank" },
-            ]}
-            note={res.total > EXPORT_MAX ? `Exportiert werden die ersten ${EXPORT_MAX} von ${res.total.toLocaleString("de-DE")} Treffern. Grenzen Sie die Suche ein, um alle zu erhalten.` : `Exportiert werden alle ${res.total.toLocaleString("de-DE")} Treffer (höchstens ${EXPORT_MAX}).`}
-            onExport={async (f) => {
-              /* Gäste sehen nur die ersten Treffer: exportieren nur mit Konto (gleicher Hinweis wie beim Blättern) */
-              if (!allowFeature("results", res.total)) return;
-              try {
-                const within = res.around?.set ? [...res.around.set] : null;
-                const n = await exportResults(res.key, within, res.total, f as ExportFormat);
-                toast(`${n.toLocaleString("de-DE")} Treffer exportiert.`);
-              } catch {
-                toast("Der Export ist gerade nicht möglich.");
-              }
-            }}
-          />
-          </div>
           {/* Ein Umschalter rechts neben der Sortierung: Icon und Bezeichnung der Ansicht, zu der gewechselt wird */}
           <button
             type="button"

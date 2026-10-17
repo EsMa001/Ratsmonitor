@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (522 Zeilen, ⚠14)
+- app/ratsmonitor-info.css (523 Zeilen, ⚠14)
 - app/ratsmonitor.css (225 Zeilen, ⚠16)
 
 admin-access admin.css:6
@@ -515,10 +515,10 @@ ri-tl__title ratsmonitor.css:147
 ri-topnav ratsmonitor-info.css:370
 ri-two ratsmonitor-info.css:136
 rm-analytics ratsmonitor-info.css:452
-rm-band-mid ratsmonitor-info.css:520
-rm-banddots ratsmonitor-info.css:516
-rm-bandicon ratsmonitor-info.css:511
-rm-brandtag ratsmonitor-info.css:508
+rm-band-mid ratsmonitor-info.css:521
+rm-banddots ratsmonitor-info.css:517
+rm-bandicon ratsmonitor-info.css:512
+rm-brandtag ratsmonitor-info.css:509
 rm-chip ratsmonitor.css:88
 rm-dark admin.css:461
 rm-dark ratsmonitor-info.css:400
@@ -719,7 +719,6 @@ topic design-styles.css:140
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - DotField.tsx (86): DotField
-- ExportMenu.tsx (56, ⚠1): ExportOption, ExportMenu
 - FilterPanel.tsx (110, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (28): NOTIFY_LATER, FollowButton
@@ -731,7 +730,7 @@ topic design-styles.css:140
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (550, ⚠1): isSearchInput, focusSearch, SearchBox
-- SearchFilterPanel.tsx (87): SearchFilterPanel
+- SearchFilterPanel.tsx (62): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - ShareButton.tsx (40): ShareButton
 - SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
@@ -785,8 +784,6 @@ topic design-styles.css:140
 - clipboard.ts (26): copyText
 - constants.ts (69, ⚠1): THEMEN, shownThema, StatusInfo, STATUS, STATUS_BY_ID, TEASER_MAX_SENTENCES, isCovered, MAP_COLORS, MAP_COLORS_DARK, colorForCoverageDark, colorForCoverage, colorForCount, STATUS_COLOR
 - entitlements.ts (50): useEntitlements
-- exportArticle.ts (93): ArticleExport, exportArticleTable, printArticle
-- exportResults.ts (35): EXPORT_MAX, ExportFormat, exportResults
 - favicon.ts (39, ⚠1): faviconHref, setFavicon
 - fetchJson.ts (44): ApiError, fetchJson, readJson, fetchOrFail, errorText
 - filter.ts (35): FilterSpec, FilterKey, matches, addCount, countBy
@@ -821,13 +818,12 @@ topic design-styles.css:140
 - useDarkMode.ts (40): useDarkMode
 - usePhone.ts (19): PHONE_QUERY, isPhone, usePhone
 - uuid.ts (12): newId
-- xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
 - MainMenu.tsx (272, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (182, ⚠11): DetailPage
+- DetailPage.tsx (170, ⚠11): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (64): OverviewPage
@@ -843,7 +839,7 @@ topic design-styles.css:140
 - AnalyticsPages.tsx (58): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
 - AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
-- Befund.tsx (62): Befund, zuThema, Leer, Fehler
+- Befund.tsx (53): Befund, zuThema, Leer, Fehler
 - BeschluessePage.tsx (195, ⚠8): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField

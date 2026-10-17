@@ -1,21 +1,12 @@
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { useSearchResults } from "../../state/search";
 import { prettyTerm } from "../../lib/terms";
 
 const heute = () => { const d = new Date(); return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getFullYear()).slice(2)}`; };
 
-/** Drucken und Stand der Zahlen: unter dem Befund jeder Auswertung (Methodik über das Seitensymbol im Kopf) */
+/** Stand der Zahlen: unter dem Befund jeder Auswertung (Methodik über das Seitensymbol im Kopf) */
 function AnalyseLeiste() {
   const { text } = useSearchResults();
-  /* Beim Drucken (auch mit Strg+P) alle eingeklappten Blöcke zeigen und danach wieder einklappen */
-  useEffect(() => {
-    let zu: HTMLDetailsElement[] = [];
-    const vor = () => { zu = [...document.querySelectorAll<HTMLDetailsElement>("main details:not([open])")]; zu.forEach((d) => (d.open = true)); };
-    const nach = () => { zu.forEach((d) => (d.open = false)); zu = []; };
-    window.addEventListener("beforeprint", vor);
-    window.addEventListener("afterprint", nach);
-    return () => { window.removeEventListener("beforeprint", vor); window.removeEventListener("afterprint", nach); };
-  }, []);
   return (
     <>
     <p className="m-0 mt-2 hidden text-[14px] text-slate-500 print:block">{text.trim() ? `Suchbegriff „${prettyTerm(text.trim())}“ · ` : ""}Berechnet am {heute()} aus den Ratsinformationssystemen der Kommunen · plenara.X</p>
