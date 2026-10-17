@@ -15,7 +15,7 @@ const font = (f, wgt) => `@font-face{font-family:P;font-weight:${wgt};src:url(da
 const PAGES = [
   ["", "Besser verstehen, was vor Ort beraten wird.", "Beschlüsse und Beratungen aus den Ratsinformationssystemen der Kommunen, durchsuchbar auf einer Karte."],
   ["suche", "Ganz Deutschland mit einem Begriff.", "Beschlüsse und Vorlagen der Räte, durchsuchbar auf einer Karte."],
-  ["preise", "Einfache Preise. Jederzeit kündbar.", "Die Stufen von plenara im Vergleich."],
+  ["preise", "Die Stufen im Überblick.", "In der Testphase auf Anfrage. Die Preise folgen."],
   ["datenabdeckung", "Kommunalpolitik aus ganz Deutschland.", "Beschlüsse und Vorlagen, jeweils mit Verweis auf die Originalquelle."],
   ["benachrichtigungen", "Früher wissen. Alarme statt tägliches Suchen.", "Per E-Mail, sobald zu Ihren Themen und Gebieten etwas beraten wird."],
   ["videos", "Ein Begriff genügt. Die Karte zeigt, wo beraten wird.", "Kurzvideos zu plenara."],

@@ -24,7 +24,7 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
       <PageBand>
         <p className="text-[14px] text-slate-500">plenara.X</p>
         <h1 className="mb-6 mt-4"><span className="sr-only">plenara.X</span><AnalyticsLogo size={56} /></h1>
-        <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Die Analysen von plenara.X gehören zum Tarif Enterprise, für Organisationen, in denen mehrere Personen informiert werden sollen.</p>
+        <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Die Analysen von plenara.X gehören zur Stufe Enterprise, für Organisationen, in denen mehrere Personen informiert werden sollen.</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Link href="/kontakt" className="btn-primary">Enterprise: {UPGRADE_TEXT}</Link>
           <Link href="/preise" className="btn-secondary">Was kann plenara.X?</Link>

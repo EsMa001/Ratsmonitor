@@ -19,7 +19,7 @@ const h2 = "m-0 text-[18px] font-semibold";
 const block = "mt-10 border-t border-slate-200 pt-6";
 const link = "text-[14px] font-medium text-teal-700 hover:underline disabled:opacity-50";
 
-/** Kontoseite: Angaben, Tarif, Geräte, Kalender-Abo, Daten aus diesem Browser, Datenauskunft, Löschen, Abmelden */
+/** Kontoseite: Angaben, Stufe, Geräte, Kalender-Abo, Daten aus diesem Browser, Datenauskunft, Löschen, Abmelden */
 export function ProfilePage() {
   const me = useMe();
   const account = useAccount();
@@ -45,7 +45,7 @@ export function ProfilePage() {
     );
   return (
     <>
-      <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Ihre Angaben. Ihr Tarif.</>} lead="Angaben, Tarif, angemeldete Geräte und Ihre Daten an einem Ort." />
+      <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Ihre Angaben. Ihre Stufe.</>} lead="Angaben, Stufe, angemeldete Geräte und Ihre Daten an einem Ort." />
       <section className="ri-sec ri-sec--tight">
         {account.ready && !account.saved.length && (
           <div className="mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
@@ -359,7 +359,7 @@ function Export() {
   return (
     <section className={block} aria-labelledby="export-title">
       <h2 id="export-title" className={h2}>Ihre Daten</h2>
-      <p className="m-0 mt-1 text-[14px] text-slate-500">Alle Daten Ihres Kontos als Datei (JSON): Angaben, Tarif, Zustimmungen, gespeicherte Suchen und Artikel, Geräte und Anmeldungen.</p>
+      <p className="m-0 mt-1 text-[14px] text-slate-500">Alle Daten Ihres Kontos als Datei (JSON): Angaben, Stufe, Zustimmungen, gespeicherte Suchen und Artikel, Geräte und Anmeldungen.</p>
       {status && <p role="status" className="m-0 mt-2 text-[14px] text-slate-600">{status}</p>}
       {step === "idle" ? (
         <>

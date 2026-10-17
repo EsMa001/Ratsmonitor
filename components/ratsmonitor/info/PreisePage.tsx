@@ -25,8 +25,8 @@ export function PreisePage() {
         icon="tag"
         label="Informationen"
         name="Preise"
-        title="Einfache Preise. Jederzeit kündbar."
-        lead="Durchsuchen Sie die Ratsinformationen der Kommunen und lassen Sie sich per E-Mail informieren, sobald zu Ihrem Thema etwas beraten wird."
+        title="Die Stufen im Überblick."
+        lead="In der Testphase schalten wir Stufen auf Anfrage frei. Die Preise folgen."
       />
       <section className="ri-sec ri-sec--prices">
         {/* Gleiche Tarifkarten wie im Konto */}

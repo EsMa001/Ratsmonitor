@@ -81,32 +81,31 @@ export const FAQ: { group: string; items: Qa[] }[] = [
     ],
   },
   {
-    group: "Alarme und Tarife",
+    group: "Alarme und Stufen",
     items: [
       { q: "Wie funktionieren die Benachrichtigungen und E-Mail-Alarme?", a: "Speichern Sie eine Suche mit dem Herz neben dem Suchfeld. Unter „Gespeicherte Suchen“ schalten Sie für jede Suche E-Mail-Benachrichtigungen ein und wählen, ob Sie sofort, täglich oder wöchentlich informiert werden." },
       { q: "Was ist der Unterschied zwischen gespeicherter Suche und Bookmark?", a: "Eine gespeicherte Suche beobachtet ein Thema oder Gebiet und meldet neue Treffer. Ein Bookmark (gespeicherter Artikel) merkt sich einen einzelnen Vorgang; mit der Glocke werden Sie informiert, wenn er weiter beraten oder beschlossen wird." },
-      { q: "Kann ich meinen Tarif wechseln oder kündigen?", a: "Ja. Sie können jederzeit auf einen höheren Tarif wechseln. Kostenpflichtige Tarife sind jederzeit kündbar, eine Mindestlaufzeit gibt es nicht." },
+      { q: "Kann ich meine Stufe wechseln oder kündigen?", a: "Ja. Sie können jederzeit auf eine höhere Stufe wechseln. Kostenpflichtige Stufen sind jederzeit kündbar, eine Mindestlaufzeit gibt es nicht." },
     ],
   },
   {
     group: "Für Unternehmen und Organisationen",
     items: [
-      { q: "Kann ich plenara im Team nutzen?", a: "Ja. Im Tarif Enterprise gehen Benachrichtigungen an bis zu fünf E-Mail-Adressen oder Verteiler je gespeicherter Suche, etwa an Kolleginnen und Kollegen oder ein Team-Postfach." },
+      { q: "Kann ich plenara im Team nutzen?", a: "Ja. In der Stufe Enterprise gehen Benachrichtigungen an bis zu fünf E-Mail-Adressen oder Verteiler je gespeicherter Suche, etwa an Kolleginnen und Kollegen oder ein Team-Postfach." },
       { q: "Erhalte ich eine Rechnung für mein Unternehmen?", a: "Für Unternehmen und Organisationen stimmen wir Abrechnung und Rechnungsstellung gern individuell ab. Sprechen Sie uns dazu über die Kontaktseite an." },
-      { q: "Kann ich mehrere Regionen oder Themen beobachten?", a: "Ja. Legen Sie für jede Region oder jedes Thema eine eigene gespeicherte Suche an. In einer Suche können Sie außerdem mehrere Orte und mehrere Begriffe kombinieren. Wie viele Suchen Sie speichern können, hängt vom Tarif ab." },
+      { q: "Kann ich mehrere Regionen oder Themen beobachten?", a: "Ja. Legen Sie für jede Region oder jedes Thema eine eigene gespeicherte Suche an. In einer Suche können Sie außerdem mehrere Orte und mehrere Begriffe kombinieren. Wie viele Suchen Sie speichern können, hängt von der Stufe ab." },
       { q: "Was unterscheidet plenara von Vergabeportalen?", a: "Vergabeportale zeigen Ausschreibungen, also das Ende eines Prozesses. plenara zeigt, was davor in Räten und Ausschüssen beraten und beschlossen wird. So sehen Sie Projekte, bevor sie ausgeschrieben werden." },
     ],
   },
 ];
 
 export const PRICE_FAQ: Qa[] = [
-  { q: "Gibt es eine Mindestlaufzeit?", a: "Nein. Kostenpflichtige Tarife sind jederzeit kündbar." },
+  { q: "Was kosten die Stufen?", a: "Die Preise stehen noch nicht fest. In der Testphase schalten wir Stufen auf Anfrage frei. Preise nennen wir hier, bevor eine Stufe kostenpflichtig wird." },
   { q: "Brauche ich für Basic Zahlungsdaten?", a: "Nein. Basic ist kostenlos und ohne Zahlungsdaten nutzbar." },
-  { q: "Sind die Preise inklusive Mehrwertsteuer?", a: "Ja, alle angegebenen Preise verstehen sich inklusive Mehrwertsteuer." },
-  { q: "Kann ich später upgraden?", a: "Ja, ein Wechsel auf einen höheren Tarif ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
+  { q: "Kann ich später upgraden?", a: "Ja, ein Wechsel auf eine höhere Stufe ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
   { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit Basic eine Suche, einen Artikel und eine Benachrichtigung. Mit Pro und Enterprise jeweils bis zu 100 gespeicherte Suchen, bis zu 100 gespeicherte Artikel und bis zu 100 aktive Benachrichtigungen." },
-  { q: "Welcher Tarif enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo ist nur im Tarif Enterprise enthalten. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
-  { q: "Was ist plenara.X und welcher Tarif enthält es?", a: "plenara.X sind die Analysen und Einblicke zu plenara: Atlas mit Ortsvergleich, Signale, Trends mit Ausgang der Vorgänge und Fakten aus den Unterlagen, dazu Fraktionen, Gremien, Themennetz und Aktuelles. Sie sind nur im Tarif Enterprise enthalten. In Basic und Pro bleibt die Suche mit allen Treffern und Benachrichtigungen." },
+  { q: "Welche Stufe enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo ist nur in der Stufe Enterprise enthalten. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
+  { q: "Was ist plenara.X und welche Stufe enthält es?", a: "plenara.X sind die Analysen und Einblicke zu plenara: Atlas mit Ortsvergleich, Signale, Trends mit Ausgang der Vorgänge und Fakten aus den Unterlagen, dazu Fraktionen, Gremien, Themennetz und Aktuelles. Sie sind nur in der Stufe Enterprise enthalten. In Basic und Pro bleibt die Suche mit allen Treffern und Benachrichtigungen." },
 ];
 
 export type PlanId = "free" | "pro" | "enterprise";

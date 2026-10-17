@@ -19,8 +19,8 @@ const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
 const PLANS: { tier: Tier; note: string; nutzen: string }[] = [
   { tier: "guest", note: "Ohne Anmeldung", nutzen: "Reinschauen: ein Begriff, ganz Deutschland." },
   { tier: "basic", note: "Mit Konto", nutzen: "Ein Thema per E-Mail im Blick behalten." },
-  { tier: "pro", note: "monatlich kündbar", nutzen: "Viele Themen per E-Mail verfolgen, statt täglich zu suchen." },
-  { tier: "enterprise", note: "für Teams · monatlich kündbar", nutzen: "Im Team informiert bleiben, mit Analysen und Kalender." },
+  { tier: "pro", note: "auf Anfrage", nutzen: "Viele Themen per E-Mail verfolgen, statt täglich zu suchen." },
+  { tier: "enterprise", note: "für Teams · auf Anfrage", nutzen: "Im Team informiert bleiben, mit Analysen und Kalender." },
 ];
 
 /* Wie im übrigen Design: schwarze Pille mit Pfeil für die Hauptaktion, sonst Petrol-Text mit Pfeil */
@@ -54,8 +54,8 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
   };
   return (
     <section id="tarif" aria-labelledby="tarif-title" className={publicPage ? "" : "mt-6 scroll-mt-20"}>
-      {!publicPage && <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Tarif</h2>}
-      <div role="tablist" aria-label="Tarif wählen" className="mt-3 flex border-b border-slate-200 sm:hidden">
+      {!publicPage && <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Stufe</h2>}
+      <div role="tablist" aria-label="Stufe wählen" className="mt-3 flex border-b border-slate-200 sm:hidden">
         {PLANS.map((p) => (
           <button key={p.tier} type="button" role="tab" aria-selected={pick === p.tier} onClick={() => { setPick(p.tier); goTo(p.tier, true); }} className={`-mb-px flex-1 border-b-2 py-2.5 text-[14px] ${pick === p.tier ? "border-teal-600 font-semibold text-teal-700" : "border-transparent text-slate-500"}`}>
             {p.tier === "guest" ? "Gast" : TIER_LABEL[p.tier]}
@@ -69,7 +69,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
             <div key={plan.tier} className={`flex flex-col max-sm:w-full max-sm:flex-none max-sm:snap-start border-t-2 pb-2 pt-5 lg:pr-2 ${current ? "border-teal-600" : plan.tier === "pro" && publicPage ? "border-slate-900 bg-slate-50 px-4 sm:-mt-2 sm:pt-7" : "border-slate-200"}`}>
               <div className="flex items-center justify-between gap-2">
                 <h3 className="m-0 text-[16px] font-semibold">{plan.tier === "guest" ? "Ohne Konto" : TIER_LABEL[plan.tier]}</h3>
-                {current && <span className="rounded-full bg-teal-700 px-2 py-0.5 text-[12px] font-semibold text-white">{plan.tier === "guest" ? "Ihr Status" : "Ihr Tarif"}</span>}
+                {current && <span className="rounded-full bg-teal-700 px-2 py-0.5 text-[12px] font-semibold text-white">{plan.tier === "guest" ? "Ihr Status" : "Ihre Stufe"}</span>}
                 {publicPage && plan.tier === "pro" && <span className="text-[12px] font-semibold text-teal-800">Beliebt</span>}
               </div>
               <p className="m-0 mt-2 text-[22px] font-bold tracking-tight">{priceLabel(plan.tier)}</p>
@@ -126,7 +126,7 @@ export function PlanSummary() {
   const name = tier === "guest" ? (user ? "Konto ohne freigeschaltete Stufe" : "Ohne Konto") : TIER_LABEL[tier];
   return (
     <section id="tarif" aria-labelledby="tarif-title" className="mt-6 scroll-mt-20">
-      <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Tarif</h2>
+      <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Stufe</h2>
       <p className="m-0 mt-3 text-[16px] font-semibold">
         {name} {tier !== "guest" && <span className="font-normal text-slate-500">· {priceLabel(tier)} · {plan.note}</span>}
       </p>
@@ -147,7 +147,7 @@ export function PlanSummary() {
           ) : null;
         })}
       </ul>
-      <Link href="/preise" className={SECONDARY}>Alle Tarife ansehen</Link>
+      <Link href="/preise" className={SECONDARY}>Alle Stufen ansehen</Link>
     </section>
   );
 }

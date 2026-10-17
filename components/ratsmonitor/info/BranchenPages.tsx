@@ -37,7 +37,7 @@ function EnterpriseSection({ terms }: { terms: string[] }) {
     <section className="ri-sec" style={{ backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0) 40%, var(--rm-page) 100%), radial-gradient(circle, var(--rm-dot) 1.3px, transparent 1.8px)", backgroundSize: "100% 100%, 22px 22px" }}>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2" style={{ marginTop: -40 }}>
         <AnalyticsLogo size={32} />
-        <p className="m-0 text-[14px] text-slate-500">Im Tarif Enterprise</p>
+        <p className="m-0 text-[14px] text-slate-500">In der Stufe Enterprise</p>
       </div>
       
       <div className="grid gap-x-10 gap-y-8 sm:grid-cols-3" style={{ marginTop: 24 }}>

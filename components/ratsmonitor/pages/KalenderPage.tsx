@@ -148,10 +148,10 @@ export function KalenderPage() {
   const dayLabel = day ? new Date(day + "T00:00:00").toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" }) : "";
   const regionName = (ags: string) => geo?.info(ags).name ?? regions?.find((r) => r.ags === ags)?.name ?? ags;
 
-  /* Nur Enterprise: alle anderen sehen, was der Kalender kann, und den Weg zum Tarif */
+  /* Nur Enterprise: alle anderen sehen, was der Kalender kann, und den Weg zur Stufe */
   const head = <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" />;
   if (!tierReady) return <>{head}<section className="ri-sec ri-sec--tight"><AccountLoading /></section></>;
-  if (!me.user) return <>{head}<section className="ri-sec ri-sec--tight"><LoginRequired title="Sitzungskalender" text="Melden Sie sich an. Der Sitzungskalender ist Teil des Enterprise-Tarifs." /></section></>;
+  if (!me.user) return <>{head}<section className="ri-sec ri-sec--tight"><LoginRequired title="Sitzungskalender" text="Melden Sie sich an. Der Sitzungskalender ist Teil der Stufe Enterprise." /></section></>;
   if (!limits.calendar) return <KalenderTeaser />;
   if (!loaded) return <>{head}<section className="ri-sec ri-sec--tight"><AccountLoading /></section></>;
   return (
@@ -347,11 +347,11 @@ const CAL_POINTS: [string, string][] = [
   ["Tagesordnung vorab", "Zu jedem Termin die beratenen Vorgänge, bevor entschieden wird."],
 ];
 
-/** Kalender für Tarife ohne Kalender: was er kann, und der Weg zu Enterprise */
+/** Kalender für Stufen ohne Kalender: was er kann, und der Weg zu Enterprise */
 function KalenderTeaser() {
   return (
     <>
-      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine. In Ihren Gebieten.</>} lead="Der Sitzungskalender ist Teil des Enterprise-Tarifs." />
+      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine. In Ihren Gebieten.</>} lead="Der Sitzungskalender ist Teil der Stufe Enterprise." />
       <section className="ri-sec ri-sec--tight">
         <h2 className="ri-h2">Was der Kalender kann</h2>
         <div className="ri-points ri-points--2">
