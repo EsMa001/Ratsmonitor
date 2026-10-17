@@ -152,7 +152,7 @@ export function SavedSearchesPage() {
     );
   return (
     <>
-      <PageHead icon="search" label="Suchen" name={`Gespeicherte Suchen${ready && saved.length ? ` (${saved.length})` : ""}`} title={<>Ihre Themen.<br />Immer im Blick.</>} lead="Neue Treffer auf einen Blick, gespeichert in Ihrem Konto.">
+      <PageHead icon="search" label="Suchen" name={`Gespeicherte Suchen${ready && saved.length ? ` (${saved.length})` : ""}`} title={<>Ihre Themen. Immer im Blick.</>} lead="Neue Treffer auf einen Blick, gespeichert in Ihrem Konto.">
         <div className="mt-4 flex flex-wrap gap-2">
           <UsagePill label="Suchen" used={used.searches} max={max.searches} />
         </div>

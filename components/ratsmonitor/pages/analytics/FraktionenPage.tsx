@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Kennzahlen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
@@ -155,7 +154,7 @@ export function FraktionenPage() {
                 )}
               </section></Reveal>
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei. <Link href="#methodik" className="text-teal-700">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei.</p>
             </>
           )}
         </div>

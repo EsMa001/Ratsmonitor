@@ -265,7 +265,7 @@ export function SignalePage() {
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
           {res.total === 0 ? <Leer tipp="Einen längeren Zeitraum, eine andere Art oder „Alle Themen“ wählen, oder den Ort entfernen.">{`Keine Vorgänge für diese Auswahl: ${res.signal.name}${zeit !== "alle" ? `, letzte ${zeit} Monate` : ""}.`}</Leer>
-            : <Kennzahlen week={week} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
+            : <Kennzahlen week={week} scope={[res.signal.name, art ? artShort(art) : "", areaAgs && res.places.length === 1 ? res.places[0].name : "", zeitText ?? ""].filter(Boolean).join(" · ")} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
               <span>{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
               <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
               <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />

@@ -37,7 +37,7 @@ const ANALYSE: XEintrag[] = [
 ];
 /* Einblicke: wer beteiligt ist und was zusammenhängt (die früheren Tools; Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends) */
 const EINBLICKE: XEintrag[] = [
-  { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer will was?" },
+  { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer möchte was?" },
   { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
   { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
   { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },

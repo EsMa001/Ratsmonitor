@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
 import { Befund, Fehler } from "./Befund";
-import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo, zeitText } from "./Kennzahlen";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
@@ -446,8 +446,8 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           </div> : (
             <>
               {/* Mit Ort: der Ort als Chip mit ✕ am Satzanfang (dort sieht man ihn und kann ihn entfernen); sonst große Kennzahlen */}
-              {place && cmp ? <Befund link={false} tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest} <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} /></Befund>
-                : <Kennzahlen week={week} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }, { value: n(allRegions.length), label: plural(allRegions.length, "Gebiet", "Gebiete") }, ...(share !== null ? [{ value: pct(share), label: "aller Sachvorgänge dieser Räte" }] : [])]}>
+              {place && cmp ? <Befund tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest} <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} /></Befund>
+                : <Kennzahlen week={week} scope={[what || "Alle Themen", res.selection.q ? `„${prettyTerm(res.selection.q)}“` : "", place || "", zeitText(zeit)].filter(Boolean).join(" · ")} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }, { value: n(allRegions.length), label: plural(allRegions.length, "Gebiet", "Gebiete") }, ...(share !== null ? [{ value: pct(share), label: "aller Sachvorgänge dieser Räte" }] : [])]}>
                   <span>{what || "Alle Themen"}{res.selection.q ? ` · Suche „${prettyTerm(res.selection.q)}“` : ""}</span>
                   {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
                   <ZeitPills value={zeit} onPick={onZeit} />

@@ -9,6 +9,7 @@ import { Icon, type IconName } from "./icons";
 import { IconChevronLeft } from "../components/icons";
 import { Reveal } from "../pages/analytics/Reveal";
 import { useRouter } from "next/navigation";
+import { BandDots } from "../components/BandDots";
 
 /** Öffnet die echte Suche der Startseite, optional mit vorbelegtem Begriff */
 export function useOpenSearch() {
@@ -81,6 +82,7 @@ export function PageHead({
   );
   return (
     <section className={"ri-head" + (title ? "" : " ri-head--compact")}>
+      <BandDots />
       {aside ? (
         <div className={"ri-head__grid" + (top ? " ri-head__grid--top" : "")}>
           {main}
@@ -136,7 +138,7 @@ export function HitPreview({ example, topics, active, onPick, still }: { example
     <Wrap still={still}>
     <div className="ri-pv" aria-label="Beispiel eines echten Treffers" style={{ background: "none", border: "none", boxShadow: "none", padding: 0, marginTop: 24 }}>
       <a href={example.href ?? undefined} aria-label={example.title} className="group" style={{ display: "block", color: "inherit", textDecoration: "none" }}>
-      <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ background: "linear-gradient(135deg, var(--rm-white) 0%, var(--rm-tint) 100%)" }}>
+      <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ background: "var(--rm-white)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "52px minmax(0,1fr)", gap: 12 }}>
           {example.datum && (
             <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid var(--rm-c200)", paddingRight: 10, textAlign: "center" }}>

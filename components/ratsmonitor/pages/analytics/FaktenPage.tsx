@@ -195,7 +195,7 @@ export function FaktenPage() {
       {res && (fact || allFacts) && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst */}
-          {plain && ranked.length > 0 && <Befund link={false}>
+          {plain && ranked.length > 0 && <Befund>
             {titleName}: üblich {num(quart(lasts, 0.25))} bis {num(quart(lasts, 0.75))} {unit}, Median {num(mid(lasts))} {unit}
             .
           </Befund>}

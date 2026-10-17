@@ -185,7 +185,7 @@ export function XTrendsPage() {
       {res && lists && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst */}
-          {top && <Befund link={false}>
+          {top && <Befund>
             Am stärksten zugenommen: „{prettyTerm(top.term)}“ ({ratio(top)}{wide?.s && wide.t.key === top.key && wide.s.added > 0 ? `, +${n(wide.s.added)} Gebiete, die meisten neuen` : ""})
             {wide?.s && wide.t.key !== top.key && wide.s.added > 0 ? <>, am meisten neue Gebiete: „{prettyTerm(wide.t.term)}“ (+{n(wide.s.added)})</> : null}.
           </Befund>}

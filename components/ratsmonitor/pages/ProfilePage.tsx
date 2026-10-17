@@ -33,7 +33,7 @@ export function ProfilePage() {
   if (!me.user)
     return (
       <>
-        <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Sie sind nicht<br />angemeldet.</>} lead="Ohne Anmeldung sehen Sie 10 Treffer je Suche. Mit einem Konto speichern Sie Suchen und Artikel." />
+        <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Sie sind nicht angemeldet.</>} lead="Ohne Anmeldung sehen Sie 10 Treffer je Suche. Mit einem Konto speichern Sie Suchen und Artikel." />
         <section className="ri-sec ri-sec--tight">
           <LoginRequired title="Anmelden" text="Mit einer freigeschalteten Stufe sehen Sie alle Treffer, nutzen die Filter und speichern Artikel und Suchen in Ihrem Konto." />
           <PlanSummary />
@@ -43,7 +43,7 @@ export function ProfilePage() {
     );
   return (
     <>
-      <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Ihre Angaben.<br />Ihr Tarif.</>} lead="Angaben, Tarif, angemeldete Geräte und Ihre Daten an einem Ort." />
+      <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Ihre Angaben. Ihr Tarif.</>} lead="Angaben, Tarif, angemeldete Geräte und Ihre Daten an einem Ort." />
       <section className="ri-sec ri-sec--tight">
         <Personal />
         <PlanSummary />
