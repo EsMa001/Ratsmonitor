@@ -95,6 +95,10 @@ Profil je Route auf dem Server (`x-profile`, Zeit in der Datenbank gegen gesamt)
 
 zstd drückt sie auf 164 bzw. 88 KB, aber Parsen und Speicher im Browser (Handy) bleiben. Prüfen, welche Felder die Seite wirklich nutzt.
 
+## Ausgerollt (17.10.2026, 16:29 Uhr)
+
+Caddy: Bausteine mit `encode` eingesetzt (Sicherung `/etc/caddy/Caddyfile.bak-vor-encode-20261017-1627`), `reload` ohne Unterbrechung. App: Commit `19e6e1b` (nico_eff mit main gemischt, Zweig `nico_eff_deploy`) über `deploy/node/deploy.sh`, Release `/srv/ratsmonitor/app/releases/19e6e1b7308d`, keine Migrationen. Geprüft live: Skripte und Karte komprimiert (de_map.json 1,2 MB statt 2,4 MB), Startseite mit drei Preloads und einmaliger Abdeckung, Suche mit einem Strom-Aufruf, Trends-Liste nach 2,4 s (Ausbreitung nach 4,1 s), Protokoll „plenara.X-Rechnungen: 2 Worker-Thread(s)“, keine Fehler im Journal. Speicher des Dienstes nach dem Start 1,2 GB RSS (Warmhalten plus zwei Worker); beobachten.
+
 ## Offen
 
 - Handy-Messung (mobile Preset) nach den Änderungen.
