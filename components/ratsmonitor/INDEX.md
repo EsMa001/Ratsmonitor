@@ -629,6 +629,7 @@ topic design-styles.css:140
 ### app/(monitor)/
 - layout.tsx (3): MonitorLayout
 - not-found.tsx (4): metadata, NotFound
+- page-meta.ts (13): pageMeta
 - page.tsx (11): Page
 
 ### app/(monitor)/preise/
