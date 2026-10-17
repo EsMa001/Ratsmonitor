@@ -483,7 +483,12 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  useEffect(()=>{if(!active||cover[state.level])return;const abort=new AbortController();loadCover(state.level,abort.signal).catch(()=>{});return()=>abort.abort();},[active,state.level,cover,loadCover]);
  /* Abfrage für Seite oder Zähler. Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs).
     Welche Gebiete Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
+ /* buildQuery hängt nur am Schlüssel der Suche, nicht am Objekt `local`: das entsteht neu, sobald Geodaten oder Ortsliste
+    geladen sind, und ließ die erste Suche mit identischer Anfrage abbrechen und neu starten (Messung 17.10.2026: 0,4 s verloren). */
+ const localRef=useRef(local);
+ useLayoutEffect(()=>{localRef.current=local;},[local]);
  const buildQuery=useCallback(async(page:number,part:'page'|'facets'|'stream',signal:AbortSignal)=>{
+  const local=localRef.current;
   const params=new URLSearchParams(local.key);params.delete('around');params.set('part',part);
   if(part!=='facets'){params.set('page',String(page));if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);}
   if(local.around){
@@ -497,7 +502,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
    }
   }
   return params.toString();
- },[local,loadCover]);
+ // eslint-disable-next-line react-hooks/exhaustive-deps -- local.key steht für local (Ref), siehe oben
+ },[local.key,loadCover]);
  const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string;final:boolean;known?:Known;knownTotal?:number}>({key:'',data:null,error:'',final:true});
  /* Dauert die Suche über 0,5 s: sind schon Treffer da („partial“), erscheinen sie und weitere fliegen ein; sonst („ring“) steht
     der Ladering und alles erscheint erst auf einmal, wenn die Suche samt genauer Zahl fertig ist. Vorher passiert nichts. */

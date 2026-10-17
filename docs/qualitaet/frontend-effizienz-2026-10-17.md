@@ -39,6 +39,8 @@ Gebietskatalog als JS-Bündel; prüfen, ob die Artikelseite ihn wirklich braucht
 
 Beim Öffnen von `/suche?q=…` geht derselbe Aufruf dreimal raus (einer abgebrochen, zwei vollständig, 713 + 161 ms). Vermutlich doppelter Effekt bzw. Abhängigkeit (Filterzustand, Sortierung). Serverlast und Wartezeit halbierbar, nur Frontend.
 
+**Umgesetzt (17.10.2026, Zweig nico_eff):** Ursache war `buildQuery` in `state/search.tsx`, das am Objekt `local` hing; das entsteht neu, sobald Geodaten und Ortsliste geladen sind, und ließ den laufenden Strom-Aufruf abbrechen und identisch neu starten (live: Abbruch nach 260 ms, Neustart bei 920 ms). Jetzt hängt `buildQuery` nur am Suchschlüssel (Ref). Lokal geprüft: je Suche ein Strom-Aufruf und ein Zähler-Aufruf, auch mit Ortsfilter.
+
 ## Befund 5: Startseite wartet auf vier parallele API-Aufrufe (≈ 530 ms)
 
 search, facets, coverage, startseite-trends laufen parallel, alle ≈ 510–530 ms; coverage liefert 700 KB roh. Erst nach Hydration (≈ 950 ms) gestartet, Inhalt steht bei ≈ 1,5 s. Hebel: Aufrufe früher starten (Preload-Link oder serverseitig), coverage schlanker.
