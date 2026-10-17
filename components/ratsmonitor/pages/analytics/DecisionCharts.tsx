@@ -35,7 +35,7 @@ export function MonthColumns({ months }: { months: Month[] }) {
           {pts.length > 1 && <polyline points={pts.join(" ")} fill="none" stroke="#0f172a" strokeWidth="1.5" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />}
         </svg>
       </div>
-      <figcaption className="ml-12 mr-12 mt-1 flex justify-between text-[12px] text-slate-500"><span>{mlabel(months[0].m)}</span><span>Flächen: Entscheidungen · gestrichelt: Beschlussquote</span><span>{mlabel(months[months.length - 1].m)}</span></figcaption>
+      <figcaption className="ml-12 mr-12 mt-1 text-[12px] text-slate-500"><span className="flex justify-between"><span>{mlabel(months[0].m)}</span><span>{mlabel(months[months.length - 1].m)}</span></span><span className="mt-1 block text-center">Flächen: Entscheidungen · gestrichelt: Beschlussquote</span></figcaption>
     </figure>
   );
 }

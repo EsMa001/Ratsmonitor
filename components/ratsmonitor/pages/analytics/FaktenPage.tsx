@@ -151,7 +151,7 @@ export function FaktenPage() {
   const plain = !!fact && !overview && !amount && !change;
   const lasts = ranked.map((x) => x.last);
   const withPrev = ranked.filter((x) => x.prev !== undefined && x.prev !== x.last);
-  const up = withPrev.filter((x) => x.last > x.prev!).length, down = withPrev.length - up;
+  const up = withPrev.filter((x) => x.last > x.prev!).length;
   const titleName = `${factName}${metric && metrics.length > 1 ? ` · ${metric}` : ""}`;
 
   return (
@@ -169,7 +169,8 @@ export function FaktenPage() {
                 <button type="button" aria-pressed={on} onClick={() => pick(f.kind === "alle" ? { fakt: "alle", wert: "", ansicht: "" } : { fakt: f.kind, wert: "" })}
                   className={`flex h-[76px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />
-                  <span className="line-clamp-2">{f.name}</span>
+                  {/* Weiches Trennzeichen vor dem Wortende („Abwasser-gebühren“): auf dem Handy sonst abgeschnitten */}
+                  <span className="line-clamp-2 w-full hyphens-auto break-words">{f.name.replace(/(\p{Ll})(gebühren|steuer|sätze|preise)/u, "$1\u00AD$2")}</span>
                 </button>
               </li>
             );
@@ -196,7 +197,7 @@ export function FaktenPage() {
           {/* Antwort zuerst */}
           {plain && ranked.length > 0 && <Befund link={false}>
             {titleName}: üblich {num(quart(lasts, 0.25))} bis {num(quart(lasts, 0.75))} {unit}, Median {num(mid(lasts))} {unit}
-            {withPrev.length > 0 && <span className="font-normal text-slate-600">; seit dem vorigen Wert {up} {up === 1 ? "Gebiet" : "Gebiete"} höher, {down} niedriger</span>}.
+            .
           </Befund>}
           <Kennzahlen items={overview ? [{ value: n(ranked.length), label: "Gebiete mit Werten" }]
             : amount ? [{ value: num(ranked.reduce((a, x) => a + (x.sum ?? x.v), 0)), label: `${unit || "insgesamt"}` }, { value: n(ranked.length), label: "Gebiete" }]

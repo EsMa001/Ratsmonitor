@@ -101,8 +101,24 @@ export function FraktionenPage() {
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Themenprofil</h2>
-                <p className="mb-4 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil eines Themenfelds an den Anträgen und Anfragen einer Fraktion, verglichen mit allen Fraktionen (Index 100 = wie alle). Kräftiges Petrol: deutlich häufiger als bei den anderen.</p>
-                <div className="overflow-x-auto">
+                <p className="mb-4 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil je Themenfeld an den Anträgen und Anfragen einer Fraktion. Kräftiges Petrol: deutlich häufiger als bei den anderen.</p>
+                {/* Handy: je Fraktion eine Zeile mit den Themen untereinander statt der breiten Tabelle (kein Querscrollen) */}
+                <ul className="m-0 list-none border-t border-slate-200 p-0 sm:hidden">
+                  {parties.map((p) => (
+                    <li key={p.name} className="border-b border-slate-200 py-3">
+                      <p className="m-0 text-[14px] font-semibold text-slate-900">{p.name}</p>
+                      {p.top.length > 0 && <p className="m-0 mt-0.5 text-[12px] text-slate-500">Typisch: {p.top.map((t) => t.name).join(", ")}</p>}
+                      <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                        {cols.map((c) => {
+                          const cell = p.profile.find((x) => x.id === c.id);
+                          const idx = cell && cell.n >= 3 ? cell.index : null;
+                          return <div key={c.id} className="flex items-center justify-between gap-2 text-[12px]"><span className="truncate text-slate-500">{c.name.split(" & ")[0]}</span><span className={`shrink-0 rounded px-1.5 tabular-nums ${idx !== null && idx >= 160 ? "text-white" : "text-slate-700"}`} style={{ background: cellColor(idx) }}>{cell?.share !== null && cell?.share !== undefined ? `${Math.round(cell.share)} %` : "–"}</span></div>;
+                        })}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <div className="hidden overflow-x-auto sm:block">
                   <table className="w-full min-w-[720px] border-collapse text-[14px]">
                     <thead>
                       <tr className="border-b border-slate-200 text-left text-[12px] text-slate-500">
@@ -130,7 +146,7 @@ export function FraktionenPage() {
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Was aus den Anträgen wird</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil der Anträge, deren Beschlussvorschlag beschlossen wurde, an den Anträgen mit Entscheidung; empfiehlt der Beschlussvorschlag, dem Antrag nicht zu folgen, zählt er als abgelehnt. Nur Fraktionen mit mindestens 10 entschiedenen Anträgen. Derselbe Antrag in Ausschuss und Rat zählt einmal; Besetzungen und Umbesetzungen zählen nicht. Anfragen zählen nicht, sie werden beantwortet.</p>
+                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil beschlossener Anträge an den entschiedenen, je Fraktion ab 10 Anträgen. Empfiehlt die Vorlage, dem Antrag nicht zu folgen, zählt er als abgelehnt.</p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
                   {([["beschlossen", DEC_COLORS.approved], ["vertagt", DEC_COLORS.postponed], ["abgelehnt", DEC_COLORS.rejected]] as const).map(([l, c]) => <li key={l} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
                 </ul>
@@ -139,7 +155,7 @@ export function FraktionenPage() {
                 )}
               </section></Reveal>
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Die Fraktion wird aus der Antragswendung in Titel oder Textanfang gelesen („Antrag der SPD-Fraktion“); lokale Wählergruppen sind zusammengefasst. Sammelpunkte wie „Beantwortung von Anfragen“ zählen nicht. Der Status ist nur bei einem Teil der Anträge bekannt; die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei. <Link href="#methodik" className="text-teal-700">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei. <Link href="#methodik" className="text-teal-700">Methode →</Link></p>
             </>
           )}
         </div>

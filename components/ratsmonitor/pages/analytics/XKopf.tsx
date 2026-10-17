@@ -68,11 +68,12 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
           {s.titel.replace("plenara.X ", "")}
           <MarkenAbzeichen />
         </h1>
-        <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">{s.frage}</b> {s.text}
-          <button type="button" onClick={() => setInfo(!info)} aria-expanded={info} aria-controls="methodik" title="Methodik: worauf die Zahlen beruhen"
+        <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">{s.frage}</b> {s.text.replace(/\s*\S+$/, "")}{" "}
+          {/* Letztes Wort und Fragezeichen bleiben zusammen, sonst steht das Symbol auf dem Handy allein in einer Zeile */}
+          <span className="whitespace-nowrap">{s.text.match(/\S+$/)?.[0]}<button type="button" onClick={() => setInfo(!info)} aria-expanded={info} aria-controls="methodik" title="Methodik: worauf die Zahlen beruhen"
             className="ml-2 inline-flex h-6 w-6 translate-y-[3px] items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-teal-700 print:hidden">
             <Icon name="circleHelp" size={16} /><span className="sr-only">Methodik</span>
-          </button>
+          </button></span>
         </p>
       </div>
       {info && METHODIK_VON[seite] && (

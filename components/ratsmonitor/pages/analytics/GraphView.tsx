@@ -65,6 +65,31 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
   const [hover, setHover] = useState("");
   const drag = useRef<{ id: string; moved: boolean } | { pan: true; sx: number; sy: number; vx: number; vy: number } | null>(null);
   const raf = useRef(0);
+  /* Zoomen mit zwei Fingern (Handy) und Trackpad-Geste bzw. Strg + Mausrad: Punkt unter den Fingern bleibt stehen */
+  const touches = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<{ d: number; k: number } | null>(null);
+  const zoomAt = useCallback((k: number, cx: number, cy: number) => {
+    const el = boxRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect(), px = cx - r.left - r.width / 2, py = cy - r.top - r.height / 2;
+    setView((v) => {
+      const k2 = Math.max(0.3, Math.min(4, k)), f = k2 / v.k;
+      return { k: k2, x: px - (px - v.x) * f, y: py - (py - v.y) * f };
+    });
+  }, []);
+  const viewK = useRef(1);
+  useEffect(() => { viewK.current = view.k; }, [view.k]);
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const wheel = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      zoomAt(viewK.current * Math.exp(-e.deltaY / 200), e.clientX, e.clientY);
+    };
+    el.addEventListener("wheel", wheel, { passive: false });
+    return () => el.removeEventListener("wheel", wheel);
+  }, [zoomAt]);
 
   useEffect(() => {
     const el = boxRef.current;
@@ -107,7 +132,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
   useEffect(() => fit(), [size.w, size.h, fit]);
 
   useEffect(() => {
-    if (zoomRef) zoomRef.current = (f) => (f === "fit" ? fit() : setView((v) => ({ ...v, k: Math.max(0.3, Math.min(3, v.k * f)), x: v.x * f, y: v.y * f })));
+    if (zoomRef) zoomRef.current = (f) => (f === "fit" ? fit() : setView((v) => ({ ...v, k: Math.max(0.3, Math.min(4, v.k * f)), x: v.x * f, y: v.y * f })));
     return () => { if (zoomRef) zoomRef.current = null; };
   }, [zoomRef, fit]);
 
@@ -140,8 +165,25 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
     <div
       ref={boxRef}
       className="absolute inset-0 touch-none select-none overflow-hidden bg-white"
-      onPointerDown={(e) => { (e.target as Element).setPointerCapture?.(e.pointerId); const t = (e.target as Element).closest("[data-node]"); drag.current = t ? { id: t.getAttribute("data-node")!, moved: false } : { pan: true, sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; if (t) { const n = pos(t.getAttribute("data-node")!); if (n) n.fixed = true; } }}
+      onPointerDown={(e) => {
+        touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        try { (e.target as Element).setPointerCapture?.(e.pointerId); } catch { /* Zeiger schon weg */ }
+        /* Zweiter Finger: Ziehen endet, Zoomen mit zwei Fingern beginnt */
+        if (touches.current.size === 2) {
+          const [a, b] = [...touches.current.values()];
+          const d = drag.current;
+          if (d && !("pan" in d)) { const n = pos(d.id); if (n) n.fixed = false; }
+          drag.current = null;
+          pinch.current = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, k: view.k };
+          return;
+        }
+        const t = (e.target as Element).closest("[data-node]"); drag.current = t ? { id: t.getAttribute("data-node")!, moved: false } : { pan: true, sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; if (t) { const n = pos(t.getAttribute("data-node")!); if (n) n.fixed = true; } }}
       onPointerMove={(e) => {
+        if (touches.current.has(e.pointerId)) touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pinch.current && touches.current.size >= 2) {
+          const [a, b] = [...touches.current.values()];
+          return zoomAt(pinch.current.k * (Math.hypot(a.x - b.x, a.y - b.y) / pinch.current.d), (a.x + b.x) / 2, (a.y + b.y) / 2);
+        }
         const d = drag.current;
         if (!d) return;
         if ("pan" in d) return setView((v) => ({ ...v, x: d.vx + e.clientX - d.sx, y: d.vy + e.clientY - d.sy }));
@@ -149,7 +191,11 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
         if (!n) return;
         d.moved = true; n.x = w.x; n.y = w.y; run();
       }}
-      onPointerUp={() => {
+      onPointerCancel={(e) => { touches.current.delete(e.pointerId); pinch.current = null; drag.current = null; }}
+      onPointerUp={(e) => {
+        touches.current.delete(e.pointerId);
+        /* Nach dem Zoomen mit zwei Fingern nichts auswählen, bis alle Finger los sind */
+        if (pinch.current) { if (!touches.current.size) pinch.current = null; return; }
         const d = drag.current;
         drag.current = null;
         if (!d) return;
