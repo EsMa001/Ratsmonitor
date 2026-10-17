@@ -2,7 +2,7 @@
    Gleiches Gerüst für alle Branchen, Auswahl, Sätze und Anordnung je Branche. */
 import type { IconName } from "./icons";
 
-export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "atlas" | "signale" | "fakten" | "klima" | "finanzlage" | "beteiligung" | "news";
+export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "atlas" | "signale" | "fakten" | "klima" | "finanzlage" | "beteiligung" | "news" | "ausschreibungen";
 /** Tools funktionieren mit jedem Suchbegriff; Themen sind fertige Auswertungen; der Atlas zeigt die 10 Themen (feste Auswahlen darin für die Branchenseiten) */
 /** atlas: Auswahl im plenara.X Atlas (/analytics/atlas: Thema oder Unterthema), keine eigene Gruppe und kein eigener Eintrag in den Listen */
 export type AnalyseGruppe = "tool" | "atlas";
@@ -33,6 +33,7 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   finanzlage: { href: "/analytics/atlas?thema=finanzen", name: "Finanzen & Haushalt", icon: "layers", group: "atlas" },
   beteiligung: { href: "/analytics/atlas?thema=verwaltung&sub=verwaltung.beteil", name: "Bürgerbeteiligung und Beiräte", icon: "megaphone", group: "atlas" },
   news: { href: "/analytics/news", name: "Aktuelles", icon: "newspaper", group: "tool" },
+  ausschreibungen: { href: "/analytics/ausschreibungen", name: "Ausschreibungen", icon: "clipboardList", group: "tool" },
 };
 
 /* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */
@@ -44,7 +45,7 @@ export const NEU_HREF: Partial<Record<AnalyseId, (term?: string) => string>> = {
 };
 export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "Vergleich im plenara.X Atlas", beschluesse: "Ausgang in plenara.X Trends", gremien: "Gremien", fraktionen: "Fraktionen", news: "Aktuelles" };
 /** Seiten der Gruppe plenara.X Einblicke (keine eigene Übersichtsseite); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
-export const EINBLICKE: AnalyseId[] = ["fraktionen", "gremien", "graph", "news"];
+export const EINBLICKE: AnalyseId[] = ["fraktionen", "gremien", "graph", "news", "ausschreibungen"];
 
 export const PLENARAX_VORTEILE: [AnalyseId, string, string][] = [
   ["diffusion", "Ausbreitung in Trends sehen", "Wo ein Begriff zuerst auftaucht und in welchen Kommunen er danach folgt."],

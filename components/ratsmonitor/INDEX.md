@@ -527,7 +527,7 @@ topic design-styles.css:140
 - page.tsx (4): metadata, Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (22): generateMetadata, Page
+- page.tsx (23): generateMetadata, Page
 
 ### app/(monitor)/anmelden/bestaetigen/
 - page.tsx (4): metadata, Page
@@ -618,7 +618,7 @@ topic design-styles.css:140
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (186, ⚠21): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (224, ⚠11): AdminRuleTexts
+- admin-rule-texts.tsx (290, ⚠18): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-schedules.tsx (116, ⚠4): AdminSchedules
 - admin-signout.tsx (13): AdminSignOut
@@ -701,7 +701,7 @@ topic design-styles.css:140
 - XAuszug.tsx (220, ⚠2): XAuszug
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
 - blocks.tsx (224, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, PlacePill, HitPreview, DarkCta, QaItem, Ladefehler
-- branchen-enterprise.ts (112): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- branchen-enterprise.ts (113): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (281, ⚠27): Status, Example, Branche, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
@@ -753,7 +753,7 @@ topic design-styles.css:140
 - uuid.ts (12): newId
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (272, ⚠1): MainMenu
+- MainMenu.tsx (273, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (171, ⚠12): DetailPage
@@ -767,9 +767,9 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (242): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (224, ⚠15): ANALYSE_THUMBS, MethodikText
+- AnalyticsAbout.tsx (231, ⚠17): ANALYSE_THUMBS, MethodikText
 - AnalyticsLocked.tsx (51): AnalyticsLocked
-- AnalyticsPages.tsx (58): AnalyticsPages
+- AnalyticsPages.tsx (60): AnalyticsPages
 - AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (53): Befund, zuThema, Leer, Fehler
 - BeschluessePage.tsx (195, ⚠8): BeschluessePage
@@ -793,10 +793,10 @@ topic design-styles.css:140
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (107, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (334, ⚠7): signaleHref, SignalePage
+- SignalePage.tsx (336, ⚠7): signaleHref, SignalePage
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (550, ⚠7): XAtlasView
-- XKopf.tsx (166): XKopf, XWeiter, ThemenLeiste
+- XKopf.tsx (167): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (341, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun

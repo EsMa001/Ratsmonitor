@@ -26,7 +26,7 @@ const KACHEL_FRAGE: Record<string, string> = { "/analytics/vergleich": "Mit ande
 const KURZ: Record<string, string> = {
   atlas: "Themen nach Ort und Zeit", vergleich: "Zwei Orte im Vergleich", signale: "Vorhaben vor Ort", fakten: "Werte aus den Vorlagen",
   trends: "Begriffe im Wandel", beschluesse: "Wie Vorgänge ausgehen", fraktionen: "Anträge der Fraktionen", gremien: "Wege durch die Gremien",
-  graph: "Verwandte Themen", news: "Berichtenswerte Vorgänge",
+  graph: "Verwandte Themen", news: "Berichtenswerte Vorgänge", ausschreibungen: "Aufträge der Kommunen",
 };
 
 const SEITEN: Record<string, Seite> = {
@@ -39,6 +39,7 @@ const SEITEN: Record<string, Seite> = {
   fraktionen: { icon: "landmark", gruppe: "Einblicke", titel: "plenara.X Fraktionen", frage: "Wer möchte was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
   gremien: { icon: "users", gruppe: "Einblicke", titel: "plenara.X Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   graph: { icon: "network", gruppe: "Einblicke", titel: "plenara.X Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
+  ausschreibungen: { icon: "clipboardList", gruppe: "Einblicke", titel: "plenara.X Ausschreibungen", frage: "Was wird vergeben?", text: "Welche Aufträge Kommunen ausschreiben und vergeben, nach Leistung und Schritt. Aus den Beschlüssen der Räte, nicht die Bekanntmachung selbst." },
   news: { icon: "newspaper", gruppe: "Einblicke", titel: "plenara.X Aktuelles", frage: "Was ist berichtenswert?", text: "Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit wörtlichem Zitat und Quelle. Für Vorhaben nach Branche und Stand: Signale." },
 };
 

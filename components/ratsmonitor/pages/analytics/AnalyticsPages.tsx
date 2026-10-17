@@ -28,6 +28,8 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/atlas": () => <AtlasPage />,
   /* plenara.X Signale: neue Ereignisse je Branche als Liste (/api/x/signale) */
   "/analytics/signale": SignalePage,
+  /* plenara.X Ausschreibungen: Kategorie „Ausschreibungen und Vergaben“ als eigene Seite unter Einblicke */
+  "/analytics/ausschreibungen": () => <SignalePage fest="vergaben" />,
   /* plenara.X Fakten: Werte aus den Unterlagen je Gemeinde auf der Karte (/api/x?view=fakten) */
   "/analytics/fakten": FaktenPage,
 };
@@ -43,7 +45,7 @@ export function AnalyticsPages({ path }: { path: string }) {
   useEffect(() => {
     window.scrollTo(0, 0);
     const gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
-    const TITEL: Record<string, string> = { "/analytics/atlas": "Atlas · plenara.X", "/analytics/signale": "Signale · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Aktuelles · plenara.X", 
+    const TITEL: Record<string, string> = { "/analytics/atlas": "Atlas · plenara.X", "/analytics/signale": "Signale · plenara.X", "/analytics/ausschreibungen": "Ausschreibungen · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Aktuelles · plenara.X", 
       "/analytics/graph": "Themennetz · plenara.X", "/analytics/gremien": "Gremien · plenara.X", "/analytics/beschluesse": "Ausgang · plenara.X",
       "/analytics/vergleich": "Vergleich · plenara.X", "/analytics/trends": "Trends · plenara.X", "/analytics/fraktionen": "Fraktionen · plenara.X" };
     document.title = TITEL[path] ?? (gruppe ? gruppe.name : "plenara.X");

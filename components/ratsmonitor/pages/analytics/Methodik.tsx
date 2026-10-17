@@ -9,7 +9,7 @@ import type { AnalyseId } from "../../info/branchen-enterprise";
 export const METHODIK_VON: Record<string, [AnalyseId, string][]> = {
   atlas: [["atlas", "Atlas"]], vergleich: [["vergleich", "Vergleich"]], signale: [["signale", "Signale"]], fakten: [["fakten", "Fakten"]],
   trends: [["trends", "Verlauf"], ["diffusion", "Ausbreitung"]], beschluesse: [["beschluesse", "Ausgang"]], fraktionen: [["fraktionen", "Fraktionen"]],
-  gremien: [["gremien", "Gremien"]], graph: [["graph", "Themennetz"]], news: [["news", "Aktuelles"]],
+  gremien: [["gremien", "Gremien"]], graph: [["graph", "Themennetz"]], news: [["news", "Aktuelles"]], ausschreibungen: [["ausschreibungen", "Ausschreibungen"]],
 };
 /* Ablage der Anmerkungen: der Block meldet sein Element, die Anmerkungen hängen sich dort ein */
 let slot: HTMLElement | null = null;

@@ -28,7 +28,7 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
 ];/* Analyse: Start (Übersicht), Signale (was entsteht), Tools (alle Werkzeuge), Atlas (worüber beraten wird); die einzelnen Analysen stehen auf diesen Seiten */
 /* plenara.X (Logo als Gruppenname) mit zwei Abschnitten: Analysen (die vier Seiten) und Einblicke, je Eintrag die Frage leise rechts daneben */
-type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper"; hint?: string };
+type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper" | "clipboardList"; hint?: string };
 const ANALYSE: XEintrag[] = [
   { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
   { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
@@ -41,6 +41,7 @@ const EINBLICKE: XEintrag[] = [
   { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
   { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
   { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },
+  { href: "/analytics/ausschreibungen", label: "Ausschreibungen", icon: "clipboardList", hint: "Was wird vergeben?" },
 ];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [

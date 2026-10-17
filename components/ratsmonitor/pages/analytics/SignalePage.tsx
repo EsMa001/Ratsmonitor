@@ -92,7 +92,7 @@ const ATLAS_OF: Record<string, [string, string, string]> = {
 
 /* Ort aus der Adresse (useOrtInAdresse hält ?ort aktuell, auch ohne den Router) */
 const ortNow = () => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("ort") ?? "");
-export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort = "", erstmals = "" }: { signal?: string; phase?: string; art?: string; zeit?: string; ort?: string; erstmals?: string }) => {
+export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort = "", erstmals = "", basis = "/analytics/signale" }: { signal?: string; phase?: string; art?: string; zeit?: string; ort?: string; erstmals?: string; basis?: string }) => {
   const p = new URLSearchParams();
   if (signal) p.set("signal", signal);
   if (phase) p.set("stand", phase);
@@ -100,7 +100,7 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort 
   if (zeit) p.set("zeit", zeit);
   if (erstmals) p.set("erstmals", erstmals);
   if (ort) p.set("ort", ort);
-  return `/analytics/signale${p.size ? "?" + p : ""}`;
+  return `${basis}${p.size ? "?" + p : ""}`;
 };
 
 /**
@@ -154,18 +154,20 @@ function FilterRow({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
-export function SignalePage() {
+/* fest: Seite für genau eine Kategorie (plenara.X Ausschreibungen = Kategorie „vergaben“, eigene Adresse, ohne Kategorienwahl) */
+export function SignalePage({ fest }: { fest?: string } = {}) {
   const params = useSearchParams(), router = useRouter(), path = usePathname();
-  const signal = SIGNAL_IDS.has(params.get("signal") ?? "") ? params.get("signal")! : "vergaben";
+  const basis = fest ? "/analytics/ausschreibungen" : "/analytics/signale";
+  const signal = fest ?? (SIGNAL_IDS.has(params.get("signal") ?? "") ? params.get("signal")! : "vergaben");
   const phase = params.get("stand") ?? "";
   const art = params.get("art") ?? "";
   const zeitRaw = params.get("zeit");
   const zeit = zeitRaw === null ? "6" : ZEITRAUM.some(([k]) => k === zeitRaw) ? zeitRaw : "6";
   /* Nur Vorgänge, die in ihrem Ort die ersten dieses Signals sind */
   const erstmals = params.get("erstmals") === "1" ? "1" : "";
-  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string; erstmals?: string }) => router.push(signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), erstmals, ...next }), { scroll: false });
+  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string; erstmals?: string }) => router.push(signaleHref({ basis, signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), erstmals, ...next }), { scroll: false });
   // Ungültige Werte in der Adresse still berichtigen
-  const target = signaleHref({ signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
+  const target = signaleHref({ basis, signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
   const current = path + (params.size ? "?" + params : "");
   useEffect(() => { if (current !== target && (params.has("signal") || params.has("zeit"))) router.replace(target, { scroll: false }); }, [current, target, router, params]);
 
@@ -220,16 +222,16 @@ export function SignalePage() {
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <XKopf seite="signale" />
+      <XKopf seite={fest ? "ausschreibungen" : "signale"} />
 
       {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy: Auswahlfeld */}
-      <label className="block sm:hidden print:hidden">
+      {!fest && <label className="block sm:hidden print:hidden">
         <span className="sr-only">Signal</span>
         <select value={signal} onChange={(e) => pick({ signal: e.target.value === "vergaben" ? "" : e.target.value, phase: "", art: "" })} className="select-base h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
           {SIGNALE.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
         </select>
-      </label>
-      <nav aria-label="Signal" className="hidden sm:block print:hidden">
+      </label>}
+      {!fest && <nav aria-label="Signal" className="hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-5 gap-1 p-0 lg:grid-cols-10">
           {SIGNALE.map(([id, label]) => {
             const on = id === signal;
@@ -245,7 +247,7 @@ export function SignalePage() {
             );
           })}
         </ul>
-      </nav>
+      </nav>}
 
       {/* Filterwerte der Kategorie (Leistung, Vorhaben …) als kleine Kacheln mit Icon, durch eine Linie in Petrol von den Kategorien getrennt (wie die Unterthemen im Atlas) */}
       {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <nav aria-label={res.signal.art ?? "Art"} className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
@@ -262,12 +264,12 @@ export function SignalePage() {
       <div className="mt-4 print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler>{error}</Fehler>}
-      {loading && !res && <Laden text="Signale werden geladen …" />}
+      {loading && !res && <Laden text={fest ? "Ausschreibungen werden geladen …" : "Signale werden geladen …"} />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
           {res.total === 0 ? <Leer tipp="Einen längeren Zeitraum, eine andere Art oder „Alle Themen“ wählen, oder den Ort entfernen.">{`Keine Vorgänge für diese Auswahl: ${res.signal.name}${zeit !== "alle" ? `, letzte ${zeit} Monate` : ""}.`}</Leer>
-            : <Kennzahlen week={week} band="Signale" scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
+            : <Kennzahlen week={week} band={fest ? "Ausschreibungen" : "Signale"} scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
               <span>{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
               <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
               <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
@@ -327,7 +329,7 @@ export function SignalePage() {
           </div>
         </div>
       )}
-    <XWeiter links={[["/analytics/news", "Was ist berichtenswert? (Aktuelles)"], ["/analytics/atlas", "Wie viel? (Atlas)"]]} />
+    <XWeiter links={fest ? [["/analytics/signale", "Was entsteht? (Signale)"], ["/analytics/news", "Was ist berichtenswert? (Aktuelles)"], ["/analytics/atlas", "Wie viel? (Atlas)"]] : [["/analytics/news", "Was ist berichtenswert? (Aktuelles)"], ["/analytics/atlas", "Wie viel? (Atlas)"]]} />
     </main>
   );
 }

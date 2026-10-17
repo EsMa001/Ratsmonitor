@@ -179,6 +179,13 @@ const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
       <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird über Wörter; was weder im Titel noch im Beschlussvorschlag steht, wird nicht gefunden. „Erstmals hier“ ist selten, solange viele Gebiete erst kurz erfasst sind.</p>
     </>
   ),
+  ausschreibungen: (
+    <>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt, welche Aufträge Kommunen in den Räten ausschreiben, vergeben oder nachbewilligen, nach Leistung (Hochbau, Tiefbau, Wasser, Planung, IT, Fahrzeuge und Ausstattung, Sonstiges) und Schritt (Ausschreibung, Vergabe, Nachtrag).</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Die Regel liest den Titel der Vorlage. Gezählt werden Vorgänge wie im Atlas. Ein Auftrag kann zugleich in einer Fachkategorie der Signale stehen, etwa eine Kanalsanierung in Wasser; die Zahlen beider Seiten werden nicht addiert.</p>
+      <p className="mt-3 text-[14px] text-slate-500">Grenzen: Gezeigt wird der Beschluss des Rats, nicht die Bekanntmachung: keine Angebotsfrist, keine Verfahrensart, keine Unterlagen. Viele kleinere Aufträge werden nicht öffentlich ausgeschrieben und erscheinen erst mit ihrem Beschluss. Gelesen wird über Wörter im Titel.</p>
+    </>
+  ),
   fakten: (
     <>
       <p className="mt-3 text-[16px] text-slate-500">Zeigt Werte aus den Vorlagen der Räte je Gemeinde auf der Karte, rot bis grün: derzeit Hebesätze, Haushalt je Einwohner, Wasser- und Abwassergebühren, Jahresergebnis und Preise für Gewerbegrundstücke.</p>
