@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cameFromApp, useAppNav } from "../../state/nav";
 import { IconChevronLeft } from "../../components/icons";
 import { PageBand } from "./PageBand";
@@ -16,7 +16,6 @@ import { useBandFigure, useCountUp } from "../../lib/bandFigure";
  */
 type Seite = { icon: IconName; gruppe: "Analysen" | "Einblicke"; titel: string; frage: string; text: string; reiter?: [string, string][] };
 
-const ATLAS: [string, string][] = [["/analytics/atlas", "Überblick"], ["/analytics/vergleich", "Vergleich"]];
 
 /* Reiter haben die Frage ihrer Seite im Kopf; als Kachel brauchen sie eine eigene */
 const KACHEL_FRAGE: Record<string, string> = { "/analytics/vergleich": "Mit anderem Ort vergleichen", "/analytics/beschluesse": "Wie geht es aus?" };
@@ -29,8 +28,8 @@ const KURZ: Record<string, string> = {
 };
 
 const SEITEN: Record<string, Seite> = {
-  atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen.", reiter: ATLAS },
-  vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist.", reiter: ATLAS },
+  atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen." },
+  vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Ortsvergleich", frage: "Wie steht mein Ort da?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist." },
   signale: { icon: "zap", gruppe: "Einblicke", titel: "plenara.X Signale", frage: "Was entsteht?", text: "Einzelne Vorhaben mit Ort, Schritt und Quelle." },
   fakten: { icon: "tag", gruppe: "Einblicke", titel: "plenara.X Fakten", frage: "Welcher Wert?", text: "Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle." },
   trends: { icon: "trendingUp", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten." },
@@ -45,9 +44,6 @@ const SEITEN: Record<string, Seite> = {
 export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   const s = SEITEN[seite], path = usePathname();
   const router = useRouter(), { goBack } = useAppNav();
-  /* Ort zwischen Atlas und Vergleich mitnehmen (?ort=) */
-  const ort = useSearchParams().get("ort");
-  const mit = (href: string) => (ort && s.reiter === ATLAS ? `${href}?ort=${ort}` : href);
   return (
     <PageBand compact>
       {/* Kein Pfad, nur Zurück wie auf den übrigen Seiten (Artikel) */}
@@ -68,7 +64,7 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
       {s.reiter && (
         <nav aria-label="Ansicht" className="-mb-4 mt-3 flex gap-6 print:hidden">
           {s.reiter.map(([href, name]) => (
-            <Link key={href} href={mit(href)} aria-current={href === path ? "page" : undefined} scroll={false}
+            <Link key={href} href={href} aria-current={href === path ? "page" : undefined} scroll={false}
               className={`border-b-2 pb-2 text-[16px] ${href === path ? "border-teal-700 font-semibold text-slate-900" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{name}</Link>
           ))}
         </nav>

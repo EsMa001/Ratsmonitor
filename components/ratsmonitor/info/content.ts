@@ -104,7 +104,7 @@ export const PRICE_FAQ: Qa[] = [
   { q: "Kann ich später upgraden?", a: "Ja, ein Wechsel auf eine höhere Stufe ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
   { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit Basic eine Suche, einen Artikel und eine Benachrichtigung. Mit Pro und Enterprise jeweils bis zu 100 gespeicherte Suchen, bis zu 100 gespeicherte Artikel und bis zu 100 aktive Benachrichtigungen." },
   { q: "Welche Stufe enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo ist nur in der Stufe Enterprise enthalten. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
-  { q: "Was ist plenara.X und welche Stufe enthält es?", a: "plenara.X sind die Analysen und Einblicke zu plenara: Atlas mit Ortsvergleich, Trends mit Ausbreitung, der Ausgang der Vorgänge, Gremien und Themennetz, dazu die Einblicke: Signale, Ausschreibungen, Aktuelles, Fraktionen und Fakten aus den Unterlagen. Sie sind nur in der Stufe Enterprise enthalten. In Basic und Pro bleibt die Suche mit allen Treffern und Benachrichtigungen." },
+  { q: "Was ist plenara.X und welche Stufe enthält es?", a: "plenara.X sind die Analysen und Einblicke zu plenara: Atlas, Ortsvergleich, Trends mit Ausbreitung, der Ausgang der Vorgänge, Gremien und Themennetz, dazu die Einblicke: Signale, Ausschreibungen, Aktuelles, Fraktionen und Fakten aus den Unterlagen. Sie sind nur in der Stufe Enterprise enthalten. In Basic und Pro bleibt die Suche mit allen Treffern und Benachrichtigungen." },
 ];
 
 export type PlanId = "free" | "pro" | "enterprise";
