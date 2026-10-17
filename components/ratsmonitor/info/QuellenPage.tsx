@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { DarkCta, PageHead } from "./blocks";
+import { DarkCta, Ladefehler, PageHead } from "./blocks";
 import { Icon } from "./icons";
 import { useSearch } from "../state/search";
 import { errorText, fetchJson } from "../lib/fetchJson";
@@ -34,6 +34,7 @@ function Big({ value, label, sub }: { value: number; label: string; sub: string 
 export function QuellenPage() {
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState("");
+  const [versuch, setVersuch] = useState(0);
   const [find, setFind] = useState("");
   const router = useRouter();
   const search = useSearch();
@@ -47,7 +48,7 @@ export function QuellenPage() {
       .then(setData)
       .catch((e) => !ctrl.signal.aborted && setError(errorText(e, "Der Quellenstand ist gerade nicht erreichbar.")));
     return () => ctrl.abort();
-  }, []);
+  }, [versuch]);
   const q = find.trim().toLowerCase();
   const hits = useMemo(() => (q.length >= 2 && data ? data.sources.filter((s) => s.name.toLowerCase().includes(q)).slice(0, 6) : []), [q, data]);
   const reach = data?.reach;
@@ -67,7 +68,7 @@ export function QuellenPage() {
         lead="Beschlüsse, Vorlagen und Beratungen der Kommunen, jeweils mit Verweis auf die Originalquelle. Die Abdeckung wächst laufend."
       />
       <section className="ri-sec ri-sec--tight">
-        {error && <p role="alert" className="text-slate-600">{error}</p>}
+        {error && <p className="m-0"><Ladefehler text={error} onRetry={() => { setError(""); setVersuch((n) => n + 1); }} /></p>}
         {!data && !error && (
           <div role="status" aria-label="Abdeckung wird geladen">
             <div className="grid animate-pulse gap-12 sm:grid-cols-2" aria-hidden="true">

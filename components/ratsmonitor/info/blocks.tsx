@@ -215,3 +215,13 @@ export function QaItem({ qa }: { qa: Qa }) {
     </details>
   );
 }
+
+/** Ladefehler in einem Satz, mit „Erneut versuchen“ (überall gleich, statt still zu scheitern) */
+export function Ladefehler({ text, onRetry }: { text: string; onRetry?: () => void }) {
+  return (
+    <span role="alert" className="text-[14px] text-slate-600">
+      {text}
+      {onRetry && <> <button type="button" onClick={onRetry} className="cursor-pointer border-0 bg-transparent p-0 text-[14px] font-medium text-teal-700 hover:underline">Erneut versuchen</button></>}
+    </span>
+  );
+}

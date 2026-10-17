@@ -161,7 +161,7 @@ export function DetailPage(){
               {sourceLink(t.sourceUrl)&&<div><dt className="text-[12px] text-slate-500">Originalquelle</dt><dd className="m-0"><a className="text-teal-700 no-underline hover:underline" href={sourceLink(t.sourceUrl)} target="_blank" rel="noopener noreferrer">Im Ratsinformationssystem ↗</a></dd></div>}
               {t.labelAssessments?.ai&&<div><dt className="text-[12px] text-slate-500">KI-Thema</dt><dd className="m-0 text-slate-900">{labelName(t.labelAssessments.ai.primary)}{t.labelAssessments.ai.status==='stale'&&<span className="block text-[12px] text-slate-500">Veraltet</span>}</dd></div>}
             </dl>
-            <p className="mt-4 flex items-start gap-2 text-[14px] text-slate-500" title="Herkunft der Zusammenfassung (Symbol vorläufig)"><span className="mt-0.5 text-teal-700">{source.icon}</span><span><span className="block text-[12px]">Zusammenfassung</span>{source.label}</span></p>
+            <p className="mt-4 flex items-start gap-2 text-[14px] text-slate-500" title="Herkunft der Zusammenfassung"><span className="mt-0.5 text-teal-700">{source.icon}</span><span><span className="block text-[12px]">Zusammenfassung</span>{source.label}</span></p>
           </aside>
         </div>
       </article>

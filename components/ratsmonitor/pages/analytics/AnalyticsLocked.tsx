@@ -18,7 +18,7 @@ const VORSCHAU: Record<string, { id: AnalyseId; term: string; text: string }> = 
 export function AnalyticsLocked({ path = "" }: { path?: string }) {
   const v = VORSCHAU[path];
   /* Neue Seite plenara.X Trends unter der früheren Adresse der Trends: ihr Name, nicht „Alt: …“ */
-  const title = v ? (!path.endsWith("-alt") && NEU_NAME[v.id]) || ANALYSEN[v.id].name : "";
+  const title = v ? NEU_NAME[v.id] || ANALYSEN[v.id].name : "";
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-12 text-slate-900">
       <PageBand>

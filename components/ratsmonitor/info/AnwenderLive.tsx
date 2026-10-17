@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { PageHead } from "./blocks";
+import { Ladefehler, PageHead } from "./blocks";
 import type { Branche } from "./content";
 import { Icon } from "./icons";
 import { IS_DEV } from "../lib/tier";
@@ -50,6 +50,7 @@ function VideoMitKapiteln({ b, dark }: { b: Branche; dark: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [kap, setKap] = useState<{ titel: string; start: number }[]>([]);
   const [aktiv, setAktiv] = useState(0);
+  const [fehler, setFehler] = useState(false);
   useEffect(() => {
     if (!b.video) return;
     const c = new AbortController();
@@ -65,10 +66,11 @@ function VideoMitKapiteln({ b, dark }: { b: Branche; dark: boolean }) {
         <div className="rounded-t-2xl border-[10px] border-b-0 border-slate-800 bg-slate-800">
           {b.video
             ? <video ref={ref} key={suffix} controls preload="metadata" playsInline onTimeUpdate={zeit} poster={`${b.video}${suffix}.jpg`} className="block aspect-video w-full rounded-md bg-slate-100" aria-label={`Video: Plenara für ${b.name}`}>
-                <source src={`${b.video}${suffix}.mp4`} type="video/mp4" />
+                <source src={`${b.video}${suffix}.mp4`} type="video/mp4" onError={() => setFehler(true)} />
                 <track kind="subtitles" src={`${b.video}${suffix}.vtt`} srcLang="de" label="Deutsch" />
               </video>
             : <div className="flex aspect-video w-full items-center justify-center rounded-md bg-slate-100 p-4 text-[14px] text-slate-500">Video „{b.name}“ (nur im Dev sichtbar)</div>}
+          {fehler && <div className="rounded-md bg-white px-3 py-2"><Ladefehler text="Das Video konnte nicht geladen werden." onRetry={() => { setFehler(false); ref.current?.load(); }} /></div>}
         </div>
         <div className="mx-[-3%] h-3 rounded-b-2xl bg-slate-300" style={{ boxShadow: "inset 0 -2px 0 var(--rm-c400)" }} />
       </div>

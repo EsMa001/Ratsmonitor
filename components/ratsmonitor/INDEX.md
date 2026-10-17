@@ -594,7 +594,7 @@ topic design-styles.css:140
 - page.tsx (22): generateMetadata, Page
 
 ### app/(monitor)/anmelden/bestaetigen/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/anmelden/
 - page.tsx (4): metadata, Page
@@ -624,12 +624,12 @@ topic design-styles.css:140
 - page.tsx (4): metadata, Page
 
 ### app/(monitor)/konto/[[...section]]/
-- page.tsx (4, ⚠1): Page
+- page.tsx (6, ⚠1): metadata, Page
 
 ### app/(monitor)/
 - layout.tsx (3): MonitorLayout
 - not-found.tsx (4): metadata, NotFound
-- page-meta.ts (13): pageMeta
+- page-meta.ts (18): pageMeta, privateMeta
 - page.tsx (11): Page
 
 ### app/(monitor)/preise/
@@ -750,7 +750,7 @@ topic design-styles.css:140
 - AboutPage.tsx (159): AboutPage
 - AccountPages.tsx (633): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
-- AnwenderLive.tsx (162): AnwenderLivePage
+- AnwenderLive.tsx (164): AnwenderLivePage
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
 - BranchenLive.tsx (244): LiveThumb
 - BranchenPages.tsx (121): BranchePage
@@ -759,17 +759,17 @@ topic design-styles.css:140
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (86): PreisePage
-- QuellenPage.tsx (165, ⚠3): QuellenPage
-- StartseitePage.tsx (491, ⚠3): StartseitePage
+- QuellenPage.tsx (166, ⚠3): QuellenPage
+- StartseitePage.tsx (494, ⚠3): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
-- VideosPage.tsx (157): VideosPage
+- VideosPage.tsx (161): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - XAuszug.tsx (220, ⚠2): XAuszug
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
-- blocks.tsx (218, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
+- blocks.tsx (228, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem, Ladefehler
 - branchen-enterprise.ts (112): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
-- content.ts (283, ⚠27): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
+- content.ts (282, ⚠27): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 

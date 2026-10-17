@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { IconPin } from "../components/icons";
-import { useOpenSearch } from "./blocks";
+import { Ladefehler, useOpenSearch } from "./blocks";
 import { todayLocal } from "../lib/text";
 import { useMe } from "../lib/account";
 import topicList from "./startseite-topics.json";
@@ -224,6 +224,8 @@ export function StartseitePage() {
   const me = useMe();
   const [term, setTerm] = useState("");
   const [total, setTotal] = useState<number | null>(null);
+  const [zFehler, setZFehler] = useState(false);
+  const [versuch, setVersuch] = useState(0);
   const [cov, setCov] = useState<Cov[] | null>(null);
   const [allTotal, setAllTotal] = useState<number | null>(null);
   const [raw, setData] = useState<Record<string, TopicData>>({});
@@ -290,8 +292,8 @@ export function StartseitePage() {
     /* Nur die Zähler (part=facets): dieselbe Zahl, ohne Trefferliste zu suchen */
     fetch(`/api/search?q=&area=&label=&month=&from=${from}&to=${today}&scope=with&status=&level=city&part=facets`, { signal: ctl.signal })
       .then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : Promise.reject(new Error("gesamt"))))
-      .then((d) => setTotal(typeof d.total === "number" ? d.total : null))
-      .catch(() => {});
+      .then((d) => { setTotal(typeof d.total === "number" ? d.total : null); setZFehler(false); })
+      .catch(() => { if (!ctl.signal.aborted) setZFehler(true); });
     fetch("/api/search?part=facets", { signal: ctl.signal })
       .then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : Promise.reject(new Error("gesamt"))))
       .then((d) => setAllTotal(typeof d.total === "number" ? d.total : null))
@@ -301,7 +303,7 @@ export function StartseitePage() {
       .then((d) => setCov(Array.isArray(d.coverage) ? d.coverage : null))
       .catch(() => {});
     return () => ctl.abort();
-  }, [today]);
+  }, [today, versuch]);
 
   /* Animation und Trends aus echten Daten: welche Gemeinde einen Begriff wann zum ersten Mal beraten hat und wie viele Gebiete je
      Monat dazukamen. Täglich vorab gerechnet (scripts/startseite-trends.mjs, Job „startseite-trends“, /api/startseite-trends), weil die
@@ -413,8 +415,9 @@ export function StartseitePage() {
             </h1>
             <p className="pl-slogan" style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500)" }}>Besser verstehen, was vor Ort beraten wird.</p>
             <p className="pl-num" style={{ margin: "28px 0 0", display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "4px 14px" }}>
-              <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "var(--rm-c900)", fontVariantNumeric: "tabular-nums" }}>{total !== null ? <CountUp value={total} /> : "…"}</span>
+              <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "var(--rm-c900)", fontVariantNumeric: "tabular-nums" }}>{total !== null ? <CountUp value={total} /> : zFehler ? "–" : "…"}</span>
               <span style={{ fontSize: 16, color: "var(--rm-c500)" }}>Berichte aus Räten und Ausschüssen in den letzten 30 Tagen</span>
+              {zFehler && total === null && <Ladefehler text="Die Zahl ist gerade nicht verfügbar." onRetry={() => { setZFehler(false); setVersuch((n) => n + 1); }} />}
             </p>
             <p className="pl-stand" style={{ margin: "10px 0 0", fontSize: 14, color: "var(--rm-c500)" }}>
               <span aria-hidden="true" className="pl-pulse" style={{ display: "inline-block", width: 8, height: 8, marginRight: 8, borderRadius: 4, background: "var(--rm-fill)" }} />

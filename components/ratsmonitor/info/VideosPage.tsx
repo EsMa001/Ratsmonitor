@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { DarkCta, PageHead } from "./blocks";
+import { DarkCta, Ladefehler, PageHead } from "./blocks";
 import { useDarkMode } from "../lib/useDarkMode";
 
 /* Zwei Videos, beide aus der Video-Datenbank (docs/videos): das Kurzvideo (Pitch) und das vollständige Video mit allen Kapiteln.
@@ -47,6 +47,7 @@ const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).
 
 function Player({ base, poster, label, onTime, seekRef }: { base: string; poster: string; label: string; onTime?: (t: number) => void; seekRef?: React.MutableRefObject<((t: number) => void) | null> }) {
   const [on, setOn] = useState(false);
+  const [fehler, setFehler] = useState(false);
   const ref = useRef<HTMLVideoElement>(null);
   const pending = useRef<number | null>(null);
   const seek = (t: number) => {
@@ -57,11 +58,14 @@ function Player({ base, poster, label, onTime, seekRef }: { base: string; poster
   return (
     <div className="relative overflow-hidden rounded-2xl bg-slate-900 shadow-lg">
       {on ? (
+        <>
         <video key={base} ref={ref} controls autoPlay playsInline preload="auto" poster={`/videos/${poster}.jpg`} src={`/videos/${base}.mp4`}
           onLoadedMetadata={() => { if (pending.current !== null && ref.current) { ref.current.currentTime = pending.current; pending.current = null; } }}
-          onTimeUpdate={(e) => onTime?.(e.currentTarget.currentTime)} className="block aspect-video w-full bg-slate-900">
+          onError={() => setFehler(true)} onTimeUpdate={(e) => onTime?.(e.currentTarget.currentTime)} className="block aspect-video w-full bg-slate-900">
           <track kind="captions" srcLang="de" label="Deutsch" src={`/videos/${base}.vtt`} />
         </video>
+        {fehler && <div className="bg-white px-4 py-3"><Ladefehler text="Das Video konnte nicht geladen werden." onRetry={() => { setFehler(false); setOn(false); }} /></div>}
+        </>
       ) : (
         <button type="button" onClick={() => setOn(true)} aria-label={label} className="group relative block aspect-video w-full cursor-pointer border-0 bg-slate-900 p-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
