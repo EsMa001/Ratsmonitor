@@ -7,7 +7,8 @@
 # Caddy setzt sie hier selbst und überschreibt alles, was ein Browser schickt.
 # RM_ADMIN_USER_ID und RM_ADMIN_EMAIL kommen aus /etc/default/caddy (siehe docs/betrieb/node-server.md).
 #
-# Kein `encode`: vinext komprimiert selbst und lässt den Suchstrom (application/x-ndjson) bewusst unkomprimiert.
+# `encode` nur für statische Pfade (siehe app_proxy): vinext komprimiert HTML und API selbst und lässt den Suchstrom
+# (application/x-ndjson) bewusst unkomprimiert.
 # flush_interval -1 reicht diesen Strom ohne Puffern durch. keepalive kürzer als keepAliveTimeout in serve.mjs (65 s).
 # Keine Zeitgrenzen für Antworten: Abrufe im Adminbereich dauern bis etwa drei Minuten.
 
@@ -16,6 +17,11 @@
 	# gelten nur auf Cloudflare. Hier dieselben Regeln: Kartendaten (de_map.json 2,4 MB, Version in der Adresse) und
 	# Kartenformen der Administration einen Tag, danach eine Woche im Hintergrund erneuert; Schriften 30 Tage.
 	# defer: erst beim Schreiben der Antwort setzen, sonst bliebe zusätzlich der Wert von vinext stehen.
+	# Statische Dateien komprimieren (Messung 17.10.2026, docs/qualitaet/frontend-effizienz-2026-10-17.md): vinext komprimiert
+	# nur HTML und API-Antworten, JS, CSS und Kartendaten kamen roh (de_map.json 2,4 MB, JS 1 MB). Nur diese Pfade, damit
+	# der Suchstrom (application/x-ndjson unter /api/) unberührt bleibt; schon komprimierte Antworten lässt encode aus.
+	@static_assets path /_next/static/* /data/* /geo/*
+	encode @static_assets zstd gzip
 	@static_data path /data/* /geo/*
 	header @static_data {
 		Cache-Control "public, max-age=86400, stale-while-revalidate=604800"
