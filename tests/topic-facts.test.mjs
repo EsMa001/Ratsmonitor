@@ -270,3 +270,10 @@ test('Signale Wind und Solar: Randfälle (17.10.2026)', async () => {
   assert.equal(m.solarOf('Gewinn- u. Verlustrechnung 2024 der Versorgungsbetriebe (Wasser u. PV-Anlage)'), null);
   assert.equal(m.solarOf('Photovoltaik Kindergarten a) Neubau b) Bestand'), 'Dach-PV kommunal');
 });
+
+test('Solar: Bauleitplanung PV als Freifläche, Gemeindedächer (Stichprobe h1)', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.solarOf('Bauleitplanung Vestenbergsgreuth - BBP 30 "PV-Anlage Pretzdorf"'), 'Freiflächen-PV');
+  assert.equal(m.solarOf('Solarstromanlagen auf Gemeindedächern - Mietverträge'), 'Dach-PV kommunal');
+  assert.equal(m.solarOf('Satteldachaufbau für PV-Anlage auf Garagendach Bühlfeldstraße 35'), null);
+});
