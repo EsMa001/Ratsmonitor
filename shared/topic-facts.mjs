@@ -489,7 +489,7 @@ const ROAD_WORK=[
  ['Sanierung',/Sanierung|Erneuerung|Instandsetzung|Deckenerneuerung|Deckensanierung|Fahrbahndecke|grundhaft/i],
  ['Ausbau oder Neubau',/Ausbau|Neubau|Umbau|Herstellung|Erschließung|Umgestaltung|Kreisverkehr/i],
 ];
-const NOT_ROAD=/Wasserversorgung|Versorgungsleitung|Leitung|Mehrfamilienh|Doppelh|Einfamilienh|Reihenh|Angelegenheiten|Denkmalschutz|(?:straße|str\.|weg)\s+\d|Feuerwehr|Schule|Kita|Kindergarten|Gebäude|Rathaus|Halle\b|Wohnhaus|Bauantrag|Bauvoranfrage|Baugesuch|Nutzungsänderung|Reinigung|Benennung|Umbenennung|Beleuchtung|Beitr[aä]g|Widmung|Einziehung|verkehrsrechtlich|Anordnung|Winterdienst|Parkplatz|Bebauungsplan|Satzung|Anfrage|Antrag (der|des)|Fraktion|Geschwindigkeit|Tempo|Halteverbot|Kanal|Wasserleitung|Breitband|Glasfaser/i;
+const NOT_ROAD=/Gestattung|Finanzhaushalt|Ergebnishaushalt|Haushaltssatzung|Teilhaushalt|Grünfläche|Mitteilungen und Anfragen|Verschiedenes|Wasserversorgung|Versorgungsleitung|Leitung|Mehrfamilienh|Doppelh|Einfamilienh|Reihenh|Angelegenheiten|Denkmalschutz|(?:straße|str\.|weg)\s+\d|Feuerwehr|Schule|Kita|Kindergarten|Gebäude|Rathaus|Halle\b|Wohnhaus|Bauantrag|Bauvoranfrage|Baugesuch|Nutzungsänderung|Reinigung|Benennung|Umbenennung|Beleuchtung|Beitr[aä]g|Widmung|Einziehung|verkehrsrechtlich|Anordnung|Winterdienst|Parkplatz|Bebauungsplan|Satzung|Anfrage|Antrag (der|des)|Fraktion|Geschwindigkeit|Tempo|Halteverbot|Kanal|Wasserleitung|Breitband|Glasfaser/i;
 const ROAD_EUR=/(?:in Höhe von|Höhe von|Auftragssumme|Angebotssumme|Angebotspreis|Kosten(?:\s+von)?|Gesamtkosten|brutto|Betrag von|zum Preis von|i\.\s?H\.\s?v\.)[^.;€]{0,40}?(?<![\d.,])(\d{1,3}(?:\.\d{3})+(?:,\d{2})?|\d+(?:,\d{1,2})?)\s*(Mio\.?|Millionen)?\s*(?:€|Euro|EUR)/i;
 export function roadWorkOf(title,text){
  const t=String(title||'');if(!ROAD_TITLE.test(t)||NOT_ROAD.test(t))return null;
@@ -508,7 +508,9 @@ export const PROJECTS=[
  ['Mitfahrbank',/Mitfahrbank|Mitfahrbänke|Mitfahrerbank|Mitfahrpunkt/i],
  ['Bike- oder Lastenradverleih',/Lastenrad-?\s?verleih|Bike-?\s?Sharing|Fahrradverleih|Leihrad|Leihfahrr/i],
 ];
-export function projectsOf(title){const t=String(title||'');return PROJECTS.filter(([,re])=>re.test(t)).map(([name])=>name);}
+const PROJECT_TITLE_NOT=/Mitteilungen und Anfragen|Verschiedenes|Haushaltssatzung|Teilhaushalt|Finanzhaushalt|Ergebnishaushalt|Gehwegbehinderung|Hecken|parkende/i;
+const WLAN_SCHOOL=/Schul|Kindertagesst|Kita\b|Kindergarten|Turnhalle/i;
+export function projectsOf(title){const t=String(title||'');if(PROJECT_TITLE_NOT.test(t))return [];return PROJECTS.filter(([name])=>name!=='Öffentliches WLAN'||!WLAN_SCHOOL.test(t)).filter(([,re])=>re.test(t)).map(([name])=>name);}
 /* Zahl der Windenergieanlagen eines Vorhabens (Umwelt, Energie): „acht neue Windenergieanlagen“, „3 WEA“, in Sätzen über die
    Errichtung oder Planung. Nicht Bestand, Rückbau, Anlagen anderer Orte, Kreise oder Länder, nicht Abstände („3 H“). */
 const WORDNUM={eine:1,einer:1,zwei:2,drei:3,vier:4,fünf:5,sechs:6,sieben:7,acht:8,neun:9,zehn:10,elf:11,zwölf:12};
@@ -516,7 +518,7 @@ const WIND_RE=/(?<![\d.,])(\d{1,2}|eine[r]?|zwei|drei|vier|fünf|sechs|sieben|ac
 const WIND_PLAN=/errichte|Errichtung|geplant|plant|vorgesehen|entstehen|Bau\b|bauen|Neubau|beantragt|Antrag|Genehmigung|Vorhaben|Repowering|ersetzt|realisier|Standort/i;
 const NOT_WIND=/genehmigt|in Betrieb|auf\s+(?:dem\s+)?\S*\s*Gebiet|Gemeindegebiet|Stadtgebiet|Planungsstadi|unterschiedlichen Planung|\d+\/\d+|maximal|höchstens|bestehende|vorhandene|bereits\s+(?:in Betrieb|errichtet|vorhanden)|Rückbau|abgebaut|zurückgebaut|Landkreis|Kreis\b|Bundesland|Deutschland|bundesweit|Region\b|Nachbar|insgesamt\s+(?:im|in)|Altanlagen|alte[n]?\s/i;
 export function windCountOf(title,text){
- const t=String(title||'');if(!/Wind/i.test(t)||/Bericht|Sachstand|Anfrage|Studie|Konzept|Potenzial|Potential|Regionalplan|Raumordnung|Teilfortschreibung|Kleinwind|Aufhebung|Gesellschaft|Beteiligung von Bürgern|finanzielle Beteiligung|§\s?6\s*EEG|Flächennutzungsplan|Vorrangfläche|Standorte für/i.test(t))return null;
+ const t=String(title||'');if(!/Wind/i.test(t)||/Bürgerbegehren|Bürgerinitiative|Petition|Bericht|Sachstand|Anfrage|Studie|Konzept|Potenzial|Potential|Regionalplan|Raumordnung|Teilfortschreibung|Kleinwind|Aufhebung|Gesellschaft|Beteiligung von Bürgern|finanzielle Beteiligung|§\s?6\s*EEG|Flächennutzungsplan|Vorrangfläche|Standorte für/i.test(t))return null;
  for(const s of [t,...String(text||'').replace(/\s+/g,' ').split(SENTENCE)]){if(s.length>800||!WIND_PLAN.test(s)&&s!==t)continue;
   for(const m of s.matchAll(WIND_RE)){if(NOT_WIND.test(s.slice(Math.max(0,m.index-80),m.index+m[0].length+40)))continue;
    const v=WORDNUM[m[1].toLowerCase()]??Number(m[1]);if(v>=1&&v<=60)return v;}}

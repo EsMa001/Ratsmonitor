@@ -21,7 +21,7 @@ for(const kind of kinds.split(',').filter(Boolean)){
   let docs=[];try{docs=JSON.parse(t.docs||'[]');}catch{}
   const p=primaryPdf(docs),s=p&&shaOf.get(p.url),tx=s?text(s.sha):'';
   const v=String(r.value??'').replace(/\D/g,'').slice(0,3)||String(r.value??'').slice(0,12);
-  const keys=[String(r.detail||'').replace('.',','),String(r.detail||''),String(r.value||'').split(' ')[0]].filter(k=>k&&k.length>1);let i=-1;if(tx)for(const k of keys){i=tx.indexOf(k);if(i>=0)break;}
+  const keys=[String(r.detail||'').replace('.',','),String(r.detail||''),String(r.value||'').split(' ')[0]].filter(k=>k&&k.length>1);let i=-1;if(tx){const d=String(r.detail||'').replace('.',',');const re={plan_area:d&&new RegExp(d.replace(/,/,'[.,]')+'\\s*(ha|Hektar)'),wind_count:/Windenergie|Windkraft|Windpark|WEA/}[kind];if(re){const m=re.exec(tx);if(m)i=m.index;}if(i<0)for(const k of keys){i=tx.indexOf(k);if(i>=0)break;}}
   const ctx=i>=0?tx.slice(Math.max(0,i-160),i+160):'';
   const {topic_id,kind:_,...rest}=r;
   return {id:topic_id,title:(t.title||'').slice(0,140),...rest,ctx};
