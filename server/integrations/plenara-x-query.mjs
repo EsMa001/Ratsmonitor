@@ -53,6 +53,7 @@ const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plan_area'],['plot_p
 import {MAP_FACTS,MAP_FACT_NAMES} from '../../shared/map-facts.mjs';
 import {atRevisionStale,paramsKey} from './revision-cache.mjs';
 import {X_REVISION_SQL} from './x-cases.mjs';
+import {xOffload} from './x-offload.mjs';
 export {MAP_FACTS,MAP_FACT_NAMES};
 export const X_LIST_SIZE=50;
 /* Zahl hinter einem Wert (erstes Feld von detail) und ihre Einheit; Fakten ohne Eintrag sind nur Kategorien (Schritt, Fraktion).
@@ -200,7 +201,7 @@ async function xList(db,catalog,x,{count:counted=true,src=null}={}){
   for(const f of fs){const num=factNum(x.fact,f.d);if(!num)continue;const t=fmtNum(num.v,num.unit),l=values.get(f.ck)||[];if(!l.includes(t))l.push(t);values.set(f.ck,l);}
  }
  return {offset:x.offset,size:X_LIST_SIZE,total:Number(count?.n||0),
-  items:results.map(r=>({id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,
+  items:results.map(r=>({id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,gremium:r.gremium||undefined,
    stage:r.stage||null,subs:r.subs?r.subs.split(','):[],times:r.times,...(values.has(r.ck)?{value:values.get(r.ck).slice(0,3).join(' · ')}:{})}))};
 }
 
@@ -326,7 +327,7 @@ async function xCompare(db,catalog,x,params,opts={}){
 /** Ein Zwischenspeicher für alle plenara.X-Routen: je Art, Parameter und Bau von x_cases (X_REVISION_SQL) einmal gerechnet;
     nach einem neuen Bau kommt kurz der alte Stand, während im Hintergrund neu gerechnet wird (atRevisionStale). */
 export function xCached(db,kind,params,compute){
- return atRevisionStale(db,paramsKey(kind,params),compute,{revisionSql:X_REVISION_SQL});
+ return atRevisionStale(db,paramsKey(kind,params),async()=>(await xOffload(kind,params))??compute(),{revisionSql:X_REVISION_SQL});
 }
 
 /* Platzhalter statt Gremium: nur „Gremium“ oder „Gremium laut Originalquelle“, auch mehrfach mit Komma; echte Namen wie

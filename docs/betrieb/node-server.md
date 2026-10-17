@@ -199,6 +199,18 @@ sudo -u ratsmonitor sqlite3 /srv/ratsmonitor/data/ratsmonitor.sqlite "PRAGMA ana
 systemctl restart ratsmonitor
 ```
 
+## plenara.X im Worker-Thread (seit 17.10.2026)
+
+Der Webserver liest SQLite synchron (`node:sqlite`, `DatabaseSync`). Eine plenara.X-Rechnung von 2 s (Newsradar, Trends,
+Gremiennetz kalt) hielt deshalb jede andere Anfrage an, auch Seitengerüste und die Suche (gemessen 17.10.2026,
+`docs/qualitaet/frontend-effizienz-2026-10-17.md`, Befund 7). Seitdem rechnen die X-Routen in Worker-Threads:
+`dist/standalone/worker/x-worker.mjs` (Quelle `server/node/x-worker.mjs`, Funktionen je Art in
+`server/integrations/x-registry.mjs`, Verteilung `server/integrations/x-offload.mjs`, gebaut von `scripts/build-node.mjs`
+neben dem Importprozess). `serve.mjs` setzt `RM_X_WORKER` auf die Datei, wenn sie liegt; `RM_X_WORKERS` (Standard 2) ist
+die Zahl der Threads, jeder mit eigener Nur-Lese-Verbindung auf `DATABASE_FILE`. `RM_X_WORKER=0` schaltet ab, dann
+rechnet der Hauptprozess wie vorher. Der Zwischenspeicher je Bau (`xCached`, `revision-cache.mjs`) bleibt im Hauptprozess;
+nur die kalte Rechnung wandert. Ohne Datei (Dev-Server, Cloudflare) ändert sich nichts. Test: `tests/x-offload.test.mjs`.
+
 ## Importprozess (seit 11.10.2026, Code-Analyse A14)
 
 Abrufe laufen in einem eigenen Prozess neben dem Webserver, `dist/standalone/worker/import-worker.mjs` (Quelle

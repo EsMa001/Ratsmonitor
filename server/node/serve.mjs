@@ -102,6 +102,10 @@ if (problem) {
   process.exit(1);
 }
 
+// plenara.X-Rechnungen im Worker-Thread (server/integrations/x-offload.mjs): Datei neben dem Importprozess; RM_X_WORKER=0 schaltet ab.
+if (process.env.RM_X_WORKER === '0') delete process.env.RM_X_WORKER;
+else if (!process.env.RM_X_WORKER) { const xw = join(import.meta.dirname, 'worker/x-worker.mjs'); if (fs.existsSync(xw)) process.env.RM_X_WORKER = xw; }
+console.log(`[ratsmonitor] plenara.X-Rechnungen: ${process.env.RM_X_WORKER ? `${Number(process.env.RM_X_WORKERS || 2)} Worker-Thread(s)` : 'im Hauptprozess'}`);
 const { server } = await startProdServer({ port, host, outDir: join(import.meta.dirname, 'dist') });
 server.keepAliveTimeout = 65_000;
 server.headersTimeout = 66_000;

@@ -1,10 +1,10 @@
-// Baut den Importprozess (server/node/import-worker.mjs) als eine Datei für Node, mit denselben Ersetzungen wie der
+// Baut den Importprozess (server/node/import-worker.mjs) und den plenara.X-Worker (server/node/x-worker.mjs) je als eine Datei für Node, mit denselben Ersetzungen wie der
 // Server-Bau: 'cloudflare:workers' zeigt auf server/node/cloudflare-workers.mjs, 'server-only' ist leer, '@/' ist die
 // Projektwurzel. Alle Pakete werden eingebündelt (wie vinext es für den Server tut); nur Node-Module bleiben außen.
 import path from 'node:path';
 import {build} from 'vite';
 
-export async function buildWorker({root,outDir}){
+export async function buildWorker({root,outDir,entry='server/node/import-worker.mjs',fileName='import-worker.mjs',emptyOutDir=true}){
  await build({
   root,
   configFile:false,
@@ -23,13 +23,13 @@ export async function buildWorker({root,outDir}){
   define:{'import.meta.env.DEV':'false'},
   ssr:{noExternal:true,target:'node'},
   build:{
-   ssr:path.join(root,'server/node/import-worker.mjs'),
+   ssr:path.join(root,entry),
    outDir,
-   emptyOutDir:true,
+   emptyOutDir,
    minify:false,
    sourcemap:false,
    target:'node22',
-   rollupOptions:{output:{entryFileNames:'import-worker.mjs',format:'es',codeSplitting:false}},
+   rollupOptions:{output:{entryFileNames:fileName,format:'es',codeSplitting:false}},
   },
  });
 }

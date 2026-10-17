@@ -34,6 +34,9 @@ fs.copyFileSync(new URL('../server/node/serve.mjs', import.meta.url), new URL('s
 const { buildWorker } = await import('../build/worker-build.mjs');
 await buildWorker({ root, outDir: fileURLToPath(new URL('worker/', standalone)) });
 if (!fs.existsSync(new URL('worker/import-worker.mjs', standalone))) fail('dist/standalone/worker/import-worker.mjs fehlt.');
+// Der plenara.X-Worker-Thread (server/integrations/x-offload.mjs) als dritter Einstieg, daneben im selben Ordner.
+await buildWorker({ root, outDir: fileURLToPath(new URL('worker/', standalone)), entry: 'server/node/x-worker.mjs', fileName: 'x-worker.mjs', emptyOutDir: false });
+if (!fs.existsSync(new URL('worker/x-worker.mjs', standalone))) fail('dist/standalone/worker/x-worker.mjs fehlt.');
 
 // Prüfen: kein Cloudflare-Modul mehr im Server-Paket, und die Datenbank-Anbindung nicht im Browser-Paket.
 const scan = (dir, pattern) => {
