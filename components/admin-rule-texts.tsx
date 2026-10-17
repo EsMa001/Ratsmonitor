@@ -39,6 +39,8 @@ const QT=QUALITY.target;
 const SIGNAL_RECALL=80;
 /* Signale, für die es noch keine Kategorie im Frontend gibt (Regel gemessen, Qualität unter 90 %) */
 const NO_CATEGORY=new Set(['sig_pflege','sig_handel']);
+/* Ausschreibungen und Vergaben ist seit 18.10.2026 eine eigene Seite unter Einblicke, keine Kategorie der Signale mehr */
+const OWN_PAGE='sig_tender';
 const TAB_IDS=['uebersicht','signale','fakten','lauf'];
 const GROUP_ORDER=['read','other','signals','facts'];
 const TABS:[string,string][]=[['uebersicht','Übersicht und Grundregeln'],['signale','Signale'],['fakten','Fakten'],['lauf','Lauf und Zahlen']];
@@ -147,7 +149,8 @@ export function AdminRuleTexts(){
  const pick=(id:string)=>{setTab(id as typeof tab);try{window.history.replaceState(null,'','#'+id);}catch{/* ohne Adresszeile egal */}};
  useEffect(()=>{const read=()=>{const h=window.location.hash.slice(1);if(TAB_IDS.includes(h))setTab(h as typeof tab);};const t=setTimeout(read,0);window.addEventListener('hashchange',read);return ()=>{clearTimeout(t);window.removeEventListener('hashchange',read);};},[]);
  const allSig=(QUALITY.groups.find(g=>g.id==='signals')?.rows??[]) as QualityRow[];
- const sigTable=allSig.filter(r=>!NO_CATEGORY.has(r.id));
+ const sigTable=allSig.filter(r=>!NO_CATEGORY.has(r.id)&&r.id!==OWN_PAGE);
+ const sigTender=allSig.filter(r=>r.id===OWN_PAGE);
  const sigNoCat=allSig.filter(r=>NO_CATEGORY.has(r.id));
  const factTable=FACT_ROWS.filter(r=>factArt(r.id)==='vergleich');
  return <>
@@ -169,6 +172,13 @@ export function AdminRuleTexts(){
      const cell=(v:number|null|undefined,t:number)=><td className={'px-2 tabular-nums '+(v==null?'text-slate-400':(v as number)>=t?'text-teal-700':'text-amber-700')}>{v==null?'–':v+' %'}</td>;
      return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900"><span className="inline-flex flex-wrap items-center gap-2">{r.name}{r.what&&<Info text={r.what}/>}</span></td>{cell(r.quality,QT.quality)}{cell(r.recall,SIGNAL_RECALL)}{cell(r.art,QT.quality)}{cell(r.phase,QT.quality)}<td className={'pl-2 '+(g==='open'?'font-semibold text-teal-700':'text-slate-500')}>{g==='open'?'frei':'fehlt: '+miss.join(', ')}</td></tr>;})}</tbody>
    </table></div>
+   {sigTender.length>0&&<><h3 className="mt-6">Seite Ausschreibungen (Einblicke)</h3>
+   <p className="admin-note mt-1">Keine Kategorie der Signale mehr, sondern eine eigene Seite. Die Vorgänge stehen weiter in ihren Fachkategorien; hier stehen alle mit einer Ausschreibung oder Vergabe im Titel.</p>
+   <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[560px] border-collapse text-left text-[14px]">
+    <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Seite</th><th className="px-2 font-medium">Qualität</th><th className="px-2 font-medium">Treffer</th><th className="px-2 font-medium">Art</th><th className="px-2 font-medium">Stand</th><th className="pl-2 font-medium">Status</th></tr></thead>
+    <tbody>{sigTender.map(r=>{const g=signalGate(r);const cell=(v:number|null|undefined,t:number)=><td className={'px-2 tabular-nums '+(v==null?'text-slate-400':(v as number)>=t?'text-teal-700':'text-amber-700')}>{v==null?'–':v+' %'}</td>;
+     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900"><span className="inline-flex flex-wrap items-center gap-2">{r.name}{r.what&&<Info text={r.what}/>}</span></td>{cell(r.quality,QT.quality)}{cell(r.recall,SIGNAL_RECALL)}{cell(r.art,QT.quality)}{cell(r.phase,QT.quality)}<td className={'pl-2 '+(g==='open'?'font-semibold text-teal-700':'text-slate-500')}>{g==='open'?'frei':'noch nicht alles gemessen'}</td></tr>;})}</tbody>
+   </table></div></>}
    {sigNoCat.length>0&&<><h3 className="mt-6">Signale ohne Kategorie im Frontend ({sigNoCat.length})</h3>
    <p className="admin-note mt-1">Die Regel ist gemessen, aber die Qualität liegt unter {QT.quality} %. Eine Kategorie im Frontend (Signale-Seite) entsteht erst, wenn sie darüber liegt.</p>
    <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[460px] border-collapse text-left text-[14px]">
@@ -205,7 +215,7 @@ export function AdminRuleTexts(){
       <div className="grid gap-x-6 gap-y-2 md:grid-cols-[minmax(0,1fr)_120px_120px_120px_120px]">
        <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
-         <SignalGateBadge r={r}/>{(r.id==='sig_pflege'||r.id==='sig_handel')&&<span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">Kategorie fehlt im Frontend</span>}<SignalGate/></div>
+         <SignalGateBadge r={r}/>{r.id===OWN_PAGE&&<span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">eigene Seite unter Einblicke</span>}{(r.id==='sig_pflege'||r.id==='sig_handel')&&<span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">Kategorie fehlt im Frontend</span>}<SignalGate/></div>
         <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),r.phaseFrom&&'Stand: '+r.phaseFrom,r.note].filter(Boolean).join(' · ')}</small>
        </div>
        <Meter label="Qualität" v={r.quality} min={QT.quality}/>

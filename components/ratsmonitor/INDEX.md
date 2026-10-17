@@ -618,7 +618,7 @@ topic design-styles.css:140
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (186, ⚠21): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (290, ⚠18): AdminRuleTexts
+- admin-rule-texts.tsx (300, ⚠21): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-schedules.tsx (116, ⚠4): AdminSchedules
 - admin-signout.tsx (13): AdminSignOut
@@ -767,7 +767,7 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (242): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (231, ⚠17): ANALYSE_THUMBS, MethodikText
+- AnalyticsAbout.tsx (231, ⚠18): ANALYSE_THUMBS, MethodikText
 - AnalyticsLocked.tsx (51): AnalyticsLocked
 - AnalyticsPages.tsx (60): AnalyticsPages
 - AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
@@ -793,7 +793,7 @@ topic design-styles.css:140
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (107, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (336, ⚠7): signaleHref, SignalePage
+- SignalePage.tsx (342, ⚠7): signaleHref, SignalePage
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (550, ⚠7): XAtlasView
 - XKopf.tsx (167): XKopf, XWeiter, ThemenLeiste

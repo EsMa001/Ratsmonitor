@@ -27,7 +27,7 @@ interface Result { signals: Signal[]; signal: { id: string; name: string; who: s
 
 /* Signale und Zeiträume in derselben Reihenfolge wie im Backend; die Zahlen kommen mit der Antwort */
 const SIGNALE: [string, string][] = [
-  ["vergaben", "Ausschreibungen und Vergaben"], ["wohnbau", "Neue Wohnbaugebiete"], ["gewerbe", "Gewerbe, Industrie, Handel"], ["wind", "Windenergie"],
+  ["wohnbau", "Neue Wohnbaugebiete"], ["gewerbe", "Gewerbe, Industrie, Handel"], ["wind", "Windenergie"],
   ["solar", "Solarenergie"], ["waerme", "Wärme und Netze"], ["schulen", "Schulen, Kitas, Sport"], ["strasse", "Straßen und Brücken"],
   ["wasser", "Wasser und Hochwasser"], ["breitband", "Breitband und Mobilfunk"], ["mobil", "Mobilität"],
 ];
@@ -158,18 +158,24 @@ function FilterRow({ label, children }: { label: string; children: React.ReactNo
 export function SignalePage({ fest }: { fest?: string } = {}) {
   const params = useSearchParams(), router = useRouter(), path = usePathname();
   const basis = fest ? "/analytics/ausschreibungen" : "/analytics/signale";
-  const signal = fest ?? (SIGNAL_IDS.has(params.get("signal") ?? "") ? params.get("signal")! : "vergaben");
+  /* Standard: die erste Kategorie (steht dann nicht in der Adresse); „Ausschreibungen und Vergaben“ ist seit 18.10.2026 eine eigene Seite unter Einblicke */
+  const standard = fest ?? SIGNALE[0][0];
+  const signal = fest ?? (SIGNAL_IDS.has(params.get("signal") ?? "") ? params.get("signal")! : standard);
   const phase = params.get("stand") ?? "";
   const art = params.get("art") ?? "";
   const zeitRaw = params.get("zeit");
   const zeit = zeitRaw === null ? "6" : ZEITRAUM.some(([k]) => k === zeitRaw) ? zeitRaw : "6";
   /* Nur Vorgänge, die in ihrem Ort die ersten dieses Signals sind */
   const erstmals = params.get("erstmals") === "1" ? "1" : "";
-  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string; erstmals?: string }) => router.push(signaleHref({ basis, signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), erstmals, ...next }), { scroll: false });
+  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string; erstmals?: string }) => router.push(signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), erstmals, ...next }), { scroll: false });
   // Ungültige Werte in der Adresse still berichtigen
-  const target = signaleHref({ basis, signal: signal === "vergaben" ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
+  const target = signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
   const current = path + (params.size ? "?" + params : "");
-  useEffect(() => { if (current !== target && (params.has("signal") || params.has("zeit"))) router.replace(target, { scroll: false }); }, [current, target, router, params]);
+  useEffect(() => {
+    /* alte Links (…/signale?signal=vergaben) führen auf die Seite Ausschreibungen */
+    if (!fest && params.get("signal") === "vergaben") { router.replace(signaleHref({ basis: "/analytics/ausschreibungen", phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" }), { scroll: false }); return; }
+    if (current !== target && (params.has("signal") || params.has("zeit"))) router.replace(target, { scroll: false });
+  }, [current, target, router, params, fest, phase, art, zeit, erstmals]);
 
   const { query, search } = useAnalyticsQuery();
   /* Zeitraum der Seite ersetzt den der Suche nur, wenn die Suche selbst keinen hat */
@@ -227,7 +233,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
       {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy: Auswahlfeld */}
       {!fest && <label className="block sm:hidden print:hidden">
         <span className="sr-only">Signal</span>
-        <select value={signal} onChange={(e) => pick({ signal: e.target.value === "vergaben" ? "" : e.target.value, phase: "", art: "" })} className="select-base h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
+        <select value={signal} onChange={(e) => pick({ signal: e.target.value === standard ? "" : e.target.value, phase: "", art: "" })} className="select-base h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
           {SIGNALE.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
         </select>
       </label>}
@@ -238,7 +244,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             const Icon = ICONS[id];
             return (
               <li key={id}>
-                <button type="button" aria-pressed={on} onClick={() => pick({ signal: id === "vergaben" ? "" : id, phase: "", art: "" })}
+                <button type="button" aria-pressed={on} onClick={() => pick({ signal: id === standard ? "" : id, phase: "", art: "" })}
                   className={`flex h-[76px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   {Icon && <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
                   <span className="line-clamp-2">{label}</span>

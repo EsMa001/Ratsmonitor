@@ -174,7 +174,7 @@ const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
   ),
   signale: (
     <>
-      <p className="mt-3 text-[16px] text-slate-500">Zeigt einzelne Vorhaben, die gerade entstehen, in 10 Kategorien: Vergaben, Wohnbaugebiete, Gewerbeflächen, Windenergie, Solarenergie, Wärme, Schulen und Kitas, Pflege, Einzelhandel und Mobilität.</p>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt einzelne Vorhaben, die gerade entstehen, in 10 Kategorien: Wohnbaugebiete, Gewerbeflächen, Windenergie, Solarenergie, Wärme, Schulen und Kitas, Straßen, Wasser, Breitband und Mobilität. Aufträge und Vergaben stehen auf der eigenen Seite Ausschreibungen.</p>
       <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Jede Kategorie hat eine feste Regel, die Titel, Betreff und Beschlussvorschlag liest. Gezählt werden Vorgänge wie im Atlas. „Erstmals hier“ heißt: Im Gebiet gab es vorher keinen Vorgang dieser Kategorie, und es liegen mindestens 12 Monate Daten davor vor. Eine Kategorie wird erst freigegeben, wenn eine Stichprobe mindestens 90 % richtig zugeordnete Vorgänge ergibt.</p>
       <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird über Wörter; was weder im Titel noch im Beschlussvorschlag steht, wird nicht gefunden. „Erstmals hier“ ist selten, solange viele Gebiete erst kurz erfasst sind.</p>
     </>
