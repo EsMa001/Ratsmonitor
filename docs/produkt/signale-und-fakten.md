@@ -10,7 +10,9 @@ Stand 17.10.2026, Entwurf zur Abstimmung (Branch `plenara-x-fakten-qualitaet`).
 
 ## Regel für die Einordnung (entschieden 17.10.2026)
 
-- **Signale haben Vorrang.** Alles, was keine Zahl ist, ist ein Signal (oder gehört zu einem: Art, Stand). Auch eine Zahl, für die wir noch kein Signal haben, ist zunächst ein Signal bzw. eine Angabe daran.
+- **Ein Signal ist, wenn etwas passiert.** Es wird nicht gezählt, sondern aufgelistet: Welches Bauland ist frei? Welche Windenergieanlagen sind neu? Was wird gemacht? Eine Zahl allein ist nie ein Signal. Eine Zahl (Fläche, Anlagenzahl) darf höchstens als Zusatz an einem Signal stehen.
+- **Alles, was keine Zahl ist,** ist Signal, Art oder Stand eines Signals, nicht Fakt.
+- **Eine Zahl ohne Ereignis** bleibt vorerst unbenutzt oder Angabe, sie wird nicht zum Signal erklärt.
 - **Fakten nur mit Zahl und hoher Abdeckung.** Eine Zahl wird erst ein Fakt (Karte, Vergleich), wenn Qualität mindestens 90 % und Abdeckung mindestens 80 % erreichen. Vorher bleibt sie Angabe oder Kandidat.
 - **Signale zählen nach Qualität.** Ein Signal wird freigegeben, wenn seine Qualität hoch ist (Qualität, Art, Stand je mindestens 90 %, Trefferquote mindestens 80 %). Abdeckung über alle Orte ist keine Bedingung: Ein Signal darf selten sein, wenn es stimmt.
 - **Teilen, wenn beides drinsteckt** (Straßenbau, Ausschreibung): Art und Stand sind Signal, der Betrag ein eigener Fakt, der erst bei hoher Abdeckung zählt.
