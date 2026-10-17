@@ -354,3 +354,11 @@ test('Signale Wasser und Straßen: Trefferquote aus Stichproben w1 und q2', asyn
   assert.ok(m.streetSignalOf('Vergabe von Asphaltarbeiten für Teilabschnitte Herlesries, Moossstraße'));
   assert.ok(m.streetSignalOf('Planung zum Ausbau von barrierefreien Bushaltestellen'));
 });
+
+test('Signal Wärme: Randfälle aus Stichprobe y3', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.energyOf('Kalkulation der Gebühren für die Wärmeversorgung ab dem 01.01.2026'), null);
+  assert.equal(m.energyOf('Geförderter Glasfaserausbau im Landkreis, Konzessionsvertrag'), null);
+  assert.equal(m.energyOf('Antrag auf Vorbescheid Neubau eines Heizhauses mit Hackschnitzellager'), null);
+  assert.ok(m.energyOf('Erneuerung Heizung FFW Haus Equarhofen'));
+});
