@@ -318,3 +318,13 @@ test('Signal Straßen: Randfälle aus Stichprobe q1', async () => {
   assert.equal(m.streetSignalOf('Autonomes Level-4-Fahrsystem von ZF, Straße'), null);
   assert.equal(m.streetSignalOf('Vorbescheid zum Neubau eines Bungalows, Nähe Langenbrucker Straße'), null);
 });
+
+test('Signale Stichprobe n1: Agri-Solarpark, Straßenbankett, Akustikdecke, Verschiedenes', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.solarOf('Aufstellungsbeschluss: Bebauungsplan Nr. 45 "Agri-Solarpark am Rame"'), 'Agri-PV');
+  assert.equal(m.tenderOf('Ausschreibung von Bauleistungen zur Wiederherstellung des Straßenbankettes Bakenberg').value, 'Tiefbau und Straße');
+  assert.equal(m.tenderOf('Auftragsvergabe Akustikdecke Kita „Auf der Hohen Straße“').value, 'Hochbau');
+  assert.equal(m.tenderOf('Vergabe des Atelierstipendiums 2027/2028'), null);
+  assert.equal(m.streetSignalOf('Verschiedenes Straßenausbau/Straßennutzungsplan'), null);
+  assert.equal(m.waterSignalOf('Sanierung von Krugweg und Deichweg'), null);
+});
