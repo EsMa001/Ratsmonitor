@@ -78,18 +78,18 @@ export async function factions(db,catalog,params){
  }
  /* Themenprofil: nur eingeordnete Themenfelder (ohne „unklar“) */
  const sorted=[...labelsAll].filter(([id])=>!NO_TOPIC.has(id)),allN=sorted.reduce((a,[,n])=>a+n,0);
- const rows=[...parties.values()].filter(p=>p.n>=MIN_PARTY).sort((a,b)=>b.n-a.n).map(p=>{
+ const rows=[...parties.values()].filter(p=>p.n>=MIN_PARTY).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name)).map(p=>{
   const pN=[...p.labels].filter(([id])=>!NO_TOPIC.has(id)).reduce((a,[,n])=>a+n,0);
-  const profile=sorted.map(([id,n])=>{const k=p.labels.get(id)||0;return {id,name:labelName(id),n:k,share:share(k,pN),index:pN&&allN&&n?Math.round(((k/pN)/(n/allN))*100):null};}).sort((a,b)=>b.n-a.n);
+  const profile=sorted.map(([id,n])=>{const k=p.labels.get(id)||0;return {id,name:labelName(id),n:k,share:share(k,pN),index:pN&&allN&&n?Math.round(((k/pN)/(n/allN))*100):null};}).sort((a,b)=>b.n-a.n||a.id.localeCompare(b.id));
   const decided=p.approved+p.rejected+p.postponed;
   return {name:p.name,n:p.n,antrag:p.antrag,anfrage:p.anfrage,decided,approved:p.approved,rejected:p.rejected,postponed:p.postponed,open:p.open,rate:share(p.approved,decided),
-   top:profile.filter(x=>x.n>=MIN_CELL&&x.index>=120).sort((a,b)=>b.index-a.index).slice(0,3),profile,
+   top:profile.filter(x=>x.n>=MIN_CELL&&x.index>=120).sort((a,b)=>b.index-a.index||a.id.localeCompare(b.id)).slice(0,3),profile,
    months:[...p.months].sort((a,b)=>a[0].localeCompare(b[0])).map(([m,n])=>({m,n}))};
  });
  return {
   q:f.q,
   totals:{withFaction:total?.withFaction||0,facts},
-  labels:sorted.sort((a,b)=>b[1]-a[1]).map(([id,n])=>({id,name:labelName(id),n,share:share(n,allN)})),
+  labels:sorted.sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([id,n])=>({id,name:labelName(id),n,share:share(n,allN)})),
   months:[...months].sort((a,b)=>a[0].localeCompare(b[0])).map(([m,n])=>({m,n})),
   parties:rows,
   small:[...parties.values()].filter(p=>p.n<MIN_PARTY).map(p=>({name:p.name,n:p.n})),

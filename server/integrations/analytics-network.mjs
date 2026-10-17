@@ -101,7 +101,7 @@ export async function network(db,catalog,params){
   const route=seq.slice(0,4).map(e=>e.g).join('\u0001');routes.set(route,(routes.get(route)||0)+1);
  }
  /* Wichtigste Knoten (nach Durchsatz) und Kanten zwischen ihnen */
- const ranked=[...nodes.values()].sort((a,b)=>(b.in+b.out)-(a.in+a.out)).slice(0,MAX_NODES);
+ const ranked=[...nodes.values()].sort((a,b)=>(b.in+b.out)-(a.in+a.out)||a.id.localeCompare(b.id)).slice(0,MAX_NODES);
  const keep=new Set(ranked.map(n=>n.id));
  const outNodes=ranked.map(n=>{
   const flow=n.in+n.out,share=flow?n.out/flow:0.5;
@@ -109,7 +109,7 @@ export async function network(db,catalog,params){
    /* Einstieg: überwiegend ausgehend; Entscheidung: überwiegend eingehend; sonst Durchgang */
    role:share>=0.65?'start':share<=0.35?'end':'bridge',broker:Math.min(n.in,n.out)};
  });
- const outEdges=[...edges.values()].filter(e=>keep.has(e.a)&&keep.has(e.b)&&e.n>=MIN_EDGE).sort((a,b)=>b.n-a.n).slice(0,MAX_EDGES).map(e=>({a:e.a,b:e.b,n:e.n,days:median(e.days)}));
- const outRoutes=[...routes].filter(([,n])=>n>=MIN_EDGE).sort((a,b)=>b[1]-a[1]).slice(0,ROUTES).map(([r,n])=>({path:r.split('\u0001'),n}));
+ const outEdges=[...edges.values()].filter(e=>keep.has(e.a)&&keep.has(e.b)&&e.n>=MIN_EDGE).sort((a,b)=>b.n-a.n||a.a.localeCompare(b.a)||a.b.localeCompare(b.b)).slice(0,MAX_EDGES).map(e=>({a:e.a,b:e.b,n:e.n,days:median(e.days)}));
+ const outRoutes=[...routes].filter(([,n])=>n>=MIN_EDGE).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,ROUTES).map(([r,n])=>({path:r.split('\u0001'),n}));
  return {q:f.q,mode:single?'names':'types',pool,examined:pool,capped:false,paths,nodes:outNodes,edges:outEdges,routes:outRoutes};
 }

@@ -63,7 +63,7 @@ export async function knowledgeGraph(db,catalog,params){
   docs[i]={keys,label:r.label,gremien:gremienOf(r.steps),land:region?region.ags.slice(0,2):null};
  }
  /* Häufigkeit der Begriffe in der Auswahl; Gewichtung gegen den ganzen Bestand (search_words) */
- const cand=[...df].filter(([,n])=>n>=Math.min(MIN_DF,Math.max(2,Math.floor(total*0.02)))).sort((a,b)=>b[1]-a[1]).slice(0,120);
+ const cand=[...df].filter(([,n])=>n>=Math.min(MIN_DF,Math.max(2,Math.floor(total*0.02)))).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,120);
  let global=new Map(),all=0;
  if(cand.length){
   try{
@@ -73,11 +73,11 @@ export async function knowledgeGraph(db,catalog,params){
   }catch{global=new Map();}
  }
  const idf=k=>global.size&&all?Math.log(1+all/Math.max(1,global.get(k)||df.get(k))):1;
- const chosen=cand.map(([k,n])=>({k,n,score:n*idf(k)})).sort((a,b)=>b.score-a.score).slice(0,TERMS);
+ const chosen=cand.map(([k,n])=>({k,n,score:n*idf(k)})).sort((a,b)=>b.score-a.score||a.k.localeCompare(b.k)).slice(0,TERMS);
  const termSet=new Set(chosen.map(c=>c.k));
  /* Themen, Gremien, Länder: je Art die häufigsten */
- const countAll=pick=>{const m=new Map();for(const d of docs)for(const v of pick(d))m.set(v,(m.get(v)||0)+1);return [...m].sort((a,b)=>b[1]-a[1]).slice(0,PER_KIND);};
- const count=pick=>{const m=new Map();for(const d of docs){const v=pick(d);if(v)m.set(v,(m.get(v)||0)+1);}return [...m].sort((a,b)=>b[1]-a[1]).slice(0,PER_KIND);};
+ const countAll=pick=>{const m=new Map();for(const d of docs)for(const v of pick(d))m.set(v,(m.get(v)||0)+1);return [...m].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0]))).slice(0,PER_KIND);};
+ const count=pick=>{const m=new Map();for(const d of docs){const v=pick(d);if(v)m.set(v,(m.get(v)||0)+1);}return [...m].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0]))).slice(0,PER_KIND);};
  const labelName=id=>LABELS.find(l=>l.id===id)?.name||null;
  const topics=count(d=>labelName(d.label)&&d.label!=='unklar'?d.label:null),committees=countAll(d=>d.gremien.filter(g=>g.length>=4)),lands=count(d=>d.land);
  const nodes=[{id:'q',type:'center',label:f.q||'Gesamter Datenbestand',count:total}];
@@ -106,10 +106,10 @@ export async function knowledgeGraph(db,catalog,params){
   if(n>=2&&w>=0.04)edges.push({a,b,w:Math.round(w*1000)/1000,n});
  }
  /* Alle tragfähigen Kanten; wie viele je Knoten gezeigt werden, entscheidet die Detailstufe der Seite */
- const links=edges.sort((x,y)=>y.w-x.w);
+ const links=edges.sort((x,y)=>y.w-x.w||x.a.localeCompare(y.a)||x.b.localeCompare(y.b));
  /* Jeder Knoten hängt am Zentrum (Stärke: Anteil der Auswahl) */
  for(const n of nodes.slice(1))links.push({a:'q',b:n.id,w:Math.round((n.count/Math.max(1,total))*1000)/1000,n:n.count,center:true});
- return {q:f.q,total,capped,sample:limit,partial:[...partial].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([w,n])=>({word:w,n})),nodes,edges:links,stats:{terms:chosen.length,topics:topics.length,committees:committees.length,lands:lands.length,links:links.length-nodes.length+1}};
+ return {q:f.q,total,capped,sample:limit,partial:[...partial].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,5).map(([w,n])=>({word:w,n})),nodes,edges:links,stats:{terms:chosen.length,topics:topics.length,committees:committees.length,lands:lands.length,links:links.length-nodes.length+1}};
 }
 
 /** Liste hinter einem Knoten: by=node&value=„t:Begriff“, „k:Thema“, „g:Gremium“ oder „l:Land“; alle Vorgänge der Auswahl */

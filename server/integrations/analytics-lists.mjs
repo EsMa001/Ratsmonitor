@@ -14,7 +14,7 @@ export const offsetOf=params=>Math.max(0,Number(params.get('offset'))||0);
 export function listPage(rows,catalog,offset,extra=()=>({})){
  const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
  const groups=new Map();
- for(const r of [...rows].sort((a,b)=>String(b.date).localeCompare(String(a.date)))){
+ for(const r of [...rows].sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(a.id).localeCompare(String(b.id)))){
   const k=r.region+'|'+titleKey(r.title),g=groups.get(k);
   if(g){g.times++;continue;}
   groups.set(k,{...r,times:1});

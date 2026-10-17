@@ -115,7 +115,12 @@ export async function source(db,catalog,f,opts={}){
 // noPrivate: ohne private Bauanträge (x_cases.private_build), einheitlich für Themennetz, Ortsvergleich und Trends
  const np=opts.noPrivate?' AND private_build=0':'';
  const cols=X_COLS+(opts.steps?',steps':'')+(opts.terms?',terms':'')+(opts.factions?',factions,faction_advice':'');
- if(!f.q)return {from:`(SELECT ${cols} FROM x_cases WHERE ${page.where}${np}) x`,args:page.args};
+ /* Nur Obergrenze (date<=heute, also fast alle Zeilen): über den Datumsindex liest SQLite die ganze Tabelle in Indexreihenfolge mit
+    wahlfreiem Zugriff; der Tabellen-Scan (+date schaltet den Index für diesen Term ab) ist 2- bis 3-mal schneller (Server 17.10.2026:
+    Gremiennetz 809→293 ms, Fraktionen 738→226, Themennetz 1283→670, Ausgang 1331→789). Mit Untergrenze (Trends-Fenster, Newsradar)
+    liest der Index nur den Ausschnitt und bleibt. Ergebnis unverändert, nur der Zugriffsweg. */
+ const where=!f.from&&!f.month?page.where.replace('date<=?','+date<=?'):page.where;
+ if(!f.q)return {from:`(SELECT ${cols} FROM x_cases WHERE ${where}${np}) x`,args:page.args};
  // Die Suche einmal je Anfrage: Vorgänge der gefundenen Karten als Liste, alle Zählungen lesen nur noch sie
  const {results}=await db.prepare(`SELECT DISTINCT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k FROM (SELECT id,region_id,title FROM search_cards WHERE ${page.where}) c LEFT JOIN report_rules r ON r.topic_id=c.id`).bind(...page.args).all();
  return {from:`(SELECT ${cols} FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))${np}) x`,args:[JSON.stringify(results.map(r=>r.k))]};
@@ -178,7 +183,7 @@ export async function xQuery(db,catalog,params,opts={}){
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const rows=hits.map(h=>{const b=perPart?Number(all?.n||0):h.b||0;
   return {key:h.k??'',name:nameOf(x.by,h.k,byId),...(x.by==='region'?{ags:byId.get(h.k)?.ags||'',...(byId.get(h.k)?.members?.length?{members:byId.get(h.k).members.map(m=>m.ags).filter(Boolean)}:{})}:{}),count:h.n,base:b,share:b?Math.round(1000*h.n/b)/10:null,...(sums?{sum:sums.get(h.k)??0}:{}),...(medians?.has(h.k)?{median:medians.get(h.k)}:{})};})
-  .sort((a,b)=>x.by==='month'?String(a.key).localeCompare(String(b.key)):b.count-a.count);
+  .sort((a,b)=>x.by==='month'?String(a.key).localeCompare(String(b.key)):b.count-a.count||String(a.key).localeCompare(String(b.key)));
  return {selection:{theme:x.theme,sub:x.sub,stage:x.stage,q:x.f.q},by:x.by,...(x.sum?{sum:{kind:x.sum,name:X_SUMS[x.sum]}}:{}),total:Number(total?.n||0),unread:Number(total?.u||0),builtAt:state.builtAt,rows};
 }
 
