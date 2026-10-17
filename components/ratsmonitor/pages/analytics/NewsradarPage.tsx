@@ -99,7 +99,7 @@ export function NewsradarPage() {
               <Reveal><section className="mt-6 border-t border-slate-200">
                 {res.items.map((i) => <Meldung key={i.id} i={i} />)}
               </section></Reveal>
-              <MethodikNote>Nachrichtenwert nach festen Regeln: Konflikt (abgelehnt, vertagt, nur mit Mehrheit beschlossen), Tragweite (Fördergeld, Kita-Beiträge, Gebühren, Steuern, Bürgerbegehren), Alltagsnähe des Themas und Aktualität. Der Kern jeder Meldung ist ein wörtliches Zitat aus der Regel-Zusammenfassung der Vorlage; Gremium, Datum und Ausgang stammen aus den Sitzungsdaten. Vorgänge ohne zitierbaren Satz erscheinen nicht.</MethodikNote>
+              <MethodikNote>Nachrichtenwert nach festen Regeln: Konflikt, Tragweite, Alltagsnähe und Aktualität. Jede Meldung zitiert wörtlich aus der Vorlage; Vorgänge ohne zitierbaren Satz erscheinen nicht.</MethodikNote>
             </>
           )}
         </div>

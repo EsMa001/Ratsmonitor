@@ -186,10 +186,10 @@ export const PLANS: Plan[] = [
 /* Anwender: fünf Gruppen, je eine Seite. Die Inhalte der Branchen liefern Ablauf, Beispiel und Schlagwörter; die Rollen liefern den Nutzen. */
 type Rolle = { name: string; icon: IconName; nutzen: [IconName, string, string, string][] };
 const ANWENDER_GRUPPEN: { kopf?: Branche["kopf"]; xauszug?: Branche["xauszug"]; video?: string; beleg?: Branche["beleg"]; plenarax?: Branche["plenarax"]; slug: string; name: string; icon: IconName; watch: string[]; keywords: string[]; flowTitle: string; steps: [IconName, string][]; reported: number[]; title: string; intro: string; closing: string; rollen: Rolle[] }[] = [
-  { beleg: { titel: "Bebauungsplan „Berken IV“", ort: "Holzgerlingen", schritte: [
-    { d: "2025-12-16", label: "Aufstellungsbeschluss", gremium: "Gemeinderat", href: "/beschluss/de-08115024-vo-3487" },
-    { d: "2026-03-17", label: "Entwurf gebilligt, Veröffentlichung beschlossen", gremium: "Gemeinderat", href: "/beschluss/de-08115024-vo-3553" },
-    { d: "2026-06-30", label: "Satzungsbeschluss", gremium: "Gemeinderat", href: "/beschluss/de-08115024-vo-3606" },
+  { beleg: { titel: "Gewerbegebiet „Neubeckumer Straße/Grüner Weg“", ort: "Beckum", schritte: [
+    { d: "2026-01-28", label: "Aufstellungsbeschluss empfohlen", gremium: "Ausschuss für Stadtentwicklung", href: "/beschluss/nrw-05570008-vo-32437" },
+    { d: "2026-06-30", label: "Aufstellungs- und Offenlagebeschluss empfohlen", gremium: "Ausschuss für Stadtentwicklung", href: "/beschluss/nrw-05570008-vo-36535" },
+    { d: "2026-09-23", label: "Satzungsbeschluss", gremium: "Rat der Stadt Beckum", href: "/beschluss/nrw-05570008-vo-36690" },
   ] }, plenarax: [
     ["Neue Wohnbaugebiete", "Wo Kommunen neue Baugebiete planen, mit Stand je Vorgang.", "/analytics/signale?signal=wohnbau"],
     ["Bauleitplanung im Atlas", "Wo Bauleitplanung viel Raum hat, je Ort und Monat.", "/analytics/atlas?thema=bauen&sub=bauen.plan"],

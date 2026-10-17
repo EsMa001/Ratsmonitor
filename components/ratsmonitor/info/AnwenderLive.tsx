@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { HitPreview, PageHead, PlacePill } from "./blocks";
+import { PageHead } from "./blocks";
 import type { Branche } from "./content";
 import { Icon } from "./icons";
-import { todayLocal } from "../lib/text";
 import { IS_DEV } from "../lib/tier";
 import { useDarkMode } from "../lib/useDarkMode";
 import { XAuszug } from "./XAuszug";
@@ -13,22 +12,6 @@ import { XAuszug } from "./XAuszug";
    Rollen kurz, plenara.X als Links, Abschluss mit nächstem Schritt. Gilt für Seiten mit `beleg` in content.ts. */
 
 const kurz = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}.${d.slice(2, 4)}`;
-const zahl = (n: number) => n.toLocaleString("de-DE");
-
-/** Zahl der Vorgänge der letzten 30 Tage (ohne Formalien) zu einem Begriff in ganz Deutschland */
-function useZahl(term: string) {
-  const key = term;
-  const [res, setRes] = useState<{ key: string; total: number | null } | null>(null);
-  useEffect(() => {
-    const c = new AbortController();
-    const p = new URLSearchParams({ q: term, from: todayLocal(-30), to: todayLocal(), scope: "with", noformal: "1", part: "facets" });
-    fetch(`/api/search?${p}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : Promise.reject(r.status)))
-      .then((f) => setRes({ key, total: typeof f.total === "number" ? f.total : null }))
-      .catch(() => { if (!c.signal.aborted) setRes({ key, total: null }); });
-    return () => c.abort();
-  }, [key, term]);
-  return res?.key === key ? res : null;
-}
 
 /** Link in die echte Suche mit Begriff und den letzten 30 Tagen (dort lässt sie sich mit dem Herz merken) */
 const suchLink = (term: string) => {
@@ -37,96 +20,6 @@ const suchLink = (term: string) => {
   return `/suche?${p}`;
 };
 
-/** Angebundene Gemeinden (wie Seite Datenabdeckung, /api/sources), für die Vertrauenszeile */
-function useGemeinden() {
-  const [n, setN] = useState<number | null>(null);
-  useEffect(() => {
-    const c = new AbortController();
-    fetch("/api/sources", { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ reach?: { municipalities?: { covered?: number } } }>) : null))
-      .then((d) => { const v = d?.reach?.municipalities?.covered; if (typeof v === "number") setN(v); }).catch(() => {});
-    return () => c.abort();
-  }, []);
-  return n;
-}
-
-/** Drei belegbare Punkte (Vorteile Stufe A: ganz Deutschland mit einem Begriff, Originalquelle, Stand jedes Vorgangs) */
-function Vertrauen() {
-  const n = useGemeinden();
-  const punkte: [Parameters<typeof Icon>[0]["name"], React.ReactNode][] = [
-    ["map", <>Ein Begriff, ganz Deutschland{n ? <>: <Link href="/datenabdeckung" className="text-teal-700 hover:underline">{zahl(n)} Gemeinden</Link></> : null}</>],
-    ["fileText", "Jede Angabe mit Originalunterlage"],
-    ["clock", "Stand jedes Vorgangs auf einen Blick"],
-  ];
-  return (
-    <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-1.5 p-0" style={{ marginTop: 14 }}>
-      {punkte.map(([icon, text], i) => <li key={i} className="flex items-center gap-2 text-[14px] text-slate-700"><Icon name={icon} size={16} className="flex-none text-teal-700" />{text}</li>)}
-    </ul>
-  );
-}
-
-/* Kopfkarte: je Chip ein Signal der Branche (/api/x/teaser, vorgerechnet im nächtlichen Bau von x_signals); gezeigt wird der neueste
-   Vorgang mit Schritt und eigener Kurzfassung aus der Vorlage (der Auszug sortiert solche nach vorn). Dieselbe Abfrage wie im plenara-Block. */
-interface Vorhaben { id: string; date: string; title: string; place: string; phase: string; teaser: string }
-const MON = ["JAN", "FEB", "MÄR", "APR", "MAI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEZ"];
-function useVorhaben(id: string) {
-  const [res, setRes] = useState<{ id: string; item: Vorhaben | false } | null>(null);
-  useEffect(() => {
-    const c = new AbortController();
-    fetch(`/api/x/teaser?id=${encodeURIComponent(id)}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ items?: Vorhaben[] }>) : null))
-      .then((d) => setRes({ id, item: d?.items?.find((i) => i.teaser) ?? d?.items?.[0] ?? false }))
-      .catch(() => { if (!c.signal.aborted) setRes({ id, item: false }); });
-    return () => c.abort();
-  }, [id]);
-  return res?.id === id ? res.item : null;
-}
-
-function Kopfkarte({ kopf, pick, setPick }: { kopf: [string, string][]; pick: number; setPick: (i: number) => void }) {
-  const [id] = kopf[Math.min(pick, kopf.length - 1)];
-  const m = useVorhaben(id);
-  return (
-    <div className="ri-pv" style={{ background: "none", border: "none", boxShadow: "none", padding: 0, marginTop: 24 }}>
-      {m ? (
-        <Link href={`/beschluss/${m.id}`} className="group" style={{ display: "block", color: "inherit", textDecoration: "none" }}>
-          <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ minHeight: 170, background: "var(--rm-white)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "52px minmax(0,1fr)", gap: 12 }}>
-              <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid var(--rm-c200)", paddingRight: 10, textAlign: "center" }}>
-                <span style={{ fontSize: 22, fontWeight: 600, lineHeight: 1 }}>{Number(m.date.slice(8, 10))}</span>
-                <span style={{ marginTop: 4, fontSize: 12, fontWeight: 600, letterSpacing: ".06em", color: "var(--rm-ac)" }}>{MON[Number(m.date.slice(5, 7)) - 1]}</span>
-                <span style={{ fontSize: 12, color: "var(--rm-c500)" }}>{m.date.slice(2, 4)}</span>
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}><PlacePill place={m.place} />{m.phase && <span style={{ fontSize: 14, color: "var(--rm-ac)", fontWeight: 600 }}>{m.phase}</span>}</div>
-                <p className="line-clamp-2" style={{ margin: "10px 0 0", fontSize: 16, fontWeight: 600, lineHeight: 1.35, color: "var(--rm-c900)" }}>{m.title}</p>
-                {m.teaser && <p className="line-clamp-3" style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.5, color: "var(--rm-c700)" }}>{m.teaser}</p>}
-                {m.teaser && <span style={{ display: "block", marginTop: 8, fontSize: 12, color: "var(--rm-c500)" }}>Aus der Vorlage</span>}
-              </div>
-            </div>
-          </div>
-        </Link>
-      ) : (
-        <div className="ri-pv__card flex items-center text-[14px] text-slate-500" style={{ minHeight: 170 }}>{m === false ? "Gerade nichts Neues zu diesem Signal." : "Neuester Vorgang wird geladen …"}</div>
-      )}
-      <div style={{ marginTop: 16 }}>
-        <span className="ri-pv__topics-label" style={{ display: "block", marginBottom: 8 }}>Signale</span>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {kopf.map(([k, t], i) => <button key={k} type="button" aria-pressed={pick === i} onClick={() => setPick(i)} className={"rounded-full border px-3 py-1.5 text-[14px] " + (pick === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{t}</button>)}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** Live-Zeile im Kopf: Zahl der letzten 30 Tage in ganz Deutschland, als Link in die Suche */
-function LiveZeile({ term }: { term: string }) {
-  const z = useZahl(term);
-  const wo = "in ganz Deutschland";
-  return (
-    <p className="m-0 text-[14px] text-slate-500" aria-live="polite" style={{ marginTop: 12 }}>
-      {!z ? "Letzte 30 Tage …" : z.total === null ? <>Letzte 30 Tage {wo}</> : <>Letzte 30 Tage {wo}: <Link href={suchLink(term)} className="font-semibold text-teal-700 hover:underline">{zahl(z.total)} {z.total === 1 ? "Vorgang" : "Vorgänge"} zu „{term}“ →</Link></>}
-    </p>
-  );
-}
-
 /** Beleg: ein echter Vorgang, jede Sitzung mit Datum und Link */
 function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
   const first = b.schritte[0].d, last = b.schritte[b.schritte.length - 1].d;
@@ -134,10 +27,12 @@ function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
   return (
     <section className="ri-sec">
       <h2 className="ri-h2">{b.ueberschrift ?? `Vom ersten Beschluss bis zur Satzung: ${monate} Monate`}</h2>
-      <p className="ri-sub">{b.text ?? `${b.titel} in ${b.ort}: vom ersten Beschluss bis zur Satzung.`} Jeder Schritt mit Datum, Gremium und Originalunterlage.</p>
-      <ol className={`m-0 mt-6 grid list-none gap-0 p-0 ${["", "", "sm:grid-cols-2", "sm:grid-cols-3", "sm:grid-cols-4"][Math.min(b.schritte.length, 4)]}`}>
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+        {b.text ? <span className="text-[16px] text-slate-700">{b.text}</span> : <><span className="text-[16px] font-semibold text-slate-900">{b.titel}</span><span className="text-[16px] text-slate-500">{b.ort}</span></>}
+      </div>
+      <ol className={`relative m-0 mt-10 grid list-none gap-x-10 p-0 sm:before:absolute sm:before:inset-x-0 sm:before:top-0 sm:before:h-0.5 sm:before:bg-teal-600 ${["", "", "sm:grid-cols-2", "sm:grid-cols-3", "sm:grid-cols-4"][Math.min(b.schritte.length, 4)]}`}>
         {b.schritte.map((s, i) => (
-          <li key={s.href} className="relative border-l-2 border-teal-600 pb-6 pl-5 sm:border-l-0 sm:border-t-2 sm:pb-0 sm:pl-0 sm:pr-6 sm:pt-5">
+          <li key={s.href} className="relative border-l-2 border-teal-600 pb-6 pl-5 sm:border-l-0 sm:pb-0 sm:pl-0 sm:pt-5">
             <span aria-hidden="true" className="absolute -left-[7px] top-0 h-3 w-3 rounded-full bg-teal-600 sm:-top-[7px] sm:left-0" />
             <p className="m-0 text-[14px] font-semibold text-teal-700">{kurz(s.d)}{i === 0 ? " · hier erstmals sichtbar" : ""}</p>
             <p className="m-0 mt-1 text-[16px] font-semibold text-slate-900">{s.label}</p>
@@ -150,44 +45,73 @@ function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
   );
 }
 
+/** Video im Laptop-Rahmen, rechts die Kapitel (`<video>.kapitel.json` aus der Zeitleiste des Videos); ein Klick springt im Video dorthin */
+function VideoMitKapiteln({ b, dark }: { b: Branche; dark: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [kap, setKap] = useState<{ titel: string; start: number }[]>([]);
+  const [aktiv, setAktiv] = useState(0);
+  useEffect(() => {
+    if (!b.video) return;
+    const c = new AbortController();
+    fetch(`${b.video}.kapitel.json`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ titel: string; start: number }[]>) : [])).then(setKap).catch(() => {});
+    return () => c.abort();
+  }, [b.video]);
+  const gehe = (i: number) => { const v = ref.current; if (!v) return; v.currentTime = kap[i].start; void v.play().catch(() => {}); };
+  const zeit = () => { const t = ref.current?.currentTime ?? 0; let i = 0; kap.forEach((k, j) => { if (t >= k.start - 0.2) i = j; }); setAktiv(i); };
+  const suffix = dark ? "-dunkel" : "";
+  return (
+    <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:gap-12">
+      <div className="w-full max-w-[680px] lg:flex-none">
+        <div className="rounded-t-2xl border-[10px] border-b-0 border-slate-800 bg-slate-800">
+          {b.video
+            ? <video ref={ref} key={suffix} controls preload="metadata" playsInline onTimeUpdate={zeit} poster={`${b.video}${suffix}.jpg`} className="block aspect-video w-full rounded-md bg-slate-100" aria-label={`Video: Plenara für ${b.name}`}>
+                <source src={`${b.video}${suffix}.mp4`} type="video/mp4" />
+                <track kind="subtitles" src={`${b.video}${suffix}.vtt`} srcLang="de" label="Deutsch" />
+              </video>
+            : <div className="flex aspect-video w-full items-center justify-center rounded-md bg-slate-100 p-4 text-[14px] text-slate-500">Video „{b.name}“ (nur im Dev sichtbar)</div>}
+        </div>
+        <div className="mx-[-3%] h-3 rounded-b-2xl bg-slate-300" style={{ boxShadow: "inset 0 -2px 0 var(--rm-c400)" }} />
+      </div>
+      {kap.length > 0 && (
+        <ol className="m-0 w-full max-w-[680px] list-none p-0 lg:max-w-none lg:flex-1">
+          {kap.map((k, i) => (
+            <li key={k.titel}>
+              <button type="button" onClick={() => gehe(i)} aria-current={aktiv === i} className={"flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left text-[16px] leading-snug " + (aktiv === i ? "bg-teal-50 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50")}>
+                <span className={"mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full text-[13px] font-semibold " + (aktiv === i ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-700")}>{i + 1}</span>
+                {k.titel}
+              </button>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+}
+
 export function AnwenderLivePage({ b }: { b: Branche }) {
   const term = b.keywords[0];
-  const [pick, setPick] = useState(0);
   const [dark] = useDarkMode();
   const href = suchLink(term);
   return (
     <>
-      {/* Kopf: Live-Zahl; rechts handverlesene echte Vorgänge mit den Themen „Auch im Blick“. Einleitung nur ab Tablet (mobil steht das Beispiel so im ersten Bild) */}
-      <PageHead icon={b.icon} label="Anwender" name={b.name} title={b.title} lead={<span className="max-sm:hidden">{b.intro}</span>}
-        aside={b.kopf ? <Kopfkarte kopf={b.kopf} pick={pick} setPick={setPick} /> : <HitPreview example={(b.examples ?? [])[pick] ?? b.example} topics={b.watch} active={pick} onPick={setPick} />}>
-        <div className="ri-actions">
-          <LiveZeile term={term} />
-          <Vertrauen />
-        </div>
-      </PageHead>
+      {/* Kopf: Einleitung nur ab Tablet */}
+      <PageHead icon={b.icon} label="Anwender" name={b.name} title={b.title} lead={<span className="max-sm:hidden">{b.intro}</span>} />
 
       {b.xauszug && <XAuszug name={b.name} auszuege={b.xauszug} />}
 
-      {b.beleg && <Beleg b={b.beleg} />}
-
-      {/* Video der Seite (Feld `video` in content.ts: Pfad ohne Endung, .mp4/.jpg/.vtt), direkt nach dem Beleg. Im Dark Mode die dunkle
+      {/* Video der Seite (Feld `video` in content.ts: Pfad ohne Endung, .mp4/.jpg/.vtt), direkt nach dem Auszug. Im Dark Mode die dunkle
          Fassung (<Pfad>-dunkel). Ohne Video nur im Dev-Server ein kleiner Platzhalter. */}
       {(b.video || IS_DEV) && (
         <section className="ri-sec ri-sec--tight">
-          <div className="grid items-center gap-x-12 gap-y-6 lg:grid-cols-[minmax(0,1fr)_440px]">
-            <div>
-              <h2 className="ri-h2">In einer Minute: Plenara für {b.name}</h2>
-              <p className="ri-sub">Suchen, Stand verfolgen, Treffer merken, mit einem Begriff aus Ihrem Alltag.</p>
-            </div>
-            {b.video
-              ? <video key={dark ? "d" : "h"} controls preload="metadata" playsInline poster={`${b.video}${dark ? "-dunkel" : ""}.jpg`} className="aspect-video w-full rounded-xl bg-slate-100" aria-label={`Video: Plenara für ${b.name}`}>
-                  <source src={`${b.video}${dark ? "-dunkel" : ""}.mp4`} type="video/mp4" />
-                  <track kind="subtitles" src={`${b.video}${dark ? "-dunkel" : ""}.vtt`} srcLang="de" label="Deutsch" />
-                </video>
-              : <div className="flex aspect-video w-full items-center justify-center rounded-xl border-2 border-dashed border-slate-200 p-4 text-center text-[14px] text-slate-500">Video „{b.name}“ (nur im Dev sichtbar)</div>}
+          <div className="mx-auto max-w-[1100px]">
+            <h2 className="ri-h2" style={{ margin: "0 auto 32px", fontSize: 34, textAlign: "center" }}>Plenara für {b.name} in einer Minute</h2>
+            <VideoMitKapiteln b={b} dark={dark} />
           </div>
         </section>
       )}
+
+      {b.beleg && <Beleg b={b.beleg} />}
+
 
       {/* Rollen: je Rolle ein konkreter Nutzen (Überschrift und Satz) und ein Suchlink */}
       <section className="ri-sec ri-sec--tight">
@@ -221,7 +145,6 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
           </Link>
         </div>
         <p className="m-0 text-[14px] text-slate-500" style={{ marginTop: 12 }}>Kostenlos und ohne Anmeldung. <Link href="/preise" className="text-teal-700 hover:underline">Preise</Link></p>
-        <p className="m-0 text-[18px] text-slate-500" style={{ marginTop: 40 }}>Besser verstehen, was vor Ort beraten wird.</p>
       </section>
 
       {/* plenara.X: schmale Zeile am Ende (Tarif Enterprise) */}
