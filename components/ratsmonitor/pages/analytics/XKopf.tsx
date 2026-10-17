@@ -36,9 +36,9 @@ const SEITEN: Record<string, Seite> = {
   fakten: { icon: "tag", gruppe: "Analysen", titel: "plenara.X Fakten", frage: "Welcher Wert?", text: "Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle." },
   trends: { icon: "trendingUp", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten.", reiter: TRENDS },
   beschluesse: { icon: "circleCheck", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Wie die Vorgänge zum gewählten Begriff ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf.", reiter: TRENDS },
-  fraktionen: { icon: "landmark", gruppe: "Einblicke", titel: "plenara.X Fraktionen", frage: "Wer möchte was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
-  gremien: { icon: "users", gruppe: "Einblicke", titel: "plenara.X Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
-  graph: { icon: "network", gruppe: "Einblicke", titel: "plenara.X Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
+  fraktionen: { icon: "landmark", gruppe: "Analysen", titel: "plenara.X Fraktionen", frage: "Wer möchte was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
+  gremien: { icon: "users", gruppe: "Analysen", titel: "plenara.X Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
+  graph: { icon: "network", gruppe: "Analysen", titel: "plenara.X Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
   ausschreibungen: { icon: "clipboardList", gruppe: "Einblicke", titel: "plenara.X Ausschreibungen", frage: "Was wird vergeben?", text: "Welche Aufträge Kommunen ausschreiben und vergeben, nach Leistung und Schritt. Aus den Beschlüssen der Räte, nicht die Bekanntmachung selbst." },
   news: { icon: "newspaper", gruppe: "Einblicke", titel: "plenara.X Aktuelles", frage: "Was ist berichtenswert?", text: "Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit wörtlichem Zitat und Quelle. Für Vorhaben nach Branche und Stand: Signale." },
 };
