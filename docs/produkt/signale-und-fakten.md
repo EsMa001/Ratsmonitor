@@ -8,6 +8,15 @@ Stand 17.10.2026, Entwurf zur Abstimmung (Branch `plenara-x-fakten-qualitaet`).
 - **Fakt** = ein Zahlenwert mit Einheit, vergleichbar über Orte und Zeit (Karte, Trends). Qualität: Ist der Wert richtig? Abdeckung: Bekommen die Berichte, die einen Wert haben, ihn auch?
 - Größe eines Vorhabens (Hektar, Anlagenzahl, Leistung, Wohneinheiten) ist eine **Angabe am Signal**, kein Fakt auf der Karte. Sie darf das Signal nicht blockieren; sie wird getrennt bewertet und im Signal nur angezeigt, wenn sie belegt ist.
 
+## Regel für die Einordnung (entschieden 17.10.2026)
+
+- **Signale haben Vorrang.** Alles, was keine Zahl ist, ist ein Signal (oder gehört zu einem: Art, Stand). Auch eine Zahl, für die wir noch kein Signal haben, ist zunächst ein Signal bzw. eine Angabe daran.
+- **Fakten nur mit Zahl und hoher Abdeckung.** Eine Zahl wird erst ein Fakt (Karte, Vergleich), wenn Qualität mindestens 90 % und Abdeckung mindestens 80 % erreichen. Vorher bleibt sie Angabe oder Kandidat.
+- **Signale zählen nach Qualität.** Ein Signal wird freigegeben, wenn seine Qualität hoch ist (Qualität, Art, Stand je mindestens 90 %, Trefferquote mindestens 80 %). Abdeckung über alle Orte ist keine Bedingung: Ein Signal darf selten sein, wenn es stimmt.
+- **Teilen, wenn beides drinsteckt** (Straßenbau, Ausschreibung): Art und Stand sind Signal, der Betrag ein eigener Fakt, der erst bei hoher Abdeckung zählt.
+
+Folge für den heutigen Stand (Quelle `rule-quality.json`): Als Fakten erfüllen die Bedingung derzeit `hebesatz` (90/85), `annual_result` (100/95) und `land_price` (92/80). `fee_rate` (93/69), `plan` und `grant` liegen bei der Abdeckung darunter bzw. ohne Messung; `faction` (97/65) ist keine Zahl. Sie laufen als Kandidaten weiter, bis die Abdeckung reicht.
+
 ## Zuordnung der heutigen Faktarten
 
 | Faktart | Bisher | Künftig | Messung |
