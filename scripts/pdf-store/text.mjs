@@ -36,7 +36,7 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
-import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile,ocrWithRefetch,downloader,dropIfTooBig} from './store-lib.mjs';
+import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile,ocrWithRefetch,downloader,dropIfTooBig,ocrRange} from './store-lib.mjs';
 import {progress,onStop,stepSummary,lane} from './state.mjs';
 import {openFailures,seedFromStore,originOf} from './failures.mjs';
 import {dailyBoundary} from '../../server/integrations/work-failures.mjs';
@@ -94,10 +94,10 @@ if(!flag('ocr')){
   for(const r of F.sql.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step IN ('ocr','ocr-fetch')").all())
    if(r.class==='slow'?!flag('include-slow')||!r.next_try_at:!r.next_try_at||r.next_try_at>now)waitingKeys.add(r.key);
  }
- // --range daily: nur Dateien von Sitzungen im Tagesbereich (dailyBoundary); backlog: nur ältere oder ohne Sitzungstag; sonst alle
+ // --range daily: nur Dateien von Sitzungen im Tagesbereich (dailyBoundary), ohne Sitzungstag die seit dem Stichtag geladenen;
+ // backlog: der Rest; sonst alle (ocrRange in store-lib.mjs)
  const range=opt('range','all'),boundary=dailyBoundary();
- // ohne Sitzungstag (etwa vom Importprozess abgelegt): zum Tagesbereich, damit die Datei nicht liegen bleibt
- const inRange=x=>range==='daily'?!x.eventDate||x.eventDate.slice(0,10)>=boundary:range==='backlog'?!!x.eventDate&&x.eventDate.slice(0,10)<boundary:true;
+ const inRange=x=>ocrRange(x,range,boundary);
  const queueNow=()=>store.ocrQueue({others:!flag('main-only')}).filter(x=>(!onlyShas||onlyShas.has(x.sha))&&!waitingKeys.has(x.sha)&&inRange(x));
  // OCR: nur Seiten ohne Textebene, jede Seite einzeln gerendert; die übrigen Seiten bleiben, wie pdf.js sie liest.
  // Sperre: Datei mit der Prozessnummer; eine verwaiste (Prozess läuft nicht mehr) wird übernommen
@@ -151,8 +151,10 @@ if(!flag('ocr')){
    for(const k of Object.keys(tot))if(typeof r[k]==='number')tot[k]+=r[k];
    show(true);
    if(halted||r.stopped){stoppedChild=true;break;}
-   const worked=(r.files||0)+(r.failed||0)+(r.slow||0)+(r.skipped||0);
-   if(!worked){if(code!==0)console.error(`OCR-Paket endete mit ${code} ohne Ergebnis, Lauf beendet`);break;}
+   // Fortschritt heißt gelesen, gescheitert oder zu langsam. Nur ausgelassene Server zählen nicht: die Dateien bleiben stehen,
+   // und der Treiber startete sonst alle 30 s ein neues Paket mit denselben Dateien, drei Stunden lang (17.10.2026: 6.316 Pakete)
+   const worked=(r.files||0)+(r.failed||0)+(r.slow||0);
+   if(!worked){if(code!==0)console.error(`OCR-Paket endete mit ${code} ohne Ergebnis, Lauf beendet`);else if(r.skipped)console.log(`Paket ohne Fortschritt (${r.skipped} Dateien auf wartenden Servern), Lauf beendet`);break;}
   }
   const open=queueNow().length;
   console.log(`fertig: ${tot.files} Dateien (${tot.primary} Hauptdokumente), ${tot.pages} Seiten per OCR, ${tot.failed} Fehler (davon ${tot.changed} geändert), ${tot.fetched} nachgeladen und wieder gelöscht, ${tot.skipped} Server ausgelassen, ${tot.slow} über der Zeitgrenze, ${tot.killed} Pakete vom Wächter beendet, ${tot.dropped} zu große PDFs gelöscht, ${open} offen (${elapsed(t0)})`);
@@ -165,7 +167,10 @@ if(!flag('ocr')){
  // beendet sich das Paket nach der laufenden Datei, der Treiber startet das nächste (13.10.2026: 6,6 GB bei 150 Dateien)
  const rssMb=()=>process.memoryUsage.rss()/1048576,rssLimit=Number(opt('rss-mb',2500));let ocr=await ocrScheduler(workers);
  if(!ocr){console.error('OCR-Werkzeuge fehlen (OCR_TOOLS).');process.exit(1);}
- const todo=queueNow().slice(0,limit||undefined),main=new Set(todo.filter(x=>x.main).map(x=>x.sha)),t0=Date.now();
+ // Verdrängte Dateien, deren Server laut Fehlerspeicher alle warten, gar nicht erst ins Paket nehmen: sonst füllen sie die
+ // ersten 25 Plätze, jedes Paket lässt sie aus, und die Dateien dahinter kommen nie dran
+ const hostsWait=x=>{if(!F||x.present)return false;const urls=store.urlsOf(x.sha);return urls.length>0&&urls.every(u=>{try{return F.waiting(new URL(u).host);}catch{return true;}});};
+ const todo=queueNow().filter(x=>!hostsWait(x)).slice(0,limit||undefined),main=new Set(todo.filter(x=>x.main).map(x=>x.sha)),t0=Date.now();
  let files=0,primary=0,pagesDone=0,failed=0,dropped=0,fetched=0,changed=0,skipped=0,slow=0;
  const fileMs=Number(opt('file-minutes',0))*60000,pageMs=Number(opt('page-seconds',90))*1000;
  // Lebenszeichen für den Wächter des Treibers: Zeit und die Dateien, an denen gerade gelesen wird
@@ -182,6 +187,16 @@ if(!flag('ocr')){
   try{const b=await get(url);fails.set(host,0);if(F?.hosts.has(host))await F.hostOk(host);return b;}catch(e){if(!halted)fails.set(host,(fails.get(host)||0)+1);throw e;}
  };
  const knownOcr=F?F.known('ocr'):new Set(),knownFetch=F?F.known('ocr-fetch'):new Set();
+ // Veraltete Einträge: die Datei braucht keine OCR mehr (das Paket hatte sie fertig, bevor Wächter oder Zeitgrenze zuschlugen).
+ // Eintrag weg, sonst versucht die Nacharbeit sie jede Stunde erneut und findet nichts zu lesen (Befund 16.10.2026).
+ if(F&&!flag('child')){
+  let stale=0;
+  for(const [set,step] of [[knownOcr,'ocr'],[knownFetch,'ocr-fetch']])for(const sha of [...set]){
+   if(onlyShas&&!onlyShas.has(sha))continue;
+   if(store.ocrDone(sha)){await F.ok({step,key:sha});set.delete(sha);stale++;}
+  }
+  if(stale)console.log(`${stale} Einträge im Fehlerspeicher veraltet (Datei schon vollständig gelesen), gelöscht`);
+ }
  // Nachladen gescheitert: mit Fehlerspeicher dort (Klasse aus HTTP-Code, „geändert“ endgültig), sonst ocr_refetch
  const refetchFailed=async(sha,error,info={})=>{
   if(!F){store.refetchFailed(sha,error);return;}

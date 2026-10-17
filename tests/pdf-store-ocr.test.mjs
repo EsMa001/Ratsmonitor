@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {openPdfStore} from '../server/node/pdf-store.mjs';
-import {ocrWithRefetch} from '../scripts/pdf-store/store-lib.mjs';
+import {ocrWithRefetch,ocrRange} from '../scripts/pdf-store/store-lib.mjs';
 
 const bytes=name=>new Uint8Array(Buffer.from(`%PDF-1.4\n% ${name}\n%%EOF`,'latin1'));
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
@@ -76,4 +76,26 @@ test('OCR: wird eine Lesung angehalten oder über der Zeitgrenze abgebrochen, is
   assert.ok(!fs.existsSync(store.file(gone.s)));
  }
  assert.deepEqual(queue(store),[gone.s],'bleibt offen für den nächsten Lauf');
+}));
+
+test('OCR-Bereich: Sitzung ab dem Stichtag ist Tagesbereich; ohne Sitzungstag zählt der Ladetag, alte Anlagen ohne Datum gehören zum Altbestand',()=>{
+ const b='2026-10-09';
+ const daily=x=>ocrRange(x,'daily',b),backlog=x=>ocrRange(x,'backlog',b);
+ assert.equal(daily({eventDate:'2026-10-10T00:00:00Z'}),true);
+ assert.equal(daily({eventDate:'2026-10-01',fetchedAt:'2026-10-15T01:00:00Z'}),false,'alte Sitzung, auch wenn frisch geladen');
+ assert.equal(daily({eventDate:null,fetchedAt:'2026-10-15T01:00:00Z'}),true,'ohne Sitzungstag: frisch geladen');
+ assert.equal(daily({eventDate:null,fetchedAt:'2026-09-01T01:00:00Z'}),false,'ohne Sitzungstag: alt geladen');
+ assert.equal(daily({eventDate:null,fetchedAt:null}),false);
+ for(const x of [{eventDate:'2026-10-10'},{eventDate:'2026-10-01'},{eventDate:null,fetchedAt:'2026-10-15'},{eventDate:null,fetchedAt:'2026-09-01'}])assert.equal(backlog(x),!daily(x));
+ assert.equal(ocrRange({eventDate:null,fetchedAt:null},'all',b),true);
+});
+
+test('ocrDone: wahr, sobald keine Seite mehr auf OCR wartet (veraltete Einträge im Fehlerspeicher erkennen)',withStore(async store=>{
+ const open=file(store,'open',{pages:2});
+ assert.equal(store.ocrDone(open.s),false,'zwei Seiten warten');
+ store.putText(open.s,['Seite eins mit Text.','Seite zwei per OCR.','Seite drei per OCR.'],{method:'mixed',version:1,ocrPages:2,ocrNeeded:0});
+ assert.equal(store.ocrDone(open.s),true);
+ assert.equal(store.ocrDone('0000'),false,'unbekannt');
+ store.failText(open.s,'kaputt',{version:1});
+ assert.equal(store.ocrDone(open.s),false,'Textfassung fehlerhaft');
 }));

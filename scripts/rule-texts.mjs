@@ -36,7 +36,10 @@ const steps=[],failed=[];
 let child=null,stopped=false;
 for(const sig of ['SIGTERM','SIGINT'])process.on(sig,()=>{if(stopped)process.exit(130);stopped=true;say('angehalten, laufender Schritt wird beendet');try{child?.kill('SIGTERM');}catch{/* schon weg */}});
 
-async function step(name,script,stepArgs=[]){
+/* fatal:false (Zählschritte nach dem Kern): ein Fehler wird vermerkt (warnings), beendet den Lauf aber nicht mit Exit 1; sonst
+   liefe um 08:50 der Rückfall-Lauf der Tagespipeline, obwohl Regeln, Suche und Zahlen fertig sind (Befund 16.10.2026) */
+const warnings=[];
+async function step(name,script,stepArgs=[],{fatal=true}={}){
  const cmd=[process.execPath,'--no-warnings','--max-old-space-size=6144',path.join(root,script),...stepArgs];
  if(dry){say('[Probe]',name+':',cmd.slice(3).join(' '));return null;}
  if(stopped){say(`${name} übersprungen (angehalten)`);return null;}
@@ -51,9 +54,9 @@ async function step(name,script,stepArgs=[]){
  child=null;
  let summary=null;try{summary=JSON.parse(fs.readFileSync(summaryFile,'utf8'));fs.unlinkSync(summaryFile);}catch{/* ohne */}
  const seconds=Math.round((Date.now()-t)/1000),ok=status===0||stopped;
- steps.push({name,seconds,ok,summary:summary||(stopped?{stopped:true}:null)});
- if(!ok)failed.push(name);
- say(`${name} ${stopped?'angehalten':ok?'fertig':`FEHLER (${status})`} (${seconds} s)`);
+ steps.push({name,seconds,ok,fatal,summary:summary||(stopped?{stopped:true}:null)});
+ if(!ok)(fatal?failed:warnings).push(name);
+ say(`${name} ${stopped?'angehalten':ok?'fertig':`FEHLER (${status})${fatal?'':', nicht fatal'}`} (${seconds} s)`);
  return summary;
 }
 
@@ -92,9 +95,9 @@ if(!dry)try{
  }finally{db.close();}
 }catch(e){say('KI-Zähler:',e.message);}
 /* Weg der Berichte für die Debug-Seite (scripts/pipeline-trace.mjs, vorübergehend) */
-await step(stepName('trace'),'scripts/pipeline-trace.mjs',dry?['--dry-run']:[]);
+await step(stepName('trace'),'scripts/pipeline-trace.mjs',dry?['--dry-run']:[],{fatal:false});
 
 const result=stopped?'stopped':failed.length?'failed':'done';
-if(!dry)writeState(RULE_TEXTS_KEY,{startedAt:new Date(t0).toISOString(),finishedAt:new Date().toISOString(),result,all,steps,facts});
-say(`Ende nach ${Math.round((Date.now()-t0)/1000)} s${failed.length?`, Fehler in: ${failed.join(', ')}`:''}`);
+if(!dry)writeState(RULE_TEXTS_KEY,{startedAt:new Date(t0).toISOString(),finishedAt:new Date().toISOString(),result,all,steps,facts,...(warnings.length?{warnings}:{})});
+say(`Ende nach ${Math.round((Date.now()-t0)/1000)} s${failed.length?`, Fehler in: ${failed.join(', ')}`:''}${warnings.length?`, nicht fatal: ${warnings.join(', ')}`:''}`);
 process.exit(stopped?3:failed.length?1:0);

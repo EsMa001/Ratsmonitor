@@ -25,7 +25,7 @@ import {env} from 'cloudflare:workers';
 import {runSync} from '@/server/services/sync';
 import {analysePending} from '@/server/integrations/manual-analysis.mjs';
 import {useDocumentStore} from '@/server/integrations/documents.mjs';
-import {workJob,ensureJob,currentJob,openJob,catchUp,parseArgs,importRunner,runDirect,windowForTonight} from '@/server/integrations/pipeline-worker.mjs';
+import {workJob,ensureJob,currentJob,openJob,nightlyBusy,catchUp,parseArgs,importRunner,runDirect,windowForTonight} from '@/server/integrations/pipeline-worker.mjs';
 
 const log=(...parts)=>console.log(new Date().toISOString(),'[import-worker]',...parts);
 const warn=(...parts)=>console.error(new Date().toISOString(),'[import-worker]',...parts);
@@ -56,7 +56,7 @@ try{
  let job=await currentJob(db);
  if(options.create){
   const window=windowForTonight(options);
-  const made=await ensureJob(db,{regions:options.regions||options.create,window});
+  const made=await ensureJob(db,{regions:options.regions||options.create,window,owner:'nightly'});
   job=made.job;
   log(made.created?`Auftrag angelegt: ${job.id}, ${job.items.length} Gebiete, Fenster ${window}${made.deferred?`, ${made.deferred} zurückgestellt (Fehlerspeicher)`:''}${made.replaced?' (ein pausierter oder liegen gebliebener Auftrag wurde beendet)':''}`:`offener Auftrag ${job.id} (${counts(job)}) wird fortgesetzt; kein neuer angelegt`);
  }
@@ -64,6 +64,7 @@ try{
  for(let round=0;round<5;round++){
   if(!openJob(job)){log(job?`kein offener Auftrag (Stand ${job.status})`:'kein Auftrag');break;}
   if(job.paused){log(`Auftrag ${job.id} ist pausiert; nichts zu tun`);if(options.create)exitCode=2;break;}
+  if(!options.create&&nightlyBusy(job)){log(`Auftrag ${job.id} gehört dem Nachtlauf und bewegt sich; nichts zu tun`);break;}
   log(`Auftrag ${job.id}: ${counts(job)}, ${options.lanes} Bahnen${options.maxMinutes?`, höchstens ${options.maxMinutes} min`:''}`);
   const result=await workJob(db,run,{lanes:options.lanes,stop,warn,log:latest=>log('Stand',latest.status,counts(latest),'nach',Math.round((Date.now()-started)/60000),'min')});
   log(`Ende: ${result.state}, ${result.job?counts(result.job):'-'}, ${((Date.now()-started)/60000).toFixed(1)} min${result.failures?`, ${result.failures} Fehler in Bahnen`:''}`);

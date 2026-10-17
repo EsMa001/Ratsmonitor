@@ -135,9 +135,12 @@ function collect(from,to){
  for(const [where,params] of variants)for(const r of db.prepare(`SELECT id,region_id AS region,event_date AS date,json_extract(payload,'$.documents') AS docs,${formalSql} AS formal FROM topics WHERE ${where.join(' AND ')} ORDER BY event_date DESC`).iterate(...params)){
   let docs;try{docs=JSON.parse(r.docs||'[]');}catch{continue;}
   const p=primaryPdf(docs,{uses:usesOf}),types=reportTypes(docs);
-  for(const d of others?docs.filter(x=>x?.kind==='application/pdf'&&x.url&&x.url!==p?.url&&!primaryUrls.has(x.url)):[p]){
+  // --urls (Nacharbeit): alle PDFs des Berichts, die Adresse entscheidet; auch Anlagen (ihre Fehlschläge stehen unter demselben
+  // Schritt 'pdf' wie Hauptdokumente), sonst kämen Anlagen nie wieder dran. Rolle wie beim ersten Abruf, sonst nach Stellung im Bericht.
+  const pdfs=docs.filter(x=>x?.kind==='application/pdf'&&x.url);
+  for(const d of urlList?pdfs.filter(x=>urlList.has(x.url)):others?pdfs.filter(x=>x.url!==p?.url&&!primaryUrls.has(x.url)):[p]){
    if(!d?.url||seen.has(d.url))continue;
-   if(urlList&&!urlList.has(d.url))continue;
+   const role=others?'other':urlList?(store.entry(d.url)?.role||(d.url!==p?.url?'other':null)):null;
    seen.add(d.url);total++;
    if(!urlList&&!store.wants(d.url,{retryDays:o.retryDays,textOnlyBelow})){
     // Ältere Fehler übriger PDFs ohne Rolle (vor dem 14.10.2026) einmal nachtragen
@@ -148,7 +151,7 @@ function collect(from,to){
    let host;try{host=new URL(d.url).host;}catch{continue;}
    if(blocked.has(host)||F?.waiting(host)){skipped++;continue;}
    if(!hosts.has(host))hosts.set(host,{queue:[],held:[],busy:0,next:0,fails:0,sample:!!F?.due(host)});
-   const h=hosts.get(host),job={url:d.url,region:r.region,topic:r.id,meta:{docType:types.get(d.url)||'other',formal:r.formal,eventDate:r.date,...(others?{role:'other'}:{})}};
+   const h=hosts.get(host),job={url:d.url,region:r.region,topic:r.id,meta:{docType:types.get(d.url)||'other',formal:r.formal,eventDate:r.date,...(role?{role}:{})}};
    // Fälliger Server: erst SAMPLE Adressen, der Rest wartet auf den ersten Erfolg
    (h.sample&&h.queue.length>=SAMPLE?h.held:h.queue).push(job);open++;
   }

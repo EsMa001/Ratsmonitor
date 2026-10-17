@@ -138,6 +138,16 @@ const ranked=f=>{
     übrige PDFs, ein übriges nie ein Hauptdokument */
  return {...f,type,scan,...r,order:f.other?r.score-1:r.score};
 };
+/**
+ * Bereich einer Datei der OCR-Reihe (text.mjs --range): daily = Sitzung ab dem Stichtag, ohne Sitzungstag die seit dem Stichtag
+ * geladene Datei (sonst zählten Zehntausende alte Anlagen ohne Datum zum Tagesbereich, Befund 16.10.2026); backlog = der Rest.
+ */
+export function ocrRange(x,range,boundary){
+ if(range!=='daily'&&range!=='backlog')return true;
+ const day=x.eventDate?x.eventDate.slice(0,10):(x.fetchedAt||'').slice(0,10);
+ const daily=!!day&&day>=boundary;
+ return range==='daily'?daily:!daily;
+}
 /** Alle geladenen Dateien mit Score, beste zuerst (übrige PDFs nach allen Hauptdokumenten) */
 export const rankedFiles=store=>store.db.prepare(FILES+' GROUP BY p.sha256').all().map(ranked).sort((a,b)=>b.order-a.order);
 /** Eine Datei mit Rang (oder null, wenn sie nicht geladen ist) */

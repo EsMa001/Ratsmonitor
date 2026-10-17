@@ -214,6 +214,14 @@ async function step(db,id,run){
  * auf ok; die Quelle bat um Pause → blocked (Server wartet, Retry-After); Fehler → Klasse aus der Ursache (Ausnahme ohne
  * erkennbaren Netzfehler: internal); 409 (Sperre im Haus) zählt nicht. Auch für import-worker --direct (Nacharbeit).
  */
+/** Teilweiser Abruf, bei dem ein Teil am Netz scheiterte (nicht: gesperrter Monat, nicht öffentlich, Grenze des Lesers): erster solcher Hinweis */
+export const PARTIAL_PREFIX='teilweise: ';
+const NETWORK=/fetch failed|timeout|aborted|ECONN|ENOTFOUND|EAI_AGAIN|socket hang up|HTTP 5\d\d/i;
+export function partialCause(d){
+ const complete=d?.attemptComplete??d?.coverage?.complete;
+ if(!d?.coverage||complete!==false)return null;
+ return (d.coverage.issues||[]).map(String).find(i=>NETWORK.test(i))?.slice(0,200)||null;
+}
 export async function noteImport(db,region,{result,failure='',server=provider(region),origin='daily'}={}){
  try{
   const d=result?.data||{};
@@ -222,6 +230,12 @@ export async function noteImport(db,region,{result,failure='',server=provider(re
   if(!result)await recordFailure(db,{...f,cls:classify({error:failure,internal:true}),error:failure});
   else if(d.refused)await recordFailure(db,{...f,cls:'blocked',error:d.cause||'Quelle bittet um Pause',retryAfterMs:d.refused.retryAfterMs});
   else if(result.status!==200){const cause=String(d.cause||d.error||'');await recordFailure(db,{...f,cls:classify({error:cause,http:result.status>=500?null:result.status,internal:/TypeError|ReferenceError|SyntaxError|is not a function|Cannot read/.test(cause)}),error:cause});}
+  else if(partialCause(d)){
+   // Teilweise mit Netzfehler (Teil der Quelle nicht erreichbar, 5xx, Zeitüberschreitung): als vorübergehend vermerken, damit die
+   // Nacharbeit es erneut versucht; vorher galt das als Erfolg (17.10.2026: 417 Gebiete „fetch failed“ ohne neuen Versuch). Ohne
+   // Server (er hat ja geantwortet, keine Bremse) und mit Präfix „teilweise:“, damit der Nachtlauf das Gebiet nicht zurückstellt.
+   await recordFailure(db,{...f,host:null,cls:'transient',error:'teilweise: '+partialCause(d)});
+  }
   else await clearFailure(db,{...f});
  }catch(e){console.error('[pipeline] Fehlerspeicher:',e?.message||e);}
 }
