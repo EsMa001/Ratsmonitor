@@ -709,6 +709,7 @@ topic design-styles.css:140
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
 - ArtIcon.tsx (71, ⚠1): ArtIcon
+- BandDots.tsx (50): BandDots
 - BottomNav.tsx (35): BottomNav
 - Brand.tsx (274): AnalyticsX, AnalyticsLogo, Brand
 - CalendarFeed.tsx (106): CalendarFeed
@@ -717,6 +718,7 @@ topic design-styles.css:140
 - DateRangeFilter.tsx (98): DateRangeSelect, DateRangeFields, DateRangeFilter
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
+- DotField.tsx (86): DotField
 - ExportMenu.tsx (56, ⚠1): ExportOption, ExportMenu
 - FilterPanel.tsx (110, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
@@ -773,6 +775,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/lib/
 - account.ts (283): Me, ACCOUNT_REV, getMe, AccountApiError, api, touchAccount, loadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
+- bandFigure.ts (32): publishBandFigure, useBandFigure, useCountUp
 - betreiber.ts (20): BETREIBER, betreiberAdresse
 - brand.ts (54): setLogo, useBrand, useBrandText, brandName
 - brands.ts (45): BrandId, BRAND_NAME, LogoId, LOGOS, LOGO_IDS, DEFAULT_LOGO, DEFAULT_BRAND, pageTitle
@@ -837,35 +840,35 @@ topic design-styles.css:140
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (227, ⚠26): ANALYSE_THUMBS, MethodikText
 - AnalyticsLocked.tsx (51): AnalyticsLocked
-- AnalyticsPages.tsx (57): AnalyticsPages
+- AnalyticsPages.tsx (58): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
 - AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (62): Befund, zuThema, Leer, Fehler
-- BeschluessePage.tsx (194, ⚠8): BeschluessePage
+- BeschluessePage.tsx (195, ⚠8): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (302, ⚠10): ComparePage
+- ComparePage.tsx (303, ⚠10): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionSearch.tsx (68, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (312, ⚠3): FaktenPage
-- FraktionenPage.tsx (166, ⚠4): FraktionenPage
+- FraktionenPage.tsx (167, ⚠4): FraktionenPage
 - GraphView.tsx (235, ⚠1): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (170, ⚠3): GremiennetzPage
-- Kennzahlen.tsx (131): weekAgo, isNew, NeuMark, Kennzahlen, countScale, zeitText, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (233, ⚠3): KnowledgeGraphPage
+- GremiennetzPage.tsx (171, ⚠3): GremiennetzPage
+- Kennzahlen.tsx (132): weekAgo, isNew, NeuMark, Kennzahlen, countScale, zeitText, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
+- KnowledgeGraphPage.tsx (234, ⚠3): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠2): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (110, ⚠1): NewsradarPage
+- NewsradarPage.tsx (111, ⚠1): NewsradarPage
 - PageBand.tsx (19): PageBand
-- RadarDrill.tsx (90): DrillItem, StatusDot, RadarDrill
+- RadarDrill.tsx (91): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (107, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (331, ⚠7): signaleHref, SignalePage
+- SignalePage.tsx (334, ⚠7): signaleHref, SignalePage
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
-- XAtlasView.tsx (571, ⚠10): XAtlasView
-- XKopf.tsx (194): XKopf, XWeiter, ThemenLeiste
+- XAtlasView.tsx (550, ⚠7): XAtlasView
+- XKopf.tsx (166): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (338, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun

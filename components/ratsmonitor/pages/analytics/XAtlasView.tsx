@@ -15,6 +15,7 @@ import { prettyTerm } from "../../lib/terms";
 import { ThemeIcon } from "../../components/icons";
 import { SubtopicIcon } from "../../components/SubtopicIcon";
 import { num, pctText as pct } from "../../lib/format";
+import { MethodikNote } from "./Methodik";
 
 /* plenara.X Atlas auf der einen Abfrage (GET /api/x?view=atlas, server/integrations/plenara-x-query.mjs): je Thema die
    Unterthemen, der Verlauf, die Orte und die jüngsten Vorgänge; ohne Thema die 10 Themen. Gezählt werden
@@ -233,17 +234,6 @@ function OrtImVergleich({ c, theme, onPick }: { c: Compare; theme: string; onPic
    haben die Seite /analytics/signale, Vergleichswerte kommen in den Ortsvergleich. Regeln, Daten und by=fact bleiben; true zeigt sie wieder. */
 const SHOW_FACTS = false;
 
-/* Signale zu Themen und Unterthemen (Hinweis unter der Antwortzeile); umgekehrt ATLAS_OF in SignalePage */
-const SIGNAL_OF: Record<string, [string, string][]> = {
-  bauen: [["wohnbau", "Neue Wohnbaugebiete"]], "bauen.plan": [["wohnbau", "Neue Wohnbaugebiete"], ["gewerbe", "Gewerbe, Industrie, Handel"]],
-  wirtschaft: [["gewerbe", "Gewerbe, Industrie, Handel"]],
-  umwelt: [["wind", "Windenergie"], ["solar", "Solarenergie"], ["waerme", "Wärme und Netze"], ["wasser", "Wasser und Hochwasser"]],
-  "umwelt.ee": [["wind", "Windenergie"], ["solar", "Solarenergie"]], "umwelt.waerme": [["waerme", "Wärme und Netze"]], "umwelt.klimaschutz": [["waerme", "Wärme und Netze"]],
-  "umwelt.wasser": [["wasser", "Wasser und Hochwasser"]], "umwelt.anpass": [["wasser", "Wasser und Hochwasser"]],
-  mobilitaet: [["strasse", "Straßen und Brücken"], ["mobil", "Mobilität"]], "mobilitaet.strasse": [["strasse", "Straßen und Brücken"]], "mobilitaet.rad": [["strasse", "Straßen und Brücken"]],
-  bildung: [["schulen", "Schulen, Kitas, Sport"]], "kultur.sport": [["schulen", "Schulen, Kitas, Sport"]],
-  "verwaltung.breit": [["breitband", "Breitband und Mobilfunk"]], "verwaltung.digital": [["breitband", "Breitband und Mobilfunk"]],
-};
 
 export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit }: { theme: string; sub: string; zeit?: string; term: string | null; onTheme: (id: string) => void; onSub: (id: string) => void; onZeit: (z: string) => void }) {
   const { query: baseQuery, search } = useAnalyticsQuery();
@@ -373,9 +363,6 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
     return () => { clearTimeout(t); c.abort(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hoverKey]);
-  /* Antwort mit Namen: die (bis zu drei) Zeilen mit dem deutlichsten Zuwachs */
-  const growth = (() => { if (dirs?.for !== dirFor) return null; const g = parts.filter((p) => (dirs.v.get(p.key) ?? 0) >= 1).sort((a, b) => dirs.v.get(b.key)! - dirs.v.get(a.key)!).slice(0, 3);
-    return g.length ? g.map((p) => ({ key: p.key, name: p.name, f: dirs.v.get(p.key)!.toLocaleString("de-DE", { maximumFractionDigits: 1 }) })) : null; })();
   useOrtInAdresse(new URLSearchParams(baseQuery).get("area") ?? "", (a) => search.setArea(a, "ui"));
   /* Auf dem Handy steht der Inhalt des Unterthemas unter der Karte: nach der Wahl dorthin scrollen */
   const subRef = useRef<HTMLElement>(null);
@@ -411,8 +398,6 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   const areaAgs = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ?? "";
   /* Gewählter Ort (Filter der Suche): mit ✕ an der Antwortzeile, damit man ihn dort sieht und entfernen kann */
   const place = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ? (cmp?.region ?? res?.compare?.region ?? (allRegions.length === 1 ? allRegions[0].name : "")) : "";
-  /* Passende Signale zur Auswahl (Unterthema genauer als Thema) */
-  const related = SIGNAL_OF[sub] ?? SIGNAL_OF[theme] ?? [];
   const answer = placeAnswer || `${what ? what + ": " : ""}${n(total)} ${plural(total, "Vorgang", "Vorgänge")} ${where}${share !== null ? `; das sind ${pct(share)} aller Sachvorgänge dieser Räte` : ""}${res?.selection.q ? ` zur Suche „${prettyTerm(res.selection.q)}“` : ""}${zeit ? ` in den letzten ${zeit} Monaten` : ""}.`;
 
   return (
@@ -447,17 +432,13 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
             <>
               {/* Mit Ort: der Ort als Chip mit ✕ am Satzanfang (dort sieht man ihn und kann ihn entfernen); sonst große Kennzahlen */}
               {place && cmp ? <Befund tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest} <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} /></Befund>
-                : <Kennzahlen week={week} scope={[what || "Alle Themen", res.selection.q ? `„${prettyTerm(res.selection.q)}“` : "", place || "", zeitText(zeit)].filter(Boolean).join(" · ")} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }, { value: n(allRegions.length), label: plural(allRegions.length, "Gebiet", "Gebiete") }, ...(share !== null ? [{ value: pct(share), label: "aller Sachvorgänge dieser Räte" }] : [])]}>
-                  <span>{what || "Alle Themen"}{res.selection.q ? ` · Suche „${prettyTerm(res.selection.q)}“` : ""}</span>
+                : <Kennzahlen week={week} scope={[what || "Alle Themen", res.selection.q ? `„${prettyTerm(res.selection.q)}“` : "", place || ""].filter(Boolean).join(" · ")} period={zeitText(zeit)} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }]}>
                   {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
                   <ZeitPills value={zeit} onPick={onZeit} />
                   <MeinOrt current={areaAgs && place ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} />
                   <Folgen before={() => { if (theme) search.setThema(theme); }} hint="Neue Vorgänge zu Thema, Ort und Suche per Mail (Unterthemen werden nicht gespeichert)" />
                 </Kennzahlen>}
 
-              {/* Veränderung gehört zu den Trends: hier nur ein kurzer Hinweis, der Atlas zeigt Menge und Vergleich */}
-              {growth && <p className="mt-1 text-[14px] text-slate-500">Deutlich gewachsen: {growth.map((g, i) => <span key={g.key}>{i ? ", " : ""}{g.name} (×{g.f})</span>)}. <Link href={`/analytics/trends?begriff=${encodeURIComponent(growth[0].name)}`} className="font-medium text-teal-700 hover:underline">Was sich verändert, in den Trends →</Link></p>}
-              {related.length > 0 && <p className="mt-1 text-[14px] text-slate-500">Dazu in den Signalen, mit Stand des Verfahrens: {related.map(([id, name], i) => <span key={id}>{i > 0 && " · "}<Link href={`/analytics/signale?signal=${id}`} className="font-medium text-teal-700 hover:underline">{name} →</Link></span>)}</p>}
               {place && cmp && <div className="mt-2"><ZeitPills value={zeit} onPick={onZeit} /></div>}
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
@@ -478,7 +459,6 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                     </section>
                   </> : <section className={res.compare ? "mt-8" : ""}>
                     <h2 className="flex items-center gap-2 text-[22px] font-semibold">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? `Unterthemen von ${themeName}` : "Themen"}</h2>
-                    <p className="mb-3 mt-1 text-[14px] text-slate-500">Antippen zeigt die Vorgänge, Überfahren zeigt sie auf der Karte. ↑ ↓: Anteil der letzten {span} Monate gegenüber den {span} davor, nur deutliche Änderungen.</p>
                     <PartList rows={parts} icons={!theme} open={openPart} dir={dirOf} onHover={setHoverKey} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
                       label={(r) => `${n(r.count)}${r.share !== null && theme && !sub ? ` · ${pct(r.share)}` : ""}`}
                       drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={3}
@@ -515,9 +495,8 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                   <div className="mt-3"><RadarDrill base={partBase} query={listQuery} by={all.by} value={all.value} label={all.label} /></div>
                 </div>}
               </section>
-              {!SHOW_FACTS && <p className="mt-8 text-[14px] text-slate-500">Neue Baugebiete, Windparks, Wärmeplanung und mehr mit Stand und Kennzahlen: <Link href="/analytics/signale" className="font-medium text-teal-700 hover:underline">plenara.X Signale →</Link></p>}
 
-              <p className="mt-4 max-w-[900px] text-[12px] text-slate-500">Gezählt werden Vorgänge: derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Formalien, Sammelpunkte, Besetzungen und Fragestunden zählen nicht.{res.unread ? ` ${n(res.unread)} Vorgänge sind noch nicht mit ihren Unterlagen gelesen; sie zählen beim Thema, aber noch ohne Unterthema.` : ""}</p>
+              <MethodikNote>Gezählt werden Vorgänge: derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Formalien, Sammelpunkte, Besetzungen und Fragestunden zählen nicht.{res.unread ? ` ${n(res.unread)} Vorgänge sind noch nicht mit ihren Unterlagen gelesen; sie zählen beim Thema, aber noch ohne Unterthema.` : ""}</MethodikNote>
             </>
           )}
         </div>

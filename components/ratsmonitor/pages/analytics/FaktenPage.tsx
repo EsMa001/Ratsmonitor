@@ -12,6 +12,7 @@ import { RadarDrill } from "./RadarDrill";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, useOrtInAdresse } from "./Kennzahlen";
 import { Baby, Banknote, Building2, Coins, Dog, Droplets, Factory, HandCoins, House, LayoutGrid, Map as MapIcon, Percent, Route, Ticket, Trash2, Wind, type LucideIcon } from "lucide-react";
 import { num } from "../../lib/format";
+import { MethodikNote } from "./Methodik";
 
 /* plenara.X Fakten (GET /api/x?view=fakten, server/integrations/plenara-x-query.mjs): Werte aus den Unterlagen je Gemeinde
    auf der Karte, rot bis grün. Nur Werte ab 90 % gemessener Qualität (MAP_FACTS). Filter: Fakt, Wert (z. B. Grundsteuer B),
@@ -199,11 +200,10 @@ export function FaktenPage() {
             {titleName}: üblich {num(quart(lasts, 0.25))} bis {num(quart(lasts, 0.75))} {unit}, Median {num(mid(lasts))} {unit}
             .
           </Befund>}
-          <Kennzahlen items={overview ? [{ value: n(ranked.length), label: "Gebiete mit Werten" }]
+          <Kennzahlen scope={titleName} items={overview ? [{ value: n(ranked.length), label: "Gebiete mit Werten" }]
             : amount ? [{ value: num(ranked.reduce((a, x) => a + (x.sum ?? x.v), 0)), label: `${unit || "insgesamt"}` }, { value: n(ranked.length), label: "Gebiete" }]
             : change ? [{ value: n(ranked.filter((x) => x.v > 0).length), label: "Gebiete gestiegen" }, { value: n(ranked.filter((x) => x.v < 0).length), label: "gesunken" }]
             : [{ value: ranked.length ? `${num(mid(lasts))}` : "–", label: `Median${unit ? ` (${unit})` : ""}` }, { value: n(ranked.length), label: ranked.length === 1 ? "Gebiet mit Wert" : "Gebiete mit Wert" }, { value: n(up), label: "seit dem vorigen Wert höher" }]}>
-            <span>{titleName}</span>
             <MeinOrt current={areaAgs && focus && focus.ags === areaAgs ? { ags: areaAgs, name: focus.name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
             <Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (der Fakt wird noch nicht gespeichert)" />
           </Kennzahlen>
@@ -238,7 +238,7 @@ export function FaktenPage() {
                     options={[["hoch", "Höchste"], ["niedrig", "Niedrigste"], ["veraenderung", "Stärkster Anstieg", "Jüngster Wert gegen den vorigen; die Karte zeigt dann die Veränderung"]]}
                     onPick={(k) => pick(k === "veraenderung" ? { ansicht: "veraenderung", sortierung: "" } : { ansicht: "", sortierung: k })} />}
                 </div>
-                <p className="mt-1 text-[14px] text-slate-500">Antippen zeigt die Vorgänge, aus denen der Wert stammt; Überfahren zeigt den Ort auf der Karte.{plain ? " Pfeil: gegenüber dem vorigen Wert." : ""}</p>
+                {plain && <p className="mt-1 text-[14px] text-slate-500">↑ ↓ gegenüber dem vorigen Wert</p>}
                 <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0" onMouseLeave={() => setHover("")}>
                   {shown.map((x) => <li key={x.name} className="border-b border-slate-200">
                     <button type="button" aria-expanded={listed === x.key && listedIn === "list"} onClick={() => show(x.key, "list")} onMouseEnter={() => setHover(x.ags)} onFocus={() => setHover(x.ags)} onBlur={() => setHover("")}
@@ -255,7 +255,7 @@ export function FaktenPage() {
                 </ol>
                 {ranked.length > 10 && <button type="button" onClick={() => setAll(!all)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{all ? "Weniger zeigen" : `Alle ${n(ranked.length)} zeigen`}</button>}
               </section>}
-              <p className="mt-8 text-[12px] text-slate-500">Je Gebiet der jüngste in den Vorlagen der Räte genannte Wert (beschlossen oder vorgeschlagen, keine Vergleichswerte; mehrere am selben Tag: Median); Veränderung gegen den vorigen anderen Wert. Nur Werte, deren Erkennung in Stichproben zu mindestens 90 % stimmt.</p>
+              <MethodikNote>Je Gebiet der jüngste in den Vorlagen der Räte genannte Wert (beschlossen oder vorgeschlagen, keine Vergleichswerte; mehrere am selben Tag: Median); Veränderung gegen den vorigen anderen Wert. Nur Werte, deren Erkennung in Stichproben zu mindestens 90 % stimmt.</MethodikNote>
             </div>
           </div>
         </div>

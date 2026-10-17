@@ -14,6 +14,7 @@ import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
 import { RadarDrill } from "./RadarDrill";
 import { todayLocal } from "../../lib/text";
 import { errorText, fetchJson } from "../../lib/fetchJson";
+import { MethodikNote } from "./Methodik";
 
 interface Share { id: string; n: number; share: number }
 interface Place {
@@ -292,7 +293,7 @@ export function ComparePage() {
           </details>
           </Reveal>
 
-          <p className="mt-10 text-[12px] text-slate-500">Maßstab sind alle Gebiete der Gemeindeebene mit denselben Filtern ({n(res.base.total)} Vorgänge). Jeder Ort zählt nur seinen eigenen Rat (eine Gemeinde ohne Kreistag, ein Kreis ohne seine Gemeinden); derselbe Titel in mehreren Gremien zählt einmal, einzeln geführte Einwohnerfragen und Besetzungen zählen nicht. Alle Zahlen zählen alle passenden Vorgänge; Gremien aus den Stationen jedes Vorgangs. „Typisch“ verlangt mindestens den 1,8-fachen Anteil und einen deutlichen Unterschied (z-Wert ab 3). Unterschiede im Datenbestand (z. B. wie vollständig ein Ratsinformationssystem erfasst ist) wirken auf die Zahlen; Vorgänge je 1.000 Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität.</p>
+          <MethodikNote>Maßstab sind alle Gebiete der Gemeindeebene mit denselben Filtern ({n(res.base.total)} Vorgänge). Jeder Ort zählt nur seinen eigenen Rat (eine Gemeinde ohne Kreistag, ein Kreis ohne seine Gemeinden); derselbe Titel in mehreren Gremien zählt einmal, einzeln geführte Einwohnerfragen und Besetzungen zählen nicht. Alle Zahlen zählen alle passenden Vorgänge; Gremien aus den Stationen jedes Vorgangs. „Typisch“ verlangt mindestens den 1,8-fachen Anteil und einen deutlichen Unterschied (z-Wert ab 3). Unterschiede im Datenbestand (z. B. wie vollständig ein Ratsinformationssystem erfasst ist) wirken auf die Zahlen; Vorgänge je 1.000 Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität.</MethodikNote>
         </div>
       )}
     <XWeiter links={[["/analytics/fraktionen", "Fraktionen"], ["/analytics/gremien", "Gremien"]]} />

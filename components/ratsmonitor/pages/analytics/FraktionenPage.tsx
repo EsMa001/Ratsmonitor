@@ -9,6 +9,7 @@ import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarDrill } from "./RadarDrill";
 import { useAnalysisRun } from "./useAnalysisRun";
+import { MethodikNote } from "./Methodik";
 
 interface Cell { id: string; name: string; n: number; share: number | null; index: number | null }
 interface Party {
@@ -154,7 +155,7 @@ export function FraktionenPage() {
                 )}
               </section></Reveal>
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei.</p>
+              <MethodikNote>Die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei.</MethodikNote>
             </>
           )}
         </div>

@@ -2,10 +2,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cameFromApp, useAppNav } from "../../state/nav";
 import { IconChevronLeft } from "../../components/icons";
-import { useEffect, useState } from "react";
 import { PageBand } from "./PageBand";
-import { MethodikText } from "./AnalyticsAbout";
-import type { AnalyseId } from "../../info/branchen-enterprise";
 import { Icon, type IconName } from "../../info/icons";
 import { AnalyticsX } from "../../components/Brand";
 import { ThemeIcon } from "../../components/icons";
@@ -24,13 +21,6 @@ const TRENDS: [string, string][] = [["/analytics/trends", "Verlauf"], ["/analyti
 
 /* Reiter haben die Frage ihrer Seite im Kopf; als Kachel brauchen sie eine eigene */
 const KACHEL_FRAGE: Record<string, string> = { "/analytics/vergleich": "Mit anderem Ort vergleichen", "/analytics/beschluesse": "Wie geht es aus?" };
-
-/* Methodik je Seite (Texte in AnalyticsAbout.tsx); Trends erklärt auch die Ausbreitung */
-const METHODIK_VON: Record<string, [AnalyseId, string][]> = {
-  atlas: [["atlas", "Atlas"]], vergleich: [["vergleich", "Vergleich"]], signale: [["signale", "Signale"]], fakten: [["fakten", "Fakten"]],
-  trends: [["trends", "Verlauf"], ["diffusion", "Ausbreitung"]], beschluesse: [["beschluesse", "Ausgang"]], fraktionen: [["fraktionen", "Fraktionen"]],
-  gremien: [["gremien", "Gremien"]], graph: [["graph", "Themennetz"]], news: [["news", "Aktuelles"]],
-};
 
 /* Im Kopf statt der Frage (die Fragen bleiben im Menü): was die Seite zeigt, in wenigen Worten */
 const KURZ: Record<string, string> = {
@@ -55,14 +45,6 @@ const SEITEN: Record<string, Seite> = {
 export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   const s = SEITEN[seite], path = usePathname();
   const router = useRouter(), { goBack } = useAppNav();
-  /* Methodik: kleiner Info-Knopf neben der Frage; „Methodik“ unter den Ergebnissen (#methodik) öffnet dasselbe Feld */
-  const [info, setInfo] = useState(false);
-  useEffect(() => {
-    const auf = () => { if (location.hash === "#methodik") { setInfo(true); document.getElementById("methodik")?.scrollIntoView({ behavior: "smooth", block: "start" }); } };
-    auf();
-    window.addEventListener("hashchange", auf);
-    return () => window.removeEventListener("hashchange", auf);
-  }, []);
   /* Ort zwischen Atlas und Vergleich mitnehmen (?ort=) */
   const ort = useSearchParams().get("ort");
   const mit = (href: string) => (ort && s.reiter === ATLAS ? `${href}?ort=${ort}` : href);
@@ -79,19 +61,10 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
         </h1>
         <BandMitte kurz={KURZ[seite] ?? s.frage} />
         {/* Das Symbol der Seite ist zugleich der Knopf für die Methodik */}
-        <button type="button" onClick={() => setInfo(!info)} aria-expanded={info} aria-controls="methodik" title="Methodik: worauf die Zahlen beruhen" className="rm-bandicon justify-self-end pr-6 max-sm:pr-2 print:hidden">
+        <a href="#methodik" title="Methodik: worauf die Zahlen beruhen" className="rm-bandicon justify-self-end pr-6 max-sm:pr-2 print:hidden">
           <Icon name={s.icon} size={44} /><span className="sr-only">Methodik</span>
-        </button>
+        </a>
       </div>
-      {info && METHODIK_VON[seite] && (
-        <div id="methodik" className="mt-4 max-w-[900px] scroll-mt-24 border-l-2 border-teal-600 pl-4">
-          <div className="flex items-baseline justify-between gap-4">
-            <p className="m-0 text-[14px] font-semibold text-slate-900">Methodik</p>
-            <button type="button" onClick={() => { setInfo(false); if (location.hash === "#methodik") history.replaceState(history.state, "", location.pathname + location.search); }} className="text-[14px] text-slate-500 hover:text-slate-900">Schließen</button>
-          </div>
-          <MethodikText ids={METHODIK_VON[seite]} />
-        </div>
-      )}
       {s.reiter && (
         <nav aria-label="Ansicht" className="-mb-4 mt-3 flex gap-6 print:hidden">
           {s.reiter.map(([href, name]) => (
@@ -181,13 +154,12 @@ function BandMitte({ kurz }: { kurz: string }) {
   const fig = useBandFigure();
   const value = useCountUp(fig?.value ?? "");
   if (!fig) return <p className="rm-band-mid m-0 whitespace-nowrap text-center text-[22px] opacity-90 max-sm:order-3 max-sm:col-span-2 max-sm:text-left">{kurz}</p>;
+  const when = [fig.period, fig.week ? `+${fig.week.toLocaleString("de-DE")} in 7 Tagen` : ""].filter(Boolean).join(" · ");
   return (
-    <div className="rm-band-mid flex items-center justify-center gap-3 max-sm:order-3 max-sm:col-span-2 max-sm:justify-start" title={kurz}>
-      <span className="text-[44px] font-semibold leading-none tabular-nums max-sm:text-[28px]">{value}</span>
-      <span className="flex flex-col leading-tight">
-        <span className="text-[16px] font-medium">{fig.label}</span>
-        <span className="text-[14px] opacity-80">{fig.scope ?? kurz}{fig.week ? ` · +${fig.week.toLocaleString("de-DE")} in 7 Tagen` : ""}</span>
-      </span>
+    <div className="rm-band-mid text-left max-sm:order-3 max-sm:col-span-2" title={kurz}>
+      <p className="m-0 flex items-baseline gap-2 leading-none"><span className="text-[44px] font-semibold tabular-nums max-sm:text-[28px]">{value}</span><span className="text-[18px] font-medium">{fig.label}</span></p>
+      <p className="m-0 mt-1.5 text-[14px] opacity-85">{fig.scope || kurz}</p>
+      {when && <p className="m-0 text-[14px] opacity-70">{when}</p>}
     </div>
   );
 }

@@ -65,7 +65,7 @@ export function AtlasPage() {
         </ul>
       </nav>
       <XAtlasView theme={thema} sub={sub} zeit={zeit} term={term} onTheme={(id) => pick({ thema: id })} onSub={(id) => pick({ thema, sub: id })} onZeit={(z) => pick({ thema, sub, zeit: z })} />
-    <XWeiter links={[["/analytics/trends", "Was verändert sich? (Trends)"], ["/analytics/vergleich", "Mit anderem Ort vergleichen"], ["/analytics/gremien", "Wo wird das beraten? (Gremien)"]]} />
+    <XWeiter links={[["/analytics/trends", "Was verändert sich? (Trends)"], ["/analytics/vergleich", "Mit anderem Ort vergleichen"], ["/analytics/gremien", "Wo wird das beraten? (Gremien)"], ["/analytics/signale", "Was entsteht? (Signale)"]]} />
     </main>
   );
 }
