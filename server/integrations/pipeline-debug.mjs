@@ -6,10 +6,10 @@
  * Aktionen (POST): Server freigeben, Einträge des Tagesbereichs wieder öffnen (den Altbestand bearbeitet seine eigene Seite).
  */
 import {failureCounts,hasFailureStore,releaseHost,reopen,CLASSES,rangeWhere,dailyBoundary,DAILY_SINCE,PHASE_ORDER} from './work-failures.mjs';
-import {JOBS} from './schedules.mjs';
+import {JOBS,UNITS_KEY,unitsWarning} from './schedules.mjs';
 
 export const SCHEDULE_LOG_KEY='schedule-log';
-const KEYS=[SCHEDULE_LOG_KEY,'schedule-runs','pdf-store-runs','rule-texts-last','nacharbeit-last','ai-counts','pipeline-trace','pdf-daily-last','admin-pipeline-job','altbestand-last','altbestand-requests'];
+const KEYS=[SCHEDULE_LOG_KEY,'schedule-runs','pdf-store-runs','rule-texts-last','nacharbeit-last','ai-counts','pipeline-trace','pdf-daily-last','admin-pipeline-job','altbestand-last','altbestand-requests',UNITS_KEY];
 const parse=v=>{try{return v?JSON.parse(v):null;}catch{return null;}};
 
 /** Auftrag des Imports knapp: Zähler je Zustand statt aller Posten */
@@ -33,6 +33,7 @@ export async function pipelineDebug(db,now=Date.now()){
  const recent=store?(await db.prepare(`SELECT step,key,host,class,reason,http,tries,last_at,next_try_at,origin,event_date,CASE WHEN ${d.sql} THEN 'daily' ELSE 'backlog' END AS range FROM work_failures ORDER BY last_at DESC LIMIT 60`).bind(...d.args).all()).results:[];
  const req=by.get('altbestand-requests')||{};
  return {at:new Date(now).toISOString(),boundary:dailyBoundary(now),since:DAILY_SINCE,phases:PHASE_ORDER,
+  units:unitsWarning(by.get(UNITS_KEY),now),
   jobs:JOBS.map(j=>({id:j.id,label:j.label,flow:j.flow,time:j.time||null,every:j.every||null,window:j.window||null})),
   log:(by.get(SCHEDULE_LOG_KEY)||[]).slice(0,200),runs:by.get('schedule-runs')||{},
   pdfRuns:(by.get('pdf-store-runs')||[]).slice(0,12),ruleTexts:by.get('rule-texts-last'),nacharbeit:by.get('nacharbeit-last'),

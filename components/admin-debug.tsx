@@ -17,7 +17,7 @@ type NachStep={step:string;name?:string;entries:number;ok?:number;again?:number;
 type Nach={startedAt:string;finishedAt:string;due:number;steps:NachStep[];followUp?:{after:string;step:string;code:number|string;reports?:number}[];readyForAi?:number;totals?:Counter};
 type Win={since:string;written:number;withPdf:number;noPdf:number;main:number;session:number;noMain:number;pdf:Counter;failures:Counter;text:Counter;ocr:Counter;rules:Counter;summary:Counter;label:Counter;ai:Counter;imports:Counter};
 type Entry={step:string;key:string;class?:string;reason:string|null;tries:number;last_at:string;next_try_at?:string|null;range?:string;release?:string|null};
-type Data={at:string;boundary:string;since:string;jobs:{id:string;label:string;flow:string}[];log:{job:string;start:string;end:string;seconds:number;result:string;trigger:string}[];
+type Data={at:string;boundary:string;since:string;units:{at:string;inactive:string[];stale:boolean}|null;jobs:{id:string;label:string;flow:string}[];log:{job:string;start:string;end:string;seconds:number;result:string;trigger:string}[];
  pdfRuns:PdfRun[];ruleTexts:RuleRun|null;nacharbeit:Nach|null;altbestand:{last:{startedAt:string;finishedAt:string;readyForAi?:number}|null;importOpen:boolean;reworkOpen:boolean;ocrOpen:boolean};
  aiCounts:{at:string;states:Counter;newText:number;withoutAi:number}|null;trace:{at:string;seconds:number;windows:Record<string,Win>}|null;pdfDaily:{startedAt:string}|null;
  importJob:{status:string;createdAt:string;updatedAt:string;window:string|null;counts:Counter;deferred:{region:string;message:string}[];failed:{region:string;message:string}[]}|null;
@@ -80,6 +80,10 @@ export function AdminDebug(){
   <AdminPageHead page="debug"/>
   {error&&<Alert onRetry={load}>{error}</Alert>}
   {note&&<p role="status" className="mt-4 text-[14px] text-slate-700">{note}</p>}
+  {data?.units&&(data.units.inactive.length>0||data.units.stale)&&<div role="alert" className="mt-4 max-w-[900px] rounded-md border border-red-300 bg-red-50 px-4 py-3 text-[14px] text-red-900">
+   <strong>Auslöser auf dem Server:</strong>{' '}
+   {data.units.stale?<>der Zeitplaner hat sich seit {when(data.units.at)} nicht gemeldet; kein Job startet mehr.</>:<>inaktiv: {data.units.inactive.join(', ')}. Diese Jobs starten nie, bis jemand sie auf dem Server wieder einschaltet (<code>systemctl start {data.units.inactive.join(' ')}</code>). Jobs nur über „Anhalten“ stoppen, nie über <code>systemctl stop …timer</code>.</>}
+  </div>}
 
   <section className="mt-6" aria-label="Begriffe">
    <H2 icon="report">So liest man diese Seite</H2>
