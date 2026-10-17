@@ -54,6 +54,7 @@ export interface TopicCard {
 export interface RuleSummaryText { sentences: string[]; gaps?: boolean[]; words: number; score: number; parts?: Record<string, number> }
 export interface RuleSummary { version: number; generatedBy: string; generatedAt: string; source?: { url: string; title: string }; score: number; short: RuleSummaryText; long: RuleSummaryText }
 export interface TopicDetail extends TopicCard {
+    regionName?: string|null;
     metadata?:ArticleMetadata;
     contentAnalysis?:ContentAnalysis;
     labelAssessments?:{rule?:Classification;ai?:Classification;review?:{primary:string;reviewer:string;reviewedAt:string;reason:string}};

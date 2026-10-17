@@ -8,7 +8,7 @@ const compile=(file)=>ts.transpileModule(fs.readFileSync(path.join(root,file),'u
 const moduleUrl=code=>'data:text/javascript;base64,'+Buffer.from(code).toString('base64');
 const pagination=await import(moduleUrl(compile('shared/pagination.ts').replace('./regions',moduleUrl("const REGIONS="+fs.readFileSync(path.join(root,'shared/nrw-regions.json'),'utf8')+";export const validRegion=id=>REGIONS.some(r=>r.id===id);"))));
 const processUrl=moduleUrl(compile('shared/process.ts'));
-const {toCard,toDetail}=await import(moduleUrl(compile('server/mappers/topics.ts').replace('../../shared/topic-identity.mjs',new URL('../shared/topic-identity.mjs',import.meta.url).href).replace('../../shared/process',processUrl).replace('../../shared/analysis-state.mjs',new URL('../shared/analysis-state.mjs',import.meta.url).href).replace('../../shared/labels.mjs',new URL('../shared/labels.mjs',import.meta.url).href)));
+const {toCard,toDetail}=await import(moduleUrl(compile('server/mappers/topics.ts').replace('../../shared/topic-identity.mjs',new URL('../shared/topic-identity.mjs',import.meta.url).href).replace('../../shared/process',processUrl).replace('../../shared/analysis-state.mjs',new URL('../shared/analysis-state.mjs',import.meta.url).href).replace('../../shared/labels.mjs',new URL('../shared/labels.mjs',import.meta.url).href).replace('../../shared/catalog.mjs',new URL('../shared/catalog.mjs',import.meta.url).href)));
 const {topics}=JSON.parse(fs.readFileSync(path.join(root,'data/topics.json'),'utf8'));
 
 test('API pagination rejects invalid input and round-trips cursors',()=>{

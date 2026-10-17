@@ -35,6 +35,8 @@ Komprimiert nur 2:1, also viele Koordinaten-Nachkommastellen. Optionen: Koordina
 
 Gebietskatalog als JS-Bündel; prüfen, ob die Artikelseite ihn wirklich braucht oder nur wenige Felder.
 
+**Umgesetzt (17.10.2026, Zweig nico_eff):** Die Artikelseite brauchte den Katalog nur für den Gebietsnamen. Der kommt jetzt mit dem Vorgang (`regionName` in `server/mappers/topics.ts`, Typ `TopicDetail`), `DetailPage.tsx` lädt den Katalog nicht mehr. Lokal geprüft: Gebietsname im Kopf und in den Angaben wie vorher, kein regions-Chunk mehr (528 KB roh, 139 KB gzip gespart je erstem Artikelaufruf).
+
 ## Befund 4: Suche fragt dieselbe Suche dreimal ab
 
 Beim Öffnen von `/suche?q=…` geht derselbe Aufruf dreimal raus (einer abgebrochen, zwei vollständig, 713 + 161 ms). Vermutlich doppelter Effekt bzw. Abhängigkeit (Filterzustand, Sortierung). Serverlast und Wartezeit halbierbar, nur Frontend.

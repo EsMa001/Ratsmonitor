@@ -4,7 +4,6 @@ import Link from 'next/link';
 import type {ContentEvidence,TopicDetail} from '@/shared/types';
 import {STATUS,formatDate} from '@/shared/types';
 import {labelName} from '@/shared/labels.mjs';
-import {loadCatalog,type Region} from '../lib/catalog';
 import {SessionDetails} from '@/components/article-analysis';
 import {IconChevronLeft,IconDoc,IconSpark,IconRules} from '../components/icons';
 import {cameFromApp,useAppNav} from '../state/nav';
@@ -42,12 +41,10 @@ export function DetailPage(){
  const [data,setData]=useState<{id:string;topic:TopicDetail|null;error:string}>(()=>{const s=peekTopic(id);return s===undefined?{id:'',topic:null,error:''}:{id,topic:s,error:s?'':NOT_FOUND_TEXT};}),[attempt,setAttempt]=useState(0),[summaryView,setSummaryView]=useState<{id:string;view:'ai'|'rule'}>({id:'',view:'ai'});
  // Der Vorgang kommt aus lib/topicCache.ts: aus der Trefferliste meist schon vorgeladen, bei der Rückkehr noch gehalten.
  useEffect(()=>{let live=true;if(!attempt&&peekTopic(id)!==undefined){window.scrollTo(0,0);return;}loadTopic(id).then(t=>{if(live)setData({id,topic:t,error:''});}).catch(e=>{if(live)setData({id,topic:null,error:e instanceof TopicError?e.message:'Der Vorgang konnte nicht geladen werden.'});});window.scrollTo(0,0);return()=>{live=false;};},[id,attempt]);
- // Gebietsname aus dem Katalog; der wird erst hier geladen (nicht schon mit dem Vorladen der Seite), der Name folgt dann.
- const [regions,setRegions]=useState<Region[]|null>(null);
- useEffect(()=>{let live=true;loadCatalog().then(m=>{if(live)setRegions(m.REGIONS);}).catch(()=>{});return()=>{live=false;};},[]);
+ // Gebietsname kommt mit dem Vorgang (regionName, server/mappers/topics.ts); der Katalog (528 KB) wird hier nicht mehr geladen.
  /* Vom Server mitgelieferter Vorgang gilt sofort (auch nach einem Wechsel zu einem anderen mitgelieferten), ohne Setzen im Effekt */
  const seeded=attempt?undefined:peekTopic(id),cur=seeded!==undefined?{id,topic:seeded,error:seeded?'':NOT_FOUND_TEXT}:data;
- const t=cur.id===id?cur.topic:null,region=regions?.find(r=>r.id===t?.regionId);
+ const t=cur.id===id?cur.topic:null,regionName=t?.regionName||'';
  // Tab-Titel wie vom Server (generateMetadata): Vorgangstitel · Marke; solange nichts da ist, „Vorgang“
  const {name}=useBrand(),tabTitle=t?.title||(cur.id===id&&cur.error?'Vorgang nicht gefunden':'Vorgang');
  useEffect(()=>{document.title=`${tabTitle} · ${name}`;},[tabTitle,name]);
@@ -62,7 +59,7 @@ export function DetailPage(){
   const changeView=(next:'ai'|'rule')=>setSummaryView({id,view:next});
   const source=isAi?{icon:<IconSpark size={16} aria-hidden="true"/>,label:'KI-Zusammenfassung'}:rule?{icon:<IconRules size={16} aria-hidden="true"/>,label:'Auszug aus der Vorlage (Originalsätze)'}:{icon:<IconDoc size={16} aria-hidden="true"/>,label:'Automatischer Quellenüberblick'};
   const excerptSource=rule?.source;
-  const article={id:t.id,title:t.title,date:(t.eventDate||'').slice(0,10),gemeinde:region?.name||'',teaser:shortText||''};
+  const article={id:t.id,title:t.title,date:(t.eventDate||'').slice(0,10),gemeinde:regionName,teaser:shortText||''};
   /* Rohdaten der OParl-Schnittstelle (maschinenlesbares JSON) sind keine Unterlage für Menschen: ausblenden */
   const isOparlData=(u?:string,title?:string)=>/oparl-datensatz/i.test(title||'')||/\/oparl\/.*\/(papers|meetings|agendaitems|consultations)\//i.test(u||'');
   /* Unterlagen über den eigenen Durchreicher öffnen: PDFs erscheinen im Browser statt als Download */
@@ -70,7 +67,7 @@ export function DetailPage(){
   const sorted=[...events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   /* Letzte Sitzung bis heute (-1: alle noch künftig); danach Kommendes grau */
   const today=todayLocal(),current=sorted.reduce((c,e,i)=>(e.date||'').slice(0,10)<=today?i:c,-1);
-  const facts:[string,string][]=[['Sitzung',formatDate(t.eventDate)],['Gremium',t.committee||'Nicht dokumentiert'],['Vorlage',t.reference||'Nicht dokumentiert'],['Gebiet',region?.name||(regions?'Unbekannt':'…')],['Stand',status.label],['Quellenstand',formatDate(t.updatedAt)]];
+  const facts:[string,string][]=[['Sitzung',formatDate(t.eventDate)],['Gremium',t.committee||'Nicht dokumentiert'],['Vorlage',t.reference||'Nicht dokumentiert'],['Gebiet',regionName||'Unbekannt'],['Stand',status.label],['Quellenstand',formatDate(t.updatedAt)]];
   return (
     <main id="inhalt" className="mx-auto max-w-page py-[12px]">
       <article className="py-2">
@@ -78,7 +75,7 @@ export function DetailPage(){
 
         {/* Kopf: Ort, Thema, Stand als Textzeile; Aktionen rechts */}
         <div className="flex flex-wrap items-center gap-2 text-[14px] text-slate-500">
-          <span>{region?.name||(regions?'Gebiet nicht zugeordnet':'')} · {t.category} · <span className="text-teal-700">{status.label}</span></span>
+          <span>{regionName||'Gebiet nicht zugeordnet'} · {t.category} · <span className="text-teal-700">{status.label}</span></span>
           {/* Aktionen als Symbole: Teilen, Folgen, Speichern, Exportieren */}
           <span className="ml-auto flex flex-wrap items-center gap-1">
             <ShareButton title={t.title} url={typeof window!=='undefined'?window.location.origin+'/beschluss/'+t.id:''}/>
@@ -92,7 +89,7 @@ export function DetailPage(){
                 {id:'xlsx',label:'Excel (.xlsx)',desc:'Eckdaten, Verlauf und Unterlagen als Tabelle'},
                 {id:'csv',label:'CSV (.csv)',desc:'Für andere Programme, z. B. CRM'},
               ]}
-              onExport={async f=>{const a={t,place:region?.name||'',docs:docs.map(d=>({...d,url:window.location.origin+d.url})),events:sorted};if(f==='print')printArticle(a);else exportArticleTable(a,f as 'csv'|'xlsx');}}
+              onExport={async f=>{const a={t,place:regionName,docs:docs.map(d=>({...d,url:window.location.origin+d.url})),events:sorted};if(f==='print')printArticle(a);else exportArticleTable(a,f as 'csv'|'xlsx');}}
             />
           </span>
         </div>
