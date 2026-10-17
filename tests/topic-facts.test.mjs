@@ -286,3 +286,26 @@ test('Wohnbau: Ausschreibung, Besichtigung, Wohnbauland; keine Straßennamen ode
   assert.equal(m.areaDevOf('Namensfindung Straße Baugebiet „An der Ullabreite“'), null);
   assert.equal(m.areaDevOf('Gigabitrichtlinie, Anpassung des Ausbaugebietes und Start eines Auswahlverfahrens'), null);
 });
+
+test('Signale Solar, Wärme, Straßen: Randfälle aus Stichprobe k1', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.solarOf('Information zur geplanten Flächenphotovoltaik Anlage'), 'Freiflächen-PV');
+  assert.equal(m.solarOf('Freifl�chenphotovoltaikanlage'), 'Freiflächen-PV');
+  assert.equal(m.solarOf('PV-Machbarkeitsstudie für ausgewählte kommunale Liegenschaften'), 'Dach-PV kommunal');
+  assert.equal(m.energyOf('Polizeilicher Einsatz von LED-Lichtern gegen Journalist*innen'), null);
+  assert.equal(m.energyOf('Erneuerung der Deckenbeleuchtung im Festsaal des Schlosses'), null);
+  assert.equal(m.energyOf('Zur Lände 10 denkmalschutzrechtliche Genehmigung - Installation Luft-Wärmepumpe'), null);
+  assert.equal(m.streetSignalOf('Zusatzantrag CDU betr. Brückenstraße'), null);
+  assert.equal(m.streetSignalOf('Ausbau der Fernwärme – Bauabschnitt 13.1 Goethestraße'), null);
+  assert.ok(m.streetSignalOf('Sanierung Gerber-Fischer-Straße Vorstellung neuer Planentwurf'));
+});
+
+test('Signale Ausschreibung und Wasser: Randfälle aus Stichprobe m1', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.tenderOf('Beschluss zur Vergabe von Bauleistungen >250.000,00 Euro, HB-B 014-2022-15 Lindenau-Museum Altenburg').value, 'Hochbau');
+  assert.equal(m.tenderOf('Kauf eines Multiquads für Gemeindezwecke - Auftragsvergabe').value, 'Fahrzeuge und Ausstattung');
+  assert.equal(m.tenderOf('Interkommunale Zusammenarbeit - Sonderförderung; Zweckvereinbarung Beschaffung'), null);
+  assert.equal(m.waterSignalOf('Sanierung und Erweiterung der Kita „Deichmäuse“; Baubeschluss Hochwasserschutz'), null);
+  assert.equal(m.waterSignalOf('Einleitung des Vergabeverfahrens zur Durchführung von Mäh-, Mulch und Rückschnittarbeiten Kanal'), null);
+  assert.ok(m.waterSignalOf('Kanalsanierung in Schwarzenbach hier: Vergabe des Planungsauftrages'));
+});
