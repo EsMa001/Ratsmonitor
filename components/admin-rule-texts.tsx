@@ -39,7 +39,7 @@ const QT=QUALITY.target;
 const SIGNAL_RECALL=80;
 const GROUP_ORDER=['signals','facts','read','other'];
 /* Fakten: Anteil der Gemeinden mit mindestens einem Wert, ab dem ein Fakt gilt (Entscheidung 17.10.2026) */
-const FACT_PLACES=20;
+const FACT_PLACES=10;
 const signalGate=(r:QualityRow)=>{const v=[r.quality,r.recall,r.art,r.phase];return v.some(x=>x===null||x===undefined)?'unmeasured':[r.quality,r.art,r.phase].every(x=>(x as number)>=QT.quality)&&(r.recall as number)>=SIGNAL_RECALL?'open':'closed';};
 const SignalGate=()=>{return <Info text="Offen, wenn alles gemessen ist: Qualität, Art und Stand je mindestens 90 %, Trefferquote mindestens 80 %."/>;};
 const SignalGateBadge=({r}:{r:QualityRow})=>{const g=signalGate(r);return <span title="Offen, wenn Qualität, Art und Stand je mindestens 90 % und die Trefferquote mindestens 80 % erreichen." className={'rounded-full px-2 py-0.5 text-[12px] '+(g==='open'?'bg-teal-50 text-teal-700':g==='closed'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{g==='open'?'offen':g==='closed'?'unter 90 %':'noch nicht alles gemessen'}</span>;};

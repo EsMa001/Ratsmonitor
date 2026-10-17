@@ -88,3 +88,8 @@ Neu denkbar (jeweils erst Regel bauen und messen):
 - Bei den Signalen bleiben Art (Filter) und Stand (Verfahrensschritt) als Beschreibung des Vorgangs.
 - Nach der 20-%-Grenze liegen die vier Größen darunter (Fläche 15 %, Wohneinheiten 9 %, Leistung 8 %, Anlagenzahl 8 %), sind also „nicht frei“.
 - Admin „Themen & Texte“ (17.10.2026): eine Seite mit Inhaltsverzeichnis und Übersichtstabelle oben (Signale und Fakten mit Status), darunter Signale, Fakten, Grundregeln, dann Lauf und Zahlen.
+
+## Entscheidung 17.10.2026 (zuletzt): Grenze für Fakten 10 %
+
+- Die Grenze für Fakten sinkt auf **10 % der Gemeinden** (Qualität weiter mindestens 90 %).
+- Damit erfüllen die Bedingung: Jahresergebnis (100 % / 36 %), Hebesatz (90 % / 15 %), Wassergebühr `fee_rate` (95 % / 11 %). Zuschüsse (89 % / 40 %) liegen knapp unter 90 % Qualität, der Haushalt (90 % / 9,6 %) knapp unter 10 % der Gemeinden.
