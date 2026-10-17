@@ -27,23 +27,26 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Verbände", slug: "verbaende" },
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
 ];/* Analyse: Start (Übersicht), Signale (was entsteht), Tools (alle Werkzeuge), Atlas (worüber beraten wird); die einzelnen Analysen stehen auf diesen Seiten */
-/* plenara.X (Logo als Gruppenname) mit zwei Abschnitten: Analysen (Zahlen und Verteilungen) und Einblicke (einzelne Vorgänge), je Eintrag die Frage leise rechts daneben */
+/* plenara.X (Logo als Gruppenname) mit drei Abschnitten: Analysen (Zahlen und Verteilungen), Einblicke (einzelne Vorgänge und Werte) und Hintergründe (wer beteiligt ist, was zusammenhängt), je Eintrag die Frage leise rechts daneben */
 type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper" | "clipboardList" | "circleCheck" | "mapPin"; hint?: string };
 const ANALYSE: XEintrag[] = [
   { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
   { href: "/analytics/vergleich", label: "Ortsvergleich", icon: "mapPin", hint: "Wie steht mein Ort da?" },
   { href: "/analytics/trends", label: "Trends", icon: "trendingUp", hint: "Was verändert sich?" },
   { href: "/analytics/beschluesse", label: "Ausgang", icon: "circleCheck", hint: "Wie geht es aus?" },
-  { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
-  { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
 ];
-/* Einblicke: einzelne Vorgänge und belegte Einzelwerte mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles, Anträge der Fraktionen, Fakten). Zahlen und Verteilungen stehen in den Analysen (Atlas, Ortsvergleich, Trends, Ausgang, Gremien, Themennetz) */
+/* Einblicke: einzelne Vorgänge und belegte Einzelwerte mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles, Anträge der Fraktionen, Fakten). Zahlen und Verteilungen stehen in den Analysen (Atlas, Ortsvergleich, Trends, Ausgang) */
 const EINBLICKE: XEintrag[] = [
   { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
   { href: "/analytics/ausschreibungen", label: "Ausschreibungen", icon: "clipboardList", hint: "Was wird vergeben?" },
   { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },
-  { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer möchte was?" },
   { href: "/analytics/fakten", label: "Fakten", icon: "map", hint: "Welcher Wert?" },
+];
+/* Hintergründe: wer beteiligt ist und was zusammenhängt (Fraktionen, Gremien, Themennetz) */
+const HINTERGRUENDE: XEintrag[] = [
+  { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer möchte was?" },
+  { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
+  { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
 ];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
@@ -59,12 +62,12 @@ const MENU_GAP = 6;
 
 export function MainMenu() {
   /* "all" = Dreistrichmenü; "funktionen"/"usecases" = Aufklappliste der breiten Kopfzeile */
-  const [open, setOpen] = useState<false | "all" | "funktionen" | "analyse" | "einblicke" | "usecases" | "info">(false);
+  const [open, setOpen] = useState<false | "all" | "funktionen" | "analyse" | "einblicke" | "hintergruende" | "usecases" | "info">(false);
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
   const me = useMe();
   /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
-  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/anwender/") ? "usecases" : EINBLICKE.some((e) => e.href === path) ? "einblicke" : path.startsWith("/analytics") ? "analyse" : ["/preise", "/videos", "/datenabdeckung", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
+  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/anwender/") ? "usecases" : EINBLICKE.some((e) => e.href === path) ? "einblicke" : HINTERGRUENDE.some((e) => e.href === path) ? "hintergruende" : path.startsWith("/analytics") ? "analyse" : ["/preise", "/videos", "/datenabdeckung", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
   const btnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -124,7 +127,7 @@ export function MainMenu() {
     close();
     window.scrollTo(0, 0);
   };
-  const toggle = (which: "all" | "funktionen" | "analyse" | "einblicke" | "usecases" | "info", el: HTMLElement | null) => {
+  const toggle = (which: "all" | "funktionen" | "analyse" | "einblicke" | "hintergruende" | "usecases" | "info", el: HTMLElement | null) => {
     if (open === which) return close();
     const btn = el?.getBoundingClientRect();
     const head = btnRef.current?.closest("header")?.getBoundingClientRect();
@@ -143,9 +146,9 @@ export function MainMenu() {
       </button>
       {/* Breite Bildschirme: Menüpunkte direkt in der Kopfzeile, Funktionen und Use Cases klappen auf */}
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
-        {(["usecases", "funktionen", "analyse", "einblicke", "info"] as const).map((g) => (
+        {(["usecases", "funktionen", "analyse", "einblicke", "hintergruende", "info"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : g === "analyse" ? <XGruppe name="Analysen" /> : g === "einblicke" ? <XGruppe name="Einblicke" /> : g === "usecases" ? "Anwender" : "Informationen"}
+            {g === "funktionen" ? "Funktionen" : g === "analyse" ? <XGruppe name="Analysen" /> : g === "einblicke" ? <XGruppe name="Einblicke" /> : g === "hintergruende" ? <XGruppe name="Hintergründe" /> : g === "usecases" ? "Anwender" : "Informationen"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
@@ -218,6 +221,23 @@ export function MainMenu() {
                 {show("einblicke") && (
                   <ul className="ri-menu__subs">
                     {EINBLICKE.map((f) => (
+                      <li key={f.href}>
+                        <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
+                          <Icon name={f.icon} size={15} />
+                          <span>{f.label}</span>
+                          {f.hint && <span className="ml-auto whitespace-nowrap pl-5 text-[12px] font-normal text-slate-400 max-sm:hidden">{f.hint}</span>}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "hintergruende"} onClick={() => setOpenGroup(openGroup === "hintergruende" ? "" : "hintergruende")}>
+                  <XGruppe name="Hintergründe" />
+                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "hintergruende" ? "rotate-180" : ""}`} />
+                </button>}
+                {show("hintergruende") && (
+                  <ul className="ri-menu__subs">
+                    {HINTERGRUENDE.map((f) => (
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />

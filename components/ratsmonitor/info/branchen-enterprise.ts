@@ -9,7 +9,7 @@ export type AnalyseGruppe = "tool" | "atlas";
 
 /* Gruppen mit Übersichtsseite (Menü „Analysen“, Brotkrumen der einzelnen Analysen) */
 export const GRUPPEN: Record<Exclude<AnalyseGruppe, "atlas">, { name: string; kurz: string; href: string; text: string }> = {
-  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/signale", text: "Einzelne Vorgänge mit Ort, Schritt und Quelle: Signale, Ausschreibungen, was gerade berichtenswert ist, die Anträge der Fraktionen und die Werte aus den Unterlagen." },
+  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/signale", text: "Einzelne Vorgänge mit Ort, Schritt und Quelle: Signale, Ausschreibungen, was gerade berichtenswert ist und die Werte aus den Unterlagen. Hintergründe (Fraktionen, Gremien, Themennetz) zeigen, wer beteiligt ist und was zusammenhängt." },
 };
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {
@@ -45,7 +45,9 @@ export const NEU_HREF: Partial<Record<AnalyseId, (term?: string) => string>> = {
 };
 export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "plenara.X Ortsvergleich", beschluesse: "plenara.X Ausgang", gremien: "Gremien", fraktionen: "Fraktionen", news: "Aktuelles" };
 /** Seiten der Gruppe plenara.X Einblicke (keine eigene Übersichtsseite); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
-export const EINBLICKE: AnalyseId[] = ["signale", "ausschreibungen", "news", "fraktionen", "fakten"];
+export const EINBLICKE: AnalyseId[] = ["signale", "ausschreibungen", "news", "fakten"];
+/** Seiten der Gruppe plenara.X Hintergründe: wer beteiligt ist und was zusammenhängt */
+export const HINTERGRUENDE: AnalyseId[] = ["fraktionen", "gremien", "graph"];
 
 export const PLENARAX_VORTEILE: [AnalyseId, string, string][] = [
   ["diffusion", "Ausbreitung in Trends sehen", "Wo ein Begriff zuerst auftaucht und in welchen Kommunen er danach folgt."],

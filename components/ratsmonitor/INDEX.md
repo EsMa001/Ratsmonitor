@@ -701,7 +701,7 @@ topic design-styles.css:140
 - XAuszug.tsx (220, ⚠2): XAuszug
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
 - blocks.tsx (224, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, PlacePill, HitPreview, DarkCta, QaItem, Ladefehler
-- branchen-enterprise.ts (113): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- branchen-enterprise.ts (115, ⚠1): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, HINTERGRUENDE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (281, ⚠27): Status, Example, Branche, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
@@ -753,7 +753,7 @@ topic design-styles.css:140
 - uuid.ts (12): newId
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (275, ⚠1): MainMenu
+- MainMenu.tsx (295, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (171, ⚠12): DetailPage
