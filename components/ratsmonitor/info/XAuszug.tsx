@@ -201,13 +201,13 @@ function Block({ id, label }: { id: string; label: string }) {
 }
 
 /** Block „Was plenara für … zeigt“: auszuege = [Schlüssel, Bezeichnung]; Chips wechseln den gezeigten Auszug */
-export function XAuszug({ name, auszuege }: { name: string; auszuege: [string, string, string?][] }) {
+export function XAuszug({ name, auszuege, text }: { name: string; auszuege: [string, string, string?][]; text?: string }) {
   const [sel, setSel] = useState(0);
   const [id, label] = auszuege[Math.min(sel, auszuege.length - 1)];
   return (
     <section className="ri-sec">
       <h2 className="ri-h2">Was plenara für {name} zeigt</h2>
-      <p className="ri-sub">Aus den Vorlagen aller Räte, jede Zahl mit den Vorgängen dahinter.</p>
+      <p className="ri-sub">{text ?? "Aus den Vorlagen aller Räte, jede Zahl mit den Vorgängen dahinter."}</p>
       {auszuege.length > 1 && (
         <div className="flex flex-wrap gap-2" role="group" aria-label="Auszug wählen" style={{ marginTop: 16 }}>
           {auszuege.map(([k, l, chip], i) => <button key={k} type="button" aria-pressed={sel === i} onClick={() => setSel(i)} className={"rounded-full border px-3 py-1.5 text-[14px] " + (sel === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{chip ?? l}</button>)}

@@ -97,7 +97,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
       {/* Kopf: Einleitung nur ab Tablet */}
       <PageHead icon={b.icon} label="Anwender" name={b.name} title={b.title} lead={<span className="max-sm:hidden">{b.intro}</span>} />
 
-      {b.xauszug && <XAuszug name={b.name} auszuege={b.xauszug} />}
+      {b.xauszug && <XAuszug name={b.name} auszuege={b.xauszug} text={b.xtext} />}
 
       {/* Video der Seite (Feld `video` in content.ts: Pfad ohne Endung, .mp4/.jpg/.vtt), direkt nach dem Auszug. Im Dark Mode die dunkle
          Fassung (<Pfad>-dunkel). Ohne Video nur im Dev-Server ein kleiner Platzhalter. */}
