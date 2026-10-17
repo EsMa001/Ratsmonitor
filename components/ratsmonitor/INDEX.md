@@ -588,7 +588,7 @@ topic design-styles.css:140
 
 
 ### app/(monitor)/agb/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/analytics/[[...section]]/
 - page.tsx (22): generateMetadata, Page
@@ -597,7 +597,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/anmelden/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/anwender/[slug]/
 - page.tsx (16): generateMetadata, Page
@@ -606,22 +606,22 @@ topic design-styles.css:140
 - page.tsx (35): generateMetadata, Page
 
 ### app/(monitor)/datenabdeckung/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/datenschutz/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/faq/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/funktionen/benachrichtigungen/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/impressum/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/kontakt/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/konto/[[...section]]/
 - page.tsx (4, ⚠1): Page
@@ -632,22 +632,22 @@ topic design-styles.css:140
 - page.tsx (11): Page
 
 ### app/(monitor)/preise/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/registrieren/
 - page.tsx (4): Page
 
 ### app/(monitor)/suche/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/thema/[id]/
 - page.tsx (8): Page
 
 ### app/(monitor)/videos/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/widerruf/
-- page.tsx (2): Page
+- page.tsx (4): metadata, Page
 
 ### app/admin/
 - page.tsx (82, ⚠7): dynamic, metadata, AdminPage
@@ -823,13 +823,13 @@ topic design-styles.css:140
 - MainMenu.tsx (272, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (170, ⚠11): DetailPage
+- DetailPage.tsx (171, ⚠12): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (64): OverviewPage
 - PersonalPage.tsx (24): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
-- ProfilePage.tsx (440): ProfilePage
+- ProfilePage.tsx (448): ProfilePage
 - SavedArticlesPage.tsx (142, ⚠2): SavedArticlesPage
 - SavedSearchesPage.tsx (242): SavedSearchesPage
 

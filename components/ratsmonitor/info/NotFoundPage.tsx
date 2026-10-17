@@ -10,14 +10,14 @@ export function NotFoundPage() {
       label="Fehler 404"
       name="Seite nicht gefunden"
       title="Diese Seite gibt es nicht (mehr)."
-      lead="Der Link ist vielleicht veraltet oder enthält einen Tippfehler. Von der Startseite aus finden Sie alles wieder."
+      lead="Der Link ist vielleicht veraltet oder enthält einen Tippfehler."
     >
       <div className="ri-actions">
-        <Link href="/" className="ri-btn ri-btn--dark">
-          Zur Startseite
+        <Link href="/suche" className="ri-btn ri-btn--dark">
+          Zur Suche
         </Link>
-        <Link href="/preise" className="ri-btn ri-btn--light">
-          Preise ansehen
+        <Link href="/" className="ri-btn ri-btn--light">
+          Zur Startseite
         </Link>
         <Link href="/kontakt" className="ri-btn ri-btn--light">
           Kontakt aufnehmen

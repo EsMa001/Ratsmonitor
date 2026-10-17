@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useToast } from "../state/toast";
+import { useAccount } from "../state/account";
 import { useData } from "../state/data";
 import { confirmDialog } from "../components/ConfirmDialog";
 import { PlanSummary } from "../components/PlanCards";
@@ -21,6 +22,7 @@ const link = "text-[14px] font-medium text-teal-700 hover:underline disabled:opa
 /** Kontoseite: Angaben, Tarif, Geräte, Kalender-Abo, Daten aus diesem Browser, Datenauskunft, Löschen, Abmelden */
 export function ProfilePage() {
   const me = useMe();
+  const account = useAccount();
   if (!me.ready)
     return (
       <>
@@ -45,6 +47,12 @@ export function ProfilePage() {
     <>
       <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Ihre Angaben. Ihr Tarif.</>} lead="Angaben, Tarif, angemeldete Geräte und Ihre Daten an einem Ort." />
       <section className="ri-sec ri-sec--tight">
+        {account.ready && !account.saved.length && (
+          <div className="mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <span className="text-[16px] text-slate-900">Erster Schritt: Suche speichern, Glocke einschalten, per E-Mail informiert werden.</span>
+            <Link href="/suche" className="text-[14px] font-medium text-teal-700 no-underline hover:underline">Zur Suche →</Link>
+          </div>
+        )}
         <Personal />
         <PlanSummary />
         <Devices />
