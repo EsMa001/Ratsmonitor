@@ -200,7 +200,7 @@ async function xList(db,catalog,x,{count:counted=true,src=null}={}){
   for(const f of fs){const num=factNum(x.fact,f.d);if(!num)continue;const t=fmtNum(num.v,num.unit),l=values.get(f.ck)||[];if(!l.includes(t))l.push(t);values.set(f.ck,l);}
  }
  return {offset:x.offset,size:X_LIST_SIZE,total:Number(count?.n||0),
-  items:results.map(r=>({id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,
+  items:results.map(r=>({id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,gremium:r.gremium||undefined,
    stage:r.stage||null,subs:r.subs?r.subs.split(','):[],times:r.times,...(values.has(r.ck)?{value:values.get(r.ck).slice(0,3).join(' · ')}:{})}))};
 }
 

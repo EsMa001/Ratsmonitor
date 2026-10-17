@@ -1,13 +1,13 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 /* Kennzahl für das Kopfband der plenara.X-Seiten: die erste große Zahl der Seite (Kennzahlen) erscheint auch im Kopf */
-type Figure = { value: string; label: string; week?: number | null; scope?: string } | null;
+type Figure = { value: string; label: string; week?: number | null; scope?: string; period?: string } | null;
 let current: Figure = null;
 const subs = new Set<() => void>();
 const emit = () => subs.forEach((f) => f());
 
 export function publishBandFigure(f: Figure) {
-  if (current?.value === f?.value && current?.label === f?.label && current?.week === f?.week && current?.scope === f?.scope) return;
+  if (current?.value === f?.value && current?.label === f?.label && current?.week === f?.week && current?.scope === f?.scope && current?.period === f?.period) return;
   current = f;
   emit();
 }

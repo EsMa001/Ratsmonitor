@@ -11,6 +11,7 @@ import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { pctText as pct } from "../../lib/format";
+import { MethodikNote } from "./Methodik";
 
 interface VRow { id: string; name: string; n: number; vote: number; unanimous: number | null; changeN: number; changed: number | null }
 interface Result {
@@ -84,7 +85,7 @@ export function BeschluessePage() {
             <>
               <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} werden ${pct(res.rates.approval)} der ${n(res.totals.decided)} Entscheidungen beschlossen, ${pct(res.rates.postponement)} vertagt und ${pct(res.rates.rejection)} abgelehnt.${res.duration.median !== null ? ` Im Median dauert es ${res.duration.median} Tage bis zur Entscheidung.` : ""}`}</Befund>
               <p className="mt-2 max-w-[760px] text-[14px] text-slate-500">Grundlage: {n(res.totals.decided)} Vorgänge mit bekannter Entscheidung, das sind {n(res.totals.known)} von {n(res.totals.all)} Einträgen mit bekanntem Status{res.totals.knownShare !== null ? ` (${pct(res.totals.knownShare)} aller Einträge)` : ""}. Die übrigen Einträge zeigen keinen Status.</p>
-              <Kennzahlen items={([
+              <Kennzahlen rest items={([
                   ["Beschlussquote", pct(res.rates.approval)],
                   ["Vertagt", pct(res.rates.postponement)],
                   ["Abgelehnt", pct(res.rates.rejection)],
@@ -180,7 +181,7 @@ export function BeschluessePage() {
                   {statusRows.map((s) => <li key={s.id} className="flex items-center justify-between gap-3 border-b border-slate-100 py-1"><span className="flex items-center gap-2"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{STATUS.find((x) => x.id === s.id)?.label ?? s.id}</span><span className="tabular-nums text-slate-500">{n(s.n)} · {Math.round((s.n / statusTotal) * 100)} %</span></li>)}
                 </ul>
               </div>
-              <p className="mt-4 max-w-[900px] text-[12px] text-slate-500">Stand, Verlauf und Aufteilungen zählen alle passenden Vorgänge (Endstand je Vorgang, Gremienebene je Station); Formalien zählen nicht. Abstimmung, Änderungen und Durchlaufzeit zählen alle Vorgänge mit Entscheidung. „Einstimmig“, „mehrheitlich“ und „geändert“ werden aus dem Ergebnistext der Beschlussstation gelesen; fehlt dort die Angabe, zählt der Vorgang nicht mit. Der Status ist nur bei einem Teil der Einträge bekannt, und Ablehnungen sind in den Quellen selten vermerkt; die Quoten sind deshalb ein Anhaltspunkt. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt.</p>
+              <MethodikNote>Stand, Verlauf und Aufteilungen zählen alle passenden Vorgänge (Endstand je Vorgang, Gremienebene je Station); Formalien zählen nicht. Abstimmung, Änderungen und Durchlaufzeit zählen alle Vorgänge mit Entscheidung. „Einstimmig“, „mehrheitlich“ und „geändert“ werden aus dem Ergebnistext der Beschlussstation gelesen; fehlt dort die Angabe, zählt der Vorgang nicht mit. Der Status ist nur bei einem Teil der Einträge bekannt, und Ablehnungen sind in den Quellen selten vermerkt; die Quoten sind deshalb ein Anhaltspunkt. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt.</MethodikNote>
               </Fold>
               </div>
             </>

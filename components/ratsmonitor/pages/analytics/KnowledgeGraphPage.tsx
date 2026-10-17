@@ -10,6 +10,7 @@ import { GraphView, KIND, type GEdge, type GNode } from "./GraphView";
 import { isFiller, prettyTerm, termStem } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
+import { MethodikNote } from "./Methodik";
 
 interface Result {
   /** Datum des vorab berechneten Gesamtgraphen (nur dort gesetzt) */
@@ -205,7 +206,7 @@ export function KnowledgeGraphPage() {
           <div className="mt-10 max-w-[820px]">
             <section>
               <h2 className="text-[22px] font-semibold">Stärkste Verbindungen</h2>
-              <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die in denselben Einträgen vorkommen. Tippen Sie auf eine Verbindung, um sie im Netz oben zu markieren.</p>
+              <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die in denselben Einträgen vorkommen.</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {strongest.map((e, i) => (
                   <li key={e.a + e.b} className="border-b border-slate-200">
@@ -223,7 +224,7 @@ export function KnowledgeGraphPage() {
               </ol>
             </section>
           </div>
-          <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage sind alle ${n(res.total)} Vorgänge${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind alle ${n(res.total)} passenden Vorgänge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht.</p>
+          <MethodikNote>{res.q === "" ? `Grundlage sind alle ${n(res.total)} Vorgänge${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind alle ${n(res.total)} passenden Vorgänge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht.</MethodikNote>
         </>
       )}
     <XWeiter links={[["/analytics/trends", "plenara.X Trends"], ["/analytics/atlas", "plenara.X Atlas"]]} />

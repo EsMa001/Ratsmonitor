@@ -17,16 +17,17 @@ export const NeuMark = ({ date }: { date: string }) => (isNew(date) ? <span clas
  * Antwort als große Kennzahlen (Atlas, Signale): Zahl groß in Petrol, Bedeutung klein darunter; daneben, wie viele Vorgänge
  * in den letzten 7 Tagen beraten wurden (Sitzungsdatum; nicht der Abruf: ein spät gefundener alter Bericht ist nicht neu). Darunter in einer Zeile, worauf sich die Zahlen beziehen.
  */
-/** scope: wofür die Zahl gilt (Thema, Suche, Ort, Zeitraum), erscheint im Kopfband unter der Zahl */
-export function Kennzahlen({ items, week, scope, children }: { items: { value: string; label: string }[]; week?: number | null; scope?: string; children?: ReactNode }) {
+/** Im Kopfband: band = Bezeichnung neben der Zahl (sonst die erste Bedeutung), scope = Auswahl (Thema, Suche, Ort), period = Zeitraum */
+/** rest: die übrigen Zahlen ruhig in einer Zeile zeigen (Ausgang, Gremien: dort sind sie die Auswertung) */
+export function Kennzahlen({ items, week, band, scope, period, rest = false, children }: { items: { value: string; label: string }[]; week?: number | null; band?: string; scope?: string; period?: string; rest?: boolean; children?: ReactNode }) {
   /* Erste Zahl auch im Kopfband zeigen; beim Verlassen der Seite wieder entfernen */
-  const fv = items[0]?.value, fl = items[0]?.label;
-  useEffect(() => { publishBandFigure(fv && fl ? { value: fv, label: fl, week, scope } : null); }, [fv, fl, week, scope]);
+  const fv = items[0]?.value, fl = band ?? items[0]?.label;
+  useEffect(() => { publishBandFigure(fv && fl ? { value: fv, label: fl, week, scope, period } : null); }, [fv, fl, week, scope, period]);
   useEffect(() => () => publishBandFigure(null), []);
   return (
     <div className="mt-2">
-      {/* Die erste Zahl steht im Kopfband (XKopf, BandMitte); weitere Zahlen hier ruhig in einer Zeile */}
-      {items.length > 1 && <p className="m-0 mb-2 flex flex-wrap gap-x-6 text-[16px] text-slate-500">{items.slice(1).map((k) => <span key={k.label}><b className="font-semibold tabular-nums text-slate-900">{k.value}</b> {k.label}</span>)}</p>}
+      {/* Die Zahl steht im Kopfband (XKopf, BandMitte); hier nur Auswahl und Bedienung */}
+      {rest && items.length > 1 && <p className="m-0 mb-2 flex flex-wrap gap-x-6 text-[16px] text-slate-500">{items.slice(1).map((k) => <span key={k.label}><b className="font-semibold tabular-nums text-slate-900">{k.value}</b> {k.label}</span>)}</p>}
       {children && <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[16px] text-slate-700">{children}</div>}
     </div>
   );

@@ -21,6 +21,6 @@ export function listPage(rows,catalog,offset,extra=()=>({})){
  }
  const all=[...groups.values()];
  return {offset,size:LIST_SIZE,total:all.length,
-  items:all.slice(offset,offset+LIST_SIZE).map(r=>({id:r.id,title:r.title,region:where(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,times:r.times,...extra(r)}))};
+  items:all.slice(offset,offset+LIST_SIZE).map(r=>({id:r.id,title:r.title,region:where(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,times:r.times,gremium:r.gremium||undefined,...extra(r)}))};
 }
 

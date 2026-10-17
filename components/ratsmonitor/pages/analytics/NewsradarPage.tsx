@@ -8,6 +8,7 @@ import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
+import { MethodikNote } from "./Methodik";
 
 interface Item {
   id: string; region: string; place: string; headline: string;
@@ -98,7 +99,7 @@ export function NewsradarPage() {
               <Reveal><section className="mt-6 border-t border-slate-200">
                 {res.items.map((i) => <Meldung key={i.id} i={i} />)}
               </section></Reveal>
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Nachrichtenwert nach festen Regeln: Konflikt (abgelehnt, vertagt, nur mit Mehrheit beschlossen), Tragweite (Fördergeld, Kita-Beiträge, Gebühren, Steuern, Bürgerbegehren), Alltagsnähe des Themas und Aktualität. Der Kern jeder Meldung ist ein wörtliches Zitat aus der Regel-Zusammenfassung der Vorlage; Gremium, Datum und Ausgang stammen aus den Sitzungsdaten. Vorgänge ohne zitierbaren Satz erscheinen nicht.</p>
+              <MethodikNote>Nachrichtenwert nach festen Regeln: Konflikt (abgelehnt, vertagt, nur mit Mehrheit beschlossen), Tragweite (Fördergeld, Kita-Beiträge, Gebühren, Steuern, Bürgerbegehren), Alltagsnähe des Themas und Aktualität. Der Kern jeder Meldung ist ein wörtliches Zitat aus der Regel-Zusammenfassung der Vorlage; Gremium, Datum und Ausgang stammen aus den Sitzungsdaten. Vorgänge ohne zitierbaren Satz erscheinen nicht.</MethodikNote>
             </>
           )}
         </div>

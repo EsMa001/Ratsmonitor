@@ -14,6 +14,8 @@ import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitPills, useOrtInAdresse, wee
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import type { Article } from "../../types";
+import { MethodikNote } from "./Methodik";
+import { DateBadge } from "../../components/DateBadge";
 
 /* Antwort von /api/x/signale (server/integrations/plenara-x-signals.mjs) */
 interface Signal { id: string; name: string; who: string; count: number }
@@ -265,7 +267,7 @@ export function SignalePage() {
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
           {res.total === 0 ? <Leer tipp="Einen längeren Zeitraum, eine andere Art oder „Alle Themen“ wählen, oder den Ort entfernen.">{`Keine Vorgänge für diese Auswahl: ${res.signal.name}${zeit !== "alle" ? `, letzte ${zeit} Monate` : ""}.`}</Leer>
-            : <Kennzahlen week={week} scope={[res.signal.name, art ? artShort(art) : "", areaAgs && res.places.length === 1 ? res.places[0].name : "", zeitText ?? ""].filter(Boolean).join(" · ")} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
+            : <Kennzahlen week={week} band="Signale" scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
               <span>{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
               <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
               <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
@@ -302,10 +304,11 @@ export function SignalePage() {
                   {items.length === 0 && <Leer tipp="„Erstmals hier“ zählt nur Gebiete mit mindestens 12 Monaten Daten davor; „Neueste“ zeigt alle Vorgänge.">In dieser Auswahl ist kein Vorgang der erste seiner Art im Ort.</Leer>}
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
                     {items.slice(0, shown).map((r) => (
-                      <li key={r.id} onMouseEnter={() => setHoverPlace(r.place ?? "")} onMouseLeave={() => setHoverPlace("")} onFocus={() => setHoverPlace(r.place ?? "")} onBlur={() => setHoverPlace("")} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">
+                      <li key={r.id} onMouseEnter={() => setHoverPlace(r.place ?? "")} onMouseLeave={() => setHoverPlace("")} onFocus={() => setHoverPlace(r.place ?? "")} onBlur={() => setHoverPlace("")} className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">
+                        <DateBadge iso={r.date} />
                         <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
                           <span className="line-clamp-2 text-[14px] leading-snug sm:text-[16px]">{r.firstHere && <span title="Der erste Vorgang dieser Art in diesem Ort (Bestand seit mindestens einem Jahr davor)" className="mr-1.5 rounded-full bg-teal-50 px-2 py-0.5 align-[1px] text-[12px] font-medium text-teal-800">erstmals hier</span>}{r.title}</span>
-                          <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), (r.status === "announced" || r.status === "consulting") && (r.status === "announced" ? "angekündigt" : "in Beratung"), r.gremium].filter(Boolean).join(" · ")}</span>
+                          <span className="block truncate text-[12px] text-slate-500">{[r.region, (r.status === "announced" || r.status === "consulting") && (r.status === "announced" ? "angekündigt" : "in Beratung"), r.gremium].filter(Boolean).join(" · ")}</span>
                         </Link>
                         <span className="self-center whitespace-nowrap text-right text-[12px] text-slate-500"><span className="block"><span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${dotOf(r.phase, phaseOrder)}`} />{r.phase}</span>{r.arts?.length ? <span className="block text-slate-900">{r.arts.map(artShort).join(", ")}</span> : null}</span>
                       </li>
@@ -319,7 +322,7 @@ export function SignalePage() {
                   )}
                 </section>
               )}
-              <p className="mt-6 text-[12px] text-slate-500">Stand {day(res.builtAt?.slice(0, 10) ?? "")}. Gelesen aus Titeln, Vorlagen und Begründungen; jede Angabe mit Originalquelle im Vorgang.</p>
+              <MethodikNote>Stand {day(res.builtAt?.slice(0, 10) ?? "")}. Gelesen aus Titeln, Vorlagen und Begründungen; jede Angabe mit Originalquelle im Vorgang.</MethodikNote>
             </div>
           </div>
         </div>

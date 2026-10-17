@@ -10,6 +10,7 @@ import { NetView, ROLE, type NEdge, type NNode } from "./NetView";
 import { RadarDrill } from "./RadarDrill";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
+import { MethodikNote } from "./Methodik";
 
 interface Result {
   q: string; mode: "types" | "names"; pool: number; examined: number; capped: boolean; paths: number;
@@ -65,7 +66,7 @@ export function GremiennetzPage() {
           ) : (
             <>
               {res.routes[0] && <Befund>Der häufigste Weg: {res.routes[0].path.join(" → ")} ({n(res.routes[0].n)} Vorgänge).</Befund>}
-              <Kennzahlen items={([
+              <Kennzahlen rest items={([
                   ["Vorgänge mit mehreren Gremien", n(res.paths)],
                   [res.mode === "types" ? "Gremienarten" : "Gremien", n(res.nodes.length)],
                   ["Vorgänge im häufigsten Übergang", top ? n(top.n) : "–"],
@@ -160,7 +161,7 @@ export function GremiennetzPage() {
               </Reveal>
             </>
           )}
-          <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Grundlage sind {n(res.examined)}{res.capped ? ` gleichmäßig ausgewählte von ${n(res.pool)}` : ""} Vorgängen mit Beratung oder Entscheidung. Nur Vorgänge, die in mindestens zwei verschiedenen Gremien behandelt wurden, bilden Übergänge ({n(res.paths)}). Stationen werden nach Datum geordnet, aufeinanderfolgende Stationen im selben Gremium zählen einmal. {res.mode === "types" ? "Ohne einzelnen Ort sind die Gremien nach ihrer Art aus dem Namen zusammengefasst (zum Beispiel Haupt- und Verwaltungsausschuss), weil jeder Ort eigene Namen hat. " : "Mit einem Ort gelten dessen echte Gremiennamen. "}Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab; die Zeit je Übergang ist der Abstand der Sitzungstermine.</p>
+          <MethodikNote>Grundlage sind {n(res.examined)}{res.capped ? ` gleichmäßig ausgewählte von ${n(res.pool)}` : ""} Vorgängen mit Beratung oder Entscheidung. Nur Vorgänge, die in mindestens zwei verschiedenen Gremien behandelt wurden, bilden Übergänge ({n(res.paths)}). Stationen werden nach Datum geordnet, aufeinanderfolgende Stationen im selben Gremium zählen einmal. {res.mode === "types" ? "Ohne einzelnen Ort sind die Gremien nach ihrer Art aus dem Namen zusammengefasst (zum Beispiel Haupt- und Verwaltungsausschuss), weil jeder Ort eigene Namen hat. " : "Mit einem Ort gelten dessen echte Gremiennamen. "}Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab; die Zeit je Übergang ist der Abstand der Sitzungstermine.</MethodikNote>
         </div>
       )}
     <XWeiter links={[["/analytics/beschluesse", "Ausgang"], ["/analytics/fraktionen", "Fraktionen"], ["/analytics/atlas", "plenara.X Atlas"]]} />
