@@ -504,7 +504,7 @@ html.rm-dark :is(.pl-band,.ri-head){background:var(--rm-page) !important;border-
 .ri-head .ri-bid svg{width:28px;height:28px}.ri-head .back-btn{margin-bottom:8px !important}.ri-head .ri-actions{margin-top:16px !important}
 /* Symbol der Seite rechts im Kopfband, weiß (Info- und Kontoseiten; plenara.X setzt es in XKopf.tsx) */
 .ri-head .ri-bid__icon{position:absolute;right:calc(var(--ri-pad) + 24px);top:50%;transform:translateY(-50%);width:44px !important;height:44px !important}
-@media (max-width:640px){.ri-head .ri-bid__icon{top:14px;transform:none;right:var(--ri-pad);width:36px !important;height:36px !important}}
+@media (max-width:640px){.ri-head .ri-bid__icon{top:50px;transform:none;right:var(--ri-pad);width:36px !important;height:36px !important}}
 /* plenara.X-Abzeichen im Petrol-Band: weiß mit Originalfarben, sonst kaum lesbar */
 html:not(.rm-dark) .pl-band .rm-brandtag{background:#fff !important}
 html:not(.rm-dark) .pl-band .rm-brandtag,html:not(.rm-dark) .pl-band .rm-brandtag *{color:var(--rm-c700) !important}
