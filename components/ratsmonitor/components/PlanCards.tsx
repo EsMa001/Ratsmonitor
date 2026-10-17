@@ -70,7 +70,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
               <div className="flex items-center justify-between gap-2">
                 <h3 className="m-0 text-[16px] font-semibold">{plan.tier === "guest" ? "Ohne Konto" : TIER_LABEL[plan.tier]}</h3>
                 {current && <span className="rounded-full bg-teal-700 px-2 py-0.5 text-[12px] font-semibold text-white">{plan.tier === "guest" ? "Ihr Status" : "Ihr Tarif"}</span>}
-                {publicPage && plan.tier === "pro" && <span className="text-[12px] font-semibold text-teal-700">Beliebt</span>}
+                {publicPage && plan.tier === "pro" && <span className="text-[12px] font-semibold text-teal-800">Beliebt</span>}
               </div>
               <p className="m-0 mt-2 text-[22px] font-bold tracking-tight">{priceLabel(plan.tier)}</p>
               <p className="m-0 text-[12px] text-slate-500">{plan.note}</p>

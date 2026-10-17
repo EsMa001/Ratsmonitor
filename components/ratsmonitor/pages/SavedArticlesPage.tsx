@@ -44,7 +44,7 @@ export function SavedArticlesPage() {
       <>
         <PageHead icon="fileText" label="Artikel" name="Gespeicherte Artikel" />
         <section className="ri-sec ri-sec--tight">
-          {tierReady ? <LoginRequired title="Artikel speichern" text="Melden Sie sich an, um Artikel in Ihrem Konto zu speichern und später wiederzufinden." /> : <AccountLoading />}
+          {tierReady ? <LoginRequired title="Artikel speichern" text="Melden Sie sich an, um Artikel zu speichern." /> : <AccountLoading />}
         </section>
       </>
     );

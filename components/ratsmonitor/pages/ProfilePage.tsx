@@ -33,9 +33,9 @@ export function ProfilePage() {
   if (!me.user)
     return (
       <>
-        <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Sie sind nicht angemeldet.</>} lead="Ohne Anmeldung sehen Sie 10 Treffer je Suche. Mit einem Konto speichern Sie Suchen und Artikel." />
+        <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Sie sind nicht angemeldet.</>} lead="Ohne Anmeldung: 10 Treffer je Suche. Mit Konto: Suchen und Artikel speichern." />
         <section className="ri-sec ri-sec--tight">
-          <LoginRequired title="Anmelden" text="Mit einer freigeschalteten Stufe sehen Sie alle Treffer, nutzen die Filter und speichern Artikel und Suchen in Ihrem Konto." />
+          <LoginRequired title="Anmelden" text="Mit einer Stufe: alle Treffer, Filter, gespeicherte Suchen und Artikel." />
           <PlanSummary />
           <BrowserData signedIn={false} />
         </section>
@@ -374,7 +374,7 @@ function DeleteAccount() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const start = async () => {
-    if (!(await confirmDialog({ title: "Konto löschen?", text: "Wir schicken Ihnen einen Code. Erst mit dem Code wird das Konto mit allen gespeicherten Suchen, Artikeln und Einstellungen gelöscht. Das lässt sich nicht rückgängig machen.", confirmLabel: "Code anfordern" }))) return;
+    if (!(await confirmDialog({ title: "Konto löschen?", text: "Wir schicken Ihnen einen Code. Mit ihm wird das Konto endgültig gelöscht, samt Suchen, Artikeln und Einstellungen.", confirmLabel: "Code anfordern" }))) return;
     setBusy(true);
     setError("");
     try {

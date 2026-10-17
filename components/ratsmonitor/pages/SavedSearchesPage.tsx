@@ -146,7 +146,7 @@ export function SavedSearchesPage() {
       <>
         <PageHead icon="search" label="Suchen" name="Gespeicherte Suchen" />
         <section className="ri-sec ri-sec--tight">
-          {tierReady ? <LoginRequired title="Suchen speichern" text="Melden Sie sich an, um Suchen zu speichern und neue Treffer im Blick zu behalten." /> : <AccountLoading />}
+          {tierReady ? <LoginRequired title="Suchen speichern" text="Melden Sie sich an, um Suchen zu speichern." /> : <AccountLoading />}
         </section>
       </>
     );
@@ -167,7 +167,7 @@ export function SavedSearchesPage() {
             <IconHeart size={26} />
           </span>
           <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Suchen</h2>
-          <p className="m-0 max-w-[44ch] text-slate-500">Suchen oder filtern Sie in der Übersicht und tippen Sie auf das Herz neben dem Suchfeld.</p>
+          <p className="m-0 max-w-[44ch] text-slate-500">Suchen Sie in der Übersicht und tippen Sie auf das Herz neben dem Suchfeld.</p>
           {/* Beispiele, wie eine nützliche gespeicherte Suche aussieht */}
           <div className="mt-5 w-full max-w-[520px] text-left">
             <p className="m-0 text-[12px] font-semibold uppercase tracking-wide text-slate-500">Beispiele</p>

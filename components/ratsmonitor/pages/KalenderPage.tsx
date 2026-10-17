@@ -156,7 +156,7 @@ export function KalenderPage() {
   if (!loaded) return <>{head}<section className="ri-sec ri-sec--tight"><AccountLoading /></section></>;
   return (
     <>
-      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine. In Ihren Gebieten.</>} lead="Rats- und Ausschusssitzungen in den Orten, die Sie beobachten, auch mit Umkreis, etwa für Ihr Vertriebsgebiet." />
+      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine. In Ihren Gebieten.</>} lead="Rats- und Ausschusssitzungen Ihrer Orte, auch mit Umkreis." />
       {!today ? <section className="ri-sec ri-sec--tight"><p className="text-slate-500">Kalender wird geladen …</p></section> : (
       <section className="ri-sec ri-sec--tight">
         <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
@@ -297,7 +297,7 @@ export function KalenderPage() {
       {agsList.length > 0 && (
         <section className="ri-sec ri-sec--tight">
           <h2 className="m-0 text-[18px] font-semibold text-slate-900">Auf dem Laufenden bleiben</h2>
-          <p className="m-0 mt-1 text-slate-500">Per E-Mail informiert werden oder alle Sitzungen Ihrer Gebiete in Apple Kalender, Outlook oder Google Kalender übernehmen.</p>
+          <p className="m-0 mt-1 text-slate-500">Per E-Mail informiert werden oder alle Sitzungen in Apple Kalender, Outlook oder Google Kalender übernehmen.</p>
           <div className="mt-6 grid gap-x-10 gap-y-8 md:grid-cols-3">
             <div className="border-t border-slate-200 pt-5">
               <IconBell size={28} className="text-teal-700" />
@@ -341,9 +341,9 @@ export function KalenderPage() {
 }
 
 const CAL_POINTS: [string, string][] = [
-  ["Alle Sitzungen auf einen Blick", "Rats- und Ausschusssitzungen aller Orte, die Sie beobachten, in einer Monatsansicht."],
-  ["Gebiete mit Umkreis", "Legen Sie Orte oder Kreise fest, auf Wunsch mit Umkreis, etwa Ihr ganzes Vertriebsgebiet."],
-  ["Farbe je Gebiet", "Jedes Gebiet hat eine eigene Farbe, so sehen Sie sofort, wo etwas ansteht."],
+  ["Alle Sitzungen auf einen Blick", "Alle Sitzungen Ihrer Orte in einer Monatsansicht."],
+  ["Gebiete mit Umkreis", "Orte oder Kreise festlegen, auf Wunsch mit Umkreis."],
+  ["Farbe je Gebiet", "Jedes Gebiet hat eine eigene Farbe."],
   ["Tagesordnung vorab", "Zu jedem Termin die beratenen Vorgänge, bevor entschieden wird."],
 ];
 

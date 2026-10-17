@@ -278,7 +278,7 @@ export function LoginPage() {
   };
 
   const invite = me.access === "invite" || !!weiter;
-  const lead = step === "wait" ? undefined : mode === "app" ? "Mit Ihrer E-Mail-Adresse und dem Code aus Ihrer Authenticator-App anmelden." : "Mit Ihrer E-Mail-Adresse anmelden oder ein Konto anlegen. Sie bekommen einen Link und einen Code, ein Passwort gibt es nicht.";
+  const lead = step === "wait" ? undefined : mode === "app" ? "Mit Ihrer E-Mail-Adresse und dem Code aus Ihrer Authenticator-App anmelden." : "Mit Ihrer E-Mail-Adresse anmelden. Sie erhalten einen Link und einen Code, ein Passwort gibt es nicht.";
   const head = <PageHead icon="user" label="Konto" name="Anmelden" title={step === "wait" ? "E-Mail prüfen" : "Anmelden"} lead={lead} />;
 
   if (me.ready && me.user)
