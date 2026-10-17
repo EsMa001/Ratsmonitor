@@ -277,3 +277,12 @@ test('Solar: Bauleitplanung PV als Freifläche, Gemeindedächer (Stichprobe h1)'
   assert.equal(m.solarOf('Solarstromanlagen auf Gemeindedächern - Mietverträge'), 'Dach-PV kommunal');
   assert.equal(m.solarOf('Satteldachaufbau für PV-Anlage auf Garagendach Bühlfeldstraße 35'), null);
 });
+
+test('Wohnbau: Ausschreibung, Besichtigung, Wohnbauland; keine Straßennamen oder Ausbaugebiete (Stichprobe r1)', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.areaDevOf('Ausschreibung von weiteren Bauplätzen für den Geschosswohnungsbau'), 'Wohnen');
+  assert.equal(m.areaDevOf('Besichtigung und Sachstand zum Baugebiet „Am Köblitzbach“'), 'Wohnen');
+  assert.equal(m.areaDevOf('Richtlinien für die Vergabe von preisvergünstigten Wohnbauland'), 'Wohnen');
+  assert.equal(m.areaDevOf('Namensfindung Straße Baugebiet „An der Ullabreite“'), null);
+  assert.equal(m.areaDevOf('Gigabitrichtlinie, Anpassung des Ausbaugebietes und Start eines Auswahlverfahrens'), null);
+});

@@ -107,7 +107,7 @@ export const PLAN_USES=[
  ['Batteriespeicher und Wasserstoff',/Batteriespeicher|Energiespeicher|Stromspeicher|Großspeicher|\bBESS\b|Wasserstoff|Elektrolys/i],
  ['Hotel, Camping und Freizeit',/Hotel|Camping|Wohnmobil|Ferienhaus|Ferienhäuser|Ferienwohnanlage|Feriendorf|Ferienpark|Freizeitpark|Freizeitanlage|Tourismus/i],
  ['Mischgebiet',/Mischgebiet|urbane[sn]? Gebiet|\bM[IUD]\b|Dorfgebiet/],
- ['Wohnen',/Wohn(gebiet|bau|baufläche|quartier|anlage|siedlung|park|ungen|en\b)|[\p{L}]-?[Ss]iedlung\b|Einfamilienh|Mehrfamilienh|Neubaugebiet|Baugebiet|Wohnraum/iu,/\bWA\b/],
+ ['Wohnen',/Wohnbebauung|Wohnbauland|Wohn(gebiet|bau|baufläche|quartier|anlage|siedlung|park|ungen|en\b)|[\p{L}]-?[Ss]iedlung\b|Einfamilienh|Mehrfamilienh|Neubaugebiet|Baugebiet|Wohnraum/iu,/\bWA\b/],
 ];
 const SINGLE_PLOT=/Ferienwohn|Ausschluss von|Straßenbezeichnung|Straßenname|Handwerk|Nachbargemeinde|isolierte Abweichung|Antrag auf (?:Abweichung|Änderung|Befreiung)|Ausnahmeregelung|Abweichung vom Gestaltung|Errichtung eine[sr] (?:Einfamilien|Mehrfamilien|Doppel|Wohn|Carport|Garage)|Fl\.?\s?-?Nr|Flst|Flurstück|Grundstück [\p{L}-]+(?:straße|weg|str\.) \d/iu;
 const INTERCOMMUNAL=/interkommunal|\bIKG\b|\bIGP\b|Zweckverband|gemeinsame[sn]? (Gewerbe|Industrie)/i;
@@ -184,10 +184,10 @@ export function energyOf(title){const t=String(title||'');if(/Wärmeplan|Bericht
 const AREA_DEV=[
  ['Industrie',/Industrie(?:gebiet|park|fläche)/i],
  ['Gewerbe',/Gewerbe(?:gebiet|park|fläche|ansiedlung|grundstück)|interkommunale[sn]? Gewerbe/i],
- ['Wohnen',/Neubaugebiet|Wohn(?:bau)?gebiet|Baugebiet|Wohnbaufläche|Wohnquartier|Bauplätze|Bauplatz|Baugrundstücke|Wohnbaugrundstück/i],
+ ['Wohnen',/Neubaugebiet|Wohn(?:bau)?gebiet|(?<!Aus)Baugebiet|Wohnbauland|Wohnbaufläche|Wohnquartier|Bauplätze|Bauplatz|Baugrundstücke|Wohnbaugrundstück/i],
 ];
-const AREA_ACT=/Erschließung|Entwicklung|Erweiterung|Vermarktung|Vergabe|Verkauf|Vorkaufsrecht|Ansiedlung|Ausweisung|Information|Gesellschaft|Zweckverband|neue[sn]?|Grunderwerb|Ankauf|Erwerb|Umlegung|Bauplatzpreis|Kaufpreis|Richtlinie/i;
-const AREA_NOT=/Ferienwohn|Straßenbezeichnung|Ausschluss von|Bebauungsplan|B-Plan|Flächennutzungsplan|FNP|Feuerwehr|Regenrückhalt|Widmung|Straßenname|Benennung|Kanal|Befreiung|Bauvorhaben|Baugenehmigung|Spielplatz|Kita|Kindergarten|Schule|Gewerbesteuer|Gewerbe und Meldewesen|Haushaltsplan|Handwerk|eines Baugrundstück|Baugrundstückes Nr|Zuwendung|ÖPNV|Wahl d|Ausgleich|Ersatzmaßnahme|Los \d|Veräußerung des Regen|Ankauf Landwirtschaft/i;
+const AREA_ACT=/Ausschreibung|Besichtigung|Sachstand|Interessenabfrage|Bedarfsermittlung|Erschließung|Entwicklung|Erweiterung|Vermarktung|Vergabe|Verkauf|Vorkaufsrecht|Ansiedlung|Ausweisung|Information|Gesellschaft|Zweckverband|neue[sn]?|Grunderwerb|Ankauf|Erwerb|Umlegung|Bauplatzpreis|Kaufpreis|Richtlinie/i;
+const AREA_NOT=/Namensfindung|Straßenschilder|Gehölzliste|Zaun|Ausbaugebiet|Ferienwohn|Straßenbezeichnung|Ausschluss von|Bebauungsplan|B-Plan|Flächennutzungsplan|FNP|Feuerwehr|Regenrückhalt|Widmung|Straßenname|Benennung|Kanal|Befreiung|Bauvorhaben|Baugenehmigung|Spielplatz|Kita|Kindergarten|Schule|Gewerbesteuer|Gewerbe und Meldewesen|Haushaltsplan|Handwerk|eines Baugrundstück|Baugrundstückes Nr|Zuwendung|ÖPNV|Wahl d|Ausgleich|Ersatzmaßnahme|Los \d|Veräußerung des Regen|Ankauf Landwirtschaft/i;
 export function areaDevOf(title){const t=String(title||'');if(!(AREA_ACT.test(t)||/^\s*(?:Neu)?[Bb]augebiet\b/.test(t))||AREA_NOT.test(t)||SIG_NOT.test(t))return null;return firstOf(AREA_DEV,t);}
 /* 7 Schulen, Kitas und Sportstätten: nur Bauvorhaben */
 const SCHOOL_BUILD=/Neubau|Ersatzneubau|Erweiterung|Sanierung|Generalsanierung|Umbau|Anbau|Modulbau|Container|Interim|Errichtung|Bau\s|Baumaßnahme|Neugestaltung|Modernisierung|Ertüchtigung/i;
