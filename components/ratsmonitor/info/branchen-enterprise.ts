@@ -9,7 +9,7 @@ export type AnalyseGruppe = "tool" | "atlas";
 
 /* Gruppen mit Übersichtsseite (Menü „Analysen“, Brotkrumen der einzelnen Analysen) */
 export const GRUPPEN: Record<Exclude<AnalyseGruppe, "atlas">, { name: string; kurz: string; href: string; text: string }> = {
-  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/fraktionen", text: "Wer beteiligt ist und was zusammenhängt: Fraktionen und ihre Anträge, die Wege durch die Gremien, das Netz verwandter Themen und was gerade berichtenswert ist." },
+  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/signale", text: "Einzelne Vorgänge und wer beteiligt ist: Signale und Ausschreibungen, was gerade berichtenswert ist, Fraktionen und ihre Anträge, die Wege durch die Gremien und das Netz verwandter Themen." },
 };
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {

@@ -27,21 +27,21 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Verbände", slug: "verbaende" },
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
 ];/* Analyse: Start (Übersicht), Signale (was entsteht), Tools (alle Werkzeuge), Atlas (worüber beraten wird); die einzelnen Analysen stehen auf diesen Seiten */
-/* plenara.X (Logo als Gruppenname) mit zwei Abschnitten: Analysen (die vier Seiten) und Einblicke, je Eintrag die Frage leise rechts daneben */
+/* plenara.X (Logo als Gruppenname) mit zwei Abschnitten: Analysen (Zahlen und Verteilungen) und Einblicke (einzelne Vorgänge und Akteure), je Eintrag die Frage leise rechts daneben */
 type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper" | "clipboardList"; hint?: string };
 const ANALYSE: XEintrag[] = [
   { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
-  { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
   { href: "/analytics/trends", label: "Trends", icon: "trendingUp", hint: "Was verändert sich?" },
   { href: "/analytics/fakten", label: "Fakten", icon: "map", hint: "Welcher Wert?" },
 ];
-/* Einblicke: wer beteiligt ist und was zusammenhängt (die früheren Tools; Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends) */
+/* Einblicke: einzelne Vorgänge (Signale, Ausschreibungen, Aktuelles) und wer beteiligt ist und was zusammenhängt (die früheren Tools; Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends) */
 const EINBLICKE: XEintrag[] = [
+  { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
+  { href: "/analytics/ausschreibungen", label: "Ausschreibungen", icon: "clipboardList", hint: "Was wird vergeben?" },
+  { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },
   { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer möchte was?" },
   { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
   { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
-  { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },
-  { href: "/analytics/ausschreibungen", label: "Ausschreibungen", icon: "clipboardList", hint: "Was wird vergeben?" },
 ];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
