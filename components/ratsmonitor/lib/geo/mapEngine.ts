@@ -48,6 +48,14 @@ function sameList(a: string[], b: string[]) {
   return true;
 }
 
+/** Löst var(--name) (mit optionaler Rückfallfarbe) zu einer Farbe auf, die der Canvas versteht; andere Werte bleiben unverändert */
+function cssColor(c: string): string {
+  const m = /^var\(\s*(--[\w-]+)\s*(?:,\s*([^)]+))?\)$/.exec(c.trim());
+  if (!m || typeof document === "undefined") return c;
+  const v = getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim();
+  return v || m[2]?.trim() || c;
+}
+
 export class MapEngine {
   private geo: GeoModel;
   private cb: MapEngineCallbacks;
@@ -98,7 +106,8 @@ export class MapEngine {
 
   /* Eigene Farben für die Stufen 1 bis n (Atlas: grün bis rot für Kennzahlen); null: Farben der Abdeckung */
   private palette: string[] | null = null;
-  private coverageColor() { const p = this.palette; return p ? (l: number) => p[Math.min(p.length, Math.max(1, l)) - 1] : this.pal === MAP_COLORS_DARK ? colorForCoverageDark : colorForCoverage; }
+  /* Die Karte zeichnet auf Canvas: var(--…) kennt der Canvas nicht, die Farbe muss hier aufgelöst werden (seit dem Farbschema „Petrol klar“ stehen in den Paletten Variablen) */
+  private coverageColor() { const p = this.palette?.map(cssColor) ?? null; return p ? (l: number) => p[Math.min(p.length, Math.max(1, l)) - 1] : this.pal === MAP_COLORS_DARK ? colorForCoverageDark : colorForCoverage; }
 
   setDark(d: boolean) {
     const pal = d ? MAP_COLORS_DARK : MAP_COLORS;
