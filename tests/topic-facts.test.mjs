@@ -398,3 +398,12 @@ test('Signale: Aufsichtsräte, Bestellungen und Besetzungen sind keine Vorhaben 
   assert.equal(m.streetSignalOf('Unterhaltung der Waldwege im Privatwald'), null);
   assert.ok(m.energyOf('Erneuerung der Heizungsanlage im Rathaus'));
 });
+
+test('Signale Pflege und Einzelhandel: Randfälle aus Stichprobe p5', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.careOf('Parkraumkonzept Klinik- und Kreuzviertel'), null);
+  assert.equal(m.careOf('Isolierte Befreiung; Ersatz von Entlüftungshauben für eine Arztpraxis'), null);
+  assert.ok(m.careOf('Neubau Wohnpflegeheim für 18 Plätze'));
+  assert.equal(m.retailOf('Ausfahrtsituation beim Netto-Markt'), null);
+  assert.ok(m.retailOf('Projekt Dorfladen in Ramsin'));
+});
