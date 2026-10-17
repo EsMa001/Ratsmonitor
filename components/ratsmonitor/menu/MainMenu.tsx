@@ -33,15 +33,15 @@ const ANALYSE: XEintrag[] = [
   { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
   { href: "/analytics/trends", label: "Trends", icon: "trendingUp", hint: "Was verändert sich?" },
   { href: "/analytics/fakten", label: "Fakten", icon: "map", hint: "Welcher Wert?" },
-  { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer möchte was?" },
   { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
   { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
 ];
-/* Einblicke: einzelne Vorgänge als Liste mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles). Zahlen und Verteilungen stehen in den Analysen (auch Fraktionen, Gremien, Themennetz); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
+/* Einblicke: einzelne Vorgänge als Liste mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles, Anträge der Fraktionen). Zahlen und Verteilungen stehen in den Analysen (auch Gremien, Themennetz); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
 const EINBLICKE: XEintrag[] = [
   { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
   { href: "/analytics/ausschreibungen", label: "Ausschreibungen", icon: "clipboardList", hint: "Was wird vergeben?" },
   { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },
+  { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer möchte was?" },
 ];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
