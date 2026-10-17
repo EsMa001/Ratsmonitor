@@ -61,7 +61,7 @@ dort steht im Ergebnis (`warnings`), beendet den Job aber mit Exit 0, damit der 
 | `import-nightly` | Abruf, nachts | Tagespipeline | 01:00 | 4 h |
 | `startseite-trends` | Startseite: Karte und Trends | Tagespipeline | 05:10 | 10 min |
 | `pdf-nightly` | Extraktion, nachts | Tagespipeline | 05:30 | 2 h |
-| `rule-texts` | Verarbeitung, nachts | Tagespipeline | direkt danach (Rückfall 08:50) | meist unter 1 h |
+| `rule-texts` | Verarbeitung, nachts | Tagespipeline | direkt danach (Rückfall 08:50 nur, wenn heute noch kein Lauf war; `fallback`) | meist unter 1 h |
 | `nacharbeit` | Nacharbeit | Nacharbeit | alle 30 min, 09:00 bis 23:00 | 20 min, 500 Einträge je Lauf |
 | `ocr` | OCR, tagsüber | Nacharbeit | alle 10 min, 07:00 bis 23:00 | 3 h je Lauf |
 | `altbestand` | Altbestand | Altbestand | alle 10 min, 10:00 bis 22:00, nur mit Anforderung | 2 h je Lauf |
@@ -194,7 +194,8 @@ Job `nacharbeit` (`scripts/nacharbeit.mjs --range daily`), alle 30 Minuten zwisc
    wurden (`ocrRange` in `store-lib.mjs`); ältere ohne Datum gehören zum Altbestand (sonst standen 43.000 alte Anlagen im Tagesbereich).
 4. **Grenzen:** je Seitengruppe 90 s (hängt eine Seite, endet das Paket sofort), je Datei 5 Minuten, Pakete zu 25 Dateien oder 2,5 GB
    als eigene Prozesse, 2 Worker. Ein **Wächter** beendet ein Paket ohne Lebenszeichen nach 3 Minuten; seine laufenden Dateien gelten
-   als zu langsam.
+   als zu langsam. Verdrängte Dateien, deren Server alle warten, nimmt ein Paket gar nicht erst auf; ein Paket ohne Fortschritt
+   (nichts gelesen, gescheitert oder zu langsam) beendet den Lauf (17.10.2026: 6.316 Pakete in 3 Stunden für 3 wartende Dateien).
 5. **Folgekette:** Nach einem Lauf mit gelesenen Dateien folgen gleich Regeln anwenden für die Berichte mit neuem Text und Suche
    aktualisieren (nicht, solange „Verarbeitung, nachts“ läuft; dann kommt der Text dort an).
 6. **Eigene Einheit** `ratsmonitor-ocr.service`: „Anhalten“ trifft nur die OCR; eine halb gelesene Datei bleibt in der Reihe.

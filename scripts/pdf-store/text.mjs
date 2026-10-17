@@ -151,8 +151,10 @@ if(!flag('ocr')){
    for(const k of Object.keys(tot))if(typeof r[k]==='number')tot[k]+=r[k];
    show(true);
    if(halted||r.stopped){stoppedChild=true;break;}
-   const worked=(r.files||0)+(r.failed||0)+(r.slow||0)+(r.skipped||0);
-   if(!worked){if(code!==0)console.error(`OCR-Paket endete mit ${code} ohne Ergebnis, Lauf beendet`);break;}
+   // Fortschritt heißt gelesen, gescheitert oder zu langsam. Nur ausgelassene Server zählen nicht: die Dateien bleiben stehen,
+   // und der Treiber startete sonst alle 30 s ein neues Paket mit denselben Dateien, drei Stunden lang (17.10.2026: 6.316 Pakete)
+   const worked=(r.files||0)+(r.failed||0)+(r.slow||0);
+   if(!worked){if(code!==0)console.error(`OCR-Paket endete mit ${code} ohne Ergebnis, Lauf beendet`);else if(r.skipped)console.log(`Paket ohne Fortschritt (${r.skipped} Dateien auf wartenden Servern), Lauf beendet`);break;}
   }
   const open=queueNow().length;
   console.log(`fertig: ${tot.files} Dateien (${tot.primary} Hauptdokumente), ${tot.pages} Seiten per OCR, ${tot.failed} Fehler (davon ${tot.changed} geändert), ${tot.fetched} nachgeladen und wieder gelöscht, ${tot.skipped} Server ausgelassen, ${tot.slow} über der Zeitgrenze, ${tot.killed} Pakete vom Wächter beendet, ${tot.dropped} zu große PDFs gelöscht, ${open} offen (${elapsed(t0)})`);
@@ -165,7 +167,10 @@ if(!flag('ocr')){
  // beendet sich das Paket nach der laufenden Datei, der Treiber startet das nächste (13.10.2026: 6,6 GB bei 150 Dateien)
  const rssMb=()=>process.memoryUsage.rss()/1048576,rssLimit=Number(opt('rss-mb',2500));let ocr=await ocrScheduler(workers);
  if(!ocr){console.error('OCR-Werkzeuge fehlen (OCR_TOOLS).');process.exit(1);}
- const todo=queueNow().slice(0,limit||undefined),main=new Set(todo.filter(x=>x.main).map(x=>x.sha)),t0=Date.now();
+ // Verdrängte Dateien, deren Server laut Fehlerspeicher alle warten, gar nicht erst ins Paket nehmen: sonst füllen sie die
+ // ersten 25 Plätze, jedes Paket lässt sie aus, und die Dateien dahinter kommen nie dran
+ const hostsWait=x=>{if(!F||x.present)return false;const urls=store.urlsOf(x.sha);return urls.length>0&&urls.every(u=>{try{return F.waiting(new URL(u).host);}catch{return true;}});};
+ const todo=queueNow().filter(x=>!hostsWait(x)).slice(0,limit||undefined),main=new Set(todo.filter(x=>x.main).map(x=>x.sha)),t0=Date.now();
  let files=0,primary=0,pagesDone=0,failed=0,dropped=0,fetched=0,changed=0,skipped=0,slow=0;
  const fileMs=Number(opt('file-minutes',0))*60000,pageMs=Number(opt('page-seconds',90))*1000;
  // Lebenszeichen für den Wächter des Treibers: Zeit und die Dateien, an denen gerade gelesen wird

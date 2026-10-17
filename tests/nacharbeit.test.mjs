@@ -103,3 +103,15 @@ test('Altbestand: alte Fehler erst, dann rückwirkender Abruf in Paketen, fortse
  assert.equal(calls.length,before,'angehalten: nichts mehr');
  sql.close();
 });
+
+test('Verarbeitung: 08:50 ist nur der Rückfall; nach einem Lauf am selben Tag (von der Nachtkette angestoßen) nicht noch einmal',()=>{
+ const job=JOBS.find(j=>j.id==='rule-texts'),s=settingOf(job,{});
+ assert.equal(job.fallback,true);
+ const at=(h,m=0)=>Date.parse('2026-10-17T00:00:00+02:00')+h*3600000+m*60000;// MESZ
+ assert.equal(dueNow(job,s,{lastStart:new Date(at(6,34)).toISOString()},at(8,50)).due,false,'heute 06:34 gelaufen');
+ assert.equal(dueNow(job,s,{lastStart:new Date(at(6,34)-864e5).toISOString()},at(8,50)).due,true,'gestern gelaufen, heute noch nicht');
+ assert.equal(dueNow(job,s,null,at(8,50)).due,true);
+ assert.equal(dueNow(job,s,{lastStart:new Date(at(8,50)).toISOString()},at(9,0)).due,false);
+ const backup=JOBS.find(j=>j.id==='backup'),b=settingOf(backup,{});
+ assert.equal(dueNow(backup,b,{lastStart:new Date(at(0,10)).toISOString()},at(0,30)).due,true,'ohne fallback wie bisher: Lauf vor der Uhrzeit zählt nicht');
+});
