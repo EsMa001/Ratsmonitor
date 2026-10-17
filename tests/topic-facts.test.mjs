@@ -328,3 +328,10 @@ test('Signale Stichprobe n1: Agri-Solarpark, Straßenbankett, Akustikdecke, Vers
   assert.equal(m.streetSignalOf('Verschiedenes Straßenausbau/Straßennutzungsplan'), null);
   assert.equal(m.waterSignalOf('Sanierung von Krugweg und Deichweg'), null);
 });
+
+test('Signale Stichprobe p1: Zweibrücken, Brückenbauer, Heizzentrale', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.streetSignalOf('Brückenbauer der Solidarität: Ehrenamt in der Straße'), null);
+  assert.equal(m.energyOf('Grundschule Wendelsteinstraße: Sanierung der Heizzentrale'), 'Heizungstausch');
+  assert.equal(m.energyOf('Beratung über die Neuanschaffung von Weihnachtssternbeleuchtung'), null);
+});
