@@ -81,13 +81,7 @@ export function AboutPage() {
         icon="search"
         label="Funktionen"
         name="Suche"
-        title={
-          <>
-            Kommunale Entscheidungen.
-            <br />
-            Endlich durchsuchbar.
-          </>
-        }
+        title="Kommunale Entscheidungen. Endlich durchsuchbar."
         lead={`Eine Suche statt hunderter Ratsinformationssysteme: ${name} durchsucht alle angebundenen Kommunen gleichzeitig, nach Begriff, Ort, Umkreis, Thema, Zeitraum und Stand. Was früher Tage dauerte, dauert jetzt Sekunden.`}
         aside={<SearchPreview />}
       >

@@ -156,7 +156,7 @@ export function KalenderPage() {
   if (!loaded) return <>{head}<section className="ri-sec ri-sec--tight"><AccountLoading /></section></>;
   return (
     <>
-      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine.<br />In Ihren Gebieten.</>} lead="Rats- und Ausschusssitzungen in den Orten, die Sie beobachten, auch mit Umkreis, etwa für Ihr Vertriebsgebiet." />
+      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine. In Ihren Gebieten.</>} lead="Rats- und Ausschusssitzungen in den Orten, die Sie beobachten, auch mit Umkreis, etwa für Ihr Vertriebsgebiet." />
       {!today ? <section className="ri-sec ri-sec--tight"><p className="text-slate-500">Kalender wird geladen …</p></section> : (
       <section className="ri-sec ri-sec--tight">
         <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
@@ -351,7 +351,7 @@ const CAL_POINTS: [string, string][] = [
 function KalenderTeaser() {
   return (
     <>
-      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine.<br />In Ihren Gebieten.</>} lead="Der Sitzungskalender ist Teil des Enterprise-Tarifs." />
+      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine. In Ihren Gebieten.</>} lead="Der Sitzungskalender ist Teil des Enterprise-Tarifs." />
       <section className="ri-sec ri-sec--tight">
         <h2 className="ri-h2">Was der Kalender kann</h2>
         <div className="ri-points ri-points--2">

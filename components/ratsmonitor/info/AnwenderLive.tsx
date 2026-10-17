@@ -87,7 +87,7 @@ function Kopfkarte({ kopf, pick, setPick }: { kopf: [string, string][]; pick: nu
     <div className="ri-pv" style={{ background: "none", border: "none", boxShadow: "none", padding: 0, marginTop: 24 }}>
       {m ? (
         <Link href={`/beschluss/${m.id}`} className="group" style={{ display: "block", color: "inherit", textDecoration: "none" }}>
-          <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ minHeight: 170, background: "linear-gradient(135deg, var(--rm-white) 0%, var(--rm-tint) 100%)" }}>
+          <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ minHeight: 170, background: "var(--rm-white)" }}>
             <div style={{ display: "grid", gridTemplateColumns: "52px minmax(0,1fr)", gap: 12 }}>
               <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid var(--rm-c200)", paddingRight: 10, textAlign: "center" }}>
                 <span style={{ fontSize: 22, fontWeight: 600, lineHeight: 1 }}>{Number(m.date.slice(8, 10))}</span>

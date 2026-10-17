@@ -9,13 +9,7 @@ export function NotFoundPage() {
       icon="search"
       label="Fehler 404"
       name="Seite nicht gefunden"
-      title={
-        <>
-          Diese Seite gibt es
-          <br />
-          nicht (mehr).
-        </>
-      }
+      title="Diese Seite gibt es nicht (mehr)."
       lead="Der Link ist vielleicht veraltet oder enthält einen Tippfehler. Von der Startseite aus finden Sie alles wieder."
     >
       <div className="ri-actions">

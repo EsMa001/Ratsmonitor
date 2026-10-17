@@ -11,6 +11,7 @@ import { AnalyticsX } from "../../components/Brand";
 import { ThemeIcon } from "../../components/icons";
 import { useSearch } from "../../state/search";
 import { THEMES } from "@/shared/themes.mjs";
+import { useBandFigure, useCountUp } from "../../lib/bandFigure";
 
 /*
  * Kopf der plenara.X-Seiten: Brotkrumen, Titel, Frage und (bei Atlas und Trends) die Reiter. Ein Reiter ist eine eigene Adresse
@@ -31,6 +32,13 @@ const METHODIK_VON: Record<string, [AnalyseId, string][]> = {
   gremien: [["gremien", "Gremien"]], graph: [["graph", "Themennetz"]], news: [["news", "Aktuelles"]],
 };
 
+/* Im Kopf statt der Frage (die Fragen bleiben im Menü): was die Seite zeigt, in wenigen Worten */
+const KURZ: Record<string, string> = {
+  atlas: "Themen nach Ort und Zeit", vergleich: "Zwei Orte im Vergleich", signale: "Vorhaben vor Ort", fakten: "Werte aus den Vorlagen",
+  trends: "Begriffe im Wandel", beschluesse: "Wie Vorgänge ausgehen", fraktionen: "Anträge der Fraktionen", gremien: "Wege durch die Gremien",
+  graph: "Verwandte Themen", news: "Berichtenswerte Vorgänge",
+};
+
 const SEITEN: Record<string, Seite> = {
   atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen.", reiter: ATLAS },
   vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist.", reiter: ATLAS },
@@ -38,7 +46,7 @@ const SEITEN: Record<string, Seite> = {
   fakten: { icon: "tag", gruppe: "Analysen", titel: "plenara.X Fakten", frage: "Welcher Wert?", text: "Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle." },
   trends: { icon: "trendingUp", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten.", reiter: TRENDS },
   beschluesse: { icon: "circleCheck", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Wie die Vorgänge zum gewählten Begriff ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf.", reiter: TRENDS },
-  fraktionen: { icon: "landmark", gruppe: "Einblicke", titel: "plenara.X Fraktionen", frage: "Wer will was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
+  fraktionen: { icon: "landmark", gruppe: "Einblicke", titel: "plenara.X Fraktionen", frage: "Wer möchte was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
   gremien: { icon: "users", gruppe: "Einblicke", titel: "plenara.X Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   graph: { icon: "network", gruppe: "Einblicke", titel: "plenara.X Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
   news: { icon: "newspaper", gruppe: "Einblicke", titel: "plenara.X Aktuelles", frage: "Was ist berichtenswert?", text: "Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit wörtlichem Zitat und Quelle. Für Vorhaben nach Branche und Stand: Signale." },
@@ -62,19 +70,18 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
     <PageBand compact>
       {/* Kein Pfad, nur Zurück wie auf den übrigen Seiten (Artikel) */}
       <button type="button" className="back-btn -ml-1.5 mb-1 print:hidden" onClick={() => (cameFromApp() ? router.back() : goBack())}><IconChevronLeft />Zurück</button>
-      <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+      {/* Titel links, Kurzbeschreibung in der Mitte, Symbol der Seite rechts (weiß im Petrol-Band) */}
+      <div className="mt-1 grid grid-cols-[1fr_auto_1fr] items-center gap-x-4 gap-y-1 max-sm:grid-cols-[1fr_auto]">
         {/* Titel kurz, die Marke als kleines Abzeichen daneben  */}
         <h1 className="flex items-baseline gap-2.5 text-[28px] font-semibold leading-tight">
           {s.titel.replace("plenara.X ", "")}
           <MarkenAbzeichen />
         </h1>
-        <p className="text-[16px] text-slate-500"><b className="font-semibold text-slate-700">{s.frage}</b> {s.text.replace(/\s*\S+$/, "")}{" "}
-          {/* Letztes Wort und Fragezeichen bleiben zusammen, sonst steht das Symbol auf dem Handy allein in einer Zeile */}
-          <span className="whitespace-nowrap">{s.text.match(/\S+$/)?.[0]}<button type="button" onClick={() => setInfo(!info)} aria-expanded={info} aria-controls="methodik" title="Methodik: worauf die Zahlen beruhen"
-            className="ml-2 inline-flex h-6 w-6 translate-y-[3px] items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-teal-700 print:hidden">
-            <Icon name="circleHelp" size={16} /><span className="sr-only">Methodik</span>
-          </button></span>
-        </p>
+        <BandMitte kurz={KURZ[seite] ?? s.frage} />
+        {/* Das Symbol der Seite ist zugleich der Knopf für die Methodik */}
+        <button type="button" onClick={() => setInfo(!info)} aria-expanded={info} aria-controls="methodik" title="Methodik: worauf die Zahlen beruhen" className="rm-bandicon justify-self-end pr-6 max-sm:pr-2 print:hidden">
+          <Icon name={s.icon} size={44} /><span className="sr-only">Methodik</span>
+        </button>
       </div>
       {info && METHODIK_VON[seite] && (
         <div id="methodik" className="mt-4 max-w-[900px] scroll-mt-24 border-l-2 border-teal-600 pl-4">
@@ -163,8 +170,24 @@ export function ThemenLeiste() {
 /** Marke neben dem Seitentitel: graues Abzeichen „plenara.X“, Text auf der Grundlinie von Titel und Frage */
 function MarkenAbzeichen() {
   return (
-    <span role="img" aria-label="plenara.X" className="inline-flex items-baseline rounded-md bg-slate-100 px-[7px] pb-[3px] pt-[2px] text-[14px] font-semibold leading-none text-slate-700">
+    <span role="img" aria-label="plenara.X" className="rm-brandtag inline-flex items-baseline rounded-md bg-slate-100 px-[7px] pb-[3px] pt-[2px] text-[14px] font-semibold leading-none text-slate-700">
       <span style={{ letterSpacing: "-.015em" }}>plenara</span><span className="inline-block self-center" style={{ lineHeight: 0 }}><AnalyticsX centered /></span>
     </span>
+  );
+}
+
+/** Mitte des Kopfbands: die Kennzahl der Seite groß (zählt kurz hoch), daneben klein ihre Bedeutung und was in 7 Tagen dazukam; ohne Zahl die Kurzbeschreibung */
+function BandMitte({ kurz }: { kurz: string }) {
+  const fig = useBandFigure();
+  const value = useCountUp(fig?.value ?? "");
+  if (!fig) return <p className="rm-band-mid m-0 whitespace-nowrap text-center text-[22px] opacity-90 max-sm:order-3 max-sm:col-span-2 max-sm:text-left">{kurz}</p>;
+  return (
+    <div className="rm-band-mid flex items-center justify-center gap-3 max-sm:order-3 max-sm:col-span-2 max-sm:justify-start" title={kurz}>
+      <span className="text-[44px] font-semibold leading-none tabular-nums max-sm:text-[28px]">{value}</span>
+      <span className="flex flex-col leading-tight">
+        <span className="text-[16px] font-medium">{fig.label}</span>
+        <span className="text-[14px] opacity-80">{fig.scope ?? kurz}{fig.week ? ` · +${fig.week.toLocaleString("de-DE")} in 7 Tagen` : ""}</span>
+      </span>
+    </div>
   );
 }

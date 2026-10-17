@@ -50,7 +50,7 @@ export function SavedArticlesPage() {
     );
   return (
     <>
-      <PageHead icon="fileText" label="Artikel" name={`Gespeicherte Artikel${list.length ? ` (${list.length})` : ""}`} title={<>Gemerkt.<br />Und nichts verpasst.</>} lead={`Ihre gemerkten Vorgänge mit ihrem Verlauf. Benachrichtigungen zu einem Vorgang: ${NOTIFY_LATER.toLowerCase()}.`}>
+      <PageHead icon="fileText" label="Artikel" name={`Gespeicherte Artikel${list.length ? ` (${list.length})` : ""}`} title={<>Gemerkt. Und nichts verpasst.</>} lead={`Ihre gemerkten Vorgänge mit ihrem Verlauf. Benachrichtigungen zu einem Vorgang: ${NOTIFY_LATER.toLowerCase()}.`}>
         <div className="mt-4 flex flex-wrap gap-2">
           <UsagePill label="Artikel" used={used.bookmarks} max={max.bookmarks} />
         </div>

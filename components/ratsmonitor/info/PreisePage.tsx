@@ -25,13 +25,7 @@ export function PreisePage() {
         icon="tag"
         label="Informationen"
         name="Preise"
-        title={
-          <>
-            Einfache Preise.
-            <br />
-            Jederzeit kündbar.
-          </>
-        }
+        title="Einfache Preise. Jederzeit kündbar."
         lead="Besser verstehen, was vor Ort beraten wird: Durchsuchen Sie die Ratsinformationssysteme der Kommunen und lassen Sie sich per E-Mail informieren, sobald zu Ihrem Thema etwas auf der Tagesordnung steht oder beschlossen wird. plenara.X mit den Analysen ist Teil von Enterprise."
       />
       <section className="ri-sec ri-sec--prices">

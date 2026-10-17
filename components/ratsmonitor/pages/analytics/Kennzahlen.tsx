@@ -3,6 +3,7 @@ import { useSearchParams } from "next/navigation";
 import { Bell } from "lucide-react";
 import { useClient } from "../../lib/useClient";
 import { useUi } from "../../state/ui";
+import { publishBandFigure } from "../../lib/bandFigure";
 
 const n = (v: number) => v.toLocaleString("de-DE");
 
@@ -16,19 +17,16 @@ export const NeuMark = ({ date }: { date: string }) => (isNew(date) ? <span clas
  * Antwort als große Kennzahlen (Atlas, Signale): Zahl groß in Petrol, Bedeutung klein darunter; daneben, wie viele Vorgänge
  * in den letzten 7 Tagen beraten wurden (Sitzungsdatum; nicht der Abruf: ein spät gefundener alter Bericht ist nicht neu). Darunter in einer Zeile, worauf sich die Zahlen beziehen.
  */
-export function Kennzahlen({ items, week, children }: { items: { value: string; label: string }[]; week?: number | null; children?: ReactNode }) {
+/** scope: wofür die Zahl gilt (Thema, Suche, Ort, Zeitraum), erscheint im Kopfband unter der Zahl */
+export function Kennzahlen({ items, week, scope, children }: { items: { value: string; label: string }[]; week?: number | null; scope?: string; children?: ReactNode }) {
+  /* Erste Zahl auch im Kopfband zeigen; beim Verlassen der Seite wieder entfernen */
+  const fv = items[0]?.value, fl = items[0]?.label;
+  useEffect(() => { publishBandFigure(fv && fl ? { value: fv, label: fl, week, scope } : null); }, [fv, fl, week, scope]);
+  useEffect(() => () => publishBandFigure(null), []);
   return (
-    <div className="mt-4">
-      {/* Handy: zwei Zahlen je Reihe und etwas kleiner, sonst stehen vier große Zahlen untereinander */}
-      <div className="grid grid-cols-2 items-end gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-10">
-        {items.map((k) => (
-          <div key={k.label}>
-            <p className="m-0 text-[28px] font-semibold leading-none tabular-nums text-teal-700 sm:text-[44px]">{k.value}</p>
-            <p className="m-0 mt-1 text-[14px] text-slate-500">{k.label}</p>
-          </div>
-        ))}
-        {week ? <p className="col-span-2 m-0 justify-self-start rounded-full sm:mb-6 bg-teal-50 px-3 py-1 text-[14px] font-medium text-teal-800">+{n(week)} in den letzten 7 Tagen beraten</p> : null}
-      </div>
+    <div className="mt-2">
+      {/* Die erste Zahl steht im Kopfband (XKopf, BandMitte); weitere Zahlen hier ruhig in einer Zeile */}
+      {items.length > 1 && <p className="m-0 mb-2 flex flex-wrap gap-x-6 text-[16px] text-slate-500">{items.slice(1).map((k) => <span key={k.label}><b className="font-semibold tabular-nums text-slate-900">{k.value}</b> {k.label}</span>)}</p>}
       {children && <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[16px] text-slate-700">{children}</div>}
     </div>
   );
@@ -52,6 +50,9 @@ export function countScale(values: number[]): { level: (v: number) => number; le
 }
 
 /** Zeitraum als kleine Pillen in der Bezugszeile (Atlas und Signale gleich): Monate zurück ab heute, "" bzw. "alle" = alles */
+/** Text zum Zeitraum der ZeitPills (für den Bezug der Kennzahl) */
+export const zeitText = (v: string) => (v === "3" || v === "6" || v === "12" ? `letzte ${v} Monate` : "gesamter Zeitraum");
+
 export function ZeitPills({ value, all = "", onPick }: { value: string; all?: string; onPick: (v: string) => void }) {
   const opts: [string, string][] = [["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], [all, "Alles"]];
   return (

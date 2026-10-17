@@ -24,7 +24,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-[1100] border-b border-slate-200 bg-white">
+    <header className="sticky top-0 z-[1100] border-b-2 border-teal-600 bg-white">
       <div className="flex h-[56px] items-center justify-between gap-2 px-4 sm:gap-4">
         <div className="flex min-w-0 items-center gap-2 sm:gap-[14px]">
           {title && !root ? (

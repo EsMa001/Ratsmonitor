@@ -610,7 +610,7 @@ export function KontaktPage() {
         icon="mail"
         label="Hilfe"
         name="Kontakt"
-        title={<>Schreiben Sie uns.<br />Wir antworten schnell.</>}
+        title={<>Schreiben Sie uns. Wir antworten schnell.</>}
         lead={`Fragen zu ${name}, Ihrem Konto oder einer Stufe für die Testphase? Wir antworten in der Regel innerhalb eines Werktags.`}
       />
       <section className="ri-sec">
