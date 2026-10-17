@@ -61,9 +61,20 @@ const FACT_THEME:Record<string,string>={plan:'bauen',plan_use:'bauen',housing:'b
 const NO_COVERAGE=new Set(['stage','subs','main_doc','doc_type','social']);
 /* Fakten nach Verwendung: Werte für die Karte von plenara.X Fakten (Zahl je Gemeinde), Bausteine der Signale (Einordnungen für
    Stand und Auswahl, keine Zahlen; stehen bei den Signalen), Fraktionsprofil (plenara.X Einblicke) */
-const SIGNAL_FACTS=new Set(['plan','plan_use','heat_plan','house_type','project','stage']);
+/* Konzept docs/produkt/signale-und-fakten.md: Fakt = Zahlenwert zum Vergleich; Signal = Ereignis mit Art, Stand und optional Größe */
+const SIGNAL_STAND=new Set(['plan','heat_plan','stage']);
+const SIGNAL_ART=new Set(['plan_use','house_type','road','project']);
+const SIGNAL_GROESSE=new Set(['plan_area','housing','wind_count','ee_power']);
 const PROFILE_FACTS=new Set(['faction','faction_advice']);
-const factArt=(id:string)=>SIGNAL_FACTS.has(id)?'signal':PROFILE_FACTS.has(id)?'profil':'vergleich';
+const factArt=(id:string)=>SIGNAL_STAND.has(id)?'stand':SIGNAL_ART.has(id)?'art':SIGNAL_GROESSE.has(id)?'groesse':PROFILE_FACTS.has(id)?'profil':'vergleich';
+const isSignalPart=(id:string)=>['stand','art','groesse'].includes(factArt(id));
+/* Neue Signale, noch nicht gebaut (Konzept, Abschnitt „Kategorien: Was neu heißt“) */
+const SIGNAL_IDEAS:{name:string;what:string}[]=[
+ {name:'Schrittwechsel eines Vorhabens',what:'Meldung, wenn der Stand eines bekannten Vorhabens wechselt („geht in die Auslegung“, „Satzungsbeschluss“). Braucht ein Gedächtnis je Vorhaben (Vorgang über mehrere Sitzungen).'},
+ {name:'Änderung eines Fakts',what:'Hebesatz oder Gebühr ändert sich gegenüber dem Vorjahr. Der Fakt wird zum Signal; braucht frühere Werte desselben Orts.'},
+ {name:'Neuer Standort',what:'Einzelhandel, Pflege oder Schule aus der Nutzung in der Bauleitplanung.'},
+ {name:'Große Vergabe',what:'Vergabe über einer Schwelle je Branche (Betrag aus dem Titel oder Beschluss).'},
+];
 /* Auf der Karte von plenara.X Fakten (shared/map-facts.mjs) */
 /* Zeilen der Fakten (für die Bausteine bei den Signalen) */
 const FACT_ROWS=(QUALITY.groups.find(g=>g.id==='facts')?.rows??[]) as QualityRow[];
@@ -177,6 +188,7 @@ export function AdminRuleTexts(){
     /* Signale: Kategorie mit Qualität der Zuordnung und Trefferquote, darunter die Filter mit eigener Qualität */
     if(g.id==='signals')return <div key={g.id} className="mt-8">
      <h3>{g.name}</h3>
+     <p className="admin-note mt-1">Ein Signal ist ein Ereignis, das eine Branche wissen will („Wo entsteht gerade etwas Neues?“), mit Art, Stand und optional Größe. Ein Fakt dagegen ist ein Zahlenwert zum Vergleich von Orten (siehe unten). Konzept: docs/produkt/signale-und-fakten.md.</p>
      <p className="admin-note mt-1">Qualität: von den Vorgängen, die die Regel einer Kategorie oder einem Filter zuordnet, gehören so viele wirklich dazu. Trefferquote: von den Vorgängen, die dazugehören, findet die Regel so viele. Offen erst, wenn Qualität, Art und Stand je mindestens {QT.quality} % und die Trefferquote mindestens {SIGNAL_RECALL} % erreichen. Kategorien, Filter und Vorgehen: docs/produkt/plenara-x-signale.md.</p>
      <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{(g.rows as QualityRow[]).map(r=><li key={r.id} className="py-3 text-[14px]">
       <div className="grid gap-x-6 gap-y-2 md:grid-cols-[minmax(0,1fr)_120px_120px_120px_120px]">
@@ -195,9 +207,18 @@ export function AdminRuleTexts(){
        <span className={'tabular-nums '+(f.quality===null?'text-slate-400':f.quality>=QT.quality?'font-semibold text-teal-700':'font-semibold text-slate-900')}>{f.quality===null?'nicht gemessen':f.quality+' %'}</span>
       </li>)}</ul>}
      </li>)}</ul>
-     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Bausteine der Signale</h4>
-     <p className="admin-note mt-1">Einordnungen aus den Unterlagen für Stand und Auswahl der Signale (zum Beispiel Verfahrensschritt eines Bebauungsplans, Schritt der Wärmeplanung), keine Zahlen. Rechts die Zahl der Berichte im letzten Lauf.</p>
-     {list(FACT_ROWS.filter(r=>factArt(r.id)==='signal'),'facts')}
+     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Stand der Signale</h4>
+     <p className="admin-note mt-1">Verfahrensschritt eines Vorhabens (zum Beispiel eines Bebauungsplans oder der Wärmeplanung), keine Zahl. Rechts die Zahl der Berichte im letzten Lauf.</p>
+     {list(FACT_ROWS.filter(r=>factArt(r.id)==='stand'),'facts')}
+     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Art der Signale</h4>
+     <p className="admin-note mt-1">Was für ein Vorhaben es ist (Nutzung im Plan, Hausformen, Straßenbau, Mobilitätsprojekte). Sie bilden die Filter der Kategorien.</p>
+     {list(FACT_ROWS.filter(r=>factArt(r.id)==='art'),'facts')}
+     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Angaben am Signal (Größe)</h4>
+     <p className="admin-note mt-1">Fläche, Wohneinheiten, Anlagenzahl, Leistung. Sie hängen am Signal und blockieren es nicht; angezeigt werden sie nur, wenn sie im Text belegt sind. Ihre Qualität wird getrennt gemessen.</p>
+     {list(FACT_ROWS.filter(r=>factArt(r.id)==='groesse'),'facts')}
+     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Weitere Signale (noch nicht gebaut)</h4>
+     <p className="admin-note mt-1">Vorschläge aus dem Konzept. Jedes bekommt erst eine Regel, dann eine Messung, dann ein Tor.</p>
+     <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{SIGNAL_IDEAS.map(i=><li key={i.name} className="py-3 text-[14px]"><div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{i.name}</span><span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">geplant</span></div><small className="mt-1 block text-[12px] leading-snug text-slate-500">{i.what}</small></li>)}</ul>
     </div>;
     const rows=g.rows as QualityRow[];
     /* Fakten nach Thema; ohne Thema („Alle Themen“) etwa der Haushalt */
@@ -205,7 +226,7 @@ export function AdminRuleTexts(){
     if(g.id==='facts')return <div key={g.id}>
      <div className="mt-8">
       <h3>{g.name}</h3>
-      <p className="admin-note mt-1">Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Auf die Karte kommt ein Wert erst ab {QT.quality} % Qualität. Mengen je Vorhaben (Wohneinheiten, Fläche, Windanlagen) zählen dort als Summe je 1.000 Einwohner.</p>
+      <p className="admin-note mt-1">Ein Fakt ist ein Zahlenwert mit Einheit, vergleichbar über Orte und Zeit: Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Größen von Vorhaben sind keine Fakten, sondern Angaben am Signal (oben). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Auf die Karte kommt ein Wert erst ab {QT.quality} % Qualität.</p>
       {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[14px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
      </div>
      <div className="mt-8">
