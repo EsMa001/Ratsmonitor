@@ -569,7 +569,7 @@ export function ConfirmLoginPage() {
                 Anmelden als {data.email}
               </h2>
               {!data.sameBrowser && (
-                <p role="alert" style={{ margin: "12px 0 0", fontSize: 16, lineHeight: 1.5, color: "#92400e" }}>
+                <p role="alert" style={{ margin: "12px 0 0", fontSize: 16, lineHeight: 1.5, color: "var(--color-amber-800)" }}>
                   Diese Anmeldung wurde nicht in diesem Browser angefordert. Nur fortfahren, wenn Sie das selbst waren.
                 </p>
               )}

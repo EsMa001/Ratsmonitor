@@ -89,7 +89,7 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
         <nav aria-label="Ansicht" className="-mb-4 mt-3 flex gap-6 print:hidden">
           {s.reiter.map(([href, name]) => (
             <Link key={href} href={mit(href)} aria-current={href === path ? "page" : undefined} scroll={false}
-              className={`border-b-2 pb-2 text-[15px] ${href === path ? "border-teal-700 font-semibold text-slate-900" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{name}</Link>
+              className={`border-b-2 pb-2 text-[16px] ${href === path ? "border-teal-700 font-semibold text-slate-900" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{name}</Link>
           ))}
         </nav>
       )}

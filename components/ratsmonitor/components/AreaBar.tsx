@@ -63,10 +63,10 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
         )}
         <div className={`flex flex-1 items-center gap-2.5 ${compact ? "min-w-full text-[14px]" : "min-w-[220px]"}`}>
           <span className="inline-flex items-center gap-1.5 text-slate-500">
-            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={compact ? "currentColor" : "#d1665a"} strokeWidth="1.5" strokeLinecap="round" className="flex-none">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={compact ? "currentColor" : "var(--color-amber-500)"} strokeWidth="1.5" strokeLinecap="round" className="flex-none">
               <circle cx="12" cy="12" r="9" strokeDasharray="3 2.6" />
               <path d="M12 12h9" />
-              <circle cx="12" cy="12" r="1.8" fill={compact ? "currentColor" : "#d1665a"} stroke="none" />
+              <circle cx="12" cy="12" r="1.8" fill={compact ? "currentColor" : "var(--color-amber-500)"} stroke="none" />
             </svg>
             {compact ? <span className="max-w-[120px] truncate" title={`Umkreis um ${name}`}>um {name}</span> : "Umkreis"}
           </span>
@@ -85,9 +85,9 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
             }}
             onPointerUp={fit}
             onKeyUp={fit}
-            className={`min-w-0 flex-1 cursor-pointer ${compact ? "h-5 accent-teal-600" : "h-7 accent-[#d1665a]"}`}
+            className={`min-w-0 flex-1 cursor-pointer ${compact ? "h-5 accent-teal-600" : "h-7 accent-amber-700"}`}
           />
-          <output className={`min-w-[52px] text-right text-[14px] tabular-nums ${compact ? "" : "font-bold"} ${km ? (compact ? "text-teal-700" : "text-[#b4493e]") : "text-slate-500"}`}>{km ? `${km} km` : "aus"}</output>
+          <output className={`min-w-[52px] text-right text-[14px] tabular-nums ${compact ? "" : "font-bold"} ${km ? (compact ? "text-teal-700" : "text-amber-700") : "text-slate-500"}`}>{km ? `${km} km` : "aus"}</output>
         </div>
       </div>
       {km > 0 && (

@@ -9,12 +9,12 @@ function DiffusionThumb() {
     const a = i * 2.399963, r = 5 + Math.sqrt(i) * 8.6;
     return { x: Math.round((98 + Math.cos(a) * r * 1.1) * 100) / 100, y: Math.round((78 + Math.sin(a) * r * 0.9) * 100) / 100, age: i / 70 };
   });
-  const shade = (t: number) => (t < 0.25 ? "#0f766e" : t < 0.5 ? "#6ebfb8" : t < 0.75 ? "#8ccdc7" : "#d7dce3");
+  const shade = (t: number) => (t < 0.25 ? "var(--rm-ac)" : t < 0.5 ? "var(--rm-map3)" : t < 0.75 ? "var(--rm-map2)" : "var(--rm-c200)");
   return (
     <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Ausbreitung: Punkte breiten sich wellenförmig aus, daneben eine S-Kurve" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
       {dots.map((d, i) => <circle key={i} cx={d.x} cy={d.y} r={3.2 + (1 - d.age) * 1.2} fill={shade(d.age)} />)}
-      <path d="M190 126 C 212 124, 224 120, 238 100 S 262 44, 304 34" fill="none" stroke="#0d9488" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M190 126H304" stroke="#e2e8f0" />
+      <path d="M190 126 C 212 124, 224 120, 238 100 S 262 44, 304 34" fill="none" stroke="var(--rm-fill)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M190 126H304" stroke="var(--rm-c200)" />
     </svg>
   );
 }
@@ -23,16 +23,16 @@ function DiffusionThumb() {
 function GraphThumb() {
   const hub: [number, number] = [160, 78];
   const ring: [number, number, number, string][] = [
-    [96, 40, 7, "#0d9488"], [128, 24, 5, "#0d9488"], [200, 30, 8, "#0d9488"], [236, 62, 6, "#0d9488"], [232, 112, 7, "#0d9488"],
-    [190, 134, 5, "#0d9488"], [124, 130, 8, "#0d9488"], [82, 102, 6, "#0d9488"], [60, 66, 4, "#94a3b8"], [268, 36, 5, "#0f172a"], [270, 90, 4, "#94a3b8"],
+    [96, 40, 7, "var(--rm-fill)"], [128, 24, 5, "var(--rm-fill)"], [200, 30, 8, "var(--rm-fill)"], [236, 62, 6, "var(--rm-fill)"], [232, 112, 7, "var(--rm-fill)"],
+    [190, 134, 5, "var(--rm-fill)"], [124, 130, 8, "var(--rm-fill)"], [82, 102, 6, "var(--rm-fill)"], [60, 66, 4, "var(--rm-c400)"], [268, 36, 5, "var(--rm-c900)"], [270, 90, 4, "var(--rm-c400)"],
   ];
   const cross: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0], [0, 8], [3, 9], [4, 10], [2, 9], [6, 4]];
   return (
     <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Themennetzes: Knoten um einen Suchbegriff, durch Linien verbunden" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
-      {ring.map(([x, y], i) => <line key={`h${i}`} x1={hub[0]} y1={hub[1]} x2={x} y2={y} stroke="#94a3b8" strokeOpacity=".25" />)}
-      {cross.map(([a, b]) => <line key={`${a}-${b}`} x1={ring[a][0]} y1={ring[a][1]} x2={ring[b][0]} y2={ring[b][1]} stroke="#94a3b8" strokeOpacity=".55" strokeWidth="1.4" />)}
+      {ring.map(([x, y], i) => <line key={`h${i}`} x1={hub[0]} y1={hub[1]} x2={x} y2={y} stroke="var(--rm-c400)" strokeOpacity=".25" />)}
+      {cross.map(([a, b]) => <line key={`${a}-${b}`} x1={ring[a][0]} y1={ring[a][1]} x2={ring[b][0]} y2={ring[b][1]} stroke="var(--rm-c400)" strokeOpacity=".55" strokeWidth="1.4" />)}
       {ring.map(([x, y, r, c], i) => <circle key={i} cx={x} cy={y} r={r} fill={c} fillOpacity=".9" />)}
-      <circle cx={hub[0]} cy={hub[1]} r="14" fill="#0f766e" />
+      <circle cx={hub[0]} cy={hub[1]} r="14" fill="var(--rm-ac)" />
       <rect x={hub[0] - 4.5} y={hub[1] - 4.5} width="9" height="9" fill="#fff" />
     </svg>
   );
@@ -41,14 +41,14 @@ function GraphThumb() {
 /** Vorschaubild der Trends: Streudiagramm der Begriffe mit Aufsteigern oben links */
 function TrendThumb() {
   const dots: [number, number, number, string][] = [
-    [40, 28, 6, "#0f766e"], [62, 36, 5, "#0d9488"], [82, 30, 7, "#0d9488"], [108, 52, 8, "#0d9488"], [150, 62, 6, "#cbd5e1"], [176, 76, 9, "#cbd5e1"],
-    [196, 70, 7, "#cbd5e1"], [220, 80, 10, "#cbd5e1"], [244, 74, 6, "#cbd5e1"], [270, 84, 7, "#cbd5e1"], [136, 98, 6, "#94a3b8"], [96, 118, 5, "#94a3b8"], [200, 112, 7, "#94a3b8"], [60, 126, 4, "#94a3b8"],
+    [40, 28, 6, "var(--rm-ac)"], [62, 36, 5, "var(--rm-fill)"], [82, 30, 7, "var(--rm-fill)"], [108, 52, 8, "var(--rm-fill)"], [150, 62, 6, "var(--rm-c300)"], [176, 76, 9, "var(--rm-c300)"],
+    [196, 70, 7, "var(--rm-c300)"], [220, 80, 10, "var(--rm-c300)"], [244, 74, 6, "var(--rm-c300)"], [270, 84, 7, "var(--rm-c300)"], [136, 98, 6, "var(--rm-c400)"], [96, 118, 5, "var(--rm-c400)"], [200, 112, 7, "var(--rm-c400)"], [60, 126, 4, "var(--rm-c400)"],
   ];
   return (
     <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Trendkarte: Begriffe als Punkte, Aufsteiger oben links, Absteiger unten" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
-      <line x1="16" x2="304" y1="82" y2="82" stroke="#94a3b8" strokeOpacity=".6" />
-      <line x1="16" x2="304" y1="42" y2="42" stroke="#e2e8f0" strokeDasharray="3 4" />
-      <line x1="16" x2="304" y1="122" y2="122" stroke="#e2e8f0" strokeDasharray="3 4" />
+      <line x1="16" x2="304" y1="82" y2="82" stroke="var(--rm-c400)" strokeOpacity=".6" />
+      <line x1="16" x2="304" y1="42" y2="42" stroke="var(--rm-c200)" strokeDasharray="3 4" />
+      <line x1="16" x2="304" y1="122" y2="122" stroke="var(--rm-c200)" strokeDasharray="3 4" />
       {dots.map(([x, y, r, c]) => <circle key={`${x}-${y}`} cx={x} cy={y} r={r} fill={c} fillOpacity=".85" />)}
     </svg>
   );
@@ -59,12 +59,12 @@ function CompareThumb() {
   const rows: [number, number][] = [[96, 40], [64, 88], [44, 52], [78, 24], [30, 70]];
   return (
     <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Vergleichs: Balken zweier Orte gegenüber, links der eine, rechts der andere" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
-      <line x1="160" x2="160" y1="16" y2="140" stroke="#cbd5e1" />
-      <circle cx="40" cy="18" r="4" fill="#0d9488" /><circle cx="280" cy="18" r="4" fill="#0f172a" />
+      <line x1="160" x2="160" y1="16" y2="140" stroke="var(--rm-c300)" />
+      <circle cx="40" cy="18" r="4" fill="var(--rm-fill)" /><circle cx="280" cy="18" r="4" fill="var(--rm-c900)" />
       {rows.map(([l, r], i) => (
         <g key={i} transform={`translate(0 ${34 + i * 22})`}>
-          <rect x={160 - l} width={l - 4} height="12" rx="3" fill="#0d9488" fillOpacity=".9" />
-          <rect x="164" width={r} height="12" rx="3" fill="#0f172a" fillOpacity=".85" />
+          <rect x={160 - l} width={l - 4} height="12" rx="3" fill="var(--rm-fill)" fillOpacity=".9" />
+          <rect x="164" width={r} height="12" rx="3" fill="var(--rm-c900)" fillOpacity=".85" />
         </g>
       ))}
     </svg>
@@ -78,17 +78,17 @@ function DecisionThumb() {
   return (
     <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau von Beschlüssen: Ring mit der Beschlussquote, daneben Balken je Gremienebene" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
       <g transform="translate(86 78) rotate(-90)">
-        <circle r="38" fill="none" stroke="#0d9488" strokeWidth="14" strokeDasharray={`${a} ${C}`} />
-        <circle r="38" fill="none" stroke="#94a3b8" strokeWidth="14" strokeDasharray={`${p} ${C}`} strokeDashoffset={-a} />
-        <circle r="38" fill="none" stroke="#0f172a" strokeWidth="14" strokeDasharray={`${r} ${C}`} strokeDashoffset={-(a + p)} />
+        <circle r="38" fill="none" stroke="var(--rm-fill)" strokeWidth="14" strokeDasharray={`${a} ${C}`} />
+        <circle r="38" fill="none" stroke="var(--rm-c400)" strokeWidth="14" strokeDasharray={`${p} ${C}`} strokeDashoffset={-a} />
+        <circle r="38" fill="none" stroke="var(--rm-c900)" strokeWidth="14" strokeDasharray={`${r} ${C}`} strokeDashoffset={-(a + p)} />
       </g>
-      <text x="86" y="85" textAnchor="middle" fontSize="20" fontWeight="600" fill="#0f172a">91 %</text>
+      <text x="86" y="85" textAnchor="middle" fontSize="20" fontWeight="600" fill="var(--rm-c900)">91 %</text>
       {bars.map(([x, y, z], i) => (
         <g key={i} transform={`translate(160 ${44 + i * 28})`}>
-          <rect width="140" height="10" rx="5" fill="#f1f5f9" />
-          <rect width={140 * x} height="10" rx="5" fill="#0d9488" />
-          <rect x={140 * x} width={140 * y} height="10" fill="#94a3b8" />
-          <rect x={140 * (x + y)} width={140 * z} height="10" rx="3" fill="#0f172a" />
+          <rect width="140" height="10" rx="5" fill="var(--rm-c100)" />
+          <rect width={140 * x} height="10" rx="5" fill="var(--rm-fill)" />
+          <rect x={140 * x} width={140 * y} height="10" fill="var(--rm-c400)" />
+          <rect x={140 * (x + y)} width={140 * z} height="10" rx="3" fill="var(--rm-c900)" />
         </g>
       ))}
     </svg>
@@ -97,14 +97,14 @@ function DecisionThumb() {
 
 /** Vorschaubild der Gremien: gerichtete Pfeile von Einstiegs-Gremien zu einem Entscheidungs-Gremium */
 function NetThumb() {
-  const nodes: [number, number, number, string, string][] = [[40, 36, 9, "#cbd5e1", "#94a3b8"], [40, 80, 11, "#cbd5e1", "#94a3b8"], [40, 122, 8, "#cbd5e1", "#94a3b8"], [150, 60, 14, "#cbd5e1", "#94a3b8"], [150, 118, 8, "#5eead4", "#0d9488"], [272, 78, 20, "#0f766e", "#0f766e"]];
+  const nodes: [number, number, number, string, string][] = [[40, 36, 9, "var(--rm-c300)", "var(--rm-c400)"], [40, 80, 11, "var(--rm-c300)", "var(--rm-c400)"], [40, 122, 8, "var(--rm-c300)", "var(--rm-c400)"], [150, 60, 14, "var(--rm-c300)", "var(--rm-c400)"], [150, 118, 8, "var(--color-teal-300)", "var(--rm-fill)"], [272, 78, 20, "var(--rm-ac)", "var(--rm-ac)"]];
   const links: [number, number, number][] = [[0, 3, 2], [1, 3, 3.5], [2, 4, 1.5], [3, 5, 6], [1, 5, 2], [4, 5, 2.5]];
   return (
     <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Gremien: Pfeile von Ausschüssen zum Rat" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
-      <defs><marker id="nt" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L9 5L0 9z" fill="#64748b" /></marker></defs>
+      <defs><marker id="nt" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L9 5L0 9z" fill="var(--rm-c500)" /></marker></defs>
       {links.map(([a, b, w]) => {
         const A = nodes[a], B = nodes[b], dx = B[0] - A[0], dy = B[1] - A[1], d = Math.hypot(dx, dy), ux = dx / d, uy = dy / d;
-        return <path key={`${a}${b}`} d={`M${A[0] + ux * A[2]},${A[1] + uy * A[2]} Q${(A[0] + B[0]) / 2 - uy * d * 0.12},${(A[1] + B[1]) / 2 + ux * d * 0.12} ${B[0] - ux * (B[2] + 4)},${B[1] - uy * (B[2] + 4)}`} fill="none" stroke="#94a3b8" strokeOpacity=".7" strokeWidth={w} strokeLinecap="round" markerEnd="url(#nt)" />;
+        return <path key={`${a}${b}`} d={`M${A[0] + ux * A[2]},${A[1] + uy * A[2]} Q${(A[0] + B[0]) / 2 - uy * d * 0.12},${(A[1] + B[1]) / 2 + ux * d * 0.12} ${B[0] - ux * (B[2] + 4)},${B[1] - uy * (B[2] + 4)}`} fill="none" stroke="var(--rm-c400)" strokeOpacity=".7" strokeWidth={w} strokeLinecap="round" markerEnd="url(#nt)" />;
       })}
       {nodes.map(([x, y, r, f, st], i) => <circle key={i} cx={x} cy={y} r={r} fill={f} stroke={st} strokeWidth="2" />)}
     </svg>

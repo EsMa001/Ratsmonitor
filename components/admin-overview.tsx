@@ -49,7 +49,7 @@ function TrendChart({series,max,now,fmt,unit,hover,onHover}:{series:Series[];max
   {ticks.map(f=><g key={f}><line x1={L} x2={W-R} y1={y(f*max)} y2={y(f*max)} stroke={f?AC.grid:AC.base} strokeWidth="1"/><text x={L-8} y={y(f*max)+4} textAnchor="end" fontSize="12" fill={AC.axis}>{n(100*f)} %</text></g>)}
   {series.map(s=><path key={s.id} d={path(s.points)} fill="none" stroke={s.color} strokeWidth="2.4" strokeLinejoin="round"/>)}
   {labels.map(t=><text key={t} x={x(t)} y={H-8} textAnchor={t===t0?'start':'middle'} fontSize="12" fill={AC.axis}>{dayLabel(t)}</text>)}
-  {hover!==null&&<g><line x1={x(hover)} x2={x(hover)} y1={T} y2={T+h} stroke={AC.ink} strokeWidth="1" strokeDasharray="3 3"/>{series.map(s=><circle key={s.id} cx={x(hover)} cy={y(valueAt(s.points,hover))} r="4.5" fill={s.color} stroke="#fff" strokeWidth="1.5"/>)}</g>}
+  {hover!==null&&<g><line x1={x(hover)} x2={x(hover)} y1={T} y2={T+h} stroke={AC.ink} strokeWidth="1" strokeDasharray="3 3"/>{series.map(s=><circle key={s.id} cx={x(hover)} cy={y(valueAt(s.points,hover))} r="4.5" fill={s.color} stroke="var(--rm-white)" strokeWidth="1.5"/>)}</g>}
   <title>{unit}: {series.map(s=>s.label+' '+fmt(valueAt(s.points,now))).join(', ')}</title>
  </svg>;
 }

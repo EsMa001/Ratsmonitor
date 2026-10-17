@@ -22,7 +22,7 @@ const day = (v: string | null) => (v ? new Date(v).toLocaleDateString("de-DE", {
 function Big({ value, label, sub }: { value: number; label: string; sub: string }) {
   return (
     <div>
-      <p className="m-0 text-[64px] font-semibold leading-none tracking-[-0.03em] text-slate-900 max-sm:text-[44px]">{value} <span className="text-[36px] max-sm:text-[28px]">%</span></p>
+      <p className="m-0 text-[44px] font-semibold leading-none tracking-[-0.03em] text-slate-900 max-sm:text-[28px]">{value} <span className="text-[28px] max-sm:text-[22px]">%</span></p>
       <p className="m-0 mt-3 text-[18px] font-medium text-slate-900">{label}</p>
       <span className="mt-3 block h-[4px] w-full max-w-[420px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${value}%` }} /></span>
       <p className="m-0 mt-2 text-[14px] text-slate-500">{sub}</p>

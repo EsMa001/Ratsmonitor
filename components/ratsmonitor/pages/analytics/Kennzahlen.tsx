@@ -23,7 +23,7 @@ export function Kennzahlen({ items, week, children }: { items: { value: string; 
       <div className="grid grid-cols-2 items-end gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-10">
         {items.map((k) => (
           <div key={k.label}>
-            <p className="m-0 text-[32px] font-semibold leading-none tabular-nums text-teal-700 sm:text-[44px]">{k.value}</p>
+            <p className="m-0 text-[28px] font-semibold leading-none tabular-nums text-teal-700 sm:text-[44px]">{k.value}</p>
             <p className="m-0 mt-1 text-[14px] text-slate-500">{k.label}</p>
           </div>
         ))}

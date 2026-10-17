@@ -72,7 +72,7 @@ export function ImportDialog() {
           </p>
           <p className="mb-0 mt-2 text-[14px] text-slate-500">Übernommene Einträge werden danach in diesem Browser gelöscht und stehen in Ihrem Konto.</p>
           {error && (
-            <p role="alert" className="mb-0 mt-3 text-[14px] text-rose-700">
+            <p role="alert" className="mb-0 mt-3 text-[14px] text-amber-700">
               {error}
             </p>
           )}

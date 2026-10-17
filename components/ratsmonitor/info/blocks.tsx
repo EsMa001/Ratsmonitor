@@ -113,7 +113,7 @@ export function SearchTermButton({ term, light }: { term: string; light?: boolea
 
 export function StatusPill({ status }: { status: Status }) {
   /* Stand als schlichter grauer Text (keine bunten Abzeichen) */
-  return <span style={{ fontSize: 12, color: "var(--rm-c500,#64748b)", whiteSpace: "nowrap" }}>{STATUS_LABEL[status]}</span>;
+  return <span style={{ fontSize: 12, color: "var(--rm-c500)", whiteSpace: "nowrap" }}>{STATUS_LABEL[status]}</span>;
 }
 
 export function PlacePill({ place }: { place: string }) {
@@ -136,21 +136,21 @@ export function HitPreview({ example, topics, active, onPick, still }: { example
     <Wrap still={still}>
     <div className="ri-pv" aria-label="Beispiel eines echten Treffers" style={{ background: "none", border: "none", boxShadow: "none", padding: 0, marginTop: 24 }}>
       <a href={example.href ?? undefined} aria-label={example.title} className="group" style={{ display: "block", color: "inherit", textDecoration: "none" }}>
-      <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ background: "linear-gradient(135deg, var(--rm-white,#ffffff) 0%, var(--rm-tint,#f1fbf9) 100%)" }}>
+      <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ background: "linear-gradient(135deg, var(--rm-white) 0%, var(--rm-tint) 100%)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "52px minmax(0,1fr)", gap: 12 }}>
           {example.datum && (
-            <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid var(--rm-c200,#e2e8f0)", paddingRight: 10, textAlign: "center" }}>
+            <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid var(--rm-c200)", paddingRight: 10, textAlign: "center" }}>
               <span style={{ fontSize: 22, fontWeight: 600, lineHeight: 1 }}>{example.datum[0]}</span>
-              <span style={{ marginTop: 4, fontSize: 12, fontWeight: 600, letterSpacing: ".06em", color: "#0f766e" }}>{example.datum[1]}</span>
-              <span style={{ fontSize: 12, color: "var(--rm-c500,#64748b)" }}>{example.datum[2]}</span>
+              <span style={{ marginTop: 4, fontSize: 12, fontWeight: 600, letterSpacing: ".06em", color: "var(--rm-ac)" }}>{example.datum[1]}</span>
+              <span style={{ fontSize: 12, color: "var(--rm-c500)" }}>{example.datum[2]}</span>
             </div>
           )}
           <div style={{ minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <PlacePill place={example.place} />
-              <span style={{ fontSize: 14, color: "var(--rm-c500,#64748b)" }}>{example.committee}</span>
+              <span style={{ fontSize: 14, color: "var(--rm-c500)" }}>{example.committee}</span>
             </div>
-            <p style={{ margin: "10px 0 0", fontSize: 16, fontWeight: 600, lineHeight: 1.35, color: "var(--rm-c900,#0f172a)" }}>{example.title}</p>
+            <p style={{ margin: "10px 0 0", fontSize: 16, fontWeight: 600, lineHeight: 1.35, color: "var(--rm-c900)" }}>{example.title}</p>
             {example.steps && <div style={{ marginTop: 10 }}><StepTimeline steps={example.steps} /></div>}
           </div>
         </div>

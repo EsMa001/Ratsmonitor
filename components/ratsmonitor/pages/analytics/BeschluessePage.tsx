@@ -6,11 +6,12 @@ import { Befund, zuThema, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useMemo, useState, useEffect } from "react";
 import { RadarDrill } from "./RadarDrill";
-import { STATUS } from "../../lib/constants";
+import { STATUS_COLOR, STATUS } from "../../lib/constants";
 import { DEC_COLORS, DecisionRow, MonthColumns, type Cut, type Month } from "./DecisionCharts";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
+import { pctText as pct } from "../../lib/format";
 
 interface VRow { id: string; name: string; n: number; vote: number; unanimous: number | null; changeN: number; changed: number | null }
 interface Result {
@@ -25,9 +26,7 @@ interface Result {
   duration: { n: number; median: number | null; p25: number | null; p75: number | null; p90: number | null; topics: { id: string; name: string; n: number; median: number; p90: number }[] };
 }
 
-const STATUS_COLOR: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0" };
 const n = (v: number) => v.toLocaleString("de-DE");
-const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-DE")} %`);
 
 /** Offener Abschnitt mit Überschrift wie auf den übrigen plenara.X-Seiten (Wichtiges sichtbar, Nebensachen in Fold) */
 function Abschnitt({ title, children }: { title: string; children: React.ReactNode }) {

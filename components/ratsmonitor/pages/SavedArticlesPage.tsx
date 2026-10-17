@@ -60,7 +60,7 @@ export function SavedArticlesPage() {
 
       {list.length > 0 && (
         <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-3">
-          <input type="search" value={find} onChange={(e) => setFind(e.target.value)} placeholder="Gespeicherte Artikel durchsuchen …" aria-label="Gespeicherte Artikel durchsuchen" className="h-11 min-w-0 flex-1 basis-[260px] rounded-xl border border-transparent bg-[#f8f9fa] px-4 text-[16px] outline-none placeholder:text-slate-400 focus:border-teal-600 focus:bg-white focus:shadow-focus" />
+          <input type="search" value={find} onChange={(e) => setFind(e.target.value)} placeholder="Gespeicherte Artikel durchsuchen …" aria-label="Gespeicherte Artikel durchsuchen" className="h-11 min-w-0 flex-1 basis-[260px] rounded-xl border border-transparent bg-slate-50 px-4 text-[16px] outline-none placeholder:text-slate-400 focus:border-teal-600 focus:bg-white focus:shadow-focus" />
           <div role="group" aria-label="Filter" className="flex items-center gap-4">
             {([["all", "Alle"], ["follow", "Mit Benachrichtigung"]] as const).map(([v, label]) => (
               <button key={v} type="button" aria-pressed={only === v} onClick={() => setOnly(v)} className={`py-1 text-[14px] ${only === v ? "border-b-2 border-teal-600 text-teal-700" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>

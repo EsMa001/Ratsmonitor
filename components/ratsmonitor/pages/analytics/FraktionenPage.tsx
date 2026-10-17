@@ -27,7 +27,7 @@ interface Result {
 
 const n = (v: number) => v.toLocaleString("de-DE");
 /* Index 100 = wie alle Fraktionen: darüber Petrol, darunter hell; Stärke nach Abstand */
-const cellColor = (i: number | null) => (i === null ? "transparent" : i >= 100 ? `rgba(13,148,136,${Math.min(0.85, (i - 100) / 150 + 0.08)})` : `rgba(148,163,184,${Math.min(0.5, (100 - i) / 160)})`);
+const cellColor = (i: number | null) => (i === null ? "transparent" : i >= 100 ? `rgba(38,132,120,${Math.min(0.85, (i - 100) / 150 + 0.08)})` : `rgba(161,161,170,${Math.min(0.5, (100 - i) / 160)})`);
 
 /** plenara.X – Fraktionsprofil: Anträge und Anfragen je Fraktion, Themenprofil und was aus den Anträgen wird */
 export function FraktionenPage() {

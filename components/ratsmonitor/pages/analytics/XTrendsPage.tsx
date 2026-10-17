@@ -160,7 +160,7 @@ export function XTrendsPage() {
     if (prev) {
       /* Wellen: früher, im Zeitraum davor, neu im Zeitraum */
       for (const [id, d] of prev.regions) { const w = d >= sp.ranges.start ? 3 : d >= sp.ranges.prevStart ? 2 : 1; for (const a of flat(id)) levels[a] = Math.max(levels[a] ?? 0, w); }
-      return { levels, legend: ["früher", "im Zeitraum davor", "neu im Zeitraum"], colors: ["#cbd5e1", "#6ebfb8", "#0f766e"], label: `Karte: Ausbreitung von „${prettyTerm(hoverName)}“`, note: "Vorschau; Klick auf den Begriff öffnet die ganze Ausbreitung" };
+      return { levels, legend: ["früher", "im Zeitraum davor", "neu im Zeitraum"], colors: ["var(--rm-c300)", "var(--rm-map3)", "var(--rm-ac)"], label: `Karte: Ausbreitung von „${prettyTerm(hoverName)}“`, note: "Vorschau; Klick auf den Begriff öffnet die ganze Ausbreitung" };
     }
     const vals: [string, number][] = [];
     for (const [id, v] of Object.entries(sp.moving)) for (const a of flat(id)) vals.push([a, v]);
@@ -299,7 +299,7 @@ function Steckbrief({ begriff, row, spread, df, error, firsts, day, onDay, playi
 
         <dl className="mt-6 grid grid-cols-2 gap-y-4 sm:grid-cols-4">
           {[["Frühester Eintrag", fmt(df.stats.first)], ["Hälfte im Bestand", fmt(df.stats.median)], ["Von 10 % auf 90 %", df.stats.p10 && df.stats.p90 ? `${months(df.stats.p10, df.stats.p90)} Monate` : "–"], ["Einträge insgesamt", n(df.stats.cards)]].map(([k, v], i) => (
-            <div key={k} className={`px-3 ${i % 2 ? "border-l border-slate-200" : "pl-0"} ${i ? "sm:border-l sm:border-slate-200 sm:pl-3" : ""}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="m-0 mt-1 text-[20px] font-semibold tabular-nums">{v}</dd></div>
+            <div key={k} className={`px-3 ${i % 2 ? "border-l border-slate-200" : "pl-0"} ${i ? "sm:border-l sm:border-slate-200 sm:pl-3" : ""}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="m-0 mt-1 text-[18px] font-semibold tabular-nums">{v}</dd></div>
           ))}
         </dl>
 

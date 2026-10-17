@@ -42,7 +42,7 @@ export function Befund({ children, link = true, tight = false }: { children: Rea
   return (
     <div className={tight ? "mt-4" : "mt-6"}>
       {/* Eine Größe für alle plenara.X-Seiten (wie Trends und Fakten) */}
-      <p className={`m-0 text-[20px] font-semibold leading-snug text-slate-900 ${tight ? "" : "max-w-[900px]"}`}>{children}</p>
+      <p className={`m-0 text-[18px] font-semibold leading-snug text-slate-900 ${tight ? "" : "max-w-[900px]"}`}>{children}</p>
       <AnalyseLeiste link={link} />
     </div>
   );
@@ -64,7 +64,7 @@ export function Leer({ children, tipp = "Suchbegriff kürzen, „Alle Themen“ 
 /** Fehler beim Laden oder Rechnen: gleiche Form wie Leer, mit roter Linie */
 export function Fehler({ children }: { children: ReactNode }) {
   return (
-    <div role="alert" className="mt-4 max-w-[760px] border-l-2 border-red-500 py-1 pl-4">
+    <div role="alert" className="mt-4 max-w-[760px] border-l-2 border-amber-500 py-1 pl-4">
       <p className="m-0 text-[16px] font-medium text-slate-900">{children}</p>
       <p className="m-0 mt-1 text-[14px] text-slate-500">Bitte gleich noch einmal versuchen; Suche und Filter bleiben erhalten.</p>
     </div>

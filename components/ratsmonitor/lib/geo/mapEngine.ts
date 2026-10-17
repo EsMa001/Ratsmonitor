@@ -540,7 +540,7 @@ export class MapEngine {
     const r = this.pillR(ctx, n, max);
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fillStyle = "#0d9488";
+    ctx.fillStyle = "#268478";
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 1.5;
     ctx.fill();
@@ -666,7 +666,7 @@ export class MapEngine {
     /* Gemeinden mit Treffern petrolfarben umrandet */
     ctx.save();
     this.applyT(ctx);
-    ctx.strokeStyle = "#0d9488";
+    ctx.strokeStyle = "#268478";
     ctx.lineWidth = 1.2 / this.view!.k;
     ctx.lineJoin = "round";
     for (const [ags, n] of Object.entries(this.badges ?? {})) {
@@ -678,7 +678,7 @@ export class MapEngine {
     ctx.restore();
     ctx.save();
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    ctx.fillStyle = "rgba(13,148,136,0.9)";
+    ctx.fillStyle = "rgba(38,132,120,0.9)";
     /* Gut sichtbar: mindestens 2,5 px, wächst beim Hineinzoomen bis 5 px; auf einer Zoomstufe alle gleich groß */
     const r = Math.max(2.5, Math.min(5, 1.5 + this.view!.k * 100 * 0.35));
     ctx.beginPath();
@@ -729,7 +729,7 @@ export class MapEngine {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "600 12px " + fam;
-    ctx.shadowColor = "rgba(15,23,42,0.18)";
+    ctx.shadowColor = "rgba(24,24,27,0.18)";
     ctx.shadowBlur = 6;
     ctx.shadowOffsetY = 1;
     /* Kleine zuletzt, damit sie auf großen Blasen sichtbar bleiben */
@@ -750,7 +750,7 @@ export class MapEngine {
       ctx.stroke();
       ctx.fillStyle = "#ffffff";
       ctx.fillText(t, p.x, p.y + 0.5);
-      ctx.shadowColor = "rgba(15,23,42,0.18)";
+      ctx.shadowColor = "rgba(24,24,27,0.18)";
     }
     ctx.restore();
   }
@@ -802,14 +802,14 @@ export class MapEngine {
       const [sx, sy] = this.toScreen(L.lp[2 * i], L.lp[2 * i + 1]);
       const label = pin.label, tw = ctx.measureText(label).width;
       /* Punkt am Ort, daneben das Schild (weiß, Rand und Schrift Petrol) */
-      ctx.fillStyle = "#0f766e";
+      ctx.fillStyle = "#0f5249";
       ctx.beginPath(); ctx.arc(sx, sy, 3.5, 0, Math.PI * 2); ctx.fill();
       const x = sx + 7, y = sy, h = 20, w = tw + 14;
       ctx.fillStyle = "rgba(255,255,255,0.94)";
-      ctx.strokeStyle = "#0f766e";
+      ctx.strokeStyle = "#0f5249";
       ctx.lineWidth = 1;
       ctx.beginPath(); ctx.roundRect(x, y - h / 2, w, h, 10); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = "#0f766e";
+      ctx.fillStyle = "#0f5249";
       ctx.fillText(label, x + 7, y + 0.5);
     }
   }
@@ -897,7 +897,7 @@ export class MapEngine {
       ctx.arc(r.x, r.y, Math.max(R, 0.01), 0, Math.PI * 2);
       ctx.fillStyle = this.pal.ringFill;
       ctx.fill();
-      ctx.strokeStyle = (this.pal === MAP_COLORS ? "rgba(255,255,255,.9)" : "rgba(11,18,32,.9)");
+      ctx.strokeStyle = (this.pal === MAP_COLORS ? "rgba(255,255,255,.9)" : "rgba(24,24,27,.9)");
       ctx.lineWidth = 4.5 / k;
       ctx.stroke();
       ctx.strokeStyle = this.pal.ring;

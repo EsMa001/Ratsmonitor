@@ -19,7 +19,7 @@ type Shape={id:string;ags:string;kind:string;path:string;bounds:number[]};
 // Gemeindefreie Gebiete (Forste, Seen, Truppenübungsplätze): keine Gemeinde, kein Rat; nur gezeichnet, nicht wählbar (public/geo/de-free.json).
 type Free={ags:string;name:string;land:string;path:string;bounds:number[]};
 type View={x:number;y:number;w:number;h:number};
-const FILES=['/geo/germany.json','/geo/de-areas.json'],FREE_FILE='/geo/de-free.json',FREE_FILL='#e2e8f0',FREE_LINE='#94a3b8',FREE_CSS=`repeating-linear-gradient(135deg,${'#e2e8f0'} 0 2px,${'#94a3b8'} 2px 3px)`,REFRESH_MS=5*60*1000,PAGE=80,DIM=AC.zero;
+const FILES=['/geo/germany.json','/geo/de-areas.json'],FREE_FILE='/geo/de-free.json',FREE_FILL='var(--rm-c200)',FREE_LINE='var(--rm-c400)',FREE_CSS=`repeating-linear-gradient(135deg,${'var(--rm-c200)'} 0 2px,${'var(--rm-c400)'} 2px 3px)`,REFRESH_MS=5*60*1000,PAGE=80,DIM=AC.zero;
 // Reach (first agenda day) and freshness (latest meeting day) of the reports per area: shared/coverage.mjs.
 const REACH_IDS=REACH_BUCKETS.map(b=>b.id),FRESH_IDS=FRESH_BUCKETS.map(b=>b.id),REACH_ITEMS=REACH_BUCKETS.map(b=>({...b,color:bucketColor('reach',b)})),FRESH_ITEMS=FRESH_BUCKETS.map(b=>({...b,color:bucketColor('fresh',b)})),REACH_COLOR=new Map<string,string>(REACH_ITEMS.map(b=>[b.id,b.color])),FRESH_COLOR=new Map<string,string>(FRESH_ITEMS.map(b=>[b.id,b.color])),COLOR_MODES=['cat','access','reports','reach','fresh'];
 const n=(v:number)=>v.toLocaleString('de-DE');
@@ -35,7 +35,7 @@ const BlockTitle=({children}:{children:string})=><p className="mb-1.5 text-[12px
 const Swatch=({color}:{color?:string})=><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm align-baseline" style={{background:color}}/>;
 // The shapes are drawn again only when fills or the selection change, not on every hover: several thousand paths.
 const Regions=memo(function Regions({shapes,fills,selected,fine,onPick,onHover}:{shapes:Shape[];fills:Map<string,string>;selected:string|null;fine:boolean;onPick:(id:string)=>void;onHover:(id:string|null)=>void}){
- return <>{shapes.map(r=><path key={r.id} d={r.path} fill={fills.get(r.id)||DIM} stroke="#fff" strokeWidth={fine?.3:.5} vectorEffect="non-scaling-stroke" className="admin-map-region" onClick={()=>onPick(r.id)} onMouseEnter={()=>onHover(r.id)} onMouseLeave={()=>onHover(null)}/>)}{selected&&shapes.filter(r=>r.id===selected).map(r=><path key={'sel-'+r.id} d={r.path} fill="none" stroke={AC.selection} strokeWidth="2.2" vectorEffect="non-scaling-stroke" pointerEvents="none"/>)}</>;
+ return <>{shapes.map(r=><path key={r.id} d={r.path} fill={fills.get(r.id)||DIM} stroke="var(--rm-white)" strokeWidth={fine?.3:.5} vectorEffect="non-scaling-stroke" className="admin-map-region" onClick={()=>onPick(r.id)} onMouseEnter={()=>onHover(r.id)} onMouseLeave={()=>onHover(null)}/>)}{selected&&shapes.filter(r=>r.id===selected).map(r=><path key={'sel-'+r.id} d={r.path} fill="none" stroke={AC.selection} strokeWidth="2.2" vectorEffect="non-scaling-stroke" pointerEvents="none"/>)}</>;
 });
 /** Admin page "Lückenatlas". Reads only. */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

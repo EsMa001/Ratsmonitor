@@ -62,7 +62,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
     <Link role="menuitem" href="/konto/profil" className={item} onClick={()=>setOpen(false)}>Konto</Link>
     {isAdmin&&<div className="border-t border-slate-100 px-3 pb-1 pt-2">
      <label htmlFor="view-tier" className="block text-[12px] text-slate-500">Ansehen als</label>
-     <select id="view-tier" className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-[13px] text-slate-900" value={me.viewTier??''}
+     <select id="view-tier" className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-[14px] text-slate-900" value={me.viewTier??''}
       onChange={e=>{const v=e.target.value;void setViewTier(v?(v as Tier):null);}}>
       {VIEWS.map(([t,label])=><option key={label} value={t??''}>{label}</option>)}
      </select>

@@ -29,8 +29,8 @@ type QualityRow={id:string;name:string;version:string;quality:number|null;covera
  /* Signale: Trefferquote der Kategorie und Qualität je Filter (docs/produkt/plenara-x-signale.md) */ recall?:number|null;art?:number|null;phase?:number|null;phaseFrom?:string;filters?:{name:string;quality:number|null}[]};
 /* „i“ neben dem Namen: was bei der Regel gemessen wird (what in rule-quality.json); Klick öffnet, für Tastatur und Touch */
 const Info=({text}:{text:string})=>{const [open,setOpen]=useState(false);return <>
- <button type="button" aria-label="Was gemessen wird" aria-expanded={open} title={text} onClick={()=>setOpen(o=>!o)} className={'inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border text-[11px] font-semibold leading-none '+(open?'border-teal-600 bg-teal-600 text-white':'border-slate-300 text-slate-500 hover:border-teal-600 hover:text-teal-700')}>i</button>
- {open&&<span className="basis-full rounded-md bg-slate-50 px-3 py-2 text-[13px] leading-snug text-slate-700">{text}</span>}
+ <button type="button" aria-label="Was gemessen wird" aria-expanded={open} title={text} onClick={()=>setOpen(o=>!o)} className={'inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border text-[12px] font-semibold leading-none '+(open?'border-teal-600 bg-teal-600 text-white':'border-slate-300 text-slate-500 hover:border-teal-600 hover:text-teal-700')}>i</button>
+ {open&&<span className="basis-full rounded-md bg-slate-50 px-3 py-2 text-[14px] leading-snug text-slate-700">{text}</span>}
 </>;};
 const QT=QUALITY.target;
 /** „12 %“ mit Hinweis, wenn unter dem Ziel */
@@ -136,7 +136,7 @@ export function AdminRuleTexts(){
      {job&&(job.setting.enabled?` Nächster Start ${when(job.next)} (täglich ${job.setting.time} Uhr, einstellbar unter Jobs & Zeitpläne).`:' Zeitplan ausgeschaltet (Jobs & Zeitpläne).')}</li>
     {job?.last?.steps.map(st=><li key={st.name}><span className="text-slate-500">{st.name}: </span>{stepNote(st)}, {dur(st.seconds)}</li>)}
    </ul>
-   <button type="button" className="mt-4 inline-flex h-10 items-center rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white hover:bg-slate-700 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start()}>Jetzt erstellen →</button>
+   <button type="button" className="mt-4 inline-flex h-10 items-center rounded-full bg-teal-700 px-5 text-[14px] font-medium text-white hover:bg-teal-800 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start()}>Jetzt erstellen →</button>
    <button type="button" className="ml-3 mt-4 inline-flex h-10 items-center rounded-full px-5 text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start(true)}>Alle neu erstellen →</button>
    <p className="mt-2 text-[12px] text-slate-500">„Jetzt erstellen“: nur Neues. „Alle neu erstellen“: alles mit den heutigen Regeln, etwa nach Regeländerungen.{job?.all&&requested?' Neu erstellen angefordert.':''}</p>
   </section>
@@ -190,7 +190,7 @@ export function AdminRuleTexts(){
        <Meter label="Art" v={r.art??null} min={QT.quality}/>
        <Meter label="Stand" v={r.phase??null} min={QT.quality}/>
       </div>
-      {r.filters&&r.filters.length>0&&<ul className="m-0 mt-2 grid list-none gap-x-6 gap-y-1 p-0 pl-4 sm:grid-cols-2 lg:grid-cols-3">{r.filters.map(f=><li key={f.name} className="flex items-baseline justify-between gap-3 border-b border-slate-100 py-1 text-[13px]">
+      {r.filters&&r.filters.length>0&&<ul className="m-0 mt-2 grid list-none gap-x-6 gap-y-1 p-0 pl-4 sm:grid-cols-2 lg:grid-cols-3">{r.filters.map(f=><li key={f.name} className="flex items-baseline justify-between gap-3 border-b border-slate-100 py-1 text-[14px]">
        <span className="text-slate-700">{f.name}</span>
        <span className={'tabular-nums '+(f.quality===null?'text-slate-400':f.quality>=QT.quality?'font-semibold text-teal-700':'font-semibold text-slate-900')}>{f.quality===null?'nicht gemessen':f.quality+' %'}</span>
       </li>)}</ul>}
@@ -206,7 +206,7 @@ export function AdminRuleTexts(){
      <div className="mt-8">
       <h3>{g.name}</h3>
       <p className="admin-note mt-1">Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Auf die Karte kommt ein Wert erst ab {QT.quality} % Qualität. Mengen je Vorhaben (Wohneinheiten, Fläche, Windanlagen) zählen dort als Summe je 1.000 Einwohner.</p>
-      {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[13px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
+      {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[14px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
      </div>
      <div className="mt-8">
       <h3>Fraktionsprofil (plenara.X Einblicke)</h3>

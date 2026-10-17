@@ -263,7 +263,7 @@ function XGruppe({ name }: { name: string }) {
   return (
     <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
       {name}
-      <span aria-label="plenara.X" role="img" className="inline-flex items-baseline rounded-md bg-slate-100 px-[6px] pb-[3px] pt-[2px] text-[11px] font-semibold leading-none text-slate-700">
+      <span aria-label="plenara.X" role="img" className="inline-flex items-baseline rounded-md bg-slate-100 px-[6px] pb-[3px] pt-[2px] text-[12px] font-semibold leading-none text-slate-700">
         <span style={{ letterSpacing: "-.015em" }}>plenara</span><span className="inline-block self-center" style={{ lineHeight: 0 }}><AnalyticsX centered /></span>
       </span>
     </span>

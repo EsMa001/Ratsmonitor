@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 export interface Trend { term: string; key?: string; nr: number; np: number; ratio: number; z: number; regions: number; regionsPrev: number; series: number[] }
 export type TrendKind = "rising" | "emerging" | "falling" | "steady";
-const COLOR: Record<TrendKind, string> = { rising: "#0d9488", emerging: "#0f766e", falling: "#94a3b8", steady: "#cbd5e1" };
+const COLOR: Record<TrendKind, string> = { rising: "var(--rm-fill)", emerging: "var(--rm-ac)", falling: "var(--rm-c400)", steady: "var(--rm-c300)" };
 
 /** Verlaufskurve der wöchentlichen Anteile: der Zeitraum davor hellgrau, der aktuelle in der Akzentfarbe */
 export function Spark({ series, kind }: { series: number[]; kind: TrendKind }) {
@@ -14,8 +14,8 @@ export function Spark({ series, kind }: { series: number[]; kind: TrendKind }) {
   const second = series.slice(Math.floor(half)).map((v, i) => pt(v, i + Math.floor(half))).join(" ");
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Verlauf" className="block">
-      <line x1={(half / Math.max(1, n - 1)) * W} x2={(half / Math.max(1, n - 1)) * W} y1="0" y2={H} stroke="#e2e8f0" strokeDasharray="2 3" />
-      <polyline points={first} fill="none" stroke="#cbd5e1" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" />
+      <line x1={(half / Math.max(1, n - 1)) * W} x2={(half / Math.max(1, n - 1)) * W} y1="0" y2={H} stroke="var(--rm-c200)" strokeDasharray="2 3" />
+      <polyline points={first} fill="none" stroke="var(--rm-c300)" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" />
       <polyline points={second} fill="none" stroke={COLOR[kind === "steady" ? "rising" : kind]} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
     </svg>
   );
@@ -50,18 +50,18 @@ export function TrendMap({ items, selected, onSelect }: { items: (Trend & { kind
       <svg width={w} height={H} role="img" aria-label="Trendkarte: Begriffe nach Häufigkeit und Veränderung" className="block">
         {ticks.map((r) => (
           <g key={r}>
-            <line x1={L} x2={w - R} y1={ly(r)} y2={ly(r)} stroke={r === 1 ? "#94a3b8" : "#e2e8f0"} strokeDasharray={r === 1 ? "" : "3 4"} />
-            <text x={L - 8} y={ly(r) + 4} textAnchor="end" fontSize="12" fill="#64748b">{r === 1 ? "gleich" : r > 1 ? `×${r}` : `÷${1 / r}`}</text>
+            <line x1={L} x2={w - R} y1={ly(r)} y2={ly(r)} stroke={r === 1 ? "var(--rm-c400)" : "var(--rm-c200)"} strokeDasharray={r === 1 ? "" : "3 4"} />
+            <text x={L - 8} y={ly(r) + 4} textAnchor="end" fontSize="12" fill="var(--rm-c500)">{r === 1 ? "gleich" : r > 1 ? `×${r}` : `÷${1 / r}`}</text>
           </g>
         ))}
-        <text x={L} y={H - 8} fontSize="12" fill="#64748b">weniger Einträge</text>
-        <text x={w - R} y={H - 8} fontSize="12" fill="#64748b" textAnchor="end">mehr Einträge im aktuellen Zeitraum →</text>
+        <text x={L} y={H - 8} fontSize="12" fill="var(--rm-c500)">weniger Einträge</text>
+        <text x={w - R} y={H - 8} fontSize="12" fill="var(--rm-c500)" textAnchor="end">mehr Einträge im aktuellen Zeitraum →</text>
         {items.map((t) => {
           const x = lx(t.nr), y = ly(cap(t.ratio)), on = t.term === selected;
           return (
             <g key={t.term} style={{ cursor: "pointer" }} onClick={() => onSelect(on ? "" : t.term)} opacity={selected && !on ? 0.35 : 1}>
-              <circle cx={x} cy={y} r={rad(t.regions)} fill={COLOR[t.kind]} fillOpacity={t.kind === "steady" ? 0.55 : 0.8} stroke={on ? "#0f172a" : "#fff"} strokeWidth={on ? 2 : 1.2} />
-              {labelled.has(t.term) && <text x={x} y={y - rad(t.regions) - 5} textAnchor={x > w - 90 ? "end" : x < 70 ? "start" : "middle"} fontSize="12" fill="#0f172a" stroke="#fff" strokeWidth="3.5" paintOrder="stroke" style={{ pointerEvents: "none" }}>{prettyTerm(t.term)}</text>}
+              <circle cx={x} cy={y} r={rad(t.regions)} fill={COLOR[t.kind]} fillOpacity={t.kind === "steady" ? 0.55 : 0.8} stroke={on ? "var(--rm-c900)" : "#fff"} strokeWidth={on ? 2 : 1.2} />
+              {labelled.has(t.term) && <text x={x} y={y - rad(t.regions) - 5} textAnchor={x > w - 90 ? "end" : x < 70 ? "start" : "middle"} fontSize="12" fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="3.5" paintOrder="stroke" style={{ pointerEvents: "none" }}>{prettyTerm(t.term)}</text>}
             </g>
           );
         })}

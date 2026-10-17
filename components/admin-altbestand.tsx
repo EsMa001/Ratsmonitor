@@ -25,7 +25,7 @@ type Data={at:string;boundary:string;since:string;requests:Req;last:{startedAt:s
 const WINDOWS:[string,string][]=[['1m','1 Monat'],['3m','3 Monate'],['12m','12 Monate'],['24m','24 Monate']];
 const H2=({icon,children}:{icon:string;children:React.ReactNode})=><h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name={icon} className="text-teal-600"/>{children}</h2>;
 const Lead=({children}:{children:React.ReactNode})=><p className="mt-1 max-w-[820px] text-[14px] text-slate-500">{children}</p>;
-const main='inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-[14px] font-medium text-white hover:bg-slate-700 disabled:opacity-40';
+const main='inline-flex items-center gap-2 rounded-full bg-teal-700 px-4 py-2 text-[14px] font-medium text-white hover:bg-teal-800 disabled:opacity-40';
 const side='text-[14px] font-medium text-teal-700 hover:text-teal-600 disabled:opacity-40';
 
 export function AdminAltbestand(){

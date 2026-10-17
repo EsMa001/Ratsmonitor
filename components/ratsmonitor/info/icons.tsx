@@ -64,7 +64,7 @@ function Road(p: LucideProps) {
 function PlenaraX(p: LucideProps) {
   const arms = [1, -1].flatMap((dx) => [1, -1].flatMap((dy) => Array.from({ length: 3 }, (_, i) => [12 + dx * (4.6 + i * 2.3), 12 + dy * (4.6 + i * 2.3), 1 - i * 0.15, 3.4 - i * 0.35] as const)));
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={p.size ?? 24} height={p.size ?? 24} viewBox="0 0 24 24" fill="#0d9488">
+    <svg xmlns="http://www.w3.org/2000/svg" width={p.size ?? 24} height={p.size ?? 24} viewBox="0 0 24 24" fill="var(--rm-fill)">
       {arms.map(([x, y, o, w]) => (
         <rect key={x + "-" + y} x={x - w / 2} y={y - w / 2} width={w} height={w} fillOpacity={o} />
       ))}

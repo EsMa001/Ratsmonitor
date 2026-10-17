@@ -22,7 +22,7 @@ function Impressum() {
   const { name } = useBrand();
   return (
     <>
-      <H2>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG)</H2>
+      <H2>Angaben gemäß # 5 Digitale-Dienste-Gesetz (DDG)</H2>
       <Anschrift />
       <H2>Kontakt</H2>
       <P>
@@ -30,7 +30,7 @@ function Impressum() {
         <br />
         Oder über das <Link href="/kontakt" className="ri-link">Kontaktformular</Link>.
       </P>
-      <H2>Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV)</H2>
+      <H2>Verantwortlich für den Inhalt nach # 18 Abs. 2 Medienstaatsvertrag (MStV)</H2>
       <P>
         {BETREIBER.gesellschafter.join(" und ")}, Anschrift wie oben
       </P>
@@ -102,7 +102,7 @@ function Datenschutz() {
       <H2>5. Gespeicherte Suchen (lokaler Speicher Ihres Browsers)</H2>
       <P>
         Wenn Sie eine Suche speichern (Herz-Symbol), wird sie im lokalen Speicher (localStorage) Ihres Browsers abgelegt. Diese Daten verlassen Ihr Gerät nicht und
-        werden nicht an uns übertragen. Die Speicherung ist für die von Ihnen ausdrücklich gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2
+        werden nicht an uns übertragen. Die Speicherung ist für die von Ihnen ausdrücklich gewünschte Funktion unbedingt erforderlich (# 25 Abs. 2 Nr. 2
         Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz, TDDDG). Sie können gespeicherte Suchen jederzeit unter „Konto → Gespeicherte Suchen“ entfernen oder den
         Website-Speicher in Ihren Browser-Einstellungen löschen.
       </P>
@@ -119,7 +119,7 @@ function Datenschutz() {
         möglich und auf Grundlage des EU-U.S. Data Privacy Framework abgesichert.
       </P>
       <P>
-        Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Sie können sie jederzeit widerrufen, indem Sie die Berechtigung für Mitteilungen
+        Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, # 25 Abs. 1 TDDDG). Sie können sie jederzeit widerrufen, indem Sie die Berechtigung für Mitteilungen
         in Ihren Browser-Einstellungen entziehen. Die gespeicherte Push-Adresse wird dann gelöscht; ungültig gewordene Adressen
         entfernen wir automatisch.
       </P>

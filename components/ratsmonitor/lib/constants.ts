@@ -6,47 +6,47 @@ export const THEMEN=LABELS.map(l=>l.name);
 const OHNE_THEMA=LABELS.find(l=>l.id==='unklar')?.name;
 export const shownThema=(thema?:string)=>thema&&thema!==OHNE_THEMA&&THEMEN.includes(thema)?thema:'';
 export interface StatusInfo {id:StatusId;label:string;badge:string;dot:string}
-export const STATUS:StatusInfo[]=Object.entries(SOURCE_STATUS).map(([id,s])=>({id:id as StatusId,label:s.label,badge:id==='approved'?'bg-emerald-50 text-emerald-700 border-emerald-200':id==='rejected'?'bg-rose-50 text-rose-700 border-rose-200':id==='unknown'?'bg-slate-100 text-slate-600 border-slate-200':'bg-sky-50 text-sky-700 border-sky-200',dot:id==='approved'?'bg-emerald-500':id==='rejected'?'bg-rose-500':'bg-slate-400'}));
+export const STATUS:StatusInfo[]=Object.entries(SOURCE_STATUS).map(([id,s])=>({id:id as StatusId,label:s.label,badge:id==='approved'?'bg-sky-50 text-sky-900 border-sky-200':id==='rejected'?'bg-amber-50 text-amber-700 border-amber-200':'bg-slate-100 text-slate-600 border-slate-200',dot:id==='approved'?'bg-sky-900':id==='rejected'?'bg-amber-700':'bg-slate-300'}));
 export const STATUS_BY_ID=Object.fromEntries(STATUS.map(s=>[s.id,s])) as Record<StatusId,StatusInfo>;
 export const TEASER_MAX_SENTENCES=4;
 export const isCovered=(ags:string,coverage:{ags:string}[])=>coverage.some(r=>r.ags===ags||r.ags.startsWith(ags));
 /** Kartenstufen, identisch mit tailwind.preset (colors.map) */
 export const MAP_COLORS = {
   ground: "#ffffff",
-  neighbour: "#f8f9fa",
-  line: "#d3d8df",
-  national: "#8b95a1",
-  hatch: "#c9cfd7",
-  zero: "#d7dce3",
-  scale: ["#b3dfda", "#8ccdc7", "#6ebfb8", "#0f766e"],
-  selection: "#0f766e",
-  hover: "#0f766e",
-  hoverFill: "rgba(13,148,136,.12)",
-  ring: "#d1665a",
-  ringFill: "rgba(209,102,90,.08)",
-  ringDot: "#b4493e",
+  neighbour: "#fafafa",
+  line: "#e4e4e7",
+  national: "#a1a1aa",
+  hatch: "#d4d4d8",
+  zero: "#e4e4e7",
+  scale: ["#c4e5e0", "#86cbc1", "#4fa89b", "#0f5249"],
+  selection: "#0f5249",
+  hover: "#0f5249",
+  hoverFill: "rgba(38,132,120,.12)",
+  ring: "#c8732f",
+  ringFill: "rgba(200,115,47,.08)",
+  ringDot: "#8f420a",
   dim: "rgba(255,255,255,.74)",
   mesh: "#ffffff",
-  meshNb: "#f1f3f5",
-  label: "#475569",
+  meshNb: "#f4f4f5",
+  label: "#52525b",
 };
 
 /** Dunkle Palette der Startseitenkarte (Flächen heller = mehr Abdeckung) */
 export const MAP_COLORS_DARK = {
   ...MAP_COLORS,
-  ground: "#0e1523",
-  neighbour: "#131c2c",
-  national: "#64748b",
-  line: "#243044",
-  zero: "#1b2638",
-  scale: ["#14524f", "#13706a", "#0f9488", "#2dd4bf"],
-  selection: "#5eead4",
-  hover: "#5eead4",
-  hoverFill: "rgba(94,234,212,.14)",
-  dim: "rgba(11,18,32,.72)",
-  mesh: "#0e1523",
-  meshNb: "#1b2638",
-  label: "#94a3b8",
+  ground: "#18181b",
+  neighbour: "#18181b",
+  national: "#52525b",
+  line: "#27272a",
+  zero: "#27272a",
+  scale: ["#10574e", "#268478", "#4fa89b", "#86cbc1"],
+  selection: "#86cbc1",
+  hover: "#86cbc1",
+  hoverFill: "rgba(134,203,193,.14)",
+  dim: "rgba(24,24,27,.72)",
+  mesh: "#18181b",
+  meshNb: "#27272a",
+  label: "#a1a1aa",
 };
 
 export function colorForCoverageDark(level: number): string {
@@ -63,3 +63,6 @@ export function colorForCount(c: number): string {
   const s = MAP_COLORS.scale;
   return c === 0 ? MAP_COLORS.zero : c <= 25 ? s[0] : c <= 100 ? s[1] : c <= 500 ? s[2] : s[3];
 }
+
+/** Farben je Status für Balken und Legenden (Farbkonzept: beschlossen Dunkelblau, in Arbeit Blaugrau, abgelehnt Orange-Braun) */
+export const STATUS_COLOR: Record<string, string> = { approved: "var(--rm-ok)", recommended: "var(--rm-ok2)", consulting: "var(--rm-ok3)", announced: "var(--rm-c300)", rejected: "var(--rm-no)", postponed: "var(--rm-c400)", info: "var(--rm-c200)", unknown: "var(--rm-c100)" };

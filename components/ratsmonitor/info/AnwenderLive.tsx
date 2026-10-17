@@ -87,18 +87,18 @@ function Kopfkarte({ kopf, pick, setPick }: { kopf: [string, string][]; pick: nu
     <div className="ri-pv" style={{ background: "none", border: "none", boxShadow: "none", padding: 0, marginTop: 24 }}>
       {m ? (
         <Link href={`/beschluss/${m.id}`} className="group" style={{ display: "block", color: "inherit", textDecoration: "none" }}>
-          <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ minHeight: 170, background: "linear-gradient(135deg, var(--rm-white,#ffffff) 0%, var(--rm-tint,#f1fbf9) 100%)" }}>
+          <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ minHeight: 170, background: "linear-gradient(135deg, var(--rm-white) 0%, var(--rm-tint) 100%)" }}>
             <div style={{ display: "grid", gridTemplateColumns: "52px minmax(0,1fr)", gap: 12 }}>
-              <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid var(--rm-c200,#e2e8f0)", paddingRight: 10, textAlign: "center" }}>
+              <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid var(--rm-c200)", paddingRight: 10, textAlign: "center" }}>
                 <span style={{ fontSize: 22, fontWeight: 600, lineHeight: 1 }}>{Number(m.date.slice(8, 10))}</span>
-                <span style={{ marginTop: 4, fontSize: 12, fontWeight: 600, letterSpacing: ".06em", color: "#0f766e" }}>{MON[Number(m.date.slice(5, 7)) - 1]}</span>
-                <span style={{ fontSize: 12, color: "var(--rm-c500,#64748b)" }}>{m.date.slice(2, 4)}</span>
+                <span style={{ marginTop: 4, fontSize: 12, fontWeight: 600, letterSpacing: ".06em", color: "var(--rm-ac)" }}>{MON[Number(m.date.slice(5, 7)) - 1]}</span>
+                <span style={{ fontSize: 12, color: "var(--rm-c500)" }}>{m.date.slice(2, 4)}</span>
               </div>
               <div style={{ minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}><PlacePill place={m.place} />{m.phase && <span style={{ fontSize: 14, color: "#0f766e", fontWeight: 600 }}>{m.phase}</span>}</div>
-                <p className="line-clamp-2" style={{ margin: "10px 0 0", fontSize: 16, fontWeight: 600, lineHeight: 1.35, color: "var(--rm-c900,#0f172a)" }}>{m.title}</p>
-                {m.teaser && <p className="line-clamp-3" style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.5, color: "var(--rm-c700,#334155)" }}>{m.teaser}</p>}
-                {m.teaser && <span style={{ display: "block", marginTop: 8, fontSize: 12, color: "var(--rm-c500,#64748b)" }}>Aus der Vorlage</span>}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}><PlacePill place={m.place} />{m.phase && <span style={{ fontSize: 14, color: "var(--rm-ac)", fontWeight: 600 }}>{m.phase}</span>}</div>
+                <p className="line-clamp-2" style={{ margin: "10px 0 0", fontSize: 16, fontWeight: 600, lineHeight: 1.35, color: "var(--rm-c900)" }}>{m.title}</p>
+                {m.teaser && <p className="line-clamp-3" style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.5, color: "var(--rm-c700)" }}>{m.teaser}</p>}
+                {m.teaser && <span style={{ display: "block", marginTop: 8, fontSize: 12, color: "var(--rm-c500)" }}>Aus der Vorlage</span>}
               </div>
             </div>
           </div>
@@ -216,7 +216,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
       <section className="ri-sec">
         <p className="m-0 max-w-[720px] text-[28px] font-semibold leading-tight text-slate-900">{b.closing}</p>
         <div style={{ marginTop: 24 }}>
-          <Link href={href} className="inline-flex h-12 items-center gap-2 rounded-full bg-slate-900 px-6 text-[16px] font-medium text-white hover:bg-slate-800">
+          <Link href={href} className="inline-flex h-12 items-center gap-2 rounded-full bg-teal-700 px-6 text-[16px] font-medium text-white hover:bg-teal-800">
             „{term}“ in der Suche ansehen <span aria-hidden="true">→</span>
           </Link>
         </div>

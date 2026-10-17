@@ -30,7 +30,7 @@ export function PostfachPage() {
           Neu laden →
         </button>
         {!mails && <p role="status" className="text-slate-500">E-Mails werden geladen …</p>}
-        {mails?.error && <p role="alert" className="text-rose-700">{mails.error}</p>}
+        {mails?.error && <p role="alert" className="text-amber-700">{mails.error}</p>}
         {mails && !mails.error && !mails.list.length && <p className="text-slate-500">Noch keine E-Mails. Fordern Sie unter „Anmelden“ einen Link an.</p>}
         {mails && mails.list.length > 0 && (
           <ul className="m-0 list-none p-0">

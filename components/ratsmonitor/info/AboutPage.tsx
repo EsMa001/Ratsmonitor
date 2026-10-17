@@ -16,10 +16,12 @@ const HITS: { place: string; status: Status; title: string; meta: string }[] = [
 function useCoverageStats(): [string, string][] {
   const [t, setT] = useState<{ withArticles: number; connected: number; articles: number; areas: number } | null>(null);
   useEffect(() => {
-    fetch("/api/sources")
+    const ac = new AbortController();
+    fetch("/api/sources", { signal: ac.signal })
       .then((r) => r.json() as Promise<{ totals?: { withArticles: number; connected: number; articles: number; areas: number } }>)
       .then((d) => d.totals && setT(d.totals))
       .catch(() => {});
+    return () => ac.abort();
   }, []);
   const n = (v?: number) => (v == null ? "…" : v.toLocaleString("de-DE"));
   return [

@@ -83,7 +83,7 @@ export function ResultsPanel() {
       <h2 id="results-title" className="sr-only">
         Ratsbeschlüsse und Artikel
       </h2>
-      {res.error&&<div role="alert" className="m-4 rounded-lg border border-rose-200 bg-rose-50 p-4">{res.error} <button className="link-btn" onClick={res.retry}>Erneut laden</button></div>}
+      {res.error&&<div role="alert" className="m-4 rounded-lg border border-amber-200 bg-amber-50 p-4">{res.error} <button className="link-btn" onClick={res.retry}>Erneut laden</button></div>}
       <div className="relative">
         <div className={`pointer-events-none absolute left-0 right-3 top-0 z-[2] h-7 bg-gradient-to-b from-white to-white/0 transition-opacity ${fade.top ? "opacity-100" : "opacity-0"}`} />
         <div className={`pointer-events-none absolute bottom-0 left-0 right-3 z-[2] h-7 bg-gradient-to-t from-white to-white/0 transition-opacity ${fade.bottom ? "opacity-100" : "opacity-0"}`} />
@@ -146,7 +146,7 @@ export function ResultsPanel() {
                   </button>
                 )}
               </div>
-              <button type="button" onClick={search.resetAll} className="mt-2.5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white hover:opacity-85">
+              <button type="button" onClick={search.resetAll} className="mt-2.5 inline-flex h-11 items-center gap-2 rounded-full bg-teal-700 px-5 text-[14px] font-medium text-white hover:opacity-85">
                 Alle Filter zurücksetzen →
               </button>
             </div>

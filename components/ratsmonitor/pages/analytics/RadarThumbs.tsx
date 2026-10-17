@@ -3,7 +3,7 @@
    Verfahrensschritte), ohne Zahlen. */
 
 const FRAME = "block h-auto w-full rounded-[18px] border border-slate-200 bg-white";
-const TEAL = "#0d9488", TEAL_LIGHT = "#5eead4", TEAL_DARK = "#0f766e", GRID = "#e2e8f0", MUTED = "#cbd5e1";
+const TEAL = "var(--rm-fill)", TEAL_LIGHT = "var(--color-teal-300)", TEAL_DARK = "var(--rm-ac)", GRID = "var(--rm-c200)", MUTED = "var(--rm-c300)";
 
 /* Vorgänge je Unterthema (Formen der früheren Themenradare vom 11.10.2026, nur als Bild) */
 const SHAPE: Record<string, number[]> = {
@@ -39,7 +39,7 @@ function ThemeRadarThumb({ id, name }: { id: keyof typeof SHAPE; name: string })
       {pts.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="3.2" fill={TEAL} />)}
       {top.map((x, i) => (
         <g key={i} transform={`translate(184 ${46 + i * 20})`}>
-          <rect width="112" height="8" rx="4" fill="#f1f5f9" />
+          <rect width="112" height="8" rx="4" fill="var(--rm-c100)" />
           <rect width={Math.max(8, (112 * x) / top[0])} height="8" rx="4" fill={i ? TEAL_LIGHT : TEAL} />
         </g>
       ))}
@@ -93,8 +93,8 @@ function NewsThumb() {
     <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau von Aktuelles: Meldungen mit Überschrift, Zitat und Text" className={FRAME}>
       {[0, 1, 2].map((k) => (
         <g key={k} transform={`translate(${24 + k * 96} 26)`}>
-          <rect width="80" height="9" rx="4.5" fill={k ? MUTED : "#0f172a"} />
-          <rect y="15" width="58" height="9" rx="4.5" fill={k ? MUTED : "#0f172a"} />
+          <rect width="80" height="9" rx="4.5" fill={k ? MUTED : "var(--rm-c900)"} />
+          <rect y="15" width="58" height="9" rx="4.5" fill={k ? MUTED : "var(--rm-c900)"} />
           <rect y="36" width="3" height="34" rx="1.5" fill={TEAL} />
           {[0, 1, 2].map((r) => <rect key={r} x="10" y={38 + r * 11} width={[66, 58, 44][r]} height="6" rx="3" fill={TEAL_LIGHT} />)}
           {[0, 1].map((r) => <rect key={r} y={82 + r * 11} width={[80, 62][r]} height="6" rx="3" fill={GRID} />)}

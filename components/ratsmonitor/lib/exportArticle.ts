@@ -54,23 +54,23 @@ export function printArticle({ t, place, docs, events }: ArticleExport) {
   const html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${esc(t.title)}</title>
 <style>
 @page{size:A4;margin:18mm 16mm}
-*{box-sizing:border-box}body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#0f172a;font-size:11pt;line-height:1.5}
-header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e2e8f0;padding-bottom:10px;margin-bottom:22px}
-header .rm-logo{font-size:22px;display:flex;align-items:center;gap:6px;color:#0f172a}header .rm-logo svg{height:26px;width:auto}
-header small{color:#64748b;font-size:9pt}
-.meta{color:#64748b;font-size:10pt}.meta b{color:#0d9488;font-weight:400}
+*{box-sizing:border-box}body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#18181b;font-size:11pt;line-height:1.5}
+header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e4e4e7;padding-bottom:10px;margin-bottom:22px}
+header .rm-logo{font-size:22px;display:flex;align-items:center;gap:6px;color:#18181b}header .rm-logo svg{height:26px;width:auto}
+header small{color:#52525b;font-size:9pt}
+.meta{color:#52525b;font-size:10pt}.meta b{color:#268478;font-weight:400}
 h1{font-size:18pt;line-height:1.2;margin:6px 0 8px;font-weight:600}
-.lead{color:#64748b;font-size:11pt;margin:0 0 18px}
-dl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 18px;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:12px 0;margin:0 0 20px}
-dt{color:#64748b;font-size:8.5pt}dd{margin:0}
+.lead{color:#52525b;font-size:11pt;margin:0 0 18px}
+dl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 18px;border-top:1px solid #e4e4e7;border-bottom:1px solid #e4e4e7;padding:12px 0;margin:0 0 20px}
+dt{color:#52525b;font-size:8.5pt}dd{margin:0}
 h2{font-size:12pt;margin:20px 0 8px;font-weight:600}
 p{margin:0 0 8px}
-ol{list-style:none;margin:0;padding:0;border-left:1px solid #e2e8f0}
-ol li{position:relative;padding:0 0 10px 16px}ol li:before{content:"";position:absolute;left:-4px;top:6px;width:7px;height:7px;border-radius:50%;background:#cbd5e1}
-ol li:last-child:before{background:#0d9488}
-.d{color:#64748b;font-size:9.5pt}
-ul{margin:0;padding:0;list-style:none}ul li{border-bottom:1px solid #e2e8f0;padding:6px 0}ul a{color:#0f172a;text-decoration:none}ul .u{display:block;color:#64748b;font-size:8.5pt;word-break:break-all}
-footer{margin-top:26px;border-top:1px solid #e2e8f0;padding-top:8px;color:#64748b;font-size:8.5pt}
+ol{list-style:none;margin:0;padding:0;border-left:1px solid #e4e4e7}
+ol li{position:relative;padding:0 0 10px 16px}ol li:before{content:"";position:absolute;left:-4px;top:6px;width:7px;height:7px;border-radius:50%;background:#d4d4d8}
+ol li:last-child:before{background:#268478}
+.d{color:#52525b;font-size:9.5pt}
+ul{margin:0;padding:0;list-style:none}ul li{border-bottom:1px solid #e4e4e7;padding:6px 0}ul a{color:#18181b;text-decoration:none}ul .u{display:block;color:#52525b;font-size:8.5pt;word-break:break-all}
+footer{margin-top:26px;border-top:1px solid #e4e4e7;padding-top:8px;color:#52525b;font-size:8.5pt}
 </style></head><body>
 <header>${logo}<small>Stand ${new Date().toLocaleDateString("de-DE")}</small></header>
 <div class="meta">${esc(place)} · ${esc(t.category || "")} · <b>${esc(status)}</b></div>

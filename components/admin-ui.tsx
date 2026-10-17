@@ -62,7 +62,7 @@ export function Legend({items}:{items:[string,string][]}){
  return <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-500">{items.map(([c,l])=><li key={l} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{background:c}}/>{l}</li>)}</ul>;
 }
 export function Alert({children,onRetry}:{children:ReactNode;onRetry?:()=>void}){
- return <p role="alert" className="mt-3 max-w-[820px] text-[14px] text-rose-700">{children}{onRetry&&<> <button type="button" className="link-btn" onClick={onRetry}>Erneut laden</button></>}</p>;
+ return <p role="alert" className="mt-3 max-w-[820px] text-[14px] text-amber-700">{children}{onRetry&&<> <button type="button" className="link-btn" onClick={onRetry}>Erneut laden</button></>}</p>;
 }
 /** Ersetzt die lokalen Choice-Helfer (shadcn Select). Kurze Listen bis ca. 30 Einträge. */
 export function AdminChoice({id,label,value,onChange,items,help}:{id:string;label:string;value:string;onChange:(v:string)=>void;items:[string,string][];help?:string}){

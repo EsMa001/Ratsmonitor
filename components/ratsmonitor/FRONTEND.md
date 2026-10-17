@@ -59,9 +59,9 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 ## Designregeln (vereinbart)
 
 - Schrift IBM Plex Sans; Größen nur 12, 14, 16, 18, 22, 28, 44 px.
-- Textfarben: Schwarz `#0f172a` (slate-900), Grau `#64748b` (slate-500), Petrol `#0f766e` (teal-700). Helles Petrol `#0d9488` (teal-600) nur für Flächen, Symbole und Schrift ab 24 px: als Textfarbe zu wenig Kontrast (3,7:1 statt mindestens 4,5:1, WCAG).
+- Farbkonzept „Petrol klar“ (seit 17.10.2026, Übersicht `docs/farbschema-petrol-klar-2026-10-17.pdf`): nur vier Farbfamilien plus Weiß/Schwarz. Grau (slate) für Text `#18181b` und Grautext `#52525b`; Petrol (teal) `#268478` = Ton der Deutschlandkarte für Marke, Hauptaktion, Hervorhebung, Balken, Karte, Fußleiste (als Text 4,5:1); Dunkelblau (sky) für beschlossen, Links, Neues; Orange-Braun (amber) für abgelehnt, Fehler, Warnung. Andere Tailwind-Farben (rose, red, emerald, violet …) nicht verwenden. Alle Werte stehen einmal in `app/ratsmonitor.css` (Block „Farbkonzept“, hell `:root`, dunkel `html.rm-dark`), dazu die Rollen `--rm-c50`…`--rm-c900`, `--rm-ac`/`--rm-ac2`, `--rm-btn`/`--rm-btn2` (Hauptaktion), `--rm-fill`, `--rm-link`, `--rm-ok`/`--rm-ok2`/`--rm-ok3`/`--rm-no`, `--rm-map1`…`3`, `--rm-tint`/`--rm-tint2`, `--rm-on` (Weiß auf Petrol), `--rm-black`. Statusfarben für Diagramme: `STATUS_COLOR` in `lib/constants.ts`; Zahlenformate: `lib/format.ts`. Im Code keine Hex-Werte und keine Fallbacks `var(--x,#…)`; Ausnahmen nur Kartenmotor und Export (`lib/constants.ts`, `lib/geo/`, `lib/exportArticle.ts`), dort nur Werte aus der Palette.
 - Weiß, Linien statt Kästen/Kacheln; keine bunten Abzeichen.
-- Hauptaktion: schwarze Pille mit „→“; Nebenaktion: Petrol-Text mit „→“.
+- Hauptaktion: Petrol-Pille mit „→“; Nebenaktion: Petrol-Text mit „→“.
 - Symbole ohne Beschriftung (Teilen, Folgen, Speichern, Exportieren).
 - Milchglas nur auf der Karte (Suchleiste, Filter, Chips); Menüs weiß.
 - Datum mit zweistelligem Jahr („05.10.26“); „Stand“ statt „Datenstand“.

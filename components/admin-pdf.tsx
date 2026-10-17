@@ -114,7 +114,7 @@ export function AdminPdf(){
     {jobs?.recent[0]&&<li className="text-slate-500">Zuletzt: {KIND[jobs.recent[0].kind]}, {when(jobs.recent[0].startedAt||jobs.recent[0].requestedAt)} bis {clock(jobs.recent[0].finishedAt)}: {jobs.recent[0].exit==='abgebrochen'?'abgebrochen':jobs.recent[0].state==='done'?'fertig':'mit Fehlern beendet'}</li>}
    </ul>
    <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
-    <button type="button" className={pill+' bg-slate-900 text-white hover:bg-slate-700'} disabled={!canAct} onClick={()=>post({action:'queue',kind:'run'})}><Icon name="play" size={16}/>{JOB.run} →</button>
+    <button type="button" className={pill+' bg-teal-700 text-white hover:bg-teal-800'} disabled={!canAct} onClick={()=>post({action:'queue',kind:'run'})}><Icon name="play" size={16}/>{JOB.run} →</button>
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'retry'})}>{JOB.retry} →</button>
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'others'})}>{JOB.others} →</button>
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'texts'})}>{JOB.texts} →</button>

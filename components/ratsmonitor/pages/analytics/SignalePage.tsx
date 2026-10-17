@@ -42,17 +42,17 @@ const fromOf = (months: string) => {
   d.setMonth(d.getMonth() - Number(months));
   return d.toISOString().slice(0, 10);
 };
-/* Farben je Stand: Knopf (aktiv/inaktiv) und Etikett in der Karte. Bekannte Schritte fest in Verfahrensreihenfolge (früh kühl, spät
-   grün, Aufhebung rot), sonst der Reihe nach aus der Palette; „Sonstiges“ grau. */
+/* Farben je Stand: Knopf (aktiv/inaktiv) und Etikett in der Karte. Bekannte Schritte fest in Verfahrensreihenfolge (früh blau, spät
+   Petrol, Aufhebung orange), sonst der Reihe nach aus der Palette; „Sonstiges“ grau. */
 const TONES = [
+  { on: "bg-sky-900 text-white", off: "bg-sky-50 text-sky-800 hover:bg-sky-100", tag: "bg-sky-50 text-sky-800" },
   { on: "bg-sky-700 text-white", off: "bg-sky-50 text-sky-800 hover:bg-sky-100", tag: "bg-sky-50 text-sky-800" },
-  { on: "bg-violet-700 text-white", off: "bg-violet-50 text-violet-800 hover:bg-violet-100", tag: "bg-violet-50 text-violet-800" },
+  { on: "bg-slate-600 text-white", off: "bg-slate-50 text-slate-800 hover:bg-slate-100", tag: "bg-slate-50 text-slate-800" },
   { on: "bg-amber-600 text-white", off: "bg-amber-50 text-amber-800 hover:bg-amber-100", tag: "bg-amber-50 text-amber-800" },
-  { on: "bg-orange-700 text-white", off: "bg-orange-50 text-orange-800 hover:bg-orange-100", tag: "bg-orange-50 text-orange-800" },
-  { on: "bg-emerald-700 text-white", off: "bg-emerald-50 text-emerald-800 hover:bg-emerald-100", tag: "bg-emerald-50 text-emerald-800" },
   { on: "bg-teal-700 text-white", off: "bg-teal-50 text-teal-800 hover:bg-teal-100", tag: "bg-teal-50 text-teal-800" },
-  { on: "bg-rose-700 text-white", off: "bg-rose-50 text-rose-800 hover:bg-rose-100", tag: "bg-rose-50 text-rose-800" },
-  { on: "bg-indigo-700 text-white", off: "bg-indigo-50 text-indigo-800 hover:bg-indigo-100", tag: "bg-indigo-50 text-indigo-800" },
+  { on: "bg-teal-600 text-white", off: "bg-teal-50 text-teal-800 hover:bg-teal-100", tag: "bg-teal-50 text-teal-800" },
+  { on: "bg-amber-700 text-white", off: "bg-amber-50 text-amber-800 hover:bg-amber-100", tag: "bg-amber-50 text-amber-800" },
+  { on: "bg-slate-800 text-white", off: "bg-slate-50 text-slate-800 hover:bg-slate-100", tag: "bg-slate-50 text-slate-800" },
 ];
 const GREY = { on: "bg-slate-700 text-white", off: "bg-slate-100 text-slate-700 hover:bg-slate-200", tag: "bg-slate-100 text-slate-700" };
 const FIXED: Record<string, number> = {
@@ -71,7 +71,7 @@ const toneOf = (name: string, order: string[]) => {
 const ART_SHORT: Record<string, string> = { Planungsleistungen: "Planung", "Fahrzeuge und Ausstattung": "Fahrzeuge", "Sonstige Leistungen": "Sonstige", "Tiefbau und Straße": "Tiefbau", "Wasser und Abwasser": "Wasser", "IT und Glasfaser": "IT", "Batteriespeicher und Wasserstoff": "Speicher und Wasserstoff", "Hotel, Camping und Freizeit": "Hotel und Camping", "Bike- oder Lastenradverleih": "Radverleih", "Bürgerbus oder Rufbus": "Bürgerbus", "Sporthalle und Sportplatz": "Sport", "Weiterführende Schule": "Weiterf. Schule", "Gehweg und Barrierefreiheit": "Gehweg", "Ortsdurchfahrt und Kreisverkehr": "Ortsdurchfahrt", "Straßenausbau und -sanierung": "Straßenausbau", "Wärmenetz und Fernwärme": "Wärmenetz", "LED-Straßenbeleuchtung": "LED-Licht", "Hochwasser und Starkregen": "Hochwasser", "Bürger- und Kommunalbeteiligung": "Beteiligung", "Genehmigungsantrag (BImSchG)": "Genehmigung", "Glasfaser und Breitband": "Glasfaser" };
 const artShort = (a: string) => ART_SHORT[a] ?? a;
 /* Farbe des Stand-Punkts: die Flächenfarbe des Tons (bg-…-700) */
-const STEP_DOTS = ["bg-sky-600", "bg-violet-600", "bg-amber-500", "bg-indigo-600", "bg-cyan-600", "bg-fuchsia-600", "bg-orange-500", "bg-blue-800"];
+const STEP_DOTS = ["bg-sky-900", "bg-sky-700", "bg-slate-500", "bg-amber-500", "bg-teal-700", "bg-teal-600", "bg-amber-700", "bg-slate-700"];
 const dotOf = (name: string, order: string[]) => {
   if (/^Sonstig|Ohne Angabe|Noch nicht/.test(name)) return "bg-slate-400";
   const i = name in FIXED ? FIXED[name] : Math.max(0, order.indexOf(name));
@@ -130,7 +130,7 @@ function SignalMap({ places, onPlace, hover = "" }: { places: Place[]; onPlace: 
   return (
     <section className="print:hidden" aria-label="Karte">
       {/* Klick wählt das Gebiet als Ort (Gemeinde oder Kreis), wie im Atlas */}
-      <RegionMap tall level={level} levels={{}} dots={dots} colors={["#0d9488"]} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={["1 Punkt = 1 Vorgang"]}
+      <RegionMap tall level={level} levels={{}} dots={dots} colors={["var(--rm-fill)"]} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={["1 Punkt = 1 Vorgang"]}
         note="Punkte liegen zufällig im Gebiet" label={`Karte: Vorgänge der Auswahl je ${level === "district" ? "Kreis" : "Gemeinde"}`}
         info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{n(sel.count)} {sel.count === 1 ? "Vorgang" : "Vorgänge"}</span></> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
       <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">

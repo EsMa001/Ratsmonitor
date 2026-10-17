@@ -292,7 +292,7 @@ export function MapPanel({ active }: { active: boolean }) {
   return (
     <section ref={sectionRef} aria-label="Karte der Treffer" className={`${dark ? "rm-dark " : ""}relative h-[460px] sm:h-[520px]`}>
       {/* Normal nur Anzeige; im Kartenmodus reagiert die Karte auf Ziehen, Zoomen und Mausrad */}
-      <div ref={stageRef} className={`absolute inset-0 select-none overflow-hidden ${dark ? "bg-[#0e1523]" : "bg-map-ground"} ${explore ? "touch-none" : filtered ? "cursor-pointer touch-pan-y" : "pointer-events-none"}`}>
+      <div ref={stageRef} className={`absolute inset-0 select-none overflow-hidden ${dark ? "bg-[var(--rm-page)]" : "bg-map-ground"} ${explore ? "touch-none" : filtered ? "cursor-pointer touch-pan-y" : "pointer-events-none"}`}>
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={overRef} role="img" aria-label={mapLabel} className="absolute left-0 top-0 block h-full w-full" />
         {!geo && <div className="absolute inset-0 grid place-items-center text-[14px] text-slate-500">{geoError ? "Kartendaten konnten nicht geladen werden." : "Karte wird aufgebaut …"}</div>}

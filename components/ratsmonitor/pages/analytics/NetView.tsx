@@ -5,9 +5,9 @@ export interface NEdge { a: string; b: string; n: number; days: number | null }
 interface P extends NNode { r: number; x: number; y: number; vx: number; vy: number; fixed: boolean }
 
 export const ROLE: Record<NNode["role"], { label: string; fill: string; stroke: string; hint: string }> = {
-  start: { label: "Einstieg", fill: "#cbd5e1", stroke: "#94a3b8", hint: "Vorgänge beginnen hier und gehen weiter" },
-  bridge: { label: "Durchgang", fill: "#5eead4", stroke: "#0d9488", hint: "Vorgänge laufen etwa gleich viel hinein wie heraus" },
-  end: { label: "Entscheidung", fill: "#0f766e", stroke: "#0f766e", hint: "Vorgänge enden überwiegend hier" },
+  start: { label: "Einstieg", fill: "var(--rm-c300)", stroke: "var(--rm-c400)", hint: "Vorgänge beginnen hier und gehen weiter" },
+  bridge: { label: "Durchgang", fill: "var(--color-teal-300)", stroke: "var(--rm-fill)", hint: "Vorgänge laufen etwa gleich viel hinein wie heraus" },
+  end: { label: "Entscheidung", fill: "var(--rm-ac)", stroke: "var(--rm-ac)", hint: "Vorgänge enden überwiegend hier" },
 };
 
 /** Kräfte: Abstoßung, Federn nach Gewicht, Bindung an die Stufe (Einstieg links, Entscheidung rechts) */
@@ -146,8 +146,8 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
     >
       <svg width={size.w} height={size.h} role="img" aria-label="Gremien: Wege von Vorgängen durch die Gremien">
         <defs>
-          <marker id="net-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="#64748b" /></marker>
-          <marker id="net-arrow-on" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="#0d9488" /></marker>
+          <marker id="net-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="var(--rm-c500)" /></marker>
+          <marker id="net-arrow-on" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="var(--rm-fill)" /></marker>
         </defs>
         <g transform={`translate(${size.w / 2 + view.x} ${size.h / 2 + view.y}) scale(${view.k})`}>
           {edges.map((e) => {
@@ -157,15 +157,15 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
             const w = 1 + 5.5 * Math.sqrt(e.n / maxN);
             /* Schwache Verbindungen erst zeigen, wenn eines ihrer Gremien gewählt ist */
             if (!on && e.n < maxN * 0.06) return null;
-            return <path key={e.a + e.b} d={path(a, b, 0.14)} fill="none" stroke={on ? "#0d9488" : "#94a3b8"} strokeOpacity={focus ? (on ? 0.9 : 0.06) : 0.45} strokeWidth={w} strokeLinecap="round" markerEnd={on ? "url(#net-arrow-on)" : "url(#net-arrow)"} style={{ pointerEvents: "none" }} />;
+            return <path key={e.a + e.b} d={path(a, b, 0.14)} fill="none" stroke={on ? "var(--rm-fill)" : "var(--rm-c400)"} strokeOpacity={focus ? (on ? 0.9 : 0.06) : 0.45} strokeWidth={w} strokeLinecap="round" markerEnd={on ? "url(#net-arrow-on)" : "url(#net-arrow)"} style={{ pointerEvents: "none" }} />;
           })}
           {shown.map((n) => {
             const k = ROLE[n.role], on = !focus || near.has(n.id), sel = n.id === selected, lines = wrap(n.name);
             return (
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.2} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
-                {sel && <circle r={n.r + 6} fill="none" stroke="#0d9488" strokeWidth="2" strokeDasharray="3 4" />}
+                {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth="2" />
-                <text textAnchor="middle" fontSize="12" fill="#0f172a" stroke="#fff" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>
+                <text textAnchor="middle" fontSize="12" fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>
                   {lines.map((l, i) => <tspan key={i} x="0" y={n.r + 15 + i * 14}>{l}</tspan>)}
                 </text>
               </g>

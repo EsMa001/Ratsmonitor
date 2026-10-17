@@ -14,6 +14,7 @@ import { plural } from "../../lib/text";
 import { prettyTerm } from "../../lib/terms";
 import { ThemeIcon } from "../../components/icons";
 import { SubtopicIcon } from "../../components/SubtopicIcon";
+import { num, pctText as pct } from "../../lib/format";
 
 /* plenara.X Atlas auf der einen Abfrage (GET /api/x?view=atlas, server/integrations/plenara-x-query.mjs): je Thema die
    Unterthemen, der Verlauf, die Orte und die jüngsten Vorgänge; ohne Thema die 10 Themen. Gezählt werden
@@ -26,8 +27,6 @@ interface Result { selection: { theme: string; sub: string; q: string }; total: 
 interface Fact { kind: string; name: string; sum: { kind: string; name: string } | null; rows: (Row & { sum?: number; median?: { median: number; unit: string; n: number } })[]; map: { key: string; ags?: string; n: number; v: Record<string, { n: number; median: number; unit: string }> }[] }
 
 const n = (v: number) => v.toLocaleString("de-DE");
-const num = (v: number) => v.toLocaleString("de-DE", { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 });
-const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-DE")} %`);
 /* Orte erst ab so vielen Sachvorgängen in der Rangliste nach Anteil (sonst führen Orte mit 2 von 3 Vorgängen) */
 const MIN_BASE = 30;
 /* Restposten („Sonstiges“ = unklar, „Sonstiger Schritt“): grau und ans Ende der Liste */
@@ -75,7 +74,7 @@ function Bars({ rows, mode, open = "", onOpen, drill = () => null, value = (r) =
    Bürger sind (Steuern, Gebühren, Beiträge, Preise), von grün nach rot. Gemeindeverbände färben ihre Mitgliedsgemeinden, die
    Kreise fassen alle Gebiete im Kreis zusammen (Summe, bei Kennzahlen der Median der Gebiete). */
 const HIGH_BAD = new Set(["hebesatz", "fee_rate", "dog_tax", "kita_fee", "land_price", "plot_price"]);
-const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
+const GREEN_RED = ["var(--rm-ac)", "var(--color-teal-400)", "var(--color-amber-300)", "var(--rm-no)"];
 const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
 function AtlasMap({ regions, facts, onList, listed, drill, onPlace, preview }: { /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void }) {

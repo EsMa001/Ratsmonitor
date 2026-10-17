@@ -14,7 +14,7 @@ export const fmt = (iso: string | null | undefined) => (iso ? `${iso.slice(8, 10
 /* Rahmenlos wie die übrigen plenara.X-Seiten (rm-legend statt rm-glass) */
 const glass = "rm-legend";
 /* Wie die Ausbreitung: je länger die erste Erwähnung her ist, desto dunkler */
-export const AGE_LEGEND: [string, string][] = [["#b3dfda", "bis 1 Monat"], ["#8ccdc7", "bis 3 Monate"], ["#6ebfb8", "bis 6 Monate"], ["#0f766e", "länger"]];
+export const AGE_LEGEND: [string, string][] = [["var(--rm-map1)", "bis 1 Monat"], ["var(--rm-map2)", "bis 3 Monate"], ["var(--rm-map3)", "bis 6 Monate"], ["var(--rm-ac)", "länger"]];
 const levelAt = (first: string, today: number) => { const age = today - toDay(first); return age < 0 ? 0 : age <= 31 ? 1 : age <= 92 ? 2 : age <= 183 ? 3 : 4; };
 
 export interface SpreadRegion { ags: string; name: string; first: string; n: number; members?: string[]; atStart?: boolean }
@@ -68,7 +68,7 @@ export function SpreadMap({ regions, day, firstDay, lastDay, onDay, playing, onT
         <p className="m-0 mb-1 font-medium text-slate-900">Erste Erwähnung vor</p>
         <ul className="m-0 flex list-none flex-col gap-1 p-0">
           {AGE_LEGEND.map(([c, l]) => <li key={l} className="flex items-center gap-2"><i className="inline-block h-3 w-5 rounded-sm" style={{ background: c }} />{l}</li>)}
-          <li className="flex items-center gap-2"><i className="inline-block h-3 w-5 rounded-sm" style={{ background: "#d7dce3" }} />noch nicht</li>
+          <li className="flex items-center gap-2"><i className="inline-block h-3 w-5 rounded-sm" style={{ background: "var(--rm-c200)" }} />noch nicht</li>
         </ul>
       </div>
       <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>

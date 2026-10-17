@@ -2,7 +2,7 @@ import { BETREIBER } from "../lib/betreiber";
 import { PageHead } from "./blocks";
 import { H2, P } from "./LegalText";
 
-/* Entwurf nach dem gesetzlichen Muster für Dienstleistungsverträge (Anlage 1 zu Art. 246a § 1 Abs. 2 Satz 2 EGBGB),
+/* Entwurf nach dem gesetzlichen Muster für Dienstleistungsverträge (Anlage 1 zu Art. 246a # 1 Abs. 2 Satz 2 EGBGB),
    nicht anwaltlich geprüft. Der Wortlaut des Musters soll nicht verändert werden. */
 function Kontakt() {
   return (
@@ -12,8 +12,8 @@ function Kontakt() {
   );
 }
 
-const box = { margin: "0 0 14px", padding: "18px 20px", border: "1px solid var(--rm-c200,#e2e8f0)", borderRadius: 10 } as const;
-const line = { margin: "0 0 10px", fontSize: 16, lineHeight: 1.7, color: "var(--rm-c500,#64748b)" } as const;
+const box = { margin: "0 0 14px", padding: "18px 20px", border: "1px solid var(--rm-c200)", borderRadius: 10 } as const;
+const line = { margin: "0 0 10px", fontSize: 16, lineHeight: 1.7, color: "var(--rm-c500)" } as const;
 
 export function WiderrufPage() {
   return (

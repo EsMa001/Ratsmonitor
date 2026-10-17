@@ -31,14 +31,14 @@ function TopicCard({t,showDate}:{t:Topic;showDate:boolean}){
  return <li className="rounded-xl border border-slate-200 bg-white p-4">
   <div className="flex items-baseline justify-between gap-2">
    <h3 className="text-[18px] font-semibold">{t.region}</h3>
-   <span className={'shrink-0 rounded px-2 py-0.5 text-[13px] font-semibold tabular-nums '+fitClass(t.fit.percent)} title={t.fit.parts.map(p=>p.max?p.label+' '+p.points+' von '+p.max:p.label+' '+p.points).join('\n')}>{t.fit.percent} %</span>
+   <span className={'shrink-0 rounded px-2 py-0.5 text-[14px] font-semibold tabular-nums '+fitClass(t.fit.percent)} title={t.fit.parts.map(p=>p.max?p.label+' '+p.points+' von '+p.max:p.label+' '+p.points).join('\n')}>{t.fit.percent} %</span>
   </div>
   <p className="mt-1 text-[12px] text-slate-500">{showDate&&dayName(t.date)+' · '}{t.group} · Eignung für Social Media</p>
-  <p className="mt-2 text-[15px] leading-snug"><a className="text-teal-600" href={t.link}>{t.title}</a></p>
+  <p className="mt-2 text-[16px] leading-snug"><a className="text-teal-600" href={t.link}>{t.title}</a></p>
   {t.draft&&<DraftBox d={t.draft}/>}
   {t.fit.evidence.length>0&&<ul className="mt-2 list-disc pl-4 text-[12px] leading-snug text-slate-600">{t.fit.evidence.map(e=><li key={e}>{e}</li>)}</ul>}
-  <p className="mt-2 text-[11px] leading-snug text-slate-500">{t.fit.parts.map(p=>p.max?p.label+' '+p.points+'/'+p.max:p.label+' '+p.points).join(' · ')}</p>
-  <p className="mt-2 text-[13px] text-slate-500">{t.gremium&&t.gremium+' · '}{STATUS[t.status]||t.status}</p>
+  <p className="mt-2 text-[12px] leading-snug text-slate-500">{t.fit.parts.map(p=>p.max?p.label+' '+p.points+'/'+p.max:p.label+' '+p.points).join(' · ')}</p>
+  <p className="mt-2 text-[14px] text-slate-500">{t.gremium&&t.gremium+' · '}{STATUS[t.status]||t.status}</p>
   <p className="mt-2 flex flex-wrap gap-1.5 text-[12px]">{t.why.map(w=><span key={w} className="rounded bg-teal-50 px-2 py-0.5 text-teal-700">{w}</span>)}</p>
   <p className="mt-3 text-[12px] text-slate-500">{t.otherPlaces?`„${t.term}“ gab es im Zeitraum auch in ${t.otherPlaces} anderen Orten · `:''}Stärke {t.score} · <a className="text-teal-600" href={t.search}>Suche öffnen →</a></p>
  </li>;
@@ -73,10 +73,10 @@ export function AdminSocial(){
  },[data,shown,onlyFilled]);
  const avgShown=shown.length?Math.round(shown.reduce((n,t)=>n+t.fit.percent,0)/shown.length):null;
  const filtered=minFit>0||group!=='';
- const btn=(on:boolean)=>'h-8 rounded-lg px-3 text-[13px] '+(on?'bg-teal-600 text-white':'bg-slate-100 text-slate-700 hover:bg-slate-200');
+ const btn=(on:boolean)=>'h-8 rounded-lg px-3 text-[14px] '+(on?'bg-teal-600 text-white':'bg-slate-100 text-slate-700 hover:bg-slate-200');
  return <>
   <AdminPageHead page="social">
-   <p className="text-[13px] text-slate-500">
+   <p className="text-[14px] text-slate-500">
     {busy?'Wird berechnet (kann einige Sekunden dauern) …':data?`${all.length} Vorschläge in den letzten 30 Tagen (${dmy(data.from)} bis ${dmy(data.to)}); ${data.matched.toLocaleString('de-DE')} von ${data.scanned.toLocaleString('de-DE')} Einträgen enthalten ein Streitwort.`:''}
     {' '}<button type="button" className="text-teal-600" disabled={busy} onClick={()=>load(true)}>Neu berechnen →</button>
    </p>
@@ -109,13 +109,13 @@ export function AdminSocial(){
     </div>
    </div>
    <label className="text-[12px] text-slate-500">Thema
-    <select value={group} onChange={e=>pick<string>('social.group',setGroup)(e.target.value)} className="mt-1 block h-8 rounded-lg border border-slate-200 bg-white px-2 text-[13px] text-slate-900">
+    <select value={group} onChange={e=>pick<string>('social.group',setGroup)(e.target.value)} className="mt-1 block h-8 rounded-lg border border-slate-200 bg-white px-2 text-[14px] text-slate-900">
      <option value="">alle Themen ({all.length})</option>
      {groups.map(([g,n])=><option key={g} value={g}>{g} ({n})</option>)}
     </select>
    </label>
-   {sort==='datum'&&<label className="flex items-center gap-2 text-[13px] text-slate-600"><input type="checkbox" checked={onlyFilled} onChange={e=>setOnlyFilled(e.target.checked)}/>Tage ohne Vorschlag ausblenden</label>}
-   <p role="status" className="ml-auto text-[13px] text-slate-600">
+   {sort==='datum'&&<label className="flex items-center gap-2 text-[14px] text-slate-600"><input type="checkbox" checked={onlyFilled} onChange={e=>setOnlyFilled(e.target.checked)}/>Tage ohne Vorschlag ausblenden</label>}
+   <p role="status" className="ml-auto text-[14px] text-slate-600">
     {data?<>{shown.length} von {all.length} Vorschlägen{avgShown!==null&&<> · Ø {avgShown} %</>}{filtered&&<> · <button type="button" className="text-teal-600" onClick={()=>{pick<number>('social.min',setMinFit)(0);pick<string>('social.group',setGroup)('');}}>Filter zurücksetzen</button></>}</>:''}
    </p>
   </section>

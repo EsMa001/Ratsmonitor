@@ -1,5 +1,5 @@
 /** Farben der Orte (bis vier): Akzentfarbe, Schwarz, Grau, helle Akzentfarbe */
-export const PLACE_COLORS = ["#0d9488", "#0f172a", "#94a3b8", "#5eead4"];
+export const PLACE_COLORS = ["var(--rm-fill)", "var(--rm-c900)", "var(--rm-c400)", "var(--color-teal-300)"];
 
 export interface CMonth { m: string; n: number }
 const mfmt = (m: string) => `${m.slice(5, 7)}/${m.slice(2, 4)}`;

@@ -4,19 +4,19 @@
 :root {
   /* Farben: Grundlage */
   --color-paper: #FFFFFF;          /* Hintergrund */
-  --color-surface: #F4F4F2;        /* Flächen für Hinweise und Bildplatzhalter */
-  --color-ink: #141414;            /* Überschriften, Marken, Linien 3 px, 18,4:1 */
-  --color-text: #1F1F1F;           /* Fließtext Detailansicht, 16,5:1 */
-  --color-text-secondary: #333333; /* Anreißer, Erläuterungen, 12,6:1 */
-  --color-meta: #5C5C5C;           /* Dachzeile, Datum, Herkunft, 6,7:1 */
-  --color-subtle: #6B6B6B;         /* inaktive Tab-Leiste, 5,3:1 */
-  --color-control: #8C8C8C;        /* Rahmen von Schaltern und Optionen (nicht Text), 3,4:1 */
-  --color-step-inactive: #D6D6D6;  /* nicht erreichte Verfahrensschritte (zusätzlich per Text benannt) */
-  --color-line: #E2E2E2;           /* Haarlinien zwischen Einträgen */
+  --color-surface: var(--rm-c100);        /* Flächen für Hinweise und Bildplatzhalter */
+  --color-ink: var(--rm-c900);            /* Überschriften, Marken, Linien 3 px, 18,4:1 */
+  --color-text: var(--rm-c900);           /* Fließtext Detailansicht, 16,5:1 */
+  --color-text-secondary: var(--rm-c800); /* Anreißer, Erläuterungen, 12,6:1 */
+  --color-meta: var(--rm-c500);           /* Dachzeile, Datum, Herkunft, 6,7:1 */
+  --color-subtle: var(--rm-c500);         /* inaktive Tab-Leiste, 5,3:1 */
+  --color-control: var(--rm-c400);        /* Rahmen von Schaltern und Optionen (nicht Text), 3,4:1 */
+  --color-step-inactive: var(--rm-c300);  /* nicht erreichte Verfahrensschritte (zusätzlich per Text benannt) */
+  --color-line: var(--rm-c200);           /* Haarlinien zwischen Einträgen */
 
   /* Farben: Akzent, nur für bedienbare Elemente */
-  --color-accent: #2352AD;         /* Kobalt, oklch(0.46 0.155 262), 7,3:1 */
-  --color-accent-hover: #173B80;
+  --color-accent: var(--color-sky-800);         /* Kobalt, oklch(0.46 0.155 262), 7,3:1 */
+  --color-accent-hover: var(--color-sky-900);
   --color-on-accent: #FFFFFF;
 
   /* Schrift */

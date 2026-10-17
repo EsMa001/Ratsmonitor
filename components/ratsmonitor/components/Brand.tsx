@@ -4,7 +4,7 @@ import { useBrand } from "../lib/brand";
 import type { LogoId } from "../lib/brands";
 
 /* Logos exakt nach Vorgabe „Kopfzeile-Logos v3“ (Code-Seite, direkt aus dem Prototyp) */
-const TEAL = "#0d9488";
+const TEAL = "var(--rm-fill)";
 const WORD: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",

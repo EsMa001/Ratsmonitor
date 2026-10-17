@@ -155,7 +155,7 @@ function Devices() {
   return (
     <section className={block} aria-labelledby="geraete-title">
       <h2 id="geraete-title" className={h2}>Angemeldete Geräte</h2>
-      {list.key === key && list.error && <p role="alert" className="m-0 mt-2 text-[14px] text-rose-700">{list.error}</p>}
+      {list.key === key && list.error && <p role="alert" className="m-0 mt-2 text-[14px] text-amber-700">{list.error}</p>}
       {!sessions && !(list.key === key && list.error) && <p role="status" className="m-0 mt-2 text-[14px] text-slate-500">Geräte werden geladen …</p>}
       {sessions && (
         <ul className="m-0 mt-3 list-none p-0">
@@ -257,7 +257,7 @@ function BrowserData({ signedIn }: { signedIn: boolean }) {
         </div>
       )}
       {!any && <p className="m-0 mt-2 text-[14px] text-slate-500">In diesem Browser liegen keine Daten aus der Zeit vor den Konten. Eine gesicherte Datei können Sie hier übernehmen.</p>}
-      {error && <p role="alert" className="m-0 mt-2 text-[14px] text-rose-700">{error}</p>}
+      {error && <p role="alert" className="m-0 mt-2 text-[14px] text-amber-700">{error}</p>}
       {result && <p role="status" className="m-0 mt-2 text-[14px] text-teal-700">{result}</p>}
       <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2">
         {any && signedIn && !local.imported && (
@@ -279,7 +279,7 @@ function BrowserData({ signedIn }: { signedIn: boolean }) {
           </>
         )}
         {any && (
-          <button type="button" className="text-[14px] text-rose-700 underline underline-offset-2" onClick={() => void discard()}>
+          <button type="button" className="text-[14px] text-amber-700 underline underline-offset-2" onClick={() => void discard()}>
             {local.imported ? "Verwerfen" : "Nicht übernehmen und löschen"}
           </button>
         )}
@@ -308,14 +308,14 @@ function CodeForm({ id, label: submit, busy, error, onSubmit, onCancel, danger =
         <label htmlFor={id} className={label}>Code aus der E-Mail</label>
         <input ref={ref} id={id} className={field} value={code} onChange={(e) => setCode(e.target.value)} autoComplete="one-time-code" inputMode="numeric" maxLength={12} aria-invalid={error ? true : undefined} aria-describedby={error ? id + "-err" : undefined} />
       </div>
-      <button type="submit" disabled={busy} className={danger ? "inline-flex h-11 items-center rounded-full bg-rose-700 px-5 text-[14px] font-medium text-white hover:opacity-90 disabled:opacity-50" : "btn-primary"}>
+      <button type="submit" disabled={busy} className={danger ? "inline-flex h-11 items-center rounded-full bg-amber-700 px-5 text-[14px] font-medium text-white hover:opacity-90 disabled:opacity-50" : "btn-primary"}>
         {submit}
       </button>
       <button type="button" onClick={onCancel} className="btn-secondary">
         Abbrechen
       </button>
       {error && (
-        <p id={id + "-err"} role="alert" className="m-0 w-full text-[14px] text-rose-700">
+        <p id={id + "-err"} role="alert" className="m-0 w-full text-[14px] text-amber-700">
           {error}
         </p>
       )}
@@ -355,7 +355,7 @@ function Export() {
       {status && <p role="status" className="m-0 mt-2 text-[14px] text-slate-600">{status}</p>}
       {step === "idle" ? (
         <>
-          {error && <p role="alert" className="m-0 mt-2 text-[14px] text-rose-700">{error}</p>}
+          {error && <p role="alert" className="m-0 mt-2 text-[14px] text-amber-700">{error}</p>}
           <button type="button" disabled={busy} className={`${link} mt-3`} onClick={() => void run()}>
             {busy ? "Wird erstellt …" : "Daten herunterladen →"}
           </button>
@@ -406,8 +406,8 @@ function DeleteAccount() {
       {step === "idle" ? (
         <>
           <p className="m-0 mt-1 text-[14px] text-slate-500">Löscht das Konto mit allen gespeicherten Suchen, Artikeln und Einstellungen.</p>
-          {error && <p role="alert" className="m-0 mt-2 text-[14px] text-rose-700">{error}</p>}
-          <button type="button" disabled={busy} onClick={() => void start()} className="mt-3 text-[14px] text-rose-700 underline underline-offset-2 disabled:opacity-50">
+          {error && <p role="alert" className="m-0 mt-2 text-[14px] text-amber-700">{error}</p>}
+          <button type="button" disabled={busy} onClick={() => void start()} className="mt-3 text-[14px] text-amber-700 underline underline-offset-2 disabled:opacity-50">
             Konto löschen
           </button>
         </>

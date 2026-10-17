@@ -6,11 +6,11 @@ interface P extends GNode { r: number; x: number; y: number; vx: number; vy: num
 
 /** Farben je Art: Begriffe Akzentfarbe, Themen Schwarz, Gremien Grau, Länder weiß mit Ring */
 export const KIND: Record<GNode["type"], { label: string; fill: string; stroke: string }> = {
-  center: { label: "Suchbegriff", fill: "#0f766e", stroke: "#0f766e" },
-  term: { label: "Begriff", fill: "#0d9488", stroke: "#0d9488" },
-  topic: { label: "Thema", fill: "#0f172a", stroke: "#0f172a" },
-  committee: { label: "Gremium", fill: "#94a3b8", stroke: "#94a3b8" },
-  land: { label: "Land", fill: "#ffffff", stroke: "#0d9488" },
+  center: { label: "Suchbegriff", fill: "var(--rm-ac)", stroke: "var(--rm-ac)" },
+  term: { label: "Begriff", fill: "var(--rm-fill)", stroke: "var(--rm-fill)" },
+  topic: { label: "Thema", fill: "var(--rm-c900)", stroke: "var(--rm-c900)" },
+  committee: { label: "Gremium", fill: "var(--rm-c400)", stroke: "var(--rm-c400)" },
+  land: { label: "Land", fill: "#ffffff", stroke: "var(--rm-fill)" },
 };
 
 /** Kräftemodell: Abstoßung, Federn nach Kantengewicht, schwache Bindung ans Zentrum, Kollision */
@@ -214,16 +214,16 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
             /* Kanten zu Themen, Gremien und Ländern erscheinen erst, wenn man einen der Knoten wählt */
             const outer = !e.center && !(a.type === "term" && b.type === "term");
             const op = e.center ? (on ? 0.5 : 0.07) : outer ? (on ? 0.8 : 0) : focus ? (on ? 0.85 : 0.07) : 0.3 + Math.min(0.45, e.w);
-            return <line key={e.a + e.b} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={on ? "#0d9488" : "#94a3b8"} strokeOpacity={op} strokeWidth={e.center ? 1 : 1 + Math.min(4, e.w * 9)} strokeLinecap="round" />;
+            return <line key={e.a + e.b} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={on ? "var(--rm-fill)" : "var(--rm-c400)"} strokeOpacity={op} strokeWidth={e.center ? 1 : 1 + Math.min(4, e.w * 9)} strokeLinecap="round" />;
           })}
           {shown.map((n) => {
             const k = KIND[n.type], on = lit(n.id), sel = n.id === selected || (pairOn && (n.id === pair!.a || n.id === pair!.b));
             return (
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.18} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
-                {sel && <circle r={n.r + 6} fill="none" stroke="#0d9488" strokeWidth="2" strokeDasharray="3 4" />}
+                {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle className={n.type === "topic" ? "rm-gtopic" : undefined} r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth={n.type === "land" ? 2.5 : 0} fillOpacity={n.type === "term" ? 0.88 : 1} />
                 {n.type === "center" && <rect x="-7" y="-7" width="14" height="14" fill="#fff" />}
-                <text className="rm-gtext" y={n.type === "center" ? n.r + 18 : n.r + 15} textAnchor="middle" fontSize={n.type === "center" ? 18 : 12} fontWeight={n.type === "center" ? 600 : 400} fill="#0f172a" stroke="#fff" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>{n.label}</text>
+                <text className="rm-gtext" y={n.type === "center" ? n.r + 18 : n.r + 15} textAnchor="middle" fontSize={n.type === "center" ? 18 : 12} fontWeight={n.type === "center" ? 600 : 400} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>{n.label}</text>
               </g>
             );
           })}

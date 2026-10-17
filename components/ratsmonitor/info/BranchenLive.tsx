@@ -3,15 +3,15 @@ import { ANALYSE_THUMBS } from "../pages/analytics/AnalyticsAbout";
 import { Spark, type TrendKind } from "../pages/analytics/TrendViews";
 import { ANALYSEN, type AnalyseId } from "./branchen-enterprise";
 import { Icon } from "./icons";
-import { STATUS } from "../lib/constants";
+import { STATUS_COLOR, STATUS } from "../lib/constants";
 import { prettyTerm } from "../lib/terms";
+import { nf } from "../lib/format";
 
 /* Mini-Ausschnitte der plenara.X-Analysen zum Suchbegriff der Branche. Sie kommen aus einem Schnappschuss
    (public/data/branchen-ausschnitte.json, erzeugt mit scripts/build-branchen-ausschnitte.mjs), nicht aus der API:
    plenara.X ist Teil von Enterprise, die Branchenseiten zeigen nur diese feste Auswahl. Fehlt ein Eintrag
    (leer, Ortsvergleich), bleibt das schematische Vorschaubild. */
 
-const nf = (v: number) => v.toLocaleString("de-DE");
 /* Schnappschuss: je Analyse eine andere Form; mini() prüft beim Zeichnen, was da ist */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Loose = any;
@@ -30,17 +30,16 @@ function load(): Promise<Snap> {
   return snapshot;
 }
 
-const STATUS_FARBE: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0" };
 const STATUS_NAME: Record<string, string> = Object.fromEntries(STATUS.map((x: { id: string; label: string }) => [x.id, x.label]));
-const CLS = ["#b3dfda", "#8ccdc7", "#6ebfb8", "#0f766e"];
-const KIND_FILL: Record<string, [string, string]> = { center: ["#0f766e", "#0f766e"], term: ["#0d9488", "#0d9488"], topic: ["#0f172a", "#0f172a"], committee: ["#94a3b8", "#94a3b8"], land: ["#ffffff", "#0d9488"] };
+const CLS = ["var(--rm-map1)", "var(--rm-map2)", "var(--rm-map3)", "var(--rm-ac)"];
+const KIND_FILL: Record<string, [string, string]> = { center: ["var(--rm-ac)", "var(--rm-ac)"], term: ["var(--rm-fill)", "var(--rm-fill)"], topic: ["var(--rm-c900)", "var(--rm-c900)"], committee: ["var(--rm-c400)", "var(--rm-c400)"], land: ["#ffffff", "var(--rm-fill)"] };
 const short = (t: string, n: number) => (t.length > n ? t.slice(0, n - 1) + "…" : t);
 
 /** Mini-Karte der Diffusion: jede Gemeinde ein Punkt, gefärbt nach Alter der ersten Erwähnung (wie die Legende der Analyse) */
 function DiffusionMap({ map, geo }: { map: string; geo: NonNullable<Snap["geo"]> }) {
   const groups: string[] = ["", "", "", "", ""];
   for (let i = 0; i < map.length; i++) groups[+map[i]] += `M${geo.pts[2 * i]} ${geo.pts[2 * i + 1]}h0`;
-  const colors = [CLS[0], CLS[1], CLS[2], CLS[3], "#d5dce5"];
+  const colors = [CLS[0], CLS[1], CLS[2], CLS[3], "var(--rm-c200)"];
   return (
     <svg viewBox={`-4 -4 ${geo.w + 8} ${geo.h + 8}`} className="block h-[190px] w-auto flex-none" role="img" aria-label="Karte: Gemeinden nach Alter der ersten Erwähnung">
       {[4, 3, 2, 1, 0].map((c) => <path key={c} d={groups[c]} stroke={colors[c]} strokeWidth={c === 4 ? 6 : 7.5} strokeLinecap="round" fill="none" />)}
@@ -60,8 +59,8 @@ function MiniGraph({ nodes, edges }: { nodes: [string, string, number][]; edges:
   const linked = new Set(edges.flatMap((e) => [e[0], e[1]]));
   return (
     <svg viewBox={`-28 0 ${W + 56} ${H}`} className="block h-auto w-full" role="img" aria-label="Netz aus Begriffen, Themen und Gremien rund um den Suchbegriff">
-      {nodes.map((_, i) => i > 0 && !linked.has(i) && <line key={"s" + i} x1={cx} y1={cy} x2={pos[i][0]} y2={pos[i][1]} stroke="#cbd5e1" strokeWidth="0.8" />)}
-      {edges.map(([a, b, w], i) => <line key={i} x1={pos[a][0]} y1={pos[a][1]} x2={pos[b][0]} y2={pos[b][1]} stroke="#94a3b8" strokeOpacity={0.35 + w} strokeWidth={0.8 + w * 4} />)}
+      {nodes.map((_, i) => i > 0 && !linked.has(i) && <line key={"s" + i} x1={cx} y1={cy} x2={pos[i][0]} y2={pos[i][1]} stroke="var(--rm-c300)" strokeWidth="0.8" />)}
+      {edges.map(([a, b, w], i) => <line key={i} x1={pos[a][0]} y1={pos[a][1]} x2={pos[b][0]} y2={pos[b][1]} stroke="var(--rm-c400)" strokeOpacity={0.35 + w} strokeWidth={0.8 + w * 4} />)}
       {nodes.map(([type, label, n], i) => {
         const [fill, stroke] = KIND_FILL[type] ?? KIND_FILL.term;
         const r = i === 0 ? 9 : 3.5 + Math.sqrt(n / max) * 4.5;
@@ -69,7 +68,7 @@ function MiniGraph({ nodes, edges }: { nodes: [string, string, number][]; edges:
         return (
           <g key={i}>
             <circle cx={pos[i][0]} cy={pos[i][1]} r={r} fill={fill} stroke={stroke} strokeWidth="1.6" />
-            <text x={pos[i][0] + (left ? -r - 3 : right ? r + 3 : 0)} y={pos[i][1] + (left || right ? 3 : -r - 3)} textAnchor={left ? "end" : right ? "start" : "middle"} fontSize="10.5" fill="#475569" stroke="#fff" strokeWidth="3" paintOrder="stroke">{short(label, 14)}</text>
+            <text x={pos[i][0] + (left ? -r - 3 : right ? r + 3 : 0)} y={pos[i][1] + (left || right ? 3 : -r - 3)} textAnchor={left ? "end" : right ? "start" : "middle"} fontSize="10.5" fill="var(--rm-c500)" stroke="var(--rm-white)" strokeWidth="3" paintOrder="stroke">{short(label, 14)}</text>
           </g>
         );
       })}
@@ -87,19 +86,19 @@ function MiniFlow({ nodes, edges }: { nodes: [string, number, number][]; edges: 
     pos[i] = [Math.round(PAD + 30 + (k * (W - 2 * PAD - 60)) / Math.max(order.length - 1, 1)), Math.round(PAD + (k * (H - 2 * PAD)) / Math.max(order.length - 1, 1))];
   });
   const maxN = Math.max(...edges.map((e) => e[2]), 1), maxS = Math.max(...nodes.map((n) => n[2]), 1);
-  const fill = (st: number) => (st < 0.4 ? "#94a3b8" : st < 0.7 ? "#2dd4bf" : "#0f766e");
+  const fill = (st: number) => (st < 0.4 ? "var(--rm-c400)" : st < 0.7 ? "var(--color-teal-300)" : "var(--rm-ac)");
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full" role="img" aria-label="Weg der Vorlagen durch die Gremien, von Eingang bis Entscheidung">
       {edges.map(([a, b, n], i) => {
         const [x1, y1] = pos[a], [x2, y2] = pos[b], my = (y1 + y2) / 2;
-        return <path key={i} d={`M${x1} ${y1}C${x1 + 40} ${my} ${x2 - 40} ${my} ${x2} ${y2}`} fill="none" stroke="#94a3b8" strokeOpacity=".5" strokeWidth={1.2 + (n / maxN) * 6} />;
+        return <path key={i} d={`M${x1} ${y1}C${x1 + 40} ${my} ${x2 - 40} ${my} ${x2} ${y2}`} fill="none" stroke="var(--rm-c400)" strokeOpacity=".5" strokeWidth={1.2 + (n / maxN) * 6} />;
       })}
       {nodes.map(([name, st, size], i) => {
         const r = 5 + Math.sqrt(size / maxS) * 7, right = pos[i][0] < W * 0.62;
         return (
           <g key={i}>
-            <circle cx={pos[i][0]} cy={pos[i][1]} r={r} fill={fill(st)} stroke="#fff" strokeWidth="1.5" />
-            <text x={pos[i][0] + (right ? r + 5 : -r - 5)} y={pos[i][1] + 4} textAnchor={right ? "start" : "end"} fontSize="11" fill="#475569" stroke="#fff" strokeWidth="3" paintOrder="stroke">{short(name, 20)}</text>
+            <circle cx={pos[i][0]} cy={pos[i][1]} r={r} fill={fill(st)} stroke="var(--rm-white)" strokeWidth="1.5" />
+            <text x={pos[i][0] + (right ? r + 5 : -r - 5)} y={pos[i][1] + 4} textAnchor={right ? "start" : "end"} fontSize="11" fill="var(--rm-c500)" stroke="var(--rm-white)" strokeWidth="3" paintOrder="stroke">{short(name, 20)}</text>
           </g>
         );
       })}
@@ -113,15 +112,15 @@ function MiniVergleich({ names, rows }: { names: string[]; rows: [string, number
   const max = Math.max(...rows.flatMap((r) => [r[1], r[2]]), 1);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full" role="img" aria-label={`Themenprofil im Vergleich: ${names.join(" und ")}`}>
-      <circle cx={MID - HALF - 6} cy={9} r="4" fill="#0d9488" /><text x={MID - HALF - 14} y={12.5} textAnchor="end" fontSize="12" fontWeight="600" fill="#0f172a">{names[0]}</text>
-      <circle cx={MID + HALF + 6} cy={9} r="4" fill="#0f172a" /><text x={MID + HALF + 14} y={12.5} fontSize="12" fontWeight="600" fill="#0f172a">{names[1]}</text>
+      <circle cx={MID - HALF - 6} cy={9} r="4" fill="var(--rm-fill)" /><text x={MID - HALF - 14} y={12.5} textAnchor="end" fontSize="12" fontWeight="600" fill="var(--rm-c900)">{names[0]}</text>
+      <circle cx={MID + HALF + 6} cy={9} r="4" fill="var(--rm-c900)" /><text x={MID + HALF + 14} y={12.5} fontSize="12" fontWeight="600" fill="var(--rm-c900)">{names[1]}</text>
       {rows.map(([name, a, b], i) => {
         const y = TOP + i * RH + 9;
         return (
           <g key={name}>
-            <rect x={MID - HALF - 4 - (a / max) * BAR} y={y - 4} width={(a / max) * BAR} height="8" rx="4" fill="#0d9488" />
-            <rect x={MID + HALF + 4} y={y - 4} width={(b / max) * BAR} height="8" rx="4" fill="#0f172a" />
-            <text x={MID} y={y + 3.5} textAnchor="middle" fontSize="10.5" fill="#475569">{short(name.replace(" & ", " & "), 14)}</text>
+            <rect x={MID - HALF - 4 - (a / max) * BAR} y={y - 4} width={(a / max) * BAR} height="8" rx="4" fill="var(--rm-fill)" />
+            <rect x={MID + HALF + 4} y={y - 4} width={(b / max) * BAR} height="8" rx="4" fill="var(--rm-c900)" />
+            <text x={MID} y={y + 3.5} textAnchor="middle" fontSize="10.5" fill="var(--rm-c500)">{short(name.replace(" & ", " & "), 14)}</text>
           </g>
         );
       })}
@@ -149,14 +148,14 @@ function mini(id: AnalyseId, d: Loose, geo?: Snap["geo"]): ReactNode {
         {sum > 0 && (
           <>
             <span className="mt-2.5 flex h-[10px] w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label="Stand der Vorgänge">
-              {known.map(([sid, n]) => <span key={sid} style={{ width: `${(n / sum) * 100}%`, background: STATUS_FARBE[sid] ?? "#e2e8f0" }} title={`${STATUS_NAME[sid] ?? sid}: ${n}`} />)}
+              {known.map(([sid, n]) => <span key={sid} style={{ width: `${(n / sum) * 100}%`, background: STATUS_COLOR[sid] ?? "var(--rm-c200)" }} title={`${STATUS_NAME[sid] ?? sid}: ${n}`} />)}
             </span>
           </>
         )}
         <svg viewBox="0 0 120 36" preserveAspectRatio="none" className="mt-3 block h-8 w-full" role="img" aria-label="Entscheidungen je Monat">
           {months.map((m, i) => {
             const h = ((m[0] + m[1] + m[2]) / max) * 34, w = 120 / months.length;
-            return <rect key={i} x={i * w + 1} y={35 - h} width={w - 2} height={h} fill="#0d9488" fillOpacity=".85" />;
+            return <rect key={i} x={i * w + 1} y={35 - h} width={w - 2} height={h} fill="var(--rm-fill)" fillOpacity=".85" />;
           })}
         </svg>
         <p className="m-0 mt-1 text-[12px] text-slate-500">{nf(d.decided)} Entscheidungen{d.median != null ? `, im Median ${d.median} Tage bis dahin` : ""}</p>
@@ -189,7 +188,7 @@ function mini(id: AnalyseId, d: Loose, geo?: Snap["geo"]): ReactNode {
       <div>
         {text}
         <svg viewBox="0 0 120 36" preserveAspectRatio="none" className="mt-3 block h-9 w-full" role="img" aria-label="Ausbreitung über die Zeit">
-          <polyline points={pts} fill="none" stroke="#0d9488" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+          <polyline points={pts} fill="none" stroke="var(--rm-fill)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
         </svg>
       </div>
     );

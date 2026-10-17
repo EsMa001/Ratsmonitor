@@ -64,7 +64,7 @@ const nf = new Intl.NumberFormat("de-DE");
 const day = (iso: string) => (iso ? iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(2, 4) : "");
 const reduced = () => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 const short = (n: string) => n.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde) /, "");
-const rule = { borderTop: "1px solid var(--rm-c200,#e2e8f0)" } as const;
+const rule = { borderTop: "1px solid var(--rm-c200)" } as const;
 
 /** Zahl, die einmal hochzählt (nicht bei reduzierter Bewegung) */
 function CountUp({ value }: { value: number }) {
@@ -91,8 +91,8 @@ function Spark({ values, w = 400, h = 60, label }: { values: number[]; w?: numbe
   const last = pts[pts.length - 1]?.split(",") ?? ["0", "0"];
   return (
     <svg role="img" aria-label={label} width="100%" viewBox={`0 0 ${w} ${h}`} style={{ display: "block", overflow: "visible" }}>
-      <polyline points={pts.join(" ")} fill="none" stroke="#0d9488" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={last[0]} cy={last[1]} r="3.4" fill="#0d9488" />
+      <polyline points={pts.join(" ")} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={last[0]} cy={last[1]} r="3.4" fill="var(--rm-fill)" />
     </svg>
   );
 }
@@ -114,7 +114,7 @@ function DotMap() {
         const ctx = cv.getContext("2d");
         if (!ctx) return;
         ctx.scale(dpr, dpr);
-        ctx.fillStyle = "rgba(100,116,139,0.28)";
+        ctx.fillStyle = "rgba(63,106,138,0.28)";
         for (let i = 0; i < pts.length; i += 2) ctx.fillRect(pts[i], pts[i + 1], 1.5, 1.5);
       })
       .catch(() => {});
@@ -132,19 +132,18 @@ function TrendPops({ items, onPick }: { items: TrendItem[]; onPick: (t: string) 
   const shown = items;
   return (
     <div className="pl-trends" style={{ margin: "28px 0 0", display: "flex", flexWrap: "wrap", gap: 12, minHeight: 78 }}>
-      <style>{`.pl-tp{animation:pltp .6s cubic-bezier(.2,.9,.3,1.2) both}@keyframes pltp{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.pl-tp{animation:none}}`}</style>
       {shown.map((t, k) => (
-        <button key={t.topic} type="button" onClick={() => onPick(t.topic)} className="pl-tp" style={{ width: 200, padding: "10px 14px", textAlign: "left", background: "var(--rm-white,#fff)", border: "1px solid var(--rm-c200,#e2e8f0)", borderRadius: 14, boxShadow: "0 8px 24px rgba(0,0,0,.12)", cursor: "pointer", animationDelay: `${k * 0.25}s` }}>
+        <button key={t.topic} type="button" onClick={() => onPick(t.topic)} className="pl-tp" style={{ width: 200, padding: "10px 14px", textAlign: "left", background: "var(--rm-white)", border: "1px solid var(--rm-c200)", borderRadius: 14, boxShadow: "0 8px 24px rgba(0,0,0,.12)", cursor: "pointer", animationDelay: `${k * 0.25}s` }}>
           <span style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>{t.topic}</span>
-            <span style={{ fontSize: 14, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: t.ch !== null && t.ch >= 10 ? "#0d9488" : "var(--rm-c900,#0f172a)" }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--rm-c900)" }}>{t.topic}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: t.ch !== null && t.ch >= 10 ? "var(--rm-fill)" : "var(--rm-c900)" }}>
               {t.ch === null ? "–" : `${t.ch > 0 ? "+" : ""}${t.ch} %`}
             </span>
           </span>
           <span style={{ display: "block", margin: "4px 0 2px" }}>
             <Spark values={t.values.slice(-12)} w={170} h={26} label={`Verlauf ${t.topic}`} />
           </span>
-          <span style={{ display: "block", fontSize: 12, color: "var(--rm-c500,#64748b)" }}>{t.last3} neue Gebiete in 3 Monaten</span>
+          <span style={{ display: "block", fontSize: 12, color: "var(--rm-c500)" }}>{t.last3} neue Gebiete in 3 Monaten</span>
         </button>
       ))}
     </div>
@@ -178,17 +177,16 @@ function GermanyMap({ pops, onPick }: { pops: Pop[]; onPick: (name: string) => v
   const paths = useMemo(() => {
     if (!geo) return null;
     return geo.regions.map((r) => {
-      return <path key={r.id} d={r.path} fill="#0d9488" fillOpacity={0.78} stroke="var(--rm-white,#fff)" strokeOpacity="0.5" strokeWidth="0.25" style={{ cursor: "pointer", transition: "fill .5s, fill-opacity .5s" }} data-n={r.name} />;
+      return <path key={r.id} d={r.path} fill="var(--rm-fill)" fillOpacity={0.78} stroke="var(--rm-white)" strokeOpacity="0.5" strokeWidth="0.25" style={{ cursor: "pointer", transition: "fill .5s, fill-opacity .5s" }} data-n={r.name} />;
     });
   }, [geo]);
   if (!geo) return <DotMap />;
   return (
     <div>
       <svg role="img" aria-label="Deutschlandkarte der Kreise; eingeblendet ist, wo Begriffe wie Wärmeplanung oder Photovoltaik zum ersten Mal beraten wurden" viewBox="12 8 560 758" style={{ width: "100%", height: "auto", display: "block" }} onMouseLeave={() => setTip("")} onMouseOver={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) setTip(n); }} onClick={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) onPick(n); }}>
-        <style>{`.pl-pop{animation:plpop 5.6s ease-out both}@keyframes plpop{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}.pl-ping{transform-box:fill-box;transform-origin:center;animation:plping 1.6s ease-out infinite}@keyframes plping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.4);opacity:0}}@media (prefers-reduced-motion:reduce){.pl-pop,.pl-ping{animation:none}}`}</style>
         {paths}
         {geo.states.map((st) => (
-          <path key={st.name} d={st.path} fill="none" stroke="var(--rm-white,#fff)" strokeWidth="0.9" strokeLinejoin="round" pointerEvents="none" />
+          <path key={st.name} d={st.path} fill="none" stroke="var(--rm-white)" strokeWidth="0.9" strokeLinejoin="round" pointerEvents="none" />
         ))}
         {pops.map((p) => {
           const r = geo.regions.find((x) => x.ags === p.k);
@@ -199,22 +197,22 @@ function GermanyMap({ pops, onPick }: { pops: Pop[]; onPick: (name: string) => v
           const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
           const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
           const right = cx < 330;
-          const halo = { stroke: "var(--rm-white,#fff)", strokeWidth: 3.4, paintOrder: "stroke" as const, strokeLinejoin: "round" as const };
+          const halo = { stroke: "var(--rm-white)", strokeWidth: 3.4, paintOrder: "stroke" as const, strokeLinejoin: "round" as const };
           return (
             <g key={p.key} className={p.still ? "pl-still" : "pl-pop"} pointerEvents="none">
-              <circle cx={cx} cy={cy} r="5" fill="none" stroke="var(--rm-c900,#0f172a)" strokeWidth="1.5" className="pl-ping" />
-              <circle cx={cx} cy={cy} r="5" fill="var(--rm-c900,#0f172a)" stroke="var(--rm-white,#fff)" strokeWidth="1.6" />
-              <text x={cx + (right ? 12 : -12)} y={cy} textAnchor={right ? "start" : "end"} fontSize="17" fontWeight="600" fill="var(--rm-c900,#0f172a)" style={halo}>
+              <circle cx={cx} cy={cy} r="5" fill="none" stroke="var(--rm-c900)" strokeWidth="1.5" className="pl-ping" />
+              <circle cx={cx} cy={cy} r="5" fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="1.6" />
+              <text x={cx + (right ? 12 : -12)} y={cy} textAnchor={right ? "start" : "end"} fontSize="17" fontWeight="600" fill="var(--rm-c900)" style={halo}>
                 {p.label}
               </text>
-              <text x={cx + (right ? 12 : -12)} y={cy + 15} textAnchor={right ? "start" : "end"} fontSize="12" fill="var(--rm-c600,#475569)" style={halo}>
+              <text x={cx + (right ? 12 : -12)} y={cy + 15} textAnchor={right ? "start" : "end"} fontSize="12" fill="var(--rm-c600)" style={halo}>
                 {p.sub}
               </text>
             </g>
           );
         })}
       </svg>
-      <p aria-live="polite" style={{ margin: "6px 0 0", minHeight: 20, fontSize: 14, color: "var(--rm-c900,#0f172a)", textAlign: "center" }}>
+      <p aria-live="polite" style={{ margin: "6px 0 0", minHeight: 20, fontSize: 14, color: "var(--rm-c900)", textAlign: "center" }}>
         {tip || " "}
       </p>
     </div>
@@ -407,24 +405,22 @@ export function StartseitePage() {
   return (
     <>
       <section className="ri-sec pl-hero" style={{ paddingTop: 56 }}>
-        <style>{`@media (max-width:640px){.pl-hero{padding-top:12px !important;padding-bottom:16px !important}.pl-grid{display:flex !important;flex-direction:column;align-items:stretch !important;gap:0 !important}.pl-left{display:contents}.pl-h1{order:1;font-size:24px !important;line-height:1.1 !important}.pl-slogan{order:2;margin:6px 0 0 !important;font-size:14px !important}.pl-num{order:3;margin:10px 0 0 !important}.pl-num span:first-child{font-size:28px !important}.pl-num span:last-child{font-size:12px !important}.pl-stand,.pl-chips,.pl-source{display:none !important}.pl-h2{margin:0 0 6px !important;font-size:18px !important}.pl-trends{order:6;margin:8px 0 0 !important;min-height:0 !important;gap:8px !important;flex-wrap:nowrap !important}.pl-trends>button{flex:0 0 calc(50% - 4px);min-width:0;width:auto !important;padding:6px 10px !important}.pl-trends>button:nth-of-type(n+3){display:none}.pl-mapwrap{order:4;margin:6px 0 0 !important}.pl-mapwrap p[aria-live]{display:none}.pl-mapwrap{max-width:none !important;width:100% !important}.pl-mapwrap>div:first-child{width:240px;margin:0 auto}.pl-mapwrap>p:nth-of-type(1){display:none !important}.pl-pop text:nth-of-type(1),.pl-still text:nth-of-type(1){font-size:30px !important}.pl-pop text:nth-of-type(2),.pl-still text:nth-of-type(2){font-size:22px !important;transform:translateY(14px)}.pl-search{order:5;margin:10px 0 0 !important;border-top:0 !important}.pl-ort{order:8;margin:22px 0 0 !important;border-top:0 !important}.pl-search input,.pl-ort input{margin-top:0 !important;height:42px !important}.pl-ort [aria-live]{margin-top:4px !important}.pl-ctawrap{order:9;margin:24px 0 0 !important;text-align:center}.pl-ctawrap a{min-height:44px !important;padding:0 20px !important}}`}</style>
         <div className="mx-auto pl-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48, alignItems: "start" }}>
           <div className="pl-left" style={{ paddingTop: 40 }}>
-            <h1 className="pl-h1" style={{ margin: 0, fontSize: "clamp(28px, 8vw, 44px)", lineHeight: 1.08, letterSpacing: "-0.02em", fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>
-              Deutschlands Kommunalpolitik<br /> <span style={{ color: "#0f766e" }}>in Echtzeit.</span>
+            <h1 className="pl-h1" style={{ margin: 0, fontSize: "clamp(28px, 8vw, 44px)", lineHeight: 1.08, letterSpacing: "-0.02em", fontWeight: 600, color: "var(--rm-c900)" }}>
+              Deutschlands Kommunalpolitik<br /> <span style={{ color: "var(--rm-ac)" }}>in Echtzeit.</span>
             </h1>
-            <p className="pl-slogan" style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>Besser verstehen, was vor Ort beraten wird.</p>
+            <p className="pl-slogan" style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500)" }}>Besser verstehen, was vor Ort beraten wird.</p>
             <p className="pl-num" style={{ margin: "28px 0 0", display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "4px 14px" }}>
-              <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "var(--rm-c900,#0f172a)", fontVariantNumeric: "tabular-nums" }}>{total !== null ? <CountUp value={total} /> : "…"}</span>
-              <span style={{ fontSize: 16, color: "var(--rm-c500,#64748b)" }}>Berichte aus Räten und Ausschüssen in den letzten 30 Tagen</span>
+              <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "var(--rm-c900)", fontVariantNumeric: "tabular-nums" }}>{total !== null ? <CountUp value={total} /> : "…"}</span>
+              <span style={{ fontSize: 16, color: "var(--rm-c500)" }}>Berichte aus Räten und Ausschüssen in den letzten 30 Tagen</span>
             </p>
-            <p className="pl-stand" style={{ margin: "10px 0 0", fontSize: 14, color: "var(--rm-c500,#64748b)" }}>
-              <span aria-hidden="true" className="pl-pulse" style={{ display: "inline-block", width: 8, height: 8, marginRight: 8, borderRadius: 4, background: "#0d9488" }} />
-              <style>{`.pl-pulse{animation:plpulse 2.4s ease-in-out infinite}@keyframes plpulse{0%,100%{box-shadow:0 0 0 0 rgba(13,148,136,.45)}60%{box-shadow:0 0 0 7px rgba(13,148,136,0)}}@media (prefers-reduced-motion:reduce){.pl-pulse{animation:none}}`}</style>
+            <p className="pl-stand" style={{ margin: "10px 0 0", fontSize: 14, color: "var(--rm-c500)" }}>
+              <span aria-hidden="true" className="pl-pulse" style={{ display: "inline-block", width: 8, height: 8, marginRight: 8, borderRadius: 4, background: "var(--rm-fill)" }} />
               Stand {day(today)}
             </p>
               <div className="pl-search" style={{ margin: "24px 0 0", maxWidth: 460, ...rule }}>
-          <h2 className="pl-h2" style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>Thema suchen</h2>
+          <h2 className="pl-h2" style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900)" }}>Thema suchen</h2>
           <form onSubmit={submit}>
             <label>
               <span className="sr-only">Suchbegriff</span>
@@ -434,7 +430,7 @@ export function StartseitePage() {
                 onChange={(e) => setTerm(e.target.value)}
                 maxLength={120}
                 placeholder="Thema suchen, z. B. Windkraft"
-                style={{ marginTop: 12, width: "100%", height: 48, padding: "0 16px", fontSize: 16, color: "var(--rm-c900,#0f172a)", border: "1px solid var(--rm-c300,#cbd5e1)", borderRadius: 999, background: "var(--rm-white,#fff)" }}
+                style={{ marginTop: 12, width: "100%", height: 48, padding: "0 16px", fontSize: 16, color: "var(--rm-c900)", border: "1px solid var(--rm-c300)", borderRadius: 999, background: "var(--rm-white)" }}
               />
             </label>
           </form>
@@ -442,7 +438,7 @@ export function StartseitePage() {
             <TrendPops items={trends.filter((t) => pops.some((p) => p.label === t.topic))} onPick={(t) => openSearch(t)} />
             {cov && (
         <div className="pl-ort" style={rule}>
-          <h2 className="pl-h2" style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>Ist mein Ort dabei?</h2>
+          <h2 className="pl-h2" style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900)" }}>Ist mein Ort dabei?</h2>
           <label>
             <span className="sr-only">Ort</span>
             <input
@@ -451,34 +447,33 @@ export function StartseitePage() {
               onChange={(e) => setPlace(e.target.value)}
               maxLength={60}
               placeholder="Ort: Stadt oder Gemeinde"
-              style={{ marginTop: 12, width: "100%", height: 48, padding: "0 16px", fontSize: 16, color: "var(--rm-c900,#0f172a)", border: "1px solid var(--rm-c300,#cbd5e1)", borderRadius: 999, background: "var(--rm-white,#fff)" }}
+              style={{ marginTop: 12, width: "100%", height: 48, padding: "0 16px", fontSize: 16, color: "var(--rm-c900)", border: "1px solid var(--rm-c300)", borderRadius: 999, background: "var(--rm-white)" }}
             />
           </label>
-          <div aria-live="polite" style={{ marginTop: 8, fontSize: 14, color: "var(--rm-c500,#64748b)" }}>
+          <div aria-live="polite" style={{ marginTop: 8, fontSize: 14, color: "var(--rm-c500)" }}>
             {q.length >= 3 && found.length === 0 ? "Dazu liegen noch keine Berichte vor." : null}
             {found.length > 0 && (
-              <div role="listbox" aria-label="Orte" style={{ padding: 6, background: "var(--rm-white,#fff)", border: "1px solid var(--rm-c200,#e2e8f0)", borderRadius: 16, boxShadow: "0 8px 24px rgba(15,23,42,.10)" }}>
+              <div role="listbox" aria-label="Orte" style={{ padding: 6, background: "var(--rm-white)", border: "1px solid var(--rm-c200)", borderRadius: 16, boxShadow: "0 8px 24px rgba(24,24,27,.10)" }}>
                 {found.map((c) => (
                   <button key={c.name} type="button" role="option" aria-selected="false" className="pl-opt" onClick={() => openSearch(short(c.name))} style={{ display: "grid", gridTemplateColumns: "18px minmax(0,1fr)", alignItems: "center", gap: 8, width: "100%", minHeight: 40, padding: "6px 8px", textAlign: "left", background: "none", border: 0, borderRadius: 10, cursor: "pointer" }}>
                     <IconPin size={16} className="text-slate-500" />
                     <span style={{ minWidth: 0 }}>
-                      <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, fontWeight: 500, color: "var(--rm-c900,#0f172a)" }}>{c.name}</span>
-                      <span style={{ display: "block", fontSize: 12, color: "var(--rm-c500,#64748b)" }}>{c.complete ? "vollständig abgerufen" : "teilweise abgerufen"}</span>
+                      <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, fontWeight: 500, color: "var(--rm-c900)" }}>{c.name}</span>
+                      <span style={{ display: "block", fontSize: 12, color: "var(--rm-c500)" }}>{c.complete ? "vollständig abgerufen" : "teilweise abgerufen"}</span>
                     </span>
                   </button>
                 ))}
-                <style>{`.pl-opt:hover,.pl-opt:focus-visible{background:var(--rm-c100,#f1f5f9) !important;outline:none}`}</style>
               </div>
             )}
           </div>
         </div>
       )}
             <div className="pl-ctawrap" style={{ margin: "28px 0 0" }}>
-              <Link href="/suche" className="ri-btn pl-cta" style={{ borderRadius: 999, border: 0, color: "var(--rm-white,#fff)", background: "var(--rm-c900,#0f172a)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
+              <Link href="/suche" className="ri-btn pl-cta" style={{ borderRadius: 999, border: 0, color: "var(--rm-white)", background: "var(--rm-ac)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
                 {me.user ? "Suche starten →" : "Ohne Anmeldung starten →"}
               </Link>
             </div>
-            <p className="pl-source" style={{ margin: "14px 0 0", maxWidth: 460, fontSize: 14, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>
+            <p className="pl-source" style={{ margin: "14px 0 0", maxWidth: 460, fontSize: 14, lineHeight: 1.5, color: "var(--rm-c500)" }}>
               {`Aus den öffentlichen Ratsinformationssystemen${cov ? ` von ${nf.format(cov.length)} Kommunen und Gebieten` : " der Kommunen"}${allTotal !== null ? `: insgesamt ${nf.format(allTotal)} Berichte aus Räten und Ausschüssen` : ""}.`}
             </p>
           </div>

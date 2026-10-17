@@ -11,6 +11,7 @@ import { RegionMap } from "./RegionMap";
 import { RadarDrill } from "./RadarDrill";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, useOrtInAdresse } from "./Kennzahlen";
 import { Baby, Banknote, Building2, Coins, Dog, Droplets, Factory, HandCoins, House, LayoutGrid, Map as MapIcon, Percent, Route, Ticket, Trash2, Wind, type LucideIcon } from "lucide-react";
+import { num } from "../../lib/format";
 
 /* plenara.X Fakten (GET /api/x?view=fakten, server/integrations/plenara-x-query.mjs): Werte aus den Unterlagen je Gemeinde
    auf der Karte, rot bis grün. Nur Werte ab 90 % gemessener Qualität (MAP_FACTS). Filter: Fakt, Wert (z. B. Grundsteuer B),
@@ -24,9 +25,8 @@ interface Result { regions: Row[]; facts: Fact[] }
 interface Area { /* Übersicht („Alle“): die Werte als Text */ items?: string[]; v: number; name: string; key: string; n: number; sum?: number; last: number; date?: string; prev?: number; prevDate?: string; ags: string }
 
 /* Niedrig grün, hoch rot (Gebühren, Steuern, Preise); beim Jahresergebnis umgekehrt */
-const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
+const GREEN_RED = ["var(--rm-ac)", "var(--color-teal-400)", "var(--color-amber-300)", "var(--rm-no)"];
 const RED_GREEN = [...GREEN_RED].reverse();
-const num = (v: number) => v.toLocaleString("de-DE", { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 });
 const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
 /* Werte eines Fakts, die meisten Gebiete zuerst */

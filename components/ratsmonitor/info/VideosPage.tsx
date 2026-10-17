@@ -68,7 +68,7 @@ function Player({ base, poster, label, onTime, seekRef }: { base: string; poster
           <img src={`/videos/${poster}.jpg`} alt="" decoding="async" className="h-full w-full object-cover" />
           <span className="absolute inset-0 bg-slate-900/25 transition group-hover:bg-slate-900/10" />
           <span className="absolute left-1/2 top-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 shadow-lg transition group-hover:scale-105 max-md:h-14 max-md:w-14">
-            <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="#0f172a" /></svg>
+            <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="var(--rm-c900)" /></svg>
           </span>
         </button>
       )}
@@ -119,7 +119,7 @@ export function VideosPage() {
           <Player base={variant(PITCH, dark)} poster={variant(PITCH, dark)} label="Kurzvideo abspielen: plenara in unter einer Minute" />
           <div>
             <p className="m-0 text-[14px] font-semibold uppercase tracking-wide text-teal-700">Unter 45 Sekunden</p>
-            <h2 className="m-0 mt-1 text-[26px] font-semibold leading-tight max-md:text-[21px] text-slate-900">Was wird in Räten gerade beraten, das Ihr Vorhaben, Ihre Stadt oder Ihre Recherche betrifft?</h2>
+            <h2 className="m-0 mt-1 text-[28px] font-semibold leading-tight max-md:text-[22px] text-slate-900">Was wird in Räten gerade beraten, das Ihr Vorhaben, Ihre Stadt oder Ihre Recherche betrifft?</h2>
             <p className="mb-0 mt-3 text-[16px] text-slate-600">Für Kommunen, Unternehmen, Verbände, Medien und Bürger: Ein Begriff genügt, die Karte zeigt, wo darüber beraten wird, und jede Angabe führt zur Originalunterlage.</p>
           </div>
         </div>

@@ -65,7 +65,7 @@ export function CalendarFeed({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "" : "mt-4"}>
       {!data && !feed.error && <p className="m-0 text-[14px] text-slate-500">Abo wird geladen …</p>}
-      {feed.error && <p role="alert" className="m-0 text-[14px] text-rose-700">{feed.error}</p>}
+      {feed.error && <p role="alert" className="m-0 text-[14px] text-amber-700">{feed.error}</p>}
       {data && (
         <>
           <p className="m-0 text-[14px] text-slate-500" role="status">
@@ -89,11 +89,11 @@ export function CalendarFeed({ compact = false }: { compact?: boolean }) {
             </div>
           )}
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
-            <button type="button" disabled={busy} onClick={() => void create()} className={data.active ? link : "inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white hover:opacity-85 disabled:opacity-50"}>
+            <button type="button" disabled={busy} onClick={() => void create()} className={data.active ? link : "inline-flex h-11 items-center gap-2 rounded-full bg-teal-700 px-5 text-[14px] font-medium text-white hover:opacity-85 disabled:opacity-50"}>
               {data.active ? "Neuen Link erzeugen →" : "Abo-Link erzeugen →"}
             </button>
             {data.active && (
-              <button type="button" disabled={busy} onClick={() => void stop()} className="text-[14px] text-rose-700 underline underline-offset-2 disabled:opacity-50">
+              <button type="button" disabled={busy} onClick={() => void stop()} className="text-[14px] text-amber-700 underline underline-offset-2 disabled:opacity-50">
                 Abo beenden
               </button>
             )}

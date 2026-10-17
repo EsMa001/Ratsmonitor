@@ -1,10 +1,11 @@
+import { STATUS_COLOR } from "../../lib/constants";
 import type { ReactNode } from "react";
+import { nf } from "../../lib/format";
 /** Farben der Entscheidungen: beschlossen Akzentfarbe, vertagt Grau, abgelehnt Schwarz */
-export const DEC_COLORS = { approved: "#0d9488", postponed: "#94a3b8", rejected: "#0f172a" };
+export const DEC_COLORS = { approved: STATUS_COLOR.approved, postponed: STATUS_COLOR.postponed, rejected: STATUS_COLOR.rejected };
 /** differs: Quote weicht deutlich vom Gesamtwert ab (false = im üblichen Rahmen, fehlt = keine Prüfung); recommended: Empfehlungen (Ausschüsse) */
 export interface Cut { id: string; name: string; decided: number; approved: number; rejected: number; postponed: number; rate: number | null; differs?: boolean; recommended?: number }
 export interface Month { m: string; approved: number; rejected: number; postponed: number; rate: number | null }
-const nf = (v: number) => v.toLocaleString("de-DE");
 const mlabel = (m: string) => `${m.slice(5, 7)}/${m.slice(2, 4)}`;
 
 /** Entscheidungen je Monat als gestapelte Flächen mit Linie (beschlossen, vertagt, abgelehnt; keine Säulen im Zeitverlauf),
@@ -32,7 +33,7 @@ export function MonthColumns({ months }: { months: Month[] }) {
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="absolute inset-0 h-full w-full" role="img" aria-label="Entscheidungen je Monat und Beschlussquote">
           {layers.map(([c, o], k) => <polygon key={k} points={band(k)} fill={c} fillOpacity={o} />)}
           {layers.map(([c], k) => <polyline key={k} points={line(k)} fill="none" stroke={c} strokeWidth="1.8" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />)}
-          {pts.length > 1 && <polyline points={pts.join(" ")} fill="none" stroke="#0f172a" strokeWidth="1.5" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />}
+          {pts.length > 1 && <polyline points={pts.join(" ")} fill="none" stroke="var(--rm-c900)" strokeWidth="1.5" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />}
         </svg>
       </div>
       <figcaption className="ml-12 mr-12 mt-1 text-[12px] text-slate-500"><span className="flex justify-between"><span>{mlabel(months[0].m)}</span><span>{mlabel(months[months.length - 1].m)}</span></span><span className="mt-1 block text-center">Flächen: Entscheidungen · gestrichelt: Beschlussquote</span></figcaption>

@@ -14,7 +14,7 @@ const day = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? `${iso.slic
 const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
 /** Stand als kleiner farbiger Punkt vor dem Wort: Farbe nur als Punkt, kein buntes Abzeichen. Ergebnis grün/rot, offen blau,
     unterwegs Petrol, vertagt gelb, zur Kenntnis und ohne Stand grau */
-const DOT: Record<string, string> = { approved: "bg-emerald-500", rejected: "bg-rose-500", announced: "bg-sky-500", consulting: "bg-teal-600", recommended: "bg-teal-600", postponed: "bg-amber-500", info: "bg-slate-400", unknown: "bg-slate-300" };
+const DOT: Record<string, string> = { approved: "bg-sky-900", rejected: "bg-amber-700", announced: "bg-slate-300", consulting: "bg-sky-300", recommended: "bg-sky-500", postponed: "bg-slate-400", info: "bg-slate-400", unknown: "bg-slate-300" };
 export const StatusDot = ({ status }: { status: string }) => (DOT[status] ? <span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${DOT[status]}`} /> : null);
 
 /** base: Adresse der Auswertung mit Listenmodus (by=…), etwa /api/x?list=1. limit: nur so viele Einträge zeigen und statt

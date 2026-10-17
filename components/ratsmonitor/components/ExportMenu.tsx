@@ -46,7 +46,7 @@ export function ExportMenu({ options, note, onExport, disabled = false, title = 
           ))}
         </div>
         {note && <p className="m-0 mt-2 text-[12px] text-slate-500">{note}</p>}
-        <button type="button" disabled={busy} onClick={run} className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-slate-900 text-[14px] font-medium text-white hover:opacity-85 disabled:opacity-50">
+        <button type="button" disabled={busy} onClick={run} className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-teal-700 text-[14px] font-medium text-white hover:opacity-85 disabled:opacity-50">
           {busy ? "Wird erstellt …" : "Exportieren →"}
         </button>
       </PopoverContent>

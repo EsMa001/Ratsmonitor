@@ -25,7 +25,7 @@ const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart
 const WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 const RADII = [0, 10, 25, 50];
 /* Eine Farbe je eigenem Gebiet, damit Termine verschiedener Orte unterscheidbar sind */
-const AREA_COLORS = ["#0d9488", "#6366f1", "#f59e0b", "#e11d48", "#0ea5e9", "#8b5cf6", "#65a30d", "#ea580c"];
+const AREA_COLORS = ["var(--rm-fill)", "var(--rm-link)", "var(--rm-no)", "var(--rm-ok2)", "var(--rm-c500)", "var(--rm-map2)", "var(--rm-warn)", "var(--rm-ok)"];
 
 /** Kalender: alle Sitzungstermine in den eigenen Gebieten (Orte, optional mit Umkreis), schlicht als Monatsansicht */
 export function KalenderPage() {
@@ -255,7 +255,7 @@ export function KalenderPage() {
               ))}
             </ul>
             <div className="relative mt-4 flex flex-wrap items-center gap-2">
-              <input value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort oder Kreis hinzufügen …" aria-label="Ort oder Kreis hinzufügen" className="h-11 min-w-0 flex-1 basis-[220px] rounded-xl bg-[#f8f9fa] px-4 text-[16px] outline-none placeholder:text-slate-400 focus:bg-white focus:shadow-focus" />
+              <input value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort oder Kreis hinzufügen …" aria-label="Ort oder Kreis hinzufügen" className="h-11 min-w-0 flex-1 basis-[220px] rounded-xl bg-slate-50 px-4 text-[16px] outline-none placeholder:text-slate-400 focus:bg-white focus:shadow-focus" />
               <FilterSelect
                 id="k-umkreis"
                 label="Umkreis"

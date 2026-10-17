@@ -1,6 +1,6 @@
 import { LOGOS, type LogoId } from "./brands";
 
-const TEAL = "#0d9488";
+const TEAL = "var(--color-teal-500)";
 
 /* Marken-Zeichen für den Browser-Tab, aus den Logos in components/Brand.tsx abgeleitet (Quadrat, transparenter Grund) */
 const PLENARA_P: [number, number, number, number][] = [

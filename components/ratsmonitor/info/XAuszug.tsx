@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { RegionMap } from "../pages/analytics/RegionMap";
+import { pctText } from "../lib/format";
 
 /* plenara.X auf den Anwenderseiten: fest gewählte Auszüge aus /api/x/teaser (server/integrations/plenara-x-teaser.mjs), nur die
    Zusammenfassung; Listen, Filter und Blättern bleiben im Werkzeug (Tarif Enterprise). Erster Auszug groß mit Karte, weitere klein. */
@@ -18,7 +19,7 @@ type Auszug = SignalAuszug | WertAuszug | NewsAuszug | TrendAuszug | NetzAuszug 
 const n = (v: number) => v.toLocaleString("de-DE");
 const MON = ["JAN", "FEB", "MÄR", "APR", "MAI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEZ"];
 /* Stände als Balken: Petrol in Abstufungen (Verfahrensschritte sind keine Zeitreihe) */
-const SHADES = ["#0f766e", "#0d9488", "#14b8a6", "#5eead4", "#99f6e4", "#ccfbf1"];
+const SHADES = ["var(--rm-ac)", "var(--rm-fill)", "var(--color-teal-400)", "var(--color-teal-300)", "var(--color-teal-200)", "var(--color-teal-100)"];
 
 function useAuszug(id: string) {
   const [res, setRes] = useState<{ id: string; data: Auszug | null } | null>(null);
@@ -86,12 +87,12 @@ function SignalBlock({ a, label }: { a: SignalAuszug; label: string }) {
         )}
         <Link href={`/analytics/signale?signal=${a.signal}`} className="mt-4 inline-block text-[16px] text-teal-700 hover:underline">Alle Vorhaben in plenara.X Signale →</Link>
       </div>
-      <RegionMap level="city" levels={{}} dots={dotsOf(a.places)} colors={["#0d9488"]} picked="" onPick={() => {}} legend={["1 Punkt = 1 Vorhaben"]} label={`Karte: ${label} je Gemeinde`} />
+      <RegionMap level="city" levels={{}} dots={dotsOf(a.places)} colors={["var(--rm-fill)"]} picked="" onPick={() => {}} legend={["1 Punkt = 1 Vorhaben"]} label={`Karte: ${label} je Gemeinde`} />
     </div>
   );
 }
 
-const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-DE", { maximumFractionDigits: 1 })} %`);
+const pct = (v: number | null) => pctText(v, 1);
 const Gross = ({ zahl, text }: { zahl: string; text: React.ReactNode }) => (
   <p className="m-0 flex flex-wrap items-baseline gap-x-3"><span className="text-[44px] font-semibold leading-none text-teal-700 tabular-nums">{zahl}</span><span className="text-[18px] text-slate-900">{text}</span></p>
 );

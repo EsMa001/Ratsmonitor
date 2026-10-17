@@ -51,7 +51,7 @@ export function DiffusionChart({ firsts, series, day, onPick, playing, onToggle 
   return (
     <figure className="m-0">
       <div className="mb-3 flex items-center gap-3">
-        <button type="button" onClick={onToggle} aria-label={playing ? "Zeitraffer anhalten" : "Zeitraffer abspielen"} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-900 text-white transition-opacity hover:opacity-85">
+        <button type="button" onClick={onToggle} aria-label={playing ? "Zeitraffer anhalten" : "Zeitraffer abspielen"} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-teal-700 text-white transition-opacity hover:opacity-85">
           {playing ? <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.5" height="12" rx="1" fill="currentColor" /><rect x="8.5" y="1" width="3.5" height="12" rx="1" fill="currentColor" /></svg> : <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor" /></svg>}
         </button>
         <span className="text-[16px] font-medium tabular-nums">{fmt(cur)}</span>
@@ -64,11 +64,11 @@ export function DiffusionChart({ firsts, series, day, onPick, playing, onToggle 
           </div>
         ))}
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="absolute inset-0 h-full w-full cursor-ew-resize touch-pan-y select-none" role="img" aria-label="Anteil der erreichten Gebiete im Zeitverlauf" onPointerDown={(e) => { drag.current = true; e.currentTarget.setPointerCapture(e.pointerId); onPick(dayAt(e)); }} onPointerMove={(e) => { if (drag.current) onPick(dayAt(e)); }} onPointerUp={(e) => { drag.current = false; e.currentTarget.releasePointerCapture(e.pointerId); }} onPointerCancel={() => { drag.current = false; }}>
-          <defs><linearGradient id="dc-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0d9488" stopOpacity=".22" /><stop offset="1" stopColor="#0d9488" stopOpacity="0" /></linearGradient></defs>
-          {series.map((s) => { const h = (s.added / maxAdd) * H * 0.4; return <rect key={s.month} x={x(toDay(s.month + "-15")) - barW / 2} y={H - 4 - h} width={barW} height={h} fill="#99d6cf" opacity=".55" rx="2" />; })}
+          <defs><linearGradient id="dc-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--rm-fill)" stopOpacity=".22" /><stop offset="1" stopColor="var(--rm-fill)" stopOpacity="0" /></linearGradient></defs>
+          {series.map((s) => { const h = (s.added / maxAdd) * H * 0.4; return <rect key={s.month} x={x(toDay(s.month + "-15")) - barW / 2} y={H - 4 - h} width={barW} height={h} fill="var(--color-teal-200)" opacity=".55" rx="2" />; })}
           <path d={`${line} L${W},${H} L0,${H} Z`} fill="url(#dc-fill)" />
-          <path d={line} fill="none" stroke="#0d9488" strokeWidth="2.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-          <line x1={x(cur)} x2={x(cur)} y1="0" y2={H} stroke="#0f172a" strokeWidth="1" strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />
+          <path d={line} fill="none" stroke="var(--rm-fill)" strokeWidth="2.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <line x1={x(cur)} x2={x(cur)} y1="0" y2={H} stroke="var(--rm-c900)" strokeWidth="1" strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />
         </svg>
         <span className="pointer-events-none absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-teal-600 shadow-md ring-4 ring-teal-600/20" style={{ left: `${left}%`, top: `${top}%` }} />
       </div>

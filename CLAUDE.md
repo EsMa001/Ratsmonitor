@@ -2,6 +2,7 @@
 
 - Frontend-Arbeiten (Oberfläche, Texte, Stile): zuerst `components/ratsmonitor/FRONTEND.md` lesen. Dort stehen Dateikarte, Designregeln und Prüfbefehle.
 - Bei reinen Frontend-Aufgaben das Backend nicht ändern: `server/`, `shared/`, `app/api/`, `drizzle/`, `tests/`.
+- **Farbschema „Petrol klar“ ist verbindlich** (`components/ratsmonitor/FRONTEND.md`, Block „Farbkonzept“ in `app/ratsmonitor.css`, Übersicht `docs/farbschema-petrol-klar-2026-10-17.pdf`): nur Grau, Petrol, Dunkelblau, Orange-Braun plus Weiß/Schwarz, im Code nur die Variablen bzw. Tailwind slate/teal/sky/amber. Keine weiteren Farben, Töne oder Hex-Werte, auch nicht für Admin, Diagramme oder Sonderfälle, außer der Nutzer weist ausdrücklich darauf hin und stimmt zu.
 
 ## KI-Inhalte aus gespeicherten Quellen
 

@@ -62,14 +62,14 @@ function Scatter({level,examples,provisional}:{level:Level;examples:Example[];pr
  const line=(e:number)=>clampY(Math.log10(at(m,10**e))),[one]=UNIT[level.id];
  return <figure><figcaption>{level.name}: {n(own.length)} Beispiele <Tag kind="counted"/>{open.length>0&&<> + {n(open.length)} mit Teilstand <Tag kind="assumed">hochgerechnet</Tag></>}</figcaption>
   <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${level.name}: Berichte pro Jahr (senkrecht) gegen Einwohner (waagerecht) für ${own.length} Beispiele, beide Achsen logarithmisch. Die Werte stehen in der Liste der Beispielgebiete.`}>
-   {decades(y0,y1).map(e=><g key={'y'+e}><line x1={L} x2={W-R} y1={y(e)} y2={y(e)} stroke={e===y0?'#cbd5e1':'#e2e8f0'}/><text x={L-8} y={y(e)+4} textAnchor="end" fontSize="12" fill="#64748b">{label(e)}</text></g>)}
-   {decades(x0,x1).map(e=><g key={'x'+e}><line x1={x(e)} x2={x(e)} y1={T} y2={H-B} stroke={e===x0?'#cbd5e1':'#e2e8f0'}/><text x={x(e)} y={H-B+17} textAnchor="middle" fontSize="12" fill="#64748b">{label(e)}</text></g>)}
-   <text x={(L+W-R)/2} y={H-10} textAnchor="middle" fontSize="14" fill="#64748b">Einwohner</text>
-   <text transform={`translate(16 ${(T+H-B)/2}) rotate(-90)`} textAnchor="middle" fontSize="14" fill="#64748b">Berichte pro Jahr</text>
-   {open.map(e=>{const title=`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte in ${n(e.weeks)} Wochen, aufs Jahr hochgerechnet rund ${round(e.annual)}. Nicht in der Rechnung: ${e.reason}.`,cx=x(Math.log10(e.population)),cy=y(Math.log10(e.annual));return e.origin==='stored'?<circle key={e.id} cx={cx} cy={cy} r="3.5" fill="#fff" fillOpacity=".6" stroke="#0d9488" strokeOpacity=".55" strokeWidth="1.2"><title>{title}</title></circle>:<rect key={e.id} x={cx-3.2} y={cy-3.2} width="6.4" height="6.4" fill="#fff" fillOpacity=".6" stroke="#0f172a" strokeOpacity=".6" strokeWidth="1.2"><title>{title}</title></rect>;})}
-   <line x1={x(x0)} y1={y(line(x0))} x2={x(x1)} y2={y(line(x1))} stroke="#94a3b8" strokeWidth="2"/>
-   {own.map(e=>e.origin==='stored'?<circle key={e.id} cx={x(Math.log10(e.population))} cy={y(Math.log10(e.reports))} r="4.5" fill="#0d9488" fillOpacity=".75" stroke="#fff" strokeWidth="1"><title>{`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte`}</title></circle>
-    :<rect key={e.id} x={x(Math.log10(e.population))-4} y={y(Math.log10(e.reports))-4} width="8" height="8" fill="#0f172a" fillOpacity=".8" stroke="#fff" strokeWidth="1"><title>{`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte`}</title></rect>)}
+   {decades(y0,y1).map(e=><g key={'y'+e}><line x1={L} x2={W-R} y1={y(e)} y2={y(e)} stroke={e===y0?'var(--rm-c300)':'var(--rm-c200)'}/><text x={L-8} y={y(e)+4} textAnchor="end" fontSize="12" fill="var(--rm-c500)">{label(e)}</text></g>)}
+   {decades(x0,x1).map(e=><g key={'x'+e}><line x1={x(e)} x2={x(e)} y1={T} y2={H-B} stroke={e===x0?'var(--rm-c300)':'var(--rm-c200)'}/><text x={x(e)} y={H-B+17} textAnchor="middle" fontSize="12" fill="var(--rm-c500)">{label(e)}</text></g>)}
+   <text x={(L+W-R)/2} y={H-10} textAnchor="middle" fontSize="14" fill="var(--rm-c500)">Einwohner</text>
+   <text transform={`translate(16 ${(T+H-B)/2}) rotate(-90)`} textAnchor="middle" fontSize="14" fill="var(--rm-c500)">Berichte pro Jahr</text>
+   {open.map(e=>{const title=`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte in ${n(e.weeks)} Wochen, aufs Jahr hochgerechnet rund ${round(e.annual)}. Nicht in der Rechnung: ${e.reason}.`,cx=x(Math.log10(e.population)),cy=y(Math.log10(e.annual));return e.origin==='stored'?<circle key={e.id} cx={cx} cy={cy} r="3.5" fill="#fff" fillOpacity=".6" stroke="var(--rm-fill)" strokeOpacity=".55" strokeWidth="1.2"><title>{title}</title></circle>:<rect key={e.id} x={cx-3.2} y={cy-3.2} width="6.4" height="6.4" fill="#fff" fillOpacity=".6" stroke="var(--rm-c900)" strokeOpacity=".6" strokeWidth="1.2"><title>{title}</title></rect>;})}
+   <line x1={x(x0)} y1={y(line(x0))} x2={x(x1)} y2={y(line(x1))} stroke="var(--rm-c400)" strokeWidth="2"/>
+   {own.map(e=>e.origin==='stored'?<circle key={e.id} cx={x(Math.log10(e.population))} cy={y(Math.log10(e.reports))} r="4.5" fill="var(--rm-fill)" fillOpacity=".75" stroke="var(--rm-white)" strokeWidth="1"><title>{`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte`}</title></circle>
+    :<rect key={e.id} x={x(Math.log10(e.population))-4} y={y(Math.log10(e.reports))-4} width="8" height="8" fill="var(--rm-c900)" fillOpacity=".8" stroke="var(--rm-white)" strokeWidth="1"><title>{`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte`}</title></rect>)}
   </svg>
   <p className="admin-estimate-explain">Jeder Punkt ist ein Gebiet mit einem gezählten Jahr: je weiter rechts, desto mehr Einwohner; je weiter oben, desto mehr Berichte. Die Linie ist das Modell und beruht nur auf den gefüllten Punkten. {open.length>0?'Hohle Punkte sind Gebiete mit Berichten, aber ohne vollständiges Jahr: Ihr Jahreswert ist aus den vorhandenen Wochen hochgerechnet und geht nicht in die Rechnung ein. ':''}{m.slope<.1?`Sie verläuft fast waagerecht: Ein ${one} hat unabhängig von seiner Größe ähnlich viele Berichte.`:`Sie steigt: Bei doppelter Einwohnerzahl erwartet das Modell ${signed(2**m.slope-1)} Berichte.`}</p>
  </figure>;
@@ -79,11 +79,11 @@ function Bars({values,labels,ticks,unit,reference,xTitle,yTitle}:{values:number[
  const W=880,H=250,L=66,R=8,T=12,B=52,max=Math.max(.5,Math.ceil(Math.max(...values,reference||0)*2)/2),step=(W-L-R)/values.length,y=(v:number)=>T+(H-T-B)*(1-v/max);
  const marks=Array.from({length:Math.round(max*2)+1},(_,i)=>i/2);
  return <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={unit}>
-  {marks.map(v=><g key={v}><line x1={L} x2={W-R} y1={y(v)} y2={y(v)} stroke={v?'#e2e8f0':'#cbd5e1'}/><text x={L-8} y={y(v)+4} textAnchor="end" fontSize="12" fill="#64748b">{n(v,1)}</text></g>)}
-  {values.map((v,i)=>{const tick=ticks(i);return <g key={i}><rect x={L+i*step+Math.min(2,step*.12)} y={y(v)} width={Math.max(1,step-Math.min(4,step*.24))} height={Math.max(0,H-B-y(v))} fill="#0d9488"><title>{labels(i)}</title></rect>{tick&&<><line x1={L+i*step} x2={L+i*step} y1={H-B} y2={H-B+5} stroke="#cbd5e1"/><text x={L+i*step+3} y={H-B+18} fontSize="12" fill="#64748b">{tick}</text></>}</g>;})}
-  {reference!==undefined&&<><line x1={L} x2={W-R} y1={y(reference)} y2={y(reference)} stroke="#94a3b8" strokeDasharray="5 4"/></>}
-  <text x={(L+W-R)/2} y={H-8} textAnchor="middle" fontSize="14" fill="#64748b">{xTitle}</text>
-  <text transform={`translate(16 ${(T+H-B)/2}) rotate(-90)`} textAnchor="middle" fontSize="14" fill="#64748b">{yTitle}</text>
+  {marks.map(v=><g key={v}><line x1={L} x2={W-R} y1={y(v)} y2={y(v)} stroke={v?'var(--rm-c200)':'var(--rm-c300)'}/><text x={L-8} y={y(v)+4} textAnchor="end" fontSize="12" fill="var(--rm-c500)">{n(v,1)}</text></g>)}
+  {values.map((v,i)=>{const tick=ticks(i);return <g key={i}><rect x={L+i*step+Math.min(2,step*.12)} y={y(v)} width={Math.max(1,step-Math.min(4,step*.24))} height={Math.max(0,H-B-y(v))} fill="var(--rm-fill)"><title>{labels(i)}</title></rect>{tick&&<><line x1={L+i*step} x2={L+i*step} y1={H-B} y2={H-B+5} stroke="var(--rm-c300)"/><text x={L+i*step+3} y={H-B+18} fontSize="12" fill="var(--rm-c500)">{tick}</text></>}</g>;})}
+  {reference!==undefined&&<><line x1={L} x2={W-R} y1={y(reference)} y2={y(reference)} stroke="var(--rm-c400)" strokeDasharray="5 4"/></>}
+  <text x={(L+W-R)/2} y={H-8} textAnchor="middle" fontSize="14" fill="var(--rm-c500)">{xTitle}</text>
+  <text transform={`translate(16 ${(T+H-B)/2}) rotate(-90)`} textAnchor="middle" fontSize="14" fill="var(--rm-c500)">{yTitle}</text>
  </svg>;
 }
 const Share=({value}:{value:number})=><span className="admin-estimate-share"><span style={{width:Math.max(0,Math.min(100,100*value))+'%'}}/></span>;
