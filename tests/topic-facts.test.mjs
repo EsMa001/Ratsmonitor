@@ -309,3 +309,12 @@ test('Signale Ausschreibung und Wasser: Randfälle aus Stichprobe m1', async () 
   assert.equal(m.waterSignalOf('Einleitung des Vergabeverfahrens zur Durchführung von Mäh-, Mulch und Rückschnittarbeiten Kanal'), null);
   assert.ok(m.waterSignalOf('Kanalsanierung in Schwarzenbach hier: Vergabe des Planungsauftrages'));
 });
+
+test('Signal Straßen: Randfälle aus Stichprobe q1', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.ok(m.streetSignalOf('Sanierung der Kirchstraße, Tairnbach (Sachstandsbericht)'));
+  assert.ok(m.streetSignalOf('Überplanmäßige Ausgabe L100 Friedrichstraße/Amtsfeldstraße'));
+  assert.ok(m.streetSignalOf('Beratung über die Bankettbefestigung an der Kreisstraße K45'));
+  assert.equal(m.streetSignalOf('Autonomes Level-4-Fahrsystem von ZF, Straße'), null);
+  assert.equal(m.streetSignalOf('Vorbescheid zum Neubau eines Bungalows, Nähe Langenbrucker Straße'), null);
+});
