@@ -496,6 +496,13 @@ ist, hat Gast-Rechte). Kontojob, Pfad- und Stopp-Einheiten aktiv, Sicherung mit 
 admin) angelegt; Nico fehlt noch. Sicherungen vor dem Umbau: `ratsmonitor.env.bak-vor-konten-20261015-1801`,
 `/etc/caddy/Caddyfile.bak-vor-konten-20261015-1801`, `/root/units-bak-vor-konten-20261015-1801/`.
 
+**Domain `plenara.de` (seit 17.10.2026):** bei IONOS registriert (dazu `parlamo.de`, `quorumo.de`, unbenutzt). DNS bei IONOS:
+A `@` → `187.7.72.52` (die IONOS-Parkseite „Default Site“ samt AAAA ist abgeschaltet), A `www` → `187.7.72.52`; MX, SPF,
+DKIM, DMARC und `autodiscover` bleiben bei IONOS (Postfächer möglich). Noch kein AAAA (IPv6 der Firewall ungeprüft). Caddy:
+Block `plenara.de` an die Fassung von Schritt 0 angehängt (Let's-Encrypt-Zertifikat, Passwort wie bei sslip, HSTS, `noindex`),
+`www` als Weiterleitung, sobald sein DNS-Eintrag steht. `SITE_URL=https://plenara.de`; sslip läuft parallel weiter.
+Sicherungen: `Caddyfile.bak-vor-domain-*`, `ratsmonitor.env.bak-vor-domain-*`.
+
 **Anmelden ohne Mailanbieter:** Mit `MAIL_TRANSPORT=log` bietet die Anmeldeseite keine Anmeldung per Mail an. Admins
 melden sich mit `LOGIN_TOTP=1` (in `ratsmonitor.env`) über E-Mail-Adresse und Code aus der Authenticator-App an
 (Konzept, Nachtrag 15.10. abends). Den zweiten Faktor einrichten: im Tunnel unter `/admin` oder
