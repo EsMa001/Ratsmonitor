@@ -31,6 +31,8 @@ Erster Aufruf Startseite: ≈ 2,3 MB → ≈ 0,6 MB; mit Karte (Suche) ≈ 4,7 M
 
 Komprimiert nur 2:1, also viele Koordinaten-Nachkommastellen. Optionen: Koordinaten auf 3–4 Stellen runden bzw. TopoJSON (Datei ≈ ⅓ bis ¼), erst laden, wenn die Karte sichtbar ist. Cache ist in Ordnung (1 Tag + stale-while-revalidate).
 
+**Geprüft und verworfen (17.10.2026):** Die Datei ist schon kompakt: 35.118 Bögen mit 284.250 Punkten, Koordinaten auf 10 m gerastert und als Delta-Zeichenketten abgelegt (`decodeArc`), die Gemeinden als Bogenverweise. Eine Vereinfachung mit Douglas-Peucker bringt selbst bei 30 m (1,8 px bei maximalem Zoom, 0,6 px je 10 m) unter 0,1 % weniger Punkte, die Geometrie ist bereits auf dieser Stufe vereinfacht. Nach Kompression wiegen die Bögen 763 KB, die Gemeindeverweise 327 KB (davon 177 KB Bogenlisten, mit anderer Kodierung vielleicht 100 KB weniger, dafür Änderungen am Leser). Keine Verkleinerung, die der Nutzer nicht merken würde; die Kompression aus Befund 1 (2,4 MB → 1,1 MB) bleibt der Hebel. Die Startseite lädt die Datei weiter im Leerlauf (DataProvider), damit die Suche sofort Orte erkennt.
+
 ## Befund 3: regions-Chunk 528 KB (139 KB gz) auf der Artikelseite
 
 Gebietskatalog als JS-Bündel; prüfen, ob die Artikelseite ihn wirklich braucht oder nur wenige Felder.
