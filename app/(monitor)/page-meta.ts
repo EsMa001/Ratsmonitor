@@ -10,3 +10,8 @@ export function pageMeta(name: string, description: string, image = '/og.png'): 
     twitter: { card: 'summary_large_image', title, description, images: [image] },
   };
 }
+
+/* Seiten hinter der Anmeldung: eigener Titel, aber nicht für Suchmaschinen */
+export function privateMeta(name: string): Metadata {
+  return { title: `${name} · plenara`, robots: { index: false, follow: false } };
+}
