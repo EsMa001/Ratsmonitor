@@ -68,3 +68,11 @@ Neu denkbar (jeweils erst Regel bauen und messen):
 - Fakt `fee_rate` (Wasser-/Abwassergebühr): Qualität etwa 95 %, Abdeckung etwa 90 % (geschätzt, Stichproben v1 und c1). Damit erfüllt er die Bedingung für einen Fakt.
 - Neue Signalregeln gemessen, aber noch nicht als Kategorie im Frontend: Pflege und Gesundheit (`careOf`, 76 %), Einzelhandel und Nahversorgung (`retailOf`, 82 %).
 - Schrittwechsel, Fakt-Änderung, neuer Standort und große Vergabe sind noch nicht gebaut.
+
+
+## Korrektur 17.10.2026: Abdeckung bei Fakten
+
+- **Abdeckung eines Fakts = Anteil der Gemeinden, für die wir mindestens einen Wert haben** (so zählt die Admin-Seite, Lauf `rule-texts`, Stand 17.10.: 8.039 Gemeinden mit Sachvorgängen). Eine frühere Schätzung in diesem Dokument nach Berichten war falsch gedeutet.
+- **Signale** zählen nach Qualität und Trefferquote. **Fakten** nehmen wir nur auf, wenn wir sie für viele Gemeinden haben und die Werte stimmen (Qualität mindestens 90 %).
+- Stand je Fakt (Gemeinden mit Wert): Zuschüsse 40 %, Jahresergebnis 36 %, Kita 20 %, Hebesatz 15 %, Wassergebühr 11 %, Haushalt 10 %, Hundesteuer 7 %, Bauplatzpreis 1 %, Gewerbegrundstückspreis 0,5 %, Zweitwohnungs- und Vergnügungssteuer unter 1 %, Abfallgebühr 0 %. Kein Zahlenfakt erreicht das Ziel von 80 %.
+- Hebel für mehr Gemeinden: Quellen, in denen der Wert für jede Gemeinde steht (Haushaltssatzung für Hebesätze, Gebühren- und Hundesteuersatzungen), nicht nur Beschlussvorlagen lesen.
