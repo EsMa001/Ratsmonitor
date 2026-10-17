@@ -106,7 +106,10 @@ export function XTrendsPage() {
   const sp = spread.url === spreadUrl ? spread.data : null;
   const byKey = useMemo(() => new Map((sp?.terms ?? []).map((t) => [t.key, t])), [sp]);
 
+  /* Sortierung „Ausbreitung“: solange die Ausbreitung noch rechnet, steht die Liste schon vorläufig nach Anstieg da (die Spalte
+     „Gebiete“ bleibt leer); sobald sie da ist, wird einmal umsortiert. Vorher wartete die Seite auf beide Aufrufe (kalt 6,5 s). */
   const rows: Row[] = !lists ? [] : sort === "auf" ? lists.up : sort === "ab" ? lists.down
+    : !sp ? [...lists.up, ...lists.down, ...lists.more].sort((a, b) => b.z - a.z)
     : [...lists.up, ...lists.down, ...lists.more].filter((t) => (byKey.get(t.key)?.added ?? 0) >= 3).sort((a, b) => byKey.get(b.key)!.added - byKey.get(a.key)!.added || b.z - a.z);
   const [limit, setLimit] = useState({ for: "", n: 10 });
   const shown = limit.for === url + sort ? limit.n : 10;

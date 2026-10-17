@@ -67,6 +67,8 @@ Zusätzlich auf jeder X-Seite: `/api/me`, `/api/me/articles`, `/api/me/searches`
 
 Erst `trends` (1,8 s), erst mit dessen Ergebnis `part=spread` mit den gefundenen Schlüsseln (1,9 s, 230 KB). Hebel: Ausbreitung erst auf Anforderung laden (Klick/Sichtbarkeit) oder die Spread-Rechnung in den ersten Aufruf ziehen; Schlüsselliste kürzen.
 
+**Geprüft und entschieden (17.10.2026):** Die Ausbreitung braucht die Begriffe aus der Trend-Rechnung, die Kette ist zwingend. Die Ausbreitung ist ein Durchlauf über alle 675.000 Vorgänge (85 MB Begriffstext, 1,5 s, unabhängig von der Zahl der Begriffe; SQL-Vorfilter mit 40 Begriffen 2,4 s, also langsamer); schneller nur mit Vorberechnung, die ausgeschlossen ist. Umgesetzt (Zweig nico_eff, `XTrendsPage.tsx`): bei Sortierung „Ausbreitung“ steht die Liste schon nach dem ersten Aufruf vorläufig nach Anstieg da, die Spalte „Gebiete“ füllt sich mit dem zweiten Aufruf und sortiert einmal um. Zahlen unverändert; erster Inhalt kalt nach ≈ 2 s statt 6,5 s.
+
 ## Befund 7: Eine langsame X-Abfrage blockiert den ganzen Server
 
 Der Node-Server nutzt `node:sqlite` `DatabaseSync` (synchron, ein Prozess). Während news (2,5 s) oder trends (1,9 s) rechnen, wartet jede andere Anfrage: Seitengerüste, die sonst 60 ms brauchen, hatten TTFB 1,7 s (Gremien) und 2,4 s (Trends), per curl danach wieder 60 ms. Das trifft alle Nutzer gleichzeitig, auch die Suche. Hebel: die teuren X-Rechnungen (news, trends, network, fraktionen, fakten) in einen Worker-Thread mit eigener Verbindung verlegen (kein neues Datenmodell, keine Vorberechnung); oder die Abfragen selbst beschleunigen.
