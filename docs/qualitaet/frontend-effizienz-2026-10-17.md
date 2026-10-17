@@ -47,6 +47,8 @@ Beim Öffnen von `/suche?q=…` geht derselbe Aufruf dreimal raus (einer abgebro
 
 search, facets, coverage, startseite-trends laufen parallel, alle ≈ 510–530 ms; coverage liefert 700 KB roh. Erst nach Hydration (≈ 950 ms) gestartet, Inhalt steht bei ≈ 1,5 s. Hebel: Aufrufe früher starten (Preload-Link oder serverseitig), coverage schlanker.
 
+**Nachgemessen und umgesetzt (17.10.2026, Zweig nico_eff):** Auf dem Server dauern die vier Aufrufe einzeln 60 bis 190 ms und parallel 60 bis 80 ms; die 520 ms im Browser waren Wartezeit hinter dem Seitenaufbau, und je nach Cache-Zustand starteten die Aufrufe erst nach 0,6 bis 2,2 s. Jetzt schickt `app/(monitor)/page.tsx` die drei undatierten Adressen (Zähler, Abdeckung, Startseiten-Trends) als `<link rel="preload" as="fetch">` mit dem HTML; lokal geprüft: Start nach 66 ms, kein doppelter Abruf. Die datierte Zählung der letzten 30 Tage bleibt beim Seitenaufbau, weil ein vorgerendertes HTML kein Tagesdatum kennt.
+
 
 ## plenara.X (angemeldet als Enterprise, ohne Filter, erster Aufruf = kalter Server-Zwischenspeicher)
 

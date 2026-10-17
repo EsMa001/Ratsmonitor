@@ -281,7 +281,8 @@ export function StartseitePage() {
   const [place, setPlace] = useState("");
   const today = todayLocal();
 
-  /* Artikelzahl und Abdeckungsliste (für „Ist mein Ort dabei?“) */
+  /* Artikelzahl und Abdeckungsliste (für „Ist mein Ort dabei?“). Die drei undatierten Adressen stehen auch als Preload in
+     app/(monitor)/page.tsx; bei Änderungen beide Stellen anpassen. */
   useEffect(() => {
     const ctl = new AbortController();
     /* Zahl der Einträge der letzten 30 Tage (nicht der Gesamtbestand) */
