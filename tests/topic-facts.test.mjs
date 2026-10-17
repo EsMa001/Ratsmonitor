@@ -260,3 +260,13 @@ test('Haushalt, Zweitwohnungsteuer und Vergnügungssteuer: neuer Wert, keine Ver
  assert.deepEqual(amusementTaxOf('Vergnügungssteuersatzung','Anpassung beim Spieleinsatz von 3,5 % auf 5,0 % vor.'),{value:'vom Spieleinsatz',rate:'5'});
  assert.deepEqual(amusementTaxOf('Vergnügungssteuer','Der Steuersatz wurde von 23% netto auf 25 % netto erhöht.'),{value:'vom Einspielergebnis',rate:'25'});
 });
+
+test('Signale Wind und Solar: Randfälle (17.10.2026)', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.windStepOf('Antrag auf Baugenehmigung; Bauvorhaben: Errichtung und Betrieb einer Windenergieanlage (Repowering)'), 'Genehmigungsantrag (BImSchG)');
+  assert.equal(m.windStepOf('KIWI Bürgerwind Windkraft Hamm GmbH, Gremienbesetzung'), null);
+  assert.equal(m.windStepOf('Tempo 30 ab Sägewerk bis Bushaltestelle „Am Windrad“'), null);
+  assert.equal(m.windStepOf('�nderung Fl�chennutzungsplan im Bereich "Windpark WK 101"'), 'Bauleitplanung');
+  assert.equal(m.solarOf('Gewinn- u. Verlustrechnung 2024 der Versorgungsbetriebe (Wasser u. PV-Anlage)'), null);
+  assert.equal(m.solarOf('Photovoltaik Kindergarten a) Neubau b) Bestand'), 'Dach-PV kommunal');
+});
