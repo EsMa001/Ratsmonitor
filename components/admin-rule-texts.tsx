@@ -37,7 +37,9 @@ const QT=QUALITY.target;
 /* Messwert als Balken mit Zielmarke; unter dem Ziel orange */
 /* Signale: offen erst, wenn alles gemessen ist: Qualität, Art und Stand ab 90 %, Trefferquote ab 80 % */
 const SIGNAL_RECALL=80;
-const GROUP_ORDER=['signals','facts','read','other'];
+const GROUP_ORDER=['read','other','signals','facts'];
+const TABS:[string,string][]=[['uebersicht','Übersicht und Grundregeln'],['signale','Signale'],['fakten','Fakten'],['lauf','Lauf und Zahlen']];
+const TAB_OF:Record<string,string>={read:'uebersicht',other:'uebersicht',signals:'signale',facts:'fakten'};
 /* Fakten: Anteil der Gemeinden mit mindestens einem Wert, ab dem ein Fakt gilt (Entscheidung 17.10.2026) */
 const FACT_PLACES=10;
 const signalGate=(r:QualityRow)=>{const v=[r.quality,r.recall,r.art,r.phase];return v.some(x=>x===null||x===undefined)?'unmeasured':[r.quality,r.art,r.phase].every(x=>(x as number)>=QT.quality)&&(r.recall as number)>=SIGNAL_RECALL?'open':'closed';};
@@ -137,16 +139,19 @@ export function AdminRuleTexts(){
  const themeRows=xs?.themes?Object.entries(xs.themes).sort((a,b)=>b[1]-a[1]):[];
  const themeTotal=themeRows.reduce((a,[,v])=>a+v,0);
  const subsOf=(theme:string)=>SUBTOPICS.filter((u:{theme:string})=>u.theme===theme).map((u:{id:string;name:string})=>({name:u.name,n:xs?.subs?.[u.id]||0})).sort((a:{n:number},b:{n:number})=>b.n-a.n);
+ const [tab,setTab]=useState<'uebersicht'|'signale'|'fakten'|'lauf'>('uebersicht');
  const sigTable=(QUALITY.groups.find(g=>g.id==='signals')?.rows??[]) as QualityRow[];
  const factTable=FACT_ROWS.filter(r=>factArt(r.id)==='vergleich');
  return <>
   <AdminPageHead page="regeltexte"><StandLine stand={data?.stand} busy={busy} action="Aktualisieren" onAction={load}/></AdminPageHead>
   {error&&<Alert onRetry={load}>{error}</Alert>}
   {!!data?.statsPending&&<p role="status" className="mt-4 text-[14px] text-slate-500">Die Gebietszahlen werden noch nachgeführt ({n(data.statsPending)} Gebiete offen); die Werte können noch steigen.</p>}
-  <nav aria-label="Inhalt" className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
-   {[['uebersicht','Übersicht'],['signale','Signale'],['fakten','Fakten'],['grundregeln','Grundregeln'],['job','Erstellen'],['zusammenfassungen','Zusammenfassungen'],['themen','Themen']].map(([id,t])=><a key={id} href={'#regeltexte-'+id} className="text-teal-700 hover:text-teal-800">{t}</a>)}
-  </nav>
-  <section id="regeltexte-uebersicht" className="admin-section">
+  <div role="tablist" aria-label="Themen & Texte" className="scroll-thin mt-6 flex gap-1 overflow-x-auto border-b border-slate-200">
+   {TABS.map(([id,t])=><button key={id} type="button" role="tab" id={'regeltexte-tab-'+id} aria-selected={tab===id} aria-controls={'regeltexte-panel'} onClick={()=>setTab(id as typeof tab)}
+    className={'inline-flex h-10 shrink-0 items-center whitespace-nowrap border-b-2 px-3 text-[14px] '+(tab===id?'border-teal-600 font-medium text-slate-900':'border-transparent text-slate-500 hover:text-slate-900')}>{t}</button>)}
+  </div>
+  <div role="tabpanel" id="regeltexte-panel" aria-labelledby={'regeltexte-tab-'+tab}>
+  {tab==='uebersicht'&&<section id="regeltexte-uebersicht" className="admin-section">
    <div className="admin-section-heading"><h2>Übersicht: Was ist frei?</h2></div>
    <p className="admin-note">Qualität und Trefferquote aus der letzten ungesehenen Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert bei den Abschnitten darunter, beim Antippen des „i“. Signale zählen nach Qualität (ab {QT.quality} %) und Trefferquote (ab {SIGNAL_RECALL} %). Fakten nehmen wir nur auf, wenn wir sie für viele Gemeinden haben (ab {FACT_PLACES} % der Gemeinden{xs?.factPlaces?`, von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen`:""}) und die Werte stimmen (Qualität ab {QT.quality} %).</p>
    <h3 className="mt-6">Signale</h3>
@@ -163,8 +168,8 @@ export function AdminRuleTexts(){
      const why=r.quality==null?'nicht gemessen':r.quality<QT.quality?'Qualität unter '+QT.quality+' %':pl==null?'Gemeinden nach dem Lauf':pl<FACT_PLACES?'Gemeinden unter '+FACT_PLACES+' %':'';
      return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900">{r.name}</td><td className={'px-2 tabular-nums '+(r.quality==null?'text-slate-400':r.quality>=QT.quality?'text-teal-700':'text-amber-700')}>{r.quality==null?'–':r.quality+' %'}</td><td className={'px-2 tabular-nums '+(pl==null?'text-slate-400':pl>=FACT_PLACES?'text-teal-700':'text-amber-700')}>{pl==null?'–':pl.toLocaleString('de-DE')+' %'}</td><td className={'pl-2 '+(ok?'font-semibold text-teal-700':'text-slate-500')}>{ok?'frei':why}</td></tr>;})}</tbody>
    </table></div>
-  </section>
-   {[...QUALITY.groups].sort((a,b)=>GROUP_ORDER.indexOf(a.id)-GROUP_ORDER.indexOf(b.id)).map(g=>{
+  </section>}
+   {[...QUALITY.groups].filter(g=>TAB_OF[g.id]===tab).sort((a,b)=>GROUP_ORDER.indexOf(a.id)-GROUP_ORDER.indexOf(b.id)).map(g=>{
     const row=(r:QualityRow,gid:string=g.id)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
@@ -230,6 +235,7 @@ export function AdminRuleTexts(){
      <div className="admin-section-heading"><h2>{g.id==='read'?'Grundregeln (für alle Seiten)':g.name}</h2></div>
      {list(rows)}
     </div>;})}
+  {tab==='lauf'&&<>
   <section id="regeltexte-job" className="admin-section">
    <div className="admin-section-heading"><h2>Erstellen</h2></div>
    <p className="admin-note">Drei Schritte nach festen Regeln, ohne KI: Regeln je Bericht (Thema, Zusammenfassung, Fakten), Wortliste der Suche, Zahlen für plenara.X (Atlas, Signale, Fakten).</p>
@@ -262,5 +268,7 @@ export function AdminRuleTexts(){
     {id!=='unklar'&&<small className="mt-1 block text-[12px] text-slate-500">{subsOf(id).map((u:{name:string;n:number})=>u.name+' '+pct(u.n,v)).join(' · ')}</small>}
    </div>)}</div>}
   </section>
+  </>}
+  </div>
  </>;
 }
