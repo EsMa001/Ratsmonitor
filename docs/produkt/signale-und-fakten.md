@@ -61,3 +61,10 @@ Neu denkbar (jeweils erst Regel bauen und messen):
 ## Offen
 
 - Schrittwechsel-Meldung: braucht ein Gedächtnis je Vorhaben; Vorgang-ID über Sitzungen (`case_key`) liegt vor.
+
+## Nachtrag 17.10.2026: Stand der Arbeit auf dem Branch
+
+- `kita_fee` liefert Ereignisse (Erhöhung, Neufassung), keine Zahl: gehört nach dem Konzept zu den Signalen („Kita-Gebühren geändert“), nicht zu den Fakten. Qualität 88 %.
+- Fakt `fee_rate` (Wasser-/Abwassergebühr): Qualität etwa 95 %, Abdeckung etwa 90 % (geschätzt, Stichproben v1 und c1). Damit erfüllt er die Bedingung für einen Fakt.
+- Neue Signalregeln gemessen, aber noch nicht als Kategorie im Frontend: Pflege und Gesundheit (`careOf`, 76 %), Einzelhandel und Nahversorgung (`retailOf`, 82 %).
+- Schrittwechsel, Fakt-Änderung, neuer Standort und große Vergabe sind noch nicht gebaut.
