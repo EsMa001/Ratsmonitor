@@ -21,14 +21,15 @@ export function Footer() {
   return (
     <>
     {/* Abstand, damit Inhalt wie die Seitenzahl nicht im Verlauf des Abschlusses steht */}
-    {!OWN_CTA(path) && <div className="ri pt-16 print:hidden">{
+    {/* Handy: kein Abschlussband und kein großer Fuß (wirkt wie eine Webseite); nur eine schmale Zeile mit den Pflichtangaben */}
+    {!OWN_CTA(path) && <div className="ri pt-16 max-sm:hidden print:hidden">{
       /* Ohne Anmeldung: Hinweis auf das Konto (nicht auf Konto- und Anmeldeseiten, nicht in der geschlossenen Testphase) */
       me.ready && me.accounts && !me.user && me.access !== "invite" && !(path.startsWith("/konto/") || path.startsWith("/anmelden") || path === "/registrieren") ? (
         <DarkCta title="Mit Konto speichern" sub="Suchen und Artikel im Konto speichern. Anmeldung mit einem Link per E-Mail, ohne Passwort." action={<Link href="/anmelden" className="ri-btn ri-btn--inv">Anmelden</Link>} />
       ) : (
         <DarkCta title="Fragen oder Anregungen?" sub={`Wir freuen uns über Ihr Feedback zu ${name}.`} action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />
       )}</div>}
-    <footer className="pl-footer-accent border-t">
+    <footer className="pl-footer-accent border-t max-sm:hidden">
       <div className="mx-auto grid max-w-page grid-cols-2 gap-x-6 gap-y-6 py-8 sm:gap-8 sm:py-10 lg:grid-cols-[minmax(0,1.4fr)_repeat(2,minmax(0,1fr))]">
         <div className="col-span-2 sm:col-span-1">
           <p className="m-0 text-[16px] font-semibold text-slate-900">{name}</p>
@@ -53,6 +54,11 @@ export function Footer() {
       </div>
       <div className="mx-auto max-w-page border-t border-slate-100 py-4 text-[12px] text-slate-500">© {new Date().getFullYear()} {name}</div>
     </footer>
+    <nav aria-label="Rechtliches" className="border-t border-slate-200 px-4 py-4 text-center text-[12px] text-slate-500 sm:hidden print:hidden">
+      {[["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"], ["/agb", "AGB"], ["/kontakt", "Kontakt"]].map(([href, label], i) => (
+        <span key={href}>{i > 0 && " · "}<Link href={href} className="text-slate-500 no-underline">{label}</Link></span>
+      ))}
+    </nav>
     </>
   );
 }

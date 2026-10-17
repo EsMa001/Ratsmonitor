@@ -35,7 +35,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         role="status"
         aria-live="polite"
-        className={`pointer-events-none fixed bottom-6 left-1/2 z-[2000] flex max-w-[calc(100vw-32px)] -translate-x-1/2 items-center gap-3.5 rounded-[10px] bg-slate-900 px-4 py-2.5 text-[14px] text-white shadow-pop transition-[opacity,transform] duration-200 ${
+        className={`pointer-events-none fixed bottom-[calc(var(--rm-tabbar)+24px)] left-1/2 z-[2000] flex max-w-[calc(100vw-32px)] -translate-x-1/2 items-center gap-3.5 rounded-[10px] bg-slate-900 px-4 py-2.5 text-[14px] text-white shadow-pop transition-[opacity,transform] duration-200 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
         }`}
       >

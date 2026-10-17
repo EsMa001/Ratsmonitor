@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (498 Zeilen, ⚠13)
-- app/ratsmonitor.css (211 Zeilen, ⚠14)
+- app/ratsmonitor.css (224 Zeilen, ⚠14)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -497,6 +497,7 @@ rm-dark admin.css:461
 rm-dark ratsmonitor-info.css:415
 rm-dark ratsmonitor.css:84
 rm-dots ratsmonitor.css:113
+rm-fade-in ratsmonitor.css:222
 rm-flat ratsmonitor.css:71
 rm-gdot ratsmonitor.css:181
 rm-glass ratsmonitor.css:80
@@ -513,6 +514,7 @@ rm-logo__text ratsmonitor-info.css:251
 rm-search ratsmonitor-info.css:411
 rm-solid ratsmonitor.css:87
 rm-spinner ratsmonitor.css:110
+rm-tabbar ratsmonitor.css:217
 rm-topline ratsmonitor.css:173
 scroll-thin ratsmonitor.css:52
 section design-styles.css:249
@@ -671,7 +673,7 @@ topic design-styles.css:140
 - process-progress.tsx (8, ⚠1): ProcessProgress
 
 ### components/ratsmonitor/
-- App.tsx (71, ⚠1): MonitorApp
+- App.tsx (72, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (77, ⚠2): AccountMenu
@@ -689,9 +691,9 @@ topic design-styles.css:140
 - FilterPanel.tsx (110, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (28): NOTIFY_LATER, FollowButton
-- Footer.tsx (59): Footer
+- Footer.tsx (65): Footer
 - GateDialog.tsx (148): GateFeature, openGate, openLimitGate, GateDialog
-- Header.tsx (36): Header
+- Header.tsx (64): Header
 - ImportDialog.tsx (151): ImportDialog
 - PlanCards.tsx (153, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (29): SaveArticleButton
@@ -716,6 +718,7 @@ topic design-styles.css:140
 - AboutPage.tsx (163): AboutPage
 - AccountPages.tsx (633): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
+- AnwenderLive.tsx (239, ⚠1): AnwenderLivePage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenLive.tsx (245): LiveThumb
 - BranchenPages.tsx (121): BranchePage
@@ -730,6 +733,7 @@ topic design-styles.css:140
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (157): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
+- XAuszug.tsx (220, ⚠2): XAuszug
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
 - blocks.tsx (216, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (112): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
@@ -810,15 +814,15 @@ topic design-styles.css:140
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (304, ⚠10): ComparePage
-- DecisionCharts.tsx (65, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
+- DecisionCharts.tsx (65, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionSearch.tsx (68, ⚠2): PlayState, DiffusionSearch
-- FaktenPage.tsx (311, ⚠3): FaktenPage
-- FraktionenPage.tsx (151, ⚠5): FraktionenPage
-- GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
+- FaktenPage.tsx (312, ⚠3): FaktenPage
+- FraktionenPage.tsx (167, ⚠4): FraktionenPage
+- GraphView.tsx (235, ⚠1): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (171, ⚠3): GremiennetzPage
 - Kennzahlen.tsx (130): weekAgo, isNew, NeuMark, Kennzahlen, countScale, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (228, ⚠3): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (234, ⚠3): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
@@ -830,7 +834,7 @@ topic design-styles.css:140
 - SignalePage.tsx (331, ⚠6): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (572, ⚠9): XAtlasView
-- XKopf.tsx (170): XKopf, XWeiter, ThemenLeiste
+- XKopf.tsx (171): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (338, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
