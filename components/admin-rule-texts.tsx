@@ -65,9 +65,10 @@ const NO_COVERAGE=new Set(['stage','subs','main_doc','doc_type','social']);
 const SIGNAL_STAND=new Set(['plan','heat_plan','stage']);
 const SIGNAL_ART=new Set(['plan_use','house_type','road','project']);
 const SIGNAL_GROESSE=new Set(['plan_area','housing','wind_count','ee_power']);
+/* Ereignis statt Zahl: gehört zu den Signalen (Kita-Gebühren erhöht oder neu gefasst) */
+const SIGNAL_EREIGNIS=new Set(['kita_fee']);
 const PROFILE_FACTS=new Set(['faction','faction_advice']);
-const factArt=(id:string)=>SIGNAL_STAND.has(id)?'stand':SIGNAL_ART.has(id)?'art':SIGNAL_GROESSE.has(id)?'groesse':PROFILE_FACTS.has(id)?'profil':'vergleich';
-const isSignalPart=(id:string)=>['stand','art','groesse'].includes(factArt(id));
+const factArt=(id:string)=>SIGNAL_STAND.has(id)?'stand':SIGNAL_ART.has(id)?'art':SIGNAL_GROESSE.has(id)?'groesse':SIGNAL_EREIGNIS.has(id)?'ereignis':PROFILE_FACTS.has(id)?'profil':'vergleich';
 /* Neue Signale, noch nicht gebaut (Konzept, Abschnitt „Kategorien: Was neu heißt“) */
 const SIGNAL_IDEAS:{name:string;what:string}[]=[
  {name:'Schrittwechsel eines Vorhabens',what:'Meldung, wenn der Stand eines bekannten Vorhabens wechselt („geht in die Auslegung“, „Satzungsbeschluss“). Braucht ein Gedächtnis je Vorhaben (Vorgang über mehrere Sitzungen).'},
@@ -172,12 +173,12 @@ export function AdminRuleTexts(){
   </section>
   <section id="regeltexte-qualitaet" className="admin-section">
    <div className="admin-section-heading"><h2>Qualität der Regeln</h2></div>
-   <p className="admin-note">Letzte ungesehene Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert beim Antippen des Namens oder des „i“. Ziel: Qualität ab {QT.quality} %, Abdeckung ab {QT.coverage} %{xs?.factPlaces?` (Gemeinden: von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen)`:""}.</p>
+   <p className="admin-note">Letzte ungesehene Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert beim Antippen des Namens oder des „i“. Signale zählen nach Qualität (ab {QT.quality} %) und Trefferquote (ab {SIGNAL_RECALL} %). Fakten nehmen wir nur auf, wenn wir sie für viele Gemeinden haben (Ziel ab {QT.coverage} % der Gemeinden{xs?.factPlaces?`, von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen`:""}) und die Werte stimmen (Qualität ab {QT.quality} %).</p>
    {QUALITY.groups.map(g=>{
     const row=(r:QualityRow,gid:string=g.id)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
-       {gid==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':r.quality!=null&&r.quality<QT.quality?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte':r.quality==null?'nicht gemessen':r.quality<QT.quality?'unter '+QT.quality+' %':r.lock||'noch gesperrt'}</span>}</div>
+       {gid==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':r.quality!=null&&r.quality<QT.quality?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte'+(xs?.factPlaces&&100*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total<QT.coverage?', Gemeinden unter '+QT.coverage+' %':''):r.quality==null?'nicht gemessen':r.quality<QT.quality?'unter '+QT.quality+' %':r.lock||'noch gesperrt'}</span>}</div>
       <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),gid==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
      </div>
      <Meter label="Qualität" v={r.quality} min={QT.quality}/>
@@ -194,7 +195,7 @@ export function AdminRuleTexts(){
       <div className="grid gap-x-6 gap-y-2 md:grid-cols-[minmax(0,1fr)_120px_120px_120px_120px]">
        <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
-         <SignalGateBadge r={r}/><SignalGate/></div>
+         <SignalGateBadge r={r}/>{(r.id==='sig_pflege'||r.id==='sig_handel')&&<span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">Kategorie fehlt im Frontend</span>}<SignalGate/></div>
         <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),r.phaseFrom&&'Stand: '+r.phaseFrom,r.note].filter(Boolean).join(' · ')}</small>
        </div>
        <Meter label="Qualität" v={r.quality} min={QT.quality}/>
@@ -216,6 +217,9 @@ export function AdminRuleTexts(){
      <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Angaben am Signal (Größe)</h4>
      <p className="admin-note mt-1">Fläche, Wohneinheiten, Anlagenzahl, Leistung. Sie hängen am Signal und blockieren es nicht; angezeigt werden sie nur, wenn sie im Text belegt sind. Ihre Qualität wird getrennt gemessen.</p>
      {list(FACT_ROWS.filter(r=>factArt(r.id)==='groesse'),'facts')}
+     <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Gebührenänderungen (Ereignisse)</h4>
+     <p className="admin-note mt-1">Kein Zahlenwert, sondern ein Ereignis: Gebühren erhöht oder neu gefasst. Gehört zu den Signalen; das Signal selbst gibt es noch nicht.</p>
+     {list(FACT_ROWS.filter(r=>factArt(r.id)==='ereignis'),'facts')}
      <h4 className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Weitere Signale (noch nicht gebaut)</h4>
      <p className="admin-note mt-1">Vorschläge aus dem Konzept. Jedes bekommt erst eine Regel, dann eine Messung, dann ein Tor.</p>
      <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{SIGNAL_IDEAS.map(i=><li key={i.name} className="py-3 text-[14px]"><div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{i.name}</span><span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">geplant</span></div><small className="mt-1 block text-[12px] leading-snug text-slate-500">{i.what}</small></li>)}</ul>
@@ -226,7 +230,7 @@ export function AdminRuleTexts(){
     if(g.id==='facts')return <div key={g.id}>
      <div className="mt-8">
       <h3>{g.name}</h3>
-      <p className="admin-note mt-1">Ein Fakt ist ein Zahlenwert mit Einheit, vergleichbar über Orte und Zeit: Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Größen von Vorhaben sind keine Fakten, sondern Angaben am Signal (oben). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Auf die Karte kommt ein Wert erst ab {QT.quality} % Qualität.</p>
+      <p className="admin-note mt-1">Ein Fakt ist ein Zahlenwert mit Einheit, vergleichbar über Orte und Zeit: Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Größen von Vorhaben sind keine Fakten, sondern Angaben am Signal (oben). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Ein Fakt gilt als frei, wenn die Qualität bei mindestens {QT.quality} % und der Anteil der Gemeinden bei mindestens {QT.coverage} % liegt; bisher erreicht das keiner. Auf der Karte stehen heute Fakten ab {QT.quality} % Qualität.</p>
       {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[14px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
      </div>
      <div className="mt-8">
