@@ -500,7 +500,7 @@ admin) angelegt; Nico fehlt noch. Sicherungen vor dem Umbau: `ratsmonitor.env.ba
 A `@` → `187.7.72.52` (die IONOS-Parkseite „Default Site“ samt AAAA ist abgeschaltet), A `www` → `187.7.72.52`; MX, SPF,
 DKIM, DMARC und `autodiscover` bleiben bei IONOS (Postfächer möglich). Noch kein AAAA (IPv6 der Firewall ungeprüft). Caddy:
 Block `plenara.de` an die Fassung von Schritt 0 angehängt (Let's-Encrypt-Zertifikat, Passwort wie bei sslip, HSTS, `noindex`),
-`www` als Weiterleitung, sobald sein DNS-Eintrag steht. `SITE_URL=https://plenara.de`; sslip läuft parallel weiter.
+`www.plenara.de` und die alte Adresse `187-7-72-52.sslip.io` leiten dauerhaft (301) auf `https://plenara.de` weiter. `SITE_URL=https://plenara.de`.
 Sicherungen: `Caddyfile.bak-vor-domain-*`, `ratsmonitor.env.bak-vor-domain-*`.
 
 **Anmelden ohne Mailanbieter:** Mit `MAIL_TRANSPORT=log` bietet die Anmeldeseite keine Anmeldung per Mail an. Admins
