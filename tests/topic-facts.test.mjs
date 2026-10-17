@@ -335,3 +335,22 @@ test('Signale Stichprobe p1: Zweibrücken, Brückenbauer, Heizzentrale', async (
   assert.equal(m.energyOf('Grundschule Wendelsteinstraße: Sanierung der Heizzentrale'), 'Heizungstausch');
   assert.equal(m.energyOf('Beratung über die Neuanschaffung von Weihnachtssternbeleuchtung'), null);
 });
+
+test('Signale Pflege und Einzelhandel: Randfälle aus Stichprobe c1', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.careOf('Radständer beim Ärztehaus'), null);
+  assert.equal(m.careOf('Bebauungsplan Nr. 180 „Tiergesundheitszentrum Grußendorf“'), null);
+  assert.ok(m.careOf('Bebauungsplan Nr. 50 "Gesundheitszentrum Schönwiese"'));
+  assert.equal(m.retailOf('Bauzaun bei ehemaligem Supermarkt'), null);
+  assert.ok(m.retailOf('Ansiedlung Netto'));
+});
+
+test('Signale Wasser und Straßen: Trefferquote aus Stichproben w1 und q2', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.ok(m.waterSignalOf('Hochwasserschutz Jeinsen - Variantenuntersuchung'));
+  assert.ok(m.waterSignalOf('Abwasser-Rückstausituation vor dem Abwasserpumpwerk Blankenau'));
+  assert.ok(m.waterSignalOf('Sachstandsbericht zur Thematik Entwässerung (Abwasserkanäle)'));
+  assert.equal(m.waterSignalOf('Information zum Beginn der Glasfaserarbeiten und Kanalrestmaßnahmen'), null);
+  assert.ok(m.streetSignalOf('Vergabe von Asphaltarbeiten für Teilabschnitte Herlesries, Moossstraße'));
+  assert.ok(m.streetSignalOf('Planung zum Ausbau von barrierefreien Bushaltestellen'));
+});

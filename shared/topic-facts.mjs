@@ -216,7 +216,7 @@ const STREETS=[
  ['Gehweg und Barrierefreiheit',/Gehweg|Bürgersteig|Fußweg|Bushaltestelle|barrierefrei/i],
  ['Ortsdurchfahrt und Kreisverkehr',/Ortsdurchfahrt|Kreisverkehr|Kreuzung|Knotenpunkt|Lichtsignal|Ampel/i],
  ['Brücke',/(?<!Saar|Zwei)Brücke(?!nau)|(?<!Saar|Zwei)Brücken(?!au)|Steg\b|Unterführung|Überführung/i],
- ['Straßenausbau und -sanierung',/Unterhaltung|Bankett|Ausgabe|Verbreiterung|Neugestaltung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Deckenerneuerung|Deckensanierung|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung/i],
+ ['Straßenausbau und -sanierung',/Asphalt|Pflaster|Unterhaltung|Bankett|Ausgabe|Verbreiterung|Neugestaltung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Deckenerneuerung|Deckensanierung|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung/i],
 ];
 const STREET_WORK=/Unterhaltung|Bankett|Ausgabe|Mittelbereitstellung|Maßnahme|Vorhaben|Projekt|Variante|Kosten|Förder|Vergabe|Auftrag|Instandhaltung|Ertüchtigung|Verkehrsführung|Fahrradstraße|Qualitätsstandard|Verbreiterung|Neugestaltung|Überführung|Ausbau|Neubau|Umbau|Sanierung|Erneuerung|Instandsetzung|Decke|Fahrbahn|grundhaft|Straßenbau|Endausbau|Umgestaltung|Herstellung|Errichtung|Planung|Bau\b|Brücke|Radweg|Gehweg|Kreisverkehr|Ortsdurchfahrt|Unterführung/i;
 export function streetSignalOf(title){const t=String(title||'');if(!ROAD_TITLE.test(t)||!STREET_WORK.test(t)||NOT_ROAD.test(t)||PROJECT_NOT.test(t.replace(/Sachstandsbericht/g,''))||SIG_NOT.test(t)||/Erinnerung|Litfaß|Holzkreuz|Baugenehmigung|Wohnanlage|Pflegeheim|Pflanzung|Spielplatz|Quartierssanierung|Geschwindigkeit|Tempo|Mobilfunk|Funkmast|e\.\s?V\.|Sondermittel|Knöterich|Neophyt|Schulneubau|Schulgebäude|Sanierungsgebiet|Zustand de[sr] (?:Gehweg|Straße)|Brückenbauer|Treppenturm|Tektur|abwassertechnisch|Regenrückhaltebecken|Verschiedenes|Haushalt|Überschreitung|Brückenkopf|Wohnen|Wohnbau|Abriss|Ersatzbau|Neubaugebiet|Kiesgrube|Fahrsystem|Bungalow|Vorbescheid|Reparaturstation|Haushaltsbegleit|Baumbestand|Zusatzantrag|Bündnis|Volt-Antrag|\bCDU\b|\bSPD\b|\bGRÜNE|\bFDP\b|Die Linke|\bAfD\b|Fernwärme|Straßenmeisterei|Gelände|Hochwasserschutz|Veloturm/i.test(t))return null;const a=firstOf(STREETS,t);return a?{value:a,step:projectStep(t)}:null;}
@@ -226,8 +226,8 @@ const WATERS=[
  ['Kanal und Abwasser',/Kanal|Abwasser|Schmutzwasser|Mischwasser|Regenwasser|Entwässerung|Pumpwerk|Pumpstation|Regenüberlauf/i],
  ['Trinkwasser',/Trinkwasser|Wasserversorgung|Wasserleitung|Hochbehälter|Wasserwerk|Tiefbrunnen|Brunnenanlage|Wasserturm|Löschwasser/i],
 ];
-const WATER_WORK=/Entschlammung|Rückhaltung|Eigenkontroll|Inspektion|Generalentwässerung|Einspeiseleitung|Neustrukturierung|Rückhaltebecken|Neubau|Erweiterung|Sanierung|Erneuerung|Ausbau|Bau\b|Errichtung|Planung|Konzept|Maßnahme|Ertüchtigung|Umbau|Vergabe|Herstellung|Studie|Machbarkeit|Förder|Verlegung|Instandsetzung|Modernisierung|Auftrag/i;
-export function waterSignalOf(title){const t=String(title||'');if(!WATER_WORK.test(t)&&!/Hochwasserschutz|Starkregen/i.test(t)||PROJECT_NOT.test(t.replace(/Sachstandsbericht/g,''))||SIG_NOT.test(t)||/Sondervermögen|Gewässerunterhaltung|Wasserverband.*Wahl|Energie|Strom|Vergleich|Bekanntgaben|Laufendes|Mäharbeit|Böschung|Straßenunterhaltung|Deichweg|Brandschutzbedarf|Kita\b|Kindergarten|Mäh|Mulch|Rückschnitt|Finanzprüfung|Brandschutz|dringliche[nr]? Anordnung|Gruppe\s+\S+\s*\/|Wirtschaftsprüf|Transporter|Mietangelegenheit|Brunnenstraße|Abbruch|Wasserschaden|Flst|Fl\.?\s?-?Nr|Pflanz|Zwischenbericht|Jahresergebnis/i.test(t))return null;const a=firstOf(WATERS,t);return a?{value:a,step:projectStep(t)}:null;}
+const WATER_WORK=/Untersuchung|Variante|Rückstau|Notstrom|Eigenenergie|Blockheizkraftwerk|BHKW|Rückbau|Sachstand|Versorgungsleitung|Entschlammung|Rückhaltung|Eigenkontroll|Inspektion|Generalentwässerung|Einspeiseleitung|Neustrukturierung|Rückhaltebecken|Neubau|Erweiterung|Sanierung|Erneuerung|Ausbau|Bau\b|Errichtung|Planung|Konzept|Maßnahme|Ertüchtigung|Umbau|Vergabe|Herstellung|Studie|Machbarkeit|Förder|Verlegung|Instandsetzung|Modernisierung|Auftrag/i;
+export function waterSignalOf(title){const t=String(title||'');if(!WATER_WORK.test(t)&&!/Hochwasserschutz|Starkregen/i.test(t)||PROJECT_NOT.test(t.replace(/Sachstandsbericht/g,''))||SIG_NOT.test(t)||/Sondervermögen|Gewässerunterhaltung|Wasserverband.*Wahl|Energie|Strom|Vergleich|Bekanntgaben|Laufendes|Mäharbeit|Böschung|Straßenunterhaltung|Glasfaser|Interreg|Deichweg|Brandschutzbedarf|Kita\b|Kindergarten|Mäh|Mulch|Rückschnitt|Finanzprüfung|Brandschutz|dringliche[nr]? Anordnung|Gruppe\s+\S+\s*\/|Wirtschaftsprüf|Transporter|Mietangelegenheit|Brunnenstraße|Abbruch|Wasserschaden|Flst|Fl\.?\s?-?Nr|Pflanz|Zwischenbericht|Jahresergebnis/i.test(t))return null;const a=firstOf(WATERS,t);return a?{value:a,step:projectStep(t)}:null;}
 const BROADBANDS=[
  ['Mobilfunk',/Mobilfunk|Funkmast|Sendemast|\b5G\b|Funkturm/i],
  ['Glasfaser und Breitband',/Glasfaser|Breitband|Gigabit|\bFTT[HB]\b|Leerrohr/i],
@@ -240,7 +240,7 @@ const CARE=[
  ['Ärztehaus und MVZ',/Ärztehaus|Ärztezentrum|\bMVZ\b|Medizinisches Versorgungszentrum|Gesundheitszentrum|Arztpraxis|Hausarzt|Landarzt|Primärversorgungszentrum|Apotheke/i],
  ['Krankenhaus',/Krankenhaus|Klinikum|(?<![\p{L}])Klinik(?!weg)|Hospital|Notaufnahme/iu],
 ];
-export function careOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Grünpflege|Landschaftspflege|Pflegevertrag|Pflegearbeiten|Baumpflege|Denkmalpflege|Pflegeplan|Biotoppflege|Kindertages|Großtagespflege|Kita|Elternbeitr|Wahl|Bericht|Berichterstattung|Teddy|Rettungswache|Mietvertrag|Entlassmanagement|Delir|Fußweg|\be\.\s?V\.|Bus|Parken|Aufsichtsrat|Geschäftsführung|Catering|Stromliefer|Essen|Regionalplan|Tagespflegestelle|Hitzeschutz/i.test(t))return null;
+export function careOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Krankenhausstraße|Radständer|Bürgersteig|Gehweg|Tierarzt|Tiergesundheit|Tierklinik|Werbebeschild|Werbeanlage|Anzeige|Satteldach|Wärmeschutz|Jahresabschluss|Grünpflege|Landschaftspflege|Pflegevertrag|Pflegearbeiten|Baumpflege|Denkmalpflege|Pflegeplan|Biotoppflege|Kindertages|Großtagespflege|Kita|Elternbeitr|Wahl|Bericht|Berichterstattung|Teddy|Rettungswache|Mietvertrag|Entlassmanagement|Delir|Fußweg|\be\.\s?V\.|Bus|Parken|Aufsichtsrat|Geschäftsführung|Catering|Stromliefer|Essen|Regionalplan|Tagespflegestelle|Hitzeschutz/i.test(t))return null;
  // Signal für Bau und Betrieb: nur mit Vorhaben, Planung oder Standortfrage
  if(!/Neubau|Errichtung|Erweiterung|Umbau|Ausbau|Sanierung|Bebauungsplan|Bauleitplan|Ansiedlung|Versorgungszentrum|Ärztehaus|MVZ|Standort|Nachfolge|Übernahme|Schließung|Bau\b|Gründung|Projekt|Konzept|Besichtigung|Grundstück/i.test(t))return null;
  return firstOf(CARE,t);}
@@ -251,7 +251,7 @@ const RETAIL=[
  ['Fachmarkt',/Fachmarkt|Baumarkt|Gartenmarkt|Gartencenter|Möbelmarkt|Möbelhaus|Fachmarktzentrum|Elektronikmarkt|Sonderposten|Einkaufszentrum|Factory Outlet/i],
  ['Innenstadt und Leerstand',/(?<!Wohnungs)Leerstand(?!simmobilie)|Innenstadt[^]{0,60}(?:Handel|Geschäft|Belebung|Leerstand|Laden|Einkauf)|(?:Handel|Geschäft|Belebung|Laden|Einkauf)[^]{0,60}Innenstadt|Einzelhandelskonzept|Zentrenkonzept|Einzelhandels- und Zentren|Ladenlokal|Citymanagement|Zentrale Versorgungsbereich|Einzelhandel/i],
 ];
-export function retailOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Wochenmarkt|Weihnachtsmarkt|Flohmarkt|Marktplatz|Bauernmarkt|Ladenschluss|verkaufsoffen|Sonntagsöffnung|Parken|Parkplätze|Lebensmittelausgabe|Statik/i.test(t))return null;return firstOf(RETAIL,t);}
+export function retailOf(title){const t=String(title||'');if(SIG_NOT.test(t)||/Bauzaun|Verkehrsschild|Bachlauf|Freiraumprofil|Zuwendung|Veranstaltung|Befreiung|Bürohochhaus|Kappungsgrenze|Aldi-Kreisel|Wochenmarkt|Weihnachtsmarkt|Flohmarkt|Marktplatz|Bauernmarkt|Ladenschluss|verkaufsoffen|Sonntagsöffnung|Parken|Parkplätze|Lebensmittelausgabe|Statik/i.test(t))return null;return firstOf(RETAIL,t);}
 
 /* Ausschreibungen und Vergaben (plenara.X Signale, Kategorie 1, docs/produkt/plenara-x-signale.md): öffentliche Aufträge der Kommune,
    nur aus dem Titel. Je Vorgang genau ein Filter in fester Reihenfolge (IT vor Planung vor Fahrzeugen vor Wasser vor Tiefbau vor
@@ -481,7 +481,7 @@ export function eePowerOf(title,text){
 /* Straßenbau (Mobilität, Straßen): Art der Maßnahme aus dem Titel (Ausbau, Sanierung, Radweg, Gehweg, Brücke) und Kosten aus dem
    Beschlussvorschlag („Vergabe … in Höhe von 412.300,00 € brutto“, „Kosten von rund 1,2 Mio. €“). Nicht Straßenreinigung,
    -benennung, -beleuchtung allein, Beiträge, Widmung, verkehrsrechtliche Anordnungen, Winterdienst. */
-const ROAD_TITLE=/Straße|Strasse|Str\.|Weg\b|wege?s?\b|Gehweg|Radweg|(?<!Saar|Zwei)Brücke(?!nau)|Kreuzung|Kreisverkehr|Ortsdurchfahrt|Fahrbahn/i;
+const ROAD_TITLE=/Bushaltestelle|Straße|Strasse|Str\.|Weg\b|wege?s?\b|Gehweg|Radweg|(?<!Saar|Zwei)Brücke(?!nau)|Kreuzung|Kreisverkehr|Ortsdurchfahrt|Fahrbahn/i;
 const ROAD_WORK=[
  ['Radweg',/Radweg|Radverkehrsanlage|Fahrradstraße|Radschnellweg/i],
  ['Gehweg',/Gehweg|Bürgersteig|Fußweg/i],
