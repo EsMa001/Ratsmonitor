@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
@@ -221,6 +221,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   };
   const zeitText = ZEITRAUM.find(([k]) => k === zeit)?.[1];
   const [hoverPlace, setHoverPlace] = useState("");
+  /* Karte standardmäßig eingeklappt (Signale und Ausschreibungen); aufklappen auf Wunsch */
+  const [karte, setKarte] = useState(false);
   useOrtInAdresse(areaAgs, (a) => search.setArea(a, "ui"));
   /* Antwort mit Namen: die Orte mit den meisten Vorgängen */
   const topPlaces = res ? [...res.places].sort((a, b) => b.count - a.count).slice(0, 3) : [];
@@ -289,11 +291,16 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             {TRENDS_OF[signal] && <>Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="font-medium text-teal-700 hover:underline">„{TRENDS_OF[signal]}“ in den Trends →</Link></>}
           </p>}
           {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 1024 px nebeneinander */}
+          <div className="mt-4 print:hidden">
+            <button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
+              {karte ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{karte ? "Karte ausblenden" : "Karte zeigen"}
+            </button>
+          </div>
           <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
-            <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+            {karte && <div id="signale-karte" className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
               {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
-            </div>
-            <div className="min-w-0 lg:col-span-6">
+            </div>}
+            <div className={`min-w-0 ${karte ? "lg:col-span-6" : "lg:col-span-12"}`}>
               <div className="flex flex-col gap-2 print:hidden">
                 {res.phases.length > 0 && <FilterRow label="Schritt">
                   <button type="button" aria-pressed={!phase} onClick={() => pick({ phase: "" })} className={PILL(!phase)}>Alle</button>

@@ -793,7 +793,7 @@ topic design-styles.css:140
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (107, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (342, ⚠7): signaleHref, SignalePage
+- SignalePage.tsx (349, ⚠7): signaleHref, SignalePage
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (550, ⚠7): XAtlasView
 - XKopf.tsx (167): XKopf, XWeiter, ThemenLeiste
