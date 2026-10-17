@@ -37,6 +37,8 @@ const QT=QUALITY.target;
 /* Messwert als Balken mit Zielmarke; unter dem Ziel orange */
 /* Signale: offen erst, wenn alles gemessen ist: Qualität, Art und Stand ab 90 %, Trefferquote ab 80 % */
 const SIGNAL_RECALL=80;
+/* Fakten: Anteil der Gemeinden mit mindestens einem Wert, ab dem ein Fakt gilt (Entscheidung 17.10.2026) */
+const FACT_PLACES=20;
 const signalGate=(r:QualityRow)=>{const v=[r.quality,r.recall,r.art,r.phase];return v.some(x=>x===null||x===undefined)?'unmeasured':[r.quality,r.art,r.phase].every(x=>(x as number)>=QT.quality)&&(r.recall as number)>=SIGNAL_RECALL?'open':'closed';};
 const SignalGate=()=>{return <Info text="Offen, wenn alles gemessen ist: Qualität, Art und Stand je mindestens 90 %, Trefferquote mindestens 80 %."/>;};
 const SignalGateBadge=({r}:{r:QualityRow})=>{const g=signalGate(r);return <span title="Offen, wenn Qualität, Art und Stand je mindestens 90 % und die Trefferquote mindestens 80 % erreichen." className={'rounded-full px-2 py-0.5 text-[12px] '+(g==='open'?'bg-teal-50 text-teal-700':g==='closed'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{g==='open'?'offen':g==='closed'?'unter 90 %':'noch nicht alles gemessen'}</span>;};
@@ -173,17 +175,17 @@ export function AdminRuleTexts(){
   </section>
   <section id="regeltexte-qualitaet" className="admin-section">
    <div className="admin-section-heading"><h2>Qualität der Regeln</h2></div>
-   <p className="admin-note">Letzte ungesehene Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert beim Antippen des Namens oder des „i“. Signale zählen nach Qualität (ab {QT.quality} %) und Trefferquote (ab {SIGNAL_RECALL} %). Fakten nehmen wir nur auf, wenn wir sie für viele Gemeinden haben (Ziel ab {QT.coverage} % der Gemeinden{xs?.factPlaces?`, von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen`:""}) und die Werte stimmen (Qualität ab {QT.quality} %).</p>
+   <p className="admin-note">Letzte ungesehene Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert beim Antippen des Namens oder des „i“. Signale zählen nach Qualität (ab {QT.quality} %) und Trefferquote (ab {SIGNAL_RECALL} %). Fakten nehmen wir nur auf, wenn wir sie für viele Gemeinden haben (ab {FACT_PLACES} % der Gemeinden{xs?.factPlaces?`, von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen`:""}) und die Werte stimmen (Qualität ab {QT.quality} %).</p>
    {QUALITY.groups.map(g=>{
     const row=(r:QualityRow,gid:string=g.id)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
-       {gid==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':r.quality!=null&&r.quality<QT.quality?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte'+(xs?.factPlaces&&100*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total<QT.coverage?', Gemeinden unter '+QT.coverage+' %':''):r.quality==null?'nicht gemessen':r.quality<QT.quality?'unter '+QT.quality+' %':r.lock||'noch gesperrt'}</span>}</div>
+       {gid==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':r.quality!=null&&r.quality<QT.quality?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte'+(xs?.factPlaces&&100*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total<FACT_PLACES?', Gemeinden unter '+FACT_PLACES+' %':''):r.quality==null?'nicht gemessen':r.quality<QT.quality?'unter '+QT.quality+' %':r.lock||'noch gesperrt'}</span>}</div>
       <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),gid==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
      </div>
      <Meter label="Qualität" v={r.quality} min={QT.quality}/>
      {gid==='facts'&&factArt(r.id)!=='vergleich'?<div className="min-w-0 text-[12px] text-slate-500">{xs?.facts?.[r.id]!==undefined?<><span className="block text-[18px] font-semibold tabular-nums text-slate-900">{n(xs.facts[r.id])}</span>Berichte</>:r.id==='stage'?'':'noch kein Lauf'}</div>
-      :gid==='facts'&&xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={QT.coverage}/>:r.id==='summary'&&c&&docs?<Meter label="Abdeckung" v={Math.round(100*(ai+rule)/docs)} min={QT.coverage}/>:NO_COVERAGE.has(r.id)?<div/>:<Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>}
+      :gid==='facts'&&xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={FACT_PLACES}/>:r.id==='summary'&&c&&docs?<Meter label="Abdeckung" v={Math.round(100*(ai+rule)/docs)} min={QT.coverage}/>:NO_COVERAGE.has(r.id)?<div/>:<Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>}
     </li>;
     const list=(rows:QualityRow[],gid:string=g.id)=><ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{rows.map(r=>row(r,gid))}</ul>;
     /* Signale: Kategorie mit Qualität der Zuordnung und Trefferquote, darunter die Filter mit eigener Qualität */
@@ -230,7 +232,7 @@ export function AdminRuleTexts(){
     if(g.id==='facts')return <div key={g.id}>
      <div className="mt-8">
       <h3>{g.name}</h3>
-      <p className="admin-note mt-1">Ein Fakt ist ein Zahlenwert mit Einheit, vergleichbar über Orte und Zeit: Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Größen von Vorhaben sind keine Fakten, sondern Angaben am Signal (oben). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Ein Fakt gilt als frei, wenn die Qualität bei mindestens {QT.quality} % und der Anteil der Gemeinden bei mindestens {QT.coverage} % liegt; bisher erreicht das keiner. Auf der Karte stehen heute Fakten ab {QT.quality} % Qualität.</p>
+      <p className="admin-note mt-1">Ein Fakt ist ein Zahlenwert mit Einheit, vergleichbar über Orte und Zeit: Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …). Größen von Vorhaben sind keine Fakten, sondern Angaben am Signal (oben). Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Ein Fakt gilt als frei, wenn die Qualität bei mindestens {QT.quality} % und der Anteil der Gemeinden bei mindestens {FACT_PLACES} % liegt. Auf der Karte stehen heute Fakten ab {QT.quality} % Qualität.</p>
       {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[14px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
      </div>
      <div className="mt-8">
