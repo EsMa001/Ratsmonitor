@@ -10,7 +10,7 @@ export const KIND: Record<GNode["type"], { label: string; fill: string; stroke: 
   term: { label: "Begriff", fill: "var(--rm-fill)", stroke: "var(--rm-fill)" },
   topic: { label: "Thema", fill: "var(--rm-c900)", stroke: "var(--rm-c900)" },
   committee: { label: "Gremium", fill: "var(--rm-c400)", stroke: "var(--rm-c400)" },
-  land: { label: "Land", fill: "#ffffff", stroke: "var(--rm-fill)" },
+  land: { label: "Land", fill: "var(--rm-on)", stroke: "var(--rm-fill)" },
 };
 
 /** Kräftemodell: Abstoßung, Federn nach Kantengewicht, schwache Bindung ans Zentrum, Kollision */
@@ -222,7 +222,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.18} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle className={n.type === "topic" ? "rm-gtopic" : undefined} r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth={n.type === "land" ? 2.5 : 0} fillOpacity={n.type === "term" ? 0.88 : 1} />
-                {n.type === "center" && <rect x="-7" y="-7" width="14" height="14" fill="#fff" />}
+                {n.type === "center" && <rect x="-7" y="-7" width="14" height="14" fill="var(--rm-on)" />}
                 <text className="rm-gtext" y={n.type === "center" ? n.r + 18 : n.r + 15} textAnchor="middle" fontSize={n.type === "center" ? 18 : 12} fontWeight={n.type === "center" ? 600 : 400} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>{n.label}</text>
               </g>
             );

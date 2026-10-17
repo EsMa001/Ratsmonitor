@@ -114,7 +114,9 @@ function DotMap() {
         const ctx = cv.getContext("2d");
         if (!ctx) return;
         ctx.scale(dpr, dpr);
-        ctx.fillStyle = "rgba(63,106,138,0.28)";
+        /* Dunkelblau des Farbschemas (sky-600) aus der Variable, nicht als feste Zahl */
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--color-sky-600").trim() || "#3f6a8a";
+        ctx.globalAlpha = 0.28;
         for (let i = 0; i < pts.length; i += 2) ctx.fillRect(pts[i], pts[i + 1], 1.5, 1.5);
       })
       .catch(() => {});
