@@ -195,14 +195,14 @@ export function ComparePage() {
             {res.places.some((p) => p.total < 30) && (
               <p role="status" className="m-0 mt-3 text-[14px] font-medium text-slate-900">Zu wenige Vorgänge für einen belastbaren Vergleich: {res.places.map((p, i) => ({ p, i })).filter(({ p }) => p.total < 30).map(({ p, i }) => `${names[i]} (${p.total})`).join(", ")}. Ein weiter gefasstes oder gar kein Thema hilft.</p>
             )}
-            <p className="m-0 mt-3 text-[12px] text-slate-500">Der Unterschied bei den Vorgängen zeigt auch, wie vollständig die Quellen der beiden Orte sind. Er ist kein Maß für politische Aktivität.</p>
+            <p className="m-0 mt-3 text-[12px] text-slate-500">Der Unterschied zeigt auch, wie vollständig die Quellen sind, nicht politische Aktivität.</p>
           </section>
           </Reveal>
 
           <Reveal>
           <section className="mt-12">
             <h2 className="text-[22px] font-semibold">Themenprofil</h2>
-            <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themen an den Vorgängen mit Thema; Formalien und noch nicht eingeordnete Vorgänge zählen nicht mit. Die senkrechte Marke zeigt den Wert für alle Gebiete.</p>
+            <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themen an den Vorgängen mit Thema. Die Marke zeigt den Wert für alle Gebiete.</p>
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             {legend}
             <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => pick("topics", "label", r.id, r.name, [0, 1])} />)}</ol>
@@ -239,7 +239,7 @@ export function ComparePage() {
             return (
               <section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Begriffe im Vergleich</h2>
-                <p className="mb-4 mt-1 text-[14px] text-slate-500">Links und rechts: Begriffe, die im jeweiligen Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). Ein Klick auf einen Begriff, ein Thema, ein Gremium oder die Zahl der Vorgänge zeigt die Vorgänge dahinter. In der Mitte: Begriffe, die in beiden Orten vorkommen (Anteil an den Vorgängen je Ort). Ortsnamen und Wörter des Sitzungsbetriebs (zum Beispiel „Anregungen“, „Beantwortung“) sind ausgenommen.</p>
+                <p className="mb-4 mt-1 text-[14px] text-slate-500">Links und rechts: Begriffe, die im Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). In der Mitte: Begriffe beider Orte. Ein Klick zeigt die Vorgänge dahinter.</p>
                 <div className="grid gap-x-8 gap-y-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1fr)]">
                   {only(0)}
                   <div className="md:order-none">
@@ -265,7 +265,7 @@ export function ComparePage() {
             <p className="mb-1 mt-2 text-[14px] text-slate-500">Datenlage der beiden Orte und Stand der Vorlagen.</p>
             <div className="mt-5">
               <h3 className="text-[18px] font-semibold">Datenlage</h3>
-              <p className="mb-2 mt-1 text-[14px] text-slate-500">Was beim Vergleich zu beachten ist: Wie gut die Quellen der Orte gefüllt und eingeordnet sind.</p>
+              <p className="mb-2 mt-1 text-[14px] text-slate-500">Zu beachten: Wie gut die Quellen gefüllt und eingeordnet sind.</p>
               <div className="grid gap-4 sm:grid-cols-2">
                 {res.places.map((p, i) => { const d = datenlage(p); return (
                   <div key={p.ags + p.scope} className="rounded-[14px] border border-slate-200 p-4">

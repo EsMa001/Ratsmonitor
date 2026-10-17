@@ -40,7 +40,7 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
           <div>
             <h2 className="m-0 text-[22px] font-semibold">{title}</h2>
             <p className="mt-2 max-w-[560px] text-[16px] leading-relaxed text-slate-500">{v.text}</p>
-            <p className="mt-4 max-w-[560px] text-[14px] text-slate-500">Rechts sehen Sie eine Vorschau mit echten Daten. Mit dem Tarif Enterprise starten Sie die Analyse für jedes eigene Thema.</p>
+            <p className="mt-4 max-w-[560px] text-[14px] text-slate-500">Die Vorschau zeigt echte Daten.</p>
           </div>
           <LiveThumb id={v.id} term={v.term} />
         </section>

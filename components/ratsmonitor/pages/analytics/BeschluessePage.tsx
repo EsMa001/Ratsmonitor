@@ -181,7 +181,7 @@ export function BeschluessePage() {
                   {statusRows.map((s) => <li key={s.id} className="flex items-center justify-between gap-3 border-b border-slate-100 py-1"><span className="flex items-center gap-2"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{STATUS.find((x) => x.id === s.id)?.label ?? s.id}</span><span className="tabular-nums text-slate-500">{n(s.n)} · {Math.round((s.n / statusTotal) * 100)} %</span></li>)}
                 </ul>
               </div>
-              <MethodikNote>Stand, Verlauf und Aufteilungen zählen alle passenden Vorgänge (Endstand je Vorgang, Gremienebene je Station); Formalien zählen nicht. Abstimmung, Änderungen und Durchlaufzeit zählen alle Vorgänge mit Entscheidung. „Einstimmig“, „mehrheitlich“ und „geändert“ werden aus dem Ergebnistext der Beschlussstation gelesen; fehlt dort die Angabe, zählt der Vorgang nicht mit. Der Status ist nur bei einem Teil der Einträge bekannt, und Ablehnungen sind in den Quellen selten vermerkt; die Quoten sind deshalb ein Anhaltspunkt. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt.</MethodikNote>
+              <MethodikNote>Abstimmung, Änderungen und Durchlaufzeit zählen Vorgänge mit Entscheidung; „einstimmig“, „mehrheitlich“ und „geändert“ stammen aus dem Ergebnistext. Der Status ist nur bei einem Teil bekannt, Ablehnungen sind selten vermerkt: die Quoten sind ein Anhaltspunkt. Offene Vorgänge fehlen in der Durchlaufzeit.</MethodikNote>
               </Fold>
               </div>
             </>

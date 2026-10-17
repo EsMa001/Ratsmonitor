@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (513 Zeilen, ⚠14)
+- app/ratsmonitor-info.css (522 Zeilen, ⚠14)
 - app/ratsmonitor.css (225 Zeilen, ⚠16)
 
 admin-access admin.css:6
@@ -232,7 +232,7 @@ analysis-controls analyse-admin.css:30
 analysis-field analyse-admin.css:30
 analysis-provenance analyse-admin.css:71
 analysis-provenance ratsmonitor.css:58
-back-btn ratsmonitor-info.css:495
+back-btn ratsmonitor-info.css:504
 back-btn ratsmonitor.css:20
 bg-slate-900 ratsmonitor.css:172
 bg-teal-50 ratsmonitor.css:98
@@ -515,10 +515,10 @@ ri-tl__title ratsmonitor.css:147
 ri-topnav ratsmonitor-info.css:370
 ri-two ratsmonitor-info.css:136
 rm-analytics ratsmonitor-info.css:452
-rm-band-mid ratsmonitor-info.css:511
-rm-banddots ratsmonitor-info.css:507
-rm-bandicon ratsmonitor-info.css:502
-rm-brandtag ratsmonitor-info.css:499
+rm-band-mid ratsmonitor-info.css:520
+rm-banddots ratsmonitor-info.css:516
+rm-bandicon ratsmonitor-info.css:511
+rm-brandtag ratsmonitor-info.css:508
 rm-chip ratsmonitor.css:88
 rm-dark admin.css:461
 rm-dark ratsmonitor-info.css:400
@@ -577,7 +577,9 @@ text-link admin.css:6
 text-link analyse-admin.css:92
 text-link design-styles.css:72
 text-link ratsmonitor.css:93
+text-slate-500 ratsmonitor-info.css:495
 text-slate-900 ratsmonitor.css:158
+text-teal-700 ratsmonitor-info.css:493
 text-white ratsmonitor.css:172
 timeline design-styles.css:204
 topic design-styles.css:140
@@ -715,6 +717,7 @@ topic design-styles.css:140
 - CalendarFeed.tsx (106): CalendarFeed
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - CountDots.tsx (9): CountDots
+- DateBadge.tsx (14): DateBadge
 - DateRangeFilter.tsx (98): DateRangeSelect, DateRangeFields, DateRangeFilter
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
@@ -750,7 +753,7 @@ topic design-styles.css:140
 - AboutPage.tsx (159): AboutPage
 - AccountPages.tsx (633): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
-- AnwenderLive.tsx (239, ⚠1): AnwenderLivePage
+- AnwenderLive.tsx (162): AnwenderLivePage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenLive.tsx (244): LiveThumb
 - BranchenPages.tsx (121): BranchePage
@@ -759,13 +762,13 @@ topic design-styles.css:140
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (86): PreisePage
-- QuellenPage.tsx (171, ⚠4): QuellenPage
+- QuellenPage.tsx (171, ⚠3): QuellenPage
 - StartseitePage.tsx (490, ⚠3): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (157): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
-- XAuszug.tsx (221, ⚠2): XAuszug
+- XAuszug.tsx (220, ⚠2): XAuszug
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
 - blocks.tsx (218, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (112): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
@@ -838,7 +841,7 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (242): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (227, ⚠26): ANALYSE_THUMBS, MethodikText
+- AnalyticsAbout.tsx (224, ⚠15): ANALYSE_THUMBS, MethodikText
 - AnalyticsLocked.tsx (51): AnalyticsLocked
 - AnalyticsPages.tsx (58): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
@@ -847,19 +850,20 @@ topic design-styles.css:140
 - BeschluessePage.tsx (195, ⚠8): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (303, ⚠10): ComparePage
+- ComparePage.tsx (303, ⚠9): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionSearch.tsx (68, ⚠2): PlayState, DiffusionSearch
-- FaktenPage.tsx (312, ⚠3): FaktenPage
+- FaktenPage.tsx (312, ⚠2): FaktenPage
 - FraktionenPage.tsx (167, ⚠4): FraktionenPage
 - GraphView.tsx (235, ⚠1): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (171, ⚠3): GremiennetzPage
 - Kennzahlen.tsx (132): weekAgo, isNew, NeuMark, Kennzahlen, countScale, zeitText, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
 - KnowledgeGraphPage.tsx (234, ⚠3): KnowledgeGraphPage
 - Laden.tsx (25): Laden
+- Methodik.tsx (38): METHODIK_VON, MethodikUnten, MethodikNote
 - NetView.tsx (179, ⚠2): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (111, ⚠1): NewsradarPage
+- NewsradarPage.tsx (111): NewsradarPage
 - PageBand.tsx (19): PageBand
 - RadarDrill.tsx (91): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS

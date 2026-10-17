@@ -487,9 +487,18 @@ html.rm-search .rm-dotfield{display:none}
 html:not(.rm-dark) :is(.pl-band,.ri-head){background:var(--rm-ac) !important;border-bottom:0 !important}
 html:not(.rm-dark) :is(.pl-band,.ri-head),html:not(.rm-dark) :is(.pl-band,.ri-head) *{color:var(--rm-on) !important;border-color:rgba(255,255,255,.3) !important}
 html:not(.rm-dark) :is(.pl-band,.ri-head) :is([class*="bg-slate-"],[class*="bg-teal-"],[class*="bg-white"]){background:rgba(255,255,255,.16) !important}
+/* Weiße Karte im Kopf (Anwenderseiten): Text wieder dunkel, sonst weiß auf weiß; Akzent und Grautöne über die Inline-Farbe */
+html:not(.rm-dark) .ri-head .ri-pv__card,html:not(.rm-dark) .ri-head .ri-pv__card *{color:var(--rm-c900) !important;border-color:var(--rm-c200) !important}
+html:not(.rm-dark) .ri-head .ri-pv__card [style*="--rm-ac"]{color:var(--rm-ac) !important}
+html:not(.rm-dark) .ri-head .ri-pv__card .text-teal-700{color:var(--rm-ac) !important}
+html:not(.rm-dark) .ri-head .ri-pv__card [style*="--rm-c700"]{color:var(--rm-c700) !important}
+html:not(.rm-dark) .ri-head .ri-pv__card [style*="--rm-c500"],html:not(.rm-dark) .ri-head .ri-pv__card .text-slate-500{color:var(--rm-c500) !important}
 html.rm-dark :is(.pl-band,.ri-head){background:var(--rm-page) !important;border-bottom:2px solid var(--rm-fill) !important}
 /* Alle Seitenköpfe gleich knapp: gleicher Innenabstand, Überschrift einheitlich 28 px */
 :is(.pl-band,.ri-head){padding-top:16px !important;padding-bottom:24px !important}
+/* Anwenderseiten: Überschrift größer */
+.ri-anw .ri-head .ri-h1{font-size:40px !important;line-height:1.15 !important}
+@media (max-width:640px){.ri-anw .ri-head .ri-h1{font-size:30px !important}}
 .ri-head :is(h1,.ri-h1){font-size:28px !important;line-height:1.2 !important;margin-top:8px !important;margin-bottom:0 !important}
 .ri-head :is(p,.ri-lead){font-size:16px !important;margin-top:8px !important;max-width:860px}
 .ri-head .ri-bid svg{width:28px;height:28px}.ri-head .back-btn{margin-bottom:8px !important}.ri-head .ri-actions{margin-top:16px !important}

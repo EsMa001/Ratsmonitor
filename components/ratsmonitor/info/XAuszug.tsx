@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { RegionMap } from "../pages/analytics/RegionMap";
 import { pctText } from "../lib/format";
@@ -18,8 +18,6 @@ type Auszug = SignalAuszug | WertAuszug | NewsAuszug | TrendAuszug | NetzAuszug 
 
 const n = (v: number) => v.toLocaleString("de-DE");
 const MON = ["JAN", "FEB", "MÄR", "APR", "MAI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEZ"];
-/* Stände als Balken: Petrol in Abstufungen (Verfahrensschritte sind keine Zeitreihe) */
-const SHADES = ["var(--rm-ac)", "var(--rm-fill)", "var(--color-teal-400)", "var(--color-teal-300)", "var(--color-teal-200)", "var(--color-teal-100)"];
 
 function useAuszug(id: string) {
   const [res, setRes] = useState<{ id: string; data: Auszug | null } | null>(null);
@@ -43,27 +41,26 @@ function dotsOf(places: SignalAuszug["places"]) {
 }
 
 function SignalBlock({ a, label }: { a: SignalAuszug; label: string }) {
-  const steps = a.phases.filter((p) => p.key !== "Sonstiger Schritt" && p.count > 0);
-  const sum = steps.reduce((s, p) => s + p.count, 0);
+  /* Die Karte steht bündig zur Überschrift des Abschnitts: Abstand von dort bis zu diesem Block nach oben ziehen (nur ab lg, wo sie rechts steht) */
+  const wrap = useRef<HTMLDivElement>(null);
+  const [hoch, setHoch] = useState(0);
+  useLayoutEffect(() => {
+    const messen = () => {
+      const h = wrap.current?.closest("section")?.querySelector("h2");
+      setHoch(h && wrap.current ? Math.max(0, Math.round(wrap.current.getBoundingClientRect().top - h.getBoundingClientRect().top)) : 0);
+    };
+    messen();
+    window.addEventListener("resize", messen);
+    return () => window.removeEventListener("resize", messen);
+  }, [a]);
   return (
-    <div className="grid items-start gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+    <div ref={wrap} className="grid items-start gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1fr)_420px]">
       <div>
         <p className="m-0 flex flex-wrap items-baseline gap-x-3">
           <span className="text-[44px] font-semibold leading-none text-teal-700 tabular-nums">{n(a.total)}</span>
           <span className="text-[18px] text-slate-900">{label} in {n(a.placeCount)} Kommunen, letzte {a.months} Monate</span>
         </p>
         {a.firstCount > 0 && <p className="m-0 mt-2 text-[14px] text-slate-500">{n(a.firstCount)} {a.firstCount === 1 ? "Ort berät" : "Orte beraten"} das Thema zum ersten Mal.</p>}
-        {sum > 0 && (
-          <div style={{ marginTop: 24 }}>
-            <p className="m-0 text-[14px] font-semibold text-slate-900">Nach Schritt</p>
-            <div className="mt-2 flex h-3 w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label={steps.map((p) => `${p.name} ${p.count}`).join(", ")}>
-              {steps.map((p, i) => <span key={p.key} style={{ width: `${(100 * p.count) / sum}%`, background: SHADES[i % SHADES.length] }} />)}
-            </div>
-            <ul className="m-0 mt-2 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[14px] text-slate-700">
-              {steps.map((p, i) => <li key={p.key} className="flex items-center gap-1.5"><i aria-hidden="true" className="h-2.5 w-2.5 rounded-full" style={{ background: SHADES[i % SHADES.length] }} />{p.name} <span className="tabular-nums text-slate-500">{n(p.count)}</span></li>)}
-            </ul>
-          </div>
-        )}
         {a.items.length > 0 && (
           <div style={{ marginTop: 24 }}>
             <p className="m-0 text-[14px] font-semibold text-slate-900">Neueste Vorhaben</p>
@@ -87,7 +84,9 @@ function SignalBlock({ a, label }: { a: SignalAuszug; label: string }) {
         )}
         <Link href={`/analytics/signale?signal=${a.signal}`} className="mt-4 inline-block text-[16px] text-teal-700 hover:underline">Alle Vorhaben in plenara.X Signale →</Link>
       </div>
-      <RegionMap level="city" levels={{}} dots={dotsOf(a.places)} colors={["var(--rm-fill)"]} picked="" onPick={() => {}} legend={["1 Punkt = 1 Vorhaben"]} label={`Karte: ${label} je Gemeinde`} />
+      <div className="lg:mt-[var(--hoch)]" style={{ "--hoch": `${-hoch}px` } as CSSProperties}>
+        <RegionMap level="city" levels={{}} dots={dotsOf(a.places)} colors={["var(--rm-fill)"]} picked="" onPick={() => {}} legend={["1 Punkt = 1 Vorhaben"]} label={`Karte: ${label} je Gemeinde`} />
+      </div>
     </div>
   );
 }
@@ -208,7 +207,7 @@ export function XAuszug({ name, auszuege }: { name: string; auszuege: [string, s
   return (
     <section className="ri-sec">
       <h2 className="ri-h2">Was plenara für {name} zeigt</h2>
-      <p className="ri-sub">Aus den Vorlagen aller Räte gelesen, jede Zahl mit den Vorgängen dahinter. Auszug aus plenara.X, Tarif Enterprise.</p>
+      <p className="ri-sub">Aus den Vorlagen aller Räte, jede Zahl mit den Vorgängen dahinter.</p>
       {auszuege.length > 1 && (
         <div className="flex flex-wrap gap-2" role="group" aria-label="Auszug wählen" style={{ marginTop: 16 }}>
           {auszuege.map(([k, l, chip], i) => <button key={k} type="button" aria-pressed={sel === i} onClick={() => setSel(i)} className={"rounded-full border px-3 py-1.5 text-[14px] " + (sel === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{chip ?? l}</button>)}

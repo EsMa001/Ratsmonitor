@@ -153,7 +153,7 @@ export function QuellenPage() {
 
       <section className="ri-sec ri-sec--tight">
         <h2 className="ri-h2">Hinter den Kulissen</h2>
-        <p className="m-0 mt-3 max-w-[760px] text-[16px] leading-relaxed text-slate-500">Damit fast eine Million Vorgänge sofort durchsuchbar bleiben, arbeitet unter plenara eine eigens aufgebaute, hochperformante Datenbank mit intelligenter Suche: Wortlisten und vorberechnete Zahlen statt langem Blättern. Das macht Antworten in Bruchteilen einer Sekunde möglich und ist die Grundlage für die Analysen in <Link href="/analytics/atlas" className="text-teal-700">plenara.X</Link>.</p>
+        <p className="m-0 mt-3 max-w-[760px] text-[16px] leading-relaxed text-slate-500">Wortlisten und vorberechnete Zahlen halten fast eine Million Vorgänge sofort durchsuchbar; sie sind auch die Grundlage für <Link href="/analytics/atlas" className="text-teal-700">plenara.X</Link>.</p>
       </section>
 
       <DarkCta

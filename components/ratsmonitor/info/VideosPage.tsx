@@ -120,7 +120,7 @@ export function VideosPage() {
           <div>
             <p className="m-0 text-[14px] font-semibold uppercase tracking-wide text-teal-700">Unter 45 Sekunden</p>
             <h2 className="m-0 mt-1 text-[28px] font-semibold leading-tight max-md:text-[22px] text-slate-900">Was wird in Räten gerade beraten, das Ihr Vorhaben, Ihre Stadt oder Ihre Recherche betrifft?</h2>
-            <p className="mb-0 mt-3 text-[16px] text-slate-600">Für Kommunen, Unternehmen, Verbände, Medien und Bürger: Ein Begriff genügt, die Karte zeigt, wo darüber beraten wird, und jede Angabe führt zur Originalunterlage.</p>
+            <p className="mb-0 mt-3 text-[16px] text-slate-600">Ein Begriff genügt, die Karte zeigt, wo beraten wird.</p>
           </div>
         </div>
       </section>

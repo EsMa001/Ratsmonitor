@@ -255,7 +255,7 @@ export function FaktenPage() {
                 </ol>
                 {ranked.length > 10 && <button type="button" onClick={() => setAll(!all)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{all ? "Weniger zeigen" : `Alle ${n(ranked.length)} zeigen`}</button>}
               </section>}
-              <MethodikNote>Je Gebiet der jüngste in den Vorlagen der Räte genannte Wert (beschlossen oder vorgeschlagen, keine Vergleichswerte; mehrere am selben Tag: Median); Veränderung gegen den vorigen anderen Wert. Nur Werte, deren Erkennung in Stichproben zu mindestens 90 % stimmt.</MethodikNote>
+              <MethodikNote>Je Gebiet der jüngste genannte Wert (beschlossen oder vorgeschlagen, keine Vergleichswerte), dazu die Veränderung zum vorigen. Nur Werte mit mindestens 90 % Trefferquote in Stichproben.</MethodikNote>
             </div>
           </div>
         </div>
