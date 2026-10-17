@@ -16,7 +16,7 @@ import { useBandFigure, useCountUp } from "../../lib/bandFigure";
  */
 type Seite = { icon: IconName; gruppe: "Analysen" | "Einblicke"; titel: string; frage: string; text: string; reiter?: [string, string][] };
 
-const ATLAS: [string, string][] = [["/analytics/atlas", "Überblick"], ["/analytics/vergleich", "Vergleich"], ["/analytics/beschluesse", "Ausgang"]];
+const ATLAS: [string, string][] = [["/analytics/atlas", "Überblick"], ["/analytics/vergleich", "Vergleich"]];
 
 /* Reiter haben die Frage ihrer Seite im Kopf; als Kachel brauchen sie eine eigene */
 const KACHEL_FRAGE: Record<string, string> = { "/analytics/vergleich": "Mit anderem Ort vergleichen", "/analytics/beschluesse": "Wie geht es aus?" };
@@ -32,9 +32,9 @@ const SEITEN: Record<string, Seite> = {
   atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen.", reiter: ATLAS },
   vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist.", reiter: ATLAS },
   signale: { icon: "zap", gruppe: "Einblicke", titel: "plenara.X Signale", frage: "Was entsteht?", text: "Einzelne Vorhaben mit Ort, Schritt und Quelle." },
-  fakten: { icon: "tag", gruppe: "Analysen", titel: "plenara.X Fakten", frage: "Welcher Wert?", text: "Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle." },
+  fakten: { icon: "tag", gruppe: "Einblicke", titel: "plenara.X Fakten", frage: "Welcher Wert?", text: "Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle." },
   trends: { icon: "trendingUp", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten." },
-  beschluesse: { icon: "circleCheck", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Wie die Vorgänge zum gewählten Thema ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf.", reiter: ATLAS },
+  beschluesse: { icon: "circleCheck", gruppe: "Analysen", titel: "plenara.X Ausgang", frage: "Wie geht es aus?", text: "Wie die Vorgänge zum gewählten Thema ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf." },
   fraktionen: { icon: "landmark", gruppe: "Einblicke", titel: "plenara.X Fraktionen", frage: "Wer möchte was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
   gremien: { icon: "users", gruppe: "Analysen", titel: "plenara.X Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   graph: { icon: "network", gruppe: "Analysen", titel: "plenara.X Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },

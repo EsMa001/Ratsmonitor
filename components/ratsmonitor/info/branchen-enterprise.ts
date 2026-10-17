@@ -9,7 +9,7 @@ export type AnalyseGruppe = "tool" | "atlas";
 
 /* Gruppen mit Übersichtsseite (Menü „Analysen“, Brotkrumen der einzelnen Analysen) */
 export const GRUPPEN: Record<Exclude<AnalyseGruppe, "atlas">, { name: string; kurz: string; href: string; text: string }> = {
-  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/signale", text: "Einzelne Vorgänge mit Ort, Schritt und Quelle: Signale, Ausschreibungen, was gerade berichtenswert ist und die Anträge der Fraktionen." },
+  tool: { name: "plenara.X Einblicke", kurz: "Einblicke", href: "/analytics/signale", text: "Einzelne Vorgänge mit Ort, Schritt und Quelle: Signale, Ausschreibungen, was gerade berichtenswert ist, die Anträge der Fraktionen und die Werte aus den Unterlagen." },
 };
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {
@@ -43,9 +43,9 @@ export const NEU_HREF: Partial<Record<AnalyseId, (term?: string) => string>> = {
   diffusion: (term) => `/analytics/trends${term ? `?begriff=${encodeURIComponent(term)}` : ""}`,
   trends: () => "/analytics/trends",
 };
-export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "Vergleich im plenara.X Atlas", beschluesse: "Ausgang im plenara.X Atlas", gremien: "Gremien", fraktionen: "Fraktionen", news: "Aktuelles" };
+export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "Vergleich im plenara.X Atlas", beschluesse: "plenara.X Ausgang", gremien: "Gremien", fraktionen: "Fraktionen", news: "Aktuelles" };
 /** Seiten der Gruppe plenara.X Einblicke (keine eigene Übersichtsseite); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
-export const EINBLICKE: AnalyseId[] = ["signale", "ausschreibungen", "news", "fraktionen"];
+export const EINBLICKE: AnalyseId[] = ["signale", "ausschreibungen", "news", "fraktionen", "fakten"];
 
 export const PLENARAX_VORTEILE: [AnalyseId, string, string][] = [
   ["diffusion", "Ausbreitung in Trends sehen", "Wo ein Begriff zuerst auftaucht und in welchen Kommunen er danach folgt."],

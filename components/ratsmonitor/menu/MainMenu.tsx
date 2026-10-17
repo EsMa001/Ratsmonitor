@@ -28,20 +28,21 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
 ];/* Analyse: Start (Übersicht), Signale (was entsteht), Tools (alle Werkzeuge), Atlas (worüber beraten wird); die einzelnen Analysen stehen auf diesen Seiten */
 /* plenara.X (Logo als Gruppenname) mit zwei Abschnitten: Analysen (Zahlen und Verteilungen) und Einblicke (einzelne Vorgänge), je Eintrag die Frage leise rechts daneben */
-type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper" | "clipboardList"; hint?: string };
+type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper" | "clipboardList" | "circleCheck"; hint?: string };
 const ANALYSE: XEintrag[] = [
   { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
   { href: "/analytics/trends", label: "Trends", icon: "trendingUp", hint: "Was verändert sich?" },
-  { href: "/analytics/fakten", label: "Fakten", icon: "map", hint: "Welcher Wert?" },
+  { href: "/analytics/beschluesse", label: "Ausgang", icon: "circleCheck", hint: "Wie geht es aus?" },
   { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
   { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
 ];
-/* Einblicke: einzelne Vorgänge als Liste mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles, Anträge der Fraktionen). Zahlen und Verteilungen stehen in den Analysen (auch Gremien, Themennetz); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
+/* Einblicke: einzelne Vorgänge und belegte Einzelwerte mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles, Anträge der Fraktionen, Fakten). Zahlen und Verteilungen stehen in den Analysen (Atlas, Trends, Ausgang, Gremien, Themennetz); der Ortsvergleich ist ein Reiter im Atlas */
 const EINBLICKE: XEintrag[] = [
   { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
   { href: "/analytics/ausschreibungen", label: "Ausschreibungen", icon: "clipboardList", hint: "Was wird vergeben?" },
   { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },
   { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer möchte was?" },
+  { href: "/analytics/fakten", label: "Fakten", icon: "map", hint: "Welcher Wert?" },
 ];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [

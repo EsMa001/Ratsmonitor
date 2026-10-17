@@ -753,7 +753,7 @@ topic design-styles.css:140
 - uuid.ts (12): newId
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (273, ⚠1): MainMenu
+- MainMenu.tsx (274, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (171, ⚠12): DetailPage
