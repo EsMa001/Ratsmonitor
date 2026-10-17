@@ -372,3 +372,19 @@ test('Signale Pflege und Einzelhandel: Randfälle aus Stichprobe z1', async () =
   assert.equal(m.retailOf('Kleidercontainer am EDEKA-Markt Tebbe'), null);
   assert.ok(m.retailOf('Bebauungsplan "Nahversorgung Hüffenhardt" Aufstellungsbeschluss'));
 });
+
+test('Signale Wärme und Wasser: Randfälle aus Stichprobe y4', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.energyOf('Vergabe Wasserkonzession im Stadtgebiet'), null);
+  assert.equal(m.energyOf('Konzessionsvertrag über die Erbringung des Citymarketing'), null);
+  assert.equal(m.waterSignalOf('Hangabrutsch im Bereich Alte Kläranlage – Vergabe der Hangsicherung'), null);
+  assert.equal(m.waterSignalOf('Antrag auf Neubau einer Photovoltaik-Anlage zur Versorgung der Kläranlage'), null);
+  assert.ok(m.waterSignalOf('Kanalsanierung 3.BA - Block V in geschlossener Bauweise - Vergabe der Arbeiten'));
+});
+
+test('Signal Wärme: private Neubauten mit Heizung und Verwaltungsräte (Stichprobe y6)', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.energyOf('Neubau eines Heizhauses mit PV-Anlage auf der Flur-Nr. 1228/1 in Wurmansau'), null);
+  assert.equal(m.energyOf('Verwaltungsräte im Kommunalunternehmen "Fernwärmeversorgung Grabenstätt-Süd AöR"'), null);
+  assert.ok(m.energyOf('Erneuerung der Heizungsanlage an der Grundschule Burgrieden – Grundsatzbeschluss'));
+});
