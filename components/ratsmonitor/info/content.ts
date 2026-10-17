@@ -221,10 +221,10 @@ const ANWENDER_GRUPPEN: { kopf?: Branche["kopf"]; xauszug?: Branche["xauszug"]; 
     { name: "Landschaftsplanung", icon: "map", nutzen: [["map", "Ausgleichsflächen finden", "Beschlossene Ausgleichsmaßnahmen, für die Planer gesucht werden.", "Ausgleich"], ["layers", "Grünordnung im Blick", "Grünordnungspläne zeigen, wo Eingriffe ausgeglichen werden müssen.", "Grünordnungsplan"]] },
     { name: "Verkehrs- und Ingenieurplanung", icon: "road", nutzen: [["road", "Bauprogramme der Region", "Straßen, Radwege und ÖPNV-Ausbau mehrerer Kommunen auf einen Blick.", "Radverkehr"], ["clipboardList", "Projekte vor der Vergabe sehen", "Sanierungen und Ausbauten stehen in Beschlüssen, bevor ausgeschrieben wird.", "Straßensanierung"]] },
   ] },
-  { beleg: { titel: "Hebesatzsatzung", ort: "Ratzeburg", ueberschrift: "4 Wochen zum Mitreden", text: "Hebesatzsatzung in Ratzeburg: Zwischen der ersten Beratung im Ausschuss und dem Beschluss lagen vier Wochen. Genug Zeit, um Stellung zu nehmen.", schritte: [
-    { d: "2025-11-11", label: "Erste Beratung", gremium: "Finanzausschuss", href: "/beschluss/de-01053100-vo-7306" },
-    { d: "2025-11-24", label: "Empfehlung", gremium: "Hauptausschuss", href: "/beschluss/de-01053100-vo-7374" },
-    { d: "2025-12-08", label: "Beschluss der Satzung", gremium: "Stadtvertretung", href: "/beschluss/de-01053100-vo-7387" },
+  { beleg: { titel: "Fortführung Planung Gewerbegebiet", ort: "Satow", ueberschrift: "8 Tage durch 3 Gremien", text: "Fortführung der Planung des Gewerbegebiets Satow: Binnen acht Tagen beriet es der Fachausschuss, der Hauptausschuss und die Gemeindevertretung. Wer mitreden will, hat dafür wenig Zeit.", schritte: [
+    { d: "2026-09-16", label: "Beratung im Fachausschuss", gremium: "Ausschuss für Gemeindeentwicklung, Bau und Verkehr", href: "/beschluss/de-13072093-top-463--13" },
+    { d: "2026-09-17", label: "Beratung im Hauptausschuss", gremium: "Hauptausschuss", href: "/beschluss/de-13072093-top-464--19" },
+    { d: "2026-09-24", label: "Beratung in der Gemeindevertretung", gremium: "Gemeindevertretung Satow", href: "/beschluss/de-13072093-top-465--17" },
   ] }, plenarax: [
     ["Hebesätze auf der Karte", "Hebesätze aus den Vorlagen, je Gemeinde im Vergleich.", "/analytics/fakten?fakt=hebesatz"],
     ["Ausschreibungen und Vergaben", "Welche Aufträge Kommunen vergeben, mit Stand je Vorgang.", "/analytics/signale?signal=vergaben"],
