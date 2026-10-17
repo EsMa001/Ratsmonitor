@@ -362,3 +362,13 @@ test('Signal Wärme: Randfälle aus Stichprobe y3', async () => {
   assert.equal(m.energyOf('Antrag auf Vorbescheid Neubau eines Heizhauses mit Hackschnitzellager'), null);
   assert.ok(m.energyOf('Erneuerung Heizung FFW Haus Equarhofen'));
 });
+
+test('Signale Pflege und Einzelhandel: Randfälle aus Stichprobe z1', async () => {
+  const m = await import('../shared/topic-facts.mjs');
+  assert.equal(m.careOf('Wirtschaftsplan 2026 der MVZ Crailsheim GmbH'), null);
+  assert.equal(m.careOf('Parkplatz am Ärztehaus - Bau einer PV-Überdachung'), null);
+  assert.ok(m.careOf('Sanierung / Umbau Ärztehaus Weidenbach'));
+  assert.equal(m.retailOf('Öffnungszeiten des LIDL-Supermarktes'), null);
+  assert.equal(m.retailOf('Kleidercontainer am EDEKA-Markt Tebbe'), null);
+  assert.ok(m.retailOf('Bebauungsplan "Nahversorgung Hüffenhardt" Aufstellungsbeschluss'));
+});
