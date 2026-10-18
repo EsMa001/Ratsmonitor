@@ -62,6 +62,9 @@ export function ComparePage() {
   /* Name des mitgebrachten Orts, sobald die Gebiete geladen sind */
   if (ort1 && !ort1.name && geo?.info(ort1.ags)) setOrt1(asPlace({ ags: ort1.ags, name: geo.info(ort1.ags)!.name }));
   const phone = usePhone();
+  /* Handy: Themenprofil zuerst nur mit den fünf größten Themen, Begriffe als Schalter Ort 1 / beide / Ort 2 */
+  const [allTopics, setAllTopics] = useState(false);
+  const [termTab, setTermTab] = useState<"a" | "b" | "c">("b");
   const [thema, setThema] = useState("");
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
@@ -207,7 +210,8 @@ export function ComparePage() {
             <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themen an den Vorgängen mit Thema. Die Marke zeigt den Wert für alle Gebiete.</p>
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             {legend}
-            <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => pick("topics", "label", r.id, r.name, [0, 1])} />)}</ol>
+            <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{(phone && !allTopics ? topicRows.slice(0, 5) : topicRows).map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => pick("topics", "label", r.id, r.name, [0, 1])} />)}</ol>
+            {phone && topicRows.length > 5 && <button type="button" aria-expanded={allTopics} onClick={() => setAllTopics(!allTopics)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 hover:underline sm:hidden">{allTopics ? "Weniger Themen zeigen" : `Alle ${topicRows.length} Themen zeigen`}</button>}
             {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Vorgänge für ein Themenprofil.</p>}
             {drillAt("topics")}
           </section>
@@ -242,16 +246,17 @@ export function ComparePage() {
               <section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Begriffe im Vergleich</h2>
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Links und rechts: Begriffe, die im Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). In der Mitte: Begriffe beider Orte. Ein Klick zeigt die Vorgänge dahinter.</p>
+                <div className="mb-4 sm:hidden"><Segmented label="Begriffe" fill options={[["a", names[0]], ["b", "In beiden"], ["c", names[1]]]} value={termTab} onPick={setTermTab} /></div>
                 <div className="grid gap-x-8 gap-y-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1fr)]">
-                  {only(0)}
-                  <div className="md:order-none">
+                  <div className={termTab === "a" ? "" : "max-sm:hidden"}>{only(0)}</div>
+                  <div className={`md:order-none ${termTab === "b" ? "" : "max-sm:hidden"}`}>
                     <h3 className="text-[16px] font-semibold">In beiden Orten</h3>
                     <ol className={list}>
                       {com.map((c) => <li key={c.term} className={row}><button type="button" onClick={() => pick("terms", "term", c.term, `„${prettyTerm(c.term)}“`, [0, 1])} aria-expanded={isOpen("terms", "term", c.term)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", c.term) && drill!.idx.length > 1)}`}>{prettyTerm(c.term)}</button><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
                       {!com.length && <li className="py-2 text-[14px] text-slate-500">Keine gemeinsamen Begriffe.</li>}
                     </ol>
                   </div>
-                  {only(1)}
+                  <div className={termTab === "c" ? "" : "max-sm:hidden"}>{only(1)}</div>
                 </div>
                 {drillAt("terms")}
               </section>
