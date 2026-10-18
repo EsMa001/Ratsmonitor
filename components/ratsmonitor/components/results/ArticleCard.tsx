@@ -4,6 +4,10 @@ import { MONTH_SHORT, fmtDate, highlightSegments, todayLocal } from "../../lib/t
 import type { Article } from "../../types";
 import { SaveArticleButton } from "../SaveArticleButton";
 import { prefetchDetail } from "../../lib/topicCache";
+import { toggleSavedArticle, useSavedArticles } from "../../lib/savedArticles";
+import { useEntitlements } from "../../lib/entitlements";
+import { useToast } from "../../state/toast";
+import { useSwipe } from "../../lib/useSwipe";
 
 export function Highlight({ text, terms }: { text: string; terms: string[] }) {
   return (
@@ -36,19 +40,30 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
   const warm = useRef(0);
   const later = () => { clearTimeout(warm.current); warm.current = window.setTimeout(() => prefetchDetail(a.id), 150); };
   const stop = () => clearTimeout(warm.current);
+  /* Handy: nach links wischen merkt den Artikel vor (oder nimmt ihn wieder heraus), wie das Lesezeichen */
+  const saved = useSavedArticles().some((x) => x.id === a.id);
+  const { allow } = useEntitlements();
+  const toast = useToast();
+  const swipe = useSwipe((dir) => {
+    if (dir !== -1) return;
+    if (!saved && !allow("bookmarks")) return;
+    void toggleSavedArticle({ id: a.id, title: a.title, date: a.date, gemeinde: a.gemeinde, teaser: a.teaser }).then((err) => toast(err || (saved ? "Aus gespeicherten Artikeln entfernt" : "Artikel gespeichert")));
+  }, { follow: true });
   return (
     <article
       onMouseEnter={() => { onHover(a.ags); later(); }}
       onMouseLeave={stop}
-      onTouchStart={later}
-      onTouchMove={stop}
+      onTouchStart={(e) => { later(); swipe.handlers.onTouchStart(e); }}
+      onTouchMove={(e) => { stop(); swipe.handlers.onTouchMove(e); }}
+      onTouchEnd={swipe.handlers.onTouchEnd}
+      onTouchCancel={swipe.handlers.onTouchCancel}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest("button, a")) return;
         if (e.metaKey || e.ctrlKey || e.shiftKey) return;
         e.preventDefault();
         onOpen(a);
       }}
-      style={{ animationDelay: `${Math.min(index * 30, 240)}ms` }}
+      style={{ animationDelay: `${Math.min(index * 30, 240)}ms`, ...(swipe.dx ? { transform: `translateX(${swipe.dx}px)`, transition: "none" } : {}) }}
       className="group relative grid shrink-0 animate-cardIn grid-cols-[44px_minmax(0,1fr)_auto] gap-2.5 sm:grid-cols-[52px_minmax(0,1fr)_auto] sm:gap-3 cursor-pointer rounded-lg border-b border-slate-200 bg-white px-3 max-sm:px-4 py-3 sm:py-4 transition-colors last:border-b-0 hover:bg-slate-50 has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-teal-600 sm:px-3.5"
     >
       <div aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-2.5 pt-0.5 text-center sm:pr-3">

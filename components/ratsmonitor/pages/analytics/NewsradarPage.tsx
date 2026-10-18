@@ -1,3 +1,4 @@
+import { ShareButton } from "../../components/ShareButton";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Segmented } from "./Kennzahlen";
@@ -55,7 +56,8 @@ function Meldung({ i, hide }: { i: Item; hide?: boolean }) {
       <p className={`m-0 mt-3 text-[12px] text-slate-500 ${rest}`}>Quelle: {i.source} · {HINWEIS}</p>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
         <Link href={`/beschluss/${i.id}`} className="inline-flex max-sm:min-h-[44px] items-center text-[14px] font-medium text-teal-700 no-underline">Zum Vorgang →</Link>
-        <button type="button" onClick={copy} className="inline-flex max-sm:min-h-[44px] items-center text-[14px] font-medium text-teal-700">{copied ? "Kopiert" : "Meldung kopieren"}</button>
+        <button type="button" onClick={copy} className="inline-flex max-sm:hidden items-center text-[14px] font-medium text-teal-700">{copied ? "Kopiert" : "Meldung kopieren"}</button>
+        <ShareButton title={i.headline} url={typeof window === "undefined" ? `/beschluss/${i.id}` : `${window.location.origin}/beschluss/${i.id}`} className="sm:hidden" />
         <span className="text-[12px] text-slate-500"><span className="sr-only">Nachrichtenwert </span>Wert {i.score}: {i.why.join(" · ")}</span>
       </div>
     </article>

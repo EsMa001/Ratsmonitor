@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (450 Zeilen, ⚠14)
-- app/ratsmonitor.css (225 Zeilen, ⚠16)
+- app/ratsmonitor.css (229 Zeilen, ⚠16)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -636,15 +636,15 @@ topic design-styles.css:140
 - database-admin.tsx (34, ⚠3): DatabaseAdmin
 
 ### components/ratsmonitor/
-- App.tsx (73, ⚠1): MonitorApp
+- App.tsx (74, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
-- AccountMenu.tsx (77, ⚠2): AccountMenu
+- AccountMenu.tsx (83, ⚠2): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
 - ArtIcon.tsx (71, ⚠1): ArtIcon
 - BandDots.tsx (50): BandDots
-- BottomNav.tsx (52): BottomNav
+- BottomNav.tsx (53, ⚠1): BottomNav
 - Brand.tsx (274): AnalyticsX, AnalyticsLogo, Brand
 - CalendarFeed.tsx (106): CalendarFeed
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
@@ -659,7 +659,7 @@ topic design-styles.css:140
 - FollowButton.tsx (28): NOTIFY_LATER, FollowButton
 - Footer.tsx (65): Footer
 - GateDialog.tsx (148): GateFeature, openGate, openLimitGate, GateDialog
-- Header.tsx (44): Header
+- Header.tsx (58): Header
 - ImportDialog.tsx (151): ImportDialog
 - PlanCards.tsx (154, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (29): SaveArticleButton
@@ -677,13 +677,13 @@ topic design-styles.css:140
 - MapPanel.tsx (344, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
-- ArticleCard.tsx (141, ⚠1): Highlight, ArticleCard, StepTimeline
+- ArticleCard.tsx (156, ⚠1): Highlight, ArticleCard, StepTimeline
 - ResultsPanel.tsx (211): ResultsPanel
 
 ### components/ratsmonitor/info/
 - AccountPages.tsx (633): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
-- AnwenderLive.tsx (164): AnwenderLivePage
+- AnwenderLive.tsx (169): AnwenderLivePage
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
 - BranchenLive.tsx (244): LiveThumb
 - BranchenPages.tsx (121): BranchePage
@@ -700,7 +700,7 @@ topic design-styles.css:140
 - WiderrufPage.tsx (79): WiderrufPage
 - XAuszug.tsx (220, ⚠2): XAuszug
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
-- blocks.tsx (224, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, PlacePill, HitPreview, DarkCta, QaItem, Ladefehler
+- blocks.tsx (228, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, PlacePill, HitPreview, DarkCta, QaItem, Ladefehler
 - branchen-enterprise.ts (115, ⚠1): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, HINTERGRUENDE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (281, ⚠27): Status, Example, Branche, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
@@ -754,15 +754,19 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/menu/
 - MainMenu.tsx (295, ⚠1): ANWENDER, XEintrag, ANALYSE, EINBLICKE, HINTERGRUENDE, INFO, MainMenu, XGruppe
+- MoreSheet.tsx (31): MoreSheet
+- SavedTabs.tsx (35): SAVED_TABS, useSavedSwipe, SavedTabs
+- Sheet.tsx (37): Sheet, SHEET_ROW, SHEET_HEAD
+- XSwitcher.tsx (36): XSheet
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (171, ⚠12): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
-- LegalPage.tsx (213): LegalPage
+- LegalPage.tsx (240): LegalPage
 - OverviewPage.tsx (64): OverviewPage
-- PersonalPage.tsx (25): PersonalPage
+- PersonalPage.tsx (26): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
-- ProfilePage.tsx (448): ProfilePage
+- ProfilePage.tsx (454): ProfilePage
 - SavedArticlesPage.tsx (142, ⚠2): SavedArticlesPage
 - SavedSearchesPage.tsx (242): SavedSearchesPage
 
@@ -779,7 +783,7 @@ topic design-styles.css:140
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (68, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (312, ⚠2): FaktenPage
-- FraktionenPage.tsx (167, ⚠4): FraktionenPage
+- FraktionenPage.tsx (171, ⚠4): FraktionenPage
 - GraphView.tsx (235, ⚠1): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (171, ⚠3): GremiennetzPage
 - Kennzahlen.tsx (130): weekAgo, isNew, Kennzahlen, countScale, zeitText, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
@@ -787,7 +791,7 @@ topic design-styles.css:140
 - Laden.tsx (25): Laden
 - Methodik.tsx (38): METHODIK_VON, MethodikUnten, MethodikNote
 - NetView.tsx (179, ⚠2): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (111): NewsradarPage
+- NewsradarPage.tsx (119): NewsradarPage
 - PageBand.tsx (19): PageBand
 - RadarDrill.tsx (91): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
