@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { RadarDrill } from "./RadarDrill";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, useOrtInAdresse } from "./Kennzahlen";
-import { Baby, Banknote, Building2, Coins, Dog, Droplets, Factory, HandCoins, House, LayoutGrid, Map as MapIcon, Percent, Route, Ticket, Trash2, Wind, type LucideIcon } from "lucide-react";
+import { Baby, Banknote, Building2, Coins, Dog, Droplets, Factory, HandCoins, House, LayoutGrid, Map as MapIcon, Percent, Route, Sprout, Ticket, Trash2, Wind, Zap, type LucideIcon } from "lucide-react";
 import { num } from "../../lib/format";
 import { MethodikNote } from "./Methodik";
 
@@ -179,13 +179,17 @@ export function FaktenPage() {
         </ul>
       </nav>
       {metrics.length > 1 && <nav aria-label="Wert" className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
-        <div className="flex flex-wrap gap-1.5 max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden">
+        {/* Werte als kleine Kacheln mit Symbol (wie die Arten bei den Signalen) */}
+        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {[["alle", "Alle Werte"], ...metrics.map((m) => [m, m])].map(([k, l]) => {
             const on = k === "alle" ? allMetrics : k === metric;
-            return <button key={k} type="button" aria-pressed={on} onClick={() => pick({ fakt: fact?.kind, wert: k, ...(k === "alle" ? { ansicht: "" } : {}) })}
-              className={`h-8 max-sm:shrink-0 max-sm:whitespace-nowrap rounded-full border px-3 text-[14px] ${on ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>;
+            const Icon = k === "alle" ? LayoutGrid : metricIcon(l, fact?.kind);
+            return <li key={k} className="sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => pick({ fakt: fact?.kind, wert: k, ...(k === "alle" ? { ansicht: "" } : {}) })}
+              className={`flex h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:manual] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
+              <Icon size={20} strokeWidth={1.4} aria-hidden="true" className={`max-sm:h-4 max-sm:w-4 ${on ? "text-white" : "text-slate-500"}`} />
+              <span className="line-clamp-2">{l.replace(/(\p{Ll})(steuer|gebühren|sätze|preise)/u, "$1\u00AD$2")}</span></button></li>;
           })}
-        </div>
+        </ul>
       </nav>}
 
       <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
@@ -267,6 +271,11 @@ export function FaktenPage() {
 
 const n = (v: number) => v.toLocaleString("de-DE");
 /* Icon je Fakt (Kacheln) */
+/** Symbol eines Werts (Grundsteuer B, Gewerbesteuer, Wasser …) nach dem Namen, sonst das Symbol des Fakts */
+const metricIcon = (name: string, kind?: string): LucideIcon =>
+  /Grundsteuer A/i.test(name) ? Sprout : /Grundsteuer/i.test(name) ? Building2 : /Gewerbe/i.test(name) ? Factory : /Hunde/i.test(name) ? Dog : /Zweitwohn/i.test(name) ? House
+  : /Vergn/i.test(name) ? Ticket : /wasser/i.test(name) ? Droplets : /Kita|Krippe|Hort/i.test(name) ? Baby : /Müll|Abfall/i.test(name) ? Trash2
+  : /Preis|Euro|€|Boden/i.test(name) ? Banknote : /Leistung|MW|kW/i.test(name) ? Zap : (kind && FACT_ICONS[kind]) || Coins;
 const FACT_ICONS: Record<string, LucideIcon> = {
   alle: LayoutGrid, hebesatz: Percent, fee_rate: Droplets, annual_result: Banknote, land_price: Factory, housing: House, budget: Coins, second_home_tax: Building2,
   amusement_tax: Ticket, kita_fee: Baby, dog_tax: Dog, plot_price: MapIcon, grant: HandCoins, ee_power: Wind, waste_fee: Trash2, plan_area: MapIcon, wind_count: Wind, road: Route,
