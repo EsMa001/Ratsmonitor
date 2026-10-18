@@ -7,7 +7,7 @@ import { useAccount } from "../state/account";
 import { overviewScroll } from "../state/nav";
 import { useSearch, useSearchResults } from "../state/search";
 import { hasFilters } from "../lib/savedSearch";
-import { useSheetStage, useListStage, setSheetStage } from "../lib/sheetStage";
+import { useSheetStage, setSheetStage } from "../lib/sheetStage";
 import { useFiltersOpen } from "../lib/filtersOpen";
 import { isPhone } from "../lib/usePhone";
 
@@ -18,7 +18,6 @@ import { isPhone } from "../lib/usePhone";
 export function OverviewPage({ active }: { active: boolean }) {
   const wasActive = useRef(active);
   const stage = useSheetStage();
-  const listStage = useListStage();
   /* Handy: nach einer Suche zeigt das kleine Blatt schon die ersten Treffer (Vorschau), damit man sieht, dass sie geklappt hat */
   const { snapshot, total } = useSearchResults();
   const peek = hasFilters(snapshot) && total > 0;
@@ -75,7 +74,7 @@ export function OverviewPage({ active }: { active: boolean }) {
   }, [active]);
 
   return (
-    <div hidden={!active} className="rm-flat" data-stage={stage} data-list={listStage} data-peek={peek ? "1" : undefined}>
+    <div hidden={!active} className="rm-flat" data-stage={stage} data-peek={peek ? "1" : undefined}>
       <MapPanel active={active} />
       <main ref={mainRef} id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page max-sm:max-w-none flex-col gap-[12px] pb-0 pt-0">
         {active && <h1 className="sr-only">Kommunalpolitik entdecken: öffentliche Vorgänge, Beratungen und Beschlüsse</h1>}

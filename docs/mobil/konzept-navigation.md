@@ -25,7 +25,7 @@ Schwächen:
 - **Mehr:** Anwender, Informationen (Videos, Datenabdeckung, FAQ, Benachrichtigungen), Impressum, Datenschutz.
 - **Gast:** Folgen und Artikel zeigen die Anmeldeaufforderung, plenara.X die Sperrseite, Suche und Karte voll nutzbar (10 Treffer).
 
-- **Suche am Handy (seit 18.10.2026):** Karte und Ergebnisblatt teilen die Bildschirmhöhe, zwei Stufen. „Klein“: Karte groß, vom Blatt nur Griff und Zeile mit Trefferzahl; „voll“: Liste groß (scrollt im Blatt), Karte als schmaler Streifen mit Suchleiste. Wechsel per Tipp oder Wischen am Griff; Suchfeld und Filter schalten automatisch auf „klein“ (Platz für Vorschläge und Filter). Zustand in `lib/sheetStage.ts`, Stile am Ende von `app/ratsmonitor.css` (`data-stage`); Desktop unverändert. Die Rechtlich-Zeile entfällt dort (steht unter „Mehr“).
+- **Suche am Handy (seit 18.10.2026):** Karte und Ergebnisblatt teilen die Bildschirmhöhe, zwei Stufen. „Klein“: Karte groß, vom Blatt nur Griff und Zeile mit Trefferzahl; „voll“: Liste groß (scrollt im Blatt), Karte als schmaler Streifen mit Suchleiste. Wechsel per Tipp oder Wischen am Griff; Suchfeld und Filter schalten automatisch auf „klein“ (Platz für Vorschläge und Filter). Zustand in `lib/sheetStage.ts`, Stile am Ende von `app/ratsmonitor.css` (`data-stage`, `data-peek`); Desktop unverändert. Die Karte behält ihre Größe (kein Neuzeichnen); das Blatt (`main`) und die Suchleiste (`.rm-sbar`) bewegen sich nur per `transform`, deshalb ruckelt der Wechsel nicht. Nach einer Suche zeigt das kleine Blatt die ersten Treffer als Vorschau. Die Rechtlich-Zeile entfällt dort (steht unter „Mehr“).
 
 Code: `components/BottomNav.tsx`, `menu/{Sheet,MoreSheet,XSwitcher,SavedTabs}.tsx`, `components/{Header,AccountMenu}.tsx`; die Listen kommen aus `menu/MainMenu.tsx`.
 

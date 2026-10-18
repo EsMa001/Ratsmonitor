@@ -302,7 +302,8 @@ export function MapPanel({ active }: { active: boolean }) {
       {/* Suchleiste mittig, im Kartenmodus und auf dem Handy am unteren Rand (Filter-Chips dann darüber); dazu die aktiven Filter und, wenn geöffnet, die Filter selbst (alles Milchglas) */}
       <div
         ref={overlayRef}
-        className={`pointer-events-none absolute inset-x-0 ${filtersOpen ? "z-[8]" : "z-[6]"} flex items-center gap-2 px-4 transition-[top] duration-500 ease-in-out motion-reduce:transition-none max-sm:transition-none ${low ? "flex-col-reverse" : "flex-col"}`}
+        data-low={low ? "1" : undefined}
+        className={`rm-sbar pointer-events-none absolute inset-x-0 ${filtersOpen ? "z-[8]" : "z-[6]"} flex items-center gap-2 px-4 transition-[top] duration-500 ease-in-out motion-reduce:transition-none max-sm:transition-none ${low ? "flex-col-reverse" : "flex-col"}`}
         style={low && mobile ? { bottom: 20 } : { top: low ? mapH - 20 - barH : mapH / 2 - 22 }}
       >
         <SearchOverlay listMax={below} listUp={low} />
@@ -310,7 +311,7 @@ export function MapPanel({ active }: { active: boolean }) {
       </div>
 
       {explore && (
-        <div className={`rm-glass absolute z-[6] flex flex-col overflow-hidden rounded-full ${mobile ? "right-[17px]" : "right-4"}`} style={mobile ? { bottom: PHONE_STACK_LAYERS + PHONE_LAYERS_H + PHONE_GAP } : { top: 16 + topShift }}>
+        <div className={`rm-mapctl rm-glass absolute z-[6] flex flex-col overflow-hidden rounded-full ${mobile ? "right-[17px]" : "right-4"}`} style={mobile ? { bottom: PHONE_STACK_LAYERS + PHONE_LAYERS_H + PHONE_GAP } : { top: 16 + topShift }}>
           {/* Handy: kein Plus/Minus, gezoomt wird mit zwei Fingern; die zwei übrigen Knöpfe so breit wie die Knöpfe daneben */}
           {!mobile && <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={ctlSm}><IconPlus size={16} /></button>}
           {!mobile && <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={ctlSm}><IconMinus size={16} /></button>}
@@ -320,7 +321,7 @@ export function MapPanel({ active }: { active: boolean }) {
       )}
       {/* Darstellung oben links (rückt unter der Kopfzeile mit), klappt nach unten auf; Handy: rechts direkt über dem Filter-Knopf der Suchleiste, darüber die Zoom-Leiste (alle drei auf einer Achse), klappt nach oben auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
       {explore && (
-        <div className={`rm-glass absolute z-[7] flex rounded-full ${mobile ? "right-[17px] flex-col-reverse" : "left-4 flex-col"}`} style={mobile ? { bottom: PHONE_STACK_LAYERS } : { top: 16 + topShift }}>
+        <div className={`rm-mapctl rm-glass absolute z-[7] flex rounded-full ${mobile ? "right-[17px] flex-col-reverse" : "left-4 flex-col"}`} style={mobile ? { bottom: PHONE_STACK_LAYERS } : { top: 16 + topShift }}>
           <button type="button" title="Darstellung" aria-label="Darstellung der Karte" aria-expanded={styleOpen} onClick={() => setStyleOpen((o) => !o)} className={`${ctl} ${styleOpen ? "!text-slate-900" : ""}`}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z" /><path d="m3 13 9 5 9-5" /></svg>
           </button>
