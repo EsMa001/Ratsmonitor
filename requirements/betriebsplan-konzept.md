@@ -182,7 +182,12 @@ Job `nacharbeit` (`scripts/nacharbeit.mjs --range daily`), alle 30 Minuten zwisc
   und Regeln anwenden (`followUp`). Gelingt PDF laden, folgen Text lesen und OCR der Datei, dann die Regeln der betroffenen Berichte;
   gelingt Text lesen oder OCR, folgen die Regeln. Das Protokoll nennt, wie viele Berichte damit für die KI bereitstehen.
 - **Ausgang je Eintrag:** gelungen (Eintrag weg), neuer Termin (Grund und Leiter), kein Versuch mehr, nicht drangekommen (Server wartet,
-  Zeitgrenze): eine Stunde weiter, damit er nicht jede halbe Stunde wiederkommt.
+  Zeitgrenze): eine Stunde weiter, damit er nicht jede halbe Stunde wiederkommt. OCR-Einträge, deren Dateien nur auf wartenden
+  Servern liegen, ruhen bis zum Termin des ersten Servers (statt stündlich „nicht versucht“).
+- **Zeitanteil je Schritt** (`stepShare`): die verbleibende Zeit gleichmäßig auf die noch offenen Schritte, mindestens 3 Minuten; der
+  letzte Schritt bekommt den Rest. Sonst füllte ein großer erster Schritt (18.10.2026: 500 Abrufe) den ganzen Lauf.
+- **Verlauf** `nacharbeit-log` (die letzten 96 Läufe mit fälligen Einträgen, je Schritt gelungen, verschoben, endgültig, nicht
+  versucht); der Nachtbericht summiert ihn als „Wirkung im Zeitraum“.
 - Belegt die Bahn „Laden“ der PDF-Ablage; hält sie ein Auftrag des Altbestands oder die Nacht, lässt der Lauf aus. Ergebnis:
   `nacharbeit-last`.
 

@@ -30,10 +30,20 @@ import {sqliteAdapter} from './ai-job.mjs';
 import {databaseFile,writeState} from './pdf-store/state.mjs';
 import {DEFAULT_PDF_STORE} from '../server/node/pdf-store.mjs';
 import {LANE_LOCKS} from '../server/integrations/pdf-store-admin.mjs';
-import {dueEntries,hasFailureStore,phaseOf} from '../server/integrations/work-failures.mjs';
+import {dueEntries,hasFailureStore,phaseOf,hostStates,hostWaiting} from '../server/integrations/work-failures.mjs';
 import {stepName} from '../shared/pipeline-terms.mjs';
 
 export const NACHARBEIT_KEY='nacharbeit-last',BACKLOG_REWORK_KEY='altbestand-rework-last';
+/** Verlauf der Läufe (Tagesbereich), neueste zuerst, für Nachtbericht und Debug-Seite: Wirkung über den Tag statt nur der letzte Lauf */
+export const NACHARBEIT_LOG_KEY='nacharbeit-log',NACHARBEIT_LOG_MAX=96;
+/** Kurzfassung eines Laufs für den Verlauf */
+export const runBrief=r=>({at:r.startedAt,due:r.due,result:r.result,
+ steps:r.steps.map(s=>({step:s.step,entries:s.entries,ok:s.ok||0,again:s.again||0,final:s.final||0,untouched:s.untouched||0,...(s.skipped?{skipped:s.skipped}:{})}))});
+/**
+ * Zeitanteil eines Schritts: die verbleibende Zeit gleichmäßig auf die noch offenen Schritte, mindestens 3 Minuten. Vorher nahm
+ * der erste Schritt alles (18.10.2026: 500 Abrufe füllten den ganzen Lauf, PDF und OCR kamen erst eine halbe Stunde später).
+ */
+export const stepShare=(left,stepsLeft)=>stepsLeft<=1?left:Math.min(left,Math.max(3,left/stepsLeft));
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 /** Reihenfolge der Schritte: Abruf, dann Extraktion, dann Verarbeitung */
 export const STEP_ORDER=['import','pdf','text','ocr-fetch','ocr','rules'];
@@ -116,15 +126,29 @@ export async function nacharbeit({db,sql,exec=runNode,store=null,minutes=20,limi
  log(`${range==='backlog'?'Altbestand':'Tagesbereich'}: ${due.length} fällige Einträge: ${[...plan].map(([s,l])=>`${stepName(s)} ${l.length}`).join(', ')||'keine'}`);
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'nacharbeit-'));
  const look=sql.prepare('SELECT last_at,next_try_at FROM work_failures WHERE step=? AND key=?');
+ // OCR-Einträge, deren Dateien nur auf wartenden Servern liegen (verdrängt, müssten nachgeladen werden): nicht jede Stunde
+ // „nicht versucht“, sondern bis der erste Server wieder darf
+ const hosts=store?await hostStates(db):new Map();
+ const waitUntil=e=>{
+  if(!store||(e.step!=='ocr'&&e.step!=='ocr-fetch'))return null;
+  const rows=store.prepare("SELECT url,status FROM pdfs WHERE sha256=? AND status IN ('ok','text-only')").all(e.key);
+  if(!rows.length||rows.some(r=>r.status==='ok'))return null;
+  const states=rows.map(r=>{try{return hosts.get(new URL(r.url).host);}catch{return null;}});
+  if(!states.every(h=>hostWaiting(h,t0)))return null;
+  const next=states.map(h=>h.next_try_at).filter(Boolean).sort()[0];
+  return next||null;
+ };
+ const batches=[...plan];
  try{
-  for(const [step,list] of plan){
+  for(const [i,[step,list]] of batches.entries()){
    const name=stepName(step),phase=phaseOf(step);
+   const share=stepShare(left(),batches.length-i),stepEnd=now()+share*60000,stepLeft=()=>Math.min(left(),(stepEnd-now())/60000);
    if(left()<1){log(`${name}: keine Zeit mehr, im nächsten Lauf`);report.steps.push({step,name,phase,entries:list.length,skipped:'Zeit'});continue;}
    if(step==='import'&&!hasImporter){log(`${name}: Importprozess nicht gebaut (node scripts/build-node.mjs), ausgelassen`);report.steps.push({step,name,phase,entries:list.length,skipped:'kein Importprozess'});continue;}
    const file=path.join(tmp,step+'.txt');fs.writeFileSync(file,list.map(e=>e.key).join('\n'));
    // Ein Abruf holt so weit zurück, wie der älteste Fehlschlag der Gruppe liegt
    const window=step==='import'?list.map(e=>windowSince(e.first_at,t0)).sort((a,b)=>WIDTH[b]-WIDTH[a])[0]:'1w';
-   const cmd=commandFor(step,file,{minutes:left(),window,origin});
+   const cmd=commandFor(step,file,{minutes:stepLeft(),window,origin});
    if(!cmd)continue;
    const began=now(),beganIso=new Date(began).toISOString();
    log(`${name}: ${list.length} Einträge …`);
@@ -136,9 +160,13 @@ export async function nacharbeit({db,sql,exec=runNode,store=null,minutes=20,limi
     const r=look.get(e.step,e.key);
     if(!r){out.ok++;okKeys.push(e.key);}
     else if(r.last_at!==e.last_at){if(r.next_try_at)out.again++;else out.final++;}
-    else{out.untouched++;if(!dry)sql.prepare('UPDATE work_failures SET next_try_at=? WHERE step=? AND key=? AND last_at=?').run(later,e.step,e.key,e.last_at);}
+    else{
+     out.untouched++;
+     const until=waitUntil(e);if(until)out.parked=(out.parked||0)+1;
+     if(!dry)sql.prepare('UPDATE work_failures SET next_try_at=? WHERE step=? AND key=? AND last_at=?').run(until&&until>later?until:later,e.step,e.key,e.last_at);
+    }
    }
-   log(`${name}: ${out.ok} gelungen, ${out.again} wieder verschoben, ${out.final} endgültig, ${out.untouched} nicht versucht (eine Stunde weiter)`);
+   log(`${name}: ${out.ok} gelungen, ${out.again} wieder verschoben, ${out.final} endgültig, ${out.untouched} nicht versucht (eine Stunde weiter${out.parked?`; ${out.parked} davon bis ihr Server wieder darf`:''})`);
    report.steps.push(out);
    if(code!==0&&code!==1)report.result='failed';
    // Folgekette: nach gelungenem Abruf Extraktion und Verarbeitung der geschriebenen Berichte; nach gelungener Extraktion Regeln
@@ -196,7 +224,14 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1
  const report=await nacharbeit({db,sql,store,range,minutes:Number(opt('minutes',20)),limit:Number(opt('limit',500)),perHost:Number(opt('per-host',20)),
   steps:opt('steps')?opt('steps').split(','):null,includeSlow:true,dry:flag('dry-run'),log:say,
   exec:(script,a)=>new Promise(resolve=>{child=spawn(process.execPath,['--no-warnings','--max-old-space-size=4096',path.join(root,script),...a],{cwd:root,stdio:'inherit',env:process.env});child.on('error',()=>resolve(127));child.on('exit',(c,s)=>{child=null;resolve(c??s);});})});
- if(!flag('dry-run'))writeState(range==='backlog'?BACKLOG_REWORK_KEY:NACHARBEIT_KEY,report);
+ if(!flag('dry-run')){
+  writeState(range==='backlog'?BACKLOG_REWORK_KEY:NACHARBEIT_KEY,report);
+  if(range==='daily'&&report.due){
+   const row=sql.prepare('SELECT value FROM system_state WHERE key=?').get(NACHARBEIT_LOG_KEY);
+   let list=[];try{list=row?JSON.parse(row.value):[];}catch{/* neu anfangen */}
+   writeState(NACHARBEIT_LOG_KEY,[runBrief(report),...(Array.isArray(list)?list:[])].slice(0,NACHARBEIT_LOG_MAX));
+  }
+ }
  say(`Ende: ${JSON.stringify(report.totals)}`);
  store?.close();sql.close();
  process.exit(report.result==='failed'?1:0);
