@@ -31,7 +31,7 @@ export function WheelPicker({ label, items, value, onPick, className = "" }: { l
   return (
     <div role="group" aria-label={label} className={`relative rounded-xl bg-white sm:hidden print:hidden ${className}`} style={{ height: ROW * 3, marginTop: -TRIM, clipPath: `inset(${TRIM}px -4px 0 -4px)`, WebkitMaskImage: "linear-gradient(to bottom, transparent 0, #000 28%, #000 72%, transparent 100%)", maskImage: "linear-gradient(to bottom, transparent 0, #000 28%, #000 72%, transparent 100%)" }}>
       {/* Markierung der gewählten Zeile */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 rounded-xl bg-teal-50 ring-1 ring-teal-600/30" style={{ top: ROW, height: ROW }}>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-[1px] rounded-xl bg-teal-50 ring-1 ring-teal-600/30" style={{ top: ROW, height: ROW }}>
         {/* Hinweis „drehbar“: Pfeile oben und unten, hüpfen beim Erscheinen dreimal */}
         <ChevronsUpDown size={20} strokeWidth={1.6} className="absolute right-3 top-1/2 -mt-2.5 animate-[bounce_.7s_ease-in-out_3] text-teal-700 motion-reduce:animate-none" />
       </div>
