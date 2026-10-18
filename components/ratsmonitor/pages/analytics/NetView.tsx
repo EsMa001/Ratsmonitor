@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { clampView, type NetBox, type NetViewState } from "../../lib/viewClamp";
 
 export interface NNode { id: string; name: string; in: number; out: number; starts: number; ends: number; stage: number; role: "start" | "bridge" | "end"; broker: number }
 export interface NEdge { a: string; b: string; n: number; days: number | null }
@@ -11,7 +12,7 @@ export const ROLE: Record<NNode["role"], { label: string; fill: string; stroke: 
 };
 
 /** Kräfte: Abstoßung, Federn nach Gewicht, Bindung an die Stufe (Einstieg links, Entscheidung rechts) */
-function layout(nodes: P[], edges: NEdge[], span: number, iterations: number, alpha0 = 1, vertical = false) {
+function layout(nodes: P[], edges: NEdge[], span: number, iterations: number, alpha0 = 1) {
   const by = new Map(nodes.map((n) => [n.id, n]));
   const max = Math.max(1, ...edges.map((e) => e.n));
   for (let it = 0; it < iterations; it++) {
@@ -20,7 +21,7 @@ function layout(nodes: P[], edges: NEdge[], span: number, iterations: number, al
       const a = nodes[i], b = nodes[j];
       let dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy;
       if (d2 < 1) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; d2 = 1; }
-      const d = Math.sqrt(d2), f = (16000 / d2) * alpha, min = a.r + b.r + (vertical ? 96 : 60);
+      const d = Math.sqrt(d2), f = (16000 / d2) * alpha, min = a.r + b.r + 60;
       let fx = (dx / d) * f, fy = (dy / d) * f;
       if (d < min) { const push = (min - d) * 0.3; fx += (dx / d) * push; fy += (dy / d) * push; }
       if (!a.fixed) { a.vx -= fx; a.vy -= fy; }
@@ -36,9 +37,7 @@ function layout(nodes: P[], edges: NEdge[], span: number, iterations: number, al
     }
     for (const n of nodes) {
       if (n.fixed) { n.vx = n.vy = 0; continue; }
-      /* Quer: Einstieg links, Entscheidung rechts; Hochformat (Handy): Einstieg oben, Entscheidung unten */
-      if (vertical) { n.vy += ((n.stage - 0.5) * span - n.y) * 0.06 * alpha; n.vx -= n.x * 0.006 * alpha; }
-      else { n.vx += ((n.stage - 0.5) * span - n.x) * 0.06 * alpha; n.vy -= n.y * 0.006 * alpha; }
+      n.vx += ((n.stage - 0.5) * span - n.x) * 0.06 * alpha; n.vy -= n.y * 0.006 * alpha;
       n.x += n.vx; n.y += n.vy; n.vx *= 0.78; n.vy *= 0.78;
     }
   }
@@ -58,8 +57,16 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const boxRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 800, h: 560 });
   const [view, setView] = useState({ x: 0, y: 0, k: 1 });
-  /* Handy (schmal): Hochformat-Anordnung mit größerer Schrift */
-  const vertical = size.w < 520;
+  /* Handy (schmal): Namen in fester Bildschirmgröße, bei wenig Zoom nur die wichtigsten */
+  const phone = size.w < 520;
+  const fitK = useRef(1);
+  const bounds = useCallback((): NetBox => {
+    const l = sim.current;
+    if (!l.length) return { x0: 0, x1: 0, y0: 0, y1: 0 };
+    return { x0: Math.min(...l.map((n) => n.x - n.r - 80)), x1: Math.max(...l.map((n) => n.x + n.r + 80)), y0: Math.min(...l.map((n) => n.y - n.r - 50)), y1: Math.max(...l.map((n) => n.y + n.r + 50)) };
+  }, []);
+  /* Jede Änderung von Zoom und Verschiebung bleibt innerhalb des Netzes */
+  const put = useCallback((f: (v: NetViewState) => NetViewState) => setView((v) => clampView(f(v), bounds(), size.w, size.h, fitK.current, 3)), [bounds, size.w, size.h]);
   const sim = useRef<P[]>([]);
   /* Gezeichnet wird ein Abbild der Simulation (Zustand); gerechnet und gezogen wird in sim (Ref) */
   const [shown, setShown] = useState<P[]>([]);
@@ -67,6 +74,9 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const [hover, setHover] = useState("");
   const drag = useRef<{ id: string; moved: boolean } | { pan: true; sx: number; sy: number; vx: number; vy: number } | null>(null);
   const raf = useRef(0);
+  /* Zwei Finger (Handy): Zoomen, der Punkt zwischen den Fingern bleibt stehen */
+  const touches = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<{ d: number; k: number } | null>(null);
 
   useEffect(() => {
     const el = boxRef.current;
@@ -77,34 +87,38 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
     return () => ro.disconnect();
   }, []);
 
-  const fit = useCallback((w = size.w, h = size.h) => {
+  /* all: ganzes Netz zeigen. Sonst am Handy: lesbarer Maßstab, am Anfang des Flusses (Einstieg links); am Desktop das ganze Netz */
+  const fit = useCallback((w = size.w, h = size.h, all = false) => {
     const list = sim.current;
     if (!list.length) return;
-    const px = vertical ? 56 : 80, py = vertical ? 30 : 50;
-    const x0 = Math.min(...list.map((n) => n.x - n.r - px)), x1 = Math.max(...list.map((n) => n.x + n.r + px));
-    const y0 = Math.min(...list.map((n) => n.y - n.r - py)), y1 = Math.max(...list.map((n) => n.y + n.r + py));
+    const { x0, x1, y0, y1 } = bounds();
     const k = Math.min(1.3, Math.min(w / (x1 - x0), h / (y1 - y0)));
+    fitK.current = k;
+    if (w < 520 && !all) {
+      const k0 = Math.min(1, Math.max(k, 0.8));
+      return setView({ k: k0, x: -w / 2 - x0 * k0, y: -((y0 + y1) / 2) * k0 });
+    }
     setView({ k, x: -((x0 + x1) / 2) * k, y: -((y0 + y1) / 2) * k });
-  }, [size.w, size.h, vertical]);
+  }, [size.w, size.h, bounds]);
 
   useEffect(() => {
     const max = Math.max(1, ...nodes.map((n) => n.in + n.out));
-    const span = vertical ? 860 : 980;
-    sim.current = nodes.map((n, i) => {
-      const along = (n.stage - 0.5) * span, across = ((i % (vertical ? 3 : 6)) - (vertical ? 1 : 2.5)) * (vertical ? 118 : 110) + (Math.random() - 0.5) * 30;
-      return { ...n, r: 12 + 24 * Math.sqrt((n.in + n.out) / max), x: vertical ? across : along, y: vertical ? along : across, vx: 0, vy: 0, fixed: false };
-    });
-    layout(sim.current, edges, span, 460, 1, vertical);
+    const span = 980;
+    // eslint-disable-next-line react-hooks/immutability
+    sim.current = nodes.map((n, i) => ({ ...n, r: 12 + 24 * Math.sqrt((n.in + n.out) / max), x: (n.stage - 0.5) * span, y: ((i % 6) - 2.5) * 110 + (Math.random() - 0.5) * 30, vx: 0, vy: 0, fixed: false }));
+    layout(sim.current, edges, span, 460);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fit();
     /* Neue Daten: Startlage mit Zufall und Messung, einmal je Daten gerechnet; das Abbild folgt sofort */
     draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodes, edges, vertical]);
+  }, [nodes, edges]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => fit(), [size.w, size.h, fit]);
   useEffect(() => {
-    if (zoomRef) zoomRef.current = (f) => (f === "fit" ? fit() : setView((v) => ({ ...v, k: Math.max(0.3, Math.min(3, v.k * f)), x: v.x * f, y: v.y * f })));
+    if (zoomRef) zoomRef.current = (f) => (f === "fit" ? fit(size.w, size.h, true) : put((v) => ({ k: v.k * f, x: v.x * f, y: v.y * f })));
     return () => { if (zoomRef) zoomRef.current = null; };
-  }, [zoomRef, fit]);
+  }, [zoomRef, fit, put, size.w, size.h]);
 
   const pos = (id: string) => sim.current.find((n) => n.id === id);
   const at = (id: string) => shown.find((n) => n.id === id);
@@ -112,7 +126,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const run = () => {
     cancelAnimationFrame(raf.current);
     let c = 0;
-    const step = () => { layout(sim.current, edges, vertical ? 860 : 980, 1, 0.3, vertical); draw(); if (++c < 40) raf.current = requestAnimationFrame(step); };
+    const step = () => { layout(sim.current, edges, 980, 1, 0.3); draw(); if (++c < 40) raf.current = requestAnimationFrame(step); };
     raf.current = requestAnimationFrame(step);
   };
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
@@ -120,6 +134,14 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const maxN = useMemo(() => Math.max(1, ...edges.map((e) => e.n)), [edges]);
   const near = useMemo(() => { const m = new Set<string>(); const f = hover || selected; if (f) { m.add(f); for (const e of edges) { if (e.a === f) m.add(e.b); if (e.b === f) m.add(e.a); } } return m; }, [edges, hover, selected]);
   const focus = hover || selected;
+  /* Maßstab, bei dem das ganze Netz zu sehen ist (für die Zahl der gezeigten Namen) */
+  const fitNow = useMemo(() => {
+    if (!shown.length) return 1;
+    const x0 = Math.min(...shown.map((n) => n.x - n.r - 80)), x1 = Math.max(...shown.map((n) => n.x + n.r + 80)), y0 = Math.min(...shown.map((n) => n.y - n.r - 50)), y1 = Math.max(...shown.map((n) => n.y + n.r + 50));
+    return Math.min(1.3, Math.min(size.w / (x1 - x0), size.h / (y1 - y0))) || 1;
+  }, [shown, size.w, size.h]);
+  /* Rangfolge nach Durchsatz: die wichtigsten Namen zuerst */
+  const rank = useMemo(() => new Map([...nodes].sort((a, b) => b.in + b.out - (a.in + a.out)).map((n, i) => [n.id, i] as const)), [nodes]);
 
   /* Gebogene Kante von Rand zu Rand, Pfeilspitze am Ziel */
   const path = (a: P, b: P, bend: number) => {
@@ -133,16 +155,39 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
     <div
       ref={boxRef}
       className="absolute inset-0 touch-none select-none overflow-hidden bg-white"
-      onPointerDown={(e) => { (e.target as Element).setPointerCapture?.(e.pointerId); const t = (e.target as Element).closest("[data-node]"); drag.current = t ? { id: t.getAttribute("data-node")!, moved: false } : { pan: true, sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; if (t) { const n = pos(t.getAttribute("data-node")!); if (n) n.fixed = true; } }}
+      onPointerDown={(e) => {
+        touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        (e.target as Element).setPointerCapture?.(e.pointerId);
+        if (touches.current.size === 2) {
+          const [p1, p2] = [...touches.current.values()];
+          const dr = drag.current;
+          if (dr && !("pan" in dr)) { const n = pos(dr.id); if (n) n.fixed = false; }
+          drag.current = null;
+          pinch.current = { d: Math.hypot(p1.x - p2.x, p1.y - p2.y) || 1, k: view.k };
+          return;
+        }
+        const t = (e.target as Element).closest("[data-node]"); drag.current = t ? { id: t.getAttribute("data-node")!, moved: false } : { pan: true, sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; if (t) { const n = pos(t.getAttribute("data-node")!); if (n) n.fixed = true; }
+      }}
       onPointerMove={(e) => {
+        if (touches.current.has(e.pointerId)) touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pinch.current && touches.current.size >= 2) {
+          const [p1, p2] = [...touches.current.values()], r = boxRef.current!.getBoundingClientRect();
+          const kNew = pinch.current.k * (Math.hypot(p1.x - p2.x, p1.y - p2.y) / pinch.current.d);
+          const px = (p1.x + p2.x) / 2 - r.left - size.w / 2, py = (p1.y + p2.y) / 2 - r.top - size.h / 2;
+          return put((v) => { const f = Math.max(fitK.current, Math.min(3, kNew)) / v.k; return { k: v.k * f, x: px - (px - v.x) * f, y: py - (py - v.y) * f }; });
+        }
         const d = drag.current;
         if (!d) return;
-        if ("pan" in d) return setView((v) => ({ ...v, x: d.vx + e.clientX - d.sx, y: d.vy + e.clientY - d.sy }));
+        if ("pan" in d) return put((v) => ({ ...v, x: d.vx + e.clientX - d.sx, y: d.vy + e.clientY - d.sy }));
         const n = pos(d.id), w = toWorld(e.clientX, e.clientY);
         if (!n) return;
         d.moved = true; n.x = w.x; n.y = w.y; run();
       }}
-      onPointerUp={() => {
+      onPointerCancel={(e) => { touches.current.delete(e.pointerId); pinch.current = null; drag.current = null; }}
+      onPointerUp={(e) => {
+        touches.current.delete(e.pointerId);
+        /* Nach dem Zoomen mit zwei Fingern nichts auswählen, bis alle Finger los sind */
+        if (pinch.current) { if (!touches.current.size) pinch.current = null; return; }
         const d = drag.current;
         drag.current = null;
         if (!d) return;
@@ -168,14 +213,18 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
             return <path key={e.a + e.b} d={path(a, b, 0.14)} fill="none" stroke={on ? "var(--rm-fill)" : "var(--rm-c400)"} strokeOpacity={focus ? (on ? 0.9 : 0.06) : 0.45} strokeWidth={w} strokeLinecap="round" markerEnd={on ? "url(#net-arrow-on)" : "url(#net-arrow)"} style={{ pointerEvents: "none" }} />;
           })}
           {shown.map((n) => {
-            const k = ROLE[n.role], on = !focus || near.has(n.id), sel = n.id === selected, lines = wrap(n.name, vertical ? 15 : 17);
+            const k = ROLE[n.role], on = !focus || near.has(n.id), sel = n.id === selected, lines = wrap(n.name, 17);
+            /* Handy: Namen in fester Bildschirmgröße (nicht mit dem Zoom kleiner); bei wenig Zoom nur die wichtigsten, mehr beim Hineinzoomen */
+            const zoomIn = view.k / fitNow, allowed = !phone ? 999 : zoomIn < 1.25 ? 6 : zoomIn < 1.8 ? 11 : 999;
+            const label = !phone || (rank.get(n.id) ?? 99) < allowed || (!!focus && near.has(n.id)) || sel;
+            const fs = phone ? 12.5 / view.k : 12, lh = phone ? 15 / view.k : 14, off = phone ? 14 / view.k : 16, sw = phone ? 3 / view.k : 4;
             return (
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.2} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth="2" />
-                <text textAnchor="middle" fontSize={vertical ? 15 : 12} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth={vertical ? 3 : 4} paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>
-                  {lines.map((l, i) => <tspan key={i} x="0" y={n.r + 16 + i * (vertical ? 17 : 14)}>{l}</tspan>)}
-                </text>
+                {label && <text textAnchor="middle" fontSize={fs} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth={sw} paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>
+                  {lines.map((l, i) => <tspan key={i} x="0" y={n.r + off + i * lh}>{l}</tspan>)}
+                </text>}
               </g>
             );
           })}

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { clampView, type NetBox, type NetViewState } from "../../lib/viewClamp";
 
 export type GNode = { id: string; type: "center" | "term" | "topic" | "committee" | "land"; label: string; count: number };
 export type GEdge = { a: string; b: string; w: number; n: number; center?: boolean };
@@ -68,15 +69,23 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
   /* Zoomen mit zwei Fingern (Handy) und Trackpad-Geste bzw. Strg + Mausrad: Punkt unter den Fingern bleibt stehen */
   const touches = useRef(new Map<number, { x: number; y: number }>());
   const pinch = useRef<{ d: number; k: number } | null>(null);
+  /* Zoom und Verschieben bleiben innerhalb des Netzes: nicht weiter hinaus als das ganze Netz, der Inhalt verlässt die Fläche nie */
+  const fitK = useRef(1);
+  const bounds = useCallback((): NetBox => {
+    const l = sim.current;
+    if (!l.length) return { x0: 0, x1: 0, y0: 0, y1: 0 };
+    return { x0: Math.min(...l.map((n) => n.x - n.r - 70)), x1: Math.max(...l.map((n) => n.x + n.r + 70)), y0: Math.min(...l.map((n) => n.y - n.r - 20)), y1: Math.max(...l.map((n) => n.y + n.r + 20)) };
+  }, []);
+  const put = useCallback((f: (v: NetViewState) => NetViewState) => setView((v) => clampView(f(v), bounds(), size.w, size.h, fitK.current, 4)), [bounds, size.w, size.h]);
   const zoomAt = useCallback((k: number, cx: number, cy: number) => {
     const el = boxRef.current;
     if (!el) return;
     const r = el.getBoundingClientRect(), px = cx - r.left - r.width / 2, py = cy - r.top - r.height / 2;
-    setView((v) => {
-      const k2 = Math.max(0.3, Math.min(4, k)), f = k2 / v.k;
+    put((v) => {
+      const k2 = Math.max(fitK.current, Math.min(4, k)), f = k2 / v.k;
       return { k: k2, x: px - (px - v.x) * f, y: py - (py - v.y) * f };
     });
-  }, []);
+  }, [put]);
   const viewK = useRef(1);
   useEffect(() => { viewK.current = view.k; }, [view.k]);
   useEffect(() => {
@@ -106,6 +115,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
     const x0 = Math.min(...list.map((n) => n.x - n.r - 70)), x1 = Math.max(...list.map((n) => n.x + n.r + 70));
     const y0 = Math.min(...list.map((n) => n.y - n.r - 20)), y1 = Math.max(...list.map((n) => n.y + n.r + 20));
     const k = Math.min(1.3, Math.min(w / (x1 - x0), h / (y1 - y0)));
+    fitK.current = k;
     setView({ k, x: -((x0 + x1) / 2) * k, y: -((y0 + y1) / 2) * k });
   }, [size.w, size.h]);
 
@@ -133,9 +143,9 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
   useEffect(() => fit(), [size.w, size.h, fit]);
 
   useEffect(() => {
-    if (zoomRef) zoomRef.current = (f) => (f === "fit" ? fit() : setView((v) => ({ ...v, k: Math.max(0.3, Math.min(4, v.k * f)), x: v.x * f, y: v.y * f })));
+    if (zoomRef) zoomRef.current = (f) => (f === "fit" ? fit() : put((v) => ({ k: v.k * f, x: v.x * f, y: v.y * f })));
     return () => { if (zoomRef) zoomRef.current = null; };
-  }, [zoomRef, fit]);
+  }, [zoomRef, fit, put]);
 
   const pos = (id: string) => sim.current.find((n) => n.id === id);
   const at = (id: string) => shown.find((n) => n.id === id);
@@ -188,7 +198,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
         }
         const d = drag.current;
         if (!d) return;
-        if ("pan" in d) return setView((v) => ({ ...v, x: d.vx + e.clientX - d.sx, y: d.vy + e.clientY - d.sy }));
+        if ("pan" in d) return put((v) => ({ ...v, x: d.vx + e.clientX - d.sx, y: d.vy + e.clientY - d.sy }));
         const n = pos(d.id), w = toWorld(e.clientX, e.clientY);
         if (!n) return;
         d.moved = true; n.x = w.x; n.y = w.y; run();
@@ -225,7 +235,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle className={n.type === "topic" ? "rm-gtopic" : undefined} r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth={n.type === "land" ? 2.5 : 0} fillOpacity={n.type === "term" ? 0.88 : 1} />
                 {n.type === "center" && <rect x="-7" y="-7" width="14" height="14" fill="var(--rm-on)" />}
-                <text className="rm-gtext" y={n.type === "center" ? n.r + 18 : n.r + 15} textAnchor="middle" fontSize={n.type === "center" ? (size.w < 520 ? 22 : 18) : (size.w < 520 ? 16 : 12)} fontWeight={n.type === "center" ? 600 : 400} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>{n.label}</text>
+                <text className="rm-gtext" y={size.w < 520 ? n.r + 14 / view.k : n.type === "center" ? n.r + 18 : n.r + 15} textAnchor="middle" fontSize={size.w < 520 ? (n.type === "center" ? 15 : 12.5) / view.k : n.type === "center" ? 18 : 12} fontWeight={n.type === "center" ? 600 : 400} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>{n.label}</text>
               </g>
             );
           })}
