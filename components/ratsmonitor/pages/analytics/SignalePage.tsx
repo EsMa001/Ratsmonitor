@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useClient } from "../../lib/useClient";
 import { ChevronDown, ChevronUp, Map as MapIcon, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { XKopf, XWeiter } from "./XKopf";
@@ -20,6 +21,11 @@ import { PhasePicker } from "../../components/PhasePicker";
 import type { Article } from "../../types";
 import { MethodikNote } from "./Methodik";
 import { DateBadge } from "../../components/DateBadge";
+
+/* Wie viele Art-Kacheln ein Signal hat, vom letzten Besuch gemerkt: beim Wechsel steht der Platzhalter schon in der richtigen Größe */
+const ARTS_KEY = "plenara.signalArts";
+const artsSeen = (id: string): number => { try { const v = JSON.parse(localStorage.getItem(ARTS_KEY) || "{}")[id]; return typeof v === "number" ? v : 5; } catch { return 5; } };
+const rememberArts = (id: string, n: number) => { try { const o = JSON.parse(localStorage.getItem(ARTS_KEY) || "{}"); if (o[id] !== n) { o[id] = n; localStorage.setItem(ARTS_KEY, JSON.stringify(o)); } } catch { /* ohne Speicher geht es auch */ } };
 
 /* Antwort von /api/x/signale (server/integrations/plenara-x-signals.mjs) */
 interface Signal { id: string; name: string; who: string; count: number }
@@ -170,6 +176,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   if (fromOf(zeit) && !q.get("from")) q.set("from", fromOf(zeit));
   const url = `/api/x/signale?signal=${signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}&${q}`;
   const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
+  /* Anzahl der Art-Kacheln für den Platzhalter (erst im Browser bekannt, daher useClient) */
+  const seenArts = useClient(() => artsSeen(signal), 5);
+  useEffect(() => { if (res) rememberArts(res.signal.id, (res.arts ?? []).length); }, [res]);
   /* Auswahl, Stand, Zeitraum oder Suche geändert: neu rechnen (Auswahl sofort, Suche nach kurzer Pause) */
   useEffect(() => {
     if (!stale || loading) return;
@@ -241,6 +250,12 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
       </nav>}
 
       {/* Filterwerte der Kategorie (Leistung, Vorhaben …) als kleine Kacheln mit Icon, durch eine Linie in Petrol von den Kategorien getrennt (wie die Unterthemen im Atlas) */}
+      {/* Beim Wechsel der Kategorie: Linie und graue, leicht pulsierende Kacheln stehen sofort da, bis die echten kommen */}
+      {!(res && res.signal.id === signal) && seenArts > 0 && <nav aria-hidden="true" className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
+        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
+          {Array.from({ length: Math.min(8, seenArts + 1) }, (_, i) => <li key={i} className="sm:w-[100px]"><div className="h-[60px] animate-pulse rounded-lg bg-slate-100 max-sm:h-[46px]" /></li>)}
+        </ul>
+      </nav>}
       {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <nav aria-label={res.signal.art ?? "Art"} className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {[{ key: "", name: "Alle" }, ...res.arts].map((a) => {
