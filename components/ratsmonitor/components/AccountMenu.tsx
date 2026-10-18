@@ -38,7 +38,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   {isAdmin&&<Link href="/admin" title={me.adminHere?'Administration':'Administration (Code aus der Authenticator-App nötig)'} aria-label="Administration" className={cls(false)}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
   </Link>}
-  <button type="button" title={dark?'Heller Modus':'Dunkler Modus'} aria-label={dark?'Heller Modus':'Dunkler Modus'} aria-pressed={dark} onClick={()=>setDark(!dark)} className={cls(false)}>
+  <button type="button" title={dark?'Heller Modus':'Dunkler Modus'} aria-label={dark?'Heller Modus':'Dunkler Modus'} aria-pressed={dark} onClick={()=>setDark(!dark)} className={`${cls(false)} max-sm:hidden`}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{dark?<><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>:<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>}</svg>
   </button>
   <Link href="/konto/suchen" title="Gespeicherte Suchen" aria-label={`Gespeicherte Suchen (${saved.length})`} className={`${cls(currentPage==='suchen')} max-sm:hidden`}>
@@ -56,10 +56,16 @@ export function AccountMenu({currentPage}:{currentPage:string}){
    <button type="button" title="Konto" aria-label="Konto" aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(o=>!o)} className={cls(currentPage==='profil'||open)}>
     <IconUser size={19}/>
    </button>
-   {open&&<div role="menu" onKeyDown={e=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}}} className="absolute right-0 top-[calc(100%+13px)] z-[1100] w-[220px] max-sm:w-[190px] sm:top-[calc(100%+17px)] rounded-2xl border border-slate-200 bg-white p-1.5 shadow-pop">
+   {open&&<div role="menu" onKeyDown={e=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}}} className="absolute right-0 top-[calc(100%+13px)] z-[1100] w-[220px] max-sm:w-[230px] sm:top-[calc(100%+17px)] rounded-2xl border border-slate-200 bg-white p-1.5 shadow-pop">
     {loggedIn&&<p className="m-0 truncate px-3 pb-1 pt-2 text-[12px] text-slate-500" title={me.user?.email}>{me.user?.email}</p>}
     {!loggedIn&&me.accounts&&<Link role="menuitem" href="/anmelden" className={item} onClick={()=>setOpen(false)}>Anmelden</Link>}
     <Link role="menuitem" href="/konto/profil" className={item} onClick={()=>setOpen(false)}>Konto</Link>
+    {/* Handy: was am Desktop in der Kopfzeile steht (Preise, Hell/Dunkel) */}
+    <Link role="menuitem" href="/preise" className={`${item} sm:hidden`} onClick={()=>setOpen(false)}>Preise</Link>
+    <button role="menuitem" type="button" aria-pressed={dark} onClick={()=>setDark(!dark)} className={`${item} flex w-full items-center justify-between text-left sm:hidden`}>
+     Dunkler Modus
+     <span className={`h-5 w-9 rounded-full p-0.5 transition-colors ${dark?'bg-teal-700':'bg-slate-300'}`} aria-hidden="true"><span className={`block h-4 w-4 rounded-full bg-white transition-transform ${dark?'translate-x-4':''}`}/></span>
+    </button>
     {isAdmin&&<div className="border-t border-slate-100 px-3 pb-1 pt-2">
      <label htmlFor="view-tier" className="block text-[12px] text-slate-500">Ansehen als</label>
      <select id="view-tier" className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-[14px] text-slate-900" value={me.viewTier??''}

@@ -644,7 +644,7 @@ topic design-styles.css:140
 - AreaBar.tsx (101, ⚠1): AreaBar
 - ArtIcon.tsx (71, ⚠1): ArtIcon
 - BandDots.tsx (50): BandDots
-- BottomNav.tsx (35): BottomNav
+- BottomNav.tsx (52): BottomNav
 - Brand.tsx (274): AnalyticsX, AnalyticsLogo, Brand
 - CalendarFeed.tsx (106): CalendarFeed
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
@@ -659,7 +659,7 @@ topic design-styles.css:140
 - FollowButton.tsx (28): NOTIFY_LATER, FollowButton
 - Footer.tsx (65): Footer
 - GateDialog.tsx (148): GateFeature, openGate, openLimitGate, GateDialog
-- Header.tsx (64): Header
+- Header.tsx (44): Header
 - ImportDialog.tsx (151): ImportDialog
 - PlanCards.tsx (154, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (29): SaveArticleButton
@@ -753,14 +753,14 @@ topic design-styles.css:140
 - uuid.ts (12): newId
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (295, ⚠1): MainMenu
+- MainMenu.tsx (295, ⚠1): ANWENDER, XEintrag, ANALYSE, EINBLICKE, HINTERGRUENDE, INFO, MainMenu, XGruppe
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (171, ⚠12): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (64): OverviewPage
-- PersonalPage.tsx (24): PersonalPage
+- PersonalPage.tsx (25): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (448): ProfilePage
 - SavedArticlesPage.tsx (142, ⚠2): SavedArticlesPage
@@ -768,7 +768,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (231, ⚠18): ANALYSE_THUMBS, MethodikText
-- AnalyticsLocked.tsx (51): AnalyticsLocked
+- AnalyticsLocked.tsx (57): AnalyticsLocked
 - AnalyticsPages.tsx (60): AnalyticsPages
 - AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (53): Befund, zuThema, Leer, Fehler

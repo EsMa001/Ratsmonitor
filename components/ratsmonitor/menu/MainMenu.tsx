@@ -20,7 +20,7 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
 /* Unterpunkte von „Informationen“: Tarife, Videos, Datenabdeckung und häufige Fragen */
 /* Anwender: fünf Gruppen, jede mit den Branchenseiten, die dazu gehören */
 /* Anwender: genau diese fünf Seiten, jede führt auf ihre Hauptbranche */
-const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
+export const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Immobilien", slug: "immobilien" },
   { label: "Versorgung", slug: "versorgung" },
   { label: "Planung", slug: "planung", icon: "map" },
@@ -28,28 +28,28 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
 ];/* Analyse: Start (Übersicht), Signale (was entsteht), Tools (alle Werkzeuge), Atlas (worüber beraten wird); die einzelnen Analysen stehen auf diesen Seiten */
 /* plenara.X (Logo als Gruppenname) mit drei Abschnitten: Analysen (Zahlen und Verteilungen), Einblicke (einzelne Vorgänge und Werte) und Hintergründe (wer beteiligt ist, was zusammenhängt), je Eintrag die Frage leise rechts daneben */
-type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper" | "clipboardList" | "circleCheck" | "mapPin"; hint?: string };
-const ANALYSE: XEintrag[] = [
+export type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper" | "clipboardList" | "circleCheck" | "mapPin"; hint?: string };
+export const ANALYSE: XEintrag[] = [
   { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
   { href: "/analytics/vergleich", label: "Ortsvergleich", icon: "mapPin", hint: "Wie steht mein Ort da?" },
   { href: "/analytics/trends", label: "Trends", icon: "trendingUp", hint: "Was verändert sich?" },
   { href: "/analytics/beschluesse", label: "Ausgang", icon: "circleCheck", hint: "Wie geht es aus?" },
 ];
 /* Einblicke: einzelne Vorgänge und belegte Einzelwerte mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles, Anträge der Fraktionen, Fakten). Zahlen und Verteilungen stehen in den Analysen (Atlas, Ortsvergleich, Trends, Ausgang) */
-const EINBLICKE: XEintrag[] = [
+export const EINBLICKE: XEintrag[] = [
   { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
   { href: "/analytics/ausschreibungen", label: "Ausschreibungen", icon: "clipboardList", hint: "Was wird vergeben?" },
   { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },
   { href: "/analytics/fakten", label: "Fakten", icon: "map", hint: "Welcher Wert?" },
 ];
 /* Hintergründe: wer beteiligt ist und was zusammenhängt (Fraktionen, Gremien, Themennetz) */
-const HINTERGRUENDE: XEintrag[] = [
+export const HINTERGRUENDE: XEintrag[] = [
   { href: "/analytics/fraktionen", label: "Fraktionen", icon: "landmark", hint: "Wer möchte was?" },
   { href: "/analytics/gremien", label: "Gremien", icon: "users", hint: "Wer berät was?" },
   { href: "/analytics/graph", label: "Themennetz", icon: "network", hint: "Was hängt zusammen?" },
 ];
 
-const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
+export const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
   { href: "/preise", label: "Preise", icon: "euro" },
   { href: "/videos", label: "Videos", icon: "circlePlay" },
   { href: "/datenabdeckung", label: "Datenabdeckung", icon: "layers" },
@@ -139,7 +139,7 @@ export function MainMenu() {
 
   return (
     <>
-      <button ref={btnRef} type="button" data-menu-trigger className="ri-burger xl:!hidden" aria-label={open === "all" ? "Menü schließen" : "Menü öffnen"} aria-expanded={open === "all"} aria-controls="hauptmenue" onClick={(e) => toggle("all", e.currentTarget)}>
+      <button ref={btnRef} type="button" data-menu-trigger className="ri-burger max-sm:!hidden xl:!hidden" aria-label={open === "all" ? "Menü schließen" : "Menü öffnen"} aria-expanded={open === "all"} aria-controls="hauptmenue" onClick={(e) => toggle("all", e.currentTarget)}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" aria-hidden="true">
           <path d="M4 6.5h16M4 12h12M4 17.5h8" />
         </svg>
@@ -282,7 +282,7 @@ export function MainMenu() {
 }
 
 /** Gruppenname mit grauem Abzeichen plenara.X (wie neben den Seitentiteln), alles auf einer Grundlinie */
-function XGruppe({ name }: { name: string }) {
+export function XGruppe({ name }: { name: string }) {
   return (
     <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
       {name}

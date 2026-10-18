@@ -6,11 +6,17 @@ import { LiveThumb } from "../../info/BranchenLive";
 import { ANALYSEN, NEU_NAME, type AnalyseId } from "../../info/branchen-enterprise";
 
 /* Was eine gesperrte Analyse zeigt: Pfad, Analyse, Beispielbegriff der Vorschau und ein Satz dazu */
-const VORSCHAU: Record<string, { id: AnalyseId; term: string; text: string }> = {
+const VORSCHAU: Record<string, { id: AnalyseId; term: string; text: string; thumb?: false }> = {
   "/analytics/graph": { id: "graph", term: "Photovoltaik", text: "Zeigt, womit ein Thema zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz." },
   "/analytics/trends": { id: "trends", term: "Photovoltaik", text: "Zeigt, welche Begriffe gerade aufkommen, zunehmen oder verschwinden, mit Verlaufskurven." },
   "/analytics/vergleich": { id: "vergleich", term: "Köln und Dortmund", text: "Stellt zwei Orte nebeneinander: Themenprofil, Verlauf, aktivste Gremien und typische Begriffe." },
   "/analytics/beschluesse": { id: "beschluesse", term: "Photovoltaik", text: "Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen, Ablehnungen und die Dauer bis zur Entscheidung." },
+  "/analytics/atlas": { id: "atlas", term: "", thumb: false, text: "Zeigt, worüber wo beraten wird: zehn Themen auf der Karte, nach Ort, Monat und Status, mit den Vorgängen hinter jeder Zahl." },
+  "/analytics/signale": { id: "signale", term: "", thumb: false, text: "Zeigt neue Ereignisse je Branche als Liste mit Ort, Stand und Quelle: was entsteht, bevor es in der Zeitung steht." },
+  "/analytics/ausschreibungen": { id: "ausschreibungen", term: "", thumb: false, text: "Zeigt Ausschreibungen und Vergaben aus den Ratsunterlagen mit Ort, Stand und Quelle." },
+  "/analytics/news": { id: "news", term: "", thumb: false, text: "Zeigt, was gerade berichtenswert ist: Vorgänge mit Ausgang, Streit oder ungewöhnlich viel Aufmerksamkeit." },
+  "/analytics/fakten": { id: "fakten", term: "", thumb: false, text: "Zeigt belegte Einzelwerte aus den Unterlagen je Gemeinde auf der Karte, etwa Hebesätze." },
+  "/analytics/fraktionen": { id: "fraktionen", term: "", thumb: false, text: "Zeigt, welche Fraktion was beantragt und wie die Anträge ausgehen." },
   "/analytics/gremien": { id: "gremien", term: "Photovoltaik", text: "Zeigt, welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
 };
 
@@ -40,9 +46,9 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
           <div>
             <h2 className="m-0 text-[22px] font-semibold">{title}</h2>
             <p className="mt-2 max-w-[560px] text-[16px] leading-relaxed text-slate-500">{v.text}</p>
-            <p className="mt-4 max-w-[560px] text-[14px] text-slate-500">Die Vorschau zeigt echte Daten.</p>
+            {v.thumb !== false && <p className="mt-4 max-w-[560px] text-[14px] text-slate-500">Die Vorschau zeigt echte Daten.</p>}
           </div>
-          <LiveThumb id={v.id} term={v.term} />
+          {v.thumb !== false && <LiveThumb id={v.id} term={v.term} />}
         </section>
       )}
     </main>
