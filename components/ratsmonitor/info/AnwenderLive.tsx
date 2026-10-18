@@ -37,7 +37,7 @@ function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
             <p className="m-0 text-[14px] font-semibold text-teal-700">{kurz(s.d)}{i === 0 ? " · hier erstmals sichtbar" : ""}</p>
             <p className="m-0 mt-1 text-[16px] font-semibold text-slate-900">{s.label}</p>
             <p className="m-0 mt-1 text-[14px] text-slate-500">{s.gremium}</p>
-            <Link href={s.href} className="mt-1 inline-block text-[14px] text-teal-700 hover:underline">Vorgang mit Quelle →</Link>
+            <Link href={s.href} className="mt-1 inline-block max-sm:py-3 text-[14px] text-teal-700 hover:underline">Vorgang mit Quelle →</Link>
           </li>
         ))}
       </ol>
@@ -130,7 +130,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
                 {n && <>
                   <p className="m-0 mt-3 text-[16px] font-semibold text-slate-900">{n[1]}</p>
                   <p className="m-0 mt-1 text-[16px] leading-relaxed text-slate-500">{n[2]}</p>
-                  <Link href={suchLink(n[3])} className="mt-1 inline-block py-1 text-[14px] text-teal-700 hover:underline">Suche „{n[3]}“ →</Link>
+                  <Link href={suchLink(n[3])} className="mt-1 inline-block py-1 max-sm:py-3 text-[14px] text-teal-700 hover:underline">Suche „{n[3]}“ →</Link>
                 </>}
               </div>
             );
@@ -146,7 +146,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
             „{term}“ in der Suche ansehen <span aria-hidden="true">→</span>
           </Link>
         </div>
-        <p className="m-0 text-[14px] text-slate-500" style={{ marginTop: 12 }}>Kostenlos und ohne Anmeldung. <Link href="/preise" className="text-teal-700 hover:underline">Preise</Link></p>
+        <p className="m-0 text-[14px] text-slate-500" style={{ marginTop: 12 }}>Kostenlos und ohne Anmeldung. <Link href="/preise" className="inline-block px-1 max-sm:py-3 text-teal-700 hover:underline">Preise</Link></p>
       </section>
 
       {/* plenara.X: schmale Zeile am Ende (Stufe Enterprise) */}
@@ -154,7 +154,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
         <section className="ri-sec ri-sec--tight">
           <p className="m-0 text-[14px] text-slate-500">
             <span className="font-semibold text-slate-900">Mehr mit plenara.X</span> (Stufe Enterprise):{" "}
-            {b.plenarax.map(([titel, , link], i) => <span key={link}>{i ? " · " : ""}<Link href={link} className="text-teal-700 hover:underline">{titel} →</Link></span>)}
+            {b.plenarax.map(([titel, , link], i) => <span key={link}>{i ? " · " : ""}<Link href={link} className="inline-block max-sm:py-3 text-teal-700 hover:underline">{titel} →</Link></span>)}
           </p>
         </section>
       )}

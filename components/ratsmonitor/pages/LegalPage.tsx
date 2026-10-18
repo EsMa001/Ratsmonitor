@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { useBrand } from "../lib/brand";
 import { BETREIBER } from "../lib/betreiber";
 import { PageHead } from "../info/blocks";
@@ -198,14 +199,40 @@ function Datenschutz() {
   );
 }
 
+/** Inhaltsverzeichnis mit Sprungmarken (nur Handy) aus den Überschriften des Textes; per DOM, weil der Text selbst feste Komponenten sind */
+function useInhalt(ref: React.RefObject<HTMLDivElement | null>, on: boolean) {
+  useEffect(() => {
+    const root = ref.current;
+    if (!on || !root) return;
+    const hs = [...root.querySelectorAll("h2")];
+    const nav = document.createElement("nav");
+    nav.className = "sm:hidden";
+    nav.setAttribute("aria-label", "Inhalt");
+    nav.style.cssText = "margin:0 0 8px;border-bottom:1px solid var(--rm-c200)";
+    hs.forEach((h, i) => {
+      h.id = h.id || `abschnitt-${i + 1}`;
+      h.style.scrollMarginTop = "72px";
+      const a = document.createElement("a");
+      a.href = `#${h.id}`;
+      a.textContent = h.textContent;
+      a.style.cssText = "display:flex;align-items:center;min-height:44px;font-size:14px;color:var(--rm-c900);text-decoration:none;border-top:1px solid var(--rm-c100)";
+      nav.appendChild(a);
+    });
+    root.insertBefore(nav, root.firstChild);
+    return () => { nav.remove(); };
+  }, [ref, on]);
+}
+
 export function LegalPage({ kind }: { kind: "impressum" | "datenschutz" }) {
   /* Gleicher Aufbau wie die Info-Seiten: Kopf mit Zurück-Link, Text ohne Rahmen */
   const imp = kind === "impressum";
+  const text = useRef<HTMLDivElement>(null);
+  useInhalt(text, !imp);
   return (
     <main id="inhalt" className="ri">
       <PageHead icon={imp ? "fileText" : "shieldCheck"} label="Rechtliches" name={imp ? "Impressum" : "Datenschutz"} title={imp ? "Impressum" : "Datenschutzerklärung"} />
       <section className="ri-sec ri-sec--tight">
-        <div className="max-w-[80ch] [&>h2:first-child]:mt-0">{imp ? <Impressum /> : <Datenschutz />}</div>
+        <div ref={text} className="max-w-[80ch] [&>h2:first-child]:mt-0">{imp ? <Impressum /> : <Datenschutz />}</div>
       </section>
     </main>
   );

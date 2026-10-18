@@ -17,7 +17,7 @@ const field = "h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 
 const label = "mb-1 block text-[12px] font-semibold uppercase tracking-wide text-slate-500";
 const h2 = "m-0 text-[18px] font-semibold";
 const block = "mt-10 border-t border-slate-200 pt-6";
-const link = "text-[14px] font-medium text-teal-700 hover:underline disabled:opacity-50";
+const link = "text-[14px] font-medium text-teal-700 hover:underline disabled:opacity-50 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center";
 
 /** Kontoseite: Angaben, Stufe, Geräte, Kalender-Abo, Daten aus diesem Browser, Datenauskunft, Löschen, Abmelden */
 export function ProfilePage() {
@@ -160,6 +160,9 @@ function Devices() {
       toast((e as Error).message);
     }
   };
+  /* Lange Listen kürzen: das eigene Gerät zuerst, dann die neuesten, höchstens 3 */
+  const [all, setAll] = useState(false);
+  const shown = sessions ? (all || sessions.length <= 3 ? sessions : [...sessions].sort((a, b) => Number(!!b.current) - Number(!!a.current)).slice(0, 3)) : [];
   return (
     <section className={block} aria-labelledby="geraete-title">
       <h2 id="geraete-title" className={h2}>Angemeldete Geräte</h2>
@@ -167,7 +170,7 @@ function Devices() {
       {!sessions && !(list.key === key && list.error) && <p role="status" className="m-0 mt-2 text-[14px] text-slate-500">Geräte werden geladen …</p>}
       {sessions && (
         <ul className="m-0 mt-3 list-none p-0">
-          {sessions.map((s) => (
+          {shown.map((s) => (
             <li key={s.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-slate-200 py-3 last:border-b-0">
               <span className="min-w-0 flex-1">
                 <span className="block text-[16px] text-slate-900">
@@ -184,6 +187,9 @@ function Devices() {
             </li>
           ))}
         </ul>
+      )}
+      {sessions && sessions.length > 3 && (
+        <button type="button" className={`${link} mt-2`} onClick={() => setAll(!all)}>{all ? "Weniger zeigen" : `Alle ${sessions.length} Geräte zeigen`}</button>
       )}
       <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
         {sessions && sessions.length > 1 && (

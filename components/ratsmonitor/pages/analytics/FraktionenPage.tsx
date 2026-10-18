@@ -41,6 +41,9 @@ export function FraktionenPage() {
   }, [stale, loading, run]);
   // Geöffnete Liste hinter einer Zahl („all:SPD“, „decided:SPD“)
   const [open, setOpen] = useState("");
+  /* Handy: nur die ersten 6 Fraktionen je Liste, bis „Alle zeigen“ */
+  const [allP, setAllP] = useState(false);
+  const rowHide = (i: number) => (!allP && i >= 6 ? " max-sm:hidden" : "");
   const toggle = (k: string) => setOpen(open === k ? "" : k);
 
   /* Liste hinter einer Zeile: alle Vorgänge der Fraktion (all) oder ihre Anträge mit Entscheidung (decided) */
@@ -82,8 +85,8 @@ export function FraktionenPage() {
                   <li className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm bg-teal-200" />Anfragen</li>
                 </ul>
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
-                  {parties.map((p) => (
-                    <li key={p.name} className="border-b border-slate-200">
+                  {parties.map((p, i) => (
+                    <li key={p.name} className={"border-b border-slate-200" + rowHide(i)}>
                       <button type="button" onClick={() => toggle(`all:${p.name}`)} aria-expanded={open === `all:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 text-left sm:grid-cols-[240px_minmax(0,1fr)_150px] ${open === `all:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
                       <span className="truncate text-[16px]">{p.name}</span>
                       <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1" role="img" aria-label={`${p.name}: ${n(p.antrag)} Anträge, ${n(p.anfrage)} Anfragen`}>
@@ -99,13 +102,14 @@ export function FraktionenPage() {
                 {res.small.length > 0 && <p className="mt-2 text-[12px] text-slate-500">Mit weniger als 10 Vorgängen nicht einzeln gezeigt: {res.small.map((s) => `${s.name} (${s.n})`).join(", ")}.</p>}
               </section></Reveal>
 
+              {parties.length > 6 && <button type="button" onClick={() => setAllP(!allP)} className="mt-3 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{allP ? "Weniger Fraktionen zeigen" : `Alle ${parties.length} Fraktionen zeigen`}</button>}
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Themenprofil</h2>
                 <p className="mb-4 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil je Themenfeld an den Anträgen und Anfragen einer Fraktion. Kräftiges Petrol: deutlich häufiger als bei den anderen.</p>
                 {/* Handy: je Fraktion eine Zeile mit den Themen untereinander statt der breiten Tabelle (kein Querscrollen) */}
                 <ul className="m-0 list-none border-t border-slate-200 p-0 sm:hidden">
-                  {parties.map((p) => (
-                    <li key={p.name} className="border-b border-slate-200 py-3">
+                  {parties.map((p, i) => (
+                    <li key={p.name} className={"border-b border-slate-200 py-3" + rowHide(i)}>
                       <p className="m-0 text-[14px] font-semibold text-slate-900">{p.name}</p>
                       {p.top.length > 0 && <p className="m-0 mt-0.5 text-[12px] text-slate-500">Typisch: {p.top.map((t) => t.name).join(", ")}</p>}
                       <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">

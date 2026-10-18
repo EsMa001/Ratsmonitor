@@ -149,7 +149,7 @@ export function VideosPage() {
             <div key={v.base}>
               <Player base={variant(v.base, dark)} poster={variant(v.base, dark)} label={`Video abspielen: ${v.name}`} />
               <p className="m-0 mt-3 text-[16px] font-semibold text-slate-900">{v.name}</p>
-              <p className="m-0 mt-0.5 text-[14px] text-slate-500">{v.text} <Link href={v.href} className="text-teal-700 hover:underline">{v.link} →</Link></p>
+              <p className="m-0 mt-0.5 text-[14px] text-slate-500">{v.text} <Link href={v.href} className="inline-block max-sm:py-3 text-teal-700 hover:underline">{v.link} →</Link></p>
             </div>
           ))}
         </div>

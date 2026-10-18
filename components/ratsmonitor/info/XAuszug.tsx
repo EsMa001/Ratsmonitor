@@ -82,7 +82,7 @@ function SignalBlock({ a, label }: { a: SignalAuszug; label: string }) {
             </ul>
           </div>
         )}
-        <Link href={`/analytics/signale?signal=${a.signal}`} className="mt-4 inline-block text-[16px] text-teal-700 hover:underline">Alle Vorhaben in plenara.X Signale →</Link>
+        <Link href={`/analytics/signale?signal=${a.signal}`} className="mt-4 inline-block max-sm:py-3 text-[16px] text-teal-700 hover:underline">Alle Vorhaben in plenara.X Signale →</Link>
       </div>
       <div className="lg:mt-[var(--hoch)]" style={{ "--hoch": `${-hoch}px` } as CSSProperties}>
         <RegionMap level="city" levels={{}} dots={dotsOf(a.places)} colors={["var(--rm-fill)"]} picked="" onPick={() => {}} legend={["1 Punkt = 1 Vorhaben"]} label={`Karte: ${label} je Gemeinde`} />
@@ -210,7 +210,7 @@ export function XAuszug({ name, auszuege, text }: { name: string; auszuege: [str
       <p className="ri-sub">{text ?? "Aus den Vorlagen aller Räte, jede Zahl mit den Vorgängen dahinter."}</p>
       {auszuege.length > 1 && (
         <div className="flex flex-wrap gap-2" role="group" aria-label="Auszug wählen" style={{ marginTop: 16 }}>
-          {auszuege.map(([k, l, chip], i) => <button key={k} type="button" aria-pressed={sel === i} onClick={() => setSel(i)} className={"rounded-full border px-3 py-1.5 text-[14px] " + (sel === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{chip ?? l}</button>)}
+          {auszuege.map(([k, l, chip], i) => <button key={k} type="button" aria-pressed={sel === i} onClick={() => setSel(i)} className={"rounded-full border px-3 py-1.5 max-sm:min-h-[44px] text-[14px] " + (sel === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{chip ?? l}</button>)}
         </div>
       )}
       <div style={{ marginTop: 24 }}><Block key={id} id={id} label={label} /></div>
