@@ -1,4 +1,4 @@
-import { Kennzahlen, Segmented } from "./Kennzahlen";
+import { Kennzahlen, Segmented, Folgen } from "./Kennzahlen";
 import { usePhone } from "../../lib/usePhone";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
@@ -77,7 +77,7 @@ export function BeschluessePage() {
       <XKopf seite="beschluesse" />
 
       <ThemenLeiste />
-      <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 

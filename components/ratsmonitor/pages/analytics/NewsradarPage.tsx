@@ -1,7 +1,7 @@
 import { ShareButton } from "../../components/ShareButton";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Segmented } from "./Kennzahlen";
+import { Segmented, Folgen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, Fehler, Leer } from "./Befund";
@@ -84,8 +84,8 @@ export function NewsradarPage() {
       <XKopf seite="news" />
 
       <ThemenLeiste />
-      <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
-      <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden" role="group" aria-label="Zeitraum">
+      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className={`mt-4 flex flex-wrap items-center gap-2 print:hidden${own ? "" : " max-sm:hidden"}`} role="group" aria-label="Zeitraum">
         {own ? (
           <p className="m-0 text-[14px] text-slate-700">Zeitraum aus dem Filter{res?.own ? `: ${datum(res.from)} bis ${datum(res.to)}` : ""}</p>
         ) : (

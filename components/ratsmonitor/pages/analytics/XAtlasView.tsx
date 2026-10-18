@@ -5,7 +5,6 @@ import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
 import { Befund, Fehler } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo, zeitText } from "./Kennzahlen";
-import { setFiltersOpen } from "../../lib/filtersOpen";
 import { usePhone } from "../../lib/usePhone";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -232,8 +231,8 @@ function OrtImVergleich({ c, theme, onPick }: { c: Compare; theme: string; onPic
   );
 }
 
-/** Handy: Ebene der Karte (Gemeinden, Kreise) und „Folgen“ (Neues per Mail) im Filterblatt statt als eigene Zeilen über und unter der Karte */
-function AtlasExtra({ level, onLevel, before }: { level: Level; onLevel: (l: Level) => void; before: () => void }) {
+/** Handy: Ebene der Karte (Gemeinden, Kreise) im Filterblatt statt als eigene Zeilen über und unter der Karte */
+function AtlasExtra({ level, onLevel }: { level: Level; onLevel: (l: Level) => void }) {
   const chip = (on: boolean) => `h-8 shrink-0 whitespace-nowrap rounded-full border px-3 text-[14px] transition-colors ${on ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700"}`;
   return (
     <div className="flex flex-col gap-2 border-b border-slate-200 pb-2">
@@ -242,10 +241,6 @@ function AtlasExtra({ level, onLevel, before }: { level: Level; onLevel: (l: Lev
         <span className="flex gap-1.5">
           {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => onLevel(k)} className={chip(level === k)}>{l}</button>)}
         </span>
-      </div>
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-[14px] text-slate-700">Neues per Mail</span>
-        <Folgen showText before={() => { before(); setFiltersOpen(false); }} hint="Dieser Auswahl folgen" />
       </div>
     </div>
   );
@@ -437,7 +432,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           })}
         </ul>
       </nav>}
-      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} before={() => { if (theme) search.setThema(theme); }} />} /></div>
+      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch follow={<Folgen heart before={() => { if (theme) search.setThema(theme); }} hint="Suche speichern: neue Vorgänge per Mail" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden karte text="Auswertung wird berechnet …" />}
       {res && (

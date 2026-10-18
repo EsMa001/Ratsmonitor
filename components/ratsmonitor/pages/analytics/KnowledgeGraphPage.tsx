@@ -1,4 +1,4 @@
-import { Segmented } from "./Kennzahlen";
+import { Segmented, Folgen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Befund, Fehler } from "./Befund";
 import { RadarDrill } from "./RadarDrill";
@@ -138,7 +138,7 @@ export function KnowledgeGraphPage() {
       <XKopf seite="graph" />
 
       <ThemenLeiste />
-      <div className="print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} /></div>
+      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} /></div>
       {error && <Fehler>{error}</Fehler>}
 
       {/* Antwort zuerst, dann das Netz */}

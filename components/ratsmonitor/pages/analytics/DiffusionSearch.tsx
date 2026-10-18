@@ -77,7 +77,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
             <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} />
           </div>
           {follow && <div className={`flex-none max-sm:order-2 sm:hidden ${typing ? "max-sm:hidden" : ""}`}>{follow}</div>}
-          {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} /> : filterBtn}</div>}
+          {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${follow ? "max-sm:order-1" : ""} ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} /> : filterBtn}</div>}
           {phone && typing && <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => { (document.activeElement as HTMLElement | null)?.blur(); setTyping(false); }} className="h-12 flex-none px-1 text-[16px] font-medium text-teal-700">Abbrechen</button>}
         </div>
           </div>
