@@ -449,6 +449,14 @@ html.rm-dark .rm-banddots{opacity:.35}
 @media (prefers-reduced-motion:reduce){:is(.pl-band,.ri-head) :is(h1,.ri-h1,.rm-band-mid,.ri-lead){animation:none}}
 /* Handy: Kopfbänder schlanker (plenara.X: ohne Zurück, Symbol und Zeitraumzeilen; Info- und Kontoseiten: ohne großes Symbol, Einleitung auf 2 Zeilen) */
 @media (max-width:639px){
+  /* Kopfband der Info- und Kontoseiten: überall so hoch wie bei plenara.X (Name groß, darunter eine Zeile); Überschrift, Satz und Zusätze stehen darunter (PageHead) */
+  .ri-head{min-height:135px;padding-bottom:16px !important}
+  html .ri-head .ri-bid .ri-bid__name{font-size:28px !important;font-weight:600 !important;line-height:1.15 !important}
+  .ri-head .ri-lead{display:none !important}
+  .ri-head .ri-bid + .ri-h1,.ri-head .ri-h1{font-size:18px !important;font-weight:500 !important;line-height:1.3 !important;margin-top:6px !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ri-below{padding:16px var(--ri-pad) 4px}
+  .ri-below__h{margin:0;font-size:22px;font-weight:600;line-height:1.2;letter-spacing:-.01em;color:var(--rm-c900)}
+  .ri-below__lead{margin:8px 0 0;font-size:16px;line-height:1.5;color:var(--rm-c500)}
   /* Textknöpfe („Weiterlesen“, „Weitere 10 zeigen →“, „Netz anzeigen →“ …) erreichen die 44 px Tippfläche */
   main#inhalt button[class*="hover:underline"]:not(.truncate){display:inline-flex;align-items:center;min-height:44px}
   main#inhalt button.truncate[class*="hover:underline"]{line-height:44px}
@@ -474,7 +482,7 @@ html.rm-dark .rm-banddots{opacity:.35}
   html:has(.ri-head) .ri-head{padding-top:46px !important}
   html:has(.ri-head) .ri-head > div:not(.rm-banddots){display:flex;flex-direction:column}
   html:has(.ri-head) .ri-head .ri-bid{display:flex;align-items:center;margin:0 0 4px !important;padding:0}
-  html:has(.ri-head) .ri-head .ri-bid__name{font-size:18px !important;line-height:1.2;font-weight:600}
+  html:has(.ri-head) .ri-head .ri-bid__name{font-size:28px !important;line-height:1.15;font-weight:600}
   html:has(.ri-head) .ri-head .back-btn{display:none !important}
   header .rm-logo__text{position:static !important;width:auto !important;height:auto !important;overflow:visible !important;clip:auto !important}
   header .rm-logo{font-size:18px}

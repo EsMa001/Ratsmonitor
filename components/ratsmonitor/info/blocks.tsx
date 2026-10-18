@@ -1,4 +1,4 @@
-import { useCallback, type ReactNode } from "react";
+import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { focusSearch } from "../components/SearchBox";
 import { StepTimeline } from "../components/results/ArticleCard";
 import { useBrandText } from "../lib/brand";
@@ -42,7 +42,7 @@ export function PageHead({
   icon,
   label,
   name,
-  title,
+  title: titleIn,
   lead,
   small,
   aside,
@@ -60,12 +60,26 @@ export function PageHead({
   top?: boolean;
   children?: ReactNode;
 }) {
+  /* Steht derselbe Text als Name und als Überschrift (Impressum, Anmelden), genügt der Name */
+  const title = typeof titleIn === "string" && titleIn === name ? undefined : titleIn;
   const router = useRouter();
   const pathname = usePathname();
   const { goOverview } = useAppNav();
   /* Dezenter Zurück-Pfeil auf allen Info- und Kontoseiten: zur vorigen Seite der App; wer von außen kommt (Link aus E-Mail,
      Suchmaschine), landet in der Suche statt wieder auf der fremden Seite (wie die Detailseite, state/nav.ts) */
   const back = () => (cameFromApp() ? router.back() : goOverview());
+  /* Handy: die Überschrift steht im Band in einer Zeile; wird sie dort abgeschnitten, steht sie ganz unter dem Band */
+  const h1Ref = useRef<HTMLHeadingElement>(null);
+  const [cut, setCut] = useState(false);
+  useLayoutEffect(() => {
+    const el = h1Ref.current;
+    if (!el) { setCut(false); return; }
+    const measure = () => setCut(el.scrollWidth > el.clientWidth + 1);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [title]);
   const main = (
     <div>
       <button type="button" onClick={back} className={`back-btn -ml-1.5 mb-4 ${HAUPTZIEL.includes(pathname) ? "max-sm:hidden" : ""}`}>
@@ -79,23 +93,33 @@ export function PageHead({
           {title ? <span className="ri-bid__name">{name}</span> : <h1 className="ri-bid__name m-0">{name}</h1>}
         </div>
       </div>
-      {title && <h1 className={"ri-h1" + (small ? " ri-h1--sm" : "")}>{title}</h1>}
-      {lead && <p className="ri-lead">{lead}</p>}
-      {children}
+      {title && <h1 ref={h1Ref} className={"ri-h1" + (small ? " ri-h1--sm" : "")}>{title}</h1>}
+      {lead && <p className="ri-lead max-sm:hidden">{lead}</p>}
+      {children && <div className="max-sm:hidden">{children}</div>}
     </div>
   );
   return (
-    <section className={"ri-head" + (title ? "" : " ri-head--compact")}>
-      <BandDots />
-      {aside ? (
-        <div className={"ri-head__grid" + (top ? " ri-head__grid--top" : "")}>
-          {main}
-          {aside}
+    <>
+      <section className={"ri-head" + (title ? "" : " ri-head--compact")}>
+        <BandDots />
+        {aside ? (
+          <div className={"ri-head__grid" + (top ? " ri-head__grid--top" : "")}>
+            {main}
+            {aside}
+          </div>
+        ) : (
+          main
+        )}
+      </section>
+      {/* Handy: das Band hat überall dieselbe Höhe (Name und eine Zeile); die ganze Überschrift, der Satz und Zusätze stehen darunter */}
+      {((title && cut) || lead || children) && (
+        <div className="ri-below sm:hidden">
+          {title && cut && <p className="ri-below__h">{title}</p>}
+          {lead && <p className="ri-below__lead">{lead}</p>}
+          {children}
         </div>
-      ) : (
-        main
       )}
-    </section>
+    </>
   );
 }
 
