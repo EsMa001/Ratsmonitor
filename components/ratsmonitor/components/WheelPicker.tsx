@@ -4,6 +4,8 @@ import { ChevronsUpDown } from "lucide-react";
 import type { RailItem } from "./ChipRail";
 
 const ROW = 32;
+/* oben ein Stück der leeren Vorzeile abschneiden: weniger Abstand zur Kopfzeile, wenn der erste Eintrag gewählt ist */
+const TRIM = 18;
 
 /** Handy: Walze wie ein Drehrad. Die mittlere Zeile ist gewählt; geladen wird erst, wenn die Walze eingerastet ist (kurze Ruhe nach dem letzten Scrollen). Ein Tipp auf eine Zeile dreht sie in die Mitte. Nur unter 640 px sichtbar. */
 export function WheelPicker({ label, items, value, onPick, className = "" }: { label: string; items: RailItem[]; value: string; onPick: (id: string) => void; className?: string }) {
@@ -26,7 +28,7 @@ export function WheelPicker({ label, items, value, onPick, className = "" }: { l
     }, 160);
   };
   return (
-    <div role="group" aria-label={label} className={`relative rounded-xl bg-white sm:hidden print:hidden ${className}`} style={{ height: ROW * 3 }}>
+    <div role="group" aria-label={label} className={`relative rounded-xl bg-white sm:hidden print:hidden ${className}`} style={{ height: ROW * 3, marginTop: -TRIM, clipPath: `inset(${TRIM}px 0 0 0)` }}>
       {/* Markierung der gewählten Zeile */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 rounded-xl bg-teal-50 ring-1 ring-teal-600/30" style={{ top: ROW, height: ROW }}>
         {/* Hinweis „drehbar“: Pfeile oben und unten, hüpfen beim Erscheinen dreimal */}

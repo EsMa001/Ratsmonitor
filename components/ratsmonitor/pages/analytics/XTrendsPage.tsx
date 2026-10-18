@@ -9,7 +9,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { RadarDrill } from "./RadarDrill";
 import { TrendMap, type Trend, type TrendKind } from "./TrendViews";
-import { Folgen, Kennzahlen, MeinOrt, Segmented, countScale, useOrtInAdresse } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitExtra, countScale, useOrtInAdresse } from "./Kennzahlen";
 import { MiniCurve, SpreadChart, SpreadMap, fmt, keysOf, toDay, type SpreadRegion } from "./XTrendsParts";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { isFiller, prettyTerm } from "../../lib/terms";
@@ -187,7 +187,7 @@ export function XTrendsPage() {
       <XKopf seite="trends" />
 
       <ThemenLeiste />
-      <div className="mt-4 print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden"><DiffusionSearch extra={<ZeitExtra options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Trends werden berechnet …" />}
@@ -203,7 +203,7 @@ export function XTrendsPage() {
             { value: n(lists.up.filter((t) => t.kind === "emerging").length), label: "neu aufgekommen" },
             { value: moving === null ? "…" : n(moving), label: "Gebiete mit neuen Themen" },
           ]}>
-            <span className="inline-flex flex-wrap gap-1 print:hidden" role="group" aria-label="Zeitraum">
+            <span className="inline-flex flex-wrap gap-1 max-sm:hidden print:hidden" role="group" aria-label="Zeitraum">
               {WINDOWS.map(([k, l]) => <button key={k} type="button" aria-pressed={k === zeit} onClick={() => pick({ zeit: k })}
                 className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === zeit ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>)}
             </span>

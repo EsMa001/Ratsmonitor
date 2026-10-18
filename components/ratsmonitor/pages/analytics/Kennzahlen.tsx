@@ -52,10 +52,24 @@ export function countScale(values: number[]): { level: (v: number) => number; le
 /** Text zum Zeitraum der ZeitPills (für den Bezug der Kennzahl) */
 export const zeitText = (v: string) => (v === "3" || v === "6" || v === "12" ? `letzte ${v} Monate` : "gesamter Zeitraum");
 
+/** Handy: Zeitraum im Filterblatt (die Reihe auf der Seite entfällt dort) */
+export function ZeitExtra({ value, all = "", onPick, options }: { value: string; all?: string; onPick: (v: string) => void; options?: [string, string][] }) {
+  const opts: [string, string][] = options ?? [["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], [all, "Alles"]];
+  return (
+    <div role="group" aria-label="Zeitraum" className="flex flex-col gap-2 border-b border-slate-200 pb-2">
+      <span className="text-[14px] text-slate-700">Auswertung über</span>
+      <span className="flex flex-wrap gap-1.5">
+        {opts.map(([k, l]) => <button key={k || "alle"} type="button" aria-pressed={k === value} onClick={() => onPick(k)}
+          className={`h-8 shrink-0 whitespace-nowrap rounded-full border px-3 text-[14px] ${k === value ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700"}`}>{l}</button>)}
+      </span>
+    </div>
+  );
+}
+
 export function ZeitPills({ value, all = "", onPick }: { value: string; all?: string; onPick: (v: string) => void }) {
   const opts: [string, string][] = [["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], [all, "Alles"]];
   return (
-    <span className="inline-flex flex-wrap gap-1 print:hidden" role="group" aria-label="Zeitraum">
+    <span className="inline-flex flex-wrap gap-1 max-sm:hidden print:hidden" role="group" aria-label="Zeitraum">
       {opts.map(([k, l]) => <button key={k || "alle"} type="button" aria-pressed={k === value} onClick={() => onPick(k)}
         className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === value ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(" Monate", " Mon.")}</span></button>)}
     </span>
@@ -87,8 +101,24 @@ export function useOrtInAdresse(area: string, setArea: (ags: string) => void) {
 
 /** Umschalter für die Sortierung einer Liste (Trends, Fakten): helle Fläche, gewählte Wahl weiß hervorgehoben */
 export function Segmented<K extends string>({ options, value, onPick, label }: { options: [K, string, string?][]; value: K | ""; onPick: (k: K) => void; label: string }) {
+  /* Wie bei iOS: mit dem Finger über die Auswahl ziehen wählt die Stellung unter dem Finger */
+  const drag = useRef<{ x: number; on: boolean } | null>(null);
+  const moved = useRef(false);
+  const at = (e: React.PointerEvent<HTMLDivElement>) => {
+    const tabs = [...e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]')];
+    const i = tabs.findIndex((t) => { const r = t.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right; });
+    return i < 0 ? undefined : options[i]?.[0];
+  };
   return (
-    <div role="tablist" aria-label={label} className="inline-flex max-w-full overflow-x-auto rounded-full bg-slate-100 p-1">
+    <div role="tablist" aria-label={label} className="inline-flex max-w-full touch-pan-y overflow-x-auto rounded-full bg-slate-100 p-1"
+      onPointerDown={(e) => { if (e.pointerType === "touch") { drag.current = { x: e.clientX, on: false }; moved.current = false; } }}
+      onPointerMove={(e) => {
+        const d = drag.current; if (!d) return;
+        if (!d.on && Math.abs(e.clientX - d.x) > 8) { d.on = true; moved.current = true; e.currentTarget.setPointerCapture(e.pointerId); }
+        if (d.on) { const k = at(e); if (k !== undefined && k !== value) onPick(k); }
+      }}
+      onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}
+      onClickCapture={(e) => { if (moved.current) { e.stopPropagation(); e.preventDefault(); moved.current = false; } }}>
       {options.map(([k, l, hint]) => <button key={k} role="tab" type="button" aria-selected={k === value} title={hint} onClick={() => onPick(k)}
         className={`h-8 max-sm:h-11 shrink-0 whitespace-nowrap rounded-full px-3 text-[14px] ${k === value ? "bg-white font-semibold text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(" Monate", " Mon.")}</span></button>)}
     </div>

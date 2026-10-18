@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Fehler, Leer } from "./Befund";
-import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitExtra, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import { kurz } from "../../components/ChipRail";
@@ -267,7 +267,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           })}
         </ul>
       </nav>}
-      <div className="mt-4 print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden"><DiffusionSearch extra={<ZeitExtra value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text={fest ? "Ausschreibungen werden geladen …" : "Signale werden geladen …"} />}

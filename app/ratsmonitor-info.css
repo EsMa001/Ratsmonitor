@@ -467,6 +467,7 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
   html:not(.rm-dark) header{background:var(--rm-ac);border-bottom-color:transparent}
   html:not(.rm-dark) header .rm-logo svg{filter:brightness(0) invert(1)}
   html:not(.rm-dark) header button[aria-haspopup="menu"]{color:var(--rm-on)}
+  html:not(.rm-dark) header button[aria-haspopup="menu"][aria-expanded="true"]{background:rgba(255,255,255,.18);color:var(--rm-on);border-radius:9999px;height:40px;width:40px}
 }
 
 /* Handy, plenara.X (Kopf mit Titel): Kopfzeile und Band sind eine Fläche. Die Kopfzeile liegt weiß-auf-Petrol über dem Band (scrollt mit weg),

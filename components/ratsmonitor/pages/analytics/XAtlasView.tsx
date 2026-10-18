@@ -82,9 +82,12 @@ const HIGH_BAD = new Set(["hebesatz", "fee_rate", "dog_tax", "kita_fee", "land_p
 const GREEN_RED = ["var(--rm-ac)", "var(--color-teal-400)", "var(--color-amber-300)", "var(--rm-no)"];
 const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
-function AtlasMap({ regions, facts, onList, listed, drill, onPlace, preview }: { /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void }) {
-  const [level, setLevel] = useState<"city" | "district">("city");
-  const [picked, setPicked] = useState("");
+type Level = "city" | "district";
+
+function AtlasMap({ regions, facts, onList, listed, drill, onPlace, onLevel, preview, level }: { /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; onLevel: (l: Level) => void; /* Ebene der Karte: Gemeinden oder Kreise (gehört dem Filter, siehe AtlasExtra) */ level: Level }) {
+  const [pk, setPk] = useState<{ l: string; v: string }>({ l: level, v: "" });
+  const picked = pk.l === level ? pk.v : "";
+  const setPicked = (v: string) => setPk({ l: level, v });
   const [kind, setKind] = useState("");
   /* Fakt-, Kennzahl- und Ebenenwahl erst auf Wunsch einblenden */
   const [more, setMore] = useState(false);
@@ -145,9 +148,9 @@ function AtlasMap({ regions, facts, onList, listed, drill, onPlace, preview }: {
           </> : picked ? <span className="text-slate-500">Hier gibt es keine Werte zur Auswahl.</span> : undefined} />
       </div>
       {/* Ebene sichtbar (nicht mehr unter „Karte anpassen“): Kreise wählen beim Klick den ganzen Kreis */}
-      <div className="mt-3 max-sm:mt-2 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
+      <div className="mt-3 flex flex-wrap items-center gap-2 max-sm:hidden" role="group" aria-label="Ebene der Karte">
         <span className="text-[14px] text-slate-500 max-sm:hidden">Ebene</span>
-        {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
+        {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => onLevel(k)} className={chip(level === k)}>{l}</button>)}
         <span className="text-[14px] text-slate-500 max-sm:hidden">· Gebiet antippen wählt den Ort</span>
       </div>
       {facts.length > 0 && <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mb-2 mt-2 text-[14px] font-medium text-teal-700 hover:underline">
@@ -230,12 +233,21 @@ function OrtImVergleich({ c, theme, onPick }: { c: Compare; theme: string; onPic
   );
 }
 
-/** Handy: „Folgen“ (Neues per Mail) im Filterblatt statt als eigene Zeile über der Karte */
-function AtlasExtra({ before }: { before: () => void }) {
+/** Handy: Ebene der Karte (Gemeinden, Kreise) und „Folgen“ (Neues per Mail) im Filterblatt statt als eigene Zeilen über und unter der Karte */
+function AtlasExtra({ level, onLevel, before }: { level: Level; onLevel: (l: Level) => void; before: () => void }) {
+  const chip = (on: boolean) => `h-8 shrink-0 whitespace-nowrap rounded-full border px-3 text-[14px] transition-colors ${on ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700"}`;
   return (
-    <div className="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
-      <span className="text-[14px] text-slate-700">Neues per Mail</span>
-      <Folgen showText before={() => { before(); setFiltersOpen(false); }} hint="Dieser Auswahl folgen" />
+    <div className="flex flex-col gap-2 border-b border-slate-200 pb-2">
+      <div role="group" aria-label="Ebene der Karte" className="flex items-center justify-between gap-2">
+        <span className="text-[14px] text-slate-700">Karte zeigt</span>
+        <span className="flex gap-1.5">
+          {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => onLevel(k)} className={chip(level === k)}>{l}</button>)}
+        </span>
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[14px] text-slate-700">Neues per Mail</span>
+        <Folgen showText before={() => { before(); setFiltersOpen(false); }} hint="Dieser Auswahl folgen" />
+      </div>
     </div>
   );
 }
@@ -251,6 +263,7 @@ const SHOW_FACTS = false;
 
 export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit }: { theme: string; sub: string; zeit?: string; term: string | null; onTheme: (id: string) => void; onSub: (id: string) => void; onZeit: (z: string) => void }) {
   const phone = usePhone();
+  const [level, setLevel] = useState<Level>("city");
   const { query: baseQuery, search } = useAnalyticsQuery();
   /* Zeitraum der Seite (Monate zurück ab heute) ersetzt den der Suche nur, wenn die Suche selbst keinen hat (wie in den Signalen) */
   const query = (() => { const q = new URLSearchParams(baseQuery); if (zeit && !q.get("from")) { const d = new Date(); d.setMonth(d.getMonth() - Number(zeit)); q.set("from", d.toISOString().slice(0, 10)); } return q.toString(); })();
@@ -430,7 +443,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           })}
         </ul>
       </nav>}
-      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra before={() => { if (theme) search.setThema(theme); }} />} /></div>
+      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} before={() => { if (theme) search.setThema(theme); }} />} /></div>
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
       {res && (
@@ -459,7 +472,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="mt-4 max-sm:mt-2 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-4 lg:grid-cols-12">
                 <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-                  {allRegions.length > 0 && <AtlasMap onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+                  {allRegions.length > 0 && <AtlasMap level={level} onLevel={setLevel} onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
                 </div>
 
                 <div className="min-w-0 lg:col-span-6">
