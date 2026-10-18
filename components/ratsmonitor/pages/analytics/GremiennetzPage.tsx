@@ -1,4 +1,5 @@
 import { Kennzahlen, Folgen } from "./Kennzahlen";
+import { usePhone } from "../../lib/usePhone";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, Fehler, Leer } from "./Befund";
@@ -22,6 +23,10 @@ const n = (v: number) => v.toLocaleString("de-DE");
 
 export function GremiennetzPage() {
   const [netz, setNetz] = useState(false);
+  /* Handy: die Listen zuerst mit den ersten Einträgen, „Alle zeigen“ klappt den Rest auf */
+  const phone = usePhone();
+  const [more, setMore] = useState({ e: false, r: false, o: false });
+  const moreBtn = (k: "e" | "r" | "o", total: number, shown: number) => phone && total > shown ? <button type="button" aria-expanded={more[k]} onClick={() => setMore((m) => ({ ...m, [k]: !m[k] }))} className="mt-1 text-[14px] font-medium text-teal-700 hover:underline sm:hidden">{more[k] ? "Weniger zeigen" : `Alle ${total} zeigen`}</button> : null;
   const { query } = useAnalyticsQuery();
   const [selected, setSelected] = useState("");
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/network?${query}`, initial: true, fallback: "Das Netz konnte nicht berechnet werden.", onDone: () => setSelected("") });
@@ -114,7 +119,7 @@ export function GremiennetzPage() {
                   <h2 className="text-[22px] font-semibold">Wichtigste Übergänge</h2>
                   <p className="mb-3 mt-1 text-[14px] text-slate-500">Von welchem Gremium ein Vorgang an welches ging, und wie lange das im Mittel dauerte.</p>
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
-                    {res.edges.slice(0, 12).map((e) => (
+                    {res.edges.slice(0, phone && !more.e ? 5 : 12).map((e) => (
                       <li key={e.a + e.b} className="border-b border-slate-200">
                         <button type="button" onClick={() => { setSelected(e.a); setEdge(edge === e.a + "|" + e.b ? "" : e.a + "|" + e.b); }} aria-expanded={edge === e.a + "|" + e.b} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left ${edge === e.a + "|" + e.b ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
                           <span className="min-w-0 text-[16px] text-slate-900"><span className="block truncate">{e.a}</span><span className="block truncate text-slate-500">→ {e.b}</span></span>
@@ -125,12 +130,13 @@ export function GremiennetzPage() {
                       </li>
                     ))}
                   </ol>
+                  {moreBtn("e", Math.min(12, res.edges.length), 5)}
                 </section>
                 <section>
                   <h2 className="text-[22px] font-semibold">Typische Beratungswege</h2>
                   <p className="mb-3 mt-1 text-[14px] text-slate-500">Die häufigsten Folgen von Gremien (bis zu vier Stationen).</p>
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
-                    {res.routes.map((r, i) => (
+                    {(phone && !more.r ? res.routes.slice(0, 5) : res.routes).map((r, i) => (
                       <li key={i} className="flex items-start justify-between gap-4 border-b border-slate-200 py-3 text-[14px]">
                         <span className="min-w-0 text-slate-900">{r.path.map((p, j) => <span key={j}>{j > 0 && <span className="mx-1.5 text-teal-700">→</span>}{p}</span>)}</span>
                         <span className="shrink-0 tabular-nums text-slate-500">{n(r.n)}</span>
@@ -138,6 +144,7 @@ export function GremiennetzPage() {
                     ))}
                     {!res.routes.length && <li className="py-3 text-[14px] text-slate-500">Keine wiederkehrenden Wege.</li>}
                   </ol>
+                  {moreBtn("r", res.routes.length, 5)}
                 </section>
               </div>
 
@@ -146,7 +153,7 @@ export function GremiennetzPage() {
                 <h2 className="text-[22px] font-semibold">Rollen im Netz</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Durchsatz je Gremium: eingehende und ausgehende Übergänge. Durchgänge verbinden Einstieg und Entscheidung.</p>
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
-                  {ranked.map((x) => (
+                  {(phone && !more.o ? ranked.slice(0, 6) : ranked).map((x) => (
                     <li key={x.id} className="border-b border-slate-200">
                       <button type="button" onClick={() => setSelected(x.id)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-3 max-sm:py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,1.2fr)_130px_minmax(0,1fr)_150px]">
                         <span className="truncate text-[16px] text-slate-900">{x.name}</span>
@@ -157,6 +164,7 @@ export function GremiennetzPage() {
                     </li>
                   ))}
                 </ol>
+                {moreBtn("o", ranked.length, 6)}
               </section>
               </Reveal>
             </>

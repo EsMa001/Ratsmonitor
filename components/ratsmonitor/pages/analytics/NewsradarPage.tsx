@@ -48,17 +48,17 @@ function Meldung({ i, hide, nr, total }: { i: Item; hide?: boolean; nr: number; 
       <p className="m-0 text-[12px] text-slate-500"><b className="font-semibold text-teal-700 sm:hidden">{nr} von {total} · </b>{i.dateline.place}{i.dateline.committee ? ` · ${i.dateline.committee}` : ""} · {datum(i.dateline.date)}</p>
       <h3 className="m-0 mt-1.5 text-[18px] font-semibold leading-snug sm:text-[22px]"><Link href={`/beschluss/${i.id}`} className="text-slate-900 no-underline hover:text-teal-800">{i.headline}</Link></h3>
       <p className="m-0 mt-3 max-w-[820px] text-[16px] leading-relaxed text-slate-900">
-        {i.lead} In der Vorlage heißt es: <q>{i.quote}</q>
+        {i.lead}<span className={rest}> In der Vorlage heißt es: <q>{i.quote}</q></span>
         {i.more && <span className={rest}> Weiter heißt es dort: <q>{i.more}</q></span>}
         {i.body.length > 0 && <span className={rest}> {i.body.join(" ")}</span>}
       </p>
-      {(i.more || i.body.length > 0) && <button type="button" onClick={() => setWeiter(!weiter)} aria-expanded={weiter} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{weiter ? "Weniger" : "Weiterlesen"}</button>}
       <p className={`m-0 mt-3 text-[12px] text-slate-500 ${rest}`}>Quelle: {i.source} · {HINWEIS}</p>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-0 max-sm:mt-1">
+        {(i.more || i.body.length > 0) && <button type="button" onClick={() => setWeiter(!weiter)} aria-expanded={weiter} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{weiter ? "Weniger" : "Weiterlesen"}</button>}
         <Link href={`/beschluss/${i.id}`} className="inline-flex max-sm:min-h-[44px] items-center text-[14px] font-medium text-teal-700 no-underline">Zum Vorgang →</Link>
         <button type="button" onClick={copy} className="inline-flex max-sm:hidden items-center text-[14px] font-medium text-teal-700">{copied ? "Kopiert" : "Meldung kopieren"}</button>
         <ShareButton title={i.headline} url={typeof window === "undefined" ? `/beschluss/${i.id}` : `${window.location.origin}/beschluss/${i.id}`} className="sm:hidden" />
-        <span className="text-[12px] text-slate-500"><span className="sr-only">Nachrichtenwert </span>Wert {i.score}: {i.why.join(" · ")}</span>
+        <span className={`text-[12px] text-slate-500 ${rest}`}><span className="sr-only">Nachrichtenwert </span>Wert {i.score}: {i.why.join(" · ")}</span>
       </div>
     </article>
   );
