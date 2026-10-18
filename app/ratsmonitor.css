@@ -230,14 +230,18 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
    klein: Karte groß, vom Blatt nur die Zeile mit der Trefferzahl. voll: Liste groß (scrollt im Blatt), Karte als Streifen mit der Suchleiste. */
 @media (max-width:639px){
   html.rm-search .rm-flat:not([hidden]){display:flex;flex-direction:column;height:calc(100dvh - 58px - var(--rm-tabbar));overflow:hidden}
-  html.rm-search .rm-flat>section{flex:1 1 0;min-height:170px;height:auto !important}
-  html.rm-search .rm-flat main{flex:0 0 auto;min-height:0}
+  /* Höhen sind in beiden Stufen fest (var(--klein) = Höhe des Blatts im kleinen Zustand), damit der Wechsel weich animiert */
+  html.rm-search .rm-flat{--klein:63px}
+  html.rm-search .rm-flat[data-peek]{--klein:221px}
+  html.rm-search .rm-flat>section{flex:none;min-height:0;height:calc(100dvh - 58px - var(--rm-tabbar) - var(--klein)) !important;transition:height .3s cubic-bezier(.32,.72,0,1)}
+  html.rm-search .rm-flat main{flex:1 1 0;min-height:0;overflow:hidden}
+  @media (prefers-reduced-motion:reduce){html.rm-search .rm-flat>section{transition:none}}
   html.rm-search .rm-flat[data-stage=klein] main>section+section{display:none}
   /* nach einer Suche: Vorschau der ersten Treffer im kleinen Blatt, Tipp auf eine Zeile öffnet sie wie gewohnt */
   html.rm-search .rm-flat[data-stage=klein][data-peek] main>section+section{display:block;max-height:158px;overflow:hidden;position:relative}
   html.rm-search .rm-flat[data-stage=klein][data-peek] main>section+section::after{content:"";position:absolute;inset:auto 0 0 0;height:36px;background:linear-gradient(to top,var(--rm-white),transparent);pointer-events:none}
-  html.rm-search .rm-flat[data-stage=voll]>section{flex:0 0 auto;height:176px !important;min-height:0}
-  html.rm-search .rm-flat[data-stage=voll] main{flex:1 1 0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  html.rm-search .rm-flat[data-stage=voll]>section{height:176px !important}
+  html.rm-search .rm-flat[data-stage=voll] main{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   html.rm-search .rm-flat[data-stage=voll] main>section:first-child{position:sticky;top:0;z-index:4;background:var(--rm-white)}
 }
 @media (max-width:639px){

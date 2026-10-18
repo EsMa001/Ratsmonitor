@@ -25,9 +25,9 @@ export function SearchFilterPanel() {
   return (
     <section aria-label="Suche und Filter" {...drag}
       onClick={(e) => { if (isPhone() && !(e.target as HTMLElement).closest("button, a, input, select, [role=listbox], [role=option]")) toggleSheetStage(); }}
-      className="card-shell relative z-[3] flex flex-col gap-3 p-[12px] max-sm:px-4 max-sm:pb-1 max-sm:pt-6">
+      className="card-shell relative z-[3] flex flex-col gap-3 p-[12px] max-sm:px-4 max-sm:gap-0 max-sm:pb-0 max-sm:pt-[18px]">
       <button type="button" aria-label={stage === "klein" ? "Trefferliste öffnen" : "Karte zeigen"} aria-expanded={stage === "voll"} onClick={(e) => { e.stopPropagation(); toggleSheetStage(); }}
-        className="absolute inset-x-0 top-0 flex h-7 items-center justify-center border-0 bg-transparent p-0 sm:hidden">
+        className="absolute inset-x-0 top-0 flex h-[18px] items-center justify-center border-0 bg-transparent p-0 sm:hidden">
         <span className="h-1 w-9 rounded-full bg-slate-300" />
       </button>
       {/* Trefferzahl, Datenstand und Sortierung; aktive Filter und Filter selbst liegen auf der Karte */}
