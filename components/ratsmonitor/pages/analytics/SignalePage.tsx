@@ -296,7 +296,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                   </div>
                   {/* Handy: Karte als Symbol rechts neben der Schritt-Auswahl */}
                   <button type="button" aria-expanded={karte} aria-controls="signale-karte" aria-label={karte ? "Karte ausblenden" : "Karte zeigen"} title={karte ? "Karte ausblenden" : "Karte zeigen"} onClick={() => setKarte((k) => !k)}
-                    className={`grid h-11 w-11 flex-none place-items-center rounded-xl border sm:hidden print:hidden ${karte ? "border-teal-600/30 bg-teal-50 text-teal-800" : "border-slate-200 bg-white text-slate-700"}`}><MapIcon size={20} strokeWidth={1.5} aria-hidden="true" /></button>
+                    className={`grid h-12 w-12 flex-none place-items-center rounded-xl border sm:hidden print:hidden ${karte ? "border-teal-600/30 bg-teal-50 text-teal-800" : "border-slate-200 bg-white text-slate-700"}`}><MapIcon size={20} strokeWidth={1.5} aria-hidden="true" /></button>
                 </div>}
                 {res.phases.length > 0 && <div className="max-sm:hidden"><FilterRow label="Schritt">
                   <button type="button" aria-pressed={!phase} onClick={() => pick({ phase: "" })} className={PILL(!phase)}>Alle</button>

@@ -29,7 +29,7 @@ export function PhasePicker({ label, items, value, onPick }: { label: string; it
   return (
     <div className="sm:hidden print:hidden">
       <button type="button" aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)}
-        className="flex h-11 w-full items-center gap-2 rounded-xl border border-teal-600/30 bg-teal-50 px-3 text-left text-[14px] font-semibold text-teal-800">
+        className="flex h-12 w-full items-center gap-2 rounded-xl border border-teal-600/30 bg-teal-50 px-3 text-left text-[14px] font-semibold text-teal-800">
         <span className="shrink-0">{iconOf(cur)}</span>
         <span className="min-w-0 flex-1 truncate"><span className="font-normal text-slate-600">{label}: </span>{cur.label}{cur.count ? ` (${cur.count})` : ""}</span>
         <ChevronsUpDown size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
