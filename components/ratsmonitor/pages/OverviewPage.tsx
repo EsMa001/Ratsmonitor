@@ -56,19 +56,17 @@ export function OverviewPage({ active }: { active: boolean }) {
       const flat = flatOf(e);
       const dy = e.changedTouches[0].clientY - s.y;
       if (s.drag) {
-        /* Zu Ende gleiten (mit Übergang), dann Stufe setzen und die Hilfsmaße ohne Sprung entfernen */
+        /* Stufe gleich beim Loslassen setzen (Suchleiste und Blatt laufen zusammen los); das Blatt startet dort, wo der Finger es verlassen hat, und gleitet in die Ruhelage */
         const fast = Date.now() - s.t < 260 && Math.abs(dy) > 20;
         const go = Math.abs(s.drag) >= 44 || fast;
-        const target = go ? (stage === "klein" ? -s.range : s.range) : 0;
+        const from = stage === "klein" ? (go ? s.range + s.drag : s.drag) : (go ? s.drag - s.range : s.drag);
+        flat.setAttribute("data-drag", "1");
+        flat.style.setProperty("--drag", `${from}px`);
+        flushSync(() => { if (go) setSheetStage(stage === "klein" ? "voll" : "klein"); });
+        void flat.offsetHeight;
         flat.removeAttribute("data-drag");
-        flat.style.setProperty("--drag", `${target}px`);
-        window.setTimeout(() => {
-          flat.setAttribute("data-drag", "1");
-          /* Stufe und Maß im selben Schritt, sonst steht das Blatt einen Augenblick verschoben */
-          flushSync(() => { if (go) setSheetStage(stage === "klein" ? "voll" : "klein"); });
-          flat.style.removeProperty("--drag");
-          requestAnimationFrame(() => requestAnimationFrame(() => flat.removeAttribute("data-drag")));
-        }, 300);
+        flat.style.setProperty("--drag", "0px");
+        window.setTimeout(() => flat.style.removeProperty("--drag"), 400);
         return;
       }
       if (Math.abs(dy) < 44) return;

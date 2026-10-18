@@ -239,7 +239,7 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   html.rm-search .rm-flat::after{content:"";position:absolute;inset:auto 0 0 0;height:22px;z-index:6;pointer-events:none;opacity:0;transition:opacity .2s;background:linear-gradient(to top,var(--rm-white),transparent)}
   html.rm-search .rm-flat[data-stage=klein][data-peek]::after{opacity:1}
   /* Suchleiste samt Chips: im kleinen Blatt am unteren Rand der Karte, im vollen Blatt im Streifen oben (nur eine kleine Fläche, läuft mit dem Blatt) */
-  html.rm-search .rm-sbar{transition:top .3s cubic-bezier(.32,.72,0,1),bottom .3s cubic-bezier(.32,.72,0,1) !important}
+  html.rm-search .rm-sbar{transition:top .34s cubic-bezier(.22,.9,.28,1),bottom .34s cubic-bezier(.22,.9,.28,1) !important}
   html.rm-search .rm-flat[data-stage=voll] .rm-sbar[data-low]{bottom:calc(100% - 164px) !important}
   html.rm-search .rm-flat[data-stage=voll] .rm-sbar:not([data-low]){top:62px !important}
   html.rm-search .rm-mapctl{transition:opacity .2s}
