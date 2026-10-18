@@ -219,7 +219,7 @@ export function SavedSearchesPage() {
 
 /** Wochenbericht: alle neuen Treffer der gespeicherten Suchen in einer E-Mail, täglich oder am gewählten Wochentag.
  *  Folgt mit den E-Mail-Benachrichtigungen: die Einstellung aus dem Konto (/api/me/settings) wird nur angezeigt. */
-export function WeeklyReport() {
+export function WeeklyReport({ bare = false }: { /** ohne eigene Überschrift (steht schon über dem Abschnitt) */ bare?: boolean } = {}) {
   const me = useMe();
   const key = me.user ? `${me.user.id}:${me.rev}` : "";
   const [got, setGot] = useState<{ key: string; weekly: boolean; day: number | null } | null>(null);
@@ -238,7 +238,7 @@ export function WeeklyReport() {
   const day = s?.day ?? 1;
   return (
     <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-200 pb-5 text-[14px]">
-      <span className="font-semibold text-slate-900">Wochenbericht</span>
+      <span className={bare ? "sr-only" : "font-semibold text-slate-900"}>Wochenbericht</span>
       <span className="text-slate-500">Alle neuen Treffer Ihrer Suchen in einer E-Mail, täglich oder an dem Wochentag, den Sie wählen:</span>
       <select aria-label="Rhythmus des Wochenberichts" aria-describedby="weekly-later" disabled value={String(day)} className="h-8 rounded-md border border-slate-200 bg-slate-50 px-2 text-[14px] text-slate-500">
         {[1, 2, 3, 4, 5, 6, 0].map((i) => (

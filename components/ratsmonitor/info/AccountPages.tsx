@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useBrand } from "../lib/brand";
-import { PageHead } from "./blocks";
+import { InfoHints, PageHead } from "./blocks";
 import { IS_DEV } from "../lib/tier";
 import { AccountApiError, accountChanged, api, devLogin, logout, useMe } from "../lib/account";
 import { postponeImport } from "../lib/browserData";
@@ -279,6 +279,7 @@ export function LoginPage() {
 
   const invite = me.access === "invite" || !!weiter;
   const lead = step === "wait" ? undefined : mode === "app" ? "Mit Ihrer E-Mail-Adresse und dem Code aus Ihrer Authenticator-App anmelden." : "Mit Ihrer E-Mail-Adresse anmelden. Sie erhalten einen Link und einen Code, ein Passwort gibt es nicht.";
+  const hints = <InfoHints items={[{ icon: "heart", text: "Mit dem Konto speichern Sie Suchen und Artikel." }, { icon: "shieldCheck", text: "Sie können sich jederzeit abmelden." }]} />;
   const head = <PageHead icon="user" label="Konto" name="Anmelden" title={step === "wait" ? "E-Mail prüfen" : "Anmelden"} lead={lead} />;
 
   if (me.ready && me.user)
@@ -299,6 +300,7 @@ export function LoginPage() {
               </button>
             </p>
           </div>
+          {hints}
         </section>
       </>
     );
@@ -445,6 +447,7 @@ export function LoginPage() {
             {invite && <InviteNote />}
           </div>
         )}
+        {step !== "wait" && hints}
       </section>
     </>
   );
@@ -626,6 +629,7 @@ export function KontaktPage() {
             E-Mail schreiben
           </a>
         </div>
+        <InfoHints items={[{ icon: "clock", text: "Antwort in der Regel innerhalb eines Werktags." }, { icon: "mail", text: "Für Fragen zu Konto, Stufen und Testphase." }]} />
       </section>
     </>
   );

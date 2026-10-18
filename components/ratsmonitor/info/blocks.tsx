@@ -249,3 +249,17 @@ export function Ladefehler({ text, onRetry }: { text: string; onRetry?: () => vo
     </span>
   );
 }
+
+/** Handy: kurze Hinweise mit Symbol unter einem Formular oder Knopf (füllt die Seite sinnvoll, erklärt den Ablauf) */
+export function InfoHints({ items }: { items: { icon: IconName; text: ReactNode }[] }) {
+  return (
+    <ul className="mb-0 ml-0 mr-0 mt-6 grid list-none gap-2 p-0 sm:hidden">
+      {items.map((it, i) => (
+        <li key={i} className="flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-3 text-[14px] text-slate-700">
+          <Icon name={it.icon} size={20} className="flex-none text-teal-700" />
+          <span className="min-w-0">{it.text}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
