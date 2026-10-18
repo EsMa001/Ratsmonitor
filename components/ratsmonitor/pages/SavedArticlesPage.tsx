@@ -79,7 +79,7 @@ export function SavedArticlesPage() {
           </span>
           <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Artikel</h2>
           <p className="m-0 max-w-[44ch] text-slate-500">Tippen Sie bei einem Artikel auf das Lesezeichen, um ihn hier zu sammeln.</p>
-          <Link className="btn-primary mt-5" href="/suche">
+          <Link className="btn-primary mt-5 max-sm:flex max-sm:h-12 max-sm:w-full max-sm:justify-center" href="/suche">
             Artikel entdecken
           </Link>
         </div>

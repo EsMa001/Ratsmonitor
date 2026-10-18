@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { copyText } from "../lib/clipboard";
 
+/** Teilen-Menü des Geräts (iOS, Android), sonst Link in die Zwischenablage; ergibt, was geschah */
+export async function shareLink(title: string, url: string): Promise<"shared" | "copied" | "failed"> {
+  try {
+    if (navigator.share) { await navigator.share({ title, url }); return "shared"; }
+    return (await copyText(url)) ? "copied" : "failed";
+  } catch { return "failed"; /* Teilen abgebrochen */ }
+}
+
 /** Link teilen: Teilen-Menü des Geräts, sonst Link in die Zwischenablage (kurz Haken als Bestätigung) */
 export function ShareButton({ title, url, className = "", label = false }: { title: string; url: string; className?: string; /** Beschriftung neben dem Symbol (am Desktop) */ label?: boolean }) {
   const [copied, setCopied] = useState(false);

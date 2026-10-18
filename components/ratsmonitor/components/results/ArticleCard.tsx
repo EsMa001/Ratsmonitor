@@ -1,4 +1,8 @@
-import { memo, useRef, type ReactNode } from "react";
+import { memo, useRef, useState, type ReactNode } from "react";
+import { ArrowRight, Bookmark, Share } from "lucide-react";
+import { ContextMenu, type MenuItem } from "../ContextMenu";
+import { shareLink } from "../ShareButton";
+import { useLongPress } from "../../lib/useLongPress";
 import { STATUS_BY_ID, shownThema } from "../../lib/constants";
 import { MONTH_SHORT, fmtDate, highlightSegments, todayLocal } from "../../lib/text";
 import type { Article } from "../../types";
@@ -49,15 +53,27 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
     if (!saved && !allow("bookmarks")) return;
     void toggleSavedArticle({ id: a.id, title: a.title, date: a.date, gemeinde: a.gemeinde, teaser: a.teaser }).then((err) => toast(err || (saved ? "Aus gespeicherten Artikeln entfernt" : "Artikel gespeichert")));
   }, { follow: true });
+  /* Handy: langer Druck öffnet ein kleines Menü (Merken, Teilen, Öffnen) */
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const press = useLongPress(setMenu);
+  const link = typeof window === "undefined" ? "" : `${window.location.origin}/beschluss/${a.id}`;
+  const items: MenuItem[] = [
+    { label: saved ? "Aus Artikeln entfernen" : "Artikel merken", icon: <Bookmark size={18} strokeWidth={1.5} fill={saved ? "currentColor" : "none"} />, onSelect: () => { if (!saved && !allow("bookmarks")) return; void toggleSavedArticle({ id: a.id, title: a.title, date: a.date, gemeinde: a.gemeinde, teaser: a.teaser }).then((err) => toast(err || (saved ? "Aus gespeicherten Artikeln entfernt" : "Artikel gespeichert"))); } },
+    { label: "Teilen", icon: <Share size={18} strokeWidth={1.5} />, onSelect: () => void shareLink(a.title, link).then((r) => r === "copied" && toast("Link kopiert.")) },
+    { label: "Öffnen", icon: <ArrowRight size={18} strokeWidth={1.5} />, onSelect: () => onOpen(a) },
+  ];
   return (
+    <>
     <article
+      onContextMenu={press.handlers.onContextMenu}
       onMouseEnter={() => { onHover(a.ags); later(); }}
       onMouseLeave={stop}
-      onTouchStart={(e) => { later(); swipe.handlers.onTouchStart(e); }}
-      onTouchMove={(e) => { stop(); swipe.handlers.onTouchMove(e); }}
-      onTouchEnd={swipe.handlers.onTouchEnd}
-      onTouchCancel={swipe.handlers.onTouchCancel}
+      onTouchStart={(e) => { later(); swipe.handlers.onTouchStart(e); press.handlers.onTouchStart(e); }}
+      onTouchMove={(e) => { stop(); swipe.handlers.onTouchMove(e); press.handlers.onTouchMove(e); }}
+      onTouchEnd={(e) => { swipe.handlers.onTouchEnd(e); press.handlers.onTouchEnd(); }}
+      onTouchCancel={() => { swipe.handlers.onTouchCancel(); press.handlers.onTouchCancel(); }}
       onClick={(e) => {
+        if (press.consume()) { e.preventDefault(); return; }
         if ((e.target as HTMLElement).closest("button, a")) return;
         if (e.metaKey || e.ctrlKey || e.shiftKey) return;
         e.preventDefault();
@@ -125,6 +141,8 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
         <SaveArticleButton article={{ id: a.id, title: a.title, date: a.date, gemeinde: a.gemeinde, teaser: a.teaser }} size={20} className="-mr-3.5 max-sm:-mr-2.5 -mt-1" />
       </div>
     </article>
+    {menu && <ContextMenu pos={menu} items={items} label={a.title} onClose={() => setMenu(null)} />}
+    </>
   );
 });
 

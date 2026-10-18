@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { useMapSlot } from "../../lib/mapSlot";
@@ -24,6 +25,8 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
   const open = useFiltersOpen();
   const slot = useMapSlot();
   const phone = usePhone();
+  /* Handy: beim Tippen verschwindet der Filterknopf und „Abbrechen“ erscheint rechts (wie bei Apple) */
+  const [typing, setTyping] = useState(false);
   const chips = filterChips(res.snapshot, geo);
   const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
   const round = "relative grid border border-slate-200 bg-white hover:bg-slate-50 h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12 transition-colors";
@@ -70,10 +73,11 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg>
             )}
           </button>}
-          <div className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white [&_input]:rounded-full">
+          <div className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white [&_input]:rounded-full" onFocusCapture={() => setTyping(true)} onBlurCapture={() => window.setTimeout(() => { if (!document.activeElement?.closest('[role="search"]')) setTyping(false); }, 150)}>
             <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} />
           </div>
-          {!noPlay && <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} extra={extra} /> : filterBtn}</div>}
+          {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} /> : filterBtn}</div>}
+          {phone && typing && <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => { (document.activeElement as HTMLElement | null)?.blur(); setTyping(false); }} className="h-12 flex-none px-1 text-[16px] font-medium text-teal-700">Abbrechen</button>}
         </div>
           </div>
         );

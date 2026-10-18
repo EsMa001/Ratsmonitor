@@ -1,3 +1,9 @@
+import { ShareButton, shareLink } from "../components/ShareButton";
+import { ContextMenu, type MenuItem } from "../components/ContextMenu";
+import { useLongPress } from "../lib/useLongPress";
+import { ArrowRight, Share, Trash2 } from "lucide-react";
+import { searchToUrl } from "../lib/searchUrl";
+import { INITIAL_SEARCH } from "../state/search";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IconBell, IconHeart } from "../components/icons";
@@ -74,10 +80,20 @@ function SavedCard({ s }: { s: SavedSearch }) {
     toast("Gespeicherte Suche entfernt.", { label: "Rückgängig", run: () => void restoreSaved(s, index).then((e) => e && toast(e)) });
   };
   const bell = `Bei neuen Treffern benachrichtigen: ${NOTIFY_LATER}`;
+  const shareUrl = `${typeof window === "undefined" ? "" : window.location.origin}/suche?${searchToUrl({ ...INITIAL_SEARCH, q: s.q || s.text, area: s.area, areaSrc: s.areaSrc, scope: s.scope ?? "only", thema: s.thema, monat: s.monat, von: s.von ?? "", bis: s.bis ?? "", status: s.status, level: s.level ?? "city", future: !!s.future, radius: s.radius ? { ags: s.radius.ags, km: s.radius.km, x: s.radius.x ?? 0, y: s.radius.y ?? 0 } : null })}`;
   const iconBtn = "grid h-9 w-9 flex-none place-items-center rounded-full transition-colors hover:bg-slate-100";
 
+  /* Handy: langer Druck öffnet ein Menü (Öffnen, Teilen, Entfernen) */
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const press = useLongPress(setMenu);
+  const items: MenuItem[] = [
+    { label: "Suche öffnen", icon: <ArrowRight size={18} strokeWidth={1.5} />, onSelect: open },
+    { label: "Teilen", icon: <Share size={18} strokeWidth={1.5} />, onSelect: () => void shareLink(s.name, shareUrl).then((r) => r === "copied" && toast("Link kopiert.")) },
+    { label: "Entfernen", icon: <Trash2 size={18} strokeWidth={1.5} />, danger: true, onSelect: () => void remove() },
+  ];
   return (
-    <article className="border-b border-slate-200 py-4 last:border-b-0">
+    <>
+    <article className="border-b border-slate-200 py-4 last:border-b-0" {...press.handlers}>
       {/* Kopf wie bei gespeicherten Artikeln: Herz entfernt die Suche, Glocke schaltet Benachrichtigungen */}
       <div className="flex items-start gap-3">
         <button type="button" onClick={() => void remove()} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-700`}>
@@ -94,6 +110,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
           </p>
           {s.active === false && <p className="m-0 mt-0.5 text-[12px] text-amber-800">Nicht aktiv: über der Grenze Ihrer Stufe gespeichert.</p>}
         </div>
+        <ShareButton title={s.name} url={shareUrl} className="-mr-1" />
         {/* Benachrichtigungen folgen mit Thema 2: Glocke sichtbar (auch eine vorgemerkte), aber ohne Wirkung */}
         <button type="button" aria-disabled="true" aria-pressed={!!n.mail} title={bell} aria-label={bell} className={`${iconBtn} -mr-2 cursor-default text-slate-400 hover:bg-transparent`}>
           <IconBell size={20} filled={!!n.mail} />
@@ -134,6 +151,8 @@ function SavedCard({ s }: { s: SavedSearch }) {
         </p>
       )}
     </article>
+    {menu && <ContextMenu pos={menu} items={items} label={s.name} onClose={() => setMenu(null)} />}
+    </>
   );
 }
 
@@ -182,7 +201,7 @@ export function SavedSearchesPage() {
               ))}
             </ul>
           </div>
-          <Link className="btn-primary mt-5" href="/suche">
+          <Link className="btn-primary mt-5 max-sm:flex max-sm:h-12 max-sm:w-full max-sm:justify-center" href="/suche">
             Zur Suche
           </Link>
         </div>

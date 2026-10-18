@@ -109,7 +109,7 @@ export function GremiennetzPage() {
               </section>
 
 
-              <div className="mt-12 grid gap-12 lg:grid-cols-2">
+              <div className="mt-12 max-sm:mt-8 grid gap-12 lg:grid-cols-2">
                 <section>
                   <h2 className="text-[22px] font-semibold">Wichtigste Übergänge</h2>
                   <p className="mb-3 mt-1 text-[14px] text-slate-500">Von welchem Gremium ein Vorgang an welches ging, und wie lange das im Mittel dauerte.</p>
@@ -142,13 +142,13 @@ export function GremiennetzPage() {
               </div>
 
               <Reveal>
-              <section className="mt-12">
+              <section className="mt-12 max-sm:mt-8">
                 <h2 className="text-[22px] font-semibold">Rollen im Netz</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Durchsatz je Gremium: eingehende und ausgehende Übergänge. Durchgänge verbinden Einstieg und Entscheidung.</p>
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
                   {ranked.map((x) => (
                     <li key={x.id} className="border-b border-slate-200">
-                      <button type="button" onClick={() => setSelected(x.id)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,1.2fr)_130px_minmax(0,1fr)_150px]">
+                      <button type="button" onClick={() => setSelected(x.id)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-3 max-sm:py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,1.2fr)_130px_minmax(0,1fr)_150px]">
                         <span className="truncate text-[16px] text-slate-900">{x.name}</span>
                         <span className="flex items-center gap-2 text-[14px] text-slate-500 max-sm:hidden"><i className="inline-block h-3 w-3 rounded-full" style={{ background: ROLE[x.role].fill, border: `2px solid ${ROLE[x.role].stroke}` }} />{ROLE[x.role].label}</span>
                         <span className="flex h-[6px] overflow-hidden rounded-full bg-slate-100 max-sm:order-3 max-sm:col-span-2 max-sm:mt-1.5" style={{ width: `${Math.max(6, ((x.in + x.out) / maxFlow) * 100)}%` }}><span style={{ width: `${(x.in / Math.max(1, x.in + x.out)) * 100}%`, background: "var(--rm-ac)" }} /><span style={{ width: `${(x.out / Math.max(1, x.in + x.out)) * 100}%`, background: "var(--rm-c400)" }} /></span>

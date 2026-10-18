@@ -1,4 +1,5 @@
-import { Kennzahlen } from "./Kennzahlen";
+import { Kennzahlen, Segmented } from "./Kennzahlen";
+import { usePhone } from "../../lib/usePhone";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, zuThema, Fehler, Leer } from "./Befund";
@@ -61,6 +62,7 @@ export function BeschluessePage() {
   }, [stale, loading, run]);
   // Geöffnete Liste hinter einer Zeile („kind:rat“)
   const [open, setOpen] = useState("");
+  const phone = usePhone();
   const [cut, setCut] = useState<"topics" | "kinds" | "lands">("kinds");
 
 
@@ -106,11 +108,7 @@ export function BeschluessePage() {
 
               <Abschnitt title="Aufteilung">
               <div className="pb-6 pt-2">
-                <div role="tablist" aria-label="Aufteilung" className="flex gap-6 border-b border-slate-200">
-                  {([["kinds", "Gremienebene"], ["topics", "Themenfeld"], ["lands", "Bundesland"]] as const).map(([id, l]) => (
-                    <button key={id} type="button" role="tab" aria-selected={cut === id} onClick={() => setCut(id)} className={`-mb-px border-b-2 pb-3 text-[16px] ${cut === id ? "border-teal-600 font-semibold text-slate-900" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{l}</button>
-                  ))}
-                </div>
+                <Segmented label="Aufteilung" fill={phone} options={[["kinds", "Gremienebene"], ["topics", "Themenfeld"], ["lands", "Bundesland"]]} value={cut} onPick={setCut} />
                 <p className="mb-2 mt-3 text-[14px] text-slate-500">Beschlussquote und Anteil vertagt und abgelehnt{cut === "topics" ? `. Nur ${n(res.totals.decided - res.unclassified.decided)} der ${n(res.totals.decided)} Entscheidungen sind einem Themenfeld zugeordnet.` : cut === "kinds" ? ". Ausschüsse empfehlen nur: Für sie steht die Zahl der Empfehlungen statt einer Quote." : "."}{cut !== "kinds" ? " Grau: im üblichen Rahmen." : ""}</p>
                 {cuts.length === 0 ? <p className="py-4 text-[14px] text-slate-500">Zu wenige Entscheidungen für diese Aufteilung.</p> : <ol className="m-0 list-none border-t border-slate-200 p-0">{cuts.map((c) => { const by = { kinds: "kind", topics: "label", lands: "land" }[cut], k = `${by}:${c.id}`; return <DecisionRow key={c.id} cut={c} onToggle={() => setOpen(open === k ? "" : k)} expanded={open === k} drill={open === k && <RadarDrill base="/api/analytics/decisions?list=1" query={ranKey} by={by} value={c.id} label={`${c.name}, Vorgänge mit Entscheidung`} />} />; })}</ol>}
               </div>

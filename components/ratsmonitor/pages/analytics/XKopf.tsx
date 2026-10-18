@@ -3,6 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cameFromApp, useAppNav } from "../../state/nav";
 import { IconChevronLeft } from "../../components/icons";
 import { PageBand } from "./PageBand";
+import { ShareButton } from "../../components/ShareButton";
 import { Icon, type IconName } from "../../info/icons";
 import { AnalyticsX } from "../../components/Brand";
 import { ThemeIcon } from "../../components/icons";
@@ -58,9 +59,12 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
         </h1>
         <BandMitte kurz={KURZ[seite] ?? s.frage} />
         {/* Das Symbol der Seite ist zugleich der Knopf für die Methodik */}
-        <a href="#methodik" title="Methodik: worauf die Zahlen beruhen" className="rm-bandicon justify-self-end pr-6 max-sm:pr-2 print:hidden">
-          <Icon name={s.icon} size={44} /><span className="sr-only">Methodik</span>
-        </a>
+        <div className="flex items-center justify-self-end gap-1 print:hidden">
+          <ShareButton title={s.titel} url={typeof window === "undefined" ? path : window.location.href} className="text-white" />
+          <a href="#methodik" title="Methodik: worauf die Zahlen beruhen" className="rm-bandicon pr-6 max-sm:pr-2">
+            <Icon name={s.icon} size={44} /><span className="sr-only">Methodik</span>
+          </a>
+        </div>
       </div>
       {s.reiter && (
         <nav aria-label="Ansicht" className="-mb-4 mt-3 flex gap-6 print:hidden">
@@ -149,7 +153,7 @@ function BandMitte({ kurz }: { kurz: string }) {
   const when = [fig.period, fig.week ? `+${fig.week.toLocaleString("de-DE")} in 7 Tagen` : ""].filter(Boolean).join(" · ");
   return (
     <div className="rm-band-mid text-left max-sm:order-3 max-sm:col-span-2" title={kurz}>
-      <p className="m-0 flex items-baseline gap-2 leading-none"><span className="text-[44px] font-semibold tabular-nums max-sm:text-[28px]">{value}</span><span className="text-[18px] font-medium">{fig.label}</span></p>
+      <p className="m-0 flex items-baseline gap-2 leading-none"><span className="shrink-0 whitespace-nowrap text-[44px] font-semibold tabular-nums max-sm:text-[28px]">{value}</span><span className="text-[18px] font-medium">{fig.label}</span></p>
       <p className="m-0 mt-1.5 text-[14px] opacity-85">{fig.scope || kurz}</p>
       {when && <p className="m-0 text-[14px] opacity-70">{when}</p>}
     </div>

@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0d9488",
+  "theme_color": "#268478",
   "lang": "de",
   "icons": [
     {
@@ -17,6 +17,42 @@
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "orientation": "portrait",
+  "shortcuts": [
+    {
+      "name": "Suche",
+      "short_name": "Suche",
+      "url": "/suche",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "plenara.X Atlas",
+      "short_name": "Atlas",
+      "url": "/analytics/atlas",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Meine Suchen",
+      "short_name": "Suchen",
+      "url": "/konto/suchen",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

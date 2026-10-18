@@ -168,7 +168,7 @@ export function FaktenPage() {
             return (
               <li key={f.kind} className="sm:w-[104px]">
                 <button type="button" aria-pressed={on} onClick={() => pick(f.kind === "alle" ? { fakt: "alle", wert: "", ansicht: "" } : { fakt: f.kind, wert: "" })}
-                  className={`flex h-[76px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                  className={`flex h-[76px] max-sm:h-[64px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />
                   {/* Weiches Trennzeichen vor dem Wortende („Abwasser-gebühren“): auf dem Handy sonst abgeschnitten */}
                   <span className="line-clamp-2 w-full hyphens-auto break-words">{f.name.replace(/(\p{Ll})(gebühren|steuer|sätze|preise)/u, "$1\u00AD$2")}</span>

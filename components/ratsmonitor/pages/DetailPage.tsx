@@ -7,6 +7,7 @@ import {labelName} from '@/shared/labels.mjs';
 import {SessionDetails} from '@/components/article-analysis';
 import {IconChevronLeft,IconDoc,IconSpark,IconRules} from '../components/icons';
 import {cameFromApp,useAppNav} from '../state/nav';
+import {Segmented} from '../components/Segmented';
 import {ShareButton} from '../components/ShareButton';
 import {SaveArticleButton} from '../components/SaveArticleButton';
 import {FollowButton} from '../components/FollowButton';
@@ -96,11 +97,7 @@ export function DetailPage(){
           <div className="min-w-0">
             <section>
               <h2 className="mb-3 text-[18px] font-semibold text-slate-900">{both?'Zusammenfassung':isAi?'Inhaltszusammenfassung':rule?'Auszug aus der Vorlage':'Worum es geht'}</h2>
-              {both&&<div role="tablist" aria-label="Fassung der Zusammenfassung" className="mb-5 flex flex-wrap gap-x-6 gap-y-1 border-b border-slate-200">
-                {([['ai','KI-Zusammenfassung'],['rule','Originalauszug']] as const).map(([key,label])=><button key={key} id={'summary-'+key+'-tab'} type="button" role="tab" aria-controls={'summary-'+key+'-view'} aria-selected={view===key} tabIndex={view===key?0:-1} onClick={()=>changeView(key)} onKeyDown={event=>{
-                  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?'ai':event.key==='End'?'rule':key==='ai'?'rule':'ai';changeView(next);document.getElementById('summary-'+next+'-tab')?.focus();
-                }} className={'-mb-px min-h-[44px] border-b-2 px-0 py-2 text-left text-[14px] outline-offset-4 focus-visible:outline-2 focus-visible:outline-teal-600 '+(view===key?'border-teal-600 font-semibold text-slate-900':'border-transparent text-slate-500 hover:text-slate-900')}>{label}</button>)}
-              </div>}
+              {both&&<div className="mb-5"><Segmented label="Fassung der Zusammenfassung" options={[['ai','KI-Zusammenfassung'],['rule','Originalauszug']]} value={view} onPick={changeView}/></div>}
               <div id={'summary-'+(showRule?'rule':'ai')+'-view'} role={both?'tabpanel':undefined} aria-labelledby={both?'summary-'+view+'-tab':undefined} tabIndex={both?0:undefined}>
                 {showRule?<div className="mb-4"><Excerpt text={withoutLead(rule.long,!isAi?rule.short:undefined)} source={excerptSource} size="long"/></div>:<>
                   {isAi&&t.contentAnalysis?.status==='stale'&&<p role="status" className="mb-4 border-l-2 border-slate-300 pl-4 text-[14px] leading-relaxed text-slate-500">Die Quelldaten haben sich geändert. Diese KI-Zusammenfassung wurde noch nicht aktualisiert.</p>}

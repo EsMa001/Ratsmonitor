@@ -3,7 +3,6 @@ import { useSearchParams } from "next/navigation";
 import { Bell } from "lucide-react";
 import { useClient } from "../../lib/useClient";
 import { useUi } from "../../state/ui";
-import { tick } from "../../lib/haptic";
 import { publishBandFigure, useCountUp } from "../../lib/bandFigure";
 
 /** Zahl, die kurz hochzählt, wenn sie sich ändert */
@@ -104,41 +103,7 @@ export function useOrtInAdresse(area: string, setArea: (ags: string) => void) {
 }
 
 /** Umschalter für die Sortierung einer Liste (Trends, Fakten): helle Fläche, gewählte Wahl weiß hervorgehoben */
-export function Segmented<K extends string>({ options, value, onPick, label }: { options: [K, string, string?][]; value: K | ""; onPick: (k: K) => void; label: string }) {
-  /* Wie bei iOS: der weiße Streifen folgt dem Finger und gleitet; gewählt (und geladen) wird erst beim Loslassen */
-  const drag = useRef<{ x: number; on: boolean } | null>(null);
-  const moved = useRef(false);
-  const box = useRef<HTMLDivElement>(null);
-  const [over, setOver] = useState<K | null>(null);
-  const [pill, setPill] = useState<{ l: number; w: number } | null>(null);
-  const shown = over ?? value;
-  const at = (x: number) => {
-    const tabs = [...(box.current?.querySelectorAll<HTMLElement>('[role="tab"]') ?? [])];
-    let best = -1, d = Infinity;
-    tabs.forEach((t, i) => { const r = t.getBoundingClientRect(); const c = x < r.left ? r.left - x : x > r.right ? x - r.right : 0; if (c < d) { d = c; best = i; } });
-    return best < 0 ? undefined : options[best]?.[0];
-  };
-  useEffect(() => {
-    const t = [...(box.current?.querySelectorAll<HTMLElement>('[role="tab"]') ?? [])][options.findIndex(([k]) => k === shown)];
-    if (t) setPill({ l: t.offsetLeft, w: t.offsetWidth }); else setPill(null);
-  }, [shown, options]);
-  return (
-    <div ref={box} role="tablist" aria-label={label} className="relative inline-flex max-w-full touch-pan-y overflow-x-auto rounded-full bg-slate-100 p-1"
-      onPointerDown={(e) => { if (e.pointerType === "touch") { drag.current = { x: e.clientX, on: false }; moved.current = false; } }}
-      onPointerMove={(e) => {
-        const d = drag.current; if (!d) return;
-        if (!d.on && Math.abs(e.clientX - d.x) > 8) { d.on = true; moved.current = true; e.currentTarget.setPointerCapture(e.pointerId); }
-        if (d.on) { const k = at(e.clientX); if (k !== undefined) setOver(k); }
-      }}
-      onPointerUp={() => { const k = over; drag.current = null; setOver(null); if (k !== null && k !== value) { tick(); onPick(k); } }}
-      onPointerCancel={() => { drag.current = null; setOver(null); }}
-      onClickCapture={(e) => { if (moved.current) { e.stopPropagation(); e.preventDefault(); moved.current = false; } }}>
-      {pill && <span aria-hidden="true" className="absolute inset-y-1 rounded-full bg-white shadow-sm transition-[left,width] duration-[260ms] ease-[cubic-bezier(.3,.7,.3,1)] motion-reduce:transition-none" style={{ left: pill.l, width: pill.w }} />}
-      {options.map(([k, l, hint]) => <button key={k} role="tab" type="button" aria-selected={k === value} title={hint} onClick={() => onPick(k)}
-        className={`relative z-10 h-8 max-sm:h-11 shrink-0 whitespace-nowrap rounded-full px-3 text-[14px] ${k === shown ? "font-semibold text-slate-900" : "text-slate-600 hover:text-slate-900"}`}><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(" Monate", " Mon.")}</span></button>)}
-    </div>
-  );
-}
+export { Segmented } from "../../components/Segmented";
 
 /* Eigener Ort, im Browser gemerkt (nur Bequemlichkeit, kein Konto nötig) */
 const MEIN_ORT = "plenara.meinOrt";

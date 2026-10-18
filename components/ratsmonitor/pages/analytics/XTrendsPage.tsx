@@ -187,10 +187,10 @@ export function XTrendsPage() {
       <XKopf seite="trends" />
 
       <ThemenLeiste />
-      <div className="mt-4 print:hidden"><DiffusionSearch extra={<ZeitExtra options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden max-sm:hidden"><DiffusionSearch extra={<ZeitExtra options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler>{error}</Fehler>}
-      {loading && !res && <Laden text="Trends werden berechnet …" />}
+      {loading && !res && <Laden karte text="Trends werden berechnet …" />}
       {res && lists && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst */}

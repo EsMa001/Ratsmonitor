@@ -15,6 +15,7 @@ import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import { kurz } from "../../components/ChipRail";
 import { WheelPicker } from "../../components/WheelPicker";
+import { PhasePicker } from "../../components/PhasePicker";
 import type { Article } from "../../types";
 import { MethodikNote } from "./Methodik";
 import { DateBadge } from "../../components/DateBadge";
@@ -300,11 +301,13 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             </div>}
             <div className={`min-w-0 ${karte ? "lg:col-span-6" : "lg:col-span-12"}`}>
               <div className="flex flex-col gap-2 print:hidden">
-                {res.phases.length > 0 && <FilterRow label="Schritt">
+                {res.phases.length > 0 && <PhasePicker label="Schritt" value={phase} onPick={(id) => pick({ phase: id })}
+                  items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} />}
+                {res.phases.length > 0 && <div className="max-sm:hidden"><FilterRow label="Schritt">
                   <button type="button" aria-pressed={!phase} onClick={() => pick({ phase: "" })} className={PILL(!phase)}>Alle</button>
                   {res.phases.map((p) => <button key={p.key} type="button" aria-pressed={p.key === phase} onClick={() => pick({ phase: p.key === phase ? "" : p.key })} className={PILL(p.key === phase)}>
                     <span aria-hidden="true" className={`inline-block h-2 w-2 rounded-full ${dotOf(p.name, phaseOrder)}`} />{p.name}<span className={`tabular-nums ${p.key === phase ? "text-white/80" : "text-slate-500"}`}>{n(p.count)}</span></button>)}
-                </FilterRow>}
+                </FilterRow></div>}
               </div>
 
               {(items.length > 0 || !!erstmals) && (

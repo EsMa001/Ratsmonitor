@@ -532,3 +532,9 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
 @media (max-width:639px){
   html:has(.pl-top,.ri-head) main#inhalt{min-height:calc(100dvh + 150px)}
 }
+
+/* Wer in iOS/Android „Bewegung reduzieren“ gewählt hat: keine Überblendungen und Animationen (Ladeanzeigen laufen weiter) */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+  *:not(.animate-spin,.rm-spinner,.animate-pulse){animation-iteration-count:1 !important}
+}

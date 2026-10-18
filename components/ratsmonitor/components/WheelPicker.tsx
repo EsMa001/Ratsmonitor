@@ -29,7 +29,7 @@ export function WheelPicker({ label, items, value, onPick, className = "" }: { l
     }, 160);
   };
   return (
-    <div role="group" aria-label={label} className={`relative rounded-xl bg-white sm:hidden print:hidden ${className}`} style={{ height: ROW * 3, marginTop: -TRIM, clipPath: `inset(${TRIM}px 0 0 0)` }}>
+    <div role="group" aria-label={label} className={`relative rounded-xl bg-white sm:hidden print:hidden ${className}`} style={{ height: ROW * 3, marginTop: -TRIM, clipPath: `inset(${TRIM}px -4px 0 -4px)` }}>
       {/* Markierung der gewählten Zeile */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 rounded-xl bg-teal-50 ring-1 ring-teal-600/30" style={{ top: ROW, height: ROW }}>
         {/* Hinweis „drehbar“: Pfeile oben und unten, hüpfen beim Erscheinen dreimal */}
