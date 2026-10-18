@@ -81,7 +81,7 @@ export function FraktionenPage() {
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Anträge und Anfragen je Fraktion</h2>
-                <p className="mb-3 mt-1 text-[14px] text-slate-500">Gemeinsame Anträge zählen bei jeder beteiligten Fraktion.</p>
+                <p className="mb-3 mt-1 text-[14px] text-slate-500">Gemeinsame Anträge zählen bei jeder beteiligten Fraktion. <span className="sm:hidden">Zahl rechts: Anträge und Anfragen zusammen; Tippen zeigt die Liste.</span></p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
                   <li className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm bg-teal-600" />Anträge</li>
                   <li className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm bg-teal-200" />Anfragen</li>
@@ -89,13 +89,13 @@ export function FraktionenPage() {
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
                   {parties.map((p, i) => (
                     <li key={p.name} className={"border-b border-slate-200" + rowHide(i)}>
-                      <button type="button" onClick={() => toggle(`all:${p.name}`)} aria-expanded={open === `all:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 text-left sm:grid-cols-[240px_minmax(0,1fr)_150px] ${open === `all:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
-                      <span className="truncate text-[16px]">{p.name}</span>
-                      <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1" role="img" aria-label={`${p.name}: ${n(p.antrag)} Anträge, ${n(p.anfrage)} Anfragen`}>
+                      <button type="button" onClick={() => toggle(`all:${p.name}`)} aria-expanded={open === `all:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] max-sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 max-sm:gap-2 py-3 max-sm:py-0.5 max-sm:min-h-[44px] text-left sm:grid-cols-[240px_minmax(0,1fr)_150px] ${open === `all:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
+                      <span className="truncate text-[16px] max-sm:text-[14px]">{p.name}</span>
+                      <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 max-sm:order-none max-sm:col-span-1 sm:order-none sm:col-span-1" role="img" aria-label={`${p.name}: ${n(p.antrag)} Anträge, ${n(p.anfrage)} Anfragen`}>
                         <span className="bg-teal-600" style={{ width: `${(p.antrag / maxN) * 100}%` }} />
                         <span className="bg-teal-200" style={{ width: `${(p.anfrage / maxN) * 100}%` }} />
                       </span>
-                      <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(p.n)}</b><span className="ml-2 text-slate-500">{n(p.antrag)} / {n(p.anfrage)}</span></span>
+                      <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(p.n)}</b><span className="ml-2 text-slate-500 max-sm:hidden">{n(p.antrag)} / {n(p.anfrage)}</span></span>
                       </button>
                       {drill("all", p.name, `${p.name}: Anträge und Anfragen`)}
                     </li>
