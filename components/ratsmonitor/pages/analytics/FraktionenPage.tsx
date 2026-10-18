@@ -43,6 +43,8 @@ export function FraktionenPage() {
   const [open, setOpen] = useState("");
   /* Handy: nur die ersten 6 Fraktionen je Liste, bis „Alle zeigen“ */
   const [allP, setAllP] = useState(false);
+  /* Handy, Themenprofil: Fraktionen, deren alle Themen aufgeklappt sind */
+  const [openT, setOpenT] = useState<Record<string, boolean>>({});
   const rowHide = (i: number) => (!allP && i >= 6 ? " max-sm:hidden" : "");
   const toggle = (k: string) => setOpen(open === k ? "" : k);
 
@@ -111,14 +113,18 @@ export function FraktionenPage() {
                   {parties.map((p, i) => (
                     <li key={p.name} className={"border-b border-slate-200 py-2.5" + rowHide(i)}>
                       <p className="m-0 text-[14px] font-semibold text-slate-900">{p.name}</p>
-                      {p.top.length > 0 && <p className="m-0 mt-0.5 text-[12px] text-slate-500">Typisch: {p.top.map((t) => t.name).join(", ")}</p>}
-                      <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1">
-                        {cols.map((c) => {
-                          const cell = p.profile.find((x) => x.id === c.id);
-                          const idx = cell && cell.n >= 3 ? cell.index : null;
-                          return <div key={c.id} className="flex items-center justify-between gap-2 text-[12px]"><span className="truncate text-slate-500">{c.name.split(" & ")[0]}</span><span className={`shrink-0 rounded px-1.5 tabular-nums ${idx !== null && idx >= 160 ? "text-white" : "text-slate-700"}`} style={{ background: cellColor(idx) }}>{cell?.share !== null && cell?.share !== undefined ? `${Math.round(cell.share)} %` : "–"}</span></div>;
-                        })}
-                      </div>
+                      {/* Die drei Themen, die diese Fraktion deutlich häufiger aufgreift als die übrigen; alle Themen dahinter */}
+                      {(() => {
+                        const cells = cols.map((c) => ({ c, cell: p.profile.find((x) => x.id === c.id) }));
+                        const ok = cells.filter((x) => x.cell && x.cell.n >= 3 && x.cell.index !== null && x.cell.share !== null && x.cell.share !== undefined);
+                        const top3 = [...ok].sort((a, b) => (b.cell!.index ?? 0) - (a.cell!.index ?? 0)).slice(0, 3).sort((a, b) => (b.cell!.share ?? 0) - (a.cell!.share ?? 0));
+                        const chip = ({ c, cell }: { c: (typeof cols)[number]; cell?: Cell }) => { const idx = cell && cell.n >= 3 ? cell.index : null; return <span key={c.id} className={`inline-flex h-7 items-center gap-1.5 rounded-lg px-2 text-[12px] ${idx !== null && idx >= 160 ? "text-white" : "text-slate-800"}`} style={{ background: idx !== null && idx >= 100 ? cellColor(idx) : "var(--rm-c100, #f1f5f9)" }}>{c.name.split(" & ")[0]}<b className="font-semibold tabular-nums">{cell?.share !== null && cell?.share !== undefined ? `${Math.round(cell.share)} %` : "–"}</b></span>; };
+                        return <>
+                          {top3.length > 0 ? <div className="mt-1.5 flex flex-wrap gap-1.5">{top3.map(chip)}</div> : <p className="m-0 mt-1 text-[12px] text-slate-500">Zu wenige Anträge für ein Themenprofil.</p>}
+                          {ok.length > top3.length && <button type="button" aria-expanded={!!openT[p.name]} onClick={() => setOpenT((o) => ({ ...o, [p.name]: !o[p.name] }))} className="inline-flex items-center text-[12px] font-medium text-teal-700 hover:underline">{openT[p.name] ? "Weniger Themen" : "Alle Themen zeigen"}</button>}
+                          {openT[p.name] && <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1">{cells.map(({ c, cell }) => { const idx = cell && cell.n >= 3 ? cell.index : null; return <div key={c.id} className="flex items-center justify-between gap-2 text-[12px]"><span className="truncate text-slate-500">{c.name.split(" & ")[0]}</span><span className={`shrink-0 rounded px-1.5 tabular-nums ${idx !== null && idx >= 160 ? "text-white" : "text-slate-700"}`} style={{ background: cellColor(idx) }}>{cell?.share !== null && cell?.share !== undefined ? `${Math.round(cell.share)} %` : "–"}</span></div>; })}</div>}
+                        </>;
+                      })()}
                     </li>
                   ))}
                 </ul>
