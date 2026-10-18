@@ -144,7 +144,7 @@ export function SavedSearchesPage() {
   if (!tierReady || (tier === "guest" && (!signedIn || (ready && !saved.length))))
     return (
       <>
-        <PageHead icon="search" label="Suchen" name="Gespeicherte Suchen" />
+        <PageHead icon="search" label="Suchen" name="Meine Suchen" />
         <section className="ri-sec ri-sec--tight">
           {tierReady ? <LoginRequired title="Suchen speichern" text="Melden Sie sich an, um Suchen zu speichern." /> : <AccountLoading />}
         </section>
@@ -152,14 +152,13 @@ export function SavedSearchesPage() {
     );
   return (
     <>
-      <PageHead icon="search" label="Suchen" name={`Gespeicherte Suchen${ready && saved.length ? ` (${saved.length})` : ""}`} title={<>Ihre Themen. Immer im Blick.</>} lead="Neue Treffer auf einen Blick, gespeichert in Ihrem Konto.">
+      <PageHead icon="search" label="Suchen" name={`Meine Suchen${ready && saved.length ? ` (${saved.length})` : ""}`} title={<>Ihre Themen. Immer im Blick.</>} lead="Neue Treffer auf einen Blick, gespeichert in Ihrem Konto.">
         <div className="mt-4 flex flex-wrap gap-2">
           <UsagePill label="Suchen" used={used.searches} max={max.searches} />
         </div>
       </PageHead>
       <section className="ri-sec ri-sec--tight">
       {!ready && <AccountLoading />}
-      {ready && saved.length > 0 && <WeeklyReport />}
 
       {ready && !saved.length && (
         <div className="flex flex-col items-center px-6 py-10 text-center">
@@ -201,7 +200,7 @@ export function SavedSearchesPage() {
 
 /** Wochenbericht: alle neuen Treffer der gespeicherten Suchen in einer E-Mail, täglich oder am gewählten Wochentag.
  *  Folgt mit den E-Mail-Benachrichtigungen: die Einstellung aus dem Konto (/api/me/settings) wird nur angezeigt. */
-function WeeklyReport() {
+export function WeeklyReport() {
   const me = useMe();
   const key = me.user ? `${me.user.id}:${me.rev}` : "";
   const [got, setGot] = useState<{ key: string; weekly: boolean; day: number | null } | null>(null);

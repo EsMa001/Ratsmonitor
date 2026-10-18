@@ -78,22 +78,22 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
  *  „Frage (Seite)“ wird zu Frage groß und Seite klein darüber */
 export function XWeiter({ links }: { links: [string, string][] }) {
   return (
-    <nav aria-label="Weiter mit derselben Suche" className="mt-12 border-t border-slate-200 pt-6 print:hidden">
+    <nav aria-label="Weiter mit derselben Suche" className="mt-12 border-t border-slate-200 pt-6 max-sm:mt-6 max-sm:pt-3 print:hidden">
       <p className="m-0 text-[14px] font-semibold text-slate-700">Weiter mit derselben Suche</p>
-      <ul className="m-0 mt-3 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="m-0 mt-3 grid list-none gap-3 p-0 max-sm:mt-1 max-sm:gap-0 max-sm:divide-y max-sm:divide-slate-200 sm:grid-cols-2 lg:grid-cols-3">
         {links.map(([href, name]) => {
           /* Seite und Frage aus SEITEN (überall gleich); eigener Text nur, wenn die Seite dort fehlt */
           const z = SEITEN[href.split("/").pop()!];
           const m = z ? [, (KACHEL_FRAGE[href] ?? z.frage), z.titel.replace("plenara.X ", "") + (z.reiter && z.reiter[0][0] !== href ? ` · ${z.reiter.find(([h]) => h === href)?.[1]}` : "")] : name.match(/^(.*) \((.*)\)$/);
           return (
             <li key={href}>
-              <Link href={href} className="group flex h-full items-center gap-3 rounded-xl bg-slate-50 px-4 py-3 transition-colors hover:bg-teal-50">
-                {z && <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-teal-700"><Icon name={z.icon} size={18} /></span>}
-                <span className="mr-auto">
-                  {m && <span className="block text-[12px] font-medium uppercase tracking-wide text-slate-500">{m[2]}</span>}
-                  <span className="block text-[16px] font-semibold text-slate-900 group-hover:text-teal-800">{m ? m[1] : name}</span>
+              <Link href={href} className="group flex h-full items-center gap-3 rounded-xl bg-slate-50 px-4 py-3 transition-colors hover:bg-teal-50 max-sm:gap-2.5 max-sm:rounded-none max-sm:bg-transparent max-sm:px-0 max-sm:py-2.5">
+                {z && <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-teal-700 max-sm:h-6 max-sm:w-6 max-sm:bg-transparent"><Icon name={z.icon} size={18} /></span>}
+                <span className="mr-auto max-sm:flex max-sm:min-w-0 max-sm:flex-1 max-sm:items-baseline max-sm:justify-between max-sm:gap-2">
+                  {m && <span className="block text-[12px] font-medium uppercase tracking-wide text-slate-500 max-sm:order-2 max-sm:normal-case max-sm:tracking-normal">{m[2]}</span>}
+                  <span className="block text-[16px] font-semibold text-slate-900 group-hover:text-teal-800 max-sm:truncate max-sm:font-medium">{m ? m[1] : name}</span>
                 </span>
-                <span aria-hidden="true" className="text-[18px] text-teal-700 transition-transform group-hover:translate-x-1">→</span>
+                <span aria-hidden="true" className="text-[18px] text-teal-700 transition-transform group-hover:translate-x-1 max-sm:text-[14px]">→</span>
               </Link>
             </li>
           );

@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (464 Zeilen, ⚠14)
+- app/ratsmonitor-info.css (507 Zeilen, ⚠14)
 - app/ratsmonitor.css (253 Zeilen, ⚠17)
 
 admin-access admin.css:6
@@ -264,6 +264,7 @@ gap-8 ratsmonitor-info.css:396
 gap-y-12 ratsmonitor-info.css:351
 gap-y-6 ratsmonitor-info.css:394
 gap-y-8 ratsmonitor-info.css:352
+grid ratsmonitor-info.css:478
 group ratsmonitor.css:159
 h-16 ratsmonitor-info.css:372
 heading-m design-styles.css:44
@@ -338,6 +339,7 @@ pl-slogan ratsmonitor-info.css:406
 pl-source ratsmonitor-info.css:406
 pl-stand ratsmonitor-info.css:406
 pl-still ratsmonitor-info.css:406
+pl-top ratsmonitor-info.css:475
 pl-tp ratsmonitor-info.css:404
 pl-trends ratsmonitor-info.css:406
 popover ratsmonitor.css:49
@@ -484,6 +486,7 @@ rm-search ratsmonitor-info.css:321
 rm-search ratsmonitor.css:232
 rm-solid ratsmonitor.css:87
 rm-spinner ratsmonitor.css:110
+rm-stage ratsmonitor-info.css:483
 rm-tabbar ratsmonitor.css:218
 rm-topline ratsmonitor.css:174
 scroll-thin ratsmonitor.css:52
@@ -597,7 +600,7 @@ topic design-styles.css:140
 - chatgpt-auth.ts (92): ChatGPTUser, getChatGPTUser, chatGPTSignInAvailable, chatGPTSignInPath, chatGPTSignOutPath
 - error.tsx (8, ⚠1): PageError
 - global-error.tsx (10, ⚠1): GlobalError
-- layout.tsx (10, ⚠2): metadata, RootLayout
+- layout.tsx (12, ⚠2): metadata, viewport, RootLayout
 - not-found.tsx (4): metadata, NotFound
 
 ### components/
@@ -643,14 +646,15 @@ topic design-styles.css:140
 - App.tsx (74, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
-- AccountMenu.tsx (83, ⚠2): AccountMenu
+- AccountMenu.tsx (86, ⚠2): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
 - ArtIcon.tsx (71, ⚠1): ArtIcon
 - BandDots.tsx (50): BandDots
-- BottomNav.tsx (53, ⚠1): BottomNav
+- BottomNav.tsx (55, ⚠1): BottomNav
 - Brand.tsx (274): AnalyticsX, AnalyticsLogo, Brand
 - CalendarFeed.tsx (106): CalendarFeed
+- ChipRail.tsx (35, ⚠1): RailItem, ChipRail, kurz
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - CountDots.tsx (9): CountDots
 - DateBadge.tsx (14): DateBadge
@@ -658,7 +662,7 @@ topic design-styles.css:140
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - DotField.tsx (86): DotField
-- FilterPanel.tsx (110, ⚠1): FilterPanel
+- FilterPanel.tsx (111, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (28): NOTIFY_LATER, FollowButton
 - Footer.tsx (65): Footer
@@ -676,6 +680,7 @@ topic design-styles.css:140
 - SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
 - TierNotice.tsx (67): AccountLoading, LoginRequired, UsagePill
 - TopicSeed.tsx (11): TopicSeed
+- WheelPicker.tsx (54): WheelPicker
 - icons.tsx (193): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync, ThemeIcon
 
 ### components/ratsmonitor/components/map/
@@ -731,13 +736,13 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (360): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (1083): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1098): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
 - listView.ts (47): ListView, setListView, useListView
 - otherTab.ts (11): onOtherTab
-- pageTitle.ts (39): pageName, tabTitle
+- pageTitle.ts (40): pageName, tabTitle
 - place.ts (287, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, removePhrase
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
@@ -747,7 +752,7 @@ topic design-styles.css:140
 - savedSearch.ts (155, ⚠1): SearchSnapshot, snapshotOf, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - searchUrl.ts (106): readableQuery, SEARCH_URL_KEYS, searchToUrl, onlyText, searchFromUrl
-- sheetStage.ts (16): SheetStage, setSheetStage, toggleSheetStage, useSheetStage
+- sheetStage.ts (26): SheetStage, setSheetStage, toggleSheetStage, useSheetStage, setPeekHidden, usePeekHidden
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem
 - text.ts (96): normChar, norm, FILLER, terms, Segment, highlightSegments, plural, parseDate, fmtDate, isoDay, todayLocal, MONTH_FMT, MONTH_SHORT, monthLabel
 - tier.ts (68): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, priceLabel, UPGRADE_TEXT, IS_DEV, getTier, setTier, useTier, usage
@@ -762,21 +767,20 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/menu/
 - MainMenu.tsx (295, ⚠1): ANWENDER, XEintrag, ANALYSE, EINBLICKE, HINTERGRUENDE, INFO, MainMenu, XGruppe
-- MoreSheet.tsx (31): MoreSheet
-- SavedTabs.tsx (35): SAVED_TABS, useSavedSwipe, SavedTabs
-- Sheet.tsx (37): Sheet, SHEET_ROW, SHEET_HEAD
-- XSwitcher.tsx (36): XSheet
+- MoreSheet.tsx (33, ⚠1): MoreSheet
+- Sheet.tsx (77, ⚠1): Sheet, SHEET_ROW, SHEET_HEAD
+- XSwitcher.tsx (34): XSheet
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (171, ⚠12): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (240): LegalPage
-- OverviewPage.tsx (87): OverviewPage
+- OverviewPage.tsx (111): OverviewPage
 - PersonalPage.tsx (26): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
 - SavedArticlesPage.tsx (142, ⚠2): SavedArticlesPage
-- SavedSearchesPage.tsx (242): SavedSearchesPage
+- SavedSearchesPage.tsx (241): SavedSearchesPage, WeeklyReport
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (231, ⚠18): ANALYSE_THUMBS, MethodikText
@@ -789,25 +793,25 @@ topic design-styles.css:140
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (303, ⚠9): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
-- DiffusionSearch.tsx (68, ⚠2): PlayState, DiffusionSearch
+- DiffusionSearch.tsx (86, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (312, ⚠2): FaktenPage
 - FraktionenPage.tsx (171, ⚠4): FraktionenPage
 - GraphView.tsx (235, ⚠1): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (171, ⚠3): GremiennetzPage
-- Kennzahlen.tsx (130): weekAgo, isNew, Kennzahlen, countScale, zeitText, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
+- Kennzahlen.tsx (130, ⚠2): weekAgo, isNew, Kennzahlen, countScale, zeitText, ZeitPills, useOrtInAdresse, Segmented, MeinOrt, Folgen
 - KnowledgeGraphPage.tsx (234, ⚠3): KnowledgeGraphPage
 - Laden.tsx (25): Laden
-- Methodik.tsx (38): METHODIK_VON, MethodikUnten, MethodikNote
+- Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
 - NetView.tsx (179, ⚠2): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (119): NewsradarPage
 - PageBand.tsx (19): PageBand
-- RadarDrill.tsx (91): DrillItem, StatusDot, RadarDrill
+- RadarDrill.tsx (130, ⚠1): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
-- RegionMap.tsx (107, ⚠1): RegionMap
+- RegionMap.tsx (128, ⚠2): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (346, ⚠8): signaleHref, SignalePage
+- SignalePage.tsx (347, ⚠8): signaleHref, SignalePage
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
-- XAtlasView.tsx (550, ⚠8): XAtlasView
+- XAtlasView.tsx (570, ⚠9): XAtlasView
 - XKopf.tsx (158, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (346, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve

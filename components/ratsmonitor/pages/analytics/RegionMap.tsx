@@ -3,6 +3,7 @@ import { useDarkMode } from "../../lib/useDarkMode";
 import { MapEngine } from "../../lib/geo/mapEngine";
 import { MAP_COLORS } from "../../lib/constants";
 import { useData } from "../../state/data";
+import { clearMapSlot, setMapSlot } from "../../lib/mapSlot";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 
 /* Karte für plenara.X-Radare mit derselben Engine wie Suche und Ausbreitung: Gemeinden in Stufen 1 bis 4 eingefärbt
@@ -35,6 +36,16 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   // Die Karte ruft select erst bei einem Klick auf, nicht beim Rendern
   // eslint-disable-next-line react-hooks/refs
   const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: select, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => hintRef.current() }) : null), [geo, select]);
+  const slotRef = useRef<HTMLDivElement>(null);
+  const [topInset, setTopInset] = useState(0);
+  useEffect(() => {
+    const el = slotRef.current;
+    setMapSlot(el);
+    /* Höhe von Suchleiste und Chips auf der Karte: so viel bleibt beim Einpassen oben frei */
+    const ro = el ? new ResizeObserver(() => setTopInset(el.getBoundingClientRect().height ? Math.round(el.getBoundingClientRect().height + 8) : 0)) : null;
+    if (el && ro) ro.observe(el);
+    return () => { ro?.disconnect(); clearMapSlot(el); };
+  }, []);
   const pinKey = pins?.map((p) => p.label + p.ags.join()).join("|") ?? "";
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { engine?.setPins(pins ?? []); }, [engine, pinKey]);
@@ -76,11 +87,20 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     Object.assign(v, levels);
     engine.update(v, picked, null, all, level);
   }, [engine, levels, all, picked, level]);
-  useEffect(() => { if (!engine) return; if (shown.length) engine.focusMany(shown); else engine.focusArea(""); }, [engine, shown]);
+  useEffect(() => {
+    if (!engine) return;
+    const phone = window.matchMedia("(max-width:639px)").matches;
+    engine.setFitInsets(phone ? topInset : 0, phone ? 52 : 0);
+    if (shown.length) engine.focusMany(shown); else engine.focusArea("");
+  }, [engine, shown, topInset]);
+
 
   return (
-    <div className={`relative h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
-      <div ref={stageRef} className="absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
+    <div className="rm-mapwrap relative">
+    {/* Handy: Platz für die Suchleiste der Seite oben auf der Karte (siehe lib/mapSlot.ts) */}
+    <div ref={slotRef} className="absolute inset-x-2 top-2 z-30 empty:hidden sm:hidden" />
+    <div className={`relative h-[420px] overflow-hidden rounded-[22px] border border-slate-200 max-sm:h-[300px] sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
+      <div ref={stageRef} className="rm-stage absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={ghostRef} aria-hidden="true" className="pointer-events-none absolute left-0 top-0 block h-full w-full opacity-0" />
         <canvas ref={overRef} role="img" aria-label={label} className="absolute left-0 top-0 block h-full w-full" />
@@ -89,18 +109,19 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
           <span className="rounded-full bg-white px-4 py-2 text-[14px] font-medium text-slate-900 shadow">Zum Zoomen in die Karte klicken oder Strg/⌘ + Scrollen</span>
         </div>
       </div>
-      <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
-        <ul className="m-0 flex list-none flex-col gap-1 p-0">
-          {legend.map((l, i) => <li key={l} className="flex items-center gap-2"><i className="inline-block h-3 w-5 rounded-sm" style={{ background: colors?.[i] ?? MAP_COLORS.scale[i] }} />{l}</li>)}
+      <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700 max-sm:bottom-2 max-sm:left-2 max-sm:right-14 max-sm:top-auto max-sm:rounded-xl max-sm:px-2 max-sm:py-1`}>
+        <ul className="m-0 flex list-none flex-col gap-1 p-0 max-sm:flex-row max-sm:flex-wrap max-sm:gap-x-2.5 max-sm:gap-y-0.5">
+          {legend.map((l, i) => <li key={l} className="flex items-center gap-2 max-sm:gap-1"><i className="inline-block h-3 w-5 rounded-sm max-sm:w-3" style={{ background: colors?.[i] ?? MAP_COLORS.scale[i] }} /><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(/\s*Vorg\S*/, "").replace(" bis ", "–").replace("über ", ">")}</span></li>)}
         </ul>
-        {note && <p className="m-0 mt-1 max-w-[180px] text-slate-500">{note}</p>}
+        {note && <p className="m-0 mt-1 max-w-[180px] text-slate-500 max-sm:mt-0 max-sm:max-w-none">{note}</p>}
       </div>
-      <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
+      <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full max-sm:bottom-2 max-sm:right-2 max-sm:top-auto`}>
         <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>
         <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={16} /></button>
         <button type="button" title="Auf Ergebnis zentrieren" aria-label="Auf Ergebnis zentrieren" onClick={() => (shown.length ? engine?.focusMany(shown) : engine?.focusArea(""))} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
       </div>
       {info && <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:inset-x-3 max-sm:bottom-3 max-sm:top-auto"><span className={`${glass} rounded-2xl px-4 py-2 text-center text-[14px] text-slate-900`}>{info}</span></div>}
+    </div>
     </div>
   );
 }

@@ -9,7 +9,7 @@ const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
   { label: "Suche in allen Gebieten", tiers: { guest: "Suche in allen Gebieten", basic: "Suche in allen Gebieten", pro: "Suche in allen Gebieten", enterprise: "Suche in allen Gebieten" } },
   { label: "Alle Treffer", tiers: { guest: "10 Treffer je Suche", basic: "Alle Treffer", pro: "Alle Treffer", enterprise: "Alle Treffer" } },
   { label: "Filter und Umkreis", tiers: { guest: null, basic: "Filter und Umkreis", pro: "Filter und Umkreis", enterprise: "Filter und Umkreis" } },
-  { label: "Gespeicherte Suchen", tiers: { guest: null, basic: "1 gespeicherte Suche", pro: `Bis zu ${PLAN_MAX} gespeicherte Suchen`, enterprise: `Bis zu ${PLAN_MAX} gespeicherte Suchen` } },
+  { label: "Meine Suchen", tiers: { guest: null, basic: "1 gespeicherte Suche", pro: `Bis zu ${PLAN_MAX} gespeicherte Suchen`, enterprise: `Bis zu ${PLAN_MAX} gespeicherte Suchen` } },
   { label: "Gespeicherte Artikel", tiers: { guest: null, basic: "1 gespeicherter Artikel", pro: `Bis zu ${PLAN_MAX} gespeicherte Artikel`, enterprise: `Bis zu ${PLAN_MAX} gespeicherte Artikel` } },
   { label: "E-Mail-Benachrichtigungen", tiers: { guest: null, basic: "1 aktive Benachrichtigung", pro: `Bis zu ${PLAN_MAX} Benachrichtigungen`, enterprise: `Bis zu ${PLAN_MAX} Benachrichtigungen` } },
   { label: "Sitzungskalender mit Kalender-Abo", tiers: { guest: null, basic: null, pro: null, enterprise: "Sitzungskalender mit Kalender-Abo" } },

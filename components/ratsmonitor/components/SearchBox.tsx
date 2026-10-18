@@ -148,7 +148,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
           });
       }
       if (saved.length) {
-        out.push({ kind: "head", label: "Gespeicherte Suchen" });
+        out.push({ kind: "head", label: "Meine Suchen" });
         for (const sv of saved.slice(0, 5))
           out.push({
             kind: "recent",

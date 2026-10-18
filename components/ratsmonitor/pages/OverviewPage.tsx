@@ -7,7 +7,7 @@ import { useAccount } from "../state/account";
 import { overviewScroll } from "../state/nav";
 import { useSearch, useSearchResults } from "../state/search";
 import { hasFilters } from "../lib/savedSearch";
-import { useSheetStage, setSheetStage } from "../lib/sheetStage";
+import { useSheetStage, setSheetStage, usePeekHidden, setPeekHidden } from "../lib/sheetStage";
 import { useFiltersOpen } from "../lib/filtersOpen";
 import { isPhone } from "../lib/usePhone";
 
@@ -20,8 +20,32 @@ export function OverviewPage({ active }: { active: boolean }) {
   const stage = useSheetStage();
   /* Handy: nach einer Suche zeigt das kleine Blatt schon die ersten Treffer (Vorschau), damit man sieht, dass sie geklappt hat */
   const { snapshot, total } = useSearchResults();
-  const peek = hasFilters(snapshot) && total > 0;
+  const peekHidden = usePeekHidden();
+  const peek = hasFilters(snapshot) && total > 0 && !peekHidden;
   const mainRef = useRef<HTMLElement>(null);
+  /* Neue Suche oder Blatt „voll“: die Vorschau ist wieder da */
+  const snapKey = JSON.stringify(snapshot);
+  useEffect(() => { setPeekHidden(false); }, [snapKey]);
+  useEffect(() => { if (stage === "voll") setPeekHidden(false); }, [stage]);
+  /* Handy: Wischen mit dem Finger auf dem Blatt. Nach unten: voll → klein, klein → minimal (ohne Vorschau). Nach oben: minimal → klein, klein → voll.
+     Im vollen Blatt zählt nur ein Zug nach unten, wenn die Liste ganz oben steht (sonst scrollt sie). */
+  const pull = useRef<{ y: number; top: number } | null>(null);
+  const sheetTouch = {
+    onTouchStart: (e: React.TouchEvent) => { if (isPhone()) pull.current = { y: e.touches[0].clientY, top: mainRef.current?.scrollTop ?? 0 }; },
+    onTouchEnd: (e: React.TouchEvent) => {
+      const s = pull.current; pull.current = null;
+      if (!s || !isPhone()) return;
+      const dy = e.changedTouches[0].clientY - s.y;
+      if (Math.abs(dy) < 44) return;
+      if (dy > 0) {
+        if (stage === "voll") { if (s.top <= 0) setSheetStage("klein"); }
+        else if (peek) setPeekHidden(true);
+      } else if (stage === "klein") {
+        if (peekHidden) setPeekHidden(false); else setSheetStage("voll");
+      }
+    },
+    onTouchCancel: () => { pull.current = null; },
+  };
   /* Handy: die Filter öffnen sich auf der Karte; dafür braucht sie ihre volle Höhe */
   const filtersOpen = useFiltersOpen();
   useEffect(() => { if (filtersOpen && isPhone()) setSheetStage("klein"); }, [filtersOpen]);
@@ -76,7 +100,7 @@ export function OverviewPage({ active }: { active: boolean }) {
   return (
     <div hidden={!active} className="rm-flat" data-stage={stage} data-peek={peek ? "1" : undefined}>
       <MapPanel active={active} />
-      <main ref={mainRef} id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page max-sm:max-w-none flex-col gap-[12px] pb-0 pt-0">
+      <main ref={mainRef} {...sheetTouch} id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page max-sm:max-w-none flex-col gap-[12px] pb-0 pt-0">
         {active && <h1 className="sr-only">Kommunalpolitik entdecken: öffentliche Vorgänge, Beratungen und Beschlüsse</h1>}
         <SearchFilterPanel />
         <ResultsPanel />

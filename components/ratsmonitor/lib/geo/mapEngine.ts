@@ -290,7 +290,7 @@ export class MapEngine {
   }
 
   /* ---------- Ansicht ---------- */
-  private clampK(k: number, reserve = this.bottomInset ? this.bottomInset - 8 : 0) {
+  private clampK(k: number, reserve = this.compactFit ? Math.max(0, this.insetTop + this.insetBottom - 16) : this.bottomInset ? this.bottomInset - 8 : 0) {
     /* Höchstens so weit herauszoomen, dass Deutschland die Karte gerade ausfüllt (nicht kleiner) */
     const bb = this.geo.germany.bb;
     const kmin = 0.98 * Math.min((this.W - 32) / Math.max(bb[2] - bb[0], 1), (this.H - 32 - reserve) / Math.max(bb[3] - bb[1], 1));
@@ -308,14 +308,24 @@ export class MapEngine {
   /** Deutschland passt gerade noch vollständig hinein (kleiner Rand, mittig); unten etwas mehr Rand, damit der Quellentext der Karte (© GeoBasis-DE …) die Südspitze nicht überdeckt */
   private germanyView(): View {
     const bb = this.geo.germany.bb;
-    const pt = 8;
-    const pb = 28;
+    const pt = this.compactFit ? this.insetTop + 8 : 8;
+    const pb = this.compactFit ? this.insetBottom + 8 : 28;
     const k = Math.min((this.W - 16) / Math.max(bb[2] - bb[0], 1), (this.H - pt - pb) / Math.max(bb[3] - bb[1], 1));
     return { cx: (bb[0] + bb[2]) / 2, cy: (bb[1] + bb[3]) / 2 + (pt - pb) / 2 / k, k };
   }
 
   /** Unten verdeckter Streifen (px, z. B. Suchleiste mit Chips im Kartenmodus): beim Einpassen bleibt er frei, die Gebiete liegen darüber */
   bottomInset = 0;
+  /** Analyseseiten (Handy): die Karte liegt schon unterhalb von Suchleiste und Legende, deshalb beim Einpassen kaum Rand lassen */
+  compactFit = false;
+  /** Handy, Analyseseiten: oben (Suchleiste, Chips) und unten (Legende) liegen Leisten über der vollen Karte; beim Einpassen bleiben die Streifen frei */
+  insetTop = 0;
+  insetBottom = 0;
+  setFitInsets(top: number, bottom: number) {
+    this.insetTop = top;
+    this.insetBottom = bottom;
+    this.compactFit = top > 0 || bottom > 0;
+  }
   /** Platz unten (px) für Leisten über der Karte, beim Einpassen frei gelassen */
   setBottomInset(px: number) {
     this.bottomInset = px;
@@ -324,8 +334,8 @@ export class MapEngine {
   private fitView(bb: BBox, pad?: number): View {
     const small = this.W < 640;
     /* Handy: unten mehr Rand, dort liegen Suchleiste und Chips über der Karte */
-    const pt = small ? 24 : 24;
-    const pb = Math.max(small ? 120 : 72, this.bottomInset ? this.bottomInset + 8 : 0);
+    const pt = this.compactFit ? this.insetTop + 8 : 24;
+    const pb = this.compactFit ? this.insetBottom + 8 : Math.max(small ? 120 : 72, this.bottomInset ? this.bottomInset + 8 : 0);
     const ps = pad ?? (small ? 4 : 28);
     const w = Math.max(bb[2] - bb[0], 1);
     const h = Math.max(bb[3] - bb[1], 1);
@@ -984,6 +994,11 @@ export class MapEngine {
       if (drag && pointers.size === 1) {
         const dx = p[0] - drag.x;
         const dy = p[1] - drag.y;
+        /* Analyseseiten am Handy: ein Finger schiebt die Karte nicht (er scrollt die Seite); Tippen wählt, zwei Finger zoomen */
+        if (this.compactFit && e.pointerType === "touch") {
+          if (Math.hypot(dx, dy) > 4) drag.moved = true;
+          return;
+        }
         if (this.locked) {
           if (Math.hypot(dx, dy) > 4) drag.moved = true;
           return;

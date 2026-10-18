@@ -34,7 +34,7 @@ function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boo
 /** Milchglas-Filterfenster, oben links mit dem Filter-Knopf (toggle) verankert:
  *  Umkreis um den gesuchten Ort (dezent), Zeitraum, Thema, Status */
 /** up: Suchleiste steht unten (Kartenmodus) – das Fenster klappt nach oben auf, der Filter-Knopf bleibt an seiner Stelle */
-export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
+export function FilterPanel({ toggle, up = false, maxH, extra }: { toggle: ReactNode; /** Handy: Zusatzfelder der Seite (z. B. Zeitraum, Folgen) oben im Blatt */ extra?: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
   const { geo } = useData();
   const search = useSearch();
   const { state } = search;
@@ -86,6 +86,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
         )}
       </div>
       <div className="flex flex-col gap-2.5 px-4 max-sm:gap-[3px] sm:gap-1.5">
+        {phone && extra}
         {state.area.length >= 5 && geo && <AreaBar compact />}
         {phone ? <DateRangeFields /> : <DateRangeFilter />}
         {/* Schalter wie am iPhone */}

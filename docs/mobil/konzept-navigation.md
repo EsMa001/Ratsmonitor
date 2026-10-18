@@ -42,3 +42,13 @@ Vorgehen, erst nach Phase 1:
 1. **Bestandsaufnahme:** alle Routen bei 375 px aufnehmen; je Seite Zahl der Wörter über dem Falz (OCR-Werkzeug aus `CLAUDE.md`), Zahl der Tipps bis zur Kernaktion, Tippflächen unter 44 px, horizontales Scrollen.
 2. **Regeln zum Kürzen:** pro Seite ein Satz Einleitung, Erklärtext hinter „Mehr“; Kennzahlen vor Fließtext; Tabellen als Zeilen mit zwei Angaben; Filter im Blatt statt Leiste; Antwortsatz (`Befund`) bleibt, Methodik und Hinweise einklappen. Nur belegbare Vorteile (`docs/produkt/vorteile.json`, Stufe A) in Einleitungen.
 3. **Ergebnis:** Liste je Seite „kürzen / umbauen / so lassen“, danach Umsetzung in kleinen Schritten.
+
+
+## 6. Stand 19.10.2026 (Handy, ersetzt die Angaben oben, wo sie abweichen)
+
+- **Untere Leiste (5):** Start, Suche, plenara.X, Favoriten (Stern), Mehr. „plenara.X“, „Favoriten“ und „Mehr“ öffnen je ein Blatt; es endet über der Leiste (die bleibt sichtbar) und schließt per Wisch nach unten, Tipp aufs Dunkle oder zweiten Tipp auf das Symbol.
+- **Blätter:** gleiche Bauart (`menu/SegTiles.tsx`, `Segmented` und `Tile`): Schalter mit Stellungen, darunter Kacheln mit Symbol. plenara.X: Analysen, Einblicke, Hintergründe (je höchstens vier Kacheln). Favoriten: Suchen, Benachrichtigungen, Kalender, Artikel. Mehr: Anwender, Informationen. Kein Scrollen im Blatt.
+- **Persönliche Seiten:** `/konto/suchen` („Meine Suchen“), `/konto/artikel`, `/konto/kalender` und neu `/konto/benachrichtigungen` sind eigene Seiten ohne Umschalter. Die Benachrichtigungen zeigen, was vorgemerkt ist (Wochenbericht, Suchen mit E-Mail, Artikel mit Glocke, Kalender); der Versand folgt mit den E-Mail-Benachrichtigungen. Am Desktop steht die Glocke im Konto-Menü neben Suchen, Kalender und Artikel.
+- **Kopfzeile:** Petrol, 44 px, volles Logo in Weiß. Auf Seiten mit Band (plenara.X, Info, Konto) ist sie durchsichtig und gehört zum Band (eine Fläche), die Statusleiste des iPhones ist petrolfarben (`theme-color`).
+- **Walzen:** Listen am Handy (Berichte hinter Unterthema und Ort) sind Walzen mit drei Zeilen (`components/WheelList.tsx`), Punkte als Hinweis, bis man wischt; Themenwahl in Atlas, Signale und Einblicken als Drehwalze (`components/WheelPicker.tsx`, lädt erst beim Einrasten).
+- **Suche:** Ergebnisblatt mit drei Zuständen: voll, klein mit Vorschau, minimal (Wisch nach unten bzw. oben). Karte und Leiste der plenara.X-Seiten: Suchleiste und Legende liegen auf der Karte, ein Finger scrollt die Seite (`lib/mapSlot.ts`).

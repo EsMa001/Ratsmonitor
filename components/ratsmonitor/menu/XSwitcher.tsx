@@ -1,10 +1,10 @@
-import Link from "next/link";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Lock } from "lucide-react";
 import { useTier } from "../lib/tier";
 import { Icon } from "../info/icons";
-import { ANALYSE, EINBLICKE, HINTERGRUENDE, XGruppe, type XEintrag } from "./MainMenu";
-import { Sheet, SHEET_HEAD } from "./Sheet";
+import { ANALYSE, EINBLICKE, HINTERGRUENDE, type XEintrag } from "./MainMenu";
+import { Sheet } from "./Sheet";
+import { Segmented, Tile } from "./SegTiles";
 
 const GRUPPEN: [string, XEintrag[]][] = [["Analysen", ANALYSE], ["Einblicke", EINBLICKE], ["Hintergründe", HINTERGRUENDE]];
 
@@ -14,22 +14,20 @@ export function XSheet({ open, onClose }: { open: boolean; onClose: () => void }
   const { tier, ready } = useTier();
   /* Die Analysen gehören zu Enterprise: alle anderen sehen dieselbe Liste mit Schloss, jede Seite zeigt dann eine Vorschau */
   const locked = ready && tier !== "enterprise";
+  const [pick, setPick] = useState<string | null>(null);
+  const own = GRUPPEN.find(([, l]) => l.some((f) => f.href === path))?.[0] ?? GRUPPEN[0][0];
+  const active = pick ?? own;
+  const list = GRUPPEN.find(([n]) => n === active)![1];
   return (
     <Sheet open={open} onClose={onClose} label="plenara.X Seiten">
       {locked && <p className="m-0 border-b border-slate-100 pb-3 text-[14px] text-slate-500">Die Analysen gehören zu Enterprise. Jede Seite zeigt eine Vorschau.</p>}
-      {GRUPPEN.map(([name, list]) => (
-        <div key={name}>
-          <p className={SHEET_HEAD}><XGruppe name={name} /></p>
-          {list.map((f) => (
-            <Link key={f.href} href={f.href} aria-current={f.href === path ? "page" : undefined}
-              className={`flex min-h-[48px] items-center gap-3 border-b border-slate-100 no-underline ${f.href === path ? "text-teal-700" : "text-slate-900"}`}>
-              <Icon name={f.icon} size={18} />
-              <span className="min-w-0 flex-1"><span className={`block text-[16px] ${f.href === path ? "font-semibold" : ""}`}>{f.label}</span>{f.hint && <span className="block text-[12px] text-slate-500">{f.hint}</span>}</span>
-              {locked && <Lock size={14} className="flex-none text-slate-400" aria-label="gesperrt" />}
-            </Link>
-          ))}
-        </div>
-      ))}
+      {/* Schalter mit drei Stellungen (wie am iPhone), darunter die Seiten der Gruppe als Kacheln (höchstens 4, kein Scrollen) */}
+      <Segmented label="Gruppe" names={GRUPPEN.map(([n]) => n)} active={active} onPick={setPick} />
+      <ul className="m-0 mt-3 grid list-none grid-cols-2 gap-2 p-0">
+        {list.map((f) => (
+          <li key={f.href}><Tile href={f.href} icon={<Icon name={f.icon} size={22} />} label={f.label} hint={f.hint} on={f.href === path} locked={locked} onClick={() => f.href === path && onClose()} /></li>
+        ))}
+      </ul>
     </Sheet>
   );
 }

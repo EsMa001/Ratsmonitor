@@ -19,7 +19,7 @@ export function Header() {
     const el = bar.current, root = document.documentElement;
     if (!el || !phone || pathname === "/" || pathname === "/suche") return;
     let last = window.scrollY, raf = 0;
-    const set = (hidden: boolean) => { el.style.transform = hidden ? "translateY(-100%)" : ""; root.style.setProperty("--rm-head", hidden ? "0px" : "58px"); };
+    const set = (hidden: boolean) => { el.style.transform = hidden ? "translateY(-100%)" : ""; root.style.setProperty("--rm-head", hidden ? "0px" : `${el.offsetHeight}px`); };
     const on = () => {
       if (raf) return;
       raf = requestAnimationFrame(() => {
@@ -42,7 +42,7 @@ export function Header() {
 
   return (
     <header ref={bar} className="sticky top-0 z-[1100] border-b-2 border-teal-600 bg-white transition-transform duration-200 motion-reduce:transition-none">
-      <div className="flex h-[56px] items-center justify-between gap-2 px-4 sm:gap-4">
+      <div className="flex h-[56px] max-sm:h-[42px] max-sm:pb-1 items-center justify-between gap-2 px-4 sm:gap-4">
         <div className="flex min-w-0 items-center gap-2 sm:gap-[14px]">
           <MainMenu />
           <Brand onClick={leave} />

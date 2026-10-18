@@ -10,7 +10,7 @@ const COMPARE_ROWS: [string, (t: Tier) => string][] = [
   ["Preis", priceLabel],
   ["Treffer je Suche", (t) => (Number.isFinite(LIMITS[t].maxResults) ? String(LIMITS[t].maxResults) : "alle")],
   ["Filter (Gebiet, Zeitraum, Thema, Status)", (t) => (LIMITS[t].filters ? "✓" : "–")],
-  ["Gespeicherte Suchen", (t) => count(LIMITS[t].savedSearches)],
+  ["Meine Suchen", (t) => count(LIMITS[t].savedSearches)],
   ["Gespeicherte Artikel", (t) => count(LIMITS[t].bookmarks)],
   ["Aktive Benachrichtigungen", (t) => count(LIMITS[t].notifications)],
   ["Sitzungskalender mit Kalender-Abo", (t) => (LIMITS[t].calendar ? "✓" : "–")],

@@ -23,10 +23,10 @@ export function Kennzahlen({ items, week, band, scope, period, rest = false, chi
   useEffect(() => { publishBandFigure(fv && fl ? { value: fv, label: fl, week, scope, period } : null); }, [fv, fl, week, scope, period]);
   useEffect(() => () => publishBandFigure(null), []);
   return (
-    <div className="mt-2">
+    <div className="mt-2 max-sm:mt-0">
       {/* Die Zahl steht im Kopfband (XKopf, BandMitte); hier nur Auswahl und Bedienung */}
       {rest && items.length > 1 && <p className="m-0 mb-2 flex flex-wrap gap-x-6 text-[16px] text-slate-500">{items.slice(1).map((k) => <span key={k.label}><b className="font-semibold tabular-nums text-slate-900">{k.value}</b> {k.label}</span>)}</p>}
-      {children && <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[16px] text-slate-700">{children}</div>}
+      {children && <div className="mt-3 max-sm:mt-0 flex flex-wrap items-center gap-x-3 gap-y-2 text-[16px] text-slate-700">{children}</div>}
     </div>
   );
 }
@@ -57,7 +57,7 @@ export function ZeitPills({ value, all = "", onPick }: { value: string; all?: st
   return (
     <span className="inline-flex flex-wrap gap-1 print:hidden" role="group" aria-label="Zeitraum">
       {opts.map(([k, l]) => <button key={k || "alle"} type="button" aria-pressed={k === value} onClick={() => onPick(k)}
-        className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === value ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>)}
+        className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === value ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(" Monate", " Mon.")}</span></button>)}
     </span>
   );
 }
@@ -90,7 +90,7 @@ export function Segmented<K extends string>({ options, value, onPick, label }: {
   return (
     <div role="tablist" aria-label={label} className="inline-flex max-w-full overflow-x-auto rounded-full bg-slate-100 p-1">
       {options.map(([k, l, hint]) => <button key={k} role="tab" type="button" aria-selected={k === value} title={hint} onClick={() => onPick(k)}
-        className={`h-8 max-sm:h-11 shrink-0 whitespace-nowrap rounded-full px-3 text-[14px] ${k === value ? "bg-white font-semibold text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>)}
+        className={`h-8 max-sm:h-11 shrink-0 whitespace-nowrap rounded-full px-3 text-[14px] ${k === value ? "bg-white font-semibold text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(" Monate", " Mon.")}</span></button>)}
     </div>
   );
 }
@@ -121,9 +121,9 @@ export function MeinOrt({ current, onApply }: { current: { ags: string; name: st
  * „Folgen“: speichert die aktuelle Suche (Begriff, Ort, Filter, Thema) im Konto, dort mit Mail-Benachrichtigung bei neuen
  * Vorgängen (derselbe Dialog wie „Suche speichern“). before: vorher die Auswahl der Seite in die Suche übernehmen (Atlas: Thema).
  */
-export function Folgen({ before, hint }: { before?: () => void; hint?: string }) {
+export function Folgen({ before, hint, showText = false }: { before?: () => void; hint?: string; /** Handy: Name zeigen statt nur der Glocke */ showText?: boolean }) {
   const { openSaveDialog } = useUi();
   return <button type="button" title={hint ?? "Neue Vorgänge zu dieser Auswahl per Mail"} onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }}
-    className="inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-700 px-3 text-[14px] font-medium text-teal-700 hover:bg-teal-50 print:hidden">
-    <Bell size={14} strokeWidth={1.5} aria-hidden="true" />Folgen</button>;
+    aria-label="Folgen" className="inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-700 px-3 text-[14px] font-medium text-teal-700 hover:bg-teal-50 max-sm:px-2.5 print:hidden">
+    <Bell size={14} strokeWidth={1.5} aria-hidden="true" /><span className={showText ? "" : "max-sm:sr-only"}>Folgen</span></button>;
 }

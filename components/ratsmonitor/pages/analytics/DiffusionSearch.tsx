@@ -1,3 +1,7 @@
+import { createPortal } from "react-dom";
+import type { ReactNode } from "react";
+import { useMapSlot } from "../../lib/mapSlot";
+import { usePhone } from "../../lib/usePhone";
 import { filterChips } from "../../lib/savedSearch";
 import { setFiltersOpen, useFiltersOpen } from "../../lib/filtersOpen";
 import { useEntitlements } from "../../lib/entitlements";
@@ -12,12 +16,14 @@ import { ActiveFilters } from "../../components/ActiveFilters";
 export type PlayState = "idle" | "loading" | "playing" | "paused";
 
 /** Suchleiste wie auf der Startseite (gleiche Suche, gleiche Filter), rechts der Start-Knopf der Analyse */
-export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false, noPlay = false }: { /** ohne Start-Knopf: der Filter steht links an seiner Stelle (plenara.X Signale rechnen von selbst) */ noPlay?: boolean; play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
+export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false, noPlay = false, extra }: { /** Handy: Zusatzfelder im Filterblatt (Zeitraum, Folgen …) */ extra?: ReactNode; /** ohne Start-Knopf: der Filter steht links an seiner Stelle (plenara.X Signale rechnen von selbst) */ noPlay?: boolean; play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
   const { geo } = useData();
   const search = useSearch();
   const res = useSearchResults();
   const { allowFeature } = useEntitlements();
   const open = useFiltersOpen();
+  const slot = useMapSlot();
+  const phone = usePhone();
   const chips = filterChips(res.snapshot, geo);
   const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
   const round = "relative grid border border-slate-200 bg-white hover:bg-slate-50 h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12 transition-colors";
@@ -39,29 +45,41 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
     </button>
   );
   const label = play === "loading" ? "Wird berechnet" : play === "playing" ? "Pause" : startLabel;
-  return (
-    /* rm-solid: Filter und Vorschläge flach statt Milchglas (ratsmonitor.css) */
-    <div className="rm-solid relative z-20">
-      <div role="search" className="flex w-full items-center gap-2">
-        {noPlay && <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} /> : filterBtn}</div>}
-        {!noPlay && <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default`}>
-          {play === "loading" ? (
-            <span role="status" aria-label="Wird berechnet" className="rm-spinner" />
-          ) : play === "playing" ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1.2" /><rect x="13.8" y="5" width="4.2" height="14" rx="1.2" /></svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg>
-          )}
-        </button>}
-        <div className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white [&_input]:rounded-full">
-          <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} />
-        </div>
-        {!noPlay && <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} /> : filterBtn}</div>}
-      </div>
+  const chipsBlock = (
+    <div className="rm-solid relative z-10">
       {/* Chips flach statt Milchglas und ohne Scrollbalken: die Zeile bricht um */}
-      <div className="mt-2 flex pl-[52px] max-sm:pl-[56px] [&>div]:!my-0 [&>div]:!max-h-none [&>div]:!flex-wrap [&>div]:!overflow-visible [&>div]:!px-0 [&>div]:!py-0 [&_.rm-chip]:!border-slate-200 [&_.rm-chip]:!bg-white [&_.rm-chip]:!shadow-none [&_.rm-chip]:![backdrop-filter:none] [&_.rm-chip:hover]:!bg-slate-50">
+      <div className={`mt-2 flex pl-[52px] ${phone && slot ? "max-sm:mt-0 max-sm:pl-0 max-sm:[&:has(.rm-chip)]:mt-2" : "max-sm:pl-[56px]"} [&>div]:!my-0 [&>div]:!max-h-none [&>div]:!flex-wrap [&>div]:!overflow-visible [&>div]:!px-0 [&>div]:!py-0 [&_.rm-chip]:!border-slate-200 [&_.rm-chip]:!bg-white [&_.rm-chip]:!shadow-none [&_.rm-chip]:![backdrop-filter:none] [&_.rm-chip:hover]:!bg-slate-50`}>
         <ActiveFilters />
       </div>
     </div>
+  );
+  return (
+    /* rm-solid: Filter und Vorschläge flach statt Milchglas (ratsmonitor.css) */
+    <>
+      {(() => {
+        const bar = (
+          <div className="rm-solid relative z-20">
+      <div role="search" className="flex w-full items-center gap-2">
+          {noPlay && <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} extra={extra} /> : filterBtn}</div>}
+          {!noPlay && <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default max-sm:hidden`}>
+            {play === "loading" ? (
+              <span role="status" aria-label="Wird berechnet" className="rm-spinner" />
+            ) : play === "playing" ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1.2" /><rect x="13.8" y="5" width="4.2" height="14" rx="1.2" /></svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg>
+            )}
+          </button>}
+          <div className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white [&_input]:rounded-full">
+            <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} />
+          </div>
+          {!noPlay && <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} extra={extra} /> : filterBtn}</div>}
+        </div>
+          </div>
+        );
+        return phone && slot ? createPortal(<>{bar}{chipsBlock}</>, slot) : bar;
+      })()}
+      {phone && slot ? null : chipsBlock}
+    </>
   );
 }

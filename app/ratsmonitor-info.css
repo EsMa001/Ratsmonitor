@@ -461,3 +461,46 @@ html.rm-dark .rm-banddots{opacity:.35}
 
 /* plenara.X-Seiten: Punktraster nur im Kopfband (weiße Punkte), nicht auf der Seite */
 html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
+
+/* Handy, hell: Kopfzeile in Petrol wie die Bänder (weißes Logo, weißes Konto-Symbol); im Dunkelmodus bleibt sie wie die Seite */
+@media (max-width:639px){
+  html:not(.rm-dark) header{background:var(--rm-ac);border-bottom-color:transparent}
+  html:not(.rm-dark) header .rm-logo svg{filter:brightness(0) invert(1)}
+  html:not(.rm-dark) header button[aria-haspopup="menu"]{color:var(--rm-on)}
+}
+
+/* Handy, plenara.X (Kopf mit Titel): Kopfzeile und Band sind eine Fläche. Die Kopfzeile liegt weiß-auf-Petrol über dem Band (scrollt mit weg),
+   der Titel sitzt in ihrer Zeile zwischen Logo und Konto, darunter gleich die Zahl. Spart die weiße Zeile (58 px) und die Titelzeile. */
+@media (max-width:639px){
+  html:has(.pl-top) header{position:absolute;inset:0 0 auto 0;background:transparent;border-bottom:0}
+  html:has(.pl-top) header .rm-logo svg{filter:brightness(0) invert(1)}
+  .pl-band.pl-top{padding-top:46px !important}
+  .pl-band.pl-top .grid{margin-top:0}
+}
+
+
+/* Handy, Analysekarten: senkrechtes Wischen über der Karte scrollt die Seite (die Karte verschiebt sich nicht von selbst) */
+@media (max-width:639px){ .rm-stage{touch-action:pan-y !important} }
+
+/* Handy, plenara.X: weniger Leerraum zwischen Seitenende und Methodik */
+@media (max-width:639px){ html:has(.pl-top) main#inhalt{padding-bottom:0 !important} }
+
+/* Handy, Bänder der Info-, Anwender- und Kontoseiten wie bei plenara.X: Kopfzeile und Band sind eine Fläche, der Titel sitzt in der Zeile des Logos.
+   (Auch die Seiten „Suchen“, „Artikel“ und „Kalender“: eigene Seiten ohne Umschalter.) */
+@media (max-width:639px){
+  html:not(.rm-dark):has(.ri-head) header{position:absolute;inset:0 0 auto 0;background:transparent;border-bottom:0}
+  html:has(.ri-head) .ri-head{padding-top:46px !important}
+  html:has(.ri-head) .ri-head > div:not(.rm-banddots){display:flex;flex-direction:column}
+  html:has(.ri-head) .ri-head .ri-bid{display:flex;align-items:center;margin:0 0 4px !important;padding:0}
+  html:has(.ri-head) .ri-head .ri-bid__name{font-size:18px !important;line-height:1.2;font-weight:600}
+  html:has(.ri-head) .ri-head .back-btn{display:none !important}
+}
+
+/* Handy: volles Logo (Bildmarke und Schriftzug) in der Kopfzeile, weiß auf Petrol; etwas Luft unter der Marke */
+@media (max-width:639px){
+  header .rm-logo__text{position:static !important;width:auto !important;height:auto !important;overflow:visible !important;clip:auto !important}
+  header .rm-logo{font-size:18px}
+  header .rm-logo__mark{height:.86em !important;width:.86em !important;margin:0 .01em 0 0 !important;vertical-align:-.16em !important}
+  header .rm-logo__mark--p{height:.66em !important;width:.66em !important;vertical-align:-.07em !important}
+  html:not(.rm-dark) header .rm-logo{color:var(--rm-on)}
+}

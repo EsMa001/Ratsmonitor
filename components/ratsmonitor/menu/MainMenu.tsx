@@ -11,7 +11,7 @@ import { AnalyticsX } from "../components/Brand";
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
 const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" | "circleHelp" }[] = [
   { href: "/suche", label: "Suche", icon: "search" },
-  { href: "/konto/suchen", label: "Gespeicherte Suchen", icon: "heart" },
+  { href: "/konto/suchen", label: "Meine Suchen", icon: "heart" },
   { href: "/konto/artikel", label: "Gespeicherte Artikel", icon: "fileText" },
   { href: "/funktionen/benachrichtigungen", label: "Benachrichtigungen", icon: "bell" },
   { href: "/konto/kalender", label: "Kalender", icon: "calendar" },

@@ -1,3 +1,4 @@
+import { kurz } from "../../components/ChipRail";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
@@ -5,6 +6,9 @@ import { Laden } from "./Laden";
 import { Befund, Fehler } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo, zeitText } from "./Kennzahlen";
 import { Reveal } from "./Reveal";
+import { setFiltersOpen } from "../../lib/filtersOpen";
+import { usePhone } from "../../lib/usePhone";
+import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
@@ -141,10 +145,10 @@ function AtlasMap({ regions, facts, onList, listed, drill, onPlace, preview }: {
           </> : picked ? <span className="text-slate-500">Hier gibt es keine Werte zur Auswahl.</span> : undefined} />
       </div>
       {/* Ebene sichtbar (nicht mehr unter „Karte anpassen“): Kreise wählen beim Klick den ganzen Kreis */}
-      <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
-        <span className="text-[14px] text-slate-500">Ebene</span>
+      <div className="mt-3 max-sm:mt-2 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
+        <span className="text-[14px] text-slate-500 max-sm:hidden">Ebene</span>
         {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
-        <span className="text-[14px] text-slate-500">· Gebiet antippen wählt den Ort</span>
+        <span className="text-[14px] text-slate-500 max-sm:hidden">· Gebiet antippen wählt den Ort</span>
       </div>
       {facts.length > 0 && <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mb-2 mt-2 text-[14px] font-medium text-teal-700 hover:underline">
         {more ? "Werte ausblenden" : `Karte zeigt: ${fact ? fact.name : "Alle Vorgänge"}`}
@@ -189,13 +193,13 @@ const WORT = { mehr: "viel", weniger: "wenig", ueblich: "üblich" };
     springt; Auffälliges fett. Klick wählt das Thema bzw. Unterthema für den Ort. */
 function OrtImVergleich({ c, theme, onPick }: { c: Compare; theme: string; onPick: (key: string) => void }) {
   if (c.insufficient) return (
-    <section><h2 className="text-[22px] font-semibold">{c.region} im Vergleich</h2>
+    <section><h2 className="text-[22px] font-semibold max-sm:text-[18px]">{c.region} im Vergleich</h2>
       <p className="mt-2 max-w-[760px] text-[16px]">Keine Einordnung möglich: {ZU_WENIG[c.insufficient]} ({n(c.n)} Sachvorgänge in {n(c.months)} Monaten; nötig sind {n(c.rule.minItems)} in {n(c.rule.minMonths)} Monaten).</p></section>
   );
   const rows = [...(c.rows ?? [])].map((r) => ({ ...r, name: SUBTOPICS.find((x: { id: string; short: string }) => x.id === r.key)?.short ?? r.name })).sort((a, b) => b.k - a.k);
   return (
     <section>
-      <h2 className="text-[22px] font-semibold">{c.region} im Vergleich</h2>
+      <h2 className="text-[22px] font-semibold max-sm:text-[18px]">{c.region} im Vergleich</h2>
       <p className="mb-1 mt-1 text-[14px] text-slate-500">Grau: üblich bei {n(c.group!.n)} {c.group!.label}. Punkt: {c.region}, Linie: Unsicherheit.</p>
       <Hint>Anteil an allen {n(c.n)} Sachvorgängen des eigenen Rats in den letzten 12 Monaten. „Üblich“ ist die mittlere Hälfte der Gruppe; eingeordnet wird erst ab {n(c.rule.minTopic)} Vorgängen und nur, wenn die Unsicherheit klar außerhalb liegt.</Hint>
       <ol className="m-0 list-none border-t border-slate-200 p-0">
@@ -226,6 +230,16 @@ function OrtImVergleich({ c, theme, onPick }: { c: Compare; theme: string; onPic
   );
 }
 
+/** Handy: „Folgen“ (Neues per Mail) im Filterblatt statt als eigene Zeile über der Karte */
+function AtlasExtra({ before }: { before: () => void }) {
+  return (
+    <div className="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
+      <span className="text-[14px] text-slate-700">Neues per Mail</span>
+      <Folgen showText before={() => { before(); setFiltersOpen(false); }} hint="Dieser Auswahl folgen" />
+    </div>
+  );
+}
+
 /**
  * theme: eines der 10 Themen oder "" (alle); sub: Unterthema oder "".
  * term: Suchbegriff aus einem geteilten Link (?q=), wird beim Öffnen einmal in die Suche übernommen.
@@ -236,6 +250,7 @@ const SHOW_FACTS = false;
 
 
 export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit }: { theme: string; sub: string; zeit?: string; term: string | null; onTheme: (id: string) => void; onSub: (id: string) => void; onZeit: (z: string) => void }) {
+  const phone = usePhone();
   const { query: baseQuery, search } = useAnalyticsQuery();
   /* Zeitraum der Seite (Monate zurück ab heute) ersetzt den der Suche nur, wenn die Suche selbst keinen hat (wie in den Signalen) */
   const query = (() => { const q = new URLSearchParams(baseQuery); if (zeit && !q.get("from")) { const d = new Date(); d.setMonth(d.getMonth() - Number(zeit)); q.set("from", d.toISOString().slice(0, 10)); } return q.toString(); })();
@@ -294,7 +309,8 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   }, [res]);
   const toggle = (key: string) => setOpen(open === key ? "" : key);
   const listBase = `/api/x?list=1${sel ? "&" + sel : ""}`;
-  const drill = (by: string, r: Row, label = r.name) => <RadarDrill base={listBase} query={listQuery} by={by} value={r.key} label={label} />;
+  /* Handy: die Vorgänge hinter einer Zeile als Walze (10 neueste, „Alle … zeigen“ am Ende) */
+  const drill = (by: string, r: Row, label = r.name) => <RadarDrill base={listBase} query={listQuery} by={by} value={r.key} label={label} limit={phone ? 3 : undefined} onAll={phone ? () => showAll(by, r.key, label) : undefined} />;
   const opened = (by: string) => (open.startsWith(by + ":") ? open.slice(by.length + 1) : "");
   const [jump, setJump] = useState(0);
   /* „Alle … zeigen“ ist ein Schritt im Verlauf (#alle): Zurück schließt die Liste, statt die Seite zu verlassen */
@@ -409,12 +425,12 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
             const on = x.id === sub;
             return <li key={x.id} className="sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => onSub(on ? "" : x.id)}
               className={`flex h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:auto] max-sm:[overflow-wrap:anywhere] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
-              <SubtopicIcon id={x.id} size={20} className={on ? "text-white" : "text-slate-500"} />
-              <span className="line-clamp-2">{x.short}</span></button></li>;
+              <SubtopicIcon id={x.id} size={20} className={`max-sm:h-4 max-sm:w-4 ${on ? "text-white" : "text-slate-500"}`} />
+              <span className="line-clamp-2"><span className="max-sm:hidden">{x.short}</span><span className="sm:hidden">{kurz(x.short)}</span></span></button></li>;
           })}
         </ul>
       </nav>}
-      <div className="mt-2 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
+      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra before={() => { if (theme) search.setThema(theme); }} />} /></div>
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
       {res && (
@@ -434,14 +450,14 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
               {place && cmp ? <Befund tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest} <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} /></Befund>
                 : <Kennzahlen week={week} scope={[what || "Alle Themen", res.selection.q ? `„${prettyTerm(res.selection.q)}“` : "", place || ""].filter(Boolean).join(" · ")} period={zeitText(zeit)} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }]}>
                   {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
-                  <ZeitPills value={zeit} onPick={onZeit} />
+                  <span className="max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></span>
                   <MeinOrt current={areaAgs && place ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} />
-                  <Folgen before={() => { if (theme) search.setThema(theme); }} hint="Neue Vorgänge zu Thema, Ort und Suche per Mail (Unterthemen werden nicht gespeichert)" />
+                  <span className="max-sm:hidden"><Folgen before={() => { if (theme) search.setThema(theme); }} hint="Neue Vorgänge zu Thema, Ort und Suche per Mail (Unterthemen werden nicht gespeichert)" /></span>
                 </Kennzahlen>}
 
-              {place && cmp && <div className="mt-2"><ZeitPills value={zeit} onPick={onZeit} /></div>}
+              {place && cmp && <div className="mt-2 max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></div>}
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
-              <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
+              <div className="mt-4 max-sm:mt-2 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-4 lg:grid-cols-12">
                 <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
                   {allRegions.length > 0 && <AtlasMap onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
                 </div>
@@ -452,34 +468,38 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                   {sub ? <>
                     {/* Mit Unterthema: rechts sein Inhalt statt der Liste aller Unterthemen (zum Wechseln dienen die Pillen oben) */}
                     <section ref={subRef} className={`scroll-mt-4 ${res.compare ? "mt-8" : ""}`}>
-                      <h2 className="flex items-center gap-2 text-[22px] font-semibold"><ThemeIcon theme={theme} size={24} className="shrink-0 text-teal-700" />{subName}</h2>
+                      <h2 className="flex items-center gap-2 text-[22px] font-semibold max-sm:text-[18px]"><ThemeIcon theme={theme} size={24} className="shrink-0 text-teal-700" />{subName}</h2>
                       <p className="mb-3 mt-1 text-[14px] text-slate-500">{subCount !== undefined ? `${n(subCount)} ${plural(subCount, "Vorgang", "Vorgänge")}${themeTotal ? `, ${pct(Math.round((1000 * subCount) / themeTotal) / 10)} von ${themeName}` : ""}. ` : ""}Die neuesten:</p>
                       <RadarDrill base={partBase} query={listQuery} by="sub" value={sub} label={subName} limit={3} onAll={() => showAll("sub", sub, [themeName, subName].join(" › "))} />
                       <p className="mt-3 text-[14px] text-slate-500">Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(subName)}`} className="font-medium text-teal-700 hover:underline">„{subName}“ in den Trends →</Link></p>
                     </section>
-                  </> : <section className={res.compare ? "mt-8" : ""}>
-                    <h2 className="flex items-center gap-2 text-[22px] font-semibold">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? `Unterthemen von ${themeName}` : "Themen"}</h2>
+                  </> : <section className={res.compare ? "mt-8 max-sm:mt-5" : ""}>
+                    <h2 className="flex items-center gap-2 text-[22px] font-semibold max-sm:text-[18px]">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? <>Unterthemen<span className="max-sm:hidden"> von {themeName}</span></> : "Themen"}</h2>
                     <PartList rows={parts} icons={!theme} open={openPart} dir={dirOf} onHover={setHoverKey} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
-                      label={(r) => `${n(r.count)}${r.share !== null && theme && !sub ? ` · ${pct(r.share)}` : ""}`}
+                      label={(r) => (phone ? `${n(r.count)} ${plural(r.count, "Vorgang", "Vorgänge")}` : `${n(r.count)}${r.share !== null && theme && !sub ? ` · ${pct(r.share)}` : ""}`)}
                       drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={3}
                         onAll={() => showAll(partBy, r.key, [themeName, r.name].filter(Boolean).join(" › "))}
                         footer={isRest(r) ? null : <button type="button" onClick={() => (theme ? onSub(sub === r.key ? "" : r.key) : onTheme(r.key))} className="mt-2 block text-[14px] font-medium text-teal-700 hover:underline">
-                          {theme && sub === r.key ? "Eingrenzung aufheben" : `Auf „${r.name}“ eingrenzen →`}</button>} />} />
+                          {theme && sub === r.key ? "Eingrenzung aufheben" : <>Auf „{r.name}“ eingrenzen<span className="max-sm:hidden"> →</span></>}</button>} />} />
                   </section>}
 
-                  {rankRegions && <section className="mt-8">
-                    <h2 className="text-[22px] font-semibold">Wo {sub ? `„${subName}“` : `„${themeName}“`} viel Raum hat</h2>
-                    <Hint>Anteil an allen Sachvorgängen des Gebiets (gleiche Filter), nur Gebiete mit mindestens {MIN_BASE} Sachvorgängen. Klick zeigt die Vorgänge.</Hint>
+                  {rankRegions && <section className="mt-8 max-sm:mt-5">
+                    <h2 className="text-[22px] font-semibold max-sm:text-[18px]">Wo <span className="max-sm:hidden">{sub ? `„${subName}“` : `„${themeName}“`} </span>viel Raum hat</h2>
+                    <div className="max-sm:hidden"><Hint>Anteil an allen Sachvorgängen des Gebiets (gleiche Filter), nur Gebiete mit mindestens {MIN_BASE} Sachvorgängen. Klick zeigt die Vorgänge.</Hint></div>
                     {regions.length ? <>
                       <Bars rows={regions.slice(0, moreRegions ? 15 : 5)} mode="expand" open={opened("region")} onOpen={(k) => toggle(`region:${k}`)} drill={(r) => drill("region", r)} value={(r) => r.share ?? 0}
-                        label={(r) => `${pct(r.share)} · ${n(r.count)}`} />
-                      {regions.length > 5 && <button type="button" onClick={() => setMoreRegions(!moreRegions)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{moreRegions ? "Weniger Orte" : "Weitere Orte →"}</button>}
+                        label={(r) => (phone ? `${n(r.count)} ${plural(r.count, "Vorgang", "Vorgänge")}` : `${pct(r.share)} · ${n(r.count)}`)} />
+                      {regions.length > 5 && <button type="button" aria-expanded={moreRegions} onClick={() => setMoreRegions(!moreRegions)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline max-sm:mt-3 max-sm:flex max-sm:w-full max-sm:items-center max-sm:gap-3 max-sm:rounded-xl max-sm:border max-sm:border-teal-600/30 max-sm:px-3 max-sm:py-2 max-sm:text-teal-800 max-sm:no-underline">
+                        <span aria-hidden="true" className="grid h-8 w-8 flex-none place-items-center rounded-full bg-teal-50 text-teal-700 sm:hidden"><MapPin size={18} strokeWidth={1.6} /></span>
+                        <span className="max-sm:flex-1 max-sm:text-left">{moreRegions ? "Weniger Orte" : <>Weitere Orte<span className="max-sm:hidden"> →</span></>}</span>
+                        <span aria-hidden="true" className="flex-none text-teal-700 sm:hidden">{moreRegions ? <ChevronUp size={18} strokeWidth={1.6} /> : <ChevronDown size={18} strokeWidth={1.6} />}</span>
+                      </button>}
                     </> : <p className="text-[14px] text-slate-500">Kein Gebiet hat genug Sachvorgänge für einen Vergleich.</p>}
                   </section>}
                   {!(theme || sub) && allRegions.length > 1 && <p className="mt-8 text-[14px] text-slate-500">Thema wählen, um zu sehen, wo es viel Raum hat.</p>}
-                  {sub && together.length > 0 && <section className="mt-8">
-                    <h2 className="text-[22px] font-semibold">Oft zusammen mit</h2>
-                    <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Vorgänge zu „{subName}“, die auch dieses Unterthema haben. Klick wechselt dorthin.</p>
+                  {sub && together.length > 0 && <section className="mt-8 max-sm:mt-5">
+                    <h2 className="text-[22px] font-semibold max-sm:text-[18px]">Oft zusammen mit</h2>
+                    <p className="mb-3 mt-1 text-[14px] text-slate-500 max-sm:hidden">Anteil der Vorgänge zu „{subName}“, die auch dieses Unterthema haben. Klick wechselt dorthin.</p>
                     <Bars rows={together} mode="select" onOpen={(k) => onSub(k)} value={(r) => r.count} label={(r) => pct(r.share)} />
                   </section>}
                 </div>
@@ -489,7 +509,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
               <section ref={bottomRef} className="scroll-mt-4">
                 {all && <div className="mt-10">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                    <h2 className="text-[22px] font-semibold">Vorgänge: {all.label}</h2>
+                    <h2 className="text-[22px] font-semibold max-sm:text-[18px]">Vorgänge: {all.label}</h2>
                     <button type="button" onClick={closeAll} className="text-[14px] font-medium text-teal-700 hover:underline">Schließen</button>
                   </div>
                   <div className="mt-3"><RadarDrill base={partBase} query={listQuery} by={all.by} value={all.value} label={all.label} /></div>

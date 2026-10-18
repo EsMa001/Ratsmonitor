@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect,useRef,useState} from 'react';
-import {IconBookmark,IconCalendar,IconHeart,IconUser} from './icons';
+import {IconBell,IconBookmark,IconCalendar,IconHeart,IconUser} from './icons';
 import {useDarkMode} from '../lib/useDarkMode';
 import {useSavedArticles} from '../lib/savedArticles';
 import {useAccount} from '../state/account';
@@ -41,9 +41,12 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   <button type="button" title={dark?'Heller Modus':'Dunkler Modus'} aria-label={dark?'Heller Modus':'Dunkler Modus'} aria-pressed={dark} onClick={()=>setDark(!dark)} className={`${cls(false)} max-sm:hidden`}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{dark?<><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>:<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>}</svg>
   </button>
-  <Link href="/konto/suchen" title="Gespeicherte Suchen" aria-label={`Gespeicherte Suchen (${saved.length})`} className={`${cls(currentPage==='suchen')} max-sm:hidden`}>
+  <Link href="/konto/suchen" title="Meine Suchen" aria-label={`Meine Suchen (${saved.length})`} className={`${cls(currentPage==='suchen')} max-sm:hidden`}>
    <IconHeart size={19} filled={currentPage==='suchen'}/>
    {saved.length>0&&<span className={badge}>{saved.length}</span>}
+  </Link>
+  <Link href="/konto/benachrichtigungen" title="Benachrichtigungen" aria-label="Benachrichtigungen" className={`${cls(currentPage==='benachrichtigungen')} max-sm:hidden`}>
+   <IconBell size={19} filled={currentPage==='benachrichtigungen'}/>
   </Link>
   <Link href="/konto/kalender" title="Kalender" aria-label="Kalender" className={`${cls(currentPage==='kalender')} max-sm:hidden`}>
    <IconCalendar size={19}/>
@@ -54,7 +57,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   </Link>
   <div ref={ref} className="relative">
    <button type="button" title="Konto" aria-label="Konto" aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(o=>!o)} className={cls(currentPage==='profil'||open)}>
-    <IconUser size={19}/>
+    <IconUser size={19} className="max-sm:!h-[23px] max-sm:!w-[23px]"/>
    </button>
    {open&&<div role="menu" onKeyDown={e=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}}} className="absolute right-0 top-[calc(100%+13px)] z-[1100] w-[220px] max-sm:w-[230px] sm:top-[calc(100%+17px)] rounded-2xl border border-slate-200 bg-white p-1.5 shadow-pop">
     {loggedIn&&<p className="m-0 truncate px-3 pb-1 pt-2 text-[12px] text-slate-500" title={me.user?.email}>{me.user?.email}</p>}

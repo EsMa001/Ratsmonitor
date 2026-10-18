@@ -13,6 +13,7 @@ import { Fehler, Leer } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
+import { kurz } from "../../components/ChipRail";
 import { WheelPicker } from "../../components/WheelPicker";
 import type { Article } from "../../types";
 import { MethodikNote } from "./Methodik";
@@ -261,8 +262,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             const on = a.key === art;
             return <li key={a.key || "alle"} className="sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => pick({ art: on || !a.key ? "" : a.key })}
               className={`flex h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:auto] max-sm:[overflow-wrap:anywhere] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
-              {a.key ? <ArtIcon value={a.key} size={20} className={on ? "text-white" : "text-slate-500"} /> : <ThemeIcon theme="alle" size={20} className={on ? "text-white" : "text-slate-500"} />}
-              <span className="line-clamp-2">{a.key ? artShort(a.name) : "Alle"}</span></button></li>;
+              {a.key ? <ArtIcon value={a.key} size={20} className={`max-sm:h-4 max-sm:w-4 ${on ? "text-white" : "text-slate-500"}`} /> : <ThemeIcon theme="alle" size={20} className={on ? "text-white" : "text-slate-500"} />}
+              <span className="line-clamp-2">{a.key ? <><span className="max-sm:hidden">{artShort(a.name)}</span><span className="sm:hidden">{kurz(artShort(a.name))}</span></> : "Alle"}</span></button></li>;
           })}
         </ul>
       </nav>}
