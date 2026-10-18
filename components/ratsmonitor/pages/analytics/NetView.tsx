@@ -87,17 +87,13 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
     return () => ro.disconnect();
   }, []);
 
-  /* all: ganzes Netz zeigen. Sonst am Handy: lesbarer Maßstab, am Anfang des Flusses (Einstieg links); am Desktop das ganze Netz */
-  const fit = useCallback((w = size.w, h = size.h, all = false) => {
+  /* Ganzes Netz zeigen */
+  const fit = useCallback((w = size.w, h = size.h) => {
     const list = sim.current;
     if (!list.length) return;
     const { x0, x1, y0, y1 } = bounds();
     const k = Math.min(1.3, Math.min(w / (x1 - x0), h / (y1 - y0)));
     fitK.current = k;
-    if (w < 520 && !all) {
-      const k0 = Math.min(1, Math.max(k, 0.8));
-      return setView({ k: k0, x: -w / 2 - x0 * k0, y: -((y0 + y1) / 2) * k0 });
-    }
     setView({ k, x: -((x0 + x1) / 2) * k, y: -((y0 + y1) / 2) * k });
   }, [size.w, size.h, bounds]);
 
@@ -107,16 +103,14 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
     // eslint-disable-next-line react-hooks/immutability
     sim.current = nodes.map((n, i) => ({ ...n, r: 12 + 24 * Math.sqrt((n.in + n.out) / max), x: (n.stage - 0.5) * span, y: ((i % 6) - 2.5) * 110 + (Math.random() - 0.5) * 30, vx: 0, vy: 0, fixed: false }));
     layout(sim.current, edges, span, 460);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fit();
     /* Neue Daten: Startlage mit Zufall und Messung, einmal je Daten gerechnet; das Abbild folgt sofort */
     draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges]);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => fit(), [size.w, size.h, fit]);
   useEffect(() => {
-    if (zoomRef) zoomRef.current = (f) => (f === "fit" ? fit(size.w, size.h, true) : put((v) => ({ k: v.k * f, x: v.x * f, y: v.y * f })));
+    if (zoomRef) zoomRef.current = (f) => (f === "fit" ? fit() : put((v) => ({ k: v.k * f, x: v.x * f, y: v.y * f })));
     return () => { if (zoomRef) zoomRef.current = null; };
   }, [zoomRef, fit, put, size.w, size.h]);
 
@@ -134,14 +128,25 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const maxN = useMemo(() => Math.max(1, ...edges.map((e) => e.n)), [edges]);
   const near = useMemo(() => { const m = new Set<string>(); const f = hover || selected; if (f) { m.add(f); for (const e of edges) { if (e.a === f) m.add(e.b); if (e.b === f) m.add(e.a); } } return m; }, [edges, hover, selected]);
   const focus = hover || selected;
-  /* Maßstab, bei dem das ganze Netz zu sehen ist (für die Zahl der gezeigten Namen) */
-  const fitNow = useMemo(() => {
-    if (!shown.length) return 1;
-    const x0 = Math.min(...shown.map((n) => n.x - n.r - 80)), x1 = Math.max(...shown.map((n) => n.x + n.r + 80)), y0 = Math.min(...shown.map((n) => n.y - n.r - 50)), y1 = Math.max(...shown.map((n) => n.y + n.r + 50));
-    return Math.min(1.3, Math.min(size.w / (x1 - x0), size.h / (y1 - y0))) || 1;
-  }, [shown, size.w, size.h]);
   /* Rangfolge nach Durchsatz: die wichtigsten Namen zuerst */
   const rank = useMemo(() => new Map([...nodes].sort((a, b) => b.in + b.out - (a.in + a.out)).map((n, i) => [n.id, i] as const)), [nodes]);
+  /* Handy: welche Namen Platz haben (Rangfolge: gewählte und ihre Nachbarn, dann nach Durchsatz; Namen außerhalb des Bildes entfallen) */
+  const labelSet = useMemo(() => {
+    const set = new Set<string>();
+    if (!phone) return set;
+    const boxes: { x0: number; x1: number; y0: number; y1: number }[] = [];
+    const prio = (n: P) => (n.id === selected ? -2 : focus && near.has(n.id) ? -1 : rank.get(n.id) ?? 99);
+    for (const n of [...shown].sort((a, b) => prio(a) - prio(b))) {
+      const lines = wrap(n.name, 17), w = Math.max(...lines.map((l) => l.length)) * 6.8 + 8, h = lines.length * 15 + 2;
+      const cx = size.w / 2 + view.x + n.x * view.k, y0 = size.h / 2 + view.y + n.y * view.k + Math.max(n.r * view.k, 7) + 3;
+      const box = { x0: cx - w / 2, x1: cx + w / 2, y0, y1: y0 + h };
+      if (box.x1 < 0 || box.x0 > size.w || box.y1 < 0 || box.y0 > size.h) continue;
+      if (prio(n) >= 0 && (box.x0 < 2 || box.x1 > size.w - 2 || box.y1 > size.h - 2)) continue;
+      if (prio(n) >= 0 && boxes.some((o) => box.x0 < o.x1 + 3 && o.x0 < box.x1 + 3 && box.y0 < o.y1 + 2 && o.y0 < box.y1 + 2)) continue;
+      boxes.push(box); set.add(n.id);
+    }
+    return set;
+  }, [shown, view, size.w, size.h, selected, focus, near, rank, phone]);
 
   /* Gebogene Kante von Rand zu Rand, Pfeilspitze am Ziel */
   const path = (a: P, b: P, bend: number) => {
@@ -214,14 +219,13 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
           })}
           {shown.map((n) => {
             const k = ROLE[n.role], on = !focus || near.has(n.id), sel = n.id === selected, lines = wrap(n.name, 17);
-            /* Handy: Namen in fester Bildschirmgröße (nicht mit dem Zoom kleiner); bei wenig Zoom nur die wichtigsten, mehr beim Hineinzoomen */
-            const zoomIn = view.k / fitNow, allowed = !phone ? 999 : zoomIn < 1.25 ? 6 : zoomIn < 1.8 ? 11 : 999;
-            const label = !phone || (rank.get(n.id) ?? 99) < allowed || (!!focus && near.has(n.id)) || sel;
+            /* Handy: Namen in fester Bildschirmgröße; gezeigt werden so viele, wie sich nicht überlappen (wichtige zuerst, beim Zoomen mehr) */
+            const label = !phone || labelSet.has(n.id);
             const fs = phone ? 12.5 / view.k : 12, lh = phone ? 15 / view.k : 14, off = phone ? 14 / view.k : 16, sw = phone ? 3 / view.k : 4;
             return (
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.2} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
-                <circle r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth="2" />
+                <circle r={phone ? Math.max(n.r, 7 / view.k) : n.r} fill={k.fill} stroke={k.stroke} strokeWidth="2" />
                 {label && <text textAnchor="middle" fontSize={fs} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth={sw} paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>
                   {lines.map((l, i) => <tspan key={i} x="0" y={n.r + off + i * lh}>{l}</tspan>)}
                 </text>}
