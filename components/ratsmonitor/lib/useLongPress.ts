@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-/** Langer Druck (Handy): nach 0,5 s ohne Wischen ruft cb mit der Fingerposition; danach zählt das Loslassen nicht als Tipp. */
+/** Langer Druck (Handy) oder Rechtsklick (Desktop): nach 0,5 s ohne Wischen ruft cb mit der Fingerposition; danach zählt das Loslassen nicht als Tipp. */
 export function useLongPress(cb: (pos: { x: number; y: number }) => void, ms = 500) {
   const t = useRef(0);
   const start = useRef<{ x: number; y: number } | null>(null);
@@ -24,7 +24,8 @@ export function useLongPress(cb: (pos: { x: number; y: number }) => void, ms = 5
       onTouchEnd: stop,
       onTouchCancel: stop,
       /* iOS öffnet bei langem Druck auf einen Link eine eigene Vorschau: hier ersetzt durch unser Menü */
-      onContextMenu: (e: React.MouseEvent) => { if (fired.current || start.current) e.preventDefault(); },
+      /* Maus (Desktop): Rechtsklick öffnet dasselbe Menü an der Mauszeiger-Position */
+      onContextMenu: (e: React.MouseEvent) => { if (fired.current || start.current) { e.preventDefault(); return; } e.preventDefault(); cb({ x: e.clientX, y: e.clientY }); },
     },
   };
 }

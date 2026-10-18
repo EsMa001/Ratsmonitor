@@ -1,3 +1,4 @@
+import { Segmented } from "./Segmented";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { IS_DEV, PLAN_MAX, priceLabel, setTier, TIER_LABEL, UPGRADE_TEXT, useTier, type Tier } from "../lib/tier";
@@ -55,13 +56,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
   return (
     <section id="tarif" aria-labelledby="tarif-title" className={publicPage ? "" : "mt-6 scroll-mt-20"}>
       {!publicPage && <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Stufe</h2>}
-      <div role="tablist" aria-label="Stufe wählen" className="mt-3 flex border-b border-slate-200 sm:hidden">
-        {PLANS.map((p) => (
-          <button key={p.tier} type="button" role="tab" aria-selected={pick === p.tier} onClick={() => { setPick(p.tier); goTo(p.tier, true); }} className={`-mb-px flex-1 border-b-2 py-2.5 text-[14px] ${pick === p.tier ? "border-teal-600 font-semibold text-teal-700" : "border-transparent text-slate-500"}`}>
-            {p.tier === "guest" ? "Gast" : TIER_LABEL[p.tier]}
-          </button>
-        ))}
-      </div>
+      <div className="mt-3 sm:hidden"><Segmented label="Stufe wählen" fill options={PLANS.map((p) => [p.tier, p.tier === "guest" ? "Gast" : TIER_LABEL[p.tier]] as [typeof p.tier, string])} value={pick} onPick={(t) => { setPick(t); goTo(t, true); }} /></div>
       <div ref={track} onScroll={onScroll} className="mt-3 grid gap-x-8 gap-y-6 max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:gap-4 max-sm:overflow-x-auto max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden sm:grid-cols-2 lg:grid-cols-4">
         {PLANS.map((plan) => {
           const current = !publicPage && plan.tier === tier;

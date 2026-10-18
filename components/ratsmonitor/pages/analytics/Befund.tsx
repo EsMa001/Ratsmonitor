@@ -22,7 +22,7 @@ export function Befund({ children, tight = false }: { children: ReactNode; tight
   return (
     <div className={tight ? "mt-4" : "mt-6"}>
       {/* Eine Größe für alle plenara.X-Seiten (wie Trends und Fakten) */}
-      <p className={`m-0 text-[18px] font-semibold leading-snug text-slate-900 ${tight ? "" : "max-w-[900px]"}`}>{children}</p>
+      <p className={`m-0 text-[18px] max-sm:text-[16px] font-semibold leading-snug text-slate-900 ${tight ? "" : "max-w-[900px]"}`}>{children}</p>
       <AnalyseLeiste />
     </div>
   );

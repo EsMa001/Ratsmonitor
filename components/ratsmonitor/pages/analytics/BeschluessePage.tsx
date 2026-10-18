@@ -32,7 +32,7 @@ const n = (v: number) => v.toLocaleString("de-DE");
 /** Offener Abschnitt mit Überschrift wie auf den übrigen plenara.X-Seiten (Wichtiges sichtbar, Nebensachen in Fold) */
 function Abschnitt({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-12">
+    <section className="mt-12 max-sm:mt-8">
       <h2 className="text-[22px] font-semibold">{title}</h2>
       {children}
     </section>
@@ -86,8 +86,8 @@ export function BeschluessePage() {
           {res.totals.all === 0 ? <Leer>Keine Vorgänge für diese Auswahl.</Leer> : (
             <>
               <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} werden ${pct(res.rates.approval)} der ${n(res.totals.decided)} Entscheidungen beschlossen, ${pct(res.rates.postponement)} vertagt und ${pct(res.rates.rejection)} abgelehnt.${res.duration.median !== null ? ` Im Median dauert es ${res.duration.median} Tage bis zur Entscheidung.` : ""}`}</Befund>
-              <p className="mt-2 max-w-[760px] text-[14px] text-slate-500">Grundlage: {n(res.totals.decided)} Vorgänge mit bekannter Entscheidung, das sind {n(res.totals.known)} von {n(res.totals.all)} Einträgen mit bekanntem Status{res.totals.knownShare !== null ? ` (${pct(res.totals.knownShare)} aller Einträge)` : ""}. Die übrigen Einträge zeigen keinen Status.</p>
-              <Kennzahlen rest items={([
+              <p className="mt-2 max-w-[760px] text-[14px] text-slate-500 max-sm:line-clamp-2">Grundlage: {n(res.totals.decided)} Vorgänge mit bekannter Entscheidung, das sind {n(res.totals.known)} von {n(res.totals.all)} Einträgen mit bekanntem Status{res.totals.knownShare !== null ? ` (${pct(res.totals.knownShare)} aller Einträge)` : ""}. Die übrigen Einträge zeigen keinen Status.</p>
+              <Kennzahlen rest={!phone} items={([
                   ["Beschlussquote", pct(res.rates.approval)],
                   ["Vertagt", pct(res.rates.postponement)],
                   ["Abgelehnt", pct(res.rates.rejection)],
@@ -95,7 +95,7 @@ export function BeschluessePage() {
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
 
 
-              <Reveal><section className="mt-12">
+              <Reveal><section className="mt-12 max-sm:mt-8">
                 <h2 className="text-[22px] font-semibold">Entscheidungen im Zeitverlauf</h2>
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Beschlossen, vertagt und abgelehnt je Monat.</p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
@@ -135,7 +135,7 @@ export function BeschluessePage() {
                 )}
               </div>
               </Abschnitt>
-              <div className="mt-12 border-t border-slate-200">
+              <div className="mt-12 max-sm:mt-8 border-t border-slate-200">
               <Fold title="Abstimmung und Änderungen">
               <div className="pb-6 pt-2">
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Aus dem Ergebnistext der Beschlüsse gelesen; das nennen nur manche Ratsinformationssysteme, die Werte gelten nur für Vorgänge mit Angabe. Grundlage: alle {n(res.votes.of)} Vorgänge mit Entscheidung.</p>

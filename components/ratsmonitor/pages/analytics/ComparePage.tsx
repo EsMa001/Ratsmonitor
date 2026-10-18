@@ -1,3 +1,4 @@
+import { usePhone } from "../../lib/usePhone";
 import { prettyTerm } from "../../lib/terms";
 import { Segmented } from "./Kennzahlen";
 import { XKopf, XWeiter } from "./XKopf";
@@ -60,6 +61,7 @@ export function ComparePage() {
   const [ort2, setOrt2] = useState<PlaceEntry | null>(() => asPlace(von === ORT.koeln.ags ? ORT.dortmund : von ? ORT.koeln : ORT.dortmund));
   /* Name des mitgebrachten Orts, sobald die Gebiete geladen sind */
   if (ort1 && !ort1.name && geo?.info(ort1.ags)) setOrt1(asPlace({ ags: ort1.ags, name: geo.info(ort1.ags)!.name }));
+  const phone = usePhone();
   const [thema, setThema] = useState("");
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
@@ -134,7 +136,7 @@ export function ComparePage() {
     </ul>
   );
   /* Beschriftung, zwei Orte, Unterschied */
-  const rowCls = "grid grid-cols-2 gap-x-4 gap-y-1 border-b border-slate-200 py-3 md:grid-cols-[minmax(130px,1.1fr)_repeat(2,minmax(0,1fr))_minmax(120px,.8fr)] md:gap-y-0";
+  const rowCls = "grid grid-cols-2 gap-x-4 gap-y-1 border-b border-slate-200 py-3 max-sm:py-2 max-sm:gap-y-0 md:grid-cols-[minmax(130px,1.1fr)_repeat(2,minmax(0,1fr))_minmax(120px,.8fr)] md:gap-y-0";
   /* Unterschied zweier Zahlen: wer mehr hat und um welchen Faktor */
   const diff = (a: number | null, b: number | null) => {
     if (!a || !b) return "–";
@@ -151,8 +153,8 @@ export function ComparePage() {
           <PlaceField label="Ort 1" color={PLACE_COLORS[0]} value={ort1} onChange={setOrt1} onEnter={() => run()} />
           <PlaceField label="Ort 2" color={PLACE_COLORS[1]} value={ort2} onChange={setOrt2} onEnter={() => run()} />
           <div className="min-w-0 max-sm:col-span-2">
-            <label htmlFor="vergleich-thema" className="mb-1.5 max-sm:mb-1 block text-[14px] font-medium text-slate-700">Thema <span className="font-normal text-slate-500">(optional)</span></label>
-            <input id="vergleich-thema" type="search" value={thema} onChange={(e) => setThema(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder="beliebiger Begriff" className={FIELD} />
+            <label htmlFor="vergleich-thema" className="mb-1.5 max-sm:sr-only block text-[14px] font-medium text-slate-700">Thema <span className="font-normal text-slate-500">(optional)</span></label>
+            <input id="vergleich-thema" type="search" value={thema} onChange={(e) => setThema(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder={phone ? "Thema (optional)" : "beliebiger Begriff"} className={FIELD} />
           </div>
           <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-full bg-teal-700 text-white max-sm:col-span-2 max-sm:h-11 max-sm:w-full max-sm:justify-self-stretch max-sm:gap-2 max-sm:rounded-xl transition-opacity hover:opacity-85 disabled:opacity-60 md:justify-self-auto">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" /></svg>}<span className="text-[16px] font-medium sm:hidden">Vergleichen</span></button>
         </div>
@@ -170,7 +172,7 @@ export function ComparePage() {
             return <Befund>{names[hi ? 0 : 1]} berät je 1.000 Einwohner {r <= 1.1 ? "etwa so viel wie" : `${r.toLocaleString("de-DE")}-mal so viel wie`} {names[hi ? 1 : 0]}.</Befund>;
           })()}
           <Reveal>
-          <section className="mt-10">
+          <section className="mt-10 max-sm:mt-5">
             <h2 className="text-[22px] font-semibold">Überblick</h2>
             <div className="mt-3"><div className="border-t border-slate-200 text-[16px]">
               <div className={rowCls + " items-end"}>

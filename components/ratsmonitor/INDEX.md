@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (541 Zeilen, ⚠14)
+- app/ratsmonitor-info.css (546 Zeilen, ⚠14)
 - app/ratsmonitor.css (253 Zeilen, ⚠17)
 
 admin-access admin.css:6
@@ -228,8 +228,8 @@ admin-todo-wait-filter admin.css:262
 admin-todo-waiting admin.css:296
 admin-todo-wip admin.css:275
 admin-zoom admin.css:70
-animate-pulse ratsmonitor-info.css:539
-animate-spin ratsmonitor-info.css:539
+animate-pulse ratsmonitor-info.css:544
+animate-spin ratsmonitor-info.css:544
 back-btn ratsmonitor-info.css:431
 back-btn ratsmonitor.css:20
 bg-slate-900 ratsmonitor.css:172
@@ -488,7 +488,7 @@ rm-sbar ratsmonitor.css:241
 rm-search ratsmonitor-info.css:321
 rm-search ratsmonitor.css:232
 rm-solid ratsmonitor.css:87
-rm-spinner ratsmonitor-info.css:539
+rm-spinner ratsmonitor-info.css:544
 rm-spinner ratsmonitor.css:110
 rm-stage ratsmonitor-info.css:484
 rm-tabbar ratsmonitor.css:218
@@ -660,6 +660,7 @@ topic design-styles.css:140
 - CalendarFeed.tsx (106): CalendarFeed
 - ChipRail.tsx (35, ⚠1): RailItem, ChipRail, kurz
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
+- ContextMenu.tsx (35): MenuItem, ContextMenu
 - CountDots.tsx (9): CountDots
 - DateBadge.tsx (14): DateBadge
 - DateRangeFilter.tsx (98): DateRangeSelect, DateRangeFields, DateRangeFilter
@@ -673,13 +674,15 @@ topic design-styles.css:140
 - GateDialog.tsx (148): GateFeature, openGate, openLimitGate, GateDialog
 - Header.tsx (112, ⚠1): Header
 - ImportDialog.tsx (151): ImportDialog
-- PlanCards.tsx (154, ⚠1): PlanCards, PlanSummary
+- PhasePicker.tsx (48): PickItem, PhasePicker
+- PlanCards.tsx (149): PlanCards, PlanSummary
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (550, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (74): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
+- Segmented.tsx (66): Segmented
 - ShareButton.tsx (48): shareLink, ShareButton
 - SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
 - TierNotice.tsx (67): AccountLoading, LoginRequired, UsagePill
@@ -768,6 +771,7 @@ topic design-styles.css:140
 - useClient.ts (12): useClient, useHydrated
 - useDarkMode.ts (40): useDarkMode
 - useInstall.ts (27): isStandalone, useInstall
+- useLongPress.ts (32): useLongPress
 - usePhone.ts (19): PHONE_QUERY, isPhone, usePhone
 - useSwipe.ts (43): useSwipe, useVerticalSwipe
 - uuid.ts (12): newId
@@ -801,7 +805,7 @@ topic design-styles.css:140
 - BeschluessePage.tsx (193, ⚠8): BeschluessePage
 - CompareCharts.tsx (63): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (303, ⚠9): ComparePage
+- ComparePage.tsx (305, ⚠9): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (90, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (312, ⚠2): FaktenPage
@@ -813,7 +817,7 @@ topic design-styles.css:140
 - Laden.tsx (27): Laden
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
 - NetView.tsx (179, ⚠2): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (119): NewsradarPage
+- NewsradarPage.tsx (122, ⚠1): NewsradarPage
 - PageBand.tsx (19): PageBand
 - RadarDrill.tsx (130, ⚠1): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS

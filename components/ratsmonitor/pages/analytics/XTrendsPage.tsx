@@ -37,9 +37,9 @@ type Sort = "auf" | "aus" | "ab";
 interface Row extends Trend { kind: TrendKind; key: string }
 
 const SORTS: [Sort, string, string][] = [
-  ["auf", "Aufsteigend", "Deutlich häufiger als im Zeitraum davor; „neu“: davor kaum vorhanden"],
+  ["auf", "Aufsteigend", "Deutlich häufiger als im Zeitraum davor, geordnet nach Aussagekraft (viele Erwähnungen zählen mehr als ein hoher Faktor); „neu“: davor kaum vorhanden"],
   ["aus", "Breitet sich aus", "Meiste Gebiete, die den Begriff im Zeitraum zum ersten Mal beraten haben"],
-  ["ab", "Absteigend", "Deutlich seltener als im Zeitraum davor"],
+  ["ab", "Absteigend", "Deutlich seltener als im Zeitraum davor, geordnet nach Aussagekraft"],
 ];
 const WINDOWS: [string, string][] = [["30", "30 Tage"], ["90", "90 Tage"], ["180", "180 Tage"]];
 const n = (v: number) => v.toLocaleString("de-DE");

@@ -533,6 +533,11 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
   html:has(.pl-top,.ri-head) main#inhalt{min-height:calc(100dvh + 150px)}
 }
 
+/* Desktop: Seiten laden ihren Inhalt nach; ohne Mindesthöhe stünde die Fußzeile erst im Bild und würde dann nach unten springen */
+@media (min-width:640px){
+  main#inhalt{min-height:100dvh}
+}
+
 /* Wer in iOS/Android „Bewegung reduzieren“ gewählt hat: keine Überblendungen und Animationen (Ladeanzeigen laufen weiter) */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
