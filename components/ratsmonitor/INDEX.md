@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (450 Zeilen, ⚠14)
-- app/ratsmonitor.css (229 Zeilen, ⚠16)
+- app/ratsmonitor.css (245 Zeilen, ⚠16)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -470,6 +470,7 @@ rm-glass ratsmonitor.css:80
 rm-glass-pop ratsmonitor.css:87
 rm-gtext ratsmonitor.css:180
 rm-gtopic ratsmonitor.css:181
+rm-legalbar ratsmonitor.css:242
 rm-legend ratsmonitor.css:83
 rm-logo ratsmonitor-info.css:189
 rm-logo ratsmonitor.css:146
@@ -478,6 +479,7 @@ rm-logo__mark ratsmonitor-info.css:193
 rm-logo__mark--p ratsmonitor-info.css:194
 rm-logo__text ratsmonitor-info.css:191
 rm-search ratsmonitor-info.css:321
+rm-search ratsmonitor.css:232
 rm-solid ratsmonitor.css:87
 rm-spinner ratsmonitor.css:110
 rm-tabbar ratsmonitor.css:218
@@ -662,10 +664,11 @@ topic design-styles.css:140
 - Header.tsx (58): Header
 - ImportDialog.tsx (151): ImportDialog
 - PlanCards.tsx (154, ⚠1): PlanCards, PlanSummary
+- PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (550, ⚠1): isSearchInput, focusSearch, SearchBox
-- SearchFilterPanel.tsx (62): SearchFilterPanel
+- SearchFilterPanel.tsx (71): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - ShareButton.tsx (40): ShareButton
 - SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
@@ -749,7 +752,9 @@ topic design-styles.css:140
 - topicCache.ts (43): TopicError, seedTopic, peekTopic, loadTopic, prefetchDetail
 - useClient.ts (12): useClient, useHydrated
 - useDarkMode.ts (40): useDarkMode
+- useInstall.ts (27): isStandalone, useInstall
 - usePhone.ts (19): PHONE_QUERY, isPhone, usePhone
+- useSwipe.ts (43): useSwipe, useVerticalSwipe
 - uuid.ts (12): newId
 
 ### components/ratsmonitor/menu/
@@ -763,7 +768,7 @@ topic design-styles.css:140
 - DetailPage.tsx (171, ⚠12): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (240): LegalPage
-- OverviewPage.tsx (64): OverviewPage
+- OverviewPage.tsx (81): OverviewPage
 - PersonalPage.tsx (26): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
@@ -812,7 +817,7 @@ topic design-styles.css:140
 ### components/ratsmonitor/state/
 - account.tsx (108): AccountProvider, useAccount, useSavedStats
 - data.tsx (36, ⚠1): DataProvider, useData
-- nav.ts (17): View, viewOf, noteRoute, cameFromApp, overviewScroll, useAppNav
+- nav.ts (17, ⚠1): View, viewOf, noteRoute, cameFromApp, overviewScroll, useAppNav
 - search.tsx (665, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi

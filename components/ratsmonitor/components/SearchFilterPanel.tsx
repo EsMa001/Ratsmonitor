@@ -5,6 +5,8 @@ import { useEntitlements } from "../lib/entitlements";
 import { FilterSelect } from "./FilterSelect";
 import { CountDots } from "./CountDots";
 import { IconViewCompact, IconViewFull } from "./icons";
+import { setSheetStage, toggleSheetStage, useSheetStage } from "../lib/sheetStage";
+import { useVerticalSwipe } from "../lib/useSwipe";
 
 /** Zeile über der Trefferliste: Trefferzahl und Stand, Sortierung, Export, Ansicht.
  *  Suche, Filter und aktive Filter liegen auf der Karte (SearchOverlay, FilterPanel, ActiveFilters). */
@@ -15,9 +17,16 @@ export function SearchFilterPanel() {
   const listView = useListView();
   const toast = useToast();
   const { allowFeature } = useEntitlements();
+  /* Handy: der Griff oben zieht das Ergebnisblatt hoch (Liste) oder runter (Karte); Tippen wechselt */
+  const stage = useSheetStage();
+  const drag = useVerticalSwipe((dir) => setSheetStage(dir < 0 ? "voll" : "klein"));
 
   return (
     <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[12px] max-sm:px-4 max-sm:py-1">
+      <button type="button" aria-label={stage === "klein" ? "Trefferliste öffnen" : "Karte zeigen"} aria-expanded={stage === "voll"} onClick={toggleSheetStage} {...drag}
+        className="-mx-4 -mb-1 flex h-7 flex-none items-center justify-center border-0 bg-transparent p-0 sm:hidden">
+        <span className="h-1 w-9 rounded-full bg-slate-300" />
+      </button>
       {/* Trefferzahl, Datenstand und Sortierung; aktive Filter und Filter selbst liegen auf der Karte */}
       <div className="flex items-center gap-1 max-sm:flex-wrap sm:flex-wrap sm:gap-1.5">
           <span aria-live="polite" className="mr-1 whitespace-nowrap max-sm:whitespace-normal max-sm:min-w-0 max-sm:flex-[1_1_0%] text-[14px] text-slate-600 sm:mr-1.5">

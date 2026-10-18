@@ -6,6 +6,9 @@ import { ResultsPanel } from "../components/results/ResultsPanel";
 import { useAccount } from "../state/account";
 import { overviewScroll } from "../state/nav";
 import { useSearch } from "../state/search";
+import { useSheetStage, setSheetStage } from "../lib/sheetStage";
+import { useFiltersOpen } from "../lib/filtersOpen";
+import { isPhone } from "../lib/usePhone";
 
 /**
  * Übersicht mit Karte und Ergebnisliste. Bleibt beim Wechsel auf Detail- und Kontoseiten
@@ -13,6 +16,18 @@ import { useSearch } from "../state/search";
  */
 export function OverviewPage({ active }: { active: boolean }) {
   const wasActive = useRef(active);
+  const stage = useSheetStage();
+  const mainRef = useRef<HTMLElement>(null);
+  /* Handy: die Filter öffnen sich auf der Karte; dafür braucht sie ihre volle Höhe */
+  const filtersOpen = useFiltersOpen();
+  useEffect(() => { if (filtersOpen && isPhone()) setSheetStage("klein"); }, [filtersOpen]);
+  /* Handy: wer ins Suchfeld tippt, braucht die Karte für Vorschläge und Ergebnis */
+  useEffect(() => {
+    if (!active) return;
+    const on = (e: FocusEvent) => { if (isPhone() && e.target instanceof HTMLInputElement && e.target.closest(".rm-flat>section")) setSheetStage("klein"); };
+    document.addEventListener("focusin", on);
+    return () => document.removeEventListener("focusin", on);
+  }, [active]);
   const search = useSearch();
   const { saved, ready } = useAccount();
   /* Links auf gespeicherte Suchen (E-Mails): /?suche=<id> öffnet sie mit allen Einstellungen. App.tsx leitet / nach /suche um;
@@ -40,7 +55,9 @@ export function OverviewPage({ active }: { active: boolean }) {
       overviewScroll.current = null;
       requestAnimationFrame(() => {
         window.scrollTo(0, s ? s.y : 0);
-        if (s && overviewScroll.listEl) {
+        /* Handy: die Liste scrollt im Blatt (main), nicht im Fenster */
+        if (isPhone() && mainRef.current) mainRef.current.scrollTop = s ? s.list : 0;
+        else if (s && overviewScroll.listEl) {
           overviewScroll.listEl.scrollTop = s.list;
           const link = s.id ? overviewScroll.listEl.querySelector<HTMLAnchorElement>(`a[href="/beschluss/${s.id}"]`) : null;
           link?.focus({ preventScroll: true });
@@ -51,9 +68,9 @@ export function OverviewPage({ active }: { active: boolean }) {
   }, [active]);
 
   return (
-    <div hidden={!active} className="rm-flat">
+    <div hidden={!active} className="rm-flat" data-stage={stage}>
       <MapPanel active={active} />
-      <main id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page max-sm:max-w-none flex-col gap-[12px] pb-0 pt-0">
+      <main ref={mainRef} id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page max-sm:max-w-none flex-col gap-[12px] pb-0 pt-0">
         {active && <h1 className="sr-only">Kommunalpolitik entdecken: öffentliche Vorgänge, Beratungen und Beschlüsse</h1>}
         <SearchFilterPanel />
         <ResultsPanel />

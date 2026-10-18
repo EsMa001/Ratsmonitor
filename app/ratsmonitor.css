@@ -226,3 +226,19 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
 @keyframes rm-page-in{from{opacity:0}to{opacity:1}}
 @media (max-width:639px){main#inhalt{animation:rm-page-in .2s ease-out}}
 @media (prefers-reduced-motion:reduce){main#inhalt{animation:none}}
+/* Suche am Handy: Ergebnisblatt mit zwei Stufen (lib/sheetStage.ts). Seite = Bildschirmhöhe ohne Kopfzeile und untere Leiste; Karte und Blatt teilen sie.
+   klein: Karte groß, vom Blatt nur die Zeile mit der Trefferzahl. voll: Liste groß (scrollt im Blatt), Karte als Streifen mit der Suchleiste. */
+@media (max-width:639px){
+  html.rm-search .rm-flat:not([hidden]){display:flex;flex-direction:column;height:calc(100dvh - 58px - var(--rm-tabbar));overflow:hidden}
+  html.rm-search .rm-flat>section{flex:1 1 0;min-height:170px;height:auto !important;transition:flex-basis .25s ease}
+  html.rm-search .rm-flat main{flex:0 0 auto;min-height:0}
+  html.rm-search .rm-flat[data-stage=klein] main>section+section{display:none}
+  html.rm-search .rm-flat[data-stage=voll]>section{flex:0 0 auto;height:176px !important;min-height:0}
+  html.rm-search .rm-flat[data-stage=voll] main{flex:1 1 0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  html.rm-search .rm-flat[data-stage=voll] main>section:first-child{position:sticky;top:0;z-index:4;background:var(--rm-white)}
+}
+@media (max-width:639px){
+  /* Suche: genau eine Bildschirmhöhe, die Rechtlich-Zeile steht in „Mehr“ */
+  html.rm-search .rm-legalbar{display:none}
+  html.rm-search body{overflow:hidden}
+}
