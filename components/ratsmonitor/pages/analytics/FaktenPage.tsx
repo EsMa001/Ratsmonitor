@@ -129,7 +129,7 @@ export function FaktenPage() {
     return level === "city" ? { kreis: of(5), land: of(2) } : { kreis: undefined, land: of(2) };
   };
   const sel = picked ? byAgs.get(picked) : undefined;
-  const chip = (on: boolean) => `h-7 whitespace-nowrap rounded-full px-3 text-[12px] font-medium ${on ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`;
+  const chip = (on: boolean) => `h-7 max-sm:h-11 whitespace-nowrap rounded-full px-3 text-[12px] font-medium ${on ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`;
   const amount = fact?.dir === "amount";
   const factName = allFacts ? "Alle Fakten" : fact?.name ?? "";
   const valueText = (x: Area) => overview ? (x.items ?? []).join(" · ") : amount ? `${num(x.sum ?? 0)} Wohneinheiten in ${x.n} ${x.n === 1 ? "Vorgang" : "Vorgängen"}, ${num(x.v)} ${unit}`

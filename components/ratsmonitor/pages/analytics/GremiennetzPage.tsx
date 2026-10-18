@@ -73,7 +73,7 @@ export function GremiennetzPage() {
                   ["Tage im Mittel je Übergang", lag === null ? "–" : String(lag)]
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
               {/* Handy: Netz erst auf Wunsch (zu klein zum Lesen); die Listen darunter tragen die Antwort */}
-              <button type="button" onClick={() => setNetz(!netz)} aria-expanded={netz} className="mt-6 text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
+              <button type="button" onClick={() => setNetz(!netz)} aria-expanded={netz} className="mt-6 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
               <section className={`${netz ? "" : "max-sm:hidden"} relative mt-8 h-[360px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
                 <NetView nodes={res.nodes} edges={res.edges} selected={selected} onSelect={setSelected} zoomRef={zoomRef} />
                 <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
@@ -109,7 +109,7 @@ export function GremiennetzPage() {
               </section>
 
 
-              <div className="mt-12 max-sm:mt-8 grid gap-12 lg:grid-cols-2">
+              <div className="mt-12 max-sm:mt-8 grid gap-12 max-sm:gap-6 lg:grid-cols-2">
                 <section>
                   <h2 className="text-[22px] font-semibold">Wichtigste Übergänge</h2>
                   <p className="mb-3 mt-1 text-[14px] text-slate-500">Von welchem Gremium ein Vorgang an welches ging, und wie lange das im Mittel dauerte.</p>

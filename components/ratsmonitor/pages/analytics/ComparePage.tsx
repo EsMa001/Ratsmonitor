@@ -233,7 +233,7 @@ export function ComparePage() {
               <div>
                 <h3 className="flex items-center gap-2 text-[16px] font-semibold"><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="min-w-0 truncate">Typisch für {names[i]}</span></h3>
                 <ol className={list}>
-                  {typ[i].map((t) => <li key={t.term} className={row}><button type="button" onClick={() => pick("terms", "term", t.term, `„${prettyTerm(t.term)}“`, [i])} aria-expanded={isOpen("terms", "term", t.term, i)} className={`min-w-0 truncate text-slate-900 ${linkCls(isOpen("terms", "term", t.term, i))}`}>{prettyTerm(t.term)}</button><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
+                  {typ[i].map((t) => <li key={t.term} className={row}><button type="button" onClick={() => pick("terms", "term", t.term, `„${prettyTerm(t.term)}“`, [i])} aria-expanded={isOpen("terms", "term", t.term, i)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", t.term, i))}`}>{prettyTerm(t.term)}</button><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
                   {!typ[i].length && <li className="py-2 text-[14px] text-slate-500">Keine auffälligen Begriffe.</li>}
                 </ol>
               </div>
@@ -247,7 +247,7 @@ export function ComparePage() {
                   <div className="md:order-none">
                     <h3 className="text-[16px] font-semibold">In beiden Orten</h3>
                     <ol className={list}>
-                      {com.map((c) => <li key={c.term} className={row}><button type="button" onClick={() => pick("terms", "term", c.term, `„${prettyTerm(c.term)}“`, [0, 1])} aria-expanded={isOpen("terms", "term", c.term)} className={`min-w-0 truncate text-slate-900 ${linkCls(isOpen("terms", "term", c.term) && drill!.idx.length > 1)}`}>{prettyTerm(c.term)}</button><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
+                      {com.map((c) => <li key={c.term} className={row}><button type="button" onClick={() => pick("terms", "term", c.term, `„${prettyTerm(c.term)}“`, [0, 1])} aria-expanded={isOpen("terms", "term", c.term)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", c.term) && drill!.idx.length > 1)}`}>{prettyTerm(c.term)}</button><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
                       {!com.length && <li className="py-2 text-[14px] text-slate-500">Keine gemeinsamen Begriffe.</li>}
                     </ol>
                   </div>

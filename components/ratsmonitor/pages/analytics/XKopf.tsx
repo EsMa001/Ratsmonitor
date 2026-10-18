@@ -153,7 +153,7 @@ function BandMitte({ kurz }: { kurz: string }) {
   const when = [fig.period, fig.week ? `+${fig.week.toLocaleString("de-DE")} in 7 Tagen` : ""].filter(Boolean).join(" · ");
   return (
     <div className="rm-band-mid text-left max-sm:order-3 max-sm:col-span-2" title={kurz}>
-      <p className="m-0 flex items-baseline gap-2 leading-none"><span className="shrink-0 whitespace-nowrap text-[44px] font-semibold tabular-nums max-sm:text-[28px]">{value}</span><span className="text-[18px] font-medium">{fig.label}</span></p>
+      <p className="m-0 flex items-baseline gap-2 leading-none"><span className="shrink-0 whitespace-nowrap text-[44px] font-semibold tabular-nums max-sm:text-[28px]">{value}</span><span className="text-[18px] font-medium max-sm:leading-[1.2]">{fig.label}</span></p>
       <p className="m-0 mt-1.5 text-[14px] opacity-85">{fig.scope || kurz}</p>
       {when && <p className="m-0 text-[14px] opacity-70">{when}</p>}
     </div>

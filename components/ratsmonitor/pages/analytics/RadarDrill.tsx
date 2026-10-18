@@ -94,7 +94,7 @@ export function RadarDrill({ base, query, by, value, label, unit, limit, onAll, 
               </span>
             </div>
           )),
-          ...(onAll && total !== null ? [<ActionRow key="a" icon={<List size={18} strokeWidth={1.6} aria-hidden="true" />}><button type="button" onClick={() => onAll(total)} className="text-left text-[14px] font-medium text-teal-800">Alle {n(total)} Vorgänge zeigen</button></ActionRow>] : []),
+          ...(onAll && total !== null ? [<ActionRow key="a" icon={<List size={18} strokeWidth={1.6} aria-hidden="true" />}><button type="button" onClick={() => onAll(total)} className="text-left text-[14px] font-medium text-teal-800 max-sm:min-h-[44px]">Alle {n(total)} Vorgänge zeigen</button></ActionRow>] : []),
           ...(footer ? [<ActionRow key="f" icon={<Crosshair size={18} strokeWidth={1.6} aria-hidden="true" />}>{footer}</ActionRow>] : []),
         ]} />
       ) : (

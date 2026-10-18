@@ -555,7 +555,7 @@ function PartList({ rows, open, selected, onOpen, drill, label, icons = false, d
     </ol>
     {rests.map((r) => (
       <div key={r.key} className="mt-2">
-        <button type="button" onClick={() => onOpen(r.key)} aria-expanded={open === r.key} className="px-2 text-left text-[14px] text-slate-500 hover:text-slate-900">
+        <button type="button" onClick={() => onOpen(r.key)} aria-expanded={open === r.key} className="max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center px-2 text-left text-[14px] text-slate-500 hover:text-slate-900">
           Dazu {n(r.count)} {plural(r.count, "Vorgang", "Vorgänge")} unter „{r.name}“ {open === r.key ? "▾" : "›"}</button>
         {open === r.key && <div className="mb-3 ml-2 mt-2">{drill(r)}</div>}
       </div>

@@ -449,6 +449,9 @@ html.rm-dark .rm-banddots{opacity:.35}
 @media (prefers-reduced-motion:reduce){:is(.pl-band,.ri-head) :is(h1,.ri-h1,.rm-band-mid,.ri-lead){animation:none}}
 /* Handy: Kopfbänder schlanker (plenara.X: ohne Zurück, Symbol und Zeitraumzeilen; Info- und Kontoseiten: ohne großes Symbol, Einleitung auf 2 Zeilen) */
 @media (max-width:639px){
+  /* Textknöpfe („Weiterlesen“, „Weitere 10 zeigen →“, „Netz anzeigen →“ …) erreichen die 44 px Tippfläche */
+  main#inhalt button[class*="hover:underline"]:not(.truncate){display:inline-flex;align-items:center;min-height:44px}
+  main#inhalt button.truncate[class*="hover:underline"]{line-height:44px}
   :is(.pl-band,.ri-head){padding-top:8px !important;padding-bottom:12px !important}
   .pl-band .back-btn,.pl-band .rm-bandicon{display:none !important}
   .pl-band .rm-band-mid>p:nth-child(n+2){display:none}

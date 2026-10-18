@@ -107,14 +107,14 @@ export function BeschluessePage() {
 
 
               <Abschnitt title="Aufteilung">
-              <div className="pb-6 pt-2">
+              <div className="pb-6 max-sm:pb-0 pt-2">
                 <Segmented label="Aufteilung" fill={phone} options={[["kinds", "Gremienebene"], ["topics", "Themenfeld"], ["lands", "Bundesland"]]} value={cut} onPick={setCut} />
                 <p className="mb-2 mt-3 text-[14px] text-slate-500">Beschlussquote und Anteil vertagt und abgelehnt{cut === "topics" ? `. Nur ${n(res.totals.decided - res.unclassified.decided)} der ${n(res.totals.decided)} Entscheidungen sind einem Themenfeld zugeordnet.` : cut === "kinds" ? ". Ausschüsse empfehlen nur: Für sie steht die Zahl der Empfehlungen statt einer Quote." : "."}{cut !== "kinds" ? " Grau: im üblichen Rahmen." : ""}</p>
                 {cuts.length === 0 ? <p className="py-4 text-[14px] text-slate-500">Zu wenige Entscheidungen für diese Aufteilung.</p> : <ol className="m-0 list-none border-t border-slate-200 p-0">{cuts.map((c) => { const by = { kinds: "kind", topics: "label", lands: "land" }[cut], k = `${by}:${c.id}`; return <DecisionRow key={c.id} cut={c} onToggle={() => setOpen(open === k ? "" : k)} expanded={open === k} drill={open === k && <RadarDrill base="/api/analytics/decisions?list=1" query={ranKey} by={by} value={c.id} label={`${c.name}, Vorgänge mit Entscheidung`} />} />; })}</ol>}
               </div>
               </Abschnitt>
               <Abschnitt title="Durchlaufzeit">
-              <div className="pb-6 pt-2">
+              <div className="pb-6 max-sm:pb-0 pt-2">
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Tage von der ersten Station eines Vorgangs bis zur Entscheidung. Nur Vorgänge mit mindestens zwei datierten Stationen ({n(res.duration.n)}).</p>
                 {res.duration.median === null ? <p className="text-[14px] text-slate-500">Zu wenige Vorgänge mit mehreren Stationen.</p> : (
                   <>
@@ -137,7 +137,7 @@ export function BeschluessePage() {
               </Abschnitt>
               <div className="mt-12 max-sm:mt-8 border-t border-slate-200">
               <Fold title="Abstimmung und Änderungen">
-              <div className="pb-6 pt-2">
+              <div className="pb-6 max-sm:pb-0 pt-2">
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Aus dem Ergebnistext der Beschlüsse gelesen; das nennen nur manche Ratsinformationssysteme, die Werte gelten nur für Vorgänge mit Angabe. Grundlage: alle {n(res.votes.of)} Vorgänge mit Entscheidung.</p>
                 <dl className="grid grid-cols-2 gap-y-6 sm:grid-cols-4">
                   {[
@@ -170,7 +170,7 @@ export function BeschluessePage() {
               </div>
               </Fold>
               <Fold title="Stand der Vorgänge und Datenlage">
-              <div className="pb-6 pt-2">
+              <div className="pb-6 max-sm:pb-0 pt-2">
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Alle Einträge mit bekanntem Status.</p>
                 <div className="flex h-[16px] w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label="Stand der Vorgänge">
                   {statusRows.map((s) => <span key={s.id} title={`${STATUS.find((x) => x.id === s.id)?.label ?? s.id}: ${n(s.n)}`} style={{ width: `${(s.n / statusTotal) * 100}%`, background: STATUS_COLOR[s.id] }} />)}

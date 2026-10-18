@@ -146,7 +146,7 @@ export function KnowledgeGraphPage() {
       {/* Detailstufe über dem Netz, als Umschalter wie auf den übrigen Seiten */}
       {res && !empty && <div className={`${netz ? "" : "max-sm:hidden"} mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
       {/* Handy: Netz erst auf Wunsch (zu klein zum Lesen); die Listen darunter tragen die Antwort */}
-      <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
+      <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
       {/* Handy: Legende über dem Netz statt darauf (sonst liegt sie über den Punkten) */}
       {res && !empty && netz && <ul className="m-0 mt-3 flex list-none gap-4 p-0 text-[12px] text-slate-700 sm:hidden">
         {(["center", "term", "topic"] as const).map((t) => (

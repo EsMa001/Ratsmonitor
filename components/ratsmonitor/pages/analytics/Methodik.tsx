@@ -30,7 +30,7 @@ export function MethodikUnten({ seite }: { seite: string }) {
         <div ref={setSlot} className="mt-2 max-w-[900px] space-y-2 text-[14px] text-slate-600 empty:hidden" />
         <div className="max-w-[900px]"><MethodikText ids={ids} /></div>
       </div>
-      <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mt-1 text-[14px] font-medium text-teal-700 hover:underline sm:hidden">{more ? "Weniger" : "Weiterlesen"}</button>
+      <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mt-1 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 hover:underline sm:hidden">{more ? "Weniger" : "Weiterlesen"}</button>
     </section>
   );
 }
