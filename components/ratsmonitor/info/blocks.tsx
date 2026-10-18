@@ -8,7 +8,7 @@ import type { Example, Qa, Rich as RichText } from "./content";
 import { Icon, type IconName } from "./icons";
 import { IconChevronLeft } from "../components/icons";
 import { Reveal } from "../pages/analytics/Reveal";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BandDots } from "../components/BandDots";
 
 /** Öffnet die echte Suche der Startseite, optional mit vorbelegtem Begriff */
@@ -35,6 +35,9 @@ export function Rich({ text }: { text: RichText }) {
 }
 
 /** Kopfbereich: graues Icon, türkise Zeile, Seitenname, große Überschrift, Einleitung */
+/** Seiten, die am Handy ein Ziel der unteren Leiste sind: kein „Zurück“ */
+const HAUPTZIEL = ["/konto/suchen", "/konto/artikel", "/konto/kalender"];
+
 export function PageHead({
   icon,
   label,
@@ -58,13 +61,14 @@ export function PageHead({
   children?: ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { goOverview } = useAppNav();
   /* Dezenter Zurück-Pfeil auf allen Info- und Kontoseiten: zur vorigen Seite der App; wer von außen kommt (Link aus E-Mail,
      Suchmaschine), landet in der Suche statt wieder auf der fremden Seite (wie die Detailseite, state/nav.ts) */
   const back = () => (cameFromApp() ? router.back() : goOverview());
   const main = (
     <div>
-      <button type="button" onClick={back} className="back-btn -ml-1.5 mb-4">
+      <button type="button" onClick={back} className={`back-btn -ml-1.5 mb-4 ${HAUPTZIEL.includes(pathname) ? "max-sm:hidden" : ""}`}>
         <IconChevronLeft />
         Zurück
       </button>
