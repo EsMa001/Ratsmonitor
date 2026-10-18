@@ -7,6 +7,7 @@ import { CountDots } from "./CountDots";
 import { IconViewCompact, IconViewFull } from "./icons";
 import { setSheetStage, toggleSheetStage, useSheetStage } from "../lib/sheetStage";
 import { useVerticalSwipe } from "../lib/useSwipe";
+import { isPhone } from "../lib/usePhone";
 
 /** Zeile über der Trefferliste: Trefferzahl und Stand, Sortierung, Export, Ansicht.
  *  Suche, Filter und aktive Filter liegen auf der Karte (SearchOverlay, FilterPanel, ActiveFilters). */
@@ -22,9 +23,11 @@ export function SearchFilterPanel() {
   const drag = useVerticalSwipe((dir) => setSheetStage(dir < 0 ? "voll" : "klein"));
 
   return (
-    <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[12px] max-sm:px-4 max-sm:py-1">
-      <button type="button" aria-label={stage === "klein" ? "Trefferliste öffnen" : "Karte zeigen"} aria-expanded={stage === "voll"} onClick={toggleSheetStage} {...drag}
-        className="-mx-4 -mb-1 flex h-7 flex-none items-center justify-center border-0 bg-transparent p-0 sm:hidden">
+    <section aria-label="Suche und Filter" {...drag}
+      onClick={(e) => { if (isPhone() && !(e.target as HTMLElement).closest("button, a, input, select, [role=listbox], [role=option]")) toggleSheetStage(); }}
+      className="card-shell relative z-[3] flex flex-col gap-3 p-[12px] max-sm:px-4 max-sm:pb-1 max-sm:pt-6">
+      <button type="button" aria-label={stage === "klein" ? "Trefferliste öffnen" : "Karte zeigen"} aria-expanded={stage === "voll"} onClick={(e) => { e.stopPropagation(); toggleSheetStage(); }}
+        className="absolute inset-x-0 top-0 flex h-7 items-center justify-center border-0 bg-transparent p-0 sm:hidden">
         <span className="h-1 w-9 rounded-full bg-slate-300" />
       </button>
       {/* Trefferzahl, Datenstand und Sortierung; aktive Filter und Filter selbst liegen auf der Karte */}
