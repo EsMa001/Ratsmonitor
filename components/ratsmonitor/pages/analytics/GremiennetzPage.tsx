@@ -22,7 +22,8 @@ const glass = "rm-legend";
 const n = (v: number) => v.toLocaleString("de-DE");
 
 export function GremiennetzPage() {
-  const [netz, setNetz] = useState(false);
+  /* Das Netz ist die Hauptsache der Seite: auch am Handy zuerst ausgeklappt (lässt sich einklappen) */
+  const [netz, setNetz] = useState(true);
   /* Handy: die Listen zuerst mit den ersten Einträgen, „Alle zeigen“ klappt den Rest auf */
   const phone = usePhone();
   const [more, setMore] = useState({ e: false, r: false, o: false });
@@ -77,11 +78,12 @@ export function GremiennetzPage() {
                   ["Vorgänge im häufigsten Übergang", top ? n(top.n) : "–"],
                   ["Tage im Mittel je Übergang", lag === null ? "–" : String(lag)]
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
-              {/* Handy: Netz erst auf Wunsch (zu klein zum Lesen); die Listen darunter tragen die Antwort */}
+              {/* Handy: das Netz lässt sich ein- und ausklappen */}
               <button type="button" onClick={() => setNetz(!netz)} aria-expanded={netz} className="mt-6 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
-              <section className={`${netz ? "" : "max-sm:hidden"} relative mt-8 h-[360px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
+              {netz && <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[12px] text-slate-700 sm:hidden">{(["start", "bridge", "end"] as const).map((r) => <li key={r} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-full" style={{ background: ROLE[r].fill, border: `2px solid ${ROLE[r].stroke}` }} />{ROLE[r].label}</li>)}<li className="text-slate-500">Größe: Durchsatz · Linie: Vorgänge</li></ul>}
+              <section className={`${netz ? "" : "max-sm:hidden"} relative mt-8 max-sm:mt-2 h-[360px] max-sm:h-[min(620px,calc(100dvh-250px))] overflow-hidden rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
                 <NetView nodes={res.nodes} edges={res.edges} selected={selected} onSelect={setSelected} zoomRef={zoomRef} />
-                <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
+                <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700 max-sm:hidden`}>
                   <ul className="m-0 flex list-none flex-col gap-1 p-0">
                     {(["start", "bridge", "end"] as const).map((r) => <li key={r} className="flex items-center gap-2" title={ROLE[r].hint}><i className="inline-block h-3 w-3 rounded-full" style={{ background: ROLE[r].fill, border: `2px solid ${ROLE[r].stroke}` }} />{ROLE[r].label}</li>)}
                   </ul>

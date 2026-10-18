@@ -11,7 +11,7 @@ export const ROLE: Record<NNode["role"], { label: string; fill: string; stroke: 
 };
 
 /** Kräfte: Abstoßung, Federn nach Gewicht, Bindung an die Stufe (Einstieg links, Entscheidung rechts) */
-function layout(nodes: P[], edges: NEdge[], span: number, iterations: number, alpha0 = 1) {
+function layout(nodes: P[], edges: NEdge[], span: number, iterations: number, alpha0 = 1, vertical = false) {
   const by = new Map(nodes.map((n) => [n.id, n]));
   const max = Math.max(1, ...edges.map((e) => e.n));
   for (let it = 0; it < iterations; it++) {
@@ -20,7 +20,7 @@ function layout(nodes: P[], edges: NEdge[], span: number, iterations: number, al
       const a = nodes[i], b = nodes[j];
       let dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy;
       if (d2 < 1) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; d2 = 1; }
-      const d = Math.sqrt(d2), f = (16000 / d2) * alpha, min = a.r + b.r + 60;
+      const d = Math.sqrt(d2), f = (16000 / d2) * alpha, min = a.r + b.r + (vertical ? 96 : 60);
       let fx = (dx / d) * f, fy = (dy / d) * f;
       if (d < min) { const push = (min - d) * 0.3; fx += (dx / d) * push; fy += (dy / d) * push; }
       if (!a.fixed) { a.vx -= fx; a.vy -= fy; }
@@ -36,7 +36,9 @@ function layout(nodes: P[], edges: NEdge[], span: number, iterations: number, al
     }
     for (const n of nodes) {
       if (n.fixed) { n.vx = n.vy = 0; continue; }
-      n.vx += ((n.stage - 0.5) * span - n.x) * 0.06 * alpha; n.vy -= n.y * 0.006 * alpha;
+      /* Quer: Einstieg links, Entscheidung rechts; Hochformat (Handy): Einstieg oben, Entscheidung unten */
+      if (vertical) { n.vy += ((n.stage - 0.5) * span - n.y) * 0.06 * alpha; n.vx -= n.x * 0.006 * alpha; }
+      else { n.vx += ((n.stage - 0.5) * span - n.x) * 0.06 * alpha; n.vy -= n.y * 0.006 * alpha; }
       n.x += n.vx; n.y += n.vy; n.vx *= 0.78; n.vy *= 0.78;
     }
   }
@@ -56,6 +58,8 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const boxRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 800, h: 560 });
   const [view, setView] = useState({ x: 0, y: 0, k: 1 });
+  /* Handy (schmal): Hochformat-Anordnung mit größerer Schrift */
+  const vertical = size.w < 520;
   const sim = useRef<P[]>([]);
   /* Gezeichnet wird ein Abbild der Simulation (Zustand); gerechnet und gezogen wird in sim (Ref) */
   const [shown, setShown] = useState<P[]>([]);
@@ -76,22 +80,26 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const fit = useCallback((w = size.w, h = size.h) => {
     const list = sim.current;
     if (!list.length) return;
-    const x0 = Math.min(...list.map((n) => n.x - n.r - 80)), x1 = Math.max(...list.map((n) => n.x + n.r + 80));
-    const y0 = Math.min(...list.map((n) => n.y - n.r - 50)), y1 = Math.max(...list.map((n) => n.y + n.r + 50));
+    const px = vertical ? 56 : 80, py = vertical ? 30 : 50;
+    const x0 = Math.min(...list.map((n) => n.x - n.r - px)), x1 = Math.max(...list.map((n) => n.x + n.r + px));
+    const y0 = Math.min(...list.map((n) => n.y - n.r - py)), y1 = Math.max(...list.map((n) => n.y + n.r + py));
     const k = Math.min(1.3, Math.min(w / (x1 - x0), h / (y1 - y0)));
     setView({ k, x: -((x0 + x1) / 2) * k, y: -((y0 + y1) / 2) * k });
-  }, [size.w, size.h]);
+  }, [size.w, size.h, vertical]);
 
   useEffect(() => {
     const max = Math.max(1, ...nodes.map((n) => n.in + n.out));
-    const span = 980;
-    sim.current = nodes.map((n, i) => ({ ...n, r: 12 + 24 * Math.sqrt((n.in + n.out) / max), x: (n.stage - 0.5) * span, y: ((i % 6) - 2.5) * 110 + (Math.random() - 0.5) * 30, vx: 0, vy: 0, fixed: false }));
-    layout(sim.current, edges, span, 460);
+    const span = vertical ? 860 : 980;
+    sim.current = nodes.map((n, i) => {
+      const along = (n.stage - 0.5) * span, across = ((i % (vertical ? 3 : 6)) - (vertical ? 1 : 2.5)) * (vertical ? 118 : 110) + (Math.random() - 0.5) * 30;
+      return { ...n, r: 12 + 24 * Math.sqrt((n.in + n.out) / max), x: vertical ? across : along, y: vertical ? along : across, vx: 0, vy: 0, fixed: false };
+    });
+    layout(sim.current, edges, span, 460, 1, vertical);
     fit();
     /* Neue Daten: Startlage mit Zufall und Messung, einmal je Daten gerechnet; das Abbild folgt sofort */
     draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodes, edges]);
+  }, [nodes, edges, vertical]);
   useEffect(() => fit(), [size.w, size.h, fit]);
   useEffect(() => {
     if (zoomRef) zoomRef.current = (f) => (f === "fit" ? fit() : setView((v) => ({ ...v, k: Math.max(0.3, Math.min(3, v.k * f)), x: v.x * f, y: v.y * f })));
@@ -104,7 +112,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const run = () => {
     cancelAnimationFrame(raf.current);
     let c = 0;
-    const step = () => { layout(sim.current, edges, 980, 1, 0.3); draw(); if (++c < 40) raf.current = requestAnimationFrame(step); };
+    const step = () => { layout(sim.current, edges, vertical ? 860 : 980, 1, 0.3, vertical); draw(); if (++c < 40) raf.current = requestAnimationFrame(step); };
     raf.current = requestAnimationFrame(step);
   };
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
@@ -160,13 +168,13 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
             return <path key={e.a + e.b} d={path(a, b, 0.14)} fill="none" stroke={on ? "var(--rm-fill)" : "var(--rm-c400)"} strokeOpacity={focus ? (on ? 0.9 : 0.06) : 0.45} strokeWidth={w} strokeLinecap="round" markerEnd={on ? "url(#net-arrow-on)" : "url(#net-arrow)"} style={{ pointerEvents: "none" }} />;
           })}
           {shown.map((n) => {
-            const k = ROLE[n.role], on = !focus || near.has(n.id), sel = n.id === selected, lines = wrap(n.name);
+            const k = ROLE[n.role], on = !focus || near.has(n.id), sel = n.id === selected, lines = wrap(n.name, vertical ? 15 : 17);
             return (
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.2} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth="2" />
-                <text textAnchor="middle" fontSize="12" fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>
-                  {lines.map((l, i) => <tspan key={i} x="0" y={n.r + 15 + i * 14}>{l}</tspan>)}
+                <text textAnchor="middle" fontSize={vertical ? 15 : 12} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth={vertical ? 3 : 4} paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>
+                  {lines.map((l, i) => <tspan key={i} x="0" y={n.r + 16 + i * (vertical ? 17 : 14)}>{l}</tspan>)}
                 </text>
               </g>
             );
