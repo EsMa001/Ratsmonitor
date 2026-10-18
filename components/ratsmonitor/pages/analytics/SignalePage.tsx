@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, Map as MapIcon, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
@@ -252,7 +252,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           })}
         </ul>
       </nav>}
-      <div className="mt-4 print:hidden"><DiffusionSearch extra={<ZeitExtra value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} extra={<ZeitExtra value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text={fest ? "Ausschreibungen werden geladen …" : "Signale werden geladen …"} />}
@@ -264,9 +264,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
               <span className="max-sm:hidden">{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
               <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
               <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
-              <Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (die Signalkategorie wird noch nicht gespeichert)" />
+              <span className="max-sm:hidden"><Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (die Signalkategorie wird noch nicht gespeichert)" /></span>
               {/* Handy: Glocke und Karte in einer Reihe */}
-              <span className="sm:hidden"><button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
+              <span className={res.phases.length > 0 ? "hidden" : "sm:hidden"}><button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
                 {karte ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{karte ? "Karte ausblenden" : "Karte zeigen"}
               </button></span>
             </Kennzahlen>}
@@ -289,8 +289,15 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             </div>}
             <div className={`min-w-0 ${karte ? "lg:col-span-6" : "lg:col-span-12"}`}>
               <div className="flex flex-col gap-2 print:hidden">
-                {res.phases.length > 0 && <PhasePicker label="Schritt" value={phase} onPick={(id) => pick({ phase: id })}
-                  items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} />}
+                {res.phases.length > 0 && <div className="flex items-center gap-2 sm:contents">
+                  <div className="min-w-0 flex-1 sm:contents">
+                    <PhasePicker label="Schritt" value={phase} onPick={(id) => pick({ phase: id })}
+                  items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} />
+                  </div>
+                  {/* Handy: Karte als Symbol rechts neben der Schritt-Auswahl */}
+                  <button type="button" aria-expanded={karte} aria-controls="signale-karte" aria-label={karte ? "Karte ausblenden" : "Karte zeigen"} title={karte ? "Karte ausblenden" : "Karte zeigen"} onClick={() => setKarte((k) => !k)}
+                    className={`grid h-11 w-11 flex-none place-items-center rounded-xl border sm:hidden print:hidden ${karte ? "border-teal-600/30 bg-teal-50 text-teal-800" : "border-slate-200 bg-white text-slate-700"}`}><MapIcon size={20} strokeWidth={1.5} aria-hidden="true" /></button>
+                </div>}
                 {res.phases.length > 0 && <div className="max-sm:hidden"><FilterRow label="Schritt">
                   <button type="button" aria-pressed={!phase} onClick={() => pick({ phase: "" })} className={PILL(!phase)}>Alle</button>
                   {res.phases.map((p) => <button key={p.key} type="button" aria-pressed={p.key === phase} onClick={() => pick({ phase: p.key === phase ? "" : p.key })} className={PILL(p.key === phase)}>

@@ -188,7 +188,7 @@ export function FaktenPage() {
         </div>
       </nav>}
 
-      <div className="mt-4 print:hidden"><DiffusionSearch noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Fakten werden geladen …" />}
@@ -205,7 +205,7 @@ export function FaktenPage() {
             : change ? [{ value: n(ranked.filter((x) => x.v > 0).length), label: "Gebiete gestiegen" }, { value: n(ranked.filter((x) => x.v < 0).length), label: "gesunken" }]
             : [{ value: ranked.length ? `${num(mid(lasts))}` : "–", label: `Median${unit ? ` (${unit})` : ""}` }, { value: n(ranked.length), label: ranked.length === 1 ? "Gebiet mit Wert" : "Gebiete mit Wert" }, { value: n(up), label: "seit dem vorigen Wert höher" }]}>
             <MeinOrt current={areaAgs && focus && focus.ags === areaAgs ? { ags: areaAgs, name: focus.name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
-            <Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (der Fakt wird noch nicht gespeichert)" />
+            <span className="max-sm:hidden"><Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (der Fakt wird noch nicht gespeichert)" /></span>
           </Kennzahlen>
           {LINKS[fact?.kind ?? ""] && <p className="mt-1 text-[14px] text-slate-500">{LINKS[fact!.kind].map(([href, text], i) => <span key={href}>{i > 0 && " · "}<Link href={href} className="font-medium text-teal-700 hover:underline">{text} →</Link></span>)}</p>}
 
