@@ -466,7 +466,7 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
 @media (max-width:639px){
   html:not(.rm-dark) header{background:var(--rm-ac);border-bottom-color:transparent}
   html:not(.rm-dark) header .rm-logo svg{filter:brightness(0) invert(1)}
-  html:not(.rm-dark) header button[aria-haspopup="menu"]{color:var(--rm-on)}
+  html:not(.rm-dark) header button[aria-haspopup="menu"]{color:var(--rm-on);background:transparent}
   html:not(.rm-dark) header button[aria-haspopup="menu"][aria-expanded="true"]{background:rgba(255,255,255,.18);color:var(--rm-on);border-radius:9999px;height:40px;width:40px}
 }
 
@@ -508,9 +508,15 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
 
 /* Handy: kleiner Seitentitel in der Kopfzeile, sobald der große aus dem Bild ist; das Logo macht ihm Platz */
 @media (max-width:639px){
-  header[data-title="1"] .rm-logo{visibility:hidden}
-  html:not(.rm-dark) header[data-title="1"]{position:fixed !important;inset:0 0 auto 0 !important;background:var(--rm-ac) !important;border-bottom:0 !important}
-  .rm-headtitle{color:var(--rm-c900);background:transparent;border:0;padding:0;animation:rmHeadIn .2s ease-out both}
+  header .rm-logo{opacity:calc(1 - var(--hp,0))}
+  header[data-title="1"] .rm-logo{pointer-events:none}
+  /* Seiten mit Band: Kopfzeile bleibt oben und färbt sich beim Scrollen weich ein (--hp 0 bis 1, aus Header.tsx) */
+  html:has(.pl-top,.ri-head) header{position:sticky !important;top:0 !important;margin-bottom:-42px !important;border-bottom:0 !important;background:color-mix(in srgb,var(--rm-ac) calc(var(--hb,0) * 100%),transparent) !important}
+  html.rm-dark:has(.pl-top,.ri-head) header{background:color-mix(in srgb,var(--rm-page) calc(var(--hb,0) * 100%),transparent) !important}
+  html.rm-dark header[data-title="1"]{border-bottom:2px solid var(--rm-fill) !important}
+  .rm-headtitle{opacity:var(--hp,0);pointer-events:none}
+  header[data-title="1"] .rm-headtitle{pointer-events:auto}
+  .rm-headtitle{color:var(--rm-c900);background:transparent;border:0;padding:0}
   html:not(.rm-dark) .rm-headtitle{color:var(--rm-on)}
   @keyframes rmHeadIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 }

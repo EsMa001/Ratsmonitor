@@ -4,7 +4,10 @@ import { Bell } from "lucide-react";
 import { useClient } from "../../lib/useClient";
 import { useUi } from "../../state/ui";
 import { tick } from "../../lib/haptic";
-import { publishBandFigure } from "../../lib/bandFigure";
+import { publishBandFigure, useCountUp } from "../../lib/bandFigure";
+
+/** Zahl, die kurz hochzählt, wenn sie sich ändert */
+function Zahl({ v }: { v: string }) { return <>{useCountUp(v)}</>; }
 
 const n = (v: number) => v.toLocaleString("de-DE");
 
@@ -26,7 +29,7 @@ export function Kennzahlen({ items, week, band, scope, period, rest = false, chi
   return (
     <div className="mt-2 max-sm:mt-0">
       {/* Die Zahl steht im Kopfband (XKopf, BandMitte); hier nur Auswahl und Bedienung */}
-      {rest && items.length > 1 && <p className="m-0 mb-2 flex flex-wrap gap-x-6 text-[16px] text-slate-500">{items.slice(1).map((k) => <span key={k.label}><b className="font-semibold tabular-nums text-slate-900">{k.value}</b> {k.label}</span>)}</p>}
+      {rest && items.length > 1 && <p className="m-0 mb-2 flex flex-wrap gap-x-6 text-[16px] text-slate-500">{items.slice(1).map((k) => <span key={k.label}><b className="font-semibold tabular-nums text-slate-900"><Zahl v={k.value} /></b> {k.label}</span>)}</p>}
       {children && <div className="mt-3 max-sm:mt-0 flex flex-wrap items-center gap-x-3 gap-y-2 text-[16px] text-slate-700">{children}</div>}
     </div>
   );
@@ -130,7 +133,7 @@ export function Segmented<K extends string>({ options, value, onPick, label }: {
       onPointerUp={() => { const k = over; drag.current = null; setOver(null); if (k !== null && k !== value) { tick(); onPick(k); } }}
       onPointerCancel={() => { drag.current = null; setOver(null); }}
       onClickCapture={(e) => { if (moved.current) { e.stopPropagation(); e.preventDefault(); moved.current = false; } }}>
-      {pill && <span aria-hidden="true" className="absolute inset-y-1 rounded-full bg-white shadow-sm transition-[left,width] duration-200 motion-reduce:transition-none" style={{ left: pill.l, width: pill.w }} />}
+      {pill && <span aria-hidden="true" className="absolute inset-y-1 rounded-full bg-white shadow-sm transition-[left,width] duration-[260ms] ease-[cubic-bezier(.3,.7,.3,1)] motion-reduce:transition-none" style={{ left: pill.l, width: pill.w }} />}
       {options.map(([k, l, hint]) => <button key={k} role="tab" type="button" aria-selected={k === value} title={hint} onClick={() => onPick(k)}
         className={`relative z-10 h-8 max-sm:h-11 shrink-0 whitespace-nowrap rounded-full px-3 text-[14px] ${k === shown ? "font-semibold text-slate-900" : "text-slate-600 hover:text-slate-900"}`}><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(" Monate", " Mon.")}</span></button>)}
     </div>

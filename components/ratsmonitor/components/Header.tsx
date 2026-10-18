@@ -37,22 +37,36 @@ export function Header() {
   /* Handy, Seiten mit Band: Der große Titel wandert beim Scrollen klein in die Kopfzeile (wie bei iOS), Tipp darauf: nach oben.
      Die Kopfzeile blendet sich dort nicht mehr aus, damit der Titel stehen bleibt. */
   const [title, setTitle] = useState("");
+  const [shown, setShown] = useState(false);
   useEffect(() => {
     if (!phone) return;
     let raf = 0;
+    const root = bar.current;
     const h1 = () => document.querySelector<HTMLElement>(".pl-band h1, .ri-head h1, .ri-head .ri-h1");
+    /* Fortschritt p (0 bis 1) folgt dem Scrollen: Kopfzeile färbt sich ein, Logo blendet aus, der Titel (derselbe wie der große) ein */
     const read = () => {
       raf = 0;
       const el = h1();
-      if (!el) { setTitle(""); return; }
+      if (!el) { setTitle(""); setShown(false); root?.style.setProperty("--hp", "0"); root?.style.setProperty("--hb", "0"); return; }
       const own = Array.from(el.childNodes).filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim() || (el.textContent ?? "").trim();
-      setTitle(el.getBoundingClientRect().bottom < (bar.current?.offsetHeight ?? 44) ? own : "");
+      /* Steht über dem Titel noch eine Zeile (z. B. „Meine Suchen“), gilt deren Unterkante, damit sich beide nicht überlagern */
+      const above = el.previousElementSibling, ref = above instanceof HTMLElement && above.getBoundingClientRect().height > 0 ? above : el;
+      const bottom = ref.getBoundingClientRect().bottom, h = root?.offsetHeight ?? 44;
+      const y = window.scrollY, abs = bottom + y, start = abs - (h + 6), end = abs - (h - 18);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      /* Kurze Seite: reicht der Weg nicht bis zum Ende des Übergangs, läuft er über den ganzen möglichen Weg, damit er nie in der Mitte stehen bleibt */
+      const p = max < end ? (max > 0 ? Math.min(1, Math.max(0, y / max)) : 0) : Math.min(1, Math.max(0, (y - start) / (end - start)));
+      root?.style.setProperty("--hp", p.toFixed(3));
+      /* Hintergrund wird schon in den ersten Pixeln deckend, damit der Band-Inhalt nie durch die Kopfzeile scheint */
+      root?.style.setProperty("--hb", Math.min(1, Math.max(0, window.scrollY / 10)).toFixed(3));
+      setTitle((t) => (t === own ? t : own));
+      setShown(p >= 0.5);
     };
     const on = () => { if (!raf) raf = requestAnimationFrame(read); };
     on();
     window.addEventListener("scroll", on, { passive: true });
     const t = setTimeout(on, 400);
-    return () => { window.removeEventListener("scroll", on); clearTimeout(t); cancelAnimationFrame(raf); setTitle(""); };
+    return () => { window.removeEventListener("scroll", on); clearTimeout(t); cancelAnimationFrame(raf); setTitle(""); setShown(false); root?.style.removeProperty("--hp"); root?.style.removeProperty("--hb"); };
   }, [phone, pathname]);
 
   /* Handy: Wischen vom linken Rand geht eine Seite zurück (wie bei iOS), außer auf Start, Suche und in Blättern/Feldern */
@@ -80,12 +94,12 @@ export function Header() {
   };
 
   return (
-    <header ref={bar} data-title={title ? "1" : undefined} className="sticky top-0 z-[1100] border-b-2 border-teal-600 bg-white transition-transform duration-200 motion-reduce:transition-none">
+    <header ref={bar} data-title={title && shown ? "1" : undefined} className="sticky top-0 z-[1100] border-b-2 border-teal-600 bg-white transition-transform duration-200 motion-reduce:transition-none">
       <div className="flex h-[56px] max-sm:h-[42px] max-sm:pb-1 items-center justify-between gap-2 px-4 sm:gap-4">
         <div className="flex min-w-0 items-center gap-2 sm:gap-[14px]">
           <MainMenu />
           <Brand onClick={leave} />
-          {title && <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="rm-headtitle absolute left-4 right-16 top-0 z-10 flex h-[42px] items-center truncate text-left text-[18px] font-semibold sm:hidden" aria-label={`${title}, nach oben`}><span className="truncate">{title}</span></button>}
+          {title && <button type="button" tabIndex={shown ? 0 : -1} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="rm-headtitle absolute left-4 right-16 top-0 z-10 flex h-[42px] items-center truncate text-left text-[18px] font-semibold sm:hidden" aria-label={`${title}, nach oben`}><span className="truncate">{title}</span></button>}
         </div>
         <div className="flex flex-none items-center gap-3">
           <DevTierSwitcher />
