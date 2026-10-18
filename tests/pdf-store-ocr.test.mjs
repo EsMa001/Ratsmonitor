@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {fileURLToPath} from 'node:url';
 import {openPdfStore} from '../server/node/pdf-store.mjs';
 import {ocrWithRefetch,ocrRange} from '../scripts/pdf-store/store-lib.mjs';
 
@@ -99,3 +100,29 @@ test('ocrDone: wahr, sobald keine Seite mehr auf OCR wartet (veraltete Einträge
  store.failText(open.s,'kaputt',{version:1});
  assert.equal(store.ocrDone(open.s),false,'Textfassung fehlerhaft');
 }));
+
+test('OCR-Lauf (Treiber, wie die Nacharbeit ihn startet) löscht veraltete Einträge: Datei schon vollständig gelesen',async()=>{
+ const {spawnSync}=await import('node:child_process');
+ const {DatabaseSync}=await import('node:sqlite');
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-ocr-stale-'));
+ try{
+  const sql=new DatabaseSync(path.join(dir,'main.sqlite'));
+  const mig=new URL('../drizzle/',import.meta.url);
+  for(const f of fs.readdirSync(mig).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL(f,mig),'utf8'));
+  const store=openPdfStore(path.join(dir,'store'));
+  const done=file(store,'done',{main:true,pages:1}),open=file(store,'open',{main:true,pages:1});
+  store.putText(done.s,['Seite eins mit Text.','Seite zwei per OCR.'],{method:'mixed',version:1,ocrPages:1,ocrNeeded:0});
+  store.close();
+  const ins=sql.prepare("INSERT INTO work_failures(step,key,class,reason,tries,first_at,last_at,next_try_at,origin) VALUES(?,?,?,?,1,?,?,?,'daily')");
+  const at=new Date().toISOString();
+  ins.run('ocr',done.s,'slow','Zeitgrenze je Seite (90 s)',at,at,at);ins.run('ocr',open.s,'slow','Zeitgrenze je Seite (90 s)',at,at,at);
+  sql.close();
+  fs.writeFileSync(path.join(dir,'shas.txt'),[done.s,open.s].join('\n'));
+  const r=spawnSync(process.execPath,['--no-warnings',fileURLToPath(new URL('../scripts/pdf-store/text.mjs',import.meta.url)),'--ocr','--include-slow','--shas',path.join(dir,'shas.txt'),'--max-minutes','1'],
+   {encoding:'utf8',timeout:60000,env:{...process.env,DATABASE_FILE:path.join(dir,'main.sqlite'),RM_PDF_STORE:path.join(dir,'store'),OCR_TOOLS:path.join(dir,'keine-werkzeuge'),RM_NO_PROGRESS:'1'}});
+  assert.match(r.stdout,/1 Einträge im Fehlerspeicher veraltet/,r.stdout+r.stderr);
+  const check=new DatabaseSync(path.join(dir,'main.sqlite'),{readOnly:true});
+  assert.deepEqual(check.prepare("SELECT key FROM work_failures WHERE step='ocr'").all().map(x=>x.key),[open.s],'nur der offene bleibt');
+  check.close();
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
