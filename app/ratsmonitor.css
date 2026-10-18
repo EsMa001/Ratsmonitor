@@ -247,7 +247,8 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   html.rm-search .rm-flat[data-drag] .rm-sbar{transition:none !important}
   html.rm-search .rm-flat[data-stage=voll] .rm-sbar:not([data-low]){top:62px !important}
   /* Mit Vorschau schiebt sich das Blatt über den unteren Kartenrand: Kartenknöpfe und Quellenangabe rutschen um deren Höhe hoch (die Karte selbst behält ihre Größe) */
-  html.rm-search .rm-flat[data-stage=klein] :is(.rm-mapctl,.rm-attr){transform:translateY(calc(63px - var(--klein)))}
+  html.rm-search .rm-flat[data-stage=klein] :is(.rm-mapctl,.rm-attr){transform:translateY(calc(63px - var(--klein) + var(--lf,0px)))}
+  html.rm-search .rm-flat[data-drag] :is(.rm-mapctl,.rm-attr){transition:none !important}
   html.rm-search :is(.rm-mapctl,.rm-attr){transition:opacity .2s,transform .34s cubic-bezier(.22,.9,.28,1)}
   html.rm-search .rm-flat[data-stage=voll] .rm-mapctl{opacity:0;pointer-events:none}
   @media (prefers-reduced-motion:reduce){html.rm-search .rm-flat main,html.rm-search .rm-sbar{transition:none !important}}

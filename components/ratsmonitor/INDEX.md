@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (542 Zeilen, ⚠14)
-- app/ratsmonitor.css (260 Zeilen, ⚠17)
+- app/ratsmonitor.css (261 Zeilen, ⚠17)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -476,7 +476,7 @@ rm-glass-pop ratsmonitor.css:87
 rm-gtext ratsmonitor.css:180
 rm-gtopic ratsmonitor.css:181
 rm-headtitle ratsmonitor-info.css:487
-rm-legalbar ratsmonitor.css:257
+rm-legalbar ratsmonitor.css:258
 rm-legend ratsmonitor.css:83
 rm-logo ratsmonitor-info.css:189
 rm-logo ratsmonitor.css:146
@@ -790,7 +790,7 @@ topic design-styles.css:140
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (240): LegalPage
 - NotificationsPage.tsx (80): NotificationsPage
-- OverviewPage.tsx (150): OverviewPage
+- OverviewPage.tsx (170): OverviewPage
 - PersonalPage.tsx (26): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
