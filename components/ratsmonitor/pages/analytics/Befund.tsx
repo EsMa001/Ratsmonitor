@@ -10,7 +10,7 @@ function AnalyseLeiste() {
   return (
     <>
     <p className="m-0 mt-2 hidden text-[14px] text-slate-500 print:block">{text.trim() ? `Suchbegriff „${prettyTerm(text.trim())}“ · ` : ""}Berechnet am {heute()} aus den Ratsinformationssystemen der Kommunen · plenara.X</p>
-    <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] print:hidden">
+    <div className="mt-3 max-sm:mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] print:hidden">
       <span className="text-slate-500">Stand {heute()}</span>
     </div>
     </>

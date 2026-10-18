@@ -113,7 +113,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
         <ul className="m-0 flex list-none flex-col gap-1 p-0 max-sm:flex-row max-sm:flex-wrap max-sm:gap-x-2.5 max-sm:gap-y-0.5">
           {legend.map((l, i) => <li key={l} className="flex items-center gap-2 max-sm:gap-1"><i className="inline-block h-3 w-5 rounded-sm max-sm:w-3" style={{ background: colors?.[i] ?? MAP_COLORS.scale[i] }} /><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(/\s*Vorg\S*/, "").replace(" bis ", "–").replace("über ", ">")}</span></li>)}
         </ul>
-        {note && <p className="m-0 mt-1 max-w-[180px] text-slate-500 max-sm:mt-0 max-sm:max-w-none">{note}</p>}
+        {note && <p className={`m-0 mt-1 max-w-[180px] text-slate-500 max-sm:mt-0 max-sm:max-w-none ${note.length > 40 ? "max-sm:hidden" : ""}`}>{note}</p>}
       </div>
       <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full max-sm:bottom-2 max-sm:right-2 max-sm:top-auto`}>
         <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>

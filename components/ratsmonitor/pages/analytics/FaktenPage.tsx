@@ -179,11 +179,11 @@ export function FaktenPage() {
         </ul>
       </nav>
       {metrics.length > 1 && <nav aria-label="Wert" className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden">
           {[["alle", "Alle Werte"], ...metrics.map((m) => [m, m])].map(([k, l]) => {
             const on = k === "alle" ? allMetrics : k === metric;
             return <button key={k} type="button" aria-pressed={on} onClick={() => pick({ fakt: fact?.kind, wert: k, ...(k === "alle" ? { ansicht: "" } : {}) })}
-              className={`h-8 rounded-full border px-3 text-[14px] ${on ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>;
+              className={`h-8 max-sm:shrink-0 max-sm:whitespace-nowrap rounded-full border px-3 text-[14px] ${on ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>;
           })}
         </div>
       </nav>}
