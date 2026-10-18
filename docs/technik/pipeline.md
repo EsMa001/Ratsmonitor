@@ -80,6 +80,7 @@ Anhalten `schedule-stop`, Zustand der systemd-Einheiten `systemd-units`.
 ### Wie ein Job startet
 
 ```mermaid
+%%{init: {"sequence": {"wrap": true, "width": 240, "messageMargin": 24}}}%%
 sequenceDiagram
   participant T as systemd: ratsmonitor-&lt ·job&gt ·.timer (alle 10 min)<br/>oder .path (Datei data/trigger/&lt ·job&gt ·)
   participant S as scripts/schedule.mjs &lt ·job&gt ·
@@ -493,6 +494,7 @@ Der Knopf „Alte Fehler erneut versuchen“ im Reiter PDF-Import (Auftrag `retr
 Vom Knopf zum Lauf:
 
 ```mermaid
+%%{init: {"sequence": {"wrap": true, "width": 240, "messageMargin": 24}}}%%
 sequenceDiagram
   participant UI as Admin: Reiter PDF-Import / Seite Altbestand
   participant API as POST /api/admin/pdf-ablage

@@ -20,6 +20,7 @@ ein (`scripts/apply-source-overrides.mjs`), `source-consents.json` dem Katalogba
 ## 2. Ein nächtlicher Abruf von Anfang bis Ende
 
 ```mermaid
+%%{init: {"sequence": {"wrap": true, "width": 240, "messageMargin": 24}}}%%
 sequenceDiagram
   participant T as Zeitplaner (01:00, Job import-nightly)
   participant W as import-worker.mjs --create sources --window 1d

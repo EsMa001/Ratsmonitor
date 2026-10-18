@@ -213,6 +213,9 @@ oneshot, eigene Speicher- und Zeitgrenzen), `.timer` (`OnCalendar=*:0/10`; `impo
 
 ## 7. Pflege dieser Dokumentation
 
+- **PDF:** `node docs/technik/tools/build-pdf.mjs` baut alle Kapitel als `docs/technik/technische-dokumentation.pdf` (Markdown zu
+  HTML, Diagramme über mermaid.js, Druck über Chrome mit playwright-core aus `docs/design/tools`; `--html` schreibt nur die
+  HTML-Vorlage nach `tmp/technik-pdf/`). Nach Änderungen an den Kapiteln neu bauen.
 - Begriffe der Pipeline nur in `shared/pipeline-terms.mjs` ändern, dann im [Glossar](glossar.md) nachziehen.
 - Neue Tabelle oder neuer `system_state`-Schlüssel: Katalog im [Datenmodell](datenmodell.md) ergänzen.
 - Neuer Job: `JOBS` in `schedules.mjs`, Einheiten in `deploy/node/`, Tabelle in [Pipeline](pipeline.md) Abschnitt 2.

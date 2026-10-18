@@ -78,6 +78,7 @@ Ohne Passwort: E-Mail-Link oder achtstelliger Code; Tokens, Codes und Anmeldesit
 synchrone Arbeit von `/api/auth/link` sind für alle Adressen gleich, alles Adressabhängige läuft nach der Antwort (`after()`).
 
 ```mermaid
+%%{init: {"sequence": {"wrap": true, "width": 240, "messageMargin": 24}}}%%
 sequenceDiagram
   participant U as Browser
   participant A as POST /api/auth/link
@@ -206,6 +207,7 @@ Drei Zugänge auf dieselbe Logik:
 | HTTP | `GET\|POST /api/admin/ai-local` (`requireAdmin`, `requireSameOrigin`, Body ≤ 3 MB), Reiter „Abruf & Verarbeitung“ | braucht `env.AI_LOCAL_SOURCES` (nur Node); im Dev fängt `build/ai-local-dev-plugin.mjs` die Route ab (nur Loopback) |
 
 ```mermaid
+%%{init: {"sequence": {"wrap": true, "width": 240, "messageMargin": 24}}}%%
 sequenceDiagram
   participant AG as Agent (MCP-Client)
   participant W as ai-local-work.mjs
