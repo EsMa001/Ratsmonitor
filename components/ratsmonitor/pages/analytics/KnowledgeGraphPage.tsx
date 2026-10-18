@@ -165,7 +165,7 @@ export function KnowledgeGraphPage() {
           </ul>
         </div>
 
-        <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
+        <div className="absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full border border-slate-200 bg-white shadow-sm">
           <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>
           <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={16} /></button>
           <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
@@ -179,12 +179,12 @@ export function KnowledgeGraphPage() {
         </div>
 
         {sel && res && (
-          <div className={`${glass} absolute inset-x-3 bottom-3 z-[6] rounded-[18px] px-4 py-3 sm:left-6 sm:right-auto sm:w-[420px]`}>
-            <div className="flex items-start justify-between gap-4">
+          <div className={`${glass} absolute inset-x-3 bottom-3 z-[6] rounded-[18px] px-4 py-3 max-sm:rounded-2xl max-sm:py-2.5 sm:left-6 sm:right-auto sm:w-[420px]`}>
+            <div className="flex items-start justify-between gap-4 max-sm:items-center">
               <div className="min-w-0">
-                <p className="text-[12px] text-slate-500">{KIND[sel.type].label}</p>
+                <p className="text-[12px] text-slate-500 max-sm:hidden">{KIND[sel.type].label}</p>
                 <p className="truncate text-[16px] font-semibold">{sel.label}</p>
-                <p className="text-[14px] text-slate-700">{n(sel.count)} von {n(res.total)} Einträgen ({pct(sel.count, res.total)})</p>
+                <p className="text-[14px] text-slate-700 max-sm:hidden">{n(sel.count)} von {n(res.total)} Einträgen ({pct(sel.count, res.total)})</p>
               </div>
               <button type="button" onClick={() => setSelected("")} aria-label="Auswahl schließen" className="text-[14px] text-slate-500 hover:text-slate-900">Schließen</button>
             </div>
@@ -192,14 +192,14 @@ export function KnowledgeGraphPage() {
             {links.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500 max-sm:hidden">Verbunden mit: {links.slice(0, 6).map((l) => l.other.label).join(", ")}</p>}
             {/* Was man mit der Auswahl tun kann, mit kurzer Erklärung */}
             {(sel.type === "term" || sel.type === "topic" || (res.q && String(sel.type) !== "center")) && (
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-3 max-sm:mt-2 flex flex-wrap gap-2">
                 {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); setHint(""); runAfterChange(); }} className="inline-flex h-10 items-center rounded-full bg-teal-700 px-4 text-[14px] font-medium text-white">Netz zu „{sel.label}“ zeigen</button>}
                 {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); setHint(""); runAfterChange(); }} className="inline-flex h-10 items-center rounded-full bg-teal-700 px-4 text-[14px] font-medium text-white">Nur dieses Thema zeigen</button>}
                 {res.q && String(sel.type) !== "center" && <button type="button" onClick={() => setShowList(!showList)} aria-expanded={showList} className="inline-flex h-10 items-center rounded-full border border-teal-700 px-4 text-[14px] font-medium text-teal-700">{showList ? "Vorgänge ausblenden" : "Vorgänge ansehen"}</button>}
               </div>
             )}
-            {sel.type === "term" && <p className="m-0 mt-2 text-[12px] text-slate-500">Baut das Netz neu auf und zeigt, womit „{sel.label}“ zusammen vorkommt.</p>}
-            {sel.type === "topic" && <p className="m-0 mt-2 text-[12px] text-slate-500">Grenzt auf dieses Thema ein; über „Alle Themen“ oben lässt es sich wieder aufheben.</p>}
+            {sel.type === "term" && <p className="m-0 mt-2 text-[12px] text-slate-500 max-sm:hidden">Baut das Netz neu auf und zeigt, womit „{sel.label}“ zusammen vorkommt.</p>}
+            {sel.type === "topic" && <p className="m-0 mt-2 text-[12px] text-slate-500 max-sm:hidden">Grenzt auf dieses Thema ein; über „Alle Themen“ oben lässt es sich wieder aufheben.</p>}
             {res.q && showList && sel.type !== "center" && <div className="mt-2 max-h-[50vh] overflow-auto"><RadarDrill base="/api/analytics/graph?list=1" query={ranKey} by="node" value={sel.id} label={`„${sel.label}“`} /></div>}
           </div>
         )}
