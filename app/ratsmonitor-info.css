@@ -485,7 +485,8 @@ html.rm-dark .rm-banddots{opacity:.35}
   html.rm-dark:has(.pl-top,.ri-head) header{background:color-mix(in srgb,var(--rm-page) calc(var(--hb,0) * 100%),transparent) !important}
   html.rm-dark header[data-title="1"]{border-bottom:2px solid var(--rm-fill) !important}
   .rm-headtitle{opacity:var(--hp,0);pointer-events:none}
-  /* Dünne Kopfzeile: das P des Logos steht schon an der Stelle des Logos, davon durch einen Strich getrennt der Titel; Logo blendet aus, das P der Titelzeile ein (Summe bleibt 1, das P bleibt stehen) */
+  /* Dünne Kopfzeile: das P des Logos steht schon an der Stelle des Logos, davon mit etwas Abstand der Titel; Logo blendet aus, das P der Titelzeile ein (Summe bleibt 1, das P bleibt stehen) */
+  .rm-pmark{transform:translateY(-3px)}
   .rm-pmark .rm-logo{opacity:1 !important}
   .rm-pmark .rm-logo__text{display:none !important}
   header[data-title="1"] .rm-headtitle{pointer-events:auto}

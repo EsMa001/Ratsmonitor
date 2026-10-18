@@ -99,7 +99,7 @@ export function Header() {
         <div className="flex min-w-0 items-center gap-2 sm:gap-[14px]">
           <MainMenu />
           <Brand onClick={leave} />
-          {title && <button type="button" tabIndex={shown ? 0 : -1} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="rm-headtitle absolute left-4 right-16 top-0 z-10 flex h-[42px] items-center gap-2.5 text-left text-[18px] font-semibold sm:hidden" aria-label={`${title}, nach oben`}><span className="rm-pmark flex-none" aria-hidden="true"><Brand asLink={false} /></span><i aria-hidden="true" className="h-[18px] w-px flex-none bg-current opacity-40" /><span className="truncate">{title}</span></button>}
+          {title && <button type="button" tabIndex={shown ? 0 : -1} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="rm-headtitle absolute left-4 right-16 top-0 z-10 flex h-[42px] items-center gap-3 text-left text-[18px] font-semibold sm:hidden" aria-label={`${title}, nach oben`}><span className="rm-pmark flex-none" aria-hidden="true"><Brand asLink={false} /></span><span className="truncate">{title}</span></button>}
         </div>
         <div className="flex flex-none items-center gap-3">
           <DevTierSwitcher />
