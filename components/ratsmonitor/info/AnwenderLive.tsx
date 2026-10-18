@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { usePhone } from "../lib/usePhone";
 import Link from "next/link";
 import { Ladefehler, PageHead } from "./blocks";
 import type { Branche } from "./content";
@@ -22,6 +23,10 @@ const suchLink = (term: string) => {
 
 /** Beleg: ein echter Vorgang, jede Sitzung mit Datum und Link */
 function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
+  /* Handy: zuerst die ersten drei Schritte, der Rest auf Wunsch */
+  const phone = usePhone();
+  const [alle, setAlle] = useState(false);
+  const sicht = phone && !alle ? 3 : b.schritte.length;
   const first = b.schritte[0].d, last = b.schritte[b.schritte.length - 1].d;
   const monate = Math.round((Date.parse(last) - Date.parse(first)) / 2629800000);
   return (
@@ -31,7 +36,7 @@ function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
         {b.text ? <span className="text-[16px] text-slate-700">{b.text}</span> : <><span className="text-[16px] font-semibold leading-snug text-slate-900">{b.titel}</span><span className="text-[16px] leading-snug text-slate-500">{b.ort}</span></>}
       </div>
       <ol className={`relative m-0 mt-10 max-sm:mt-0 max-sm:pt-6 grid list-none gap-x-10 p-0 sm:before:absolute sm:before:inset-x-0 sm:before:top-0 sm:before:h-0.5 sm:before:bg-teal-600 ${["", "", "sm:grid-cols-2", "sm:grid-cols-3", "sm:grid-cols-4"][Math.min(b.schritte.length, 4)]}`}>
-        {b.schritte.map((s, i) => (
+        {b.schritte.slice(0, sicht).map((s, i) => (
           <li key={s.href} className="relative border-l-2 border-teal-600 pb-6 pl-5 sm:border-l-0 sm:pb-0 sm:pl-0 sm:pt-5">
             <span aria-hidden="true" className="absolute -left-[7px] top-0 h-3 w-3 rounded-full bg-teal-600 sm:-top-[7px] sm:left-0" />
             <p className="m-0 text-[14px] font-semibold text-teal-700">{kurz(s.d)}{i === 0 ? " · hier erstmals sichtbar" : ""}</p>
@@ -41,6 +46,7 @@ function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
           </li>
         ))}
       </ol>
+      {phone && b.schritte.length > 3 && <button type="button" aria-expanded={alle} onClick={() => setAlle(!alle)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 hover:underline sm:hidden">{alle ? "Weniger Schritte zeigen" : `Alle ${b.schritte.length} Schritte zeigen`}</button>}
     </section>
   );
 }

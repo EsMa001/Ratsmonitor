@@ -44,11 +44,11 @@ function Meldung({ i, hide, nr, total }: { i: Item; hide?: boolean; nr: number; 
     navigator.clipboard?.writeText(asText(i)).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1800); }).catch(() => {});
   };
   return (
-    <article id={`meldung-${nr}`} className={`scroll-mt-16 border-b border-slate-200 py-7 max-sm:py-5 ${hide ? "max-sm:hidden" : ""}`}>
+    <article id={`meldung-${nr}`} className={`scroll-mt-16 border-b border-slate-200 py-7 max-sm:py-3.5 ${hide ? "max-sm:hidden" : ""}`}>
       <p className="m-0 text-[12px] text-slate-500"><b className="font-semibold text-teal-700 sm:hidden">{nr} von {total} · </b>{i.dateline.place}{i.dateline.committee ? ` · ${i.dateline.committee}` : ""} · {datum(i.dateline.date)}</p>
-      <h3 className="m-0 mt-1.5 text-[18px] font-semibold leading-snug sm:text-[22px]"><Link href={`/beschluss/${i.id}`} className="text-slate-900 no-underline hover:text-teal-800">{i.headline}</Link></h3>
-      <p className="m-0 mt-3 max-w-[820px] text-[16px] leading-relaxed text-slate-900">
-        {i.lead}<span className={rest}> In der Vorlage heißt es: <q>{i.quote}</q></span>
+      <h3 className="m-0 mt-1 text-[18px] font-semibold leading-snug sm:text-[22px]"><Link href={`/beschluss/${i.id}`} className="text-slate-900 no-underline hover:text-teal-800">{i.headline}</Link></h3>
+      <p className="m-0 mt-3 max-sm:mt-2 max-w-[820px] text-[16px] leading-relaxed max-sm:leading-[1.5] text-slate-900">
+        {i.lead} In der Vorlage heißt es: <q>{i.quote}</q>
         {i.more && <span className={rest}> Weiter heißt es dort: <q>{i.more}</q></span>}
         {i.body.length > 0 && <span className={rest}> {i.body.join(" ")}</span>}
       </p>

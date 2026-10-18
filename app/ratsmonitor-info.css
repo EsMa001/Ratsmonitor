@@ -449,6 +449,8 @@ html.rm-dark .rm-banddots{opacity:.35}
 @media (prefers-reduced-motion:reduce){:is(.pl-band,.ri-head) :is(h1,.ri-h1,.rm-band-mid,.ri-lead){animation:none}}
 /* Handy: Kopfbänder schlanker (plenara.X: ohne Zurück, Symbol und Zeitraumzeilen; Info- und Kontoseiten: ohne großes Symbol, Einleitung auf 2 Zeilen) */
 @media (max-width:639px){
+  /* Auszüge der Anwender-Seiten: am Handy nur die ersten drei Zeilen */
+  .pl-cut3>li:nth-child(n+4){display:none}
   /* Kopfband der Info- und Kontoseiten: überall so hoch wie bei plenara.X (Name groß, darunter eine Zeile); Überschrift, Satz und Zusätze stehen darunter (PageHead) */
   .ri-head{min-height:135px;padding-bottom:16px !important}
   html .ri-head .ri-bid .ri-bid__name{font-size:28px !important;font-weight:600 !important;line-height:1.15 !important}

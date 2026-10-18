@@ -64,7 +64,7 @@ function SignalBlock({ a, label }: { a: SignalAuszug; label: string }) {
         {a.items.length > 0 && (
           <div style={{ marginTop: 24 }}>
             <p className="m-0 text-[14px] font-semibold text-slate-900">Neueste Vorhaben</p>
-            <ul className="m-0 mt-1 list-none p-0">
+            <ul className="pl-cut3 m-0 mt-1 list-none p-0">
               {a.items.map((it) => (
                 <li key={it.id} className="grid grid-cols-[44px_minmax(0,1fr)] gap-3 border-b border-slate-200 py-2.5">
                   {/* Datum links wie in der Trefferliste der Suche (ArticleCard) */}
@@ -118,7 +118,7 @@ function WertBlock({ a }: { a: WertAuszug }) {
 function NewsBlock({ a }: { a: NewsAuszug }) {
   return (
     <div>
-      <ul className="m-0 list-none p-0">
+      <ul className="pl-cut3 m-0 list-none p-0">
         {a.items.map((it) => (
           <li key={it.id} className="grid grid-cols-[44px_minmax(0,1fr)] gap-3 border-b border-slate-200 py-3">
             <Datum iso={it.date} />
@@ -141,7 +141,7 @@ function TrendBlock({ a }: { a: TrendAuszug }) {
   return (
     <div>
       <Gross zahl={`×${top.ratio.toLocaleString("de-DE", { maximumFractionDigits: 1 })}`} text={<>„{top.term}“ in den letzten {a.window} Tagen gegenüber den {a.window} davor{a.label ? ` (${a.label})` : ""}</>} />
-      <ul className="m-0 mt-4 list-none p-0">
+      <ul className="pl-cut3 m-0 mt-4 list-none p-0">
         {a.items.map((x) => (
           <li key={x.term} className="flex items-baseline justify-between gap-3 border-b border-slate-200 py-2 text-[16px]">
             <span className="min-w-0 truncate text-slate-900">{x.term.charAt(0).toUpperCase() + x.term.slice(1)} <span className="text-[14px] text-slate-500">{n(x.count)} Vorgänge</span></span>
@@ -159,7 +159,7 @@ function NetzBlock({ a }: { a: NetzAuszug }) {
     <div>
       <Gross zahl={n(a.paths)} text="Vorgänge liefen durch mehrere Gremien" />
       <p className="m-0 mt-4 text-[14px] font-semibold text-slate-900">Häufigste Wege, Tage im Mittel bis zum nächsten Gremium</p>
-      <ul className="m-0 mt-1 list-none p-0">
+      <ul className="pl-cut3 m-0 mt-1 list-none p-0">
         {a.items.map((e) => (
           <li key={e.from + e.to} className="flex items-baseline justify-between gap-3 border-b border-slate-200 py-2 text-[16px]">
             <span className="min-w-0 text-slate-900">{e.from} → {e.to} <span className="text-[14px] text-slate-500">{n(e.count)} Vorgänge</span></span>
@@ -209,8 +209,8 @@ export function XAuszug({ name, auszuege, text }: { name: string; auszuege: [str
       <h2 className="ri-h2">Was plenara für {name} zeigt</h2>
       <p className="ri-sub">{text ?? "Aus den Vorlagen aller Räte, jede Zahl mit den Vorgängen dahinter."}</p>
       {auszuege.length > 1 && (
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Auszug wählen" style={{ marginTop: 16 }}>
-          {auszuege.map(([k, l, chip], i) => <button key={k} type="button" aria-pressed={sel === i} onClick={() => setSel(i)} className={"rounded-full border px-3 py-1.5 max-sm:min-h-[44px] text-[14px] " + (sel === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{chip ?? l}</button>)}
+        <div className="flex flex-wrap gap-2 max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden" role="group" aria-label="Auszug wählen" style={{ marginTop: 16 }}>
+          {auszuege.map(([k, l, chip], i) => <button key={k} type="button" aria-pressed={sel === i} onClick={() => setSel(i)} className={"rounded-full border px-3 py-1.5 max-sm:min-h-[44px] max-sm:shrink-0 max-sm:whitespace-nowrap text-[14px] " + (sel === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{chip ?? l}</button>)}
         </div>
       )}
       <div style={{ marginTop: 24 }}><Block key={id} id={id} label={label} /></div>
