@@ -12,6 +12,7 @@ import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Fehler, Leer } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitExtra, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
+import { Icon } from "../../info/icons";
 import { ThemeIcon } from "../../components/icons";
 import { kurz } from "../../components/ChipRail";
 import { WheelPicker } from "../../components/WheelPicker";
@@ -258,14 +259,14 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
           {res.total === 0 ? <Leer tipp="Einen längeren Zeitraum, eine andere Art oder „Alle Themen“ wählen, oder den Ort entfernen.">{`Keine Vorgänge für diese Auswahl: ${res.signal.name}${zeit !== "alle" ? `, letzte ${zeit} Monate` : ""}.`}</Leer>
             : <Kennzahlen week={week} band={fest ? "Ausschreibungen" : "Signale"} scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
-              <span>{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
+              <span className="max-sm:hidden">{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
               <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
               <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
               <Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (die Signalkategorie wird noch nicht gespeichert)" />
             </Kennzahlen>}
 
           {topPlaces.length > 1 && res.total > 0 && <p className="mt-3 text-[18px] max-sm:hidden font-semibold leading-snug">Am meisten in {topPlaces.map((p, i) => <span key={p.region}>{i ? (i === topPlaces.length - 1 ? " und " : ", ") : ""}<button type="button" onClick={() => search.setArea(p.ags || p.members?.[0] || "", "ui")} className="font-semibold text-teal-700 hover:underline" aria-label={p.name}><span aria-hidden="true" className="max-sm:hidden">{p.name}</span><span aria-hidden="true" className="sm:hidden">{p.name.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt|Landkreis|Kreis) /, "")}</span></button> ({n(p.count)})</span>)}.</p>}
-          {(ATLAS_OF[signal] || TRENDS_OF[signal]) && <p className="mt-1 text-[14px] text-slate-500">
+          {(ATLAS_OF[signal] || TRENDS_OF[signal]) && <p className="mt-1 text-[14px] text-slate-500 max-sm:hidden">
             {ATLAS_OF[signal] && <>Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 hover:underline">{ATLAS_OF[signal][2]} im Atlas →</Link></>}
             {ATLAS_OF[signal] && TRENDS_OF[signal] && " · "}
             {TRENDS_OF[signal] && <>Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="font-medium text-teal-700 hover:underline">„{TRENDS_OF[signal]}“ in den Trends →</Link></>}
@@ -324,6 +325,10 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           </div>
         </div>
       )}
+    {(ATLAS_OF[signal] || TRENDS_OF[signal]) && res && res.total > 0 && <ul className="m-0 mt-6 list-none border-t border-slate-200 p-0 sm:hidden print:hidden">
+      {ATLAS_OF[signal] && <li className="border-b border-slate-200"><Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="flex min-h-[44px] items-center gap-3 py-2 text-[14px] text-slate-700 no-underline"><span aria-hidden="true" className="text-teal-700"><Icon name="map" size={18} /></span><span className="min-w-0 flex-1">Wie viel Raum das Thema hat: <b className="font-medium text-teal-700">{ATLAS_OF[signal][2]} im Atlas</b></span><span aria-hidden="true" className="text-teal-700">→</span></Link></li>}
+      {TRENDS_OF[signal] && <li className="border-b border-slate-200"><Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="flex min-h-[44px] items-center gap-3 py-2 text-[14px] text-slate-700 no-underline"><span aria-hidden="true" className="text-teal-700"><Icon name="trendingUp" size={18} /></span><span className="min-w-0 flex-1">Wie es sich ausbreitet: <b className="font-medium text-teal-700">„{TRENDS_OF[signal]}“ in den Trends</b></span><span aria-hidden="true" className="text-teal-700">→</span></Link></li>}
+    </ul>}
     <XWeiter links={fest ? [["/analytics/signale", "Was entsteht? (Signale)"], ["/analytics/news", "Was ist berichtenswert? (Aktuelles)"], ["/analytics/atlas", "Wie viel? (Atlas)"]] : [["/analytics/news", "Was ist berichtenswert? (Aktuelles)"], ["/analytics/atlas", "Wie viel? (Atlas)"]]} />
     </main>
   );
