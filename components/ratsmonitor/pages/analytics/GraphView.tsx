@@ -14,7 +14,7 @@ export const KIND: Record<GNode["type"], { label: string; fill: string; stroke: 
 };
 
 /** Kräftemodell: Abstoßung, Federn nach Kantengewicht, schwache Bindung ans Zentrum, Kollision */
-function layout(nodes: P[], edges: GEdge[], iterations: number, alpha0 = 1) {
+function layout(nodes: P[], edges: GEdge[], iterations: number, alpha0 = 1, sc = 1) {
   const by = new Map(nodes.map((n) => [n.id, n]));
   for (let it = 0; it < iterations; it++) {
     const alpha = alpha0 * (1 - it / iterations) + 0.02;
@@ -23,7 +23,7 @@ function layout(nodes: P[], edges: GEdge[], iterations: number, alpha0 = 1) {
         const a = nodes[i], b = nodes[j];
         let dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy;
         if (d2 < 1) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; d2 = 1; }
-        const d = Math.sqrt(d2), f = (7000 / d2) * alpha, min = a.r + b.r + 34;
+        const d = Math.sqrt(d2), f = (7000 * sc * sc / d2) * alpha, min = a.r + b.r + 34 * sc;
         let fx = (dx / d) * f, fy = (dy / d) * f;
         if (d < min) { const push = (min - d) * 0.25; fx += (dx / d) * push; fy += (dy / d) * push; }
         if (!a.fixed) { a.vx -= fx; a.vy -= fy; }
@@ -37,7 +37,7 @@ function layout(nodes: P[], edges: GEdge[], iterations: number, alpha0 = 1) {
       /* Themen, Gremien und Länder liegen als äußerer Ring; ihre Kanten zu Begriffen werden nur gezeichnet, ziehen aber nicht */
       if (!e.center && (a.type !== "term" || b.type !== "term")) continue;
       const outer = a.type !== "term" && a.type !== "center" ? a : b.type !== "term" && b.type !== "center" ? b : null;
-      const target = e.center ? (outer ? 400 : 240) : 90 + (1 - Math.min(1, e.w * 2)) * 150;
+      const target = (e.center ? (outer ? 400 : 240) : 90 + (1 - Math.min(1, e.w * 2)) * 150) * sc;
       const k = e.center ? (outer ? 0.03 : 0.012) : 0.03 + e.w * 0.1;
       const f = (d - target) * k * alpha, fx = (dx / d) * f, fy = (dy / d) * f;
       if (!a.fixed) { a.vx += fx; a.vy += fy; }
@@ -115,7 +115,8 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
     const groups: Record<string, number> = { term: 0, topic: 0, committee: 0, land: 0 };
     const total: Record<string, number> = { term: 0, topic: 0, committee: 0, land: 0 };
     for (const n of nodes) if (n.type !== "center") total[n.type]++;
-    const sector: Record<string, [number, number, number]> = { term: [0, 6.28, 250], topic: [4.6, 5.4, 420], committee: [5.6, 6.9, 420], land: [1.4, 3.0, 420] };
+    const sc = size.w < 520 ? 0.6 : 1; /* Handy: engeres Netz, damit die Schrift lesbar bleibt */
+    const sector: Record<string, [number, number, number]> = { term: [0, 6.28, 250 * sc], topic: [4.6, 5.4, 420 * sc], committee: [5.6, 6.9, 420 * sc], land: [1.4, 3.0, 420 * sc] };
     sim.current = nodes.map((n) => {
       const r = radius(n, max);
       if (n.type === "center") return { ...n, r, x: 0, y: 0, vx: 0, vy: 0, fixed: false };
@@ -123,7 +124,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
       const ang = a0 + (a1 - a0) * t;
       return { ...n, r, x: Math.cos(ang) * rad, y: Math.sin(ang) * rad, vx: 0, vy: 0, fixed: false };
     });
-    layout(sim.current, edges, 420);
+    layout(sim.current, edges, 420, 1, sc);
     fit();
     /* Neue Daten: Startlage mit Zufall und Messung, einmal je Daten gerechnet; das Abbild folgt sofort */
     draw();
@@ -145,7 +146,8 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
   const run = () => {
     cancelAnimationFrame(raf.current);
     let n = 0;
-    const step = () => { layout(sim.current, edges, 1, 0.35); draw(); if (++n < 40) raf.current = requestAnimationFrame(step); };
+    const sc = size.w < 520 ? 0.6 : 1;
+    const step = () => { layout(sim.current, edges, 1, 0.35, sc); draw(); if (++n < 40) raf.current = requestAnimationFrame(step); };
     raf.current = requestAnimationFrame(step);
   };
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
@@ -223,7 +225,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle className={n.type === "topic" ? "rm-gtopic" : undefined} r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth={n.type === "land" ? 2.5 : 0} fillOpacity={n.type === "term" ? 0.88 : 1} />
                 {n.type === "center" && <rect x="-7" y="-7" width="14" height="14" fill="var(--rm-on)" />}
-                <text className="rm-gtext" y={n.type === "center" ? n.r + 18 : n.r + 15} textAnchor="middle" fontSize={n.type === "center" ? 18 : 12} fontWeight={n.type === "center" ? 600 : 400} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>{n.label}</text>
+                <text className="rm-gtext" y={n.type === "center" ? n.r + 18 : n.r + 15} textAnchor="middle" fontSize={n.type === "center" ? (size.w < 520 ? 22 : 18) : (size.w < 520 ? 16 : 12)} fontWeight={n.type === "center" ? 600 : 400} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>{n.label}</text>
               </g>
             );
           })}

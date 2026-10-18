@@ -27,10 +27,10 @@ function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
   return (
     <section className="ri-sec">
       <h2 className="ri-h2">{b.ueberschrift ?? `Vom ersten Beschluss bis zur Satzung: ${monate} Monate`}</h2>
-      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-        {b.text ? <span className="text-[16px] text-slate-700">{b.text}</span> : <><span className="text-[16px] font-semibold text-slate-900">{b.titel}</span><span className="text-[16px] text-slate-500">{b.ort}</span></>}
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 max-sm:py-2.5 max-sm:mb-8 leading-snug">
+        {b.text ? <span className="text-[16px] text-slate-700">{b.text}</span> : <><span className="text-[16px] font-semibold leading-snug text-slate-900">{b.titel}</span><span className="text-[16px] leading-snug text-slate-500">{b.ort}</span></>}
       </div>
-      <ol className={`relative m-0 mt-10 grid list-none gap-x-10 p-0 sm:before:absolute sm:before:inset-x-0 sm:before:top-0 sm:before:h-0.5 sm:before:bg-teal-600 ${["", "", "sm:grid-cols-2", "sm:grid-cols-3", "sm:grid-cols-4"][Math.min(b.schritte.length, 4)]}`}>
+      <ol className={`relative m-0 mt-10 max-sm:mt-0 max-sm:pt-6 grid list-none gap-x-10 p-0 sm:before:absolute sm:before:inset-x-0 sm:before:top-0 sm:before:h-0.5 sm:before:bg-teal-600 ${["", "", "sm:grid-cols-2", "sm:grid-cols-3", "sm:grid-cols-4"][Math.min(b.schritte.length, 4)]}`}>
         {b.schritte.map((s, i) => (
           <li key={s.href} className="relative border-l-2 border-teal-600 pb-6 pl-5 sm:border-l-0 sm:pb-0 sm:pl-0 sm:pt-5">
             <span aria-hidden="true" className="absolute -left-[7px] top-0 h-3 w-3 rounded-full bg-teal-600 sm:-top-[7px] sm:left-0" />
@@ -147,8 +147,8 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
       <section className="ri-sec">
         <p className="m-0 max-w-[720px] text-[28px] max-sm:text-[22px] font-semibold leading-tight text-slate-900">{b.closing}</p>
         <div style={{ marginTop: 24 }}>
-          <Link href={href} className="inline-flex h-12 items-center gap-2 rounded-full bg-teal-700 px-6 text-[16px] font-medium text-white hover:bg-teal-800">
-            „{term}“ in der Suche ansehen <span aria-hidden="true">→</span>
+          <Link href={href} className="inline-flex h-12 items-center gap-2 rounded-full bg-teal-700 px-6 text-[16px] font-medium text-white hover:bg-teal-800 max-sm:flex max-sm:h-auto max-sm:min-h-12 max-sm:w-full max-sm:justify-between max-sm:rounded-2xl max-sm:px-4 max-sm:py-3 max-sm:leading-snug">
+            <span>„{term}“ in der Suche ansehen</span> <span aria-hidden="true">→</span>
           </Link>
         </div>
         <p className="m-0 text-[14px] text-slate-500" style={{ marginTop: 12 }}>Kostenlos und ohne Anmeldung. <Link href="/preise" className="inline-block px-1 max-sm:py-3 text-teal-700 hover:underline">Preise</Link></p>
