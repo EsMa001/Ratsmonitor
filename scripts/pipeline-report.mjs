@@ -94,6 +94,14 @@ console.log('pipeline-trace:',short(state('pipeline-trace'),600));
 
 head('Nacharbeit (nacharbeit-last)');
 console.log(short(state('nacharbeit-last'),700));
+/* Wirkung über den Zeitraum (nacharbeit-log, scripts/nacharbeit.mjs): je Schritt gelungen, wieder verschoben, endgültig, nicht versucht */
+const runs=(state('nacharbeit-log')||[]).filter(r=>r.at>=since);
+if(runs.length){
+ const sum={};
+ for(const r of runs)for(const s of r.steps||[]){const x=sum[s.step]||={runs:0,entries:0,ok:0,again:0,final:0,untouched:0};x.runs++;for(const k of ['entries','ok','again','final','untouched'])x[k]+=s[k]||0;}
+ console.log(`Wirkung im Zeitraum (${runs.length} Läufe mit fälligen Einträgen): Schritt | Läufe | Einträge | gelungen | verschoben | endgültig | nicht versucht`);
+ for(const [step,x] of Object.entries(sum))console.log(`  ${step.padEnd(10)} ${String(x.runs).padStart(3)} ${String(x.entries).padStart(6)} ${String(x.ok).padStart(6)} ${String(x.again).padStart(6)} ${String(x.final).padStart(6)} ${String(x.untouched).padStart(6)}`);
+}else console.log('Wirkung im Zeitraum: kein Verlauf (nacharbeit-log, seit 18.10.2026)');
 
 if(has('work_failures')){
  head('Fehlerspeicher: im Zeitraum vermerkt (letzter Fehlschlag)');

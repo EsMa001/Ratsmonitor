@@ -84,6 +84,15 @@ if [ -n "${IMPORT_TOKEN:-}" ]; then
   if [ -n "${RM_ACCESS:-}" ]; then case "$health" in *"\"access\":\"$RM_ACCESS\""*) ;; *) echo "Zugang laut Server weicht von RM_ACCESS=$RM_ACCESS ab"; exit 1;; esac; fi
 fi
 journalctl -u ratsmonitor -n 20 --no-pager -o cat | grep -E "Datenbank|Node v" || true
-# Alte Stände aufräumen: der laufende und die zwei neuesten anderen bleiben, angefangene Bauten nicht anfassen
-for old in $(ls -1dt "$APP"/releases/* | grep -v -e '[.]build$' -e '[.]old$' | grep -vxF "$REL" | tail -n +3); do rm -rf "$old"; done
+# Alte Stände aufräumen: der laufende und die zwei neuesten anderen bleiben, angefangene Bauten nicht anfassen. Ein Stand, in dem
+# noch ein Job arbeitet (Arbeitsordner eines Prozesses, etwa die Verarbeitung, die Schritt für Schritt Skripte aus ihrem Stand
+# startet), bleibt bis zum nächsten Ausrollen liegen; sonst fehlten ihm mitten im Lauf die Skripte (16.10.2026: drei Deploys an
+# einem Tag während laufender Jobs).
+in_use() { for p in /proc/[0-9]*; do c=$(readlink "$p/cwd" 2>/dev/null) || continue; case "$c" in "$1"|"$1"/*) return 0;; esac; done; return 1; }
+for old in $(ls -1dt "$APP"/releases/* | grep -v -e '[.]build$' -e '[.]old$' | grep -vxF "$REL" | tail -n +3); do
+  if in_use "$old"; then echo "Hinweis: $(basename "$old") wird noch von einem laufenden Job genutzt, bleibt bis zum nächsten Ausrollen"; else rm -rf "$old"; fi
+done
+jobs=$(systemctl list-units 'ratsmonitor-*.service' --state=active --no-legend 2>/dev/null | awk '{print $1}' | tr '\n' ' ')
+[ -n "$jobs" ] && echo "Hinweis: laufende Jobs ($jobs) arbeiten mit ihrem bisherigen Stand weiter; der nächste Lauf nimmt den neuen"
+true
 REMOTE

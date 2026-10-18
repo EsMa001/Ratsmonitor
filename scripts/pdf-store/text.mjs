@@ -89,6 +89,18 @@ if(!flag('ocr')){
  // OCR-Reihe: alle PDFs, Hauptdokumente zuerst (nur sie mit --main-only), ohne Dateien mit wartendem Eintrag im Fehlerspeicher (fällige ja; slow
  // nur mit --include-slow), mit --shas nur diese
  const waitingKeys=new Set();
+ // Veraltete Einträge: die Datei braucht keine OCR mehr (das Paket hatte sie fertig, bevor Wächter oder Zeitgrenze zuschlugen).
+ // Eintrag weg, sonst versucht die Nacharbeit sie jede Stunde erneut und findet nichts zu lesen (Befund 16.10.2026). Im Treiber,
+ // vor der Reihe: die Pakete (--child) sehen solche Dateien gar nicht (ocrQueue nur mit ocr_needed>0); bis 18.10. stand das
+ // hinter dem Treiber und lief nie.
+ if(F&&!flag('child')){
+  let stale=0;
+  for(const step of ['ocr','ocr-fetch'])for(const sha of [...F.known(step)]){
+   if(onlyShas&&!onlyShas.has(sha))continue;
+   if(store.ocrDone(sha)){await F.ok({step,key:sha});stale++;}
+  }
+  if(stale)console.log(`${stale} Einträge im Fehlerspeicher veraltet (Datei schon vollständig gelesen), gelöscht`);
+ }
  if(F){
   const now=new Date().toISOString();
   for(const r of F.sql.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step IN ('ocr','ocr-fetch')").all())
@@ -187,16 +199,6 @@ if(!flag('ocr')){
   try{const b=await get(url);fails.set(host,0);if(F?.hosts.has(host))await F.hostOk(host);return b;}catch(e){if(!halted)fails.set(host,(fails.get(host)||0)+1);throw e;}
  };
  const knownOcr=F?F.known('ocr'):new Set(),knownFetch=F?F.known('ocr-fetch'):new Set();
- // Veraltete Einträge: die Datei braucht keine OCR mehr (das Paket hatte sie fertig, bevor Wächter oder Zeitgrenze zuschlugen).
- // Eintrag weg, sonst versucht die Nacharbeit sie jede Stunde erneut und findet nichts zu lesen (Befund 16.10.2026).
- if(F&&!flag('child')){
-  let stale=0;
-  for(const [set,step] of [[knownOcr,'ocr'],[knownFetch,'ocr-fetch']])for(const sha of [...set]){
-   if(onlyShas&&!onlyShas.has(sha))continue;
-   if(store.ocrDone(sha)){await F.ok({step,key:sha});set.delete(sha);stale++;}
-  }
-  if(stale)console.log(`${stale} Einträge im Fehlerspeicher veraltet (Datei schon vollständig gelesen), gelöscht`);
- }
  // Nachladen gescheitert: mit Fehlerspeicher dort (Klasse aus HTTP-Code, „geändert“ endgültig), sonst ocr_refetch
  const refetchFailed=async(sha,error,info={})=>{
   if(!F){store.refetchFailed(sha,error);return;}

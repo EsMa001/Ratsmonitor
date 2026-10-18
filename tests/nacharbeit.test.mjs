@@ -3,7 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {memoryDb} from './helpers/d1.mjs';
-import {nacharbeit,planBatches,commandFor,STEP_ORDER} from '../scripts/nacharbeit.mjs';
+import {nacharbeit,planBatches,commandFor,STEP_ORDER,stepShare,runBrief} from '../scripts/nacharbeit.mjs';
+import {DatabaseSync} from 'node:sqlite';
 import {recordFailure,clearFailure} from '../server/integrations/work-failures.mjs';
 import {JOBS,dueNow,nextRun,settingOf,inWindow} from '../server/integrations/schedules.mjs';
 
@@ -114,4 +115,34 @@ test('Verarbeitung: 08:50 ist nur der Rückfall; nach einem Lauf am selben Tag (
  assert.equal(dueNow(job,s,{lastStart:new Date(at(8,50)).toISOString()},at(9,0)).due,false);
  const backup=JOBS.find(j=>j.id==='backup'),b=settingOf(backup,{});
  assert.equal(dueNow(backup,b,{lastStart:new Date(at(0,10)).toISOString()},at(0,30)).due,true,'ohne fallback wie bisher: Lauf vor der Uhrzeit zählt nicht');
+});
+
+test('Zeitanteil je Schritt: verbleibende Zeit gleichmäßig auf die offenen Schritte, mindestens 3 Minuten, der letzte bekommt den Rest',()=>{
+ assert.equal(stepShare(20,3),20/3);
+ assert.equal(stepShare(20,1),20);
+ assert.equal(stepShare(5,4),3,'mindestens 3 Minuten');
+ assert.equal(stepShare(2,4),2,'nie mehr als übrig');
+});
+
+test('Nacharbeit: der erste Schritt bekommt nur seinen Anteil; OCR auf wartenden Servern ruht bis zum Server; Kurzfassung für den Verlauf',async()=>{
+ const {sql,db}=memoryDb();
+ await recordFailure(db,{step:'import',key:'billerbeck',error:'fetch failed'},T0-2*H);
+ await recordFailure(db,{step:'pdf',key:'https://a.de/1.pdf',host:'a.de',error:'timeout',eventDate:'2026-10-14'},T0-2*H);
+ await recordFailure(db,{step:'ocr',key:'sha-wartet',cls:'slow',error:'Zeitgrenze je Seite (90 s)'},T0-2*H);
+ const later=new Date(T0+3*86400000).toISOString();
+ sql.prepare("INSERT INTO source_hosts(host,state,fails,level,next_try_at,updated_at) VALUES('b.de','bremsen',3,4,?,?)").run(later,new Date(T0).toISOString());
+ const store=new DatabaseSync(':memory:');
+ store.exec("CREATE TABLE pdfs(url TEXT,sha256 TEXT,status TEXT,topic_id TEXT);CREATE TABLE texts(sha256 TEXT,ocr_needed INTEGER)");
+ store.prepare("INSERT INTO pdfs VALUES('https://b.de/x.pdf','sha-wartet','text-only',NULL)").run();
+ let clock=T0;const minutes=[];
+ const exec=async(script,args)=>{const i=args.indexOf('--max-minutes');if(i>=0)minutes.push([script.split('/').pop(),Number(args[i+1])]);clock+=60000;return 0;};
+ const r=await nacharbeit({db,sql,store,exec,now:()=>clock,log:()=>{},hasImporter:true,minutes:21,includeSlow:true});
+ assert.deepEqual(minutes.map(m=>m[0]),['import-worker.mjs','fetch.mjs','text.mjs']);
+ assert.ok(minutes[0][1]<=7,`Abruf bekommt ein Drittel, nicht alles: ${minutes[0][1]}`);
+ const ocr=sql.prepare("SELECT next_try_at FROM work_failures WHERE key='sha-wartet'").get();
+ assert.equal(ocr.next_try_at,later,'ruht bis der Server wieder darf, nicht eine Stunde');
+ assert.equal(r.steps.find(s=>s.step==='ocr').parked,1);
+ const brief=runBrief(r);
+ assert.equal(brief.steps.length,3);assert.deepEqual(Object.keys(brief.steps[0]).sort(),['again','entries','final','ok','step','untouched']);
+ sql.close();store.close();
 });

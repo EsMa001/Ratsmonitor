@@ -480,6 +480,8 @@ Schritte: `shared/pipeline-terms.mjs`.
 - **Nachtbericht** (nur lesend, ohne Deploy): `ssh ratsmonitor 'node --input-type=module - --hours 30' < scripts/pipeline-report.mjs`: Schalter,
   Laufbuch je Job, Abruf, Extraktion, Verarbeitung, Nacharbeit, Fehlerspeicher (neu, fällig, Gründe), Server und auffällige Journalzeilen je Einheit;
   dazu der Zustand der Auslöser (Timer und Pfade, `systemd-units`).
+- **Ausrollen während laufender Jobs:** `deploy.sh` nennt laufende Jobs; sie arbeiten mit ihrem Stand weiter, der nächste Lauf
+  nimmt den neuen. Ein alter Stand, in dem noch ein Prozess arbeitet, wird beim Aufräumen nicht gelöscht (seit 18.10.2026).
 - **Jobs anhalten:** nur über „Anhalten“ in der Administration (stoppt den Dienst) oder den Schalter im Zeitplaner. Nie
   `systemctl stop ratsmonitor-<job>.timer`: der Job startet dann nie wieder, bis jemand den Timer startet (16.10.2026: OCR 17 Stunden
   aus, Fund erst am Nachmittag). Ist es doch passiert: `systemctl start ratsmonitor-<job>.timer ratsmonitor-<job>.path`.
