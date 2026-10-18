@@ -141,8 +141,8 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
       const cx = size.w / 2 + view.x + n.x * view.k, y0 = size.h / 2 + view.y + n.y * view.k + Math.max(n.r * view.k, 7) + 3;
       const box = { x0: cx - w / 2, x1: cx + w / 2, y0, y1: y0 + h };
       if (box.x1 < 0 || box.x0 > size.w || box.y1 < 0 || box.y0 > size.h) continue;
-      if (prio(n) >= 0 && (box.x0 < 2 || box.x1 > size.w - 2 || box.y1 > size.h - 2)) continue;
-      if (prio(n) >= 0 && boxes.some((o) => box.x0 < o.x1 + 3 && o.x0 < box.x1 + 3 && box.y0 < o.y1 + 2 && o.y0 < box.y1 + 2)) continue;
+      if (n.id !== selected && (box.x0 < 2 || box.x1 > size.w - 2 || box.y1 > size.h - 2)) continue;
+      if (n.id !== selected && boxes.some((o) => box.x0 < o.x1 + 3 && o.x0 < box.x1 + 3 && box.y0 < o.y1 + 2 && o.y0 < box.y1 + 2)) continue;
       boxes.push(box); set.add(n.id);
     }
     return set;

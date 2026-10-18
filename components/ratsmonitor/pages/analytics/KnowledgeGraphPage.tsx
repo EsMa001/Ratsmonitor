@@ -189,10 +189,17 @@ export function KnowledgeGraphPage() {
               <button type="button" onClick={() => setSelected("")} aria-label="Auswahl schließen" className="text-[14px] text-slate-500 hover:text-slate-900">Schließen</button>
             </div>
             {activePair && <p className="mt-2 text-[14px] text-slate-700">Verbindung mit „{byId.get(activePair.b)?.label}“: gemeinsam in {n(activePair.n)} Einträgen.</p>}
-            {links.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500">Verbunden mit: {links.slice(0, 6).map((l) => l.other.label).join(", ")}</p>}
-            {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); setHint(""); runAfterChange(); }} className="mt-2 text-[14px] font-medium text-teal-700">Graph um „{sel.label}“ neu aufbauen →</button>}
-            {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); setHint(""); runAfterChange(); }} className="mt-2 text-[14px] font-medium text-teal-700">Auf dieses Thema eingrenzen →</button>}
-            {res.q && sel.type !== "center" && <button type="button" onClick={() => setShowList(!showList)} aria-expanded={showList} className="ml-4 mt-2 text-[14px] font-medium text-teal-700">{showList ? "Vorgänge ausblenden" : "Vorgänge zeigen"}</button>}
+            {links.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500 max-sm:hidden">Verbunden mit: {links.slice(0, 6).map((l) => l.other.label).join(", ")}</p>}
+            {/* Was man mit der Auswahl tun kann, mit kurzer Erklärung */}
+            {(sel.type === "term" || sel.type === "topic" || (res.q && String(sel.type) !== "center")) && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); setHint(""); runAfterChange(); }} className="inline-flex h-10 items-center rounded-full bg-teal-700 px-4 text-[14px] font-medium text-white">Netz zu „{sel.label}“ zeigen</button>}
+                {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); setHint(""); runAfterChange(); }} className="inline-flex h-10 items-center rounded-full bg-teal-700 px-4 text-[14px] font-medium text-white">Nur dieses Thema zeigen</button>}
+                {res.q && String(sel.type) !== "center" && <button type="button" onClick={() => setShowList(!showList)} aria-expanded={showList} className="inline-flex h-10 items-center rounded-full border border-teal-700 px-4 text-[14px] font-medium text-teal-700">{showList ? "Vorgänge ausblenden" : "Vorgänge ansehen"}</button>}
+              </div>
+            )}
+            {sel.type === "term" && <p className="m-0 mt-2 text-[12px] text-slate-500">Baut das Netz neu auf und zeigt, womit „{sel.label}“ zusammen vorkommt.</p>}
+            {sel.type === "topic" && <p className="m-0 mt-2 text-[12px] text-slate-500">Grenzt auf dieses Thema ein; über „Alle Themen“ oben lässt es sich wieder aufheben.</p>}
             {res.q && showList && sel.type !== "center" && <div className="mt-2 max-h-[50vh] overflow-auto"><RadarDrill base="/api/analytics/graph?list=1" query={ranKey} by="node" value={sel.id} label={`„${sel.label}“`} /></div>}
           </div>
         )}

@@ -98,16 +98,16 @@ export function GremiennetzPage() {
                   {!sel && <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Von links (Einstieg) nach rechts (Entscheidung) · Gremium anklicken</span>}
                 </div>
                 {sel && (
-                  <div className={`${glass} absolute inset-x-3 bottom-3 z-[6] rounded-[22px] px-5 py-4 sm:inset-x-6`}>
-                    <div className="flex items-start justify-between gap-4">
+                  <div className={`${glass} absolute inset-x-3 bottom-3 z-[6] rounded-[22px] px-5 py-4 max-sm:rounded-2xl max-sm:py-3 sm:inset-x-6`}>
+                    <div className="flex items-start justify-between gap-4 max-sm:items-center">
                       <div className="min-w-0">
-                        <p className="text-[12px] text-slate-500">{ROLE[sel.role].label}</p>
-                        <p className="text-[18px] font-semibold">{sel.name}</p>
-                        <p className="text-[14px] text-slate-700">{n(sel.in)} Vorgänge kommen an, {n(sel.out)} gehen weiter · {n(sel.starts)} beginnen hier, {n(sel.ends)} enden hier</p>
+                        <p className="text-[12px] text-slate-500 max-sm:hidden">{ROLE[sel.role].label}</p>
+                        <p className="text-[18px] max-sm:text-[16px] max-sm:line-clamp-2 font-semibold">{sel.name}</p>
+                        <p className="text-[14px] text-slate-700 max-sm:hidden">{n(sel.in)} Vorgänge kommen an, {n(sel.out)} gehen weiter · {n(sel.starts)} beginnen hier, {n(sel.ends)} enden hier</p>
                       </div>
                       <button type="button" onClick={() => setSelected("")} className="text-[14px] text-slate-500 hover:text-slate-900">Schließen</button>
                     </div>
-                    <div className="mt-2 grid gap-x-8 gap-y-1 text-[14px] text-slate-500 sm:grid-cols-2">
+                    <div className="mt-2 grid gap-x-8 gap-y-1 text-[14px] text-slate-500 max-sm:hidden sm:grid-cols-2">
                       <p className="line-clamp-2">Davor: {around.into.length ? around.into.slice(0, 3).map((e) => `${e.a} (${n(e.n)})`).join(", ") : "–"}</p>
                       <p className="line-clamp-2">Danach: {around.from.length ? around.from.slice(0, 3).map((e) => `${e.b} (${n(e.n)}${e.days !== null ? `, ${e.days} Tage` : ""})`).join(", ") : "–"}</p>
                     </div>
