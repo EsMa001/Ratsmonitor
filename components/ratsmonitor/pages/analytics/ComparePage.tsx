@@ -53,6 +53,12 @@ function datenlage(p: Place): string[] {
   return out;
 }
 
+/** Erklärtext: am Handy eine Zeile, Antippen zeigt ihn ganz */
+function Hinweis({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  const [auf, setAuf] = useState(false);
+  return <p onClick={() => setAuf(!auf)} className={`${className} text-[14px] text-slate-500 ${auf ? "" : "max-sm:line-clamp-1"}`}>{children}</p>;
+}
+
 export function ComparePage() {
   const { geo } = useData();
   /* Vom Atlas mit gewähltem Ort (?ort=): dieser Ort ist Ort 1, verglichen mit Köln (bzw. Dortmund); sonst Köln und Dortmund */
@@ -64,6 +70,9 @@ export function ComparePage() {
   const phone = usePhone();
   /* Handy: Themenprofil zuerst nur mit den fünf größten Themen, Begriffe als Schalter Ort 1 / beide / Ort 2 */
   const [allTopics, setAllTopics] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [showCom, setShowCom] = useState(false);
+  const [allTerms, setAllTerms] = useState(false);
   const [termTab, setTermTab] = useState<"a" | "b" | "c">("b");
   const [thema, setThema] = useState("");
   const [res, setRes] = useState<Result | null>(null);
@@ -87,6 +96,7 @@ export function ComparePage() {
     if (!a || !b) return setError("Bitte beide Orte wählen.");
     if (a.ags === b.ags) return setError("Bitte zwei verschiedene Orte wählen.");
     setError("");
+    setEditOpen(false);
     setLoading(true);
     fetchCompare(buildQuery(a, b, t));
   };
@@ -151,7 +161,14 @@ export function ComparePage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="vergleich" />
 
-      <section aria-label="Vergleich einstellen" className="print:hidden mt-2 border-b border-slate-200 pb-5 max-sm:mt-3 max-sm:pb-3">
+      {/* Handy: nach dem Vergleich nur eine Zeile; „Ändern“ öffnet das Formular */}
+      {phone && res && !editOpen && !stale && (
+        <button type="button" onClick={() => setEditOpen(true)} aria-label="Orte und Thema ändern" className="mt-3 flex min-h-[48px] w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 text-left text-[14px] text-slate-800 print:hidden">
+          <span className="min-w-0 truncate"><b className="font-semibold">{names[0]}</b> <span className="text-slate-500">gegen</span> <b className="font-semibold">{names[1]}</b>{thema.trim() ? <span className="text-slate-500"> · {thema.trim()}</span> : null}</span>
+          <span className="flex-none font-medium text-teal-700">Ändern</span>
+        </button>
+      )}
+      <section aria-label="Vergleich einstellen" className={`print:hidden mt-2 border-b border-slate-200 pb-5 max-sm:mt-3 max-sm:pb-3 ${phone && res && !editOpen && !stale ? "max-sm:hidden" : ""}`}>
         <div className="grid gap-4 max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:gap-y-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
           <PlaceField label="Ort 1" color={PLACE_COLORS[0]} value={ort1} onChange={setOrt1} onEnter={() => run()} />
           <PlaceField label="Ort 2" color={PLACE_COLORS[1]} value={ort2} onChange={setOrt2} onEnter={() => run()} />
@@ -190,7 +207,8 @@ export function ComparePage() {
               ] as [string, (p: Place) => string, (p: Place) => number | null][]).map(([k, f, num]) => (
                 <div key={k} className={rowCls}><span className="col-span-2 text-[14px] text-slate-500 md:col-span-1 max-sm:text-[12px] max-sm:font-medium max-sm:uppercase max-sm:tracking-wide">{k}</span>{res.places.map((p, i) => k === "Vorgänge" ? <button key={p.ags + p.scope} type="button" onClick={() => pick("overview", "all", "", "alle Vorgänge", [i])} aria-expanded={isOpen("overview", "all", "", i)} className={`font-semibold tabular-nums max-sm:text-[28px] max-sm:leading-none max-sm:!min-h-0 max-sm:py-1 ${i === 0 ? "max-sm:text-teal-700" : "max-sm:text-slate-900"} ${linkCls(isOpen("overview", "all", "", i))}`}>{f(p)}</button> : <b key={p.ags + p.scope} className={`font-semibold tabular-nums max-sm:text-[28px] max-sm:leading-none max-sm:!min-h-0 max-sm:py-1 ${i === 0 ? "max-sm:text-teal-700" : "max-sm:text-slate-900"}`}>{f(p)}</b>)}<span className="col-span-2 text-[14px] text-slate-700 md:col-span-1 max-sm:mt-1 max-sm:inline-flex max-sm:w-fit max-sm:items-center max-sm:rounded-full max-sm:bg-slate-100 max-sm:px-2.5 max-sm:py-0.5 max-sm:text-[12px]"><span className="md:hidden max-sm:hidden">Unterschied: </span>{diff(num(res.places[0]), num(res.places[1]))}</span></div>
               ))}
-              <div className={rowCls}>
+              {!showCom && <button type="button" onClick={() => setShowCom(true)} className="flex min-h-[48px] w-full items-center justify-between border-b border-slate-200 text-left text-[14px] font-medium text-teal-700 sm:hidden">Aktivste Gremien zeigen<span aria-hidden="true">›</span></button>}
+              <div className={`${rowCls} ${showCom ? "" : "max-sm:hidden"}`}>
                 <span className="col-span-2 text-[14px] text-slate-500 md:col-span-1 max-sm:text-[12px] max-sm:font-medium max-sm:uppercase max-sm:tracking-wide">Aktivste Gremien</span>
                 {res.places.map((p, i) => <ul key={p.ags + p.scope} className="m-0 list-none p-0 text-[14px]">{p.committees.slice(0, 4).map((c) => <li key={c.name} className="mb-1 flex items-center justify-between gap-x-2 max-sm:mb-1 max-sm:grid max-sm:grid-cols-[minmax(0,1fr)_auto]"><button type="button" onClick={() => pick("overview", "committee", c.name, c.name, [i])} aria-expanded={isOpen("overview", "committee", c.name, i)} className={`min-w-0 truncate ${linkCls(isOpen("overview", "committee", c.name, i))}`} title={c.name}>{c.name}</button><span className="tabular-nums text-slate-500">{n(c.n)}</span><span aria-hidden="true" className="block h-1 overflow-hidden rounded-full bg-slate-100 max-sm:col-span-2 sm:hidden"><span className="block h-full rounded-full" style={{ width: `${Math.max(4, (c.n / Math.max(1, ...p.committees.map((x) => x.n))) * 100)}%`, background: PLACE_COLORS[i] }} /></span></li>)}{!p.committees.length && <li className="text-slate-500">–</li>}</ul>)}
                 <span className="hidden md:block" />
@@ -207,7 +225,7 @@ export function ComparePage() {
           <Reveal>
           <section className="mt-12">
             <h2 className="text-[22px] font-semibold">Themenprofil</h2>
-            <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themen an den Vorgängen mit Thema. Die Marke zeigt den Wert für alle Gebiete.</p>
+            <Hinweis className="mb-3 mt-1">Anteil der Themen an den Vorgängen mit Thema. Die Marke zeigt den Wert für alle Gebiete.</Hinweis>
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             {legend}
             <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{(phone && !allTopics ? topicRows.slice(0, 5) : topicRows).map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => pick("topics", "label", r.id, r.name, [0, 1])} />)}</ol>
@@ -237,7 +255,7 @@ export function ComparePage() {
               <div>
                 <h3 className="flex items-center gap-2 text-[16px] font-semibold"><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="min-w-0 truncate">Typisch für {names[i]}</span></h3>
                 <ol className={list}>
-                  {typ[i].map((t) => <li key={t.term} className={row}><button type="button" onClick={() => pick("terms", "term", t.term, `„${prettyTerm(t.term)}“`, [i])} aria-expanded={isOpen("terms", "term", t.term, i)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", t.term, i))}`}>{prettyTerm(t.term)}</button><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
+                  {(phone && !allTerms ? typ[i].slice(0, 5) : typ[i]).map((t) => <li key={t.term} className={row}><button type="button" onClick={() => pick("terms", "term", t.term, `„${prettyTerm(t.term)}“`, [i])} aria-expanded={isOpen("terms", "term", t.term, i)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", t.term, i))}`}>{prettyTerm(t.term)}</button><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
                   {!typ[i].length && <li className="py-2 text-[14px] text-slate-500">Keine auffälligen Begriffe.</li>}
                 </ol>
               </div>
@@ -245,19 +263,20 @@ export function ComparePage() {
             return (
               <section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Begriffe im Vergleich</h2>
-                <p className="mb-4 mt-1 text-[14px] text-slate-500">Links und rechts: Begriffe, die im Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). In der Mitte: Begriffe beider Orte. Ein Klick zeigt die Vorgänge dahinter.</p>
+                <Hinweis className="mb-4 mt-1">Links und rechts: Begriffe, die im Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). In der Mitte: Begriffe beider Orte. Ein Klick zeigt die Vorgänge dahinter.</Hinweis>
                 <div className="mb-4 sm:hidden"><Segmented label="Begriffe" fill options={[["a", names[0]], ["b", "In beiden"], ["c", names[1]]]} value={termTab} onPick={setTermTab} /></div>
                 <div className="grid gap-x-8 gap-y-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1fr)]">
                   <div className={termTab === "a" ? "" : "max-sm:hidden"}>{only(0)}</div>
                   <div className={`md:order-none ${termTab === "b" ? "" : "max-sm:hidden"}`}>
                     <h3 className="text-[16px] font-semibold">In beiden Orten</h3>
                     <ol className={list}>
-                      {com.map((c) => <li key={c.term} className={row}><button type="button" onClick={() => pick("terms", "term", c.term, `„${prettyTerm(c.term)}“`, [0, 1])} aria-expanded={isOpen("terms", "term", c.term)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", c.term) && drill!.idx.length > 1)}`}>{prettyTerm(c.term)}</button><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
+                      {(phone && !allTerms ? com.slice(0, 5) : com).map((c) => <li key={c.term} className={row}><button type="button" onClick={() => pick("terms", "term", c.term, `„${prettyTerm(c.term)}“`, [0, 1])} aria-expanded={isOpen("terms", "term", c.term)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", c.term) && drill!.idx.length > 1)}`}>{prettyTerm(c.term)}</button><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
                       {!com.length && <li className="py-2 text-[14px] text-slate-500">Keine gemeinsamen Begriffe.</li>}
                     </ol>
                   </div>
                   <div className={termTab === "c" ? "" : "max-sm:hidden"}>{only(1)}</div>
                 </div>
+                {phone && !allTerms && <button type="button" onClick={() => setAllTerms(true)} className="flex min-h-[48px] w-full items-center justify-between border-b border-slate-200 text-left text-[14px] font-medium text-teal-700 sm:hidden">Alle Begriffe zeigen<span aria-hidden="true">›</span></button>}
                 {drillAt("terms")}
               </section>
             );
