@@ -229,18 +229,18 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
 /* Suche am Handy: Ergebnisblatt mit zwei Stufen (lib/sheetStage.ts). Die Karte behält ihre Größe (kein Neuzeichnen), das Blatt schiebt sich per transform darüber.
    klein: Karte groß, vom Blatt nur Kopf (und nach einer Suche die ersten Treffer, data-peek). voll: Liste groß (scrollt im Blatt), Suchleiste wandert in den Streifen oben. */
 @media (max-width:639px){
-  html.rm-search .rm-flat:not([hidden]){--H:calc(100dvh - 58px - var(--rm-tabbar));--klein:63px;--S:calc(var(--H) - var(--klein));position:relative;height:var(--H);overflow:hidden}
+  html.rm-search .rm-flat:not([hidden]){--klein:63px;position:fixed;inset:58px 0 var(--rm-tabbar) 0;overflow:hidden}
   html.rm-search .rm-flat[data-peek]:not([hidden]){--klein:221px}
-  html.rm-search .rm-flat>section{position:absolute !important;inset:0 0 auto 0;height:var(--S) !important;min-height:0;border-bottom:0}
-  html.rm-search .rm-flat main{position:absolute;inset:auto 0 0 0;height:calc(var(--H) - 176px);z-index:5;overflow:hidden;background:var(--rm-white);border-top:1px solid var(--rm-c200);transform:translateY(calc(100% - var(--klein)));transition:transform .3s cubic-bezier(.32,.72,0,1);will-change:transform}
+  html.rm-search .rm-flat>section{position:absolute !important;inset:0 0 auto 0;height:calc(100% - var(--klein)) !important;min-height:0;border-bottom:0}
+  html.rm-search .rm-flat main{position:absolute;inset:auto 0 0 0;height:calc(100% - 176px);z-index:5;overflow:hidden;background:var(--rm-white);border-top:1px solid var(--rm-c200);transform:translateY(calc(100% - var(--klein)));transition:transform .3s cubic-bezier(.32,.72,0,1);will-change:transform}
   html.rm-search .rm-flat[data-stage=voll] main{transform:none;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   html.rm-search .rm-flat[data-stage=voll] main>section:first-child{position:sticky;top:0;z-index:4;background:var(--rm-white)}
-  html.rm-search .rm-flat::after{content:"";position:absolute;inset:auto 0 0 0;height:36px;z-index:6;pointer-events:none;opacity:0;transition:opacity .2s;background:linear-gradient(to top,var(--rm-white),transparent)}
+  html.rm-search .rm-flat::after{content:"";position:absolute;inset:auto 0 0 0;height:22px;z-index:6;pointer-events:none;opacity:0;transition:opacity .2s;background:linear-gradient(to top,var(--rm-white),transparent)}
   html.rm-search .rm-flat[data-stage=klein][data-peek]::after{opacity:1}
-  /* Suchleiste samt Chips: im kleinen Blatt am unteren Rand der Karte, im vollen Blatt im Streifen oben (nur transform, läuft mit dem Blatt) */
-  html.rm-search .rm-sbar{transition:transform .3s cubic-bezier(.32,.72,0,1) !important}
-  html.rm-search .rm-flat[data-stage=voll] .rm-sbar[data-low]{transform:translateY(calc(-1 * (var(--S) - 184px)))}
-  html.rm-search .rm-flat[data-stage=voll] .rm-sbar:not([data-low]){transform:translateY(calc(-1 * (var(--S) / 2 - 85px)))}
+  /* Suchleiste samt Chips: im kleinen Blatt am unteren Rand der Karte, im vollen Blatt im Streifen oben (nur eine kleine Fläche, läuft mit dem Blatt) */
+  html.rm-search .rm-sbar{transition:top .3s cubic-bezier(.32,.72,0,1),bottom .3s cubic-bezier(.32,.72,0,1) !important}
+  html.rm-search .rm-flat[data-stage=voll] .rm-sbar[data-low]{bottom:calc(100% - 164px) !important}
+  html.rm-search .rm-flat[data-stage=voll] .rm-sbar:not([data-low]){top:62px !important}
   html.rm-search .rm-mapctl{transition:opacity .2s}
   html.rm-search .rm-flat[data-stage=voll] .rm-mapctl{opacity:0;pointer-events:none}
   @media (prefers-reduced-motion:reduce){html.rm-search .rm-flat main,html.rm-search .rm-sbar{transition:none !important}}
