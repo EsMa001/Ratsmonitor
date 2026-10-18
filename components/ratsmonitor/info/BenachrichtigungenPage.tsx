@@ -54,7 +54,7 @@ export function BenachrichtigungenPage() {
               <li key={st.href} className="grid gap-x-6 gap-y-1 border-b border-slate-200 py-3 sm:grid-cols-[120px_minmax(0,1fr)_auto] sm:items-baseline">
                 <span className="text-[14px] font-semibold tabular-nums text-teal-700">{new Date(st.d).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
                 <span className="text-[16px] text-slate-900">{st.label}<span className="block text-[14px] text-slate-500">{st.gremium}</span></span>
-                <Link href={st.href} className="text-[14px] text-teal-700 no-underline hover:underline">Vorgang mit Quelle →</Link>
+                <Link href={st.href} className="inline-block max-sm:py-3 text-[14px] text-teal-700 no-underline hover:underline">Vorgang mit Quelle →</Link>
               </li>
             ))}
           </ol>
@@ -72,7 +72,7 @@ export function BenachrichtigungenPage() {
                 <td className="py-4 text-[16px] leading-relaxed text-slate-500">
                   {p}
                   <br />
-                  <Link href={href} className="text-[14px] text-teal-700 no-underline hover:underline">{link} →</Link>
+                  <Link href={href} className="inline-block max-sm:py-3 text-[14px] text-teal-700 no-underline hover:underline">{link} →</Link>
                 </td>
               </tr>
             ))}

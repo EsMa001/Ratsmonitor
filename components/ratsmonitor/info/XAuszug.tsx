@@ -95,7 +95,7 @@ const pct = (v: number | null) => pctText(v, 1);
 const Gross = ({ zahl, text }: { zahl: string; text: React.ReactNode }) => (
   <p className="m-0 flex flex-wrap items-baseline gap-x-3"><span className="text-[44px] font-semibold leading-none text-teal-700 tabular-nums">{zahl}</span><span className="text-[18px] text-slate-900">{text}</span></p>
 );
-const Mehr = ({ href, children }: { href: string; children: React.ReactNode }) => <Link href={href} className="mt-4 inline-block text-[16px] text-teal-700 hover:underline">{children} →</Link>;
+const Mehr = ({ href, children }: { href: string; children: React.ReactNode }) => <Link href={href} className="mt-4 inline-block max-sm:py-3 text-[16px] text-teal-700 hover:underline">{children} →</Link>;
 const Datum = ({ iso }: { iso: string }) => (
   <span aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-2 text-center">
     <span className="text-[22px] font-semibold leading-none">{Number(iso.slice(8, 10))}</span>

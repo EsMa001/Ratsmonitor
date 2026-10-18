@@ -51,6 +51,8 @@ function VideoMitKapiteln({ b, dark }: { b: Branche; dark: boolean }) {
   const [kap, setKap] = useState<{ titel: string; start: number }[]>([]);
   const [aktiv, setAktiv] = useState(0);
   const [fehler, setFehler] = useState(false);
+  /* Handy: Kapitelliste eingeklappt */
+  const [kapOffen, setKapOffen] = useState(false);
   useEffect(() => {
     if (!b.video) return;
     const c = new AbortController();
@@ -75,7 +77,10 @@ function VideoMitKapiteln({ b, dark }: { b: Branche; dark: boolean }) {
         <div className="mx-[-3%] h-3 rounded-b-2xl bg-slate-300" style={{ boxShadow: "inset 0 -2px 0 var(--rm-c400)" }} />
       </div>
       {kap.length > 0 && (
-        <ol className="m-0 w-full max-w-[680px] list-none p-0 lg:max-w-none lg:flex-1">
+        <button type="button" aria-expanded={kapOffen} onClick={() => setKapOffen(!kapOffen)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{kapOffen ? "Kapitel ausblenden" : `${kap.length} Kapitel zeigen`}</button>
+      )}
+      {kap.length > 0 && (
+        <ol className={`m-0 w-full max-w-[680px] list-none p-0 lg:max-w-none lg:flex-1 ${kapOffen ? "" : "max-sm:hidden"}`}>
           {kap.map((k, i) => (
             <li key={k.titel}>
               <button type="button" onClick={() => gehe(i)} aria-current={aktiv === i} className={"flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left text-[16px] leading-snug " + (aktiv === i ? "bg-teal-50 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50")}>
@@ -106,7 +111,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
       {(b.video || IS_DEV) && (
         <section className="ri-sec ri-sec--tight">
           <div className="mx-auto max-w-[1100px]">
-            <h2 className="ri-h2" style={{ margin: "0 auto 32px", fontSize: 34, textAlign: "center" }}>Plenara für {b.name} in einer Minute</h2>
+            <h2 className="ri-h2 max-sm:!text-[22px] max-sm:!mb-4" style={{ margin: "0 auto 32px", fontSize: 34, textAlign: "center" }}>Plenara für {b.name} in einer Minute</h2>
             <VideoMitKapiteln b={b} dark={dark} />
           </div>
         </section>
@@ -118,7 +123,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
       {/* Rollen: je Rolle ein konkreter Nutzen (Überschrift und Satz) und ein Suchlink */}
       <section className="ri-sec ri-sec--tight">
         <h2 className="ri-h2">Für Ihre Rolle</h2>
-        <div className="grid gap-x-10 gap-y-10 sm:grid-cols-3" style={{ marginTop: 24 }}>
+        <div className="grid gap-x-10 gap-y-10 max-sm:gap-y-6 sm:grid-cols-3" style={{ marginTop: 24 }}>
           {(b.rollen ?? []).map((rolle) => {
             const n = b.benefits.find(([, , , , r]) => r === rolle.name);
             return (
@@ -129,7 +134,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
                 </div>
                 {n && <>
                   <p className="m-0 mt-3 text-[16px] font-semibold text-slate-900">{n[1]}</p>
-                  <p className="m-0 mt-1 text-[16px] leading-relaxed text-slate-500">{n[2]}</p>
+                  <p className="m-0 mt-1 text-[16px] leading-relaxed text-slate-500 max-sm:hidden">{n[2]}</p>
                   <Link href={suchLink(n[3])} className="mt-1 inline-block py-1 max-sm:py-3 text-[14px] text-teal-700 hover:underline">Suche „{n[3]}“ →</Link>
                 </>}
               </div>
@@ -140,7 +145,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
 
       {/* Abschluss: ein Satz, eine Handlung, Slogan */}
       <section className="ri-sec">
-        <p className="m-0 max-w-[720px] text-[28px] font-semibold leading-tight text-slate-900">{b.closing}</p>
+        <p className="m-0 max-w-[720px] text-[28px] max-sm:text-[22px] font-semibold leading-tight text-slate-900">{b.closing}</p>
         <div style={{ marginTop: 24 }}>
           <Link href={href} className="inline-flex h-12 items-center gap-2 rounded-full bg-teal-700 px-6 text-[16px] font-medium text-white hover:bg-teal-800">
             „{term}“ in der Suche ansehen <span aria-hidden="true">→</span>

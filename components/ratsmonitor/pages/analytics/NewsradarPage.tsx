@@ -34,21 +34,25 @@ function asText(i: Item) {
   return [i.headline, "", [i.lead, `In der Vorlage heißt es: „${i.quote}“`, i.more ? `Weiter heißt es dort: „${i.more}“` : "", ...i.body].filter(Boolean).join(" "), "", `Quelle: ${i.source}, ${link}`, HINWEIS].join("\n");
 }
 
-function Meldung({ i }: { i: Item }) {
+function Meldung({ i, hide }: { i: Item; hide?: boolean }) {
   const [copied, setCopied] = useState(false);
+  /* Handy: Überschrift, Satz und Zitat; der Rest hinter „Weiterlesen“ */
+  const [weiter, setWeiter] = useState(false);
+  const rest = weiter ? "" : "max-sm:hidden";
   const copy = () => {
     navigator.clipboard?.writeText(asText(i)).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1800); }).catch(() => {});
   };
   return (
-    <article className="border-b border-slate-200 py-7">
+    <article className={`border-b border-slate-200 py-7 max-sm:py-5 ${hide ? "max-sm:hidden" : ""}`}>
       <p className="m-0 text-[12px] text-slate-500">{i.dateline.place}{i.dateline.committee ? ` · ${i.dateline.committee}` : ""} · {datum(i.dateline.date)}</p>
       <h3 className="m-0 mt-1.5 text-[18px] font-semibold leading-snug sm:text-[22px]"><Link href={`/beschluss/${i.id}`} className="text-slate-900 no-underline hover:text-teal-800">{i.headline}</Link></h3>
       <p className="m-0 mt-3 max-w-[820px] text-[16px] leading-relaxed text-slate-900">
         {i.lead} In der Vorlage heißt es: <q>{i.quote}</q>
-        {i.more && <> Weiter heißt es dort: <q>{i.more}</q></>}
-        {i.body.length > 0 && <> {i.body.join(" ")}</>}
+        {i.more && <span className={rest}> Weiter heißt es dort: <q>{i.more}</q></span>}
+        {i.body.length > 0 && <span className={rest}> {i.body.join(" ")}</span>}
       </p>
-      <p className="m-0 mt-3 text-[12px] text-slate-500">Quelle: {i.source} · {HINWEIS}</p>
+      {(i.more || i.body.length > 0) && <button type="button" onClick={() => setWeiter(!weiter)} aria-expanded={weiter} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{weiter ? "Weniger" : "Weiterlesen"}</button>}
+      <p className={`m-0 mt-3 text-[12px] text-slate-500 ${rest}`}>Quelle: {i.source} · {HINWEIS}</p>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
         <Link href={`/beschluss/${i.id}`} className="inline-flex max-sm:min-h-[44px] items-center text-[14px] font-medium text-teal-700 no-underline">Zum Vorgang →</Link>
         <button type="button" onClick={copy} className="inline-flex max-sm:min-h-[44px] items-center text-[14px] font-medium text-teal-700">{copied ? "Kopiert" : "Meldung kopieren"}</button>
@@ -62,6 +66,7 @@ function Meldung({ i }: { i: Item }) {
 export function NewsradarPage() {
   const { query } = useAnalyticsQuery();
   const [days, setDays] = useState(30);
+  const [alle, setAlle] = useState(false);
   const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: `${query}&days=${days}`, url: `/api/analytics/news?${query}&days=${days}`, initial: true });
   /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
   useEffect(() => {
@@ -97,7 +102,8 @@ export function NewsradarPage() {
             <>
               <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
               <Reveal><section className="mt-6 border-t border-slate-200">
-                {res.items.map((i) => <Meldung key={i.id} i={i} />)}
+                {res.items.map((k, n) => <Meldung key={k.id} i={k} hide={!alle && n >= 8} />)}
+                {res.items.length > 8 && <button type="button" onClick={() => setAlle(!alle)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{alle ? "Weniger Meldungen zeigen" : `Alle ${res.items.length} Meldungen zeigen`}</button>}
               </section></Reveal>
               <MethodikNote>Nachrichtenwert nach festen Regeln: Konflikt, Tragweite, Alltagsnähe und Aktualität. Jede Meldung zitiert wörtlich aus der Vorlage; Vorgänge ohne zitierbaren Satz erscheinen nicht.</MethodikNote>
             </>
