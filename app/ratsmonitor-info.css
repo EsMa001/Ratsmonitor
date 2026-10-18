@@ -527,3 +527,8 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
   :is(button,a[href],[role="button"]):not([role="tab"],[role="menuitem"],.rm-headtitle):active{transform:scale(.97)}
   nav a[href]:active,nav button:active{transform:scale(.94)}
 }
+
+/* Handy, Seiten mit Band: auch kurze Seiten lassen sich so weit scrollen, dass das Band ganz in die Kopfzeile einklappt */
+@media (max-width:639px){
+  html:has(.pl-top,.ri-head) main#inhalt{min-height:calc(100dvh + 150px)}
+}
