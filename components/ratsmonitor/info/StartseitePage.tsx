@@ -4,6 +4,7 @@ import { IconPin } from "../components/icons";
 import { Ladefehler, useOpenSearch } from "./blocks";
 import { todayLocal } from "../lib/text";
 import { useMe } from "../lib/account";
+import { usePhone } from "../lib/usePhone";
 import topicList from "./startseite-topics.json";
 
 /* Startseite (noch nicht die Landingpage).
@@ -223,6 +224,7 @@ function GermanyMap({ pops, onPick }: { pops: Pop[]; onPick: (name: string) => v
 
 export function StartseitePage() {
   const openSearch = useOpenSearch();
+  const phone = usePhone();
   const me = useMe();
   const [term, setTerm] = useState("");
   const [total, setTotal] = useState<number | null>(null);
@@ -372,14 +374,23 @@ export function StartseitePage() {
   const win = span ? ((span.hi - span.lo) * 6000) / 96000 : 0;
   const live: Pop[] = (() => {
     if (!span) return [];
-    /* Älteres bleibt stehen, Neues wartet, wenn es sich auf der Karte überlappen würde */
+    /* Älteres bleibt stehen, Neues wartet, wenn sich die beschrifteten Flächen auf der Karte überlappen würden (Schriftgrößen wie im CSS: Handy 34/26, sonst 17/12) */
+    const fs1 = phone ? 34 : 17, fs2 = phone ? 26 : 12;
+    const boxOf = (e: (typeof events)[number]) => {
+      const c = cent[e.k];
+      if (!c) return null;
+      const w = Math.max(e.topic.length * fs1 * 0.6, short(e.name).length * fs2 * 0.55) + 24;
+      const left = c[0] < 330 ? c[0] - 8 : c[0] - w + 8;
+      return { x0: left, x1: left + w, y0: c[1] - fs1 - 4, y1: c[1] + fs2 + 12 };
+    };
+    const hit = (a: ReturnType<typeof boxOf>, b: ReturnType<typeof boxOf>) => !!a && !!b && a.x0 < b.x1 + 10 && b.x0 < a.x1 + 10 && a.y0 < b.y1 + 8 && b.y0 < a.y1 + 8;
     const ok: typeof events = [];
     for (const e of events.filter((x) => x.t <= rT && x.t > rT - win)) {
-      const c = cent[e.k];
-      const clash = c && ok.some((o) => { const q = cent[o.k]; return q && Math.abs(q[0] - c[0]) < 150 && Math.abs(q[1] - c[1]) < 46; });
+      const b = boxOf(e);
+      const clash = b && ok.some((o) => hit(b, boxOf(o)));
       if (!clash) ok.push(e);
     }
-    return ok.slice(-3).map((e) => ({ key: `${e.topic}-${e.k}`, k: e.k, label: e.topic, sub: short(e.name) }));
+    return ok.slice(phone ? -2 : -3).map((e) => ({ key: `${e.topic}-${e.k}`, k: e.k, label: e.topic, sub: short(e.name) }));
   })();
   /* Nie leer: Zwischen zwei Erscheinungen bleibt das zuletzt gezeigte stehen (am Anfang das erste) */
   const pops: Pop[] = (() => {

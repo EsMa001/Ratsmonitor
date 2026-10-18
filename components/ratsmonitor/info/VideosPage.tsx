@@ -134,19 +134,30 @@ export function VideosPage() {
         <p className="mb-6 mt-1 text-[16px] text-slate-500">Von der ersten Suche bis zur Analyse. Untertitel lassen sich im Player zuschalten.</p>
         <div className="grid items-start gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-10">
           <Player base={variant(FULL, dark)} poster={variant(FULL, dark)} label="Vollständiges Video abspielen" onTime={(t) => setNow(Math.floor(t))} seekRef={ctlRef} />
-          <div className="grid gap-5 sm:grid-cols-2 lg:max-h-[34rem] lg:grid-cols-1 lg:overflow-y-auto">
+          <div className="grid gap-5 max-sm:hidden sm:grid-cols-2 lg:max-h-[34rem] lg:grid-cols-1 lg:overflow-y-auto">
             <ChapterList title="plenara" items={PLENARA} now={now} go={go} />
             <ChapterList title="plenara.X Analysen" items={ANALYSE} now={now} go={go} />
           </div>
+          {/* Handy: die Kapitel erst auf Wunsch */}
+          <details className="group rounded-2xl bg-slate-50 px-4 py-1 sm:hidden">
+            <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between text-[16px] font-semibold text-slate-900 [&::-webkit-details-marker]:hidden">
+              {PLENARA.length + ANALYSE.length} Kapitel zeigen
+              <span aria-hidden="true" className="text-teal-700 transition-transform group-open:rotate-90">›</span>
+            </summary>
+            <div className="grid gap-5 pb-3">
+              <ChapterList title="plenara" items={PLENARA} now={now} go={go} />
+              <ChapterList title="plenara.X Analysen" items={ANALYSE} now={now} go={go} />
+            </div>
+          </details>
         </div>
       </section>
       <section className="ri-sec">
         <h2 className="m-0 text-[22px] font-semibold text-slate-900">Weitere Videos</h2>
         <p className="mb-6 mt-1 text-[16px] text-slate-500">plenara.X und je Anwendergruppe ein kurzes Video mit einem passenden Begriff.</p>
-        <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 max-sm:-mx-4 max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:scroll-px-4 max-sm:gap-3 max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden">
           {[{ base: PLENARAX, name: "plenara.X", text: "Atlas, Signale, Trends, Fakten und Einblicke.", href: "/analytics/atlas", link: "Zum Atlas" },
             ...ANWENDER.map((a) => ({ base: `plenara-anwender-${a.slug}`, name: a.name, text: a.text, href: `/anwender/${a.slug}`, link: `Zur Seite ${a.name}` }))].map((v) => (
-            <div key={v.base}>
+            <div key={v.base} className="max-sm:w-[78%] max-sm:flex-none max-sm:snap-start">
               <Player base={variant(v.base, dark)} poster={variant(v.base, dark)} label={`Video abspielen: ${v.name}`} />
               <p className="m-0 mt-3 text-[16px] font-semibold text-slate-900">{v.name}</p>
               <p className="m-0 mt-0.5 text-[14px] text-slate-500">{v.text} <Link href={v.href} className="inline-block max-sm:py-3 text-teal-700 hover:underline">{v.link} →</Link></p>
