@@ -9,9 +9,13 @@ import { IconArrowUp, IconEmptySearch, IconChevronLeft, IconChevronRight } from 
 import { ArticleCard } from "./ArticleCard";
 import { useEntitlements } from "../../lib/entitlements";
 import { CountDots } from "../CountDots";
+import { isPhone } from "../../lib/usePhone";
 
 /** Beim Blättern: die Zeile mit der Trefferzahl (Suche und Filter) an den oberen Rand direkt unter der angehefteten Kopfzeile, darunter beginnen die Artikel */
 function scrollToResultsTop() {
+  /* Handy: die Liste scrollt im Ergebnisblatt (main), nicht im Fenster */
+  const sheet = isPhone() ? document.querySelector<HTMLElement>(".rm-flat main") : null;
+  if (sheet) { sheet.scrollTo({ top: 0, behavior: "smooth" }); return; }
   const row = document.querySelector<HTMLElement>('section[aria-label="Suche und Filter"]');
   if (!row) return;
   const head = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
@@ -63,6 +67,7 @@ export function ResultsPanel() {
   const listKey = res.results.map((a) => a.id).join(",") + "|" + res.terms.join(" ");
   useEffect(() => {
     listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    if (isPhone()) document.querySelector<HTMLElement>(".rm-flat main")?.scrollTo({ top: 0, behavior: "smooth" });
     requestAnimationFrame(updateFades);
   }, [listKey, updateFades]);
 
