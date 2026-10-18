@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { DarkCta, Ladefehler, PageHead } from "./blocks";
-import { Icon } from "./icons";
+import { Icon, type IconName } from "./icons";
 import { useSearch } from "../state/search";
 import { errorText, fetchJson } from "../lib/fetchJson";
 
@@ -21,10 +21,10 @@ const day = (v: string | null) => (v ? new Date(v).toLocaleDateString("de-DE", {
 /** Große Kennzahl mit feiner Fortschrittslinie */
 function Big({ value, label, sub }: { value: number; label: string; sub: string }) {
   return (
-    <div>
-      <p className="m-0 text-[44px] font-semibold leading-none tracking-[-0.03em] text-slate-900 max-sm:text-[28px]">{value} <span className="text-[28px] max-sm:text-[22px]">%</span></p>
+    <div className="max-sm:rounded-2xl max-sm:bg-slate-50 max-sm:p-4">
+      <p className="m-0 text-[44px] font-semibold leading-none tracking-[-0.03em] text-slate-900 max-sm:text-teal-700">{value} <span className="text-[28px] max-sm:text-[22px]">%</span></p>
       <p className="m-0 mt-3 text-[18px] font-medium text-slate-900">{label}</p>
-      <span className="mt-3 block h-[4px] w-full max-w-[420px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${value}%` }} /></span>
+      <span className="mt-3 block h-[4px] max-sm:h-2 w-full max-w-[420px] rounded-full bg-slate-100 max-sm:bg-white"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${value}%` }} /></span>
       <p className="m-0 mt-2 text-[14px] text-slate-500">{sub}</p>
     </div>
   );
@@ -81,18 +81,19 @@ export function QuellenPage() {
         )}
         {data && reach && (
           <>
-            <div className="grid gap-12 sm:grid-cols-2">
+            <div className="grid gap-12 max-sm:gap-3 sm:grid-cols-2">
               <Big value={pct(reach.municipalities.covered, reach.municipalities.total)} label="der Gemeinden Deutschlands sind dabei" sub={`${n(reach.municipalities.covered)} von ${n(reach.municipalities.total)} Gemeinden mit Vorgängen aus ihrem Rat`} />
               <Big value={pct(reach.population.covered, reach.population.total)} label="der Einwohner leben in abgedeckten Orten" sub={`${(reach.population.covered / 1e6).toLocaleString("de-DE", { maximumFractionDigits: 1 })} von ${(reach.population.total / 1e6).toLocaleString("de-DE", { maximumFractionDigits: 1 })} Millionen Menschen`} />
             </div>
-            <dl className="m-0 mt-12 grid grid-cols-2 border-t border-slate-200 sm:grid-cols-4">
+            <dl className="m-0 mt-12 max-sm:mt-3 grid grid-cols-2 max-sm:gap-2 border-t border-slate-200 max-sm:border-t-0 sm:grid-cols-4">
               {[
-                [n(data.totals.articles), "Vorgänge durchsuchbar"],
-                [`${n(reach.districts.covered)} von ${n(reach.districts.total)}`, "Landkreise"],
-                [n(landsWithData), "Bundesländer mit Daten"],
-                [day(data.totals.latest), "Letzter Abruf"],
-              ].map(([value, label], i) => (
-                <div key={label} className={`py-4 sm:px-4 ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}>
+                [n(data.totals.articles), "Vorgänge durchsuchbar", "fileText"],
+                [`${n(reach.districts.covered)} von ${n(reach.districts.total)}`, "Landkreise", "mapPin"],
+                [n(landsWithData), "Bundesländer mit Daten", "map"],
+                [day(data.totals.latest), "Letzter Abruf", "clock"],
+              ].map(([value, label, icon], i) => (
+                <div key={label} className={`py-4 sm:px-4 max-sm:rounded-xl max-sm:bg-slate-50 max-sm:p-3 ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}>
+                  <Icon name={icon as IconName} size={18} className="mb-1.5 text-teal-700 sm:hidden" />
                   <dd className="m-0 text-[22px] font-semibold text-slate-900">{value}</dd>
                   <dt className="mt-1 text-[14px] text-slate-500">{label}</dt>
                 </div>
