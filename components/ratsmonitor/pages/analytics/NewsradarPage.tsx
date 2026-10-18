@@ -68,7 +68,8 @@ function Meldung({ i, hide, nr, total }: { i: Item; hide?: boolean; nr: number; 
 export function NewsradarPage() {
   const { query } = useAnalyticsQuery();
   const [days, setDays] = useState(30);
-  const [alle, setAlle] = useState(false);
+  /* Handy: zuerst fünf Meldungen, „Weitere laden“ zeigt je fünf mehr */
+  const [sicht, setSicht] = useState(5);
   const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: `${query}&days=${days}`, url: `/api/analytics/news?${query}&days=${days}`, initial: true });
   /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
   useEffect(() => {
@@ -104,11 +105,11 @@ export function NewsradarPage() {
             <>
               <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
               <nav aria-label="Meldungen" className="-mx-4 mt-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden">
-                {res.items.map((k, n) => (!alle && n >= 8) ? null : <a key={k.id} href={`#meldung-${n + 1}`} className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 no-underline"><b className="font-semibold tabular-nums text-teal-700">{n + 1}</b>{k.dateline.place.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt) /, "")}</a>)}
+                {res.items.map((k, n) => (n >= sicht) ? null : <a key={k.id} href={`#meldung-${n + 1}`} className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 no-underline"><b className="font-semibold tabular-nums text-teal-700">{n + 1}</b>{k.dateline.place.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt) /, "")}</a>)}
               </nav>
               <Reveal><section className="mt-6 max-sm:mt-3 border-t border-slate-200">
-                {res.items.map((k, n) => <Meldung key={k.id} i={k} nr={n + 1} total={res.items.length} hide={!alle && n >= 8} />)}
-                {res.items.length > 8 && <button type="button" onClick={() => setAlle(!alle)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{alle ? "Weniger Meldungen zeigen" : `Alle ${res.items.length} Meldungen zeigen`}</button>}
+                {res.items.map((k, n) => <Meldung key={k.id} i={k} nr={n + 1} total={res.items.length} hide={n >= sicht} />)}
+                {res.items.length > sicht && <button type="button" onClick={() => setSicht((v) => v + 5)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{`Weitere ${Math.min(5, res.items.length - sicht)} Meldungen laden`}</button>}
               </section></Reveal>
               <MethodikNote>Nachrichtenwert nach festen Regeln: Konflikt, Tragweite, Alltagsnähe und Aktualität. Jede Meldung zitiert wörtlich aus der Vorlage; Vorgänge ohne zitierbaren Satz erscheinen nicht.</MethodikNote>
             </>
