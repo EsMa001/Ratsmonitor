@@ -103,16 +103,16 @@ export function FraktionenPage() {
               </section></Reveal>
 
               {parties.length > 6 && <button type="button" onClick={() => setAllP(!allP)} className="mt-3 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{allP ? "Weniger Fraktionen zeigen" : `Alle ${parties.length} Fraktionen zeigen`}</button>}
-              <Reveal><section className="mt-12">
+              <Reveal><section className="mt-12 max-sm:mt-8">
                 <h2 className="text-[22px] font-semibold">Themenprofil</h2>
-                <p className="mb-4 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil je Themenfeld an den Anträgen und Anfragen einer Fraktion. Kräftiges Petrol: deutlich häufiger als bei den anderen.</p>
+                <p className="mb-4 max-sm:mb-2 mt-1 max-w-[760px] text-[14px] text-slate-500 max-sm:line-clamp-2">Anteil je Themenfeld an den Anträgen und Anfragen einer Fraktion. Kräftiges Petrol: deutlich häufiger als bei den anderen.</p>
                 {/* Handy: je Fraktion eine Zeile mit den Themen untereinander statt der breiten Tabelle (kein Querscrollen) */}
                 <ul className="m-0 list-none border-t border-slate-200 p-0 sm:hidden">
                   {parties.map((p, i) => (
-                    <li key={p.name} className={"border-b border-slate-200 py-3" + rowHide(i)}>
+                    <li key={p.name} className={"border-b border-slate-200 py-2.5" + rowHide(i)}>
                       <p className="m-0 text-[14px] font-semibold text-slate-900">{p.name}</p>
                       {p.top.length > 0 && <p className="m-0 mt-0.5 text-[12px] text-slate-500">Typisch: {p.top.map((t) => t.name).join(", ")}</p>}
-                      <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                      <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1">
                         {cols.map((c) => {
                           const cell = p.profile.find((x) => x.id === c.id);
                           const idx = cell && cell.n >= 3 ? cell.index : null;
