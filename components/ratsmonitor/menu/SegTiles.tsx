@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { useRef, type PointerEvent, type ReactNode } from "react";
+import { useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { Lock } from "lucide-react";
+import { tick } from "../lib/haptic";
 
 /** Schalter mit mehreren Stellungen (wie am iPhone): grauer Rahmen, die gewählte Stelle liegt auf einem weißen Streifen, der gleitet */
 export function Segmented({ label, names, active, onPick }: { label: string; names: string[]; active: string; onPick: (n: string) => void }) {
-  const i = Math.max(0, names.indexOf(active));
+  const [over, setOver] = useState<string | null>(null);
+  const i = Math.max(0, names.indexOf(over ?? active));
   /* Mit dem Finger über den Schalter ziehen wählt die Stellung unter dem Finger */
   const drag = useRef<{ x: number; on: boolean } | null>(null);
   const moved = useRef(false);
@@ -15,14 +17,14 @@ export function Segmented({ label, names, active, onPick }: { label: string; nam
       onPointerMove={(e) => {
         const d = drag.current; if (!d) return;
         if (!d.on && Math.abs(e.clientX - d.x) > 8) { d.on = true; moved.current = true; e.currentTarget.setPointerCapture(e.pointerId); }
-        if (d.on) { const n = at(e); if (n !== active) onPick(n); }
+        if (d.on) setOver(at(e));
       }}
-      onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}
+      onPointerUp={() => { const n = over; drag.current = null; setOver(null); if (n !== null && n !== active) { tick(); onPick(n); } }} onPointerCancel={() => { drag.current = null; setOver(null); }}
       onClickCapture={(e) => { if (moved.current) { e.stopPropagation(); e.preventDefault(); moved.current = false; } }} style={{ gridTemplateColumns: `repeat(${names.length}, minmax(0, 1fr))` }}>
       <span aria-hidden="true" className="absolute inset-y-1 left-1 rounded-[10px] bg-white shadow-sm transition-transform duration-200 motion-reduce:transition-none" style={{ width: `calc((100% - 8px) / ${names.length})`, transform: `translateX(${i * 100}%)` }} />
       {names.map((n) => (
         <button key={n} type="button" role="tab" aria-selected={n === active} onClick={() => onPick(n)}
-          className={`relative z-10 h-9 rounded-[10px] text-[14px] font-medium transition-colors ${n === active ? "text-slate-900" : "text-slate-500"}`}>{n}</button>
+          className={`relative z-10 h-9 rounded-[10px] text-[14px] font-medium transition-colors ${n === (over ?? active) ? "text-slate-900" : "text-slate-500"}`}>{n}</button>
       ))}
     </div>
   );

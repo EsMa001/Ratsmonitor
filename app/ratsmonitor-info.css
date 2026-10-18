@@ -505,3 +505,12 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
   header .rm-logo__mark--p{height:.66em !important;width:.66em !important;vertical-align:-.07em !important}
   html:not(.rm-dark) header .rm-logo{color:var(--rm-on)}
 }
+
+/* Handy: kleiner Seitentitel in der Kopfzeile, sobald der große aus dem Bild ist; das Logo macht ihm Platz */
+@media (max-width:639px){
+  header[data-title="1"] .rm-logo{visibility:hidden}
+  html:not(.rm-dark) header[data-title="1"]{position:fixed !important;inset:0 0 auto 0 !important;background:var(--rm-ac) !important;border-bottom:0 !important}
+  .rm-headtitle{color:var(--rm-c900);background:transparent;border:0;padding:0;animation:rmHeadIn .2s ease-out both}
+  html:not(.rm-dark) .rm-headtitle{color:var(--rm-on)}
+  @keyframes rmHeadIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}

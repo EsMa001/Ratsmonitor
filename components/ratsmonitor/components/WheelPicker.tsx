@@ -1,4 +1,5 @@
 "use client";
+import { tick } from "../lib/haptic";
 import { useEffect, useRef } from "react";
 import { ChevronsUpDown } from "lucide-react";
 import type { RailItem } from "./ChipRail";
@@ -24,7 +25,7 @@ export function WheelPicker({ label, items, value, onPick, className = "" }: { l
       const el = ref.current;
       if (!el) return;
       const i = Math.min(items.length - 1, Math.max(0, Math.round(el.scrollTop / ROW)));
-      if (items[i].id !== value) onPick(items[i].id);
+      if (items[i].id !== value) { tick(); onPick(items[i].id); }
     }, 160);
   };
   return (
