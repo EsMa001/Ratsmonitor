@@ -224,7 +224,7 @@ export function MethodikText({ ids }: { ids: [AnalyseId, string][] }) {
           {METHODIK[id]}
         </div>
       ))}
-      <button type="button" onClick={() => setAlles(!alles)} aria-expanded={alles} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{alles ? "Weniger" : "Mehr lesen: Grundlage, Messung, Grenzen"}</button>
+      <button type="button" onClick={() => setAlles(!alles)} aria-expanded={alles} className="mt-2 max-sm:min-h-[44px] text-[14px] font-medium text-teal-700 hover:underline">{alles ? "Weniger" : "Mehr lesen: Grundlage, Messung, Grenzen"}</button>
     </>
   );
 }

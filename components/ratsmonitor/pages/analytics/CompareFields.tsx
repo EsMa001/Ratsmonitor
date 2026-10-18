@@ -24,7 +24,7 @@ export function PlaceField({ label, color, value, onChange, onEnter }: { label: 
       {value ? (
         <div className="flex h-11 items-center justify-between gap-2 rounded-full border border-slate-200 bg-slate-50 pl-4 pr-1.5">
           <span className="min-w-0 truncate text-[16px] font-medium text-slate-900">{value.name}</span>
-          <button type="button" onClick={() => onChange(null)} aria-label={`${value.name} entfernen`} className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-900">
+          <button type="button" onClick={() => onChange(null)} aria-label={`${value.name} entfernen`} className="grid h-8 w-8 max-sm:h-11 max-sm:w-11 shrink-0 place-items-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-900">
             <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
           </button>
         </div>

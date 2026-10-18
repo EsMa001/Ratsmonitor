@@ -50,8 +50,8 @@ function Meldung({ i }: { i: Item }) {
       </p>
       <p className="m-0 mt-3 text-[12px] text-slate-500">Quelle: {i.source} · {HINWEIS}</p>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <Link href={`/beschluss/${i.id}`} className="text-[14px] font-medium text-teal-700 no-underline">Zum Vorgang →</Link>
-        <button type="button" onClick={copy} className="text-[14px] font-medium text-teal-700">{copied ? "Kopiert" : "Meldung kopieren"}</button>
+        <Link href={`/beschluss/${i.id}`} className="inline-flex max-sm:min-h-[44px] items-center text-[14px] font-medium text-teal-700 no-underline">Zum Vorgang →</Link>
+        <button type="button" onClick={copy} className="inline-flex max-sm:min-h-[44px] items-center text-[14px] font-medium text-teal-700">{copied ? "Kopiert" : "Meldung kopieren"}</button>
         <span className="text-[12px] text-slate-500"><span className="sr-only">Nachrichtenwert </span>Wert {i.score}: {i.why.join(" · ")}</span>
       </div>
     </article>

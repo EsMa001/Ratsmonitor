@@ -90,7 +90,7 @@ export function Segmented<K extends string>({ options, value, onPick, label }: {
   return (
     <div role="tablist" aria-label={label} className="inline-flex max-w-full overflow-x-auto rounded-full bg-slate-100 p-1">
       {options.map(([k, l, hint]) => <button key={k} role="tab" type="button" aria-selected={k === value} title={hint} onClick={() => onPick(k)}
-        className={`h-8 shrink-0 whitespace-nowrap rounded-full px-3 text-[14px] ${k === value ? "bg-white font-semibold text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>)}
+        className={`h-8 max-sm:h-11 shrink-0 whitespace-nowrap rounded-full px-3 text-[14px] ${k === value ? "bg-white font-semibold text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>)}
     </div>
   );
 }
