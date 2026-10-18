@@ -10,7 +10,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Fehler, Leer } from "./Befund";
-import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitExtra, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, MeinOrt, ZeitExtra, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import { kurz } from "../../components/ChipRail";
@@ -152,7 +152,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const zeitRaw = params.get("zeit");
   const zeit = zeitRaw === null ? "6" : ZEITRAUM.some(([k]) => k === zeitRaw) ? zeitRaw : "6";
   /* Nur Vorgänge, die in ihrem Ort die ersten dieses Signals sind */
-  const erstmals = params.get("erstmals") === "1" ? "1" : "";
+  /* Die Ansicht „Erstmals hier“ gibt es nicht mehr (Schalter und Überschrift entfallen); ältere Links mit ?erstmals=1 zeigen die normale Liste */
+  const erstmals = "";
   const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string; erstmals?: string }) => router.push(signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), erstmals, ...next }), { scroll: false });
   // Ungültige Werte in der Adresse still berichtigen
   const target = signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
@@ -264,6 +265,10 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
               <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
               <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
               <Folgen hint="Neue Vorgänge zu Ort und Suche per Mail (die Signalkategorie wird noch nicht gespeichert)" />
+              {/* Handy: Glocke und Karte in einer Reihe */}
+              <span className="sm:hidden"><button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
+                {karte ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{karte ? "Karte ausblenden" : "Karte zeigen"}
+              </button></span>
             </Kennzahlen>}
 
           {topPlaces.length > 1 && res.total > 0 && <p className="mt-3 text-[18px] max-sm:hidden font-semibold leading-snug">Am meisten in {topPlaces.map((p, i) => <span key={p.region}>{i ? (i === topPlaces.length - 1 ? " und " : ", ") : ""}<button type="button" onClick={() => search.setArea(p.ags || p.members?.[0] || "", "ui")} className="font-semibold text-teal-700 hover:underline" aria-label={p.name}><span aria-hidden="true" className="max-sm:hidden">{p.name}</span><span aria-hidden="true" className="sm:hidden">{p.name.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt|Landkreis|Kreis) /, "")}</span></button> ({n(p.count)})</span>)}.</p>}
@@ -273,7 +278,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             {TRENDS_OF[signal] && <>Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="font-medium text-teal-700 hover:underline">„{TRENDS_OF[signal]}“ in den Trends →</Link></>}
           </p>}
           {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 1024 px nebeneinander */}
-          <div className="mt-4 print:hidden">
+          <div className="mt-4 print:hidden max-sm:hidden">
             <button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
               {karte ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{karte ? "Karte ausblenden" : "Karte zeigen"}
             </button>
@@ -294,13 +299,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
               </div>
 
               {(items.length > 0 || !!erstmals) && (
-                <section className="mt-6" aria-label="Vorgänge">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h2 className="text-[22px] font-semibold">{erstmals ? "Erstmals im Ort" : "Neueste Vorgänge"}</h2>
-                    {res.firstCount !== undefined && (res.firstCount > 0 || !!erstmals) && <Segmented label="Auswahl" value={erstmals ? "erst" : "neu"} onPick={(k) => pick({ erstmals: k === "erst" ? "1" : "" })}
-                      options={[["neu", "Neueste"], ["erst", `Erstmals hier${res.firstCount ? ` (${n(res.firstCount)})` : ""}`, "Nur Vorgänge, die in ihrem Ort die ersten dieser Art sind (Bestand des Orts seit mindestens einem Jahr davor)"]]} />}
-                  </div>
-                  {items.length === 0 && <Leer tipp="„Erstmals hier“ zählt nur Gebiete mit mindestens 12 Monaten Daten davor; „Neueste“ zeigt alle Vorgänge.">In dieser Auswahl ist kein Vorgang der erste seiner Art im Ort.</Leer>}
+                <section className="mt-6" aria-label="Neueste Vorgänge">
+                  {items.length === 0 && <Leer>Keine Vorgänge in dieser Auswahl.</Leer>}
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
                     {items.slice(0, shown).map((r) => (
                       <li key={r.id} onMouseEnter={() => setHoverPlace(r.place ?? "")} onMouseLeave={() => setHoverPlace("")} onFocus={() => setHoverPlace(r.place ?? "")} onBlur={() => setHoverPlace("")} className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">
