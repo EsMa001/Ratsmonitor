@@ -47,29 +47,10 @@ const fromOf = (months: string) => {
   d.setMonth(d.getMonth() - Number(months));
   return d.toISOString().slice(0, 10);
 };
-/* Farben je Stand: Knopf (aktiv/inaktiv) und Etikett in der Karte. Bekannte Schritte fest in Verfahrensreihenfolge (früh blau, spät
-   Petrol, Aufhebung orange), sonst der Reihe nach aus der Palette; „Sonstiges“ grau. */
-const TONES = [
-  { on: "bg-sky-900 text-white", off: "bg-sky-50 text-sky-800 hover:bg-sky-100", tag: "bg-sky-50 text-sky-800" },
-  { on: "bg-sky-700 text-white", off: "bg-sky-50 text-sky-800 hover:bg-sky-100", tag: "bg-sky-50 text-sky-800" },
-  { on: "bg-slate-600 text-white", off: "bg-slate-50 text-slate-800 hover:bg-slate-100", tag: "bg-slate-50 text-slate-800" },
-  { on: "bg-amber-600 text-white", off: "bg-amber-50 text-amber-800 hover:bg-amber-100", tag: "bg-amber-50 text-amber-800" },
-  { on: "bg-teal-700 text-white", off: "bg-teal-50 text-teal-800 hover:bg-teal-100", tag: "bg-teal-50 text-teal-800" },
-  { on: "bg-teal-600 text-white", off: "bg-teal-50 text-teal-800 hover:bg-teal-100", tag: "bg-teal-50 text-teal-800" },
-  { on: "bg-amber-700 text-white", off: "bg-amber-50 text-amber-800 hover:bg-amber-100", tag: "bg-amber-50 text-amber-800" },
-  { on: "bg-slate-800 text-white", off: "bg-slate-50 text-slate-800 hover:bg-slate-100", tag: "bg-slate-50 text-slate-800" },
-];
-const GREY = { on: "bg-slate-700 text-white", off: "bg-slate-100 text-slate-700 hover:bg-slate-200", tag: "bg-slate-100 text-slate-700" };
 const FIXED: Record<string, number> = {
   Aufstellung: 0, "Frühzeitige Beteiligung": 1, Offenlage: 2, Abwägung: 3, Satzungsbeschluss: 4, Aufhebung: 6,
   "Start und Beauftragung": 0, "Analyse und Zwischenstand": 1, "Entwurf und Beteiligung": 2, "Wärmeplan vorgelegt": 4, "Umsetzung und Fortschreibung": 5,
   "Antrag und Anfrage": 7, Ausschreibung: 0, Vergabe: 4, Nachtrag: 3, "Planung und Konzept": 0, "Ausschreibung und Vergabe": 2, "Bau und Sanierung": 4, "Bauanträge Dritter": 1, "Beteiligung": 3, "Bericht und Sachstand": 5,
-};
-const toneOf = (name: string, order: string[]) => {
-  if (/^Sonstig|Ohne Angabe|Noch nicht/.test(name)) return GREY;
-  if (name in FIXED) return TONES[FIXED[name]];
-  const i = order.indexOf(name);
-  return TONES[(i < 0 ? 0 : i) % TONES.length];
 };
 
 /* Kurze Namen der Filterwerte (Leistung u. a.) für Pillen und Liste */

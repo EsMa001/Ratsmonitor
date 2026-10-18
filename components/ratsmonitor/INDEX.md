@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (546 Zeilen, ⚠14)
+- app/ratsmonitor-info.css (542 Zeilen, ⚠14)
 - app/ratsmonitor.css (253 Zeilen, ⚠17)
 
 admin-access admin.css:6
@@ -228,8 +228,8 @@ admin-todo-wait-filter admin.css:262
 admin-todo-waiting admin.css:296
 admin-todo-wip admin.css:275
 admin-zoom admin.css:70
-animate-pulse ratsmonitor-info.css:544
-animate-spin ratsmonitor-info.css:544
+animate-pulse ratsmonitor-info.css:540
+animate-spin ratsmonitor-info.css:540
 back-btn ratsmonitor-info.css:431
 back-btn ratsmonitor.css:20
 bg-slate-900 ratsmonitor.css:172
@@ -266,7 +266,7 @@ gap-8 ratsmonitor-info.css:396
 gap-y-12 ratsmonitor-info.css:351
 gap-y-6 ratsmonitor-info.css:394
 gap-y-8 ratsmonitor-info.css:352
-grid ratsmonitor-info.css:479
+grid ratsmonitor-info.css:467
 group ratsmonitor.css:159
 h-16 ratsmonitor-info.css:372
 heading-m design-styles.css:44
@@ -341,7 +341,7 @@ pl-slogan ratsmonitor-info.css:406
 pl-source ratsmonitor-info.css:406
 pl-stand ratsmonitor-info.css:406
 pl-still ratsmonitor-info.css:406
-pl-top ratsmonitor-info.css:476
+pl-top ratsmonitor-info.css:464
 pl-tp ratsmonitor-info.css:404
 pl-trends ratsmonitor-info.css:406
 popover ratsmonitor.css:49
@@ -474,7 +474,7 @@ rm-glass ratsmonitor.css:80
 rm-glass-pop ratsmonitor.css:87
 rm-gtext ratsmonitor.css:180
 rm-gtopic ratsmonitor.css:181
-rm-headtitle ratsmonitor-info.css:517
+rm-headtitle ratsmonitor-info.css:487
 rm-legalbar ratsmonitor.css:250
 rm-legend ratsmonitor.css:83
 rm-logo ratsmonitor-info.css:189
@@ -488,9 +488,9 @@ rm-sbar ratsmonitor.css:241
 rm-search ratsmonitor-info.css:321
 rm-search ratsmonitor.css:232
 rm-solid ratsmonitor.css:87
-rm-spinner ratsmonitor-info.css:544
+rm-spinner ratsmonitor-info.css:540
 rm-spinner ratsmonitor.css:110
-rm-stage ratsmonitor-info.css:484
+rm-stage ratsmonitor-info.css:468
 rm-tabbar ratsmonitor.css:218
 rm-topline ratsmonitor.css:174
 scroll-thin ratsmonitor.css:52
@@ -680,7 +680,7 @@ topic design-styles.css:140
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (550, ⚠1): isSearchInput, focusSearch, SearchBox
-- SearchFilterPanel.tsx (74): SearchFilterPanel
+- SearchFilterPanel.tsx (70): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - Segmented.tsx (66): Segmented
 - ShareButton.tsx (48): shareLink, ShareButton
@@ -688,7 +688,7 @@ topic design-styles.css:140
 - TierNotice.tsx (67): AccountLoading, LoginRequired, UsagePill
 - TopicSeed.tsx (11): TopicSeed
 - WheelList.tsx (42): WHEEL_ROW, WheelList
-- WheelPicker.tsx (57): WheelPicker
+- WheelPicker.tsx (57, ⚠1): WheelPicker
 - icons.tsx (193): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync, ThemeIcon
 
 ### components/ratsmonitor/components/map/
@@ -701,7 +701,7 @@ topic design-styles.css:140
 ### components/ratsmonitor/info/
 - AccountPages.tsx (633): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
-- AnwenderLive.tsx (169): AnwenderLivePage
+- AnwenderLive.tsx (169, ⚠1): AnwenderLivePage
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
 - BranchenLive.tsx (244): LiveThumb
 - BranchenPages.tsx (121): BranchePage
@@ -810,10 +810,10 @@ topic design-styles.css:140
 - DiffusionSearch.tsx (90, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (312, ⚠2): FaktenPage
 - FraktionenPage.tsx (171, ⚠4): FraktionenPage
-- GraphView.tsx (235, ⚠1): GNode, GEdge, KIND, GraphView
+- GraphView.tsx (237, ⚠1): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (171, ⚠3): GremiennetzPage
 - Kennzahlen.tsx (140, ⚠1): weekAgo, isNew, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (234, ⚠3): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (234, ⚠5): KnowledgeGraphPage
 - Laden.tsx (27): Laden
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
 - NetView.tsx (179, ⚠2): NNode, NEdge, ROLE, NetView
@@ -823,9 +823,9 @@ topic design-styles.css:140
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (128, ⚠2): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (350, ⚠8): signaleHref, SignalePage
+- SignalePage.tsx (331, ⚠8): signaleHref, SignalePage
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
-- XAtlasView.tsx (583, ⚠10): XAtlasView
+- XAtlasView.tsx (577, ⚠9): XAtlasView
 - XKopf.tsx (162, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (346, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve

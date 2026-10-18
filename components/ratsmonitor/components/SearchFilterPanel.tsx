@@ -1,7 +1,5 @@
 import { setListView, useListView } from "../lib/listView";
 import { useSearch, useSearchResults } from "../state/search";
-import { useToast } from "../state/toast";
-import { useEntitlements } from "../lib/entitlements";
 import { FilterSelect } from "./FilterSelect";
 import { CountDots } from "./CountDots";
 import { IconViewCompact, IconViewFull } from "./icons";
@@ -16,8 +14,6 @@ export function SearchFilterPanel() {
   const { state } = search;
   const res = useSearchResults();
   const listView = useListView();
-  const toast = useToast();
-  const { allowFeature } = useEntitlements();
   /* Handy: der Griff oben zieht das Ergebnisblatt hoch (Liste) oder runter (Karte); Tippen wechselt */
   const stage = useSheetStage();
   const drag = useVerticalSwipe((dir) => setSheetStage(dir < 0 ? "voll" : "klein"));

@@ -457,57 +457,27 @@ html.rm-dark .rm-banddots{opacity:.35}
   .ri-head .ri-bid__label{display:none}
   .ri-head .ri-h1{font-size:22px !important;line-height:1.2 !important;margin-top:6px !important;margin-bottom:0 !important}
   .ri-head .ri-lead{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-}
-
-/* plenara.X-Seiten: Punktraster nur im Kopfband (weiße Punkte), nicht auf der Seite */
-html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
-
-/* Handy, hell: Kopfzeile in Petrol wie die Bänder (weißes Logo, weißes Konto-Symbol); im Dunkelmodus bleibt sie wie die Seite */
-@media (max-width:639px){
   html:not(.rm-dark) header{background:var(--rm-ac);border-bottom-color:transparent}
   html:not(.rm-dark) header .rm-logo svg{filter:brightness(0) invert(1)}
   html:not(.rm-dark) header button[aria-haspopup="menu"]{color:var(--rm-on);background:transparent}
   html:not(.rm-dark) header button[aria-haspopup="menu"][aria-expanded="true"]{background:rgba(255,255,255,.18);color:var(--rm-on);border-radius:9999px;height:40px;width:40px}
-}
-
-/* Handy, plenara.X (Kopf mit Titel): Kopfzeile und Band sind eine Fläche. Die Kopfzeile liegt weiß-auf-Petrol über dem Band (scrollt mit weg),
-   der Titel sitzt in ihrer Zeile zwischen Logo und Konto, darunter gleich die Zahl. Spart die weiße Zeile (58 px) und die Titelzeile. */
-@media (max-width:639px){
   html:has(.pl-top) header{position:absolute;inset:0 0 auto 0;background:transparent;border-bottom:0}
   html:has(.pl-top) header .rm-logo svg{filter:brightness(0) invert(1)}
   .pl-band.pl-top{padding-top:46px !important}
   .pl-band.pl-top .grid{margin-top:0}
-}
-
-
-/* Handy, Analysekarten: senkrechtes Wischen über der Karte scrollt die Seite (die Karte verschiebt sich nicht von selbst) */
-@media (max-width:639px){ .rm-stage{touch-action:pan-y !important} }
-
-/* Handy, plenara.X: weniger Leerraum zwischen Seitenende und Methodik */
-@media (max-width:639px){ html:has(.pl-top) main#inhalt{padding-bottom:0 !important} }
-
-/* Handy, Bänder der Info-, Anwender- und Kontoseiten wie bei plenara.X: Kopfzeile und Band sind eine Fläche, der Titel sitzt in der Zeile des Logos.
-   (Auch die Seiten „Suchen“, „Artikel“ und „Kalender“: eigene Seiten ohne Umschalter.) */
-@media (max-width:639px){
+ .rm-stage{touch-action:pan-y !important} 
+ html:has(.pl-top) main#inhalt{padding-bottom:0 !important} 
   html:not(.rm-dark):has(.ri-head) header{position:absolute;inset:0 0 auto 0;background:transparent;border-bottom:0}
   html:has(.ri-head) .ri-head{padding-top:46px !important}
   html:has(.ri-head) .ri-head > div:not(.rm-banddots){display:flex;flex-direction:column}
   html:has(.ri-head) .ri-head .ri-bid{display:flex;align-items:center;margin:0 0 4px !important;padding:0}
   html:has(.ri-head) .ri-head .ri-bid__name{font-size:18px !important;line-height:1.2;font-weight:600}
   html:has(.ri-head) .ri-head .back-btn{display:none !important}
-}
-
-/* Handy: volles Logo (Bildmarke und Schriftzug) in der Kopfzeile, weiß auf Petrol; etwas Luft unter der Marke */
-@media (max-width:639px){
   header .rm-logo__text{position:static !important;width:auto !important;height:auto !important;overflow:visible !important;clip:auto !important}
   header .rm-logo{font-size:18px}
   header .rm-logo__mark{height:.86em !important;width:.86em !important;margin:0 .01em 0 0 !important;vertical-align:-.16em !important}
   header .rm-logo__mark--p{height:.66em !important;width:.66em !important;vertical-align:-.07em !important}
   html:not(.rm-dark) header .rm-logo{color:var(--rm-on)}
-}
-
-/* Handy: kleiner Seitentitel in der Kopfzeile, sobald der große aus dem Bild ist; das Logo macht ihm Platz */
-@media (max-width:639px){
   header .rm-logo{opacity:calc(1 - var(--hp,0))}
   header[data-title="1"] .rm-logo{pointer-events:none}
   /* Seiten mit Band: Kopfzeile bleibt oben und färbt sich beim Scrollen weich ein (--hp 0 bis 1, aus Header.tsx) */
@@ -519,7 +489,35 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
   .rm-headtitle{color:var(--rm-c900);background:transparent;border:0;padding:0}
   html:not(.rm-dark) .rm-headtitle{color:var(--rm-on)}
   @keyframes rmHeadIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  html:has(.pl-top,.ri-head) main#inhalt{min-height:calc(100dvh + 150px)}
 }
+
+/* plenara.X-Seiten: Punktraster nur im Kopfband (weiße Punkte), nicht auf der Seite */
+html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
+
+/* Handy, hell: Kopfzeile in Petrol wie die Bänder (weißes Logo, weißes Konto-Symbol); im Dunkelmodus bleibt sie wie die Seite */
+
+
+/* Handy, plenara.X (Kopf mit Titel): Kopfzeile und Band sind eine Fläche. Die Kopfzeile liegt weiß-auf-Petrol über dem Band (scrollt mit weg),
+   der Titel sitzt in ihrer Zeile zwischen Logo und Konto, darunter gleich die Zahl. Spart die weiße Zeile (58 px) und die Titelzeile. */
+
+
+
+/* Handy, Analysekarten: senkrechtes Wischen über der Karte scrollt die Seite (die Karte verschiebt sich nicht von selbst) */
+
+
+/* Handy, plenara.X: weniger Leerraum zwischen Seitenende und Methodik */
+
+
+/* Handy, Bänder der Info-, Anwender- und Kontoseiten wie bei plenara.X: Kopfzeile und Band sind eine Fläche, der Titel sitzt in der Zeile des Logos.
+   (Auch die Seiten „Suchen“, „Artikel“ und „Kalender“: eigene Seiten ohne Umschalter.) */
+
+
+/* Handy: volles Logo (Bildmarke und Schriftzug) in der Kopfzeile, weiß auf Petrol; etwas Luft unter der Marke */
+
+
+/* Handy: kleiner Seitentitel in der Kopfzeile, sobald der große aus dem Bild ist; das Logo macht ihm Platz */
+
 
 /* Handy: Drücken gibt Rückmeldung (leicht einsinken), überall gleich; Schalter und Felder bleiben ruhig */
 @media (max-width:639px) and (hover:none){
@@ -529,9 +527,7 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
 }
 
 /* Handy, Seiten mit Band: auch kurze Seiten lassen sich so weit scrollen, dass das Band ganz in die Kopfzeile einklappt */
-@media (max-width:639px){
-  html:has(.pl-top,.ri-head) main#inhalt{min-height:calc(100dvh + 150px)}
-}
+
 
 /* Desktop: Seiten laden ihren Inhalt nach; ohne Mindesthöhe stünde die Fußzeile erst im Bild und würde dann nach unten springen */
 @media (min-width:640px){

@@ -5,7 +5,6 @@ import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
 import { Befund, Fehler } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo, zeitText } from "./Kennzahlen";
-import { Reveal } from "./Reveal";
 import { setFiltersOpen } from "../../lib/filtersOpen";
 import { usePhone } from "../../lib/usePhone";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
@@ -412,22 +411,17 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   const rankRegions = !!(theme || sub) && allRegions.length > 1;
   const regions = rankRegions ? allRegions.filter((r) => r.base >= MIN_BASE).sort((a, b) => (b.share ?? 0) - (a.share ?? 0)) : [];
   const [moreRegions, setMoreRegions] = useState(false);
-  const where = allRegions.length === 1 ? `in ${allRegions[0].name}` : `in ${n(allRegions.length)} ${plural(allRegions.length, "Gebiet", "Gebieten")}`;
   /* Antwortzeile: Auswahl, Vorgänge, Gebiete und (mit Thema) Anteil an allen Sachvorgängen derselben Gebiete */
-  const base = allRegions.reduce((s, r) => s + (r.base || 0), 0);
   /* Name und Zahlen aus derselben Antwort: während neu gerechnet wird, passt die Zeile weiter zu den abgeblendeten Zahlen */
   const rt = res?.selection.theme ?? "", rs = res?.selection.sub ?? "";
-  const share = (rt || rs) && base ? Math.round((1000 * total) / base) / 10 : null;
   const what = [rt && THEMES.find((t: { id: string; name: string }) => t.id === rt)?.name, rs && SUBTOPICS.find((s: { id: string; short: string }) => s.id === rs)?.short].filter(Boolean).join(" › ");
   /* Mit Ort (Vergleich möglich): Ortssatz statt der allgemeinen Zeile */
   const cmp = res?.compare && !res.compare.insufficient ? res.compare : null;
   /* Gleicher Zeitraum wie der Vergleich (12 Monate); die Zahl der Auswahl steht in der Liste darunter */
   const placeRest = cmp ? `: ${n(cmp.n)} Sachvorgänge in den letzten 12 Monaten, verglichen mit ${n(cmp.group!.n)} ${cmp.group!.label}.` : "";
-  const placeAnswer = cmp ? `${cmp.region}: ${n(cmp.n)} Sachvorgänge in den letzten 12 Monaten, verglichen mit ${n(cmp.group!.n)} ${cmp.group!.label}.` : "";
   const areaAgs = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ?? "";
   /* Gewählter Ort (Filter der Suche): mit ✕ an der Antwortzeile, damit man ihn dort sieht und entfernen kann */
   const place = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ? (cmp?.region ?? res?.compare?.region ?? (allRegions.length === 1 ? allRegions[0].name : "")) : "";
-  const answer = placeAnswer || `${what ? what + ": " : ""}${n(total)} ${plural(total, "Vorgang", "Vorgänge")} ${where}${share !== null ? `; das sind ${pct(share)} aller Sachvorgänge dieser Räte` : ""}${res?.selection.q ? ` zur Suche „${prettyTerm(res.selection.q)}“` : ""}${zeit ? ` in den letzten ${zeit} Monaten` : ""}.`;
 
   return (
     <section aria-label="Auswertung des Themas">

@@ -23,7 +23,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   const key=(e:KeyboardEvent)=>{if(e.key!=='Escape')return;setOpen(false);/* Fokus zurück auf den Konto-Knopf */if(ref.current?.contains(document.activeElement))ref.current.querySelector<HTMLElement>('button[aria-haspopup]')?.focus();};
   document.addEventListener('mousedown',down);document.addEventListener('keydown',key);
   /* Fokus auf den ersten Eintrag, damit die Pfeiltasten gleich wirken (Tastatur und Bildschirmleser) */
-  ref.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+  ref.current?.querySelector<HTMLElement>('[role^="menuitem"]')?.focus();
   return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',key);};
  },[open]);
  const base='relative grid h-9 w-9 max-sm:h-11 max-sm:w-11 place-items-center rounded-lg transition-colors';
@@ -59,13 +59,13 @@ export function AccountMenu({currentPage}:{currentPage:string}){
    <button type="button" title="Konto" aria-label="Konto" aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(o=>!o)} className={cls(currentPage==='profil'||open)}>
     <IconUser size={19} className="max-sm:!h-[23px] max-sm:!w-[23px]"/>
    </button>
-   {open&&<div role="menu" onKeyDown={e=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}}} className="absolute right-0 top-[calc(100%+13px)] z-[1100] w-[220px] max-sm:w-[230px] sm:top-[calc(100%+17px)] rounded-2xl border border-slate-200 bg-white p-1.5 shadow-pop">
+   {open&&<div role="menu" onKeyDown={e=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role^="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}}} className="absolute right-0 top-[calc(100%+13px)] z-[1100] w-[220px] max-sm:w-[230px] sm:top-[calc(100%+17px)] rounded-2xl border border-slate-200 bg-white p-1.5 shadow-pop">
     {loggedIn&&<p className="m-0 truncate px-3 pb-1 pt-2 text-[12px] text-slate-500" title={me.user?.email}>{me.user?.email}</p>}
     {!loggedIn&&me.accounts&&<Link role="menuitem" href="/anmelden" className={item} onClick={()=>setOpen(false)}>Anmelden</Link>}
     <Link role="menuitem" href="/konto/profil" className={item} onClick={()=>setOpen(false)}>Konto</Link>
     {/* Handy: was am Desktop in der Kopfzeile steht (Preise, Hell/Dunkel) */}
     <Link role="menuitem" href="/preise" className={`${item} sm:hidden`} onClick={()=>setOpen(false)}>Preise</Link>
-    <button role="menuitem" type="button" aria-pressed={dark} onClick={()=>setDark(!dark)} className={`${item} flex w-full items-center justify-between text-left sm:hidden`}>
+    <button role="menuitemcheckbox" type="button" aria-checked={dark} onClick={()=>setDark(!dark)} className={`${item} flex w-full items-center justify-between text-left sm:hidden`}>
      Dunkler Modus
      <span className={`h-5 w-9 rounded-full p-0.5 transition-colors ${dark?'bg-teal-700':'bg-slate-300'}`} aria-hidden="true"><span className={`block h-4 w-4 rounded-full bg-white transition-transform ${dark?'translate-x-4':''}`}/></span>
     </button>
