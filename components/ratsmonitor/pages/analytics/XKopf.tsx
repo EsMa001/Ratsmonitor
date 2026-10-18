@@ -6,6 +6,7 @@ import { PageBand } from "./PageBand";
 import { Icon, type IconName } from "../../info/icons";
 import { AnalyticsX } from "../../components/Brand";
 import { ThemeIcon } from "../../components/icons";
+import { WheelPicker } from "../../components/WheelPicker";
 import { useSearch } from "../../state/search";
 import { THEMES } from "@/shared/themes.mjs";
 import { useBandFigure, useCountUp } from "../../lib/bandFigure";
@@ -107,14 +108,9 @@ export function ThemenLeiste() {
   const search = useSearch();
   return (
     <>
-      {/* Handy: Auswahlfeld statt drei Reihen Kacheln */}
-      <label className="mb-3 block sm:hidden print:hidden">
-        <span className="sr-only">Thema</span>
-        <select value={search.state.thema} onChange={(e) => search.setThema(e.target.value)} className="select-base h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
-          <option value="">Alle Themen</option>
-          {THEMES.map((t: { id: string; name: string }) => <option key={t.id} value={t.name}>{t.name}</option>)}
-        </select>
-      </label>
+      {/* Handy: Chip-Reihe zum Wischen statt drei Reihen Kacheln */}
+      <WheelPicker label="Thema" className="mb-3" value={search.state.thema} onPick={(name) => search.setThema(name)}
+        items={[{ id: "", label: "Alle Themen", name: "alle" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.name, label: t.name, name: t.id }))].map((t) => ({ id: t.id, label: t.label, icon: <ThemeIcon theme={t.name} size={18} className="text-slate-500" />, iconOn: <ThemeIcon theme={t.name} size={18} className="text-white" /> }))} />
       {/* Ab Tablet Kacheln; ab Desktop alle 11 in einer Reihe (Breite teilt sich auf) */}
       <nav aria-label="Thema" className="mb-4 hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">

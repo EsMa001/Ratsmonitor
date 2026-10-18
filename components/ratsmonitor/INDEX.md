@@ -10,8 +10,8 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (450 Zeilen, ⚠14)
-- app/ratsmonitor.css (245 Zeilen, ⚠16)
+- app/ratsmonitor-info.css (464 Zeilen, ⚠14)
+- app/ratsmonitor.css (253 Zeilen, ⚠17)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -470,7 +470,7 @@ rm-glass ratsmonitor.css:80
 rm-glass-pop ratsmonitor.css:87
 rm-gtext ratsmonitor.css:180
 rm-gtopic ratsmonitor.css:181
-rm-legalbar ratsmonitor.css:242
+rm-legalbar ratsmonitor.css:250
 rm-legend ratsmonitor.css:83
 rm-logo ratsmonitor-info.css:189
 rm-logo ratsmonitor.css:146
@@ -478,6 +478,8 @@ rm-logo--big ratsmonitor-info.css:312
 rm-logo__mark ratsmonitor-info.css:193
 rm-logo__mark--p ratsmonitor-info.css:194
 rm-logo__text ratsmonitor-info.css:191
+rm-mapctl ratsmonitor.css:244
+rm-sbar ratsmonitor.css:241
 rm-search ratsmonitor-info.css:321
 rm-search ratsmonitor.css:232
 rm-solid ratsmonitor.css:87
@@ -668,7 +670,7 @@ topic design-styles.css:140
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (550, ⚠1): isSearchInput, focusSearch, SearchBox
-- SearchFilterPanel.tsx (71): SearchFilterPanel
+- SearchFilterPanel.tsx (74): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - ShareButton.tsx (40): ShareButton
 - SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
@@ -677,11 +679,11 @@ topic design-styles.css:140
 - icons.tsx (193): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync, ThemeIcon
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (344, ⚠2): MapPanel
+- MapPanel.tsx (345, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (156, ⚠1): Highlight, ArticleCard, StepTimeline
-- ResultsPanel.tsx (211): ResultsPanel
+- ResultsPanel.tsx (216): ResultsPanel
 
 ### components/ratsmonitor/info/
 - AccountPages.tsx (633): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
@@ -745,6 +747,7 @@ topic design-styles.css:140
 - savedSearch.ts (155, ⚠1): SearchSnapshot, snapshotOf, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - searchUrl.ts (106): readableQuery, SEARCH_URL_KEYS, searchToUrl, onlyText, searchFromUrl
+- sheetStage.ts (16): SheetStage, setSheetStage, toggleSheetStage, useSheetStage
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem
 - text.ts (96): normChar, norm, FILLER, terms, Segment, highlightSegments, plural, parseDate, fmtDate, isoDay, todayLocal, MONTH_FMT, MONTH_SHORT, monthLabel
 - tier.ts (68): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, priceLabel, UPGRADE_TEXT, IS_DEV, getTier, setTier, useTier, usage
@@ -768,7 +771,7 @@ topic design-styles.css:140
 - DetailPage.tsx (171, ⚠12): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (240): LegalPage
-- OverviewPage.tsx (81): OverviewPage
+- OverviewPage.tsx (87): OverviewPage
 - PersonalPage.tsx (26): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
@@ -779,7 +782,7 @@ topic design-styles.css:140
 - AnalyticsAbout.tsx (231, ⚠18): ANALYSE_THUMBS, MethodikText
 - AnalyticsLocked.tsx (57): AnalyticsLocked
 - AnalyticsPages.tsx (60): AnalyticsPages
-- AtlasPage.tsx (72): ATLAS_THEMEN, atlasHref, AtlasPage
+- AtlasPage.tsx (69): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (53): Befund, zuThema, Leer, Fehler
 - BeschluessePage.tsx (195, ⚠8): BeschluessePage
 - CompareCharts.tsx (63): PLACE_COLORS, CompareLines, TopicPair
@@ -802,10 +805,10 @@ topic design-styles.css:140
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (107, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (349, ⚠7): signaleHref, SignalePage
+- SignalePage.tsx (346, ⚠8): signaleHref, SignalePage
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
-- XAtlasView.tsx (550, ⚠7): XAtlasView
-- XKopf.tsx (162): XKopf, XWeiter, ThemenLeiste
+- XAtlasView.tsx (550, ⚠8): XAtlasView
+- XKopf.tsx (158, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (346, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun

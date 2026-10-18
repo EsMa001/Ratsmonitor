@@ -3,6 +3,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { XKopf, XWeiter } from "./XKopf";
 import { XAtlasView } from "./XAtlasView";
 import { ThemeIcon } from "../../components/icons";
+import { WheelPicker } from "../../components/WheelPicker";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 
 /** Themen des Atlas: „Alle Themen“ und die 10 Themen aus shared/themes.mjs (dieselben wie im Themenfilter der Suche) */
@@ -45,12 +46,8 @@ export function AtlasPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="atlas" />
       {/* Handy: Auswahlfeld; Tablet 6 Kacheln je Reihe; Desktop alle in einer Reihe (nie waagerecht scrollen) */}
-      <label className="mt-2 block sm:hidden print:hidden">
-        <span className="sr-only">Thema des Atlas</span>
-        <select value={thema} onChange={(e) => pick(e.target.value ? { thema: e.target.value } : {})} className="select-base h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
-          {ATLAS_THEMEN.map(([id, label]) => <option key={id || "alle"} value={id}>{label}</option>)}
-        </select>
-      </label>
+      <WheelPicker label="Thema des Atlas" className="mt-2" value={thema} onPick={(id) => pick(id ? { thema: id } : {})}
+        items={ATLAS_THEMEN.map(([id, label]) => ({ id, label, icon: <ThemeIcon theme={id || "alle"} size={18} className="text-slate-500" />, iconOn: <ThemeIcon theme={id || "alle"} size={18} className="text-white" /> }))} />
       <nav aria-label="Thema des Atlas" className="mt-2 hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {ATLAS_THEMEN.map(([id, label]) => (

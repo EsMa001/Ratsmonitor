@@ -458,3 +458,6 @@ html.rm-dark .rm-banddots{opacity:.35}
   .ri-head .ri-h1{font-size:22px !important;line-height:1.2 !important;margin-top:6px !important;margin-bottom:0 !important}
   .ri-head .ri-lead{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 }
+
+/* plenara.X-Seiten: Punktraster nur im Kopfband (weiße Punkte), nicht auf der Seite */
+html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}

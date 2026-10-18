@@ -13,6 +13,7 @@ import { Fehler, Leer } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
+import { WheelPicker } from "../../components/WheelPicker";
 import type { Article } from "../../types";
 import { MethodikNote } from "./Methodik";
 import { DateBadge } from "../../components/DateBadge";
@@ -233,12 +234,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
       <XKopf seite={fest ? "ausschreibungen" : "signale"} />
 
       {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy: Auswahlfeld */}
-      {!fest && <label className="block sm:hidden print:hidden">
-        <span className="sr-only">Signal</span>
-        <select value={signal} onChange={(e) => pick({ signal: e.target.value === standard ? "" : e.target.value, phase: "", art: "" })} className="select-base h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
-          {SIGNALE.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
-        </select>
-      </label>}
+      {!fest && <WheelPicker label="Signal" value={signal} onPick={(id) => pick({ signal: id === standard ? "" : id, phase: "", art: "" })}
+        items={SIGNALE.map(([id, label]) => { const I = ICONS[id]; return { id, label, icon: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" />, iconOn: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-white" /> }; })} />}
       {!fest && <nav aria-label="Signal" className="hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-5 gap-1 p-0 lg:grid-cols-10">
           {SIGNALE.map(([id, label]) => {
@@ -263,7 +260,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           {[{ key: "", name: "Alle" }, ...res.arts].map((a) => {
             const on = a.key === art;
             return <li key={a.key || "alle"} className="sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => pick({ art: on || !a.key ? "" : a.key })}
-              className={`flex h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
+              className={`flex h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:auto] max-sm:[overflow-wrap:anywhere] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
               {a.key ? <ArtIcon value={a.key} size={20} className={on ? "text-white" : "text-slate-500"} /> : <ThemeIcon theme="alle" size={20} className={on ? "text-white" : "text-slate-500"} />}
               <span className="line-clamp-2">{a.key ? artShort(a.name) : "Alle"}</span></button></li>;
           })}
