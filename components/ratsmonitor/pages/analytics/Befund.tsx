@@ -18,9 +18,9 @@ function AnalyseLeiste() {
 }
 
 /** Der Befund einer Auswertung in einem Satz, vor den Zahlen */
-export function Befund({ children, tight = false }: { children: ReactNode; tight?: boolean }) {
+export function Befund({ children, tight = false, noPhone = false }: { children: ReactNode; tight?: boolean; /** Handy: Satz und Stand weglassen */ noPhone?: boolean }) {
   return (
-    <div className={tight ? "mt-4" : "mt-6"}>
+    <div className={`${tight ? "mt-4" : "mt-6"}${noPhone ? " max-sm:hidden" : ""}`}>
       {/* Eine Größe für alle plenara.X-Seiten (wie Trends und Fakten) */}
       <p className={`m-0 text-[18px] max-sm:text-[16px] font-semibold leading-snug text-slate-900 ${tight ? "" : "max-w-[900px]"}`}>{children}</p>
       <AnalyseLeiste />

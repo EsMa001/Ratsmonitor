@@ -69,7 +69,7 @@ export function FraktionenPage() {
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {parties.length === 0 ? <Leer>Keine Anträge oder Anfragen einer Fraktion für diese Auswahl.</Leer> : (
             <>
-              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.withFaction)} Anträge und Anfragen einer Fraktion zugeordnet. Die meisten stellt ${busiest.name} (${n(busiest.n)}).`}</Befund>
+              <Befund noPhone>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.withFaction)} Anträge und Anfragen einer Fraktion zugeordnet. Die meisten stellt ${busiest.name} (${n(busiest.n)}).`}</Befund>
               <Kennzahlen items={([
                   ["Vorgänge mit Fraktion", n(res.totals.withFaction)],
                   ["Fraktionen", n(parties.length)],
