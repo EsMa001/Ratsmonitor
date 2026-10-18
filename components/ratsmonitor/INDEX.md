@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (549 Zeilen, ⚠14)
+- app/ratsmonitor-info.css (557 Zeilen, ⚠14)
 - app/ratsmonitor.css (261 Zeilen, ⚠17)
 
 admin-access admin.css:6
@@ -228,8 +228,8 @@ admin-todo-wait-filter admin.css:262
 admin-todo-waiting admin.css:296
 admin-todo-wip admin.css:275
 admin-zoom admin.css:70
-animate-pulse ratsmonitor-info.css:547
-animate-spin ratsmonitor-info.css:547
+animate-pulse ratsmonitor-info.css:555
+animate-spin ratsmonitor-info.css:555
 back-btn ratsmonitor-info.css:431
 back-btn ratsmonitor.css:20
 bg-slate-900 ratsmonitor.css:172
@@ -266,7 +266,7 @@ gap-8 ratsmonitor-info.css:396
 gap-y-12 ratsmonitor-info.css:351
 gap-y-6 ratsmonitor-info.css:394
 gap-y-8 ratsmonitor-info.css:352
-grid ratsmonitor-info.css:470
+grid ratsmonitor-info.css:478
 group ratsmonitor.css:159
 h-16 ratsmonitor-info.css:372
 heading-m design-styles.css:44
@@ -341,7 +341,7 @@ pl-slogan ratsmonitor-info.css:406
 pl-source ratsmonitor-info.css:406
 pl-stand ratsmonitor-info.css:406
 pl-still ratsmonitor-info.css:406
-pl-top ratsmonitor-info.css:467
+pl-top ratsmonitor-info.css:475
 pl-tp ratsmonitor-info.css:404
 pl-trends ratsmonitor-info.css:406
 popover ratsmonitor.css:49
@@ -363,6 +363,9 @@ ri ratsmonitor-info.css:13
 ri ratsmonitor.css:149
 ri-actions ratsmonitor-info.css:29
 ri-anw ratsmonitor-info.css:341
+ri-below ratsmonitor-info.css:457
+ri-below__h ratsmonitor-info.css:458
+ri-below__lead ratsmonitor-info.css:459
 ri-bid ratsmonitor-info.css:35
 ri-bid__icon ratsmonitor-info.css:36
 ri-bid__label ratsmonitor-info.css:37
@@ -475,7 +478,7 @@ rm-glass ratsmonitor.css:80
 rm-glass-pop ratsmonitor.css:87
 rm-gtext ratsmonitor.css:180
 rm-gtopic ratsmonitor.css:181
-rm-headtitle ratsmonitor-info.css:490
+rm-headtitle ratsmonitor-info.css:498
 rm-legalbar ratsmonitor.css:258
 rm-legend ratsmonitor.css:83
 rm-logo ratsmonitor-info.css:189
@@ -485,14 +488,14 @@ rm-logo__mark ratsmonitor-info.css:193
 rm-logo__mark--p ratsmonitor-info.css:194
 rm-logo__text ratsmonitor-info.css:191
 rm-mapctl ratsmonitor.css:250
-rm-pmark ratsmonitor-info.css:492
+rm-pmark ratsmonitor-info.css:500
 rm-sbar ratsmonitor.css:243
 rm-search ratsmonitor-info.css:321
 rm-search ratsmonitor.css:232
 rm-solid ratsmonitor.css:87
-rm-spinner ratsmonitor-info.css:547
+rm-spinner ratsmonitor-info.css:555
 rm-spinner ratsmonitor.css:110
-rm-stage ratsmonitor-info.css:471
+rm-stage ratsmonitor-info.css:479
 rm-tabbar ratsmonitor.css:218
 rm-topline ratsmonitor.css:174
 scroll-thin ratsmonitor.css:52
@@ -532,7 +535,7 @@ text-teal-700 ratsmonitor-info.css:420
 text-white ratsmonitor.css:172
 timeline design-styles.css:204
 topic design-styles.css:140
-truncate ratsmonitor-info.css:453
+truncate ratsmonitor-info.css:461
 
 ## Dateien (Zeilen, Exporte)
 
@@ -678,7 +681,7 @@ truncate ratsmonitor-info.css:453
 - Header.tsx (112, ⚠1): Header
 - ImportDialog.tsx (151): ImportDialog
 - PhasePicker.tsx (48): PickItem, PhasePicker
-- PlanCards.tsx (149): PlanCards, PlanSummary
+- PlanCards.tsx (154, ⚠1): PlanCards, PlanSummary
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
@@ -702,7 +705,7 @@ truncate ratsmonitor-info.css:453
 - ResultsPanel.tsx (216): ResultsPanel
 
 ### components/ratsmonitor/info/
-- AccountPages.tsx (633): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
+- AccountPages.tsx (637): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - AnwenderLive.tsx (169, ⚠1): AnwenderLivePage
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
@@ -713,7 +716,7 @@ truncate ratsmonitor-info.css:453
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (86): PreisePage
-- QuellenPage.tsx (166, ⚠3): QuellenPage
+- QuellenPage.tsx (167, ⚠3): QuellenPage
 - StartseitePage.tsx (496, ⚠3): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
@@ -721,7 +724,7 @@ truncate ratsmonitor-info.css:453
 - WiderrufPage.tsx (79): WiderrufPage
 - XAuszug.tsx (220, ⚠2): XAuszug
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
-- blocks.tsx (228, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, PlacePill, HitPreview, DarkCta, QaItem, Ladefehler
+- blocks.tsx (266, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, PlacePill, HitPreview, DarkCta, QaItem, Ladefehler, InfoHints
 - branchen-enterprise.ts (115, ⚠1): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, EINBLICKE, HINTERGRUENDE, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (281, ⚠27): Status, Example, Branche, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
@@ -791,7 +794,7 @@ truncate ratsmonitor-info.css:453
 - DetailPage.tsx (168, ⚠10): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (240): LegalPage
-- NotificationsPage.tsx (80): NotificationsPage
+- NotificationsPage.tsx (92): NotificationsPage
 - OverviewPage.tsx (170): OverviewPage
 - PersonalPage.tsx (26): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
@@ -811,8 +814,8 @@ truncate ratsmonitor-info.css:453
 - ComparePage.tsx (305, ⚠9): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (91, ⚠3): PlayState, DiffusionSearch
-- FaktenPage.tsx (312, ⚠2): FaktenPage
-- FraktionenPage.tsx (171, ⚠4): FraktionenPage
+- FaktenPage.tsx (321, ⚠3): FaktenPage
+- FraktionenPage.tsx (177, ⚠6): FraktionenPage
 - GraphView.tsx (237, ⚠1): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (171, ⚠3): GremiennetzPage
 - Kennzahlen.tsx (142, ⚠1): weekAgo, isNew, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
@@ -826,7 +829,7 @@ truncate ratsmonitor-info.css:453
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (128, ⚠2): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (343, ⚠9): signaleHref, SignalePage
+- SignalePage.tsx (358, ⚠9): signaleHref, SignalePage
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (572, ⚠9): XAtlasView
 - XKopf.tsx (162, ⚠1): XKopf, XWeiter, ThemenLeiste

@@ -61,7 +61,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
         {PLANS.map((plan) => {
           const current = !publicPage && plan.tier === tier;
           return (
-            <div key={plan.tier} className={`flex flex-col max-sm:w-full max-sm:flex-none max-sm:snap-start border-t-2 pb-2 pt-5 lg:pr-2 ${current ? "border-teal-600" : plan.tier === "pro" && publicPage ? "border-slate-900 bg-slate-50 px-4 sm:-mt-2 sm:pt-7" : "border-slate-200"}`}>
+            <div key={plan.tier} className={`flex flex-col max-sm:w-full max-sm:flex-none max-sm:snap-start border-t-2 pb-2 pt-5 lg:pr-2 max-sm:rounded-2xl max-sm:border max-sm:border-t max-sm:p-4 max-sm:shadow-sm ${current ? "border-teal-600 max-sm:bg-teal-50/60" : plan.tier === "pro" && publicPage ? "border-slate-900 bg-slate-50 px-4 sm:-mt-2 sm:pt-7 max-sm:border-teal-600 max-sm:bg-white max-sm:shadow-md max-sm:ring-1 max-sm:ring-teal-600/30" : "border-slate-200 max-sm:bg-white"}`}>
               <div className="flex items-center justify-between gap-2">
                 <h3 className="m-0 text-[16px] font-semibold">{plan.tier === "guest" ? "Ohne Konto" : TIER_LABEL[plan.tier]}</h3>
                 {current && <span className="rounded-full bg-teal-700 px-2 py-0.5 text-[12px] font-semibold text-white">{plan.tier === "guest" ? "Ihr Status" : "Ihre Stufe"}</span>}
@@ -122,8 +122,12 @@ export function PlanSummary() {
   return (
     <section id="tarif" aria-labelledby="tarif-title" className="mt-6 scroll-mt-20">
       <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Stufe</h2>
-      <p className="m-0 mt-3 text-[16px] font-semibold">
-        {name} {tier !== "guest" && <span className="font-normal text-slate-500">· {priceLabel(tier)} · {plan.note}</span>}
+      {/* Handy: die Stufe als Karte mit Abzeichen */}
+      <div className="max-sm:mt-3 max-sm:rounded-2xl max-sm:border max-sm:border-teal-600/40 max-sm:bg-teal-50/60 max-sm:p-4">
+      <p className="m-0 mt-3 max-sm:mt-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-[16px] font-semibold">
+        {name}
+        {tier !== "guest" && <span className="rounded-full bg-teal-700 px-2 py-0.5 text-[12px] font-semibold text-white sm:hidden">Ihre Stufe</span>}
+        {tier !== "guest" && <span className="font-normal text-slate-500 max-sm:basis-full"><span className="max-sm:hidden">· </span>{priceLabel(tier)} · {plan.note}</span>}
       </p>
       {until && tier !== "guest" && (
         <p className={`m-0 mt-1 text-[14px] ${soon ? "text-amber-800" : "text-slate-500"}`} role={soon ? "status" : undefined}>
@@ -142,6 +146,7 @@ export function PlanSummary() {
           ) : null;
         })}
       </ul>
+      </div>
       <Link href="/preise" className={SECONDARY}>Alle Stufen ansehen</Link>
     </section>
   );
