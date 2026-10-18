@@ -87,8 +87,8 @@ export function XWeiter({ links }: { links: [string, string][] }) {
       <ul className="m-0 mt-3 grid list-none gap-3 p-0 max-sm:mt-1 max-sm:gap-0 max-sm:divide-y max-sm:divide-slate-200 sm:grid-cols-2 lg:grid-cols-3">
         {links.map(([href, name]) => {
           /* Seite und Frage aus SEITEN (überall gleich); eigener Text nur, wenn die Seite dort fehlt */
-          const z = SEITEN[href.split("/").pop()!];
-          const m = z ? [, (KACHEL_FRAGE[href] ?? z.frage), z.titel.replace("plenara.X ", "") + (z.reiter && z.reiter[0][0] !== href ? ` · ${z.reiter.find(([h]) => h === href)?.[1]}` : "")] : name.match(/^(.*) \((.*)\)$/);
+          const path = href.split("?")[0], z = SEITEN[path.split("/").pop()!];
+          const m = z ? [, (KACHEL_FRAGE[path] ?? z.frage), z.titel.replace("plenara.X ", "") + (z.reiter && z.reiter[0][0] !== path ? ` · ${z.reiter.find(([h]) => h === path)?.[1]}` : "")] : name.match(/^(.*) \((.*)\)$/);
           return (
             <li key={href}>
               <Link href={href} className="group flex h-full items-center gap-3 rounded-xl bg-slate-50 px-4 py-3 transition-colors hover:bg-teal-50 max-sm:gap-2.5 max-sm:rounded-none max-sm:bg-transparent max-sm:px-0 max-sm:py-2.5">

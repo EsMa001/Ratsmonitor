@@ -12,9 +12,9 @@ import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Fehler, Leer } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitExtra, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { ArtIcon } from "../../components/ArtIcon";
-import { Icon } from "../../info/icons";
 import { ThemeIcon } from "../../components/icons";
 import { kurz } from "../../components/ChipRail";
+import { usePhone } from "../../lib/usePhone";
 import { WheelPicker } from "../../components/WheelPicker";
 import { PhasePicker } from "../../components/PhasePicker";
 import type { Article } from "../../types";
@@ -141,6 +141,7 @@ function FilterRow({ label, children }: { label: string; children: React.ReactNo
 
 /* fest: Seite für genau eine Kategorie (plenara.X Ausschreibungen = Kategorie „vergaben“, eigene Adresse, ohne Kategorienwahl) */
 export function SignalePage({ fest }: { fest?: string } = {}) {
+  const phone = usePhone();
   const params = useSearchParams(), router = useRouter(), path = usePathname();
   const basis = fest ? "/analytics/ausschreibungen" : "/analytics/signale";
   /* Standard: die erste Kategorie (steht dann nicht in der Adresse); „Ausschreibungen und Vergaben“ ist seit 18.10.2026 eine eigene Seite unter Einblicke */
@@ -325,11 +326,10 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           </div>
         </div>
       )}
-    {(ATLAS_OF[signal] || TRENDS_OF[signal]) && res && res.total > 0 && <ul className="m-0 mt-6 list-none border-t border-slate-200 p-0 sm:hidden print:hidden">
-      {ATLAS_OF[signal] && <li className="border-b border-slate-200"><Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="flex min-h-[44px] items-center gap-3 py-2 text-[14px] text-slate-700 no-underline"><span aria-hidden="true" className="text-teal-700"><Icon name="map" size={18} /></span><span className="min-w-0 flex-1">Wie viel Raum das Thema hat: <b className="font-medium text-teal-700">{ATLAS_OF[signal][2]} im Atlas</b></span><span aria-hidden="true" className="text-teal-700">→</span></Link></li>}
-      {TRENDS_OF[signal] && <li className="border-b border-slate-200"><Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="flex min-h-[44px] items-center gap-3 py-2 text-[14px] text-slate-700 no-underline"><span aria-hidden="true" className="text-teal-700"><Icon name="trendingUp" size={18} /></span><span className="min-w-0 flex-1">Wie es sich ausbreitet: <b className="font-medium text-teal-700">„{TRENDS_OF[signal]}“ in den Trends</b></span><span aria-hidden="true" className="text-teal-700">→</span></Link></li>}
-    </ul>}
-    <XWeiter links={fest ? [["/analytics/signale", "Was entsteht? (Signale)"], ["/analytics/news", "Was ist berichtenswert? (Aktuelles)"], ["/analytics/atlas", "Wie viel? (Atlas)"]] : [["/analytics/news", "Was ist berichtenswert? (Aktuelles)"], ["/analytics/atlas", "Wie viel? (Atlas)"]]} />
+    <XWeiter links={[...(fest ? [["/analytics/signale", "Was entsteht? (Signale)"]] : []), ["/analytics/news", "Was ist berichtenswert? (Aktuelles)"],
+      /* Handy: Atlas und Trends gleich mit dem Thema bzw. Begriff dieser Seite (die Zeile mit den Links oben entfällt dort) */
+      [phone && ATLAS_OF[signal] ? `/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}` : "/analytics/atlas", "Wie viel? (Atlas)"],
+      ...(phone && TRENDS_OF[signal] ? [[`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`, "Was verändert sich? (Trends)"]] : [])] as [string, string][]} />
     </main>
   );
 }
