@@ -74,7 +74,7 @@ export function GremiennetzPage() {
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
               {/* Handy: Netz erst auf Wunsch (zu klein zum Lesen); die Listen darunter tragen die Antwort */}
               <button type="button" onClick={() => setNetz(!netz)} aria-expanded={netz} className="mt-6 text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
-              <section className={`${netz ? "" : "max-sm:hidden"} relative mt-8 h-[360px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
+              <section className={`${netz ? "" : "max-sm:hidden"} relative mt-8 h-[360px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
                 <NetView nodes={res.nodes} edges={res.edges} selected={selected} onSelect={setSelected} zoomRef={zoomRef} />
                 <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
                   <ul className="m-0 flex list-none flex-col gap-1 p-0">

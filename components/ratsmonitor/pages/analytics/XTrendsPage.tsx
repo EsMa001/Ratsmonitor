@@ -217,9 +217,9 @@ export function XTrendsPage() {
               {begriff ? (df ? <SpreadMap regions={df.regions} day={day} firstDay={firstDay} lastDay={lastDay} onDay={(d) => { setPlaying(false); setDay(d); }} playing={playing} onToggle={toggle}
                   picked={mapPick || area} onPick={(a) => setMapPick(mapPick === a ? "" : a)}
                   info={(() => { const r = df.regions.find((x) => keysOf(x).includes(mapPick)); return r ? <><b className="font-semibold">{r.name}</b><br /><span className="text-slate-500">erste Erwähnung {fmt(r.first)} · {n(r.n)} {r.n === 1 ? "Eintrag" : "Einträge"}</span></> : undefined; })()} />
-                : <div className="grid h-[420px] place-items-center rounded-[22px] border border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{diff.error && diff.url === diffUrl ? diff.error : "Ausbreitung wird berechnet …"}</div>)
+                : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{diff.error && diff.url === diffUrl ? diff.error : "Ausbreitung wird berechnet …"}</div>)
                 : map ? <RegionMap tall levels={map.levels} legend={map.legend} colors={map.colors} label={map.label} note={map.note} picked={area} onPick={(a) => search.setArea(a, "map")} />
-                : <div className="grid h-[420px] place-items-center rounded-[22px] border border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{spread.error || "Karte wird berechnet …"}</div>}
+                : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{spread.error || "Karte wird berechnet …"}</div>}
             </div>
 
             <div className="min-w-0 lg:col-span-6">

@@ -58,7 +58,7 @@ export function SpreadMap({ regions, day, firstDay, lastDay, onDay, playing, onT
   const reached = regions.filter((r) => toDay(r.first) <= day).length;
 
   return (
-    <section className="relative h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[540px] lg:h-[720px]" aria-label="Karte der Ausbreitung">
+    <section className="relative h-[420px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 sm:h-[540px] lg:h-[720px]" aria-label="Karte der Ausbreitung">
       <div ref={stageRef} className="absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={overRef} role="img" aria-label={`Karte: ${reached} von ${regions.length} Gebieten erreicht am ${fmt(toIso(day))}`} className="absolute left-0 top-0 block h-full w-full" />

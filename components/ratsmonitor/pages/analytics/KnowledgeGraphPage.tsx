@@ -153,7 +153,7 @@ export function KnowledgeGraphPage() {
           <li key={t} className="flex items-center gap-1.5"><i className={`inline-block h-3 w-3 rounded-full ${t === "topic" ? "rm-gdot" : ""}`} style={{ background: KIND[t].fill, border: `2px solid ${KIND[t].stroke}` }} />{KIND[t].label}</li>
         ))}
       </ul>}
-      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} relative mt-3 h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[620px]`} aria-label="Themennetz">
+      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} relative mt-3 h-[420px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 sm:h-[620px]`} aria-label="Themennetz">
         {res && !empty ? <GraphView nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="absolute inset-0 bg-map-ground" />}
 
         <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700 max-sm:hidden`}>

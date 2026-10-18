@@ -99,7 +99,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     <div className="rm-mapwrap relative">
     {/* Handy: Platz für die Suchleiste der Seite oben auf der Karte (siehe lib/mapSlot.ts) */}
     <div ref={slotRef} className="absolute inset-x-2 top-2 z-30 empty:hidden sm:hidden" />
-    <div className={`relative h-[420px] overflow-hidden rounded-[22px] border border-slate-200 max-sm:h-[300px] sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
+    <div className={`relative h-[420px] overflow-hidden bg-slate-50 rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 max-sm:h-[300px] sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
       <div ref={stageRef} className="rm-stage absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={ghostRef} aria-hidden="true" className="pointer-events-none absolute left-0 top-0 block h-full w-full opacity-0" />
