@@ -1,3 +1,4 @@
+import { flushSync } from "react-dom";
 import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MapPanel } from "../components/map/MapPanel";
@@ -29,13 +30,47 @@ export function OverviewPage({ active }: { active: boolean }) {
   useEffect(() => { if (stage === "voll") setPeekHidden(false); }, [stage]);
   /* Handy: Wischen mit dem Finger auf dem Blatt. Nach unten: voll → klein, klein → minimal (ohne Vorschau). Nach oben: minimal → klein, klein → voll.
      Im vollen Blatt zählt nur ein Zug nach unten, wenn die Liste ganz oben steht (sonst scrollt sie). */
-  const pull = useRef<{ y: number; top: number } | null>(null);
+  const pull = useRef<{ y: number; top: number; t: number; range: number; drag: number } | null>(null);
+  const flatOf = (e: React.TouchEvent) => (e.currentTarget as HTMLElement).parentElement as HTMLElement;
   const sheetTouch = {
-    onTouchStart: (e: React.TouchEvent) => { if (isPhone()) pull.current = { y: e.touches[0].clientY, top: mainRef.current?.scrollTop ?? 0 }; },
+    onTouchStart: (e: React.TouchEvent) => {
+      if (!isPhone()) return;
+      const m = mainRef.current, flat = flatOf(e);
+      const range = m ? m.offsetHeight - (parseFloat(getComputedStyle(flat).getPropertyValue("--klein")) || 63) : 0;
+      pull.current = { y: e.touches[0].clientY, top: m?.scrollTop ?? 0, t: Date.now(), range, drag: 0 };
+    },
+    /* Das Blatt folgt dem Finger (klein → voll nach oben, voll → klein nach unten); gewählt wird beim Loslassen */
+    onTouchMove: (e: React.TouchEvent) => {
+      const s = pull.current; if (!s || s.range <= 0) return;
+      const dy = e.touches[0].clientY - s.y;
+      const d = stage === "klein" ? (dy < 0 ? Math.max(dy, -s.range) : 0) : (dy > 0 && s.top <= 0 ? Math.min(dy, s.range) : 0);
+      if (Math.abs(d) < 6 && !s.drag) return;
+      s.drag = d;
+      const flat = flatOf(e);
+      flat.setAttribute("data-drag", "1");
+      flat.style.setProperty("--drag", `${d}px`);
+    },
     onTouchEnd: (e: React.TouchEvent) => {
       const s = pull.current; pull.current = null;
       if (!s || !isPhone()) return;
+      const flat = flatOf(e);
       const dy = e.changedTouches[0].clientY - s.y;
+      if (s.drag) {
+        /* Zu Ende gleiten (mit Übergang), dann Stufe setzen und die Hilfsmaße ohne Sprung entfernen */
+        const fast = Date.now() - s.t < 260 && Math.abs(dy) > 20;
+        const go = Math.abs(s.drag) >= 44 || fast;
+        const target = go ? (stage === "klein" ? -s.range : s.range) : 0;
+        flat.removeAttribute("data-drag");
+        flat.style.setProperty("--drag", `${target}px`);
+        window.setTimeout(() => {
+          flat.setAttribute("data-drag", "1");
+          /* Stufe und Maß im selben Schritt, sonst steht das Blatt einen Augenblick verschoben */
+          flushSync(() => { if (go) setSheetStage(stage === "klein" ? "voll" : "klein"); });
+          flat.style.removeProperty("--drag");
+          requestAnimationFrame(() => requestAnimationFrame(() => flat.removeAttribute("data-drag")));
+        }, 300);
+        return;
+      }
       if (Math.abs(dy) < 44) return;
       if (dy > 0) {
         if (stage === "voll") { if (s.top <= 0) setSheetStage("klein"); }
@@ -44,7 +79,7 @@ export function OverviewPage({ active }: { active: boolean }) {
         if (peekHidden) setPeekHidden(false); else setSheetStage("voll");
       }
     },
-    onTouchCancel: () => { pull.current = null; },
+    onTouchCancel: (e: React.TouchEvent) => { pull.current = null; const flat = flatOf(e); flat.style.removeProperty("--drag"); flat.removeAttribute("data-drag"); },
   };
   /* Handy: die Filter öffnen sich auf der Karte; dafür braucht sie ihre volle Höhe */
   const filtersOpen = useFiltersOpen();

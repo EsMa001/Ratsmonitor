@@ -3,8 +3,7 @@ import { useSearch, useSearchResults } from "../state/search";
 import { FilterSelect } from "./FilterSelect";
 import { CountDots } from "./CountDots";
 import { IconViewCompact, IconViewFull } from "./icons";
-import { setSheetStage, toggleSheetStage, useSheetStage } from "../lib/sheetStage";
-import { useVerticalSwipe } from "../lib/useSwipe";
+import { toggleSheetStage, useSheetStage } from "../lib/sheetStage";
 import { isPhone } from "../lib/usePhone";
 
 /** Zeile über der Trefferliste: Trefferzahl und Stand, Sortierung, Export, Ansicht.
@@ -16,10 +15,9 @@ export function SearchFilterPanel() {
   const listView = useListView();
   /* Handy: der Griff oben zieht das Ergebnisblatt hoch (Liste) oder runter (Karte); Tippen wechselt */
   const stage = useSheetStage();
-  const drag = useVerticalSwipe((dir) => setSheetStage(dir < 0 ? "voll" : "klein"));
 
   return (
-    <section aria-label="Suche und Filter" {...drag}
+    <section aria-label="Suche und Filter"
       onClick={(e) => { if (isPhone() && !(e.target as HTMLElement).closest("button, a, input, select, [role=listbox], [role=option]")) toggleSheetStage(); }}
       className="card-shell relative z-[3] flex flex-col gap-3 p-[12px] max-sm:px-4 max-sm:gap-0 max-sm:pb-0 max-sm:pt-[18px]">
       <button type="button" aria-label={stage === "klein" ? "Trefferliste öffnen" : "Karte zeigen"} aria-expanded={stage === "voll"} onClick={(e) => { e.stopPropagation(); toggleSheetStage(); }}
