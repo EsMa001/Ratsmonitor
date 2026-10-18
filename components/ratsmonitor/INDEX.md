@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (542 Zeilen, ⚠14)
-- app/ratsmonitor.css (253 Zeilen, ⚠17)
+- app/ratsmonitor.css (260 Zeilen, ⚠17)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -456,6 +456,7 @@ ri-tl__title ratsmonitor-info.css:69
 ri-tl__title ratsmonitor.css:147
 ri-topnav ratsmonitor-info.css:302
 rm-analytics ratsmonitor-info.css:383
+rm-attr ratsmonitor.css:250
 rm-band-mid ratsmonitor-info.css:448
 rm-banddots ratsmonitor-info.css:444
 rm-bandicon ratsmonitor-info.css:439
@@ -475,7 +476,7 @@ rm-glass-pop ratsmonitor.css:87
 rm-gtext ratsmonitor.css:180
 rm-gtopic ratsmonitor.css:181
 rm-headtitle ratsmonitor-info.css:487
-rm-legalbar ratsmonitor.css:250
+rm-legalbar ratsmonitor.css:257
 rm-legend ratsmonitor.css:83
 rm-logo ratsmonitor-info.css:189
 rm-logo ratsmonitor.css:146
@@ -483,8 +484,8 @@ rm-logo--big ratsmonitor-info.css:312
 rm-logo__mark ratsmonitor-info.css:193
 rm-logo__mark--p ratsmonitor-info.css:194
 rm-logo__text ratsmonitor-info.css:191
-rm-mapctl ratsmonitor.css:244
-rm-sbar ratsmonitor.css:241
+rm-mapctl ratsmonitor.css:250
+rm-sbar ratsmonitor.css:243
 rm-search ratsmonitor-info.css:321
 rm-search ratsmonitor.css:232
 rm-solid ratsmonitor.css:87
@@ -680,7 +681,7 @@ topic design-styles.css:140
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (550, ⚠1): isSearchInput, focusSearch, SearchBox
-- SearchFilterPanel.tsx (70): SearchFilterPanel
+- SearchFilterPanel.tsx (68): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - Segmented.tsx (66): Segmented
 - ShareButton.tsx (48): shareLink, ShareButton
@@ -789,7 +790,7 @@ topic design-styles.css:140
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (240): LegalPage
 - NotificationsPage.tsx (80): NotificationsPage
-- OverviewPage.tsx (111): OverviewPage
+- OverviewPage.tsx (150): OverviewPage
 - PersonalPage.tsx (26): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage

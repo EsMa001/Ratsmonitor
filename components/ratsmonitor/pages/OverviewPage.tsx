@@ -30,14 +30,17 @@ export function OverviewPage({ active }: { active: boolean }) {
   useEffect(() => { if (stage === "voll") setPeekHidden(false); }, [stage]);
   /* Handy: Wischen mit dem Finger auf dem Blatt. Nach unten: voll → klein, klein → minimal (ohne Vorschau). Nach oben: minimal → klein, klein → voll.
      Im vollen Blatt zählt nur ein Zug nach unten, wenn die Liste ganz oben steht (sonst scrollt sie). */
-  const pull = useRef<{ y: number; top: number; t: number; range: number; drag: number } | null>(null);
+  const pull = useRef<{ y: number; top: number; t: number; range: number; drag: number; k: number } | null>(null);
   const flatOf = (e: React.TouchEvent) => (e.currentTarget as HTMLElement).parentElement as HTMLElement;
   const sheetTouch = {
     onTouchStart: (e: React.TouchEvent) => {
       if (!isPhone()) return;
       const m = mainRef.current, flat = flatOf(e);
       const range = m ? m.offsetHeight - (parseFloat(getComputedStyle(flat).getPropertyValue("--klein")) || 63) : 0;
-      pull.current = { y: e.touches[0].clientY, top: m?.scrollTop ?? 0, t: Date.now(), range, drag: 0 };
+      /* Weg der Suchleiste zwischen kleinem und vollem Blatt (liegt unten auf der Karte, mit Vorschau um deren Höhe höher, bzw. oben im Streifen) */
+      const sec = flat.querySelector(":scope>section") as HTMLElement | null;
+      const sbd = Math.max(0, (sec?.offsetHeight ?? 0) - 184);
+      pull.current = { y: e.touches[0].clientY, top: m?.scrollTop ?? 0, t: Date.now(), range, drag: 0, k: range > 0 ? Math.max(0, sbd - ((parseFloat(getComputedStyle(flat).getPropertyValue("--klein")) || 63) - 63)) / range : 0 };
     },
     /* Das Blatt folgt dem Finger (klein → voll nach oben, voll → klein nach unten); gewählt wird beim Loslassen */
     onTouchMove: (e: React.TouchEvent) => {
@@ -49,6 +52,7 @@ export function OverviewPage({ active }: { active: boolean }) {
       const flat = flatOf(e);
       flat.setAttribute("data-drag", "1");
       flat.style.setProperty("--drag", `${d}px`);
+      flat.style.setProperty("--sb", `${d * s.k}px`);
     },
     onTouchEnd: (e: React.TouchEvent) => {
       const s = pull.current; pull.current = null;
@@ -62,11 +66,13 @@ export function OverviewPage({ active }: { active: boolean }) {
         const from = stage === "klein" ? (go ? s.range + s.drag : s.drag) : (go ? s.drag - s.range : s.drag);
         flat.setAttribute("data-drag", "1");
         flat.style.setProperty("--drag", `${from}px`);
+        flat.style.setProperty("--sb", `${from * s.k}px`);
         flushSync(() => { if (go) setSheetStage(stage === "klein" ? "voll" : "klein"); });
         void flat.offsetHeight;
         flat.removeAttribute("data-drag");
         flat.style.setProperty("--drag", "0px");
-        window.setTimeout(() => flat.style.removeProperty("--drag"), 400);
+        flat.style.setProperty("--sb", "0px");
+        window.setTimeout(() => { flat.style.removeProperty("--drag"); flat.style.removeProperty("--sb"); }, 400);
         return;
       }
       if (Math.abs(dy) < 44) return;
@@ -77,7 +83,7 @@ export function OverviewPage({ active }: { active: boolean }) {
         if (peekHidden) setPeekHidden(false); else setSheetStage("voll");
       }
     },
-    onTouchCancel: (e: React.TouchEvent) => { pull.current = null; const flat = flatOf(e); flat.style.removeProperty("--drag"); flat.removeAttribute("data-drag"); },
+    onTouchCancel: (e: React.TouchEvent) => { pull.current = null; const flat = flatOf(e); flat.style.removeProperty("--drag"); flat.style.removeProperty("--sb"); flat.removeAttribute("data-drag"); },
   };
   /* Handy: die Filter öffnen sich auf der Karte; dafür braucht sie ihre volle Höhe */
   const filtersOpen = useFiltersOpen();
