@@ -8,7 +8,7 @@ import { BandDots } from "../../components/BandDots";
 export function PageBand({ children, compact = false }: { children: ReactNode; compact?: boolean }) {
   return (
     <div
-      className={`-mx-[max(1vw,16px)] pl-band rm-topline px-[max(1vw,16px)] ${compact ? "mb-4 pb-7 pt-4" : "mb-8 pb-7 pt-4"}`}>
+      className={`-mx-[max(1vw,16px)] pl-band rm-topline px-[max(1vw,16px)] ${compact ? "mb-4 max-sm:mb-2 pb-7 pt-4" : "mb-8 max-sm:mb-4 pb-7 pt-4"}`}>
       <BandDots />
       <div className="mb-6 hidden print:block"><AnalyticsLogo size={30} /></div>
       {/* Kompakt ohne Einblenden: Titel und Satz sind sofort da */}

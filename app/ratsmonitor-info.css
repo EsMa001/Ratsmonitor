@@ -447,3 +447,14 @@ html.rm-dark .rm-banddots{opacity:.35}
 :is(.pl-band,.ri-head) :is(h1,.ri-h1){animation:rmBandIn .45s cubic-bezier(.2,.8,.2,1) both}
 :is(.pl-band,.ri-head) :is(.rm-band-mid,.ri-lead){animation:rmBandIn .45s cubic-bezier(.2,.8,.2,1) .12s both}
 @media (prefers-reduced-motion:reduce){:is(.pl-band,.ri-head) :is(h1,.ri-h1,.rm-band-mid,.ri-lead){animation:none}}
+/* Handy: Kopfbänder schlanker (plenara.X: ohne Zurück, Symbol und Zeitraumzeilen; Info- und Kontoseiten: ohne großes Symbol, Einleitung auf 2 Zeilen) */
+@media (max-width:639px){
+  :is(.pl-band,.ri-head){padding-top:8px !important;padding-bottom:12px !important}
+  .pl-band .back-btn,.pl-band .rm-bandicon{display:none !important}
+  .pl-band .rm-band-mid>p:nth-child(n+2){display:none}
+  .ri-head .ri-bid__icon{display:none !important}
+  .ri-head .back-btn{margin-bottom:2px !important}
+  .ri-head .ri-bid__label{display:none}
+  .ri-head .ri-h1{font-size:22px !important;line-height:1.2 !important;margin-top:6px !important;margin-bottom:0 !important}
+  .ri-head .ri-lead{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+}
