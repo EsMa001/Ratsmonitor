@@ -49,9 +49,9 @@ export function Header() {
       const el = h1();
       if (!el) { setTitle(""); setShown(false); root?.style.setProperty("--hp", "0"); root?.style.setProperty("--hb", "0"); return; }
       const own = Array.from(el.childNodes).filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim() || (el.textContent ?? "").trim();
-      /* Steht über dem Titel noch eine Zeile (z. B. „Meine Suchen“), gilt deren Unterkante, damit sich beide nicht überlagern */
-      const above = el.previousElementSibling, ref = above instanceof HTMLElement && above.getBoundingClientRect().height > 0 ? above : el;
-      const bottom = ref.getBoundingClientRect().bottom, h = root?.offsetHeight ?? 44;
+      /* Maßgeblich ist das Ende des ganzen Bandes (Titel, Kennzahl, Satz darunter ohne den Innenabstand): der kleine Titel erscheint erst, wenn auch dessen Inhalt die Kopfzeile erreicht hat und sich nichts überlagert */
+      const band = el.closest<HTMLElement>(".pl-band, .ri-head");
+      const bottom = band ? band.getBoundingClientRect().bottom - (parseFloat(getComputedStyle(band).paddingBottom) || 0) : el.getBoundingClientRect().bottom, h = root?.offsetHeight ?? 44;
       const y = window.scrollY, abs = bottom + y, start = abs - (h + 6), end = abs - (h - 18);
       const max = document.documentElement.scrollHeight - window.innerHeight;
       /* Kurze Seite: reicht der Weg nicht bis zum Ende des Übergangs, läuft er über den ganzen möglichen Weg, damit er nie in der Mitte stehen bleibt */
