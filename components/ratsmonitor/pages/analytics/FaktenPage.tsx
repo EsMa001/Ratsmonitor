@@ -192,7 +192,7 @@ export function FaktenPage() {
         </ul>
       </nav>}
 
-      <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Fakten werden geladen …" />}
@@ -210,7 +210,7 @@ export function FaktenPage() {
             : [{ value: ranked.length ? `${num(mid(lasts))}` : "–", label: `Median${unit ? ` (${unit})` : ""}` }, { value: n(ranked.length), label: ranked.length === 1 ? "Gebiet mit Wert" : "Gebiete mit Wert" }, { value: n(up), label: "seit dem vorigen Wert höher" }]}>
             <MeinOrt current={areaAgs && focus && focus.ags === areaAgs ? { ags: areaAgs, name: focus.name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
           </Kennzahlen>
-          {LINKS[fact?.kind ?? ""] && <p className="mt-1 text-[14px] text-slate-500">{LINKS[fact!.kind].map(([href, text], i) => <span key={href}>{i > 0 && " · "}<Link href={href} className="font-medium text-teal-700 hover:underline">{text} →</Link></span>)}</p>}
+          {LINKS[fact?.kind ?? ""] && <p className="mt-1 text-[14px] text-slate-500">{[...LINKS[fact!.kind], ["/analytics/beschluesse", "Beschlüsse dazu"] as [string, string]].map(([h, text], i) => { const ort = /^\d{5,9}$/.test(areaAgs) ? areaAgs : "", href = h.includes("beschluesse") ? `${h}?q=${encodeURIComponent(fact!.name)}${ort ? `&ort=${ort}` : ""}` : ort ? `${h}${h.includes("?") ? "&" : "?"}ort=${ort}` : h; return <span key={h}>{i > 0 && " · "}<Link href={href} className="font-medium text-teal-700 hover:underline">{text}{ort && h.includes("beschluesse") && focus ? ` in ${focus.name}` : ""} →</Link></span>; })}</p>}
 
           {/* Abdeckung: damit eine dünne Karte nicht wie ein Fehler wirkt (Werte stehen nur dort, wo die Unterlagen sie ausdrücklich nennen) */}
           {!overview && regionCount > 0 && (

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
 import { Befund, Fehler } from "./Befund";
+import { MeinOrtNeu } from "./MeinOrtNeu";
 import { Folgen, Kennzahlen, MeinOrt, ZeitPills, countScale, useOrtInAdresse, weekAgo, zeitText } from "./Kennzahlen";
 import { usePhone } from "../../lib/usePhone";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
@@ -432,7 +433,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           })}
         </ul>
       </nav>}
-      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch follow={<Folgen heart before={() => { if (theme) search.setThema(theme); }} hint="Suche speichern: neue Vorgänge per Mail" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
+      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch follow={<Folgen heart before={() => { if (theme) search.setThema(theme); }} hint="Auswahl unter Meine Suchen speichern" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden karte text="Auswertung wird berechnet …" />}
       {res && (
@@ -453,9 +454,10 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                 : <Kennzahlen week={week} scope={[what || "Alle Themen", res.selection.q ? `„${prettyTerm(res.selection.q)}“` : "", place || ""].filter(Boolean).join(" · ")} period={zeitText(zeit)} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }]}>
                   {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
                   <span className="max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></span>
-                  <MeinOrt current={areaAgs && place ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} />
+                  {place && <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} />}
                 </Kennzahlen>}
 
+              {!place && <MeinOrtNeu onApply={(ags) => search.setArea(ags, "ui")} />}
               {place && cmp && <div className="mt-2 max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></div>}
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="mt-4 max-sm:mt-2 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-4 lg:grid-cols-12">

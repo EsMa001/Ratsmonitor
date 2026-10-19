@@ -813,23 +813,23 @@ truncate ratsmonitor-info.css:459
 - AnalyticsPages.tsx (60): AnalyticsPages
 - AtlasPage.tsx (69): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (53): Befund, zuThema, Leer, Fehler
-- BeschluessePage.tsx (211, ⚠9): BeschluessePage
+- BeschluessePage.tsx (220, ⚠9): BeschluessePage
 - CompareCharts.tsx (63): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (406, ⚠11): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
-- DiffusionSearch.tsx (91, ⚠2): PlayState, DiffusionSearch
-- FaktenPage.tsx (328, ⚠3): FaktenPage
+- DiffusionSearch.tsx (93, ⚠2): PlayState, DiffusionSearch
+- FaktenPage.tsx (328, ⚠4): FaktenPage
 - FraktionenPage.tsx (187, ⚠6): FraktionenPage
 - GraphView.tsx (250, ⚠1): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (184, ⚠4): GremiennetzPage
-- Kennzahlen.tsx (138): weekAgo, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
+- Kennzahlen.tsx (132, ⚠1): weekAgo, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
 - KnowledgeGraphPage.tsx (270, ⚠6): KnowledgeGraphPage
 - Laden.tsx (27): Laden
 - ListRow.tsx (34, ⚠1): ListRow
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
 - NetView.tsx (240, ⚠1): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (123, ⚠1): NewsradarPage
+- NewsradarPage.tsx (126, ⚠1): NewsradarPage
 - PageBand.tsx (19): PageBand
 - RadarDrill.tsx (130, ⚠2): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
@@ -838,7 +838,7 @@ truncate ratsmonitor-info.css:459
 - SignalePage.tsx (366, ⚠8): signaleHref, SignalePage
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
-- XAtlasView.tsx (571, ⚠9): XAtlasView
+- XAtlasView.tsx (573, ⚠9): XAtlasView
 - XKopf.tsx (210, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (346, ⚠4): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve

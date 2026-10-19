@@ -63,7 +63,7 @@ export function GremiennetzPage() {
       <XKopf seite="gremien" />
 
       <ThemenLeiste />
-      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Netz wird berechnet …" />}
 

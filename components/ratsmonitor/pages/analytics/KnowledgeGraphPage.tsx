@@ -154,7 +154,7 @@ export function KnowledgeGraphPage() {
       <XKopf seite="graph" />
 
       <ThemenLeiste />
-      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} /></div>
+      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} /></div>
       {error && <Fehler>{error}</Fehler>}
 
       {/* Antwort zuerst, dann das Netz */}

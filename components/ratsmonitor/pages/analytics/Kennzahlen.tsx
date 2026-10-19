@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { Bell, Star } from "lucide-react";
-import { useClient } from "../../lib/useClient";
+import { Bell, Heart } from "lucide-react";
+import { useHomePlace } from "../../lib/homePlace";
 import { useUi } from "../../state/ui";
 import { publishBandFigure, useCountUp } from "../../lib/bandFigure";
 import { Segmented } from "../../components/Segmented";
@@ -101,20 +101,12 @@ export function useOrtInAdresse(area: string, setArea: (ags: string) => void) {
 /** Umschalter für die Sortierung einer Liste (Trends, Fakten): helle Fläche, gewählte Wahl weiß hervorgehoben */
 export { Segmented } from "../../components/Segmented";
 
-/* Eigener Ort, im Browser gemerkt (nur Bequemlichkeit, kein Konto nötig) */
-const MEIN_ORT = "plenara.meinOrt";
-const readOrt = (): { ags: string; name: string } | null => { try { const v = JSON.parse(localStorage.getItem(MEIN_ORT) || "null"); return v?.ags ? v : null; } catch { return null; } };
-
 /**
- * „Mein Ort“: Ist ein Ort gewählt, lässt er sich merken (Stern); ist keiner gewählt, setzt ein Klick den gemerkten Ort.
+ * „Mein Ort“: Ist ein Ort gewählt, lässt er sich merken (Stern, im Konto, ohne Anmeldung im Browser); ist keiner gewählt, setzt ein Klick den gemerkten Ort.
  * current: der gewählte Ort (Schlüssel und Name) oder null.
  */
 export function MeinOrt({ current, onApply }: { current: { ags: string; name: string } | null; onApply: (ags: string) => void }) {
-  /* Gemerkter Ort aus dem Browser (beim Hydrieren leer), nach dem Merken der neue Wert */
-  const stored = useClient(() => { try { return localStorage.getItem(MEIN_ORT) || ""; } catch { return ""; } }, "");
-  const [own, setSaved] = useState<{ ags: string; name: string } | null | undefined>(undefined);
-  const saved = own !== undefined ? own : stored ? readOrt() : null;
-  const save = (v: { ags: string; name: string } | null) => { try { if (v) localStorage.setItem(MEIN_ORT, JSON.stringify(v)); else localStorage.removeItem(MEIN_ORT); } catch { /* ohne Speicher geht es auch */ } setSaved(v); };
+  const [saved, save] = useHomePlace();
   if (current) {
     const mine = saved?.ags === current.ags;
     return <button type="button" onClick={() => save(mine ? null : current)} aria-pressed={mine} className="inline-flex h-7 items-center gap-1 rounded-full px-2 text-[14px] text-teal-700 hover:bg-teal-50 print:hidden">
@@ -127,10 +119,12 @@ export function MeinOrt({ current, onApply }: { current: { ags: string; name: st
  * „Folgen“: speichert die aktuelle Suche (Begriff, Ort, Filter, Thema) im Konto, dort mit Mail-Benachrichtigung bei neuen
  * Vorgängen (derselbe Dialog wie „Suche speichern“). before: vorher die Auswahl der Seite in die Suche übernehmen (Atlas: Thema).
  */
-export function Folgen({ before, hint, showText = false, heart = false }: { before?: () => void; hint?: string; /** Handy: Name zeigen statt nur der Glocke */ showText?: boolean; /** Herz in der Größe der Suchleiste (neben dem Suchfeld) */ heart?: boolean }) {
+export function Folgen({ before, hint, showText = false, heart = false, line = false }: { before?: () => void; hint?: string; /** Handy: Name zeigen statt nur der Glocke */ showText?: boolean; /** Herz in der Größe der Suchleiste (neben dem Suchfeld) */ heart?: boolean; /** Zeile unter der Suchleiste: Herz und Satz, was das Speichern bringt (Desktop) */ line?: boolean }) {
   const { openSaveDialog } = useUi();
-  if (heart) return <button type="button" title={hint ?? "Suche speichern: neue Vorgänge per Mail"} onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }} aria-label="Suche speichern"
-    className="grid h-12 w-12 flex-none place-items-center rounded-xl border border-slate-200 bg-white text-teal-700 transition-colors hover:bg-slate-50 print:hidden"><Star size={20} strokeWidth={1.5} aria-hidden="true" /></button>;
+  if (line) return <button type="button" onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }} className="inline-flex items-center gap-1.5 rounded-lg py-1 text-[14px] text-slate-500 hover:text-teal-700 print:hidden">
+    <Heart size={15} strokeWidth={1.5} aria-hidden="true" />Diese Auswahl unter „Meine Suchen“ speichern und später wieder öffnen</button>;
+  if (heart) return <button type="button" title={hint ?? "Auswahl unter Meine Suchen speichern"} onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }} aria-label="Suche speichern"
+    className="grid h-12 w-12 flex-none place-items-center rounded-xl border border-slate-200 bg-white text-teal-700 transition-colors hover:bg-slate-50 print:hidden"><Heart size={20} strokeWidth={1.5} aria-hidden="true" /></button>;
   return <button type="button" title={hint ?? "Neue Vorgänge zu dieser Auswahl per Mail"} onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }}
     aria-label="Folgen" className="inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-700 px-3 text-[14px] font-medium text-teal-700 hover:bg-teal-50 max-sm:px-2.5 print:hidden">
     <Bell size={14} strokeWidth={1.5} aria-hidden="true" /><span className={showText ? "" : "max-sm:sr-only"}>Folgen</span></button>;

@@ -1,7 +1,8 @@
 import { ShareButton } from "../../components/ShareButton";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Segmented, Folgen } from "./Kennzahlen";
+import { Segmented, Folgen, useOrtInAdresse } from "./Kennzahlen";
+import { useSearch } from "../../state/search";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, Fehler, Leer } from "./Befund";
@@ -67,6 +68,8 @@ function Meldung({ i, hide, nr, total }: { i: Item; hide?: boolean; nr: number; 
 /** plenara.X – Newsradar: berichtenswerte Vorgänge der letzten 30 und nächsten 10 Tage als Meldung mit Zitat und Quelle */
 export function NewsradarPage() {
   const { query } = useAnalyticsQuery();
+  const search = useSearch();
+  useOrtInAdresse(new URLSearchParams(query).get("area") ?? "", (a) => search.setArea(a, "ui"));
   const [days, setDays] = useState(30);
   /* Handy: zuerst fünf Meldungen, „Weitere laden“ zeigt je fünf mehr */
   const [sicht, setSicht] = useState(5);
@@ -85,7 +88,7 @@ export function NewsradarPage() {
       <XKopf seite="news" />
 
       <ThemenLeiste />
-      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       <div className={`rm-xfilter mt-3 flex flex-wrap items-center gap-2 print:hidden${own ? "" : " max-sm:hidden"}`} role="group" aria-label="Zeitraum">
         {own ? (
           <p className="m-0 text-[14px] text-slate-700">Zeitraum aus dem Filter{res?.own ? `: ${datum(res.from)} bis ${datum(res.to)}` : ""}</p>

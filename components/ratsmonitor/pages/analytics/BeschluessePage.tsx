@@ -59,6 +59,15 @@ export function BeschluessePage() {
   const search = useSearch();
   /* ?ort= aus dem Ortsvergleich setzt den Ort der Suche (und bleibt in der Adresse aktuell) */
   useOrtInAdresse(new URLSearchParams(query).get("area") ?? "", (a) => search.setArea(a, "ui"));
+  /* ?q= aus einem Weiter-Verweis (z. B. Werte → Beschlüsse dazu): einmal beim Öffnen als Suchbegriff, dann aus der Adresse nehmen */
+  useEffect(() => {
+    const u = new URL(window.location.href), q = u.searchParams.get("q")?.trim();
+    if (!q) return;
+    search.applySearch(q);
+    u.searchParams.delete("q");
+    window.history.replaceState(window.history.state, "", u.toString());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/decisions?${query}`, initial: true });
   /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
   useEffect(() => {
@@ -93,7 +102,7 @@ export function BeschluessePage() {
       <XKopf seite="beschluesse" />
 
       <ThemenLeiste />
-      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 

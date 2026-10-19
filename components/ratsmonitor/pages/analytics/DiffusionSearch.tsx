@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { cloneElement, isValidElement, useState } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { useMapSlot } from "../../lib/mapSlot";
@@ -85,6 +85,8 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
         return phone && slot ? createPortal(<>{bar}{chipsBlock}</>, slot) : bar;
       })()}
       {phone && slot ? null : chipsBlock}
+      {/* Desktop: sichtbar sagen, was das Speichern bringt (nur mit Auswahl) */}
+      {!phone && follow && isValidElement(follow) && chips.length > 0 && <div className="mt-1 pl-[52px] print:hidden">{cloneElement(follow as React.ReactElement<{ heart?: boolean; line?: boolean }>, { heart: false, line: true })}</div>}
     </>
   );
 }

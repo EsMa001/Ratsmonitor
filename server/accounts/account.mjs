@@ -170,8 +170,8 @@ const cleanCalendar=list=>Array.isArray(list)?list.slice(0,200).filter(c=>c&&AGS
 const cleanAgs=list=>Array.isArray(list)?[...new Set(list.map(String).filter(a=>AGS.test(a)))].slice(0,200):[];
 export async function settingsRead(ctx){
  const {session}=await requireUser(ctx);
- const row=await ctx.db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags FROM user_settings WHERE user_id=?').bind(session.user_id).first();
- return {response:respond({name:session.name,email:session.email,weekly:!!row?.weekly,weeklyDay:row?.weekly_day??null,calendar:JSON.parse(row?.calendar||'[]'),calendarAgs:JSON.parse(row?.calendar_ags||'[]')})};
+ const row=await ctx.db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,home_ags,home_name FROM user_settings WHERE user_id=?').bind(session.user_id).first();
+ return {response:respond({name:session.name,email:session.email,home:row?.home_ags?{ags:row.home_ags,name:row.home_name??''}:null,weekly:!!row?.weekly,weeklyDay:row?.weekly_day??null,calendar:JSON.parse(row?.calendar||'[]'),calendarAgs:JSON.parse(row?.calendar_ags||'[]')})};
 }
 export async function settingsWrite(ctx){
  const {session}=await requireUser(ctx,{write:true});
@@ -179,12 +179,13 @@ export async function settingsWrite(ctx){
  const {db,now}=ctx,at=iso(now),uid=session.user_id;
  const statements=[];
  if(body.name!==undefined)statements.push(db.prepare('UPDATE users SET name=? WHERE id=?').bind(cleanName(body.name),uid));
- const s=await db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags FROM user_settings WHERE user_id=?').bind(uid).first();
+ const s=await db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,home_ags,home_name FROM user_settings WHERE user_id=?').bind(uid).first();
  const weekly=body.weekly!==undefined?(body.weekly===true?1:0):(s?.weekly??0);
  const day=body.weeklyDay!==undefined?(Number.isInteger(body.weeklyDay)&&body.weeklyDay>=0&&body.weeklyDay<=6?body.weeklyDay:null):(s?.weekly_day??null);
  const calendar=body.calendar!==undefined?JSON.stringify(cleanCalendar(body.calendar)):(s?.calendar??'[]');
  const ags=body.calendarAgs!==undefined?JSON.stringify(cleanAgs(body.calendarAgs)):(s?.calendar_ags??'[]');
- statements.push(db.prepare('INSERT INTO user_settings(user_id,weekly,weekly_day,calendar,calendar_ags,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET weekly=excluded.weekly,weekly_day=excluded.weekly_day,calendar=excluded.calendar,calendar_ags=excluded.calendar_ags,updated_at=excluded.updated_at').bind(uid,weekly,day,calendar,ags,at));
+ const home=body.home!==undefined?(body.home&&AGS.test(String(body.home.ags))?{ags:String(body.home.ags),name:str(body.home.name,120)??''}:null):(s?.home_ags?{ags:s.home_ags,name:s.home_name??''}:null);
+ statements.push(db.prepare('INSERT INTO user_settings(user_id,weekly,weekly_day,calendar,calendar_ags,home_ags,home_name,updated_at) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET weekly=excluded.weekly,weekly_day=excluded.weekly_day,calendar=excluded.calendar,calendar_ags=excluded.calendar_ags,home_ags=excluded.home_ags,home_name=excluded.home_name,updated_at=excluded.updated_at').bind(uid,weekly,day,calendar,ags,home?.ags??null,home?.name??null,at));
  await db.batch(statements);
  return {response:respond({ok:true})};
 }
@@ -336,7 +337,7 @@ export async function collectUserData(db,userId,email){
   rollen:await all('SELECT role,granted_at FROM user_roles WHERE user_id=?',userId),
   stufen:await all('SELECT tier,source,starts_at,ends_at,note FROM plan_grants WHERE user_id=?',userId),
   zustimmungen:await all('SELECT doc,version,given_at,withdrawn_at,privacy_version FROM consents WHERE user_id=?',userId),
-  einstellungen:await db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,updated_at FROM user_settings WHERE user_id=?').bind(userId).first(),
+  einstellungen:await db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,home_ags,home_name,updated_at FROM user_settings WHERE user_id=?').bind(userId).first(),
   suchen:(await all('SELECT * FROM saved_searches WHERE user_id=? ORDER BY position',userId)).map(searchRow),
   artikel:await all('SELECT topic_id,follow,active,snapshot,saved_at,last_seen_at FROM saved_articles WHERE user_id=?',userId),
   sitzungen:await all('SELECT device,created_at,auth_at,last_seen_at,expires_at FROM sessions WHERE user_id=?',userId),
