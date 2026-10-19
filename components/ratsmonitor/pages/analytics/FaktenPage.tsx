@@ -223,8 +223,8 @@ export function FaktenPage() {
           )}
 
           {/* Links die Karte (bleibt stehen), rechts Einordnung und Rangliste; ab 1024 px nebeneinander */}
-          <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
-            <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+          <div className="rm-xsplit mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
+            <div className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
               <RegionMap tall level={level} levels={levels} picked={hover || picked || areaAgs} onPick={(a) => { setPicked(picked === a ? "" : a); }} legend={legend}
                 colors={overview || !fact ? undefined : change ? (fact.dir === "good" ? RED_GREEN : GREEN_RED) : fact.dir === "good" ? RED_GREEN : fact.dir === "bad" ? GREEN_RED : undefined}
                 note={overview ? `Wie viele ${allFacts ? "Fakten" : "Werte"} je Gebiet vorliegen; ohne Farbe: keiner` : change ? `Jüngster Wert gegen den vorigen; nur Gebiete mit zwei Werten${level === "district" ? "; nur Werte der Kreise selbst" : ""}` : `Viertel der Gebiete${level === "district" ? "; nur Werte der Kreise selbst" : ""}; ohne Farbe: kein Wert`}

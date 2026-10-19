@@ -214,7 +214,11 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const zeitText = ZEITRAUM.find(([k]) => k === zeit)?.[1];
   const [hoverPlace, setHoverPlace] = useState("");
   /* Karte standardmäßig eingeklappt (Signale und Ausschreibungen); aufklappen auf Wunsch */
-  const [karte, setKarte] = useState(false);
+  /* Am breiten Bildschirm von Anfang an offen (wie die Suche), sonst auf Wunsch */
+  const wideScreen = useClient(() => window.matchMedia("(min-width:1100px)").matches, false);
+  const [kartePick, setKartePick] = useState<boolean | null>(null);
+  const karte = kartePick ?? wideScreen;
+  const setKarte = (f: (k: boolean) => boolean) => setKartePick(f(karte));
   useOrtInAdresse(areaAgs, (a) => search.setArea(a, "ui"));
   /* Antwort mit Namen: die Orte mit den meisten Vorgängen */
   const topPlaces = res ? [...res.places].sort((a, b) => b.count - a.count).slice(0, 3) : [];
@@ -336,8 +340,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
               {karte ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{karte ? "Karte ausblenden" : "Karte zeigen"}
             </button>
           </div>
-          <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
-            {karte && <div id="signale-karte" className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+          <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12`}>
+            {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
               {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
             </div>}
             <div className={`min-w-0 ${karte ? "lg:col-span-6" : "lg:col-span-12"}`}>

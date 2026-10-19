@@ -83,7 +83,7 @@ const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.l
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
 type Level = "city" | "district";
 
-function AtlasMap({ regions, facts, onList, listed, drill, onPlace, onLevel, preview, level }: { /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; onLevel: (l: Level) => void; /* Ebene der Karte: Gemeinden oder Kreise (gehört dem Filter, siehe AtlasExtra) */ level: Level }) {
+function AtlasMap({ regions, facts, onList, listed, drill, onPlace, onLevel, preview, level, zeit, onZeit }: { /* Zeitraum: am breiten Bildschirm auf der Karte */ zeit?: string; onZeit?: (z: string) => void; /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; onLevel: (l: Level) => void; /* Ebene der Karte: Gemeinden oder Kreise (gehört dem Filter, siehe AtlasExtra) */ level: Level }) {
   const [pk, setPk] = useState<{ l: string; v: string }>({ l: level, v: "" });
   const picked = pk.l === level ? pk.v : "";
   const setPicked = (v: string) => setPk({ l: level, v });
@@ -147,10 +147,13 @@ function AtlasMap({ regions, facts, onList, listed, drill, onPlace, onLevel, pre
           </> : picked ? <span className="text-slate-500">Hier gibt es keine Werte zur Auswahl.</span> : undefined} />
       </div>
       {/* Ebene sichtbar (nicht mehr unter „Karte anpassen“): Kreise wählen beim Klick den ganzen Kreis */}
-      <div className="mt-3 flex flex-wrap items-center gap-2 max-sm:hidden" role="group" aria-label="Ebene der Karte">
+      <div className="rm-xtop">
+      <div className="rm-xebene mt-3 flex flex-wrap items-center gap-2 max-sm:hidden" role="group" aria-label="Ebene der Karte">
         <span className="text-[14px] text-slate-500 max-sm:hidden">Ebene</span>
         {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => onLevel(k)} className={chip(level === k)}>{l}</button>)}
         <span className="text-[14px] text-slate-500 max-sm:hidden">· Gebiet antippen wählt den Ort</span>
+      </div>
+      {onZeit && <div className="rm-xzeit"><ZeitPills value={zeit ?? ""} onPick={onZeit} /></div>}
       </div>
       {facts.length > 0 && <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mb-2 mt-2 text-[14px] font-medium text-teal-700 hover:underline">
         {more ? "Werte ausblenden" : `Karte zeigt: ${fact ? fact.name : "Alle Vorgänge"}`}
@@ -422,7 +425,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   return (
     <section aria-label="Auswertung des Themas">
       {/* Unterthemen als kleine Kacheln (Icon, Name), durch eine Linie in Petrol von den Themen getrennt; Handy 4 je Reihe */}
-      {theme && <nav aria-label="Unterthema" className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
+      {theme && <nav aria-label="Unterthema" className="rm-sub-std mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {SUBTOPICS.filter((x: { theme: string }) => x.theme === theme).map((x: { id: string; short: string }) => {
             const on = x.id === sub;
@@ -453,19 +456,30 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
               {place && cmp ? <Befund tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest} <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} /></Befund>
                 : <Kennzahlen week={week} scope={[what || "Alle Themen", res.selection.q ? `„${prettyTerm(res.selection.q)}“` : "", place || ""].filter(Boolean).join(" · ")} period={zeitText(zeit)} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }]}>
                   {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
-                  <span className="max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></span>
+                  <span className="rm-zeit-std max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></span>
                   {place && <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} />}
                 </Kennzahlen>}
 
               {!place && <MeinOrtNeu onApply={(ags) => search.setArea(ags, "ui")} />}
-              {place && cmp && <div className="mt-2 max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></div>}
+              {place && cmp && <div className="rm-zeit-std mt-2 max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></div>}
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
-              <div className="mt-4 max-sm:mt-2 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-4 lg:grid-cols-12">
-                <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-                  {allRegions.length > 0 && <AtlasMap level={level} onLevel={setLevel} onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+              <div className="rm-xsplit mt-4 max-sm:mt-2 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-4 lg:grid-cols-12">
+                <div className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+                  {allRegions.length > 0 && <AtlasMap level={level} onLevel={setLevel} zeit={zeit} onZeit={onZeit} onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
                 </div>
 
                 <div className="min-w-0 lg:col-span-6">
+                  {theme && <nav aria-label="Unterthema" className="rm-sub-wide print:hidden">
+        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
+          {SUBTOPICS.filter((x: { theme: string }) => x.theme === theme).map((x: { id: string; short: string }) => {
+            const on = x.id === sub;
+            return <li key={x.id} className="flex sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => onSub(on ? "" : x.id)}
+              className={`flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:min-h-0 max-sm:py-0 max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:auto] max-sm:[overflow-wrap:anywhere] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
+              <SubtopicIcon id={x.id} size={20} className={`max-sm:h-4 max-sm:w-4 ${on ? "text-white" : "text-slate-500"}`} />
+              <span className="sm:line-clamp-none max-sm:line-clamp-2"><span className="max-sm:hidden">{x.short}</span><span className="sm:hidden">{kurz(x.short)}</span></span></button></li>;
+          })}
+        </ul>
+      </nav>}
                   {res.compare && <OrtImVergleich c={res.compare} theme={theme} onPick={(k) => (theme ? onSub(sub === k ? "" : k) : onTheme(k))} />}
 
                   {sub ? <>

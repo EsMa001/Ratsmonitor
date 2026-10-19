@@ -22,7 +22,7 @@ export function Footer() {
     <>
     {/* Abstand, damit Inhalt wie die Seitenzahl nicht im Verlauf des Abschlusses steht */}
     {/* Handy: kein Abschlussband und kein großer Fuß (wirkt wie eine Webseite); nur eine schmale Zeile mit den Pflichtangaben */}
-    {!OWN_CTA(path) && <div className="ri pt-16 max-sm:hidden print:hidden">{
+    {!OWN_CTA(path) && <div className="ri rm-footcta pt-16 max-sm:hidden print:hidden">{
       /* Ohne Anmeldung: Hinweis auf das Konto (nicht auf Konto- und Anmeldeseiten, nicht in der geschlossenen Testphase) */
       me.ready && me.accounts && !me.user && me.access !== "invite" && !(path.startsWith("/konto/") || path.startsWith("/anmelden") || path === "/registrieren") ? (
         <DarkCta title="Mit Konto speichern" sub="Suchen und Artikel im Konto speichern. Anmeldung mit einem Link per E-Mail, ohne Passwort." action={<Link href="/anmelden" className="ri-btn ri-btn--inv">Anmelden</Link>} />

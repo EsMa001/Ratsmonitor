@@ -49,7 +49,8 @@ export function FilterPanel({ toggle, up = false, maxH, extra }: { toggle: React
   useLayoutEffect(() => {
     const el = ref.current;
     /* Grenze: der umgebende Abschnitt (Karte), höchstens der Bildschirm (Analyseseiten: Knopf rechts neben der Suche) */
-    const box = el?.closest("section")?.getBoundingClientRect();
+    const box0 = el?.closest("section")?.getBoundingClientRect();
+    const box = box0 && box0.width ? box0 : undefined; /* ohne eigenes Kästchen (display:contents) zählt nur der Bildschirm */
     const edge = Math.min(box?.right ?? Infinity, document.documentElement.clientWidth);
     if (el) setFlip(el.getBoundingClientRect().right > edge - 12);
     /* Fokus ins geöffnete Fenster (Tastatur, Bildschirmleser); Esc bringt ihn zurück auf den Filter-Knopf */
