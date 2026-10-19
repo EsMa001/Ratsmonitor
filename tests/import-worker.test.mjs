@@ -210,7 +210,7 @@ test('teilweise mit Netzfehler: vermerkt für die Nacharbeit, ohne Server-Bremse
  const t0=Date.now();await workJob(db,async(stage,region)=>outcome[region],{lanes:2,sleep:()=>wait(5),tickMs:1e6,stop:()=>Date.now()-t0>400});
  const rows=Object.fromEntries(sql.prepare("SELECT key,class,host,reason,next_try_at FROM work_failures WHERE step='import'").all().map(r=>[r.key,r]));
  assert.equal(rows[a].class,'transient');assert.equal(rows[a].host,null,'keine Server-Bremse');assert.match(rows[a].reason,/^teilweise: Kalender 11\/2026: fetch failed/);
- assert.ok(rows[a].next_try_at,'Termin für die Nacharbeit');
+ assert.ok(Date.parse(rows[a].next_try_at)>=Date.now()+864e5-60000,'Termin für die Nacharbeit frühestens in einem Tag');
  assert.equal(rows[b],undefined,'gesperrter künftiger Monat ist kein Netzfehler');
  assert.match(rows[c].reason,/HTTP 500/);
  assert.equal(sql.prepare('SELECT count(*) n FROM source_hosts').get().n,0);

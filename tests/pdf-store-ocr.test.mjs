@@ -110,19 +110,22 @@ test('OCR-Lauf (Treiber, wie die Nacharbeit ihn startet) löscht veraltete Eintr
   const mig=new URL('../drizzle/',import.meta.url);
   for(const f of fs.readdirSync(mig).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL(f,mig),'utf8'));
   const store=openPdfStore(path.join(dir,'store'));
-  const done=file(store,'done',{main:true,pages:1}),open=file(store,'open',{main:true,pages:1});
+  const done=file(store,'done',{main:true,pages:1}),open=file(store,'open',{main:true,pages:1}),lost=file(store,'lost',{pages:1,drop:true});
   store.putText(done.s,['Seite eins mit Text.','Seite zwei per OCR.'],{method:'mixed',version:1,ocrPages:1,ocrNeeded:0});
   store.close();
   const ins=sql.prepare("INSERT INTO work_failures(step,key,class,reason,tries,first_at,last_at,next_try_at,origin) VALUES(?,?,?,?,1,?,?,?,'daily')");
   const at=new Date().toISOString();
   ins.run('ocr',done.s,'slow','Zeitgrenze je Seite (90 s)',at,at,at);ins.run('ocr',open.s,'slow','Zeitgrenze je Seite (90 s)',at,at,at);
+  ins.run('ocr',lost.s,'slow','Zeitgrenze je Seite (90 s)',at,at,at);ins.run('ocr-fetch',lost.s,'gone','HTTP 404',at,at,null);
   sql.close();
-  fs.writeFileSync(path.join(dir,'shas.txt'),[done.s,open.s].join('\n'));
+  fs.writeFileSync(path.join(dir,'shas.txt'),[done.s,open.s,lost.s].join('\n'));
   const r=spawnSync(process.execPath,['--no-warnings',fileURLToPath(new URL('../scripts/pdf-store/text.mjs',import.meta.url)),'--ocr','--include-slow','--shas',path.join(dir,'shas.txt'),'--max-minutes','1'],
    {encoding:'utf8',timeout:60000,env:{...process.env,DATABASE_FILE:path.join(dir,'main.sqlite'),RM_PDF_STORE:path.join(dir,'store'),OCR_TOOLS:path.join(dir,'keine-werkzeuge'),RM_NO_PROGRESS:'1'}});
   assert.match(r.stdout,/1 Einträge im Fehlerspeicher veraltet/,r.stdout+r.stderr);
+  assert.match(r.stdout,/1 OCR-Einträge ohne Aussicht/,'verdrängt und Nachladen endgültig gescheitert');
   const check=new DatabaseSync(path.join(dir,'main.sqlite'),{readOnly:true});
   assert.deepEqual(check.prepare("SELECT key FROM work_failures WHERE step='ocr'").all().map(x=>x.key),[open.s],'nur der offene bleibt');
+  assert.equal(check.prepare("SELECT count(*) n FROM work_failures WHERE step='ocr-fetch'").get().n,1,'der Grund bleibt beim Nachladen');
   check.close();
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });

@@ -167,7 +167,10 @@ export async function recordFailure(db,f,now=Date.now()){
  const old=await db.prepare('SELECT tries,first_at FROM work_failures WHERE step=? AND key=?').bind(f.step,String(f.key)).first();
  const tries=cls==='busy'?old?.tries||1:(old?.tries||0)+1;
  const hostNext=h?.next_try_at||(await hostRow(db,host))?.next_try_at||null;
- const next=nextTry(cls,tries,{now,hostNext:cls==='blocked'?hostNext:null});
+ let next=nextTry(cls,tries,{now,hostNext:cls==='blocked'?hostNext:null});
+ // minWaitMs: frühester neuer Versuch (teilweise Abrufe: der Nachtlauf versucht sie ohnehin jede Nacht, die Nacharbeit nur noch
+ // höchstens einmal am Tag; 18.10.2026: 1.203 Versuche, 15 gelungen)
+ if(next&&f.minWaitMs>0&&Date.parse(next)<now+f.minWaitMs)next=iso(now+f.minWaitMs);
  const release=cls==='internal'?f.release??currentRelease():null;
  // Herkunft zur Anzeige: Altbestand, wenn der Aufrufer es sagt oder der Eintrag nicht in den Tagesbereich fällt
  f={...f,origin:f.origin==='backlog'||!inDailyRange(f.eventDate,old?.first_at||iso(now),now)?'backlog':'daily'};

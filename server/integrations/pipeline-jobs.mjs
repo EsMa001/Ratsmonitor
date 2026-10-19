@@ -216,6 +216,8 @@ async function step(db,id,run){
  */
 /** Teilweiser Abruf, bei dem ein Teil am Netz scheiterte (nicht: gesperrter Monat, nicht öffentlich, Grenze des Lesers): erster solcher Hinweis */
 export const PARTIAL_PREFIX='teilweise: ';
+/** Teilweise Abrufe: frühestens nach einem Tag erneut über die Nacharbeit (der Nachtlauf ruft das Gebiet ohnehin jede Nacht ab) */
+export const PARTIAL_MIN_WAIT_MS=86400000;
 const NETWORK=/fetch failed|timeout|aborted|ECONN|ENOTFOUND|EAI_AGAIN|socket hang up|HTTP 5\d\d/i;
 export function partialCause(d){
  const complete=d?.attemptComplete??d?.coverage?.complete;
@@ -234,7 +236,7 @@ export async function noteImport(db,region,{result,failure='',server=provider(re
    // Teilweise mit Netzfehler (Teil der Quelle nicht erreichbar, 5xx, Zeitüberschreitung): als vorübergehend vermerken, damit die
    // Nacharbeit es erneut versucht; vorher galt das als Erfolg (17.10.2026: 417 Gebiete „fetch failed“ ohne neuen Versuch). Ohne
    // Server (er hat ja geantwortet, keine Bremse) und mit Präfix „teilweise:“, damit der Nachtlauf das Gebiet nicht zurückstellt.
-   await recordFailure(db,{...f,host:null,cls:'transient',error:'teilweise: '+partialCause(d)});
+   await recordFailure(db,{...f,host:null,cls:'transient',error:'teilweise: '+partialCause(d),minWaitMs:PARTIAL_MIN_WAIT_MS});
   }
   else await clearFailure(db,{...f});
  }catch(e){console.error('[pipeline] Fehlerspeicher:',e?.message||e);}

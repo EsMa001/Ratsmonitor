@@ -100,6 +100,12 @@ if(!flag('ocr')){
    if(store.ocrDone(sha)){await F.ok({step,key:sha});stale++;}
   }
   if(stale)console.log(`${stale} Einträge im Fehlerspeicher veraltet (Datei schon vollständig gelesen), gelöscht`);
+  // OCR einer verdrängten Datei, deren Nachladen endgültig scheiterte (ocr-fetch ohne Termin: 404, geändert): sie kommt nie
+  // mehr in die Reihe; der OCR-Eintrag kam sonst stündlich als „nicht versucht“ wieder (19.10.2026). Der Grund bleibt im
+  // Eintrag „OCR-Nachladen“.
+  const lost=F.sql.prepare("SELECT o.key FROM work_failures o JOIN work_failures f ON f.key=o.key AND f.step='ocr-fetch' AND f.next_try_at IS NULL WHERE o.step='ocr'").all().map(r=>r.key);
+  let gone=0;for(const sha of lost){if(onlyShas&&!onlyShas.has(sha))continue;if(!store.present(sha)){await F.ok({step:'ocr',key:sha});gone++;}}
+  if(gone)console.log(`${gone} OCR-Einträge ohne Aussicht (Nachladen endgültig gescheitert), gelöscht`);
  }
  if(F){
   const now=new Date().toISOString();
