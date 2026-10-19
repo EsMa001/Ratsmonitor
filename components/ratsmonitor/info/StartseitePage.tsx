@@ -65,7 +65,6 @@ const nf = new Intl.NumberFormat("de-DE");
 const day = (iso: string) => (iso ? iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(2, 4) : "");
 const reduced = () => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 const short = (n: string) => n.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde) /, "");
-const rule = { borderTop: "1px solid var(--rm-c200)" } as const;
 
 /** Zahl, die einmal hochzählt (nicht bei reduzierter Bewegung) */
 function CountUp({ value }: { value: number }) {
@@ -125,7 +124,7 @@ function DotMap() {
       dead = true;
     };
   }, []);
-  return <canvas ref={ref} role="img" aria-label="Deutschlandkarte aus Punkten, jeder Punkt eine Gemeinde" style={{ width: "100%", height: "auto", display: "block", aspectRatio: "508 / 680" }} />;
+  return <canvas ref={ref} role="img" aria-label="Deutschlandkarte aus Punkten, jeder Punkt eine Gemeinde" className="block aspect-[508/680] h-auto w-full" />;
 }
 
 type TrendItem = { topic: string; values: number[]; last3: number; ch: number | null };
@@ -134,19 +133,19 @@ type TrendItem = { topic: string; values: number[]; last3: number; ch: number | 
 function TrendPops({ items, onPick }: { items: TrendItem[]; onPick: (t: string) => void }) {
   const shown = items;
   return (
-    <div className="pl-trends" style={{ margin: "28px 0 0", display: "flex", flexWrap: "wrap", gap: 12, minHeight: 78 }}>
+    <div className="pl-trends mt-7 flex min-h-[78px] flex-wrap gap-3">
       {shown.map((t, k) => (
-        <button key={t.topic} type="button" onClick={() => onPick(t.topic)} className="pl-tp" style={{ width: 200, padding: "10px 14px", textAlign: "left", background: "var(--rm-white)", border: "1px solid var(--rm-c200)", borderRadius: 14, boxShadow: "0 8px 24px rgba(0,0,0,.12)", cursor: "pointer", animationDelay: `${k * 0.25}s` }}>
-          <span style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--rm-c900)" }}>{t.topic}</span>
-            <span style={{ fontSize: 14, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: t.ch !== null && t.ch >= 10 ? "var(--rm-fill)" : "var(--rm-c900)" }}>
+        <button key={t.topic} type="button" onClick={() => onPick(t.topic)} className="pl-tp w-[200px] cursor-pointer rounded-[14px] border border-[var(--rm-c200)] bg-[var(--rm-white)] px-[14px] py-[10px] text-left shadow-[0_8px_24px_rgba(0,0,0,.12)]" style={{ animationDelay: `${k * 0.25}s` }}>
+          <span className="flex items-baseline justify-between gap-2">
+            <span className="text-[14px] font-[600] text-[var(--rm-c900)]">{t.topic}</span>
+            <span className={`text-[14px] font-[600] tabular-nums ${t.ch !== null && t.ch >= 10 ? "text-[var(--rm-fill)]" : "text-[var(--rm-c900)]"}`}>
               {t.ch === null ? "–" : `${t.ch > 0 ? "+" : ""}${t.ch} %`}
             </span>
           </span>
-          <span style={{ display: "block", margin: "4px 0 2px" }}>
+          <span className="mb-0.5 mt-1 block">
             <Spark values={t.values.slice(-12)} w={170} h={26} label={`Verlauf ${t.topic}`} />
           </span>
-          <span style={{ display: "block", fontSize: 12, color: "var(--rm-c500)" }}>{t.last3} neue Gebiete in 3 Monaten</span>
+          <span className="block text-[12px] text-[var(--rm-c500)]">{t.last3} neue Gebiete in 3 Monaten</span>
         </button>
       ))}
     </div>
@@ -180,13 +179,13 @@ function GermanyMap({ pops, onPick }: { pops: Pop[]; onPick: (name: string) => v
   const paths = useMemo(() => {
     if (!geo) return null;
     return geo.regions.map((r) => {
-      return <path key={r.id} d={r.path} fill="var(--rm-fill)" fillOpacity={0.78} stroke="var(--rm-white)" strokeOpacity="0.5" strokeWidth="0.25" style={{ cursor: "pointer", transition: "fill .5s, fill-opacity .5s" }} data-n={r.name} />;
+      return <path key={r.id} d={r.path} fill="var(--rm-fill)" fillOpacity={0.78} stroke="var(--rm-white)" strokeOpacity="0.5" strokeWidth="0.25" className="cursor-pointer transition-[fill,fill-opacity] duration-500" data-n={r.name} />;
     });
   }, [geo]);
   if (!geo) return <DotMap />;
   return (
     <div>
-      <svg role="img" aria-label="Deutschlandkarte der Kreise; eingeblendet ist, wo Begriffe wie Wärmeplanung oder Photovoltaik zum ersten Mal beraten wurden" viewBox="12 8 560 758" style={{ width: "100%", height: "auto", display: "block" }} onMouseLeave={() => setTip("")} onMouseOver={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) setTip(n); }} onClick={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) onPick(n); }}>
+      <svg role="img" aria-label="Deutschlandkarte der Kreise; eingeblendet ist, wo Begriffe wie Wärmeplanung oder Photovoltaik zum ersten Mal beraten wurden" viewBox="12 8 560 758" className="block h-auto w-full" onMouseLeave={() => setTip("")} onMouseOver={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) setTip(n); }} onClick={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) onPick(n); }}>
         {paths}
         {geo.states.map((st) => (
           <path key={st.name} d={st.path} fill="none" stroke="var(--rm-white)" strokeWidth="0.9" strokeLinejoin="round" pointerEvents="none" />
@@ -215,7 +214,7 @@ function GermanyMap({ pops, onPick }: { pops: Pop[]; onPick: (name: string) => v
           );
         })}
       </svg>
-      <p aria-live="polite" style={{ margin: "6px 0 0", minHeight: 20, fontSize: 14, color: "var(--rm-c900)", textAlign: "center" }}>
+      <p aria-live="polite" className="min-h-5 text-center text-[14px] text-[var(--rm-c900)]" style={{ margin: "6px 0 0" }}>
         {tip || " "}
       </p>
     </div>
@@ -421,23 +420,23 @@ export function StartseitePage() {
   return (
     <>
       <section className="ri-sec pl-hero" style={{ paddingTop: 56 }}>
-        <div className="mx-auto pl-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48, alignItems: "start" }}>
-          <div className="pl-left" style={{ paddingTop: 40 }}>
-            <h1 className="pl-h1" style={{ margin: 0, fontSize: "clamp(28px, 8vw, 44px)", lineHeight: 1.08, letterSpacing: "-0.02em", fontWeight: 600, color: "var(--rm-c900)" }}>
-              Deutschlands Kommunalpolitik<br /> <span style={{ color: "var(--rm-ac)" }}>in Echtzeit.</span>
+        <div className="pl-grid mx-auto grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-start gap-12">
+          <div className="pl-left pt-10">
+            <h1 className="pl-h1 text-[clamp(28px,8vw,44px)] font-[600] leading-[1.08] tracking-[-0.02em] text-[var(--rm-c900)]">
+              Deutschlands Kommunalpolitik<br /> <span className="text-[var(--rm-ac)]">in Echtzeit.</span>
             </h1>
-            <p className="pl-slogan" style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500)" }}>Besser verstehen, was vor Ort beraten wird.</p>
-            <p className="pl-num" style={{ margin: "28px 0 0", display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "4px 14px" }}>
-              <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "var(--rm-c900)", fontVariantNumeric: "tabular-nums" }}>{total !== null ? <CountUp value={total} /> : zFehler ? "–" : "…"}</span>
-              <span style={{ fontSize: 16, color: "var(--rm-c500)" }}>Berichte aus Räten und Ausschüssen in den letzten 30 Tagen</span>
+            <p className="pl-slogan text-[18px] leading-normal text-[var(--rm-c500)]" style={{ margin: "20px 0 0" }}>Besser verstehen, was vor Ort beraten wird.</p>
+            <p className="pl-num flex flex-wrap items-baseline gap-x-[14px] gap-y-1" style={{ margin: "28px 0 0" }}>
+              <span className="text-[44px] font-[600] leading-none tabular-nums text-[var(--rm-c900)]">{total !== null ? <CountUp value={total} /> : zFehler ? "–" : "…"}</span>
+              <span className="text-[16px] text-[var(--rm-c500)]">Berichte aus Räten und Ausschüssen in den letzten 30 Tagen</span>
               {zFehler && total === null && <Ladefehler text="Die Zahl ist gerade nicht verfügbar." onRetry={() => { setZFehler(false); setVersuch((n) => n + 1); }} />}
             </p>
-            <p className="pl-stand" style={{ margin: "10px 0 0", fontSize: 14, color: "var(--rm-c500)" }}>
-              <span aria-hidden="true" className="pl-pulse" style={{ display: "inline-block", width: 8, height: 8, marginRight: 8, borderRadius: 4, background: "var(--rm-fill)" }} />
+            <p className="pl-stand text-[14px] text-[var(--rm-c500)]" style={{ margin: "10px 0 0" }}>
+              <span aria-hidden="true" className="pl-pulse mr-2 inline-block size-2 rounded-full bg-[var(--rm-fill)]" />
               Stand {day(today)}
             </p>
-              <div className="pl-search" style={{ margin: "24px 0 0", maxWidth: 460, ...rule }}>
-          <h2 className="pl-h2" style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900)" }}>Thema suchen</h2>
+              <div className="pl-search mt-6 max-w-[460px] border-t border-[var(--rm-c200)]">
+          <h2 className="pl-h2 text-[22px] font-[600] text-[var(--rm-c900)]" style={{ margin: "16px 0 0" }}>Thema suchen</h2>
           <form onSubmit={submit}>
             <label>
               <span className="sr-only">Suchbegriff</span>
@@ -447,15 +446,15 @@ export function StartseitePage() {
                 onChange={(e) => setTerm(e.target.value)}
                 maxLength={120}
                 placeholder="Thema suchen, z. B. Windkraft"
-                style={{ marginTop: 12, width: "100%", height: 48, padding: "0 16px", fontSize: 16, color: "var(--rm-c900)", border: "1px solid var(--rm-c300)", borderRadius: 999, background: "var(--rm-white)" }}
+                className="mt-3 h-12 w-full rounded-full border border-[var(--rm-c300)] bg-[var(--rm-white)] px-4 text-[16px] text-[var(--rm-c900)]"
               />
             </label>
           </form>
               </div>
             <TrendPops items={trends.filter((t) => pops.some((p) => p.label === t.topic))} onPick={(t) => openSearch(t)} />
             {cov && (
-        <div className="pl-ort" style={rule}>
-          <h2 className="pl-h2" style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900)" }}>Ist mein Ort dabei?</h2>
+        <div className="pl-ort border-t border-[var(--rm-c200)]">
+          <h2 className="pl-h2 text-[22px] font-[600] text-[var(--rm-c900)]" style={{ margin: "16px 0 0" }}>Ist mein Ort dabei?</h2>
           <label>
             <span className="sr-only">Ort</span>
             <input
@@ -464,19 +463,19 @@ export function StartseitePage() {
               onChange={(e) => setPlace(e.target.value)}
               maxLength={60}
               placeholder="Ort: Stadt oder Gemeinde"
-              style={{ marginTop: 12, width: "100%", height: 48, padding: "0 16px", fontSize: 16, color: "var(--rm-c900)", border: "1px solid var(--rm-c300)", borderRadius: 999, background: "var(--rm-white)" }}
+              className="mt-3 h-12 w-full rounded-full border border-[var(--rm-c300)] bg-[var(--rm-white)] px-4 text-[16px] text-[var(--rm-c900)]"
             />
           </label>
-          <div aria-live="polite" style={{ marginTop: 8, fontSize: 14, color: "var(--rm-c500)" }}>
+          <div aria-live="polite" className="mt-2 text-[14px] text-[var(--rm-c500)]">
             {q.length >= 3 && found.length === 0 ? "Dazu liegen noch keine Berichte vor." : null}
             {found.length > 0 && (
-              <div role="listbox" aria-label="Orte" style={{ padding: 6, background: "var(--rm-white)", border: "1px solid var(--rm-c200)", borderRadius: 16, boxShadow: "0 8px 24px rgba(24,24,27,.10)" }}>
+              <div role="listbox" aria-label="Orte" className="rounded-2xl border border-[var(--rm-c200)] bg-[var(--rm-white)] p-1.5 shadow-[0_8px_24px_rgba(24,24,27,.10)]">
                 {found.map((c) => (
-                  <button key={c.name} type="button" role="option" aria-selected="false" className="pl-opt" onClick={() => openSearch(short(c.name))} style={{ display: "grid", gridTemplateColumns: "18px minmax(0,1fr)", alignItems: "center", gap: 8, width: "100%", minHeight: 40, padding: "6px 8px", textAlign: "left", background: "none", border: 0, borderRadius: 10, cursor: "pointer" }}>
+                  <button key={c.name} type="button" role="option" aria-selected="false" className="pl-opt grid min-h-10 w-full cursor-pointer grid-cols-[18px_minmax(0,1fr)] items-center gap-2 rounded-[10px] border-0 bg-transparent px-2 py-1.5 text-left" onClick={() => openSearch(short(c.name))} >
                     <IconPin size={16} className="text-slate-500" />
-                    <span style={{ minWidth: 0 }}>
-                      <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, fontWeight: 500, color: "var(--rm-c900)" }}>{c.name}</span>
-                      <span style={{ display: "block", fontSize: 12, color: "var(--rm-c500)" }}>{c.complete ? "vollständig abgerufen" : "teilweise abgerufen"}</span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-[14px] font-medium text-[var(--rm-c900)]">{c.name}</span>
+                      <span className="block text-[12px] text-[var(--rm-c500)]">{c.complete ? "vollständig abgerufen" : "teilweise abgerufen"}</span>
                     </span>
                   </button>
                 ))}
@@ -485,16 +484,16 @@ export function StartseitePage() {
           </div>
         </div>
       )}
-            <div className="pl-ctawrap" style={{ margin: "28px 0 0" }}>
+            <div className="pl-ctawrap mt-7">
               <Link href="/suche" className="ri-btn pl-cta" style={{ borderRadius: 999, border: 0, color: "var(--rm-white)", background: "var(--rm-ac)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
                 {me.user ? "Suche starten →" : "Ohne Anmeldung starten →"}
               </Link>
             </div>
-            <p className="pl-source" style={{ margin: "14px 0 0", maxWidth: 460, fontSize: 14, lineHeight: 1.5, color: "var(--rm-c500)" }}>
+            <p className="pl-source max-w-[460px] text-[14px] leading-normal text-[var(--rm-c500)]" style={{ margin: "14px 0 0" }}>
               {`Aus den öffentlichen Ratsinformationssystemen${cov ? ` von ${nf.format(cov.length)} Kommunen und Gebieten` : " der Kommunen"}${allTotal !== null ? `: insgesamt ${nf.format(allTotal)} Berichte aus Räten und Ausschüssen` : ""}.`}
             </p>
           </div>
-          <div className="pl-mapwrap" style={{ maxWidth: "min(679px, max(362px, calc((100vh - 230px) / 1.149)))", width: "100%", justifySelf: "start", marginTop: -50, marginLeft: 56 }}>
+          <div className="pl-mapwrap -mt-[50px] ml-14 w-full max-w-[min(679px,max(362px,calc((100vh_-_230px)_/_1.149)))] justify-self-start">
             <GermanyMap pops={pops} onPick={(n) => openSearch(n)} />
           </div>
         </div>

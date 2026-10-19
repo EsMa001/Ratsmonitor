@@ -112,7 +112,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
         </div>
         <ShareButton title={s.name} url={shareUrl} className="-mr-1" />
         {/* Benachrichtigungen folgen mit Thema 2: Glocke sichtbar (auch eine vorgemerkte), aber ohne Wirkung */}
-        <button type="button" aria-disabled="true" aria-pressed={!!n.mail} title={bell} aria-label={bell} className={`${iconBtn} -mr-2 cursor-default text-slate-400 hover:bg-transparent`}>
+        <button type="button" aria-disabled="true" aria-pressed={!!n.mail} title={bell} aria-label={bell} onClick={() => toast(NOTIFY_LATER + ".")} className={`${iconBtn} -mr-2 cursor-default text-slate-400 hover:bg-transparent max-sm:h-11 max-sm:w-11`}>
           <IconBell size={20} filled={!!n.mail} />
         </button>
       </div>

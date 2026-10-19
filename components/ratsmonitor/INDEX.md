@@ -721,7 +721,7 @@ truncate ratsmonitor-info.css:459
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (86): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
-- StartseitePage.tsx (507, ⚠3): StartseitePage
+- StartseitePage.tsx (506, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (172): VideosPage

@@ -3,12 +3,12 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useHydrated } from "../lib/useClient";
 
-/* Nur auf der Startseite (App.tsx). /* Punktraster oben auf den Seiten: Punkte in Mausnähe ziehen sich leicht zur Maus (am stärksten im mittleren Abstand, ganz nah kaum, damit nichts springt),
+/* Nur auf der Startseite (App.tsx). Punktraster oben auf den Seiten: Punkte in Mausnähe ziehen sich leicht zur Maus (am stärksten im mittleren Abstand, ganz nah kaum, damit nichts springt),
    färben sich in Petrol (--rm-fill, Ton der Deutschlandkarte) und verblassen langsam, sodass die Maus eine Spur zieht; ein Klick schickt eine Schockwelle über das Raster.
    Nur mit Maus (pointer: fine) und ohne „Bewegung reduzieren“; sonst bleibt das CSS-Raster (body::before). Gezeichnet wird nur, solange sich etwas bewegt. */
-const GAP = 22, H = 640, R = 150, PULL = 5, K = 0.12, DAMP = 0.8;
+const GAP = 22, H = 640, R = 150, PULL = 3, K = 0.12, DAMP = 0.8;
 /* Nachleuchten je Frame, Schockwelle: Geschwindigkeit (px je Frame), Breite des Rings, Stoß, Reichweite */
-const FADE = 0.988, WAVE_V = 9, WAVE_W = 46, WAVE_PUSH = 2.6, WAVE_MAX = 900;
+const FADE = 0.975, WAVE_V = 9, WAVE_W = 46, WAVE_PUSH = 1.5, WAVE_MAX = 900;
 
 export function DotField() {
   const client = useHydrated();
@@ -46,17 +46,17 @@ export function DotField() {
         const pull = d < R && d > 0.1 ? (4 * (d / R) * (1 - d / R) * PULL) / d : 0;
         for (const wv of waves) {
           const ex = x - wv.x, ey = y - wv.y, e = Math.hypot(ex, ey), band = 1 - Math.abs(e - wv.r) / WAVE_W;
-          if (band > 0 && e > 0.1) { const p = band * WAVE_PUSH * (1 - wv.r / WAVE_MAX); vx[i] += (ex / e) * p; vy[i] += (ey / e) * p; glow[i] = Math.max(glow[i], band * (1 - wv.r / WAVE_MAX) * 1.4); }
+          if (band > 0 && e > 0.1) { const p = band * WAVE_PUSH * (1 - wv.r / WAVE_MAX); vx[i] += (ex / e) * p; vy[i] += (ey / e) * p; glow[i] = Math.max(glow[i], band * (1 - wv.r / WAVE_MAX) * 0.9); }
         }
         vx[i] = (vx[i] + (dx * pull - ox[i]) * K) * DAMP; vy[i] = (vy[i] + (dy * pull - oy[i]) * K) * DAMP;
         ox[i] += vx[i]; oy[i] += vy[i];
         const near = d < R ? 1 - d / R : 0;
-        glow[i] = Math.max(glow[i] * FADE, near * 1.3);
+        glow[i] = Math.max(glow[i] * FADE, near * 0.8);
         if (Math.abs(vx[i]) + Math.abs(vy[i]) > 0.01 || glow[i] > 0.02) moving = true;
         const g = Math.min(1.4, glow[i]);
-        const px = x + ox[i], py = y + oy[i], rad = 1.4 + g * 1.1;
+        const px = x + ox[i], py = y + oy[i], rad = 1.4 + g * 0.6;
         ctx.fillStyle = color; ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(px, py, rad, 0, 6.2832); ctx.fill();
-        if (g > 0.02) { ctx.fillStyle = strong; ctx.globalAlpha = Math.min(1, g * 0.85); ctx.beginPath(); ctx.arc(px, py, rad, 0, 6.2832); ctx.fill(); }
+        if (g > 0.02) { ctx.fillStyle = strong; ctx.globalAlpha = Math.min(0.8, g * 0.6); ctx.beginPath(); ctx.arc(px, py, rad, 0, 6.2832); ctx.fill(); }
       }
       ctx.globalAlpha = 1;
       raf = moving ? requestAnimationFrame(draw) : 0;
