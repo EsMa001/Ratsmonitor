@@ -517,6 +517,13 @@ Block `plenara.de` an die Fassung von Schritt 0 angehängt (Let's-Encrypt-Zertif
 `www.plenara.de` und die alte Adresse `187-7-72-52.sslip.io` leiten dauerhaft (301) auf `https://plenara.de` weiter. `SITE_URL=https://plenara.de`.
 Sicherungen: `Caddyfile.bak-vor-domain-*`, `ratsmonitor.env.bak-vor-domain-*`.
 
+**Mailversand über das Postfach (seit 19.10.2026):** `MAIL_TRANSPORT=smtp` verschickt über `kontakt@plenara.de` bei IONOS
+(`server/accounts/smtp.mjs`, `smtp.ionos.de:465` mit TLS, `MAIL_FROM="Plenara <kontakt@plenara.de>"`, `MAIL_REPLY_TO`
+ebenso). `SMTP_USER` und das Passwort (`SMTP_PASSWORD_B64`, Base64, nur auf dem Server eintragen, Vorlage in
+`accounts.env.example`) stehen in `/etc/ratsmonitor/accounts.env`. IONOS erlaubt je Postfach anfangs 50 Mails pro Stunde,
+nach 30 Tagen 500. Prüfen: `echo adresse | ratsmonitor-accounts test-mail --email-stdin`. Später ein eigenes Postfach
+`anmeldung@` als Absender, damit das Passwort des Teampostfachs nicht auf dem Server liegt.
+
 **Anmelden ohne Mailanbieter:** Mit `MAIL_TRANSPORT=log` bietet die Anmeldeseite keine Anmeldung per Mail an. Admins
 melden sich mit `LOGIN_TOTP=1` (in `ratsmonitor.env`) über E-Mail-Adresse und Code aus der Authenticator-App an
 (Konzept, Nachtrag 15.10. abends). Den zweiten Faktor einrichten: im Tunnel unter `/admin` oder

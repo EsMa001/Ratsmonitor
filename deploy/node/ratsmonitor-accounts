@@ -5,7 +5,7 @@
 # Die Einstellungsdateien werden gelesen, nie als Shell ausgeführt (root ruft dieses Skript auf). Geheimnisse gehen nur
 # über die Umgebung an das Skript, nie über die Befehlszeile (sonst stünden sie im sudo-Protokoll und in ps).
 set -euo pipefail
-KEYS="ACCOUNTS_FILE ACCOUNTS_SECRET SITE_URL MAIL_TRANSPORT MAIL_API_URL MAIL_API_KEY MAIL_FROM MAIL_REPLY_TO OPERATOR_EMAIL RM_ACCESS"
+KEYS="ACCOUNTS_FILE ACCOUNTS_SECRET SITE_URL MAIL_TRANSPORT MAIL_API_URL MAIL_API_KEY MAIL_FROM MAIL_REPLY_TO SMTP_HOST SMTP_PORT SMTP_SECURE SMTP_USER SMTP_PASSWORD_B64 OPERATOR_EMAIL RM_ACCESS"
 for file in /srv/ratsmonitor/ratsmonitor.env /etc/ratsmonitor/accounts.env; do
   [ -f "$file" ] || continue
   for key in $KEYS; do

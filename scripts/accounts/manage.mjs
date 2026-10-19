@@ -12,6 +12,7 @@
  *   ratsmonitor-accounts export --out datei.json (--id | --email-stdin)
  *   ratsmonitor-accounts list [--invites] [--full] | stats
  *   ratsmonitor-accounts login-link [--base http://127.0.0.1:8080] (--id | --email-stdin)     Notzugang ohne Mailversand
+ *   ratsmonitor-accounts test-mail --email-stdin   Versand prüfen: eine Testmail sofort verschicken
  *   ratsmonitor-accounts reapply-deletions        nach dem Rückspielen einer Sicherung: Löschungen aus deleted.log erneut
  *   ratsmonitor-accounts totp-reset (--id | --email-stdin)   zweiten Faktor zurücksetzen (Handy verloren); beendet Sitzungen
  *   ratsmonitor-accounts totp-setup (--id | --email-stdin)   zweiten Faktor einrichten ohne Tunnel: zeigt den Schlüssel einmal
@@ -173,6 +174,15 @@ switch(command){
    einladungen:one('SELECT count(*) n FROM invites'),mails24h:Object.fromEntries(sql.prepare(`SELECT status,count(*) n FROM mail_outbox WHERE created_at>'${iso(now-86400000)}' GROUP BY status`).all().map(r=>[r.status,r.n]))}));
   break;
  }
+ case 'test-mail':{
+  // Versand prüfen (MAIL_TRANSPORT, Absender, Zugangsdaten): eine Betreiber-Mail an die eingegebene Adresse, sofort verschickt
+  const email=await readEmail();if(!email)fail('Bitte --email-stdin.');
+  await sendMail(db,cfg,{to:email,template:'operator',data:{message:`Testmail von Plenara (${cfg.mail.transport}). Wenn diese Mail ankommt, funktioniert der Versand.`},quota:'operator',now});
+  const r=await processOutbox(db,cfg,{site:site(),now});
+  console.log(`Transport ${cfg.mail.transport}, Absender ${cfg.mail.from}: ${JSON.stringify(r)}`);
+  if(!r.sent)fail('Nicht verschickt; Grund im Protokoll oben ([konten] Mail …).');
+  break;
+ }
  case 'login-link':{
   const base=(option('--base')||site()).replace(/\/+$/,'');
   const user=await target();
@@ -222,6 +232,6 @@ switch(command){
   break;
  }
  default:
-  fail('Befehle: create, invite, role, tier, block, unblock, revoke, delete, export, list, stats, login-link, reapply-deletions, totp-reset, totp-setup (Hilfe im Kopf der Datei).');
+  fail('Befehle: create, invite, test-mail, role, tier, block, unblock, revoke, delete, export, list, stats, login-link, reapply-deletions, totp-reset, totp-setup (Hilfe im Kopf der Datei).');
 }
 sql.close();

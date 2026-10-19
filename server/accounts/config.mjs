@@ -33,6 +33,10 @@ export function accountsConfig(env,{dev=isDev()}={}){
    // outbox (Test-Postfach dev_mail) hält Links und Codes im Klartext: nur im Dev-Server oder ausdrücklich für Tests
    transport:dev?(env?.MAIL_TRANSPORT||'outbox'):(env?.MAIL_TRANSPORT==='outbox'&&env?.ACCOUNTS_TEST_OUTBOX!=='1'?'log':(env?.MAIL_TRANSPORT||'log')),
    apiUrl:env?.MAIL_API_URL, apiKey:env?.MAIL_API_KEY,
+   // MAIL_TRANSPORT=smtp: Postfach (IONOS: smtp.ionos.de, 465, TLS). Passwort Base64-kodiert (SMTP_PASSWORD_B64), damit
+   // Sonderzeichen in der systemd-Umgebungsdatei nichts anrichten; SMTP_PASSWORD nur für lokale Versuche
+   smtp:{host:env?.SMTP_HOST||'smtp.ionos.de',port:Number(env?.SMTP_PORT||465),secure:env?.SMTP_SECURE!=='0',user:env?.SMTP_USER,
+    pass:env?.SMTP_PASSWORD_B64?new TextDecoder().decode(Uint8Array.from(atob(String(env.SMTP_PASSWORD_B64).trim()),c=>c.charCodeAt(0))):env?.SMTP_PASSWORD},
    from:env?.MAIL_FROM||'Plenara <anmeldung@plenara.test>', replyTo:env?.MAIL_REPLY_TO, operator:env?.OPERATOR_EMAIL,
   },
   // Anmelden mit E-Mail-Adresse und Code aus der Authenticator-App, ohne Mail (nur Konten mit eingerichtetem zweiten

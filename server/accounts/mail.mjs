@@ -64,7 +64,7 @@ export async function processOutbox(db,cfg,options={}){
 /** Fehlertexte ohne Adressen und Schlüssel ins Protokoll */
 const clean=error=>String(error instanceof Error?error.message:error).replace(/[^\s@]+@[^\s@]+/g,'<adresse>').replace(/(key|token|bearer)\s*[:=]?\s*\S+/gi,'$1 <entfernt>').slice(0,200);
 
-/** Versand je Transport: outbox (Dev-Postfach), log (nur Vorlage und Status), http (REST-API des Anbieters) */
+/** Versand je Transport: outbox (Dev-Postfach), log (nur Vorlage und Status), http (REST-API des Anbieters), smtp (Postfach, smtp.mjs) */
 async function deliver(db,cfg,{to,subject,text,html},{fetchImpl,now}){
  const transport=cfg.mail.transport;
  if(transport==='outbox'){
@@ -80,6 +80,10 @@ async function deliver(db,cfg,{to,subject,text,html},{fetchImpl,now}){
   if(!response.ok)throw new Error(`Anbieter antwortet ${response.status}`);
   const body=await response.json().catch(()=>({}));
   return body?.id||body?.messageId||body?.message_id||'ok';
+ }
+ if(transport==='smtp'){
+  const {sendSmtp}=await import('./smtp.mjs');
+  return sendSmtp(cfg.mail.smtp,{from:cfg.mail.from,to,replyTo:cfg.mail.replyTo,subject,text,html,now});
  }
  throw new Error('Unbekannter MAIL_TRANSPORT: '+transport);
 }
