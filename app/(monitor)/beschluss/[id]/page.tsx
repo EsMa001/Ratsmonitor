@@ -20,7 +20,7 @@ export async function generateMetadata({params}:{params:Promise<{id:string}>}):P
   const status=(SOURCE_STATUS as Record<string,{label:string}>)[t.status as string]?.label;
   const title=`${t.title}`,brand=BRAND_NAME[DEFAULT_BRAND];
   const description=[place,status,t.shortSummary].filter(Boolean).join(' · ').slice(0,280);
-  return {title:`${title} · ${brand}`,description,openGraph:{title,description,siteName:brand,type:'article',locale:'de_DE'},twitter:{card:'summary',title,description}};
+  return {title:`${title} · ${brand}`,description,openGraph:{title,description,siteName:brand,type:'article',locale:'de_DE'},twitter:{card:'summary_large_image',title,description}};
  }catch{return {};}
 }
 /* Den Vorgang auf dem Server lesen und mitgeben: DetailPage (in components/ratsmonitor/App.tsx) steht damit im HTML.

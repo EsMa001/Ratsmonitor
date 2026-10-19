@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { clampView, type NetBox, type NetViewState } from "../../lib/viewClamp";
 
+const TYP: Record<string, string> = { center: "Suchbegriff", term: "Begriff", topic: "Thema", committee: "Gremium", land: "Land" };
 export type GNode = { id: string; type: "center" | "term" | "topic" | "committee" | "land"; label: string; count: number };
 export type GEdge = { a: string; b: string; w: number; n: number; center?: boolean };
 interface P extends GNode { r: number; x: number; y: number; vx: number; vy: number; fixed: boolean }
@@ -217,7 +218,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
         if (!d.moved) onSelect(d.id === selected ? "" : d.id);
       }}
     >
-      <svg width={size.w} height={size.h} role="img" aria-label="Themennetz: Begriffe, Themen, Gremien und Länder, die mit dem Suchbegriff zusammenhängen">
+      <svg width={size.w} height={size.h} role="group" aria-label="Themennetz: Begriffe, Themen, Gremien und Länder, die mit dem Suchbegriff zusammenhängen. Mit der Tabulator-Taste durch die Knoten gehen, Enter wählt, Escape hebt die Wahl auf">
         <g transform={`translate(${size.w / 2 + view.x} ${size.h / 2 + view.y}) scale(${view.k})`}>
           {edges.map((e) => {
             const a = at(e.a), b = at(e.b);
@@ -231,7 +232,9 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
           {shown.map((n) => {
             const k = KIND[n.type], on = lit(n.id), sel = n.id === selected || (pairOn && (n.id === pair!.a || n.id === pair!.b));
             return (
-              <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.18} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
+              <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.18} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}
+                role="button" tabIndex={0} aria-pressed={n.id === selected} aria-label={`${n.label}, ${TYP[n.type] ?? "Knoten"}${n.type === "center" ? "" : `, ${n.count.toLocaleString("de-DE")} Einträge`}`} onFocus={() => setHover(n.id)} onBlur={() => setHover("")}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(n.id === selected ? "" : n.id); } else if (e.key === "Escape" && n.id === selected) { e.preventDefault(); onSelect(""); } }}>
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle className={n.type === "topic" ? "rm-gtopic" : undefined} r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth={n.type === "land" ? 2.5 : 0} fillOpacity={n.type === "term" ? 0.88 : 1} />
                 {n.type === "center" && <rect x="-7" y="-7" width="14" height="14" fill="var(--rm-on)" />}

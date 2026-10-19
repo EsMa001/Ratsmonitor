@@ -8,24 +8,30 @@ import {useAccount} from '../state/account';
 import {logout,setViewTier,useMe} from '../lib/account';
 import {IS_DEV,TIER_LABEL,type Tier} from '../lib/tier';
 
+/** Aufklappmenü: schließt bei Klick daneben und mit Escape (Fokus zurück auf den Knopf), setzt den Fokus auf den ersten Eintrag */
+function useMenu(){
+ const [open,setOpen]=useState(false);
+ const ref=useRef<HTMLDivElement>(null);
+ useEffect(()=>{
+  if(!open)return;
+  const down=(e:MouseEvent)=>{if(!ref.current?.contains(e.target as Node))setOpen(false);};
+  const key=(e:KeyboardEvent)=>{if(e.key!=='Escape')return;setOpen(false);if(ref.current?.contains(document.activeElement))ref.current.querySelector<HTMLElement>('button[aria-haspopup]')?.focus();};
+  document.addEventListener('mousedown',down);document.addEventListener('keydown',key);
+  ref.current?.querySelector<HTMLElement>('[role^="menuitem"]')?.focus();
+  return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',key);};
+ },[open]);
+ return {open,setOpen,ref};
+}
+const arrowKeys=(e:React.KeyboardEvent<HTMLDivElement>)=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role^="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}};
+
 /** Symbole rechts in der Kopfzeile: Admin (nur für Konten mit der Rolle admin; die Administration fragt bei Bedarf den
  *  zweiten Faktor ab), gespeicherte Suchen, Kalender, gespeicherte Artikel, Konto (mit kleinem Menü, für Admins „Ansehen als“) */
 export function AccountMenu({currentPage}:{currentPage:string}){
  const {saved}=useAccount(),articles=useSavedArticles(),me=useMe();
  const router=useRouter();
  const [dark,setDark]=useDarkMode();
- const [open,setOpen]=useState(false);
- const ref=useRef<HTMLDivElement>(null);
- /* Konto-Menü schließt bei Klick daneben und mit Escape */
- useEffect(()=>{
-  if(!open)return;
-  const down=(e:MouseEvent)=>{if(!ref.current?.contains(e.target as Node))setOpen(false);};
-  const key=(e:KeyboardEvent)=>{if(e.key!=='Escape')return;setOpen(false);/* Fokus zurück auf den Konto-Knopf */if(ref.current?.contains(document.activeElement))ref.current.querySelector<HTMLElement>('button[aria-haspopup]')?.focus();};
-  document.addEventListener('mousedown',down);document.addEventListener('keydown',key);
-  /* Fokus auf den ersten Eintrag, damit die Pfeiltasten gleich wirken (Tastatur und Bildschirmleser) */
-  ref.current?.querySelector<HTMLElement>('[role^="menuitem"]')?.focus();
-  return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',key);};
- },[open]);
+ const {open,setOpen,ref}=useMenu();
+ const {open:mineOpen,setOpen:setMineOpen,ref:mineRef}=useMenu();
  const base='relative grid h-9 w-9 max-sm:h-11 max-sm:w-11 place-items-center rounded-lg transition-colors';
  const cls=(on:boolean)=>`${base} ${on?'bg-teal-50 text-teal-700':'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`;
  const badge='absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-700 px-[3px] text-[12px] font-semibold leading-none text-white';
@@ -38,23 +44,19 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   {isAdmin&&<Link href="/admin" title={me.adminHere?'Administration':'Administration (Code aus der Authenticator-App nötig)'} aria-label="Administration" className={cls(false)}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
   </Link>}
-  <button type="button" title={dark?'Heller Modus':'Dunkler Modus'} aria-label={dark?'Heller Modus':'Dunkler Modus'} aria-pressed={dark} onClick={()=>setDark(!dark)} className={`${cls(false)} max-sm:hidden`}>
-   <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{dark?<><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>:<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>}</svg>
-  </button>
-  <Link href="/konto/suchen" title="Meine Suchen" aria-label={`Meine Suchen (${saved.length})`} className={`${cls(currentPage==='suchen')} max-sm:hidden`}>
-   <IconHeart size={19} filled={currentPage==='suchen'}/>
-   {saved.length>0&&<span className={badge}>{saved.length}</span>}
-  </Link>
-  <Link href="/konto/benachrichtigungen" title="Benachrichtigungen" aria-label="Benachrichtigungen" className={`${cls(currentPage==='benachrichtigungen')} max-sm:hidden`}>
-   <IconBell size={19} filled={currentPage==='benachrichtigungen'}/>
-  </Link>
-  <Link href="/konto/kalender" title="Kalender" aria-label="Kalender" className={`${cls(currentPage==='kalender')} max-sm:hidden`}>
-   <IconCalendar size={19}/>
-  </Link>
-  <Link href="/konto/artikel" title="Gespeicherte Artikel" aria-label={`Gespeicherte Artikel (${articles.length})`} className={`${cls(currentPage==='artikel')} max-sm:hidden`}>
-   <IconBookmark size={19} filled={currentPage==='artikel'}/>
-   {articles.length>0&&<span className={badge}>{articles.length}</span>}
-  </Link>
+  {/* Desktop: Suchen, Benachrichtigungen, Kalender und Artikel in einem Menü „Meine Inhalte“ (am Handy übernimmt das Blatt der unteren Leiste) */}
+  <div ref={mineRef} className="relative max-sm:hidden">
+   <button type="button" title="Meine Inhalte" aria-label={`Meine Inhalte (${saved.length+articles.length})`} aria-haspopup="menu" aria-expanded={mineOpen} onClick={()=>setMineOpen(o=>!o)} className={cls(['suchen','benachrichtigungen','kalender','artikel'].includes(currentPage)||mineOpen)}>
+    <IconHeart size={19} filled={['suchen','benachrichtigungen','kalender','artikel'].includes(currentPage)}/>
+    {saved.length+articles.length>0&&<span className={badge}>{saved.length+articles.length}</span>}
+   </button>
+   {mineOpen&&<div role="menu" onKeyDown={arrowKeys} className="absolute right-0 top-full z-[1200] mt-1 w-[248px] rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+    {([['suchen','Meine Suchen',<IconHeart key="h" size={17}/>,saved.length],['benachrichtigungen','Benachrichtigungen',<IconBell key="b" size={17}/>,0],['kalender','Kalender',<IconCalendar key="c" size={17}/>,0],['artikel','Gespeicherte Artikel',<IconBookmark key="a" size={17}/>,articles.length]] as [string,string,React.ReactNode,number][]).map(([page,label,icon,count])=>
+     <Link key={page} role="menuitem" href={`/konto/${page}`} onClick={()=>setMineOpen(false)} aria-current={currentPage===page?'page':undefined} className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] no-underline hover:bg-slate-100 ${currentPage===page?'font-medium text-teal-700':'text-slate-900'}`}>
+      <span className="text-slate-500" aria-hidden="true">{icon}</span><span className="flex-1">{label}</span>{count>0&&<span className="tabular-nums text-slate-500">{count}</span>}
+     </Link>)}
+   </div>}
+  </div>
   <div ref={ref} className="relative">
    <button type="button" title="Konto" aria-label="Konto" aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(o=>!o)} className={cls(currentPage==='profil'||open)}>
     <IconUser size={19} className="max-sm:!h-[23px] max-sm:!w-[23px]"/>
@@ -63,9 +65,9 @@ export function AccountMenu({currentPage}:{currentPage:string}){
     {loggedIn&&<p className="m-0 truncate px-3 pb-1 pt-2 text-[12px] text-slate-500" title={me.user?.email}>{me.user?.email}</p>}
     {!loggedIn&&me.accounts&&<Link role="menuitem" href="/anmelden" className={item} onClick={()=>setOpen(false)}>Anmelden</Link>}
     <Link role="menuitem" href="/konto/profil" className={item} onClick={()=>setOpen(false)}>Konto</Link>
-    {/* Handy: was am Desktop in der Kopfzeile steht (Preise, Hell/Dunkel) */}
+    {/* Preise stehen am Desktop im Menü der Kopfzeile; Hell/Dunkel gilt überall hier */}
     <Link role="menuitem" href="/preise" className={`${item} sm:hidden`} onClick={()=>setOpen(false)}>Preise</Link>
-    <button role="menuitemcheckbox" type="button" aria-checked={dark} onClick={()=>setDark(!dark)} className={`${item} flex w-full items-center justify-between text-left sm:hidden`}>
+    <button role="menuitemcheckbox" type="button" aria-checked={dark} onClick={()=>setDark(!dark)} className={`${item} flex w-full items-center justify-between text-left`}>
      Dunkler Modus
      <span className={`h-5 w-9 rounded-full p-0.5 transition-colors ${dark?'bg-teal-700':'bg-slate-300'}`} aria-hidden="true"><span className={`block h-4 w-4 rounded-full bg-white transition-transform ${dark?'translate-x-4':''}`}/></span>
     </button>

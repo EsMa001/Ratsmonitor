@@ -22,15 +22,17 @@ export function OverviewPage({ active }: { active: boolean }) {
   /* Handy: nach einer Suche zeigt das kleine Blatt schon die ersten Treffer (Vorschau), damit man sieht, dass sie geklappt hat */
   const { snapshot, total } = useSearchResults();
   const peekHidden = usePeekHidden();
-  const peek = hasFilters(snapshot) && total > 0 && !peekHidden;
+  const peek = total > 0 && !peekHidden;
   const mainRef = useRef<HTMLElement>(null);
   /* Neue Suche oder Blatt „voll“: die Vorschau ist wieder da */
   const snapKey = JSON.stringify(snapshot);
-  useEffect(() => { setPeekHidden(false); }, [snapKey]);
+  /* Mit Suche oder Filter beginnt das kleine Blatt mit Vorschau, ohne bleibt es zuerst minimal (große Karte); mittelgroß gibt es in beiden Fällen */
+  useEffect(() => { setPeekHidden(!hasFilters(snapshot)); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapKey]);
   useEffect(() => { if (stage === "voll") setPeekHidden(false); }, [stage]);
   /* Handy: Wischen mit dem Finger auf dem Blatt. Nach unten: voll → klein, klein → minimal (ohne Vorschau). Nach oben: minimal → klein, klein → voll.
      Im vollen Blatt zählt nur ein Zug nach unten, wenn die Liste ganz oben steht (sonst scrollt sie). */
-  const canPeek = hasFilters(snapshot) && total > 0;
+  const canPeek = total > 0;
   const pull = useRef<{ y: number; top: number; t: number; range: number; k: number; peekT: number; mode: "" | "stage" | "peek"; drag: number } | null>(null);
   const flatOf = (e: React.TouchEvent) => (e.currentTarget as HTMLElement).parentElement as HTMLElement;
   const setVars = (flat: HTMLElement, d: number, k: number, lf: number) => { flat.style.setProperty("--drag", `${d}px`); flat.style.setProperty("--sb", `${d * k}px`); flat.style.setProperty("--lf", `${lf}px`); };

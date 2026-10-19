@@ -290,7 +290,16 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
               </button></span>
             </Kennzahlen>}
 
-          {topPlaces.length > 1 && res.total > 0 && <p className="mt-3 text-[18px] max-sm:hidden font-semibold leading-snug">Am meisten in {topPlaces.map((p, i) => <span key={p.region}>{i ? (i === topPlaces.length - 1 ? " und " : ", ") : ""}<button type="button" onClick={() => search.setArea(p.ags || p.members?.[0] || "", "ui")} className="font-semibold text-teal-700 hover:underline" aria-label={p.name}><span aria-hidden="true" className="max-sm:hidden">{p.name}</span><span aria-hidden="true" className="sm:hidden">{p.name.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt|Landkreis|Kreis) /, "")}</span></button> ({n(p.count)})</span>)}.</p>}
+          {topPlaces.length > 1 && res.total > 0 && <p className="mt-3 text-[18px] max-sm:hidden font-semibold leading-snug">Am meisten in {topPlaces.map((p, i) => <span key={p.region}>
+            {i ? (i === topPlaces.length - 1 ? " und " : ", ") : ""}
+            <button type="button" onClick={() => search.setArea(p.ags || p.members?.[0] || "", "ui")} className="font-semibold text-teal-700 hover:underline" aria-label={p.name}>
+            <span aria-hidden="true" className="max-sm:hidden">
+            {p.name}
+            </span>
+            <span aria-hidden="true" className="sm:hidden">
+            {p.name.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt|Landkreis|Kreis) /, "")}
+            </span>
+            </button> ({n(p.count)})</span>)}.</p>}
           {(ATLAS_OF[signal] || TRENDS_OF[signal]) && <p className="mt-1 text-[14px] text-slate-500 max-sm:hidden">
             {ATLAS_OF[signal] && <>Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 hover:underline">{ATLAS_OF[signal][2]} im Atlas →</Link></>}
             {ATLAS_OF[signal] && TRENDS_OF[signal] && " · "}

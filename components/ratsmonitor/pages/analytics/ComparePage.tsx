@@ -5,8 +5,9 @@ import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { Befund, Fehler } from "./Befund";
 import { Reveal } from "./Reveal";
+import { useAnalysisRun } from "./useAnalysisRun";
 import { TabPane } from "./Tabs";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { STATUS_COLOR, STATUS } from "../../lib/constants";
 import { useData } from "../../state/data";
 import { LABELS } from "@/shared/labels.mjs";
@@ -15,7 +16,6 @@ import type { PlaceEntry } from "../../lib/place";
 import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
 import { RadarDrill } from "./RadarDrill";
 import { todayLocal } from "../../lib/text";
-import { errorText, fetchJson } from "../../lib/fetchJson";
 import { MethodikNote } from "./Methodik";
 
 interface Share { id: string; n: number; share: number }
@@ -77,16 +77,11 @@ export function ComparePage() {
   const [tab, setTab] = useState<"ueberblick" | "themen" | "verlauf" | "begriffe" | "details">("ueberblick");
   const [termTab, setTermTab] = useState<"a" | "b" | "c">("b");
   const [thema, setThema] = useState("");
-  const [res, setRes] = useState<Result | null>(null);
-  const [ranKey, setRanKey] = useState("");
-  /* Beim Öffnen gleich vergleichen, wenn zwei verschiedene Orte vorbelegt sind */
-  const [opening] = useState(() => !!ort1 && !!ort2 && ort1.ags !== ort2.ags);
-  const [loading, setLoading] = useState(opening);
-  const [error, setError] = useState("");
+  /* Eingabefehler (zwei gleiche oder fehlende Orte); Fehler der Berechnung kommen aus useAnalysisRun */
+  const [inputError, setInputError] = useState("");
   const [perHead, setPerHead] = useState(false);
   /* Geöffnete Liste hinter einer Zahl: Abschnitt (at), Art (all, label, committee, term), Wert und die Orte (Index) */
   const [drill, setDrill] = useState<{ at: string; by: string; value: string; label: string; idx: number[] } | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
 
   const buildQuery = (a: PlaceEntry | null, b: PlaceEntry | null, t: string) =>
     a && b ? new URLSearchParams({ q: t.trim(), area: a.ags, label: "", month: "", from: "", to: todayLocal(), scope: "only", status: "", level: "city", more: b.ags + ":only" }).toString() : "";
@@ -94,27 +89,19 @@ export function ComparePage() {
   /* „(Kreis)“ nur bei echten Landkreisen; eine kreisfreie Stadt heißt einfach wie die Stadt */
   const name = (ags: string) => { const i = geo?.info(ags); return (i?.name ?? ags) + (ags.length === 5 && /^(Landkreis|Kreis|Stadtkreis) /.test(i?.meta ?? "") ? " (Kreis)" : ""); };
 
-  const run = (a = ort1, b = ort2, t = thema) => {
-    if (!a || !b) return setError("Bitte beide Orte wählen.");
-    if (a.ags === b.ags) return setError("Bitte zwei verschiedene Orte wählen.");
-    setError("");
+  /* Beim Öffnen gleich vergleichen, wenn zwei verschiedene Orte vorbelegt sind; sonst auf Knopfdruck (wie die übrigen plenara.X-Seiten) */
+  const { res, ranKey, loading, error: runError, stale, run: runQuery } = useAnalysisRun<Result>({
+    key: query, url: query ? `/api/analytics/compare?${query}` : "", initial: !!ort1 && !!ort2 && ort1.ags !== ort2.ags, fallback: "Der Vergleich konnte nicht berechnet werden.",
+  });
+  const error = inputError || runError;
+  const run = () => {
+    if (!ort1 || !ort2) return setInputError("Bitte beide Orte wählen.");
+    if (ort1.ags === ort2.ags) return setInputError("Bitte zwei verschiedene Orte wählen.");
+    setInputError("");
     setEditOpen(false);
-    setLoading(true);
-    fetchCompare(buildQuery(a, b, t));
+    setDrill(null);
+    runQuery();
   };
-  /* Nur der Abruf (setzt erst mit der Antwort Zustand), auch für den Start beim Öffnen */
-  const fetchCompare = (q: string) => {
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/compare?${q}`, { signal: ctrl.signal }, "Der Vergleich konnte nicht berechnet werden.")
-      .then((r) => { setRes(r); setRanKey(q); setDrill(null); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-  };
-  /* Beim Öffnen sofort mit den vorbelegten Orten vergleichen, damit die Seite nicht leer ist */
-  useEffect(() => { if (opening) fetchCompare(query); return () => abortRef.current?.abort(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const stale = !!res && ranKey !== query && !loading;
 
   const names = res ? res.places.map((p) => name(p.ags)) : [];
   const topicRows = useMemo(() => {
@@ -178,7 +165,12 @@ export function ComparePage() {
             <label htmlFor="vergleich-thema" className="mb-1.5 max-sm:sr-only block text-[14px] font-medium text-slate-700">Thema <span className="font-normal text-slate-500">(optional)</span></label>
             <input id="vergleich-thema" type="search" value={thema} onChange={(e) => setThema(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder={phone ? "Thema (optional)" : "beliebiger Begriff"} className={FIELD} />
           </div>
-          <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-full bg-teal-700 text-white max-sm:col-span-2 max-sm:h-11 max-sm:w-full max-sm:justify-self-stretch max-sm:gap-2 max-sm:rounded-xl transition-opacity hover:opacity-85 disabled:opacity-60 md:justify-self-auto">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" /></svg>}<span className="text-[16px] font-medium sm:hidden">Vergleichen</span></button>
+          <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-full bg-teal-700 text-white max-sm:col-span-2 max-sm:h-11 max-sm:w-full max-sm:justify-self-stretch max-sm:gap-2 max-sm:rounded-xl transition-opacity hover:opacity-85 disabled:opacity-60 md:justify-self-auto">
+            {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" />
+            </svg>}
+            <span className="text-[16px] font-medium sm:hidden">Vergleichen</span>
+            </button>
         </div>
       </section>
       {error && <Fehler>{error}</Fehler>}
@@ -208,13 +200,41 @@ export function ComparePage() {
                 ["Vorgänge", (p: Place) => n(p.total), (p: Place) => p.total],
                 ["je 1.000 Einwohner", (p: Place) => (p.perThousand === null ? "–" : p.perThousand.toLocaleString("de-DE")), (p: Place) => p.perThousand],
                 ["Einwohner", (p: Place) => (p.population ? n(p.population) : "–"), (p: Place) => p.population],
+                /* Quellenabdeckung: damit ein Unterschied bei den Vorgängen nicht als „mehr Aktivität“ gelesen wird, wenn einfach mehr erfasst ist */
+                ["Quellenabdeckung: Monate mit Vorgängen", (p: Place) => `${p.months.filter((x) => x.n > 0).length} von ${res.months.length}`, () => null],
+                ["Quellenabdeckung: mit Thema / mit Status", (p: Place) => { const s = p.sampled || p.total; return s ? `${Math.round((p.topics.n / s) * 100)} % / ${Math.round((p.status.n / s) * 100)} %` : "–"; }, () => null],
               ] as [string, (p: Place) => string, (p: Place) => number | null][]).map(([k, f, num]) => (
-                <div key={k} className={rowCls}><span className="col-span-2 text-[14px] text-slate-500 md:col-span-1 max-sm:text-[12px] max-sm:font-medium max-sm:uppercase max-sm:tracking-wide">{k}</span>{res.places.map((p, i) => k === "Vorgänge" ? <button key={p.ags + p.scope} type="button" onClick={() => pick("overview", "all", "", "alle Vorgänge", [i])} aria-expanded={isOpen("overview", "all", "", i)} className={`font-semibold tabular-nums max-sm:text-[28px] max-sm:leading-none max-sm:!min-h-0 max-sm:py-1 ${i === 0 ? "max-sm:text-teal-700" : "max-sm:text-slate-900"} ${linkCls(isOpen("overview", "all", "", i))}`}>{f(p)}</button> : <b key={p.ags + p.scope} className={`font-semibold tabular-nums max-sm:text-[28px] max-sm:leading-none max-sm:!min-h-0 max-sm:py-1 ${i === 0 ? "max-sm:text-teal-700" : "max-sm:text-slate-900"}`}>{f(p)}</b>)}<span className="col-span-2 text-[14px] text-slate-700 md:col-span-1 max-sm:mt-1 max-sm:inline-flex max-sm:w-fit max-sm:items-center max-sm:rounded-full max-sm:bg-slate-100 max-sm:px-2.5 max-sm:py-0.5 max-sm:text-[12px]"><span className="md:hidden max-sm:hidden">Unterschied: </span>{diff(num(res.places[0]), num(res.places[1]))}</span></div>
+                <div key={k} className={rowCls}>
+                  <span className="col-span-2 text-[14px] text-slate-500 md:col-span-1 max-sm:text-[12px] max-sm:font-medium max-sm:uppercase max-sm:tracking-wide">
+                  {k}
+                  </span>
+                  {res.places.map((p, i) => k === "Vorgänge" ? <button key={p.ags + p.scope} type="button" onClick={() => pick("overview", "all", "", "alle Vorgänge", [i])} aria-expanded={isOpen("overview", "all", "", i)} className={`font-semibold tabular-nums max-sm:text-[28px] max-sm:leading-none max-sm:!min-h-0 max-sm:py-1 ${i === 0 ? "max-sm:text-teal-700" : "max-sm:text-slate-900"} ${linkCls(isOpen("overview", "all", "", i))}`}>
+                  {f(p)}
+                  </button> : <b key={p.ags + p.scope} className={`font-semibold tabular-nums max-sm:text-[28px] max-sm:leading-none max-sm:!min-h-0 max-sm:py-1 ${i === 0 ? "max-sm:text-teal-700" : "max-sm:text-slate-900"}`}>
+                  {f(p)}
+                  </b>)}
+                  <span className="col-span-2 text-[14px] text-slate-700 md:col-span-1 max-sm:mt-1 max-sm:inline-flex max-sm:w-fit max-sm:items-center max-sm:rounded-full max-sm:bg-slate-100 max-sm:px-2.5 max-sm:py-0.5 max-sm:text-[12px]">
+                  <span className="md:hidden max-sm:hidden">Unterschied: </span>
+                  {diff(num(res.places[0]), num(res.places[1]))}
+                  </span>
+                  </div>
               ))}
               {!showCom && <button type="button" onClick={() => setShowCom(true)} className="flex min-h-[48px] w-full items-center justify-between border-b border-slate-200 text-left text-[14px] font-medium text-teal-700 sm:hidden">Aktivste Gremien zeigen<span aria-hidden="true">›</span></button>}
-              <div className={`${rowCls} ${showCom ? "" : "hidden"}`}>
+              <div className={`${rowCls} ${showCom ? "" : "max-sm:hidden"}`}>
                 <span className="col-span-2 text-[14px] text-slate-500 md:col-span-1 max-sm:text-[12px] max-sm:font-medium max-sm:uppercase max-sm:tracking-wide">Aktivste Gremien</span>
-                {res.places.map((p, i) => <ul key={p.ags + p.scope} className="m-0 list-none p-0 text-[14px]">{p.committees.slice(0, 4).map((c) => <li key={c.name} className="mb-1 flex items-center justify-between gap-x-2 max-sm:mb-1 max-sm:grid max-sm:grid-cols-[minmax(0,1fr)_auto]"><button type="button" onClick={() => pick("overview", "committee", c.name, c.name, [i])} aria-expanded={isOpen("overview", "committee", c.name, i)} className={`min-w-0 truncate ${linkCls(isOpen("overview", "committee", c.name, i))}`} title={c.name}>{c.name}</button><span className="tabular-nums text-slate-500">{n(c.n)}</span><span aria-hidden="true" className="block h-1 overflow-hidden rounded-full bg-slate-100 max-sm:col-span-2 sm:hidden"><span className="block h-full rounded-full" style={{ width: `${Math.max(4, (c.n / Math.max(1, ...p.committees.map((x) => x.n))) * 100)}%`, background: PLACE_COLORS[i] }} /></span></li>)}{!p.committees.length && <li className="text-slate-500">–</li>}</ul>)}
+                {res.places.map((p, i) => <ul key={p.ags + p.scope} className="m-0 list-none p-0 text-[14px]">
+                  {p.committees.slice(0, 4).map((c) => <li key={c.name} className="mb-1 flex items-center justify-between gap-x-2 max-sm:mb-1 max-sm:grid max-sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <button type="button" onClick={() => pick("overview", "committee", c.name, c.name, [i])} aria-expanded={isOpen("overview", "committee", c.name, i)} className={`min-w-0 truncate ${linkCls(isOpen("overview", "committee", c.name, i))}`} title={c.name}>
+                  {c.name}
+                  </button>
+                  <span className="tabular-nums text-slate-500">
+                  {n(c.n)}
+                  </span>
+                  <span aria-hidden="true" className="block h-1 overflow-hidden rounded-full bg-slate-100 max-sm:col-span-2 sm:hidden">
+                  <span className="block h-full rounded-full" style={{ width: `${Math.max(4, (c.n / Math.max(1, ...p.committees.map((x) => x.n))) * 100)}%`, background: PLACE_COLORS[i] }} />
+                  </span>
+                  </li>)}{!p.committees.length && <li className="text-slate-500">–</li>}
+                  </ul>)}
                 <span className="hidden md:block" />
               </div>
             </div></div>
@@ -266,7 +286,13 @@ export function ComparePage() {
               <div>
                 <h3 className="flex items-center gap-2 text-[16px] font-semibold"><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="min-w-0 truncate">Typisch für {names[i]}</span></h3>
                 <ol className={list}>
-                  {(!allTerms ? typ[i].slice(0, 5) : typ[i]).map((t) => <li key={t.term} className={row}><button type="button" onClick={() => pick("terms", "term", t.term, `„${prettyTerm(t.term)}“`, [i])} aria-expanded={isOpen("terms", "term", t.term, i)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", t.term, i))}`}>{prettyTerm(t.term)}</button><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
+                  {(!allTerms ? typ[i].slice(0, 5) : typ[i]).map((t) => <li key={t.term} className={row}>
+                    <button type="button" onClick={() => pick("terms", "term", t.term, `„${prettyTerm(t.term)}“`, [i])} aria-expanded={isOpen("terms", "term", t.term, i)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", t.term, i))}`}>
+                    {prettyTerm(t.term)}
+                    </button>
+                    <span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}
+                    </span>
+                    </li>)}
                   {!typ[i].length && <li className="py-2 text-[14px] text-slate-500">Keine auffälligen Begriffe.</li>}
                 </ol>
               </div>
@@ -281,7 +307,16 @@ export function ComparePage() {
                   <div className={`md:order-none ${termTab === "b" ? "" : "max-sm:hidden"}`}>
                     <h3 className="text-[16px] font-semibold">In beiden Orten</h3>
                     <ol className={list}>
-                      {(!allTerms ? com.slice(0, 5) : com).map((c) => <li key={c.term} className={row}><button type="button" onClick={() => pick("terms", "term", c.term, `„${prettyTerm(c.term)}“`, [0, 1])} aria-expanded={isOpen("terms", "term", c.term)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", c.term) && drill!.idx.length > 1)}`}>{prettyTerm(c.term)}</button><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
+                      {(!allTerms ? com.slice(0, 5) : com).map((c) => <li key={c.term} className={row}>
+                        <button type="button" onClick={() => pick("terms", "term", c.term, `„${prettyTerm(c.term)}“`, [0, 1])} aria-expanded={isOpen("terms", "term", c.term)} className={`min-w-0 truncate text-slate-900 max-sm:flex-1 ${linkCls(isOpen("terms", "term", c.term) && drill!.idx.length > 1)}`}>
+                        {prettyTerm(c.term)}
+                        </button>
+                        <span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">
+                        {c.shares.map((v, k) => <span key={k} className="flex items-center gap-1">
+                        <i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />
+                        {v.toLocaleString("de-DE")} %</span>)}
+                        </span>
+                        </li>)}
                       {!com.length && <li className="py-2 text-[14px] text-slate-500">Keine gemeinsamen Begriffe.</li>}
                     </ol>
                   </div>

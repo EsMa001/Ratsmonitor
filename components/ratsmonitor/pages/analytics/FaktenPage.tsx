@@ -212,6 +212,14 @@ export function FaktenPage() {
           </Kennzahlen>
           {LINKS[fact?.kind ?? ""] && <p className="mt-1 text-[14px] text-slate-500">{LINKS[fact!.kind].map(([href, text], i) => <span key={href}>{i > 0 && " · "}<Link href={href} className="font-medium text-teal-700 hover:underline">{text} →</Link></span>)}</p>}
 
+          {/* Abdeckung: damit eine dünne Karte nicht wie ein Fehler wirkt (Werte stehen nur dort, wo die Unterlagen sie ausdrücklich nennen) */}
+          {!overview && regionCount > 0 && (
+            <p className="mt-2 max-w-[760px] text-[14px] text-slate-600">
+              Werte für <b className="font-semibold text-slate-900">{n(ranked.length)} von {n(regionCount)} Gebieten</b> ({ranked.length === 0 ? "0 %" : ranked.length * 100 < regionCount ? "unter 1 %" : `${Math.round((ranked.length / regionCount) * 100).toLocaleString("de-DE")} %`}).
+              Eine leere Fläche heißt: Die Unterlagen nennen dort keinen Wert, nicht, dass es keinen gibt.
+            </p>
+          )}
+
           {/* Links die Karte (bleibt stehen), rechts Einordnung und Rangliste; ab 1024 px nebeneinander */}
           <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
             <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">

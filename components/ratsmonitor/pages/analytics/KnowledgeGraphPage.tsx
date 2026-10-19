@@ -11,6 +11,7 @@ import { isFiller, prettyTerm, termStem } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { MethodikNote } from "./Methodik";
+import { ListRow } from "./ListRow";
 
 interface Result {
   /** Datum des vorab berechneten Gesamtgraphen (nur dort gesetzt) */
@@ -128,12 +129,23 @@ export function KnowledgeGraphPage() {
     return edges.filter((e) => !e.center && (e.a === selected || e.b === selected)).sort((a, b) => b.w - a.w).map((e) => ({ other: byId.get(e.a === selected ? e.b : e.a)!, e })).filter((x) => x.other);
   }, [res, edges, selected, byId]);
   /* Nur Begriffe, die zum Thema passen: die häufigsten des Netzes; seltene Paare wie „Belange · öffentlicher“ sagen nichts über das Thema */
+  /* Ohne Begriff (ganzer Bestand) zählt, was überdurchschnittlich oft zusammen vorkommt (Lift), nicht was nur häufig ist:
+     „Baugb · Bebauungsplan“ steht bei jedem Bebauungsplan und sagt nichts. Mit Begriff bleibt die Rangfolge nach Stärke. */
+  const lift = (e: GEdge) => { const a = byId.get(e.a), b = byId.get(e.b); return res && a && b && a.count > 0 && b.count > 0 ? (e.n * res.total) / (a.count * b.count) : 0; };
+  const gesamt = !!res && res.q.trim() === "";
   const strongest = useMemo(() => {
     const all = edges.filter((e) => !e.center && e.a.startsWith("t:") && e.b.startsWith("t:"));
+    if (gesamt) {
+      const sure = all.filter((e) => e.n >= 10);
+      return (sure.length ? sure : all).map((e) => ({ e, l: lift(e) })).sort((x, y) => y.l - x.l || y.e.n - x.e.n).slice(0, 10).map((x) => x.e);
+    }
     const top = new Set(nodes.filter((x) => x.id.startsWith("t:")).sort((a, b) => b.count - a.count).slice(0, 12).map((x) => x.id));
     const main = all.filter((e) => top.has(e.a) && top.has(e.b));
     return (main.length ? main : all).sort((a, b) => b.w - a.w).slice(0, 10);
-  }, [edges, nodes]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [edges, nodes, gesamt, res]);
+  /* Begriffe zum Anklicken für den Einstieg: die kennzeichnendsten des Netzes (der Server liefert sie nach Gewicht sortiert) */
+  const einstieg = useMemo(() => nodes.filter((x) => x.type === "term").slice(0, 10), [nodes]);
   const activePair = pair && selected === pair.a ? pair : null;
   const empty = !!res && nodes.length <= 1;
 
@@ -146,7 +158,16 @@ export function KnowledgeGraphPage() {
       {error && <Fehler>{error}</Fehler>}
 
       {/* Antwort zuerst, dann das Netz */}
-      {res && !empty && strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
+      {res && !empty && gesamt && <Befund>Über alle Vorgänge hängen vor allem diese Themen und Begriffe zusammen. Mit einem Begriff zeigt das Netz, was dazugehört.</Befund>}
+      {res && !empty && gesamt && einstieg.length > 0 && (
+        <div className="mt-4 print:hidden">
+          <p className="m-0 text-[14px] text-slate-600">Mit einem Begriff beginnen:</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {einstieg.map((x) => <button key={x.id} type="button" onClick={() => { search.applySearch(x.label); runAfterChange(); }} className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-800 hover:border-slate-400">{x.label}</button>)}
+          </div>
+        </div>
+      )}
+      {res && !empty && !gesamt && strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
       {/* Detailstufe über dem Netz, als Umschalter wie auf den übrigen Seiten */}
       {res && !empty && <div className={`${netz ? "" : "max-sm:hidden"} mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
       {/* Handy: das Netz lässt sich ein- und ausklappen */}
@@ -217,21 +238,12 @@ export function KnowledgeGraphPage() {
           )}
           <div className="mt-10 grid gap-x-12 gap-y-10 lg:grid-cols-2">
             <section>
-              <h2 className="text-[22px] font-semibold">Stärkste Verbindungen</h2>
-              <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die in denselben Einträgen vorkommen.</p>
+              <h2 className="text-[22px] font-semibold">{gesamt ? "Auffällige Verbindungen" : "Stärkste Verbindungen"}</h2>
+              <p className="mb-3 mt-1 text-[14px] text-slate-500">{gesamt ? "Begriffe, die viel öfter zusammen vorkommen, als es ihre Häufigkeit erwarten lässt." : "Begriffe, die in denselben Einträgen vorkommen."}</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {(allPairs ? strongest : strongest.slice(0, 5)).map((e, i) => (
-                  <li key={e.a + e.b} className="border-b border-slate-200">
-                    <button type="button" onClick={() => { setNetz(true); setSelected(e.a); setPair(e); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className="group grid w-full cursor-pointer grid-cols-[28px_1fr_auto_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
-                      <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
-                      <span className="min-w-0">
-                        <span className="block truncate text-[16px] text-slate-900">{byId.get(e.a)?.label} · {byId.get(e.b)?.label}</span>
-                        <span className="mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${Math.max(4, Math.min(100, e.w * 100))}%` }} /></span>
-                      </span>
-                      <span className="text-[14px] tabular-nums text-slate-500">{n(e.n)} Einträge</span>
-                      <span className="text-[16px] text-teal-700 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
-                    </button>
-                  </li>
+                  <ListRow key={e.a + e.b} nr={i + 1} title={`${byId.get(e.a)?.label} · ${byId.get(e.b)?.label}`} bar={e.w * 100} value={gesamt ? `${n(e.n)} Einträge · ×${Math.round(lift(e)).toLocaleString("de-DE")}` : `${n(e.n)} Einträge`}
+                    onClick={() => { setNetz(true); setSelected(e.a); setPair(e); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} />
                 ))}
               </ol>
               {strongest.length > 5 && <button type="button" aria-expanded={allPairs} onClick={() => setAllPairs(!allPairs)} className="mt-2 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{allPairs ? "Weniger Verbindungen zeigen" : `Alle ${strongest.length} Verbindungen zeigen`}</button>}
@@ -242,14 +254,8 @@ export function KnowledgeGraphPage() {
               <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, Themen, Gremien und Länder mit den meisten Einträgen im Netz.</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {topNodes.map((x, i) => (
-                  <li key={x.id} className="border-b border-slate-200">
-                    <button type="button" onClick={() => { setNetz(true); setSelected(x.id); setPair(null); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className="group grid w-full cursor-pointer grid-cols-[28px_1fr_auto_auto] items-center gap-x-3 py-3 text-left hover:bg-slate-50">
-                      <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
-                      <span className="min-w-0 truncate text-[16px] text-slate-900">{x.label}<span className="ml-2 text-[12px] text-slate-500">{TYP[x.type] ?? ""}</span></span>
-                      <span className="text-[14px] tabular-nums text-slate-500">{n(x.count)} Einträge</span>
-                      <span className="text-[16px] text-teal-700 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
-                    </button>
-                  </li>
+                  <ListRow key={x.id} nr={i + 1} title={x.label} tag={TYP[x.type] ?? ""} value={`${n(x.count)} Einträge`}
+                    onClick={() => { setNetz(true); setSelected(x.id); setPair(null); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} />
                 ))}
               </ol>
             </section>}

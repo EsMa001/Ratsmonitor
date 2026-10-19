@@ -277,3 +277,8 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   .rm-xfilter{position:sticky;top:calc(var(--hdr,58px) + 62px);z-index:29;background:var(--rm-white);padding:6px 0;margin-top:0 !important}
 }
 @media print{.rm-xfilter{position:static}}
+
+/* Netze (Gremien, Themennetz): Knoten per Tabulator erreichbar, der fokussierte Knoten hat einen deutlichen Ring */
+svg g[data-node]{outline:none}
+svg g[data-node]:focus-visible circle{stroke:var(--rm-fill);stroke-width:3.5}
+svg g[data-node]:focus-visible text{font-weight:600}

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { copyText } from "../lib/clipboard";
 
-/** Teilen-Menü des Geräts (iOS, Android), sonst Link in die Zwischenablage; ergibt, was geschah */
+/** Teilen-Menü des Geräts (iOS, Android), sonst Link in die Zwischenablage; ergibt, was geschah.
+ *  Mit text: WhatsApp und Nachrichten zeigen so den Titel über dem Link (mit title allein kommt nur der Link). */
 export async function shareLink(title: string, url: string): Promise<"shared" | "copied" | "failed"> {
   try {
-    if (navigator.share) { await navigator.share({ title, url }); return "shared"; }
+    if (navigator.share) { await navigator.share({ title, text: title, url }); return "shared"; }
     return (await copyText(url)) ? "copied" : "failed";
   } catch { return "failed"; /* Teilen abgebrochen */ }
 }
@@ -14,7 +15,7 @@ export function ShareButton({ title, url, className = "", label = false }: { tit
   const [copied, setCopied] = useState(false);
   const share = async () => {
     try {
-      if (navigator.share) return await navigator.share({ title, url });
+      if (navigator.share) return await navigator.share({ title, text: title, url });
       if (!(await copyText(url))) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);

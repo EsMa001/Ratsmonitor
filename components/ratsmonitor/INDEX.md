@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (582 Zeilen, ⚠14)
-- app/ratsmonitor.css (280 Zeilen, ⚠17)
+- app/ratsmonitor.css (285 Zeilen, ⚠17)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -660,7 +660,7 @@ truncate ratsmonitor-info.css:464
 - App.tsx (74, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
-- AccountMenu.tsx (86, ⚠2): AccountMenu
+- AccountMenu.tsx (88, ⚠4): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
 - ArtIcon.tsx (71, ⚠1): ArtIcon
@@ -694,7 +694,7 @@ truncate ratsmonitor-info.css:464
 - SearchFilterPanel.tsx (68): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - Segmented.tsx (66): Segmented
-- ShareButton.tsx (48): shareLink, ShareButton
+- ShareButton.tsx (49): shareLink, ShareButton
 - SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
 - TierNotice.tsx (67): AccountLoading, LoginRequired, UsagePill
 - TopicSeed.tsx (11): TopicSeed
@@ -801,7 +801,7 @@ truncate ratsmonitor-info.css:464
 - KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (250): useInhalt, LegalPage
 - NotificationsPage.tsx (92): NotificationsPage
-- OverviewPage.tsx (170): OverviewPage
+- OverviewPage.tsx (172): OverviewPage
 - PersonalPage.tsx (26): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
@@ -817,25 +817,25 @@ truncate ratsmonitor-info.css:464
 - BeschluessePage.tsx (207, ⚠9): BeschluessePage
 - CompareCharts.tsx (63): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (343, ⚠11): ComparePage
+- ComparePage.tsx (378, ⚠9): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (91, ⚠2): PlayState, DiffusionSearch
-- FaktenPage.tsx (320, ⚠3): FaktenPage
+- FaktenPage.tsx (328, ⚠3): FaktenPage
 - FraktionenPage.tsx (187, ⚠6): FraktionenPage
-- GraphView.tsx (247, ⚠1): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (184, ⚠5): GremiennetzPage
+- GraphView.tsx (250, ⚠1): GNode, GEdge, KIND, GraphView
+- GremiennetzPage.tsx (184, ⚠4): GremiennetzPage
 - Kennzahlen.tsx (139): weekAgo, isNew, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (264, ⚠8): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (270, ⚠6): KnowledgeGraphPage
 - Laden.tsx (27): Laden
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
-- NetView.tsx (238, ⚠1): NNode, NEdge, ROLE, NetView
+- NetView.tsx (240, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (123, ⚠1): NewsradarPage
 - PageBand.tsx (19): PageBand
 - RadarDrill.tsx (130, ⚠2): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (128, ⚠2): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (357, ⚠9): signaleHref, SignalePage
+- SignalePage.tsx (366, ⚠8): signaleHref, SignalePage
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (571, ⚠9): XAtlasView

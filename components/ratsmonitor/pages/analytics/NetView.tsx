@@ -200,7 +200,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
         if (!d.moved) onSelect(d.id === selected ? "" : d.id);
       }}
     >
-      <svg width={size.w} height={size.h} role="img" aria-label="Gremien: Wege von Vorgängen durch die Gremien">
+      <svg width={size.w} height={size.h} role="group" aria-label="Gremien: Wege von Vorgängen durch die Gremien. Mit der Tabulator-Taste durch die Gremien gehen, Enter wählt, Escape hebt die Wahl auf">
         <defs>
           <marker id="net-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="var(--rm-c500)" /></marker>
           <marker id="net-arrow-on" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="var(--rm-fill)" /></marker>
@@ -221,7 +221,9 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
             const label = labelSet.has(n.id);
             const fs = 12.5 / view.k, lh = 15 / view.k, off = 14 / view.k, sw = 3 / view.k;
             return (
-              <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.2} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
+              <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.2} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}
+                role="button" tabIndex={0} aria-pressed={sel} aria-label={`${n.name}, ${k.label}, ${n.in.toLocaleString("de-DE")} rein, ${n.out.toLocaleString("de-DE")} raus`} onFocus={() => setHover(n.id)} onBlur={() => setHover("")}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(sel ? "" : n.id); } else if (e.key === "Escape" && sel) { e.preventDefault(); onSelect(""); } }}>
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle r={Math.max(n.r, 7 / view.k)} fill={k.fill} stroke={k.stroke} strokeWidth="2" />
                 {label && <text textAnchor="middle" fontSize={fs} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth={sw} paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>

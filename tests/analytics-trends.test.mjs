@@ -63,3 +63,9 @@ test('trend spread counts regions reached for the first time in the window, not 
   await assert.rejects(trendSpread(db,catalog,new URLSearchParams('keys=a;b'),NOW));
  }finally{sql.close();}
 });
+
+test('Verfahrens- und Flurwörter sind kein Trend (Sperrliste FORMAL_ALL, auch ohne Neuaufbau von x_cases)',async()=>{
+ const {FORMAL_ALL}=await import('../server/integrations/analytics-graph.mjs');
+ for(const w of ['zwischenbericht','behandlung','bausachen','bezirksfraktion','wichtige','gemarkung','flur','ortlichen'])assert.ok(FORMAL_ALL.has(w),w);
+ for(const w of ['hitzeschutz','haushaltsplanung','bebauungsplan'])assert.ok(!FORMAL_ALL.has(w),w+' darf nicht gesperrt sein');
+});

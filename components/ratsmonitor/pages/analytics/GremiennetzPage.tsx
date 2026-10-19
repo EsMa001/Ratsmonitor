@@ -12,6 +12,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { MethodikNote } from "./Methodik";
 import { TabPane } from "./Tabs";
+import { ListRow } from "./ListRow";
 import { Segmented } from "./Kennzahlen";
 
 interface Result {
@@ -123,16 +124,15 @@ export function GremiennetzPage() {
                   <h2 className="text-[22px] font-semibold">Wichtigste Übergänge</h2>
                   <p className="mb-3 mt-1 text-[14px] text-slate-500">Von welchem Gremium ein Vorgang an welches ging, und wie lange das im Mittel dauerte.</p>
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
-                    {res.edges.slice(0, !more.e ? 5 : 12).map((e) => (
-                      <li key={e.a + e.b} className="border-b border-slate-200">
-                        <button type="button" onClick={() => { setSelected(e.a); setEdge(edge === e.a + "|" + e.b ? "" : e.a + "|" + e.b); }} aria-expanded={edge === e.a + "|" + e.b} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left ${edge === e.a + "|" + e.b ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
-                          <span className="min-w-0 text-[16px] text-slate-900"><span className="block truncate">{e.a}</span><span className="block truncate text-slate-500">→ {e.b}</span></span>
-                          <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(e.n)}</b><span className="block text-slate-500">{e.days === null ? "–" : `${e.days} Tage`}</span></span>
-                          <span className="col-span-2 mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${Math.max(3, (e.n / maxEdge) * 100)}%` }} /></span>
-                        </button>
-                        {edge === e.a + "|" + e.b && <RadarDrill base="/api/analytics/network?list=1" query={ranKey} by="edge" value={edge} label={`${e.a} → ${e.b}, Vorgänge`} />}
-                      </li>
-                    ))}
+                    {res.edges.slice(0, !more.e ? 5 : 12).map((e) => {
+                      const key = e.a + "|" + e.b;
+                      return (
+                        <ListRow key={e.a + e.b} title={e.a} sub={`→ ${e.b}`} value={<b className="font-semibold text-slate-900">{n(e.n)}</b>} valueSub={e.days === null ? "–" : `${e.days} Tage`} bar={(e.n / maxEdge) * 100} arrow={false}
+                          expanded={edge === key} onClick={() => { setSelected(e.a); setEdge(edge === key ? "" : key); }}>
+                          {edge === key && <RadarDrill base="/api/analytics/network?list=1" query={ranKey} by="edge" value={edge} label={`${e.a} → ${e.b}, Vorgänge`} />}
+                        </ListRow>
+                      );
+                    })}
                   </ol>
                   {moreBtn("e", Math.min(12, res.edges.length), 5)}
                 </section>
