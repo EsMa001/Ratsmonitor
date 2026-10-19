@@ -443,7 +443,7 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
 /* Handy, alle plenara.X-Seiten: Legende ohne Kasten; Suche, Filter und Herz als eine Pille statt dreier Kästchen */
 @media (max-width:639px){
   main#inhalt .rm-xlegend{background:none !important;border:0 !important;box-shadow:none !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;padding-left:2px}
-  main#inhalt .rm-xsearch [role=search]{gap:0 !important;padding:2px;border-radius:9999px;background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(230,243,241,.5)) !important;border:1px solid rgba(255,255,255,.85);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 8px 24px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.9)}
+  main#inhalt .rm-xsearch [role=search]{gap:0 !important;padding:0;border-radius:9999px;background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(230,243,241,.5)) !important;border:1px solid rgba(255,255,255,.85);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 8px 24px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.9)}
   html.rm-dark main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5)) !important;border-color:rgba(255,255,255,.12) !important;box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06) !important}
   main#inhalt .rm-xsearch [role=search]>*{border:0 !important;box-shadow:none !important;background:transparent !important}
   main#inhalt .rm-xsearch [role=search] .min-w-0{border-radius:9999px}
@@ -480,6 +480,12 @@ html.rm-dark .rm-wheel-list{background:linear-gradient(135deg,rgba(40,48,47,.9),
 }
 @media (max-width:1099px){
   main.rm-xhero .rm-xhero-panel{background:none !important;border-right:0 !important;padding:0 !important}
+}
+
+/* Handy, plenara.X-Seiten: ein schmaler fester Streifen in der Farbe des Bandes ganz oben, damit die Statusleiste von Anfang an Petrol (bzw. dunkel) zeigt und nicht erst nach dem Scrollen */
+@media (max-width:639px){
+  html:has(.pl-band)::before{content:"";position:fixed;top:0;left:0;right:0;height:3px;background:var(--rm-ac);z-index:2000;pointer-events:none}
+  html.rm-dark:has(.pl-band)::before{background:var(--rm-page)}
 }
 
 .rm-xhandle{display:none}

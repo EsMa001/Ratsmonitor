@@ -499,15 +499,16 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                     <section ref={subRef} className={`scroll-mt-4 ${res.compare ? "mt-8" : ""}`}>
                       <h2 className="flex items-center gap-2 text-[22px] font-semibold max-sm:text-[18px]"><ThemeIcon theme={theme} size={24} className="shrink-0 text-teal-700" />{subName}{place ? <span className="font-normal text-slate-500"> in {place}</span> : null}</h2>
                       <p className="mb-3 mt-1 text-[14px] text-slate-500">{subCount !== undefined ? `${n(subCount)} ${plural(subCount, "Vorgang", "Vorgänge")}${themeTotal ? `, ${pct(Math.round((1000 * subCount) / themeTotal) / 10)} von ${themeName}` : ""}. ` : ""}Die neuesten:</p>
-                      <RadarDrill base={partBase} query={listQuery} by="sub" value={sub} label={subName} limit={10} plain onAll={() => showAll("sub", sub, [themeName, subName].join(" › "))} />
+                      <RadarDrill base={partBase} query={listQuery} by="sub" value={sub} label={subName} limit={all?.by === "sub" && all.value === sub ? undefined : 10} plain onAll={() => setAll({ by: "sub", value: sub, label: [themeName, subName].join(" › ") })} />
+                      {all?.by === "sub" && all.value === sub && <button type="button" onClick={() => setAll(null)} className="mt-3 text-[14px] font-medium text-teal-700 hover:underline">Weniger zeigen</button>}
                       <p className="mt-3 text-[14px] text-slate-500">Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(subName)}`} className="font-medium text-teal-700 hover:underline">„{subName}“ in den Trends →</Link></p>
                     </section>
                   </> : <section className={res.compare ? "mt-8 max-sm:mt-5" : ""}>
                     <h2 className="flex items-center gap-2 text-[22px] font-semibold max-sm:text-[18px]">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? <>Unterthemen<span className="max-sm:hidden"> von {themeName}</span></> : "Themen"}{place ? <span className="font-normal text-slate-500"> in {place}</span> : null}</h2>
                     <PartList rows={parts} icons={!theme} open={openPart} dir={dirOf} onHover={setHoverKey} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
                       label={(r) => (phone ? `${n(r.count)} ${plural(r.count, "Vorgang", "Vorgänge")}` : `${n(r.count)}${r.share !== null && theme && !sub ? ` · ${pct(r.share)}` : ""}`)}
-                      drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={theme ? 10 : 3} plain={!!theme}
-                        onAll={() => showAll(partBy, r.key, [themeName, r.name].filter(Boolean).join(" › "))}
+                      drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={all?.by === partBy && all.value === r.key ? undefined : theme ? 10 : 3} plain={!!theme}
+                        onAll={() => setAll({ by: partBy, value: r.key, label: [themeName, r.name].filter(Boolean).join(" › ") })}
                         footer={isRest(r) ? null : <button type="button" onClick={() => (theme ? onSub(sub === r.key ? "" : r.key) : onTheme(r.key))} className="mt-2 block text-[14px] font-medium text-teal-700 hover:underline">
                           {theme && sub === r.key ? "Eingrenzung aufheben" : <>Auf „{r.name}“ eingrenzen<span className="max-sm:hidden"> →</span></>}</button>} />} />
                   </section>}
@@ -537,7 +538,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
 
               {/* Ganze Liste nur nach „Alle … zeigen“; die neuesten Vorgänge stehen schon in der aufgeklappten Zeile rechts */}
               <section ref={bottomRef} className="scroll-mt-4">
-                {all && <div className="mt-10">
+                {all && !(all.by === "sub" || all.by === partBy) && <div className="mt-10">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                     <h2 className="text-[22px] font-semibold max-sm:text-[18px]">Vorgänge: {all.label}</h2>
                     <button type="button" onClick={closeAll} className="text-[14px] font-medium text-teal-700 hover:underline">Schließen</button>

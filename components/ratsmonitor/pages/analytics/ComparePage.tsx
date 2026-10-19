@@ -257,7 +257,7 @@ export function ComparePage() {
                   </span>
                   {res.places.map((p, i) => k === "Vorgänge" ? <button key={p.ags + p.scope} type="button" onClick={() => pick("overview", "all", "", "alle Vorgänge", [i])} aria-expanded={isOpen("overview", "all", "", i)} className={`font-semibold tabular-nums max-sm:text-[28px] max-sm:leading-none max-sm:!min-h-0 max-sm:py-1 ${i === 0 ? "max-sm:text-teal-700" : "max-sm:text-slate-900"} ${linkCls(isOpen("overview", "all", "", i))}`}>
                   {f(p)}
-                  </button> : <b key={p.ags + p.scope} className={`font-semibold tabular-nums max-sm:text-[28px] max-sm:leading-none max-sm:!min-h-0 max-sm:py-1 ${i === 0 ? "max-sm:text-teal-700" : "max-sm:text-slate-900"}`}>
+                  </button> : <b key={p.ags + p.scope} className={`font-semibold tabular-nums max-sm:text-[28px] max-sm:leading-none max-sm:!min-h-0 max-sm:py-1 ${k.includes("/") ? "max-sm:!text-[21px] max-sm:whitespace-nowrap" : ""} ${i === 0 ? "max-sm:text-teal-700" : "max-sm:text-slate-900"}`}>
                   {f(p)}
                   </b>)}
                   <span className="col-span-2 text-[14px] text-slate-700 md:col-span-1 max-sm:mt-1 max-sm:inline-flex max-sm:w-fit max-sm:items-center max-sm:rounded-full max-sm:bg-slate-100 max-sm:px-2.5 max-sm:py-0.5 max-sm:text-[12px]">

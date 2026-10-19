@@ -23,10 +23,12 @@ export function MeinOrtNeu({ onApply }: { onApply: (ags: string) => void }) {
   const link = "font-medium text-teal-700 hover:underline";
   const q = `?ort=${ort.ags}`;
   return (
-    <section aria-label="Neu in meinem Ort" className="mt-3 rounded-xl bg-slate-50 px-4 py-3 text-[14px] text-slate-700 max-sm:mt-2 print:hidden">
-      <p className="m-0"><span aria-hidden="true" className="text-teal-700">★</span> <b className="font-semibold text-slate-900">{ort.name}</b>
-        {n === null ? "" : <>: <b className="font-semibold tabular-nums text-slate-900">{n.toLocaleString("de-DE")}</b> {n === 1 ? "Vorgang" : "Vorgänge"} in den letzten 7 Tagen</>}</p>
-      <p className="m-0 mt-1 flex flex-wrap gap-x-4 gap-y-1">
+    <section aria-label="Neu in meinem Ort" className="mt-3 rounded-xl bg-slate-50 px-4 py-3 text-[14px] text-slate-700 max-sm:mt-2 max-sm:flex max-sm:items-center max-sm:justify-between max-sm:gap-3 max-sm:rounded-full max-sm:px-4 max-sm:py-2 print:hidden">
+      <p className="m-0 min-w-0 max-sm:truncate"><span aria-hidden="true" className="text-teal-700">★</span> <b className="font-semibold text-slate-900">{ort.name}</b>
+        {n === null ? "" : <>: <b className="font-semibold tabular-nums text-slate-900">{n.toLocaleString("de-DE")}</b> {n === 1 ? "Vorgang" : "Vorgänge"}<span className="max-sm:hidden"> in den letzten 7 Tagen</span><span className="sm:hidden"> in 7 Tagen</span></>}</p>
+      {/* Handy: eine Zeile, die Wege zu den übrigen Seiten stehen dort in der Auswahl */}
+      <button type="button" onClick={() => onApply(ort.ags)} className={link + " flex-none bg-transparent p-0 sm:hidden"}>Zeigen</button>
+      <p className="m-0 mt-1 flex flex-wrap gap-x-4 gap-y-1 max-sm:hidden">
         <button type="button" onClick={() => onApply(ort.ags)} className={link + " bg-transparent p-0"}>Im Themenatlas zeigen</button>
         <Link href={`/analytics/signale${q}`} className={link}>Projekte</Link>
         <Link href={`/analytics/news${q}`} className={link}>Nachrichten</Link>
