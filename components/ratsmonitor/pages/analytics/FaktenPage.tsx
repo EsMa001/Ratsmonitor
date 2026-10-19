@@ -157,23 +157,32 @@ export function FaktenPage() {
   const titleName = `${factName}${metric && metrics.length > 1 ? ` · ${metric}` : ""}`;
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className={`${fact || allFacts ? "rm-xwide rm-noplay " : ""}w-full px-[max(1vw,16px)] pb-10 text-slate-900`}>
       <XKopf seite="fakten" />
 
       {/* Fakten als Kacheln wie die Themen im Atlas: Icon über dem Namen; Handy 4 je Reihe */}
-      <nav aria-label="Fakt" className="print:hidden">
+      <nav aria-label="Fakt" className="rm-xrail print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {[{ kind: "alle", name: "Alle" }, ...facts].map((f) => {
             const on = f.kind === "alle" ? allFacts : f === fact;
             const Icon = FACT_ICONS[f.kind] ?? Coins;
             return (
-              <li key={f.kind} className="sm:w-[104px]">
+              <li key={f.kind} className={`sm:w-[104px]${on && f.kind !== "alle" && metrics.length > 1 ? " rm-rail-open" : ""}`}>
                 <button type="button" aria-pressed={on} onClick={() => pick(f.kind === "alle" ? { fakt: "alle", wert: "", ansicht: "" } : { fakt: f.kind, wert: "" })}
                   className={`flex h-[76px] max-sm:h-full max-sm:min-h-[64px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />
                   {/* Weiches Trennzeichen vor dem Wortende („Abwasser-gebühren“): auf dem Handy sonst abgeschnitten */}
                   <span className="line-clamp-2 max-sm:line-clamp-3 w-full hyphens-auto break-words">{f.name.replace(/(\p{Ll})(gebühren|steuer|sätze|preise)/u, "$1\u00AD$2")}</span>
                 </button>
+                {/* Breiter Bildschirm: die Werte klappen nach links aus dem Fakt auf (CSS blendet sie sonst aus) */}
+                {on && f.kind !== "alle" && metrics.length > 1 && <ul className="rm-rail-sub m-0 list-none p-0">
+                  {[["alle", "Alle Werte"], ...metrics.map((m) => [m, m])].map(([k, l]) => {
+                    const onM = k === "alle" ? allMetrics : k === metric;
+                    const MIcon = k === "alle" ? LayoutGrid : metricIcon(l, fact?.kind);
+                    return <li key={k}><button type="button" aria-pressed={onM} onClick={() => pick({ fakt: fact?.kind, wert: k, ...(k === "alle" ? { ansicht: "" } : {}) })}>
+                      <MIcon size={16} /><span>{l}</span></button></li>;
+                  })}
+                </ul>}
               </li>
             );
           })}
@@ -232,9 +241,11 @@ export function FaktenPage() {
                 info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{valueText(sel)}</span>
                   <br /><button type="button" onClick={() => search.setArea(sel.ags, "map")} className="pointer-events-auto mt-1 text-[14px] font-medium text-teal-700 hover:underline">Diesen Ort wählen →</button></>
                   : picked ? <span className="text-slate-500">Hier gibt es keinen Wert.</span> : undefined} />
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-[14px]" role="group" aria-label="Ebene der Karte">
+                            <div className="rm-xtop">
+<div className="rm-xebene mt-3 flex flex-wrap items-center gap-2 text-[14px]" role="group" aria-label="Ebene der Karte">
                 <span className="text-slate-500">Ebene</span>
                 {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
+              </div>
               </div>
               {regionCount > 0 && <p className="mt-2 text-[14px] text-slate-500">Abdeckung: {n(ranked.length)} von {n(regionCount)} Gebieten mit Sachvorgängen haben einen Wert ({(Math.round((1000 * ranked.length) / regionCount) / 10).toLocaleString("de-DE")} %).</p>}
             </div>

@@ -103,7 +103,7 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort 
  * (keine Kennzahlen, die stehen in plenara.X Fakten). Signal, Stand und Zeitraum stehen in der Adresse (teilbar), Ort und Begriff in der Suche.
  */
 /* Ausklappbare Karte: Vorgänge der Auswahl je Gemeinde (Verbände färben ihre Mitgliedsgemeinden) */
-function SignalMap({ places, onPlace, hover = "" }: { places: Place[]; onPlace: (ags: string) => void; /* Gebiet der überfahrenen Zeile (Schlüssel des Katalogs): auf der Karte hervorgehoben */ hover?: string }) {
+function SignalMap({ places, onPlace, hover = "", zeit, onZeit }: { /* Zeitraum: am breiten Bildschirm auf der Karte */ zeit?: string; onZeit?: (z: string) => void; places: Place[]; onPlace: (ags: string) => void; /* Gebiet der überfahrenen Zeile (Schlüssel des Katalogs): auf der Karte hervorgehoben */ hover?: string }) {
   const [own, setPicked] = useState(""), [level, setLevel] = useState<"city" | "district">("city");
   /* Gemeinden: Vorgänge je Gemeinde (Verbände färben ihre Mitgliedsgemeinden); Kreise: Summe aller Gebiete im Kreis */
   const byAgs = new Map<string, { name: string; count: number }>();
@@ -130,10 +130,13 @@ function SignalMap({ places, onPlace, hover = "" }: { places: Place[]; onPlace: 
       <RegionMap tall level={level} levels={{}} dots={dots} colors={["var(--rm-fill)"]} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={["1 Punkt = 1 Vorgang"]}
         note="Punkte liegen zufällig im Gebiet" label={`Karte: Vorgänge der Auswahl je ${level === "district" ? "Kreis" : "Gemeinde"}`}
         info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{n(sel.count)} {sel.count === 1 ? "Vorgang" : "Vorgänge"}</span></> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
-      <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
+      <div className="rm-xtop">
+      <div className="rm-xebene mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
         <span className="text-[14px] text-slate-500">Ebene</span>
         {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={PILL(level === k)}>{l}</button>)}
         <span className="text-[14px] text-slate-500">· Gebiet antippen wählt den Ort</span>
+      </div>
+      {onZeit && <div className="rm-xzeit"><ZeitPills value={zeit ?? ""} all="alle" onPick={onZeit} /></div>}
       </div>
     </section>
   );
@@ -225,24 +228,29 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const phaseOrder = (res?.phases ?? []).map((p) => p.name);
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className={`${karte && signal !== ALLE ? "rm-xwide rm-noplay " : ""}w-full px-[max(1vw,16px)] pb-10 text-slate-900`}>
       <XKopf seite={fest ? "ausschreibungen" : "signale"} />
 
       {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy: Auswahlfeld */}
       {!fest && <WheelPicker label="Signal" value={signal} onPick={(id) => pick({ signal: id === standard ? "" : id, phase: "", art: "" })}
         items={MIT_ALLE.map(([id, label]) => { const I = ICONS[id]; return { id, label, icon: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" />, iconOn: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-white" /> }; })} />}
-      {!fest && <nav aria-label="Signal" className="hidden sm:block print:hidden">
+      {!fest && <nav aria-label="Signal" className="rm-xrail hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {MIT_ALLE.map(([id, label]) => {
             const on = id === signal;
             const Icon = ICONS[id];
             return (
-              <li key={id}>
+              <li key={id} className={on && id !== ALLE ? "rm-rail-open" : undefined}>
                 <button type="button" aria-pressed={on} onClick={() => pick({ signal: id === standard ? "" : id, phase: "", art: "" })}
                   className={`flex h-full min-h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   {Icon && <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
                   <span>{label}</span>
                 </button>
+                {/* Breiter Bildschirm: die Arten klappen nach links aus der Kategorie auf (CSS blendet sie sonst aus) */}
+                {on && id !== ALLE && res && res.signal.id === signal && (res.arts ?? []).length > 0 && <ul className="rm-rail-sub m-0 list-none p-0">
+                  {res.arts.map((a) => <li key={a.key}><button type="button" aria-pressed={a.key === art} onClick={() => pick({ art: a.key === art ? "" : a.key })}>
+                    <ArtIcon value={a.key} size={16} /><span>{artShort(a.name)}</span></button></li>)}
+                </ul>}
               </li>
             );
           })}
@@ -270,11 +278,11 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
       <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {/* Desktop: eine Filterzeile unter der Suche: Zeitraum, Schritt, Art als Auswahllisten, aktive Filter als Chips (Handy: Blätter und Räder) */}
       <div className="rm-xfilter mt-3 flex min-h-9 flex-wrap items-center gap-2 max-sm:hidden print:hidden">
-        <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
+        <span className="rm-zeit-std contents"><ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} /></span>
         {res && res.signal.id === signal && res.phases.length > 0 && <Dropdown label="Schritt" value={phase} onPick={(id) => pick({ phase: id })}
           items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} />}
-        {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <Dropdown label={res.signal.art ?? "Art"} value={art} onPick={(id) => pick({ art: id })}
-          items={[{ id: "", label: "Alle" }, ...res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={16} className="text-slate-500" /> }))]} />}
+        {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <span className="rm-art-std contents"><Dropdown label={res.signal.art ?? "Art"} value={art} onPick={(id) => pick({ art: id })}
+          items={[{ id: "", label: "Alle" }, ...res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={16} className="text-slate-500" /> }))]} /></span>}
         <AktiveFilter onReset={() => pick({ phase: "", art: "", zeit: "" })} chips={[
           ...(zeit !== "6" ? [{ key: "zeit", label: zeit === "alle" ? "Gesamter Zeitraum" : `Letzte ${zeit} Monate`, onClear: () => pick({ zeit: "" }) }] : []),
           ...(phase ? [{ key: "phase", label: `Schritt: ${res?.phases.find((p) => p.key === phase)?.name ?? phase}`, onClear: () => pick({ phase: "" }) }] : []),
@@ -335,14 +343,14 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             {TRENDS_OF[signal] && <>Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="font-medium text-teal-700 hover:underline">„{TRENDS_OF[signal]}“ in den Trends →</Link></>}
           </p>}
           {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 1024 px nebeneinander */}
-          <div className="mt-4 print:hidden max-sm:hidden">
+          <div className="rm-karte-toggle mt-4 print:hidden max-sm:hidden">
             <button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
               {karte ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{karte ? "Karte ausblenden" : "Karte zeigen"}
             </button>
           </div>
           <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12`}>
             {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
+              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
             </div>}
             <div className={`min-w-0 ${karte ? "lg:col-span-6" : "lg:col-span-12"}`}>
               <div className="flex flex-col gap-2 print:hidden">

@@ -274,7 +274,12 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
 @media (min-width:1100px){
   main.rm-xwide{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);column-gap:12px;align-items:start;padding-left:0 !important;padding-right:max(1vw,16px) !important}
   main.rm-xwide::before{content:"";grid-area:2 / 1 / span 80;align-self:stretch;background:var(--rm-c50);border-right:1px solid var(--rm-c200)}
-  main.rm-xwide section[aria-label="Auswertung des Themas"],main.rm-xwide section[aria-label="Auswertung des Themas"]>div[aria-busy],main.rm-xwide .rm-xsplit{display:contents}
+  main.rm-xwide section[aria-label="Auswertung des Themas"],main.rm-xwide section[aria-label="Auswertung des Themas"]>div[aria-busy],main.rm-xwide>div[aria-busy],main.rm-xwide .rm-xsplit{display:contents}
+  main.rm-xwide.rm-noplay div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch)>div{padding-left:52px !important}
+  main.rm-xwide .rm-xfilter{top:var(--hdr,58px) !important}
+  main.rm-xwide .rm-art-std,main.rm-xwide .rm-karte-toggle,main.rm-xwide nav[aria-label="Wert"],main.rm-xwide .rm-xsplit-map>p{display:none !important}
+  main.rm-xwide nav.rm-xrail ul>li{width:auto}
+  main.rm-xwide nav.rm-xrail ul:not(.rm-rail-sub){flex-wrap:nowrap}
   main.rm-xwide .rm-xsplit-map{grid-area:2 / 1 / span 80 !important;align-self:start;top:var(--hdr,58px) !important;height:calc(100dvh - var(--hdr,58px) - 88px);min-height:0}
   main.rm-xwide .rm-xsplit-map .rm-mapbox{border:0;border-radius:0;background:transparent}
   /* Alles auf der Karte rund und als Milchglas wie in der Suche: Suchleiste, Knöpfe, Ebene */
@@ -322,23 +327,23 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   main.rm-xwide .pl-band nav[aria-label="Auswertungen"]{order:4;margin-left:auto}
   main.rm-xwide .pl-band+*{margin-top:12px}
   /* Themen und Unterthemen als Milchglas auf der Karte (rechter Rand, unter den Zoom-Knöpfen); Unterthemen klappen unter dem gewählten Thema auf, die übrigen treten zurück */
-  main.rm-xwide nav[aria-label="Thema"]{grid-area:2 / 1 / span 80;justify-self:end;align-self:start;position:sticky;top:var(--hdr,58px);z-index:35;margin:0 !important;height:var(--xmh);width:168px;padding:12px 12px 14px 0;pointer-events:none}
-  main.rm-xwide nav[aria-label="Thema"] ul:not(.rm-rail-sub){display:flex;flex-direction:column;gap:6px;height:auto;pointer-events:none}
-  main.rm-xwide nav[aria-label="Thema"] ul:not(.rm-rail-sub)>li{flex:0 0 44px;min-height:0}
-  main.rm-xwide nav[aria-label="Thema"] button{pointer-events:auto;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;width:100%;height:100%;min-height:0;padding:0 10px;text-align:left;font-size:12px;line-height:1.15;border-radius:18px;color:var(--rm-c800);background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75);transition:background .25s,opacity .25s,box-shadow .25s}
-  main.rm-xwide nav[aria-label="Thema"] button:hover{background:rgba(255,255,255,.85)}
-  main.rm-xwide nav[aria-label="Thema"] button[aria-pressed=true]{background:rgba(255,255,255,.94);color:var(--rm-c900);font-weight:600}
-  main.rm-xwide nav[aria-label="Thema"] button svg{width:20px;height:20px;flex:none}
-  main.rm-xwide nav[aria-label="Thema"] button[aria-pressed=true]>svg{color:var(--rm-fill) !important}
-  html.rm-dark main.rm-xwide nav[aria-label="Thema"] button{background:linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));border-color:rgba(154,156,162,.22);color:var(--rm-c800);box-shadow:0 8px 28px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
-  html.rm-dark main.rm-xwide nav[aria-label="Thema"] button[aria-pressed=true]{background:rgba(255,255,255,.16)}
+  main.rm-xwide nav.rm-xrail{grid-area:2 / 1 / span 80;justify-self:end;align-self:start;position:sticky;top:var(--hdr,58px);z-index:35;margin:0 !important;height:var(--xmh);width:168px;padding:12px 12px 14px 0;pointer-events:none}
+  main.rm-xwide nav.rm-xrail ul:not(.rm-rail-sub){display:flex;flex-direction:column;gap:6px;height:auto;pointer-events:none}
+  main.rm-xwide nav.rm-xrail ul:not(.rm-rail-sub)>li{flex:0 0 44px;min-height:0}
+  main.rm-xwide nav.rm-xrail button{pointer-events:auto;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;width:100%;height:100%;min-height:0;padding:0 10px;text-align:left;font-size:12px;line-height:1.15;border-radius:18px;color:var(--rm-c800);background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75);transition:background .25s,opacity .25s,box-shadow .25s}
+  main.rm-xwide nav.rm-xrail button:hover{background:rgba(255,255,255,.85)}
+  main.rm-xwide nav.rm-xrail button[aria-pressed=true]{background:rgba(255,255,255,.94);color:var(--rm-c900);font-weight:600}
+  main.rm-xwide nav.rm-xrail button svg{width:20px;height:20px;flex:none}
+  main.rm-xwide nav.rm-xrail button[aria-pressed=true]>svg{color:var(--rm-fill) !important}
+  html.rm-dark main.rm-xwide nav.rm-xrail button{background:linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));border-color:rgba(154,156,162,.22);color:var(--rm-c800);box-shadow:0 8px 28px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
+  html.rm-dark main.rm-xwide nav.rm-xrail button[aria-pressed=true]{background:rgba(255,255,255,.16)}
   /* Die schmale Titelzeile unter der Kopfzeile ändert deren Höhe beim Scrollen: die Karte würde wackeln */
   html:has(main.rm-xwide) .rm-deskbar{display:none !important}
   /* Ruhiger: ein gemeinsamer, leichter Schatten für alles auf der Karte, Legende ohne Kasten */
-  main.rm-xwide .rm-xebene,main.rm-xwide .rm-xzeit .touch-pan-y,main.rm-xwide nav[aria-label="Thema"] button,main.rm-xwide .rm-xsearch [role=search]>button,main.rm-xwide .rm-xsearch [role=search]>div.relative>button,main.rm-xwide .rm-xsearch [role=search]>div.min-w-0,main.rm-xwide .rm-mapbox>.right-3{box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7) !important}
+  main.rm-xwide .rm-xebene,main.rm-xwide .rm-xzeit .touch-pan-y,main.rm-xwide nav.rm-xrail button,main.rm-xwide .rm-xsearch [role=search]>button,main.rm-xwide .rm-xsearch [role=search]>div.relative>button,main.rm-xwide .rm-xsearch [role=search]>div.min-w-0,main.rm-xwide .rm-mapbox>.right-3{box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7) !important}
   /* Eine Glasoptik für alles auf der Karte */
-  main.rm-xwide .rm-xebene,main.rm-xwide .rm-xzeit .touch-pan-y,main.rm-xwide nav[aria-label="Thema"] button:not([aria-pressed=true]),main.rm-xwide .rm-xsearch [role=search]>button,main.rm-xwide .rm-xsearch [role=search]>div.relative>button,main.rm-xwide .rm-xsearch [role=search]>div.min-w-0,main.rm-xwide .rm-mapbox>.right-3,main.rm-xwide .rm-mapbox>div.inset-x-16>span,main.rm-xwide div:has(>.rm-xsearch) .rm-chip{background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(230,243,241,.46)) !important;border:1px solid rgba(255,255,255,.82) !important;-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7) !important}
-  html.rm-dark main.rm-xwide .rm-xebene,html.rm-dark main.rm-xwide .rm-xzeit .touch-pan-y,html.rm-dark main.rm-xwide nav[aria-label="Thema"] button:not([aria-pressed=true]),html.rm-dark main.rm-xwide .rm-xsearch [role=search]>button,html.rm-dark main.rm-xwide .rm-xsearch [role=search]>div.relative>button,html.rm-dark main.rm-xwide .rm-xsearch [role=search]>div.min-w-0,html.rm-dark main.rm-xwide .rm-mapbox>.right-3,html.rm-dark main.rm-xwide .rm-mapbox>div.inset-x-16>span,html.rm-dark main.rm-xwide div:has(>.rm-xsearch) .rm-chip{background:linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5)) !important;border-color:rgba(255,255,255,.14) !important;box-shadow:0 1px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08) !important}
+  main.rm-xwide .rm-xebene,main.rm-xwide .rm-xzeit .touch-pan-y,main.rm-xwide nav.rm-xrail button:not([aria-pressed=true]),main.rm-xwide .rm-xsearch [role=search]>button,main.rm-xwide .rm-xsearch [role=search]>div.relative>button,main.rm-xwide .rm-xsearch [role=search]>div.min-w-0,main.rm-xwide .rm-mapbox>.right-3,main.rm-xwide .rm-mapbox>div.inset-x-16>span,main.rm-xwide div:has(>.rm-xsearch) .rm-chip{background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(230,243,241,.46)) !important;border:1px solid rgba(255,255,255,.82) !important;-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7) !important}
+  html.rm-dark main.rm-xwide .rm-xebene,html.rm-dark main.rm-xwide .rm-xzeit .touch-pan-y,html.rm-dark main.rm-xwide nav.rm-xrail button:not([aria-pressed=true]),html.rm-dark main.rm-xwide .rm-xsearch [role=search]>button,html.rm-dark main.rm-xwide .rm-xsearch [role=search]>div.relative>button,html.rm-dark main.rm-xwide .rm-xsearch [role=search]>div.min-w-0,html.rm-dark main.rm-xwide .rm-mapbox>.right-3,html.rm-dark main.rm-xwide .rm-mapbox>div.inset-x-16>span,html.rm-dark main.rm-xwide div:has(>.rm-xsearch) .rm-chip{background:linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5)) !important;border-color:rgba(255,255,255,.14) !important;box-shadow:0 1px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08) !important}
   /* Chips über der Suchleiste: bündig mit dem Suchfeld (nach Play und Filter), Milchglas wie der Rest */
   main.rm-xwide div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch)>div{padding-left:104px !important;margin:0 0 8px !important;justify-content:flex-start}
   main.rm-xwide div:has(>.rm-xsearch) .rm-chip{color:var(--rm-c900) !important;height:32px !important;padding-left:12px !important;padding-right:8px !important;gap:6px}
@@ -346,13 +351,13 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   main.rm-xwide .rm-mapbox>.rm-legend:not(.right-3){background:none !important;-webkit-backdrop-filter:none;backdrop-filter:none;border:0 !important;box-shadow:none !important;padding-left:2px}
   main.rm-xwide .rm-sub-std,main.rm-xwide .rm-sub-wide{display:none}
   main.rm-xwide .rm-rail-sub{display:flex;flex-direction:column;gap:4px;position:absolute;right:calc(100% + 8px);top:0;width:176px;margin:0 !important;padding:0 !important;list-style:none;pointer-events:none;animation:rm-subout .28s cubic-bezier(.22,.9,.28,1) both;transform-origin:right top}
-  main.rm-xwide nav[aria-label="Thema"] ul:not(.rm-rail-sub)>li:nth-child(n+7) .rm-rail-sub{top:auto;bottom:0;transform-origin:right bottom}
+  main.rm-xwide nav.rm-xrail ul:not(.rm-rail-sub)>li:nth-child(n+7) .rm-rail-sub{top:auto;bottom:0;transform-origin:right bottom}
   @keyframes rm-subout{from{opacity:0;transform:translateX(14px) scale(.96)}to{opacity:1;transform:none}}
   main.rm-xwide .rm-rail-sub li{height:34px;flex:none}
-  main.rm-xwide nav[aria-label="Thema"] .rm-rail-sub button{font-size:11.5px;border-radius:14px;padding:0 10px;gap:6px;pointer-events:auto;background:rgba(255,255,255,.82)}
-  html.rm-dark main.rm-xwide nav[aria-label="Thema"] .rm-rail-sub button{background:rgba(28,34,33,.85)}
-  main.rm-xwide nav[aria-label="Thema"] .rm-rail-sub button svg{width:16px;height:16px}
-  main.rm-xwide nav[aria-label="Thema"] ul:not(.rm-rail-sub)>li.rm-rail-open{position:relative;z-index:2}
+  main.rm-xwide nav.rm-xrail .rm-rail-sub button{font-size:11.5px;border-radius:14px;padding:0 10px;gap:6px;pointer-events:auto;background:rgba(255,255,255,.82)}
+  html.rm-dark main.rm-xwide nav.rm-xrail .rm-rail-sub button{background:rgba(28,34,33,.85)}
+  main.rm-xwide nav.rm-xrail .rm-rail-sub button svg{width:16px;height:16px}
+  main.rm-xwide nav.rm-xrail ul:not(.rm-rail-sub)>li.rm-rail-open{position:relative;z-index:2}
 }
 
 .rm-sub-wide,.rm-xzeit,.rm-rail-sub{display:none}
