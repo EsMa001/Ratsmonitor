@@ -54,9 +54,9 @@ export function AtlasPage() {
             <li key={id || "alle"}>
               {/* Kacheln ohne Rahmen: Icon über dem Namen, nur das gewählte Thema mit heller Fläche (Linien statt Kästen) */}
               <button type="button" aria-pressed={id === thema} onClick={() => pick(id ? { thema: id } : {})}
-                className={`flex h-[76px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${id === thema ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                className={`flex h-full min-h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${id === thema ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                 <ThemeIcon theme={id || "alle"} size={24} className={id === thema ? "text-teal-700" : "text-slate-500"} />
-                <span className="line-clamp-2">{label}</span></button>
+                <span>{label}</span></button>
             </li>
           ))}
         </ul>

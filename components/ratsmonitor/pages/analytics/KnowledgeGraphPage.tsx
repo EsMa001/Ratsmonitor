@@ -4,8 +4,10 @@ import { Befund, Fehler } from "./Befund";
 import { RadarDrill } from "./RadarDrill";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
+import { IconCenter, IconChevronLeft, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
+import { useClient } from "../../lib/useClient";
+import { usePhone } from "../../lib/usePhone";
 import { GraphView, KIND, type GEdge, type GNode } from "./GraphView";
 import { isFiller, prettyTerm, termStem } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
@@ -28,7 +30,8 @@ interface Result {
 }
 
 /* Rahmenlos wie die übrigen plenara.X-Seiten (rm-legend statt rm-glass) */
-const glass = "rm-legend";
+/* Farben der Punkte wie im Netz (dunkle Bühne): Mitte petrol mit weißem Rand, Begriffe petrol hell, Themen orange-braun */
+const DOT: Record<"center" | "term" | "topic", { background: string; border: string }> = { center: { background: "var(--st-center)", border: "2px solid var(--st-center)" }, term: { background: "var(--st-mid)", border: "2px solid var(--st-mid)" }, topic: { background: "var(--st-accent)", border: "2px solid var(--st-accent)" } };
 const n = (v: number) => v.toLocaleString("de-DE");
 const pct = (v: number, total: number) => (total ? `${Math.max(1, Math.round((v / total) * 100))} %` : "–");
 
@@ -50,7 +53,11 @@ export function KnowledgeGraphPage() {
   const [showList, setShowList] = useState(false);
   const [selected, setSelected] = useState("");
   const [pair, setPair] = useState<GEdge | null>(null);
-  const [level, setLevel] = useState<Level>("overview");
+  /* Standard nach Platz: Desktop in voller Breite „Detail“, schmaler „Normal“, Handy „Überblick“ (weniger Punkte, lesbare Schrift) */
+  const phone = usePhone();
+  const [chosen, setLevel] = useState<Level | null>(null);
+  const wide = useClient(() => window.innerWidth >= 1024, false);
+  const level: Level = chosen ?? (phone ? "overview" : wide ? "detail" : "normal");
   const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
 
@@ -61,6 +68,24 @@ export function KnowledgeGraphPage() {
   const TYP: Record<string, string> = { term: "Begriff", topic: "Thema", committee: "Gremium", land: "Land" };
   const res = runRes, ranKey = runKey, loading = runLoading;
   const [hint, setHint] = useState("");
+  /* Vorige Netze: „Zurück“ im Netz führt zu Begriff und Thema davor; der Hinweis zum Bedienen verschwindet nach 5 Sekunden */
+  const [trail, setTrail] = useState<{ q: string; thema: string }[]>([]);
+  const remember = () => setTrail((tr) => [...tr, { q: search.state.q, thema: search.state.thema }]);
+  const back = () => {
+    const prev = trail[trail.length - 1];
+    if (!prev) return;
+    setTrail((tr) => tr.slice(0, -1));
+    search.applySearch(prev.q);
+    search.setThema(prev.thema);
+    setHint(""); setSelected(""); setPair(null);
+    runAfterChange();
+  };
+  const [tipDone, setTipDone] = useState(false);
+  useEffect(() => {
+    if (!runRes) return;
+    const id = window.setTimeout(() => setTipDone(true), 5000);
+    return () => window.clearTimeout(id);
+  }, [runRes]);
   const error = hint || runError;
   /* Neu erstellen; ohne Begriff das Netz über alle Vorgänge (wie Trends, Beratungswege und Beschlüsse) */
   const start = () => { setHint(""); run(); };
@@ -163,7 +188,7 @@ export function KnowledgeGraphPage() {
         <div className="mt-4 print:hidden">
           <p className="m-0 text-[14px] text-slate-600">Mit einem Begriff beginnen:</p>
           <div className="mt-2 flex flex-wrap gap-2">
-            {einstieg.map((x) => <button key={x.id} type="button" onClick={() => { search.applySearch(x.label); runAfterChange(); }} className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-800 hover:border-slate-400">{x.label}</button>)}
+            {einstieg.map((x) => <button key={x.id} type="button" onClick={() => { remember(); search.applySearch(x.label); runAfterChange(); }} className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-800 hover:border-slate-400">{x.label}</button>)}
           </div>
         </div>
       )}
@@ -175,36 +200,41 @@ export function KnowledgeGraphPage() {
       {/* Handy: Legende über dem Netz statt darauf (sonst liegt sie über den Punkten) */}
       {res && !empty && netz && <ul className="m-0 mt-3 flex list-none gap-4 p-0 text-[12px] text-slate-700 sm:hidden">
         {(["center", "term", "topic"] as const).map((t) => (
-          <li key={t} className="flex items-center gap-1.5"><i className={`inline-block h-3 w-3 rounded-full ${t === "topic" ? "rm-gdot" : ""}`} style={{ background: KIND[t].fill, border: `2px solid ${KIND[t].stroke}` }} />{KIND[t].label}</li>
+          <li key={t} className="flex items-center gap-1.5"><i className={`inline-block h-3 w-3 rounded-full`} style={{ ...DOT[t], boxShadow: "0 0 0 1px rgba(24,24,27,.25)" }} />{KIND[t].label}</li>
         ))}
       </ul>}
-      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} relative mt-3 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
-        {res && !empty ? <GraphView nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="absolute inset-0 bg-map-ground" />}
+      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} relative mt-3 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
+        {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
-        <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700 max-sm:hidden`}>
+        {trail.length > 0 && res && !empty && (
+          <button type="button" onClick={back} className="rm-stage-chip absolute left-3 top-3 z-[7] inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[14px] font-medium sm:top-[104px] hover:opacity-90">
+            <IconChevronLeft size={16} />Zurück
+          </button>
+        )}
+        <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:hidden">
           <ul className="m-0 flex list-none flex-col gap-1 p-0">
             {(["center", "term", "topic"] as const).map((t) => (
-              <li key={t} className="flex items-center gap-2"><i className={`inline-block h-3 w-3 rounded-full ${t === "topic" ? "rm-gdot" : ""}`} style={{ background: KIND[t].fill, border: `2px solid ${KIND[t].stroke}` }} />{KIND[t].label}</li>
+              <li key={t} className="flex items-center gap-2"><i className={`inline-block h-3 w-3 rounded-full`} style={{ ...DOT[t], boxShadow: "0 0 0 1px rgba(24,24,27,.25)" }} />{KIND[t].label}</li>
             ))}
           </ul>
         </div>
 
-        <div className="absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full border border-slate-200 bg-white shadow-sm">
-          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>
-          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={16} /></button>
-          <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
+        <div className="rm-stage-chip absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full">
+          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconPlus size={16} /></button>
+          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconMinus size={16} /></button>
+          <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconCenter size={16} /></button>
         </div>
 
         {loading && !res && <div aria-hidden="true" className="pointer-events-none absolute inset-0 animate-pulse rounded-[inherit] bg-slate-100/70" />}
-        <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:inset-x-3 max-sm:top-auto max-sm:bottom-3">
-          {loading ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Graph wird berechnet …</span>
-            : empty ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-900`}>Keine Vorgänge für diese Auswahl.</span>
-            : !res ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Auf Start drücken</span>
-            : !sel ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700 max-sm:hidden`}>Knoten anklicken oder ziehen</span> : null}
+        <div className="pointer-events-none absolute inset-x-16 bottom-3 z-[6] flex justify-center max-sm:inset-x-3">
+          {loading ? <span className="rm-stage-chip rounded-full px-4 py-2 text-[14px]">Graph wird berechnet …</span>
+            : empty ? <span className="rm-stage-chip rounded-full px-4 py-2 text-[14px]">Keine Vorgänge für diese Auswahl.</span>
+            : !res ? <span className="rm-stage-chip rounded-full px-4 py-2 text-[14px]">Auf Start drücken</span>
+            : !sel && !tipDone ? <span className="rm-stage-chip rounded-full px-4 py-2 text-[14px] max-sm:hidden">Knoten anklicken</span> : null}
         </div>
 
         {sel && res && (
-          <div className={`${glass} absolute inset-x-3 bottom-3 z-[6] rounded-[18px] px-4 py-3 max-sm:rounded-2xl max-sm:py-2.5 sm:left-6 sm:right-auto sm:w-[420px]`}>
+          <div className="rm-glass rm-liquid absolute inset-x-3 bottom-3 z-[6] rounded-[24px] px-5 py-4 max-sm:px-4 max-sm:rounded-2xl max-sm:py-2.5 sm:left-6 sm:right-auto sm:w-[420px]">
             <div className="flex items-start justify-between gap-4 max-sm:items-center">
               <div className="min-w-0">
                 <p className="text-[12px] text-slate-500 max-sm:hidden">{KIND[sel.type].label}</p>
@@ -218,13 +248,11 @@ export function KnowledgeGraphPage() {
             {/* Was man mit der Auswahl tun kann, mit kurzer Erklärung */}
             {(sel.type === "term" || sel.type === "topic" || (res.q && String(sel.type) !== "center")) && (
               <div className="mt-3 max-sm:mt-2 flex flex-wrap gap-2">
-                {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); setHint(""); runAfterChange(); }} className="inline-flex h-10 items-center rounded-full bg-teal-700 px-4 text-[14px] font-medium text-white">Netz zu „{sel.label}“ zeigen</button>}
-                {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); setHint(""); runAfterChange(); }} className="inline-flex h-10 items-center rounded-full bg-teal-700 px-4 text-[14px] font-medium text-white">Nur dieses Thema zeigen</button>}
+                {sel.type === "term" && <button type="button" onClick={() => { remember(); search.applySearch(sel.label); setHint(""); runAfterChange(); }} className="inline-flex h-10 items-center rounded-full bg-teal-700 px-4 text-[14px] font-medium text-white">Netz zu „{sel.label}“ zeigen</button>}
+                {sel.type === "topic" && <button type="button" onClick={() => { remember(); search.setThema(sel.label); setHint(""); runAfterChange(); }} className="inline-flex h-10 items-center rounded-full bg-teal-700 px-4 text-[14px] font-medium text-white">Nur dieses Thema zeigen</button>}
                 {res.q && String(sel.type) !== "center" && <button type="button" onClick={() => setShowList(!showList)} aria-expanded={showList} className="inline-flex h-10 items-center rounded-full border border-teal-700 px-4 text-[14px] font-medium text-teal-700">{showList ? "Vorgänge ausblenden" : "Vorgänge ansehen"}</button>}
               </div>
             )}
-            {sel.type === "term" && <p className="m-0 mt-2 text-[12px] text-slate-500 max-sm:hidden">Baut das Netz neu auf und zeigt, womit „{sel.label}“ zusammen vorkommt.</p>}
-            {sel.type === "topic" && <p className="m-0 mt-2 text-[12px] text-slate-500 max-sm:hidden">Grenzt auf dieses Thema ein; über „Alle Themen“ oben lässt es sich wieder aufheben.</p>}
             {res.q && showList && sel.type !== "center" && <div className="mt-2 max-h-[50vh] overflow-auto"><RadarDrill base="/api/analytics/graph?list=1" query={ranKey} by="node" value={sel.id} label={`„${sel.label}“`} /></div>}
           </div>
         )}

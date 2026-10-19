@@ -232,9 +232,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             return (
               <li key={id}>
                 <button type="button" aria-pressed={on} onClick={() => pick({ signal: id === standard ? "" : id, phase: "", art: "" })}
-                  className={`flex h-[76px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                  className={`flex h-full min-h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   {Icon && <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
-                  <span className="line-clamp-2">{label}</span>
+                  <span>{label}</span>
                 </button>
               </li>
             );

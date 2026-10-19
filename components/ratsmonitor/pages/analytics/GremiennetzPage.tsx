@@ -6,7 +6,7 @@ import { Reveal } from "./Reveal";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
-import { NetView, ROLE, type NEdge, type NNode } from "./NetView";
+import { NetView, NET_KIND, ROLE, type NetKind, type NEdge, type NNode } from "./NetView";
 import { RadarDrill } from "./RadarDrill";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
@@ -14,13 +14,13 @@ import { MethodikNote } from "./Methodik";
 import { TabPane } from "./Tabs";
 import { ListRow } from "./ListRow";
 import { Segmented } from "./Kennzahlen";
+import { usePhone } from "../../lib/usePhone";
+import { useClient } from "../../lib/useClient";
 
 interface Result {
   q: string; mode: "types" | "names"; pool: number; examined: number; capped: boolean; paths: number;
   nodes: NNode[]; edges: NEdge[]; routes: { path: string[]; n: number }[];
 }
-/* Rahmenlos wie die übrigen plenara.X-Seiten (rm-legend statt rm-glass) */
-const glass = "rm-legend";
 const n = (v: number) => v.toLocaleString("de-DE");
 
 export function GremiennetzPage() {
@@ -32,7 +32,17 @@ export function GremiennetzPage() {
   const moreBtn = (k: "e" | "r" | "o", total: number, shown: number) => total > shown ? <button type="button" aria-expanded={more[k]} onClick={() => setMore((m) => ({ ...m, [k]: !m[k] }))} className="mt-1 text-[14px] font-medium text-teal-700 hover:underline sm:hidden">{more[k] ? "Weniger zeigen" : `Alle ${total} zeigen`}</button> : null;
   const { query } = useAnalyticsQuery();
   const [selected, setSelected] = useState("");
+  /* Beratungsweg aus der Liste „Typische Beratungswege“: leuchtet im Netz von der ersten bis zur letzten Station */
+  const [routeNo, setRouteNo] = useState<number | null>(null);
+  const netRef = useRef<HTMLElement | null>(null);
+  /* Der Hinweis zum Bedienen verschwindet nach 6 Sekunden */
+  const [tipDone, setTipDone] = useState(false);
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/network?${query}`, initial: true, fallback: "Das Netz konnte nicht berechnet werden.", onDone: () => setSelected("") });
+  useEffect(() => {
+    if (!res) return;
+    const id = window.setTimeout(() => setTipDone(true), 6000);
+    return () => window.clearTimeout(id);
+  }, [res]);
   /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
   useEffect(() => {
     if (!stale || loading) return;
@@ -51,6 +61,23 @@ export function GremiennetzPage() {
     if (!res || !selected) return { into: [] as NEdge[], from: [] as NEdge[] };
     return { into: res.edges.filter((e) => e.b === selected).sort((a, b) => b.n - a.n), from: res.edges.filter((e) => e.a === selected).sort((a, b) => b.n - a.n) };
   }, [res, selected]);
+  /* Detailstufe wie im Themennetz: Überblick (die größten Gremien), Normal, Detail (alle); Standard nach Platz */
+  const phone = usePhone();
+  const wide = useClient(() => window.innerWidth >= 1024, false);
+  const [chosen, setLevel] = useState<"overview" | "normal" | "detail" | null>(null);
+  const level = chosen ?? (phone ? "overview" : wide ? "detail" : "normal");
+  const routeIds = useMemo(() => {
+    const r = res && routeNo !== null ? res.routes[routeNo] : null;
+    if (!res || !r) return [] as string[];
+    return r.path.map((p) => res.nodes.find((x) => x.name === p || x.id === p)?.id).filter((x): x is string => !!x);
+  }, [res, routeNo]);
+  const net = useMemo(() => {
+    if (!res) return { nodes: [] as NNode[], edges: [] as NEdge[] };
+    const keep = level === "detail" ? res.nodes.length : level === "normal" ? 12 : 7;
+    const ids = new Set([...res.nodes].sort((a, b) => b.in + b.out - (a.in + a.out)).slice(0, keep).map((x) => x.id));
+    for (const id of routeIds) ids.add(id);
+    return { nodes: res.nodes.filter((x) => ids.has(x.id)), edges: res.edges.filter((e) => ids.has(e.a) && ids.has(e.b)) };
+  }, [res, level, routeIds]);
   const empty = !!res && (res.paths < 5 || res.edges.length === 0);
   const top = res?.edges[0];
   const lag = useMemo(() => { const d = (res?.edges ?? []).flatMap((e) => (e.days === null ? [] : Array(Math.min(e.n, 50)).fill(e.days))).sort((a: number, b: number) => a - b); return d.length ? d[Math.floor(d.length / 2)] : null; }, [res]);
@@ -82,37 +109,35 @@ export function GremiennetzPage() {
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
               {/* Handy: das Netz lässt sich ein- und ausklappen */}
               <button type="button" onClick={() => setNetz(!netz)} aria-expanded={netz} className="mt-6 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
-              {netz && <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[12px] text-slate-700 sm:hidden">{(["start", "bridge", "end"] as const).map((r) => <li key={r} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-full" style={{ background: ROLE[r].fill, border: `2px solid ${ROLE[r].stroke}` }} />{ROLE[r].label}</li>)}<li className="basis-full text-slate-500">Größe: Durchsatz · Linie: Vorgänge · Wischen verschiebt, zwei Finger zoomen</li></ul>}
-              <section className={`${netz ? "" : "max-sm:hidden"} relative mt-8 max-sm:mt-2 h-[360px] max-sm:h-[440px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
-                <NetView nodes={res.nodes} edges={res.edges} selected={selected} onSelect={setSelected} zoomRef={zoomRef} />
-                <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700 max-sm:hidden`}>
+              {netz && <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[12px] text-slate-700 sm:hidden">{(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => <li key={r} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-full" style={{ background: NET_KIND[r].fill }} />{NET_KIND[r].label}</li>)}<li className="basis-full text-slate-500">Größe: Durchsatz · Linie: Vorgänge · Wischen verschiebt, zwei Finger zoomen</li></ul>}
+              {res.nodes.length > 7 && <div className={`${netz ? "" : "max-sm:hidden"} mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]] as ["overview" | "normal" | "detail", string][]} value={level} onPick={setLevel} /></div>}
+              <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} relative mt-3 max-sm:mt-2 h-[360px] max-sm:h-[440px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
+                <NetView route={routeIds.length > 1 ? routeIds : null} nodes={net.nodes} edges={net.edges} selected={selected} onSelect={(id) => { setRouteNo(null); setSelected(id); }} zoomRef={zoomRef} />
+                <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:hidden">
                   <ul className="m-0 flex list-none flex-col gap-1 p-0">
-                    {(["start", "bridge", "end"] as const).map((r) => <li key={r} className="flex items-center gap-2" title={ROLE[r].hint}><i className="inline-block h-3 w-3 rounded-full" style={{ background: ROLE[r].fill, border: `2px solid ${ROLE[r].stroke}` }} />{ROLE[r].label}</li>)}
+                    {(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => <li key={r} className="flex items-center gap-2"><i className="inline-block h-3 w-3 rounded-full" style={{ background: NET_KIND[r].fill }} />{NET_KIND[r].label}</li>)}
                   </ul>
-                  <p className="mt-1.5 text-slate-500">Größe: Durchsatz · Linie: Vorgänge</p>
+                  <p className="mt-1.5 opacity-70">Größe: Durchsatz · Linie: Vorgänge</p>
                 </div>
-                <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
-                  <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>
-                  <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={16} /></button>
-                  <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
+                <div className="rm-stage-chip absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full">
+                  <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconPlus size={16} /></button>
+                  <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconMinus size={16} /></button>
+                  <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconCenter size={16} /></button>
                 </div>
                 <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:hidden">
-                  {!sel && <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Von links (Einstieg) nach rechts (Entscheidung) · Gremium anklicken</span>}
+                  {!sel && !tipDone && <span className="rm-stage-chip rounded-full px-4 py-2 text-[14px]">Von links (Einstieg) nach rechts (Entscheidung) · Gremium anklicken</span>}
                 </div>
                 {sel && (
-                  <div className={`${glass} absolute inset-x-3 bottom-3 z-[6] rounded-[22px] px-5 py-4 max-sm:rounded-2xl max-sm:py-3 sm:inset-x-6`}>
+                  <div className="rm-glass rm-liquid absolute inset-x-3 bottom-3 z-[6] rounded-[24px] px-5 py-4 max-sm:rounded-2xl max-sm:py-3 sm:left-6 sm:right-auto sm:w-[420px]">
                     <div className="flex items-start justify-between gap-4 max-sm:items-center">
                       <div className="min-w-0">
                         <p className="text-[12px] text-slate-500 max-sm:hidden">{ROLE[sel.role].label}</p>
                         <p className="text-[18px] max-sm:text-[16px] max-sm:line-clamp-2 font-semibold">{sel.name}</p>
-                        <p className="text-[14px] text-slate-700 max-sm:hidden">{n(sel.in)} Vorgänge kommen an, {n(sel.out)} gehen weiter · {n(sel.starts)} beginnen hier, {n(sel.ends)} enden hier</p>
+                        <p className="text-[14px] text-slate-700 max-sm:hidden">{n(sel.in)} kommen an · {n(sel.out)} gehen weiter</p>
                       </div>
                       <button type="button" onClick={() => setSelected("")} className="text-[14px] text-slate-500 hover:text-slate-900">Schließen</button>
                     </div>
-                    <div className="mt-2 grid gap-x-8 gap-y-1 text-[14px] text-slate-500 max-sm:hidden sm:grid-cols-2">
-                      <p className="line-clamp-2">Davor: {around.into.length ? around.into.slice(0, 3).map((e) => `${e.a} (${n(e.n)})`).join(", ") : "–"}</p>
-                      <p className="line-clamp-2">Danach: {around.from.length ? around.from.slice(0, 3).map((e) => `${e.b} (${n(e.n)}${e.days !== null ? `, ${e.days} Tage` : ""})`).join(", ") : "–"}</p>
-                    </div>
+                    {around.from.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500 max-sm:hidden">Danach: {around.from.slice(0, 3).map((e) => e.b).join(", ")}</p>}
                   </div>
                 )}
               </section>
@@ -139,12 +164,15 @@ export function GremiennetzPage() {
                 </TabPane>
                 <TabPane on={tab === "routen"}><section>
                   <h2 className="text-[22px] font-semibold">Typische Beratungswege</h2>
-                  <p className="mb-3 mt-1 text-[14px] text-slate-500">Die häufigsten Folgen von Gremien (bis zu vier Stationen).</p>
+                  <p className="mb-3 mt-1 text-[14px] text-slate-500">Die häufigsten Folgen von Gremien (bis zu vier Stationen). Anklicken zeigt den Weg im Netz.</p>
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {(!more.r ? res.routes.slice(0, 5) : res.routes).map((r, i) => (
-                      <li key={i} className="flex items-start justify-between gap-4 border-b border-slate-200 py-3 text-[14px]">
-                        <span className="min-w-0 text-slate-900">{r.path.map((p, j) => <span key={j}>{j > 0 && <span className="mx-1.5 text-teal-700">→</span>}{p}</span>)}</span>
-                        <span className="shrink-0 tabular-nums text-slate-500">{n(r.n)}</span>
+                      <li key={i} className="border-b border-slate-200 text-[14px]">
+                        <button type="button" aria-pressed={routeNo === i} onClick={() => { const on = routeNo !== i; setRouteNo(on ? i : null); setSelected(""); if (on) { setNetz(true); netRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); } }}
+                          title="Im Netz zeigen" className={`flex w-full items-start justify-between gap-4 py-3 text-left max-sm:min-h-[44px] ${routeNo === i ? "bg-teal-50" : "hover:bg-slate-50"}`}>
+                          <span className="min-w-0 text-slate-900">{r.path.map((p, j) => <span key={j}>{j > 0 && <span className="mx-1.5 text-teal-700">→</span>}{p}</span>)}</span>
+                          <span className="shrink-0 tabular-nums text-slate-500">{n(r.n)}</span>
+                        </button>
                       </li>
                     ))}
                     {!res.routes.length && <li className="py-3 text-[14px] text-slate-500">Keine wiederkehrenden Wege.</li>}

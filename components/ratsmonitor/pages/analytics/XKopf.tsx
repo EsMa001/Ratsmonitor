@@ -171,9 +171,9 @@ export function ThemenLeiste() {
             return (
               <li key={t.id}>
                 <button type="button" aria-pressed={on} onClick={() => search.setThema(t.name)}
-                  className={`flex h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                  className={`flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   <ThemeIcon theme={t.id} size={22} className={on ? "text-teal-700" : "text-slate-500"} />
-                  <span className="line-clamp-2">{t.name || "Alle Themen"}</span>
+                  <span>{t.name || "Alle Themen"}</span>
                 </button>
               </li>
             );

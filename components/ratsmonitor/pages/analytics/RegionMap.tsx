@@ -93,6 +93,14 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     engine.setFitInsets(phone ? topInset : 0, phone ? 52 : 0);
     if (shown.length) engine.focusMany(shown); else engine.focusArea("");
   }, [engine, shown, topInset]);
+  /* Kamerafahrt: ein gewähltes Gebiet rückt mit seiner Umgebung ins Bild, ohne Wahl zurück auf die Ergebnisse */
+  const firstPick = useRef(true);
+  useEffect(() => {
+    if (!engine) return;
+    if (firstPick.current) { firstPick.current = false; return; }
+    if (picked) engine.focusAreaWide(picked); else if (shown.length) engine.focusMany(shown); else engine.focusArea("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engine, picked]);
 
 
   return (

@@ -426,10 +426,10 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {SUBTOPICS.filter((x: { theme: string }) => x.theme === theme).map((x: { id: string; short: string }) => {
             const on = x.id === sub;
-            return <li key={x.id} className="sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => onSub(on ? "" : x.id)}
-              className={`flex h-[68px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:auto] max-sm:[overflow-wrap:anywhere] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
+            return <li key={x.id} className="flex sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => onSub(on ? "" : x.id)}
+              className={`flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:min-h-0 max-sm:py-0 max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:auto] max-sm:[overflow-wrap:anywhere] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
               <SubtopicIcon id={x.id} size={20} className={`max-sm:h-4 max-sm:w-4 ${on ? "text-white" : "text-slate-500"}`} />
-              <span className="line-clamp-2"><span className="max-sm:hidden">{x.short}</span><span className="sm:hidden">{kurz(x.short)}</span></span></button></li>;
+              <span className="sm:line-clamp-none max-sm:line-clamp-2"><span className="max-sm:hidden">{x.short}</span><span className="sm:hidden">{kurz(x.short)}</span></span></button></li>;
           })}
         </ul>
       </nav>}
@@ -533,6 +533,9 @@ function PartList({ rows, open, selected, onOpen, drill, label, icons = false, d
   /* Restposten („Sonstiges“) nicht als gleichrangige Zeile: klein darunter, aufklappbar wie die anderen */
   const main = rows.filter((r) => !isRest(r)), rests = rows.filter(isRest);
   const max = Math.max(1, ...main.map((r) => r.count));
+  /* Fokus: wer überfahren wird (oder aufgeklappt ist), bleibt klar, die übrigen Zeilen treten zurück */
+  const [hot, setHot] = useState("");
+  const focusKey = hot || open;
   return (
     <>
     <ol className="m-0 list-none border-t border-slate-200 p-0">
@@ -540,8 +543,8 @@ function PartList({ rows, open, selected, onOpen, drill, label, icons = false, d
         const rest = isRest(r), on = open === r.key, picked = selected === r.key, dim = !!selected && !picked;
         return (
           <li key={r.key} className="border-b border-slate-200">
-            <button type="button" onClick={() => onOpen(r.key)} aria-expanded={on} onMouseEnter={() => onHover?.(r.key)} onMouseLeave={() => onHover?.("")} onFocus={() => onHover?.(r.key)} onBlur={() => onHover?.("")}
-              className={`grid w-full grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto_16px] ${dim ? "opacity-70" : ""}`}>
+            <button type="button" onClick={() => onOpen(r.key)} aria-expanded={on} onMouseEnter={() => { setHot(r.key); onHover?.(r.key); }} onMouseLeave={() => { setHot(""); onHover?.(""); }} onFocus={() => { setHot(r.key); onHover?.(r.key); }} onBlur={() => { setHot(""); onHover?.(""); }}
+              className={`grid w-full transition-opacity grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto_16px] ${focusKey && focusKey !== r.key ? "opacity-45" : dim ? "opacity-70" : ""}`}>
               <span className={`flex items-center gap-2 text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${on || picked ? "font-semibold" : ""}`}>{icons && !rest && <ThemeIcon theme={r.key} size={18} className="shrink-0 text-slate-500" />}{r.name}{dir?.(r)}</span>
               <span className="order-4 col-span-3 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1">
                 <span className={`block h-full rounded-full ${rest ? "bg-slate-300" : picked ? "bg-slate-900" : "bg-teal-600"}`} style={{ width: `${(r.count / max) * 100}%` }} />

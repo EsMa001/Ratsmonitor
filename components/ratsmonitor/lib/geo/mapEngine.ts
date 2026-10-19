@@ -263,6 +263,16 @@ export class MapEngine {
     this.flyTo(this.fitView([b[0] - mx, b[1] - my, b[2] + mx, b[3] + my], 40), 700);
   }
 
+  /** Fließend auf ein gewähltes Gebiet fahren, mit Umgebung (f-fache Breite), damit man sieht, wo es liegt */
+  focusAreaWide(ags: string, f = 2.4) {
+    if (!this.view) return;
+    const b = this.geo.bbox(ags);
+    if (!b) return;
+    const mx = (b[2] - b[0]) * (f - 1) / 2 + 400;
+    const my = (b[3] - b[1]) * (f - 1) / 2 + 400;
+    this.flyTo(this.fitView([b[0] - mx, b[1] - my, b[2] + mx, b[3] + my], 40), 800);
+  }
+
   /** Fließend auf mehrere Gebiete zoomen (z. B. alle Treffer); ohne Gebiete ganz Deutschland */
   focusMany(list: string[]) {
     if (!this.view) return;
