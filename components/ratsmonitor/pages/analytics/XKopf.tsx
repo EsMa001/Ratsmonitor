@@ -164,7 +164,7 @@ export function ThemenLeiste() {
       <WheelPicker label="Thema" className="mb-3" value={search.state.thema} onPick={(name) => search.setThema(name)}
         items={[{ id: "", label: "Alle Themen", name: "alle" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.name, label: t.name, name: t.id }))].map((t) => ({ id: t.id, label: t.label, icon: <ThemeIcon theme={t.name} size={18} className="text-slate-500" />, iconOn: <ThemeIcon theme={t.name} size={18} className="text-white" /> }))} />
       {/* Ab Tablet Kacheln; ab Desktop alle 11 in einer Reihe (Breite teilt sich auf) */}
-      <nav aria-label="Thema" className="mb-4 hidden sm:block print:hidden">
+      <nav aria-label="Thema" className="rm-xrail mb-4 hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {[{ id: "alle", name: "" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.id, name: t.name }))].map((t) => {
             const on = search.state.thema === t.name;

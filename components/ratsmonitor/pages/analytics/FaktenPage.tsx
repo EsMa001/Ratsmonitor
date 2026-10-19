@@ -157,7 +157,7 @@ export function FaktenPage() {
   const titleName = `${factName}${metric && metrics.length > 1 ? ` · ${metric}` : ""}`;
 
   return (
-    <main id="inhalt" className={`${fact || allFacts ? "rm-xwide rm-noplay " : ""}w-full px-[max(1vw,16px)] pb-10 text-slate-900`}>
+    <main id="inhalt" className="rm-xwide rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="fakten" />
 
       {/* Fakten als Kacheln wie die Themen im Atlas: Icon über dem Namen; Handy 4 je Reihe */}

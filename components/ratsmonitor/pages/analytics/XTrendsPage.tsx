@@ -185,7 +185,7 @@ export function XTrendsPage() {
   const top = lists?.up[0], wide = sp && lists ? [...lists.up, ...lists.more].map((t) => ({ t, s: byKey.get(t.key) })).filter((x) => x.s).sort((a, b) => b.s!.added - a.s!.added)[0] : undefined;
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className="rm-xwide rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="trends" />
 
       <ThemenLeiste />
@@ -205,22 +205,23 @@ export function XTrendsPage() {
             { value: n(lists.up.filter((t) => t.kind === "emerging").length), label: "neu aufgekommen" },
             { value: moving === null ? "…" : n(moving), label: "Gebiete mit neuen Themen" },
           ]}>
-            <span className="inline-flex flex-wrap gap-1 max-sm:hidden print:hidden" role="group" aria-label="Zeitraum">
+            <span className="rm-zeit-std inline-flex flex-wrap gap-1 max-sm:hidden print:hidden" role="group" aria-label="Zeitraum">
               {WINDOWS.map(([k, l]) => <button key={k} type="button" aria-pressed={k === zeit} onClick={() => pick({ zeit: k })}
                 className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === zeit ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>)}
             </span>
             <MeinOrt current={area && areaName ? { ags: area, name: areaName } : null} onApply={(ags) => search.setArea(ags, "ui")} />
           </Kennzahlen>
 
-          <div className="mt-6 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
+          <div className="rm-xsplit mt-6 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
             {/* Links die Karte: immer Ausbreitung */}
-            <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+            <div className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
               {begriff ? (df ? <SpreadMap regions={df.regions} day={day} firstDay={firstDay} lastDay={lastDay} onDay={(d) => { setPlaying(false); setDay(d); }} playing={playing} onToggle={toggle}
                   picked={mapPick || area} onPick={(a) => setMapPick(mapPick === a ? "" : a)}
                   info={(() => { const r = df.regions.find((x) => keysOf(x).includes(mapPick)); return r ? <><b className="font-semibold">{r.name}</b><br /><span className="text-slate-500">erste Erwähnung {fmt(r.first)} · {n(r.n)} {r.n === 1 ? "Eintrag" : "Einträge"}</span></> : undefined; })()} />
                 : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{diff.error && diff.url === diffUrl ? diff.error : "Ausbreitung wird berechnet …"}</div>)
                 : map ? <RegionMap tall levels={map.levels} legend={map.legend} colors={map.colors} label={map.label} note={map.note} picked={area} onPick={(a) => search.setArea(a, "map")} />
                 : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{spread.error || "Karte wird berechnet …"}</div>}
+              <div className="rm-xtop"><div className="rm-xzeit"><Segmented label="Zeitraum" options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} /></div></div>
             </div>
 
             <div className="min-w-0 lg:col-span-6">

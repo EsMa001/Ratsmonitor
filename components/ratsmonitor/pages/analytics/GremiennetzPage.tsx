@@ -86,7 +86,7 @@ export function GremiennetzPage() {
   const maxEdge = res?.edges[0]?.n ?? 1;
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className="rm-xnet rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="gremien" />
 
       <ThemenLeiste />
@@ -95,7 +95,7 @@ export function GremiennetzPage() {
       {loading && !res && <Laden text="Netz wird berechnet …" />}
 
       {res && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {empty ? (
             <Leer tipp={"Mit einer weiteren Auswahl, etwa ohne Ort oder mit längerem Zeitraum, wird das Netz aussagekräftiger."}>Zu wenige Vorgänge, die durch mehrere Gremien gelaufen sind ({n(res.paths)}).</Leer>
           ) : (
@@ -110,8 +110,8 @@ export function GremiennetzPage() {
               {/* Handy: das Netz lässt sich ein- und ausklappen */}
               <button type="button" onClick={() => setNetz(!netz)} aria-expanded={netz} className="mt-6 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
               {netz && <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[12px] text-slate-700 sm:hidden">{(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => <li key={r} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-full" style={{ background: NET_KIND[r].fill }} />{NET_KIND[r].label}</li>)}<li className="basis-full text-slate-500">Größe: Durchsatz · Linie: Vorgänge · Wischen verschiebt, zwei Finger zoomen</li></ul>}
-              {res.nodes.length > 7 && <div className={`${netz ? "" : "max-sm:hidden"} mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]] as ["overview" | "normal" | "detail", string][]} value={level} onPick={setLevel} /></div>}
-              <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} relative mt-3 max-sm:mt-2 h-[360px] max-sm:h-[440px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
+              {res.nodes.length > 7 && <div className={`${netz ? "" : "max-sm:hidden"} rm-xseg mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]] as ["overview" | "normal" | "detail", string][]} value={level} onPick={setLevel} /></div>}
+              <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} rm-xstage relative mt-3 max-sm:mt-2 h-[360px] max-sm:h-[440px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
                 <NetView route={routeIds.length > 1 ? routeIds : null} nodes={net.nodes} edges={net.edges} selected={selected} onSelect={(id) => { setRouteNo(null); setSelected(id); }} zoomRef={zoomRef} />
                 <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:hidden">
                   <ul className="m-0 flex list-none flex-col gap-1 p-0">

@@ -175,7 +175,7 @@ export function KnowledgeGraphPage() {
   const empty = !!res && nodes.length <= 1;
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className="rm-xnet rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="graph" />
 
       <ThemenLeiste />
@@ -194,7 +194,7 @@ export function KnowledgeGraphPage() {
       )}
       {res && !empty && !gesamt && strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
       {/* Detailstufe über dem Netz, als Umschalter wie auf den übrigen Seiten */}
-      {res && !empty && <div className={`${netz ? "" : "max-sm:hidden"} mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
+      {res && !empty && <div className={`${netz ? "" : "max-sm:hidden"} rm-xseg mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
       {/* Handy: das Netz lässt sich ein- und ausklappen */}
       <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
       {/* Handy: Legende über dem Netz statt darauf (sonst liegt sie über den Punkten) */}
@@ -203,7 +203,7 @@ export function KnowledgeGraphPage() {
           <li key={t} className="flex items-center gap-1.5"><i className={`inline-block h-3 w-3 rounded-full`} style={{ ...DOT[t], boxShadow: "0 0 0 1px rgba(24,24,27,.25)" }} />{KIND[t].label}</li>
         ))}
       </ul>}
-      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} relative mt-3 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
+      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage relative mt-3 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
         {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
         {trail.length > 0 && res && !empty && (
