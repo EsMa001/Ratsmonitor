@@ -321,7 +321,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
               {karte ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{karte ? "Karte ausblenden" : "Karte zeigen"}
             </button>
           </div>
-          <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12`}>
+          <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-5 lg:grid-cols-12`}>
             {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
               {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} schritt={schritt}
                 pill={res.phases.length > 0 ? <MapPill label="Schritt" value={phase} onPick={(id) => pick({ phase: id })} items={[{ id: "", label: "Alle", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count) }))]} /> : undefined}

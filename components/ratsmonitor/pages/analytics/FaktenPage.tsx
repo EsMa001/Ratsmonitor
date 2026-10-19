@@ -232,7 +232,7 @@ export function FaktenPage() {
 
 
           {/* Links die Karte (bleibt stehen), rechts Einordnung und Rangliste; ab 1024 px nebeneinander */}
-          <div className="rm-xsplit mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
+          <div className="rm-xsplit mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12 max-sm:gap-y-5">
             <div className="rm-xsplit-map min-w-0 max-sm:relative lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
               {/* Beim Öffnen kurz als Hinweis auf der Karte (statt des langen Absatzes über der Karte) */}
               <MapHint id="werte">Hier steht nur, was die Kommunen in ihren Originalunterlagen nennen.</MapHint>

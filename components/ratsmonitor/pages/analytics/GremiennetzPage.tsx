@@ -113,8 +113,8 @@ export function GremiennetzPage() {
                   ["Tage im Mittel je Übergang", lag === null ? "–" : String(lag)]
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} /></div>
               {res.nodes.length > 7 && <div className="max-sm:hidden rm-xseg mt-6 flex justify-end print:hidden"><Segmented label="Detailstufe" options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]] as ["overview" | "normal" | "detail", string][]} value={level} onPick={setLevel} /></div>}
-              <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[360px] max-sm:h-[440px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
-                <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-3 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["overview", "normal"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "overview" ? "Normal" : "Detail"}</button>)}</div>
+              <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[360px] max-sm:h-[400px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
+                <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-2 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["overview", "normal"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "overview" ? "Normal" : "Detail"}</button>)}</div>
                 {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
                 <NetView route={routeIds.length > 1 ? routeIds : null} nodes={net.nodes} edges={net.edges} selected={selected} onSelect={(id) => { setRouteNo(null); setSelected(id); }} zoomRef={zoomRef} />
                 <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:left-1/2 max-sm:w-max max-sm:max-w-[calc(100%-16px)] max-sm:-translate-x-1/2 max-sm:top-2 max-sm:px-3 max-sm:py-1.5 max-sm:text-[11px]">
@@ -151,7 +151,7 @@ export function GremiennetzPage() {
               {pending && <ListSkeleton />}
               <div className={pending ? "hidden" : undefined}>
               <div className="mt-8 max-sm:hidden print:hidden"><Segmented label="Teil der Auswertung" options={[["wege", "Wichtigste Übergänge"], ["routen", "Typische Beratungswege"], ["rollen", "Rollen im Netz"]]} value={tab} onPick={setTab} /></div>
-              <div className="mt-6 max-sm:mt-8 grid gap-12 max-sm:gap-6">
+              <div className="mt-6 max-sm:mt-5 grid gap-12 max-sm:gap-6">
                 <TabPane on={tab === "wege"}><section>
                   <h2 className="text-[22px] font-semibold">Wohin Vorgänge als Nächstes gehen</h2>
                   <p className="mb-3 mt-1 text-[14px] text-slate-500">Von welchem Gremium ein Vorgang an welches ging, und wie lange das im Mittel dauerte.</p>
@@ -189,7 +189,7 @@ export function GremiennetzPage() {
               </div>
 
               <TabPane on={tab === "rollen"}><Reveal>
-              <section className="mt-12 max-sm:mt-8">
+              <section className="mt-12 max-sm:mt-5">
                 <h2 className="text-[22px] font-semibold">Wer anfängt und wer entscheidet</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Durchsatz je Gremium: eingehende und ausgehende Übergänge. Durchgänge verbinden Einstieg und Entscheidung.</p>
                 <ol className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 max-sm:block max-sm:border-t max-sm:border-slate-200">

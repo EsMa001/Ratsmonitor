@@ -526,7 +526,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                       </button>}
                     </> : <p className="text-[14px] text-slate-500">Kein Gebiet hat genug Sachvorgänge für einen Vergleich.</p>}
                   </section>}
-                  {!(theme || sub) && allRegions.length > 1 && <p className="mt-8 text-[14px] text-slate-500">Thema wählen, um zu sehen, wo es viel Raum hat.</p>}
+                  {!(theme || sub) && allRegions.length > 1 && <p className="mt-8 text-[14px] text-slate-500 max-sm:mt-5">Thema wählen, um zu sehen, wo es viel Raum hat.</p>}
                   {sub && together.length > 0 && <section className="mt-8 max-sm:mt-5">
                     <h2 className="text-[22px] font-semibold max-sm:text-[18px]">Was oft zusammen auftaucht</h2>
                     <p className="mb-3 mt-1 text-[14px] text-slate-500 max-sm:hidden">Anteil der Vorgänge zu „{subName}“, die auch dieses Unterthema haben. Klick wechselt dorthin.</p>
@@ -538,7 +538,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
 
               {/* Ganze Liste nur nach „Alle … zeigen“; die neuesten Vorgänge stehen schon in der aufgeklappten Zeile rechts */}
               <section ref={bottomRef} className="scroll-mt-4">
-                {all && !(all.by === "sub" || all.by === partBy) && <div className="mt-10">
+                {all && !(all.by === "sub" || all.by === partBy) && <div className="mt-10 max-sm:mt-5">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                     <h2 className="text-[22px] font-semibold max-sm:text-[18px]">Vorgänge: {all.label}</h2>
                     <button type="button" onClick={closeAll} className="text-[14px] font-medium text-teal-700 hover:underline">Schließen</button>

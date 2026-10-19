@@ -204,8 +204,8 @@ export function KnowledgeGraphPage() {
       {res && !empty && <div className="max-sm:hidden rm-xseg mt-6 flex justify-end print:hidden"><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
       {/* Handy: das Netz lässt sich ein- und ausklappen */}
       <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:mt-0 max-sm:inline-flex max-sm:min-h-[30px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
-      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
-        <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-3 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["overview", "normal"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "overview" ? "Normal" : "Detail"}</button>)}</div>
+      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[400px] sm:h-[620px]`} aria-label="Themennetz">
+        <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-2 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["overview", "normal"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "overview" ? "Normal" : "Detail"}</button>)}</div>
         {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
         {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
@@ -270,7 +270,7 @@ export function KnowledgeGraphPage() {
           {!!res.partial?.length && (
             <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); start(); }} className="font-medium text-teal-700">Nur ganze Wörter →</button></p>
           )}
-          <div className="mt-10 grid gap-x-12 gap-y-10 lg:grid-cols-2">
+          <div className="mt-10 grid gap-x-12 gap-y-10 lg:grid-cols-2 max-sm:mt-5 max-sm:gap-y-5">
             <section>
               <h2 className="text-[22px] font-semibold">{gesamt ? "Auffällige Verbindungen" : "Stärkste Verbindungen"}</h2>
               <p className="mb-3 mt-1 text-[14px] text-slate-500">{gesamt ? "Begriffe, die viel öfter zusammen vorkommen, als es ihre Häufigkeit erwarten lässt." : "Begriffe, die in denselben Einträgen vorkommen."}</p>

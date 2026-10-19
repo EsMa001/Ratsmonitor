@@ -37,7 +37,7 @@ const n = (v: number) => v.toLocaleString("de-DE");
 /** Offener Abschnitt mit Überschrift wie auf den übrigen plenara.X-Seiten (Wichtiges sichtbar, Nebensachen in Fold) */
 function Abschnitt({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-12 max-sm:mt-8">
+    <section className="mt-12 max-sm:mt-5">
       <h2 className="text-[22px] font-semibold">{title}</h2>
       {children}
     </section>
@@ -170,7 +170,7 @@ export function BeschluessePage() {
                 {toggle(allCut, setAllCut, cuts.length, "Einträge")}
               </div>
               </Abschnitt>
-              <Reveal><section className="mt-12 max-sm:mt-8">
+              <Reveal><section className="mt-12 max-sm:mt-5">
                 <h2 className="text-[22px] font-semibold">Entscheidungen im Zeitverlauf</h2>
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Beschlossen, vertagt und abgelehnt je Monat.</p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
@@ -179,7 +179,7 @@ export function BeschluessePage() {
                 <MonthColumns months={res.months} />
               </section></Reveal>
               
-              <div className="mt-12 max-sm:mt-8 border-t border-slate-200">
+              <div className="mt-12 max-sm:mt-5 border-t border-slate-200">
               <Fold title="Abstimmung und Änderungen">
               <div className="pb-6 max-sm:pb-0 pt-2">
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Aus dem Ergebnistext der Beschlüsse gelesen; das nennen nur manche Ratsinformationssysteme, die Werte gelten nur für Vorgänge mit Angabe. Grundlage: alle {n(res.votes.of)} Vorgänge mit Entscheidung.</p>
@@ -193,7 +193,7 @@ export function BeschluessePage() {
                     <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                   ))}
                 </dl>
-                <div className="mt-8 grid gap-12 md:grid-cols-2">
+                <div className="mt-8 grid gap-12 md:grid-cols-2 max-sm:mt-5 max-sm:gap-5">
                   {([["Nach Gremienebene", res.votes.kinds], ["Umstrittenste Themenfelder", res.votes.topics]] as [string, VRow[]][]).map(([title, rows]) => (
                     <div key={title}>
                       <h3 className="text-[16px] font-semibold">{title}</h3>
