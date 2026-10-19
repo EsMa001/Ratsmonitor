@@ -1,9 +1,10 @@
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { useBrand } from "../lib/brand";
 import { BETREIBER, betreiberAdresse } from "../lib/betreiber";
 import { PageHead } from "./blocks";
 import { H2, P, Ul } from "./LegalText";
+import { useInhalt } from "../pages/LegalPage";
 
 /* Entwurf, nicht anwaltlich geprüft. Offene Punkte stehen in docs/recht/pflichten-und-avv.md und in der To-Do-Liste.
    Die Tarife entsprechen info/content.ts (PLANS): Basic kostenlos, Pro 9,99 €, Enterprise 49,99 € je Monat inkl. MwSt. */
@@ -141,11 +142,13 @@ function sections(brand: string): Section[] {
 
 export function AgbPage() {
   const { name } = useBrand();
+  const text = useRef<HTMLDivElement>(null);
+  useInhalt(text, true);
   return (
     <>
       <PageHead icon="fileText" label="Rechtliches" name="AGB" title="Allgemeine Geschäftsbedingungen" />
       <section className="ri-sec ri-sec--tight">
-        <div className="max-w-[80ch] [&>h2:first-child]:mt-0">
+        <div ref={text} className="max-w-[80ch] [&>h2:first-child]:mt-0">
           <P>Stand: Oktober 2026</P>
           {sections(name).map((s, i) => (
             <div key={s.title}>

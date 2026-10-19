@@ -199,8 +199,8 @@ function Datenschutz() {
   );
 }
 
-/** Inhaltsverzeichnis mit Sprungmarken (nur Handy) aus den Überschriften des Textes; per DOM, weil der Text selbst feste Komponenten sind */
-function useInhalt(ref: React.RefObject<HTMLDivElement | null>, on: boolean) {
+/** Inhaltsverzeichnis mit Sprungmarken (Handy: Liste oben; breiter Desktop: fest neben dem Text) aus den Überschriften des Textes; per DOM, weil der Text selbst feste Komponenten sind */
+export function useInhalt(ref: React.RefObject<HTMLDivElement | null>, on: boolean) {
   useEffect(() => {
     const root = ref.current;
     if (!on || !root) return;
@@ -219,7 +219,17 @@ function useInhalt(ref: React.RefObject<HTMLDivElement | null>, on: boolean) {
       nav.appendChild(a);
     });
     root.insertBefore(nav, root.firstChild);
-    return () => { nav.remove(); };
+    /* Breiter Desktop: Verzeichnis rechts neben dem Text, bleibt beim Scrollen stehen */
+    const side = document.createElement("nav");
+    side.className = "ri-toc";
+    side.setAttribute("aria-label", "Inhalt");
+    const inner = document.createElement("div");
+    hs.forEach((h) => { const a = document.createElement("a"); a.href = `#${h.id}`; a.textContent = h.textContent; inner.appendChild(a); });
+    side.appendChild(inner);
+    const pos = root.style.position;
+    root.style.position = "relative";
+    root.appendChild(side);
+    return () => { nav.remove(); side.remove(); root.style.position = pos; };
   }, [ref, on]);
 }
 

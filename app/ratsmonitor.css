@@ -258,3 +258,16 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   html.rm-search .rm-legalbar{display:none}
   html.rm-search body{overflow:hidden}
 }
+
+/* Desktop (breit): Karte links, Trefferliste rechts daneben; die Karte bleibt beim Scrollen stehen (wie das Blatt am Handy: Liste und Karte gleichzeitig) */
+@media (min-width:1100px){
+  html.rm-search .rm-flat:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) minmax(520px,40%);align-items:start}
+  html.rm-search .rm-flat>section:first-child{position:sticky !important;top:58px;height:calc(100dvh - 58px) !important;min-height:0;border-bottom:0;border-right:1px solid var(--rm-c200)}
+  html.rm-search .rm-flat main{max-width:none !important;margin:0 !important;min-width:0}
+}
+
+/* Desktop: Die Suchzeile der plenara.X-Seiten bleibt beim Scrollen unter der Kopfzeile stehen (Zeitraum und Filter in Reichweite) */
+@media (min-width:640px){
+  div:has(> .rm-xsearch){position:sticky;top:var(--hdr,58px);z-index:30;background:var(--rm-white);padding:8px 0;margin-top:-8px}
+}
+@media print{div:has(> .rm-xsearch){position:static}}

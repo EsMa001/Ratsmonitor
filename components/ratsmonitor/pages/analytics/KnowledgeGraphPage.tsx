@@ -56,6 +56,7 @@ export function KnowledgeGraphPage() {
   /* Direktlink (?thema=) oder der Begriff, der schon in der Suche steht; ohne Begriff das ganze Netz */
   const [given] = useState(() => params.get("thema"));
   const { res: runRes, ranKey: runKey, loading: runLoading, error: runError, run, runAfterChange } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/graph?${query}`, initial: false, fallback: "Der Graph konnte nicht berechnet werden.", onDone: () => { setSelected(""); setPair(null); } });
+  const [allPairs, setAllPairs] = useState(false);
   const res = runRes, ranKey = runKey, loading = runLoading;
   const [hint, setHint] = useState("");
   const error = hint || runError;
@@ -171,6 +172,7 @@ export function KnowledgeGraphPage() {
           <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
         </div>
 
+        {loading && !res && <div aria-hidden="true" className="pointer-events-none absolute inset-0 animate-pulse rounded-[inherit] bg-slate-100/70" />}
         <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:inset-x-3 max-sm:top-auto max-sm:bottom-3">
           {loading ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Graph wird berechnet …</span>
             : empty ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-900`}>Keine Vorgänge für diese Auswahl.</span>
@@ -216,7 +218,7 @@ export function KnowledgeGraphPage() {
               <h2 className="text-[22px] font-semibold">Stärkste Verbindungen</h2>
               <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die in denselben Einträgen vorkommen.</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
-                {strongest.map((e, i) => (
+                {(allPairs ? strongest : strongest.slice(0, 5)).map((e, i) => (
                   <li key={e.a + e.b} className="border-b border-slate-200">
                     <button type="button" onClick={() => { setNetz(true); setSelected(e.a); setPair(e); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className="group grid w-full cursor-pointer grid-cols-[28px_1fr_auto_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
                       <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
@@ -230,6 +232,7 @@ export function KnowledgeGraphPage() {
                   </li>
                 ))}
               </ol>
+              {strongest.length > 5 && <button type="button" aria-expanded={allPairs} onClick={() => setAllPairs(!allPairs)} className="mt-2 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{allPairs ? "Weniger Verbindungen zeigen" : `Alle ${strongest.length} Verbindungen zeigen`}</button>}
             </section>
           </div>
           <MethodikNote>{res.q === "" ? `Grundlage sind alle ${n(res.total)} Vorgänge${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind alle ${n(res.total)} passenden Vorgänge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht.</MethodikNote>

@@ -10,7 +10,7 @@ function AnalyseLeiste() {
   return (
     <>
     <p className="m-0 mt-2 hidden text-[14px] text-slate-500 print:block">{text.trim() ? `Suchbegriff „${prettyTerm(text.trim())}“ · ` : ""}Berechnet am {heute()} aus den Ratsinformationssystemen der Kommunen · plenara.X</p>
-    <div className="mt-3 max-sm:mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] print:hidden">
+    <div className="mt-1.5 max-sm:mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] print:hidden">
       <span className="text-slate-500">Stand {heute()}</span>
     </div>
     </>
@@ -20,7 +20,7 @@ function AnalyseLeiste() {
 /** Der Befund einer Auswertung in einem Satz, vor den Zahlen */
 export function Befund({ children, tight = false, noPhone = false }: { children: ReactNode; tight?: boolean; /** Handy: Satz und Stand weglassen */ noPhone?: boolean }) {
   return (
-    <div className={`${tight ? "mt-4" : "mt-6"}${noPhone ? " max-sm:hidden" : ""}`}>
+    <div className={`${tight ? "mt-3" : "mt-4"}${noPhone ? " max-sm:hidden" : ""}`}>
       {/* Eine Größe für alle plenara.X-Seiten (wie Trends und Fakten) */}
       <p className={`m-0 text-[18px] max-sm:text-[16px] font-semibold leading-snug text-slate-900 ${tight ? "" : "max-w-[900px]"}`}>{children}</p>
       <AnalyseLeiste />

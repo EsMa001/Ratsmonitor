@@ -1,13 +1,11 @@
 import {useEffect,useState} from 'react';
 import {useRouter,useParams} from 'next/navigation';
 import Link from 'next/link';
-import type {ContentEvidence,TopicDetail} from '@/shared/types';
+import type {TopicDetail} from '@/shared/types';
 import {STATUS,formatDate} from '@/shared/types';
-import {labelName} from '@/shared/labels.mjs';
 import {SessionDetails} from '@/components/article-analysis';
-import {IconChevronLeft,IconDoc,IconSpark,IconRules} from '../components/icons';
+import {IconChevronLeft,IconDoc,IconRules} from '../components/icons';
 import {cameFromApp,useAppNav} from '../state/nav';
-import {Segmented} from '../components/Segmented';
 import {ShareButton} from '../components/ShareButton';
 import {SaveArticleButton} from '../components/SaveArticleButton';
 import {FollowButton} from '../components/FollowButton';
@@ -16,16 +14,6 @@ const NOT_FOUND_TEXT='Dieser Vorgang wurde nicht gefunden.';
 import {todayLocal} from '../lib/text';
 import {useBrand} from '../lib/brand';
 const sourceLink=(value?:string)=>{try{const url=new URL(value||'');return ['http:','https:'].includes(url.protocol)?url.href:undefined;}catch{return undefined;}};
-function OriginalQuote({evidence,topic}:{evidence:ContentEvidence;topic:TopicDetail}){
- const source=topic.contentAnalysis?.sourceDocuments?.find(document=>evidence.sourceId&&document.id===evidence.sourceId||document.url===evidence.url);
- const title=source?.title||topic.documents.find(document=>document.url===evidence.url)?.title||'Originalquelle',url=sourceLink(evidence.url);
- const numbered=Number.isInteger(evidence.page)&&Number(evidence.page)>0;
- const location=source?.kind==='page'&&(!evidence.location||/^Seite\s+\d+$/i.test(evidence.location))?numbered?'Textabschnitt '+evidence.page:undefined:evidence.location||(numbered?'Seite '+evidence.page:undefined);
- return <figure className="m-0 mb-5 min-w-0 border-l-2 border-teal-600 pl-4">
-  <blockquote className="m-0 max-w-none break-words text-[16px] leading-relaxed text-slate-900">„{evidence.quote}“</blockquote>
-  <figcaption className="mt-2 break-words text-[12px] text-slate-500">{url?<a href={url} className="text-teal-700 no-underline hover:underline" target="_blank" rel="noopener noreferrer">{title} ↗</a>:title}{location&&' · '+location}</figcaption>
- </figure>;
-}
 /* Der lange Auszug beginnt oft mit den Sätzen, die oben schon stehen: sie nicht noch einmal zeigen */
 function withoutLead(long:{sentences:string[];gaps?:boolean[]},lead?:{sentences:string[]}){
   const n=lead?.sentences.length||0;
@@ -44,7 +32,7 @@ function Excerpt({text,source,size}:{text:{sentences:string[];gaps?:boolean[]};s
 }
 export function DetailPage(){
  const router=useRouter(),params=useParams(),id=String(params.id||''),{goBack}=useAppNav();
- const [data,setData]=useState<{id:string;topic:TopicDetail|null;error:string}>(()=>{const s=peekTopic(id);return s===undefined?{id:'',topic:null,error:''}:{id,topic:s,error:s?'':NOT_FOUND_TEXT};}),[attempt,setAttempt]=useState(0),[summaryView,setSummaryView]=useState<{id:string;view:'ai'|'rule'}>({id:'',view:'ai'});
+ const [data,setData]=useState<{id:string;topic:TopicDetail|null;error:string}>(()=>{const s=peekTopic(id);return s===undefined?{id:'',topic:null,error:''}:{id,topic:s,error:s?'':NOT_FOUND_TEXT};}),[attempt,setAttempt]=useState(0);
  // Der Vorgang kommt aus lib/topicCache.ts: aus der Trefferliste meist schon vorgeladen, bei der Rückkehr noch gehalten.
  useEffect(()=>{let live=true;if(!attempt&&peekTopic(id)!==undefined){window.scrollTo(0,0);return;}loadTopic(id).then(t=>{if(live)setData({id,topic:t,error:''});}).catch(e=>{if(live)setData({id,topic:null,error:e instanceof TopicError?e.message:'Der Vorgang konnte nicht geladen werden.'});});window.scrollTo(0,0);return()=>{live=false;};},[id,attempt]);
  // Gebietsname kommt mit dem Vorgang (regionName, server/mappers/topics.ts); der Katalog (528 KB) wird hier nicht mehr geladen.
@@ -56,14 +44,10 @@ export function DetailPage(){
  useEffect(()=>{document.title=`${tabTitle} · ${name}`;},[tabTitle,name]);
  if(!t)return <main id="inhalt" className="mx-auto max-w-page py-[12px]"><Link className="link-btn" href="/suche">Zur Übersicht</Link>{cur.id===id&&cur.error?<div role="alert" className="card-shell mt-6 p-6"><p>{cur.error}</p><button className="btn-secondary mt-4" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></div>:<p role="status" className="mt-6">Vorgang wird geladen …</p>}</main>;
   const host=(u:string)=>{try{return new URL(u).host;}catch{return '';}},events=t.events.filter(e=>!t.sourceUrl||!e.url||!host(e.url)||host(e.url)===host(t.sourceUrl)),status=STATUS[t.status]||STATUS.unknown;
-  const isAi=/^KI-Zusammenfassung/.test(t.generatedBy||'')||t.contentAnalysis?.status==='completed',rule=t.ruleSummary;
-  const both=isAi&&!!rule,view=both&&summaryView.id===id?summaryView.view:isAi?'ai':'rule',showRule=!!rule&&view==='rule';
-  const shortText=!isAi&&rule?rule.short.sentences.join(' '):t.shortSummary;
-  const evidence=(t.contentAnalysis?.evidence||[]).filter(value=>typeof value.quote==='string'&&value.quote.trim());
-  const inlineQuote=(value:ContentEvidence)=>Number.isInteger(value.paragraphIndex)&&Number(value.paragraphIndex)>=0&&Number(value.paragraphIndex)<t.longSummary.length;
-  const standaloneQuotes=evidence.filter(value=>!inlineQuote(value)),coverage=t.contentAnalysis?.coverage;
-  const changeView=(next:'ai'|'rule')=>setSummaryView({id,view:next});
-  const source=isAi?{icon:<IconSpark size={16} aria-hidden="true"/>,label:'KI-Zusammenfassung'}:rule?{icon:<IconRules size={16} aria-hidden="true"/>,label:'Auszug aus der Vorlage (Originalsätze)'}:{icon:<IconDoc size={16} aria-hidden="true"/>,label:'Automatischer Quellenüberblick'};
+  /* KI-Texte (Zusammenfassung, Zitate, Thema) zeigt das Frontend nicht; ohne Auszug aus der Vorlage bleibt der Abschnitt knapp */
+  const ki=/^KI-Zusammenfassung/.test(t.generatedBy||'')||t.contentAnalysis?.status==='completed',rule=t.ruleSummary;
+  const shortText=ki?'':t.shortSummary;
+  const source=rule?{icon:<IconRules size={16} aria-hidden="true"/>,label:'Auszug aus der Vorlage (Originalsätze)'}:{icon:<IconDoc size={16} aria-hidden="true"/>,label:'Automatischer Quellenüberblick'};
   const excerptSource=rule?.source;
   const article={id:t.id,title:t.title,date:(t.eventDate||'').slice(0,10),gemeinde:regionName,teaser:shortText||''};
   /* Rohdaten der OParl-Schnittstelle (maschinenlesbares JSON) sind keine Unterlage für Menschen: ausblenden */
@@ -90,24 +74,15 @@ export function DetailPage(){
           </span>
         </div>
         <h1 lang="de" className="mb-3 mt-3 max-w-[64ch] hyphens-auto text-[22px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-[28px]">{t.title}</h1>
-        {!isAi&&rule?<Excerpt text={rule.short} source={excerptSource} size="short"/>:<p className="max-w-none border-l-2 border-teal-600 pl-4 text-[16px] leading-relaxed text-slate-500 sm:text-[18px]">{shortText}</p>}
+        {rule?<Excerpt text={rule.short} source={excerptSource} size="short"/>:shortText?<p className="max-w-none border-l-2 border-teal-600 pl-4 text-[16px] leading-relaxed text-slate-500 sm:text-[18px]">{shortText}</p>:null}
 
         <div className="mt-8 grid gap-10 border-t border-slate-200 pt-8 lg:grid-cols-[minmax(0,1fr)_300px]">
           {/* Hauptspalte: Inhalt und Verlauf */}
           <div className="min-w-0">
             <section>
-              <h2 className="mb-3 text-[18px] font-semibold text-slate-900">{both?'Zusammenfassung':isAi?'Inhaltszusammenfassung':rule?'Auszug aus der Vorlage':'Worum es geht'}</h2>
-              {both&&<div className="mb-5"><Segmented label="Fassung der Zusammenfassung" options={[['ai','KI-Zusammenfassung'],['rule','Originalauszug']]} value={view} onPick={changeView}/></div>}
-              <div id={'summary-'+(showRule?'rule':'ai')+'-view'} role={both?'tabpanel':undefined} aria-labelledby={both?'summary-'+view+'-tab':undefined} tabIndex={both?0:undefined}>
-                {showRule?<div className="mb-4"><Excerpt text={withoutLead(rule.long,!isAi?rule.short:undefined)} source={excerptSource} size="long"/></div>:<>
-                  {isAi&&t.contentAnalysis?.status==='stale'&&<p role="status" className="mb-4 border-l-2 border-slate-300 pl-4 text-[14px] leading-relaxed text-slate-500">Die Quelldaten haben sich geändert. Diese KI-Zusammenfassung wurde noch nicht aktualisiert.</p>}
-                  {isAi&&coverage&&(coverage.partial||coverage.missing>0)&&<div className="mb-5 border-l-2 border-slate-300 pl-4 text-[14px] leading-relaxed text-slate-500"><p className="m-0">Unvollständige Quellenlage: {coverage.available} von {coverage.total} Unterlagen mit gespeichertem Sachtext.{coverage.partial?' Einige Texte sind nur teilweise lesbar.':''}</p>
-                    {!!t.contentAnalysis?.gaps?.length&&<details className="mt-2"><summary className="cursor-pointer text-teal-700">Fehlende Unterlagen ({t.contentAnalysis.gaps.length})</summary><ul className="m-0 mt-2 list-none space-y-3 p-0">{t.contentAnalysis.gaps.map((gap,index)=>{const url=sourceLink(gap.url);return <li key={index}>{url?<a href={url} target="_blank" rel="noopener noreferrer" className="break-words text-teal-700 hover:underline">{gap.title||'Originalunterlage'} ↗</a>:<span className="break-words">{gap.title||'Originalunterlage'}</span>}<span className="block text-[12px]">{gap.reason}</span></li>;})}</ul></details>}
-                  </div>}
-                  <div className={'mb-4'+(!isAi||!evidence.length?' border-l-2 border-teal-600 pl-4':'')}>{t.longSummary?.map((paragraph,index)=><div key={index}><p className="mb-4 max-w-none break-words text-[16px] leading-relaxed text-slate-900">{paragraph}</p>{isAi&&evidence.filter(value=>value.paragraphIndex===index).map((value,quoteIndex)=><OriginalQuote key={quoteIndex} evidence={value} topic={t}/>)}</div>)}</div>
-                  {isAi&&standaloneQuotes.length>0&&<div className="mb-5"><h3 className="mb-3 text-[16px] font-semibold text-slate-900">Originalzitate</h3>{standaloneQuotes.map((value,index)=><OriginalQuote key={index} evidence={value} topic={t}/>)}</div>}
-                  {isAi&&t.contentAnalysis&&<p className="mb-4 text-[12px] leading-relaxed text-slate-500">Erstellt am {formatDate(t.contentAnalysis.generatedAt)}{t.contentAnalysis.agent?' · '+t.contentAnalysis.agent:''}{t.contentAnalysis.model?' · '+t.contentAnalysis.model:''}{coverage?' · '+coverage.available+' von '+coverage.total+' Unterlagen':''}{t.contentAnalysis.reviewStatus==='not_independently_reviewed'?' · Nicht unabhängig fachlich geprüft':''}</p>}
-                </>}
+              <h2 className="mb-3 text-[18px] font-semibold text-slate-900">{rule?'Auszug aus der Vorlage':'Worum es geht'}</h2>
+              <div id="summary-rule-view">
+                {rule?<div className="mb-4"><Excerpt text={withoutLead(rule.long,rule.short)} source={excerptSource} size="long"/></div>:!ki&&!!t.longSummary?.length&&<div className="mb-4 border-l-2 border-teal-600 pl-4">{t.longSummary.map((paragraph,index)=><p key={index} className="mb-4 max-w-none break-words text-[16px] leading-relaxed text-slate-900">{paragraph}</p>)}</div>}
               </div>
               <p className="max-w-none border-l-2 border-teal-600 pl-4 text-[14px] text-slate-500">{status.description}</p>
             </section>
@@ -156,7 +131,6 @@ export function DetailPage(){
             <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-3 text-[14px] lg:grid-cols-1">
               {facts.map(([k,v])=><div key={k}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="m-0 text-slate-900">{v}</dd></div>)}
               {sourceLink(t.sourceUrl)&&<div><dt className="text-[12px] text-slate-500">Originalquelle</dt><dd className="m-0"><a className="text-teal-700 no-underline hover:underline" href={sourceLink(t.sourceUrl)} target="_blank" rel="noopener noreferrer">Im Ratsinformationssystem ↗</a></dd></div>}
-              {t.labelAssessments?.ai&&<div><dt className="text-[12px] text-slate-500">KI-Thema</dt><dd className="m-0 text-slate-900">{labelName(t.labelAssessments.ai.primary)}{t.labelAssessments.ai.status==='stale'&&<span className="block text-[12px] text-slate-500">Veraltet</span>}</dd></div>}
             </dl>
             <p className="mt-4 flex items-start gap-2 text-[14px] text-slate-500" title="Herkunft der Zusammenfassung"><span className="mt-0.5 text-teal-700">{source.icon}</span><span><span className="block text-[12px]">Zusammenfassung</span>{source.label}</span></p>
           </aside>

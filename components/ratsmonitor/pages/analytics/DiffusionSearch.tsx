@@ -29,7 +29,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
   const [typing, setTyping] = useState(false);
   const chips = filterChips(res.snapshot, geo);
   const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
-  const round = "relative grid border border-slate-200 bg-white hover:bg-slate-50 h-11 w-11 flex-none place-items-center rounded-full max-sm:rounded-xl max-sm:h-12 max-sm:w-12 transition-colors";
+  const round = "relative grid border border-slate-200 bg-white hover:bg-slate-50 h-11 w-11 flex-none place-items-center rounded-xl max-sm:h-12 max-sm:w-12 transition-colors";
   const filterBtn = (
     <button
       type="button"
@@ -41,7 +41,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
         if (!open && !allowFeature("filters")) return;
         setFiltersOpen(!open);
       }}
-      className={`${open ? "relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:rounded-xl max-sm:h-12 max-sm:w-12" : round} ${open || filterCount ? "text-teal-700" : "text-slate-700 hover:text-teal-700"}`}
+      className={`${open ? "relative grid h-11 w-11 flex-none place-items-center rounded-xl max-sm:h-12 max-sm:w-12" : round} ${open || filterCount ? "text-teal-700" : "text-slate-700 hover:text-teal-700"}`}
     >
       <IconFilter size={20} />
       {filterCount > 0 && !open && <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-teal-700 px-1 text-[12px] font-semibold leading-none text-white">{filterCount}</span>}
@@ -61,7 +61,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
     <>
       {(() => {
         const bar = (
-          <div className="rm-solid relative z-20">
+          <div className="rm-solid rm-xsearch relative z-20">
       <div role="search" className="flex w-full items-center gap-2">
           {noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${follow ? "max-sm:order-1" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} /> : filterBtn}</div>}
           {!noPlay && <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default max-sm:hidden`}>
@@ -73,7 +73,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg>
             )}
           </button>}
-          <div className="min-w-0 flex-1 rounded-full max-sm:rounded-xl border border-slate-200 bg-white [&_input]:rounded-full max-sm:[&_input]:rounded-xl" onFocusCapture={() => setTyping(true)} onBlurCapture={() => window.setTimeout(() => { if (!document.activeElement?.closest('[role="search"]')) setTyping(false); }, 150)}>
+          <div className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white [&_input]:rounded-xl" onFocusCapture={() => setTyping(true)} onBlurCapture={() => window.setTimeout(() => { if (!document.activeElement?.closest('[role="search"]')) setTyping(false); }, 150)}>
             <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} />
           </div>
           {follow && <div className={`flex-none max-sm:order-2 sm:hidden ${typing ? "max-sm:hidden" : ""}`}>{follow}</div>}

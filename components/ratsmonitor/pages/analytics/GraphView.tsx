@@ -235,7 +235,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
                 <circle className={n.type === "topic" ? "rm-gtopic" : undefined} r={n.r} fill={k.fill} stroke={k.stroke} strokeWidth={n.type === "land" ? 2.5 : 0} fillOpacity={n.type === "term" ? 0.88 : 1} />
                 {n.type === "center" && <rect x="-7" y="-7" width="14" height="14" fill="var(--rm-on)" />}
-                <text className="rm-gtext" y={size.w < 520 ? n.r + 14 / view.k : n.type === "center" ? n.r + 18 : n.r + 15} textAnchor="middle" fontSize={size.w < 520 ? (n.type === "center" ? 15 : 12.5) / view.k : n.type === "center" ? 18 : 12} fontWeight={n.type === "center" ? 600 : 400} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>{n.label}</text>
+                <text className="rm-gtext" y={n.r + 14 / view.k} textAnchor="middle" fontSize={(n.type === "center" ? 16 : 12.5) / view.k} fontWeight={n.type === "center" ? 600 : 400} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth="4" paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>{n.label}</text>
               </g>
             );
           })}

@@ -39,12 +39,12 @@ function Meldung({ i, hide, nr, total }: { i: Item; hide?: boolean; nr: number; 
   const [copied, setCopied] = useState(false);
   /* Handy: Überschrift, Satz und Zitat; der Rest hinter „Weiterlesen“ */
   const [weiter, setWeiter] = useState(false);
-  const rest = weiter ? "" : "max-sm:hidden";
+  const rest = weiter ? "" : "hidden";
   const copy = () => {
     navigator.clipboard?.writeText(asText(i)).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1800); }).catch(() => {});
   };
   return (
-    <article id={`meldung-${nr}`} className={`scroll-mt-16 border-b border-slate-200 py-7 max-sm:py-3.5 ${hide ? "max-sm:hidden" : ""}`}>
+    <article id={`meldung-${nr}`} className={`scroll-mt-16 border-b border-slate-200 py-6 max-sm:py-3.5 ${hide ? "hidden" : ""}`}>
       <p className="m-0 text-[12px] text-slate-500"><b className="font-semibold text-teal-700 sm:hidden">{nr} von {total} · </b>{i.dateline.place}{i.dateline.committee ? ` · ${i.dateline.committee}` : ""} · {datum(i.dateline.date)}</p>
       <h3 className="m-0 mt-1 text-[18px] font-semibold leading-snug sm:text-[22px]"><Link href={`/beschluss/${i.id}`} className="text-slate-900 no-underline hover:text-teal-800">{i.headline}</Link></h3>
       <p className="m-0 mt-3 max-sm:mt-2 max-w-[820px] text-[16px] leading-relaxed max-sm:leading-[1.5] text-slate-900">
@@ -54,7 +54,7 @@ function Meldung({ i, hide, nr, total }: { i: Item; hide?: boolean; nr: number; 
       </p>
       <p className={`m-0 mt-3 text-[12px] text-slate-500 ${rest}`}>Quelle: {i.source} · {HINWEIS}</p>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-0 max-sm:mt-1">
-        {(i.more || i.body.length > 0) && <button type="button" onClick={() => setWeiter(!weiter)} aria-expanded={weiter} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{weiter ? "Weniger" : "Weiterlesen"}</button>}
+        {(i.more || i.body.length > 0) && <button type="button" onClick={() => setWeiter(!weiter)} aria-expanded={weiter} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{weiter ? "Weniger" : "Weiterlesen"}</button>}
         <Link href={`/beschluss/${i.id}`} className="inline-flex max-sm:min-h-[44px] items-center text-[14px] font-medium text-teal-700 no-underline">Zum Vorgang →</Link>
         <button type="button" onClick={copy} className="inline-flex max-sm:hidden items-center text-[14px] font-medium text-teal-700">{copied ? "Kopiert" : "Meldung kopieren"}</button>
         <ShareButton title={i.headline} url={typeof window === "undefined" ? `/beschluss/${i.id}` : `${window.location.origin}/beschluss/${i.id}`} className="sm:hidden" />
@@ -86,7 +86,7 @@ export function NewsradarPage() {
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
-      <div className={`mt-4 flex flex-wrap items-center gap-2 print:hidden${own ? "" : " max-sm:hidden"}`} role="group" aria-label="Zeitraum">
+      <div className={`mt-3 flex flex-wrap items-center gap-2 print:hidden${own ? "" : " max-sm:hidden"}`} role="group" aria-label="Zeitraum">
         {own ? (
           <p className="m-0 text-[14px] text-slate-700">Zeitraum aus dem Filter{res?.own ? `: ${datum(res.from)} bis ${datum(res.to)}` : ""}</p>
         ) : (
@@ -107,9 +107,9 @@ export function NewsradarPage() {
               <nav aria-label="Meldungen" className="-mx-4 mt-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden">
                 {res.items.map((k, n) => (n >= sicht) ? null : <a key={k.id} href={`#meldung-${n + 1}`} className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 no-underline"><b className="font-semibold tabular-nums text-teal-700">{n + 1}</b>{k.dateline.place.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt) /, "")}</a>)}
               </nav>
-              <Reveal><section className="mt-6 max-sm:mt-3 border-t border-slate-200">
+              <Reveal><section className="mt-4 max-sm:mt-3 border-t border-slate-200">
                 {res.items.map((k, n) => <Meldung key={k.id} i={k} nr={n + 1} total={res.items.length} hide={n >= sicht} />)}
-                {res.items.length > sicht && <button type="button" onClick={() => setSicht((v) => v + 5)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{`Weitere ${Math.min(5, res.items.length - sicht)} Meldungen laden`}</button>}
+                {res.items.length > sicht && <button type="button" onClick={() => setSicht((v) => v + 5)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{`Weitere ${Math.min(5, res.items.length - sicht)} Meldungen laden`}</button>}
               </section></Reveal>
               <MethodikNote>Nachrichtenwert nach festen Regeln: Konflikt, Tragweite, Alltagsnähe und Aktualität. Jede Meldung zitiert wörtlich aus der Vorlage; Vorgänge ohne zitierbaren Satz erscheinen nicht.</MethodikNote>
             </>

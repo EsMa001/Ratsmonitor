@@ -57,8 +57,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const boxRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 800, h: 560 });
   const [view, setView] = useState({ x: 0, y: 0, k: 1 });
-  /* Handy (schmal): Namen in fester Bildschirmgröße, bei wenig Zoom nur die wichtigsten */
-  const phone = size.w < 520;
+  /* Namen in fester Bildschirmgröße (Handy und Desktop gleich), bei wenig Zoom nur die wichtigsten */
   const fitK = useRef(1);
   const bounds = useCallback((): NetBox => {
     const l = sim.current;
@@ -133,7 +132,6 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   /* Handy: welche Namen Platz haben (Rangfolge: gewählte und ihre Nachbarn, dann nach Durchsatz; Namen außerhalb des Bildes entfallen) */
   const labelSet = useMemo(() => {
     const set = new Set<string>();
-    if (!phone) return set;
     const boxes: { x0: number; x1: number; y0: number; y1: number }[] = [];
     const prio = (n: P) => (n.id === selected ? -2 : focus && near.has(n.id) ? -1 : rank.get(n.id) ?? 99);
     for (const n of [...shown].sort((a, b) => prio(a) - prio(b))) {
@@ -146,7 +144,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
       boxes.push(box); set.add(n.id);
     }
     return set;
-  }, [shown, view, size.w, size.h, selected, focus, near, rank, phone]);
+  }, [shown, view, size.w, size.h, selected, focus, near, rank]);
 
   /* Gebogene Kante von Rand zu Rand, Pfeilspitze am Ziel */
   const path = (a: P, b: P, bend: number) => {
@@ -219,13 +217,13 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
           })}
           {shown.map((n) => {
             const k = ROLE[n.role], on = !focus || near.has(n.id), sel = n.id === selected, lines = wrap(n.name, 17);
-            /* Handy: Namen in fester Bildschirmgröße; gezeigt werden so viele, wie sich nicht überlappen (wichtige zuerst, beim Zoomen mehr) */
-            const label = !phone || labelSet.has(n.id);
-            const fs = phone ? 12.5 / view.k : 12, lh = phone ? 15 / view.k : 14, off = phone ? 14 / view.k : 16, sw = phone ? 3 / view.k : 4;
+            /* Namen in fester Bildschirmgröße; gezeigt werden so viele, wie sich nicht überlappen (wichtige zuerst, beim Zoomen mehr) */
+            const label = labelSet.has(n.id);
+            const fs = 12.5 / view.k, lh = 15 / view.k, off = 14 / view.k, sw = 3 / view.k;
             return (
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.2} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
                 {sel && <circle r={n.r + 6} fill="none" stroke="var(--rm-fill)" strokeWidth="2" strokeDasharray="3 4" />}
-                <circle r={phone ? Math.max(n.r, 7 / view.k) : n.r} fill={k.fill} stroke={k.stroke} strokeWidth="2" />
+                <circle r={Math.max(n.r, 7 / view.k)} fill={k.fill} stroke={k.stroke} strokeWidth="2" />
                 {label && <text textAnchor="middle" fontSize={fs} fill="var(--rm-c900)" stroke="var(--rm-white)" strokeWidth={sw} paintOrder="stroke" strokeLinejoin="round" style={{ pointerEvents: "none" }}>
                   {lines.map((l, i) => <tspan key={i} x="0" y={n.r + off + i * lh}>{l}</tspan>)}
                 </text>}

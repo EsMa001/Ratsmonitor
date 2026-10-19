@@ -10,6 +10,8 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarDrill } from "./RadarDrill";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { MethodikNote } from "./Methodik";
+import { TabPane } from "./Tabs";
+import { Segmented } from "./Kennzahlen";
 
 interface Cell { id: string; name: string; n: number; share: number | null; index: number | null }
 interface Party {
@@ -43,9 +45,10 @@ export function FraktionenPage() {
   const [open, setOpen] = useState("");
   /* Handy: nur die ersten 6 Fraktionen je Liste, bis „Alle zeigen“ */
   const [allP, setAllP] = useState(false);
+  const [tab, setTab] = useState<"je" | "themen" | "ausgang">("je");
   /* Handy, Themenprofil: Fraktionen, deren alle Themen aufgeklappt sind */
   const [openT, setOpenT] = useState<Record<string, boolean>>({});
-  const rowHide = (i: number) => (!allP && i >= 6 ? " max-sm:hidden" : "");
+  const rowHide = (i: number) => (!allP && i >= 6 ? " hidden" : "");
   const toggle = (k: string) => setOpen(open === k ? "" : k);
 
   /* Liste hinter einer Zeile: alle Vorgänge der Fraktion (all) oder ihre Anträge mit Entscheidung (decided) */
@@ -79,6 +82,8 @@ export function FraktionenPage() {
                   ["Anfragen", n(parties.reduce((a, p) => a + p.anfrage, 0))]
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
 
+              <div className="mt-8 max-sm:hidden print:hidden"><Segmented label="Teil der Auswertung" options={[["je", "Anträge je Fraktion"], ["themen", "Themenprofil"], ["ausgang", "Was aus den Anträgen wird"]]} value={tab} onPick={setTab} /></div>
+              <TabPane on={tab === "je"}>
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Anträge und Anfragen je Fraktion</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Gemeinsame Anträge zählen bei jeder beteiligten Fraktion. <span className="sm:hidden">Zahl rechts: Anträge und Anfragen zusammen; Tippen zeigt die Liste.</span></p>
@@ -104,7 +109,9 @@ export function FraktionenPage() {
                 {res.small.length > 0 && <p className="mt-2 text-[12px] text-slate-500">Mit weniger als 10 Vorgängen nicht einzeln gezeigt: {res.small.map((s) => `${s.name} (${s.n})`).join(", ")}.</p>}
               </section></Reveal>
 
-              {parties.length > 6 && <button type="button" onClick={() => setAllP(!allP)} className="mt-3 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 sm:hidden">{allP ? "Weniger Fraktionen zeigen" : `Alle ${parties.length} Fraktionen zeigen`}</button>}
+              {parties.length > 6 && <button type="button" onClick={() => setAllP(!allP)} className="mt-3 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{allP ? "Weniger Fraktionen zeigen" : `Alle ${parties.length} Fraktionen zeigen`}</button>}
+              </TabPane>
+              <TabPane on={tab === "themen"}>
               <Reveal><section className="mt-12 max-sm:mt-8">
                 <h2 className="text-[22px] font-semibold">Themenprofil</h2>
                 <p className="mb-4 max-sm:mb-2 mt-1 max-w-[760px] text-[14px] text-slate-500 max-sm:line-clamp-2">Anteil je Themenfeld an den Anträgen und Anfragen einer Fraktion. Kräftiges Petrol: deutlich häufiger als bei den anderen.</p>
@@ -153,7 +160,9 @@ export function FraktionenPage() {
                   </table>
                 </div>
               </section></Reveal>
+              </TabPane>
 
+              <TabPane on={tab === "ausgang"}>
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Was aus den Anträgen wird</h2>
                 <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil beschlossener Anträge an den entschiedenen, je Fraktion ab 10 Anträgen. Empfiehlt die Vorlage, dem Antrag nicht zu folgen, zählt er als abgelehnt.</p>
@@ -161,9 +170,10 @@ export function FraktionenPage() {
                   {([["beschlossen", DEC_COLORS.approved], ["vertagt", DEC_COLORS.postponed], ["abgelehnt", DEC_COLORS.rejected]] as const).map(([l, c]) => <li key={l} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
                 </ul>
                 {decided.length === 0 ? <p className="text-[14px] text-slate-500">Zu wenige entschiedene Anträge für diese Suche.</p> : (
-                  <ol className="m-0 list-none border-t border-slate-200 p-0">{decided.map((p) => <DecisionRow key={p.name} cut={{ id: p.name, name: p.name, decided: p.decided, approved: p.approved, rejected: p.rejected, postponed: p.postponed, rate: p.rate }} onToggle={() => toggle(`decided:${p.name}`)} expanded={open === `decided:${p.name}`} drill={drill("decided", p.name, `${p.name}: Anträge mit Entscheidung`)} />)}</ol>
+                  <ol className="m-0 list-none border-t border-slate-200 p-0">{(allP ? decided : decided.slice(0, 6)).map((p) => <DecisionRow key={p.name} cut={{ id: p.name, name: p.name, decided: p.decided, approved: p.approved, rejected: p.rejected, postponed: p.postponed, rate: p.rate }} onToggle={() => toggle(`decided:${p.name}`)} expanded={open === `decided:${p.name}`} drill={drill("decided", p.name, `${p.name}: Anträge mit Entscheidung`)} />)}</ol>
                 )}
               </section></Reveal>
+              </TabPane>
 
               <MethodikNote>Die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei.</MethodikNote>
             </>

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { usePhone } from "../lib/usePhone";
 import Link from "next/link";
 import { Ladefehler, PageHead } from "./blocks";
 import type { Branche } from "./content";
@@ -24,9 +23,8 @@ const suchLink = (term: string) => {
 /** Beleg: ein echter Vorgang, jede Sitzung mit Datum und Link */
 function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
   /* Handy: zuerst die ersten drei Schritte, der Rest auf Wunsch */
-  const phone = usePhone();
   const [alle, setAlle] = useState(false);
-  const sicht = phone && !alle ? 3 : b.schritte.length;
+  const sicht = !alle ? 3 : b.schritte.length;
   const first = b.schritte[0].d, last = b.schritte[b.schritte.length - 1].d;
   const monate = Math.round((Date.parse(last) - Date.parse(first)) / 2629800000);
   return (
@@ -46,7 +44,7 @@ function Beleg({ b }: { b: NonNullable<Branche["beleg"]> }) {
           </li>
         ))}
       </ol>
-      {phone && b.schritte.length > 3 && <button type="button" aria-expanded={alle} onClick={() => setAlle(!alle)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 hover:underline sm:hidden">{alle ? "Weniger Schritte zeigen" : `Alle ${b.schritte.length} Schritte zeigen`}</button>}
+      {b.schritte.length > 3 && <button type="button" aria-expanded={alle} onClick={() => setAlle(!alle)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 hover:underline sm:hidden">{alle ? "Weniger Schritte zeigen" : `Alle ${b.schritte.length} Schritte zeigen`}</button>}
     </section>
   );
 }

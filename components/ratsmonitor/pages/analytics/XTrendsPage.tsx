@@ -208,7 +208,6 @@ export function XTrendsPage() {
                 className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === zeit ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>)}
             </span>
             <MeinOrt current={area && areaName ? { ags: area, name: areaName } : null} onApply={(ags) => search.setArea(ags, "ui")} />
-            <span className="max-sm:hidden"><Folgen /></span>
           </Kennzahlen>
 
           <div className="mt-6 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">

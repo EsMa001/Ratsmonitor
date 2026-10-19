@@ -134,7 +134,7 @@ export function MeinOrt({ current, onApply }: { current: { ags: string; name: st
 export function Folgen({ before, hint, showText = false, heart = false }: { before?: () => void; hint?: string; /** Handy: Name zeigen statt nur der Glocke */ showText?: boolean; /** Herz in der Größe der Suchleiste (neben dem Suchfeld) */ heart?: boolean }) {
   const { openSaveDialog } = useUi();
   if (heart) return <button type="button" title={hint ?? "Suche speichern: neue Vorgänge per Mail"} onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }} aria-label="Suche speichern"
-    className="grid h-12 w-12 flex-none place-items-center rounded-full max-sm:rounded-xl border border-slate-200 bg-white text-teal-700 transition-colors hover:bg-slate-50 print:hidden"><Heart size={20} strokeWidth={1.5} aria-hidden="true" /></button>;
+    className="grid h-12 w-12 flex-none place-items-center rounded-xl border border-slate-200 bg-white text-teal-700 transition-colors hover:bg-slate-50 print:hidden"><Heart size={20} strokeWidth={1.5} aria-hidden="true" /></button>;
   return <button type="button" title={hint ?? "Neue Vorgänge zu dieser Auswahl per Mail"} onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }}
     aria-label="Folgen" className="inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-700 px-3 text-[14px] font-medium text-teal-700 hover:bg-teal-50 max-sm:px-2.5 print:hidden">
     <Bell size={14} strokeWidth={1.5} aria-hidden="true" /><span className={showText ? "" : "max-sm:sr-only"}>Folgen</span></button>;

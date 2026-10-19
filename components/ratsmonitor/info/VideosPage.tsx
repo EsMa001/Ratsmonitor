@@ -119,7 +119,7 @@ export function VideosPage() {
     <>
       <PageHead icon="circlePlay" label="Informationen" name="Videos" title={<>plenara in Bewegung. In Minuten erklärt.</>} lead="Besser verstehen, was vor Ort beraten wird. In unter einer Minute oder in acht Minuten." />
       <section className="ri-sec max-sm:!py-5">
-        <div className="grid items-center gap-8 max-sm:gap-3 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
+        <div className="grid items-center gap-8 max-sm:gap-3 lg:grid-cols-[1fr_1fr] lg:gap-10">
           <Player base={variant(PITCH, dark)} poster={variant(PITCH, dark)} label="Kurzvideo abspielen: plenara in unter einer Minute" />
           <div className="max-sm:order-first">
             <p className="m-0 text-[14px] font-semibold uppercase tracking-wide text-teal-700">Unter 45 Sekunden</p>
@@ -132,7 +132,7 @@ export function VideosPage() {
         <p className="m-0 text-[14px] font-semibold uppercase tracking-wide text-teal-700">Gut sechs Minuten</p>
         <h2 className="m-0 mt-1 text-[22px] font-semibold text-slate-900">Alle Funktionen von plenara und plenara.X</h2>
         <p className="mb-6 max-sm:mb-3 mt-1 text-[16px] text-slate-500">Von der ersten Suche bis zur Analyse. Untertitel lassen sich im Player zuschalten.</p>
-        <div className="grid items-start gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-10">
+        <div className="grid items-start gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-8">
           <Player base={variant(FULL, dark)} poster={variant(FULL, dark)} label="Vollständiges Video abspielen" onTime={(t) => setNow(Math.floor(t))} seekRef={ctlRef} />
           <div className="grid gap-5 max-sm:hidden sm:grid-cols-2 lg:max-h-[34rem] lg:grid-cols-1 lg:overflow-y-auto">
             <ChapterList title="plenara" items={PLENARA} now={now} go={go} />

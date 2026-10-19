@@ -454,7 +454,6 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                   {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
                   <span className="max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></span>
                   <MeinOrt current={areaAgs && place ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} />
-                  <span className="max-sm:hidden"><Folgen before={() => { if (theme) search.setThema(theme); }} hint="Neue Vorgänge zu Thema, Ort und Suche per Mail (Unterthemen werden nicht gespeichert)" /></span>
                 </Kennzahlen>}
 
               {place && cmp && <div className="mt-2 max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></div>}

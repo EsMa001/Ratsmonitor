@@ -3,7 +3,7 @@ import { useData } from "../../state/data";
 import type { PlaceEntry } from "../../lib/place";
 
 /** Eingabefeld im Stil der Seite */
-export const FIELD = "h-11 max-sm:h-10 w-full rounded-full max-sm:rounded-xl border border-slate-200 bg-white px-4 text-[16px] text-slate-900 outline-none placeholder:text-slate-500 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20";
+export const FIELD = "h-11 max-sm:h-10 w-full rounded-xl border border-slate-200 bg-white px-4 text-[16px] text-slate-900 outline-none placeholder:text-slate-500 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20";
 
 /**
  * Ortsfeld für den Ortsvergleich: ab drei Buchstaben erscheinen Vorschläge, ein Klick (oder Enter) wählt den Ort.
@@ -22,7 +22,7 @@ export function PlaceField({ label, color, value, onChange, onEnter }: { label: 
     <div className="relative min-w-0">
       <label htmlFor={uid} className="mb-1.5 max-sm:mb-1 flex items-center gap-2 text-[14px] font-medium text-slate-700"><i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: color }} />{label}</label>
       {value ? (
-        <div className="flex h-11 max-sm:h-10 items-center justify-between gap-2 rounded-full max-sm:rounded-xl border border-slate-200 bg-slate-50 pl-4 pr-1.5">
+        <div className="flex h-11 max-sm:h-10 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 pl-4 pr-1.5">
           <span className="min-w-0 truncate text-[16px] font-medium text-slate-900">{value.name}</span>
           <button type="button" onClick={() => onChange(null)} aria-label={`${value.name} entfernen`} className="grid h-8 w-8 max-sm:h-10 max-sm:w-10 shrink-0 place-items-center rounded-full max-sm:rounded-lg text-slate-500 hover:bg-slate-200 hover:text-slate-900">
             <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>

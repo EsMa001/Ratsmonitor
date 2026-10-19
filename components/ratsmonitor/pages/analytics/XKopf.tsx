@@ -47,6 +47,7 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   const s = SEITEN[seite], path = usePathname();
   const router = useRouter(), { goBack } = useAppNav();
   return (
+    <>
     <PageBand compact>
       {/* Kein Pfad, nur Zurück wie auf den übrigen Seiten (Artikel) */}
       <button type="button" className="back-btn -ml-1.5 mb-1 print:hidden" onClick={() => (cameFromApp() ? router.back() : goBack())}><IconChevronLeft />Zurück</button>
@@ -75,6 +76,26 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
         </nav>
       )}
     </PageBand>
+    <FragenLeiste seite={seite} />
+    </>
+  );
+}
+
+/* Desktop: alle plenara.X-Seiten als Fragen in einer Reihe (am Handy übernimmt das Blatt der unteren Leiste); Suchbegriff und Ort gelten dort weiter */
+const REIHE = ["atlas", "vergleich", "trends", "beschluesse", "signale", "fakten", "ausschreibungen", "news", "fraktionen", "gremien", "graph"] as const;
+function FragenLeiste({ seite }: { seite: string }) {
+  return (
+    <nav aria-label="Weitere Fragen an plenara.X" className="-mt-2 mb-4 flex gap-1.5 overflow-x-auto pb-1 max-sm:hidden print:hidden [scrollbar-width:none]">
+      {REIHE.map((k) => {
+        const z = SEITEN[k], on = k === seite;
+        return (
+          <Link key={k} href={`/analytics/${k}`} aria-current={on ? "page" : undefined} scroll={false} title={`${z.titel.replace("plenara.X ", "")}: ${z.text}`}
+            className={`inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3 text-[14px] no-underline ${on ? "bg-slate-900 font-medium text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>
+            <Icon name={z.icon} size={14} />{z.frage}
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
 
