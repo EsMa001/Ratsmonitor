@@ -8,8 +8,8 @@ import { IconChevronLeft } from "../../components/icons";
 import { PageBand } from "./PageBand";
 import { Icon, type IconName } from "../../info/icons";
 import { AnalyticsX } from "../../components/Brand";
+import { MapWheels } from "./MapWheels";
 import { ThemeIcon } from "../../components/icons";
-import { WheelPicker } from "../../components/WheelPicker";
 import { useSearch } from "../../state/search";
 import { THEMES } from "@/shared/themes.mjs";
 import { useBandFigure, useCountUp } from "../../lib/bandFigure";
@@ -156,13 +156,14 @@ export function XWeiter({ links }: { links: [string, string][] }) {
 }
 
 /** Die 10 Themen als Kacheln (Filter „Thema“ der gemeinsamen Suche), gleich auf Trends, Beschlusslage und den Einblicken */
-export function ThemenLeiste() {
+/* phone: false = am Handy ohne Walze (die Seite zeigt die Themen selbst auf der Karte) */
+export function ThemenLeiste({ phone = true }: { phone?: boolean } = {}) {
   const search = useSearch();
   return (
     <>
-      {/* Handy: Chip-Reihe zum Wischen statt drei Reihen Kacheln */}
-      <WheelPicker label="Thema" className="mb-3" value={search.state.thema} onPick={(name) => search.setThema(name)}
-        items={[{ id: "", label: "Alle Themen", name: "alle" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.name, label: t.name, name: t.id }))].map((t) => ({ id: t.id, label: t.label, icon: <ThemeIcon theme={t.name} size={18} className="text-slate-500" />, iconOn: <ThemeIcon theme={t.name} size={18} className="text-white" /> }))} />
+      {/* Handy: die Themen als eine Walzen-Zeile (wischen blättert, ein Tipp öffnet die Liste) */}
+      {phone && <MapWheels inline single label="Thema" value={search.state.thema} onPick={(name) => search.setThema(name)}
+        items={[{ id: "", label: "Alle Themen", icon: <ThemeIcon theme="alle" size={16} className="text-slate-500" /> }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.name, label: t.name, icon: <ThemeIcon theme={t.id} size={16} className="text-slate-500" /> }))]} />}
       {/* Ab Tablet Kacheln; ab Desktop alle 11 in einer Reihe (Breite teilt sich auf) */}
       <nav aria-label="Thema" className="rm-xrail mb-4 hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">

@@ -9,7 +9,12 @@ export function Laden({ text, karte = false }: { text: string; karte?: boolean }
   }, []);
   return (
     <div className="mt-8" role="status" aria-live="polite">
-      <div className="animate-pulse" aria-hidden="true">
+      {/* Handy mit Karte: der Platzhalter hat schon die neue Gestalt (randlose Karte, Walzen-Zeile oben, Suchleiste unten) */}
+      {karte && <div aria-hidden="true" className="relative -mx-[max(1vw,16px)] -mt-8 h-[calc(100svh-170px-var(--rm-tabbar))] animate-pulse bg-slate-100/70 sm:hidden">
+        <div className="absolute inset-x-2 top-2 h-12 rounded-full bg-white/80" />
+        <div className="absolute inset-x-2 bottom-2 h-12 rounded-full bg-white/80" />
+      </div>}
+      <div className={`animate-pulse ${karte ? "max-sm:hidden" : ""}`} aria-hidden="true">
         <div className="h-7 w-[min(640px,90%)] rounded-full bg-slate-100" />
         <div className="mt-3 h-7 w-[min(420px,70%)] rounded-full bg-slate-100" />
         <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">{[0, 1, 2, 3].map((i) => <div key={i} className="h-14 rounded-xl bg-slate-100" />)}</div>

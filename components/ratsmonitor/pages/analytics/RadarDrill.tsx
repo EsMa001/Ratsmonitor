@@ -33,11 +33,11 @@ function ActionRow({ icon, children }: { icon: ReactNode; children: ReactNode })
   );
 }
 
-export function RadarDrill({ base, query, by, value, label, unit, limit, onAll, footer }: { base: string; query: string; by: string; value: string; label: string; unit?: [string, string]; limit?: number; onAll?: (total: number) => void; footer?: React.ReactNode }) {
+export function RadarDrill({ base, query, by, value, label, unit, limit, plain = false, onAll, footer }: { /** Handy: die Einträge als normale Liste zeigen statt in der Walze (bei schon gewählter Auswahl, wo die Liste im Mittelpunkt steht) */ plain?: boolean; base: string; query: string; by: string; value: string; label: string; unit?: [string, string]; limit?: number; onAll?: (total: number) => void; footer?: React.ReactNode }) {
   /* Handy: bis zu 10 Vorgänge in einem Fenster von etwa 3 Zeilen zum Wischen (statt nur 3 untereinander) */
   const phone = usePhone();
-  const cap = limit && phone ? Math.max(limit, 10) : limit;
-  const wheel = !!(limit && phone);
+  const cap = limit && phone && !plain ? Math.max(limit, 10) : limit;
+  const wheel = !!(limit && phone && !plain);
   const [items, setItems] = useState<DrillItem[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);

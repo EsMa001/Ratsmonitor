@@ -1,5 +1,7 @@
 import { Kennzahlen, Folgen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
+import { ListSkeleton } from "./ListSkeleton";
+import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
 import { Befund, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -38,6 +40,8 @@ export function GremiennetzPage() {
   /* Der Hinweis zum Bedienen verschwindet nach 6 Sekunden */
   const [tipDone, setTipDone] = useState(false);
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/network?${query}`, initial: true, fallback: "Das Netz konnte nicht berechnet werden.", onDone: () => setSelected("") });
+  /* Neue Auswahl rechnet noch: statt des alten Ergebnisses pulsierende Kacheln (Bühne und Listen) */
+  const pending = loading && !!res && ranKey !== query;
   useEffect(() => {
     if (!res) return;
     const id = window.setTimeout(() => setTipDone(true), 6000);
@@ -88,6 +92,7 @@ export function GremiennetzPage() {
   return (
     <main id="inhalt" className="rm-xnet rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="gremien" />
+      <SplitHandle />
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
@@ -112,6 +117,7 @@ export function GremiennetzPage() {
               {netz && <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[12px] text-slate-700 sm:hidden">{(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => <li key={r} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-full" style={{ background: NET_KIND[r].fill }} />{NET_KIND[r].label}</li>)}<li className="basis-full text-slate-500">Größe: Durchsatz · Linie: Vorgänge · Wischen verschiebt, zwei Finger zoomen</li></ul>}
               {res.nodes.length > 7 && <div className={`${netz ? "" : "max-sm:hidden"} rm-xseg mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]] as ["overview" | "normal" | "detail", string][]} value={level} onPick={setLevel} /></div>}
               <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-2 h-[360px] max-sm:h-[440px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
+                {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
                 <NetView route={routeIds.length > 1 ? routeIds : null} nodes={net.nodes} edges={net.edges} selected={selected} onSelect={(id) => { setRouteNo(null); setSelected(id); }} zoomRef={zoomRef} />
                 <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:hidden">
                   <ul className="m-0 flex list-none flex-col gap-1 p-0">
@@ -143,6 +149,8 @@ export function GremiennetzPage() {
               </section>
 
 
+              {pending && <ListSkeleton />}
+              <div className={pending ? "hidden" : undefined}>
               <div className="mt-8 max-sm:hidden print:hidden"><Segmented label="Teil der Auswertung" options={[["wege", "Wichtigste Übergänge"], ["routen", "Typische Beratungswege"], ["rollen", "Rollen im Netz"]]} value={tab} onPick={setTab} /></div>
               <div className="mt-6 max-sm:mt-8 grid gap-12 max-sm:gap-6">
                 <TabPane on={tab === "wege"}><section>
@@ -200,6 +208,7 @@ export function GremiennetzPage() {
                 {moreBtn("o", ranked.length, 6)}
               </section>
               </Reveal></TabPane>
+              </div>
             </>
           )}
           <MethodikNote>Grundlage sind {n(res.examined)}{res.capped ? ` gleichmäßig ausgewählte von ${n(res.pool)}` : ""} Vorgängen mit Beratung oder Entscheidung. Nur Vorgänge, die in mindestens zwei verschiedenen Gremien behandelt wurden, bilden Übergänge ({n(res.paths)}). Stationen werden nach Datum geordnet, aufeinanderfolgende Stationen im selben Gremium zählen einmal. {res.mode === "types" ? "Ohne einzelnen Ort sind die Gremien nach ihrer Art aus dem Namen zusammengefasst (zum Beispiel Haupt- und Verwaltungsausschuss), weil jeder Ort eigene Namen hat. " : "Mit einem Ort gelten dessen echte Gremiennamen. "}Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab; die Zeit je Übergang ist der Abstand der Sitzungstermine.</MethodikNote>

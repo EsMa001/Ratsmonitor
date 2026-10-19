@@ -1,5 +1,7 @@
 import { Segmented, Folgen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
+import { ListSkeleton } from "./ListSkeleton";
+import { SplitHandle } from "./SplitHandle";
 import { Befund, Fehler } from "./Befund";
 import { RadarDrill } from "./RadarDrill";
 import { useSearchParams } from "next/navigation";
@@ -67,6 +69,8 @@ export function KnowledgeGraphPage() {
   const [allPairs, setAllPairs] = useState(false);
   const TYP: Record<string, string> = { term: "Begriff", topic: "Thema", committee: "Gremium", land: "Land" };
   const res = runRes, ranKey = runKey, loading = runLoading;
+  /* Neue Auswahl rechnet noch: statt des alten Ergebnisses pulsierende Kacheln (Bühne und Listen) */
+  const pending = loading && !!res && ranKey !== query;
   const [hint, setHint] = useState("");
   /* Vorige Netze: „Zurück“ im Netz führt zu Begriff und Thema davor; der Hinweis zum Bedienen verschwindet nach 5 Sekunden */
   const [trail, setTrail] = useState<{ q: string; thema: string }[]>([]);
@@ -177,6 +181,7 @@ export function KnowledgeGraphPage() {
   return (
     <main id="inhalt" className="rm-xnet rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="graph" />
+      <SplitHandle />
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} /></div>
@@ -204,6 +209,7 @@ export function KnowledgeGraphPage() {
         ))}
       </ul>}
       <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
+        {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
         {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
         {trail.length > 0 && res && !empty && (
@@ -261,6 +267,8 @@ export function KnowledgeGraphPage() {
       {res && !empty && (
         <>
 
+          {pending && <ListSkeleton />}
+          <div className={pending ? "hidden" : undefined}>
           {!!res.partial?.length && (
             <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); start(); }} className="font-medium text-teal-700">Nur ganze Wörter →</button></p>
           )}
@@ -289,6 +297,7 @@ export function KnowledgeGraphPage() {
             </section>}
           </div>
           <MethodikNote>{res.q === "" ? `Grundlage sind alle ${n(res.total)} Vorgänge${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind alle ${n(res.total)} passenden Vorgänge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht.</MethodikNote>
+          </div>
         </>
       )}
     <XWeiter links={[["/analytics/trends", "plenara.X Trends"], ["/analytics/atlas", "plenara.X Themenatlas"]]} />

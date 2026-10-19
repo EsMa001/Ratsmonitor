@@ -3,12 +3,16 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Befund, Fehler } from "./Befund";
 import { XKopf, XWeiter } from "./XKopf";
+import { ListSkeleton } from "./ListSkeleton";
+import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { useSearch } from "../../state/search";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
+import { MapWheels } from "./MapWheels";
+import { MapHint } from "./MapHint";
 import { RadarDrill } from "./RadarDrill";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, useOrtInAdresse } from "./Kennzahlen";
 import { Baby, Banknote, Building2, Coins, Dog, Droplets, Factory, HandCoins, House, LayoutGrid, Map as MapIcon, Percent, Route, Sprout, Ticket, Trash2, Wind, Zap, type LucideIcon } from "lucide-react";
@@ -43,7 +47,9 @@ export function FaktenPage() {
   const { query, search } = useAnalyticsQuery();
   /* Werte für ganz Deutschland: ein gewählter Ort wird auf der Karte markiert und auf der Skala eingeordnet, nicht herausgefiltert */
   const url = `/api/x?view=fakten&${(() => { const p = new URLSearchParams(query); for (const k of ["area", "scope", "more", "within", "without"]) p.delete(k); return p; })()}`;
-  const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
+  /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
+  const pending = loading && !!res && ranKey !== url;
   /* Suche oder Filter geändert (auch ein entfernter Ort): nach kurzer Pause von selbst neu rechnen, wie im Atlas */
   useEffect(() => {
     if (!stale || loading) return;
@@ -159,9 +165,10 @@ export function FaktenPage() {
   return (
     <main id="inhalt" className="rm-xwide rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="fakten" />
+      <SplitHandle />
 
       {/* Fakten als Kacheln wie die Themen im Atlas: Icon über dem Namen; Handy 4 je Reihe */}
-      <nav aria-label="Fakt" className="rm-xrail print:hidden">
+      <nav aria-label="Fakt" className="rm-xrail max-sm:hidden print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {[{ kind: "alle", name: "Alle" }, ...facts].map((f) => {
             const on = f.kind === "alle" ? allFacts : f === fact;
@@ -188,7 +195,7 @@ export function FaktenPage() {
           })}
         </ul>
       </nav>
-      {metrics.length > 1 && <nav aria-label="Wert" className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
+      {metrics.length > 1 && <nav aria-label="Wert" className="mt-2 border-t-2 border-teal-600 pt-2 max-sm:hidden print:hidden">
         {/* Werte als kleine Kacheln mit Symbol (wie die Arten bei den Signalen) */}
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {[["alle", "Alle Werte"], ...metrics.map((m) => [m, m])].map(([k, l]) => {
@@ -223,18 +230,18 @@ export function FaktenPage() {
           <Zeitregler />
           {LINKS[fact?.kind ?? ""] && <p className="mt-1 text-[14px] text-slate-500">{[...LINKS[fact!.kind], ["/analytics/beschluesse", "Beschlüsse dazu"] as [string, string]].map(([h, text], i) => { const ort = /^\d{5,9}$/.test(areaAgs) ? areaAgs : "", href = h.includes("beschluesse") ? `${h}?q=${encodeURIComponent(fact!.name)}${ort ? `&ort=${ort}` : ""}` : ort ? `${h}${h.includes("?") ? "&" : "?"}ort=${ort}` : h; return <span key={h}>{i > 0 && " · "}<Link href={href} className="font-medium text-teal-700 hover:underline">{text}{ort && h.includes("beschluesse") && focus ? ` in ${focus.name}` : ""} →</Link></span>; })}</p>}
 
-          {/* Abdeckung: damit eine dünne Karte nicht wie ein Fehler wirkt (Werte stehen nur dort, wo die Unterlagen sie ausdrücklich nennen) */}
-          {!overview && regionCount > 0 && (
-            <p className="mt-2 max-w-[760px] text-[14px] text-slate-600">
-              Werte für <b className="font-semibold text-slate-900">{n(ranked.length)} von {n(regionCount)} Gebieten</b> ({ranked.length === 0 ? "0 %" : ranked.length * 100 < regionCount ? "unter 1 %" : `${Math.round((ranked.length / regionCount) * 100).toLocaleString("de-DE")} %`}).
-              Eine leere Fläche heißt: Die Unterlagen nennen dort keinen Wert, nicht, dass es keinen gibt.
-            </p>
-          )}
 
           {/* Links die Karte (bleibt stehen), rechts Einordnung und Rangliste; ab 1024 px nebeneinander */}
           <div className="rm-xsplit mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
-            <div className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-              <RegionMap tall level={level} levels={levels} picked={hover || picked || areaAgs} onPick={(a) => { setPicked(picked === a ? "" : a); }} legend={legend}
+            <div className="rm-xsplit-map min-w-0 max-sm:relative lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+              {/* Beim Öffnen kurz als Hinweis auf der Karte (statt des langen Absatzes über der Karte) */}
+              <MapHint id="werte">Hier steht nur, was die Kommunen in ihren Originalunterlagen nennen.</MapHint>
+              {/* Handy: Fakt und Wert als Walzen auf der Karte */}
+              <MapWheels label="Fakt" subLabel="Wert" subAll="Alle Werte" value={allFacts ? "alle" : fact?.kind ?? ""} onPick={(id) => pick(id === "alle" ? { fakt: "alle", wert: "", ansicht: "" } : { fakt: id, wert: "" })}
+                items={[{ id: "alle", label: "Alle Fakten", icon: <LayoutGrid size={16} className="text-slate-500" /> }, ...facts.map((f) => { const FI = FACT_ICONS[f.kind] ?? Coins; return { id: f.kind, label: f.name, icon: <FI size={16} className="text-slate-500" /> }; })]}
+                subs={fact && metrics.length > 1 ? metrics.map((m) => { const MI = metricIcon(m, fact.kind); return { id: m, label: m, icon: <MI size={14} className="text-slate-500" /> }; }) : undefined}
+                subValue={allMetrics ? "" : metric} onSub={(k) => pick(k ? { fakt: fact?.kind, wert: k } : { fakt: fact?.kind, wert: "alle", ansicht: "" })} />
+              <RegionMap tall phoneStage level={level} levels={levels} picked={hover || picked || areaAgs} onPick={(a) => { setPicked(picked === a ? "" : a); }} legend={legend}
                 colors={overview || !fact ? undefined : change ? (fact.dir === "good" ? RED_GREEN : GREEN_RED) : fact.dir === "good" ? RED_GREEN : fact.dir === "bad" ? GREEN_RED : undefined}
                 note={overview ? `Wie viele ${allFacts ? "Fakten" : "Werte"} je Gebiet vorliegen; ohne Farbe: keiner` : change ? `Jüngster Wert gegen den vorigen; nur Gebiete mit zwei Werten${level === "district" ? "; nur Werte der Kreise selbst" : ""}` : `Viertel der Gebiete${level === "district" ? "; nur Werte der Kreise selbst" : ""}; ohne Farbe: kein Wert`}
                 label={`Karte: ${change ? "Veränderung " : ""}${factName}${metric ? ` „${metric}“` : ""} je ${level === "district" ? "Kreis" : "Gemeinde"}`}
@@ -242,7 +249,7 @@ export function FaktenPage() {
                   <br /><button type="button" onClick={() => search.setArea(sel.ags, "map")} className="pointer-events-auto mt-1 text-[14px] font-medium text-teal-700 hover:underline">Diesen Ort wählen →</button></>
                   : picked ? <span className="text-slate-500">Hier gibt es keinen Wert.</span> : undefined} />
                             <div className="rm-xtop">
-<div className="rm-xebene mt-3 flex flex-wrap items-center gap-2 text-[14px]" role="group" aria-label="Ebene der Karte">
+<div className="rm-xebene mt-3 flex flex-wrap items-center gap-2 text-[14px] max-sm:hidden" role="group" aria-label="Ebene der Karte">
                 <span className="text-slate-500">Ebene</span>
                 {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
               </div>
@@ -251,6 +258,8 @@ export function FaktenPage() {
             </div>
 
             <div className="min-w-0 lg:col-span-6">
+              {pending && <ListSkeleton />}
+              <div className={pending ? "hidden" : undefined}>
               {/* Ort im Vergleich: Wert des Orts auf der Skala aller Gebiete (Viertel und Median), dazu Kreis und Land */}
               {plain && focus && ranked.length >= 8 && <Skala x={focus} values={lasts} kreis={ranked.filter((a) => a.ags && focus.ags && a.ags.slice(0, 5) === focus.ags.slice(0, 5)).map((a) => a.last)} unit={unit} peer={peerText(focus)} good={fact!.dir === "good"} onList={() => show(focus.key, "map")} />}
               {plain && focus && listedArea && listedIn === "map" && <div className="mt-3"><RadarDrill base="/api/x?list=1" query={listQuery} by={`fact:${fact!.kind}`} value={metric} label={`${listedArea.name}: ${factName}`} limit={5} /></div>}
@@ -280,6 +289,7 @@ export function FaktenPage() {
                 {ranked.length > 10 && <button type="button" onClick={() => setAll(!all)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{all ? "Weniger zeigen" : `Alle ${n(ranked.length)} zeigen`}</button>}
               </section>}
               <MethodikNote>Je Gebiet der jüngste genannte Wert (beschlossen oder vorgeschlagen, keine Vergleichswerte), dazu die Veränderung zum vorigen. Nur Werte mit mindestens 90 % Trefferquote in Stichproben.</MethodikNote>
+              </div>
             </div>
           </div>
         </div>

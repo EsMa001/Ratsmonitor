@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Segmented, Folgen, useOrtInAdresse } from "./Kennzahlen";
 import { useSearch } from "../../state/search";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
+import { ListSkeleton } from "./ListSkeleton";
+import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
 import { Befund, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -73,7 +75,9 @@ export function NewsradarPage() {
   const [days, setDays] = useState(30);
   /* Handy: zuerst fünf Meldungen, „Weitere laden“ zeigt je fünf mehr */
   const [sicht, setSicht] = useState(5);
-  const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: `${query}&days=${days}`, url: `/api/analytics/news?${query}&days=${days}`, initial: true });
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: `${query}&days=${days}`, url: `/api/analytics/news?${query}&days=${days}`, initial: true });
+  /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
+  const pending = loading && !!res && ranKey !== `${query}&days=${days}`;
   /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
   useEffect(() => {
     if (!stale || loading) return;
@@ -84,12 +88,13 @@ export function NewsradarPage() {
   const own = !!new URLSearchParams(query).get("from");
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className="rm-xwide rm-xhero rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="news" />
+      <SplitHandle />
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
-      <div className={`rm-xfilter mt-3 flex flex-wrap items-center gap-2 print:hidden${own ? "" : " max-sm:hidden"}`} role="group" aria-label="Zeitraum">
+      <div className={`rm-xfilter rm-zeit-std mt-3 flex flex-wrap items-center gap-2 print:hidden${own ? "" : " max-sm:hidden"}`} role="group" aria-label="Zeitraum">
         {own ? (
           <p className="m-0 text-[14px] text-slate-700">Zeitraum aus dem Filter{res?.own ? `: ${datum(res.from)} bis ${datum(res.to)}` : ""}</p>
         ) : (
@@ -103,10 +108,15 @@ export function NewsradarPage() {
       {loading && !res && <Laden text="Vorgänge werden bewertet …" />}
 
       {res && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {res.items.length === 0 ? <Leer tipp="Einen längeren Zeitraum wählen oder den Suchbegriff kürzen; gezeigt werden nur Vorgänge mit zitierbarer Zusammenfassung.">Keine berichtenswerten Vorgänge in diesem Zeitraum.</Leer> : (
             <>
+              <div className="rm-xsplit-map rm-xhero-panel rm-netstage">
               <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
+                {!own && <div className="rm-xtop"><div className="rm-xzeit"><Segmented label="Zeitraum" options={SPANS.map(([dd, l]) => [String(dd), l] as [string, string])} value={String(days)} onPick={(k) => setDays(+k)} /></div></div>}
+              </div>
+              {pending && <ListSkeleton />}
+              <div className={pending ? "hidden" : undefined}>
               <nav aria-label="Meldungen" className="-mx-4 mt-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden">
                 {res.items.map((k, n) => (n >= sicht) ? null : <a key={k.id} href={`#meldung-${n + 1}`} className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 no-underline"><b className="font-semibold tabular-nums text-teal-700">{n + 1}</b>{k.dateline.place.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt) /, "")}</a>)}
               </nav>
@@ -115,6 +125,7 @@ export function NewsradarPage() {
                 {res.items.length > sicht && <button type="button" onClick={() => setSicht((v) => v + 5)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{`Weitere ${Math.min(5, res.items.length - sicht)} Meldungen laden`}</button>}
               </section></Reveal>
               <MethodikNote>Nachrichtenwert nach festen Regeln: Konflikt, Tragweite, Alltagsnähe und Aktualität. Jede Meldung zitiert wörtlich aus der Vorlage; Vorgänge ohne zitierbaren Satz erscheinen nicht.</MethodikNote>
+              </div>
             </>
           )}
         </div>

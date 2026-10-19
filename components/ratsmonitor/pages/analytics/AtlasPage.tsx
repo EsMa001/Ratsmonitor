@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { XKopf, XWeiter } from "./XKopf";
+import { SplitHandle } from "./SplitHandle";
 import { XAtlasView } from "./XAtlasView";
 import { ThemeIcon } from "../../components/icons";
-import { WheelPicker } from "../../components/WheelPicker";
 import { SubtopicIcon } from "../../components/SubtopicIcon";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 
@@ -44,11 +44,10 @@ export function AtlasPage() {
   /* Eine Wahl ist ein Schritt im Verlauf: Zurück führt zur vorigen Auswahl */
   const pick = (next: { thema?: string; sub?: string; zeit?: string }) => router.push(atlasHref({ zeit, ort: ortNow(), ...next }), { scroll: false });
   return (
-    <main id="inhalt" className="rm-xwide w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className="rm-xwide rm-xatlas w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="atlas" />
+      <SplitHandle />
       {/* Handy: Auswahlfeld; Tablet 6 Kacheln je Reihe; Desktop alle in einer Reihe (nie waagerecht scrollen) */}
-      <WheelPicker label="Thema" className="mt-2" value={thema} onPick={(id) => pick(id ? { thema: id } : {})}
-        items={ATLAS_THEMEN.map(([id, label]) => ({ id, label, icon: <ThemeIcon theme={id || "alle"} size={18} className="text-slate-500" />, iconOn: <ThemeIcon theme={id || "alle"} size={18} className="text-white" /> }))} />
       <nav aria-label="Thema" className="rm-xrail mt-2 hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {ATLAS_THEMEN.map(([id, label]) => (

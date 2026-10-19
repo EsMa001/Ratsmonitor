@@ -2,6 +2,8 @@ import { Kennzahlen, Segmented, Folgen, useOrtInAdresse } from "./Kennzahlen";
 import { useSearch } from "../../state/search";
 import { usePhone } from "../../lib/usePhone";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
+import { ListSkeleton } from "./ListSkeleton";
+import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
 import { Befund, zuThema, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -69,6 +71,8 @@ export function BeschluessePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/decisions?${query}`, initial: true });
+  /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
+  const pending = loading && !!res && ranKey !== query;
   /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
   useEffect(() => {
     if (!stale || loading) return;
@@ -101,8 +105,9 @@ export function BeschluessePage() {
   const cuts = res ? res[cut] : [];
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className="rm-xwide rm-xhero rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="beschluesse" />
+      <SplitHandle />
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
@@ -110,12 +115,13 @@ export function BeschluessePage() {
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
       {res && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {res.totals.all === 0 ? <Leer>Keine Vorgänge für diese Auswahl.</Leer> : (
             <>
+              <div className="rm-xsplit-map rm-xhero-panel rm-netstage">
               <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} werden ${pct(res.rates.approval)} der ${n(res.totals.decided)} Entscheidungen beschlossen, ${pct(res.rates.postponement)} vertagt und ${pct(res.rates.rejection)} abgelehnt.${res.duration.median !== null ? ` Im Median dauert es ${res.duration.median} Tage bis zur Entscheidung.` : ""}`}</Befund>
-              <p className="mt-2 max-w-[760px] text-[14px] text-slate-500 max-sm:line-clamp-2">Grundlage: {n(res.totals.decided)} Vorgänge mit bekannter Entscheidung, das sind {n(res.totals.known)} von {n(res.totals.all)} Einträgen mit bekanntem Status{res.totals.knownShare !== null ? ` (${pct(res.totals.knownShare)} aller Einträge)` : ""}. Die übrigen Einträge zeigen keinen Status.</p>
-              <Kennzahlen items={([
+              <p className="mt-2 max-w-[760px] text-[14px] text-slate-500 max-sm:hidden">Grundlage: {n(res.totals.decided)} Vorgänge mit bekannter Entscheidung, das sind {n(res.totals.known)} von {n(res.totals.all)} Einträgen mit bekanntem Status{res.totals.knownShare !== null ? ` (${pct(res.totals.knownShare)} aller Einträge)` : ""}. Die übrigen Einträge zeigen keinen Status.</p>
+              <Kennzahlen rest={!phone} items={([
                   ["Beschlussquote", pct(res.rates.approval)],
                   ["Vertagt", pct(res.rates.postponement)],
                   ["Abgelehnt", pct(res.rates.rejection)],
@@ -137,10 +143,16 @@ export function BeschluessePage() {
                   ))}
                 </ul>
                 {res.duration.median !== null && (
-                  <p className="m-0 mt-3 text-[14px] text-slate-600">
+                  <p className="m-0 mt-3 text-[14px] text-slate-600 max-sm:hidden">
                     Dauer bis zur Entscheidung: meist {res.duration.p25} bis {res.duration.p75} Tage, in der Mitte {res.duration.median}{showBase && base?.duration.median != null ? ` (alle Vorgänge: ${base.duration.median})` : ""}. <Link href="/analytics/gremien" className="font-medium text-teal-700 hover:underline">Wege und Dauer in den Gremien →</Link>
                   </p>
                 )}
+              </div>
+                {/* Handy: Grundlage und Dauer ruhig eingeklappt statt zwei Absätze mehr */}
+                <details className="mt-3 text-[14px] text-slate-600 sm:hidden"><summary className="cursor-pointer font-medium text-teal-700">Grundlage und Dauer</summary>
+                  <p className="m-0 mt-2">Grundlage: {n(res.totals.decided)} Vorgänge mit bekannter Entscheidung, das sind {n(res.totals.known)} von {n(res.totals.all)} Einträgen mit bekanntem Status{res.totals.knownShare !== null ? ` (${pct(res.totals.knownShare)} aller Einträge)` : ""}. Die übrigen Einträge zeigen keinen Status.</p>
+                  {res.duration.median !== null && <p className="m-0 mt-2">Dauer bis zur Entscheidung: meist {res.duration.p25} bis {res.duration.p75} Tage, in der Mitte {res.duration.median}{showBase && base?.duration.median != null ? ` (alle Vorgänge: ${base.duration.median})` : ""}. <Link href="/analytics/gremien" className="font-medium text-teal-700 hover:underline">Wege und Dauer in den Gremien →</Link></p>}
+                </details>
               </div>
 
 
@@ -148,6 +160,8 @@ export function BeschluessePage() {
 
 
 
+              {pending && <ListSkeleton />}
+              <div className={pending ? "hidden" : undefined}>
               <Abschnitt title="Aufteilung">
               <div className="pb-6 max-sm:pb-0 pt-2">
                 <Segmented label="Aufteilung" fill={phone} options={[["kinds", "Gremienebene"], ["topics", "Themenfeld"], ["lands", "Bundesland"]]} value={cut} onPick={setCut} />
@@ -211,6 +225,7 @@ export function BeschluessePage() {
               </div>
               <MethodikNote>Abstimmung, Änderungen und Durchlaufzeit zählen Vorgänge mit Entscheidung; „einstimmig“, „mehrheitlich“ und „geändert“ stammen aus dem Ergebnistext. Der Status ist nur bei einem Teil bekannt, Ablehnungen sind selten vermerkt: die Quoten sind ein Anhaltspunkt. Offene Vorgänge fehlen in der Durchlaufzeit.</MethodikNote>
               </Fold>
+              </div>
               </div>
             </>
           )}

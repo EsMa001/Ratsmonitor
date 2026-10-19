@@ -3,6 +3,7 @@ import { usePhone } from "../../lib/usePhone";
 import { prettyTerm } from "../../lib/terms";
 import { Segmented } from "./Kennzahlen";
 import { XKopf, XWeiter } from "./XKopf";
+import { ListSkeleton } from "./ListSkeleton";
 import { Laden } from "./Laden";
 import { Befund, Fehler } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -74,14 +75,14 @@ function Duell({ a, b, na, nb }: { a: Place; b: Place; na: string; nb: string })
     <div className={`min-w-0 ${i === 1 ? "text-right sm:text-left" : ""}`}>
       <p className="m-0 flex items-center gap-2 text-[16px] font-semibold max-sm:text-[14px]" style={{ justifyContent: i === 1 ? undefined : undefined }}><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="truncate">{name}</span></p>
       <p className="m-0 mt-1 text-[44px] font-semibold leading-none tabular-nums max-sm:text-[32px]" style={{ color: PLACE_COLORS[i] }}><DuellZahl v={v.toLocaleString("de-DE", { maximumFractionDigits: 1 })} /></p>
-      <p className="m-0 mt-1 text-[14px] text-slate-500">Vorgänge je 1.000 Einwohner{p.population ? ` · ${p.population.toLocaleString("de-DE")} Einwohner` : ""}</p>
+      <p className="m-0 mt-1 text-[14px] text-slate-500"><span className="max-sm:hidden">Vorgänge </span><span className="sm:hidden">pro</span><span className="max-sm:hidden">je</span> 1.000 Einwohner<span className="max-sm:hidden">{p.population ? ` · ${p.population.toLocaleString("de-DE")} Einwohner` : ""}</span></p>
       <span className="mt-2 block h-[8px] overflow-hidden rounded-full bg-slate-100"><span className="rm-bar block h-full origin-left rounded-full" style={{ width: `${(v / max) * 100}%`, background: PLACE_COLORS[i], animationDelay: `${i * 120}ms` }} /></span>
     </div>
   );
   return (
     <div className="mt-5 grid grid-cols-2 items-center gap-x-6 gap-y-2 sm:grid-cols-[1fr_auto_1fr] sm:gap-x-10 print:hidden">
       {side(na, x, 0, a)}
-      <div className="col-span-2 order-last text-center sm:order-none sm:col-span-1">
+      <div className="col-span-2 order-last text-center max-sm:hidden sm:order-none sm:col-span-1">
         <span className="inline-flex flex-col items-center rounded-full border border-slate-200 px-4 py-1.5 text-[14px] text-slate-600"><b className="text-[18px] font-semibold tabular-nums text-slate-900">{r <= 1.1 ? "≈ gleich" : `${r.toLocaleString("de-DE")}×`}</b>{r <= 1.1 ? "" : `${hi ? na : nb} mehr`}</span>
       </div>
       {side(nb, y, 1, b)}
@@ -127,6 +128,8 @@ export function ComparePage() {
     key: query, url: query ? `/api/analytics/compare?${query}` : "", initial: !!ort1 && !!ort2 && ort1.ags !== ort2.ags, fallback: "Der Vergleich konnte nicht berechnet werden.",
   });
   const error = inputError || runError;
+  /* Neuer Vergleich rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
+  const pending = loading && !!res;
   const run = () => {
     if (!ort1 || !ort2) return setInputError("Bitte beide Orte wählen.");
     if (ort1.ags === ort2.ags) return setInputError("Bitte zwei verschiedene Orte wählen.");
@@ -220,8 +223,9 @@ export function ComparePage() {
       {stale && <p className="mt-3 text-[14px] text-slate-500">Orte oder Thema wurden geändert. Mit „Vergleichen“ neu berechnen.</p>}
       {loading && !res && <Laden text="Vergleich wird berechnet …" />}
 
+      {res && pending && <ListSkeleton rows={3} />}
       {res && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+        <div className={pending ? "hidden" : loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {(() => {
             const [a, b] = res.places; const x = a?.perThousand, y = b?.perThousand;
             if (!a || !b || !x || !y) return null;

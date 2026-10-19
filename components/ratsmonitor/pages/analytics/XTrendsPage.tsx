@@ -2,11 +2,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Befund, Fehler, Leer } from "./Befund";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
+import { ListSkeleton } from "./ListSkeleton";
+import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
+import { MapWheels } from "./MapWheels";
+import { THEMES } from "@/shared/themes.mjs";
+import { ThemeIcon } from "../../components/icons";
 import { RadarDrill } from "./RadarDrill";
 import { TrendMap, type Trend, type TrendKind } from "./TrendViews";
 import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitExtra, countScale, useOrtInAdresse } from "./Kennzahlen";
@@ -66,7 +71,9 @@ export function XTrendsPage() {
 
   const { query, search } = useAnalyticsQuery();
   const url = `/api/analytics/trends?${query}&window=${zeit}`;
-  const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true, fallback: "Die Trends konnten nicht berechnet werden." });
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true, fallback: "Die Trends konnten nicht berechnet werden." });
+  /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
+  const pending = loading && !!res && ranKey !== url;
   useEffect(() => {
     if (!stale || loading) return;
     const t = setTimeout(() => run(), 400);
@@ -187,8 +194,9 @@ export function XTrendsPage() {
   return (
     <main id="inhalt" className="rm-xwide rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="trends" />
+      <SplitHandle />
 
-      <ThemenLeiste />
+      <ThemenLeiste phone={false} />
       <div className="mt-4 print:hidden max-sm:hidden"><DiffusionSearch follow={<Folgen heart />} extra={<ZeitExtra options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
@@ -196,10 +204,10 @@ export function XTrendsPage() {
       {res && lists && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst */}
-          {top && <Befund>
+          {top && <div className="max-sm:hidden"><Befund>
             Am stärksten zugenommen: „{prettyTerm(top.term)}“ ({ratio(top)}, {oft(top)}{wide?.s && wide.t.key === top.key && wide.s.added > 0 ? `, +${n(wide.s.added)} Gebiete, die meisten neuen` : ""})
             {wide?.s && wide.t.key !== top.key && wide.s.added > 0 ? <>, am meisten neue Gebiete: „{prettyTerm(wide.t.term)}“ (+{n(wide.s.added)})</> : null}.
-          </Befund>}
+          </Befund></div>}
           <Kennzahlen scope={`aus ${n(res.totals.recent)} Vorgängen`} period={`${zeitText} gegenüber den ${zeitText} davor`} items={[
             { value: n(lists.up.length), label: "aufsteigende Begriffe" },
             { value: n(lists.up.filter((t) => t.kind === "emerging").length), label: "neu aufgekommen" },
@@ -214,17 +222,27 @@ export function XTrendsPage() {
 
           <div className="rm-xsplit mt-6 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12">
             {/* Links die Karte: immer Ausbreitung */}
-            <div className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+            <div className="rm-xsplit-map min-w-0 max-sm:relative lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+              {/* Handy: Thema als Walze auf der Karte */}
+              <MapWheels single label="Thema" value={search.state.thema} onPick={(name) => search.setThema(name)}
+                items={[{ id: "", label: "Alle Themen", icon: <ThemeIcon theme="alle" size={16} className="text-slate-500" /> }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.name, label: t.name, icon: <ThemeIcon theme={t.id} size={16} className="text-slate-500" /> }))]} />
               {begriff ? (df ? <SpreadMap regions={df.regions} day={day} firstDay={firstDay} lastDay={lastDay} onDay={(d) => { setPlaying(false); setDay(d); }} playing={playing} onToggle={toggle}
                   picked={mapPick || area} onPick={(a) => setMapPick(mapPick === a ? "" : a)}
                   info={(() => { const r = df.regions.find((x) => keysOf(x).includes(mapPick)); return r ? <><b className="font-semibold">{r.name}</b><br /><span className="text-slate-500">erste Erwähnung {fmt(r.first)} · {n(r.n)} {r.n === 1 ? "Eintrag" : "Einträge"}</span></> : undefined; })()} />
                 : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{diff.error && diff.url === diffUrl ? diff.error : "Ausbreitung wird berechnet …"}</div>)
-                : map ? <RegionMap tall levels={map.levels} legend={map.legend} colors={map.colors} label={map.label} note={map.note} picked={area} onPick={(a) => search.setArea(a, "map")} />
+                : map ? <RegionMap tall phoneStage levels={map.levels} legend={map.legend} colors={map.colors} label={map.label} note={map.note} picked={area} onPick={(a) => search.setArea(a, "map")} />
                 : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{spread.error || "Karte wird berechnet …"}</div>}
               <div className="rm-xtop"><div className="rm-xzeit"><Segmented label="Zeitraum" options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} /></div></div>
             </div>
 
             <div className="min-w-0 lg:col-span-6">
+              {pending && <ListSkeleton />}
+              <div className={pending ? "hidden" : undefined}>
+              {/* Handy: der Satz zur Auswertung steht unter der Karte statt davor */}
+              {top && !begriff && <div className="sm:hidden"><Befund>
+            Am stärksten zugenommen: „{prettyTerm(top.term)}“ ({ratio(top)}, {oft(top)}{wide?.s && wide.t.key === top.key && wide.s.added > 0 ? `, +${n(wide.s.added)} Gebiete, die meisten neuen` : ""})
+            {wide?.s && wide.t.key !== top.key && wide.s.added > 0 ? <>, am meisten neue Gebiete: „{prettyTerm(wide.t.term)}“ (+{n(wide.s.added)})</> : null}.
+          </Befund></div>}
               {begriff ? (
                 <Steckbrief begriff={begriff} row={selRow} spread={selSpread} df={df} error={diff.url === diffUrl ? diff.error : ""} firsts={firsts} day={day}
                   onDay={(d) => { setPlaying(false); setDay(d); }} playing={playing} onToggle={toggle} res={res} area={area} zeitText={zeitText}
@@ -268,6 +286,7 @@ export function XTrendsPage() {
                   <MethodikNote>Gezählt werden Sachvorgänge ohne private Bauanträge. „+N Gebiete“: Gebiete, in denen der Begriff im Zeitraum erstmals im Titel steht.</MethodikNote>
                 </>
               )}
+              </div>
             </div>
           </div>
         </div>

@@ -13,6 +13,8 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { RadarDrill } from "./RadarDrill";
 import { RegionMap } from "./RegionMap";
+import { MapWheels } from "./MapWheels";
+import { ListSkeleton } from "./ListSkeleton";
 import { plural } from "../../lib/text";
 import { prettyTerm } from "../../lib/terms";
 import { ThemeIcon } from "../../components/icons";
@@ -83,7 +85,7 @@ const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.l
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
 type Level = "city" | "district";
 
-function AtlasMap({ regions, facts, onList, listed, drill, onPlace, onLevel, preview, level, zeit, onZeit }: { /* Zeitraum: am breiten Bildschirm auf der Karte */ zeit?: string; onZeit?: (z: string) => void; /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; onLevel: (l: Level) => void; /* Ebene der Karte: Gemeinden oder Kreise (gehört dem Filter, siehe AtlasExtra) */ level: Level }) {
+function AtlasMap({ regions, facts, onList, listed, drill, onPlace, onLevel, preview, level, zeit, onZeit, chips }: { /* Handy: Auswahl als Chips auf der Karte */ chips?: React.ReactNode; /* Zeitraum: am breiten Bildschirm auf der Karte */ zeit?: string; onZeit?: (z: string) => void; /* Vorschau beim Überfahren einer Zeile: deren Name */ preview?: string; regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode; onPlace: (ags: string) => void; onLevel: (l: Level) => void; /* Ebene der Karte: Gemeinden oder Kreise (gehört dem Filter, siehe AtlasExtra) */ level: Level }) {
   const [pk, setPk] = useState<{ l: string; v: string }>({ l: level, v: "" });
   const picked = pk.l === level ? pk.v : "";
   const setPicked = (v: string) => setPk({ l: level, v });
@@ -137,7 +139,7 @@ function AtlasMap({ regions, facts, onList, listed, drill, onPlace, onLevel, pre
     <section>
       <div className="relative">
         {/* Klick wählt das Gebiet als Ort (wie in den Signalen): Gemeinde oder, auf Kreisebene, Kreis */}
-        <RegionMap tall level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={legend} colors={colors}
+        <RegionMap tall phoneStage level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={legend} colors={colors}
           note={preview ? `Vorschau: ${preview}` : metricOn ? `Viertel über alle Gebiete${HIGH_BAD.has(kind) ? "; rot: hoch" : ""}${level === "district" ? "; nur Werte der Kreise selbst" : ""}` : "ohne Farbe: keine Vorgänge"}
           label={`Karte: ${what} je ${level === "district" ? "Kreis" : "Gemeinde"}`}
           info={sel ? <>
@@ -145,6 +147,7 @@ function AtlasMap({ regions, facts, onList, listed, drill, onPlace, onLevel, pre
             <span className="text-slate-500">{valueText(sel)}</span>
             {sel.key && <><br /><button type="button" onClick={() => onList(sel.key)} className="pointer-events-auto mt-1 text-[14px] font-medium text-teal-700 hover:underline">{listed === sel.key ? "Vorgänge ausblenden" : "Vorgänge zeigen →"}</button></>}
           </> : picked ? <span className="text-slate-500">Hier gibt es keine Werte zur Auswahl.</span> : undefined} />
+        {chips}
       </div>
       {/* Ebene sichtbar (nicht mehr unter „Karte anpassen“): Kreise wählen beim Klick den ganzen Kreis */}
       <div className="rm-xtop">
@@ -264,7 +267,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   const [level, setLevel] = useState<Level>("city");
   const { query: baseQuery, search } = useAnalyticsQuery();
   /* Zeitraum der Seite (Monate zurück ab heute) ersetzt den der Suche nur, wenn die Suche selbst keinen hat (wie in den Signalen) */
-  const query = (() => { const q = new URLSearchParams(baseQuery); if (zeit && !q.get("from")) { const d = new Date(); d.setMonth(d.getMonth() - Number(zeit)); q.set("from", d.toISOString().slice(0, 10)); } return q.toString(); })();
+  const query = (() => { const q = new URLSearchParams(baseQuery); /* Ein Themenfilter mit einer Kennung statt dem Namen (früher beim Speichern gesetzt) wäre ein ungültiger Suchfilter: weglassen */ const lab = q.get("label"); if (lab && lab !== "Sonstiges" && !THEMES.some((t: { name: string }) => t.name === lab)) q.delete("label"); if (zeit && !q.get("from")) { const d = new Date(); d.setMonth(d.getMonth() - Number(zeit)); q.set("from", d.toISOString().slice(0, 10)); } return q.toString(); })();
   const sel = [theme && `theme=${theme}`, sub && `sub=${sub}`].filter(Boolean).join("&");
   const url = `/api/x?view=atlas${sel ? "&" + sel : ""}&${query}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: !term, onDone: () => { setOpen(""); setPart(null); setAll(null); } });
@@ -422,10 +425,17 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   /* Gewählter Ort (Filter der Suche): mit ✕ an der Antwortzeile, damit man ihn dort sieht und entfernen kann */
   const place = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ? (cmp?.region ?? res?.compare?.region ?? (allRegions.length === 1 ? allRegions[0].name : "")) : "";
 
+  /* Neue Auswahl rechnet noch: statt des alten Inhalts sofort pulsierende Kacheln */
+  const pending = loading && !!res && ((res.selection.theme ?? "") !== (theme ?? "") || (res.selection.sub ?? "") !== (sub ?? ""));
+
+  /* Handy: Thema und Unterthema als zwei Walzen auf der Karte */
+  const mapChips = <MapWheels label="Thema" items={[{ id: "", label: "Alle Themen", icon: <ThemeIcon theme="alle" size={16} className="text-slate-500" /> }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.id, label: t.name, icon: <ThemeIcon theme={t.id} size={16} className="text-slate-500" /> }))]} value={theme} onPick={(id) => onTheme(id)}
+    subs={theme ? SUBTOPICS.filter((x: { theme: string }) => x.theme === theme).map((x: { id: string; short: string }) => ({ id: x.id, label: x.short, icon: <SubtopicIcon id={x.id} size={14} className="text-slate-500" /> })) : undefined} subValue={sub} onSub={(id) => onSub(id)} />;
+
   return (
     <section aria-label="Auswertung des Themas">
       {/* Unterthemen als kleine Kacheln (Icon, Name), durch eine Linie in Petrol von den Themen getrennt; Handy 4 je Reihe */}
-      {theme && <nav aria-label="Unterthema" className="rm-sub-std mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
+      {theme && <nav aria-label="Unterthema" className="rm-sub-std max-sm:hidden mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {SUBTOPICS.filter((x: { theme: string }) => x.theme === theme).map((x: { id: string; short: string }) => {
             const on = x.id === sub;
@@ -436,7 +446,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           })}
         </ul>
       </nav>}
-      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch follow={<Folgen heart before={() => { if (theme) search.setThema(theme); }} hint="Auswahl unter Meine Suchen speichern" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
+      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch filterUp follow={<Folgen heart before={() => { const nm = THEMES.find((t: { id: string; name: string }) => t.id === theme)?.name; if (nm) search.setThema(nm); }} hint="Auswahl unter Meine Suchen speichern" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden karte text="Auswertung wird berechnet …" />}
       {res && (
@@ -465,10 +475,12 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="rm-xsplit mt-4 max-sm:mt-2 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-4 lg:grid-cols-12">
                 <div className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-                  {allRegions.length > 0 && <AtlasMap level={level} onLevel={setLevel} zeit={zeit} onZeit={onZeit} onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+                  {allRegions.length > 0 && <AtlasMap level={level} onLevel={setLevel} chips={mapChips} zeit={zeit} onZeit={onZeit} onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
                 </div>
 
                 <div className="min-w-0 lg:col-span-6">
+                  {pending && <ListSkeleton />}
+                  <div className={pending ? "hidden" : undefined}>
                   {theme && <nav aria-label="Unterthema" className="rm-sub-wide print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {SUBTOPICS.filter((x: { theme: string }) => x.theme === theme).map((x: { id: string; short: string }) => {
@@ -485,16 +497,16 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                   {sub ? <>
                     {/* Mit Unterthema: rechts sein Inhalt statt der Liste aller Unterthemen (zum Wechseln dienen die Pillen oben) */}
                     <section ref={subRef} className={`scroll-mt-4 ${res.compare ? "mt-8" : ""}`}>
-                      <h2 className="flex items-center gap-2 text-[22px] font-semibold max-sm:text-[18px]"><ThemeIcon theme={theme} size={24} className="shrink-0 text-teal-700" />{subName}</h2>
+                      <h2 className="flex items-center gap-2 text-[22px] font-semibold max-sm:text-[18px]"><ThemeIcon theme={theme} size={24} className="shrink-0 text-teal-700" />{subName}{place ? <span className="font-normal text-slate-500"> in {place}</span> : null}</h2>
                       <p className="mb-3 mt-1 text-[14px] text-slate-500">{subCount !== undefined ? `${n(subCount)} ${plural(subCount, "Vorgang", "Vorgänge")}${themeTotal ? `, ${pct(Math.round((1000 * subCount) / themeTotal) / 10)} von ${themeName}` : ""}. ` : ""}Die neuesten:</p>
-                      <RadarDrill base={partBase} query={listQuery} by="sub" value={sub} label={subName} limit={3} onAll={() => showAll("sub", sub, [themeName, subName].join(" › "))} />
+                      <RadarDrill base={partBase} query={listQuery} by="sub" value={sub} label={subName} limit={10} plain onAll={() => showAll("sub", sub, [themeName, subName].join(" › "))} />
                       <p className="mt-3 text-[14px] text-slate-500">Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(subName)}`} className="font-medium text-teal-700 hover:underline">„{subName}“ in den Trends →</Link></p>
                     </section>
                   </> : <section className={res.compare ? "mt-8 max-sm:mt-5" : ""}>
-                    <h2 className="flex items-center gap-2 text-[22px] font-semibold max-sm:text-[18px]">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? <>Unterthemen<span className="max-sm:hidden"> von {themeName}</span></> : "Themen"}</h2>
+                    <h2 className="flex items-center gap-2 text-[22px] font-semibold max-sm:text-[18px]">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? <>Unterthemen<span className="max-sm:hidden"> von {themeName}</span></> : "Themen"}{place ? <span className="font-normal text-slate-500"> in {place}</span> : null}</h2>
                     <PartList rows={parts} icons={!theme} open={openPart} dir={dirOf} onHover={setHoverKey} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
                       label={(r) => (phone ? `${n(r.count)} ${plural(r.count, "Vorgang", "Vorgänge")}` : `${n(r.count)}${r.share !== null && theme && !sub ? ` · ${pct(r.share)}` : ""}`)}
-                      drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={3}
+                      drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={theme ? 10 : 3} plain={!!theme}
                         onAll={() => showAll(partBy, r.key, [themeName, r.name].filter(Boolean).join(" › "))}
                         footer={isRest(r) ? null : <button type="button" onClick={() => (theme ? onSub(sub === r.key ? "" : r.key) : onTheme(r.key))} className="mt-2 block text-[14px] font-medium text-teal-700 hover:underline">
                           {theme && sub === r.key ? "Eingrenzung aufheben" : <>Auf „{r.name}“ eingrenzen<span className="max-sm:hidden"> →</span></>}</button>} />} />
@@ -519,6 +531,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                     <p className="mb-3 mt-1 text-[14px] text-slate-500 max-sm:hidden">Anteil der Vorgänge zu „{subName}“, die auch dieses Unterthema haben. Klick wechselt dorthin.</p>
                     <Bars rows={together} mode="select" onOpen={(k) => onSub(k)} value={(r) => r.count} label={(r) => pct(r.share)} />
                   </section>}
+                  </div>
                 </div>
               </div>
 
@@ -549,16 +562,18 @@ function PartList({ rows, open, selected, onOpen, drill, label, icons = false, d
   const max = Math.max(1, ...main.map((r) => r.count));
   /* Fokus: wer überfahren wird (oder aufgeklappt ist), bleibt klar, die übrigen Zeilen treten zurück */
   const [hot, setHot] = useState("");
-  const focusKey = hot || open;
+  /* Nur beim Überfahren mit der Maus: die übrigen Zeilen treten zurück (am Handy bleiben alle Zeilen normal) */
+  const focusKey = hot;
+  const over = (k: string) => { if (typeof window !== "undefined" && window.matchMedia("(hover:hover)").matches) { setHot(k); onHover?.(k); } };
   return (
     <>
     <ol className="m-0 list-none border-t border-slate-200 p-0">
       {main.map((r) => {
-        const rest = isRest(r), on = open === r.key, picked = selected === r.key, dim = !!selected && !picked;
+        const rest = isRest(r), on = open === r.key, picked = selected === r.key;
         return (
           <li key={r.key} className="border-b border-slate-200">
-            <button type="button" onClick={() => onOpen(r.key)} aria-expanded={on} onMouseEnter={() => { setHot(r.key); onHover?.(r.key); }} onMouseLeave={() => { setHot(""); onHover?.(""); }} onFocus={() => { setHot(r.key); onHover?.(r.key); }} onBlur={() => { setHot(""); onHover?.(""); }}
-              className={`grid w-full transition-opacity grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto_16px] ${focusKey && focusKey !== r.key ? "opacity-45" : dim ? "opacity-70" : ""}`}>
+            <button type="button" onClick={() => onOpen(r.key)} aria-expanded={on} onMouseEnter={() => over(r.key)} onMouseLeave={() => over("")} onFocus={() => over(r.key)} onBlur={() => over("")}
+              className={`grid w-full transition-opacity grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto_16px] ${focusKey && focusKey !== r.key ? "opacity-45" : ""}`}>
               <span className={`flex items-center gap-2 text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${on || picked ? "font-semibold" : ""}`}>{icons && !rest && <ThemeIcon theme={r.key} size={18} className="shrink-0 text-slate-500" />}{r.name}{dir?.(r)}</span>
               <span className="order-4 col-span-3 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1">
                 <span className={`block h-full rounded-full ${rest ? "bg-slate-300" : picked ? "bg-slate-900" : "bg-teal-600"}`} style={{ width: `${(r.count / max) * 100}%` }} />

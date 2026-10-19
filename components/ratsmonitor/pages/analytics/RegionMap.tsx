@@ -11,7 +11,8 @@ import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 /* Rahmenlos wie die übrigen plenara.X-Seiten (rm-legend statt rm-glass) */
 const glass = "rm-legend";
 
-export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors, tall = false, pins, dots }: {
+export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors, tall = false, pins, dots, phoneStage = false }: {
+  /* Handy: Karte als Bühne (randlos, Suche unten, Legende und Zoom oben, Hinweis weg); nur Themenatlas */ phoneStage?: boolean;
   /* Einzelne Vorgänge als Punkte statt eingefärbter Flächen (Projekte): Gebietsschlüssel → Zahl der Punkte */ dots?: Record<string, number>;
   levels: Record<string, number>; legend: string[]; label: string; picked: string; onPick: (ags: string) => void; info?: React.ReactNode;
   /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string; /* eigene Farben je Stufe (sonst Abdeckung) */ colors?: string[]; /* höher auf breiten Bildschirmen (Atlas: halbe Breite) */ tall?: boolean; /* Orte als Schild auf der Karte: Gemeindeschlüssel (Verband: Mitglieder) und Name */ pins?: { ags: string[]; label: string }[];
@@ -105,11 +106,11 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   useEffect(() => {
     if (!engine) return;
     const phone = window.matchMedia("(max-width:639px)").matches;
-    engine.setFitInsets(phone ? topInset : 0, phone ? 52 : 0);
+    engine.setFitInsets(phone ? (phoneStage ? 74 : topInset) : 0, phone ? (phoneStage ? topInset + 6 : 52) : 0);
     if (restoreRef.current) { engine.restoreView(restoreRef.current); restoreRef.current = null; return; }
     if (skipFly.current) { if (shown.length) skipFly.current = false; return; }
     if (shown.length) engine.focusMany(shown); else engine.focusArea("");
-  }, [engine, shown, topInset]);
+  }, [engine, shown, topInset, phoneStage]);
   /* Kamerafahrt: ein gewähltes Gebiet rückt mit seiner Umgebung ins Bild, ohne Wahl zurück auf die Ergebnisse */
   const firstPick = useRef(true);
   useEffect(() => {
@@ -121,10 +122,10 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
 
 
   return (
-    <div className="rm-mapwrap relative">
+    <div className={`rm-mapwrap relative${phoneStage ? " max-sm:-mx-[max(1vw,16px)] max-sm:-mt-3" : ""}`}>
     {/* Handy: Platz für die Suchleiste der Seite oben auf der Karte (siehe lib/mapSlot.ts) */}
-    <div ref={slotRef} className="absolute inset-x-0 top-2 z-30 empty:hidden sm:hidden" />
-    <div className={`rm-mapbox relative h-[420px] overflow-hidden bg-slate-50 rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 max-sm:h-[300px] sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
+    <div ref={slotRef} className={phoneStage ? "absolute inset-x-2 bottom-2 z-30 flex flex-col-reverse gap-1 empty:hidden sm:hidden" : "absolute inset-x-0 top-2 z-30 empty:hidden sm:hidden"} />
+    <div className={`rm-mapbox relative h-[420px] overflow-hidden bg-slate-50 rounded-[22px] ${phoneStage ? "max-sm:rounded-none max-sm:h-[calc(100svh-170px-var(--rm-tabbar))]" : "max-sm:rounded-2xl max-sm:h-[300px]"} border max-sm:border-transparent border-slate-200 sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
       <div ref={stageRef} className="rm-stage absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={ghostRef} aria-hidden="true" className="pointer-events-none absolute left-0 top-0 block h-full w-full opacity-0" />
@@ -134,18 +135,18 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
           <span className="rounded-full bg-white px-4 py-2 text-[14px] font-medium text-slate-900 shadow">Zum Zoomen in die Karte klicken oder Strg/⌘ + Scrollen</span>
         </div>
       </div>
-      <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700 max-sm:bottom-2 max-sm:left-2 max-sm:right-14 max-sm:top-auto max-sm:rounded-xl max-sm:px-2 max-sm:py-1`}>
-        <ul className="m-0 flex list-none flex-col gap-1 p-0 max-sm:flex-row max-sm:flex-wrap max-sm:gap-x-2.5 max-sm:gap-y-0.5">
+      <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700 ${phoneStage ? "rm-xlegend max-sm:top-[72px] max-sm:left-2 max-sm:right-auto max-sm:bottom-auto" : "max-sm:bottom-2 max-sm:left-2 max-sm:right-14 max-sm:top-auto"} max-sm:rounded-xl max-sm:px-2 max-sm:py-1`}>
+        <ul className={`m-0 flex list-none flex-col gap-1 p-0 ${phoneStage ? "" : "max-sm:flex-row max-sm:flex-wrap max-sm:gap-x-2.5 max-sm:gap-y-0.5"}`}>
           {legend.map((l, i) => <li key={l} className="flex items-center gap-2 max-sm:gap-1"><i className="inline-block h-3 w-5 rounded-sm max-sm:w-3" style={{ background: colors?.[i] ?? MAP_COLORS.scale[i] }} /><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(/\s*Vorg\S*/, "").replace(" bis ", "–").replace("über ", ">")}</span></li>)}
         </ul>
-        {note && <p className={`m-0 mt-1 max-w-[180px] text-slate-500 max-sm:mt-0 max-sm:max-w-none ${note.length > 40 ? "max-sm:hidden" : ""}`}>{note}</p>}
+        {note && <p className={`m-0 mt-1 max-w-[180px] text-slate-500 max-sm:mt-0 max-sm:max-w-none ${note.length > 40 || phoneStage ? "max-sm:hidden" : ""}`}>{note}</p>}
       </div>
-      <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full max-sm:bottom-2 max-sm:right-2 max-sm:top-auto`}>
-        <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>
-        <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={16} /></button>
+      <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full ${phoneStage ? "max-sm:hidden" : "max-sm:bottom-2 max-sm:right-2 max-sm:top-auto"}`}>
+        <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={`${phoneStage ? "max-sm:hidden " : ""}grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700`}><IconPlus size={16} /></button>
+        <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={`${phoneStage ? "max-sm:hidden " : ""}grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700`}><IconMinus size={16} /></button>
         <button type="button" title="Auf Ergebnis zentrieren" aria-label="Auf Ergebnis zentrieren" onClick={() => (shown.length ? engine?.focusMany(shown) : engine?.focusArea(""))} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
       </div>
-      {info && <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:inset-x-3 max-sm:bottom-3 max-sm:top-auto"><span className={`${glass} rounded-2xl px-4 py-2 text-center text-[14px] text-slate-900`}>{info}</span></div>}
+      {info && <div className={`pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center ${phoneStage ? "max-sm:inset-x-3 max-sm:top-[114px] max-sm:bottom-auto" : "max-sm:inset-x-3 max-sm:bottom-3 max-sm:top-auto"}`}><span className={`${glass} rounded-2xl px-4 py-2 text-center text-[14px] text-slate-900`}>{info}</span></div>}
     </div>
     </div>
   );

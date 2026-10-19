@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useClient } from "../../lib/useClient";
-import { ChevronDown, ChevronUp, LayoutGrid, Map as MapIcon, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, LayoutGrid, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { XKopf, XWeiter } from "./XKopf";
+import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
@@ -14,19 +14,12 @@ import { Fehler, Leer } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { AktiveFilter, Dropdown } from "../../components/Dropdown";
 import { ArtIcon } from "../../components/ArtIcon";
-import { ThemeIcon } from "../../components/icons";
-import { kurz } from "../../components/ChipRail";
 import { usePhone } from "../../lib/usePhone";
-import { WheelPicker } from "../../components/WheelPicker";
-import { PhasePicker } from "../../components/PhasePicker";
 import type { Article } from "../../types";
 import { MethodikNote } from "./Methodik";
+import { MapPill, MapWheels } from "./MapWheels";
+import { ListSkeleton } from "./ListSkeleton";
 import { DateBadge } from "../../components/DateBadge";
-
-/* Wie viele Art-Kacheln ein Signal hat, vom letzten Besuch gemerkt: beim Wechsel steht der Platzhalter schon in der richtigen Größe */
-const ARTS_KEY = "plenara.signalArts";
-const artsSeen = (id: string): number => { try { const v = JSON.parse(localStorage.getItem(ARTS_KEY) || "{}")[id]; return typeof v === "number" ? v : 5; } catch { return 5; } };
-const rememberArts = (id: string, n: number) => { try { const o = JSON.parse(localStorage.getItem(ARTS_KEY) || "{}"); if (o[id] !== n) { o[id] = n; localStorage.setItem(ARTS_KEY, JSON.stringify(o)); } } catch { /* ohne Speicher geht es auch */ } };
 
 /* Antwort von /api/x/signale (server/integrations/plenara-x-signals.mjs) */
 interface Signal { id: string; name: string; who: string; count: number }
@@ -103,7 +96,7 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort 
  * (keine Kennzahlen, die stehen in plenara.X Fakten). Signal, Stand und Zeitraum stehen in der Adresse (teilbar), Ort und Begriff in der Suche.
  */
 /* Ausklappbare Karte: Vorgänge der Auswahl je Gemeinde (Verbände färben ihre Mitgliedsgemeinden) */
-function SignalMap({ places, onPlace, hover = "", zeit, onZeit, schritt }: { /* Schritt-Auswahl (Glas auf der Karte, nur am breiten Bildschirm) */ schritt?: React.ReactNode; /* Zeitraum: am breiten Bildschirm auf der Karte */ zeit?: string; onZeit?: (z: string) => void; places: Place[]; onPlace: (ags: string) => void; /* Gebiet der überfahrenen Zeile (Schlüssel des Katalogs): auf der Karte hervorgehoben */ hover?: string }) {
+function SignalMap({ places, onPlace, hover = "", zeit, onZeit, schritt, wheels, pill }: { /* Handy: Auswahl als Walzen und Schritt als Pille auf der Karte */ wheels?: React.ReactNode; pill?: React.ReactNode; /* Schritt-Auswahl (Glas auf der Karte, nur am breiten Bildschirm) */ schritt?: React.ReactNode; /* Zeitraum: am breiten Bildschirm auf der Karte */ zeit?: string; onZeit?: (z: string) => void; places: Place[]; onPlace: (ags: string) => void; /* Gebiet der überfahrenen Zeile (Schlüssel des Katalogs): auf der Karte hervorgehoben */ hover?: string }) {
   const [own, setPicked] = useState(""), [level, setLevel] = useState<"city" | "district">("city");
   /* Gemeinden: Vorgänge je Gemeinde (Verbände färben ihre Mitgliedsgemeinden); Kreise: Summe aller Gebiete im Kreis */
   const byAgs = new Map<string, { name: string; count: number }>();
@@ -125,13 +118,15 @@ function SignalMap({ places, onPlace, hover = "", zeit, onZeit, schritt }: { /* 
   const picked = hovAgs || own;
   const sel = picked ? byAgs.get(picked) : undefined;
   return (
-    <section className="print:hidden" aria-label="Karte">
+    <section className="relative print:hidden" aria-label="Karte">
       {/* Klick wählt das Gebiet als Ort (Gemeinde oder Kreis), wie im Atlas */}
-      <RegionMap tall level={level} levels={{}} dots={dots} colors={["var(--rm-fill)"]} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={["1 Punkt = 1 Vorgang"]}
+      <RegionMap tall phoneStage level={level} levels={{}} dots={dots} colors={["var(--rm-fill)"]} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={["1 Punkt = 1 Vorgang"]}
         note="Punkte liegen zufällig im Gebiet" label={`Karte: Vorgänge der Auswahl je ${level === "district" ? "Kreis" : "Gemeinde"}`}
         info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{n(sel.count)} {sel.count === 1 ? "Vorgang" : "Vorgänge"}</span></> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
+      {wheels}
+      {pill}
       <div className="rm-xtop">
-      <div className="rm-xebene mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Ebene der Karte">
+      <div className="rm-xebene mt-3 flex flex-wrap items-center gap-2 max-sm:hidden" role="group" aria-label="Ebene der Karte">
         <span className="text-[14px] text-slate-500">Ebene</span>
         {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={PILL(level === k)}>{l}</button>)}
         <span className="text-[14px] text-slate-500">· Gebiet antippen wählt den Ort</span>
@@ -175,10 +170,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const q = new URLSearchParams(query);
   if (fromOf(zeit) && !q.get("from")) q.set("from", fromOf(zeit));
   const url = `/api/x/signale?signal=${signal === ALLE ? standard : signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}&${q}`;
-  const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
-  /* Anzahl der Art-Kacheln für den Platzhalter (erst im Browser bekannt, daher useClient) */
-  const seenArts = useClient(() => artsSeen(signal), 5);
-  useEffect(() => { if (res) rememberArts(res.signal.id, (res.arts ?? []).length); }, [res]);
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
+  /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
+  const pending = loading && !!res && ranKey !== url;
   /* Auswahl, Stand, Zeitraum oder Suche geändert: neu rechnen (Auswahl sofort, Suche nach kurzer Pause) */
   useEffect(() => {
     if (!stale || loading) return;
@@ -218,10 +212,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const zeitText = ZEITRAUM.find(([k]) => k === zeit)?.[1];
   const [hoverPlace, setHoverPlace] = useState("");
   /* Karte standardmäßig eingeklappt (Signale und Ausschreibungen); aufklappen auf Wunsch */
-  /* Am breiten Bildschirm von Anfang an offen (wie die Suche), sonst auf Wunsch */
-  const wideScreen = useClient(() => window.matchMedia("(min-width:1100px)").matches, false);
   const [kartePick, setKartePick] = useState<boolean | null>(null);
-  const karte = kartePick ?? wideScreen;
+  const karte = kartePick ?? true;
   const setKarte = (f: (k: boolean) => boolean) => setKartePick(f(karte));
   useOrtInAdresse(areaAgs, (a) => search.setArea(a, "ui"));
   /* Antwort mit Namen: die Orte mit den meisten Vorgängen */
@@ -235,10 +227,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   return (
     <main id="inhalt" className={`${karte && signal !== ALLE ? "rm-xwide rm-noplay " : ""}w-full px-[max(1vw,16px)] pb-10 text-slate-900`}>
       <XKopf seite={fest ? "ausschreibungen" : "signale"} />
+      <SplitHandle />
 
       {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy: Auswahlfeld */}
-      {!fest && <WheelPicker label="Signal" value={signal} onPick={(id) => pick({ signal: id === standard ? "" : id, phase: "", art: "" })}
-        items={MIT_ALLE.map(([id, label]) => { const I = ICONS[id]; return { id, label, icon: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" />, iconOn: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-white" /> }; })} />}
       {!fest && <nav aria-label="Signal" className="rm-xrail hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {MIT_ALLE.map(([id, label]) => {
@@ -262,24 +253,6 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
         </ul>
       </nav>}
 
-      {/* Filterwerte der Kategorie (Leistung, Vorhaben …) als kleine Kacheln mit Icon, durch eine Linie in Petrol von den Kategorien getrennt (wie die Unterthemen im Atlas) */}
-      {/* Beim Wechsel der Kategorie: Linie und graue, leicht pulsierende Kacheln stehen sofort da, bis die echten kommen */}
-      {!(res && res.signal.id === signal) && seenArts > 0 && <nav aria-hidden="true" className="mt-2 border-t-2 border-teal-600 pt-2 sm:hidden print:hidden">
-        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
-          {Array.from({ length: Math.min(8, seenArts + 1) }, (_, i) => <li key={i} className="sm:w-[100px]"><div className="h-[60px] animate-pulse rounded-lg bg-slate-100 max-sm:h-[46px]" /></li>)}
-        </ul>
-      </nav>}
-      {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <nav aria-label={res.signal.art ?? "Art"} className="mt-2 border-t-2 border-teal-600 pt-2 sm:hidden print:hidden">
-        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
-          {[{ key: "", name: "Alle" }, ...res.arts].map((a) => {
-            const on = a.key === art;
-            return <li key={a.key || "alle"} className="sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => pick({ art: on || !a.key ? "" : a.key })}
-              className={`flex h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:auto] max-sm:[overflow-wrap:anywhere] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
-              {a.key ? <ArtIcon value={a.key} size={20} className={`max-sm:h-4 max-sm:w-4 ${on ? "text-white" : "text-slate-500"}`} /> : <ThemeIcon theme="alle" size={20} className={on ? "text-white" : "text-slate-500"} />}
-              <span className="line-clamp-2">{a.key ? <><span className="max-sm:hidden">{artShort(a.name)}</span><span className="sm:hidden">{kurz(artShort(a.name))}</span></> : "Alle"}</span></button></li>;
-          })}
-        </ul>
-      </nav>}
       <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {/* Desktop: eine Filterzeile unter der Suche: Zeitraum, Schritt, Art als Auswahllisten, aktive Filter als Chips (Handy: Blätter und Räder) */}
       <div className="rm-xfilter mt-3 flex min-h-9 flex-wrap items-center gap-2 max-sm:hidden print:hidden">
@@ -325,10 +298,6 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             : <Kennzahlen week={week} band={fest ? "Ausschreibungen" : "Projekte"} scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
               <span className="max-sm:hidden">{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
               <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
-              {/* Handy: Glocke und Karte in einer Reihe */}
-              <span className={res.phases.length > 0 ? "hidden" : "sm:hidden"}><button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
-                {karte ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{karte ? "Karte ausblenden" : "Karte zeigen"}
-              </button></span>
             </Kennzahlen>}
 
           {topPlaces.length > 1 && res.total > 0 && <p className="mt-3 text-[18px] max-sm:hidden font-semibold leading-snug">Am meisten in {topPlaces.map((p, i) => <span key={p.region}>
@@ -354,23 +323,21 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           </div>
           <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12`}>
             {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} schritt={schritt} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
+              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} schritt={schritt}
+                pill={res.phases.length > 0 ? <MapPill label="Schritt" value={phase} onPick={(id) => pick({ phase: id })} items={[{ id: "", label: "Alle", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count) }))]} /> : undefined}
+                wheels={<MapWheels label="Kategorie" subLabel="Art" subAll="Alle Arten" value={signal === standard ? "" : signal} onPick={(id) => pick({ signal: id, phase: "", art: "" })}
+                  items={MIT_ALLE.map(([id, lab]) => { const I = ICONS[id]; return { id: id === standard ? "" : id, label: lab, icon: I ? <I size={16} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" /> : undefined }; })}
+                  subs={res.signal.id === signal && (res.arts ?? []).length > 0 ? res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={14} className="text-slate-500" /> })) : undefined} subValue={art} onSub={(id) => pick({ art: id })} />} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
             </div>}
             <div className={`min-w-0 ${karte ? "lg:col-span-6" : "lg:col-span-12"}`}>
-              <div className="flex flex-col gap-2 print:hidden">
-                {res.phases.length > 0 && <div className="flex items-center gap-2 sm:contents">
-                  <div className="min-w-0 flex-1 sm:contents">
-                    <PhasePicker label="Schritt" value={phase} onPick={(id) => pick({ phase: id })}
-                  items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} />
-                  </div>
-                  {/* Handy: Karte als Symbol rechts neben der Schritt-Auswahl */}
-                  <button type="button" aria-expanded={karte} aria-controls="signale-karte" aria-label={karte ? "Karte ausblenden" : "Karte zeigen"} title={karte ? "Karte ausblenden" : "Karte zeigen"} onClick={() => setKarte((k) => !k)}
-                    className={`grid h-12 w-12 flex-none place-items-center rounded-xl border sm:hidden print:hidden ${karte ? "border-teal-600/30 bg-teal-50 text-teal-800" : "border-slate-200 bg-white text-slate-700"}`}><MapIcon size={20} strokeWidth={1.5} aria-hidden="true" /></button>
-                </div>}
-              </div>
+              {pending && <ListSkeleton />}
+              <div className={pending ? "hidden" : undefined}>
 
               {(items.length > 0 || !!erstmals) && (
                 <section className="mt-6" aria-label="Neueste Vorgänge">
+                  {/* Überschrift: was gewählt ist (Kategorie oder Art), mit Ort, falls einer gewählt ist; Schritt darunter klein */}
+                  <h2 className="m-0 text-[22px] font-semibold leading-tight max-sm:text-[20px]">{art ? artShort(art) : res.signal.name}{areaAgs && res.places.length === 1 ? <span className="font-normal text-slate-500"> in {res.places[0].name}</span> : null}</h2>
+                  {phase && <p className="m-0 mt-1 text-[14px] text-slate-500">Schritt: {res.phases.find((p) => p.key === phase)?.name ?? phase}</p>}
                   {items.length === 0 && <Leer>Keine Vorgänge in dieser Auswahl.</Leer>}
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
                     {items.slice(0, shown).map((r) => (
@@ -392,6 +359,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                   )}
                 </section>
               )}
+              </div>
               <MethodikNote>Stand {day(res.builtAt?.slice(0, 10) ?? "")}. Gelesen aus Titeln, Vorlagen und Begründungen; jede Angabe mit Originalquelle im Vorgang.</MethodikNote>
             </div>
           </div>

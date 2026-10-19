@@ -17,7 +17,7 @@ import { ActiveFilters } from "../../components/ActiveFilters";
 export type PlayState = "idle" | "loading" | "playing" | "paused";
 
 /** Suchleiste wie auf der Startseite (gleiche Suche, gleiche Filter), rechts der Start-Knopf der Analyse */
-export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false, noPlay = false, extra, follow }: { /** Handy: Reihe Suchfeld, Filter, Herz (Suche speichern) */ follow?: ReactNode; /** Handy: Zusatzfelder im Filterblatt (Zeitraum, Folgen …) */ extra?: ReactNode; /** ohne Start-Knopf: der Filter steht links an seiner Stelle (plenara.X Signale rechnen von selbst) */ noPlay?: boolean; play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
+export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false, noPlay = false, extra, follow, filterUp = false }: { /** Handy: das Filterfenster klappt nach oben auf (Suchleiste unten auf der Karte) */ filterUp?: boolean; /** Handy: Reihe Suchfeld, Filter, Herz (Suche speichern) */ follow?: ReactNode; /** Handy: Zusatzfelder im Filterblatt (Zeitraum, Folgen …) */ extra?: ReactNode; /** ohne Start-Knopf: der Filter steht links an seiner Stelle (plenara.X Signale rechnen von selbst) */ noPlay?: boolean; play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
   const { geo } = useData();
   const search = useSearch();
   const res = useSearchResults();
@@ -63,7 +63,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
         const bar = (
           <div className="rm-solid rm-xsearch relative z-20">
       <div role="search" className="flex w-full items-center gap-2">
-          {noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${follow ? "max-sm:order-1" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} /> : filterBtn}</div>}
+          {noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${follow ? "max-sm:order-1" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
           {!noPlay && <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default max-sm:hidden`}>
             {play === "loading" ? (
               <span role="status" aria-label="Wird berechnet" className="rm-spinner" />
@@ -73,9 +73,9 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg>
             )}
           </button>}
-          {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 max-sm:order-1 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} /> : filterBtn}</div>}
+          {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 max-sm:order-1 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
           <div className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white [&_input]:rounded-xl" onFocusCapture={() => setTyping(true)} onBlurCapture={() => window.setTimeout(() => { if (!document.activeElement?.closest('[role="search"]')) setTyping(false); }, 150)}>
-            <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} />
+            <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} listUp={filterUp && phone} listMax={filterUp && phone ? 6 : undefined} />
           </div>
           {follow && <div className={`flex-none max-sm:order-2 sm:hidden ${typing ? "max-sm:hidden" : ""}`}>{follow}</div>}
           {phone && typing && <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => { (document.activeElement as HTMLElement | null)?.blur(); setTyping(false); }} className="h-12 flex-none px-1 text-[16px] font-medium text-teal-700">Abbrechen</button>}

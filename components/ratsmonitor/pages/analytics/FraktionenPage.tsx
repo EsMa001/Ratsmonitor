@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Kennzahlen, Folgen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
+import { ListSkeleton } from "./ListSkeleton";
+import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
 import { Befund, zuThema, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -35,6 +37,8 @@ const cellColor = (i: number | null) => (i === null ? "transparent" : i >= 100 ?
 export function FraktionenPage() {
   const { query } = useAnalyticsQuery();
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/fraktionen?${query}`, initial: true });
+  /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
+  const pending = loading && !!res && ranKey !== query;
   /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
   useEffect(() => {
     if (!stale || loading) return;
@@ -64,8 +68,9 @@ export function FraktionenPage() {
   const busiest = parties[0];
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className="rm-xwide rm-xhero rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="fraktionen" />
+      <SplitHandle />
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
@@ -73,17 +78,21 @@ export function FraktionenPage() {
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
       {res && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {parties.length === 0 ? <Leer>Keine Anträge oder Anfragen einer Fraktion für diese Auswahl.</Leer> : (
             <>
+              <div className="rm-xsplit-map rm-xhero-panel rm-netstage">
               <Befund noPhone>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.withFaction)} Anträge und Anfragen einer Fraktion zugeordnet. Die meisten stellt ${busiest.name} (${n(busiest.n)}).`}</Befund>
-              <Kennzahlen items={([
+              <Kennzahlen rest items={([
                   ["Vorgänge mit Fraktion", n(res.totals.withFaction)],
                   ["Fraktionen", n(parties.length)],
                   ["Anträge", n(parties.reduce((a, p) => a + p.antrag, 0))],
                   ["Anfragen", n(parties.reduce((a, p) => a + p.anfrage, 0))]
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
+              </div>
 
+              {pending && <ListSkeleton />}
+              <div className={pending ? "hidden" : undefined}>
               <div className="mt-8 max-sm:hidden print:hidden"><Segmented label="Teil der Auswertung" options={[["je", "Anträge je Fraktion"], ["themen", "Themenprofil"], ["ausgang", "Was aus den Anträgen wird"]]} value={tab} onPick={setTab} /></div>
               <TabPane on={tab === "je"}>
               <Reveal><section className="mt-12">
@@ -178,6 +187,7 @@ export function FraktionenPage() {
               </TabPane>
 
               <MethodikNote>Die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei.</MethodikNote>
+              </div>
             </>
           )}
         </div>
