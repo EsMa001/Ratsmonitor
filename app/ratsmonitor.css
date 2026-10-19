@@ -81,7 +81,7 @@ body h1,body h2,body h3{font-weight:600}
 .rm-glass:hover{background:linear-gradient(135deg,rgba(255,255,255,.65),rgba(230,243,241,.55))}
 /* plenara.X: Legenden und Knöpfe auf Karten und Netzen ohne Rahmen und Schatten (Linien statt Kästen) */
 /* Legenden, Zoomknöpfe und Karten auf Karten und Netzen: Milchglas (durchscheinend, weicher Rand, Lichtkante) */
-.rm-legend{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(236,246,244,.86));border:1px solid rgba(255,255,255,.9);box-shadow:0 8px 24px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.9)}
+.rm-legend{background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(230,243,241,.5));border:1px solid rgba(255,255,255,.85);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 8px 24px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.9)}
 .rm-dark .rm-legend{background:linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5));border-color:rgba(255,255,255,.14);box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);color:var(--rm-c900)}
 .rm-dark .rm-legend button{color:var(--rm-c900)}
 /* plenara.X: Suche und Filter ohne Milchglas (flach, weiß, feine Linie); die Startseite behält das Glas */
@@ -266,7 +266,7 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
 
 /* Desktop: Die Suchzeile der plenara.X-Seiten bleibt beim Scrollen unter der Kopfzeile stehen (Zeitraum und Filter in Reichweite) */
 @media (min-width:640px){
-  div:has(> .rm-xsearch){position:sticky;top:var(--hdr,58px);z-index:30;background:color-mix(in srgb,var(--rm-white) 94%,transparent);padding:0 0 8px;margin-top:12px}
+  div:has(> .rm-xsearch){position:sticky;top:var(--hdr,58px);z-index:30;background:color-mix(in srgb,var(--rm-white) 80%,transparent);-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);padding:0 0 8px;margin-top:12px}
 }
 @media print{div:has(> .rm-xsearch){position:static}}
 
@@ -291,7 +291,7 @@ svg g[data-node]:focus-visible text{font-weight:600}
 .rm-gpulse2{animation-delay:1.6s}
 .rm-gflow{animation:rm-gflow 1.2s linear infinite}
 @media (prefers-reduced-motion:reduce){.rm-gin,.rm-gpulse,.rm-gflow{animation:none}}
-.rm-stage-chip,.rm-liquid{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(236,246,244,.86));color:var(--st-text);border:1px solid rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(24,24,27,.12),inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.35)}
+.rm-stage-chip,.rm-liquid{background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(230,243,241,.46));color:var(--st-text);border:1px solid rgba(255,255,255,.85);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);box-shadow:0 10px 30px rgba(24,24,27,.12),inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.35)}
 .rm-liquid{color:inherit}
 :root{--st-bg:#fff;--st-text:#18181b;--st-topic-text:#b45309;--st-light:#86cbc1;--st-mid:#4fa89b;--st-core:#268478;--st-warm:#dfa475;--st-accent:#c8732f;--st-edge-hi:#268478;--st-center:#268478;--st-center-core:#fff;--st-spot:rgba(38,132,120,.12);--st-grid:rgba(38,132,120,.2)}
 html.rm-dark{--st-bg:#18181b;--st-text:#fff;--st-topic-text:#dfa475;--st-edge-hi:#86cbc1;--st-center:#fff;--st-center-core:#268478;--st-spot:rgba(38,132,120,.38);--st-grid:rgba(255,255,255,.07)}
@@ -318,7 +318,7 @@ html.rm-dark{--st-blue:#6f93ad}
 @media (prefers-reduced-motion:reduce){.rm-pagein{animation:none}}
 /* Dialoge: Milchglas, weiche Ein- und Ausblendung, Hintergrund leicht unscharf */
 .rm-dialog{background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(236,246,244,.7));border:1px solid rgba(255,255,255,.9);-webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%);box-shadow:0 24px 60px rgba(24,24,27,.22),inset 0 1px 0 rgba(255,255,255,.95)}
-.rm-dialog::backdrop{background:rgba(24,24,27,.36);animation:rm-dlg-back .25s ease-out both}
+.rm-dialog::backdrop{background:rgba(24,24,27,.3);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:rm-dlg-back .25s ease-out both}
 .rm-dialog[open]{animation:rm-dlg .25s cubic-bezier(.2,.8,.3,1) both}
 html.rm-dark .rm-dialog{background:linear-gradient(135deg,rgba(40,48,47,.85),rgba(23,33,42,.78));border-color:rgba(255,255,255,.14);box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);color:var(--rm-c900)}
 @keyframes rm-dlg{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
@@ -328,3 +328,9 @@ html.rm-dark .rm-dialog{background:linear-gradient(135deg,rgba(40,48,47,.85),rgb
 @keyframes rm-fpop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
 .rm-fpop{animation:rm-fpop .22s cubic-bezier(.2,.8,.3,1) both;transform-origin:top left}
 @media (prefers-reduced-motion:reduce){.rm-fpop{animation:none}}
+/* Startseite: das p aus Punkten, sehr langsame Helligkeitswelle (nur Deckkraft) */
+.rm-pdot{opacity:var(--o,.14);animation:rm-pwave 11s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes rm-pwave{0%,60%,100%{opacity:var(--o,.14)}30%{opacity:.42}}
+.rm-pstem{opacity:.14;animation:rm-pstem 11s ease-in-out infinite}
+@keyframes rm-pstem{0%,60%,100%{opacity:.14}20%{opacity:.5}}
+@media (prefers-reduced-motion:reduce){.rm-pdot,.rm-pstem{animation:none}}
