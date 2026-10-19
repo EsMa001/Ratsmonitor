@@ -328,9 +328,3 @@ html.rm-dark .rm-dialog{background:linear-gradient(135deg,rgba(40,48,47,.85),rgb
 @keyframes rm-fpop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
 .rm-fpop{animation:rm-fpop .22s cubic-bezier(.2,.8,.3,1) both;transform-origin:top left}
 @media (prefers-reduced-motion:reduce){.rm-fpop{animation:none}}
-/* Startseite: das p aus Punkten, sehr langsame Helligkeitswelle (nur Deckkraft) */
-.rm-pdot{opacity:var(--o,.14);animation:rm-pwave 11s ease-in-out infinite;animation-delay:var(--d,0s)}
-@keyframes rm-pwave{0%,60%,100%{opacity:var(--o,.14)}30%{opacity:.42}}
-.rm-pstem{opacity:.14;animation:rm-pstem 11s ease-in-out infinite}
-@keyframes rm-pstem{0%,60%,100%{opacity:.14}20%{opacity:.5}}
-@media (prefers-reduced-motion:reduce){.rm-pdot,.rm-pstem{animation:none}}

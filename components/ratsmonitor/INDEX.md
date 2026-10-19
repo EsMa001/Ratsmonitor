@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (577 Zeilen, ⚠14)
-- app/ratsmonitor.css (337 Zeilen, ⚠18)
+- app/ratsmonitor.css (331 Zeilen, ⚠18)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -500,9 +500,7 @@ rm-logo__text ratsmonitor-info.css:188
 rm-mapctl ratsmonitor.css:248
 rm-netstage ratsmonitor.css:284
 rm-pagein ratsmonitor.css:317
-rm-pdot ratsmonitor.css:332
 rm-pmark ratsmonitor-info.css:498
-rm-pstem ratsmonitor.css:334
 rm-sbar ratsmonitor.css:241
 rm-search ratsmonitor-info.css:316
 rm-search ratsmonitor.css:230
@@ -684,7 +682,7 @@ truncate ratsmonitor-info.css:459
 - ArtIcon.tsx (71, ⚠1): ArtIcon
 - BandDots.tsx (50): BandDots
 - BottomNav.tsx (55, ⚠1): BottomNav
-- Brand.tsx (274): PLENARA_P, AnalyticsX, AnalyticsLogo, Brand
+- Brand.tsx (274): AnalyticsX, AnalyticsLogo, Brand
 - CalendarFeed.tsx (106): CalendarFeed
 - ChipRail.tsx (35, ⚠1): RailItem, ChipRail, kurz
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
@@ -740,7 +738,7 @@ truncate ratsmonitor-info.css:459
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (86): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
-- StartseitePage.tsx (508, ⚠1): StartseitePage
+- StartseitePage.tsx (506, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (172): VideosPage
