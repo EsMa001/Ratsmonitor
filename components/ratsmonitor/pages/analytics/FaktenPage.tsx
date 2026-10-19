@@ -55,7 +55,7 @@ export function FaktenPage() {
   const [picked, setPicked] = useState("");
   const facts = res?.facts ?? [];
   /* „Alle“: bei den Fakten wie viele Fakten je Gebiet einen Wert haben, bei den Werten ob es überhaupt einen gibt (Abdeckung) */
-  const allFacts = params.get("fakt") === "alle";
+  const allFacts = params.get("fakt") === "alle" || params.get("fakt") === null;
   const fact = allFacts ? undefined : facts.find((f) => f.kind === params.get("fakt")) ?? facts[0];
   const metrics = metricsOf(fact);
   const allMetrics = !allFacts && params.get("wert") === "alle";

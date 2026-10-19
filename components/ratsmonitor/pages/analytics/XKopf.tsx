@@ -73,7 +73,7 @@ function XSeiten({ path }: { path: string }) {
     <nav aria-label="Auswertungen" className="relative z-20 flex items-center gap-4 max-sm:hidden print:hidden">
       {eigene[1].map((k) => <Link key={k} href={`/analytics/${k}`} aria-current={k === aktuell ? "page" : undefined} className={pill(k === aktuell)}>{kurzName(k)}</Link>)}
       <div ref={ref} className="relative">
-        <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ top: r.bottom + 4, right: window.innerWidth - r.right }); setOpen((o) => !o); }} className={pill(false)}>
+        <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ top: Math.max(r.bottom + 4, (e.currentTarget.closest(".pl-band")?.getBoundingClientRect().bottom ?? 0) + 6), right: window.innerWidth - r.right }); setOpen((o) => !o); }} className={pill(false)}>
           Weitere<ChevronDown size={14} aria-hidden="true" />
         </button>
         {open && createPortal(

@@ -103,7 +103,7 @@ export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort 
  * (keine Kennzahlen, die stehen in plenara.X Fakten). Signal, Stand und Zeitraum stehen in der Adresse (teilbar), Ort und Begriff in der Suche.
  */
 /* Ausklappbare Karte: Vorgänge der Auswahl je Gemeinde (Verbände färben ihre Mitgliedsgemeinden) */
-function SignalMap({ places, onPlace, hover = "", zeit, onZeit }: { /* Zeitraum: am breiten Bildschirm auf der Karte */ zeit?: string; onZeit?: (z: string) => void; places: Place[]; onPlace: (ags: string) => void; /* Gebiet der überfahrenen Zeile (Schlüssel des Katalogs): auf der Karte hervorgehoben */ hover?: string }) {
+function SignalMap({ places, onPlace, hover = "", zeit, onZeit, schritt }: { /* Schritt-Auswahl (Glas auf der Karte, nur am breiten Bildschirm) */ schritt?: React.ReactNode; /* Zeitraum: am breiten Bildschirm auf der Karte */ zeit?: string; onZeit?: (z: string) => void; places: Place[]; onPlace: (ags: string) => void; /* Gebiet der überfahrenen Zeile (Schlüssel des Katalogs): auf der Karte hervorgehoben */ hover?: string }) {
   const [own, setPicked] = useState(""), [level, setLevel] = useState<"city" | "district">("city");
   /* Gemeinden: Vorgänge je Gemeinde (Verbände färben ihre Mitgliedsgemeinden); Kreise: Summe aller Gebiete im Kreis */
   const byAgs = new Map<string, { name: string; count: number }>();
@@ -137,6 +137,7 @@ function SignalMap({ places, onPlace, hover = "", zeit, onZeit }: { /* Zeitraum:
         <span className="text-[14px] text-slate-500">· Gebiet antippen wählt den Ort</span>
       </div>
       {onZeit && <div className="rm-xzeit"><ZeitPills value={zeit ?? ""} all="alle" onPick={onZeit} /></div>}
+      {schritt && <div className="rm-xschritt">{schritt}</div>}
       </div>
     </section>
   );
@@ -227,6 +228,10 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const topPlaces = res ? [...res.places].sort((a, b) => b.count - a.count).slice(0, 3) : [];
   const phaseOrder = (res?.phases ?? []).map((p) => p.name);
 
+  /* Schritt-Auswahl: in der Filterzeile, am breiten Bildschirm stattdessen als Glas auf der Karte */
+  const schritt = res && res.signal.id === signal && res.phases.length > 0 ? <Dropdown label="Schritt" value={phase} onPick={(id) => pick({ phase: id })}
+    items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} /> : null;
+
   return (
     <main id="inhalt" className={`${karte && signal !== ALLE ? "rm-xwide rm-noplay " : ""}w-full px-[max(1vw,16px)] pb-10 text-slate-900`}>
       <XKopf seite={fest ? "ausschreibungen" : "signale"} />
@@ -279,8 +284,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
       {/* Desktop: eine Filterzeile unter der Suche: Zeitraum, Schritt, Art als Auswahllisten, aktive Filter als Chips (Handy: Blätter und Räder) */}
       <div className="rm-xfilter mt-3 flex min-h-9 flex-wrap items-center gap-2 max-sm:hidden print:hidden">
         <span className="rm-zeit-std contents"><ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} /></span>
-        {res && res.signal.id === signal && res.phases.length > 0 && <Dropdown label="Schritt" value={phase} onPick={(id) => pick({ phase: id })}
-          items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} />}
+        {schritt && <span className="rm-schritt-std contents">{schritt}</span>}
         {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <span className="rm-art-std contents"><Dropdown label={res.signal.art ?? "Art"} value={art} onPick={(id) => pick({ art: id })}
           items={[{ id: "", label: "Alle" }, ...res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={16} className="text-slate-500" /> }))]} /></span>}
         <AktiveFilter onReset={() => pick({ phase: "", art: "", zeit: "" })} chips={[
@@ -350,7 +354,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           </div>
           <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12`}>
             {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
+              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} schritt={schritt} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
             </div>}
             <div className={`min-w-0 ${karte ? "lg:col-span-6" : "lg:col-span-12"}`}>
               <div className="flex flex-col gap-2 print:hidden">
