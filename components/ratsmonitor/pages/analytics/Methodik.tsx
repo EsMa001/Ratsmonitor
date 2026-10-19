@@ -7,9 +7,9 @@ import type { AnalyseId } from "../../info/branchen-enterprise";
 /* Methodik einheitlich unten auf jeder plenara.X-Seite, über der Kachel „Fragen oder Anregungen?“: die Erklärtexte der Seite
    (AnalyticsAbout) und die Anmerkungen zur jeweiligen Auswertung (MethodikNote). Das Symbol im Kopfband springt hierher (#methodik). */
 export const METHODIK_VON: Record<string, [AnalyseId, string][]> = {
-  atlas: [["atlas", "Atlas"]], vergleich: [["vergleich", "Vergleich"]], signale: [["signale", "Signale"]], fakten: [["fakten", "Fakten"]],
+  atlas: [["atlas", "Themenatlas"]], vergleich: [["vergleich", "Vergleich"]], signale: [["signale", "Projekte"]], fakten: [["fakten", "Werte"]],
   trends: [["trends", "Verlauf"], ["diffusion", "Ausbreitung"]], beschluesse: [["beschluesse", "Beschlusslage"]], fraktionen: [["fraktionen", "Fraktionen"]],
-  gremien: [["gremien", "Gremien"]], graph: [["graph", "Themennetz"]], news: [["news", "Aktuelles"]], ausschreibungen: [["ausschreibungen", "Ausschreibungen"]],
+  gremien: [["gremien", "Gremien"]], graph: [["graph", "Themennetz"]], news: [["news", "Nachrichten"]], ausschreibungen: [["ausschreibungen", "Ausschreibungen"]],
 };
 /* Ablage der Anmerkungen: der Block meldet sein Element, die Anmerkungen hängen sich dort ein */
 let slot: HTMLElement | null = null;

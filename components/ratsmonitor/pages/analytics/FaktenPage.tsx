@@ -271,7 +271,7 @@ export function FaktenPage() {
           </div>
         </div>
       )}
-    <XWeiter links={[["/analytics/atlas", "Wie viel? (Atlas)"], ["/analytics/signale", "Was entsteht? (Signale)"]]} />
+    <XWeiter links={[["/analytics/atlas", "Wie viel? (Themenatlas)"], ["/analytics/signale", "Was entsteht? (Projekte)"]]} />
     </main>
   );
 }
@@ -289,18 +289,18 @@ const FACT_ICONS: Record<string, LucideIcon> = {
 };
 /* Wo es zum Fakt weitergeht: Menge im Atlas, Vorhaben in den Signalen */
 const LINKS: Record<string, [string, string][]> = {
-  hebesatz: [["/analytics/atlas?thema=finanzen", "Finanzen & Haushalt im Atlas"]],
-  budget: [["/analytics/atlas?thema=finanzen", "Finanzen & Haushalt im Atlas"]],
-  annual_result: [["/analytics/atlas?thema=finanzen", "Finanzen & Haushalt im Atlas"]],
-  fee_rate: [["/analytics/atlas?thema=umwelt", "Umwelt, Klima & Energie im Atlas"], ["/analytics/signale?signal=wasser", "Wasser und Hochwasser in den Signalen"]],
-  kita_fee: [["/analytics/atlas?thema=bildung&sub=bildung.kitabetr", "Kitas im Atlas"]],
-  housing: [["/analytics/signale?signal=wohnbau", "Neue Wohnbaugebiete in den Signalen"]],
-  plot_price: [["/analytics/signale?signal=wohnbau", "Neue Wohnbaugebiete in den Signalen"]],
-  plan_area: [["/analytics/signale?signal=wohnbau", "Neue Wohnbaugebiete in den Signalen"], ["/analytics/signale?signal=gewerbe", "Gewerbe in den Signalen"]],
-  land_price: [["/analytics/signale?signal=gewerbe", "Gewerbe, Industrie, Handel in den Signalen"]],
-  ee_power: [["/analytics/signale?signal=wind", "Windenergie in den Signalen"], ["/analytics/signale?signal=solar", "Solarenergie in den Signalen"]],
-  wind_count: [["/analytics/signale?signal=wind", "Windenergie in den Signalen"]],
-  road: [["/analytics/signale?signal=strasse", "Straßen und Brücken in den Signalen"]],
+  hebesatz: [["/analytics/atlas?thema=finanzen", "Finanzen & Haushalt im Themenatlas"]],
+  budget: [["/analytics/atlas?thema=finanzen", "Finanzen & Haushalt im Themenatlas"]],
+  annual_result: [["/analytics/atlas?thema=finanzen", "Finanzen & Haushalt im Themenatlas"]],
+  fee_rate: [["/analytics/atlas?thema=umwelt", "Umwelt, Klima & Energie im Themenatlas"], ["/analytics/signale?signal=wasser", "Wasser und Hochwasser in den Projekten"]],
+  kita_fee: [["/analytics/atlas?thema=bildung&sub=bildung.kitabetr", "Kitas im Themenatlas"]],
+  housing: [["/analytics/signale?signal=wohnbau", "Neue Wohnbaugebiete in den Projekten"]],
+  plot_price: [["/analytics/signale?signal=wohnbau", "Neue Wohnbaugebiete in den Projekten"]],
+  plan_area: [["/analytics/signale?signal=wohnbau", "Neue Wohnbaugebiete in den Projekten"], ["/analytics/signale?signal=gewerbe", "Gewerbe in den Projekten"]],
+  land_price: [["/analytics/signale?signal=gewerbe", "Gewerbe, Industrie, Handel in den Projekten"]],
+  ee_power: [["/analytics/signale?signal=wind", "Windenergie in den Projekten"], ["/analytics/signale?signal=solar", "Solarenergie in den Projekten"]],
+  wind_count: [["/analytics/signale?signal=wind", "Windenergie in den Projekten"]],
+  road: [["/analytics/signale?signal=strasse", "Straßen und Brücken in den Projekten"]],
 };
 
 /** Ort im Vergleich: Wert des Orts auf der Skala aller Gebiete; hell die mittlere Hälfte (übliche Spanne), Strich der Median */

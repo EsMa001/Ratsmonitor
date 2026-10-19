@@ -45,7 +45,7 @@ export function AnalyticsPages({ path }: { path: string }) {
   useEffect(() => {
     window.scrollTo(0, 0);
     const gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
-    const TITEL: Record<string, string> = { "/analytics/atlas": "Atlas · plenara.X", "/analytics/signale": "Signale · plenara.X", "/analytics/ausschreibungen": "Ausschreibungen · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Aktuelles · plenara.X", 
+    const TITEL: Record<string, string> = { "/analytics/atlas": "Themenatlas · plenara.X", "/analytics/signale": "Projekte · plenara.X", "/analytics/ausschreibungen": "Ausschreibungen · plenara.X", "/analytics/fakten": "Werte · plenara.X", "/analytics/news": "Nachrichten · plenara.X", 
       "/analytics/graph": "Themennetz · plenara.X", "/analytics/gremien": "Gremien · plenara.X", "/analytics/beschluesse": "Beschlusslage · plenara.X",
       "/analytics/vergleich": "Vergleich · plenara.X", "/analytics/trends": "Trends · plenara.X", "/analytics/fraktionen": "Fraktionen · plenara.X" };
     document.title = TITEL[path] ?? (gruppe ? gruppe.name : "plenara.X");

@@ -24,10 +24,10 @@ const PLENARA: Chapter[] = [
   { t: 242, title: "Datenabdeckung", what: "Ist Ihre Gemeinde dabei? Das sehen Sie offen." },
 ];
 const ANALYSE: Chapter[] = [
-  { t: 269, title: "Atlas", what: "Wie viel wo beraten wird, nach zehn Themen." },
-  { t: 292, title: "Signale", what: "Einzelne Vorhaben mit Ort, Schritt und Quelle." },
+  { t: 269, title: "Themenatlas", what: "Wie viel wo beraten wird, nach zehn Themen." },
+  { t: 292, title: "Projekte", what: "Einzelne Projekte mit Ort, Schritt und Quelle." },
   { t: 311, title: "Trends", what: "Begriffe, die gerade zunehmen." },
-  { t: 332, title: "Fakten", what: "Werte aus den Vorlagen, je Gemeinde." },
+  { t: 332, title: "Werte", what: "Werte aus den Vorlagen, je Gemeinde." },
   { t: 345, title: "Einblicke", what: "Gremien, Themennetz und Aktuelles." },
 ];
 const ALL = [...PLENARA, ...ANALYSE, { t: 359, title: "Jetzt ausprobieren", what: "" }];
@@ -155,7 +155,7 @@ export function VideosPage() {
         <h2 className="m-0 text-[22px] font-semibold text-slate-900">Weitere Videos</h2>
         <p className="mb-6 max-sm:mb-3 mt-1 text-[16px] text-slate-500">plenara.X und je Anwendergruppe ein kurzes Video mit einem passenden Begriff.</p>
         <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 max-sm:-mx-4 max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:scroll-px-4 max-sm:gap-3 max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden">
-          {[{ base: PLENARAX, name: "plenara.X", text: "Atlas, Signale, Trends, Fakten und Einblicke.", href: "/analytics/atlas", link: "Zum Atlas" },
+          {[{ base: PLENARAX, name: "plenara.X", text: "Themenatlas, Projekte, Trends, Werte und Einblicke.", href: "/analytics/atlas", link: "Zum Atlas" },
             ...ANWENDER.map((a) => ({ base: `plenara-anwender-${a.slug}`, name: a.name, text: a.text, href: `/anwender/${a.slug}`, link: `Zur Seite ${a.name}` }))].map((v) => (
             <div key={v.base} className="max-sm:w-[78%] max-sm:flex-none max-sm:snap-start">
               <Player base={variant(v.base, dark)} poster={variant(v.base, dark)} label={`Video abspielen: ${v.name}`} />

@@ -276,12 +276,12 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
       </div>
 
       {error && <Fehler>{error}</Fehler>}
-      {loading && !res && <Laden text={fest ? "Ausschreibungen werden geladen …" : "Signale werden geladen …"} />}
+      {loading && !res && <Laden text={fest ? "Ausschreibungen werden geladen …" : "Projekte werden geladen …"} />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
           {res.total === 0 ? <Leer tipp="Einen längeren Zeitraum, eine andere Art oder „Alle Themen“ wählen, oder den Ort entfernen.">{`Keine Vorgänge für diese Auswahl: ${res.signal.name}${zeit !== "alle" ? `, letzte ${zeit} Monate` : ""}.`}</Leer>
-            : <Kennzahlen week={week} band={fest ? "Ausschreibungen" : "Signale"} scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
+            : <Kennzahlen week={week} band={fest ? "Ausschreibungen" : "Projekte"} scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
               <span className="max-sm:hidden">{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
               <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
               {/* Handy: Glocke und Karte in einer Reihe */}
@@ -356,9 +356,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           </div>
         </div>
       )}
-    <XWeiter links={[...(fest ? [["/analytics/signale", "Was entsteht? (Signale)"]] : []), ["/analytics/news", "Was ist berichtenswert? (Aktuelles)"],
+    <XWeiter links={[...(fest ? [["/analytics/signale", "Was entsteht? (Projekte)"]] : []), ["/analytics/news", "Was ist berichtenswert? (Nachrichten)"],
       /* Handy: Atlas und Trends gleich mit dem Thema bzw. Begriff dieser Seite (die Zeile mit den Links oben entfällt dort) */
-      [phone && ATLAS_OF[signal] ? `/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}` : "/analytics/atlas", "Wie viel? (Atlas)"],
+      [phone && ATLAS_OF[signal] ? `/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}` : "/analytics/atlas", "Wie viel? (Themenatlas)"],
       ...(phone && TRENDS_OF[signal] ? [[`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`, "Was verändert sich? (Trends)"]] : [])] as [string, string][]} />
     </main>
   );

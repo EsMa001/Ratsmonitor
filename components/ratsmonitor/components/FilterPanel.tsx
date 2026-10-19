@@ -94,6 +94,11 @@ export function FilterPanel({ toggle, up = false, maxH, extra }: { toggle: React
         <Toggle label="Formalien ausblenden" hint="Ohne Niederschriften, Mitteilungen und Anfragen" on={!!state.noformal} set={search.setNoformal} />
         <Toggle label="Exakter Begriff" hint="Nur ganze Wörter, keine Wortteile (Groß-/Kleinschreibung egal)" on={!!state.exact} set={search.setExact} />
         <Toggle label="Begriffe kombinieren" hint="Alle Suchbegriffe müssen vorkommen; sonst genügt einer" on={!!state.allterms} set={search.setAllterms} />
+        {/* Bundesland: setzt das Gebiet (2-stelliger Schlüssel), wie die Eingabe des Namens in der Suche; bei gewähltem Ort entfällt es */}
+        {geo && state.area.length < 5 && geo.lands.length > 0 && (
+          <FilterSelect id="f-land" label="Bundesland" allLabel="Alle Bundesländer" value={state.area.length === 2 ? state.area : ""} options={geo.lands.map((l) => ({ value: l.ags, label: l.name }))}
+            onChange={(v) => { if (v) search.setArea(v, "ui", { zoom: true }); else search.clearArea(); }} className={full} />
+        )}
         <div className="grid grid-cols-2 gap-2">
           <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />
           <FilterSelect id="f-status" label="Status" allLabel="Alle Stände" value={state.status} options={STATUS.map((s) => ({ value: s.id, label: s.label }))} counts={active ? res.statusCounts : undefined} onChange={(v) => search.setStatus(v as typeof state.status)} className={full} />

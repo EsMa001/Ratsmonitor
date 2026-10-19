@@ -177,7 +177,7 @@ export function GremiennetzPage() {
           <MethodikNote>Grundlage sind {n(res.examined)}{res.capped ? ` gleichmäßig ausgewählte von ${n(res.pool)}` : ""} Vorgängen mit Beratung oder Entscheidung. Nur Vorgänge, die in mindestens zwei verschiedenen Gremien behandelt wurden, bilden Übergänge ({n(res.paths)}). Stationen werden nach Datum geordnet, aufeinanderfolgende Stationen im selben Gremium zählen einmal. {res.mode === "types" ? "Ohne einzelnen Ort sind die Gremien nach ihrer Art aus dem Namen zusammengefasst (zum Beispiel Haupt- und Verwaltungsausschuss), weil jeder Ort eigene Namen hat. " : "Mit einem Ort gelten dessen echte Gremiennamen. "}Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab; die Zeit je Übergang ist der Abstand der Sitzungstermine.</MethodikNote>
         </div>
       )}
-    <XWeiter links={[["/analytics/beschluesse", "Beschlusslage"], ["/analytics/fraktionen", "Fraktionen"], ["/analytics/atlas", "plenara.X Atlas"]]} />
+    <XWeiter links={[["/analytics/beschluesse", "Beschlusslage"], ["/analytics/fraktionen", "Fraktionen"], ["/analytics/atlas", "plenara.X Themenatlas"]]} />
     </main>
   );
 }

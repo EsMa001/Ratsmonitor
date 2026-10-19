@@ -46,9 +46,9 @@ export function AtlasPage() {
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="atlas" />
       {/* Handy: Auswahlfeld; Tablet 6 Kacheln je Reihe; Desktop alle in einer Reihe (nie waagerecht scrollen) */}
-      <WheelPicker label="Thema des Atlas" className="mt-2" value={thema} onPick={(id) => pick(id ? { thema: id } : {})}
+      <WheelPicker label="Thema" className="mt-2" value={thema} onPick={(id) => pick(id ? { thema: id } : {})}
         items={ATLAS_THEMEN.map(([id, label]) => ({ id, label, icon: <ThemeIcon theme={id || "alle"} size={18} className="text-slate-500" />, iconOn: <ThemeIcon theme={id || "alle"} size={18} className="text-white" /> }))} />
-      <nav aria-label="Thema des Atlas" className="mt-2 hidden sm:block print:hidden">
+      <nav aria-label="Thema" className="mt-2 hidden sm:block print:hidden">
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {ATLAS_THEMEN.map(([id, label]) => (
             <li key={id || "alle"}>
@@ -62,7 +62,7 @@ export function AtlasPage() {
         </ul>
       </nav>
       <XAtlasView theme={thema} sub={sub} zeit={zeit} term={term} onTheme={(id) => pick({ thema: id })} onSub={(id) => pick({ thema, sub: id })} onZeit={(z) => pick({ thema, sub, zeit: z })} />
-    <XWeiter links={[["/analytics/trends", "Was verändert sich? (Trends)"], ["/analytics/vergleich", "Mit anderem Ort vergleichen"], ["/analytics/gremien", "Wo wird das beraten? (Gremien)"], ["/analytics/signale", "Was entsteht? (Signale)"]]} />
+    <XWeiter links={[["/analytics/trends", "Was verändert sich? (Trends)"], ["/analytics/vergleich", "Mit anderem Ort vergleichen"], ["/analytics/gremien", "Wo wird das beraten? (Gremien)"], ["/analytics/signale", "Was entsteht? (Projekte)"]]} />
     </main>
   );
 }

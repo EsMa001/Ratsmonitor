@@ -10,13 +10,13 @@ const read = (f) => fs.readFileSync(new URL(f, dir), 'utf8');
 
 /* Seite → Dateien, in denen ihr Code steht; gemeinsame Bausteine müssen in einer davon vorkommen */
 const SEITEN = {
-  Atlas: ['AtlasPage.tsx', 'XAtlasView.tsx'],
+  Themenatlas: ['AtlasPage.tsx', 'XAtlasView.tsx'],
   Ortsvergleich: ['ComparePage.tsx'],
   Trends: ['XTrendsPage.tsx'],
   Beschlusslage: ['BeschluessePage.tsx'],
-  Signale: ['SignalePage.tsx'],
-  Aktuelles: ['NewsradarPage.tsx'],
-  Fakten: ['FaktenPage.tsx'],
+  Projekte: ['SignalePage.tsx'],
+  Nachrichten: ['NewsradarPage.tsx'],
+  Werte: ['FaktenPage.tsx'],
   Fraktionen: ['FraktionenPage.tsx'],
   Gremien: ['GremiennetzPage.tsx'],
   Themennetz: ['KnowledgeGraphPage.tsx'],
@@ -34,13 +34,13 @@ test('jede plenara.X-Seite hat Kopf, Fehler- und Ladezustand, Methodik und Querv
 });
 
 test('Seiten, die nur auf Knopfdruck rechnen, nutzen useAnalysisRun (ein Weg für Laden, Fehler, veraltet)', () => {
-  for (const seite of ['Trends', 'Beschlusslage', 'Signale', 'Aktuelles', 'Fakten', 'Fraktionen', 'Gremien', 'Themennetz', 'Ortsvergleich']) {
+  for (const seite of ['Trends', 'Beschlusslage', 'Projekte', 'Nachrichten', 'Werte', 'Fraktionen', 'Gremien', 'Themennetz', 'Ortsvergleich']) {
     assert.match(code(seite), /useAnalysisRun/, `${seite}: eigener Abrufweg statt useAnalysisRun`);
   }
 });
 
 test('Seiten ohne Ergebnis zeigen einen Leerzustand', () => {
-  for (const seite of ['Trends', 'Beschlusslage', 'Signale', 'Aktuelles', 'Fraktionen', 'Gremien']) {
+  for (const seite of ['Trends', 'Beschlusslage', 'Projekte', 'Nachrichten', 'Fraktionen', 'Gremien']) {
     assert.match(code(seite), /<Leer/, `${seite}: kein Leerzustand`);
   }
 });

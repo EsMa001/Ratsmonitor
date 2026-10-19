@@ -32,17 +32,17 @@ const KURZ: Record<string, string> = {
 };
 
 const SEITEN: Record<string, Seite> = {
-  atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen." },
+  atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Themenatlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen." },
   vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Ortsvergleich", frage: "Wie steht mein Ort da?", text: "Zwei Orte nebeneinander: Themen, Beschlusslage und was für jeden Ort typisch ist." },
-  signale: { icon: "zap", gruppe: "Einblicke", titel: "plenara.X Signale", frage: "Was entsteht?", text: "Einzelne Vorhaben mit Ort, Schritt und Quelle." },
-  fakten: { icon: "tag", gruppe: "Einblicke", titel: "plenara.X Fakten", frage: "Welcher Wert?", text: "Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle." },
+  signale: { icon: "zap", gruppe: "Einblicke", titel: "plenara.X Projekte", frage: "Was entsteht?", text: "Einzelne Projekte mit Ort, Schritt und Quelle." },
+  fakten: { icon: "tag", gruppe: "Einblicke", titel: "plenara.X Werte", frage: "Welcher Wert?", text: "Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle." },
   trends: { icon: "trendingUp", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten." },
   beschluesse: { icon: "circleCheck", gruppe: "Analysen", titel: "plenara.X Beschlusslage", frage: "Wie geht es aus?", text: "Wie die Vorgänge zum gewählten Thema ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf." },
   fraktionen: { icon: "landmark", gruppe: "Hintergründe", titel: "plenara.X Fraktionen", frage: "Wer möchte was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
   gremien: { icon: "users", gruppe: "Hintergründe", titel: "plenara.X Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   graph: { icon: "network", gruppe: "Hintergründe", titel: "plenara.X Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
   ausschreibungen: { icon: "clipboardList", gruppe: "Einblicke", titel: "plenara.X Ausschreibungen", frage: "Was wird vergeben?", text: "Welche Aufträge Kommunen ausschreiben und vergeben, nach Leistung und Schritt. Aus den Beschlüssen der Räte, nicht die Bekanntmachung selbst." },
-  news: { icon: "newspaper", gruppe: "Einblicke", titel: "plenara.X Aktuelles", frage: "Was ist berichtenswert?", text: "Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit wörtlichem Zitat und Quelle. Für Vorhaben nach Branche und Stand: Signale." },
+  news: { icon: "newspaper", gruppe: "Einblicke", titel: "plenara.X Nachrichten", frage: "Was ist berichtenswert?", text: "Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit wörtlichem Zitat und Quelle. Für Vorhaben nach Branche und Stand: Signale." },
 };
 
 /** Die Auswertungen im Kopfband (Desktop): die Seiten der eigenen Gruppe als Reiter, die anderen Gruppen unter „Weitere“; die aktuelle ist hervorgehoben */

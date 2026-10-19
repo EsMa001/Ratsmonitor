@@ -82,7 +82,7 @@ function SignalBlock({ a, label }: { a: SignalAuszug; label: string }) {
             </ul>
           </div>
         )}
-        <Link href={`/analytics/signale?signal=${a.signal}`} className="mt-4 inline-block max-sm:py-3 text-[16px] text-teal-700 hover:underline">Alle Vorhaben in plenara.X Signale →</Link>
+        <Link href={`/analytics/signale?signal=${a.signal}`} className="mt-4 inline-block max-sm:py-3 text-[16px] text-teal-700 hover:underline">Alle in plenara.X Projekte →</Link>
       </div>
       <div className="lg:mt-[var(--hoch)]" style={{ "--hoch": `${-hoch}px` } as CSSProperties}>
         <RegionMap level="city" levels={{}} dots={dotsOf(a.places)} colors={["var(--rm-fill)"]} picked="" onPick={() => {}} legend={["1 Punkt = 1 Vorhaben"]} label={`Karte: ${label} je Gemeinde`} />
@@ -110,7 +110,7 @@ function WertBlock({ a }: { a: WertAuszug }) {
     <div>
       <Gross zahl={`${n(a.median)} ${a.unit}`} text={<>Median {a.name} · {a.wert}</>} />
       <p className="m-0 mt-2 text-[16px] text-slate-700">Üblich <b className="font-semibold text-slate-900">{n(a.q1!)} bis {n(a.q3!)} {a.unit}</b> <span className="text-slate-500">· {n(a.count)} Gemeinden mit Wert aus den Vorlagen{a.up + a.down > 0 ? `, seit dem vorigen Wert ${a.up} höher, ${a.down} niedriger` : ""}</span></p>
-      <Mehr href={`/analytics/fakten?fakt=${a.fakt}&wert=${encodeURIComponent(a.wert)}`}>Karte aller Gemeinden in plenara.X Fakten</Mehr>
+      <Mehr href={`/analytics/fakten?fakt=${a.fakt}&wert=${encodeURIComponent(a.wert)}`}>Karte aller Gemeinden in plenara.X Werte</Mehr>
     </div>
   );
 }
@@ -130,7 +130,7 @@ function NewsBlock({ a }: { a: NewsAuszug }) {
           </li>
         ))}
       </ul>
-      <Mehr href="/analytics/news">Alle Meldungen in plenara.X Aktuelles</Mehr>
+      <Mehr href="/analytics/news">Alle Meldungen in plenara.X Nachrichten</Mehr>
     </div>
   );
 }

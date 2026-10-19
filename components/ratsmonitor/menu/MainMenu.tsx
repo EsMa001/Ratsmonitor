@@ -30,17 +30,17 @@ export const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
 /* plenara.X (Logo als Gruppenname) mit drei Abschnitten: Analysen (Zahlen und Verteilungen), Einblicke (einzelne Vorgänge und Werte) und Hintergründe (wer beteiligt ist, was zusammenhängt), je Eintrag die Frage leise rechts daneben */
 export type XEintrag = { href: string; label: string; icon: "map" | "zap" | "trendingUp" | "layoutGrid" | "users" | "landmark" | "network" | "newspaper" | "clipboardList" | "circleCheck" | "mapPin"; hint?: string };
 export const ANALYSE: XEintrag[] = [
-  { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
+  { href: "/analytics/atlas", label: "Themenatlas", icon: "map", hint: "Wie viel?" },
   { href: "/analytics/vergleich", label: "Ortsvergleich", icon: "mapPin", hint: "Wie steht mein Ort da?" },
   { href: "/analytics/trends", label: "Trends", icon: "trendingUp", hint: "Was verändert sich?" },
   { href: "/analytics/beschluesse", label: "Beschlusslage", icon: "circleCheck", hint: "Wie geht es aus?" },
 ];
 /* Einblicke: einzelne Vorgänge und belegte Einzelwerte mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles, Anträge der Fraktionen, Fakten). Zahlen und Verteilungen stehen in den Analysen (Atlas, Ortsvergleich, Trends, Beschlusslage) */
 export const EINBLICKE: XEintrag[] = [
-  { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
+  { href: "/analytics/signale", label: "Projekte", icon: "zap", hint: "Was entsteht?" },
   { href: "/analytics/ausschreibungen", label: "Ausschreibungen", icon: "clipboardList", hint: "Was wird vergeben?" },
-  { href: "/analytics/news", label: "Aktuelles", icon: "newspaper", hint: "Was ist berichtenswert?" },
-  { href: "/analytics/fakten", label: "Fakten", icon: "map", hint: "Welcher Wert?" },
+  { href: "/analytics/news", label: "Nachrichten", icon: "newspaper", hint: "Was ist berichtenswert?" },
+  { href: "/analytics/fakten", label: "Werte", icon: "map", hint: "Welcher Wert?" },
 ];
 /* Hintergründe: wer beteiligt ist und was zusammenhängt (Fraktionen, Gremien, Themennetz) */
 export const HINTERGRUENDE: XEintrag[] = [

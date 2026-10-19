@@ -8,11 +8,11 @@ const SEITEN:Record<string,[string,string]>={
  beschluesse:['Beschlusslage · plenara.X','Wie Vorgänge ausgehen: beschlossen, abgelehnt, vertagt, und wie lange es dauert.'],
  gremien:['Gremien · plenara.X','Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden.'],
  fraktionen:['Fraktionen · plenara.X','Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird.'],
- news:['Aktuelles · plenara.X','Was in den Räten gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle.'],
+ news:['Nachrichten · plenara.X','Was in den Räten gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle.'],
  ausschreibungen:['Ausschreibungen · plenara.X','Welche Aufträge Kommunen ausschreiben und vergeben, nach Leistung und Schritt, aus den Beschlüssen der Räte gelesen, mit Quelle.'],
- signale:['Signale · plenara.X','Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen, mit Stand.'],
- fakten:['Fakten · plenara.X','Hebesätze, Gebühren, Jahresergebnisse und Preise aus den Vorlagen der Räte, je Gemeinde auf der Karte.'],
- atlas:['Atlas · plenara.X','Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und ein Ort im Vergleich mit ähnlichen Gemeinden.'],
+ signale:['Projekte · plenara.X','Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen, mit Stand.'],
+ fakten:['Werte · plenara.X','Hebesätze, Gebühren, Jahresergebnisse und Preise aus den Vorlagen der Räte, je Gemeinde auf der Karte.'],
+ atlas:['Themenatlas · plenara.X','Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und ein Ort im Vergleich mit ähnlichen Gemeinden.'],
 };
 export async function generateMetadata({params}:{params:Promise<{section?:string[]}>}):Promise<Metadata>{
  const {section=[]}=await params;const s=section[0]?SEITEN[section[0]]:undefined;if(!s)return {};

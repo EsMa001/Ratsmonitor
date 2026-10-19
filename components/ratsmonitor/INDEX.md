@@ -677,7 +677,7 @@ truncate ratsmonitor-info.css:459
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - DotField.tsx (86): DotField
 - Dropdown.tsx (66): DropItem, Dropdown, AktiveFilter
-- FilterPanel.tsx (111, ⚠1): FilterPanel
+- FilterPanel.tsx (116, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (28): NOTIFY_LATER, FollowButton
 - Footer.tsx (65): Footer
@@ -689,7 +689,7 @@ truncate ratsmonitor-info.css:459
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
-- SearchBox.tsx (550, ⚠1): isSearchInput, focusSearch, SearchBox
+- SearchBox.tsx (570, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (68): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - Segmented.tsx (66): Segmented

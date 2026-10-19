@@ -13,6 +13,9 @@ import { useAccount } from "../state/account";
 import { addRecent, clearRecent, readRecent } from "../lib/recentSearches";
 import { IconCheck, IconStar, IconPin, IconSearch, IconX } from "./icons";
 
+/** Vorschläge für die leere Suche; vor Änderung prüfen, dass es Treffer gibt */
+const BEISPIELE = ["Solarpark", "Windpark", "Wärmeplanung", "Hebesatz", "Bebauungsplan"];
+
 type Row =
   | { kind: "head"; label: string; action?: { label: string; run: () => void } }
   | { kind: "item"; entry: PlaceEntry; sel: boolean; pick: () => void; scope?: "only" | "with" }
@@ -161,6 +164,23 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
                 if (view !== "overview" && !stay) goOverview();
                 closeAndBlur();
               }
+            },
+          });
+      }
+      /* Beispiele (alle gegen die Daten geprüft, Treffer vorhanden): für Neue, die noch nichts gesucht haben */
+      const ex = BEISPIELE.filter((q) => !recent.includes(q));
+      if (ex.length) {
+        out.push({ kind: "head", label: "Beispiele" });
+        for (const q of ex)
+          out.push({
+            kind: "recent",
+            label: q,
+            prefetch: () => search.prefetchText(q),
+            pick: () => {
+              notePick(q);
+              apply(q);
+              search.commitPlaces();
+              closeAndBlur();
             },
           });
       }

@@ -116,7 +116,7 @@ export function NewsradarPage() {
           )}
         </div>
       )}
-    <XWeiter links={[["/analytics/signale", "plenara.X Signale"], ["/analytics/trends", "plenara.X Trends"]]} />
+    <XWeiter links={[["/analytics/signale", "plenara.X Projekte"], ["/analytics/trends", "plenara.X Trends"]]} />
     </main>
   );
 }
