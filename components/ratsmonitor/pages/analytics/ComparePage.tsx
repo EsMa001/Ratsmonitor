@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { usePhone } from "../../lib/usePhone";
 import { prettyTerm } from "../../lib/terms";
 import { Segmented } from "./Kennzahlen";
@@ -7,10 +8,11 @@ import { Befund, Fehler } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { TabPane } from "./Tabs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { STATUS_COLOR, STATUS } from "../../lib/constants";
 import { useData } from "../../state/data";
 import { LABELS } from "@/shared/labels.mjs";
+import { THEMES } from "@/shared/themes.mjs";
 import { FIELD, PlaceField } from "./CompareFields";
 import type { PlaceEntry } from "../../lib/place";
 import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
@@ -36,8 +38,8 @@ const ORT = { koeln: { ags: "05315", name: "Köln" }, dortmund: { ags: "05913", 
 const asPlace = (o: { ags: string; name: string }): PlaceEntry => ({ ags: o.ags, name: o.name, kind: "stadt", n: o.name.toLowerCase() });
 const n = (v: number) => v.toLocaleString("de-DE");
 /* Wörter des Sitzungsbetriebs (Anfragen, Geschäftsordnung, Rollen), die eher die Schreibweise eines Ratsinformationssystems als die Themen eines Ortes zeigen */
-const SITZUNGSWORT = /^(eingang|eingäng|anregung|beantwort|mündlich|absatz|gemeindeordnung|landes$|land$|geschäftsordnung|regularien|mitunterzeichn|mitwirkungsverbot|nachtrag|hinweis|angelegenheit|benennung|unbesetzt|anhörung|verpflichtung|mitglied|entscheidung|empfehlung|gruppe|ratsmitglied|berichterstatter|entgegennahme|einführung|stadtbezirk|bezirksvertretung|fraktion|unbeantwortet|ausschussmitglied|sitzung|niederschrift|tagesordnung)/;
-const inhaltlich = (term: string) => !SITZUNGSWORT.test(term) && !/(fraktion|gruppe)/.test(term) && !/^(partei|wähler|früher|freie$)/.test(term);
+const SITZUNGSWORT = /^(eingang|eingäng|anregung|beantwort|mündlich|absatz|gemeindeordnung|landes$|land$|geschäftsordnung|regularien|mitunterzeichn|mitwirkungsverbot|nachtrag|hinweis|angelegenheit|benennung|unbesetzt|anhörung|verpflichtung|mitglied|entscheidung|empfehlung|gruppe|ratsmitglied|berichterstatter|entgegennahme|einführung|stadtbezirk|bezirksvertretung|fraktion|unbeantwortet|ausschussmitglied|sitzung|niederschrift|tagesordnung|aktenzeichen|bürgereingabe|schriftlich|überweisung|sachstand|umsetzung|bereich$|straße|strasse|bitte$|volt$|anfrage|vorlage|bericht|beschluss|antrag)/;
+const inhaltlich = (term: string, orte: string[] = []) => !SITZUNGSWORT.test(term) && !orte.some((o) => o.length >= 4 && term.toLowerCase().startsWith(o.slice(0, Math.max(4, o.length - 1)))) && !/(fraktion|gruppe)/.test(term) && !/^(partei|wähler|früher|freie$)/.test(term);
 
 /** Was beim Vergleich der Datenlage zu beachten ist: wenig Themenzuordnung, kaum erfasster Beschlussstatus */
 function datenlage(p: Place): string[] {
@@ -73,6 +75,7 @@ export function ComparePage() {
   const [allTopics, setAllTopics] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [showCom, setShowCom] = useState(false);
+  const [allCom, setAllCom] = useState(false);
   const [allTerms, setAllTerms] = useState(false);
   const [tab, setTab] = useState<"ueberblick" | "themen" | "verlauf" | "begriffe" | "details">("ueberblick");
   const [termTab, setTermTab] = useState<"a" | "b" | "c">("b");
@@ -80,6 +83,9 @@ export function ComparePage() {
   /* Eingabefehler (zwei gleiche oder fehlende Orte); Fehler der Berechnung kommen aus useAnalysisRun */
   const [inputError, setInputError] = useState("");
   const [perHead, setPerHead] = useState(false);
+  /* Verlauf für ein Thema: eigene Abfrage mit dem Themenfilter der Suche; gilt nur für die Orte und Begriffe, mit denen sie gestellt wurde */
+  const [vSel, setVSel] = useState<{ key: string; thema: string }>({ key: "", thema: "" });
+  const [vRes, setVRes] = useState<{ key: string; res: Result } | null>(null);
   /* Geöffnete Liste hinter einer Zahl: Abschnitt (at), Art (all, label, committee, term), Wert und die Orte (Index) */
   const [drill, setDrill] = useState<{ at: string; by: string; value: string; label: string; idx: number[] } | null>(null);
 
@@ -127,10 +133,20 @@ export function ComparePage() {
     </div>
   ) : null;
   const linkCls = (on: boolean) => `text-left hover:text-teal-800 hover:underline ${on ? "text-teal-700 underline" : ""}`;
-  const lines = useMemo(() => !res ? [] : res.places.map((p, i) => ({
+  const vThema = vSel.key === ranKey ? vSel.thema : "";
+  const vKey = ranKey + "|" + vThema;
+  useEffect(() => {
+    if (!vThema || !ranKey) return;
+    const c = new AbortController();
+    fetch(`/api/analytics/compare?${ranKey.replace(/(^|&)label=[^&]*/, "")}&label=${encodeURIComponent(vThema)}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<Result>) : null)).then((b) => { if (b) setVRes({ key: vKey, res: b }); }).catch(() => {});
+    return () => c.abort();
+  }, [vThema, ranKey, vKey]);
+  const vSrc = vThema && vRes?.key === vKey ? vRes.res : res;
+  const vLoading = !!vThema && vRes?.key !== vKey;
+  const lines = useMemo(() => !vSrc ? [] : vSrc.places.map((p, i) => ({
     color: PLACE_COLORS[i], name: names[i],
-    values: res.months.map((m) => { const v = p.months.find((x) => x.m === m)?.n ?? 0; return perHead && p.population ? (v / p.population) * 1000 : v; }),
-  })), [res, perHead]); // eslint-disable-line react-hooks/exhaustive-deps
+    values: vSrc.months.map((m) => { const v = p.months.find((x) => x.m === m)?.n ?? 0; return perHead && p.population ? (v / p.population) * 1000 : v; }),
+  })), [vSrc, perHead]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const legend = (
     <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[14px]">
@@ -158,15 +174,15 @@ export function ComparePage() {
         </button>
       )}
       <section aria-label="Vergleich einstellen" className={`print:hidden mt-2 border-b border-slate-200 pb-5 max-sm:mt-3 max-sm:pb-3 ${res && !editOpen && !stale ? "max-sm:hidden" : ""}`}>
-        <div className="grid gap-4 max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:gap-y-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
+        <div className="grid gap-4 max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:gap-y-3 md:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] md:items-end">
           <PlaceField label="Ort 1" color={PLACE_COLORS[0]} value={ort1} onChange={setOrt1} onEnter={() => run()} />
           <PlaceField label="Ort 2" color={PLACE_COLORS[1]} value={ort2} onChange={setOrt2} onEnter={() => run()} />
           <div className="min-w-0 max-sm:col-span-2">
             <label htmlFor="vergleich-thema" className="mb-1.5 max-sm:sr-only block text-[14px] font-medium text-slate-700">Thema <span className="font-normal text-slate-500">(optional)</span></label>
             <input id="vergleich-thema" type="search" value={thema} onChange={(e) => setThema(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder={phone ? "Thema (optional)" : "beliebiger Begriff"} className={FIELD} />
           </div>
-          <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-full bg-teal-700 text-white max-sm:col-span-2 max-sm:h-11 max-sm:w-full max-sm:justify-self-stretch max-sm:gap-2 max-sm:rounded-xl transition-opacity hover:opacity-85 disabled:opacity-60 md:justify-self-auto">
-            {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center md:order-first justify-self-end rounded-xl max-sm:bg-teal-700 max-sm:text-white sm:border sm:border-slate-200 sm:bg-white sm:text-teal-700 sm:hover:bg-slate-50 max-sm:col-span-2 max-sm:h-11 max-sm:w-full max-sm:justify-self-stretch max-sm:gap-2 transition-opacity max-sm:hover:opacity-85 disabled:opacity-60 md:justify-self-auto">
+            {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" />
             </svg>}
             <span className="text-[16px] font-medium sm:hidden">Vergleichen</span>
@@ -223,7 +239,7 @@ export function ComparePage() {
               <div className={`${rowCls} ${showCom ? "" : "max-sm:hidden"}`}>
                 <span className="col-span-2 text-[14px] text-slate-500 md:col-span-1 max-sm:text-[12px] max-sm:font-medium max-sm:uppercase max-sm:tracking-wide">Aktivste Gremien</span>
                 {res.places.map((p, i) => <ul key={p.ags + p.scope} className="m-0 list-none p-0 text-[14px]">
-                  {p.committees.slice(0, 4).map((c) => <li key={c.name} className="mb-1 flex items-center justify-between gap-x-2 max-sm:mb-1 max-sm:grid max-sm:grid-cols-[minmax(0,1fr)_auto]">
+                  {p.committees.slice(0, allCom ? undefined : 4).map((c) => <li key={c.name} className="mb-1 flex items-center justify-between gap-x-2 max-sm:mb-1 max-sm:grid max-sm:grid-cols-[minmax(0,1fr)_auto]">
                   <button type="button" onClick={() => pick("overview", "committee", c.name, c.name, [i])} aria-expanded={isOpen("overview", "committee", c.name, i)} className={`min-w-0 truncate ${linkCls(isOpen("overview", "committee", c.name, i))}`} title={c.name}>
                   {c.name}
                   </button>
@@ -234,6 +250,7 @@ export function ComparePage() {
                   <span className="block h-full rounded-full" style={{ width: `${Math.max(4, (c.n / Math.max(1, ...p.committees.map((x) => x.n))) * 100)}%`, background: PLACE_COLORS[i] }} />
                   </span>
                   </li>)}{!p.committees.length && <li className="text-slate-500">–</li>}
+                  {p.committees.length > 4 && <li><button type="button" aria-expanded={allCom} onClick={() => setAllCom(!allCom)} className="inline-flex min-h-8 items-center text-[14px] font-medium text-teal-700 hover:underline max-sm:min-h-[44px]">{allCom ? "Weniger Gremien" : `Mehr Gremien (${p.committees.length - 4})`}</button></li>}
                   </ul>)}
                 <span className="hidden md:block" />
               </div>
@@ -255,7 +272,7 @@ export function ComparePage() {
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             {legend}
             <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{(!allTopics ? topicRows.slice(0, 5) : topicRows).map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => pick("topics", "label", r.id, r.name, [0, 1])} />)}</ol>
-            {topicRows.length > 5 && <button type="button" aria-expanded={allTopics} onClick={() => setAllTopics(!allTopics)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 hover:underline sm:hidden">{allTopics ? "Weniger Themen zeigen" : `Alle ${topicRows.length} Themen zeigen`}</button>}
+            {topicRows.length > 5 && <button type="button" aria-expanded={allTopics} onClick={() => setAllTopics(!allTopics)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 hover:underline sm:min-h-9">{allTopics ? "Weniger Themen zeigen" : `Alle ${topicRows.length} Themen zeigen`}</button>}
             {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Vorgänge für ein Themenprofil.</p>}
             {drillAt("topics")}
           </section>
@@ -270,16 +287,25 @@ export function ComparePage() {
               <div><h2 className="text-[22px] font-semibold">Verlauf</h2><p className="mt-1 text-[14px] text-slate-500">Vorgänge je Monat.</p></div>
               <Segmented label="Maß" options={[["anzahl", "Anzahl"], ["kopf", "je 1.000 Einwohner"]]} value={perHead ? "kopf" : "anzahl"} onPick={(k) => setPerHead(k === "kopf")} />
             </div>
+            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+              <label className="flex items-center gap-2 text-[14px] text-slate-700">Thema
+                <select value={vThema} onChange={(e) => setVSel({ key: ranKey, thema: e.target.value })} className="h-9 rounded-xl border border-slate-200 bg-white px-2 text-[14px] text-slate-900 max-sm:h-11">
+                  <option value="">Alle Themen</option>
+                  {THEMES.map((t: { id: string; name: string }) => <option key={t.id} value={t.name}>{t.name}</option>)}
+                </select>
+              </label>
+              {vLoading && <span className="text-[14px] text-slate-500">Lädt …</span>}
+            </div>
             <div className="my-3">{legend}</div>
-            <CompareLines months={res.months} series={lines} />
+            <CompareLines months={vSrc?.months ?? res.months} series={lines} />
           </details>
           </Reveal>
           </TabPane>
 
           <TabPane on={phone || tab === "begriffe"}>
           {(() => {
-            const typ = res.places.map((p) => p.typical.filter((t) => inhaltlich(t.term)).slice(0, 8));
-            const com = res.common.filter((c) => inhaltlich(c.term)).slice(0, 10);
+            const typ = res.places.map((p) => p.typical.filter((t) => inhaltlich(t.term, names.map((x) => x.toLowerCase().replace(/^(stadt|gemeinde|markt) /, "")))).slice(0, 8));
+            const com = res.common.filter((c) => inhaltlich(c.term, names.map((x) => x.toLowerCase().replace(/^(stadt|gemeinde|markt) /, "")))).slice(0, 10);
             const list = "m-0 mt-2 list-none border-t border-slate-200 p-0";
             const row = "flex justify-between gap-3 border-b border-slate-200 py-2 text-[14px]";
             const only = (i: number) => (
@@ -351,15 +377,17 @@ export function ComparePage() {
             </div>
           <div className="mt-8">
             <h3 className="text-[18px] font-semibold">Stand der Vorlagen</h3>
-            <p className="mb-4 mt-1 text-[14px] text-slate-500">Wie die Vorgänge je Ort stehen (Anteile in %).</p>
-            {[...res.places.map((p, i) => ({ label: names[i], list: p.status.list, color: PLACE_COLORS[i] })), { label: "Alle Gebiete", list: res.base.status.list, color: "var(--rm-c600)" }].map((row) => (
-              <div key={row.label} className="mb-3 grid items-center gap-3 sm:grid-cols-[200px_1fr]">
+            <p className="mb-4 mt-1 text-[14px] text-slate-500">Wie die Vorgänge je Ort stehen (Anteile in %). Ein Balken öffnet die Beschlusslage des Ortes.</p>
+            {[...res.places.map((p, i) => ({ label: names[i], list: p.status.list, color: PLACE_COLORS[i], ags: p.ags })), { label: "Alle Gebiete", list: res.base.status.list, color: "var(--rm-c600)", ags: "" }].map((row) => {
+              const rowCls = "mb-3 grid items-center gap-3 sm:grid-cols-[200px_1fr]";
+              const inner = <>
                 <span className="flex items-center gap-2 text-[14px]"><i className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: row.color }} /><span className="truncate">{row.label}</span></span>
                 <span className="flex h-[14px] w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label={`Stand der Vorlagen in ${row.label}`}>
                   {row.list.map((s) => s.share > 0 && <span key={s.id} title={`${STATUS.find((x) => x.id === s.id)?.label ?? s.id}: ${s.share} %`} style={{ width: `${s.share}%`, background: STATUS_COLOR[s.id] }} />)}
                 </span>
-              </div>
-            ))}
+              </>;
+              return row.ags ? <Link key={row.label} href={`/analytics/beschluesse?ort=${row.ags}`} title={`Beschlusslage für ${row.label} öffnen`} className={`${rowCls} rounded-lg text-slate-900 no-underline hover:bg-slate-50 max-sm:min-h-[44px]`}>{inner}</Link> : <div key={row.label} className={rowCls}>{inner}</div>;
+            })}
             <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[12px] text-slate-700">
               {STATUS.map((s) => <li key={s.id} className="flex items-center gap-1.5"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{s.label}</li>)}
             </ul>

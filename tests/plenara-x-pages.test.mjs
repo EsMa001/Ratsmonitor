@@ -119,10 +119,10 @@ e2e('Desktop: Filter und Reiter der überarbeiteten Seiten funktionieren', async
     pg = await seite('/analytics/beschluesse');
     assert.match(await pg.locator('[role="img"][aria-label^="beschlossen"]').first().getAttribute('aria-label'), /vertagt.*abgelehnt/);
     await pg.close();
-    // Kopfzeile: Meine Inhalte als ein Menü, Dunkelmodus im Konto-Menü
+    // Kopfzeile: Favoriten als ein Menü, Dunkelmodus im Konto-Menü
     pg = await seite('/analytics/atlas', 5000);
-    await pg.getByRole('button', { name: /Meine Inhalte/ }).click();
-    assert.equal(await pg.getByRole('menuitem').count(), 4, 'Kopfzeile: Meine Inhalte hat nicht vier Einträge');
+    await pg.getByRole('button', { name: /Favoriten/ }).click();
+    assert.equal(await pg.getByRole('menuitem').count(), 4, 'Kopfzeile: Favoriten hat nicht vier Einträge');
     await pg.keyboard.press('Escape');
     await pg.getByRole('button', { name: 'Konto' }).click();
     assert.ok(await pg.getByRole('menuitemcheckbox', { name: /Dunkler Modus/ }).isVisible(), 'Kopfzeile: Dunkelmodus nicht im Konto-Menü');

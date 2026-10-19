@@ -11,7 +11,7 @@ import { useAppNav } from "../state/nav";
 import { useSearch, useSearchResults } from "../state/search";
 import { useAccount } from "../state/account";
 import { addRecent, clearRecent, readRecent } from "../lib/recentSearches";
-import { IconCheck, IconHeart, IconPin, IconSearch, IconX } from "./icons";
+import { IconCheck, IconStar, IconPin, IconSearch, IconX } from "./icons";
 
 type Row =
   | { kind: "head"; label: string; action?: { label: string; run: () => void } }
@@ -500,7 +500,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
                   onClick={() => { r.pick(); confirmed(); dropKeyboard(); onSubmit?.(); }}
                   className={`grid min-h-10 w-full grid-cols-[18px_minmax(0,1fr)] items-center gap-2 rounded-lg px-2 py-1.5 text-left max-sm:min-h-11 ${idx === active ? "bg-slate-100" : "hover:bg-slate-100"}`}
                 >
-                  {r.saved ? <IconHeart size={16} className="text-slate-500" /> : <IconSearch size={16} className="text-slate-500" />}
+                  {r.saved ? <IconStar size={16} className="text-slate-500" /> : <IconSearch size={16} className="text-slate-500" />}
                   <span className="block truncate text-[14px] font-medium">{r.label}</span>
                 </button>
               );

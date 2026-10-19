@@ -57,7 +57,7 @@ export function NotificationsPage() {
             ))}
           </ul>
         ) : (
-          <p className={empty}>Noch keine Suche mit E-Mail vorgemerkt. Speichern Sie eine Suche mit dem Herz und schalten Sie die Glocke ein.</p>
+          <p className={empty}>Noch keine Suche mit E-Mail vorgemerkt. Speichern Sie eine Suche mit dem Stern und schalten Sie die Glocke ein.</p>
         )}
         </div>
 

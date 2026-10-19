@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 /* Weißes Punktraster im Kopfband (plenara.X, Info- und Kontoseiten), nach rechts kräftiger (Maske in CSS, .rm-banddots).
    Mit Maus: Punkte in der Nähe ziehen sich sanft zur Maus und leuchten kurz nach (zurückhaltender als auf der Startseite).
    Ohne Maus oder bei „Bewegung reduzieren“ bleibt das Raster ruhig. Gezeichnet wird nur, solange sich etwas bewegt. */
-const GAP = 22, R = 120, PULL = 3, K = 0.12, DAMP = 0.8, FADE = 0.985;
+const GAP = 22, R = 110, PULL = 2, K = 0.12, DAMP = 0.8, FADE = 0.97;
 
 export function BandDots() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -32,8 +32,8 @@ export function BandDots() {
         ox[i] += vx[i]; oy[i] += vy[i];
         glow[i] = Math.max(glow[i] * FADE, d < R ? 1 - d / R : 0);
         if (Math.abs(vx[i]) + Math.abs(vy[i]) > 0.01 || glow[i] > 0.02) moving = true;
-        ctx.globalAlpha = Math.min(1, 0.22 + glow[i] * 0.6);
-        ctx.beginPath(); ctx.arc(x + ox[i], y + oy[i], 1.2 + glow[i] * 0.8, 0, 6.2832); ctx.fill();
+        ctx.globalAlpha = Math.min(1, 0.22 + glow[i] * 0.3);
+        ctx.beginPath(); ctx.arc(x + ox[i], y + oy[i], 1.2 + glow[i] * 0.4, 0, 6.2832); ctx.fill();
       }
       raf = moving ? requestAnimationFrame(draw) : 0;
     };

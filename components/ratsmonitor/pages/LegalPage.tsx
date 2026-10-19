@@ -102,7 +102,7 @@ function Datenschutz() {
 
       <H2>5. Gespeicherte Suchen (lokaler Speicher Ihres Browsers)</H2>
       <P>
-        Wenn Sie eine Suche speichern (Herz-Symbol), wird sie im lokalen Speicher (localStorage) Ihres Browsers abgelegt. Diese Daten verlassen Ihr Gerät nicht und
+        Wenn Sie eine Suche speichern (Stern-Symbol), wird sie im lokalen Speicher (localStorage) Ihres Browsers abgelegt. Diese Daten verlassen Ihr Gerät nicht und
         werden nicht an uns übertragen. Die Speicherung ist für die von Ihnen ausdrücklich gewünschte Funktion unbedingt erforderlich (# 25 Abs. 2 Nr. 2
         Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz, TDDDG). Sie können gespeicherte Suchen jederzeit unter „Konto → Gespeicherte Suchen“ entfernen oder den
         Website-Speicher in Ihren Browser-Einstellungen löschen.

@@ -144,9 +144,9 @@ export const IconFilter = (p: IconProps) => (
     <path d="M4 6h16M7 12h10M10 18h4" />
   </Svg>
 );
-export const IconHeart = (p: IconProps) => (
+export const IconStar = (p: IconProps) => (
   <Svg {...p}>
-    <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z" />
+    <path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1-5.4-2.9-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z" />
   </Svg>
 );
 

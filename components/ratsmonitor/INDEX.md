@@ -699,7 +699,7 @@ truncate ratsmonitor-info.css:459
 - TopicSeed.tsx (11): TopicSeed
 - WheelList.tsx (42): WHEEL_ROW, WheelList
 - WheelPicker.tsx (57, ⚠1): WheelPicker
-- icons.tsx (187): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync, ThemeIcon
+- icons.tsx (187): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconRules, IconBell, IconFilter, IconStar, IconDownload, IconCalendarSync, ThemeIcon
 
 ### components/ratsmonitor/components/map/
 - MapPanel.tsx (345, ⚠2): MapPanel
@@ -805,18 +805,18 @@ truncate ratsmonitor-info.css:459
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
 - SavedArticlesPage.tsx (142, ⚠2): SavedArticlesPage
-- SavedSearchesPage.tsx (260, ⚠1): SavedSearchesPage, WeeklyReport
+- SavedSearchesPage.tsx (255, ⚠1): SavedSearchesPage, WeeklyReport
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (231, ⚠18): ANALYSE_THUMBS, MethodikText
+- AnalyticsAbout.tsx (232, ⚠18): ANALYSE_THUMBS, MethodikText
 - AnalyticsLocked.tsx (57): AnalyticsLocked
 - AnalyticsPages.tsx (60): AnalyticsPages
 - AtlasPage.tsx (69): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (53): Befund, zuThema, Leer, Fehler
-- BeschluessePage.tsx (207, ⚠9): BeschluessePage
+- BeschluessePage.tsx (211, ⚠9): BeschluessePage
 - CompareCharts.tsx (63): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (378, ⚠9): ComparePage
+- ComparePage.tsx (406, ⚠11): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (91, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (328, ⚠3): FaktenPage
@@ -839,7 +839,7 @@ truncate ratsmonitor-info.css:459
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (571, ⚠9): XAtlasView
-- XKopf.tsx (162, ⚠1): XKopf, XWeiter, ThemenLeiste
+- XKopf.tsx (218, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (346, ⚠4): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun

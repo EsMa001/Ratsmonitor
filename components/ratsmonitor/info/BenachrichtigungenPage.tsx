@@ -5,7 +5,7 @@ import { brancheBySlug } from "./content";
 
 /* Drei Wege zur Benachrichtigung; jeweils mit dem Ort, an dem man sie einstellt */
 const WAYS: [string, string, string, string][] = [
-  ["Gespeicherte Suche", "Speichern Sie eine Suche mit dem Herz und schalten Sie die Glocke ein. Sie erfahren von jedem neuen Treffer zu Ihrem Thema, Ort oder Umkreis.", "/konto/suchen", "Zu den gespeicherten Suchen"],
+  ["Gespeicherte Suche", "Speichern Sie eine Suche mit dem Stern und schalten Sie die Glocke ein. Sie erfahren von jedem neuen Treffer zu Ihrem Thema, Ort oder Umkreis.", "/konto/suchen", "Zu den gespeicherten Suchen"],
   ["Gespeicherter Artikel", "Folgen Sie einem einzelnen Vorgang mit der Glocke. Sie erfahren, sobald er weiter beraten, vertagt oder beschlossen wird.", "/konto/artikel", "Zu den gespeicherten Artikeln"],
   ["Kalender", "Legen Sie Ihre Gebiete fest, etwa Ihr Vertriebsgebiet mit Umkreis. Sie erfahren von neuen Sitzungsterminen, bevor die Tagesordnung verhandelt wird.", "/konto/kalender", "Zum Kalender"],
 ];
@@ -82,7 +82,7 @@ export function BenachrichtigungenPage() {
 
       <DarkCta
         title="Starten Sie mit Ihrer ersten Benachrichtigung"
-        sub="Suchen, Herz setzen, Glocke einschalten. Das dauert keine Minute."
+        sub="Suchen, Stern setzen, Glocke einschalten. Das dauert keine Minute."
         action={
           <Link href="/suche" className="ri-btn ri-btn--inv">
             Zur Suche

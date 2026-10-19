@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { ChevronDown } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cameFromApp, useAppNav } from "../../state/nav";
 import { IconChevronLeft } from "../../components/icons";
@@ -43,13 +46,66 @@ const SEITEN: Record<string, Seite> = {
   news: { icon: "newspaper", gruppe: "Einblicke", titel: "plenara.X Aktuelles", frage: "Was ist berichtenswert?", text: "Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit wörtlichem Zitat und Quelle. Für Vorhaben nach Branche und Stand: Signale." },
 };
 
+/** Die Auswertungen im Kopfband (Desktop): die Seiten der eigenen Gruppe als Reiter, die anderen Gruppen unter „Weitere“; die aktuelle ist hervorgehoben */
+const GRUPPEN: [string, string[]][] = [
+  ["Analysen", ["atlas", "vergleich", "trends", "beschluesse"]],
+  ["Einblicke", ["signale", "ausschreibungen", "news", "fakten"]],
+  ["Hintergründe", ["fraktionen", "gremien", "graph"]],
+];
+const kurzName = (k: string) => SEITEN[k].titel.replace("plenara.X ", "");
+function XSeiten({ path }: { path: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null), panel = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, right: 0 });
+  const aktuell = path.split("/").pop() ?? "";
+  const eigene = GRUPPEN.find(([, ks]) => ks.includes(aktuell)) ?? GRUPPEN[0];
+  const andere = GRUPPEN.filter((g) => g !== eigene);
+  useEffect(() => {
+    if (!open) return;
+    const down = (e: PointerEvent) => { const t = e.target as Node; if (!ref.current?.contains(t) && !panel.current?.contains(t)) setOpen(false); };
+    const close = () => setOpen(false);
+    const key = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("pointerdown", down); document.addEventListener("keydown", key); window.addEventListener("scroll", close, true); window.addEventListener("resize", close);
+    return () => { document.removeEventListener("pointerdown", down); document.removeEventListener("keydown", key); window.removeEventListener("scroll", close, true); window.removeEventListener("resize", close); };
+  }, [open]);
+  /* Im Band erzwingt das Stylesheet weiße Schrift und helle Flächen: Unterschied nur über Strich und Deckkraft */
+  const pill = (on: boolean) => `inline-flex h-8 items-center gap-1 px-1 text-[14px] transition-opacity ${on ? "font-semibold shadow-[inset_0_-2px_0_var(--rm-on)]" : "opacity-75 hover:opacity-100"}`;
+  return (
+    <nav aria-label="Auswertungen" className="relative z-20 flex items-center gap-4 max-sm:hidden print:hidden">
+      {eigene[1].map((k) => <Link key={k} href={`/analytics/${k}`} aria-current={k === aktuell ? "page" : undefined} className={pill(k === aktuell)}>{kurzName(k)}</Link>)}
+      <div ref={ref} className="relative">
+        <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); setPos({ top: r.bottom + 4, right: window.innerWidth - r.right }); setOpen((o) => !o); }} className={pill(false)}>
+          Weitere<ChevronDown size={14} aria-hidden="true" />
+        </button>
+        {open && createPortal(
+          <div ref={panel} role="menu" style={{ top: pos.top, right: pos.right }} className="fixed z-50 w-[340px] rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+            {andere.map(([gruppe, ks]) => (
+              <div key={gruppe} role="group" aria-label={gruppe} className="py-1 first:pt-0 last:pb-0">
+                <p className="m-0 px-3 pb-1 pt-1 text-[12px] font-semibold uppercase tracking-wide text-slate-500">{gruppe}</p>
+                {ks.map((k) => (
+                  <Link key={k} role="menuitem" href={`/analytics/${k}`} onClick={() => setOpen(false)}
+                    className="grid grid-cols-[1fr_auto] items-baseline gap-4 whitespace-nowrap rounded-lg px-3 py-2 text-[14px] text-slate-900 no-underline hover:bg-slate-50">
+                    <span>{kurzName(k)}</span><span className="text-[12px] text-slate-500">{SEITEN[k].frage}</span>
+                  </Link>
+                ))}
+              </div>
+            ))}
+          </div>, document.body)}
+      </div>
+    </nav>
+  );
+}
+
 export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   const s = SEITEN[seite], path = usePathname();
   const router = useRouter(), { goBack } = useAppNav();
   return (
     <PageBand compact>
       {/* Kein Pfad, nur Zurück wie auf den übrigen Seiten (Artikel) */}
-      <button type="button" className="back-btn -ml-1.5 mb-1 print:hidden" onClick={() => (cameFromApp() ? router.back() : goBack())}><IconChevronLeft />Zurück</button>
+      <div className="sm:flex sm:items-center sm:justify-between sm:gap-4">
+        <button type="button" className="back-btn -ml-1.5 mb-1 print:hidden" onClick={() => (cameFromApp() ? router.back() : goBack())}><IconChevronLeft />Zurück</button>
+        <XSeiten path={path} />
+      </div>
       {/* Titel links, Kurzbeschreibung in der Mitte, Symbol der Seite rechts (weiß im Petrol-Band) */}
       <div className="mt-1 grid grid-cols-[1fr_auto_1fr] items-center gap-x-4 gap-y-1 max-sm:grid-cols-[1fr_auto]">
         {/* Titel kurz, die Marke als kleines Abzeichen daneben  */}

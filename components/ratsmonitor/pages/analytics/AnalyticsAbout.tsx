@@ -212,10 +212,11 @@ const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
 
 
 /** Methodik einer Analyse (oder mehrerer, etwa Trends und Ausbreitung) für den Info-Knopf im Seitenkopf (XKopf) */
-export function MethodikText({ ids }: { ids: [AnalyseId, string][] }) {
+export function MethodikText({ ids, offen = false }: { ids: [AnalyseId, string][]; /** alles zeigen, ohne eigenen Knopf (der umgebende Block klappt aus) */ offen?: boolean }) {
   const da = ids.filter(([id]) => METHODIK[id]);
   /* Kurz: je Analyse nur der erste Absatz (was sie zeigt); „Mehr lesen“ zeigt Grundlage, Messung und Grenzen */
-  const [alles, setAlles] = useState(false);
+  const [auf, setAlles] = useState(false);
+  const alles = offen || auf;
   return (
     <>
       {da.map(([id, name]) => (
@@ -224,7 +225,7 @@ export function MethodikText({ ids }: { ids: [AnalyseId, string][] }) {
           {METHODIK[id]}
         </div>
       ))}
-      <button type="button" onClick={() => setAlles(!alles)} aria-expanded={alles} className="mt-2 max-sm:min-h-[44px] text-[14px] font-medium text-teal-700 hover:underline">{alles ? "Weniger" : "Mehr lesen: Grundlage, Messung, Grenzen"}</button>
+      {!offen && <button type="button" onClick={() => setAlles(!alles)} aria-expanded={alles} className="mt-2 max-sm:min-h-[44px] text-[14px] font-medium text-teal-700 hover:underline">{alles ? "Weniger" : "Mehr lesen: Grundlage, Messung, Grenzen"}</button>}
     </>
   );
 }

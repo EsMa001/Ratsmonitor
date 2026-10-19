@@ -6,7 +6,7 @@ import { searchToUrl } from "../lib/searchUrl";
 import { INITIAL_SEARCH } from "../state/search";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { IconBell, IconHeart } from "../components/icons";
+import { IconStar } from "../components/icons";
 import { filterChips } from "../lib/savedSearch";
 import { useAccount } from "../state/account";
 import { useEntitlements } from "../lib/entitlements";
@@ -79,7 +79,6 @@ function SavedCard({ s }: { s: SavedSearch }) {
     if (err) return toast(err);
     toast("Gespeicherte Suche entfernt.", { label: "Rückgängig", run: () => void restoreSaved(s, index).then((e) => e && toast(e)) });
   };
-  const bell = `Bei neuen Treffern benachrichtigen: ${NOTIFY_LATER}`;
   const shareUrl = `${typeof window === "undefined" ? "" : window.location.origin}/suche?${searchToUrl({ ...INITIAL_SEARCH, q: s.q || s.text, area: s.area, areaSrc: s.areaSrc, scope: s.scope ?? "only", thema: s.thema, monat: s.monat, von: s.von ?? "", bis: s.bis ?? "", status: s.status, level: s.level ?? "city", future: !!s.future, radius: s.radius ? { ags: s.radius.ags, km: s.radius.km, x: s.radius.x ?? 0, y: s.radius.y ?? 0 } : null })}`;
   const iconBtn = "grid h-9 w-9 flex-none place-items-center rounded-full transition-colors hover:bg-slate-100";
 
@@ -94,10 +93,10 @@ function SavedCard({ s }: { s: SavedSearch }) {
   return (
     <>
     <article className="border-b border-slate-200 py-4 last:border-b-0" {...press.handlers}>
-      {/* Kopf wie bei gespeicherten Artikeln: Herz entfernt die Suche, Glocke schaltet Benachrichtigungen */}
+      {/* Kopf wie bei gespeicherten Artikeln: Stern entfernt die Suche (E-Mail-Glocke folgt mit den Benachrichtigungen) */}
       <div className="flex items-start gap-3">
         <button type="button" onClick={() => void remove()} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-700`}>
-          <IconHeart size={20} filled />
+          <IconStar size={20} filled />
         </button>
         <div className="min-w-0 flex-1">
           <button type="button" onClick={open} className="block max-w-full truncate text-left text-[16px] font-semibold text-slate-900 hover:text-teal-700">
@@ -111,10 +110,6 @@ function SavedCard({ s }: { s: SavedSearch }) {
           {s.active === false && <p className="m-0 mt-0.5 text-[12px] text-amber-800">Nicht aktiv: über der Grenze Ihrer Stufe gespeichert.</p>}
         </div>
         <ShareButton title={s.name} url={shareUrl} className="-mr-1" />
-        {/* Benachrichtigungen folgen mit Thema 2: Glocke sichtbar (auch eine vorgemerkte), aber ohne Wirkung */}
-        <button type="button" aria-disabled="true" aria-pressed={!!n.mail} title={bell} aria-label={bell} onClick={() => toast(NOTIFY_LATER + ".")} className={`${iconBtn} -mr-2 cursor-default text-slate-400 hover:bg-transparent max-sm:h-11 max-sm:w-11`}>
-          <IconBell size={20} filled={!!n.mail} />
-        </button>
       </div>
 
       {/* Drei aktuelle Treffer im Stil der Trefferliste, nur kleiner */}
@@ -182,10 +177,10 @@ export function SavedSearchesPage() {
       {ready && !saved.length && (
         <div className="flex flex-col items-center px-6 py-10 text-center">
           <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-700">
-            <IconHeart size={26} />
+            <IconStar size={26} />
           </span>
           <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Suchen</h2>
-          <p className="m-0 max-w-[44ch] text-slate-500">Suchen Sie in der Übersicht und tippen Sie auf das Herz neben dem Suchfeld.</p>
+          <p className="m-0 max-w-[44ch] text-slate-500">Suchen Sie in der Übersicht und tippen Sie auf den Stern neben dem Suchfeld.</p>
           {/* Beispiele, wie eine nützliche gespeicherte Suche aussieht */}
           <div className="mt-5 w-full max-w-[520px] text-left">
             <p className="m-0 text-[12px] font-semibold uppercase tracking-wide text-slate-500">Beispiele</p>

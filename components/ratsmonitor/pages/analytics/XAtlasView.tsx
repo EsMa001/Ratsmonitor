@@ -426,7 +426,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           {SUBTOPICS.filter((x: { theme: string }) => x.theme === theme).map((x: { id: string; short: string }) => {
             const on = x.id === sub;
             return <li key={x.id} className="sm:w-[100px]"><button type="button" aria-pressed={on} onClick={() => onSub(on ? "" : x.id)}
-              className={`flex h-[60px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:auto] max-sm:[overflow-wrap:anywhere] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
+              className={`flex h-[68px] w-full flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-center text-[12px] leading-tight max-sm:h-[46px] max-sm:gap-0 max-sm:px-0.5 max-sm:[hyphens:auto] max-sm:[overflow-wrap:anywhere] ${on ? "bg-teal-700 font-semibold text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
               <SubtopicIcon id={x.id} size={20} className={`max-sm:h-4 max-sm:w-4 ${on ? "text-white" : "text-slate-500"}`} />
               <span className="line-clamp-2"><span className="max-sm:hidden">{x.short}</span><span className="sm:hidden">{kurz(x.short)}</span></span></button></li>;
           })}

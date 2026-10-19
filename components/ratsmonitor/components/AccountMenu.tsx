@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect,useRef,useState} from 'react';
-import {IconBell,IconBookmark,IconCalendar,IconHeart,IconUser} from './icons';
+import {IconBell,IconBookmark,IconCalendar,IconStar,IconUser} from './icons';
 import {useDarkMode} from '../lib/useDarkMode';
 import {useSavedArticles} from '../lib/savedArticles';
 import {useAccount} from '../state/account';
@@ -44,14 +44,14 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   {isAdmin&&<Link href="/admin" title={me.adminHere?'Administration':'Administration (Code aus der Authenticator-App nötig)'} aria-label="Administration" className={cls(false)}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
   </Link>}
-  {/* Desktop: Suchen, Benachrichtigungen, Kalender und Artikel in einem Menü „Meine Inhalte“ (am Handy übernimmt das Blatt der unteren Leiste) */}
+  {/* Desktop: Suchen, Benachrichtigungen, Kalender und Artikel in einem Menü „Favoriten“ (am Handy übernimmt das Blatt der unteren Leiste) */}
   <div ref={mineRef} className="relative max-sm:hidden">
-   <button type="button" title="Meine Inhalte" aria-label={`Meine Inhalte (${saved.length+articles.length})`} aria-haspopup="menu" aria-expanded={mineOpen} onClick={()=>setMineOpen(o=>!o)} className={cls(['suchen','benachrichtigungen','kalender','artikel'].includes(currentPage)||mineOpen)}>
-    <IconHeart size={19} filled={['suchen','benachrichtigungen','kalender','artikel'].includes(currentPage)}/>
+   <button type="button" title="Favoriten" aria-label={`Favoriten (${saved.length+articles.length})`} aria-haspopup="menu" aria-expanded={mineOpen} onClick={()=>setMineOpen(o=>!o)} className={cls(['suchen','benachrichtigungen','kalender','artikel'].includes(currentPage)||mineOpen)}>
+    <IconStar size={19} filled={['suchen','benachrichtigungen','kalender','artikel'].includes(currentPage)}/>
     {saved.length+articles.length>0&&<span className={badge}>{saved.length+articles.length}</span>}
    </button>
    {mineOpen&&<div role="menu" onKeyDown={arrowKeys} className="absolute right-0 top-full z-[1200] mt-1 w-[248px] rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
-    {([['suchen','Meine Suchen',<IconHeart key="h" size={17}/>,saved.length],['benachrichtigungen','Benachrichtigungen',<IconBell key="b" size={17}/>,0],['kalender','Kalender',<IconCalendar key="c" size={17}/>,0],['artikel','Gespeicherte Artikel',<IconBookmark key="a" size={17}/>,articles.length]] as [string,string,React.ReactNode,number][]).map(([page,label,icon,count])=>
+    {([['suchen','Meine Suchen',<IconStar key="h" size={17}/>,saved.length],['benachrichtigungen','Benachrichtigungen',<IconBell key="b" size={17}/>,0],['kalender','Kalender',<IconCalendar key="c" size={17}/>,0],['artikel','Gespeicherte Artikel',<IconBookmark key="a" size={17}/>,articles.length]] as [string,string,React.ReactNode,number][]).map(([page,label,icon,count])=>
      <Link key={page} role="menuitem" href={`/konto/${page}`} onClick={()=>setMineOpen(false)} aria-current={currentPage===page?'page':undefined} className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] no-underline hover:bg-slate-100 ${currentPage===page?'font-medium text-teal-700':'text-slate-900'}`}>
       <span className="text-slate-500" aria-hidden="true">{icon}</span><span className="flex-1">{label}</span>{count>0&&<span className="tabular-nums text-slate-500">{count}</span>}
      </Link>)}

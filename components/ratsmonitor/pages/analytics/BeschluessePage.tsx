@@ -1,4 +1,5 @@
-import { Kennzahlen, Segmented, Folgen } from "./Kennzahlen";
+import { Kennzahlen, Segmented, Folgen, useOrtInAdresse } from "./Kennzahlen";
+import { useSearch } from "../../state/search";
 import { usePhone } from "../../lib/usePhone";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
@@ -55,6 +56,9 @@ function Fold({ title, children }: { title: string; children: React.ReactNode })
 
 export function BeschluessePage() {
   const { query } = useAnalyticsQuery();
+  const search = useSearch();
+  /* ?ort= aus dem Ortsvergleich setzt den Ort der Suche (und bleibt in der Adresse aktuell) */
+  useOrtInAdresse(new URLSearchParams(query).get("area") ?? "", (a) => search.setArea(a, "ui"));
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/decisions?${query}`, initial: true });
   /* Wie Trends und Signale: geänderte Suche oder Filter rechnen nach kurzer Pause von selbst neu */
   useEffect(() => {

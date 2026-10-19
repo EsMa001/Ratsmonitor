@@ -13,7 +13,7 @@ import { XAuszug } from "./XAuszug";
 
 const kurz = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}.${d.slice(2, 4)}`;
 
-/** Link in die echte Suche mit Begriff und den letzten 30 Tagen (dort lässt sie sich mit dem Herz merken) */
+/** Link in die echte Suche mit Begriff und den letzten 30 Tagen (dort lässt sie sich mit dem Stern merken) */
 const suchLink = (term: string) => {
   const p = new URLSearchParams({ q: term });
   p.set("von", "@d30");

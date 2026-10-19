@@ -5,11 +5,11 @@ import { useAccount, useSavedStats } from "../state/account";
 import { useData } from "../state/data";
 import { useSearch, useSearchResults } from "../state/search";
 import { useToast } from "../state/toast";
-import { IconFilter, IconHeart } from "./icons";
+import { IconFilter, IconStar } from "./icons";
 import { SearchBox } from "./SearchBox";
 import { FilterPanel } from "./FilterPanel";
 
-/** Suchleiste auf der Karte: Herz (Suche speichern) links, Milchglas-Suchfeld, Filter rechts.
+/** Suchleiste auf der Karte: Stern (Suche speichern) links, Milchglas-Suchfeld, Filter rechts.
  *  listMax/listUp begrenzen die Vorschläge auf die Kartenfläche; onSubmit meldet Enter. */
 export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number; listUp?: boolean; onSubmit?: () => void }) {
   const { geo } = useData();
@@ -70,10 +70,10 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
         aria-pressed={!!savedHit}
         title={savedHit ? "Gespeicherte Suche entfernen" : active ? "Suche speichern" : "Erst suchen oder filtern, dann speichern"}
         aria-label={savedHit ? "Gespeicherte Suche entfernen" : "Suche speichern"}
-        /* Nicht ausgegraut: ohne Suche nur nicht klickbar, damit das Herz sichtbar bleibt */
+        /* Nicht ausgegraut: ohne Suche nur nicht klickbar, damit der Stern sichtbar bleibt */
         className={`${round} disabled:!opacity-100 ${savedHit ? "text-teal-700" : "text-slate-700 enabled:hover:text-teal-700"}`}
       >
-        <IconHeart size={20} filled={!!savedHit} />
+        <IconStar size={20} filled={!!savedHit} />
       </button>
       <div className="min-w-0 flex-1">
         <SearchBox glass listMax={listMax} listUp={listUp} onSubmit={onSubmit} />

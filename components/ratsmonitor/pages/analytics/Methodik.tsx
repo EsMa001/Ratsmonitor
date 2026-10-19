@@ -28,7 +28,7 @@ export function MethodikUnten({ seite }: { seite: string }) {
       {/* eine Schrift (14 px, normal), nur drei Zeilen, der Rest hinter „Weiterlesen“ */}
       <div className={`text-[14px] leading-5 [&_*]:!text-[14px] [&_*]:!font-normal [&_*]:!leading-5 print:!max-h-none ${more ? "" : "max-h-[68px] overflow-hidden"}`}>
         <div ref={setSlot} className="mt-2 max-w-[900px] space-y-2 text-[14px] text-slate-600 empty:hidden" />
-        <div className="max-w-[900px]"><MethodikText ids={ids} /></div>
+        <div className="max-w-[900px]"><MethodikText ids={ids} offen /></div>
       </div>
       <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mt-1 inline-flex min-h-[36px] items-center text-[14px] font-medium text-teal-700 hover:underline max-sm:min-h-[44px] print:hidden">{more ? "Weniger" : "Weiterlesen"}</button>
     </section>
