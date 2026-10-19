@@ -382,7 +382,11 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   main.rm-xnet>:not(.pl-band):not(.rm-xstage):not(nav.rm-xrail):not(.rm-xseg):not(:has(>.rm-xsearch)){margin-left:0;margin-right:0}
   main.rm-xnet>.pl-band{margin:0 calc(-1 * max(1vw,16px)) 0 0 !important}
   main.rm-xnet>div[aria-busy]{display:contents}
-  main.rm-xnet section.rm-xstage{grid-area:2 / 1 / span 80 !important;align-self:start;position:sticky;top:var(--xt);height:var(--xmh) !important;margin:0 192px 0 0 !important;border:0 !important;border-radius:0 !important}
+  main.rm-xnet section.rm-xstage{grid-area:2 / 1 / span 80 !important;align-self:start;position:sticky;top:var(--xt);height:var(--xmh) !important;margin:0 !important;border:0 !important;border-radius:0 !important}
+  /* Das Netz selbst lässt rechts Platz für die Themenkacheln, die auf der Bühne liegen; Zoom und Legende rücken daneben */
+  main.rm-xnet .rm-xstage>.rm-netstage{right:192px;background:none !important}
+  main.rm-xnet .rm-xstage>.rm-stage-chip.right-3{right:204px}
+  main.rm-xnet .rm-xstage>.rm-stage-chip.left-3.top-3:not(.z-\[7\]){right:204px}
   main.rm-xnet nav.rm-xrail{margin:0 !important}
   main.rm-xnet div:has(>.rm-xsearch){padding:12px 14px 0 14px;margin:0 192px 0 0}
   main.rm-xnet .rm-xseg{grid-area:2 / 1 / span 80;justify-self:center;align-self:start;position:sticky;top:calc(var(--xt) + var(--xmh) - 52px);z-index:30;margin:0 192px 0 0 !important;display:block;height:0;overflow:visible}

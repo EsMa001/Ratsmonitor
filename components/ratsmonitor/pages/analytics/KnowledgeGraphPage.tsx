@@ -203,7 +203,7 @@ export function KnowledgeGraphPage() {
           <li key={t} className="flex items-center gap-1.5"><i className={`inline-block h-3 w-3 rounded-full`} style={{ ...DOT[t], boxShadow: "0 0 0 1px rgba(24,24,27,.25)" }} />{KIND[t].label}</li>
         ))}
       </ul>}
-      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage relative mt-3 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
+      <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
         {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
         {trail.length > 0 && res && !empty && (
