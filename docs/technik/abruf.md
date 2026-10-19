@@ -98,7 +98,7 @@ sequenceDiagram
 
 | Weg | Was passiert |
 |---|---|
-| Admin-Reiter „Abruf & Verarbeitung“ (`components/admin-processing.tsx`) | legt mit `create` an und arbeitet im Browser mit `run` ab: bis 8 Bahnen je Anfrage, je 90 s (`POST /api/admin/pipeline`, dieselbe Ausführungsfunktion wie der Prozess). „Im Hintergrund abrufen“ legt den Auftrag nur an; der Job `import` holt ihn binnen 10 Minuten. Prozess und Browser dürfen denselben Auftrag treiben (jedes Gebiet genau einmal) |
+| Admin-Seite „Abruf“ (`components/admin-processing.tsx`) | legt mit `create` an und arbeitet im Browser mit `run` ab: bis 8 Bahnen je Anfrage, je 90 s (`POST /api/admin/pipeline`, dieselbe Ausführungsfunktion wie der Prozess). „Im Hintergrund abrufen“ legt den Auftrag nur an; der Job `import` holt ihn binnen 10 Minuten. Prozess und Browser dürfen denselben Auftrag treiben (jedes Gebiet genau einmal) |
 | `POST /api/admin/import` | ein Gebiet, Standardzeitraum |
 | `POST /api/internal/sync` (Bearer `IMPORT_TOKEN`) | ein Gebiet; älterer Weg von außen über `scripts/run-imports.mjs` (Gebiet für Gebiet, 3 Versuche, danach `/api/internal/admin-refresh`) |
 | `import-worker.mjs --direct --regions … --window …` | ohne Auftrag, direkt je Gebiet (Nacharbeit, Altbestand) |

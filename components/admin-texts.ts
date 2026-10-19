@@ -7,43 +7,42 @@ export type Help={title:string;sub?:string;how?:string[];howLabel?:string;todo?:
 
 // ---- 6.1 Seitenköpfe und Fußzeilen --------------------------------------------------------------------------------
 export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
- todo:{title:'To-do-Liste',intro:'Aktuelle Aufgaben und nächste Vorhaben für Plenara.'},
- uebersicht:{title:'Übersicht',intro:'Zeigt, wie viele Gebiete und Einwohner Plenara erreicht: wo eine lesbare Quelle bekannt ist, wo schon Berichte gespeichert sind, wie weit sie zurückreichen und wie aktuell sie sind.'},
- abruf:{title:'Abruf & Verarbeitung',intro:'Zeigt je Gebiet, was gespeichert und aufbereitet ist, und startet die drei Stufen: Berichte abrufen, nach festen Regeln einordnen, mit KI aufbereiten. Jede Stufe startet nur auf Klick.'},
+ start:{title:'Cockpit',intro:'Der Stand auf einen Blick: wie viel Plenara erreicht, ob die letzte Nacht durchgelaufen ist, was gerade läuft, was scheitert und ob der Platz reicht. Jede Zahl führt zu ihrer Seite.'},
+ abdeckung:{title:'Abdeckung',intro:'Zeigt, wie viele Gebiete und Einwohner Plenara erreicht: wo eine lesbare Quelle bekannt ist, wo schon Berichte gespeichert sind, wie weit sie zurückreichen und wie aktuell sie sind.'},
  atlas:{title:'Lückenatlas',intro:'Zeigt für alle Gebiete Deutschlands, ob Plenara ihre Ratsinformationen lesen kann, und wenn nicht, warum – mit dem nächsten Schritt, der die Lücke schließen könnte.'},
- qualitaet:{title:'Qualität & Betrieb',intro:'Zeigt, wo der Bestand einen zweiten Blick braucht: fehlende Einordnung, unklare Verfahrensstände, Doppelungen und Defekte. Dazu die letzten Abrufe, die Datensicherung und was technisch eingerichtet ist.'},
+ nacht:{title:'Letzte Nacht',intro:'Die Tagespipeline im Blick: welcher Job wann lief, was Abruf, Extraktion, Verarbeitung und Nacharbeit getan haben und welchen Weg die Berichte genommen haben.'},
+ abruf:{title:'Abruf',intro:'Zeigt je Gebiet, was gespeichert ist, und holt Berichte von Hand: Gebiete wählen, Zeitraum wählen, Auftrag anlegen. Nachts ruft die Tagespipeline von selbst ab; diese Seite ist für alles Weitere.'},
+ pdf:{title:'PDF-Import',intro:'Lädt die PDF-Dokumente der Berichte in die eigene Ablage, liest ihren Text und hält die feste Grenze von 80 GB ein. Zeigt, was gerade läuft, wie vollständig die Ablage ist, was fehlschlägt und warum, und startet Läufe von Hand.'},
+ verarbeitung:{title:'Verarbeitung',intro:'Zeigt, wie weit die Berichte eingeordnet und aufbereitet sind: nach Regeln (Titel, Thema, Zusammenfassung, Fakten) und mit KI. Die Regeln laufen nachts von selbst; die KI startet nur auf Klick.'},
+ altbestand:{title:'Altbestand',intro:'Holt nach, was älter ist als der Tagesbereich oder vor dem 12.10.2026 gescheitert ist: Berichte rückwirkend abrufen, PDFs und Text extrahieren, alte Fehler erneut versuchen, Regeln neu anwenden. Nur auf Knopfdruck.'},
+ regeltexte:{title:'Themen & Texte',intro:'Was die festen Regeln aus Titeln und PDF-Texten erzeugen (Themen, Zusammenfassungen, Fakten, Signale) und wie gut sie gemessen sind. Die Seite zählt nur, was schon gespeichert ist.'},
+ pruefliste:{title:'Prüfliste',intro:'Zeigt, wo der Bestand einen zweiten Blick braucht: Berichte ohne Thema, unklare Verfahrensstände und weitere Prüfgründe, je Gebiet. Dazu, wie viel als KI-Text gekennzeichnet und geprüft ist.'},
+ bestand:{title:'Bestandsprüfung',intro:'Prüft, ob der gespeicherte Bestand vollständig und in sich stimmig ist: Pflichtangaben je Bericht, technische Prüfungen auf Doppelungen und Defekte. Dazu der Stand der Datenbank, die letzte Übernahme eines Exports und der vollständige Datenexport.'},
+ zeitplaene:{title:'Jobs & Zeitpläne',intro:'Zeigt alle Jobs, die auf dem Server von selbst laufen: was sie tun, wann sie zuletzt liefen, wie lange und mit welchem Ergebnis, wann sie das nächste Mal starten. Jobs lassen sich hier ein- und ausschalten, ihre Zeit ändern und einmal sofort starten.'},
+ fehler:{title:'Fehler & Server',intro:'Der Fehlerspeicher aller Stufen an einem Ort: was gescheitert ist, warum und wann es erneut versucht wird, getrennt nach Tagesbereich und Altbestand. Dazu die Server, die gerade ausgelassen werden, und Fehler im eigenen Code.'},
+ speicher:{title:'Speicher & Sicherungen',intro:'Zeigt, was auf der Festplatte des Servers wie viel Platz belegt: Datenbank und ihre größten Tabellen, PDF-Ablage, Sicherungen, Programmstände, OCR-Werkzeuge. Dazu, welche Sicherungen es gibt, wie groß und wie alt sie sind.'},
+ todo:{title:'To-do-Liste',intro:'Aktuelle Aufgaben und nächste Vorhaben für Plenara.'},
  hochrechnung:{title:'Hochrechnung',intro:'Schätzt, wie viele Berichte alle kommunalen Gremien in Deutschland pro Tag erzeugen und wie viel Text das ist. Grundlage für die Abschätzung der KI-Kosten.'},
  social:{title:'Social Media',intro:'Schlägt je Tag bis zu drei Einzelfälle aus Orten vor, die polarisieren: Tempo 30, Windkraft, Bezahlkarte, Gebühren, Schließungen, Bürgerbegehren. Gefunden über feste Streitwörter im Titel, verstärkt durch Fraktionsanträge und den Status (abgelehnt oder vertagt zählt mehr). Zu jedem Vorschlag gibt es einen kurzen Textentwurf aus festen Satzvorlagen. Rein regelbasiert, ohne KI; schwache Tage bleiben leer.'},
- regeltexte:{title:'Themen & Texte',intro:'Was die festen Regeln aus Titeln und PDF-Texten erzeugen (Themen, Zusammenfassungen, Fakten, Signale) und wie gut sie gemessen sind. Die Seite zählt nur, was schon gespeichert ist.'},
- pdf:{title:'PDF-Import',intro:'Lädt die PDF-Dokumente der Berichte in die eigene Ablage, liest ihren Text und hält die feste Grenze von 80 GB ein. Zeigt, was gerade läuft, wie vollständig die Ablage ist, was fehlschlägt und warum, und startet Läufe von Hand.'},
- zeitplaene:{title:'Jobs & Zeitpläne',intro:'Zeigt alle Jobs, die auf dem Server von selbst laufen: was sie tun, wann sie zuletzt liefen, wie lange und mit welchem Ergebnis, wann sie das nächste Mal starten. Jobs lassen sich hier ein- und ausschalten, ihre Zeit ändern und einmal sofort starten.'},
- debug:{title:'Pipeline-Debug',intro:'Vorübergehend, für den Aufbau der Tagespipeline: welcher Job wann lief, was die Läufe getan haben, welchen Weg die Berichte genommen haben und was im Fehlerspeicher des Tagesbereichs auf einen neuen Versuch wartet.'},
- altbestand:{title:'Altbestand',intro:'Holt nach, was älter ist als der Tagesbereich oder vor dem 12.10.2026 gescheitert ist: Berichte rückwirkend abrufen, PDFs und Text extrahieren, alte Fehler erneut versuchen, Regeln neu anwenden. Nur auf Knopfdruck.'},
- speicher:{title:'Speicher & Sicherungen',intro:'Zeigt, was auf der Festplatte des Servers wie viel Platz belegt: Datenbank und ihre größten Tabellen, PDF-Ablage, Sicherungen, Programmstände, OCR-Werkzeuge. Dazu, welche Sicherungen es gibt, wie groß und wie alt sie sind.'},
 };
 export const FOOT:Record<AdminPage,string>={
- todo:'Interne Projektplanung · Plenara',
- uebersicht:'Zahlen aus Quellenkatalog und Datenbank. Doppelt gelieferte Berichte, die zu einem Vorgang zusammengeführt wurden, zählen einmal.',
- abruf:'Doppelt gelieferte Berichte zählen einmal. Seitenaufrufe starten keinen Abruf.',
+ start:'Jede Kachel liest denselben Stand wie ihre Seite; das Cockpit rechnet nichts und startet nichts.',
+ abdeckung:'Zahlen aus Quellenkatalog und Datenbank. Doppelt gelieferte Berichte, die zu einem Vorgang zusammengeführt wurden, zählen einmal.',
  atlas:'Anbindung und Gründe aus Quellenkatalog und Quellensuche, Berichte und Abrufe aus der Datenbank. Karten: © BKG (2026), dl-de/by-2-0.',
- qualitaet:'Zahlen aus der Datenbank; doppelt gelieferte Berichte zählen einmal. Technische Prüfungen ersetzen keine fachliche Bewertung.',
+ nacht:'Liest nur gespeicherte Stände: Laufbuch des Zeitplaners, Protokolle der Jobs und die Zählung der Wege (am Ende von „Verarbeitung, nachts“).',
+ abruf:'Doppelt gelieferte Berichte zählen einmal. Seitenaufrufe starten keinen Abruf.',
+ pdf:'Stand aus der letzten Zählung auf dem Server (scripts/pdf-store/stats.mjs), Fortschritt jede Minute. Die Knöpfe legen einen Auftrag an und stoßen den Server sofort an; ein weiterer Auftrag wartet, bis der laufende fertig ist.',
+ verarbeitung:'Zahlen aus der Datenbank. „Jetzt verarbeiten“ startet den Job „Verarbeitung, nachts“ auf dem Server; die KI arbeitet nur über den Agentenablauf.',
+ altbestand:'Die Seite legt nur Wünsche ab; ausgeführt wird auf dem Server zwischen 10 und 22 Uhr (Jobs „Altbestand“, „OCR, tagsüber“, „PDF-Aufträge“).',
+ regeltexte:'Zahlen aus der Datenbank; „Jetzt erstellen“ startet den Job auf dem Server.',
+ pruefliste:'Zahlen aus der Datenbank; doppelt gelieferte Berichte zählen einmal.',
+ bestand:'Technische Prüfungen ersetzen keine fachliche Bewertung. Die Seite ändert nichts am Bestand.',
+ zeitplaene:'Die Timer auf dem Server fragen alle 10 Minuten (scripts/schedule.mjs); „Jetzt ausführen“ und die Knöpfe der anderen Reiter starten den Job sofort, auch wenn er ausgeschaltet ist (der Schalter stoppt nur die geplanten Zeiten). Uhrzeiten in deutscher Zeit.',
+ fehler:'Aus dem Fehlerspeicher (Migration 0040, server/integrations/work-failures.mjs). „Erneut versuchen“ macht Einträge nur fällig; ausgeführt wird von der Nacharbeit bzw. dem Job „Altbestand“.',
+ speicher:'Gemessen auf dem Server (scripts/server-disk.mjs) höchstens stündlich, Tabellen der Datenbank einmal am Tag. Die Seite löscht nichts.',
+ todo:'Interne Projektplanung · Plenara',
  hochrechnung:'Die Hochrechnung liest nur den gespeicherten Bestand und startet keinen Abruf.',
  social:'Vorschläge aus den gespeicherten Berichten; vor einem Beitrag Zahl und Fundstellen prüfen. Die Seite startet keine Analyse.',
- regeltexte:'Zahlen aus der Datenbank; „Jetzt erstellen“ startet den Job auf dem Server.',
- pdf:'Stand aus der letzten Zählung auf dem Server (scripts/pdf-store/stats.mjs), Fortschritt jede Minute. Die Knöpfe legen einen Auftrag an und stoßen den Server sofort an; ein weiterer Auftrag wartet, bis der laufende fertig ist.',
- zeitplaene:'Die Timer auf dem Server fragen alle 10 Minuten (scripts/schedule.mjs); „Jetzt ausführen“ und die Knöpfe der anderen Reiter starten den Job sofort, auch wenn er ausgeschaltet ist (der Schalter stoppt nur die geplanten Zeiten). Uhrzeiten in deutscher Zeit.',
- altbestand:'Die Seite legt nur Wünsche ab; ausgeführt wird auf dem Server zwischen 10 und 22 Uhr (Jobs „Altbestand“, „OCR, tagsüber“, „PDF-Aufträge“). Vorübergehend im Debug-Bereich.',
- debug:'Vorübergehende Seite (nicht langfristig gebraucht). Liest nur gespeicherte Stände: Laufbuch des Zeitplaners, Protokolle der Jobs, die Zählung der Wege (am Ende von „Verarbeitung, nachts“) und den Fehlerspeicher.',
- speicher:'Gemessen auf dem Server (scripts/server-disk.mjs) höchstens stündlich, Tabellen der Datenbank einmal am Tag. Die Seite löscht nichts.',
-};
-/** Stand-Zeile je Seite: Knopf, Hinweis und Zusatz hinter dem Datum („Stand … · Aktualisieren →“). */
-export const STAND_ZEILE:Partial<Record<AdminPage,{action?:string;hint?:string;extra?:string}>>={
- uebersicht:{action:'Aktualisieren'},
- abruf:{action:'Aktualisieren'},
- atlas:{action:'Aktualisieren',extra:'Gründe aus der Quellensuche vom'},
- qualitaet:{action:'Aktualisieren'},
- hochrechnung:{action:'Neu berechnen'},
- regeltexte:{action:'Aktualisieren'},
 };
 
 // ---- 6.2 Allgemeine Zustandstexte ---------------------------------------------------------------------------------
@@ -60,13 +59,6 @@ export const ZUSTAND={
  ohne0016:'Vorberechnung noch nicht eingerichtet (Migration 0016 fehlt).',
  /** title an „veraltet“ bei einer Prüfung der Qualitätsseite */
  pruefungVeraltet:'Der Bestand hat sich seit dieser Prüfung geändert.',
-};
-/** 6.7 Stand-Zeilen der Seiten mit gespeichertem Stand */
-export const STAND_TEXT={
- jetztBerechnen:'Jetzt berechnen',
- bau:(p:number|string,done:number|string,total:number|string)=>`Wird neu berechnet: ${p} % (${done} von ${total} Gebieten) · Der bisherige Stand bleibt sichtbar, bis die Zählung fertig ist.`,
- angehalten:(p:number|string)=>`Angehalten bei ${p} %`,
- fortsetzen:'Fortsetzen',
 };
 
 // ---- Wiederverwendete Absätze -------------------------------------------------------------------------------------
@@ -89,7 +81,7 @@ export const JOB_STATE_HELP:Record<string,string>={
 
 // ---- 6.3 bis 6.9 Abschnitte ---------------------------------------------------------------------------------------
 export const HELP:Record<string,Help>={
- // Übersicht
+ // Abdeckung (früher „Übersicht“; die Schlüssel behalten den alten Namen)
  'uebersicht.verlauf':{title:'Wie hat sich die Abdeckung entwickelt?',
   sub:'Petrol: Gebiete mit lesbarer Quelle. Schwarz: Gebiete, aus denen schon Berichte gespeichert sind. Der Abstand zwischen beiden Linien sind angebundene Gebiete ohne Berichte.',
   how:['„Quelle angebunden“ folgt dem Quellenkatalog: ein Punkt je Änderung des Katalogs, jeweils gezählt gegen den heutigen Katalog. „Arbeitsstand“ in der Tabelle sind Änderungen, die noch nicht in Git übernommen sind.',
@@ -111,25 +103,31 @@ export const HELP:Record<string,Help>={
  'uebersicht.groesse':{title:'Erreichen wir große und kleine Gebiete gleich gut?',
   sub:'Dieselben Zahlen nach Einwohnerzahl des Gebiets. Kreise stehen für sich und zählen keine eigenen Einwohner.',
   how:['Kleine Gemeinden haben oft kein eigenes Ratsinformationssystem und veröffentlichen nur im Amtsblatt oder auf ihrer Website; dort sind niedrige Werte zu erwarten.']},
- 'uebersicht.weiter':{title:'Als Nächstes'},
  'uebersicht.begriffe':{title:'Begriffe',sub:'Die Fachwörter der Adminseiten, kurz erklärt.'},
 
- // Abruf & Verarbeitung
+ // Abruf
  'abruf.gebiete':{title:'Gebiete auswählen',
   sub:'Auf der Karte oder in der Liste anklicken. Die Filter grenzen die Liste ein; „Alle Treffer auswählen“ übernimmt die ganze gefilterte Liste, etwa ein Land oder alle angebundenen Gebiete ohne Berichte.',
   howLabel:'Wie lese ich die Liste?',
   how:['Zustand: Ergebnis des letzten Abrufs; mit der Maus darauf zeigen für die Erklärung.',
    'Übernahme: letzter Abruf, dessen Ergebnis gespeichert wurde. Letzter Versuch: letzter Abruf überhaupt, auch wenn er scheiterte.',
    'Sitzungen: älteste bis jüngste Sitzung mit gespeichertem Bericht.']},
- 'abruf.stufen':{title:'Drei Stufen, jede startet nur auf Klick',
-  sub:'Stufe 01 holt Berichte aus den Quellen, Stufe 02 ordnet sie nach festen Regeln ein, Stufe 03 erarbeitet Inhalte mit KI. Seitenaufrufe lesen nur den Status.',
+ 'abruf.stufen':{title:'Berichte abrufen',
+  sub:'Holt Berichte für die Auswahl oder für alle angebundenen Quellen. Nachts ruft die Tagespipeline einen Tag zurück ab (sonntags einen Monat); hier geht es um alles Weitere. Seitenaufrufe lesen nur den Status.',
   howLabel:'Wie läuft ein Auftrag?',
   how:['Ein Abruf liest bis zu 24 Gebiete gleichzeitig, höchstens zwei auf demselben Server, die Server mit den meisten Gebieten zuerst.',
-   'Die Einordnung nach Regeln läuft in Paketen von 500 Berichten, bei „alle offenen Berichte“ über alle Gebiete hinweg, bei einer Auswahl Gebiet für Gebiet; jedes Paket wird sofort gespeichert.',
-   'Schließen der Seite pausiert nach den laufenden Schritten; „Auftrag fortsetzen“ macht dort weiter.']},
+   '„Im Hintergrund abrufen“ legt den Auftrag nur an; der Importprozess auf dem Server arbeitet ihn ab, auch wenn die Seite geschlossen ist.',
+   'Ein Abruf, den diese Seite selbst ausführt, pausiert beim Schließen nach den laufenden Schritten; „Auftrag fortsetzen“ macht dort weiter.']},
+ // Verarbeitung
+ 'verarbeitung.regeln':{title:'Nach Regeln',
+  sub:'Feste Regeln ordnen jeden Bericht nach seinem Titel ein, lesen das Hauptdokument und schreiben Thema, Zusammenfassung und Fakten. Ohne KI, ohne Kosten. Nachts von selbst, für Berichte mit neuen Eingaben.',
+  how:['Der Job „Verarbeitung, nachts“ ordnet zuerst die Titel ein (neue und veraltete Berichte), wendet dann die Regeln je Bericht an und führt danach Wortliste und Zahlen für plenara.X nach.',
+   '„Alle neu erstellen“ (nach geänderten Regeln) steht auf „Themen & Texte“ und im Altbestand.']},
+ 'verarbeitung.ki':{title:'Mit KI',
+  sub:'Die KI startet nie von selbst. Ein Agent liest die gespeicherten Originaltexte über die interne MCP-Verbindung; diese Liste zeigt je Bericht, was schon vorliegt, und liefert die IDs für den Auftrag.',
+  how:['Ablauf des Agenten: list, claim, read, submit (requirements/ai-processing.md). Kurzfassung, Langfassung und KI-Thema werden immer gemeinsam gespeichert.']},
  // Titel und Unterzeile des Auftrags sind dynamisch (Zeitraum, Fortschritt); hier nur die Erklärung der Zustände.
  'abruf.auftrag':{title:'Auftrag',howLabel:'Was bedeuten die Zustände?',how:Object.entries(JOB_STATE_HELP).map(([k,v])=>k+': '+v)},
- 'abruf.kiauftrag':{title:'KI-Auftrag'},
  'abruf.verlauf':{title:'Wie viele Berichte sind gespeichert, wie viele kommen hinzu?',
   sub:'Bestand und Zulauf der gespeicherten Berichte, für die Auswahl auf der Karte oder für alle Gebiete.',
   how:['Zeitbezug „Erste Beratung“: Ein Bericht zählt an dem Tag, an dem er erstmals auf einer Tagesordnung stand. „Aufnahme in die Datenbank“: an dem Tag, an dem Plenara ihn zuerst gespeichert hat; dieses Datum gibt es erst seit Oktober 2026.',
@@ -157,21 +155,21 @@ export const HELP:Record<string,Help>={
    'Viele Teilstände oder Fehlschläge bei einem Verfahren deuten auf ein Problem im Leser. Wenig „ab 1 Jahr zurück“ heißt meist: nur mit kurzem Zeitraum abgerufen.'],
   todo:[{label:'Gebiete mit fehlgeschlagenem Abruf',href:href('abruf','filter=failed')}]},
 
- // Qualität & Betrieb
+ // Prüfliste und Bestandsprüfung (früher „Qualität & Betrieb“)
  'qualitaet.inhalt':{title:'Prüfliste und Einordnung',
   sub:'Wie weit die Berichte aufbereitet sind, wie sie sich auf Themen und Verfahrensstände verteilen, und welche einen zweiten Blick brauchen.',
-  how:['Technische Prüfungen ersetzen keine fachliche Bewertung. Die Themen stammen aus den festen Regeln: zuerst aus dem Titel (Stufe 02), dann aus Titel und Unterlage (Job „Themen & Texte“). Themen der KI und Einordnungen von Hand gehen vor; alte Einordnungen mit 16 Sachgebieten werden auf die 10 Themen übertragen.',
-   '„Alle, auch Titeltest“: Diese Zahlen enthalten Ergebnisse des früheren Tests, bei dem die KI nur den Titel sah. Auf der Seite „Abruf & Verarbeitung“ zählen nur Ergebnisse aus dem Inhalt.'],
-  todo:[{label:'Offene Berichte nach Regeln einordnen',href:href('abruf')}]},
+  how:['Technische Prüfungen ersetzen keine fachliche Bewertung. Die Themen stammen aus den festen Regeln: zuerst aus dem Titel, dann aus Titel und Unterlage (Job „Verarbeitung, nachts“). Themen der KI und Einordnungen von Hand gehen vor; alte Einordnungen mit 16 Sachgebieten werden auf die 10 Themen übertragen.',
+   '„Alle, auch Titeltest“: Diese Zahlen enthalten Ergebnisse des früheren Tests, bei dem die KI nur den Titel sah. Auf der Seite „Verarbeitung“ zählen nur Ergebnisse aus dem Inhalt.'],
+  todo:[{label:'Offene Berichte nach Regeln einordnen',href:href('verarbeitung')}]},
  'qualitaet.importe':{title:'Die letzten Abrufe',
   sub:'Die letzten 30 Läufe, die dieses System gestartet hat. Extern eingespielte Daten stehen im Quellenstand der Gebiete.',
-  how:['„Status offen“: Der Lauf hat sich seit über 10 Minuten nicht zurückgemeldet und ist vermutlich abgebrochen; ein offener Auftrag lässt sich auf der Seite „Abruf & Verarbeitung“ fortsetzen oder beenden.',
+  how:['„Status offen“: Der Lauf hat sich seit über 10 Minuten nicht zurückgemeldet und ist vermutlich abgebrochen; ein offener Auftrag lässt sich auf dieser Seite fortsetzen oder beenden.',
    'Einträge: gelesene bzw. bearbeitete Berichte des Laufs.']},
- 'qualitaet.export':{title:'Export und lokale Übernahme',sub:'Sichern Sie den Bestand als Datei oder übernehmen Sie einen geprüften Export lokal.'},
+ 'qualitaet.export':{title:'Datenbank und Übernahme',sub:'Stand der Datenbank und ob in sie ein geprüfter Export übernommen wurde.'},
  'qualitaet.vollstaendig':{title:'Was ist wirklich gespeichert?',
   sub:'Prüft je Bericht elf Pflichtangaben; vollständig ist ein Bericht, wenn alle erfüllt sind. Die Prüfung liest nur, sie erstellt keine Einordnung und keine KI-Texte.',
   how:['Unbekannte Werte und Quellenlücken zählen nicht als vollständig. Anwesenheit bezieht sich auf die Sitzung, nicht auf einen einzelnen Tagesordnungspunkt.'],
-  todo:[{label:'Fehlende KI-Angaben: Stufe 03',href:href('abruf')},{label:'Fehlende Regel-Einordnung: Stufe 02',href:href('abruf')}]},
+  todo:[{label:'Fehlende KI-Angaben',href:href('verarbeitung','#verarbeitung-ki')},{label:'Fehlende Regel-Einordnung',href:href('verarbeitung')}]},
  'qualitaet.pruefung':{title:'Ist der Bestand in sich stimmig?',
   sub:'Vierzehn Prüfungen lesen den gespeicherten Bestand. Jede Prüfung läuft in Schritten, ihr Ergebnis bleibt gespeichert; nichts wird verändert oder zusammengeführt.',
   howLabel:'Was tun bei Treffern?',
@@ -179,7 +177,6 @@ export const HELP:Record<string,Help>={
    'Defekte: Gebiet neu abrufen; bleibt der Fehler, den Leser prüfen (Entwicklung).',
    'Verwaiste Einträge: Bereinigung durch die Entwicklung.',
    'Hinweise: meist korrekte, gleichlautende Punkte; nur bei Auffälligkeiten prüfen.']},
- 'qualitaet.betrieb':{title:'Was ist eingerichtet?',sub:'Was technisch eingerichtet ist und was zuletzt automatisch lief.'},
 
  // Hochrechnung (die Abschnittsüberschrift des Ergebnisses steht im JSX; hier die aus 6.8 und die Ladeüberschrift)
  'hochrechnung.leer':{title:'Noch keine Hochrechnung gespeichert',
@@ -200,7 +197,7 @@ export const TERMS:{term:string;text:string}[]=[
  {term:'Letzter Versuch',text:'Der letzte Abruf überhaupt, auch wenn er scheiterte.'},
  {term:'Teilstand',text:'Berichte sind gespeichert, aber der letzte Abruf hat nicht alles gelesen, etwa wegen eines Zeitlimits.'},
  {term:'Revision',text:'Laufende Nummer des Datenbestands. Sie steigt mit jeder Änderung an Berichten, früheren Fassungen und Analysen und mit jedem gespeicherten Abruf, auch wenn er nichts Neues brachte. Gleiche Nummer heißt: seitdem nichts gespeichert.'},
- {term:'Thema',text:'Eines der 10 Themen eines Berichts, etwa Bildung & Betreuung oder Mobilität & Verkehr. Feste Regeln vergeben es aus Titel und Unterlage, die KI aus dem Inhalt (Stufe 03). Formalien, Sammelpunkte und Routine haben keins. Im Code heißt es „Label“.'},
+ {term:'Thema',text:'Eines der 10 Themen eines Berichts, etwa Bildung & Betreuung oder Mobilität & Verkehr. Feste Regeln vergeben es aus Titel und Unterlage, die KI aus dem Inhalt (Seite „Verarbeitung“). Formalien, Sammelpunkte und Routine haben keins. Im Code heißt es „Label“.'},
  {term:'Titeltest',text:'Früherer Versuch, bei dem die KI nur den Titel sah (Billerbeck). Seine Ergebnisse werden getrennt gespeichert und zählen bei „aus dem Inhalt“ nicht.'},
  {term:'Erster Tagesordnungstag',text:'Der Tag, an dem ein Bericht zum ersten Mal auf einer Tagesordnung stand.'},
  {term:'Rückreichweite',text:'Wie weit die gespeicherten Berichte eines Gebiets zurückreichen, gemessen an der ältesten Sitzung.'},
@@ -246,19 +243,6 @@ export const MAP_HELP:Record<string,string>={
  summary:'Anteil der Berichte des Gebiets, die diesen Schritt fertig haben. Schraffur: keine Berichte.',
  aiLabel:'Anteil der Berichte des Gebiets, die diesen Schritt fertig haben. Schraffur: keine Berichte.',
 };
-/** Legendeneinträge und Namen der Kartenfarben. Die Stufen von reach, fresh und count kommen aus dem Code. */
-export const MAP_LEGEND={
- coverage:['Berichte, keine Lücke gemeldet','Teilstand','Letzter Abruf fehlgeschlagen','Angebunden, ohne Berichte','Nicht angebunden'],
- shares:['bis 20 %','über 20 bis 50 %','über 50 bis 80 %','über 80 %','keine Berichte'],
- hatched:'Schraffur',
- notConnected:'Nicht angebunden',
- none:'keine',
- more:'mehr',
-} as const;
-export const MAP_NAME:Record<string,string>={
- coverage:'Zustand des letzten Abrufs',reach:'Rückreichweite',fresh:'Jüngste Sitzung',access:'Zugang (OParl, API, HTML, Sperren)',count:'Anzahl Berichte',
- rules:'Anteil nach Regeln bearbeitet',summary:'Anteil mit KI-Zusammenfassung',aiLabel:'Anteil mit KI-Thema aus dem Inhalt',
-};
 /** Zustände je Gebiet (Schlüssel = Text aus sourceHealth() in shared/admin.mjs). */
 export const STATE_HELP:Record<string,string>={
  'Abruf fehlgeschlagen':'Der letzte Abruf endete mit einem Fehler. Die zuvor gespeicherten Berichte bleiben erhalten.',
@@ -274,7 +258,7 @@ export const STATE_HELP:Record<string,string>={
 
 // ---- 6.5 Lückenatlas ----------------------------------------------------------------------------------------------
 export const ATLAS_TODO:Record<string,{sie?:string;dev?:string}>={
- ok:{sie:'Nichts. Neue Berichte holt ein Abruf auf der Seite „Abruf & Verarbeitung“.'},
+ ok:{sie:'Nichts. Neue Berichte holt ein Abruf auf der Seite „Abruf“.'},
  nolink:{dev:'Mit den korrigierten Suchregeln neu prüfen; Kandidaten der Länderrecherche prüfen; Systeme bei Dienstleistern über öffentliche Zertifikatsverzeichnisse finden; Leser für Gemeinde-Websites.'},
  website:{dev:'Leser für Gemeinde-Websites, sobald die Freigabe geprüft ist.'},
  robots:{dev:'Mit dem Prüfskript (verify.mjs) neu prüfen.'},
@@ -287,26 +271,8 @@ export const ATLAS_TODO:Record<string,{sie?:string;dev?:string}>={
  special:{sie:'Berlin: Freigabe der Bezirke bzw. des ITDZ anfragen.',dev:'Hamburg: Transparenzportal anbinden, sobald entschieden ist, ob die Bezirke eigene Gebiete werden.'},
  other:{dev:'Quellensuche für das Gebiet ausführen.'},
 };
-/** Weitere Texte des Atlas */
-export const ATLAS_TEXT={
- laden:'Alle Gebiete werden mit Anbindung, Grund und Berichtsstand geladen …',
- umschalter:['Anbindung','Zugang','Berichte','Reichweite','Aktualität'],
- kartenhilfe:'Mausrad oder Plus/Minus zoomt, Ziehen verschiebt, Klick zeigt das Gebiet.',
- legendeBerichte:['Berichte gespeichert','Teilstand','Letzter Abruf fehlgeschlagen','Angebunden, ohne Berichte','Nicht angebunden'],
- betreiber:'Betreiber (Adresse des Systems)',
- betreiberHilfe:'Internetadresse, unter der das gefundene System läuft; nur offene Gebiete, ab 3 Gebieten. Viele offene Gebiete beim selben Betreiber: Eine Freischaltung oder ein Leser öffnet sie alle.',
- neupruefung:'Neuprüfung',
- neupruefungTitle:'Seit der letzten Prüfung gibt es einen neuen Leser oder bessere Suchregeln; das Gebiet sollte neu geprüft werden.',
- felder:{
-  'Gemeindeschlüssel':'Amtlicher Gemeindeschlüssel (AGS)',
-  'Verfahren':'Leseverfahren, dahinter der Zugangsweg, wenn er abweicht',
-  'Freigabe':'Datum der schriftlichen Zustimmung von Gemeinde oder Betreiber',
-  'Geprüft':'Tag der letzten Prüfung der Quelle',
- } as Record<string,string>,
- bloecke:{grund:'Grund laut Quellensuche',warum:'Warum diese Lücke besteht',bedeutung:'Was das heißt',sie:'Was Sie tun können',dev:'Aufgabe für die Entwicklung',zugang:'Zugang für Programme',neu:'Neuprüfung vorgesehen',kandidaten:'Kandidaten aus der Länderrecherche (ungeprüft)'},
-};
 
-// ---- 6.6 Qualität & Betrieb ---------------------------------------------------------------------------------------
+// ---- 6.6 Prüfliste und Bestandsprüfung -----------------------------------------------------------------------------
 export const REVIEW_HELP:Record<string,string>={
  labels:'Sachpunkt ohne Thema: Die Regeln fanden weder im Titel noch in der Unterlage ein Thema. Formalien zählen nicht dazu.',
  status:'Aus der Quelle geht nicht hervor, ob beraten, beschlossen oder abgelehnt wurde.',
@@ -349,7 +315,7 @@ export const QUALITY_FIGURE_HELP:Record<string,string>={
 };
 export const QUALITY_TEXT={
  sachgebiete:'Themen',
- sachgebieteNotiz:'Nach den festen Regeln aus dem Titel (Stufe 02), Anteil an allen Berichten. „Sonstiges“: Sachpunkte ohne Thema; Formalien sind nicht mitgezählt.',
+ sachgebieteNotiz:'Nach den festen Regeln, Anteil an allen Berichten. „Sonstiges“: Sachpunkte ohne Thema; Formalien sind nicht mitgezählt.',
  unbekannt:'Aus der Quelle geht nicht hervor, wie weit der Vorgang ist.',
  pruefliste:'Prüfliste',
  prueflisteNotiz:'Bis zu 25 zuletzt geänderte Berichte, die zum Prüfgrund passen. Die Links öffnen den Bericht in einem neuen Tab.',
@@ -357,21 +323,13 @@ export const QUALITY_TEXT={
  trefferOffen:'Trefferzahl wird nachgerechnet; gezeigt werden Treffer unter den 5.000 zuletzt geänderten Berichten.',
  gebiet:'Gebiet',
  alleGebiete:'Alle Gebiete mit Berichten',
- leer:'Noch keine Abrufe protokolliert. Abrufe starten Sie auf der Seite „Abruf & Verarbeitung“.',
+ leer:'Noch keine Abrufe protokolliert. Abrufe starten Sie oben auf dieser Seite.',
  art:{'Labels & Themenmerkmale':'Einordnung nach Regeln','Quellenimport':'Abruf'} as Record<string,string>,
  /** title an „Status offen“ = Abschnitt qualitaet.importe, erster Absatz */
- statusOffen:'Der Lauf hat sich seit über 10 Minuten nicht zurückgemeldet und ist vermutlich abgebrochen; ein offener Auftrag lässt sich auf der Seite „Abruf & Verarbeitung“ fortsetzen oder beenden.',
- sprungleiste:['Inhaltsqualität','Abrufe','Datenbank','Duplikate & Defekte','Betrieb','Quellen als CSV','Website ansehen'],
+ statusOffen:'Der Lauf hat sich seit über 10 Minuten nicht zurückgemeldet und ist vermutlich abgebrochen; ein offener Auftrag lässt sich auf der Seite „Abruf“ fortsetzen oder beenden.',
  exportTitel:'Gesamten Berichtsbestand sichern',
- exportText:'Enthält alle gespeicherten Berichte …',
  exportErgebnis:(a:number|string,b:number|string,c:number|string)=>`${a} von ${b} Berichten erfüllen alle Pflichtangaben. ${c} brauchen Ergänzungen.`,
  datenbank:'Revision: laufende Nummer des Datenbestands. Archivierte Fassungen: frühere Stände geänderter Berichte. Zusammengeführte Verweise: doppelt gelieferte Berichte, die auf einen anderen zeigen.',
- kiSchnittstelle:'KI-Schnittstelle',
- kiAn:'Zugang eingerichtet',
- kiAus:'Zugang nicht eingerichtet',
- push:'Benachrichtigungen im Browser. Ein gespeichertes Abonnement ist kein Nachweis einer zugestellten Nachricht.',
- analysiert:(n:number|string,m:number|string)=>`${n} Berichte analysiert. ${m} stehen in dieser Auswahl noch aus. Ein weiterer Lauf startet erst mit Ihrem nächsten Klick.`,
- uebernommen:(n:number|string)=>`${n} Berichte zur Textverarbeitung übernommen.`,
 };
 
 // ---- Spaltenhilfen -------------------------------------------------------------------------------------------------
@@ -391,66 +349,7 @@ export const COL_HELP:Record<string,string>={
  'verfahren.Abruf fehlgeschlagen':'Gebiete, deren letzter Abruf scheiterte',
 };
 
-// ---- Übersicht: Fußnoten, Notizen, Links ----------------------------------------------------------------------------
-export const UEBERSICHT_TEXT={
- // geprüft gegen shared/coverage.mjs:12-20: Einwohner zählen nur bei kind==='city' (Städte, Gemeinden, Gemeindeverbände); Kreise (kind 'district') nicht.
- fussnote:'Einwohner zählen nur bei Städten, Gemeinden und Gemeindeverbänden; ein Kreis umfasst seine Gemeinden. Ist nur der Kreis angebunden, zählen seine Einwohner hier nicht mit.',
- balken:'Balken: Petrol = angebunden, Schwarz = mit Berichten.',
- kennzahlen:'Abdeckung heute',
- legendeMonate:['Berichte','Gebiete mit Berichten im Monat'],
- reichweite:(deep:number|string,shallow:number|string)=>`${deep} Gebiete reichen mindestens ein Jahr zurück, ${shallow} weniger als drei Monate.`,
- aktualitaet:(current:number|string,quiet:number|string)=>`${current} Gebiete hatten in den letzten 30 Tagen eine Sitzung oder haben eine angekündigt, ${quiet} seit über 90 Tagen keine.`,
- monate:(undated:number|string)=>`${undated} Berichte ohne gültigen Sitzungstag (fehlend oder fehlerhaft) sind nicht enthalten.`,
- verlauf:(undatedAreas:number|string)=>`${undatedAreas} Gebiete wurden vor Oktober 2026 gespeichert und zählen ab dem ersten Tag der Reihe.`,
- weiterOffen:(n:number|string)=>`${n} offene Gebiete: warum, und was sie schließen könnte`,
- weiterAbruf:'Angebundene Gebiete ohne Berichte abrufen',
- weiterPruefliste:'Prüfliste, letzte Abrufe, Datenbank',
-};
-
-// ---- Abruf & Verarbeitung: Stufen, Rückfragen, Protokoll ----------------------------------------------------------
-export const STUFEN={
- regeln:'Feste Regeln ordnen jeden Bericht anhand seines amtlichen Titels einem der 10 Themen zu und zerlegen den Titel in Begriffe für den Vergleich zwischen Gebieten. Ohne KI, ohne Kosten. Jedes Paket von 500 Berichten wird sofort gespeichert; Sie können jederzeit pausieren und später dort fortsetzen.',
- regelnFortschritt:(a:number|string,b:number|string)=>`${a} von ${b} Berichten nach Regeln bearbeitet`,
- regelnKlein:(c:number|string)=>`${c} offen · gilt für den ganzen Bestand, nicht nur für Ihre Auswahl`,
- regelnKnopf:'Alle offenen Berichte einordnen',
- regelnAuswahl:(n:number|string,m:number|string)=>`Nur die Auswahl: ${n} offene Berichte in ${m} Gebieten`,
- ki:'Ein KI-Agent Ihrer Wahl liest die Originalunterlagen der Auswahl. Sie laden den Auftrag herunter, starten ihn selbst in Ihrem Projekt und lesen das Ergebnis hier wieder ein.',
- kiSchrittZeile:(a:number|string,b:number|string,c:number|string)=>`${a} von ${b} gespeichert · ${c} ohne ausreichende Quelle`,
- kiQuelleTitel:'Was heißt „ohne ausreichende Quelle“?',
- kiQuelle:'Ein früherer Versuch fand zu wenig lesbaren Text, etwa nur einen Titel oder einen Scan. Diese Berichte werden erst wieder angefordert, wenn sich ihre Quelldaten ändern – oder mit dem Haken „erneut versuchen“, der nur nach einer Änderung am Verfahren sinnvoll ist.',
- kiAnzahlLabel:'Berichte je KI-Auftrag',
- kiAnzahl:['10 · Testlauf','25 Berichte','50 Berichte','100 Berichte','Alle offenen Berichte'],
- kiHaken:'Berichte ohne ausreichende Quelle erneut versuchen',
- kiKlein:'Je Bericht werden nur die fehlenden Schritte angefordert, zuerst nie exportierte Berichte. Ein offener Auftrag reserviert seine Berichte bis zur Übernahme oder zum Verwerfen.',
- kiPrepared:'Reserviert – der Download allein ist keine erfolgreiche Bearbeitung. Geben Sie den Auftrag an Ihren KI-Agenten und lesen Sie die Ergebnisse hier ein; mehrere Teildateien sind möglich. Solange Berichte fehlen, bleibt der Auftrag offen.',
-};
-export const AUFTRAG_TITEL={
- abruf:(zeitraum:string)=>`Abrufauftrag · ${zeitraum} rückwirkend`,
- alle:(zeitraum:string)=>`Abruf aller Quellen in Deutschland · ${zeitraum} rückwirkend`,
- regeln:'Einordnung nach Regeln · alle offenen Berichte',
- status:{running:'Läuft',paused:'Pausiert – wartet auf Ihren Start',done:'Beendet'},
-};
-export const CONFIRM={
- alleAbrufen:{title:'Alle angebundenen Quellen abrufen?',text:(n:number|string)=>`Der Abruf liest ${n} Gebiete und belegt die Datenbank, solange er läuft. Sie können jederzeit pausieren; Gespeichertes bleibt.`,confirmLabel:'Abruf starten'},
- beenden:{title:'Offenen Auftrag beenden?',text:'Bereits Gespeichertes bleibt erhalten; noch nicht begonnene Gebiete werden nicht mehr abgerufen.',confirmLabel:'Beenden'},
- kiVerwerfen:{title:'KI-Auftrag verwerfen?',text:'Die reservierten Berichte werden wieder frei, stehen aber hinter bisher nicht exportierten Berichten. Vorhandene Analyseergebnisse bleiben erhalten.',confirmLabel:'Verwerfen'},
-};
-export const ABRUF_TEXT={
- zeile:(uebernahme:string,versuch:string,von:string,bis:string)=>`Übernahme ${uebernahme} · Letzter Versuch ${versuch} · Sitzungen ${von} bis ${bis}`,
- verarbeitung:'Verarbeitung & Quellenhinweise',
- verarbeitungKlein:'Die drei KI-Zahlen zählen nur, was aus dem Inhalt der Unterlagen entstand; der frühere Titeltest zählt hier nicht.',
- // geprüft: issues machen einen Abruf unvollständig (complete = issues.length===0 …), warnings nicht (z. B. allris.mjs, citystates.mjs).
- hinweise:'Hinweise: Der Abruf meldet, dass etwas fehlt oder nicht gelesen wurde. Warnungen: Auffälligkeiten, die den Abruf nicht unvollständig machen.',
- keineHinweise:'Keine Abrufhinweise gespeichert. Das bestätigt keine vollständige Quelle.',
- zeitbezug:{event:'Erste Beratung (Sitzungsdatum)',import:'Aufnahme in die Datenbank'},
- zeitbezugImport:'Zeigt, wann Plenara Berichte geholt hat, nicht wann sie entstanden.',
- verlaufNotizen:{
-  bestand:(n:number|string)=>`Berichte bis heute; dazu ${n} für schon angekündigte Sitzungen`,
-  proTag:(tage:number|string,x:number|string,mit:number|string)=>`Durchschnitt über ${tage} Kalendertage · ${x} an den ${mit} Tagen mit Zulauf`,
-  proWoche:(dd:string,n:number|string)=>`pro Tag × 7 · Spitzenwoche ab ${dd}: ${n}`,
-  proJahr:(dd:string,n:number|string)=>`pro Tag × 365 · Spitzentag ${dd}: ${n}`,
- },
-};
+// ---- Abruf: Protokoll ------------------------------------------------------------------------------------------
 /** Protokoll des letzten Abrufs (admin-run-debug.tsx) */
 export const PROTOKOLL={
  knopf:'Protokoll des letzten Abrufs',
@@ -487,7 +386,7 @@ export const HOCHRECHNUNG={
  standExtra:(sampleCount:number|string,from:string,to:string)=>` · ${sampleCount} Beispiele mit vollständigem Jahr · ${from} bis ${to}`,
  lesbar:(n:number|string)=>`rund ${n} Berichte pro Tag mit den vorhandenen Anbindungen; große Gebiete zählen mehr, weil sie mehr Berichte haben`,
  schritt2:'Sobald ein Gebiet mit „12 Monate“ abgerufen ist, zählt es nach dem nächsten „Neu berechnen“ als Beispiel.',
- linkAbruf:'… auf der Seite „Abruf & Verarbeitung“ auswählen',
+ linkAbruf:'… auf der Seite „Abruf“ auswählen',
  schritt3:'Je mehr Einwohner ein Gebiet hat, desto mehr Berichte entstehen, aber nicht im gleichen Maß. Die Kurve beschreibt diesen Zusammenhang; beide Achsen sind gestaucht (logarithmisch), damit kleine und große Gebiete zugleich lesbar sind.',
  // geprüft: shared/estimate.mjs fitLevel(): scatter = Standardabweichung der Abweichungen im Logarithmus; ×/÷ f = exp(scatter), das gilt für etwa zwei Drittel der Beispiele (so steht es auch in admin-estimate.tsx).
  streuung:(f:number|string)=>`Etwa zwei Drittel der Beispiele liegen höchstens um das ${f}-Fache über oder unter der Kurve.`,
@@ -497,9 +396,3 @@ export const HOCHRECHNUNG={
  neuRechnen:'bis Sie neu rechnen lassen',
 };
 
-// ---- 6.10 To-do und Anmeldung -----------------------------------------------------------------------------------
-export const RAHMEN={
- anmelden:{title:'Geschützter Bereich',text:'Melden Sie sich mit ChatGPT an, um die Administration zu öffnen.',knopf:'Mit ChatGPT anmelden'},
- keinZugriffLink:'Konto wechseln',
- fehler:{title:'Administration nicht erreichbar',text:'Die Zugangsprüfung hat gerade nicht geantwortet. Bitte versuchen Sie es gleich noch einmal.',knopf:'Erneut versuchen'},
-};

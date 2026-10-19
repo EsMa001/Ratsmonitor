@@ -4,7 +4,7 @@ import {useMemo,useState,type ReactNode} from 'react';
 import {PageBand} from '@/components/ratsmonitor/pages/analytics/PageBand';
 import {FilterSelect} from '@/components/ratsmonitor/components/FilterSelect';
 import {HELP,PAGE_HEAD} from '@/components/admin-texts';
-import type {AdminPage} from '@/components/admin-chrome';
+import {groupOf,type AdminPage} from '@/components/admin-chrome';
 export {StandLine,standText} from '@/components/admin-stand';
 
 // Bausteine der Adminseiten im Design der Startseite und der Plenara.X-Seiten (requirements/admin-performance-konzept.md, 5.2).
@@ -16,11 +16,11 @@ export const mm=(d?:string|null)=>d?d.slice(5,7)+'.'+d.slice(2,4):'–';
 /** „06.10.2026“ → „06.10.26“ (reportDate des Atlas) */
 export const short=(s:string)=>s.replace(/\.(\d{2})(\d{2})$/,'.$2');
 
-/** Kopfband einer Seite: Pfadzeile, Überschrift, Einleitung; als Kind die Stand-Zeile. */
+/** Kopfband einer Seite: Pfadzeile (Administration / Gruppe / Seite), Überschrift, Einleitung; als Kind die Stand-Zeile. */
 export function AdminPageHead({page,children}:{page:AdminPage;children?:ReactNode}){
- const h=PAGE_HEAD[page];
+ const h=PAGE_HEAD[page],group=groupOf(page)?.label;
  return <PageBand>
-  <p className="text-[14px] text-slate-500"><Link href="/admin" className="text-teal-600">Administration</Link> / {h.title}</p>
+  <p className="text-[14px] text-slate-500"><Link href="/admin" className="text-teal-600">Administration</Link> /{group?` ${group} /`:''} {h.title}</p>
   <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">{h.title}</h1>
   <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{h.intro}</p>
   {children&&<div className="mt-4">{children}</div>}

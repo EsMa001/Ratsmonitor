@@ -169,25 +169,32 @@ Tests: `tests/accounts-login.test.mjs`, `accounts-data.test.mjs`, `accounts-rule
 
 ### Administration (`/admin?seite=…`, `components/admin-*.tsx`)
 
-Reiterliste in `admin-chrome.tsx`, Aliase `pdf-import` → `pdf`, `jobs` → `zeitplaene`; `?seite=mobil` zeigt eine schlanke Ansicht.
-Bausteine: `admin-chrome.tsx` (Rahmen), `admin-ui.tsx`, `admin-stand.tsx` (Standzeile), `admin-store.ts` (Teile laden,
+Menü in `admin-chrome.tsx` (`ADMIN_GROUPS`, seit 19.10.2026): Cockpit und fünf Gruppen, die wie das Hauptmenü der Startseite
+aufklappen (Symbol, Name, leise die Frage der Seite). Frühere Adressen leiten weiter (`app/admin/page.tsx`): `uebersicht` →
+`abdeckung`, `qualitaet` → `pruefliste`, `debug` → `nacht`, `pdf-import` → `pdf`, `jobs` → `zeitplaene`, Nummern 1 bis 3;
+`?seite=mobil` zeigt eine schlanke Ansicht.
+Bausteine: `admin-chrome.tsx` (Rahmen und Menü), `admin-ui.tsx`, `admin-stand.tsx` (Standzeile), `admin-store.ts` (Teile laden,
 `useRegionCatchUp`), `admin-catch-up.tsx`, `admin-texts.ts`, `admin-colors.ts`, `admin-totp.tsx`, `admin-signout.tsx`.
 
-| Reiter | Komponente | Zweck |
-|---|---|---|
-| `uebersicht` | `admin-overview.tsx` | Übersicht |
-| `atlas` | `admin-atlas.tsx` | Lückenatlas (live, alle 5 min) |
-| `abruf` | `admin-loader.tsx` → `admin-dashboard.tsx`, `admin-processing.tsx`, `admin-ai-local.tsx` | Abruf & Verarbeitung (Abrufauftrag, Titelregel, KI-Arbeitsliste) |
-| `pdf` | `admin-pdf.tsx`, `admin-pdf-parts.tsx` | PDF-Import (Stand, Aufträge, Server, Läufe) |
-| `regeltexte` | `admin-rule-texts.tsx` | Themen & Texte (Ergebnis je Schritt, Qualität der Regeln, Freigaben) |
-| `qualitaet` | `admin-quality-check.tsx` | Qualität & Betrieb (Bauaufträge) |
-| `zeitplaene` | `admin-schedules.tsx` | Jobs & Zeitpläne |
-| `debug` | `admin-debug.tsx`, `admin-pipeline-parts.tsx` | Pipeline-Debug (vorübergehend) |
-| `altbestand` | `admin-altbestand.tsx` | Altbestand |
-| `speicher` | `admin-storage.tsx` | Speicher & Sicherungen |
-| `hochrechnung` | `admin-forecast.tsx`, `admin-estimate.tsx` | Hochrechnung für Deutschland |
-| `social` | `admin-social.tsx` | Social-Media-Vorschläge |
-| `todo` | `admin-todo.tsx` | To-do-Board (`docs/todo/todos.json`, auf dem Server `admin-todos-v1`) |
+| Gruppe | Seite | Komponente | Zweck |
+|---|---|---|---|
+| – | (ohne) | `admin-cockpit.tsx` | Cockpit: Abdeckung, Bestand, Fehler, Platz, letzte Nacht, laufende Jobs, Als Nächstes |
+| Abdeckung | `abdeckung` | `admin-overview.tsx` | Abdeckung nach Gebieten und Einwohnern, Verlauf, Begriffe |
+| Abdeckung | `atlas` | `admin-atlas.tsx` | Lückenatlas (live, alle 5 min) |
+| Pipeline | `nacht` | `admin-debug.tsx`, `admin-pipeline-parts.tsx` | Letzte Nacht: Läufe, Zeitachse, Wege der Berichte, Laufbuch |
+| Pipeline | `abruf` | `admin-loader.tsx` → `admin-processing.tsx`, `AdminRuns` | Abruf (Gebiete, Abrufauftrag, letzte Abrufe, Zulauf) |
+| Pipeline | `pdf` | `admin-pdf.tsx`, `admin-pdf-parts.tsx` | PDF-Import (Stand, Aufträge, Server, Läufe) |
+| Pipeline | `verarbeitung` | `admin-loader.tsx` → `admin-verarbeitung.tsx`, `admin-ai-local.tsx` | Verarbeitung (Stand der Regeln, Job „Verarbeitung, nachts“ starten, KI-Arbeitsliste) |
+| Pipeline | `altbestand` | `admin-altbestand.tsx` | Altbestand |
+| Qualität | `regeltexte` | `admin-rule-texts.tsx` | Themen & Texte (Ergebnis je Schritt, Qualität der Regeln, Freigaben) |
+| Qualität | `pruefliste` | `admin-loader.tsx` → `AdminReview` (`admin-dashboard.tsx`) | Prüfliste (Themen, Verfahrensstand, Berichte je Prüfgrund) |
+| Qualität | `bestand` | `admin-loader.tsx` → `AdminStock`, `database-admin.tsx`, `admin-quality-check.tsx` | Bestandsprüfung (Pflichtangaben, Bauaufträge, Datenbank und Übernahme) |
+| Betrieb | `zeitplaene` | `admin-schedules.tsx` | Jobs & Zeitpläne |
+| Betrieb | `fehler` | `admin-fehler.tsx` | Fehler & Server (Fehlerspeicher Tagesbereich und Altbestand, wartende Server, Fehler im eigenen Code) |
+| Betrieb | `speicher` | `admin-storage.tsx` | Speicher & Sicherungen |
+| Planung | `todo` | `admin-todo.tsx` | To-do-Board (`docs/todo/todos.json`, auf dem Server `admin-todos-v1`) |
+| Planung | `hochrechnung` | `admin-forecast.tsx`, `admin-estimate.tsx` | Hochrechnung für Deutschland |
+| Planung | `social` | `admin-social.tsx` | Social-Media-Vorschläge |
 
 Alle Admin-Seiten lesen nur gespeicherte Stände (`system_state`, kleine Tabellen), nie alle Berichte; GETs schreiben nie.
 
@@ -204,7 +211,7 @@ Drei Zugänge auf dieselbe Logik:
 |---|---|---|
 | MCP intern (STDIO, kein Port) | `npm run mcp:internal` → `server/mcp/stdio.mjs` → `openMcpRuntime('internal')`; Werkzeuge `ai_list`, `ai_claim`, `ai_read`, `ai_renew`, `ai_release`, `ai_submit`, `ai_fail` (`server/mcp/server.mjs`) | Konfiguration mit `databaseFile`, `sourceDirectory`, `identity`, `requestsPerMinute` (`RM_MCP_CONFIG`, Vorlagen `config/mcp/`); läuft aus dem Quelltext, wird nicht gebaut; keine Unit auf dem Server |
 | Kommandozeile | `scripts/ai-local.mjs list\|claim\|read\|renew\|release\|submit\|fail` | Datenbank aus `DATABASE_FILE`, sonst die Miniflare-Datei |
-| HTTP | `GET\|POST /api/admin/ai-local` (`requireAdmin`, `requireSameOrigin`, Body ≤ 3 MB), Reiter „Abruf & Verarbeitung“ | braucht `env.AI_LOCAL_SOURCES` (nur Node); im Dev fängt `build/ai-local-dev-plugin.mjs` die Route ab (nur Loopback) |
+| HTTP | `GET\|POST /api/admin/ai-local` (`requireAdmin`, `requireSameOrigin`, Body ≤ 3 MB), Seite „Verarbeitung“ | braucht `env.AI_LOCAL_SOURCES` (nur Node); im Dev fängt `build/ai-local-dev-plugin.mjs` die Route ab (nur Loopback) |
 
 ```mermaid
 %%{init: {"sequence": {"wrap": true, "width": 240, "messageMargin": 24}}}%%
@@ -227,7 +234,7 @@ sequenceDiagram
 
 Kommt neuer Text dazu (OCR, Nacharbeit, Altbestand), ändert sich der Eingabehash: der Bericht wird `stale` und erscheint wieder in der
 Liste. Ein erneut gesendetes gleiches Ergebnis ist idempotent. `ai_fail` schreibt `article_analyses` `ai-local-attempt`, die alten
-Inhalte bleiben. Der Job `rule-texts` zählt den Stand (`ai-counts`); Pipeline-Debug und Altbestand zeigen ihn.
+Inhalte bleiben. Der Job `rule-texts` zählt den Stand (`ai-counts`); Letzte Nacht und Altbestand zeigen ihn.
 
 Weitere Wege: `ai-jobs.mjs` und `scripts/ai-job.mjs` (Altweg per Datei, nur für vorbereitete Altaufträge), `prepared-analysis.mjs`
 (festes Bündel Billerbeck, `codex-direct-v1`), Modus `summaries` von `runSync` mit OpenAI (`ai-summary.mjs`, nur von Hand, nur mit

@@ -1,11 +1,9 @@
 'use client';
 import type React from 'react';
 import {useEffect,useMemo,useState} from 'react';
-import {RefreshCw,MapPinned,Play,ArrowUpRight} from 'lucide-react';
 import {StandLine,standText} from '@/components/admin-stand';
 import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import type {Stand} from '@/shared/admin-types';
-import {adminHref} from '@/components/admin-chrome';
 import {AdminPageHead,Alert,Kpis,Legend,PageSkeleton,SectionHelp,SectionTodo,dd} from '@/components/admin-ui';
 import {AC,bucketColor} from '@/components/admin-colors';
 import {COL_HELP,HELP,TERMS} from '@/components/admin-texts';
@@ -106,7 +104,7 @@ export const AdminOverview:(props:{displayName?:string;signOutPath?:string})=>Re
   {label:'Einwohner mit Berichten',value:pct(data.data.population,data.total.population),note:`${mio(data.data.population)} Einwohner in Gebieten mit gespeicherten Berichten`},
  ]:['Gebiete angebunden','Einwohner erreicht','Gebiete mit Berichten','Einwohner mit Berichten'].map(label=>({label,value:undefined}));
  return <>
-  <AdminPageHead page="uebersicht"><StandLine stand={data?data.stand??null:undefined} action="Aktualisieren" onAction={reload} busy={refreshing}/></AdminPageHead>
+  <AdminPageHead page="abdeckung"><StandLine stand={data?data.stand??null:undefined} action="Aktualisieren" onAction={reload} busy={refreshing}/></AdminPageHead>
   {error&&(data
    ?<Alert onRetry={()=>setAttempt(a=>a+1)}>Aktualisieren ist fehlgeschlagen: {error} Angezeigt bleibt der Stand vom {data.stand?.computedAt?standText(data.stand.computedAt):dateTime(data.asOf)}.</Alert>
    :<Alert onRetry={()=>setAttempt(a=>a+1)}>Die Zahlen konnten nicht geladen werden. Es werden keine geschätzten Werte angezeigt. ({error})</Alert>)}
@@ -158,14 +156,6 @@ export const AdminOverview:(props:{displayName?:string;signOutPath?:string})=>Re
     <div className="admin-lands mt-5" role="region" aria-label="Abdeckung je Größenklasse" tabIndex={0}><table><thead><tr><th>Einwohner je Gebiet</th><th title={COL_HELP['Gebiete']}>Gebiete</th><th title={COL_HELP['Angebunden']}>Angebunden</th><th title={COL_HELP['Mit Berichten']}>Mit Berichten</th><th title={COL_HELP['Einwohner angebunden']}>Einwohner angebunden</th><th title={COL_HELP['Einwohner mit Berichten']}>Einwohner mit Berichten</th></tr></thead><tbody>{data.analysis.sizes.filter(s=>s.total[0]).map(s=><tr key={s.id}><th>{s.label}</th><td>{n(s.total[0])}</td><td><span className="admin-share"><i style={{width:pct(s.connected[0],s.total[0])}}/></span>{n(s.connected[0])} <small>{pct(s.connected[0],s.total[0],0)}</small></td><td><span className="admin-share is-data"><i style={{width:pct(s.data[0],s.total[0])}}/></span>{n(s.data[0])} <small>{pct(s.data[0],s.total[0],0)}</small></td><td>{s.total[1]?<>{pct(s.connected[1],s.total[1],0)} <small>{mio(s.connected[1])}</small></>:'–'}</td><td>{s.total[1]?<>{pct(s.data[1],s.total[1],0)} <small>{mio(s.data[1])}</small></>:'–'}</td></tr>)}</tbody></table></div>
     {COLS_NOTE}
     <SectionTodo id="uebersicht.groesse"/>
-   </section>
-   <section className="admin-section" aria-labelledby="weiter">
-    <SectionHead help="uebersicht.weiter" id="weiter"/>
-    <div className="admin-next mt-5">
-     <a className="admin-next-link" href={adminHref('atlas')}><MapPinned size={20}/><span><strong>Lückenatlas</strong><small>{n(data.total.areas-data.connected.areas)} offene Gebiete: warum, und was sie schließen könnte</small></span><ArrowUpRight size={16}/></a>
-     <a className="admin-next-link" href={adminHref('abruf','filter=empty')}><Play size={20}/><span><strong>Abruf starten</strong><small>Angebundene Gebiete ohne Berichte abrufen</small></span><ArrowUpRight size={16}/></a>
-     <a className="admin-next-link" href={adminHref('qualitaet')}><RefreshCw size={20}/><span><strong>Qualität & Betrieb</strong><small>Prüfliste, letzte Abrufe, Datenbank</small></span><ArrowUpRight size={16}/></a>
-    </div>
    </section>
   </div>}
   <section id="begriffe" className="admin-section" aria-labelledby="begriffe-h">

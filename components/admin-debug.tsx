@@ -5,12 +5,12 @@ import {AdminPageHead,Alert} from '@/components/admin-ui';
 import {Icon} from '@/components/admin-icons';
 import {adminHref} from '@/components/admin-chrome';
 import {when,clock,dur} from '@/components/admin-pdf-parts';
-import {n,day,Glossary,StepList,Timeline,FailureTable,HostTable,result,type Step,type FailRow,type Counter} from '@/components/admin-pipeline-parts';
+import {n,Glossary,StepList,Timeline,result,type Step,type FailRow,type Counter} from '@/components/admin-pipeline-parts';
 import {PHASES,stepName,CLASS_TERMS} from '@/shared/pipeline-terms.mjs';
 
-/* Reiter „Pipeline-Debug“ (vorübergehend, nicht langfristig gebraucht; Route /api/admin/debug, server/integrations/pipeline-debug.mjs).
-   Liest nur gespeicherte Stände: wann lief was, was haben die Läufe getan, welchen Weg nahmen die Berichte, was steht im
-   Fehlerspeicher des Tagesbereichs. Den Altbestand bearbeitet die Seite „Altbestand“. Begriffe: shared/pipeline-terms.mjs. */
+/* Seite „Letzte Nacht“ (früher „Pipeline-Debug“; Route /api/admin/debug, server/integrations/pipeline-debug.mjs).
+   Liest nur gespeicherte Stände: wann lief was, was haben die Läufe getan, welchen Weg nahmen die Berichte. Den
+   Fehlerspeicher zeigt die Seite „Fehler & Server“, den Altbestand die Seite „Altbestand“. Begriffe: shared/pipeline-terms.mjs. */
 type PdfRun={kind:string;startedAt:string;finishedAt:string;result:string;steps:Step[]};
 type RuleRun={startedAt:string;finishedAt:string;result:string;steps:Step[]};
 type NachStep={step:string;name?:string;entries:number;ok?:number;again?:number;final?:number;untouched?:number;skipped?:string;seconds?:number};
@@ -56,34 +56,29 @@ function Paths({w}:{w:Win}){
 }
 
 export function AdminDebug(){
- const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[win,setWin]=useState('7d'),[note,setNote]=useState('');
+ const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[win,setWin]=useState('7d');
  const load=useCallback(async()=>{
   try{const r=await fetch('/api/admin/debug',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Die Seite konnte nicht geladen werden.');setData(d);setError('');}
   catch(e){setError(e instanceof Error?e.message:'Die Seite konnte nicht geladen werden.');}
  },[]);
  // Erster Abruf gleich nach dem Einhängen, danach jede Minute (nicht synchron im Effekt, react-hooks/set-state-in-effect)
  useEffect(()=>{const first=setTimeout(load,0),t=setInterval(load,60000);return ()=>{clearTimeout(first);clearInterval(t);};},[load]);
- const post=async(body:Record<string,unknown>,confirmText:string)=>{
-  if(!window.confirm(confirmText))return;
-  setBusy(true);
-  try{const r=await fetch('/api/admin/debug',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json() as {error?:string;reopened?:number};if(!r.ok)throw Error(d.error||'Das ging nicht.');
-   setNote(typeof d.reopened==='number'?`${n(d.reopened)} Einträge sind jetzt fällig; die Nacharbeit versucht sie in ihrem nächsten Lauf (alle 30 Minuten, 9 bis 23 Uhr).`:'Server freigegeben; die Nacharbeit prüft ihn im nächsten Lauf mit drei Dokumenten.');await load();}
-  catch(e){setError(e instanceof Error?e.message:'Das ging nicht.');}
-  finally{setBusy(false);}
- };
  const rows=data?.failures.rows||[],w=data?.trace?.windows?.[win];
  const daily=rows.filter(r=>r.range==='daily').reduce((a,r)=>a+r.n,0),backlog=rows.filter(r=>r.range==='backlog').reduce((a,r)=>a+r.n,0);
  const nightRun=data?.pdfRuns.find(r=>r.kind==='nightly'),ocrRun=data?.pdfRuns.find(r=>r.kind==='ocr');
  const imp=data?.importJob;
 
  return <>
-  <AdminPageHead page="debug"/>
+  <AdminPageHead page="nacht"/>
   {error&&<Alert onRetry={load}>{error}</Alert>}
-  {note&&<p role="status" className="mt-4 text-[14px] text-slate-700">{note}</p>}
-  {data?.units&&(data.units.inactive.length>0||data.units.stale)&&<div role="alert" className="mt-4 max-w-[900px] rounded-md border border-red-300 bg-red-50 px-4 py-3 text-[14px] text-red-900">
+  {data?.units&&(data.units.inactive.length>0||data.units.stale)&&<div role="alert" className="mt-4 max-w-[900px] rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-[14px] text-amber-900">
    <strong>Auslöser auf dem Server:</strong>{' '}
    {data.units.stale?<>der Zeitplaner hat sich seit {when(data.units.at)} nicht gemeldet; kein Job startet mehr.</>:<>inaktiv: {data.units.inactive.join(', ')}. Diese Jobs starten nie, bis jemand sie auf dem Server wieder einschaltet (<code>systemctl start {data.units.inactive.join(' ')}</code>). Jobs nur über „Anhalten“ stoppen, nie über <code>systemctl stop …timer</code>.</>}
   </div>}
+
+  {data&&<section className="mt-6" aria-label="Fehlerspeicher">
+   <p className="max-w-[900px] text-[14px] text-slate-700"><Icon name="alert" size={16} className="mr-1 inline align-[-3px] text-teal-600"/>Fehlerspeicher: {data.failures.missing?'Migration 0040 fehlt.':<>{n(daily)} Einträge im Tagesbereich, {n(backlog)} im Altbestand{data.hosts.length?`, ${n(data.hosts.length)} Server warten`:''}{data.internal.length?`, ${n(data.internal.length)} Fehler im eigenen Code`:''}.</>} <Link href={adminHref('fehler')} className="text-teal-700">Fehler & Server →</Link></p>
+  </section>}
 
   <section className="mt-6" aria-label="Begriffe">
    <H2 icon="report">So liest man diese Seite</H2>
@@ -136,21 +131,6 @@ export function AdminDebug(){
    {data?.trace?<p className="mt-1 text-[12px] text-slate-500">Gezählt {when(data.trace.at)} in {dur(data.trace.seconds)}, am Ende von „Verarbeitung, nachts“.</p>
     :<Lead>Noch keine Zählung. Sie entsteht am Ende von „Verarbeitung, nachts“.</Lead>}
    {w&&(w.written?<Paths w={w}/>:<p className="mt-3 text-[14px] text-slate-500">In diesem Zeitraum hat der Abruf keine Berichte geschrieben.</p>)}
-  </section>
-
-  <section className="mt-10" aria-label="Fehlerspeicher">
-   <H2 icon="alert">Fehlerspeicher: Tagesbereich</H2>
-   {data?.failures.missing?<Lead>Migration 0040 fehlt; ohne sie gibt es keinen Fehlerspeicher.</Lead>:<>
-    <Lead>Was in der Tagespipeline gescheitert ist (Sitzungen ab {day(data?.boundary)}), nach Stufe und Grund. „Jetzt fällig“ nimmt die Nacharbeit im nächsten Lauf, „wartet“ hat einen späteren Termin, „kein Versuch mehr“ bleibt liegen, bis jemand ihn wieder öffnet. {n(daily)} Einträge im Tagesbereich; {n(backlog)} weitere gehören zum <Link href={adminHref('altbestand')} className="text-teal-700">Altbestand</Link>.</Lead>
-    <FailureTable rows={rows} range="daily" busy={busy} onRetry={(phase,cls)=>post({action:'reopen',phase,...(cls?{cls}:{})},`Diese Einträge des Tagesbereichs jetzt fällig machen? Die Nacharbeit versucht sie im nächsten Lauf; wartende Server bleiben bis zu ihrer Stichprobe ausgelassen.`)}/>
-    {data&&data.hosts.length>0&&<><h3 className="mt-8 text-[18px] font-semibold">Server, die gerade warten</h3>
-     <Lead>Ein Server, der bremst oder mehrfach scheitert, wird eine Zeit lang von allen Abrufen ausgelassen und danach mit drei Dokumenten geprüft. „Freigeben“ zieht die Prüfung vor.</Lead>
-     <HostTable hosts={data.hosts} busy={busy} onRelease={h=>post({action:'release',host:h},`${h} jetzt freigeben? Die Nacharbeit prüft ihn im nächsten Lauf mit drei Dokumenten.`)}/></>}
-    {data&&data.internal.length>0&&<><h3 className="mt-8 text-[18px] font-semibold">Fehler im eigenen Code</h3><Lead>Hier hilft kein neuer Versuch; diese Einträge kommen erst nach dem nächsten Deploy wieder dran. Sie sind die Liste für die Entwicklung.</Lead>
-     <ul className="m-0 mt-2 max-w-[1100px] list-none space-y-1 p-0 text-[14px]">{data.internal.map(e=><li key={e.step+e.key} className="break-all"><span className="text-slate-500">{stepName(e.step)} · {when(e.last_at)} · Programmstand {e.release||'–'}</span> {e.key}: {e.reason}</li>)}</ul></>}
-    {data&&data.recent.length>0&&<details className="mt-8 max-w-[1100px]"><summary className="cursor-pointer text-[18px] font-semibold">Letzte Einträge</summary>
-     <ul className="m-0 mt-2 list-none space-y-1 p-0 text-[14px]">{data.recent.map(e=><li key={e.step+e.key} className="break-all"><span className="text-slate-500">{when(e.last_at)} · {e.range==='daily'?'Tagesbereich':'Altbestand'} · {stepName(e.step)} · {CLASS_TERMS[(e.class||'') as keyof typeof CLASS_TERMS]?.name||e.class} · {e.tries}. Versuch · {e.next_try_at?'nächster '+when(e.next_try_at):'kein Versuch mehr'}</span> {e.key}{e.reason?': '+e.reason:''}</li>)}</ul></details>}
-   </>}
   </section>
 
   {data&&<section className="mt-10" aria-label="Laufbuch">

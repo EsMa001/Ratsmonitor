@@ -6,7 +6,7 @@ import {adminState} from '@/server/services/session';
 import {AdminTotp,AdminTotpSetup} from '@/components/admin-totp';
 import {accountsConfig} from '@/server/accounts/config.mjs';
 import {AdminActivation} from '@/components/admin-activation';
-import {AdminFrame,START_PAGE,type AdminPage} from '@/components/admin-chrome';
+import {AdminFrame,type AdminPage} from '@/components/admin-chrome';
 import {BRAND_NAME,DEFAULT_BRAND} from '@/components/ratsmonitor/lib/brands';
 import {AdminLoader} from '@/components/admin-loader';
 import {staticVersion} from '@/server/repositories/admin';
@@ -22,17 +22,21 @@ import {AdminStorage} from '@/components/admin-storage';
 import {AdminSchedules} from '@/components/admin-schedules';
 import {AdminDebug} from '@/components/admin-debug';
 import {AdminAltbestand} from '@/components/admin-altbestand';
+import {AdminCockpit} from '@/components/admin-cockpit';
+import {AdminFehler} from '@/components/admin-fehler';
 import {validRegion,REGIONS} from '@/shared/regions';
 export const dynamic='force-dynamic';
 export const metadata={title:'Administration · '+BRAND_NAME[DEFAULT_BRAND],robots:{index:false,follow:false}};
-// Pages by name; the numbers of the first version still lead to their page. "auswahl" (areas handed over by the
-// estimate) and "filter" (a list filter) open the import page. Without a page: the overview (START_PAGE).
-const PAGES:Record<string,AdminPage>={todo:'todo',uebersicht:'uebersicht',abruf:'abruf',atlas:'atlas',qualitaet:'qualitaet',hochrechnung:'hochrechnung',regeltexte:'regeltexte',social:'social',pdf:'pdf','pdf-import':'pdf',speicher:'speicher',zeitplaene:'zeitplaene',jobs:'zeitplaene',debug:'debug',altbestand:'altbestand','1':'abruf','2':'qualitaet','3':'hochrechnung'};
+// Pages by name; earlier names and the numbers of the first version still lead to their page (uebersicht is now
+// "Abdeckung", qualitaet the "Prüfliste", debug "Letzte Nacht"). "auswahl" (areas handed over by the estimate) and
+// "filter" (a list filter) open the import page. Without a page: the cockpit. 'start' stands here as text: values from
+// admin-chrome.tsx ('use client') arrive in a server component only as client references, not as strings.
+const PAGES:Record<string,AdminPage>={start:'start',cockpit:'start',abdeckung:'abdeckung',uebersicht:'abdeckung',atlas:'atlas',nacht:'nacht',debug:'nacht',abruf:'abruf',pdf:'pdf','pdf-import':'pdf',verarbeitung:'verarbeitung',altbestand:'altbestand',regeltexte:'regeltexte',pruefliste:'pruefliste',qualitaet:'pruefliste',bestand:'bestand',zeitplaene:'zeitplaene',jobs:'zeitplaene',fehler:'fehler',speicher:'speicher',todo:'todo',hochrechnung:'hochrechnung',social:'social','1':'abruf','2':'pruefliste','3':'hochrechnung'};
 const FILTERS=['all','connected','data','empty','issues','partial','stale','failed','shallow','quiet','selected'];
 export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string;filter?:string}>}){const {seite,auswahl,filter}=await searchParams;
  // "auswahl" preselects areas on the import page; only known area ids are accepted.
  const selection=[...new Set(String(auswahl||'').split(',').filter(id=>id&&validRegion(id)))].slice(0,REGIONS.length);
- const page=PAGES[String(seite||'')]||(selection.length||filter?'abruf':START_PAGE);
+ const page:AdminPage=PAGES[String(seite||'')]||(selection.length||filter?'abruf':'start');
  return <AdminContent page={page} mobile={String(seite||'')==='mobil'} selection={selection} filter={FILTERS.includes(String(filter))?String(filter):undefined}/>;}
 async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobile:boolean;selection:string[];filter?:string}){
  // Melde-, Einrichtungs- und Fehlerzustände im Rahmen ohne Reiter.
@@ -70,12 +74,15 @@ async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobil
   if(page==='pdf')return frame(<AdminPdf/>);
   if(page==='speicher')return frame(<AdminStorage/>);
   if(page==='zeitplaene')return frame(<AdminSchedules/>);
-  if(page==='debug')return frame(<AdminDebug/>);
+  if(page==='nacht')return frame(<AdminDebug/>);
+  if(page==='fehler')return frame(<AdminFehler/>);
   if(page==='altbestand')return frame(<AdminAltbestand/>);
   if(page==='hochrechnung')return frame(<AdminForecast/>);
   if(page==='atlas')return frame(<AdminAtlas/>);
-  if(page==='uebersicht')return frame(<AdminOverview/>);
-  // Import and quality pages: the browser puts the dashboard together from three parts, see components/admin-loader.tsx.
+  if(page==='abdeckung')return frame(<AdminOverview/>);
+  if(page==='start')return frame(<AdminCockpit/>);
+  // Pages on the dashboard (Abruf, Verarbeitung, Prüfliste, Bestandsprüfung): the browser puts it together
+  // from three parts, see components/admin-loader.tsx.
   return frame(<AdminLoader page={page} staticVersion={staticVersion()} initialSelection={selection} initialFilter={filter}/>);
  }catch{return gate(<>{title('Administration nicht erreichbar')}<p role="alert" className="mt-3 text-[16px] text-slate-500">Die Zugangsprüfung hat gerade nicht geantwortet. Bitte versuchen Sie es gleich noch einmal.</p><a className="btn-primary mt-6 inline-flex" href="/admin">Erneut versuchen</a></>);}
 }

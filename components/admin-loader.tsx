@@ -3,30 +3,42 @@ import {useEffect,useState} from 'react';
 import type {AdminDashboard} from '@/shared/admin-types';
 import {AdminPageHead,PageSkeleton,Alert,StandLine} from '@/components/admin-ui';
 import {AdminProcessing} from '@/components/admin-processing';
-import {AdminDashboardView} from '@/components/admin-dashboard';
+import {AdminVerarbeitung} from '@/components/admin-verarbeitung';
+import {AdminReview,AdminStock} from '@/components/admin-dashboard';
 import {fetchDashboard,setAdminStaticVersion} from '@/components/admin-store';
-// The dashboard of the import and quality pages is put together by the browser from three parts (fetchDashboard in
-// admin-store.ts): the summary, the rows of figures per area and the static list of areas, which the browser keeps.
-// Embedded by the server it delayed the page for the whole read and, at 4.7 MB, broke the local render ("Network
-// connection lost"). The server only reads stored figures; areas still being computed show their previous figures and
-// are named in the line under the navigation (RegionCatchUp, admin-catch-up.tsx), which computes them in steps.
-export function AdminLoader({page,staticVersion='',initialSelection=[],initialFilter}:{page:'abruf'|'qualitaet';staticVersion?:string;initialSelection?:string[];initialFilter?:string}){
+export type DashboardPage='abruf'|'verarbeitung'|'pruefliste'|'bestand';
+// Grey areas while the data are missing: heading and explanation of each section stand already.
+const SKELETON:Record<DashboardPage,[string,number][]>={
+ abruf:[['abruf.gebiete',520],['abruf.stufen',260],['qualitaet.importe',240],['abruf.verlauf',300]],
+ verarbeitung:[['verarbeitung.regeln',200],['verarbeitung.ki',320]],
+ pruefliste:[['qualitaet.inhalt',320]],
+ bestand:[['qualitaet.vollstaendig',160],['qualitaet.pruefung',240],['qualitaet.export',120]],
+};
+// The dashboard of these pages is put together by the browser from three parts (fetchDashboard in admin-store.ts): the
+// summary, the rows of figures per area and the static list of areas, which the browser keeps. Embedded by the server it
+// delayed the page for the whole read and, at 4.7 MB, broke the local render ("Network connection lost"). The server only
+// reads stored figures; areas still being computed show their previous figures and are named in the line under the
+// navigation (RegionCatchUp, admin-catch-up.tsx), which computes them in steps.
+export function AdminLoader({page,staticVersion='',initialSelection=[],initialFilter}:{page:DashboardPage;staticVersion?:string;initialSelection?:string[];initialFilter?:string}){
  if(staticVersion)setAdminStaticVersion(staticVersion);
  const [data,setData]=useState<AdminDashboard|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0);
  useEffect(()=>{
   const controller=new AbortController();setError('');
-  // The import page asks without the review list of the quality page, as its own refresh does.
-  fetchDashboard({review:page==='qualitaet',signal:controller.signal})
+  // Only the Prüfliste asks with the review list.
+  fetchDashboard({review:page==='pruefliste',signal:controller.signal})
    .then(d=>{setData(d);})
    .catch(e=>{if(!controller.signal.aborted)setError(e instanceof Error?e.message:'Der Datenbankstand konnte nicht geladen werden.');});
   return()=>controller.abort();
  },[page,attempt]);
- if(data)return page==='qualitaet'?<AdminDashboardView initial={data}/>:<AdminProcessing initial={data} initialSelection={initialSelection} initialFilter={initialFilter}/>;
- // Solange Daten fehlen: Kopfband, Überschriften und Erklärungen der Abschnitte stehen schon, darunter graue Flächen.
- const sections:[string,number][]=page==='abruf'?[['abruf.gebiete',520],['abruf.stufen',260],['abruf.verlauf',300]]:[['qualitaet.inhalt',320],['qualitaet.importe',240],['qualitaet.vollstaendig',160],['qualitaet.pruefung',240],['qualitaet.betrieb',200]];
+ if(data){
+  if(page==='pruefliste')return <AdminReview initial={data}/>;
+  if(page==='bestand')return <AdminStock initial={data}/>;
+  if(page==='verarbeitung')return <AdminVerarbeitung initial={data}/>;
+  return <AdminProcessing initial={data} initialSelection={initialSelection} initialFilter={initialFilter}/>;
+ }
  return <>
   <AdminPageHead page={page}><StandLine stand={undefined}/></AdminPageHead>
   {error&&<Alert onRetry={()=>setAttempt(n=>n+1)}>{error} Es werden keine Ersatzzahlen angezeigt.</Alert>}
-  <PageSkeleton sections={sections}/>
+  <PageSkeleton sections={SKELETON[page]}/>
  </>;
 }

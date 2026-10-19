@@ -5,10 +5,10 @@ import {AdminPageHead,Alert} from '@/components/admin-ui';
 import {Icon} from '@/components/admin-icons';
 import {adminHref} from '@/components/admin-chrome';
 import {when,clock} from '@/components/admin-pdf-parts';
-import {n,day,Glossary,FailureTable,HostTable,result,type FailRow,type Counter} from '@/components/admin-pipeline-parts';
+import {n,day,Glossary,result,type FailRow,type Counter} from '@/components/admin-pipeline-parts';
 import {PDF_JOB_TERMS,PHASES,stepName} from '@/shared/pipeline-terms.mjs';
 
-/* Seite „Altbestand“ (Debug-Bereich; Route /api/admin/altbestand, server/integrations/altbestand-admin.mjs): alles, was älter ist als
+/* Seite „Altbestand“ (Gruppe Pipeline; Route /api/admin/altbestand, server/integrations/altbestand-admin.mjs): alles, was älter ist als
    der Tagesbereich oder vor dem 12.10.2026 gescheitert ist, auf Knopfdruck abrufen, extrahieren, verarbeiten und alte Fehler
    aufarbeiten. Die Seite legt nur Wünsche ab; ausgeführt wird auf dem Server von 10 bis 22 Uhr (Jobs „Altbestand“, „OCR, tagsüber“,
    „PDF-Aufträge“). Begriffe: shared/pipeline-terms.mjs. */
@@ -122,11 +122,8 @@ export function AdminAltbestand(){
      <button type="button" className={main} disabled={busy||!backlog} onClick={()=>post({action:'rework',reopen:true},`Alle ${n(backlog)} alten Fehler erneut versuchen? Das kann Tage dauern (10 bis 22 Uhr).`,d=>`${n(Number(d.reopened))} Einträge fällig gemacht; der Job „Altbestand“ beginnt binnen 10 Minuten.`)}>Alle alten Fehler erneut versuchen →</button>
      {reworkOpen&&<span className="text-[14px] text-slate-700">Läuft seit {when(rework!.requestedAt)}{rework!.phase?` (Stufe ${PHASES[rework!.phase as keyof typeof PHASES]?.name})`:''}.</span>}
     </div>
-    <FailureTable rows={rows} range="backlog" busy={busy} onRetry={(phase,cls)=>post({action:'rework',phase,reopen:true,...(cls?{cls}:{})},`Alte Fehler der Stufe ${PHASES[phase as keyof typeof PHASES]?.name} erneut versuchen?`,d=>`${n(Number(d.reopened))} Einträge fällig gemacht; der Job „Altbestand“ beginnt binnen 10 Minuten.`)}/>
+    <p className="mt-3 text-[14px] text-slate-700">Einzelne Stufen und Gründe, wartende Server: <Link href={adminHref('fehler','bereich=altbestand')} className="text-teal-700">Fehler & Server →</Link></p>
     {data?.rework&&<p className="mt-3 text-[14px] text-slate-700">Zuletzt {when(data.rework.startedAt)} bis {clock(data.rework.finishedAt)}: {n(data.rework.totals?.ok)} gelungen, {n(data.rework.totals?.again)} neuer Termin, {n(data.rework.totals?.final)} ohne weiteren Versuch.</p>}
-    {data&&data.hosts.length>0&&<><h3 className="mt-8 text-[18px] font-semibold">Server mit alten Fehlern, die gerade warten</h3>
-     <Lead>Ein Server, der bremst oder mehrfach scheitert, wird eine Zeit lang ausgelassen und danach mit drei Dokumenten geprüft. „Freigeben“ zieht die Prüfung vor.</Lead>
-     <HostTable hosts={data.hosts} busy={busy} onRelease={h=>post({action:'release',host:h},`${h} jetzt freigeben? Er wird im nächsten Lauf mit drei Dokumenten geprüft.`,()=>'Server freigegeben.')}/></>}
    </>}
   </section>
 

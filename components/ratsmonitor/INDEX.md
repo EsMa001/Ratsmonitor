@@ -617,7 +617,7 @@ truncate ratsmonitor-info.css:459
 - page.tsx (4): metadata, Page
 
 ### app/admin/
-- page.tsx (82, ⚠7): dynamic, metadata, AdminPage
+- page.tsx (89, ⚠7): dynamic, metadata, AdminPage
 
 ### app/
 - chatgpt-auth.ts (92): ChatGPTUser, getChatGPTUser, chatGPTSignInAvailable, chatGPTSignInPath, chatGPTSignOutPath
@@ -629,24 +629,26 @@ truncate ratsmonitor-info.css:459
 ### components/
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (114, ⚠8): AdminAiLocal
-- admin-altbestand.tsx (141, ⚠9): AdminAltbestand
+- admin-altbestand.tsx (138, ⚠8): AdminAltbestand
 - admin-atlas.tsx (197, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
-- admin-chrome.tsx (66, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
+- admin-chrome.tsx (142, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
+- admin-cockpit.tsx (98, ⚠1): AdminCockpit
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (129, ⚠14): AdminDashboardView
-- admin-debug.tsx (164, ⚠10): AdminDebug
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-dashboard.tsx (113, ⚠8): AdminRuns, AdminReview, AdminStock
+- admin-debug.tsx (144, ⚠9): AdminDebug
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
+- admin-fehler.tsx (80, ⚠4): AdminFehler
 - admin-forecast.tsx (9): AdminForecast
-- admin-icons.tsx (34): IconName, Icon
-- admin-loader.tsx (33): AdminLoader
+- admin-icons.tsx (41): IconName, Icon
+- admin-loader.tsx (45): DashboardPage, AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
-- admin-overview.tsx (178, ⚠13): AdminOverview
+- admin-overview.tsx (168, ⚠13): AdminOverview
 - admin-pdf-parts.tsx (169, ⚠10): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
 - admin-pdf.tsx (271, ⚠20): AdminPdf
 - admin-pipeline-parts.tsx (99, ⚠2): n, Step, FailRow, Glossary, stepSentence, StepList, result, Timeline, FailureTable, HostTable
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
-- admin-processing.tsx (186, ⚠21): AdminProcessing
+- admin-processing.tsx (188, ⚠19): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
 - admin-rule-texts.tsx (300, ⚠21): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
@@ -657,11 +659,12 @@ truncate ratsmonitor-info.css:459
 - admin-stand.tsx (28): standText, StandLine
 - admin-storage.tsx (124, ⚠9): AdminStorage
 - admin-store.ts (96): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (506, ⚠5): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, RAHMEN
+- admin-texts.ts (399, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, ZUSTAND, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, STATE_HELP, ATLAS_TODO, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, PROTOKOLL, TITLES, HOCHRECHNUNG
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-totp.tsx (62): AdminTotp, AdminTotpSetup
 - admin-ui.tsx (87): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
+- admin-verarbeitung.tsx (77, ⚠3): AdminVerarbeitung
 - article-analysis.tsx (6, ⚠2): SessionDetails
 - database-admin.tsx (34, ⚠3): DatabaseAdmin
 

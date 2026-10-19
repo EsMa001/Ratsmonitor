@@ -475,7 +475,7 @@ Schritte: `shared/pipeline-terms.mjs`.
   in `altbestand-requests`): rückwirkender Abruf (1 bis 24 Monate, je 8 Gebiete, mit Folgekette), alte Fehler erneut versuchen; dazu die
   Aufträge der PDF-Ablage (`pdf-job`: ältere Monate laden, Anlagen laden, Text lesen) im selben Fenster. Hat die Nacharbeit fällige
   Einträge, lässt er aus. Die KI startet nie von selbst.
-- **Debug-Seite** (vorübergehend): `/admin?seite=debug`: Laufbuch des Zeitplaners (`schedule-log`), was die Läufe getan haben, Wege der
+- **Seite „Letzte Nacht“**: `/admin?seite=nacht` (früher `debug`; Fehlerspeicher auf `/admin?seite=fehler`): Laufbuch des Zeitplaners (`schedule-log`), was die Läufe getan haben, Wege der
   Berichte, Fehlerspeicher des Tagesbereichs mit „freigeben“ und „erneut“.
 - **Nachtbericht** (nur lesend, ohne Deploy): `ssh ratsmonitor 'node --input-type=module - --hours 30' < scripts/pipeline-report.mjs`: Schalter,
   Laufbuch je Job, Abruf, Extraktion, Verarbeitung, Nacharbeit, Fehlerspeicher (neu, fällig, Gründe), Server und auffällige Journalzeilen je Einheit;

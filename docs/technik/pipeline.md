@@ -179,7 +179,7 @@ Anzeige im Reiter „Themen & Texte“. Der Wunsch „Alle neu erstellen“ (`ru
 | 2 | Suche aktualisieren | `rollCardDates`, dann Wortliste nachführen; bei „alle neu“ `--full` | `scripts/refresh-search-words.mjs --quiet` |
 | 3 | Zahlen rechnen | `x_cases`, `x_signals` bauen, warmhalten, Zählung je Thema, Unterthema, Fakt, `factCoverage` | `scripts/plenara-x/build-x-cases.mjs` |
 | 4 | KI-Stand zählen | Zustände der Arbeitsposten, Berichte mit neuem Text seit der KI-Fassung, ohne KI-Fassung → `ai-counts` | im Skript |
-| 5 | Wege zählen | Pipeline-Debug (Abschnitt 10), nicht fatal | `scripts/pipeline-trace.mjs` |
+| 5 | Wege zählen | Seite „Letzte Nacht“ (Abschnitt 10), nicht fatal | `scripts/pipeline-trace.mjs` |
 
 Exit 0 fertig, 1 Fehler, 3 angehalten. Stürzt eine Regel bei einem Bericht ab, wird er als „Fehler im eigenen Code“ (`rules`,
 `internal`) vermerkt und der Lauf geht weiter.
@@ -395,7 +395,7 @@ flowchart TD
 - **Serverstufe:** `hostWaiting` (nicht ok, Termin in der Zukunft oder ohne Termin): alle Abrufer lassen den Server aus, seine Einträge
   bleiben offen und zählen keine Versuche. `hostDue` (Termin erreicht): Stichprobe von `SAMPLE` = 3 Einträgen; gelingt einer, liefert
   der Server wieder (`hostOk` setzt alle Zähler zurück); scheitern drei oder bremst er, steigt die Wartestufe. „Freigeben“ (Seiten
-  Pipeline-Debug und Altbestand, `releaseHost`) zieht die Prüfung vor.
+  Fehler & Server, `releaseHost`) zieht die Prüfung vor.
 - **Tagesbereich:** `DAILY_SINCE` = 12.10.2026, `DAILY_DAYS` = 7; `dailyBoundary` ist das Spätere aus (heute − 7 Tage) und
   `DAILY_SINCE`; ein Eintrag liegt im Tagesbereich, wenn `first_at ≥ DAILY_SINCE`, der Sitzungstag (sonst `first_at`) ≥ Grenze und
   `origin <> 'backlog'`. Der Bereich wird bei jeder Abfrage neu bestimmt: ein `daily`-Eintrag rutscht nach 7 Tagen von selbst in den
@@ -529,7 +529,7 @@ Besonderheiten: Auftrag `ocr` wird nur übergeben (`altbestand-requests.ocr`, `s
   der Ablage samt Fehlerklasse → Text → OCR (none/waiting/done) → Regeln (read/stale/never) → Regel-Zusammenfassung → Titelregel →
   KI (`ai_work_items.state`); dazu `work_failures` nach Schritt, Grund und Herkunft, `import_runs` nach Status. Ergebnis in
   `pipeline-trace`.
-- **Seite Pipeline-Debug** (`/admin?seite=debug`, `pipeline-debug.mjs`): liest nur `system_state` (Laufbuch, Läufe, `rule-texts-last`,
+- **Seite Letzte Nacht** (`/admin?seite=nacht`, früher `debug`, `pipeline-debug.mjs`; Fehlerspeicher auf `/admin?seite=fehler`): liest nur `system_state` (Laufbuch, Läufe, `rule-texts-last`,
   `nacharbeit-last`, `ai-counts`, `pipeline-trace`, `pdf-daily-last`, `admin-pipeline-job`, `altbestand-*`, `systemd-units`) und die
   Tabellen des Fehlerspeichers; Aktionen `release` und `reopen` im Tagesbereich, danach `triggerJob('nacharbeit')`. Vorübergehend,
   bis der Betrieb läuft.
