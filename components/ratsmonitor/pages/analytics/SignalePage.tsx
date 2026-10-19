@@ -341,13 +341,15 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                   {items.length === 0 && <Leer>Keine Vorgänge in dieser Auswahl.</Leer>}
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
                     {items.slice(0, shown).map((r) => (
-                      <li key={r.id} onMouseEnter={() => setHoverPlace(r.place ?? "")} onMouseLeave={() => setHoverPlace("")} onFocus={() => setHoverPlace(r.place ?? "")} onBlur={() => setHoverPlace("")} className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5">
+                      <li key={r.id} onMouseEnter={() => setHoverPlace(r.place ?? "")} onMouseLeave={() => setHoverPlace("")} onFocus={() => setHoverPlace(r.place ?? "")} onBlur={() => setHoverPlace("")} className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5 max-sm:grid-cols-[auto_minmax(0,1fr)]">
                         <DateBadge iso={r.date} />
                         <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
-                          <span className="line-clamp-2 text-[14px] leading-snug sm:text-[16px]">{r.firstHere && <span title="Der erste Vorgang dieser Art in diesem Ort (Bestand seit mindestens einem Jahr davor)" className="mr-1.5 rounded-full bg-teal-50 px-2 py-0.5 align-[1px] text-[12px] font-medium text-teal-800">erstmals hier</span>}{r.title}</span>
+                          <span className="line-clamp-2 text-[14px] leading-snug max-sm:line-clamp-3 max-sm:text-[15px] sm:text-[16px]">{r.firstHere && <span title="Der erste Vorgang dieser Art in diesem Ort (Bestand seit mindestens einem Jahr davor)" className="mr-1.5 rounded-full bg-teal-50 px-2 py-0.5 align-[1px] text-[12px] font-medium text-teal-800">erstmals hier</span>}{r.title}</span>
                           <span className="block truncate text-[12px] text-slate-500">{[r.region, (r.status === "announced" || r.status === "consulting") && (r.status === "announced" ? "angekündigt" : "in Beratung"), r.gremium].filter(Boolean).join(" · ")}</span>
+                        {/* Handy: Schritt und, solange keine Art gewählt ist, die Art stehen klein unter dem Titel; so bleibt Platz für den Titel */}
+                        <span className="mt-0.5 block truncate text-[12px] text-slate-600 sm:hidden"><span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${dotOf(r.phase, phaseOrder)}`} />{r.phase}{!art && r.arts?.length ? <span className="text-slate-900"> · {r.arts.map(artShort).join(", ")}</span> : null}</span>
                         </Link>
-                        <span className="self-center whitespace-nowrap text-right text-[12px] text-slate-500"><span className="block"><span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${dotOf(r.phase, phaseOrder)}`} />{r.phase}</span>{r.arts?.length ? <span className="block text-slate-900">{r.arts.map(artShort).join(", ")}</span> : null}</span>
+                        <span className="self-center whitespace-nowrap text-right text-[12px] text-slate-500 max-sm:hidden"><span className="block"><span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${dotOf(r.phase, phaseOrder)}`} />{r.phase}</span>{r.arts?.length ? <span className="block text-slate-900">{r.arts.map(artShort).join(", ")}</span> : null}</span>
                       </li>
                     ))}
                   </ol>

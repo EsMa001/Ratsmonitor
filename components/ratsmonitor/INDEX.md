@@ -899,7 +899,7 @@ z- ratsmonitor.css:395
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (154, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (375, ⚠9): signaleHref, SignalePage
+- SignalePage.tsx (377, ⚠11): signaleHref, SignalePage
 - SplitHandle.tsx (51): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
