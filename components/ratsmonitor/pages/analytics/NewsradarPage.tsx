@@ -86,7 +86,7 @@ export function NewsradarPage() {
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
-      <div className={`mt-3 flex flex-wrap items-center gap-2 print:hidden${own ? "" : " max-sm:hidden"}`} role="group" aria-label="Zeitraum">
+      <div className={`rm-xfilter mt-3 flex flex-wrap items-center gap-2 print:hidden${own ? "" : " max-sm:hidden"}`} role="group" aria-label="Zeitraum">
         {own ? (
           <p className="m-0 text-[14px] text-slate-700">Zeitraum aus dem Filter{res?.own ? `: ${datum(res.from)} bis ${datum(res.to)}` : ""}</p>
         ) : (

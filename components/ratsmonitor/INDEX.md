@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (577 Zeilen, ⚠14)
-- app/ratsmonitor.css (274 Zeilen, ⚠17)
+- app/ratsmonitor.css (280 Zeilen, ⚠17)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -500,6 +500,7 @@ rm-spinner ratsmonitor.css:110
 rm-stage ratsmonitor-info.css:482
 rm-tabbar ratsmonitor.css:218
 rm-topline ratsmonitor.css:174
+rm-xfilter ratsmonitor.css:277
 rm-xsearch ratsmonitor.css:271
 scroll-thin ratsmonitor.css:52
 section design-styles.css:249
@@ -822,7 +823,7 @@ truncate ratsmonitor-info.css:464
 - FraktionenPage.tsx (187, ⚠6): FraktionenPage
 - GraphView.tsx (247, ⚠1): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (184, ⚠5): GremiennetzPage
-- Kennzahlen.tsx (142, ⚠1): weekAgo, isNew, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
+- Kennzahlen.tsx (139): weekAgo, isNew, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
 - KnowledgeGraphPage.tsx (245, ⚠7): KnowledgeGraphPage
 - Laden.tsx (27): Laden
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
@@ -834,9 +835,10 @@ truncate ratsmonitor-info.css:464
 - RegionMap.tsx (128, ⚠2): RegionMap
 - Reveal.tsx (16): Reveal
 - SignalePage.tsx (357, ⚠9): signaleHref, SignalePage
+- Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (571, ⚠9): XAtlasView
-- XKopf.tsx (183, ⚠1): XKopf, XWeiter, ThemenLeiste
+- XKopf.tsx (191, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (345, ⚠3): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun

@@ -12,6 +12,7 @@ import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Fehler, Leer } from "./Befund";
 import { Folgen, Kennzahlen, MeinOrt, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
+import { AktiveFilter, Dropdown } from "../../components/Dropdown";
 import { ArtIcon } from "../../components/ArtIcon";
 import { ThemeIcon } from "../../components/icons";
 import { kurz } from "../../components/ChipRail";
@@ -137,14 +138,6 @@ function SignalMap({ places, onPlace, hover = "" }: { places: Place[]; onPlace: 
 
 /* Kompakte Filterzeile: Wort links, Pillen rechts (wie die Unterthemen im Atlas); Stand mit farbigem Punkt statt farbigem Text */
 const PILL = (on: boolean) => `inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[14px] ${on ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`;
-function FilterRow({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={label}>
-      <span className="mr-1 w-[64px] text-[14px] text-slate-500">{label}</span>{children}
-    </div>
-  );
-}
-
 /* fest: Seite für genau eine Kategorie (plenara.X Ausschreibungen = Kategorie „vergaben“, eigene Adresse, ohne Kategorienwahl) */
 export function SignalePage({ fest }: { fest?: string } = {}) {
   const phone = usePhone();
@@ -251,12 +244,12 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
 
       {/* Filterwerte der Kategorie (Leistung, Vorhaben …) als kleine Kacheln mit Icon, durch eine Linie in Petrol von den Kategorien getrennt (wie die Unterthemen im Atlas) */}
       {/* Beim Wechsel der Kategorie: Linie und graue, leicht pulsierende Kacheln stehen sofort da, bis die echten kommen */}
-      {!(res && res.signal.id === signal) && seenArts > 0 && <nav aria-hidden="true" className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
+      {!(res && res.signal.id === signal) && seenArts > 0 && <nav aria-hidden="true" className="mt-2 border-t-2 border-teal-600 pt-2 sm:hidden print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {Array.from({ length: Math.min(8, seenArts + 1) }, (_, i) => <li key={i} className="sm:w-[100px]"><div className="h-[60px] animate-pulse rounded-lg bg-slate-100 max-sm:h-[46px]" /></li>)}
         </ul>
       </nav>}
-      {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <nav aria-label={res.signal.art ?? "Art"} className="mt-2 border-t-2 border-teal-600 pt-2 print:hidden">
+      {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <nav aria-label={res.signal.art ?? "Art"} className="mt-2 border-t-2 border-teal-600 pt-2 sm:hidden print:hidden">
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {[{ key: "", name: "Alle" }, ...res.arts].map((a) => {
             const on = a.key === art;
@@ -268,6 +261,19 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
         </ul>
       </nav>}
       <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Suche speichern: neue Vorgänge per Mail" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      {/* Desktop: eine Filterzeile unter der Suche: Zeitraum, Schritt, Art als Auswahllisten, aktive Filter als Chips (Handy: Blätter und Räder) */}
+      <div className="rm-xfilter mt-3 flex min-h-9 flex-wrap items-center gap-2 max-sm:hidden print:hidden">
+        <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
+        {res && res.signal.id === signal && res.phases.length > 0 && <Dropdown label="Schritt" value={phase} onPick={(id) => pick({ phase: id })}
+          items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} />}
+        {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <Dropdown label={res.signal.art ?? "Art"} value={art} onPick={(id) => pick({ art: id })}
+          items={[{ id: "", label: "Alle" }, ...res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={16} className="text-slate-500" /> }))]} />}
+        <AktiveFilter onReset={() => pick({ phase: "", art: "", zeit: "" })} chips={[
+          ...(zeit !== "6" ? [{ key: "zeit", label: zeit === "alle" ? "Gesamter Zeitraum" : `Letzte ${zeit} Monate`, onClear: () => pick({ zeit: "" }) }] : []),
+          ...(phase ? [{ key: "phase", label: `Schritt: ${res?.phases.find((p) => p.key === phase)?.name ?? phase}`, onClear: () => pick({ phase: "" }) }] : []),
+          ...(art ? [{ key: "art", label: artShort(art), onClear: () => pick({ art: "" }) }] : []),
+        ]} />
+      </div>
 
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text={fest ? "Ausschreibungen werden geladen …" : "Signale werden geladen …"} />}
@@ -277,7 +283,6 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           {res.total === 0 ? <Leer tipp="Einen längeren Zeitraum, eine andere Art oder „Alle Themen“ wählen, oder den Ort entfernen.">{`Keine Vorgänge für diese Auswahl: ${res.signal.name}${zeit !== "alle" ? `, letzte ${zeit} Monate` : ""}.`}</Leer>
             : <Kennzahlen week={week} band={fest ? "Ausschreibungen" : "Signale"} scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
               <span className="max-sm:hidden">{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
-              <ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} />
               <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
               {/* Handy: Glocke und Karte in einer Reihe */}
               <span className={res.phases.length > 0 ? "hidden" : "sm:hidden"}><button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
@@ -312,11 +317,6 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                   <button type="button" aria-expanded={karte} aria-controls="signale-karte" aria-label={karte ? "Karte ausblenden" : "Karte zeigen"} title={karte ? "Karte ausblenden" : "Karte zeigen"} onClick={() => setKarte((k) => !k)}
                     className={`grid h-12 w-12 flex-none place-items-center rounded-xl border sm:hidden print:hidden ${karte ? "border-teal-600/30 bg-teal-50 text-teal-800" : "border-slate-200 bg-white text-slate-700"}`}><MapIcon size={20} strokeWidth={1.5} aria-hidden="true" /></button>
                 </div>}
-                {res.phases.length > 0 && <div className="max-sm:hidden"><FilterRow label="Schritt">
-                  <button type="button" aria-pressed={!phase} onClick={() => pick({ phase: "" })} className={PILL(!phase)}>Alle</button>
-                  {res.phases.map((p) => <button key={p.key} type="button" aria-pressed={p.key === phase} onClick={() => pick({ phase: p.key === phase ? "" : p.key })} className={PILL(p.key === phase)}>
-                    <span aria-hidden="true" className={`inline-block h-2 w-2 rounded-full ${dotOf(p.name, phaseOrder)}`} />{p.name}<span className={`tabular-nums ${p.key === phase ? "text-white/80" : "text-slate-500"}`}>{n(p.count)}</span></button>)}
-                </FilterRow></div>}
               </div>
 
               {(items.length > 0 || !!erstmals) && (

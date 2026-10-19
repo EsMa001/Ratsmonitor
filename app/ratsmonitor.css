@@ -271,3 +271,9 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   div:has(> .rm-xsearch){position:sticky;top:var(--hdr,58px);z-index:30;background:var(--rm-white);padding:8px 0;margin-top:-8px}
 }
 @media print{div:has(> .rm-xsearch){position:static}}
+
+/* Desktop: Zeitraum, Schritt und Art bleiben unter der fixierten Suchzeile stehen (Höhe der Suchzeile 62 px) */
+@media (min-width:640px){
+  .rm-xfilter{position:sticky;top:calc(var(--hdr,58px) + 62px);z-index:29;background:var(--rm-white);padding:6px 0;margin-top:0 !important}
+}
+@media print{.rm-xfilter{position:static}}

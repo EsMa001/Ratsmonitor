@@ -5,6 +5,7 @@ import { IconChevronLeft } from "../../components/icons";
 import { PageBand } from "./PageBand";
 import { ShareButton } from "../../components/ShareButton";
 import { Icon, type IconName } from "../../info/icons";
+import { Dropdown } from "../../components/Dropdown";
 import { AnalyticsX } from "../../components/Brand";
 import { ThemeIcon } from "../../components/icons";
 import { WheelPicker } from "../../components/WheelPicker";
@@ -81,12 +82,17 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   );
 }
 
-/* Desktop: alle plenara.X-Seiten als Fragen in einer Reihe (am Handy übernimmt das Blatt der unteren Leiste); Suchbegriff und Ort gelten dort weiter */
+/* Desktop: die Frage der Seite und ihre Nachbarn als Chips, alle 11 Seiten in einer Auswahlliste (am Handy übernimmt das Blatt der unteren Leiste); Suchbegriff und Ort gelten dort weiter */
 const REIHE = ["atlas", "vergleich", "trends", "beschluesse", "signale", "fakten", "ausschreibungen", "news", "fraktionen", "gremien", "graph"] as const;
 function FragenLeiste({ seite }: { seite: string }) {
+  const router = useRouter();
+  const pos = Math.max(0, REIHE.indexOf(seite as (typeof REIHE)[number]));
+  /* bis zu vier Chips um die aktuelle Seite (gleiche Gruppe zuerst) */
+  const nah = [...REIHE].filter((k) => k !== seite).sort((a, b) => (SEITEN[a].gruppe === SEITEN[seite]?.gruppe ? 0 : 1) - (SEITEN[b].gruppe === SEITEN[seite]?.gruppe ? 0 : 1) || Math.abs(REIHE.indexOf(a) - pos) - Math.abs(REIHE.indexOf(b) - pos)).slice(0, 3);
+  const zeig = [seite, ...nah].filter((k) => SEITEN[k]);
   return (
-    <nav aria-label="Weitere Fragen an plenara.X" className="-mt-2 mb-4 flex gap-1.5 overflow-x-auto pb-1 max-sm:hidden print:hidden [scrollbar-width:none]">
-      {REIHE.map((k) => {
+    <nav aria-label="Weitere Fragen an plenara.X" className="-mt-2 mb-4 flex flex-wrap items-center gap-1.5 max-sm:hidden print:hidden">
+      {zeig.map((k) => {
         const z = SEITEN[k], on = k === seite;
         return (
           <Link key={k} href={`/analytics/${k}`} aria-current={on ? "page" : undefined} scroll={false} title={`${z.titel.replace("plenara.X ", "")}: ${z.text}`}
@@ -95,6 +101,8 @@ function FragenLeiste({ seite }: { seite: string }) {
           </Link>
         );
       })}
+      <Dropdown label="Alle Seiten" noCurrent value="" onPick={(id) => router.push(`/analytics/${id}`)}
+        items={REIHE.map((k) => ({ id: k, label: SEITEN[k].frage, count: SEITEN[k].titel.replace("plenara.X ", ""), icon: <Icon name={SEITEN[k].icon} size={16} className="text-slate-500" /> }))} />
     </nav>
   );
 }

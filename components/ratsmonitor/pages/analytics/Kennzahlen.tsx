@@ -4,6 +4,7 @@ import { Bell, Heart } from "lucide-react";
 import { useClient } from "../../lib/useClient";
 import { useUi } from "../../state/ui";
 import { publishBandFigure, useCountUp } from "../../lib/bandFigure";
+import { Segmented } from "../../components/Segmented";
 
 /** Zahl, die kurz hochzählt, wenn sie sich ändert */
 function Zahl({ v }: { v: string }) { return <>{useCountUp(v)}</>; }
@@ -71,12 +72,8 @@ export function ZeitExtra({ value, all = "", onPick, options }: { value: string;
 
 export function ZeitPills({ value, all = "", onPick }: { value: string; all?: string; onPick: (v: string) => void }) {
   const opts: [string, string][] = [["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], [all, "Alles"]];
-  return (
-    <span className="inline-flex flex-wrap gap-1 max-sm:hidden print:hidden" role="group" aria-label="Zeitraum">
-      {opts.map(([k, l]) => <button key={k || "alle"} type="button" aria-pressed={k === value} onClick={() => onPick(k)}
-        className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === value ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}><span className="max-sm:hidden">{l}</span><span className="sm:hidden">{l.replace(" Monate", " Mon.")}</span></button>)}
-    </span>
-  );
+  /* Wie überall: Umschalter mit gleitendem weißem Streifen (Segmented), nicht einzelne Pillen */
+  return <span className="inline-flex max-sm:hidden print:hidden"><Segmented label="Zeitraum" options={opts} value={value} onPick={onPick} /></span>;
 }
 
 /**
