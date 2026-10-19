@@ -11,9 +11,8 @@ function Zahl({ v }: { v: string }) { return <>{useCountUp(v)}</>; }
 
 const n = (v: number) => v.toLocaleString("de-DE");
 
-/** Datum der letzten 7 Tage (bis heute): für „neu“ in Listen und „+N in den letzten 7 Tagen“ */
+/** Datum vor 7 Tagen: für „+N in den letzten 7 Tagen“ */
 export const weekAgo = () => { const d = new Date(); d.setDate(d.getDate() - 7); return d.toISOString().slice(0, 10); };
-export const isNew = (iso: string) => { const d = String(iso || "").slice(0, 10), today = new Date().toISOString().slice(0, 10); return d >= weekAgo() && d <= today; };
 
 /**
  * Antwort als große Kennzahlen (Atlas, Signale): Zahl groß in Petrol, Bedeutung klein darunter; daneben, wie viele Vorgänge

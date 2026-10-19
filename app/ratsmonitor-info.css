@@ -174,9 +174,6 @@ select.ri-input{padding-right:12px;cursor:pointer}
 .ri-link:hover{color:var(--rm-ac)}
 .ri-submit{margin-top:20px;min-height:50px;font-size:16px}
 .ri-form__foot{margin-top:16px;text-align:center;font-size:16px;color:var(--rm-c500)}
-.ri-plan{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border:1px solid var(--rm-c200);border-radius:10px;background:var(--rm-white);font:inherit;cursor:pointer;transition:border-color .15s,background-color .15s}
-.ri-plan:hover{border-color:var(--rm-c300)}
-.ri-plan[aria-pressed=true]{border-color:var(--rm-c900);background:var(--rm-c50);box-shadow:inset 0 0 0 1px var(--rm-c900)}
 
 /* Bestätigungen */
 
@@ -294,8 +291,6 @@ select.ri-input{padding-right:12px;cursor:pointer}
 @media(max-width:760px){.ri-form{padding:0}}
 
 /* Registrierung ohne Kästen: Tarifwahl als Reiter mit Linie, Zusammenfassung nur mit Linie oben */
-.ri-plan,.ri-plan:hover{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;box-shadow:none;margin-bottom:-1px}
-.ri-plan[aria-pressed=true]{border:0;border-bottom:2px solid var(--rm-fill);background:none;box-shadow:none}
 /* Hauptmenü: weiß, runde Ecken, leichter Schatten */
 .ri-menu__panel{border-radius:18px;box-shadow:0 8px 28px rgba(24,24,27,.1)}
 /* Hauptmenü in der breiten Kopfzeile (ab 1280 px, darunter Dreistrichmenü) */

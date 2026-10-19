@@ -71,6 +71,3 @@ export function Sheet({ open, onClose, label, children }: { open: boolean; onClo
   );
 }
 
-/** Zeile in einem Blatt: Linie statt Kasten, mindestens 48 px hoch */
-export const SHEET_ROW = "flex min-h-[48px] items-center gap-3 border-b border-slate-100 text-[16px] text-slate-900 no-underline";
-export const SHEET_HEAD = "m-0 pb-1 pt-4 text-[14px] font-semibold text-slate-700";

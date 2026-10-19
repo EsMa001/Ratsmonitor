@@ -22,9 +22,3 @@ export function matches(a: Article, f: FilterSpec, skip?: FilterKey): boolean {
   return true;
 }
 
-
-export function countBy(articles: Article[], f: FilterSpec, key: FilterKey, field: (a: Article) => string): Record<string, number> {
-  const c: Record<string, number> = {};
-  for (const a of articles) if (matches(a, f, key)) c[field(a)] = (c[field(a)] || 0) + 1;
-  return c;
-}

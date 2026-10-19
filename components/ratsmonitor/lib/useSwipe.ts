@@ -27,16 +27,3 @@ export function useSwipe(onSwipe: (dir: -1 | 1) => void, { distance = 72, follow
   };
 }
 
-/** Senkrechtes Wischen (Blatt hoch- oder runterziehen): `onSwipe(-1)` nach oben, `onSwipe(1)` nach unten; kurze Tipps zählen nicht */
-export function useVerticalSwipe(onSwipe: (dir: -1 | 1) => void, distance = 36) {
-  const y0 = useRef<number | null>(null);
-  return {
-    onTouchStart: (e: TouchEvent) => { y0.current = e.touches[0].clientY; },
-    onTouchEnd: (e: TouchEvent) => {
-      const s = y0.current; y0.current = null;
-      if (s === null) return;
-      const dy = e.changedTouches[0].clientY - s;
-      if (Math.abs(dy) >= distance) onSwipe(dy < 0 ? -1 : 1);
-    },
-  };
-}

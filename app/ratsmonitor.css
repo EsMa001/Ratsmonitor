@@ -219,9 +219,6 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
 }
 @media print{:root{--rm-tabbar:0px}.ratsmonitor{padding-bottom:0}}
 /* Titel in der Kopfzeile (Handy) blendet weich ein */
-@keyframes rm-fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.rm-fade-in{animation:rm-fade-in .18s ease-out}
-@media (prefers-reduced-motion:reduce){.rm-fade-in{animation:none}}
 /* Handy: Seitenwechsel blendet den Inhalt weich ein (nur Deckkraft, damit mitlaufende Leisten nicht springen) */
 @keyframes rm-page-in{from{opacity:0}to{opacity:1}}
 @media (max-width:639px){main#inhalt{animation:rm-page-in .2s ease-out}}
