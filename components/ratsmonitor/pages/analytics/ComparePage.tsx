@@ -201,10 +201,10 @@ export function ComparePage() {
             const hi = x >= y, r = Math.round((Math.max(x, y) / Math.min(x, y)) * 10) / 10;
             return <Befund>{names[hi ? 0 : 1]} berät je 1.000 Einwohner {r <= 1.1 ? "etwa so viel wie" : `${r.toLocaleString("de-DE")}-mal so viel wie`} {names[hi ? 1 : 0]}.</Befund>;
           })()}
-          <div className="mt-6 max-sm:hidden print:hidden"><Segmented label="Teil des Vergleichs" options={[["ueberblick", "Überblick"], ["themen", "Themen"], ["verlauf", "Verlauf"], ["begriffe", "Begriffe"], ["details", "Details"]]} value={tab} onPick={setTab} /></div>
+          <div className="mt-3 max-sm:hidden print:hidden"><Segmented label="Teil des Vergleichs" options={[["ueberblick", "Überblick"], ["themen", "Themen"], ["verlauf", "Verlauf"], ["begriffe", "Begriffe"], ["details", "Details"]]} value={tab} onPick={setTab} /></div>
           <TabPane on={phone || tab === "ueberblick"}>
           <Reveal>
-          <section className="mt-10 max-sm:mt-5">
+          <section className="mt-5 max-sm:mt-5">
             <h2 className="text-[22px] font-semibold">Überblick</h2>
             <div className="mt-3"><div className="border-t border-slate-200 text-[16px]">
               <div className={rowCls + " items-end"}>

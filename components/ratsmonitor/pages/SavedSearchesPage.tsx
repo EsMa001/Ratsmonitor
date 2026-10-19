@@ -6,7 +6,7 @@ import { searchToUrl } from "../lib/searchUrl";
 import { INITIAL_SEARCH } from "../state/search";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { IconStar } from "../components/icons";
+import { IconHeart } from "../components/icons";
 import { filterChips } from "../lib/savedSearch";
 import { useAccount } from "../state/account";
 import { useEntitlements } from "../lib/entitlements";
@@ -96,7 +96,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
       {/* Kopf wie bei gespeicherten Artikeln: Stern entfernt die Suche (E-Mail-Glocke folgt mit den Benachrichtigungen) */}
       <div className="flex items-start gap-3">
         <button type="button" onClick={() => void remove()} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-700`}>
-          <IconStar size={20} filled />
+          <IconHeart size={20} filled />
         </button>
         <div className="min-w-0 flex-1">
           <button type="button" onClick={open} className="block max-w-full truncate text-left text-[16px] font-semibold text-slate-900 hover:text-teal-700">
@@ -177,7 +177,7 @@ export function SavedSearchesPage() {
       {ready && !saved.length && (
         <div className="flex flex-col items-center px-6 py-10 text-center">
           <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-700">
-            <IconStar size={26} />
+            <IconHeart size={26} />
           </span>
           <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Suchen</h2>
           <p className="m-0 max-w-[44ch] text-slate-500">Suchen Sie in der Übersicht und tippen Sie auf den Stern neben dem Suchfeld.</p>

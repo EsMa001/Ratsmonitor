@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { cameFromApp, useAppNav } from "../../state/nav";
 import { IconChevronLeft } from "../../components/icons";
 import { PageBand } from "./PageBand";
-import { ShareButton } from "../../components/ShareButton";
 import { Icon, type IconName } from "../../info/icons";
 import { AnalyticsX } from "../../components/Brand";
 import { ThemeIcon } from "../../components/icons";
@@ -106,7 +105,7 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
         <button type="button" className="back-btn -ml-1.5 mb-1 print:hidden" onClick={() => (cameFromApp() ? router.back() : goBack())}><IconChevronLeft />Zurück</button>
         <XSeiten path={path} />
       </div>
-      {/* Titel links, Kurzbeschreibung in der Mitte, Symbol der Seite rechts (weiß im Petrol-Band) */}
+      {/* Titel links, Kurzbeschreibung in der Mitte */}
       <div className="mt-1 grid grid-cols-[1fr_auto_1fr] items-center gap-x-4 gap-y-1 max-sm:grid-cols-[1fr_auto]">
         {/* Titel kurz, die Marke als kleines Abzeichen daneben  */}
         <h1 className="flex items-baseline gap-2.5 text-[28px] font-semibold leading-tight">
@@ -114,13 +113,6 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
           <MarkenAbzeichen />
         </h1>
         <BandMitte kurz={KURZ[seite] ?? s.frage} />
-        {/* Das Symbol der Seite ist zugleich der Knopf für die Methodik */}
-        <div className="flex items-center justify-self-end gap-1 print:hidden">
-          <ShareButton title={s.titel} url={typeof window === "undefined" ? path : window.location.href} className="text-white" />
-          <a href="#methodik" title="Methodik: worauf die Zahlen beruhen" className="rm-bandicon pr-6 max-sm:pr-2">
-            <Icon name={s.icon} size={44} /><span className="sr-only">Methodik</span>
-          </a>
-        </div>
       </div>
       {s.reiter && (
         <nav aria-label="Ansicht" className="-mb-4 mt-3 flex gap-6 print:hidden">

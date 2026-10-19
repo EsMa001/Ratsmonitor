@@ -699,7 +699,7 @@ truncate ratsmonitor-info.css:459
 - TopicSeed.tsx (11): TopicSeed
 - WheelList.tsx (42): WHEEL_ROW, WheelList
 - WheelPicker.tsx (57, ⚠1): WheelPicker
-- icons.tsx (187): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconRules, IconBell, IconFilter, IconStar, IconDownload, IconCalendarSync, ThemeIcon
+- icons.tsx (193): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconRules, IconBell, IconFilter, IconStar, IconHeart, IconDownload, IconCalendarSync, ThemeIcon
 
 ### components/ratsmonitor/components/map/
 - MapPanel.tsx (345, ⚠2): MapPanel
@@ -839,7 +839,7 @@ truncate ratsmonitor-info.css:459
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (571, ⚠9): XAtlasView
-- XKopf.tsx (218, ⚠1): XKopf, XWeiter, ThemenLeiste
+- XKopf.tsx (210, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (346, ⚠4): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun

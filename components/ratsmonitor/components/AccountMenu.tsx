@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect,useRef,useState} from 'react';
-import {IconBell,IconBookmark,IconCalendar,IconStar,IconUser} from './icons';
+import {IconBell,IconBookmark,IconCalendar,IconHeart,IconStar,IconUser} from './icons';
 import {useDarkMode} from '../lib/useDarkMode';
 import {useSavedArticles} from '../lib/savedArticles';
 import {useAccount} from '../state/account';
@@ -51,7 +51,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
     {saved.length+articles.length>0&&<span className={badge}>{saved.length+articles.length}</span>}
    </button>
    {mineOpen&&<div role="menu" onKeyDown={arrowKeys} className="absolute right-0 top-full z-[1200] mt-1 w-[248px] rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
-    {([['suchen','Meine Suchen',<IconStar key="h" size={17}/>,saved.length],['benachrichtigungen','Benachrichtigungen',<IconBell key="b" size={17}/>,0],['kalender','Kalender',<IconCalendar key="c" size={17}/>,0],['artikel','Gespeicherte Artikel',<IconBookmark key="a" size={17}/>,articles.length]] as [string,string,React.ReactNode,number][]).map(([page,label,icon,count])=>
+    {([['suchen','Meine Suchen',<IconHeart key="h" size={17}/>,saved.length],['benachrichtigungen','Benachrichtigungen',<IconBell key="b" size={17}/>,0],['kalender','Kalender',<IconCalendar key="c" size={17}/>,0],['artikel','Gespeicherte Artikel',<IconBookmark key="a" size={17}/>,articles.length]] as [string,string,React.ReactNode,number][]).map(([page,label,icon,count])=>
      <Link key={page} role="menuitem" href={`/konto/${page}`} onClick={()=>setMineOpen(false)} aria-current={currentPage===page?'page':undefined} className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] no-underline hover:bg-slate-100 ${currentPage===page?'font-medium text-teal-700':'text-slate-900'}`}>
       <span className="text-slate-500" aria-hidden="true">{icon}</span><span className="flex-1">{label}</span>{count>0&&<span className="tabular-nums text-slate-500">{count}</span>}
      </Link>)}
