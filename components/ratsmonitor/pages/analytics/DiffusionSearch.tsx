@@ -63,7 +63,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
         const bar = (
           <div className="rm-solid rm-xsearch relative z-20">
       <div role="search" className="flex w-full items-center gap-2">
-          {noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${follow ? "max-sm:order-1" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
+          {noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${follow ? "max-sm:order-1" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} trail={phone && follow ? 56 : 0} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
           {!noPlay && <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default max-sm:hidden`}>
             {play === "loading" ? (
               <span role="status" aria-label="Wird berechnet" className="rm-spinner" />
@@ -73,7 +73,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg>
             )}
           </button>}
-          {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 max-sm:order-1 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
+          {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 max-sm:order-1 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} trail={phone && follow ? 56 : 0} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
           <div className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white [&_input]:rounded-xl" onFocusCapture={() => setTyping(true)} onBlurCapture={() => window.setTimeout(() => { if (!document.activeElement?.closest('[role="search"]')) setTyping(false); }, 150)}>
             <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} listUp={filterUp && phone} listMax={filterUp && phone ? 6 : undefined} />
           </div>

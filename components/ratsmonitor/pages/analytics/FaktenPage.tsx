@@ -209,7 +209,7 @@ export function FaktenPage() {
         </ul>
       </nav>}
 
-      <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden"><DiffusionSearch filterUp follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden text="Fakten werden geladen …" />}

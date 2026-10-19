@@ -468,6 +468,10 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(236,246,244,.92)) !important}
   html.rm-dark main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(40,48,47,.94),rgba(23,33,42,.9)) !important;border-color:rgba(255,255,255,.12) !important;box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06) !important}
   html:not(.rm-dark) .rm-wheel-list{background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(236,246,244,.94)) !important}
+  /* Auswahllisten im Filterfenster (Stand, Thema, Bundesland, Zeitraum): rundes Milchglas wie die übrigen Listen */
+  main#inhalt .rm-xsearch .rm-fpop [role=listbox]{background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(236,246,244,.95)) !important;border:1px solid rgba(255,255,255,.9) !important;border-radius:20px !important;padding:6px !important;box-shadow:0 12px 32px rgba(24,24,27,.14),inset 0 1px 0 rgba(255,255,255,.9) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+  main#inhalt .rm-xsearch .rm-fpop [role=listbox] :is(button,li){border-radius:14px !important}
+  html.rm-dark main#inhalt .rm-xsearch .rm-fpop [role=listbox]{background:linear-gradient(135deg,rgba(40,48,47,.96),rgba(23,33,42,.94)) !important;border-color:rgba(255,255,255,.14) !important;box-shadow:0 12px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08) !important}
 }
 
 /* Handy, Themenatlas: aufgeklappte Liste der Walzen als Milchglas, kompakt */

@@ -34,7 +34,7 @@ function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boo
 /** Milchglas-Filterfenster, oben links mit dem Filter-Knopf (toggle) verankert:
  *  Umkreis um den gesuchten Ort (dezent), Zeitraum, Thema, Status */
 /** up: Suchleiste steht unten (Kartenmodus) – das Fenster klappt nach oben auf, der Filter-Knopf bleibt an seiner Stelle */
-export function FilterPanel({ toggle, up = false, maxH, extra }: { toggle: ReactNode; /** Handy: Zusatzfelder der Seite (z. B. Zeitraum, Folgen) oben im Blatt */ extra?: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
+export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0 }: { /** Handy: Breite der Knöpfe rechts vom Filter-Knopf (Herz): das Fenster reicht bis dorthin, der Filter-Knopf bleibt beim Aufklappen an seiner Stelle */ trail?: number; toggle: ReactNode; /** Handy: Zusatzfelder der Seite (z. B. Zeitraum, Folgen) oben im Blatt */ extra?: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
   const { geo } = useData();
   const search = useSearch();
   const { state } = search;
@@ -46,13 +46,17 @@ export function FilterPanel({ toggle, up = false, maxH, extra }: { toggle: React
   /* Reicht der Platz rechts nicht (schmale Karte), öffnet das Fenster nach links; der Knopf sitzt dann oben rechts */
   const ref = useRef<HTMLDivElement>(null);
   const [flip, setFlip] = useState(false);
+  /* Mit Knöpfen rechts vom Filter-Knopf (trail): Fenster so breit wie die Suchleiste, rechts bündig mit ihr; gemessen, nicht geraten */
+  const [fit, setFit] = useState<{ right: number; width: number } | null>(null);
   useLayoutEffect(() => {
     const el = ref.current;
     /* Grenze: der umgebende Abschnitt (Karte), höchstens der Bildschirm (Analyseseiten: Knopf rechts neben der Suche) */
     const box0 = el?.closest("section")?.getBoundingClientRect();
     const box = box0 && box0.width ? box0 : undefined; /* ohne eigenes Kästchen (display:contents) zählt nur der Bildschirm */
     const edge = Math.min(box?.right ?? Infinity, document.documentElement.clientWidth);
-    if (el) setFlip(el.getBoundingClientRect().right > edge - 12);
+    const bar = trail > 0 ? el?.closest<HTMLElement>('[role="search"]') : null, wrap = el?.parentElement;
+    if (bar && wrap) { const b = bar.getBoundingClientRect(), w = wrap.getBoundingClientRect(); setFit({ right: -(b.right - w.right), width: b.width }); }
+    if (el) setFlip(trail > 0 || el.getBoundingClientRect().right > edge - 12);
     /* Fokus ins geöffnete Fenster (Tastatur, Bildschirmleser); Esc bringt ihn zurück auf den Filter-Knopf */
     el?.focus({ preventScroll: true });
   }, []);
@@ -72,8 +76,8 @@ export function FilterPanel({ toggle, up = false, maxH, extra }: { toggle: React
         setFiltersOpen(false);
         requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-controls="filter-body"]')?.focus());
       }}
-      className={`rm-glass rm-fpop absolute z-20 flex w-[300px] outline-none max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
-      <div className={`flex items-center gap-2 max-sm:pl-4 ${flip ? "flex-row-reverse" : ""}`}>
+      className={`rm-glass rm-fpop absolute z-20 flex w-[300px] outline-none max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={{ ...(maxH ? { maxHeight: maxH } : null), ...(fit ? { right: fit.right, width: fit.width } : null) }}>
+      <div className={`flex items-center gap-2 max-sm:pl-4 ${flip ? "flex-row-reverse" : ""}`} style={fit ? { paddingRight: -fit.right } : undefined}>
         {toggle}
         {phone && (
           <div className="min-w-0 flex-1">
