@@ -129,7 +129,7 @@ export function FraktionenPage() {
                 {/* Handy: je Fraktion eine Zeile mit den Themen untereinander statt der breiten Tabelle (kein Querscrollen) */}
                 <ul className="m-0 list-none border-t border-slate-200 p-0 sm:hidden">
                   {parties.map((p, i) => (
-                    <li key={p.name} className={"border-b border-slate-200 py-2.5" + rowHide(i)}>
+                    <li key={p.name} className={"border-b border-slate-200 py-2" + rowHide(i)}>
                       <p className="m-0 text-[14px] font-semibold text-slate-900">{p.name}</p>
                       {/* Die drei Themen, die diese Fraktion deutlich häufiger aufgreift als die übrigen; alle Themen dahinter */}
                       {(() => {
@@ -139,7 +139,7 @@ export function FraktionenPage() {
                         const chip = ({ c, cell }: { c: (typeof cols)[number]; cell?: Cell }) => { const idx = cell && cell.n >= 3 ? cell.index : null; return <span key={c.id} className={`inline-flex h-7 items-center gap-1.5 rounded-lg px-2 text-[12px] ${idx !== null && idx >= 160 ? "text-white" : "text-slate-800"}`} style={{ background: idx !== null && idx >= 100 ? cellColor(idx) : "var(--rm-c100, #f1f5f9)" }}>{c.name.split(" & ")[0]}<b className="font-semibold tabular-nums">{cell?.share !== null && cell?.share !== undefined ? `${Math.round(cell.share)} %` : "–"}</b></span>; };
                         return <>
                           {top3.length > 0 ? <div className="mt-1.5 flex flex-wrap gap-1.5">{top3.map(chip)}</div> : <p className="m-0 mt-1 text-[12px] text-slate-500">Zu wenige Anträge für ein Themenprofil.</p>}
-                          {ok.length > top3.length && <button type="button" aria-expanded={!!openT[p.name]} onClick={() => setOpenT((o) => ({ ...o, [p.name]: !o[p.name] }))} className="inline-flex items-center text-[12px] font-medium text-teal-700 hover:underline">{openT[p.name] ? "Weniger Themen" : "Alle Themen zeigen"}</button>}
+                          {ok.length > top3.length && <button type="button" aria-expanded={!!openT[p.name]} onClick={() => setOpenT((o) => ({ ...o, [p.name]: !o[p.name] }))} className="inline-flex min-h-0 h-7 items-center text-[12px] font-medium text-teal-700 hover:underline">{openT[p.name] ? "Weniger Themen" : "Alle Themen zeigen"}</button>}
                           {openT[p.name] && <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1">{cells.map(({ c, cell }) => { const idx = cell && cell.n >= 3 ? cell.index : null; return <div key={c.id} className="flex items-center justify-between gap-2 text-[12px]"><span className="truncate text-slate-500">{c.name.split(" & ")[0]}</span><span className={`shrink-0 rounded px-1.5 tabular-nums ${idx !== null && idx >= 160 ? "text-white" : "text-slate-700"}`} style={{ background: cellColor(idx) }}>{cell?.share !== null && cell?.share !== undefined ? `${Math.round(cell.share)} %` : "–"}</span></div>; })}</div>}
                         </>;
                       })()}

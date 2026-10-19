@@ -59,7 +59,7 @@ export function KnowledgeGraphPage() {
   const phone = usePhone();
   const [chosen, setLevel] = useState<Level | null>(null);
   const wide = useClient(() => window.innerWidth >= 1024, false);
-  const level: Level = chosen ?? (phone ? "overview" : wide ? "detail" : "normal");
+  const level: Level = phone ? (chosen === "detail" ? "detail" : "normal") : chosen ?? (wide ? "detail" : "normal");
   const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
 
@@ -178,6 +178,9 @@ export function KnowledgeGraphPage() {
   const activePair = pair && selected === pair.a ? pair : null;
   const empty = !!res && nodes.length <= 1;
 
+  /* Der Satz zur Auswertung: am Desktop über dem Netz, am Handy unter dem Netz */
+  const befund = res && !empty ? (gesamt ? <Befund>Über alle Vorgänge hängen vor allem diese Themen und Begriffe zusammen. Mit einem Begriff zeigt das Netz, was dazugehört.</Befund> : strongest[0] ? <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund> : null) : null;
+
   return (
     <main id="inhalt" className="rm-xnet rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="graph" />
@@ -188,18 +191,17 @@ export function KnowledgeGraphPage() {
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
 
       {/* Antwort zuerst, dann das Netz */}
-      {res && !empty && gesamt && <Befund>Über alle Vorgänge hängen vor allem diese Themen und Begriffe zusammen. Mit einem Begriff zeigt das Netz, was dazugehört.</Befund>}
+      <div className="max-sm:hidden">{befund}</div>
       {res && !empty && gesamt && einstieg.length > 0 && (
-        <div className="mt-4 print:hidden">
-          <p className="m-0 text-[14px] text-slate-600">Mit einem Begriff beginnen:</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {einstieg.map((x) => <button key={x.id} type="button" onClick={() => { remember(); search.applySearch(x.label); runAfterChange(); }} className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-800 hover:border-slate-400">{x.label}</button>)}
+        <div className="mt-4 print:hidden max-sm:mt-2">
+          <p className="m-0 text-[14px] text-slate-600 max-sm:text-[12px]">Mit einem Begriff beginnen:</p>
+          <div className="mt-2 flex flex-wrap gap-2 max-sm:-mx-[max(1vw,16px)] max-sm:flex-nowrap max-sm:gap-1.5 max-sm:overflow-x-auto max-sm:px-[max(1vw,16px)] max-sm:pb-1 max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden">
+            {einstieg.map((x) => <button key={x.id} type="button" onClick={() => { remember(); search.applySearch(x.label); runAfterChange(); }} className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-800 max-sm:h-8 max-sm:shrink-0 max-sm:rounded-full max-sm:px-3 max-sm:text-[13px] hover:border-slate-400">{x.label}</button>)}
           </div>
         </div>
       )}
-      {res && !empty && !gesamt && strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
       {/* Detailstufe über dem Netz, als Umschalter wie auf den übrigen Seiten */}
-      {res && !empty && <div className={`${netz ? "" : "max-sm:hidden"} rm-xseg mt-6 flex justify-end print:hidden`}><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
+      {res && !empty && <div className="max-sm:hidden rm-xseg mt-6 flex justify-end print:hidden"><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
       {/* Handy: das Netz lässt sich ein- und ausklappen */}
       <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
       {/* Handy: Legende über dem Netz statt darauf (sonst liegt sie über den Punkten) */}
@@ -209,6 +211,7 @@ export function KnowledgeGraphPage() {
         ))}
       </ul>}
       <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
+        <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-3 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["normal", "detail"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "normal" ? "Normal" : "Detail"}</button>)}</div>
         {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
         {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
@@ -263,6 +266,7 @@ export function KnowledgeGraphPage() {
           </div>
         )}
       </section>
+      <div className="sm:hidden">{befund}</div>
 
       {res && !empty && (
         <>
