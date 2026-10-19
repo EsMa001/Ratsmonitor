@@ -501,7 +501,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                   </section>}
                   {!(theme || sub) && allRegions.length > 1 && <p className="mt-8 text-[14px] text-slate-500">Thema wählen, um zu sehen, wo es viel Raum hat.</p>}
                   {sub && together.length > 0 && <section className="mt-8 max-sm:mt-5">
-                    <h2 className="text-[22px] font-semibold max-sm:text-[18px]">Oft zusammen mit</h2>
+                    <h2 className="text-[22px] font-semibold max-sm:text-[18px]">Was oft zusammen auftaucht</h2>
                     <p className="mb-3 mt-1 text-[14px] text-slate-500 max-sm:hidden">Anteil der Vorgänge zu „{subName}“, die auch dieses Unterthema haben. Klick wechselt dorthin.</p>
                     <Bars rows={together} mode="select" onOpen={(k) => onSub(k)} value={(r) => r.count} label={(r) => pct(r.share)} />
                   </section>}

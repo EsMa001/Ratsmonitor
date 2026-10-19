@@ -2,6 +2,8 @@
 export const PLACE_COLORS = ["var(--rm-fill)", "var(--rm-c900)", "var(--rm-c400)", "var(--color-teal-300)"];
 
 const mfmt = (m: string) => `${m.slice(5, 7)}/${m.slice(2, 4)}`;
+/** Monat ausgeschrieben („September 2026“) für Sätze */
+const mlong = (m: string) => new Date(Number(m.slice(0, 4)), Number(m.slice(5, 7)) - 1, 1).toLocaleDateString("de-DE", { month: "long", year: "numeric" });
 
 /** Verlauf je Monat: eine Linie je Ort. Werte auf die Monate der gesamten Auswahl ausgerichtet; Monate ohne Einträge zählen 0 */
 export function CompareLines({ months, series }: { months: string[]; series: { color: string; name: string; values: number[] }[] }) {
@@ -10,6 +12,7 @@ export function CompareLines({ months, series }: { months: string[]; series: { c
   const x = (i: number) => (i / (months.length - 1)) * W;
   const y = (v: number) => H - 6 - (v / max) * (H - 16);
   const fmtV = (v: number) => (v >= 10 ? Math.round(v).toLocaleString("de-DE") : v.toLocaleString("de-DE", { maximumFractionDigits: 1 }));
+  const peaks = series.map((s) => { let i = 0; s.values.forEach((v, k) => { if (v > s.values[i]) i = k; }); return { name: s.name, color: s.color, i, v: s.values[i] ?? 0 }; }).filter((p) => p.v > 0);
   return (
     <figure className="m-0">
       <div className="relative ml-12" style={{ height: H }}>
@@ -23,8 +26,11 @@ export function CompareLines({ months, series }: { months: string[]; series: { c
             <polyline key={s.name} points={s.values.map((v, i) => `${x(i)},${y(v)}`).join(" ")} fill="none" stroke={s.color} strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
           ))}
         </svg>
+        {/* Meilenstein: Höchststand je Ort als Punkt an der Kurve */}
+        {peaks.map((p) => <span key={p.name} aria-hidden="true" title={`Höchststand ${p.name}: ${mfmt(months[p.i])}`} className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-white" style={{ left: `${(p.i / (months.length - 1)) * 100}%`, top: `${(y(p.v) / H) * 100}%`, background: p.color }} />)}
       </div>
       <figcaption className="ml-12 mt-1 flex justify-between text-[12px] text-slate-500"><span>{mfmt(months[0])}</span><span>{mfmt(months[months.length - 1])}</span></figcaption>
+      <p className="m-0 ml-12 mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[14px] text-slate-600">{peaks.map((p) => <span key={p.name} className="inline-flex items-center gap-1.5"><i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: p.color }} />{p.name}: Höchststand im {mlong(months[p.i])} ({fmtV(p.v)})</span>)}</p>
     </figure>
   );
 }

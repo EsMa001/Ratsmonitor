@@ -43,6 +43,8 @@ const SORTS: [Sort, string, string][] = [
 ];
 const WINDOWS: [string, string][] = [["30", "30 Tage"], ["90", "90 Tage"], ["180", "180 Tage"]];
 const n = (v: number) => v.toLocaleString("de-DE");
+/** Einordnung in Worten: „×5,5“ heißt 5,5-mal so oft wie im Zeitraum davor */
+const oft = (t: Trend) => (t.np === 0 ? "davor kaum vorhanden" : t.ratio >= 1 ? `${t.ratio.toLocaleString("de-DE", { maximumFractionDigits: 1 })}-mal so oft wie davor` : `nur ${Math.round(t.ratio * 100)} % so oft wie davor`);
 const ratio = (t: Trend) => (t.np === 0 ? "neu" : t.ratio >= 1 ? `×${t.ratio.toLocaleString("de-DE", { maximumFractionDigits: 1 })}` : `÷${(1 / t.ratio).toLocaleString("de-DE", { maximumFractionDigits: 1 })}`);
 /* Karte und Ausbreitung: ganz Deutschland, ohne Ort und Umkreis der Suche */
 const nationwide = (q: string) => { const p = new URLSearchParams(q); for (const k of ["area", "scope", "more", "within", "without"]) p.delete(k); return p.toString(); };
@@ -195,7 +197,7 @@ export function XTrendsPage() {
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst */}
           {top && <Befund>
-            Am stärksten zugenommen: „{prettyTerm(top.term)}“ ({ratio(top)}{wide?.s && wide.t.key === top.key && wide.s.added > 0 ? `, +${n(wide.s.added)} Gebiete, die meisten neuen` : ""})
+            Am stärksten zugenommen: „{prettyTerm(top.term)}“ ({ratio(top)}, {oft(top)}{wide?.s && wide.t.key === top.key && wide.s.added > 0 ? `, +${n(wide.s.added)} Gebiete, die meisten neuen` : ""})
             {wide?.s && wide.t.key !== top.key && wide.s.added > 0 ? <>, am meisten neue Gebiete: „{prettyTerm(wide.t.term)}“ (+{n(wide.s.added)})</> : null}.
           </Befund>}
           <Kennzahlen scope={`aus ${n(res.totals.recent)} Vorgängen`} period={`${zeitText} gegenüber den ${zeitText} davor`} items={[
@@ -250,7 +252,7 @@ export function XTrendsPage() {
                                 {prettyTerm(t.term)}{t.kind === "emerging" && <span className="ml-2 rounded-full bg-teal-50 px-2 py-0.5 text-[12px] font-medium text-teal-800">neu</span>}
                                 <span className="ml-2 text-[12px] text-slate-500 max-sm:hidden">{n(t.nr)} Vorgänge</span>
                               </span>
-                              <span className={`text-right text-[16px] font-semibold tabular-nums ${sort === "aus" ? "max-sm:hidden" : ""} ${t.kind === "falling" ? "text-slate-500" : "text-teal-700"}`}>{ratio(t)}</span>
+                              <span className={`text-right text-[16px] font-semibold tabular-nums ${sort === "aus" ? "max-sm:hidden" : ""} ${t.kind === "falling" ? "text-slate-500" : "text-teal-700"}`} title={oft(t)}>{ratio(t)}</span>
                               <span className={`text-right text-[14px] tabular-nums text-slate-700 ${sort === "aus" ? "" : "max-sm:hidden"}`}>{s ? `+${n(s.added)} Gebiete` : <span className="inline-block h-3 w-14 animate-pulse rounded bg-slate-100" />}</span>
                               <span className="max-sm:hidden">{s ? <MiniCurve curve={s.curve} draw={hover === t.key} /> : <span className="inline-block h-7 w-24 animate-pulse rounded bg-slate-50" />}</span>
                               <span title="Ausbreitung auf der Karte abspielen" aria-hidden="true" className={`grid h-7 w-7 place-items-center rounded-full max-sm:hidden ${hover === t.key ? "bg-teal-700 text-white" : "bg-teal-50 text-teal-700"}`}><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg></span>

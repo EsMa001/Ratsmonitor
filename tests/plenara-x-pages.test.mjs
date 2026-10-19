@@ -109,7 +109,7 @@ e2e('Desktop: Filter und Reiter der überarbeiteten Seiten funktionieren', async
     // Gremien und Fraktionen: Reiter
     pg = await seite('/analytics/gremien');
     await pg.getByRole('tab', { name: 'Rollen im Netz' }).click();
-    assert.ok(await pg.getByRole('heading', { name: 'Rollen im Netz' }).isVisible(), 'Gremien: Reiter Rollen zeigt nichts');
+    assert.ok(await pg.getByRole('heading', { name: 'Wer anfängt und wer entscheidet' }).isVisible(), 'Gremien: Reiter Rollen zeigt nichts');
     await pg.close();
     pg = await seite('/analytics/fraktionen');
     await pg.getByRole('tab', { name: 'Themenprofil' }).click();

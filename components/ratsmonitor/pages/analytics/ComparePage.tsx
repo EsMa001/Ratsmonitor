@@ -18,6 +18,7 @@ import type { PlaceEntry } from "../../lib/place";
 import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
 import { RadarDrill } from "./RadarDrill";
 import { todayLocal } from "../../lib/text";
+import { useCountUp } from "../../lib/bandFigure";
 import { MethodikNote } from "./Methodik";
 
 interface Share { id: string; n: number; share: number }
@@ -60,6 +61,32 @@ function datenlage(p: Place): string[] {
 function Hinweis({ className = "", children }: { className?: string; children: React.ReactNode }) {
   const [auf, setAuf] = useState(false);
   return <p onClick={() => setAuf(!auf)} className={`${className} text-[14px] text-slate-500 ${auf ? "" : "max-sm:line-clamp-1"}`}>{children}</p>;
+}
+
+/** Zahl, die kurz hochzählt */
+function DuellZahl({ v }: { v: string }) { return <>{useCountUp(v)}</>; }
+
+/** Gegenüberstellung: beide Orte groß einander gegenüber (je 1.000 Einwohner), dazwischen das Verhältnis; die Balken fahren ein */
+function Duell({ a, b, na, nb }: { a: Place; b: Place; na: string; nb: string }) {
+  const x = a.perThousand ?? 0, y = b.perThousand ?? 0, max = Math.max(x, y, 0.0001);
+  const hi = x >= y, r = Math.round((Math.max(x, y) / Math.max(0.0001, Math.min(x, y))) * 10) / 10;
+  const side = (name: string, v: number, i: number, p: Place) => (
+    <div className={`min-w-0 ${i === 1 ? "text-right sm:text-left" : ""}`}>
+      <p className="m-0 flex items-center gap-2 text-[16px] font-semibold max-sm:text-[14px]" style={{ justifyContent: i === 1 ? undefined : undefined }}><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="truncate">{name}</span></p>
+      <p className="m-0 mt-1 text-[44px] font-semibold leading-none tabular-nums max-sm:text-[32px]" style={{ color: PLACE_COLORS[i] }}><DuellZahl v={v.toLocaleString("de-DE", { maximumFractionDigits: 1 })} /></p>
+      <p className="m-0 mt-1 text-[14px] text-slate-500">Vorgänge je 1.000 Einwohner{p.population ? ` · ${p.population.toLocaleString("de-DE")} Einwohner` : ""}</p>
+      <span className="mt-2 block h-[8px] overflow-hidden rounded-full bg-slate-100"><span className="rm-bar block h-full origin-left rounded-full" style={{ width: `${(v / max) * 100}%`, background: PLACE_COLORS[i], animationDelay: `${i * 120}ms` }} /></span>
+    </div>
+  );
+  return (
+    <div className="mt-5 grid grid-cols-2 items-center gap-x-6 gap-y-2 sm:grid-cols-[1fr_auto_1fr] sm:gap-x-10 print:hidden">
+      {side(na, x, 0, a)}
+      <div className="col-span-2 order-last text-center sm:order-none sm:col-span-1">
+        <span className="inline-flex flex-col items-center rounded-full border border-slate-200 px-4 py-1.5 text-[14px] text-slate-600"><b className="text-[18px] font-semibold tabular-nums text-slate-900">{r <= 1.1 ? "≈ gleich" : `${r.toLocaleString("de-DE")}×`}</b>{r <= 1.1 ? "" : `${hi ? na : nb} mehr`}</span>
+      </div>
+      {side(nb, y, 1, b)}
+    </div>
+  );
 }
 
 export function ComparePage() {
@@ -199,13 +226,13 @@ export function ComparePage() {
             const [a, b] = res.places; const x = a?.perThousand, y = b?.perThousand;
             if (!a || !b || !x || !y) return null;
             const hi = x >= y, r = Math.round((Math.max(x, y) / Math.min(x, y)) * 10) / 10;
-            return <Befund>{names[hi ? 0 : 1]} berät je 1.000 Einwohner {r <= 1.1 ? "etwa so viel wie" : `${r.toLocaleString("de-DE")}-mal so viel wie`} {names[hi ? 1 : 0]}.</Befund>;
+            return <><Duell a={a} b={b} na={names[0]} nb={names[1]} /><Befund>{names[hi ? 0 : 1]} berät je 1.000 Einwohner {r <= 1.1 ? "etwa so viel wie" : `${r.toLocaleString("de-DE")}-mal so viel wie`} {names[hi ? 1 : 0]}.</Befund></>;
           })()}
           <div className="mt-3 max-sm:hidden print:hidden"><Segmented label="Teil des Vergleichs" options={[["ueberblick", "Überblick"], ["themen", "Themen"], ["verlauf", "Verlauf"], ["begriffe", "Begriffe"], ["details", "Details"]]} value={tab} onPick={setTab} /></div>
           <TabPane on={phone || tab === "ueberblick"}>
           <Reveal>
           <section className="mt-5 max-sm:mt-5">
-            <h2 className="text-[22px] font-semibold">Überblick</h2>
+            <h2 className="text-[22px] font-semibold">So unterscheiden sich die Orte</h2>
             <div className="mt-3"><div className="border-t border-slate-200 text-[16px]">
               <div className={rowCls + " items-end"}>
                 <span className="hidden md:block" />
@@ -267,7 +294,7 @@ export function ComparePage() {
           <TabPane on={phone || tab === "themen"}>
           <Reveal>
           <section className="mt-12">
-            <h2 className="text-[22px] font-semibold">Themenprofil</h2>
+            <h2 className="text-[22px] font-semibold">Worüber die beiden Orte beraten</h2>
             <Hinweis className="mb-3 mt-1">Anteil der Themen an den Vorgängen mit Thema. Die Marke zeigt den Wert für alle Gebiete.</Hinweis>
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             {legend}
@@ -284,7 +311,7 @@ export function ComparePage() {
           <details open className="group mt-6 border-t border-slate-200 pt-4">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[22px] font-semibold [&::-webkit-details-marker]:hidden">Verlauf<span className="text-[14px] font-normal text-slate-500 group-open:hidden">Vorgänge je Monat zeigen</span></summary>
             <div className="flex flex-wrap items-end justify-between gap-3">
-              <div><h2 className="text-[22px] font-semibold">Verlauf</h2><p className="mt-1 text-[14px] text-slate-500">Vorgänge je Monat.</p></div>
+              <div><h2 className="text-[22px] font-semibold">Wie sich die Beratung entwickelt</h2><p className="mt-1 text-[14px] text-slate-500">Vorgänge je Monat.</p></div>
               <Segmented label="Maß" options={[["anzahl", "Anzahl"], ["kopf", "je 1.000 Einwohner"]]} value={perHead ? "kopf" : "anzahl"} onPick={(k) => setPerHead(k === "kopf")} />
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -325,7 +352,7 @@ export function ComparePage() {
             );
             return (
               <section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Begriffe im Vergleich</h2>
+                <h2 className="text-[22px] font-semibold">Welche Begriffe die Orte prägen</h2>
                 <Hinweis className="mb-4 mt-1">Links und rechts: Begriffe, die im Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). In der Mitte: Begriffe beider Orte. Ein Klick zeigt die Vorgänge dahinter.</Hinweis>
                 <div className="mb-4 sm:hidden"><Segmented label="Begriffe" fill options={[["a", names[0]], ["b", "In beiden"], ["c", names[1]]]} value={termTab} onPick={setTermTab} /></div>
                 <div className="grid gap-x-8 gap-y-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1fr)]">

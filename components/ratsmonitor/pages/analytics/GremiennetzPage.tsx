@@ -146,7 +146,7 @@ export function GremiennetzPage() {
               <div className="mt-8 max-sm:hidden print:hidden"><Segmented label="Teil der Auswertung" options={[["wege", "Wichtigste Übergänge"], ["routen", "Typische Beratungswege"], ["rollen", "Rollen im Netz"]]} value={tab} onPick={setTab} /></div>
               <div className="mt-6 max-sm:mt-8 grid gap-12 max-sm:gap-6">
                 <TabPane on={tab === "wege"}><section>
-                  <h2 className="text-[22px] font-semibold">Wichtigste Übergänge</h2>
+                  <h2 className="text-[22px] font-semibold">Wohin Vorgänge als Nächstes gehen</h2>
                   <p className="mb-3 mt-1 text-[14px] text-slate-500">Von welchem Gremium ein Vorgang an welches ging, und wie lange das im Mittel dauerte.</p>
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.edges.slice(0, !more.e ? 5 : 12).map((e) => {
@@ -163,7 +163,7 @@ export function GremiennetzPage() {
                 </section>
                 </TabPane>
                 <TabPane on={tab === "routen"}><section>
-                  <h2 className="text-[22px] font-semibold">Typische Beratungswege</h2>
+                  <h2 className="text-[22px] font-semibold">Welchen Weg Vorgänge nehmen</h2>
                   <p className="mb-3 mt-1 text-[14px] text-slate-500">Die häufigsten Folgen von Gremien (bis zu vier Stationen). Anklicken zeigt den Weg im Netz.</p>
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {(!more.r ? res.routes.slice(0, 5) : res.routes).map((r, i) => (
@@ -183,7 +183,7 @@ export function GremiennetzPage() {
 
               <TabPane on={tab === "rollen"}><Reveal>
               <section className="mt-12 max-sm:mt-8">
-                <h2 className="text-[22px] font-semibold">Rollen im Netz</h2>
+                <h2 className="text-[22px] font-semibold">Wer anfängt und wer entscheidet</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Durchsatz je Gremium: eingehende und ausgehende Übergänge. Durchgänge verbinden Einstieg und Entscheidung.</p>
                 <ol className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 max-sm:block max-sm:border-t max-sm:border-slate-200">
                   {(!more.o ? ranked.slice(0, 6) : ranked).map((x) => (

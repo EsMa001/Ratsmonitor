@@ -115,6 +115,7 @@ export function SpreadChart({ firsts, day, onPick, window: win }: { firsts: numb
   firsts.forEach((d, i) => { path += ` L${x(d).toFixed(1)},${y(i).toFixed(1)} L${x(d).toFixed(1)},${y(i + 1).toFixed(1)}`; });
   path += ` L${W},${y(total)}`;
   const reached = firsts.filter((d) => d <= day).length;
+  const half = firsts[Math.floor(total / 2)];
   const at = (e: React.PointerEvent<SVGSVGElement>) => { const b = e.currentTarget.getBoundingClientRect(); onPick(Math.round(t0 + ((e.clientX - b.left) / b.width) * (t1 - t0))); };
   return (
     <figure className="m-0">
@@ -124,10 +125,12 @@ export function SpreadChart({ firsts, day, onPick, window: win }: { firsts: numb
         <rect x={x(win[0])} y={0} width={Math.max(2, x(win[1]) - x(win[0]))} height={H} className="fill-slate-400/10" />
         <path d={`${path} L${W},${H} L0,${H} Z`} className="fill-teal-600/10" />
         <path d={path} fill="none" className="stroke-teal-600" strokeWidth={2} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+        {/* Meilenstein: die Hälfte der Gebiete ist erreicht */}
+        <line x1={x(half)} x2={x(half)} y1={0} y2={H} className="stroke-teal-700" strokeWidth={1} strokeDasharray="3 4" vectorEffect="non-scaling-stroke" />
         <line x1={x(day)} x2={x(day)} y1={0} y2={H} className="stroke-slate-900" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
       </svg>
       <figcaption className="mt-1 flex justify-between text-[12px] tabular-nums text-slate-500">
-        <span>{fmt(toIso(t0))}</span><span>grau: gewählter Zeitraum</span><span>{fmt(toIso(t1))}</span>
+        <span>Erste: {fmt(toIso(t0))}</span><span>gestrichelt: Hälfte der Gebiete erreicht ({fmt(toIso(half))}) · grau: gewählter Zeitraum</span><span>{total.toLocaleString("de-DE")} Gebiete bis {fmt(toIso(t1))}</span>
       </figcaption>
     </figure>
   );

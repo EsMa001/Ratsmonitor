@@ -94,10 +94,12 @@ export function DetailPage(){
                    denn sie haben noch nicht stattgefunden. Schmal senkrecht, ab 768 px quer (umbricht, wenn es nicht passt) */
                 <ol className="m-0 list-none p-0 md:flex md:flex-wrap md:gap-x-8 md:gap-y-8">
                   {sorted.map((e,i)=>{const last=i===current,future=(e.date||'').slice(0,10)>today;return (
-                    <li key={i} className={`relative grid grid-cols-[20px_minmax(0,1fr)] gap-x-3 pb-6 last:pb-0 md:block md:min-w-[240px] md:flex-1 md:border-t md:pb-0 md:pt-4 ${last?'md:border-teal-600':future?'md:border-dashed md:border-slate-300':'md:border-slate-200'}`}>
+                    <li key={i} style={{animationDelay:`${Math.min(i,8)*140}ms`}} className={`rm-step relative grid grid-cols-[20px_minmax(0,1fr)] gap-x-3 pb-6 last:pb-0 md:block md:min-w-[240px] md:flex-1 md:border-t md:pb-0 md:pt-4 ${last?'md:border-teal-600':future?'md:border-dashed md:border-slate-300':'md:border-slate-200'}`}>
                       {!last&&<span aria-hidden="true" className="absolute bottom-0 left-[9px] top-4 w-px bg-slate-200 md:hidden"/>}
                       <span aria-hidden="true" className={`relative z-[1] mt-1.5 h-2.5 w-2.5 justify-self-center rounded-full md:absolute md:-top-[6px] md:left-0 md:mt-0 md:justify-self-auto ${last?'bg-teal-600':future?'border border-slate-300 bg-white':'bg-slate-300'}`}/>
                       <div className={`min-w-0 text-[14px] ${future?'opacity-60':''}`}>
+                        {/* Kurze Überschrift je Schritt: so liest sich der Verlauf wie eine Geschichte */}
+                        {sorted.length>1&&<p className={`m-0 mb-0.5 text-[12px] font-semibold uppercase tracking-wide ${last?'text-teal-700':'text-slate-500'}`}>{future?'Angesetzt':i===0?'Eingebracht':last?(STATUS[e.status]?.label||'Zuletzt beraten'):'Beraten'}</p>}
                         <div className="flex flex-wrap items-baseline gap-x-2">
                           <time className="tabular-nums text-slate-500">{formatDate(e.date)}</time>
                           <strong className="font-semibold text-slate-900">{e.committee||'Gremium nicht dokumentiert'}</strong>

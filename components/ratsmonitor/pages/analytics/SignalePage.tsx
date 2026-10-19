@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useClient } from "../../lib/useClient";
-import { ChevronDown, ChevronUp, Map as MapIcon, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, LayoutGrid, Map as MapIcon, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
@@ -43,8 +43,11 @@ const SIGNALE: [string, string][] = [
   ["wasser", "Wasser und Hochwasser"], ["breitband", "Breitband und Mobilfunk"], ["mobil", "Mobilität"],
 ];
 /* Symbol je Kategorie (Reihenfolge wie SIGNALE) */
-const ICONS: Record<string, LucideIcon> = { vergaben: FileSignature, wohnbau: House, gewerbe: Factory, wind: Wind, solar: Sun, waerme: Flame, schulen: School, strasse: Route, wasser: Droplets, breitband: RadioTower, mobil: Bus };
-const SIGNAL_IDS = new Set(SIGNALE.map(([id]) => id));
+const ICONS: Record<string, LucideIcon> = { alle: LayoutGrid, vergaben: FileSignature, wohnbau: House, gewerbe: Factory, wind: Wind, solar: Sun, waerme: Flame, schulen: School, strasse: Route, wasser: Droplets, breitband: RadioTower, mobil: Bus };
+/* „Alle Projekte“: Übersicht über alle Kategorien (kein eigenes Signal im Backend; die Zahlen je Kategorie kommen mit jeder Antwort) */
+const ALLE = "alle";
+const SIGNAL_IDS = new Set([ALLE, ...SIGNALE.map(([id]) => id)]);
+const MIT_ALLE: [string, string][] = [[ALLE, "Alle Projekte"], ...SIGNALE];
 const ZEITRAUM: [string, string][] = [["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], ["alle", "Alles"]];
 const n = (v: number) => v.toLocaleString("de-DE");
 const day = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "");
@@ -167,7 +170,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   /* Zeitraum der Seite ersetzt den der Suche nur, wenn die Suche selbst keinen hat */
   const q = new URLSearchParams(query);
   if (fromOf(zeit) && !q.get("from")) q.set("from", fromOf(zeit));
-  const url = `/api/x/signale?signal=${signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}&${q}`;
+  const url = `/api/x/signale?signal=${signal === ALLE ? standard : signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}&${q}`;
   const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
   /* Anzahl der Art-Kacheln für den Platzhalter (erst im Browser bekannt, daher useClient) */
   const seenArts = useClient(() => artsSeen(signal), 5);
@@ -223,10 +226,10 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
 
       {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy: Auswahlfeld */}
       {!fest && <WheelPicker label="Signal" value={signal} onPick={(id) => pick({ signal: id === standard ? "" : id, phase: "", art: "" })}
-        items={SIGNALE.map(([id, label]) => { const I = ICONS[id]; return { id, label, icon: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" />, iconOn: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-white" /> }; })} />}
+        items={MIT_ALLE.map(([id, label]) => { const I = ICONS[id]; return { id, label, icon: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" />, iconOn: I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="text-white" /> }; })} />}
       {!fest && <nav aria-label="Signal" className="hidden sm:block print:hidden">
-        <ul className="m-0 grid list-none grid-cols-5 gap-1 p-0 lg:grid-cols-10">
-          {SIGNALE.map(([id, label]) => {
+        <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
+          {MIT_ALLE.map(([id, label]) => {
             const on = id === signal;
             const Icon = ICONS[id];
             return (
@@ -277,7 +280,29 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
 
       {error && <Fehler>{error}</Fehler>}
       {loading && !res && <Laden text={fest ? "Ausschreibungen werden geladen …" : "Projekte werden geladen …"} />}
-      {res && (
+      {res && signal === ALLE && (
+        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
+          <Kennzahlen week={null} band="Projekte" scope="Alle Projekte" period={zeitText ?? ""} items={[{ value: n(res.signals.filter((s) => SIGNAL_IDS.has(s.id)).reduce((a, s) => a + s.count, 0)), label: "Projekte" }]} />
+          <p className="mb-3 mt-4 text-[14px] text-slate-500">Nach Kategorie, größte zuerst. Eine Kategorie anklicken zeigt ihre Projekte. Ausschreibungen und Vergaben stehen auf ihrer eigenen Seite.</p>
+          <ol className="rm-focusrows m-0 list-none border-t border-slate-200 p-0">
+            {[...res.signals].filter((s) => SIGNAL_IDS.has(s.id)).sort((a, b) => b.count - a.count).map((s) => {
+              const I = ICONS[s.id], max = Math.max(1, ...res.signals.filter((x) => SIGNAL_IDS.has(x.id)).map((x) => x.count));
+              return (
+                <li key={s.id} className="border-b border-slate-200">
+                  <button type="button" onClick={() => pick({ signal: s.id === standard ? "" : s.id, phase: "", art: "" })}
+                    className="grid w-full grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,220px)_minmax(0,1fr)_auto_16px]">
+                    <span className="flex items-center gap-2 text-[16px] leading-snug">{I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="shrink-0 text-slate-500" />}{s.name}</span>
+                    <span className="order-4 col-span-3 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="rm-bar block h-full origin-left rounded-full bg-teal-600" style={{ width: `${(s.count / max) * 100}%` }} /></span>
+                    <span className="text-right text-[14px] font-semibold tabular-nums text-teal-700">{n(s.count)}</span>
+                    <span aria-hidden="true" className="text-center text-[14px] text-teal-700">›</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      )}
+      {res && signal !== ALLE && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
           {res.total === 0 ? <Leer tipp="Einen längeren Zeitraum, eine andere Art oder „Alle Themen“ wählen, oder den Ort entfernen.">{`Keine Vorgänge für diese Auswahl: ${res.signal.name}${zeit !== "alle" ? `, letzte ${zeit} Monate` : ""}.`}</Leer>

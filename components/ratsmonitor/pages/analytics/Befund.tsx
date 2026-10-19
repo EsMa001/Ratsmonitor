@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { useSearchResults } from "../../state/search";
+import { useSearch, useSearchResults } from "../../state/search";
 import { prettyTerm } from "../../lib/terms";
 
 const heute = () => { const d = new Date(); return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getFullYear()).slice(2)}`; };
@@ -37,7 +37,21 @@ export function Leer({ children, tipp = "Suchbegriff kürzen, „Alle Themen“ 
     <div role="status" className="mt-6 max-w-[760px] border-l-2 border-slate-300 py-1 pl-4">
       <p className="m-0 text-[18px] font-semibold leading-snug text-slate-900">{children}</p>
       {tipp && <p className="m-0 mt-1 text-[14px] text-slate-500">{tipp}</p>}
+      <LeerBeispiele />
     </div>
+  );
+}
+
+/** Weiter statt Sackgasse: Auswahl zurücksetzen oder ein Beispiel mit Treffern anklicken (alle gegen die Daten geprüft) */
+const BEISPIELE = ["Solarpark", "Wärmeplanung", "Hebesatz"];
+function LeerBeispiele() {
+  const search = useSearch();
+  return (
+    <p className="m-0 mt-3 flex flex-wrap items-center gap-2 text-[14px] text-slate-500 print:hidden">
+      <span>Zum Beispiel:</span>
+      {BEISPIELE.map((b) => <button key={b} type="button" onClick={() => { search.resetAll(); search.applySearch(b); }} className="inline-flex h-8 items-center rounded-full border border-slate-200 bg-white px-3 text-slate-700 hover:border-slate-400">{b}</button>)}
+      <button type="button" onClick={() => search.resetAll()} className="inline-flex h-8 items-center px-1 font-medium text-teal-700 hover:underline">Auswahl zurücksetzen</button>
+    </p>
   );
 }
 

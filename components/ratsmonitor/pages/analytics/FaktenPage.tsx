@@ -6,6 +6,7 @@ import { XKopf, XWeiter } from "./XKopf";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
+import { useSearch } from "../../state/search";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { RadarDrill } from "./RadarDrill";
@@ -210,6 +211,7 @@ export function FaktenPage() {
             : [{ value: ranked.length ? `${num(mid(lasts))}` : "–", label: `Median${unit ? ` (${unit})` : ""}` }, { value: n(ranked.length), label: ranked.length === 1 ? "Gebiet mit Wert" : "Gebiete mit Wert" }, { value: n(up), label: "seit dem vorigen Wert höher" }]}>
             <MeinOrt current={areaAgs && focus && focus.ags === areaAgs ? { ags: areaAgs, name: focus.name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
           </Kennzahlen>
+          <Zeitregler />
           {LINKS[fact?.kind ?? ""] && <p className="mt-1 text-[14px] text-slate-500">{[...LINKS[fact!.kind], ["/analytics/beschluesse", "Beschlüsse dazu"] as [string, string]].map(([h, text], i) => { const ort = /^\d{5,9}$/.test(areaAgs) ? areaAgs : "", href = h.includes("beschluesse") ? `${h}?q=${encodeURIComponent(fact!.name)}${ort ? `&ort=${ort}` : ""}` : ort ? `${h}${h.includes("?") ? "&" : "?"}ort=${ort}` : h; return <span key={h}>{i > 0 && " · "}<Link href={href} className="font-medium text-teal-700 hover:underline">{text}{ort && h.includes("beschluesse") && focus ? ` in ${focus.name}` : ""} →</Link></span>; })}</p>}
 
           {/* Abdeckung: damit eine dünne Karte nicht wie ein Fehler wirkt (Werte stehen nur dort, wo die Unterlagen sie ausdrücklich nennen) */}
@@ -239,7 +241,7 @@ export function FaktenPage() {
 
             <div className="min-w-0 lg:col-span-6">
               {/* Ort im Vergleich: Wert des Orts auf der Skala aller Gebiete (Viertel und Median), dazu Kreis und Land */}
-              {plain && focus && ranked.length >= 8 && <Skala x={focus} values={lasts} unit={unit} peer={peerText(focus)} good={fact!.dir === "good"} onList={() => show(focus.key, "map")} />}
+              {plain && focus && ranked.length >= 8 && <Skala x={focus} values={lasts} kreis={ranked.filter((a) => a.ags && focus.ags && a.ags.slice(0, 5) === focus.ags.slice(0, 5)).map((a) => a.last)} unit={unit} peer={peerText(focus)} good={fact!.dir === "good"} onList={() => show(focus.key, "map")} />}
               {plain && focus && listedArea && listedIn === "map" && <div className="mt-3"><RadarDrill base="/api/x?list=1" query={listQuery} by={`fact:${fact!.kind}`} value={metric} label={`${listedArea.name}: ${factName}`} limit={5} /></div>}
 
               {ranked.length > 0 && <section className={plain && focus ? "mt-8" : ""}>
@@ -276,6 +278,32 @@ export function FaktenPage() {
   );
 }
 
+/** Vorher/nachher: Regler für den Stand der Werte (bis zu 24 Monate zurück); setzt das Ende des Zeitraums der Suche, die Karte rechnet neu */
+function Zeitregler() {
+  const search = useSearch();
+  const bis = search.state.bis;
+  const back = (() => { if (!/^\d{4}-\d{2}/.test(bis)) return 0; const now = new Date(); return Math.max(0, Math.min(24, (now.getFullYear() - Number(bis.slice(0, 4))) * 12 + now.getMonth() + 1 - Number(bis.slice(5, 7)))); })();
+  const [val, setVal] = useState<number | null>(null);
+  const shown = val ?? back;
+  const label = (m: number) => { if (!m) return "heute"; const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - m); return d.toLocaleDateString("de-DE", { month: "long", year: "numeric" }); };
+  useEffect(() => {
+    if (val === null || val === back) return;
+    const id = window.setTimeout(() => {
+      if (!val) search.setZeitraum(search.state.von, "");
+      else { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - val + 1); d.setDate(0); search.setZeitraum(search.state.von, d.toISOString().slice(0, 10)); }
+    }, 400);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [val]);
+  return (
+    <div className="mt-3 flex max-w-[520px] items-center gap-3 text-[14px] text-slate-600 print:hidden max-sm:hidden">
+      <label htmlFor="werte-stand" className="shrink-0">Stand der Werte:</label>
+      <input id="werte-stand" type="range" min={0} max={24} step={1} value={24 - shown} onChange={(e) => setVal(24 - Number(e.target.value))} aria-valuetext={label(shown)} className="h-1 min-w-0 flex-1 cursor-pointer accent-teal-700" />
+      <span className="w-[120px] shrink-0 font-medium tabular-nums text-slate-900">{label(shown)}</span>
+    </div>
+  );
+}
+
 const n = (v: number) => v.toLocaleString("de-DE");
 /* Icon je Fakt (Kacheln) */
 /** Symbol eines Werts (Grundsteuer B, Gewerbesteuer, Wasser …) nach dem Namen, sonst das Symbol des Fakts */
@@ -304,7 +332,9 @@ const LINKS: Record<string, [string, string][]> = {
 };
 
 /** Ort im Vergleich: Wert des Orts auf der Skala aller Gebiete; hell die mittlere Hälfte (übliche Spanne), Strich der Median */
-function Skala({ x, values, unit, peer, good, onList }: { x: Area; values: number[]; unit: string; peer: string; good: boolean; onList: () => void }) {
+function Skala({ x, values, kreis, unit, peer, good, onList }: { x: Area; values: number[]; /* Werte der Gebiete im selben Kreis (Vergleichsmarke zuschaltbar) */ kreis: number[]; unit: string; peer: string; good: boolean; onList: () => void }) {
+  const [mitKreis, setMitKreis] = useState(false);
+  const kreisMid = kreis.length >= 3 ? mid(kreis) : null;
   const lo = quart(values, 0.02), hi = quart(values, 0.98), span = hi - lo || 1;
   const at = (v: number) => `${Math.min(100, Math.max(0, ((v - lo) / span) * 100))}%`;
   const q1 = quart(values, 0.25), q3 = quart(values, 0.75), m = mid(values);
@@ -317,10 +347,12 @@ function Skala({ x, values, unit, peer, good, onList }: { x: Area; values: numbe
         <div className="absolute inset-x-0 top-1/2 h-[6px] -translate-y-1/2 rounded-full bg-slate-100" />
         <div className="absolute top-1/2 h-[6px] -translate-y-1/2 rounded-full bg-teal-100" style={{ left: at(q1), width: `calc(${at(q3)} - ${at(q1)})` }} />
         <div className="absolute top-1/2 h-4 w-[2px] -translate-y-1/2 bg-slate-500" style={{ left: at(m) }} />
+        {mitKreis && kreisMid !== null && <div className="absolute top-1/2 h-5 w-[2px] -translate-y-1/2 bg-amber-600" style={{ left: at(kreisMid) }} title={`Median im Kreis: ${num(kreisMid)} ${unit}`} />}
         <div className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-teal-700 shadow" style={{ left: at(x.last) }} />
       </div>
       <p className="mt-1 flex justify-between text-[12px] tabular-nums text-slate-500"><span>{num(lo)} {unit}</span><span>üblich {num(q1)} bis {num(q3)} · Median {num(m)}</span><span>{num(hi)} {unit}</span></p>
       {peer && <p className="mt-2 text-[14px] text-slate-500">Median {peer}</p>}
+      {kreisMid !== null && <button type="button" aria-pressed={mitKreis} onClick={() => setMitKreis(!mitKreis)} className={`mt-2 inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[14px] ${mitKreis ? "border-amber-600 text-amber-700" : "border-slate-200 text-slate-700 hover:border-slate-400"}`}>{mitKreis ? `Kreis: Median ${num(kreisMid)} ${unit} (${kreis.length} Gebiete)` : "Kreis zum Vergleich zeigen"}</button>}
       <button type="button" onClick={onList} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">Vorgänge zu diesem Wert →</button>
     </section>
   );

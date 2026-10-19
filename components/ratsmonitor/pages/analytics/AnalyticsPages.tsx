@@ -52,7 +52,8 @@ export function AnalyticsPages({ path }: { path: string }) {
   }, [path]);
   const Page = PAGES[path];
   if (!Page) return null;
-  if (FREE.has(path) || tier === "enterprise") return <><Page /><MethodikUnten seite={path.split("/").pop() ?? ""} /></>;
+  /* Ruhiger Übergang zwischen den Seiten: der Inhalt blendet kurz ein (nur Deckkraft), die Auswahl der Suche bleibt */
+  if (FREE.has(path) || tier === "enterprise") return <div key={path} className="rm-pagein"><Page /><MethodikUnten seite={path.split("/").pop() ?? ""} /></div>;
   /* Bis /api/me antwortet: neutral laden, nicht sperren */
   if (!ready) return <main id="inhalt" aria-busy="true" className="min-h-[60vh] w-full px-[max(1vw,16px)] pb-12" />;
   return <AnalyticsLocked path={path} />;

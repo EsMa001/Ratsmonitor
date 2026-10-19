@@ -281,11 +281,11 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef, route = nul
             /* Schwache Verbindungen erst zeigen, wenn eines ihrer Gremien gewählt ist */
             if (!on && e.n < maxN * 0.06) return null;
             const d = path(a, b, 0.14);
-            /* Wie im Themennetz: in Ruhe feine Linien nach Gewicht, bei Auswahl und Weg laufen Lichtpunkte entlang der Linie (Richtung = Laufrichtung) */
+            /* Wie im Themennetz bei Auswahl: dünne, kräftig petrolfarbene Strichlinien, die in Laufrichtung (Einstieg → Entscheidung) wandern; die Dicke zeigt die Menge */
+            const dim = (focus || routeSet.size) && !on;
             return (
               <g key={e.a + e.b} style={{ pointerEvents: "none" }}>
-                <path d={d} fill="none" stroke={on ? "var(--st-edge-hi)" : "var(--st-mid)"} strokeOpacity={focus || routeSet.size ? (on ? 0.3 : 0.05) : 0.4} strokeWidth={on ? 1 : w} strokeLinecap="round" />
-                {on && <path className="rm-gflow" d={d} fill="none" stroke="var(--st-edge-hi)" strokeOpacity={0.95} strokeWidth={2.4} strokeLinecap="round" strokeDasharray="2 7" />}
+                <path className="rm-gflow" d={d} fill="none" stroke="var(--st-edge-hi)" strokeOpacity={dim ? 0.1 : 1} strokeWidth={on ? 2.6 : 1 + Math.min(1.6, w * 0.3)} strokeLinecap="round" strokeDasharray="2 7" style={{ transition: "stroke-opacity .2s" }} />
               </g>
             );
           })}
