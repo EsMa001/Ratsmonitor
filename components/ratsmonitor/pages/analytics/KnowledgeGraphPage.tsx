@@ -59,7 +59,7 @@ export function KnowledgeGraphPage() {
   const phone = usePhone();
   const [chosen, setLevel] = useState<Level | null>(null);
   const wide = useClient(() => window.innerWidth >= 1024, false);
-  const level: Level = phone ? (chosen === "detail" ? "detail" : "normal") : chosen ?? (wide ? "detail" : "normal");
+  const level: Level = phone ? (chosen === "normal" ? "normal" : "overview") : chosen ?? (wide ? "detail" : "normal");
   const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
 
@@ -193,7 +193,7 @@ export function KnowledgeGraphPage() {
       {/* Antwort zuerst, dann das Netz */}
       <div className="max-sm:hidden">{befund}</div>
       {res && !empty && gesamt && einstieg.length > 0 && (
-        <div className="mt-4 print:hidden max-sm:mt-2">
+        <div className="mt-4 print:hidden max-sm:hidden">
           <p className="m-0 text-[14px] text-slate-600 max-sm:text-[12px]">Mit einem Begriff beginnen:</p>
           <div className="mt-2 flex flex-wrap gap-2 max-sm:-mx-[max(1vw,16px)] max-sm:flex-nowrap max-sm:gap-1.5 max-sm:overflow-x-auto max-sm:px-[max(1vw,16px)] max-sm:pb-1 max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden">
             {einstieg.map((x) => <button key={x.id} type="button" onClick={() => { remember(); search.applySearch(x.label); runAfterChange(); }} className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-800 max-sm:h-8 max-sm:shrink-0 max-sm:rounded-full max-sm:px-3 max-sm:text-[13px] hover:border-slate-400">{x.label}</button>)}
@@ -203,32 +203,26 @@ export function KnowledgeGraphPage() {
       {/* Detailstufe über dem Netz, als Umschalter wie auf den übrigen Seiten */}
       {res && !empty && <div className="max-sm:hidden rm-xseg mt-6 flex justify-end print:hidden"><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
       {/* Handy: das Netz lässt sich ein- und ausklappen */}
-      <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
-      {/* Handy: Legende über dem Netz statt darauf (sonst liegt sie über den Punkten) */}
-      {res && !empty && netz && <ul className="m-0 mt-3 flex list-none gap-4 p-0 text-[12px] text-slate-700 sm:hidden">
-        {(["center", "term", "topic"] as const).map((t) => (
-          <li key={t} className="flex items-center gap-1.5"><i className={`inline-block h-3 w-3 rounded-full`} style={{ ...DOT[t], boxShadow: "0 0 0 1px rgba(24,24,27,.25)" }} />{KIND[t].label}</li>
-        ))}
-      </ul>}
+      <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:mt-1 max-sm:inline-flex max-sm:min-h-[36px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
       <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[min(540px,calc(100dvh-250px))] sm:h-[620px]`} aria-label="Themennetz">
-        <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-3 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["normal", "detail"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "normal" ? "Normal" : "Detail"}</button>)}</div>
+        <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-3 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["overview", "normal"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "overview" ? "Normal" : "Detail"}</button>)}</div>
         {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
         {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
         {trail.length > 0 && res && !empty && (
-          <button type="button" onClick={back} className="rm-stage-chip absolute left-3 top-3 z-[7] inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[14px] font-medium sm:top-[104px] hover:opacity-90">
+          <button type="button" onClick={back} className="rm-stage-chip absolute left-3 top-3 z-[7] max-sm:top-14 inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[14px] font-medium sm:top-[104px] hover:opacity-90">
             <IconChevronLeft size={16} />Zurück
           </button>
         )}
-        <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:hidden">
-          <ul className="m-0 flex list-none flex-col gap-1 p-0">
+        <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:left-1/2 max-sm:w-max max-sm:max-w-[calc(100%-16px)] max-sm:-translate-x-1/2 max-sm:top-2 max-sm:px-3 max-sm:py-1.5 max-sm:text-[11px]">
+          <ul className="m-0 flex list-none flex-col gap-1 p-0 max-sm:flex-row max-sm:flex-wrap max-sm:justify-center max-sm:gap-x-3 max-sm:gap-y-0.5">
             {(["center", "term", "topic"] as const).map((t) => (
               <li key={t} className="flex items-center gap-2"><i className={`inline-block h-3 w-3 rounded-full`} style={{ ...DOT[t], boxShadow: "0 0 0 1px rgba(24,24,27,.25)" }} />{KIND[t].label}</li>
             ))}
           </ul>
         </div>
 
-        <div className="rm-stage-chip absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full">
+        <div className="rm-stage-chip absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full max-sm:hidden">
           <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconPlus size={16} /></button>
           <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconMinus size={16} /></button>
           <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconCenter size={16} /></button>

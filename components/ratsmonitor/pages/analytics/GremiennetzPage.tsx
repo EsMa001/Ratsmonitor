@@ -69,7 +69,7 @@ export function GremiennetzPage() {
   const phone = usePhone();
   const wide = useClient(() => window.innerWidth >= 1024, false);
   const [chosen, setLevel] = useState<"overview" | "normal" | "detail" | null>(null);
-  const level = phone ? (chosen === "detail" ? "detail" : "normal") : chosen ?? (wide ? "detail" : "normal");
+  const level = phone ? (chosen === "normal" ? "normal" : "overview") : chosen ?? (wide ? "detail" : "normal");
   const routeIds = useMemo(() => {
     const r = res && routeNo !== null ? res.routes[routeNo] : null;
     if (!res || !r) return [] as string[];
@@ -106,27 +106,24 @@ export function GremiennetzPage() {
           ) : (
             <>
               <div className="max-sm:hidden">{res.routes[0] && <Befund>Der häufigste Weg: {res.routes[0].path.join(" → ")} ({n(res.routes[0].n)} Vorgänge).</Befund>}</div>
-              <Kennzahlen rest items={([
+              <div className="max-sm:hidden"><Kennzahlen rest items={([
                   ["Vorgänge mit mehreren Gremien", n(res.paths)],
                   [res.mode === "types" ? "Gremienarten" : "Gremien", n(res.nodes.length)],
                   ["Vorgänge im häufigsten Übergang", top ? n(top.n) : "–"],
                   ["Tage im Mittel je Übergang", lag === null ? "–" : String(lag)]
-                ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
-              {/* Handy: das Netz lässt sich ein- und ausklappen */}
-              <button type="button" onClick={() => setNetz(!netz)} aria-expanded={netz} className="mt-6 max-sm:inline-flex max-sm:min-h-[44px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
-              {netz && <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[12px] text-slate-700 sm:hidden">{(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => <li key={r} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-full" style={{ background: NET_KIND[r].fill }} />{NET_KIND[r].label}</li>)}<li className="basis-full text-slate-500">Größe: Durchsatz · Linie: Vorgänge · Wischen verschiebt, zwei Finger zoomen</li></ul>}
+                ] as [string, string][]).map(([label, value]) => ({ label, value }))} /></div>
               {res.nodes.length > 7 && <div className="max-sm:hidden rm-xseg mt-6 flex justify-end print:hidden"><Segmented label="Detailstufe" options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]] as ["overview" | "normal" | "detail", string][]} value={level} onPick={setLevel} /></div>}
               <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-2 h-[360px] max-sm:h-[440px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
-                <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-3 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["normal", "detail"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "normal" ? "Normal" : "Detail"}</button>)}</div>
+                <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-3 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["overview", "normal"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "overview" ? "Normal" : "Detail"}</button>)}</div>
                 {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
                 <NetView route={routeIds.length > 1 ? routeIds : null} nodes={net.nodes} edges={net.edges} selected={selected} onSelect={(id) => { setRouteNo(null); setSelected(id); }} zoomRef={zoomRef} />
-                <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:hidden">
-                  <ul className="m-0 flex list-none flex-col gap-1 p-0">
+                <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:left-1/2 max-sm:w-max max-sm:max-w-[calc(100%-16px)] max-sm:-translate-x-1/2 max-sm:top-2 max-sm:px-3 max-sm:py-1.5 max-sm:text-[11px]">
+                  <ul className="m-0 flex list-none flex-col gap-1 p-0 max-sm:flex-row max-sm:flex-wrap max-sm:justify-center max-sm:gap-x-3 max-sm:gap-y-0.5">
                     {(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => <li key={r} className="flex items-center gap-2"><i className="inline-block h-3 w-3 rounded-full" style={{ background: NET_KIND[r].fill }} />{NET_KIND[r].label}</li>)}
                   </ul>
-                  <p className="mt-1.5 opacity-70">Größe: Durchsatz · Linie: Vorgänge</p>
+                  <p className="mt-1.5 opacity-70 max-sm:hidden">Größe: Durchsatz · Linie: Vorgänge</p>
                 </div>
-                <div className="rm-stage-chip absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full">
+                <div className="rm-stage-chip absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full max-sm:hidden">
                   <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconPlus size={16} /></button>
                   <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconMinus size={16} /></button>
                   <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconCenter size={16} /></button>
@@ -148,7 +145,7 @@ export function GremiennetzPage() {
                   </div>
                 )}
               </section>
-              <div className="sm:hidden">{res.routes[0] && <Befund>Der häufigste Weg: {res.routes[0].path.join(" → ")} ({n(res.routes[0].n)} Vorgänge).</Befund>}</div>
+              
 
 
               {pending && <ListSkeleton />}
