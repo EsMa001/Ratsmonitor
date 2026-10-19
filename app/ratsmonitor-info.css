@@ -200,7 +200,7 @@ select.ri-input{padding-right:12px;cursor:pointer}
 .ratsmonitor .ri-burger:focus-visible{outline:2px solid var(--rm-fill);outline-offset:2px}
 .ri-menu{position:fixed;inset:0;z-index:1050;font-size:16px;line-height:1.4;color:var(--rm-c900)}
 .ri-menu__bg{position:absolute;inset:0;background:transparent}
-.ri-menu__panel{position:absolute;display:flex;flex-direction:column;width:min(304px,calc(100vw - 16px));overflow-y:auto;border:1px solid var(--rm-c200);border-radius:14px;background:var(--rm-white);box-shadow:0 12px 32px rgba(24,24,27,.16);animation:riDrop .16s ease-out;transform-origin:top left}
+.ri-menu__panel{position:absolute;display:flex;flex-direction:column;width:min(344px,calc(100vw - 16px));overflow-y:auto;border:1px solid var(--rm-c200);border-radius:14px;background:var(--rm-white);box-shadow:0 12px 32px rgba(24,24,27,.16);animation:riDrop .16s ease-out;transform-origin:top left}
 
 
 
@@ -574,3 +574,8 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
   .ri-toc a:hover{color:var(--rm-c900)}
 }
 @media print{.ri-toc{display:none !important}}
+
+/* Zurück-Knopf im Petrol-Band: nur ein zarter heller Schleier beim Überfahren statt einer hellen Fläche mit Rahmen */
+html:not(.rm-dark) :is(.pl-band,.ri-head) .back-btn{border:0 !important;background:transparent !important;box-shadow:none !important;transition:background-color .15s}
+html:not(.rm-dark) :is(.pl-band,.ri-head) .back-btn:hover,html:not(.rm-dark) :is(.pl-band,.ri-head) .back-btn:active{background:rgba(255,255,255,.14) !important}
+html:not(.rm-dark) :is(.pl-band,.ri-head) .back-btn:focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:1px}

@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (577 Zeilen, ⚠14)
+- app/ratsmonitor-info.css (582 Zeilen, ⚠14)
 - app/ratsmonitor.css (280 Zeilen, ⚠17)
 
 admin-access admin.css:6
@@ -677,6 +677,7 @@ truncate ratsmonitor-info.css:464
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - DotField.tsx (86): DotField
+- Dropdown.tsx (66): DropItem, Dropdown, AktiveFilter
 - FilterPanel.tsx (111, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (28): NOTIFY_LATER, FollowButton
@@ -813,7 +814,7 @@ truncate ratsmonitor-info.css:464
 - AnalyticsPages.tsx (60): AnalyticsPages
 - AtlasPage.tsx (69): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (53): Befund, zuThema, Leer, Fehler
-- BeschluessePage.tsx (200, ⚠9): BeschluessePage
+- BeschluessePage.tsx (207, ⚠9): BeschluessePage
 - CompareCharts.tsx (63): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (343, ⚠11): ComparePage
@@ -824,7 +825,7 @@ truncate ratsmonitor-info.css:464
 - GraphView.tsx (247, ⚠1): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (184, ⚠5): GremiennetzPage
 - Kennzahlen.tsx (139): weekAgo, isNew, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (245, ⚠7): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (264, ⚠8): KnowledgeGraphPage
 - Laden.tsx (27): Laden
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
 - NetView.tsx (238, ⚠1): NNode, NEdge, ROLE, NetView
@@ -838,8 +839,8 @@ truncate ratsmonitor-info.css:464
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (571, ⚠9): XAtlasView
-- XKopf.tsx (191, ⚠1): XKopf, XWeiter, ThemenLeiste
-- XTrendsPage.tsx (345, ⚠3): XTrendsPage
+- XKopf.tsx (162, ⚠1): XKopf, XWeiter, ThemenLeiste
+- XTrendsPage.tsx (346, ⚠4): XTrendsPage
 - XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery

@@ -24,7 +24,7 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (108 Einträge), na
 | 11 | B | Keine Sitzung verpassen | Kalender mit Abonnieren |
 | 12 | B | Gezielt eingrenzen | Filter: Zeitraum, Thema, Status |
 | 13 | B | Orte vergleichen | plenara.X Atlas, Reiter Vergleich: zwei Orte nebeneinander |
-| 14 | B | Beschlüsse einordnen | plenara.X Trends, Reiter Ausgang: Quote, Vertagungen, Dauer |
+| 14 | B | Beschlüsse einordnen | plenara.X Trends, Reiter Beschlusslage: Quote, Vertagungen, Dauer |
 | 15 | B | Den Weg durch die Gremien verstehen | plenara.X Gremien |
 | 16 | B | Zusammenhänge entdecken | plenara.X Themennetz |
 | 17 | B | Ergebnisse als Excel oder CSV | Export der Trefferliste |
@@ -104,10 +104,10 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (108 Einträge), na
 | 91 | D | Trends: Zeitraum wählbar (30, 90, 180 Tage) | plenara.X Trends |
 | 92 | D | Trends: Veränderung je Themenfeld | plenara.X Trends |
 | 93 | D | Trends: Trendkarte | plenara.X Trends |
-| 94 | D | Ausgang: Vertagungen und Ablehnungen sichtbar | plenara.X Trends, Reiter Ausgang |
-| 95 | D | Ausgang: Anteil einstimmiger Entscheidungen | plenara.X Trends, Reiter Ausgang |
-| 96 | D | Ausgang: Wie oft Vorlagen geändert werden | plenara.X Trends, Reiter Ausgang |
-| 97 | D | Ausgang: Durchlaufzeit bis zum Beschluss | plenara.X Trends, Reiter Ausgang |
+| 94 | D | Beschlusslage: Vertagungen und Ablehnungen sichtbar | plenara.X Trends, Reiter Beschlusslage |
+| 95 | D | Beschlusslage: Anteil einstimmiger Entscheidungen | plenara.X Trends, Reiter Beschlusslage |
+| 96 | D | Beschlusslage: Wie oft Vorlagen geändert werden | plenara.X Trends, Reiter Beschlusslage |
+| 97 | D | Beschlusslage: Durchlaufzeit bis zum Beschluss | plenara.X Trends, Reiter Beschlusslage |
 | 98 | D | Vergleich: typische und gemeinsame Begriffe | plenara.X Atlas, Vergleich |
 | 99 | D | Vergleich: Einträge je Einwohner (nur als Anhaltspunkt) | plenara.X Atlas, Vergleich; Grenze ausdrücklich nennen |
 | 100 | D | Themennetz: Knoten anklicken zeigt Details | plenara.X Themennetz |

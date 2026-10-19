@@ -165,12 +165,12 @@ export function ComparePage() {
 
       {/* Handy: nach dem Vergleich nur eine Zeile; „Ändern“ öffnet das Formular */}
       {res && !editOpen && !stale && (
-        <button type="button" onClick={() => setEditOpen(true)} aria-label="Orte und Thema ändern" className="mt-3 flex min-h-[48px] w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 text-left text-[14px] text-slate-800 print:hidden">
+        <button type="button" onClick={() => setEditOpen(true)} aria-label="Orte und Thema ändern" className="mt-3 flex min-h-[48px] w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 text-left text-[14px] text-slate-800 sm:hidden print:hidden">
           <span className="min-w-0 truncate"><b className="font-semibold">{names[0]}</b> <span className="text-slate-500">gegen</span> <b className="font-semibold">{names[1]}</b>{thema.trim() ? <span className="text-slate-500"> · {thema.trim()}</span> : null}</span>
           <span className="flex-none font-medium text-teal-700">Ändern</span>
         </button>
       )}
-      <section aria-label="Vergleich einstellen" className={`print:hidden mt-2 border-b border-slate-200 pb-5 max-sm:mt-3 max-sm:pb-3 ${res && !editOpen && !stale ? "hidden" : ""}`}>
+      <section aria-label="Vergleich einstellen" className={`print:hidden mt-2 border-b border-slate-200 pb-5 max-sm:mt-3 max-sm:pb-3 ${res && !editOpen && !stale ? "max-sm:hidden" : ""}`}>
         <div className="grid gap-4 max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:gap-y-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
           <PlaceField label="Ort 1" color={PLACE_COLORS[0]} value={ort1} onChange={setOrt1} onEnter={() => run()} />
           <PlaceField label="Ort 2" color={PLACE_COLORS[1]} value={ort2} onChange={setOrt2} onEnter={() => run()} />

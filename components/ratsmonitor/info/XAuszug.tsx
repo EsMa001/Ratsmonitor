@@ -182,7 +182,7 @@ function AusgangBlock({ a }: { a: AusgangAuszug }) {
         {a.median !== null && <li><b className="font-semibold text-slate-900">{n(a.median)} Tage</b> <span className="text-slate-500">im Mittel bis zur Entscheidung</span></li>}
         {a.unanimous !== null && <li><b className="font-semibold text-slate-900">{pct(a.unanimous)}</b> <span className="text-slate-500">einstimmig, wo das Ergebnis bekannt ist</span></li>}
       </ul>
-      <Mehr href="/analytics/beschluesse">Mehr in plenara.X Ausgang</Mehr>
+      <Mehr href="/analytics/beschluesse">Mehr in plenara.X Beschlusslage</Mehr>
     </div>
   );
 }

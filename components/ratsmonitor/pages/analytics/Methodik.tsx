@@ -8,7 +8,7 @@ import type { AnalyseId } from "../../info/branchen-enterprise";
    (AnalyticsAbout) und die Anmerkungen zur jeweiligen Auswertung (MethodikNote). Das Symbol im Kopfband springt hierher (#methodik). */
 export const METHODIK_VON: Record<string, [AnalyseId, string][]> = {
   atlas: [["atlas", "Atlas"]], vergleich: [["vergleich", "Vergleich"]], signale: [["signale", "Signale"]], fakten: [["fakten", "Fakten"]],
-  trends: [["trends", "Verlauf"], ["diffusion", "Ausbreitung"]], beschluesse: [["beschluesse", "Ausgang"]], fraktionen: [["fraktionen", "Fraktionen"]],
+  trends: [["trends", "Verlauf"], ["diffusion", "Ausbreitung"]], beschluesse: [["beschluesse", "Beschlusslage"]], fraktionen: [["fraktionen", "Fraktionen"]],
   gremien: [["gremien", "Gremien"]], graph: [["graph", "Themennetz"]], news: [["news", "Aktuelles"]], ausschreibungen: [["ausschreibungen", "Ausschreibungen"]],
 };
 /* Ablage der Anmerkungen: der Block meldet sein Element, die Anmerkungen hängen sich dort ein */

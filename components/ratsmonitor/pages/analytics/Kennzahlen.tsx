@@ -20,7 +20,7 @@ export const isNew = (iso: string) => { const d = String(iso || "").slice(0, 10)
  * in den letzten 7 Tagen beraten wurden (Sitzungsdatum; nicht der Abruf: ein spät gefundener alter Bericht ist nicht neu). Darunter in einer Zeile, worauf sich die Zahlen beziehen.
  */
 /** Im Kopfband: band = Bezeichnung neben der Zahl (sonst die erste Bedeutung), scope = Auswahl (Thema, Suche, Ort), period = Zeitraum */
-/** rest: die übrigen Zahlen ruhig in einer Zeile zeigen (Ausgang, Gremien: dort sind sie die Auswertung) */
+/** rest: die übrigen Zahlen ruhig in einer Zeile zeigen (Beschlusslage, Gremien: dort sind sie die Auswertung) */
 export function Kennzahlen({ items, week, band, scope, period, rest = false, children }: { items: { value: string; label: string }[]; week?: number | null; band?: string; scope?: string; period?: string; rest?: boolean; children?: ReactNode }) {
   /* Erste Zahl auch im Kopfband zeigen; beim Verlassen der Seite wieder entfernen */
   const fv = items[0]?.value, fl = band ?? items[0]?.label;

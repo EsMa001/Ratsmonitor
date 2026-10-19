@@ -5,7 +5,6 @@ import { IconChevronLeft } from "../../components/icons";
 import { PageBand } from "./PageBand";
 import { ShareButton } from "../../components/ShareButton";
 import { Icon, type IconName } from "../../info/icons";
-import { Dropdown } from "../../components/Dropdown";
 import { AnalyticsX } from "../../components/Brand";
 import { ThemeIcon } from "../../components/icons";
 import { WheelPicker } from "../../components/WheelPicker";
@@ -32,11 +31,11 @@ const KURZ: Record<string, string> = {
 
 const SEITEN: Record<string, Seite> = {
   atlas: { icon: "map", gruppe: "Analysen", titel: "plenara.X Atlas", frage: "Wie viel?", text: "Worüber die Räte beraten, wo und wie viel, nach 10 Themen." },
-  vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Ortsvergleich", frage: "Wie steht mein Ort da?", text: "Zwei Orte nebeneinander: Themen, Ausgang und was für jeden Ort typisch ist." },
+  vergleich: { icon: "mapPin", gruppe: "Analysen", titel: "plenara.X Ortsvergleich", frage: "Wie steht mein Ort da?", text: "Zwei Orte nebeneinander: Themen, Beschlusslage und was für jeden Ort typisch ist." },
   signale: { icon: "zap", gruppe: "Einblicke", titel: "plenara.X Signale", frage: "Was entsteht?", text: "Einzelne Vorhaben mit Ort, Schritt und Quelle." },
   fakten: { icon: "tag", gruppe: "Einblicke", titel: "plenara.X Fakten", frage: "Welcher Wert?", text: "Zahlen aus den Vorlagen der Räte, je Gemeinde, mit Quelle." },
   trends: { icon: "trendingUp", gruppe: "Analysen", titel: "plenara.X Trends", frage: "Was verändert sich?", text: "Begriffe, die zunehmen, und wie sie sich über die Gebiete ausbreiten." },
-  beschluesse: { icon: "circleCheck", gruppe: "Analysen", titel: "plenara.X Ausgang", frage: "Wie geht es aus?", text: "Wie die Vorgänge zum gewählten Thema ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf." },
+  beschluesse: { icon: "circleCheck", gruppe: "Analysen", titel: "plenara.X Beschlusslage", frage: "Wie geht es aus?", text: "Wie die Vorgänge zum gewählten Thema ausgehen: beschlossen, vertagt, abgelehnt, im Zeitverlauf." },
   fraktionen: { icon: "landmark", gruppe: "Hintergründe", titel: "plenara.X Fraktionen", frage: "Wer möchte was?", text: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
   gremien: { icon: "users", gruppe: "Hintergründe", titel: "plenara.X Gremien", frage: "Wer berät was?", text: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   graph: { icon: "network", gruppe: "Hintergründe", titel: "plenara.X Themennetz", frage: "Was hängt zusammen?", text: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
@@ -48,7 +47,6 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
   const s = SEITEN[seite], path = usePathname();
   const router = useRouter(), { goBack } = useAppNav();
   return (
-    <>
     <PageBand compact>
       {/* Kein Pfad, nur Zurück wie auf den übrigen Seiten (Artikel) */}
       <button type="button" className="back-btn -ml-1.5 mb-1 print:hidden" onClick={() => (cameFromApp() ? router.back() : goBack())}><IconChevronLeft />Zurück</button>
@@ -77,33 +75,6 @@ export function XKopf({ seite }: { seite: keyof typeof SEITEN }) {
         </nav>
       )}
     </PageBand>
-    <FragenLeiste seite={seite} />
-    </>
-  );
-}
-
-/* Desktop: die Frage der Seite und ihre Nachbarn als Chips, alle 11 Seiten in einer Auswahlliste (am Handy übernimmt das Blatt der unteren Leiste); Suchbegriff und Ort gelten dort weiter */
-const REIHE = ["atlas", "vergleich", "trends", "beschluesse", "signale", "fakten", "ausschreibungen", "news", "fraktionen", "gremien", "graph"] as const;
-function FragenLeiste({ seite }: { seite: string }) {
-  const router = useRouter();
-  const pos = Math.max(0, REIHE.indexOf(seite as (typeof REIHE)[number]));
-  /* bis zu vier Chips um die aktuelle Seite (gleiche Gruppe zuerst) */
-  const nah = [...REIHE].filter((k) => k !== seite).sort((a, b) => (SEITEN[a].gruppe === SEITEN[seite]?.gruppe ? 0 : 1) - (SEITEN[b].gruppe === SEITEN[seite]?.gruppe ? 0 : 1) || Math.abs(REIHE.indexOf(a) - pos) - Math.abs(REIHE.indexOf(b) - pos)).slice(0, 3);
-  const zeig = [seite, ...nah].filter((k) => SEITEN[k]);
-  return (
-    <nav aria-label="Weitere Fragen an plenara.X" className="-mt-2 mb-4 flex flex-wrap items-center gap-1.5 max-sm:hidden print:hidden">
-      {zeig.map((k) => {
-        const z = SEITEN[k], on = k === seite;
-        return (
-          <Link key={k} href={`/analytics/${k}`} aria-current={on ? "page" : undefined} scroll={false} title={`${z.titel.replace("plenara.X ", "")}: ${z.text}`}
-            className={`inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3 text-[14px] no-underline ${on ? "bg-slate-900 font-medium text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>
-            <Icon name={z.icon} size={14} />{z.frage}
-          </Link>
-        );
-      })}
-      <Dropdown label="Alle Seiten" noCurrent value="" onPick={(id) => router.push(`/analytics/${id}`)}
-        items={REIHE.map((k) => ({ id: k, label: SEITEN[k].frage, count: SEITEN[k].titel.replace("plenara.X ", ""), icon: <Icon name={SEITEN[k].icon} size={16} className="text-slate-500" /> }))} />
-    </nav>
   );
 }
 
@@ -136,7 +107,7 @@ export function XWeiter({ links }: { links: [string, string][] }) {
   );
 }
 
-/** Die 10 Themen als Kacheln (Filter „Thema“ der gemeinsamen Suche), gleich auf Trends, Ausgang und den Einblicken */
+/** Die 10 Themen als Kacheln (Filter „Thema“ der gemeinsamen Suche), gleich auf Trends, Beschlusslage und den Einblicken */
 export function ThemenLeiste() {
   const search = useSearch();
   return (

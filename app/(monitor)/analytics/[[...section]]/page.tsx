@@ -5,7 +5,7 @@ const SEITEN:Record<string,[string,string]>={
  graph:['Themennetz · plenara.X','Womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.'],
  trends:['Trends · plenara.X','Was in den Räten gerade aufkommt und wie es sich über die Gebiete ausbreitet: Begriffe, die zunehmen, und die Gebiete, die sie zum ersten Mal beraten.'],
  vergleich:['Vergleich · plenara.X','Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe.'],
- beschluesse:['Ausgang · plenara.X','Wie Vorgänge ausgehen: beschlossen, abgelehnt, vertagt, und wie lange es dauert.'],
+ beschluesse:['Beschlusslage · plenara.X','Wie Vorgänge ausgehen: beschlossen, abgelehnt, vertagt, und wie lange es dauert.'],
  gremien:['Gremien · plenara.X','Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden.'],
  fraktionen:['Fraktionen · plenara.X','Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird.'],
  news:['Aktuelles · plenara.X','Was in den Räten gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle.'],

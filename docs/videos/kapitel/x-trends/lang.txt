@@ -1,5 +1,5 @@
-# plenara.X Trends (seit 16.10.2026): Verlauf mit Ausbreitung, Reiter Ausgang.
+# plenara.X Trends (seit 16.10.2026): Verlauf mit Ausbreitung, Reiter Beschlusslage.
 *@x-trends.start Trends zeigt Begriffe, die in den Räten gerade zunehmen.
 @x-trends.liste Jeder Begriff steht mit der Zahl seiner Vorgänge und dem Faktor des Anstiegs.
 *@x-trends.begriff Ein Begriff wie {{p.thema|text}} zeigt, wie er sich über die Gebiete ausbreitet.
-@x-trends.ausgang Im Reiter Ausgang sehen Sie, wie Vorgänge ausgehen: beschlossen, vertagt oder abgelehnt.
+@x-trends.ausgang Im Reiter Beschlusslage sehen Sie, wie Vorgänge ausgehen: beschlossen, vertagt oder abgelehnt.

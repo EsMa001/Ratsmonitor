@@ -57,6 +57,7 @@ export function KnowledgeGraphPage() {
   const [given] = useState(() => params.get("thema"));
   const { res: runRes, ranKey: runKey, loading: runLoading, error: runError, run, runAfterChange } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/graph?${query}`, initial: false, fallback: "Der Graph konnte nicht berechnet werden.", onDone: () => { setSelected(""); setPair(null); } });
   const [allPairs, setAllPairs] = useState(false);
+  const TYP: Record<string, string> = { term: "Begriff", topic: "Thema", committee: "Gremium", land: "Land" };
   const res = runRes, ranKey = runKey, loading = runLoading;
   const [hint, setHint] = useState("");
   const error = hint || runError;
@@ -120,6 +121,7 @@ export function KnowledgeGraphPage() {
   }, [res, level]);
   const nodes = merged.nodes, edges = merged.edges;
   const byId = useMemo(() => new Map(nodes.map((x) => [x.id, x])), [nodes]);
+  const topNodes = useMemo(() => nodes.filter((x) => x.type !== "center").sort((x, y) => y.count - x.count).slice(0, 8), [nodes]);
   const sel = selected ? byId.get(selected) : undefined;
   const links = useMemo(() => {
     if (!res || !selected) return [];
@@ -213,7 +215,7 @@ export function KnowledgeGraphPage() {
           {!!res.partial?.length && (
             <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); start(); }} className="font-medium text-teal-700">Nur ganze Wörter →</button></p>
           )}
-          <div className="mt-10 max-w-[820px]">
+          <div className="mt-10 grid gap-x-12 gap-y-10 lg:grid-cols-2">
             <section>
               <h2 className="text-[22px] font-semibold">Stärkste Verbindungen</h2>
               <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die in denselben Einträgen vorkommen.</p>
@@ -234,6 +236,23 @@ export function KnowledgeGraphPage() {
               </ol>
               {strongest.length > 5 && <button type="button" aria-expanded={allPairs} onClick={() => setAllPairs(!allPairs)} className="mt-2 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{allPairs ? "Weniger Verbindungen zeigen" : `Alle ${strongest.length} Verbindungen zeigen`}</button>}
             </section>
+            {/* Rechts daneben: die häufigsten Knoten des Netzes (Begriffe, Themen, Gremien, Länder); Klick zeigt sie im Netz */}
+            {topNodes.length > 0 && <section>
+              <h2 className="text-[22px] font-semibold">Häufigste Knoten</h2>
+              <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, Themen, Gremien und Länder mit den meisten Einträgen im Netz.</p>
+              <ol className="m-0 list-none border-t border-slate-200 p-0">
+                {topNodes.map((x, i) => (
+                  <li key={x.id} className="border-b border-slate-200">
+                    <button type="button" onClick={() => { setNetz(true); setSelected(x.id); setPair(null); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className="group grid w-full cursor-pointer grid-cols-[28px_1fr_auto_auto] items-center gap-x-3 py-3 text-left hover:bg-slate-50">
+                      <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
+                      <span className="min-w-0 truncate text-[16px] text-slate-900">{x.label}<span className="ml-2 text-[12px] text-slate-500">{TYP[x.type] ?? ""}</span></span>
+                      <span className="text-[14px] tabular-nums text-slate-500">{n(x.count)} Einträge</span>
+                      <span className="text-[16px] text-teal-700 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </section>}
           </div>
           <MethodikNote>{res.q === "" ? `Grundlage sind alle ${n(res.total)} Vorgänge${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind alle ${n(res.total)} passenden Vorgänge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht.</MethodikNote>
         </>

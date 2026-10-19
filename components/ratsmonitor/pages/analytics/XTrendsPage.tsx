@@ -38,7 +38,7 @@ interface Row extends Trend { kind: TrendKind; key: string }
 
 const SORTS: [Sort, string, string][] = [
   ["auf", "Aufsteigend", "Deutlich häufiger als im Zeitraum davor, geordnet nach Aussagekraft (viele Erwähnungen zählen mehr als ein hoher Faktor); „neu“: davor kaum vorhanden"],
-  ["aus", "Breitet sich aus", "Meiste Gebiete, die den Begriff im Zeitraum zum ersten Mal beraten haben"],
+  ["aus", "Meiste Gebiete", "Meiste Gebiete, die den Begriff im Zeitraum zum ersten Mal beraten haben. Jeder Begriff lässt sich als Ausbreitung auf der Karte abspielen (▶ in der Zeile)"],
   ["ab", "Absteigend", "Deutlich seltener als im Zeitraum davor, geordnet nach Aussagekraft"],
 ];
 const WINDOWS: [string, string][] = [["30", "30 Tage"], ["90", "90 Tage"], ["180", "180 Tage"]];
@@ -245,7 +245,7 @@ export function XTrendsPage() {
                         return (
                           <li key={t.key} className="border-b border-slate-200">
                             <button type="button" onClick={() => pick({ begriff: t.term })} onMouseEnter={() => setHover(t.key)} onFocus={() => setHover(t.key)} onBlur={() => setHover("")}
-                              className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 py-3 text-left sm:grid-cols-[1fr_64px_88px_96px] ${hover === t.key ? "bg-slate-50" : ""}`}>
+                              className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 py-3 text-left sm:grid-cols-[1fr_64px_88px_96px_32px] ${hover === t.key ? "bg-slate-50" : ""}`}>
                               <span className="min-w-0 truncate text-[16px] text-slate-900">
                                 {prettyTerm(t.term)}{t.kind === "emerging" && <span className="ml-2 rounded-full bg-teal-50 px-2 py-0.5 text-[12px] font-medium text-teal-800">neu</span>}
                                 <span className="ml-2 text-[12px] text-slate-500 max-sm:hidden">{n(t.nr)} Vorgänge</span>
@@ -253,6 +253,7 @@ export function XTrendsPage() {
                               <span className={`text-right text-[16px] font-semibold tabular-nums ${sort === "aus" ? "max-sm:hidden" : ""} ${t.kind === "falling" ? "text-slate-500" : "text-teal-700"}`}>{ratio(t)}</span>
                               <span className={`text-right text-[14px] tabular-nums text-slate-700 ${sort === "aus" ? "" : "max-sm:hidden"}`}>{s ? `+${n(s.added)} Gebiete` : <span className="inline-block h-3 w-14 animate-pulse rounded bg-slate-100" />}</span>
                               <span className="max-sm:hidden">{s ? <MiniCurve curve={s.curve} /> : <span className="inline-block h-7 w-24 animate-pulse rounded bg-slate-50" />}</span>
+                              <span title="Ausbreitung auf der Karte abspielen" aria-hidden="true" className={`grid h-7 w-7 place-items-center rounded-full max-sm:hidden ${hover === t.key ? "bg-teal-700 text-white" : "bg-teal-50 text-teal-700"}`}><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg></span>
                             </button>
                           </li>
                         );

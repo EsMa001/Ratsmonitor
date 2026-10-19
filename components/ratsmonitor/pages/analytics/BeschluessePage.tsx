@@ -13,6 +13,8 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { pctText as pct } from "../../lib/format";
 import { MethodikNote } from "./Methodik";
+import Link from "next/link";
+import { fetchJson } from "../../lib/fetchJson";
 
 interface VRow { id: string; name: string; n: number; vote: number; unanimous: number | null; changeN: number; changed: number | null }
 interface Result {
@@ -64,8 +66,16 @@ export function BeschluessePage() {
   const [open, setOpen] = useState("");
   const phone = usePhone();
   const [cut, setCut] = useState<"topics" | "kinds" | "lands">("kinds");
+  /* Vergleichswert: dieselbe Auswertung über alle Vorgänge (einmal geladen, serverseitig zwischengespeichert) */
+  const [base, setBase] = useState<Result | null>(null);
+  useEffect(() => {
+    const c = new AbortController();
+    fetchJson<Result>("/api/analytics/decisions", { signal: c.signal }, "Der Vergleichswert konnte nicht geladen werden.").then(setBase).catch(() => {});
+    return () => c.abort();
+  }, []);
+  const showBase = !!base && !!res && res.totals.decided !== base.totals.decided;
   /* Listen zuerst kurz, „Alle zeigen“ klappt auf */
-  const [allCut, setAllCut] = useState(false), [allDur, setAllDur] = useState(false);
+  const [allCut, setAllCut] = useState(false);
   const toggle = (open: boolean, set: (v: boolean) => void, total: number, label: string) => total > 6 ? <button type="button" aria-expanded={open} onClick={() => set(!open)} className="mt-2 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{open ? `Weniger ${label} zeigen` : `Alle ${total} ${label} zeigen`}</button> : null;
 
 
@@ -73,7 +83,6 @@ export function BeschluessePage() {
   const statusRows = useMemo(() => (res ? res.status.filter((s) => s.id !== "unknown" && s.n > 0) : []), [res]);
   const statusTotal = statusRows.reduce((a, s) => a + s.n, 0);
   const cuts = res ? res[cut] : [];
-  const dmax = res?.duration.p90 ?? 1;
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
@@ -90,22 +99,36 @@ export function BeschluessePage() {
             <>
               <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} werden ${pct(res.rates.approval)} der ${n(res.totals.decided)} Entscheidungen beschlossen, ${pct(res.rates.postponement)} vertagt und ${pct(res.rates.rejection)} abgelehnt.${res.duration.median !== null ? ` Im Median dauert es ${res.duration.median} Tage bis zur Entscheidung.` : ""}`}</Befund>
               <p className="mt-2 max-w-[760px] text-[14px] text-slate-500 max-sm:line-clamp-2">Grundlage: {n(res.totals.decided)} Vorgänge mit bekannter Entscheidung, das sind {n(res.totals.known)} von {n(res.totals.all)} Einträgen mit bekanntem Status{res.totals.knownShare !== null ? ` (${pct(res.totals.knownShare)} aller Einträge)` : ""}. Die übrigen Einträge zeigen keinen Status.</p>
-              <Kennzahlen rest={!phone} items={([
+              <Kennzahlen items={([
                   ["Beschlussquote", pct(res.rates.approval)],
                   ["Vertagt", pct(res.rates.postponement)],
                   ["Abgelehnt", pct(res.rates.rejection)],
                   ["Entscheidungen", n(res.totals.decided)]
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
 
-
-              <Reveal><section className="mt-12 max-sm:mt-8">
-                <h2 className="text-[22px] font-semibold">Entscheidungen im Zeitverlauf</h2>
-                <p className="mb-4 mt-1 text-[14px] text-slate-500">Beschlossen, vertagt und abgelehnt je Monat.</p>
-                <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
-                  {([["beschlossen", DEC_COLORS.approved], ["vertagt", DEC_COLORS.postponed], ["abgelehnt", DEC_COLORS.rejected]] as const).map(([l, c]) => <li key={l} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
+              {/* Wie gehen Vorgänge zu dieser Auswahl aus: ein Balken, daneben der Wert für alle Vorgänge; Dauer in einer Zeile */}
+              <div className="mt-6 max-w-[900px]">
+                <div className="flex h-5 overflow-hidden rounded-full bg-slate-100" role="img" aria-label={`beschlossen ${pct(res.rates.approval)}, vertagt ${pct(res.rates.postponement)}, abgelehnt ${pct(res.rates.rejection)}`}>
+                  {([[res.rates.approval, DEC_COLORS.approved], [res.rates.postponement, DEC_COLORS.postponed], [res.rates.rejection, DEC_COLORS.rejected]] as [number | null, string][]).map(([v, c], i) => <span key={i} style={{ width: `${v ?? 0}%`, background: c }} />)}
+                </div>
+                <ul className="m-0 mt-3 grid list-none grid-cols-3 gap-4 p-0 max-sm:grid-cols-1">
+                  {([["beschlossen", res.rates.approval, base?.rates.approval, DEC_COLORS.approved], ["vertagt", res.rates.postponement, base?.rates.postponement, DEC_COLORS.postponed], ["abgelehnt", res.rates.rejection, base?.rates.rejection, DEC_COLORS.rejected]] as [string, number | null, number | null | undefined, string][]).map(([l, v, b, c]) => (
+                    <li key={l} className="flex items-baseline gap-2 text-[14px] text-slate-700">
+                      <i className="inline-block h-3 w-3 flex-none translate-y-0.5 rounded-sm" style={{ background: c }} />
+                      <span><b className="text-[22px] font-semibold tabular-nums text-slate-900">{pct(v)}</b> {l}</span>
+                      {showBase && b !== undefined && b !== null && <span className="text-[12px] text-slate-500">(alle Vorgänge: {pct(b)})</span>}
+                    </li>
+                  ))}
                 </ul>
-                <MonthColumns months={res.months} />
-              </section></Reveal>
+                {res.duration.median !== null && (
+                  <p className="m-0 mt-3 text-[14px] text-slate-600">
+                    Dauer bis zur Entscheidung: meist {res.duration.p25} bis {res.duration.p75} Tage, in der Mitte {res.duration.median}{showBase && base?.duration.median != null ? ` (alle Vorgänge: ${base.duration.median})` : ""}. <Link href="/analytics/gremien" className="font-medium text-teal-700 hover:underline">Wege und Dauer in den Gremien →</Link>
+                  </p>
+                )}
+              </div>
+
+
+              
 
 
 
@@ -117,31 +140,15 @@ export function BeschluessePage() {
                 {toggle(allCut, setAllCut, cuts.length, "Einträge")}
               </div>
               </Abschnitt>
-              <Abschnitt title="Durchlaufzeit">
-              <div className="pb-6 max-sm:pb-0 pt-2">
-                <p className="mb-4 mt-1 text-[14px] text-slate-500">Tage von der ersten Station eines Vorgangs bis zur Entscheidung. Nur Vorgänge mit mindestens zwei datierten Stationen ({n(res.duration.n)}).</p>
-                {res.duration.median === null ? <p className="text-[14px] text-slate-500">Zu wenige Vorgänge mit mehreren Stationen.</p> : (
-                  <>
-                    {/* Als Satz statt einer zweiten Zahlenzeile (die Kennzahlen stehen oben) */}
-                    <p className="m-0 text-[18px] font-semibold leading-snug text-slate-900">Im Mittel {res.duration.median} Tage bis zur Entscheidung<span className="font-normal text-slate-600">; die Hälfte zwischen {res.duration.p25} und {res.duration.p75} Tagen, neun von zehn bis {res.duration.p90} Tage.</span></p>
-                    {res.duration.topics.length > 0 && (
-                      <>
-                      <ol className="m-0 mt-6 list-none border-t border-slate-200 p-0">
-                        {(allDur ? res.duration.topics : res.duration.topics.slice(0, 6)).map((t) => (
-                          <li key={t.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-slate-200 py-3 sm:grid-cols-[220px_minmax(0,1fr)_150px]">
-                            <span className="truncate text-[16px] text-slate-900">{t.name}</span>
-                            <span className="relative order-3 col-span-2 block h-[6px] rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="absolute left-0 top-0 block h-full rounded-full bg-teal-600" style={{ width: `${Math.min(100, (t.median / dmax) * 100)}%` }} /><span className="absolute top-[-3px] block h-[12px] w-px bg-slate-900/70" style={{ left: `${Math.min(100, (t.p90 / dmax) * 100)}%` }} /></span>
-                            <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{t.median} Tage</b><span className="ml-2 text-slate-500">{t.n}</span></span>
-                          </li>
-                        ))}
-                      </ol>
-                      {toggle(allDur, setAllDur, res.duration.topics.length, "Themen")}
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-              </Abschnitt>
+              <Reveal><section className="mt-12 max-sm:mt-8">
+                <h2 className="text-[22px] font-semibold">Entscheidungen im Zeitverlauf</h2>
+                <p className="mb-4 mt-1 text-[14px] text-slate-500">Beschlossen, vertagt und abgelehnt je Monat.</p>
+                <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
+                  {([["beschlossen", DEC_COLORS.approved], ["vertagt", DEC_COLORS.postponed], ["abgelehnt", DEC_COLORS.rejected]] as const).map(([l, c]) => <li key={l} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
+                </ul>
+                <MonthColumns months={res.months} />
+              </section></Reveal>
+              
               <div className="mt-12 max-sm:mt-8 border-t border-slate-200">
               <Fold title="Abstimmung und Änderungen">
               <div className="pb-6 max-sm:pb-0 pt-2">

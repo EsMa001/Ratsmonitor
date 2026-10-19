@@ -159,8 +159,8 @@ export function VideosPage() {
             ...ANWENDER.map((a) => ({ base: `plenara-anwender-${a.slug}`, name: a.name, text: a.text, href: `/anwender/${a.slug}`, link: `Zur Seite ${a.name}` }))].map((v) => (
             <div key={v.base} className="max-sm:w-[78%] max-sm:flex-none max-sm:snap-start">
               <Player base={variant(v.base, dark)} poster={variant(v.base, dark)} label={`Video abspielen: ${v.name}`} />
-              <p className="m-0 mt-3 text-[16px] font-semibold text-slate-900">{v.name}</p>
-              <p className="m-0 mt-0.5 text-[14px] text-slate-500">{v.text} <Link href={v.href} className="inline-block max-sm:py-3 text-teal-700 hover:underline">{v.link} →</Link></p>
+              <p className="m-0 pt-5 text-[16px] font-semibold text-slate-900">{v.name}</p>
+              <p className="m-0 pt-1 text-[14px] text-slate-500">{v.text} <Link href={v.href} className="inline-block max-sm:py-3 text-teal-700 hover:underline">{v.link} →</Link></p>
             </div>
           ))}
         </div>

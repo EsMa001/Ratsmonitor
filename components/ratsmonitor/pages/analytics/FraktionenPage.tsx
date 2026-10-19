@@ -180,7 +180,7 @@ export function FraktionenPage() {
           )}
         </div>
       )}
-    <XWeiter links={[["/analytics/trends", "plenara.X Trends"], ["/analytics/beschluesse", "Ausgang"], ["/analytics/gremien", "Gremien"]]} />
+    <XWeiter links={[["/analytics/trends", "plenara.X Trends"], ["/analytics/beschluesse", "Beschlusslage"], ["/analytics/gremien", "Gremien"]]} />
     </main>
   );
 }

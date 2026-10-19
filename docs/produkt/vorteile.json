@@ -90,7 +90,7 @@
    "rang": 14,
    "stufe": "B",
    "titel": "Beschlüsse einordnen",
-   "beleg": "plenara.X Trends, Reiter Ausgang: Quote, Vertagungen, Dauer"
+   "beleg": "plenara.X Trends, Reiter Beschlusslage: Quote, Vertagungen, Dauer"
   },
   {
    "rang": 15,
@@ -577,26 +577,26 @@
   {
    "rang": 94,
    "stufe": "D",
-   "titel": "Ausgang: Vertagungen und Ablehnungen sichtbar",
-   "beleg": "plenara.X Trends, Reiter Ausgang"
+   "titel": "Beschlusslage: Vertagungen und Ablehnungen sichtbar",
+   "beleg": "plenara.X Trends, Reiter Beschlusslage"
   },
   {
    "rang": 95,
    "stufe": "D",
-   "titel": "Ausgang: Anteil einstimmiger Entscheidungen",
-   "beleg": "plenara.X Trends, Reiter Ausgang"
+   "titel": "Beschlusslage: Anteil einstimmiger Entscheidungen",
+   "beleg": "plenara.X Trends, Reiter Beschlusslage"
   },
   {
    "rang": 96,
    "stufe": "D",
-   "titel": "Ausgang: Wie oft Vorlagen geändert werden",
-   "beleg": "plenara.X Trends, Reiter Ausgang"
+   "titel": "Beschlusslage: Wie oft Vorlagen geändert werden",
+   "beleg": "plenara.X Trends, Reiter Beschlusslage"
   },
   {
    "rang": 97,
    "stufe": "D",
-   "titel": "Ausgang: Durchlaufzeit bis zum Beschluss",
-   "beleg": "plenara.X Trends, Reiter Ausgang"
+   "titel": "Beschlusslage: Durchlaufzeit bis zum Beschluss",
+   "beleg": "plenara.X Trends, Reiter Beschlusslage"
   },
   {
    "rang": 98,

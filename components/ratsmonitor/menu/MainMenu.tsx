@@ -33,9 +33,9 @@ export const ANALYSE: XEintrag[] = [
   { href: "/analytics/atlas", label: "Atlas", icon: "map", hint: "Wie viel?" },
   { href: "/analytics/vergleich", label: "Ortsvergleich", icon: "mapPin", hint: "Wie steht mein Ort da?" },
   { href: "/analytics/trends", label: "Trends", icon: "trendingUp", hint: "Was verändert sich?" },
-  { href: "/analytics/beschluesse", label: "Ausgang", icon: "circleCheck", hint: "Wie geht es aus?" },
+  { href: "/analytics/beschluesse", label: "Beschlusslage", icon: "circleCheck", hint: "Wie geht es aus?" },
 ];
-/* Einblicke: einzelne Vorgänge und belegte Einzelwerte mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles, Anträge der Fraktionen, Fakten). Zahlen und Verteilungen stehen in den Analysen (Atlas, Ortsvergleich, Trends, Ausgang) */
+/* Einblicke: einzelne Vorgänge und belegte Einzelwerte mit Ort, Schritt und Quelle (Signale, Ausschreibungen, Aktuelles, Anträge der Fraktionen, Fakten). Zahlen und Verteilungen stehen in den Analysen (Atlas, Ortsvergleich, Trends, Beschlusslage) */
 export const EINBLICKE: XEintrag[] = [
   { href: "/analytics/signale", label: "Signale", icon: "zap", hint: "Was entsteht?" },
   { href: "/analytics/ausschreibungen", label: "Ausschreibungen", icon: "clipboardList", hint: "Was wird vergeben?" },
@@ -207,7 +207,7 @@ export function MainMenu() {
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />
-                          <span>{f.label}</span>
+                          <span className="shrink-0">{f.label}</span>
                           {f.hint && <span className="ml-auto whitespace-nowrap pl-5 text-[12px] font-normal text-slate-400 max-sm:hidden">{f.hint}</span>}
                         </Link>
                       </li>
@@ -224,7 +224,7 @@ export function MainMenu() {
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />
-                          <span>{f.label}</span>
+                          <span className="shrink-0">{f.label}</span>
                           {f.hint && <span className="ml-auto whitespace-nowrap pl-5 text-[12px] font-normal text-slate-400 max-sm:hidden">{f.hint}</span>}
                         </Link>
                       </li>
@@ -241,7 +241,7 @@ export function MainMenu() {
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />
-                          <span>{f.label}</span>
+                          <span className="shrink-0">{f.label}</span>
                           {f.hint && <span className="ml-auto whitespace-nowrap pl-5 text-[12px] font-normal text-slate-400 max-sm:hidden">{f.hint}</span>}
                         </Link>
                       </li>
