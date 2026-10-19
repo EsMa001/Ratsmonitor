@@ -271,7 +271,7 @@ export function ComparePage() {
             <Hinweis className="mb-3 mt-1">Anteil der Themen an den Vorgängen mit Thema. Die Marke zeigt den Wert für alle Gebiete.</Hinweis>
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             {legend}
-            <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{(!allTopics ? topicRows.slice(0, 5) : topicRows).map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => pick("topics", "label", r.id, r.name, [0, 1])} />)}</ol>
+            <ol className="rm-focusrows m-0 mt-3 list-none border-t border-slate-200 p-0">{(!allTopics ? topicRows.slice(0, 5) : topicRows).map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => pick("topics", "label", r.id, r.name, [0, 1])} />)}</ol>
             {topicRows.length > 5 && <button type="button" aria-expanded={allTopics} onClick={() => setAllTopics(!allTopics)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700 hover:underline sm:min-h-9">{allTopics ? "Weniger Themen zeigen" : `Alle ${topicRows.length} Themen zeigen`}</button>}
             {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Vorgänge für ein Themenprofil.</p>}
             {drillAt("topics")}

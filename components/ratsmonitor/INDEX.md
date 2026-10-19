@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (577 Zeilen, ⚠14)
-- app/ratsmonitor.css (301 Zeilen, ⚠18)
+- app/ratsmonitor.css (311 Zeilen, ⚠18)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -464,6 +464,7 @@ rm-attr ratsmonitor.css:248
 rm-band-mid ratsmonitor-info.css:444
 rm-banddots ratsmonitor-info.css:440
 rm-bandicon ratsmonitor-info.css:435
+rm-bar ratsmonitor.css:307
 rm-brandtag ratsmonitor-info.css:432
 rm-chip ratsmonitor.css:89
 rm-dark admin.css:461
@@ -472,7 +473,9 @@ rm-dark ratsmonitor.css:85
 rm-dotfield ratsmonitor-info.css:405
 rm-dotfield-on ratsmonitor-info.css:406
 rm-dots ratsmonitor.css:114
+rm-draw ratsmonitor.css:303
 rm-flat ratsmonitor.css:71
+rm-focusrows ratsmonitor.css:308
 rm-gdot ratsmonitor.css:183
 rm-gflow ratsmonitor.css:292
 rm-gin ratsmonitor.css:289
@@ -806,7 +809,7 @@ truncate ratsmonitor-info.css:459
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (142, ⚠6): DetailPage
 - KalenderPage.tsx (378, ⚠1): KalenderPage
-- LegalPage.tsx (250): useInhalt, LegalPage
+- LegalPage.tsx (281): useInhalt, LegalPage
 - NotificationsPage.tsx (92): NotificationsPage
 - OverviewPage.tsx (172): OverviewPage
 - PersonalPage.tsx (26): PersonalPage
@@ -821,14 +824,14 @@ truncate ratsmonitor-info.css:459
 - AnalyticsPages.tsx (60): AnalyticsPages
 - AtlasPage.tsx (69): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (53): Befund, zuThema, Leer, Fehler
-- BeschluessePage.tsx (220, ⚠9): BeschluessePage
+- BeschluessePage.tsx (223, ⚠11): BeschluessePage
 - CompareCharts.tsx (63): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (406, ⚠11): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (93, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (328, ⚠4): FaktenPage
-- FraktionenPage.tsx (187, ⚠6): FraktionenPage
+- FraktionenPage.tsx (189, ⚠7): FraktionenPage
 - GraphView.tsx (386, ⚠2): GNode, GEdge, KIND, seeded, GraphView
 - GremiennetzPage.tsx (212, ⚠5): GremiennetzPage
 - Kennzahlen.tsx (132, ⚠1): weekAgo, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
@@ -850,7 +853,7 @@ truncate ratsmonitor-info.css:459
 - XAtlasView.tsx (576, ⚠10): XAtlasView
 - XKopf.tsx (210, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (346, ⚠4): XTrendsPage
-- XTrendsParts.tsx (149, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
+- XTrendsParts.tsx (150, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery
 

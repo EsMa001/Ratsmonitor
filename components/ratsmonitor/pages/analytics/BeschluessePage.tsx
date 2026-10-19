@@ -77,6 +77,9 @@ export function BeschluessePage() {
   }, [stale, loading, run]);
   // Geöffnete Liste hinter einer Zeile („kind:rat“)
   const [open, setOpen] = useState("");
+  /* Fokus auf einen Status: beim Überfahren der Legende bzw. des Balkens treten die übrigen Anteile zurück */
+  const [hotStatus, setHotStatus] = useState("");
+  const [hotOutcome, setHotOutcome] = useState("");
   const phone = usePhone();
   const [cut, setCut] = useState<"topics" | "kinds" | "lands">("kinds");
   /* Vergleichswert: dieselbe Auswertung über alle Vorgänge (einmal geladen, serverseitig zwischengespeichert) */
@@ -149,7 +152,7 @@ export function BeschluessePage() {
               <div className="pb-6 max-sm:pb-0 pt-2">
                 <Segmented label="Aufteilung" fill={phone} options={[["kinds", "Gremienebene"], ["topics", "Themenfeld"], ["lands", "Bundesland"]]} value={cut} onPick={setCut} />
                 <p className="mb-2 mt-3 text-[14px] text-slate-500">Beschlussquote und Anteil vertagt und abgelehnt{cut === "topics" ? `. Nur ${n(res.totals.decided - res.unclassified.decided)} der ${n(res.totals.decided)} Entscheidungen sind einem Themenfeld zugeordnet.` : cut === "kinds" ? ". Ausschüsse empfehlen nur: Für sie steht die Zahl der Empfehlungen statt einer Quote." : "."}{cut !== "kinds" ? " Grau: im üblichen Rahmen." : ""}</p>
-                {cuts.length === 0 ? <p className="py-4 text-[14px] text-slate-500">Zu wenige Entscheidungen für diese Aufteilung.</p> : <ol className="m-0 list-none border-t border-slate-200 p-0">{(allCut ? cuts : cuts.slice(0, 6)).map((c) => { const by = { kinds: "kind", topics: "label", lands: "land" }[cut], k = `${by}:${c.id}`; return <DecisionRow key={c.id} cut={c} onToggle={() => setOpen(open === k ? "" : k)} expanded={open === k} drill={open === k && <RadarDrill base="/api/analytics/decisions?list=1" query={ranKey} by={by} value={c.id} label={`${c.name}, Vorgänge mit Entscheidung`} />} />; })}</ol>}
+                {cuts.length === 0 ? <p className="py-4 text-[14px] text-slate-500">Zu wenige Entscheidungen für diese Aufteilung.</p> : <ol className="m-0 list-none border-t border-slate-200 p-0">{(allCut ? cuts : cuts.slice(0, 6)).map((c) => { const by = { kinds: "kind", topics: "label", lands: "land" }[cut], k = `${by}:${c.id}`; return <DecisionRow hot={hotOutcome} key={c.id} cut={c} onToggle={() => setOpen(open === k ? "" : k)} expanded={open === k} drill={open === k && <RadarDrill base="/api/analytics/decisions?list=1" query={ranKey} by={by} value={c.id} label={`${c.name}, Vorgänge mit Entscheidung`} />} />; })}</ol>}
                 {toggle(allCut, setAllCut, cuts.length, "Einträge")}
               </div>
               </Abschnitt>
@@ -157,7 +160,7 @@ export function BeschluessePage() {
                 <h2 className="text-[22px] font-semibold">Entscheidungen im Zeitverlauf</h2>
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Beschlossen, vertagt und abgelehnt je Monat.</p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
-                  {([["beschlossen", DEC_COLORS.approved], ["vertagt", DEC_COLORS.postponed], ["abgelehnt", DEC_COLORS.rejected]] as const).map(([l, c]) => <li key={l} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
+                  {([["beschlossen", DEC_COLORS.approved, "approved"], ["vertagt", DEC_COLORS.postponed, "postponed"], ["abgelehnt", DEC_COLORS.rejected, "rejected"]] as const).map(([l, c, k]) => <li key={l} onMouseEnter={() => setHotOutcome(k)} onMouseLeave={() => setHotOutcome("")} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
                 </ul>
                 <MonthColumns months={res.months} />
               </section></Reveal>
@@ -200,10 +203,10 @@ export function BeschluessePage() {
               <div className="pb-6 max-sm:pb-0 pt-2">
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Alle Einträge mit bekanntem Status.</p>
                 <div className="flex h-[16px] w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label="Stand der Vorgänge">
-                  {statusRows.map((s) => <span key={s.id} title={`${STATUS.find((x) => x.id === s.id)?.label ?? s.id}: ${n(s.n)}`} style={{ width: `${(s.n / statusTotal) * 100}%`, background: STATUS_COLOR[s.id] }} />)}
+                  {statusRows.map((s) => <span key={s.id} title={`${STATUS.find((x) => x.id === s.id)?.label ?? s.id}: ${n(s.n)}`} onMouseEnter={() => setHotStatus(s.id)} onMouseLeave={() => setHotStatus("")} className="transition-opacity duration-200" style={{ width: `${(s.n / statusTotal) * 100}%`, background: STATUS_COLOR[s.id], opacity: hotStatus && hotStatus !== s.id ? 0.3 : 1 }} />)}
                 </div>
                 <ul className="m-0 mt-3 grid list-none gap-x-6 gap-y-1 p-0 text-[14px] sm:grid-cols-2 lg:grid-cols-4">
-                  {statusRows.map((s) => <li key={s.id} className="flex items-center justify-between gap-3 border-b border-slate-100 py-1"><span className="flex items-center gap-2"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{STATUS.find((x) => x.id === s.id)?.label ?? s.id}</span><span className="tabular-nums text-slate-500">{n(s.n)} · {Math.round((s.n / statusTotal) * 100)} %</span></li>)}
+                  {statusRows.map((s) => <li key={s.id} onMouseEnter={() => setHotStatus(s.id)} onMouseLeave={() => setHotStatus("")} className={`flex items-center justify-between gap-3 border-b border-slate-100 py-1 transition-opacity duration-200 ${hotStatus && hotStatus !== s.id ? "opacity-50" : ""}`}><span className="flex items-center gap-2"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{STATUS.find((x) => x.id === s.id)?.label ?? s.id}</span><span className="tabular-nums text-slate-500">{n(s.n)} · {Math.round((s.n / statusTotal) * 100)} %</span></li>)}
                 </ul>
               </div>
               <MethodikNote>Abstimmung, Änderungen und Durchlaufzeit zählen Vorgänge mit Entscheidung; „einstimmig“, „mehrheitlich“ und „geändert“ stammen aus dem Ergebnistext. Der Status ist nur bei einem Teil bekannt, Ablehnungen sind selten vermerkt: die Quoten sind ein Anhaltspunkt. Offene Vorgänge fehlen in der Durchlaufzeit.</MethodikNote>

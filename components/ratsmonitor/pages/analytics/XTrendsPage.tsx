@@ -243,7 +243,7 @@ export function XTrendsPage() {
                       {rows.slice(0, shown).map((t) => {
                         const s = byKey.get(t.key);
                         return (
-                          <li key={t.key} className="border-b border-slate-200">
+                          <li key={t.key} className={`border-b border-slate-200 transition-opacity duration-200 ${hover && hover !== t.key ? "opacity-55" : ""}`}>
                             <button type="button" onClick={() => pick({ begriff: t.term })} onMouseEnter={() => setHover(t.key)} onFocus={() => setHover(t.key)} onBlur={() => setHover("")}
                               className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 py-3 text-left sm:grid-cols-[1fr_64px_88px_96px_32px] ${hover === t.key ? "bg-slate-50" : ""}`}>
                               <span className="min-w-0 truncate text-[16px] text-slate-900">
@@ -252,7 +252,7 @@ export function XTrendsPage() {
                               </span>
                               <span className={`text-right text-[16px] font-semibold tabular-nums ${sort === "aus" ? "max-sm:hidden" : ""} ${t.kind === "falling" ? "text-slate-500" : "text-teal-700"}`}>{ratio(t)}</span>
                               <span className={`text-right text-[14px] tabular-nums text-slate-700 ${sort === "aus" ? "" : "max-sm:hidden"}`}>{s ? `+${n(s.added)} Gebiete` : <span className="inline-block h-3 w-14 animate-pulse rounded bg-slate-100" />}</span>
-                              <span className="max-sm:hidden">{s ? <MiniCurve curve={s.curve} /> : <span className="inline-block h-7 w-24 animate-pulse rounded bg-slate-50" />}</span>
+                              <span className="max-sm:hidden">{s ? <MiniCurve curve={s.curve} draw={hover === t.key} /> : <span className="inline-block h-7 w-24 animate-pulse rounded bg-slate-50" />}</span>
                               <span title="Ausbreitung auf der Karte abspielen" aria-hidden="true" className={`grid h-7 w-7 place-items-center rounded-full max-sm:hidden ${hover === t.key ? "bg-teal-700 text-white" : "bg-teal-50 text-teal-700"}`}><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg></span>
                             </button>
                           </li>

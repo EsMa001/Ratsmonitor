@@ -39,7 +39,7 @@ export function TopicPair({ name, a, b, base, max, onPick }: { name: string; a: 
   const side = (v: number, color: string, mirror: boolean) => (
     <span className={`flex items-center gap-2 ${mirror ? "sm:flex-row-reverse" : ""}`}>
       <span className="relative block h-[8px] flex-1 rounded-full bg-slate-100">
-        <span className={`absolute top-0 block h-full rounded-full ${mirror ? "left-0 sm:left-auto sm:right-0" : "left-0"}`} style={{ width: pct(v), background: color }} />
+        <span className={`rm-bar absolute top-0 block h-full rounded-full ${mirror ? "left-0 origin-left sm:left-auto sm:right-0 sm:origin-right" : "left-0 origin-left"}`} style={{ width: pct(v), background: color }} />
         <span className={`pointer-events-none absolute -bottom-1 -top-1 w-px bg-slate-900/70 ${mirror ? "left-[var(--p)] sm:left-auto sm:right-[var(--p)]" : "left-[var(--p)]"}`} style={{ "--p": pct(base) } as React.CSSProperties} title={`Alle Gebiete: ${val(base)}`} />
       </span>
       <span className={`w-[56px] shrink-0 text-[12px] tabular-nums text-slate-500 ${mirror ? "text-right sm:text-left" : "text-right sm:text-left"}`}>{val(v)}</span>

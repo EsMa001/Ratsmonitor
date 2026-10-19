@@ -42,16 +42,16 @@ export function MonthColumns({ months }: { months: Month[] }) {
 }
 
 /** Eine Zeile je Gruppe: Anteil beschlossen, vertagt und abgelehnt als gestapelter Balken; onToggle öffnet die Liste der Vorgänge (drill, unter der Zeile) */
-export function DecisionRow({ cut, onToggle, expanded, drill }: { cut: Cut; onToggle?: () => void; expanded?: boolean; drill?: ReactNode }) {
+export function DecisionRow({ cut, onToggle, expanded, drill, hot = "" }: { /* Fokus auf einen Ausgang (approved, postponed, rejected): die übrigen Anteile treten zurück */ hot?: string; cut: Cut; onToggle?: () => void; expanded?: boolean; drill?: ReactNode }) {
   const d = Math.max(1, cut.decided), pc = (v: number) => `${(v / d) * 100}%`;
   const cls = `grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 text-left sm:grid-cols-[220px_minmax(0,1fr)_150px] ${onToggle ? (expanded ? "bg-teal-50/60" : "hover:bg-slate-50") : ""}`;
   const body = (
     <>
       <span className="truncate text-[16px] text-slate-900">{cut.name}</span>
       <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1" role="img" aria-label={`${cut.name}: ${cut.rate ?? 0} % beschlossen`}>
-        <span style={{ width: pc(cut.approved), background: DEC_COLORS.approved }} title={`beschlossen: ${nf(cut.approved)}`} />
-        <span style={{ width: pc(cut.postponed), background: DEC_COLORS.postponed }} title={`vertagt: ${nf(cut.postponed)}`} />
-        <span style={{ width: pc(cut.rejected), background: DEC_COLORS.rejected }} title={`abgelehnt: ${nf(cut.rejected)}`} />
+        <span className="transition-opacity duration-200" style={{ width: pc(cut.approved), background: DEC_COLORS.approved, opacity: hot && hot !== "approved" ? 0.25 : 1 }} title={`beschlossen: ${nf(cut.approved)}`} />
+        <span className="transition-opacity duration-200" style={{ width: pc(cut.postponed), background: DEC_COLORS.postponed, opacity: hot && hot !== "postponed" ? 0.25 : 1 }} title={`vertagt: ${nf(cut.postponed)}`} />
+        <span className="transition-opacity duration-200" style={{ width: pc(cut.rejected), background: DEC_COLORS.rejected, opacity: hot && hot !== "rejected" ? 0.25 : 1 }} title={`abgelehnt: ${nf(cut.rejected)}`} />
       </span>
       <span className="text-right text-[14px] tabular-nums">{cut.rate === null && cut.recommended ? <span className="text-slate-500">{nf(cut.recommended)} empfohlen</span> : <b className={`font-semibold ${cut.differs === false ? "text-slate-400" : "text-slate-900"}`} title={cut.differs === false ? "im üblichen Rahmen (keine deutliche Abweichung vom Gesamtwert)" : undefined}>{cut.rate === null ? "–" : `${cut.rate.toLocaleString("de-DE")} %`}</b>}<span className="ml-2 text-slate-500">{nf(cut.decided)}</span></span>
     </>

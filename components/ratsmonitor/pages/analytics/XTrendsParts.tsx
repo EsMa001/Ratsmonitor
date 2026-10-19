@@ -134,7 +134,8 @@ export function SpreadChart({ firsts, day, onPick, window: win }: { firsts: numb
 }
 
 /** Kleine Kurve der erreichten Gebiete (zwölf Monatsenden) für eine Zeile der Liste */
-export function MiniCurve({ curve }: { curve: number[] }) {
+/** draw: die Linie zeichnet sich beim Überfahren der Zeile neu (Ruhe im Ausgangszustand) */
+export function MiniCurve({ curve, draw = false }: { curve: number[]; draw?: boolean }) {
   const W = 96, H = 28, max = Math.max(1, ...curve), min = Math.min(...curve);
   const span = Math.max(1, max - min);
   const pts = curve.map((v, i) => [(i / (curve.length - 1)) * W, H - 3 - ((v - min) / span) * (H - 6)]);
@@ -142,7 +143,7 @@ export function MiniCurve({ curve }: { curve: number[] }) {
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} aria-hidden="true" className="shrink-0">
       <path d={`${line} L${W},${H} L0,${H} Z`} className="fill-teal-600/10" />
-      <path d={line} fill="none" className="stroke-teal-600" strokeWidth={1.5} strokeLinejoin="round" />
+      <path d={line} fill="none" pathLength={1} className={`stroke-teal-600 ${draw ? "rm-draw" : ""}`} strokeWidth={1.5} strokeLinejoin="round" />
     </svg>
   );
 }

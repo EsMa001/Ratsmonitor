@@ -43,6 +43,8 @@ export function FraktionenPage() {
   }, [stale, loading, run]);
   // Geöffnete Liste hinter einer Zahl („all:SPD“, „decided:SPD“)
   const [open, setOpen] = useState("");
+  /* Fokus auf einen Ausgang beim Überfahren der Legende */
+  const [hotOutcome, setHotOutcome] = useState("");
   /* Handy: nur die ersten 6 Fraktionen je Liste, bis „Alle zeigen“ */
   const [allP, setAllP] = useState(false);
   const [tab, setTab] = useState<"je" | "themen" | "ausgang">("je");
@@ -91,7 +93,7 @@ export function FraktionenPage() {
                   <li className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm bg-teal-600" />Anträge</li>
                   <li className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm bg-teal-200" />Anfragen</li>
                 </ul>
-                <ol className="m-0 list-none border-t border-slate-200 p-0">
+                <ol className="rm-focusrows m-0 list-none border-t border-slate-200 p-0">
                   {parties.map((p, i) => (
                     <li key={p.name} className={"border-b border-slate-200" + rowHide(i)}>
                       <button type="button" onClick={() => toggle(`all:${p.name}`)} aria-expanded={open === `all:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] max-sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 max-sm:gap-2 py-3 max-sm:py-0.5 max-sm:min-h-[44px] text-left sm:grid-cols-[240px_minmax(0,1fr)_150px] ${open === `all:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
@@ -167,10 +169,10 @@ export function FraktionenPage() {
                 <h2 className="text-[22px] font-semibold">Was aus den Anträgen wird</h2>
                 <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil beschlossener Anträge an den entschiedenen, je Fraktion ab 10 Anträgen. Empfiehlt die Vorlage, dem Antrag nicht zu folgen, zählt er als abgelehnt.</p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
-                  {([["beschlossen", DEC_COLORS.approved], ["vertagt", DEC_COLORS.postponed], ["abgelehnt", DEC_COLORS.rejected]] as const).map(([l, c]) => <li key={l} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
+                  {([["beschlossen", DEC_COLORS.approved, "approved"], ["vertagt", DEC_COLORS.postponed, "postponed"], ["abgelehnt", DEC_COLORS.rejected, "rejected"]] as const).map(([l, c, k]) => <li key={l} onMouseEnter={() => setHotOutcome(k)} onMouseLeave={() => setHotOutcome("")} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
                 </ul>
                 {decided.length === 0 ? <p className="text-[14px] text-slate-500">Zu wenige entschiedene Anträge für diese Suche.</p> : (
-                  <ol className="m-0 list-none border-t border-slate-200 p-0">{(allP ? decided : decided.slice(0, 6)).map((p) => <DecisionRow key={p.name} cut={{ id: p.name, name: p.name, decided: p.decided, approved: p.approved, rejected: p.rejected, postponed: p.postponed, rate: p.rate }} onToggle={() => toggle(`decided:${p.name}`)} expanded={open === `decided:${p.name}`} drill={drill("decided", p.name, `${p.name}: Anträge mit Entscheidung`)} />)}</ol>
+                  <ol className="rm-focusrows m-0 list-none border-t border-slate-200 p-0">{(allP ? decided : decided.slice(0, 6)).map((p) => <DecisionRow hot={hotOutcome} key={p.name} cut={{ id: p.name, name: p.name, decided: p.decided, approved: p.approved, rejected: p.rejected, postponed: p.postponed, rate: p.rate }} onToggle={() => toggle(`decided:${p.name}`)} expanded={open === `decided:${p.name}`} drill={drill("decided", p.name, `${p.name}: Anträge mit Entscheidung`)} />)}</ol>
                 )}
               </section></Reveal>
               </TabPane>
