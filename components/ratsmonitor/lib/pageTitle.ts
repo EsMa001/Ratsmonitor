@@ -21,6 +21,7 @@ const NAMES: Record<string, string> = {
   "/konto/artikel": "Gespeicherte Artikel",
   "/konto/kalender": "Kalender",
   "/konto/profil": "Profil",
+  "/konto/willkommen": "Willkommen",
   "/konto/postfach": "Postfach",
 };
 

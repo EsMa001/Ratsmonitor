@@ -91,7 +91,7 @@ export function GremiennetzPage() {
 
       <ThemenLeiste />
       <div className="print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
-      {error && <Fehler>{error}</Fehler>}
+      {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden text="Netz wird berechnet …" />}
 
       {res && (

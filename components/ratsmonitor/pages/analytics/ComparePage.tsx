@@ -216,7 +216,7 @@ export function ComparePage() {
             </button>
         </div>
       </section>
-      {error && <Fehler>{error}</Fehler>}
+      {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Orte oder Thema wurden geändert. Mit „Vergleichen“ neu berechnen.</p>}
       {loading && !res && <Laden text="Vergleich wird berechnet …" />}
 

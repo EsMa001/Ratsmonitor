@@ -41,7 +41,8 @@ export function FilterPanel({ toggle, up = false, maxH, extra }: { toggle: React
   const res = useSearchResults();
   /* auch aus dem Live-Zustand: auf dem Handy bleibt res.snapshot bis zum Schließen auf dem Stand beim Öffnen */
   const liveActive = !!(state.thema || state.status || state.von || state.bis || state.monat || !state.noformal || state.allterms || state.exact || state.future || state.radius);
-  const active = filterChips(res.snapshot, geo).length > 0 || liveActive;
+  const chipList = filterChips(res.snapshot, geo);
+  const active = chipList.length > 0 || liveActive;
   /* Reicht der Platz rechts nicht (schmale Karte), öffnet das Fenster nach links; der Knopf sitzt dann oben rechts */
   const ref = useRef<HTMLDivElement>(null);
   const [flip, setFlip] = useState(false);
@@ -70,7 +71,7 @@ export function FilterPanel({ toggle, up = false, maxH, extra }: { toggle: React
         setFiltersOpen(false);
         requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-controls="filter-body"]')?.focus());
       }}
-      className={`rm-glass absolute z-20 flex w-[300px] outline-none max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
+      className={`rm-glass rm-fpop absolute z-20 flex w-[300px] outline-none max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
       <div className={`flex items-center gap-2 max-sm:pl-4 ${flip ? "flex-row-reverse" : ""}`}>
         {toggle}
         {phone && (
@@ -85,6 +86,8 @@ export function FilterPanel({ toggle, up = false, maxH, extra }: { toggle: React
           </button>
         )}
       </div>
+      {/* Ein Satz: was gerade gefiltert ist */}
+      {chipList.length > 0 && <p className="m-0 px-4 text-[13px] leading-snug text-slate-600 max-sm:hidden">{chipList.map((c) => c.value).join(" · ")}</p>}
       <div className="flex flex-col gap-2.5 px-4 max-sm:gap-[3px] sm:gap-1.5">
         {phone && extra}
         {state.area.length >= 5 && geo && <AreaBar compact />}

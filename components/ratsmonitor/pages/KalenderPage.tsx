@@ -121,6 +121,8 @@ export function KalenderPage() {
     return [...Array(first).fill(null), ...Array.from({ length: days }, (_, i) => iso(new Date(month.getFullYear(), month.getMonth(), i + 1)))];
   }, [month]);
   const dayEvents = byDay.get(day) ?? [];
+  /* Kommende Tage mit Terminen (ruhiger Fluss unter „Heute“) */
+  const upcoming = [...byDay.keys()].filter((k) => k > today && (byDay.get(k) ?? []).length > 0).sort().slice(0, 5);
 
   /* Gebiet hinzufügen: Namenssuche über alle auswählbaren Gebiete */
   const [find, setFind] = useState("");
@@ -188,8 +190,8 @@ export function KalenderPage() {
                 const sel = d === day;
                 return (
                   <button key={d} type="button" onClick={() => setDay(d)} aria-pressed={sel} aria-label={`${d}: ${n} Sitzungen`}
-                    className={`flex h-16 flex-col items-center justify-start gap-1 border-b border-slate-100 pt-2 transition-colors hover:bg-slate-50 ${sel ? "bg-teal-50/60" : ""}`}>
-                    <span className={`grid h-7 w-7 place-items-center rounded-full text-[14px] ${d === today ? "bg-slate-900 text-white" : sel ? "text-teal-700" : "text-slate-900"}`}>{Number(d.slice(8))}</span>
+                    className={`flex h-16 flex-col items-center justify-start gap-1 border-b border-slate-100 pt-2 transition-colors hover:bg-slate-50 ${d === today ? "bg-amber-50/80" : sel ? "bg-teal-50/60" : ""} ${d < today ? "opacity-60" : ""}`}>
+                    <span className={`grid h-7 w-7 place-items-center rounded-full text-[14px] ${d === today ? "bg-amber-600 font-semibold text-white shadow-[0_0_0_4px_rgba(200,115,47,.18)]" : sel ? "text-teal-700" : "text-slate-900"}`}>{Number(d.slice(8))}</span>
                     {n > 0 && (
                       <span className="flex items-center gap-0.5" aria-hidden="true">
                         {[...new Set((byDay.get(d) ?? []).map((e) => colorOf(e.ags)))].slice(0, 4).map((c) => <i key={c} className="h-1.5 w-1.5 rounded-full" style={{ background: c }} />)}
@@ -205,7 +207,14 @@ export function KalenderPage() {
 
           {/* Termine des Tages */}
           <div>
-            <h2 className="m-0 text-[18px] font-semibold text-slate-900">{dayLabel}</h2>
+            {day === today ? (
+              /* Heute im Fokus: groß und warm, danach ruhig die kommenden Tage */
+              <div className="rounded-[22px] border border-amber-200 bg-gradient-to-br from-amber-50 to-white px-5 py-4">
+                <p className="m-0 text-[12px] font-semibold uppercase tracking-wide text-amber-700">Heute</p>
+                <h2 className="m-0 mt-0.5 text-[28px] font-semibold capitalize leading-tight text-slate-900 max-sm:text-[24px]">{dayLabel}</h2>
+                <p className="m-0 mt-1 text-[14px] text-slate-600">{dayEvents.length ? `${dayEvents.length} ${dayEvents.length === 1 ? "Sitzung" : "Sitzungen"} in deinen Gebieten` : "Heute keine Sitzungen in deinen Gebieten."}</p>
+              </div>
+            ) : <h2 className="m-0 text-[18px] font-semibold text-slate-900">{dayLabel}</h2>}
             {!cfg.areas.length && (
               <p className="mt-3 text-slate-500">
                 Noch keine Gebiete gewählt.{" "}
@@ -214,7 +223,7 @@ export function KalenderPage() {
                 </button>
               </p>
             )}
-            {cfg.areas.length > 0 && !dayEvents.length && <p className="mt-3 text-slate-500">An diesem Tag keine Sitzungen in Ihren Gebieten.</p>}
+            {cfg.areas.length > 0 && !dayEvents.length && day !== today && <p className="mt-3 text-slate-500">An diesem Tag keine Sitzungen in Ihren Gebieten.</p>}
             <ul className="m-0 mt-3 list-none p-0">
               {dayEvents.map((e) => (
                 <li key={e.ags + e.committee} className="border-b border-slate-200 py-3 last:border-b-0">
@@ -233,6 +242,20 @@ export function KalenderPage() {
                 </li>
               ))}
             </ul>
+            {day === today && upcoming.length > 0 && (
+              <div className="mt-6">
+                <h3 className="m-0 text-[12px] font-semibold uppercase tracking-wide text-slate-500">Danach</h3>
+                <ol className="m-0 mt-2 list-none border-l border-slate-200 p-0 pl-4">
+                  {upcoming.map((d) => (
+                    <li key={d} className="relative pb-4 last:pb-0">
+                      <i aria-hidden="true" className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full border border-slate-300 bg-white" />
+                      <button type="button" onClick={() => setDay(d)} className="m-0 border-0 bg-transparent p-0 text-left text-[14px] font-semibold capitalize text-slate-700 hover:text-teal-700">{new Date(d + "T00:00:00").toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" })}</button>
+                      {(byDay.get(d) ?? []).slice(0, 3).map((e) => <p key={e.ags + e.committee} className="m-0 text-[14px] text-slate-500">{e.committee || "Sitzung"} · {e.place}</p>)}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
           </div>
         </div>
       </section>

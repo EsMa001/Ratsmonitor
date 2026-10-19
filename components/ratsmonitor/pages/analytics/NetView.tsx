@@ -285,7 +285,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef, route = nul
             const dim = (focus || routeSet.size) && !on;
             return (
               <g key={e.a + e.b} style={{ pointerEvents: "none" }}>
-                <path className="rm-gflow" d={d} fill="none" stroke="var(--st-edge-hi)" strokeOpacity={dim ? 0.1 : 1} strokeWidth={on ? 2.6 : 1 + Math.min(1.6, w * 0.3)} strokeLinecap="round" strokeDasharray="2 7" style={{ transition: "stroke-opacity .2s" }} />
+                <path className={edges.length <= 60 ? "rm-gflow" : undefined} d={d} fill="none" stroke="var(--st-edge-hi)" strokeOpacity={dim ? 0.1 : 1} strokeWidth={on ? 2.6 : 1 + Math.min(1.6, w * 0.3)} strokeLinecap="round" strokeDasharray="2 7" style={{ transition: "stroke-opacity .2s" }} />
               </g>
             );
           })}

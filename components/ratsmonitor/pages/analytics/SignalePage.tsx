@@ -278,7 +278,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
         ]} />
       </div>
 
-      {error && <Fehler>{error}</Fehler>}
+      {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden text={fest ? "Ausschreibungen werden geladen …" : "Projekte werden geladen …"} />}
       {res && signal === ALLE && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>

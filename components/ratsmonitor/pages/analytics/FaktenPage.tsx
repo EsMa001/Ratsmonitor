@@ -195,7 +195,7 @@ export function FaktenPage() {
 
       <div className="mt-4 print:hidden"><DiffusionSearch follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
-      {error && <Fehler>{error}</Fehler>}
+      {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden text="Fakten werden geladen …" />}
       {res && !fact && !allFacts && <p className="mt-6 text-[14px] text-slate-500">Für diese Auswahl liegen keine geprüften Werte vor.</p>}
       {res && (fact || allFacts) && (

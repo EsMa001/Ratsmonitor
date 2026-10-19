@@ -52,7 +52,7 @@ export function ConfirmDialog() {
       onClose={() => c && settle(false)}
       onClick={(e) => e.target === ref.current && settle(false)}
       aria-labelledby="confirm-title"
-      className="w-[min(440px,calc(100vw-32px))] rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-pop backdrop:bg-slate-900/40"
+      className="w-[min(440px,calc(100vw-32px))] rm-dialog rounded-[24px] p-6 text-slate-900"
     >
       {c && (
         <>

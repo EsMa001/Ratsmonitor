@@ -434,7 +434,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
         </ul>
       </nav>}
       <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch follow={<Folgen heart before={() => { if (theme) search.setThema(theme); }} hint="Auswahl unter Meine Suchen speichern" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
-      {error && <Fehler>{error}</Fehler>}
+      {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden karte text="Auswertung wird berechnet …" />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>

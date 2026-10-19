@@ -60,7 +60,7 @@ export function ImportDialog() {
       onClose={() => (step === "done" ? setClosed(true) : later())}
       aria-labelledby="import-title"
       aria-describedby="import-text"
-      className="w-[min(480px,calc(100vw-32px))] rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-pop backdrop:bg-slate-900/40"
+      className="w-[min(480px,calc(100vw-32px))] rm-dialog rounded-[24px] p-6 text-slate-900"
     >
       {want && step === "ask" && (
         <>

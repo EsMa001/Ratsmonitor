@@ -100,7 +100,7 @@ export function GateDialog() {
       onClose={closeGate}
       aria-labelledby="gate-title"
       aria-describedby="gate-text"
-      className="w-[min(440px,calc(100vw-32px))] rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-pop backdrop:bg-slate-900/40"
+      className="w-[min(440px,calc(100vw-32px))] rm-dialog rounded-[24px] p-6 text-slate-900"
     >
       {g && f && (
         <>

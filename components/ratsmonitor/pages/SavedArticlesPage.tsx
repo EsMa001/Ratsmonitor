@@ -9,7 +9,8 @@ import { useToast } from "../state/toast";
 import { queue } from "../lib/queue";
 import { loadTopic } from "../lib/topicCache";
 import { FollowButton, NOTIFY_LATER } from "../components/FollowButton";
-import { MONTH_SHORT, fmtDate } from "../lib/text";
+import { MONTH_SHORT, fmtDate, todayLocal } from "../lib/text";
+import { STATUS_BY_ID } from "../lib/constants";
 import { useEntitlements } from "../lib/entitlements";
 import { useCatalog } from "../lib/catalog";
 import { AccountLoading, LoginRequired, UsagePill } from "../components/TierNotice";
@@ -103,7 +104,7 @@ export function SavedArticlesPage() {
               {a.follow && <p className="m-0 mt-1 text-[12px] text-slate-500">Benachrichtigung vorgemerkt ({NOTIFY_LATER.toLowerCase()})</p>}
               {a.active === false && <p className="m-0 mt-1 text-[12px] text-amber-800">Nicht aktiv: über der Grenze Ihrer Stufe gespeichert.</p>}
               {/* Vorgangsverlauf: alle bisherigen Beratungen, der aktuelle Schritt rechts */}
-              <Verlauf id={a.id} fallback={a.teaser} />
+              <Verlauf id={a.id} fallback={a.teaser} savedAt={a.savedAt} />
             </div>
             <FollowButton article={a} />
             <button
@@ -126,7 +127,7 @@ export function SavedArticlesPage() {
 const timelines = queue(4);
 type Step = NonNullable<Article["steps"]>[number];
 /** Lädt den Verlauf eines gespeicherten Vorgangs (Sitzungen mit Datum, Gremium und Stand) */
-function Verlauf({ id, fallback }: { id: string; fallback?: string }) {
+function Verlauf({ id, fallback, savedAt }: { id: string; fallback?: string; savedAt?: string }) {
   const [steps, setSteps] = useState<Step[] | null>(null);
   useEffect(() => {
     const ctrl = new AbortController();
@@ -136,6 +137,19 @@ function Verlauf({ id, fallback }: { id: string; fallback?: string }) {
       .catch(() => {});
     return () => ctrl.abort();
   }, [id]);
-  if (steps && steps.length) return <StepTimeline steps={steps} />;
+  if (steps && steps.length) {
+    /* Stand in einem Satz („Seit gestern beschlossen“); neu, wenn der letzte Schritt nach dem Speichern liegt */
+    const today = todayLocal(), past = steps.filter((s) => s.d <= today), last = past[past.length - 1];
+    const label = last ? STATUS_BY_ID[last.s as Article["status"]]?.label : "";
+    const days = last ? Math.round((Date.parse(today) - Date.parse(last.d)) / 86400000) : 0;
+    const since = !last ? "" : days <= 0 ? "Heute" : days === 1 ? "Seit gestern" : days < 14 ? `Seit ${days} Tagen` : `Seit ${fmtDate(last.d)}`;
+    const fresh = !!last && !!savedAt && last.d > savedAt.slice(0, 10);
+    return (
+      <>
+        {last && label && <p className="m-0 mt-1 flex flex-wrap items-center gap-2 text-[14px] text-slate-700">{since} <b className="font-semibold text-teal-700">{label.toLowerCase()}</b>{fresh && <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[12px] font-medium text-teal-800">neu seit dem Speichern</span>}</p>}
+        <StepTimeline steps={steps} />
+      </>
+    );
+  }
   return fallback ? <p className="m-0 mt-1.5 line-clamp-2 text-[14px] leading-[1.6] text-slate-500">{fallback}</p> : null;
 }

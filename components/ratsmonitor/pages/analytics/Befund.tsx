@@ -56,11 +56,14 @@ function LeerBeispiele() {
 }
 
 /** Fehler beim Laden oder Rechnen: gleiche Form wie Leer, mit roter Linie */
-export function Fehler({ children }: { children: ReactNode }) {
+export function Fehler({ children, onNochmal }: { children: ReactNode; /** Knopf „Noch einmal“: rechnet mit derselben Auswahl neu */ onNochmal?: () => void }) {
   return (
     <div role="alert" className="mt-4 max-w-[760px] border-l-2 border-amber-500 py-1 pl-4">
       <p className="m-0 text-[16px] font-medium text-slate-900">{children}</p>
-      <p className="m-0 mt-1 text-[14px] text-slate-500">Bitte gleich noch einmal versuchen; Suche und Filter bleiben erhalten.</p>
+      <p className="m-0 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-slate-500">
+        Deine Auswahl bleibt erhalten.
+        {onNochmal && <button type="button" onClick={onNochmal} className="inline-flex h-8 items-center rounded-full border border-teal-700 px-3 font-medium text-teal-700 hover:bg-teal-50">Noch einmal</button>}
+      </p>
     </div>
   );
 }

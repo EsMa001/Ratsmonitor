@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (577 Zeilen, ⚠14)
-- app/ratsmonitor.css (319 Zeilen, ⚠18)
+- app/ratsmonitor.css (331 Zeilen, ⚠17)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -470,12 +470,14 @@ rm-chip ratsmonitor.css:89
 rm-dark admin.css:461
 rm-dark ratsmonitor-info.css:327
 rm-dark ratsmonitor.css:85
+rm-dialog ratsmonitor.css:320
 rm-dotfield ratsmonitor-info.css:405
 rm-dotfield-on ratsmonitor-info.css:406
 rm-dots ratsmonitor.css:114
 rm-draw ratsmonitor.css:303
 rm-flat ratsmonitor.css:71
 rm-focusrows ratsmonitor.css:308
+rm-fpop ratsmonitor.css:329
 rm-gdot ratsmonitor.css:183
 rm-gflow ratsmonitor.css:292
 rm-gin ratsmonitor.css:289
@@ -637,9 +639,9 @@ truncate ratsmonitor-info.css:459
 - admin-chrome.tsx (142, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
 - admin-cockpit.tsx (98, ⚠1): AdminCockpit
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (113, ⚠8): AdminRuns, AdminReview, AdminStock
+- admin-dashboard.tsx (113, ⚠7): AdminRuns, AdminReview, AdminStock
 - admin-debug.tsx (144, ⚠9): AdminDebug
-- admin-estimate.tsx (355, ⚠52): AdminEstimate
+- admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-fehler.tsx (80, ⚠4): AdminFehler
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (41): IconName, Icon
@@ -692,7 +694,7 @@ truncate ratsmonitor-info.css:459
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - DotField.tsx (86): DotField
 - Dropdown.tsx (66): DropItem, Dropdown, AktiveFilter
-- FilterPanel.tsx (116, ⚠1): FilterPanel
+- FilterPanel.tsx (119, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (28): NOTIFY_LATER, FollowButton
 - Footer.tsx (65): Footer
@@ -724,7 +726,7 @@ truncate ratsmonitor-info.css:459
 - ResultsPanel.tsx (216): ResultsPanel
 
 ### components/ratsmonitor/info/
-- AccountPages.tsx (637): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
+- AccountPages.tsx (640): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (182, ⚠15): AgbPage
 - AnwenderLive.tsx (173, ⚠2): AnwenderLivePage
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
@@ -769,7 +771,7 @@ truncate ratsmonitor-info.css:459
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (360): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (1108): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1118): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - haptic.ts (5): tick
@@ -778,7 +780,7 @@ truncate ratsmonitor-info.css:459
 - listView.ts (47): ListView, setListView, useListView
 - mapSlot.ts (18): setMapSlot, clearMapSlot, useMapSlot
 - otherTab.ts (11): onOtherTab
-- pageTitle.ts (40): pageName, tabTitle
+- pageTitle.ts (41): pageName, tabTitle
 - place.ts (287, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, removePhrase
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
@@ -813,14 +815,14 @@ truncate ratsmonitor-info.css:459
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (144, ⚠7): DetailPage
-- KalenderPage.tsx (378, ⚠1): KalenderPage
+- KalenderPage.tsx (401, ⚠2): KalenderPage
 - LegalPage.tsx (281): useInhalt, LegalPage
 - NotificationsPage.tsx (92): NotificationsPage
 - OverviewPage.tsx (172): OverviewPage
-- PersonalPage.tsx (26): PersonalPage
+- PersonalPage.tsx (28): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
-- SavedArticlesPage.tsx (142, ⚠2): SavedArticlesPage
+- SavedArticlesPage.tsx (156, ⚠3): SavedArticlesPage
 - SavedSearchesPage.tsx (255, ⚠1): SavedSearchesPage, WeeklyReport
 
 ### components/ratsmonitor/pages/analytics/
@@ -828,7 +830,7 @@ truncate ratsmonitor-info.css:459
 - AnalyticsLocked.tsx (57): AnalyticsLocked
 - AnalyticsPages.tsx (61): AnalyticsPages
 - AtlasPage.tsx (69): ATLAS_THEMEN, atlasHref, AtlasPage
-- Befund.tsx (67): Befund, zuThema, Leer, Fehler
+- Befund.tsx (70): Befund, zuThema, Leer, Fehler
 - BeschluessePage.tsx (223, ⚠11): BeschluessePage
 - CompareCharts.tsx (69, ⚠2): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
@@ -850,7 +852,7 @@ truncate ratsmonitor-info.css:459
 - PageBand.tsx (19): PageBand
 - RadarDrill.tsx (130, ⚠2): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
-- RegionMap.tsx (136, ⚠2): RegionMap
+- RegionMap.tsx (153, ⚠2): RegionMap
 - Reveal.tsx (16): Reveal
 - SignalePage.tsx (391, ⚠8): signaleHref, SignalePage
 - Tabs.tsx (7): TabPane

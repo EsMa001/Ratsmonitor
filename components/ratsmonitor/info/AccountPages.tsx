@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useBrand } from "../lib/brand";
+import { useClient } from "../lib/useClient";
 import { InfoHints, PageHead } from "./blocks";
 import { IS_DEV } from "../lib/tier";
 import { AccountApiError, accountChanged, api, devLogin, logout, useMe } from "../lib/account";
@@ -150,6 +151,8 @@ export function LoginPage() {
   const me = useMe();
   const weiter = params.get("weiter");
   const next = nextOf(weiter);
+  /* Erster Besuch nach der Anmeldung: die Willkommensseite statt des Profils */
+  const firstVisit = useClient(() => { try { return !localStorage.getItem("plenara.willkommen"); } catch { return false; } }, false);
   const [step, setStep] = useState<"email" | "wait">("email");
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState("");
@@ -291,8 +294,8 @@ export function LoginPage() {
             <p role="status" style={{ margin: 0, fontSize: 16 }}>
               Sie sind angemeldet als <strong>{me.user.email}</strong>.
             </p>
-            <Link href={next === "/" ? "/konto/profil" : next} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
-              {next === "/" ? "Zum Konto" : "Weiter"}
+            <Link href={next === "/" ? (firstVisit ? "/konto/willkommen" : "/konto/profil") : next} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+              {next === "/" ? (firstVisit ? "Los geht's" : "Zum Konto") : "Weiter"}
             </Link>
             <p className="ri-form__foot">
               <button type="button" className="ri-link max-sm:py-[10px]" onClick={() => void logout()}>

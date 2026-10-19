@@ -99,7 +99,7 @@ export function NewsradarPage() {
           </>
         )}
       </div>
-      {error && <Fehler>{error}</Fehler>}
+      {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden text="Vorgänge werden bewertet …" />}
 
       {res && (

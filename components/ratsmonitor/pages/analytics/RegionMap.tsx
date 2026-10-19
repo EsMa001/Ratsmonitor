@@ -87,10 +87,27 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     Object.assign(v, levels);
     engine.update(v, picked, null, all, level);
   }, [engine, levels, all, picked, level]);
+  /* Zurück-Gefühl: Wer die Seite verlässt und zurückkommt, findet die Karte im selben Ausschnitt (10 Minuten, nur diese Sitzung) */
+  const restoreRef = useRef<{ cx: number; cy: number; k: number } | null>(null);
+  const skipFly = useRef(false);
+  useEffect(() => {
+    if (!engine) return;
+    const key = `rm-mapview:${window.location.pathname}:${level}`;
+    try {
+      const raw = JSON.parse(sessionStorage.getItem(key) || "null");
+      if (raw && Date.now() - raw.at < 10 * 60_000 && raw.v) { restoreRef.current = raw.v; skipFly.current = true; }
+    } catch { /* ohne Speicher geht es auch */ }
+    return () => {
+      const v = engine.getView();
+      if (v) { try { sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), v })); } catch { /* egal */ } }
+    };
+  }, [engine, level]);
   useEffect(() => {
     if (!engine) return;
     const phone = window.matchMedia("(max-width:639px)").matches;
     engine.setFitInsets(phone ? topInset : 0, phone ? 52 : 0);
+    if (restoreRef.current) { engine.restoreView(restoreRef.current); restoreRef.current = null; return; }
+    if (skipFly.current) { if (shown.length) skipFly.current = false; return; }
     if (shown.length) engine.focusMany(shown); else engine.focusArea("");
   }, [engine, shown, topInset]);
   /* Kamerafahrt: ein gewähltes Gebiet rückt mit seiner Umgebung ins Bild, ohne Wahl zurück auf die Ergebnisse */

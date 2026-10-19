@@ -191,7 +191,7 @@ export function XTrendsPage() {
       <ThemenLeiste />
       <div className="mt-4 print:hidden max-sm:hidden"><DiffusionSearch follow={<Folgen heart />} extra={<ZeitExtra options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
-      {error && <Fehler>{error}</Fehler>}
+      {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden karte text="Trends werden berechnet …" />}
       {res && lists && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>

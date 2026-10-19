@@ -263,6 +263,16 @@ export class MapEngine {
     this.flyTo(this.fitView([b[0] - mx, b[1] - my, b[2] + mx, b[3] + my], 40), 700);
   }
 
+  /** Ansicht lesen und wiederherstellen (Zurück-Gefühl: die Karte behält ihren Ausschnitt) */
+  getView(): { cx: number; cy: number; k: number } | null {
+    return this.view ? { ...this.view } : null;
+  }
+  restoreView(v: { cx: number; cy: number; k: number }) {
+    if (!this.view || !(v.k > 0)) return;
+    this.view = this.clampCenter({ cx: v.cx, cy: v.cy, k: this.clampK(v.k) });
+    this.settle();
+  }
+
   /** Fließend auf ein gewähltes Gebiet fahren, mit Umgebung (f-fache Breite), damit man sieht, wo es liegt */
   focusAreaWide(ags: string, f = 2.4) {
     if (!this.view) return;
