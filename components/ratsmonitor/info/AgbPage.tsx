@@ -25,7 +25,7 @@ function sections(brand: string): Section[] {
       title: "Geltungsbereich",
       paras: [
         `Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Plattform ${brand} und für alle Verträge über ihre Tarife zwischen ${betreiberAdresse()}, vertreten durch ihre Gesellschafter (siehe Impressum), nachfolgend „wir“, und Ihnen als Nutzerin oder Nutzer, nachfolgend „Sie“.`,
-        "Verbraucher ist, wer den Vertrag zu Zwecken abschließt, die überwiegend weder seiner gewerblichen noch seiner selbständigen beruflichen Tätigkeit zugerechnet werden können (# 13 BGB). Unternehmer ist, wer in Ausübung seiner gewerblichen oder selbständigen beruflichen Tätigkeit handelt (# 14 BGB). Regelungen, die nur für eine der beiden Gruppen gelten, sind ausdrücklich gekennzeichnet.",
+        "Verbraucher ist, wer den Vertrag zu Zwecken abschließt, die überwiegend weder seiner gewerblichen noch seiner selbständigen beruflichen Tätigkeit zugerechnet werden können (§ 13 BGB). Unternehmer ist, wer in Ausübung seiner gewerblichen oder selbständigen beruflichen Tätigkeit handelt (# 14 BGB). Regelungen, die nur für eine der beiden Gruppen gelten, sind ausdrücklich gekennzeichnet.",
         "Abweichende, entgegenstehende oder ergänzende Geschäftsbedingungen von Ihnen werden nicht Vertragsbestandteil, es sei denn, wir stimmen ihrer Geltung ausdrücklich in Textform zu.",
         "Vertragssprache ist Deutsch.",
       ],

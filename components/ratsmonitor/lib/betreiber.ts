@@ -10,7 +10,7 @@ export const BETREIBER = {
   /** Ladungsfähige Anschrift (ein Postfach genügt nicht) */
   strasse: "[Straße Hausnummer]",
   ort: "[PLZ Ort]",
-  email: "[kontakt@beispiel.de]",
+  email: "kontakt@plenara.de",
   /** Sitz der Gesellschaft, maßgeblich für den Gerichtsstand gegenüber Kaufleuten (AGB § 12) */
   sitz: "Billerbeck",
 };

@@ -504,6 +504,8 @@ Fehler (einige Sekunden). Sicherung außer Haus: `BACKUP_REMOTE` (rclone-Ziel) i
 
 ## Konten (Thema 1, seit 13.10.2026 im Code, seit 15.10.2026 auf dem Server)
 
+**Schritt 4 erledigt (19.10.2026):** `ADMIN_LEGACY_HEADER=0`, Tunnel in Caddy ohne Admin-Kennung (`import app_proxy`), `RM_ADMIN_*` in `/etc/default/caddy` auskommentiert, `LOGIN_TOTP=0` (Admins melden sich per Mail-Link an und geben in `/admin` den App-Code ein; im Tunnel ohne App-Code, aber nur mit Admin-Konto). Sicherungen `*.bak-vor-schritt4-*`.
+
 **Stand auf dem Server (15.10.2026, d82b772):** Schritte 1 und 2 von „Umstellen ohne Ausfall“ erledigt (Caddy
 Schritt 0, `RM_ACCESS=open`, `ADMIN_LEGACY_HEADER=1`, `MAIL_TRANSPORT=log`, Stufengrenzen aktiv: wer nicht angemeldet
 ist, hat Gast-Rechte). Kontojob, Pfad- und Stopp-Einheiten aktiv, Sicherung mit age geprüft. Konto Max (Enterprise,

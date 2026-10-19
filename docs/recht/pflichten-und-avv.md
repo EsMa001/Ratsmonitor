@@ -6,8 +6,8 @@ Stand: 08.10.2026. Allgemeine Einschätzung nach meinem Kenntnisstand, keine Rec
 
 | Text | Stand | Offen |
 |---|---|---|
-| Impressum (`/impressum`) | Entwurf eingebunden | Namen der Gesellschafter, Anschrift, E-Mail in `lib/betreiber.ts` eintragen |
-| Datenschutzerklärung (`/datenschutz`) | Entwurf eingebunden, passt zum heutigen Stand ohne Konten | Bausteine für Konto, Zahlung, E-Mail, Kontaktformular, Newsletter: `docs/recht/datenschutz-ergaenzungen.md` |
+| Impressum (`/impressum`) | Entwurf eingebunden, E-Mail `kontakt@plenara.de` (19.10.2026) | Namen der Gesellschafter und ladungsfähige Anschrift in `lib/betreiber.ts`, anwaltliche Prüfung |
+| Datenschutzerklärung (`/datenschutz`) | Neu gefasst 19.10.2026 für den heutigen Betrieb: Hostinger (Rechenzentrum in Deutschland), Konten ohne Passwort, Sitzungs-Cookie, localStorage, Mail über IONOS, Regeln und KI (Anthropic, OpenAI), Speicherfristen aus `scripts/accounts/maintenance.mjs` | Betreiberdaten; Standort des Rechenzentrums im hPanel bestätigen; AVV mit Hostinger und IONOS abschließen (der Text sagt, dass sie bestehen); Bausteine Zahlung und Newsletter, sobald es sie gibt; anwaltliche Prüfung |
 | AGB (`/agb`) | Entwurf eingebunden (Basic, Pro, Enterprise nach `content.ts`) | Zahlungsdienstleister eintragen, Betreiberdaten, anwaltliche Prüfung |
 | Widerrufsbelehrung (`/widerruf`) | Gesetzliches Muster für Dienstleistungen eingebunden | Betreiberdaten, später Bestellablauf mit Zustimmung zum vorzeitigen Leistungsbeginn |
 
@@ -19,7 +19,9 @@ Ein AVV ist nötig, wenn ein Dienstleister personenbezogene Daten **in unserem A
 
 | Dienst | Rolle | AVV nötig? | Wie bekommen |
 |---|---|---|---|
-| Cloudflare (Workers, D1, Hosting) | Auftragsverarbeiter | Ja | Das Cloudflare-DPA ist nach meinem Kenntnisstand Teil der Nutzungsbedingungen und gilt mit Vertragsschluss. Einmal prüfen, speichern, Datum notieren. |
+| Hostinger (VPS, Hosting seit Oktober 2026) | Auftragsverarbeiter | Ja | Hostinger bietet ein Data Processing Agreement an (hPanel bzw. Rechtsseiten); abschließen, ablegen, Datum notieren. Unterauftragnehmer und Rechenzentrum (Deutschland) prüfen. |
+| IONOS (Domain, Postfach kontakt@plenara.de, Mailversand) | Auftragsverarbeiter | Ja | AVV im IONOS-Kundenbereich (Vertragsdaten / Datenschutz) online abschließen und ablegen. |
+| Cloudflare (Workers, D1, Hosting; nicht mehr in Betrieb) | Auftragsverarbeiter | Nur solange dort Daten liegen | Das Cloudflare-DPA ist nach meinem Kenntnisstand Teil der Nutzungsbedingungen und gilt mit Vertragsschluss. Einmal prüfen, speichern, Datum notieren. |
 | OpenAI API (Zusammenfassungen) | Auftragsverarbeiter | Ja, weil die Ratsunterlagen Namen enthalten können | OpenAI bietet ein Data Processing Addendum online an. Abschließen und ablegen. Datenschutzerklärung nennt OpenAI schon. |
 | E-Mail-Versand (Bestätigungen, Alarme) | Auftragsverarbeiter | Ja | Anbieter mit EU-Servern wählen, dessen AVV akzeptieren (Todo Backend 9 und Frontend 1). |
 | Zahlungsdienstleister | meist eigener Verantwortlicher für die Zahlungsabwicklung | Prüfen | Die Nutzungsbedingungen des Anbieters regeln das. Bei Einbindung genau lesen, in der Datenschutzerklärung benennen. |

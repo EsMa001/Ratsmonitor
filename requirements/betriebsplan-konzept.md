@@ -404,3 +404,6 @@ Danach eine Nacht beobachten (Pipeline-Debug: Laufbuch, Wege, Fehlerspeicher).
    Dokumente öffentlich sind; wenn ja, fehlt beim Abruf etwas (Referer, Sitzungscookie). Die Stufe „prüfen“ macht sie sichtbar.
 6. **Protokolle** `backups/*.log` ohne Rotation; Deploy-Fenster 10:00 bis 00:00 festlegen.
 7. **Pipeline-Debug** entfernen, wenn der Betrieb läuft (Seite, Route, `pipeline-trace.mjs`, Schritt „Wege zählen“).
+8. **Hessen (ekom21) sperrt die Server-IP** seit 16.10.2026 (vom VPS kein Verbindungsaufbau zu `rim.ekom21.de` und `ekom21.de`, vom Büro aus erreichbar; 42 Gebiete im Fehlerspeicher, 122 nachts zurückgestellt, 10.686 offene PDFs). Freigabe per Mail an ekom21 von `kontakt@plenara.de` erbitten (Vorlage im Verlauf vom 17.10.); bis dahin bremst der Fehlerspeicher von selbst.
+9. **Ablage an der 80-GB-Grenze:** nachts werden tausende Anlagen nur als Text behalten (18.10.: 2.419). Grenze senken oder Platz schaffen (alte Programmstände rund 7 GB, alte Sicherungen); siehe auch Punkt 4.
+10. **Bezahlung** (Freischalten nach Geldeingang, `requirements/konten-konzept.md` 9.1): erst, wenn es zahlende Kunden gibt.

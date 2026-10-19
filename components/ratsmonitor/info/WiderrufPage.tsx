@@ -2,7 +2,7 @@ import { BETREIBER } from "../lib/betreiber";
 import { PageHead } from "./blocks";
 import { H2, P } from "./LegalText";
 
-/* Entwurf nach dem gesetzlichen Muster für Dienstleistungsverträge (Anlage 1 zu Art. 246a # 1 Abs. 2 Satz 2 EGBGB),
+/* Entwurf nach dem gesetzlichen Muster für Dienstleistungsverträge (Anlage 1 zu Art. 246a § 1 Abs. 2 Satz 2 EGBGB),
    nicht anwaltlich geprüft. Der Wortlaut des Musters soll nicht verändert werden. */
 function Kontakt() {
   return (
