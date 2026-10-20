@@ -15,7 +15,6 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 absolute ratsmonitor.css:601
 admin-access admin.css:6
-admin-activation admin.css:6
 admin-ai-kinds admin.css:10
 admin-ai-local admin.css:431
 admin-ai-local-article admin.css:455
@@ -669,17 +668,15 @@ z- ratsmonitor.css:395
 - page.tsx (4): metadata, Page
 
 ### app/admin/
-- page.tsx (90, ⚠7): dynamic, metadata, AdminPage
+- page.tsx (82, ⚠5): dynamic, metadata, AdminPage
 
 ### app/
-- chatgpt-auth.ts (92): ChatGPTUser, getChatGPTUser, chatGPTSignInAvailable, chatGPTSignInPath, chatGPTSignOutPath
 - error.tsx (9, ⚠1): PageError
 - global-error.tsx (11, ⚠1): GlobalError
 - layout.tsx (12, ⚠2): metadata, viewport, RootLayout
 - not-found.tsx (4): metadata, NotFound
 
 ### components/
-- admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (114, ⚠8): AdminAiLocal
 - admin-altbestand.tsx (138, ⚠8): AdminAltbestand
 - admin-atlas.tsx (204, ⚠29): AdminAtlas
@@ -929,7 +926,7 @@ z- ratsmonitor.css:395
 
 ### components/ratsmonitor/state/
 - account.tsx (108): AccountProvider, useAccount, useSavedStats
-- data.tsx (36, ⚠1): DataProvider, useData
+- data.tsx (40, ⚠1): DataProvider, useData
 - nav.ts (17, ⚠1): View, viewOf, noteRoute, cameFromApp, overviewScroll, useAppNav
 - search.tsx (665, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast

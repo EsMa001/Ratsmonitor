@@ -188,7 +188,7 @@ Zwischenspeicher im Prozess: `server/services/read-cache.mjs` (30 s, 3 Einträge
 | Ablage | `pdf-store-stats`, `pdf-store-job`, `pdf-store-progress-chain`, `pdf-store-progress-ocr`, `pdf-store-runs`, `pdf-store-stop`, `pdf-store-count`, `pdf-store-heartbeat`, `pdf-store-errors-csv:N`, `pdf-daily-last` | Stand, Aufträge, Fortschritt je Bahn, Läufe (≤ 50), Anhalten, Zählwunsch, Lebenszeichen, Fehlerliste, Ergebnis des Tageslaufs |
 | Nacharbeit, Altbestand | `nacharbeit-last`, `altbestand-requests`, `altbestand-last`, `altbestand-rework-last` | Ergebnisse und Wünsche |
 | Speicher | `server-disk`, `server-disk-count` | Plattenbelegung, Messwunsch |
-| Administration | `admin-refresh-lease`, `admin-build:<ziel>`, `admin-stored:<name>` (+ `#000`…), `admin-quality-check`, `admin-owner-v1`, `admin-todos-v1` | Sperre der Rechenschritte, Bauaufträge, gepackte Auswertungen (gzip, base64, Teile zu 90.000 Zeichen), Qualitätsprüfungen, alter Admin-Besitzer, To-do-Board |
+| Administration | `admin-refresh-lease`, `admin-build:<ziel>`, `admin-stored:<name>` (+ `#000`…), `admin-quality-check`, `admin-owner-v1` (Altlast, seit 20.10.2026 ungelesen), `admin-todos-v1` | Sperre der Rechenschritte, Bauaufträge, gepackte Auswertungen (gzip, base64, Teile zu 90.000 Zeichen), Qualitätsprüfungen, alter Admin-Besitzer, To-do-Board |
 | KI (alt) | `admin-ai-job`, `ai-job-lease`, `last-ai-apply` | Manifest, Sperre, Übernahmebeleg des Dateiwegs |
 | Altlast | `coverage` | wird in `repositories/topics.ts` gelesen; kein Schreiber im Code gefunden |
 

@@ -4,9 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {DatabaseSync} from 'node:sqlite';
-import {createHash} from 'node:crypto';
 import ts from 'typescript';
-import {adminAccess,claimAdmin,requireAdminAccess,requireSameOrigin} from '../server/integrations/admin-access.mjs';
+import {requireSameOrigin} from '../server/integrations/admin-access.mjs';
 import {loadAdminData,adminReview} from '../server/integrations/admin-data.mjs';
 import {processingStatus} from '../server/integrations/processing-status.mjs';
 import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';
@@ -15,28 +14,12 @@ import {filterAdminSources,sourcesCsv} from '../shared/admin.mjs';
 const root=path.resolve(import.meta.dirname,'..'),sqlite=new DatabaseSync(':memory:');
 for(const f of fs.readdirSync(path.join(root,'drizzle')).filter(f=>f.endsWith('.sql')).sort())sqlite.exec(fs.readFileSync(path.join(root,'drizzle',f),'utf8'));
 const db={prepare(sql){let args=[];return {bind(...v){args=v;return this;},async all(){return {results:sqlite.prepare(sql).all(...args)};},async first(){return sqlite.prepare(sql).get(...args)||null;},async run(){sqlite.prepare(sql).run(...args);return {success:true};}};},async batch(statements){return Promise.all(statements.map(s=>s.all()));}};
-const owner={userId:'trusted-site-sub',email:'owner@example.org'},other={userId:'other-site-sub',email:owner.email};
-const code='fixture-activation-code',hash=createHash('sha256').update(code).digest('hex');
+// Signed-in accounts for the route tests: the admin role decides, not the address (session.ts, accountState).
+const owner={userId:'u_owner',email:'owner@example.org',admin:true},other={userId:'u_other',email:owner.email,admin:false};
 const reset=()=>{for(const t of ['topics','source_coverage','import_runs','article_versions','system_state','push_subscriptions'])sqlite.exec('DELETE FROM '+t);};
 const errorStatus=n=>e=>e.status===n;
 const insert=(id,extra={})=>{const t={id,regionId:'billerbeck',status:'consulting',title:'Schulbau '+id,updatedAt:'2026-09-26T12:00:00Z',generatedBy:'Quellenüberblick',classification:{primary:'bildung'},documents:[],...extra};sqlite.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)').run(id,t.regionId,'city','2026-09-20',t.updatedAt,t.status,JSON.stringify(t));};
 
-test('admin identity is claimed once, checks trusted ID rather than email and fails closed',async()=>{
- reset();assert.equal((await adminAccess(db,null)).kind,'anonymous');
- await assert.rejects(requireAdminAccess(db,null),errorStatus(401));
- await assert.rejects(claimAdmin(db,owner,'wrong',hash),errorStatus(403));
- assert.equal((await adminAccess(db,owner)).kind,'setup');
- const claims=await Promise.allSettled([claimAdmin(db,owner,code,hash),claimAdmin(db,other,code,hash)]);
- assert.equal(claims.filter(r=>r.status==='fulfilled').length,1);
- const winner=claims[0].status==='fulfilled'?owner:other,loser=winner===owner?other:owner;
- assert.equal((await adminAccess(db,winner)).kind,'owner');
- assert.equal((await adminAccess(db,loser)).kind,'denied');
- await assert.rejects(requireAdminAccess(db,loser),errorStatus(403));
- await assert.rejects(claimAdmin(db,owner,code,hash),errorStatus(409));
- await assert.rejects(adminAccess(null,owner),errorStatus(503));
- const saved=sqlite.prepare('SELECT value FROM system_state').get().value;
- assert.ok(!saved.includes(code)&&!saved.includes(hash)&&!saved.includes(owner.email));
-});
 test('admin mutations reject missing or cross-site origin and non-JSON requests',()=>{
  const request=headers=>new Request('https://site.example/api/admin/import',{method:'POST',headers});
  for(const headers of [{},{origin:'https://evil.example','content-type':'application/json'},{origin:'https://site.example','content-type':'application/json','sec-fetch-site':'cross-site'}])assert.throws(()=>requireSameOrigin(request(headers)),errorStatus(403));
@@ -183,8 +166,9 @@ test('CSV export neutralizes spreadsheet formulas and escapes delimiters and quo
 });
 
 const uri=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
-// Der alte Weg (Kopfzeilen, ChatGPT) gilt nur mit ADMIN_LEGACY_HEADER=1; Konten prüft tests/accounts-login.test.mjs und tests/accounts-totp.test.mjs.
-globalThis.adminFixture={user:null,env:{DB:db,ADMIN_SETUP_HASH:hash,ADMIN_LEGACY_HEADER:'1'},reads:0,syncs:0,analyses:0};
+// Admin ist die Rolle eines Kontos (session.ts adminState, echt); Sitzung und Rolle kommen hier aus der Testhülle von login.mjs.
+// Anmeldung, Rollen, Frist und zweiten Faktor prüfen tests/accounts-login.test.mjs und tests/accounts-totp.test.mjs.
+globalThis.adminFixture={user:null,env:{DB:db,ACCOUNTS:{},ACCOUNTS_SECRET:'test-secret-0123456789abcdef0123456789abcdef'},reads:0,syncs:0,analyses:0};
 const stubs={
  '@/server/integrations/pipeline-jobs.mjs':'export async function pipelineAction(){globalThis.adminFixture.syncs++;return {status:"queued"};}',
  '@/server/integrations/ai-jobs.mjs':'export async function getAiJob(){globalThis.adminFixture.reads++;return null;} export async function createAiJob(){globalThis.adminFixture.analyses++;return {};} export async function previewAiJob(){return {articles:0,steps:{},blocked:0,exported:0};} export async function applyAiResults(){globalThis.adminFixture.analyses++;return {};} export async function cancelAiJob(){globalThis.adminFixture.analyses++;return {};}',
@@ -193,7 +177,7 @@ const stubs={
  'next/headers':'export async function headers(){return new Headers();}',
  'next/server':'export function after(task){Promise.resolve().then(task);}',
  'cloudflare:workers':'export const env=globalThis.adminFixture.env;',
- '@/app/chatgpt-auth':'export async function getChatGPTUser(){return globalThis.adminFixture.user;}',
+ '../accounts/login.mjs':'export function context(){return {};} export async function currentSession(){const u=globalThis.adminFixture.user;return u?{user_id:u.userId,email:u.email,name:u.email}:null;} export async function accountState(){const u=globalThis.adminFixture.user;return {admin:u&&u.admin?"ok":"denied",totpConfirmed:true,adminHost:true,tier:{tier:"enterprise"}};}',
  '@/server/repositories/admin':'export async function getAdminDashboard(){globalThis.adminFixture.reads++;return {sources:[]};} export async function getAdminSummary(){globalThis.adminFixture.reads++;return {counts:{}};} export async function getAreaNotes(){globalThis.adminFixture.reads++;return {issues:[]};} export async function getAdminReview(){globalThis.adminFixture.reads++;return {};}',
  '@/server/integrations/database-transfer.mjs':'export async function exportRequest(){globalThis.adminFixture.reads++;return {status:200,data:{format:"ratsmonitor-data-v1"}};}',
  '@/server/integrations/manual-analysis.mjs':'export async function analysePending(){globalThis.adminFixture.analyses++;return {status:200,data:{processed:1,remaining:0}};}',
@@ -204,10 +188,10 @@ function load(file){if(cache.has(file))return cache.get(file);let s=fs.readFileS
  s=ts.transpileModule(s,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText.replace(/((?:from\s*|import\s*)['"])([^'"]+)(['"])/g,(m,pre,spec,post)=>{if(stubs[spec])return pre+uri(stubs[spec])+post;const base=spec.startsWith('@/')?path.join(root,spec.slice(2)):spec.startsWith('.')?path.resolve(path.dirname(file),spec):null;if(!base)return m;return pre+load([base,base+'.ts'].find(p=>fs.existsSync(p)&&fs.statSync(p).isFile()))+post;});
  const out=uri(s);cache.set(file,out);return out;
 }
-const routes=Object.fromEntries(await Promise.all(['summary','area','review','export','claim','database','pipeline','ai-job'].map(async r=>[r,await import(load(path.join(root,'app/api/admin',r,'route.ts')))])));
+const routes=Object.fromEntries(await Promise.all(['summary','area','review','export','database','pipeline','ai-job'].map(async r=>[r,await import(load(path.join(root,'app/api/admin',r,'route.ts')))])));
 const req=(route,body,headers={})=>new Request('https://site.example/api/admin/'+route,{method:body===undefined?'GET':'POST',headers:{origin:'https://site.example','content-type':'application/json',...headers},...(body===undefined?{}:{body})});
 test('every data endpoint denies anonymous and other signed-in users before any reads or imports',async()=>{
- reset();await claimAdmin(db,owner,code,hash);globalThis.adminFixture.reads=0;globalThis.adminFixture.syncs=0;
+ reset();globalThis.adminFixture.reads=0;globalThis.adminFixture.syncs=0;
  for(const [user,status] of [[null,401],[other,403]]){globalThis.adminFixture.user=user;for(const route of ['summary','area','review','export','database','pipeline','ai-job']){const response=['import','analyse','prepared-analysis','pipeline','ai-job'].includes(route)?await routes[route].POST(req(route,'{"region":"billerbeck"}')):await routes[route].GET(req(route));assert.equal(response.status,status,route);assert.match(response.headers.get('cache-control'),/no-store/);assert.ok(!(await response.text()).includes('sources'));}}
  assert.equal(globalThis.adminFixture.reads,0);assert.equal(globalThis.adminFixture.syncs,0);
 });
@@ -217,7 +201,6 @@ test('authorized APIs validate all inputs',async()=>{
  assert.equal((await routes.database.GET(req('database'))).status,200);assert.equal(routes.database.POST,undefined);
  assert.equal((await routes.review.GET(req('review?issue=nope'))).status,400);
  assert.equal((await routes.export.GET(req('export?filter=nope'))).status,400);
- assert.equal((await routes.claim.POST(req('claim','null'))).status,400);
  const csv=await routes.export.GET(req('export'));assert.equal(csv.status,200);assert.match(csv.headers.get('content-type'),/text\/csv/);
 });
 

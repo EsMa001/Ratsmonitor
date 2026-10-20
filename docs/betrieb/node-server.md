@@ -44,6 +44,9 @@ Zugang öffnen, dann im Browser `http://localhost:8080`:
 ssh -N -L 8080:127.0.0.1:8080 ratsmonitor
 ```
 
+**Überholt seit 19./20.10.2026:** Admin ist die Rolle eines Kontos (Anmeldung im Tunnel, `ADMIN_HOSTS`, Abschnitt „Konten“);
+Caddy setzt keine Kennung mehr, und der Code für den alten Weg ist entfernt. Der Rest dieses Abschnitts beschreibt den früheren Weg.
+
 Wer den Tunnel öffnen kann, ist Admin. Caddy meldet jede Anfrage mit der Kennung aus `/etc/default/caddy`.
 Die Datei und ihre Einbindung in Caddy (der Caddy-Dienst von Ubuntu liest sie nicht von selbst):
 
@@ -55,7 +58,7 @@ systemctl daemon-reload && systemctl restart caddy
 ```
 
 Fehlt die Einbindung, setzt Caddy leere Kennungen, und die Administration ist gesperrt. Die gebundene Kennung muss
-zu `RM_ADMIN_USER_ID` passen (`scripts/bind-admin-owner.mjs`).
+zu `RM_ADMIN_USER_ID` passen (früher `scripts/bind-admin-owner.mjs`, seit 20.10.2026 entfernt).
 
 Für Nico einen eigenen SSH-Schlüssel eintragen. Für den Tunnel allein genügt ein Benutzer ohne Root-Rechte; Deploys
 brauchen Root.
@@ -111,14 +114,13 @@ Die lokale Datei ist eine SQLite-Datei mit Protokoll (`-wal`). Eine rohe Kopie d
    scp -C "<lokale .sqlite>" ratsmonitor:/srv/ratsmonitor/data/ratsmonitor.sqlite.new
    ```
 
-4. Auf dem Server: Dienst stoppen, Datei vollständig prüfen und tauschen, Besitzer binden, starten:
+4. Auf dem Server: Dienst stoppen, Datei vollständig prüfen und tauschen, starten:
 
    ```bash
    systemctl stop ratsmonitor
    sqlite3 /srv/ratsmonitor/data/ratsmonitor.sqlite.new "PRAGMA integrity_check"
    cd /srv/ratsmonitor/data && rm -f ratsmonitor.sqlite-wal ratsmonitor.sqlite-shm && mv ratsmonitor.sqlite.new ratsmonitor.sqlite && chown ratsmonitor: ratsmonitor.sqlite
    sudo -u ratsmonitor node /srv/ratsmonitor/app/current/scripts/node-migrate.mjs /srv/ratsmonitor/data/ratsmonitor.sqlite --check
-   sudo -u ratsmonitor node /srv/ratsmonitor/app/current/scripts/bind-admin-owner.mjs /srv/ratsmonitor/data/ratsmonitor.sqlite max --replace
    systemctl start ratsmonitor
    ```
 
@@ -568,7 +570,7 @@ mkdir -p /etc/systemd/journald.conf.d && cp journald-ratsmonitor.conf /etc/syste
 ```
 
 In `ratsmonitor.env` die Werte aus `ratsmonitor.env.example`, Abschnitt Konten, ergänzen (`RM_ACCESS`, `ADMIN_HOSTS`,
-`ADMIN_LEGACY_HEADER`, `MAIL_*`, `OPERATOR_EMAIL`, `SITE_URL`). `deploy/node/deploy.sh` sichert und migriert die
+`MAIL_*`, `OPERATOR_EMAIL`, `SITE_URL`). `deploy/node/deploy.sh` sichert und migriert die
 Kontendatei danach bei jedem Stand selbst (nur additive Migrationen, `drizzle-accounts/`) und prüft `/api/internal/health`.
 
 **Kontenverwaltung** nur per Kommandozeile, Adressen immer über die Eingabe, nie als Argument:
@@ -599,8 +601,8 @@ ratsmonitor-accounts block --note "Grund" --id u_…  |  unblock  |  revoke  |  
 5. `RM_ACCESS=invite`, Basic-Auth vorerst davor lassen, Sperre prüfen.
 6. Mit Domain, Mailanbieter und Rechtstexten: Caddy `step3.caddy`, `SITE_URL` auf die Domain, Tester in Wellen einladen.
 
-Rückweg: `ADMIN_LEGACY_HEADER=1` (bis Schritt 4), Basic-Auth-Block wieder einsetzen. Ohne Kontendatei und ohne
-`ADMIN_LEGACY_HEADER` gilt der alte Admin-Weg automatisch weiter; ein Stand mit Konten sperrt sich also nicht selbst aus.
+Rückweg: Basic-Auth-Block wieder einsetzen. Den Schalter `ADMIN_LEGACY_HEADER` und den alten Admin-Weg gibt es seit
+20.10.2026 nicht mehr (Code entfernt, `requirements/cleanup-analyse-2026-10-20.md`, C3); Admin geht nur über ein Konto mit Rolle.
 
 **Lokal:** Der Dev-Start (`npm run dev`) spielt die Kontotabellen in die lokale D1-Datei und legt `basic@`, `pro@`,
 `enterprise@` und `admin@plenara.test` an (`scripts/accounts/dev-setup.mjs`, abschaltbar mit `RM_SKIP_ACCOUNTS=1`).

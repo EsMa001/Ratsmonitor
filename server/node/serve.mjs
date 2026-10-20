@@ -93,7 +93,6 @@ try {
   if (file && fs.existsSync(file)) {
     const db = new DatabaseSync(file, { readOnly: true });
     if (db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name IN ('users','sessions') LIMIT 1").get()) console.warn('[ratsmonitor] Die Inhaltsdatei enthält Kontotabellen (users/sessions), etwa aus einer lokalen Kopie. Konten gehören in ACCOUNTS_FILE.');
-    if (process.env.ACCOUNTS_FILE && process.env.ADMIN_LEGACY_HEADER !== '1' && db.prepare("SELECT 1 FROM system_state WHERE key='admin-owner-v1'").get()) console.warn('[ratsmonitor] admin-owner-v1 (alter Admin-Weg) besteht noch, gilt aber nicht mehr (ADMIN_LEGACY_HEADER ist aus). Nach dem Übergang: ratsmonitor-accounts cleanup-legacy.');
     db.close();
   }
 } catch { /* nur ein Hinweis */ }

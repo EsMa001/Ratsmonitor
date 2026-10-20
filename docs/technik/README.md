@@ -173,7 +173,7 @@ das steht in `docs/betrieb/node-server.md`.
 ### Cloudflare
 
 `npm run build` baut weiter mit dem Cloudflare-Plugin (`wrangler.local.json` nur lokal); der Code hält Kompatibilitätsstellen vor
-(`requestTier` ohne Kontendatei, `cf-connecting-ip`, `ADMIN_LEGACY_HEADER`). Produktiv läuft nur Node; eine Produktions-Konfiguration
+(`requestTier` ohne Kontendatei, `cf-connecting-ip`; ohne Kontendatei keine Administration, der Kopfzeilen-Weg ist seit 20.10.2026 entfernt). Produktiv läuft nur Node; eine Produktions-Konfiguration
 für Cloudflare gibt es im Repo nicht.
 
 ## 6. Infrastruktur auf dem Server
@@ -197,8 +197,8 @@ Browser ─▶ Caddy (plenara.de :443 mit Let's Encrypt, HSTS, noindex; Tunnel 1
 
 **Umgebungsvariablen** (`ratsmonitor.env.example`): `DATABASE_FILE`, `DATABASE_READONLY`, `DATABASE_BUSY_TIMEOUT_MS`, `DATABASE_SLOW_MS`,
 `HOST`, `PORT`, `NODE_ENV`, `TZ=UTC`, `VINEXT_TRUST_PROXY`, `NODE_OPTIONS`, `SITE_URL`, `RM_ACCESS` (`open`/`invite`), `ADMIN_HOSTS`,
-`ADMIN_LEGACY_HEADER`, `MAIL_TRANSPORT` (`http`/`log`/`outbox`), `LOGIN_TOTP`, `MAIL_API_URL`, `MAIL_FROM`, `MAIL_REPLY_TO`,
-`OPERATOR_EMAIL`, `ADMIN_SETUP_HASH` (alt), `IMPORT_TOKEN`,
+`MAIL_TRANSPORT` (`http`/`log`/`outbox`), `LOGIN_TOTP`, `MAIL_API_URL`, `MAIL_FROM`, `MAIL_REPLY_TO`,
+`OPERATOR_EMAIL`, `IMPORT_TOKEN`,
 `RM_PDF_STORE`, `OCR_TOOLS`, `OCR_CACHE`, `RM_X_WORKERS`. Nicht in der Vorlage: `SHUTDOWN_GRACE_MS`, `RM_ALLOW_PUBLIC_BIND`,
 `RM_ALLOW_NO_DB`, `RM_SKIP_WARM`, `RM_X_WORKER`, `IMPORT_BUSY_TIMEOUT_MS` (Einheiten 30 s), `ACCOUNTS_BUSY_TIMEOUT_MS`, `RM_TRIGGER_DIR`,
 `ACCOUNTS_OPEN_SIGNUP`, `ACCOUNTS_IN_MAIN_DB`, `BACKUP_REMOTE`, `BACKUP_DIR`, `KEEP`, `ZSTD_LEVEL`, `RM_MCP_CONFIG`, `ROBOTS_POLICY`.

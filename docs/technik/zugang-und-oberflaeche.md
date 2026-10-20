@@ -27,8 +27,7 @@ flowchart LR
   keine Stufengrenzen: Cloudflare-Build); `guard()` lässt interne Aufrufe immer durch, antwortet bei `invite` ohne Konto 401 und bei
   fehlender Funktion der Stufe 403; `gated(handler, {feature:'analytics'|'calendar'})` umhüllt eine Datenroute und macht `public`
   zu `private` mit `Vary: Cookie`; `adminState()` liefert `admin`, `stale` (Anmeldung älter als 7 Tage), `totp`, `totp-setup` oder
-  `denied`; der alte Kopfzeilenweg (`Oai-Authenticated-User-*` aus Caddy, `admin-owner-v1`) nur mit `ADMIN_LEGACY_HEADER=1` oder
-  solange keine Kontendatei eingerichtet ist.
+  `denied`; den alten Kopfzeilenweg (`Oai-Authenticated-User-*` aus Caddy, `admin-owner-v1`) gibt es seit 20.10.2026 nicht mehr.
 - **Admin-Routen:** `adminRead()` = `requireAdmin` + `readResponse` mit schwachem ETag (304 bei passendem `If-None-Match`, ohne den
   Body zu bauen; `admin-etag.mjs`); Kopfzeilen `private, no-cache`; `/api/admin/static?v=` für immer im Cache.
 - **Kontorouten:** `requireSameOrigin` (`server/accounts/http.mjs`): `Origin` gleich, nicht `cross-site`, `Content-Type` JSON, sonst 403
@@ -60,8 +59,8 @@ flowchart LR
 | `GET /api/me` | Stufe, Rollen, Rechte, Zugangsmodus |
 | `/api/me/searches`, `articles`, `settings`, `sessions`, `calendar-feed`, `import`, `export`, `delete`, `view-tier` | gespeicherte Suchen und Berichte, Einstellungen, Geräte, Abo-Link, Browserdaten übernehmen, Datenauskunft, Konto löschen (mit Code), Admins „ansehen als“ |
 
-**Administration** (26 Routen, alle `requireAdmin`): `ai-local`, `ai-job`, `altbestand`, `area`, `areas`, `static`, `atlas`,
-`coverage`, `timeline`, `summary`, `claim` (alt), `database` (Export), `debug`, `run-debug`, `estimate`, `export` (CSV),
+**Administration** (25 Routen, alle `requireAdmin`): `ai-local`, `ai-job`, `altbestand`, `area`, `areas`, `static`, `atlas`,
+`coverage`, `timeline`, `summary`, `database` (Export), `debug`, `run-debug`, `estimate`, `export` (CSV),
 `pipeline`, `pdf-ablage`, `pdf-ablage/fehler`, `quality`, `refresh`, `review`, `social`, `speicher`, `todos`,
 `zeitplaene`.
 

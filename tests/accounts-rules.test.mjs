@@ -141,11 +141,10 @@ test('Caddy-Prüfung: öffentliche Site mit Admin-Kennung oder ohne public_site 
  assert.equal(problems.length,2);assert.match(problems.join(' '),/Admin-Kennung/);
 });
 
-test('Übergang: ohne Kontendatei gilt der alte Admin-Weg weiter, mit Kontendatei nur auf ausdrücklichen Wunsch',()=>{
- assert.equal(accountsConfig({DB:{}},{dev:false}).legacyHeader,true);
- assert.equal(accountsConfig({DB:{},ACCOUNTS:{}},{dev:false}).legacyHeader,false);
- assert.equal(accountsConfig({DB:{},ACCOUNTS:{},ADMIN_LEGACY_HEADER:'1'},{dev:false}).legacyHeader,true);
- assert.equal(accountsConfig({DB:{},ADMIN_LEGACY_HEADER:'0'},{dev:false}).legacyHeader,false);
+test('Der alte Admin-Weg über Kopfzeilen ist entfernt (20.10.2026): auch ohne Kontendatei und mit ADMIN_LEGACY_HEADER=1 nicht',()=>{
+ for(const env of [{DB:{}},{DB:{},ADMIN_LEGACY_HEADER:'1'},{DB:{},ACCOUNTS:{},ADMIN_LEGACY_HEADER:'1'}])assert.equal('legacyHeader' in accountsConfig(env,{dev:false}),false);
+ const session=fs.readFileSync(new URL('../server/services/session.ts',import.meta.url),'utf8');
+ assert.doesNotMatch(session,/oai-authenticated|getChatGPTUser|ADMIN_LEGACY_HEADER/);
 });
 
 test('Admin-Protokoll: ändernde Admin-Aufrufe je Konto, Pfad und Stunde gezählt, nur IDs',async()=>{
