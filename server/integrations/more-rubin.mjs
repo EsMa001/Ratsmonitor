@@ -230,7 +230,7 @@ export async function collectRubin(source,{now=new Date(),get=fetchText,maxDurat
  const topics=[];
  for(const t of grouped.values()){
   t.events.sort((a,b)=>a.date.localeCompare(b.date));const last=t.events.at(-1);Object.assign(t,{status:last.status,eventDate:last.date,committee:last.committee});t.documents=[...new Map(t.documents.map(d=>[d.url,d])).values()];
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name.replace(/^(Stadt|Gemeinde) /,''));
+  Object.assign(t,sourceSummary(t,{place:source.name.replace(/^(Stadt|Gemeinde) /,'')}));
   t.quality={passed:false,checks:[{name:'Öffentliche Schnittstelle',passed:true,detail:'Anonymer Lesezugriff; öffentliche Tagesordnungspunkte.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Quellenüberblick ohne abgeschlossene Qualitätsevaluation.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText+JSON.stringify(t.events))};topics.push(t);
  }
  const meetings=listed.length-other-unknown;
