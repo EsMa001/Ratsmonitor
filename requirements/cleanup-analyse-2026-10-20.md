@@ -198,3 +198,46 @@ Nicht im laufenden Server geprüft (kein Start auf der lokalen Kopie, kein Deplo
   - Rahmen für die Admin-POST-Routen (`adminRoute`): nach C3 (#18), sonst Konflikte in `admin-auth.ts` und `tests/admin.test.mjs`.
   - Verteilung in `collect-region.mjs`.
   - `collectWebsite` aufteilen.
+
+## Vorher-Nachher-Vergleich auf dem Server (20.10.2026, 22:45 bis 23:15)
+
+- **Aufbau:**
+  - „Vorher“ ist main `a6bea4f5`. „Nachher“ ist main plus #14 bis #19 einschließlich #18, als lokaler Merge ohne Konflikte.
+  - Beide Fassungen sind wie bei `deploy.sh` auf dem Server gebaut und laufen gleichzeitig auf 127.0.0.1 mit niedriger Priorität.
+  - Beide lesen dieselbe Datenbankkopie (Sicherung vom 19.10. 22:30, 26 GB). Jede Fassung hat eine eigene Testkontendatei mit einem Konto Enterprise + Admin.
+  - 183 GET-Abfragen: Suche 60, plenara.X 27, Teaser 8, Auswertungen 34, Admin 21, Themen 8, Daten 4, Seiten 6, Gast 12, Konto 1, entfernte Wege 2.
+  - Die Reihenfolge wechselt je Abfrage: Wer zuerst fragt, liest aus dem leeren Seitencache des Systems.
+  - Produktion, Live-Datenbank, env und systemd blieben unberührt. Alles ist wieder entfernt, der Platz ist wieder 48 GB frei.
+- **Gleichheit:** Alle Datenantworten sind inhaltlich gleich. 106 sind auf das Byte gleich. Die übrigen Unterschiede sind erwartet:
+  - 54 Antworten von plenara.X, Teasern und Auswertungen tragen jetzt ein ETag (Paket 4, `cachedJson`), der Inhalt ist gleich.
+  - `/api/admin/summary` hat kein `counts.pushSubscriptions` und kein `operations` mehr (C1, C2). Die Oberfläche liest beides nicht.
+  - `/api/push/*` antwortet mit 404 (C1).
+  - Testbedingt: Zeitstempel (`asOf`, `at`, `next`), die Konto-ID, der Port in den Kalenderlinks und die Asset-Namen im HTML.
+  - Die Serverprotokolle zeigen keine Fehler.
+- **Zeiten** (Summe über alle Abfragen der Gruppe):
+
+| Gruppe | Lauf 1 kalt (Cache leer) | Lauf 2 kalt (neu gestartet, Reihenfolge getauscht) | warm (Median aus 3) |
+|---|---|---|---|
+| alle | 81,0 → 67,0 s (−17 %) | 75,2 → 60,0 s (−20 %) | 3,19 → 3,15 s (−1 %) |
+| Suche | 43,6 → 29,5 s (−32 %), Median 777 → 176 ms | 42,0 → 30,9 s (−27 %), Median 791 → 240 ms | −4 % |
+| Auswertungen | 15,5 → 12,6 s (−18 %) | 15,6 → 12,0 s (−23 %) | −3 % |
+| plenara.X | 16,9 → 16,1 s (−5 %) | 13,1 → 13,3 s (+1 %) | −3 % |
+| Admin | 4,1 → 7,9 s (Reihenfolge, siehe unten) | 3,9 → 3,5 s (−12 %) | −1 % |
+| Seiten | 0,57 → 0,12 s | 0,21 → 0,09 s | +4 % |
+
+- **Größte Gewinne:**
+  - Facetten seltener oder kurzer Begriffe (`ab`, `b-plan`, `windenergie`): 0,9 bis 1,1 s → 14 bis 35 ms.
+  - Seite 2 und `sort=asc`: 1,0 bis 1,4 s → 40 bis 165 ms.
+  - `sort=relevance`: 1,9 bis 2,1 s → 0,9 bis 1,1 s.
+  - `/api/analytics/decisions` ohne Filter: 2,6 → 1,3 s.
+- **Verschlechterungen:**
+  - In Lauf 1 waren `/api/admin/social` (1,4 → 3,9 s), `/api/admin/summary` (0,3 → 1,8 s) und `/api/x?view=atlas&q=schule` (0,5 → 3,8 s) nachher langsamer. Jedes Mal fragte „Nachher“ zuerst. In Lauf 2 mit getauschter Reihenfolge war keine davon langsamer, summary 617 → 337 ms.
+  - In Lauf 2 bleiben zwei Abweichungen über 150 ms: Suche `haushalt` Seite 1 (1,09 → 1,30 s) und `/api/x?by=fact:hebesatz` (2,37 → 2,65 s), beide mit „Nachher“ zuerst. In Lauf 1 war hebesatz 4,1 → 2,6 s. Das liegt im Rauschen.
+- **Last** (8 parallel, je Liste 60 neue Abfragen: Seite, Facetten, Atlas mit Begriff): ohne Fehler.
+  - Liste 1, „Vorher“ zuerst: 26,0 s, p95 7,5 s → 19,0 s, p95 3,8 s.
+  - Liste 2, „Nachher“ zuerst: 22,8 s, p95 5,5 s; danach „Vorher“: 22,5 s, p95 5,6 s.
+  - Unter Last also mindestens gleich.
+- **Speicher:** Die Spitze lag in Lauf 1 bei 2,06 GB vorher und 2,32 GB nachher, in Lauf 2 bei 2,54 GB vorher und 1,98 GB nachher. Ein Unterschied ist nicht erkennbar.
+- **Nicht abgedeckt:**
+  - POST und Admin-Aktionen, Importprozess, Jobs der PDF-Ablage und von `rule-texts`, MCP, Darstellung im Browser.
+  - Drei Abfragen mit `label=bildung` und `compare` ohne Ort antworteten bei beiden mit 400 (falsche Testadresse). Der Themenfilter ist daher nur über `/api/x` geprüft.
