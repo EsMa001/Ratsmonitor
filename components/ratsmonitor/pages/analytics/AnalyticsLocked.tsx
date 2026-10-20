@@ -32,7 +32,7 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
         {v && <p className="m-0 text-[18px] leading-relaxed text-slate-700">{v.text}</p>}
         <p className="mt-3 text-[16px] text-slate-500">Die Analysen von plenara.X gehören zur Stufe Enterprise, für Organisationen, in denen mehrere Personen informiert werden sollen.</p>
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Link href="/kontakt" className="btn-primary">Enterprise: {UPGRADE_TEXT}</Link>
+          <Link href="/kontakt" className="btn-primary max-w-full whitespace-normal">Enterprise: {UPGRADE_TEXT}</Link>
           <Link href="/preise" className="btn-secondary">Was kann plenara.X?</Link>
           {IS_DEV && (
             <button type="button" onClick={() => setTier("enterprise")} className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
