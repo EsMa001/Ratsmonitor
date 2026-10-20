@@ -88,7 +88,7 @@ function VideoMitKapiteln({ b, dark }: { b: Branche; dark: boolean }) {
           {kap.map((k, i) => (
             <li key={k.titel}>
               <button type="button" onClick={() => gehe(i)} aria-current={aktiv === i} className={"flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left text-[16px] leading-snug " + (aktiv === i ? "bg-teal-50 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50")}>
-                <span className={"mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full text-[13px] font-semibold " + (aktiv === i ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-700")}>{i + 1}</span>
+                <span className={"mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full text-[12px] font-semibold " + (aktiv === i ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-700")}>{i + 1}</span>
                 {k.titel}
               </button>
             </li>

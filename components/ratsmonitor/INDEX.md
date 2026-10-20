@@ -675,8 +675,8 @@ z- ratsmonitor.css:399
 
 ### app/
 - chatgpt-auth.ts (92): ChatGPTUser, getChatGPTUser, chatGPTSignInAvailable, chatGPTSignInPath, chatGPTSignOutPath
-- error.tsx (9, ⚠1): PageError
-- global-error.tsx (11, ⚠1): GlobalError
+- error.tsx (13, ⚠1): PageError
+- global-error.tsx (14, ⚠1): GlobalError
 - layout.tsx (12, ⚠2): metadata, viewport, RootLayout
 - not-found.tsx (4): metadata, NotFound
 - robots.ts (12): robots
@@ -726,7 +726,7 @@ z- ratsmonitor.css:399
 - database-admin.tsx (34, ⚠3): DatabaseAdmin
 
 ### components/ratsmonitor/
-- App.tsx (75, ⚠2): MonitorApp
+- App.tsx (76, ⚠2): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (90, ⚠4): AccountMenu
@@ -774,7 +774,7 @@ z- ratsmonitor.css:399
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (174, ⚠2): Highlight, ArticleCard, StepTimeline
-- ResultsPanel.tsx (223): ResultsPanel
+- ResultsPanel.tsx (225): ResultsPanel
 
 ### components/ratsmonitor/components/
 - suggestRows.ts (214): Row, notePick, takePickedText, RowContext, buildRows
@@ -845,6 +845,7 @@ z- ratsmonitor.css:399
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - searchUrl.ts (106): readableQuery, SEARCH_URL_KEYS, searchToUrl, onlyText, searchFromUrl
 - sheetStage.ts (26): SheetStage, setSheetStage, toggleSheetStage, useSheetStage, setPeekHidden, usePeekHidden
+- signedInHint.ts (7): SignedInHint, useSignedInHint
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem
 - text.ts (96): normChar, norm, FILLER, terms, Segment, highlightSegments, plural, parseDate, fmtDate, isoDay, todayLocal, MONTH_FMT, MONTH_SHORT, monthLabel
 - tier.ts (68): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, priceLabel, UPGRADE_TEXT, IS_DEV, getTier, setTier, useTier, usage

@@ -94,6 +94,8 @@ export function ResultsPanel() {
         <div className={`pointer-events-none absolute bottom-0 left-0 right-3 z-[2] h-7 bg-gradient-to-t from-white to-white/0 transition-opacity ${fade.bottom ? "opacity-100" : "opacity-0"}`} />
         <div
           ref={listRef}
+          id="treffer"
+          tabIndex={-1}
           aria-label="Ergebnisliste"
           onScroll={updateFades}
           onMouseLeave={() => onHover("")}

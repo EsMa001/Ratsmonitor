@@ -211,7 +211,7 @@ export function KalenderPage() {
               /* Heute im Fokus: groß und warm, danach ruhig die kommenden Tage */
               <div className="rounded-[22px] border border-amber-200 bg-gradient-to-br from-amber-50 to-white px-5 py-4">
                 <p className="m-0 text-[12px] font-semibold uppercase tracking-wide text-amber-700">Heute</p>
-                <h2 className="m-0 mt-0.5 text-[28px] font-semibold capitalize leading-tight text-slate-900 max-sm:text-[24px]">{dayLabel}</h2>
+                <h2 className="m-0 mt-0.5 text-[28px] font-semibold capitalize leading-tight text-slate-900 max-sm:text-[22px]">{dayLabel}</h2>
                 <p className="m-0 mt-1 text-[14px] text-slate-600">{dayEvents.length ? `${dayEvents.length} ${dayEvents.length === 1 ? "Sitzung" : "Sitzungen"} in deinen Gebieten` : "Heute keine Sitzungen in deinen Gebieten."}</p>
               </div>
             ) : <h2 className="m-0 text-[18px] font-semibold text-slate-900">{dayLabel}</h2>}
