@@ -51,7 +51,7 @@ export function BenachrichtigungenPage() {
           <p className="ri-sub">Wer diesem Vorgang folgt, erfährt von jeder dieser Beratungen.</p>
           <ol className="m-0 mt-6 list-none border-t border-slate-200 p-0">
             {beispiel.schritte.map((st) => (
-              <li key={st.href} className="grid gap-x-6 gap-y-1 border-b border-slate-200 py-3 sm:grid-cols-[120px_minmax(0,1fr)_auto] sm:items-baseline">
+              <li key={st.href} className="grid grid-cols-1 gap-x-6 gap-y-1 border-b border-slate-200 py-3 sm:grid-cols-[120px_minmax(0,1fr)_auto] sm:items-baseline">
                 <span className="text-[14px] font-semibold tabular-nums text-teal-700">{new Date(st.d).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
                 <span className="text-[16px] text-slate-900">{st.label}<span className="block text-[14px] text-slate-500">{st.gremium}</span></span>
                 <Link href={st.href} className="inline-block max-sm:py-3 text-[14px] text-teal-700 no-underline hover:underline">Vorgang mit Quelle →</Link>

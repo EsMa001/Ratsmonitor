@@ -192,7 +192,7 @@ export function GremiennetzPage() {
               <section className="rm-sec">
                 <h2 className="text-[22px] font-semibold">Wer anfängt und wer entscheidet</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Durchsatz je Gremium: eingehende und ausgehende Übergänge. Durchgänge verbinden Einstieg und Entscheidung.</p>
-                <ol className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 max-sm:block max-sm:border-t max-sm:border-slate-200">
+                <ol className="m-0 grid grid-cols-1 list-none gap-3 p-0 sm:grid-cols-2 max-sm:block max-sm:border-t max-sm:border-slate-200">
                   {(!more.o ? ranked.slice(0, 6) : ranked).map((x) => (
                     <li key={x.id} className="sm:rounded-xl sm:bg-slate-50 max-sm:border-b max-sm:border-slate-200">
                       <button type="button" onClick={() => setSelected(x.id)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-3 max-sm:py-2.5 text-left hover:bg-slate-100 sm:rounded-xl sm:px-4 sm:py-3.5">

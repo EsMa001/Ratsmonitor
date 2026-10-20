@@ -54,7 +54,7 @@ function SignalBlock({ a, label }: { a: SignalAuszug; label: string }) {
     return () => window.removeEventListener("resize", messen);
   }, [a]);
   return (
-    <div ref={wrap} className="grid items-start gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+    <div ref={wrap} className="grid grid-cols-1 items-start gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1fr)_420px]">
       <div>
         <p className="m-0 flex flex-wrap items-baseline gap-x-3">
           <span className="text-[44px] font-semibold leading-none text-teal-700 tabular-nums">{n(a.total)}</span>
@@ -176,7 +176,7 @@ function AusgangBlock({ a }: { a: AusgangAuszug }) {
   return (
     <div>
       <Gross zahl={pct(a.approval)} text={`der ${n(a.decided)} entschiedenen Vorgänge beschlossen`} />
-      <ul className="m-0 mt-4 grid list-none gap-x-8 gap-y-2 p-0 text-[16px] sm:grid-cols-2">
+      <ul className="m-0 mt-4 grid grid-cols-1 list-none gap-x-8 gap-y-2 p-0 text-[16px] sm:grid-cols-2">
         <li><b className="font-semibold text-slate-900">{pct(a.postponement)}</b> <span className="text-slate-500">vertagt</span></li>
         <li><b className="font-semibold text-slate-900">{pct(a.rejection)}</b> <span className="text-slate-500">abgelehnt</span></li>
         {a.median !== null && <li><b className="font-semibold text-slate-900">{n(a.median)} Tage</b> <span className="text-slate-500">im Mittel bis zur Entscheidung</span></li>}

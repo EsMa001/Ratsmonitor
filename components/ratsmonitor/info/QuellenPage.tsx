@@ -78,7 +78,7 @@ export function QuellenPage() {
         {error && <p className="m-0"><Ladefehler text={error} onRetry={() => { setError(""); setVersuch((n) => n + 1); }} /></p>}
         {!data && !error && (
           <div role="status" aria-label="Abdeckung wird geladen">
-            <div className="grid animate-pulse gap-12 sm:grid-cols-2" aria-hidden="true">
+            <div className="grid grid-cols-1 animate-pulse gap-12 sm:grid-cols-2" aria-hidden="true">
               {[0, 1].map((i) => <div key={i}><div className="h-12 w-28 rounded-full bg-slate-100" /><div className="mt-3 h-5 w-64 max-w-full rounded-full bg-slate-100" /><div className="mt-2 h-4 w-48 max-w-full rounded-full bg-slate-100" /></div>)}
             </div>
             <div className="mt-12 grid animate-pulse grid-cols-2 gap-6 border-t border-slate-200 pt-4 sm:grid-cols-4" aria-hidden="true">
@@ -88,7 +88,7 @@ export function QuellenPage() {
         )}
         {data && reach && (
           <>
-            <div className="grid gap-4 max-sm:gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 max-sm:gap-3 sm:grid-cols-2">
               <Big value={pct(reach.municipalities.covered, reach.municipalities.total)} label="der Gemeinden Deutschlands sind dabei" sub={`${n(reach.municipalities.covered)} von ${n(reach.municipalities.total)} Gemeinden mit Vorgängen aus ihrem Rat`} />
               <Big value={pct(reach.population.covered, reach.population.total)} label="der Einwohner leben in abgedeckten Orten" sub={`${(reach.population.covered / 1e6).toLocaleString("de-DE", { maximumFractionDigits: 1 })} von ${(reach.population.total / 1e6).toLocaleString("de-DE", { maximumFractionDigits: 1 })} Millionen Menschen`} />
             </div>
@@ -112,7 +112,7 @@ export function QuellenPage() {
 
       {data && reach && (
         <section className="ri-sec ri-sec--tight">
-          <div className="grid gap-x-12 gap-y-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start">
+          <div className="grid grid-cols-1 gap-x-12 gap-y-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start">
             <div>
               <h2 className="ri-h2">Ist Ihr Ort dabei?</h2>
               <p className="m-0 mt-2 max-w-[520px] text-[16px] text-slate-500">Gemeinde, Stadt oder Kreis eingeben und nachsehen.</p>

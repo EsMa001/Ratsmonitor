@@ -194,7 +194,7 @@ export function BeschluessePage() {
                     <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                   ))}
                 </dl>
-                <div className="mt-8 grid gap-12 md:grid-cols-2 max-sm:mt-5 max-sm:gap-5">
+                <div className="mt-8 grid grid-cols-1 gap-12 md:grid-cols-2 max-sm:mt-5 max-sm:gap-5">
                   {([["Nach Gremienebene", res.votes.kinds], ["Umstrittenste Themenfelder", res.votes.topics]] as [string, VRow[]][]).map(([title, rows]) => (
                     <div key={title}>
                       <h3 className="text-[16px] font-semibold">{title}</h3>

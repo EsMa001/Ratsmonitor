@@ -334,7 +334,7 @@ function Steckbrief({ begriff, row, spread, df, error, firsts, day, onDay, playi
           ))}
         </dl>
 
-        <div className="mt-8 grid gap-8 sm:grid-cols-2 max-sm:mt-5 max-sm:gap-5">
+        <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 max-sm:mt-5 max-sm:gap-5">
           <Places title="Vorreiter" hint="Am frühesten neu, nicht schon zu Beginn ihres Bestands" items={fresh.slice(0, 5)} />
           <Places title="Zuletzt dazugekommen" hint="Die jüngsten ersten Erwähnungen" items={[...df.regions].reverse().slice(0, 5)} />
         </div>

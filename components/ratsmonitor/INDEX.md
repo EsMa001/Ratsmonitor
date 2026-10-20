@@ -11,9 +11,9 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (578 Zeilen, ⚠14)
-- app/ratsmonitor.css (610 Zeilen, ⚠38)
+- app/ratsmonitor.css (616 Zeilen, ⚠38)
 
-absolute ratsmonitor.css:605
+absolute ratsmonitor.css:611
 admin-access admin.css:6
 admin-activation admin.css:6
 admin-ai-kinds admin.css:10
@@ -259,7 +259,7 @@ field-help ratsmonitor.css:34
 field-input ratsmonitor.css:28
 field-label ratsmonitor.css:31
 figure design-styles.css:197
-fixed ratsmonitor.css:606
+fixed ratsmonitor.css:612
 font-bold ratsmonitor.css:66
 font-medium ratsmonitor.css:68
 font-semibold ratsmonitor.css:67
@@ -477,28 +477,28 @@ rm-band-mid ratsmonitor-info.css:444
 rm-band-mid ratsmonitor.css:330
 rm-banddots ratsmonitor-info.css:440
 rm-bandicon ratsmonitor-info.css:435
-rm-bar ratsmonitor.css:555
+rm-bar ratsmonitor.css:561
 rm-brandtag ratsmonitor-info.css:432
 rm-chip ratsmonitor.css:92
 rm-dark admin.css:461
 rm-dark ratsmonitor-info.css:327
 rm-dark ratsmonitor.css:88
 rm-deskbar ratsmonitor.css:346
-rm-dialog ratsmonitor.css:569
+rm-dialog ratsmonitor.css:575
 rm-dotfield ratsmonitor-info.css:405
 rm-dotfield-on ratsmonitor-info.css:406
 rm-dots ratsmonitor.css:117
-rm-draw ratsmonitor.css:551
+rm-draw ratsmonitor.css:557
 rm-flat ratsmonitor.css:74
-rm-focusrows ratsmonitor.css:556
+rm-focusrows ratsmonitor.css:562
 rm-footcta ratsmonitor.css:506
 rm-fpop ratsmonitor.css:455
-rm-gflow ratsmonitor.css:540
-rm-gin ratsmonitor.css:537
+rm-gflow ratsmonitor.css:546
+rm-gin ratsmonitor.css:543
 rm-glass ratsmonitor.css:83
 rm-glass-pop ratsmonitor.css:91
-rm-gpulse ratsmonitor.css:538
-rm-gpulse2 ratsmonitor.css:539
+rm-gpulse ratsmonitor.css:544
+rm-gpulse2 ratsmonitor.css:545
 rm-gtext ratsmonitor.css:188
 rm-headtitle ratsmonitor-info.css:497
 rm-karte-toggle ratsmonitor.css:285
@@ -516,7 +516,7 @@ rm-mapctl ratsmonitor.css:253
 rm-mapwrap ratsmonitor.css:271
 rm-netstage ratsmonitor.css:397
 rm-noplay ratsmonitor.css:283
-rm-pagein ratsmonitor.css:566
+rm-pagein ratsmonitor.css:572
 rm-pmark ratsmonitor-info.css:499
 rm-rail-open ratsmonitor.css:389
 rm-rail-sub ratsmonitor.css:287
@@ -524,22 +524,24 @@ rm-sbar ratsmonitor.css:246
 rm-schritt-std ratsmonitor.css:293
 rm-search ratsmonitor-info.css:316
 rm-search ratsmonitor.css:235
-rm-sec ratsmonitor.css:582
-rm-sec-m ratsmonitor.css:582
-rm-sec-s ratsmonitor.css:582
+rm-sec ratsmonitor.css:588
+rm-sec-m ratsmonitor.css:588
+rm-sec-s ratsmonitor.css:588
 rm-solid ratsmonitor.css:91
 rm-spinner ratsmonitor-info.css:554
 rm-spinner ratsmonitor.css:114
 rm-stage ratsmonitor-info.css:478
 rm-stage-chip ratsmonitor.css:398
 rm-statusstrip ratsmonitor.css:492
-rm-step ratsmonitor.css:561
+rm-step ratsmonitor.css:567
 rm-sub-std ratsmonitor.css:381
 rm-sub-wide ratsmonitor.css:381
 rm-tabbar ratsmonitor.css:224
 rm-topline ratsmonitor.css:182
 rm-wheel-list ratsmonitor.css:468
+rm-xbtn ratsmonitor.css:517
 rm-xebene ratsmonitor.css:291
+rm-xfield ratsmonitor.css:517
 rm-xfilter ratsmonitor.css:284
 rm-xhandle ratsmonitor.css:496
 rm-xhero ratsmonitor.css:369
@@ -592,7 +594,7 @@ text-link ratsmonitor.css:97
 text-slate-500 ratsmonitor-info.css:417
 text-slate-900 ratsmonitor.css:166
 text-teal-700 ratsmonitor-info.css:415
-text-teal-700 ratsmonitor.css:605
+text-teal-700 ratsmonitor.css:611
 text-white ratsmonitor.css:180
 timeline design-styles.css:204
 top-3 ratsmonitor.css:399
@@ -677,6 +679,9 @@ z- ratsmonitor.css:399
 - global-error.tsx (11, ⚠1): GlobalError
 - layout.tsx (12, ⚠2): metadata, viewport, RootLayout
 - not-found.tsx (4): metadata, NotFound
+- robots.ts (12): robots
+- site-url.ts (3): SITE_URL
+- sitemap.ts (12): sitemap
 
 ### components/
 - admin-activation.tsx (7, ⚠1): AdminActivation
@@ -890,7 +895,7 @@ z- ratsmonitor.css:399
 - ComparePage.tsx (369, ⚠10): ComparePage
 - CompareParts.tsx (74, ⚠3): Share, Place, Result, ORT, asPlace, n, inhaltlich, datenlage, Hinweis, Duell
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
-- DiffusionSearch.tsx (93, ⚠4): PlayState, DiffusionSearch
+- DiffusionSearch.tsx (94, ⚠4): PlayState, DiffusionSearch
 - FaktenPage.tsx (381, ⚠6): FaktenPage
 - FraktionenPage.tsx (200, ⚠7): FraktionenPage
 - GraphView.tsx (388, ⚠2): GNode, GEdge, KIND, seeded, GraphView

@@ -127,7 +127,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
       {/* Rollen: je Rolle ein konkreter Nutzen (Überschrift und Satz) und ein Suchlink */}
       <section className="ri-sec ri-sec--tight">
         <h2 className="ri-h2">Für Ihre Rolle</h2>
-        <div className="grid gap-x-10 gap-y-10 max-sm:gap-y-6 sm:grid-cols-3" style={{ marginTop: 24 }}>
+        <div className="grid grid-cols-1 gap-x-10 gap-y-10 max-sm:gap-y-6 sm:grid-cols-3" style={{ marginTop: 24 }}>
           {(b.rollen ?? []).map((rolle) => {
             const n = b.benefits.find(([, , , , r]) => r === rolle.name);
             return (

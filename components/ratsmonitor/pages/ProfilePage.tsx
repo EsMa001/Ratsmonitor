@@ -99,7 +99,7 @@ function Personal() {
     }
   };
   return (
-    <form className="grid gap-4 sm:grid-cols-2" onSubmit={(e) => void save(e)}>
+    <form className="grid grid-cols-1 gap-4 sm:grid-cols-2" onSubmit={(e) => void save(e)}>
       <h2 className={`${h2} sm:col-span-2`}>Persönliche Angaben</h2>
       <label>
         <span className={label}>Name</span>

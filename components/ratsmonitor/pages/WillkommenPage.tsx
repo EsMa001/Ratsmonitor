@@ -24,7 +24,7 @@ export function WillkommenPage() {
     <section className="ri-sec">
       <h1 className="m-0 text-[32px] font-semibold leading-tight max-sm:text-[26px]">Hallo, was möchtest du beobachten?</h1>
       <p className="m-0 max-w-[60ch] pt-3 text-[16px] text-slate-600">Such dir einen Anfang aus. Alles lässt sich später ändern, und deine Auswahl bleibt in deinem Konto.</p>
-      <div className="grid gap-4 pt-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 pt-8 lg:grid-cols-3">
         <div className={CARD}>
           <h2 className="m-0 text-[18px] font-semibold">Meinen Ort</h2>
           <p className="m-0 pt-1 text-[14px] text-slate-500">Dein Ort wird zum Favorit und steht überall bereit.</p>

@@ -280,7 +280,7 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   main.rm-xwide{display:grid;grid-template-columns:minmax(0,var(--xl,1.1fr)) minmax(0,1fr);column-gap:12px;align-items:start;padding-left:0 !important;padding-right:max(1vw,16px) !important}
   main.rm-xwide::before{content:"";grid-area:2 / 1 / span 80;align-self:stretch;background:var(--rm-c50);border-right:1px solid var(--rm-c200)}
   main.rm-xwide section[aria-label="Auswertung des Themas"],main.rm-xwide section[aria-label="Auswertung des Themas"]>div[aria-busy],main.rm-xwide>div[aria-busy],main.rm-xwide .rm-xsplit{display:contents}
-  main:is(.rm-xwide,.rm-xnet).rm-noplay div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch)>div{padding-left:52px !important}
+  main:is(.rm-xwide,.rm-xnet).rm-noplay div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch)>div{padding-left:52px}
   main.rm-xwide .rm-xfilter{position:static !important;min-height:0 !important;margin:0 !important;padding:0 !important;background:none !important}
   main.rm-xwide .rm-art-std,main.rm-xwide .rm-karte-toggle,main.rm-xwide nav[aria-label="Wert"],main.rm-xwide .rm-xsplit-map>p{display:none !important}
   main.rm-xwide nav.rm-xrail ul>li{width:auto}
@@ -303,9 +303,9 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   main:is(.rm-xwide,.rm-xnet) .rm-xebene button:hover{color:var(--rm-c900) !important}
   main:is(.rm-xwide,.rm-xnet) .rm-xebene button[aria-pressed=true]{background:rgba(255,255,255,.92) !important;color:var(--rm-c900) !important;font-weight:600;box-shadow:0 2px 8px rgba(24,24,27,.14),inset 0 1px 0 #fff}
   html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xebene button[aria-pressed=true]{background:rgba(255,255,255,.16) !important;box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)}
-  main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>button,main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.relative>button,main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0{border-radius:9999px !important;background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42)) !important;-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75) !important;box-shadow:0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75)}
-  main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0 *:not([role=listbox]):not([role=listbox] *){background:transparent !important;border-radius:9999px}
-  html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xebene,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>button,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.relative>button,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0{background:linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52)) !important;border-color:rgba(154,156,162,.22) !important;box-shadow:0 8px 28px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
+  main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>button,main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.relative>button,main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0{border-radius:9999px;background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75)}
+  main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0 *:not([role=listbox]):not([role=listbox] *){background:transparent;border-radius:9999px}
+  html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xebene,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>button,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.relative>button,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0{background:linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));border-color:rgba(154,156,162,.22);box-shadow:0 8px 28px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
   /* Karte wie in der Suche: Suchleiste mit Play und Filter in der Mitte; mit Auswahl (Chips) springt sie nach unten, die Chips stehen darüber */
   main:is(.rm-xwide,.rm-xnet)::after{content:"";grid-area:1 / 1 / 2 / -1;height:0}
   main:is(.rm-xwide,.rm-xnet){--xt:calc(var(--hdr,58px) + 48px);--xmh:calc(100dvh - var(--xt));padding-top:48px !important}
@@ -320,7 +320,7 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch)>*{pointer-events:auto;width:100%;max-width:620px}
   main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch){order:2}
   main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch)>.rm-xsearch{order:1}
-  main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch)>:not(.rm-solid){order:3;padding-left:0 !important;text-align:left}
+  main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch)>:not(.rm-solid){order:3;padding-left:0;text-align:left}
 
   /* Band: eine dünne Zeile (Zurück, Titel, Zahl, Seiten), bis an den rechten Rand */
   main:is(.rm-xwide,.rm-xnet) .pl-band{position:fixed;top:var(--hdr,58px);left:0;right:0;z-index:40;display:flex;align-items:center;gap:20px;margin:0 !important;height:48px;min-height:0;padding:6px max(1vw,16px) 8px !important;border-radius:0;width:auto}
@@ -350,10 +350,10 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   main:is(.rm-xwide,.rm-xnet) .rm-xebene,main:is(.rm-xwide,.rm-xnet) .rm-xzeit .touch-pan-y,main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button:not([aria-pressed=true]),main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>button,main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.relative>button,main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0,main:is(.rm-xwide,.rm-xnet) .rm-mapbox>.right-3,main:is(.rm-xwide,.rm-xnet) .rm-mapbox>div.inset-x-16>span,main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch) .rm-chip{background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(230,243,241,.46)) !important;border:1px solid rgba(255,255,255,.82) !important;-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7) !important}
   html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xebene,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xzeit .touch-pan-y,html.rm-dark main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button:not([aria-pressed=true]),html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>button,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.relative>button,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-mapbox>.right-3,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-mapbox>div.inset-x-16>span,html.rm-dark main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch) .rm-chip{background:linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5)) !important;border-color:rgba(255,255,255,.14) !important;box-shadow:0 1px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08) !important}
   /* Chips über der Suchleiste: bündig mit dem Suchfeld (nach Play und Filter), Milchglas wie der Rest */
-  main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch)>div{padding-left:104px !important;margin:8px 0 0 !important;justify-content:flex-start}
-  main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch) .rm-chip{color:var(--rm-c900) !important;height:32px !important;padding-left:12px !important;padding-right:8px !important;gap:6px}
+  main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch)>div{padding-left:104px;margin:8px 0 0;justify-content:flex-start}
+  main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch) .rm-chip{color:var(--rm-c900);height:32px;padding-left:12px;padding-right:8px;gap:6px}
   /* Vorschlagsliste der Suche: deckend und rund, nicht durchsichtig */
-  main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=listbox]{background:var(--rm-white) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;border:1px solid var(--rm-c200) !important;border-radius:22px !important;box-shadow:0 12px 32px rgba(24,24,27,.14) !important}
+  main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=listbox]{background:var(--rm-white);-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid var(--rm-c200);border-radius:22px;box-shadow:0 12px 32px rgba(24,24,27,.14)}
   /* Schritt-Auswahl der Projekte als Glas auf der Karte, das Menü öffnet nach oben */
   main:is(.rm-xwide,.rm-xnet) .rm-xschritt{display:block;order:-1}
   main.rm-xwide .rm-xtop,main.rm-xwide .rm-xtop .rm-xebene{flex-wrap:nowrap;white-space:nowrap}
@@ -426,15 +426,15 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   main:not(.rm-xwide):not(.rm-xnet) .pl-band nav[aria-label="Auswertungen"]{order:4;margin-left:auto}
   html:has(.pl-band) .rm-deskbar{display:none !important}
   main:not(.rm-xwide):not(.rm-xnet) .pl-band{position:sticky;top:var(--hdr,58px);z-index:40;height:48px}
-  main:not(.rm-xwide):not(.rm-xnet) div:has(>.rm-xsearch){top:calc(var(--hdr,58px) + 48px) !important}
+  main:not(.rm-xwide):not(.rm-xnet) div:has(>.rm-xsearch){top:calc(var(--hdr,58px) + 48px)}
   main:not(.rm-xwide):not(.rm-xnet) .rm-xfilter{top:calc(var(--hdr,58px) + 48px + 62px) !important}
 }
 
 /* Übrige plenara.X-Seiten (Ortsvergleich, Beschlusslage, Fraktionen, Nachrichten): Suchleiste, Knöpfe und Chips rund im selben leichten Glasstil wie auf den Seiten mit Bühne, ohne den Aufbau zu ändern */
 @media (min-width:1024px){
-  main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>button,main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.relative>button,main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.min-w-0,main:not(.rm-xwide):not(.rm-xnet) .rm-chip{border-radius:9999px !important;background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(230,243,241,.6)) !important;border:1px solid var(--rm-c200) !important;box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.8) !important}
-  main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.min-w-0 *:not([role=listbox]):not([role=listbox] *){background:transparent !important;border-radius:9999px}
-  html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>button,html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.relative>button,html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.min-w-0,html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-chip{background:linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5)) !important;border-color:rgba(255,255,255,.14) !important}
+  main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>button,main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.relative>button,main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.min-w-0,main:not(.rm-xwide):not(.rm-xnet) .rm-chip{border-radius:9999px;background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(230,243,241,.6));border:1px solid var(--rm-c200);box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.8)}
+  main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.min-w-0 *:not([role=listbox]):not([role=listbox] *){background:transparent;border-radius:9999px}
+  html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>button,html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.relative>button,html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.min-w-0,html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-chip{background:linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5));border-color:rgba(255,255,255,.14)}
 }
 
 /* Handy, alle plenara.X-Seiten: Kopfband auf eine kompakte Zeile (Titel und Kennzahl nebeneinander), damit die Karte höher steht */
@@ -447,11 +447,11 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
 /* Handy, alle plenara.X-Seiten: Legende ohne Kasten; Suche, Filter und Herz als eine Pille statt dreier Kästchen */
 @media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px){
   main#inhalt .rm-xlegend{background:none !important;border:0 !important;box-shadow:none !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;padding-left:2px}
-  main#inhalt .rm-xsearch [role=search]{gap:0 !important;padding:0;border-radius:9999px;background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(230,243,241,.5)) !important;border:1px solid rgba(255,255,255,.85);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 8px 24px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.9)}
-  html.rm-dark main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5)) !important;border-color:rgba(255,255,255,.12) !important;box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06) !important}
-  main#inhalt .rm-xsearch [role=search]>*{border:0 !important;box-shadow:none !important;background:transparent !important}
+  main#inhalt .rm-xsearch [role=search]{gap:0;padding:0;border-radius:9999px;background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(230,243,241,.5));border:1px solid rgba(255,255,255,.85);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 8px 24px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.9)}
+  html.rm-dark main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5));border-color:rgba(255,255,255,.12);box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
+  main#inhalt .rm-xsearch [role=search]>*{border:0;box-shadow:none;background:transparent}
   main#inhalt .rm-xsearch [role=search] .min-w-0{border-radius:9999px}
-  main#inhalt .rm-xsearch [role=search]>div>button{border:0 !important;background:transparent !important;box-shadow:none !important}
+  main#inhalt .rm-xsearch [role=search]>div>button{border:0;background:transparent;box-shadow:none}
   main#inhalt .rm-mapwrap .rm-fpop{left:0 !important;right:0 !important;bottom:0 !important;top:auto !important;width:auto !important;max-width:none !important}
   /* Filterfenster: Milchglas, klappt nach oben auf und deckt die Breite der Suchleiste ab (links bis links, unten bis unten) */
   main#inhalt .rm-xsearch [role=search]{position:relative}
@@ -468,8 +468,8 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   .rm-legend,.rm-wheel-list,main#inhalt .rm-xsearch .rm-fpop,main#inhalt .rm-xsearch [role=search]{-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
   .rm-legend{background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(236,246,244,.92))}
   html.rm-dark .rm-legend{background:linear-gradient(135deg,rgba(40,48,47,.94),rgba(23,33,42,.9))}
-  main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(236,246,244,.92)) !important}
-  html.rm-dark main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(40,48,47,.94),rgba(23,33,42,.9)) !important;border-color:rgba(255,255,255,.12) !important;box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06) !important}
+  main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(236,246,244,.92))}
+  html.rm-dark main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(40,48,47,.94),rgba(23,33,42,.9));border-color:rgba(255,255,255,.12);box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
   html:not(.rm-dark) .rm-wheel-list{background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(236,246,244,.94)) !important}
   /* Auswahllisten im Filterfenster (Stand, Thema, Bundesland, Zeitraum): rundes Milchglas wie die übrigen Listen */
   main#inhalt .rm-xsearch .rm-fpop [role=listbox]{background:var(--xg-pop) !important;border:1px solid var(--xg-pop-line) !important;border-radius:20px !important;padding:6px !important;box-shadow:var(--xg-pop-shadow) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
@@ -481,7 +481,7 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
 html.rm-dark .rm-wheel-list{background:linear-gradient(135deg,rgba(40,48,47,.9),rgba(23,33,42,.82));border-color:rgba(255,255,255,.14);box-shadow:0 12px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08)}
 /* Handy, alle plenara.X-Seiten: Vorschlagsliste der Suche als Milchglas (ohne Unschärfe), rund und kompakt; Hero-Fläche ohne Punktmuster */
 @media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px){
-  main#inhalt .rm-xsearch [role=listbox]{background:var(--xg-pop) !important;border:1px solid var(--xg-pop-line) !important;border-radius:22px !important;box-shadow:var(--xg-pop-shadow) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+  main#inhalt .rm-xsearch [role=listbox]{background:var(--xg-pop);border:1px solid var(--xg-pop-line);border-radius:22px;box-shadow:var(--xg-pop-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
 }
 @media (max-width:1023px){
   main.rm-xhero .rm-xhero-panel{background:none !important;border-right:0 !important;padding:0 !important}
@@ -511,6 +511,12 @@ html.rm-search .rm-footcta{display:none}
   html.rm-search .rm-flat>section:first-child{position:sticky !important;top:58px;height:calc(100dvh - 58px) !important;min-height:0;border-bottom:0;border-right:1px solid var(--rm-c200)}
   html.rm-search .rm-flat main{max-width:none !important;margin:0 !important;min-width:0}
 }
+
+/* Suchzeile der plenara.X-Seiten (DiffusionSearch): Grundform der Knöpfe und des Felds; die Regeln weiter oben machen daraus
+   je nach Breite und Seite die Glas-Pille. Ohne !important: diese Datei liegt außerhalb der Tailwind-Layer und gewinnt ohnehin. */
+.rm-xbtn,.rm-xfield{border:1px solid var(--color-slate-200);background-color:var(--color-white);border-radius:var(--radius-xl)}
+.rm-xfield input{border-radius:var(--radius-xl)}
+@media (hover:hover){.rm-xbtn:hover{background-color:var(--color-slate-50)}}
 
 /* Desktop: Die Suchzeile der plenara.X-Seiten bleibt beim Scrollen unter der Kopfzeile stehen (Zeitraum und Filter in Reichweite) */
 @media (min-width:640px) and (not ((max-height:500px) and (pointer:coarse) and (max-width:1000px))){

@@ -321,7 +321,7 @@ export function KalenderPage() {
         <section className="ri-sec ri-sec--tight">
           <h2 className="m-0 text-[18px] font-semibold text-slate-900">Auf dem Laufenden bleiben</h2>
           <p className="m-0 mt-1 text-slate-500">Per E-Mail informiert werden oder alle Sitzungen in Apple Kalender, Outlook oder Google Kalender übernehmen.</p>
-          <div className="mt-6 grid gap-x-10 gap-y-8 md:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-3">
             <div className="border-t border-slate-200 pt-5">
               <IconBell size={28} className="text-teal-700" />
               <h3 className="m-0 mt-3 text-[16px] font-semibold text-slate-900">Per E-Mail benachrichtigen</h3>
