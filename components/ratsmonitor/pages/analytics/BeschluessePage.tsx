@@ -220,7 +220,7 @@ export function BeschluessePage() {
                 <div className="flex h-[16px] w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label="Stand der Vorgänge">
                   {statusRows.map((s) => <span key={s.id} title={`${STATUS.find((x) => x.id === s.id)?.label ?? s.id}: ${n(s.n)}`} onMouseEnter={() => setHotStatus(s.id)} onMouseLeave={() => setHotStatus("")} className="transition-opacity duration-200" style={{ width: `${(s.n / statusTotal) * 100}%`, background: STATUS_COLOR[s.id], opacity: hotStatus && hotStatus !== s.id ? 0.3 : 1 }} />)}
                 </div>
-                <ul className="m-0 mt-3 grid list-none gap-x-6 gap-y-1 p-0 text-[14px] sm:grid-cols-2 lg:grid-cols-4">
+                <ul className="m-0 mt-3 grid list-none grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-x-6 gap-y-1 p-0 text-[14px]">
                   {statusRows.map((s) => <li key={s.id} onMouseEnter={() => setHotStatus(s.id)} onMouseLeave={() => setHotStatus("")} className={`flex items-center justify-between gap-3 border-b border-slate-100 py-1 transition-opacity duration-200 ${hotStatus && hotStatus !== s.id ? "opacity-50" : ""}`}><span className="flex items-center gap-2"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{STATUS.find((x) => x.id === s.id)?.label ?? s.id}</span><span className="tabular-nums text-slate-500">{n(s.n)} · {Math.round((s.n / statusTotal) * 100)} %</span></li>)}
                 </ul>
               </div>

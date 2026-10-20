@@ -493,7 +493,7 @@ export function StartseitePage() {
               {`Aus den öffentlichen Ratsinformationssystemen${cov ? ` von ${nf.format(cov.length)} Kommunen und Gebieten` : " der Kommunen"}${allTotal !== null ? `: insgesamt ${nf.format(allTotal)} Berichte aus Räten und Ausschüssen` : ""}.`}
             </p>
           </div>
-          <div className="pl-mapwrap -mt-[50px] ml-14 w-full max-w-[min(679px,max(362px,calc((100vh_-_230px)_/_1.149)))] justify-self-start">
+          <div className="pl-mapwrap -mt-[50px] ml-14 w-[calc(100%-3.5rem)] max-w-[min(679px,max(362px,calc((100vh_-_230px)_/_1.149)))] justify-self-start">
             <GermanyMap pops={pops} onPick={(n) => openSearch(n)} />
           </div>
         </div>

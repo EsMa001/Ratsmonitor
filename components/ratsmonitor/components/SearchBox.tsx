@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useClient } from "../lib/useClient";
-import { usePhone } from "../lib/usePhone";
+import { usePhone, useTinyPhone } from "../lib/usePhone";
 import { isReplacement } from "../lib/searchLogic";
 import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
@@ -112,6 +112,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
 
   /* Handy: kürzerer Platzhalter, damit er nicht abgeschnitten wird */
   const narrow = usePhone();
+  const tiny = useTinyPhone();
   /* Strg+K bzw. ⌘K setzt den Cursor in die Suche */
   const mac = useClient(() => /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), false);
   /* Umschalt+Esc nutzt die aktuelle Fassung (die Aktionen ändern sich mit Karte und Ortsliste) */
@@ -200,7 +201,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
         autoCapitalize="none"
         enterKeyHint="search"
         spellCheck={false}
-        placeholder={narrow ? "Thema oder Ort" : "Thema, Ort oder Region suchen"}
+        placeholder={tiny ? "Thema, Ort" : narrow ? "Thema oder Ort" : "Thema, Ort oder Region suchen"}
         role="combobox"
         aria-expanded={showList}
         aria-controls={ids.list}

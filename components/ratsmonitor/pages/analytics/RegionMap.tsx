@@ -1,3 +1,4 @@
+import { isPhone } from "../../lib/usePhone";
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useDarkMode } from "../../lib/useDarkMode";
 import { MapEngine } from "../../lib/geo/mapEngine";
@@ -38,6 +39,27 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   // eslint-disable-next-line react-hooks/refs
   const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: select, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => hintRef.current() }) : null), [geo, select]);
   const slotRef = useRef<HTMLDivElement>(null);
+  /* Handy-Bühne: Höhe der Karte aus der tatsächlichen Lage (Platz bis zur unteren Leiste), damit die Suchleiste unten nie unter der Leiste liegt,
+     egal wie viel Text die Seite über der Karte hat */
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [boxH, setBoxH] = useState<number | null>(null);
+  useEffect(() => {
+    if (!phoneStage) return;
+    let raf = 0;
+    const measure = () => {
+      raf = 0;
+      const el = boxRef.current, bar = document.querySelector<HTMLElement>(".rm-tabbar");
+      if (!el || !isPhone() || window.innerHeight < 500) { setBoxH(null); return; }
+      const h = window.innerHeight - (el.getBoundingClientRect().top + window.scrollY) - (bar?.offsetHeight ?? 0) - 6;
+      setBoxH(Math.max(240, Math.round(h)));
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(measure); };
+    schedule();
+    const ro = new ResizeObserver(schedule);
+    ro.observe(document.body);
+    window.addEventListener("resize", schedule);
+    return () => { ro.disconnect(); window.removeEventListener("resize", schedule); if (raf) cancelAnimationFrame(raf); };
+  }, [phoneStage]);
   const [topInset, setTopInset] = useState(0);
   useEffect(() => {
     const el = slotRef.current;
@@ -105,8 +127,10 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   }, [engine, level]);
   useEffect(() => {
     if (!engine) return;
-    const phone = window.matchMedia("(max-width:639px)").matches;
-    engine.setFitInsets(phone ? (phoneStage ? 74 : topInset) : 0, phone ? (phoneStage ? topInset + 6 : 52) : 0);
+    const phone = isPhone();
+    /* Handy quer (kurz): wenig Platz, die Ränder für Auswahl und Suche schrumpfen */
+    const short = phone && window.innerHeight < 500;
+    engine.setFitInsets(phone ? (short ? 44 : phoneStage ? 74 : topInset) : 0, phone ? (short ? 44 : phoneStage ? topInset + 6 : 52) : 0);
     if (restoreRef.current) { engine.restoreView(restoreRef.current); restoreRef.current = null; return; }
     if (skipFly.current) { if (shown.length) skipFly.current = false; return; }
     if (shown.length) engine.focusMany(shown); else engine.focusArea("");
@@ -125,7 +149,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     <div className={`rm-mapwrap relative${phoneStage ? " max-sm:-mx-[max(1vw,16px)] max-sm:-mt-3" : ""}`}>
     {/* Handy: Platz für die Suchleiste der Seite oben auf der Karte (siehe lib/mapSlot.ts) */}
     <div ref={slotRef} className={phoneStage ? "absolute inset-x-2 bottom-2 z-30 flex flex-col-reverse gap-1 empty:hidden sm:hidden" : "absolute inset-x-0 top-2 z-30 empty:hidden sm:hidden"} />
-    <div className={`rm-mapbox relative h-[420px] overflow-hidden bg-slate-50 rounded-[22px] ${phoneStage ? "max-sm:rounded-none max-sm:h-[calc(100svh-170px-var(--rm-tabbar))]" : "max-sm:rounded-2xl max-sm:h-[300px]"} border max-sm:border-transparent border-slate-200 sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
+    <div ref={boxRef} style={boxH ? { height: boxH } : undefined} className={`rm-mapbox relative h-[420px] overflow-hidden bg-slate-50 rounded-[22px] ${phoneStage ? "max-sm:rounded-none max-sm:h-[calc(100svh-170px-var(--rm-tabbar))]" : "max-sm:rounded-2xl max-sm:h-[300px]"} border max-sm:border-transparent border-slate-200 sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
       <div ref={stageRef} className="rm-stage absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={ghostRef} aria-hidden="true" className="pointer-events-none absolute left-0 top-0 block h-full w-full opacity-0" />

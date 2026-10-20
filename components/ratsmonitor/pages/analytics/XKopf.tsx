@@ -132,7 +132,7 @@ export function XWeiter({ links }: { links: [string, string][] }) {
   return (
     <nav aria-label="Weiter mit derselben Suche" className="mt-12 border-t border-slate-200 pt-6 max-sm:mt-6 max-sm:pt-3 print:hidden">
       <p className="m-0 text-[14px] font-semibold text-slate-700">Weiter mit derselben Suche</p>
-      <ul className="m-0 mt-3 grid list-none gap-3 p-0 max-sm:mt-1 max-sm:gap-0 max-sm:divide-y max-sm:divide-slate-200 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="m-0 mt-3 grid list-none gap-3 p-0 max-sm:mt-1 max-sm:gap-0 max-sm:divide-y max-sm:divide-slate-200 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]">
         {links.map(([href, name]) => {
           /* Seite und Frage aus SEITEN (überall gleich); eigener Text nur, wenn die Seite dort fehlt */
           const path = href.split("?")[0], z = SEITEN[path.split("/").pop()!];
