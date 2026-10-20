@@ -27,5 +27,7 @@ export function expandRegions({types,districts,areas}){
  ];
 }
 export const CATALOG=[...nrw,...nds,...expandRegions(de)];
-export const POPULATION={...nrwPopulation,...ndsPopulation,...dePopulation};
+/* Einwohner je Gebiet, nur für den Server. Als reiner Aufruf markiert, damit der Bundler die Tabelle (rund 30 KB gz) aus dem
+   Gebietskatalog der Oberfläche weglässt; ein Objekt-Spread galt ihm als mögliche Nebenwirkung. Gleiches Objekt wie {...a,...b,...c}. */
+export const POPULATION=/* @__PURE__ */ Object.assign({},nrwPopulation,ndsPopulation,dePopulation);
 export const landOf=region=>region.ags.slice(0,2);

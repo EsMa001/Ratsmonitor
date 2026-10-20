@@ -133,3 +133,15 @@ Gemessen lokal auf der D1-Kopie (1,33 Mio. `search_cards`, Node 24, nur lesend),
 | B13 | plenara.X-Routen: JSON-Text und schwaches ETag je gemerktem Ergebnis, 304 (`server/services/cached-json.mjs`) | kein `JSON.stringify` je Treffer mehr; 304 bei gleichem Stand |
 
 Nicht im laufenden Server geprüft (kein Start auf der lokalen Kopie, kein Deploy). Auf dem Server nach dem Deploy messen: Suche mit Gebiet, Filterklicks, `/api/x` nach dem Bau.
+
+## Umsetzung Paket 5: Ladezeit (20.10.2026, Branch `cleanup/ladezeit`)
+
+- **B1:** `shared/themes.mjs` baut die 70 Muster erst bei der ersten Einordnung (`reFor`, `themeRe`). Die Oberfläche lädt die Datei nur für Namen. Laden in Node: 63–79 ms → 9–10 ms. Die Ausgabe von `scripts/theme-study/measure.mjs` ist auf `theme-dev`, `theme-val` und `theme-test` unverändert. Gewählt statt eines eigenen Namensmoduls: Das hätte die 70 Unterthemen-Namen ein zweites Mal gebraucht. Die Größe des Chunks bleibt deshalb fast gleich.
+- **B10:** `POPULATION` in `shared/catalog.mjs` ist als reiner Aufruf markiert (`Object.assign`, gleiches Objekt). Der Gebietskatalog-Chunk sinkt von 540 auf 436 KB, komprimiert von 144 auf 113 KB. Die Einwohnerzahlen sind nicht mehr im Client.
+- **B8:** Die Karte lädt auf plenara.X Atlas, Fakten und Trends sofort statt im Leerlauf (`MAP_NOW` in `state/data.tsx`). Die Datenmenge bleibt gleich, nur der Zeitpunkt ist früher.
+- **Nicht gemacht:**
+  - B9 (Kreiskarte neu erzeugen): Generator und Datendatei, eigener Schritt mit Sichtprüfung.
+  - B11 (`lazy()` je plenara.X-Seite, Abruf ohne Warten auf `/api/me`): Umbau des Routings.
+  - B15 (`--precompress` in `deploy.sh`): Bereitstellung, nur mit Rücksprache.
+  - `scripts/frontend-check.mjs` nicht gelaufen (braucht laufenden Server und Playwright).
+- **Neu aufgefallen (Entscheidung):** `LABELS` in `shared/labels.mjs` tragen Hex-Farben außerhalb von „Petrol klar“ (`COLORS`). Die Oberfläche nutzt nach Suche im Code nur Namen und IDs. Klären, ob die Farben weg können.
