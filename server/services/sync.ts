@@ -21,21 +21,28 @@ import type { StoredTopic as Topic, ImportData as FeedData } from '@/server/type
 const FAILURE_CAUSE = 'Fehlerursache: ';
 /** Import runs (import_runs) are kept this long; the record of each area's last import stays in import-debug. */
 export const RUNS_KEEP_DAYS = 30;
+const FINISH_RUN_SQL = 'UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?';
+const SAVE_COVERAGE_SQL = 'INSERT INTO source_coverage(region_id,payload) VALUES(?,?) ON CONFLICT(region_id) DO UPDATE SET payload=excluded.payload';
+const SAVE_STATE_SQL = 'INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value';
+/** Nebenarbeit, an der der Import nicht hängt: Ein Fehler kommt ins Server-Log, der Import läuft weiter. */
+async function bestEffort(what: string, work: () => Promise<unknown>) {
+    try { await work(); } catch (error) { console.warn(`[import] ${what} übersprungen:`, error instanceof Error ? error.message : String(error)); }
+}
 /** options.window selects the look-back period for metadata imports ('1d' | '1w' | '1m' | '3m' | '12m' | '24m'; default twelve months). */
 export async function runSync(mode: 'metadata',region='muenster', trigger: 'manual' | 'scheduled' = 'manual', options: {window?: string} = {}) {
     let lookback: string; try { lookback = historyWindow(options.window); } catch { return { status: 400, data: { error: 'Ungültiger Zeitraum für den Abruf.' } }; }
-    if (!env.DB)
-    return { status: 503, data: { error: 'Datenbank fehlt' } }; await ensureData();
+    if (!env.DB) return { status: 503, data: { error: 'Datenbank fehlt' } };
+    await ensureData();
     const coverageRow = await env.DB.prepare('SELECT payload FROM source_coverage WHERE region_id=?').bind(region).first<{payload:string}>();
     const previousCoverage = coverageRow ? JSON.parse(coverageRow.payload) : {};
     if(trigger==='scheduled' && Date.parse(previousCoverage.nextRetryAt || '')>Date.now())
         return {status:200,data:{skipped:true,reason:'cooldown',nextRetryAt:previousCoverage.nextRetryAt,coverage:previousCoverage}};
     const id = crypto.randomUUID(), started = new Date().toISOString();
     // Imports of different areas run side by side.
-    const lock = await acquireImport(env.DB, region, { shared: true }); if (!lock.ok)
+    const lock = await acquireImport(env.DB, region, { shared: true });
     // busy: 'area' (this area is being imported elsewhere) or 'stock' (something else holds the whole stock); the job
     // sets the area back for a while or waits as a whole (pipeline-jobs.mjs).
-    return { status: 409, data: { error: 'Import läuft bereits', retryAfter: 60, busy: (lock as { reason?: string }).reason } };
+    if (!lock.ok) return { status: 409, data: { error: 'Import läuft bereits', retryAfter: 60, busy: (lock as { reason?: string }).reason } };
     // Every import of official data is recorded for the debug view (import-trace.mjs).
     const trace = createTrace(region, { window: lookback });
     // Cached analysis results go when the reports may have changed: always, except after an import that wrote nothing.
@@ -43,19 +50,20 @@ export async function runSync(mode: 'metadata',region='muenster', trigger: 'manu
     try {
     await env.DB.prepare('INSERT INTO import_runs(id,started_at,status,details) VALUES(?,?,?,?)').bind(id, started, 'running', JSON.stringify({mode,region,trigger,window:lookback})).run();
     // Runs older than RUNS_KEEP_DAYS go, a few hundred per import, oldest first (index on started_at); the table stays bounded.
-    try { await env.DB.prepare('DELETE FROM import_runs WHERE id IN (SELECT id FROM import_runs WHERE started_at<? ORDER BY started_at LIMIT 200)').bind(new Date(Date.now() - RUNS_KEEP_DAYS * 864e5).toISOString()).run(); } catch { /* nicht wichtig für den Import */ }
+    const db = env.DB;
+    await bestEffort('Aufräumen alter Läufe', () => db.prepare('DELETE FROM import_runs WHERE id IN (SELECT id FROM import_runs WHERE started_at<? ORDER BY started_at LIMIT 200)').bind(new Date(Date.now() - RUNS_KEEP_DAYS * 864e5).toISOString()).run());
     const data = await refreshMetadata(id, started,region,previousCoverage,lookback,trace,lock.renew);
     wrote = Boolean(data.stored);
     /* Wortliste der Suche nachführen, wenn dieser Import Vorgänge geschrieben hat (nur Neues; fehlt sie noch oder
        schlägt es fehl, sucht die Suche wie gewohnt). Änderungen ohne Import holt der nächste Import mit Änderungen
        oder das nächtliche Nachführen nach. */
-    if ((data as { stored?: number }).stored) { try { await refreshSearchWords(env.DB, { onlyIfBuilt: true, maxCards: 20000, kinds: new Map(REGIONS.map((r) => [r.id, r.kind])), names: new Map(REGIONS.map((r) => [r.id, r.name])) }); } catch { /* nicht wichtig für den Import */ } }
+    if (data.stored) await bestEffort('Wortliste nachführen', () => refreshSearchWords(db, { onlyIfBuilt: true, maxCards: 20000, kinds: new Map(REGIONS.map((r) => [r.id, r.kind])), names: new Map(REGIONS.map((r) => [r.id, r.name])) }));
+    /* Suchkarten, deren nächste Sitzung erreicht ist, auf diese Sitzung nachrücken (drizzle/0024; meist nichts zu tun) */
+    await bestEffort('Suchkarten nachrücken', () => rollCardDates(db));
     /* Werte je Gebiet der Administration für dieses Gebiet nachrechnen (region-facts.mjs), nach dem letzten Teilabruf,
        höchstens eine Sekunde: Die Rechnung hält den Prozess an, auch die anderen Importe. Reicht die Zeit nicht oder
        schlägt es fehl, holt der nächste Rechenschritt der Administration es nach. */
-    /* Suchkarten, deren nächste Sitzung erreicht ist, auf diese Sitzung nachrücken (drizzle/0024; meist nichts zu tun) */
-    try { await rollCardDates(env.DB); } catch { /* nicht wichtig für den Import */ }
-    if (!(data as { resume?: boolean }).resume) { try { await refreshRegionFacts(env.DB, { regions: [region], budgetMs: 1000 }); } catch { /* nicht wichtig für den Import */ } }
+    if (!data.resume) await bestEffort('Werte je Gebiet', () => refreshRegionFacts(db, { regions: [region], budgetMs: 1000 }));
     return { status: 200, data };
 }
 catch (e) {
@@ -64,13 +72,14 @@ catch (e) {
     // The source refused a request (collect-region.mjs, refusalGate): the job pauses its server and asks again later.
     const refused = (e as { refused?: { retryAfterMs: number | null } })?.refused;
     const record = trace.finish({ runId: id, status: 'failed', error: cause });
-    await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), 'failed', JSON.stringify({ mode,region,trigger,error: cause, ...(record ? { debug: brief(record) } : {}) }), id).run();
+    await env.DB.prepare(FINISH_RUN_SQL).bind(new Date().toISOString(), 'failed', JSON.stringify({ mode,region,trigger,error: cause, ...(record ? { debug: brief(record) } : {}) }), id).run();
     // The record must never hide the failure it describes.
-    if (record) try { await saveDebug(env.DB, record); } catch {}
+    const db = env.DB;
+    if (record) await bestEffort('Aufzeichnung speichern', () => saveDebug(db, record));
     const coverage={...previousCoverage,regionId:region,...importHealth(previousCoverage,{at:started,failed:true}),complete:false,issues:[...new Set([...(previousCoverage.issues||[]).filter((i:string)=>!String(i).startsWith(FAILURE_CAUSE)),'Abruf fehlgeschlagen; letzter übernommener Bestand bleibt erhalten.',FAILURE_CAUSE+cause])]};
     // After a failure the OParl probe is sent again (it may be the reason: "OParl vorhanden").
     delete coverage.oparlProbeAt;
-    await env.DB.prepare('INSERT INTO source_coverage(region_id,payload) VALUES(?,?) ON CONFLICT(region_id) DO UPDATE SET payload=excluded.payload').bind(region,JSON.stringify(coverage)).run();
+    await db.prepare(SAVE_COVERAGE_SQL).bind(region,JSON.stringify(coverage)).run();
     return { status: 502, data: { error: 'Import fehlgeschlagen; der angezeigte Bestand kann teilweise aktualisiert sein', cause, ...(refused ? { refused } : {}) } };
 }
 finally {
@@ -101,7 +110,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const collectStarted = Date.now();
     const fresh = await collectRegion(region,{maxDurationMs:120000,window:lookback,marks:{known,stock,list:keptList},trace,oparlProbeAt:previousCoverage.oparlProbeAt}) as FeedData & {refused?:{retryAfterMs:number|null}};
     // Storing a large area takes a while; the lock is held for it anew (import-lock.mjs).
-    try { await renew(); } catch { /* die Sperre gilt ohnehin noch einige Minuten */ }
+    await bestEffort('Sperre verlängern (gilt ohnehin noch einige Minuten)', renew);
     const collectMs = Date.now() - collectStarted, written = { created: 0, changed: 0, unchanged: 0 };
     const unchanged = Number(fresh.coverage.unchangedMeetings || 0), warnings = fresh.coverage.warnings || [];
     const decisions: Topic[] = [];
@@ -131,15 +140,16 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     // The negative OParl probe this import relied on (collect-region.mjs); without one the next import asks again.
     if(fresh.coverage.oparlProbeAt)coverage.oparlProbeAt=fresh.coverage.oparlProbeAt;else delete coverage.oparlProbeAt;
     // Missing items remain in the archive. A partial scan never deletes an article.
-    await env.DB.prepare('INSERT INTO source_coverage(region_id,payload) VALUES(?,?) ON CONFLICT(region_id) DO UPDATE SET payload=excluded.payload').bind(region,JSON.stringify(coverage)).run();
+    await env.DB.prepare(SAVE_COVERAGE_SQL).bind(region,JSON.stringify(coverage)).run();
     // Only now, with the reports stored, do the marks of this import count. Unchanged marks and lists are not written again.
-    if (fresh.marks) { const marks = writeMarks({...known,...fresh.marks}, new Date()); if (marks !== marksRow?.value) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(marksKey(region), marks).run(); }
-    if (fresh.list) { const list = JSON.stringify(fresh.list); if (list !== listRow?.value) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(listKey(region), list).run(); }
+    if (fresh.marks) { const marks = writeMarks({...known,...fresh.marks}, new Date()); if (marks !== marksRow?.value) await env.DB.prepare(SAVE_STATE_SQL).bind(marksKey(region), marks).run(); }
+    if (fresh.list) { const list = JSON.stringify(fresh.list); if (list !== listRow?.value) await env.DB.prepare(SAVE_STATE_SQL).bind(listKey(region), list).run(); }
     const status = fresh.coverage.complete || quiet ? 'completed' : 'partial';
     const record = trace.finish({ runId: id, status, adapter: fresh.coverage.method || null, meetings: fresh.coverage.meetings, unchangedMeetings: unchanged, readMeetings: fresh.readMeetings ?? null, reports: fresh.topics.length, stockBefore: old.size, written, marksKnown: Object.keys(known).length, collectMs, storeMs: Date.now() - collectStarted - collectMs, issues: fresh.coverage.issues, warnings });
-    await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), status, JSON.stringify({ mode:'metadata',region, window: lookback, quiet, count: fresh.topics.length, unchangedMeetings: unchanged, decisions: decisions.length, issues: fresh.coverage.issues, warnings, debug: brief(record) }), id).run();
+    await env.DB.prepare(FINISH_RUN_SQL).bind(new Date().toISOString(), status, JSON.stringify({ mode:'metadata',region, window: lookback, quiet, count: fresh.topics.length, unchangedMeetings: unchanged, decisions: decisions.length, issues: fresh.coverage.issues, warnings, debug: brief(record) }), id).run();
     // A record that cannot be stored does not undo a stored import.
-    try { await saveDebug(env.DB, record); } catch {}
+    const db = env.DB;
+    await bestEffort('Aufzeichnung speichern', () => saveDebug(db, record));
     // A step that only got further in the meeting list has made progress too: the next one continues behind it.
     const listAdvanced = Boolean(fresh.list) && (fresh.list as {readAt?: number}).readAt !== keptList?.readAt;
     // attemptComplete describes this attempt; coverage.complete describes the stored period.
