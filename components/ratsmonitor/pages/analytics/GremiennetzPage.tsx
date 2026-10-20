@@ -6,7 +6,6 @@ import { Laden } from "./Laden";
 import { Befund, Fehler, Leer } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useMemo, useRef, useState, useEffect } from "react";
-import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { NetView, NET_KIND, ROLE, type NetKind, type NEdge, type NNode } from "./NetView";
 import { RadarDrill } from "./RadarDrill";
@@ -16,6 +15,7 @@ import { MethodikNote } from "./Methodik";
 import { TabPane } from "./Tabs";
 import { ListRow } from "./ListRow";
 import { Segmented } from "./Kennzahlen";
+import { LevelPill, LevelSegmented, NetLegend, NetZoom, netLevel, type Level } from "./NetControls";
 import { usePhone } from "../../lib/usePhone";
 import { useClient } from "../../lib/useClient";
 
@@ -68,8 +68,8 @@ export function GremiennetzPage() {
   /* Detailstufe wie im Themennetz: Überblick (die größten Gremien), Normal, Detail (alle); Standard nach Platz */
   const phone = usePhone();
   const wide = useClient(() => window.innerWidth >= 1024, false);
-  const [chosen, setLevel] = useState<"overview" | "normal" | "detail" | null>(null);
-  const level = phone ? (chosen === "normal" ? "normal" : "overview") : chosen ?? (wide ? "detail" : "normal");
+  const [chosen, setLevel] = useState<Level | null>(null);
+  const level = netLevel(phone, wide, chosen);
   const routeIds = useMemo(() => {
     const r = res && routeNo !== null ? res.routes[routeNo] : null;
     if (!res || !r) return [] as string[];
@@ -112,22 +112,13 @@ export function GremiennetzPage() {
                   ["Vorgänge im häufigsten Übergang", top ? n(top.n) : "–"],
                   ["Tage im Mittel je Übergang", lag === null ? "–" : String(lag)]
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} /></div>
-              {res.nodes.length > 7 && <div className="max-sm:hidden rm-xseg mt-6 flex justify-end print:hidden"><Segmented label="Detailstufe" options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]] as ["overview" | "normal" | "detail", string][]} value={level} onPick={setLevel} /></div>}
+              {res.nodes.length > 7 && <LevelSegmented options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]]} value={level} onPick={setLevel} />}
               <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[360px] max-sm:h-[400px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
-                <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-2 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["overview", "normal"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "overview" ? "Normal" : "Detail"}</button>)}</div>
+                <LevelPill value={level} onPick={setLevel} />
                 {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
                 <NetView route={routeIds.length > 1 ? routeIds : null} nodes={net.nodes} edges={net.edges} selected={selected} onSelect={(id) => { setRouteNo(null); setSelected(id); }} zoomRef={zoomRef} />
-                <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:left-1/2 max-sm:w-max max-sm:max-w-[calc(100%-16px)] max-sm:-translate-x-1/2 max-sm:top-2 max-sm:px-3 max-sm:py-1.5 max-sm:text-[11px]">
-                  <ul className="m-0 flex list-none flex-col gap-1 p-0 max-sm:flex-row max-sm:flex-wrap max-sm:justify-center max-sm:gap-x-3 max-sm:gap-y-0.5">
-                    {(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => <li key={r} className="flex items-center gap-2"><i className="inline-block h-3 w-3 rounded-full" style={{ background: NET_KIND[r].fill }} />{NET_KIND[r].label}</li>)}
-                  </ul>
-                  <p className="mt-1.5 opacity-70 max-sm:hidden">Größe: Durchsatz · Linie: Vorgänge</p>
-                </div>
-                <div className="rm-stage-chip absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full max-sm:hidden">
-                  <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconPlus size={16} /></button>
-                  <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconMinus size={16} /></button>
-                  <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconCenter size={16} /></button>
-                </div>
+                <NetLegend items={(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => ({ key: r, label: NET_KIND[r].label, dot: { background: NET_KIND[r].fill } }))} note={<p className="mt-1.5 opacity-70 max-sm:hidden">Größe: Durchsatz · Linie: Vorgänge</p>} />
+                <NetZoom zoomRef={zoomRef} />
                 <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:hidden">
                   {!sel && !tipDone && <span className="rm-stage-chip rounded-full px-4 py-2 text-[14px]">Von links (Einstieg) nach rechts (Entscheidung) · Gremium anklicken</span>}
                 </div>

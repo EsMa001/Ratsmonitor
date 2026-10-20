@@ -1,4 +1,5 @@
-import { Segmented, Folgen } from "./Kennzahlen";
+import { Folgen } from "./Kennzahlen";
+import { LevelPill, LevelSegmented, NetLegend, NetZoom, netLevel, type Level } from "./NetControls";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { ListSkeleton } from "./ListSkeleton";
 import { SplitHandle } from "./SplitHandle";
@@ -6,7 +7,7 @@ import { Befund, Fehler } from "./Befund";
 import { RadarDrill } from "./RadarDrill";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IconCenter, IconChevronLeft, IconMinus, IconPlus } from "../../components/icons";
+import { IconChevronLeft } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useClient } from "../../lib/useClient";
 import { usePhone } from "../../lib/usePhone";
@@ -39,7 +40,6 @@ const pct = (v: number, total: number) => (total ? `${Math.max(1, Math.round((v 
 
 /* Detailstufen: Begriffe, Themenfelder, Kanten je Knoten. Der Server liefert die Stufe „Detail“ (Knoten nach Rang),
    kleinere Stufen sind ein Ausschnitt davon; Umschalten ohne neue Anfrage */
-type Level = "overview" | "normal" | "detail";
 const LEVELS: Record<Level, { label: string; terms: number; topics: number; per: number }> = {
   overview: { label: "Überblick", terms: 12, topics: 4, per: 3 },
   normal: { label: "Normal", terms: 22, topics: 6, per: 4 },
@@ -59,7 +59,7 @@ export function KnowledgeGraphPage() {
   const phone = usePhone();
   const [chosen, setLevel] = useState<Level | null>(null);
   const wide = useClient(() => window.innerWidth >= 1024, false);
-  const level: Level = phone ? (chosen === "normal" ? "normal" : "overview") : chosen ?? (wide ? "detail" : "normal");
+  const level = netLevel(phone, wide, chosen);
   const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
 
@@ -201,11 +201,11 @@ export function KnowledgeGraphPage() {
         </div>
       )}
       {/* Detailstufe über dem Netz, als Umschalter wie auf den übrigen Seiten */}
-      {res && !empty && <div className="max-sm:hidden rm-xseg mt-6 flex justify-end print:hidden"><Segmented label="Detailstufe" options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label] as [Level, string])} value={level} onPick={setLevel} /></div>}
+      {res && !empty && <LevelSegmented options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label])} value={level} onPick={setLevel} />}
       {/* Handy: das Netz lässt sich ein- und ausklappen */}
       <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:mt-0 max-sm:inline-flex max-sm:min-h-[30px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
       <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[400px] sm:h-[620px]`} aria-label="Themennetz">
-        <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-2 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">{(["overview", "normal"] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`h-8 rounded-full px-4 ${level === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "overview" ? "Normal" : "Detail"}</button>)}</div>
+        <LevelPill value={level} onPick={setLevel} />
         {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
         {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
@@ -214,19 +214,9 @@ export function KnowledgeGraphPage() {
             <IconChevronLeft size={16} />Zurück
           </button>
         )}
-        <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:left-1/2 max-sm:w-max max-sm:max-w-[calc(100%-16px)] max-sm:-translate-x-1/2 max-sm:top-2 max-sm:px-3 max-sm:py-1.5 max-sm:text-[11px]">
-          <ul className="m-0 flex list-none flex-col gap-1 p-0 max-sm:flex-row max-sm:flex-wrap max-sm:justify-center max-sm:gap-x-3 max-sm:gap-y-0.5">
-            {(["center", "term", "topic"] as const).map((t) => (
-              <li key={t} className="flex items-center gap-2"><i className={`inline-block h-3 w-3 rounded-full`} style={{ ...DOT[t], boxShadow: "0 0 0 1px rgba(24,24,27,.25)" }} />{KIND[t].label}</li>
-            ))}
-          </ul>
-        </div>
+        <NetLegend items={(["center", "term", "topic"] as const).map((t) => ({ key: t, label: KIND[t].label, dot: DOT[t] }))} />
 
-        <div className="rm-stage-chip absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full max-sm:hidden">
-          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconPlus size={16} /></button>
-          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconMinus size={16} /></button>
-          <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700"><IconCenter size={16} /></button>
-        </div>
+        <NetZoom zoomRef={zoomRef} />
 
         {loading && !res && <div aria-hidden="true" className="pointer-events-none absolute inset-0 animate-pulse rounded-[inherit] bg-slate-100/70" />}
         <div className="pointer-events-none absolute inset-x-16 bottom-3 z-[6] flex justify-center max-sm:inset-x-3">

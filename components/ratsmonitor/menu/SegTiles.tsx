@@ -22,17 +22,3 @@ export function Tile({ href, icon, label, hint, on = false, locked = false, onCl
     </Link>
   );
 }
-
-/** Kachel als Knopf (Auswahl im Blatt): gleiche Bauart wie Tile, die gewählte petrolfarben, rechts die Zahl */
-export function PickTile({ icon, label, count, on, onClick }: { icon: ReactNode; label: string; count?: string; on: boolean; onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick} aria-pressed={on}
-      className={`flex min-h-[52px] w-full items-center gap-2 rounded-2xl border px-2.5 py-2 text-left ${on ? "border-teal-600 bg-teal-50 text-teal-800" : "border-slate-200 bg-white text-slate-900"}`}>
-      <span className="shrink-0 [&>svg]:h-[18px] [&>svg]:w-[18px]">{icon}</span>
-      <span className="block min-w-0 flex-1">
-        <span lang="de" className="line-clamp-2 block text-[14px] font-semibold leading-tight tracking-tight hyphens-auto">{label}</span>
-        {count && <span className="block text-[12px] text-slate-500">{count}</span>}
-      </span>
-    </button>
-  );
-}

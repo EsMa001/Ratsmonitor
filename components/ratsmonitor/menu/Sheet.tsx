@@ -57,9 +57,17 @@ export function Sheet({ open, onClose, label, children }: { open: boolean; onClo
       el.style.translate = "";
     }
   };
+  useEffect(() => {
+    if (!mounted) return;
+    /* Ist die Statusleiste nicht abzudunkeln (iOS liest sie nicht aus der Abdunklung), bleibt auch das Kopfband hell: die Fläche beginnt unter dem Band, so passen beide zusammen */
+    const band = document.querySelector<HTMLElement>(".pl-band"), scrim = document.querySelector<HTMLElement>(".rm-sheet > div:first-child");
+    const bandBottom = band ? Math.max(0, Math.round(band.getBoundingClientRect().bottom)) : 0;
+    if (scrim && bandBottom > 0) scrim.style.top = `${bandBottom}px`;
+    return () => { if (scrim) scrim.style.top = ""; };
+  }, [mounted]);
   if (!mounted) return null;
   return createPortal(
-    <div className="fixed inset-x-0 top-0 bottom-[var(--rm-tabbar,0px)] z-[1200] overflow-hidden print:hidden">
+    <div className="rm-sheet fixed inset-x-0 top-0 bottom-[var(--rm-tabbar,0px)] z-[1200] overflow-hidden print:hidden">
       <div className={`absolute inset-0 bg-slate-900/40 transition-opacity duration-[260ms] motion-reduce:transition-none ${shown ? "opacity-100" : "opacity-0"}`} onClick={onClose} aria-hidden="true" />
       <div ref={ref} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onTouchStart={dragStart} onTouchMove={dragMove} onTouchEnd={dragEnd} onTouchCancel={dragEnd}
         className={`absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-2xl border-t border-slate-200 bg-white px-4 pb-4 pt-2 outline-none transition-transform duration-[260ms] ease-[cubic-bezier(.32,.72,0,1)] motion-reduce:transition-none ${shown ? "translate-y-0" : "translate-y-full"}`}>

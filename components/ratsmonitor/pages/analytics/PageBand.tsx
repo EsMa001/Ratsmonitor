@@ -7,6 +7,9 @@ import { BandDots } from "../../components/BandDots";
 /** compact: niedriges Band (Atlas: die Karte soll ohne Scrollen sichtbar sein) */
 export function PageBand({ children, compact = false }: { children: ReactNode; compact?: boolean }) {
   return (
+    <>
+    {/* Handy: echtes festes Element ganz oben in Bandfarbe, daran färbt iOS die Statusleiste (ein Pseudoelement genügte nicht) */}
+    <div aria-hidden="true" className="rm-statusstrip" />
     <div
       className={`-mx-[max(1vw,16px)] pl-band sm:min-h-[174px] ${compact ? "pl-top " : ""}rm-topline px-[max(1vw,16px)] ${compact ? "mb-4 max-sm:mb-2 pb-7 pt-4" : "mb-8 max-sm:mb-4 pb-7 pt-4"}`}>
       <BandDots />
@@ -14,5 +17,6 @@ export function PageBand({ children, compact = false }: { children: ReactNode; c
       {/* Kompakt ohne Einblenden: Titel und Satz sind sofort da */}
       {compact ? children : <Reveal>{children}</Reveal>}
     </div>
+    </>
   );
 }

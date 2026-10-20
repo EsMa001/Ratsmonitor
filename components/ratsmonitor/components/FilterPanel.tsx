@@ -59,7 +59,7 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0 }: { /*
     if (el) setFlip(trail > 0 || el.getBoundingClientRect().right > edge - 12);
     /* Fokus ins geöffnete Fenster (Tastatur, Bildschirmleser); Esc bringt ihn zurück auf den Filter-Knopf */
     el?.focus({ preventScroll: true });
-  }, []);
+  }, [trail]);
   const phone = usePhone();
   const full = "min-w-0 [&_button]:!w-full [&_button]:!min-w-0 [&_button]:!max-w-none";
   return (

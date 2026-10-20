@@ -179,8 +179,6 @@ html.rm-dark .btn-primary:hover,html.rm-dark .ri-btn--dark:hover,html.rm-dark .b
 /* Touch-Geräte: keine Fokus-Rahmen nach dem Antippen (Karten, Titelzeilen) */
 @media (hover:none){.ratsmonitor :focus-visible,.ratsmonitor :focus-visible:not(input):not(textarea):not(select){outline:none!important}}
 html.rm-dark .rm-gtext{fill:var(--rm-c900);stroke:var(--rm-white);stroke-width:3px}
-html.rm-dark .rm-gtopic{fill:var(--rm-c400);stroke:var(--rm-c400)}
-html.rm-dark .rm-gdot{background:var(--rm-c400)!important;border-color:var(--rm-c400)!important}
 /* Dunkel: Vorschaugrafiken (SVG) mit festen hellen Farben */
 html.rm-dark svg [stroke="#dcdcdf"]{stroke:var(--rm-c200)}
 html.rm-dark svg [stroke="#d4d4d8"]{stroke:var(--rm-c300)}
@@ -488,8 +486,8 @@ html.rm-dark .rm-wheel-list{background:linear-gradient(135deg,rgba(40,48,47,.9),
 
 /* Handy, plenara.X-Seiten: ein schmaler fester Streifen in der Farbe des Bandes ganz oben, damit die Statusleiste von Anfang an Petrol (bzw. dunkel) zeigt und nicht erst nach dem Scrollen */
 @media (max-width:639px){
-  html:has(.pl-band)::before{content:"";position:fixed;top:0;left:0;right:0;height:3px;background:var(--rm-ac);z-index:2000;pointer-events:none}
-  html.rm-dark:has(.pl-band)::before{background:var(--rm-page)}
+  .rm-statusstrip{position:fixed;top:0;left:0;right:0;height:6px;background:var(--rm-ac);z-index:2000;pointer-events:none}
+  html.rm-dark .rm-statusstrip{background:var(--rm-page)}
 }
 
 .rm-xhandle{display:none}

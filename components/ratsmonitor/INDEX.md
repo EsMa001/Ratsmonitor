@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (577 Zeilen, ⚠14)
-- app/ratsmonitor.css (575 Zeilen, ⚠38)
+- app/ratsmonitor.css (577 Zeilen, ⚠39)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -38,7 +38,7 @@ admin-ai-local-tools admin.css:438
 admin-ai-preview admin.css:220
 admin-ai-retry admin.css:10
 admin-app admin.css:13
-admin-app ratsmonitor.css:206
+admin-app ratsmonitor.css:204
 admin-atlas-block admin.css:99
 admin-atlas-canvas admin.css:72
 admin-atlas-chips admin.css:56
@@ -112,7 +112,7 @@ admin-next admin.css:42
 admin-next-link admin.css:43
 admin-note admin.css:6
 admin-notice admin.css:6
-admin-notice ratsmonitor.css:206
+admin-notice ratsmonitor.css:204
 admin-number admin.css:6
 admin-operations admin.css:6
 admin-overview-charts admin.css:22
@@ -234,11 +234,11 @@ back-btn ratsmonitor-info.css:427
 back-btn ratsmonitor.css:20
 bg-slate-900 ratsmonitor.css:173
 bg-teal-50 ratsmonitor.css:99
-bg-teal-600 ratsmonitor.css:207
+bg-teal-600 ratsmonitor.css:205
 bg-teal-700 ratsmonitor.css:169
-bg-white ratsmonitor.css:194
+bg-white ratsmonitor.css:192
 border-slate-100 ratsmonitor.css:157
-bottom-3 ratsmonitor.css:407
+bottom-3 ratsmonitor.css:405
 btn-danger ratsmonitor.css:14
 btn-primary admin.css:161
 btn-primary ratsmonitor.css:5
@@ -268,14 +268,14 @@ gap-y-12 ratsmonitor-info.css:346
 gap-y-6 ratsmonitor-info.css:389
 gap-y-8 ratsmonitor-info.css:347
 grid ratsmonitor-info.css:476
-grid ratsmonitor.css:372
+grid ratsmonitor.css:370
 group ratsmonitor.css:160
 h-16 ratsmonitor-info.css:367
 heading-m design-styles.css:44
-hidden ratsmonitor.css:322
+hidden ratsmonitor.css:320
 hover ratsmonitor.css:173
 icon design-styles.css:22
-inset-x-16 ratsmonitor.css:307
+inset-x-16 ratsmonitor.css:305
 is-assumed admin.css:196
 is-assumed analyse-admin.css:46
 is-clean admin.css:121
@@ -303,13 +303,13 @@ is-sample analyse-admin.css:47
 is-selected admin.css:10
 is-static admin.css:111
 is-stored analyse-admin.css:47
-left-3 ratsmonitor.css:374
+left-3 ratsmonitor.css:372
 legend design-styles.css:251
 link-btn ratsmonitor.css:17
 map-canvas analyse-admin.css:33
 mb-6 ratsmonitor-info.css:359
 mb-8 ratsmonitor-info.css:379
-min-w-0 ratsmonitor.css:301
+min-w-0 ratsmonitor.css:299
 monthly-mix analyse-admin.css:23
 mt-10 ratsmonitor-info.css:382
 mt-12 ratsmonitor-info.css:381
@@ -327,7 +327,7 @@ page-note design-styles.css:36
 page-note ratsmonitor.css:58
 pb-10 ratsmonitor-info.css:378
 pl-band ratsmonitor-info.css:409
-pl-band ratsmonitor.css:321
+pl-band ratsmonitor.css:319
 pl-cta ratsmonitor-info.css:332
 pl-ctawrap ratsmonitor-info.css:401
 pl-cut3 ratsmonitor-info.css:449
@@ -367,7 +367,7 @@ py-3 ratsmonitor-info.css:364
 py-6 ratsmonitor-info.css:366
 ratsmonitor ratsmonitor-info.css:197
 ratsmonitor ratsmonitor.css:2
-relative ratsmonitor.css:301
+relative ratsmonitor.css:299
 ri ratsmonitor-info.css:13
 ri ratsmonitor.css:150
 ri-actions ratsmonitor-info.css:29
@@ -467,93 +467,92 @@ ri-tl__title ratsmonitor-info.css:69
 ri-tl__title ratsmonitor.css:148
 ri-toc ratsmonitor-info.css:564
 ri-topnav ratsmonitor-info.css:297
-right-3 ratsmonitor.css:309
+right-3 ratsmonitor.css:307
 rm-analytics ratsmonitor-info.css:378
-rm-art-std ratsmonitor.css:280
-rm-attr ratsmonitor.css:248
+rm-art-std ratsmonitor.css:278
+rm-attr ratsmonitor.css:246
 rm-band-mid ratsmonitor-info.css:444
-rm-band-mid ratsmonitor.css:325
+rm-band-mid ratsmonitor.css:323
 rm-banddots ratsmonitor-info.css:440
 rm-bandicon ratsmonitor-info.css:435
-rm-bar ratsmonitor.css:550
+rm-bar ratsmonitor.css:552
 rm-brandtag ratsmonitor-info.css:432
 rm-chip ratsmonitor.css:89
 rm-dark admin.css:461
 rm-dark ratsmonitor-info.css:327
 rm-dark ratsmonitor.css:85
-rm-deskbar ratsmonitor.css:341
-rm-dialog ratsmonitor.css:564
+rm-deskbar ratsmonitor.css:339
+rm-dialog ratsmonitor.css:566
 rm-dotfield ratsmonitor-info.css:405
 rm-dotfield-on ratsmonitor-info.css:406
 rm-dots ratsmonitor.css:114
-rm-draw ratsmonitor.css:546
+rm-draw ratsmonitor.css:548
 rm-flat ratsmonitor.css:71
-rm-focusrows ratsmonitor.css:551
-rm-footcta ratsmonitor.css:501
-rm-fpop ratsmonitor.css:451
-rm-gdot ratsmonitor.css:183
-rm-gflow ratsmonitor.css:535
-rm-gin ratsmonitor.css:532
+rm-focusrows ratsmonitor.css:553
+rm-footcta ratsmonitor.css:503
+rm-fpop ratsmonitor.css:449
+rm-gflow ratsmonitor.css:537
+rm-gin ratsmonitor.css:534
 rm-glass ratsmonitor.css:80
 rm-glass-pop ratsmonitor.css:88
-rm-gpulse ratsmonitor.css:533
-rm-gpulse2 ratsmonitor.css:534
+rm-gpulse ratsmonitor.css:535
+rm-gpulse2 ratsmonitor.css:536
 rm-gtext ratsmonitor.css:181
-rm-gtopic ratsmonitor.css:182
 rm-headtitle ratsmonitor-info.css:496
-rm-karte-toggle ratsmonitor.css:280
-rm-legalbar ratsmonitor.css:256
+rm-karte-toggle ratsmonitor.css:278
+rm-legalbar ratsmonitor.css:254
 rm-legend ratsmonitor.css:84
-rm-liquid ratsmonitor.css:408
+rm-liquid ratsmonitor.css:406
 rm-logo ratsmonitor-info.css:186
 rm-logo ratsmonitor.css:147
 rm-logo--big ratsmonitor-info.css:307
 rm-logo__mark ratsmonitor-info.css:190
 rm-logo__mark--p ratsmonitor-info.css:191
 rm-logo__text ratsmonitor-info.css:188
-rm-mapbox ratsmonitor.css:268
-rm-mapctl ratsmonitor.css:248
-rm-mapwrap ratsmonitor.css:266
-rm-netstage ratsmonitor.css:393
-rm-noplay ratsmonitor.css:278
-rm-pagein ratsmonitor.css:561
+rm-mapbox ratsmonitor.css:266
+rm-mapctl ratsmonitor.css:246
+rm-mapwrap ratsmonitor.css:264
+rm-netstage ratsmonitor.css:391
+rm-noplay ratsmonitor.css:276
+rm-pagein ratsmonitor.css:563
 rm-pmark ratsmonitor-info.css:498
-rm-rail-open ratsmonitor.css:384
-rm-rail-sub ratsmonitor.css:282
-rm-sbar ratsmonitor.css:241
-rm-schritt-std ratsmonitor.css:288
+rm-rail-open ratsmonitor.css:382
+rm-rail-sub ratsmonitor.css:280
+rm-sbar ratsmonitor.css:239
+rm-schritt-std ratsmonitor.css:286
 rm-search ratsmonitor-info.css:316
-rm-search ratsmonitor.css:230
+rm-search ratsmonitor.css:228
 rm-solid ratsmonitor.css:88
 rm-spinner ratsmonitor-info.css:553
 rm-spinner ratsmonitor.css:111
 rm-stage ratsmonitor-info.css:477
-rm-stage-chip ratsmonitor.css:394
-rm-step ratsmonitor.css:556
-rm-sub-std ratsmonitor.css:376
-rm-sub-wide ratsmonitor.css:376
-rm-tabbar ratsmonitor.css:219
+rm-stage-chip ratsmonitor.css:392
+rm-statusstrip ratsmonitor.css:489
+rm-step ratsmonitor.css:558
+rm-sub-std ratsmonitor.css:374
+rm-sub-wide ratsmonitor.css:374
+rm-tabbar ratsmonitor.css:217
 rm-topline ratsmonitor.css:175
-rm-wheel-list ratsmonitor.css:465
-rm-xebene ratsmonitor.css:286
-rm-xfilter ratsmonitor.css:279
-rm-xhandle ratsmonitor.css:491
-rm-xhero ratsmonitor.css:364
-rm-xhero-panel ratsmonitor.css:364
-rm-xlegend ratsmonitor.css:445
-rm-xnet ratsmonitor.css:278
-rm-xrail ratsmonitor.css:281
-rm-xschritt ratsmonitor.css:353
-rm-xsearch ratsmonitor.css:278
-rm-xseg ratsmonitor.css:388
-rm-xsplit ratsmonitor.css:262
-rm-xsplit--solo ratsmonitor.css:263
-rm-xsplit-map ratsmonitor.css:265
-rm-xstage ratsmonitor.css:388
-rm-xtop ratsmonitor.css:310
-rm-xwide ratsmonitor.css:275
-rm-xzeit ratsmonitor.css:289
-rm-zeit-std ratsmonitor.css:288
+rm-wheel-list ratsmonitor.css:463
+rm-xebene ratsmonitor.css:284
+rm-xfilter ratsmonitor.css:277
+rm-xhandle ratsmonitor.css:493
+rm-xhero ratsmonitor.css:362
+rm-xhero-panel ratsmonitor.css:362
+rm-xlegend ratsmonitor.css:443
+rm-xnet ratsmonitor.css:276
+rm-xrail ratsmonitor.css:279
+rm-xschritt ratsmonitor.css:351
+rm-xsearch ratsmonitor.css:276
+rm-xseg ratsmonitor.css:386
+rm-xsplit ratsmonitor.css:260
+rm-xsplit--solo ratsmonitor.css:261
+rm-xsplit-map ratsmonitor.css:263
+rm-xstage ratsmonitor.css:386
+rm-xtop ratsmonitor.css:308
+rm-xwide ratsmonitor.css:273
+rm-xzeit ratsmonitor.css:287
+rm-zeit-std ratsmonitor.css:286
 scroll-thin ratsmonitor.css:52
 section design-styles.css:249
 section-title design-styles.css:39
@@ -590,11 +589,11 @@ text-slate-900 ratsmonitor.css:159
 text-teal-700 ratsmonitor-info.css:415
 text-white ratsmonitor.css:173
 timeline design-styles.css:204
-top-3 ratsmonitor.css:395
+top-3 ratsmonitor.css:393
 topic design-styles.css:140
-touch-pan-y ratsmonitor.css:290
+touch-pan-y ratsmonitor.css:288
 truncate ratsmonitor-info.css:459
-z- ratsmonitor.css:395
+z- ratsmonitor.css:393
 
 ## Dateien (Zeilen, Exporte)
 
@@ -737,7 +736,7 @@ z- ratsmonitor.css:395
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - DotField.tsx (86): DotField
 - Dropdown.tsx (66): DropItem, Dropdown, AktiveFilter
-- FilterPanel.tsx (120, ⚠1): FilterPanel
+- FilterPanel.tsx (124, ⚠2): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (28): NOTIFY_LATER, FollowButton
 - Footer.tsx (65): Footer
@@ -850,8 +849,8 @@ z- ratsmonitor.css:395
 - MainMenu.tsx (295, ⚠1): ANWENDER, XEintrag, ANALYSE, EINBLICKE, HINTERGRUENDE, INFO, MainMenu, XGruppe
 - MeinSheet.tsx (29): MeinSheet
 - MoreSheet.tsx (33, ⚠1): MoreSheet
-- SegTiles.tsx (39): Segmented, Tile, PickTile
-- Sheet.tsx (74, ⚠1): Sheet
+- SegTiles.tsx (25): Segmented, Tile
+- Sheet.tsx (82, ⚠1): Sheet
 - XSwitcher.tsx (34): XSheet
 
 ### components/ratsmonitor/pages/
@@ -878,13 +877,13 @@ z- ratsmonitor.css:395
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (437, ⚠13): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
-- DiffusionSearch.tsx (93, ⚠2): PlayState, DiffusionSearch
+- DiffusionSearch.tsx (93, ⚠4): PlayState, DiffusionSearch
 - FaktenPage.tsx (381, ⚠6): FaktenPage
 - FraktionenPage.tsx (199, ⚠7): FraktionenPage
 - GraphView.tsx (386, ⚠2): GNode, GEdge, KIND, seeded, GraphView
-- GremiennetzPage.tsx (221, ⚠5): GremiennetzPage
+- GremiennetzPage.tsx (211, ⚠3): GremiennetzPage
 - Kennzahlen.tsx (132, ⚠1): weekAgo, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (307, ⚠9): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (295, ⚠9): KnowledgeGraphPage
 - Laden.tsx (32): Laden
 - ListRow.tsx (34, ⚠1): ListRow
 - ListSkeleton.tsx (13): ListSkeleton
@@ -894,7 +893,7 @@ z- ratsmonitor.css:395
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
 - NetView.tsx (319): NNode, NEdge, ROLE, NetKind, NET_KIND, netKind, NetView
 - NewsradarPage.tsx (137, ⚠1): NewsradarPage
-- PageBand.tsx (19): PageBand
+- PageBand.tsx (23): PageBand
 - RadarDrill.tsx (130, ⚠3): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (154, ⚠5): RegionMap
