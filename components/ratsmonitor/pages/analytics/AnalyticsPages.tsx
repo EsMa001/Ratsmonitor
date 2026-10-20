@@ -12,6 +12,7 @@ import { XTrendsPage } from "./XTrendsPage";
 import { GRUPPEN } from "../../info/branchen-enterprise";
 import { AnalyticsLocked } from "./AnalyticsLocked";
 import { useTier } from "../../lib/tier";
+import { useSignedInHint } from "../../lib/signedInHint";
 import { MethodikUnten } from "./Methodik";
 
 /** plenara.X: Übersicht und je Funktion eine Unterseite */
@@ -42,6 +43,7 @@ const FREE = new Set<string>();
 
 export function AnalyticsPages({ path }: { path: string }) {
   const { tier, ready } = useTier();
+  const signedIn = useSignedInHint();
   useEffect(() => {
     window.scrollTo(0, 0);
     const gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
@@ -54,7 +56,8 @@ export function AnalyticsPages({ path }: { path: string }) {
   if (!Page) return null;
   /* Ruhiger Übergang zwischen den Seiten: der Inhalt blendet kurz ein (nur Deckkraft), die Auswahl der Suche bleibt */
   if (FREE.has(path) || tier === "enterprise") return <div key={path} className="rm-pagein"><Page /><MethodikUnten seite={path.split("/").pop() ?? ""} /></div>;
-  /* Bis /api/me antwortet: neutral laden, nicht sperren */
+  /* Bis /api/me antwortet: Gäste ohne Sitzung sehen gleich die Vorschau (steht so auch im Server-HTML), Angemeldete laden neutral */
+  if (!ready && signedIn === false) return <AnalyticsLocked path={path} />;
   if (!ready) return <main id="inhalt" aria-busy="true" className="min-h-[60vh] w-full px-[max(1vw,16px)] pb-12" />;
   return <AnalyticsLocked path={path} />;
 }

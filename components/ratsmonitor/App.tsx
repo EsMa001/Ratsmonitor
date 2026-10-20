@@ -19,6 +19,7 @@ import {brancheBySlug} from './info/content';
 import {setFavicon} from './lib/favicon';
 import {useData} from './state/data';
 import {noteRoute} from './state/nav';
+import {SignedInHint} from './lib/signedInHint';
 import {useSearchResults} from './state/search';
 import {OverviewPage} from './pages/OverviewPage';
 import {isInfoPath,isAnalyticsPath} from './lib/routes';
@@ -70,4 +71,4 @@ function useBrandTitle(p:string,notFound:boolean){
 /** Adressen, die eine der Seiten unten bedient; alles andere zeigt die 404-Seite */
 const isKnownPath=(p:string)=>p==='/'||p==='/suche'||p.startsWith('/beschluss/')||p.startsWith('/konto')||p==='/impressum'||p==='/datenschutz'||isAnalyticsPath(p)||isInfoPath(p);
 function Content(){const p=usePathname();useEffect(()=>{noteRoute();},[p]);const router=useRouter();useEffect(()=>{if(p!=='/')return;const q=new URLSearchParams(window.location.search);if(q.get('q')||q.get('suche')||q.get('region'))router.replace('/suche'+window.location.search);},[p,router]);useEffect(()=>{document.documentElement.classList.toggle('rm-search',p==='/suche');document.documentElement.classList.toggle('rm-analytics',isAnalyticsPath(p));},[p]);const notFound=!isKnownPath(p);useBrandTitle(p,notFound);return <><Header/>{notFound?<NotFoundPage/>:<OverviewPage active={p==='/suche'}/>}<Suspense fallback={<div className="min-h-[60vh]" aria-busy="true"/>}>{(p.startsWith('/beschluss/'))&&<DetailPage/>}{p.startsWith('/konto')&&<PersonalPage/>}{(p==='/impressum'||p==='/datenschutz')&&<LegalPage kind={p.slice(1) as 'impressum'|'datenschutz'}/>}{isAnalyticsPath(p)&&<AnalyticsPages path={p}/>}{isInfoPath(p)&&<InfoPages path={p}/>}</Suspense><Footer/><BottomNav/><PullToRefresh/>{p==='/'&&<DotField/>}<SaveSearchDialog/><GateDialog/><ImportDialog/><ConfirmDialog/></>;}
-export default function MonitorApp(){return <div className="ratsmonitor"><DataProvider><ToastProvider><SearchProvider><AccountProvider><UiProvider><Content/></UiProvider></AccountProvider></SearchProvider></ToastProvider></DataProvider></div>;}
+export default function MonitorApp({signedIn=null}:{signedIn?:boolean|null}){return <SignedInHint.Provider value={signedIn}><div className="ratsmonitor"><DataProvider><ToastProvider><SearchProvider><AccountProvider><UiProvider><Content/></UiProvider></AccountProvider></SearchProvider></ToastProvider></DataProvider></div></SignedInHint.Provider>;}

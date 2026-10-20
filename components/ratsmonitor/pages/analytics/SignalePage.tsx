@@ -311,9 +311,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             </span>
             </button> ({n(p.count)})</span>)}.</p>}
           {(ATLAS_OF[signal] || TRENDS_OF[signal]) && <p className="mt-1 text-[14px] text-slate-500 max-sm:hidden">
-            {ATLAS_OF[signal] && <>Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 hover:underline">{ATLAS_OF[signal][2]} im Atlas →</Link></>}
+            {ATLAS_OF[signal] && <>Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 underline underline-offset-2">{ATLAS_OF[signal][2]} im Atlas →</Link></>}
             {ATLAS_OF[signal] && TRENDS_OF[signal] && " · "}
-            {TRENDS_OF[signal] && <>Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="font-medium text-teal-700 hover:underline">„{TRENDS_OF[signal]}“ in den Trends →</Link></>}
+            {TRENDS_OF[signal] && <>Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="font-medium text-teal-700 underline underline-offset-2">„{TRENDS_OF[signal]}“ in den Trends →</Link></>}
           </p>}
           {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 1024 px nebeneinander */}
           <div className="rm-karte-toggle mt-4 print:hidden max-sm:hidden">

@@ -647,7 +647,7 @@ z- ratsmonitor.css:399
 - page.tsx (6, ⚠1): metadata, Page
 
 ### app/(monitor)/
-- layout.tsx (3): MonitorLayout
+- layout.tsx (11): MonitorLayout
 - not-found.tsx (4): metadata, NotFound
 - page-meta.ts (22): pageMeta, privateMeta
 - page.tsx (14): metadata, Page
@@ -726,7 +726,7 @@ z- ratsmonitor.css:399
 - database-admin.tsx (34, ⚠3): DatabaseAdmin
 
 ### components/ratsmonitor/
-- App.tsx (74, ⚠1): MonitorApp
+- App.tsx (75, ⚠2): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (90, ⚠4): AccountMenu
@@ -883,8 +883,8 @@ z- ratsmonitor.css:399
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (232, ⚠18): ANALYSE_THUMBS, MethodikText
-- AnalyticsLocked.tsx (57): AnalyticsLocked
-- AnalyticsPages.tsx (61): AnalyticsPages
+- AnalyticsLocked.tsx (54): AnalyticsLocked
+- AnalyticsPages.tsx (64): AnalyticsPages
 - AtlasMap.tsx (107, ⚠2): AtlasMap
 - AtlasPage.tsx (76): ATLAS_THEMEN, atlasHref, AtlasPage
 - AtlasParts.tsx (186, ⚠1): Row, Result, Fact, n, MIN_BASE, isRest, restLast, Bars, Hint, OrtImVergleich, Level, AtlasExtra, PartList, PlaceChip
@@ -917,8 +917,8 @@ z- ratsmonitor.css:399
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (178, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (377, ⚠11): signaleHref, SignalePage
-- SplitHandle.tsx (51): SplitHandle
+- SignalePage.tsx (377, ⚠12): signaleHref, SignalePage
+- SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (331, ⚠10): XAtlasView

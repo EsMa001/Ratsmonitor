@@ -37,7 +37,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
       aria-expanded={open}
       aria-controls="filter-body"
       title={open ? "Filter einklappen" : "Filter anzeigen"}
-      aria-label={open ? "Filter einklappen" : "Filter anzeigen"}
+      aria-label={open ? "Filter einklappen" : filterCount > 0 ? `Filter anzeigen, ${filterCount} aktiv` : "Filter anzeigen"}
       onClick={() => {
         if (!open && !allowFeature("filters")) return;
         setFiltersOpen(!open);

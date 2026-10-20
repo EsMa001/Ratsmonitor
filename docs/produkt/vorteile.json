@@ -3,9 +3,9 @@
  "hinweis": "Zentrale Liste der Produktvorteile von Plenara und Plenara.X (108 Einträge), nach Relevanz sortiert (rang 1 = wichtigster, Vorschlag, gerne ändern). Nur belegbare Aussagen, keine Superlative und keine Vergleiche mit anderen Anbietern. pruefen=true: aus der App abgeleitet, vor Verwendung bestätigen. Texte, Videos und Marketing sollen sich an dieser Liste ausrichten.",
  "stufen": {
   "A": "Rang 1 bis 7: in 10 Sekunden verständlich, gehört in Einleitungen, Einblendungen und Werbung",
-  "B": "Rang 8 bis 23: die tieferen Gründe, tragen Kapitel und Zielgruppenvideos",
-  "C": "Rang 24 bis 57: Details für Anleitungen und Kurzclips, nicht für Werbung",
-  "D": "Rang 58 bis 108: Details und Belege, für Anleitungen, Einblendungen und Kurzclips, nicht für Werbung"
+  "B": "Rang 8 bis 22: die tieferen Gründe, tragen Kapitel und Zielgruppenvideos",
+  "C": "Rang 23 bis 56: Details für Anleitungen und Kurzclips, nicht für Werbung",
+  "D": "Rang 57 bis 107: Details und Belege, für Anleitungen, Einblendungen und Kurzclips, nicht für Werbung"
  },
  "vorteile": [
   {
@@ -107,562 +107,556 @@
   {
    "rang": 17,
    "stufe": "B",
-   "titel": "Ergebnisse als Excel oder CSV",
-   "beleg": "Export der Trefferliste"
+   "titel": "Artikel sauber drucken",
+   "beleg": "Druckansicht im Browser ohne Bedienelemente"
   },
   {
    "rang": 18,
-   "stufe": "B",
-   "titel": "Artikel als PDF oder zum Drucken",
-   "beleg": "Export im Artikel"
-  },
-  {
-   "rang": 19,
    "stufe": "B",
    "titel": "Die Suche kostenlos nutzen",
    "beleg": "Vom Nutzer bestätigt: Suche von Plenara kostenlos mit begrenztem Funktionsumfang; Plenara.X ist nicht kostenlos"
   },
   {
-   "rang": 20,
+   "rang": 19,
    "stufe": "B",
    "titel": "Grenzen und Abdeckung offen benannt",
    "beleg": "Datenabdeckung, Hinweise zu Grenzen bei jeder Analyse"
   },
   {
-   "rang": 21,
+   "rang": 20,
    "stufe": "B",
    "titel": "Sehen, wie viel wo beraten wird",
    "beleg": "plenara.X Atlas: 10 Themen mit Unterthemen, je Ort und Monat, mit Suchbegriff",
    "pruefen": true
   },
   {
-   "rang": 22,
+   "rang": 21,
    "stufe": "B",
    "titel": "Vorhaben einzeln verfolgen",
    "beleg": "plenara.X Signale: Vorhaben je Branche mit Ort, Schritt und Quelle",
    "pruefen": true
   },
   {
-   "rang": 23,
+   "rang": 22,
    "stufe": "B",
    "titel": "Werte aus den Vorlagen vergleichen",
    "beleg": "plenara.X Fakten: Hebesätze und Gebühren je Gemeinde auf der Karte, mit Quelle",
    "pruefen": true
   },
   {
-   "rang": 24,
+   "rang": 23,
    "stufe": "C",
    "titel": "Aktualität sichtbar",
    "beleg": "Datenstand mit Datum und Uhrzeit über der Trefferliste"
   },
   {
-   "rang": 25,
+   "rang": 24,
    "stufe": "C",
    "titel": "Ort direkt erkannt",
    "beleg": "„Ort erkannt“ in der Suchleiste"
   },
   {
-   "rang": 26,
+   "rang": 25,
    "stufe": "C",
    "titel": "Exakter Begriff",
    "beleg": "nur ganze Wörter (Filter)"
   },
   {
-   "rang": 27,
+   "rang": 26,
    "stufe": "C",
    "titel": "Mehrere Begriffe, wahlweise alle oder einer",
    "beleg": "Marken, „Begriffe kombinieren“"
   },
   {
-   "rang": 28,
+   "rang": 27,
    "stufe": "C",
    "titel": "Häufungen sehen",
    "beleg": "Heatmap"
   },
   {
-   "rang": 29,
+   "rang": 28,
    "stufe": "C",
    "titel": "Trefferzahl je Gebiet",
    "beleg": "Zahlen an den Gebieten der Karte"
   },
   {
-   "rang": 30,
+   "rang": 29,
    "stufe": "C",
    "titel": "Klick auf ein Gebiet zeigt dessen Beschlüsse",
    "beleg": "Karte"
   },
   {
-   "rang": 31,
+   "rang": 30,
    "stufe": "C",
    "titel": "Sortieren nach Datum oder Relevanz",
    "beleg": "Trefferliste"
   },
   {
-   "rang": 32,
+   "rang": 31,
    "stufe": "C",
    "titel": "Kompakte oder ausführliche Ansicht",
    "beleg": "Trefferliste"
   },
   {
-   "rang": 33,
+   "rang": 32,
    "stufe": "C",
    "titel": "Artikel mit allen Unterlagen und Verlauf",
    "beleg": "Artikelseite"
   },
   {
-   "rang": 34,
+   "rang": 33,
    "stufe": "C",
    "titel": "Wichtiges merken",
    "beleg": "gespeicherte Artikel (Lesezeichen)"
   },
   {
-   "rang": 35,
+   "rang": 34,
    "stufe": "C",
    "titel": "Suchen speichern",
    "beleg": "Herz in der Suchleiste"
   },
   {
-   "rang": 36,
+   "rang": 35,
    "stufe": "C",
    "titel": "Benachrichtigung je Artikel",
    "beleg": "Glocke im Artikel"
   },
   {
-   "rang": 37,
+   "rang": 36,
    "stufe": "C",
    "titel": "Artikel teilen",
    "beleg": "Teilen-Symbol im Artikel"
   },
   {
-   "rang": 38,
+   "rang": 37,
    "stufe": "C",
    "titel": "Auch am Handy",
    "beleg": "Oberfläche für Handy angepasst (Layout unter 768 px, eigene Handy-Videos, Handy-Vorschau public/handy.html); geprüft im Code"
   },
   {
-   "rang": 39,
+   "rang": 38,
    "stufe": "C",
    "titel": "Künftige Sitzungen und Formalien selbst steuern",
    "beleg": "Schalter im Filter"
   },
   {
-   "rang": 40,
+   "rang": 39,
    "stufe": "C",
    "titel": "Statusfilter",
    "beleg": "Angekündigt, In Beratung, Beschlossen u. a."
   },
   {
-   "rang": 41,
+   "rang": 40,
    "stufe": "C",
    "titel": "Themenfilter mit Themenfeldern",
    "beleg": "Filter „Alle Themen“; Zuordnung nach Titelregeln (shared/labels.mjs, title-rules-v2): jeder Eintrag bekommt anhand von Schlüsselwörtern im amtlichen Titel ein Themenfeld; nicht erkennbare bleiben ohne Feld"
   },
   {
-   "rang": 42,
+   "rang": 41,
    "stufe": "C",
    "titel": "Beispiel-Meldungen im Test-Postfach",
    "beleg": "zeigt, wie Nachrichten aussehen"
   },
   {
-   "rang": 43,
+   "rang": 42,
    "stufe": "C",
    "titel": "Kurzfassung zu jedem Eintrag",
    "beleg": "Kurzfassung unter dem Titel; Stand heute nur, wo ein Dokumenttext vorliegt (KI, ai-summary.mjs), vom Nutzer als künftig für jeden Eintrag geplant bestätigt; in Texten „Kurzfassung“ nennen, nicht „KI“"
   },
   {
-   "rang": 44,
+   "rang": 43,
    "stufe": "C",
    "titel": "Suchvorschläge beim Tippen",
    "beleg": "Vorschlagsliste unter der Suchleiste: Orte und Regionen ab 3 Buchstaben sowie „Zuletzt gesucht“; keine Vorschläge für Fachbegriffe"
   },
   {
-   "rang": 45,
+   "rang": 44,
    "stufe": "C",
    "titel": "Samtgemeinden richtig berücksichtigt",
    "beleg": "zählen bei jeder Mitgliedsgemeinde"
   },
   {
-   "rang": 46,
+   "rang": 45,
    "stufe": "C",
    "titel": "Abdeckung nach Bundesland",
    "beleg": "Datenabdeckung"
   },
   {
-   "rang": 47,
+   "rang": 46,
    "stufe": "C",
    "titel": "„Ist Ihr Ort dabei?“",
    "beleg": "Ortsabfrage auf der Datenabdeckung"
   },
   {
-   "rang": 48,
+   "rang": 47,
    "stufe": "C",
    "titel": "Fehlende Kommune melden",
    "beleg": "Kontaktweg auf der Datenabdeckung"
   },
   {
-   "rang": 49,
+   "rang": 48,
    "stufe": "C",
    "titel": "Vorreiter-Gebiete sehen",
    "beleg": "plenara.X Trends, Ausbreitung: früheste Gebiete"
   },
   {
-   "rang": 50,
+   "rang": 49,
    "stufe": "C",
    "titel": "Verlaufskurven je Begriff",
    "beleg": "plenara.X Trends, Rangliste"
   },
   {
-   "rang": 51,
+   "rang": 50,
    "stufe": "C",
    "titel": "Themenprofil im Vergleich",
    "beleg": "plenara.X Atlas, Vergleich"
   },
   {
-   "rang": 52,
+   "rang": 51,
    "stufe": "C",
    "titel": "Alle Gebiete als Maßstab",
    "beleg": "Ortsvergleich gegen den Gesamtbestand"
   },
   {
-   "rang": 53,
+   "rang": 52,
    "stufe": "C",
    "titel": "Analysen immer frisch berechnet",
    "beleg": "„bei der Abfrage frisch aus der Datenbank“ (Über Plenara.X)"
   },
   {
-   "rang": 54,
+   "rang": 53,
    "stufe": "C",
    "titel": "Berichtenswertes mit Zitat und Quelle",
    "beleg": "plenara.X Aktuelles: je Vorgang eine Meldung mit wörtlichem Zitat",
    "pruefen": true
   },
   {
-   "rang": 55,
+   "rang": 54,
    "stufe": "C",
    "titel": "Fraktionen und ihre Anträge",
    "beleg": "plenara.X Fraktionen: welche Fraktion welche Themen beantragt und was daraus wird",
    "pruefen": true
   },
   {
-   "rang": 56,
+   "rang": 55,
    "stufe": "C",
    "titel": "Orte, die ein Thema zum ersten Mal beraten",
    "beleg": "plenara.X Signale, „Erstmals hier“",
    "pruefen": true
   },
   {
-   "rang": 57,
+   "rang": 56,
    "stufe": "C",
    "titel": "Ein Ort im Vergleich mit ähnlichen Gemeinden",
    "beleg": "plenara.X Atlas: Vergleichsgruppe nach Art, Größe und Land",
    "pruefen": true
   },
   {
-   "rang": 58,
+   "rang": 57,
    "stufe": "D",
    "titel": "Schnelle Suche über den ganzen Bestand",
    "beleg": "Vorberechnete Wortliste (search-words.mjs): „keine Treffer“ sofort, Zähler und Karte häufiger Wörter aus vorberechneten Zahlen; Ergebnis identisch mit der vollen Suche (getestet)"
   },
   {
-   "rang": 59,
+   "rang": 58,
    "stufe": "D",
    "titel": "227 von 294 Kreisen abgedeckt",
    "beleg": "Datenabdeckung (docs/videos/facts.json, cov)"
   },
   {
-   "rang": 60,
+   "rang": 59,
    "stufe": "D",
    "titel": "Daten aus 14 Bundesländern",
    "beleg": "Datenabdeckung"
   },
   {
-   "rang": 61,
+   "rang": 60,
    "stufe": "D",
    "titel": "Verschiedene Ratsinformationssysteme einheitlich dargestellt",
    "beleg": "Vom Nutzer bestätigt: stimmt inhaltlich, Formulierung frei (Anbindung mehrerer Systeme)"
   },
   {
-   "rang": 62,
+   "rang": 61,
    "stufe": "D",
    "titel": "Einheitliche Statusbezeichnungen",
    "beleg": "Angekündigt, In Beratung, Beschlossen u. a."
   },
   {
-   "rang": 63,
+   "rang": 62,
    "stufe": "D",
    "titel": "Einheitliche Themenfelder",
    "beleg": "Feste Liste von Themenfeldern (LABELS in shared/labels.mjs), für alle Gebiete gleich per Titelregeln vergeben; nicht alle Einträge sind eingeordnet"
   },
   {
-   "rang": 64,
+   "rang": 63,
    "stufe": "D",
    "titel": "Gremien nach Art erkennbar",
    "beleg": "Gremienart wird per Namensmuster aus dem Gremiennamen abgeleitet (analytics-network.mjs, gremiumType); nicht erkennbare = „Sonstige“; die Grenze nennen"
   },
   {
-   "rang": 65,
+   "rang": 64,
    "stufe": "D",
    "titel": "Letzter Abruf der Daten sichtbar",
    "beleg": "Datenabdeckung"
   },
   {
-   "rang": 66,
+   "rang": 65,
    "stufe": "D",
    "titel": "„Hinter den Kulissen“: Abdeckung offen erklärt",
    "beleg": "Datenabdeckung"
   },
   {
-   "rang": 67,
+   "rang": 66,
    "stufe": "D",
    "titel": "Fragen und Anregungen jederzeit an das Team",
    "beleg": "Kontakt am Seitenende"
   },
   {
-   "rang": 68,
+   "rang": 67,
    "stufe": "D",
    "titel": "Treffer im Text hervorgehoben",
    "beleg": "gelbe Markierung in der Liste"
   },
   {
-   "rang": 69,
+   "rang": 68,
    "stufe": "D",
    "titel": "Sitzungsdatum und Gremium in jeder Zeile",
    "beleg": "Trefferliste"
   },
   {
-   "rang": 70,
+   "rang": 69,
    "stufe": "D",
    "titel": "Kartendarstellung wechseln, ohne neu zu suchen",
    "beleg": "Karte"
   },
   {
-   "rang": 71,
+   "rang": 70,
    "stufe": "D",
    "titel": "Zoomen, Zentrieren, Neu laden an der Karte",
    "beleg": "Kartenknöpfe"
   },
   {
-   "rang": 72,
+   "rang": 71,
    "stufe": "D",
    "titel": "Beispielthemen zum Anklicken",
    "beleg": "Chips unter der Suche"
   },
   {
-   "rang": 73,
+   "rang": 72,
    "stufe": "D",
    "titel": "Marken unter der Suchleiste, ein Klick entfernt den Filter",
    "beleg": "Suchleiste"
   },
   {
-   "rang": 74,
+   "rang": 73,
    "stufe": "D",
    "titel": "Trefferzahl und Stand über der Liste",
    "beleg": "Trefferliste"
   },
   {
-   "rang": 75,
+   "rang": 74,
    "stufe": "D",
    "titel": "Ort und Thema zugleich",
    "beleg": "Suche"
   },
   {
-   "rang": 76,
+   "rang": 75,
    "stufe": "D",
    "titel": "Mail bei einem Beschluss",
    "beleg": "Test-Postfach"
   },
   {
-   "rang": 77,
+   "rang": 76,
    "stufe": "D",
    "titel": "Mail bei einer Sitzung heute",
    "beleg": "Test-Postfach"
   },
   {
-   "rang": 78,
+   "rang": 77,
    "stufe": "D",
    "titel": "Mehrere Suchen gleichzeitig überwachen",
    "beleg": "gespeicherte Suchen"
   },
   {
-   "rang": 79,
+   "rang": 78,
    "stufe": "D",
    "titel": "Mehrere Regionen und Themen im Blick",
    "beleg": "Vorstellungsvideo Unternehmen und Verbände"
   },
   {
-   "rang": 80,
+   "rang": 79,
    "stufe": "D",
    "titel": "Test-Postfach ohne Risiko",
    "beleg": "Beispiel-Benachrichtigungen"
   },
   {
-   "rang": 81,
+   "rang": 80,
    "stufe": "D",
    "titel": "Kalender für mehrere Gebiete zugleich",
    "beleg": "Meine Gebiete"
   },
   {
-   "rang": 82,
+   "rang": 81,
    "stufe": "D",
    "titel": "Im Kalender: Klick auf einen Tag zeigt Gremium und Themen",
    "beleg": "Kalender"
   },
   {
-   "rang": 83,
+   "rang": 82,
    "stufe": "D",
    "titel": "Gespeichertes bleibt im Konto erhalten",
    "beleg": "Konto"
   },
   {
-   "rang": 84,
+   "rang": 83,
    "stufe": "D",
    "titel": "Anzahl gespeicherter Suchen und Artikel in der Kopfzeile",
    "beleg": "Kopfzeile"
   },
   {
-   "rang": 85,
+   "rang": 84,
    "stufe": "D",
    "titel": "Profil mit Name und E-Mail",
    "beleg": "Konto"
   },
   {
-   "rang": 86,
+   "rang": 85,
    "stufe": "D",
    "titel": "Ausbreitung: „Hälfte erreicht“ als Kennzahl",
    "beleg": "plenara.X Trends, Ausbreitung"
   },
   {
-   "rang": 87,
+   "rang": 86,
    "stufe": "D",
    "titel": "Ausbreitung: Dauer von 10 auf 90 Prozent der Gebiete",
    "beleg": "plenara.X Trends, Ausbreitung"
   },
   {
-   "rang": 88,
+   "rang": 87,
    "stufe": "D",
    "titel": "Ausbreitung: Verlauf als Diagramm, Klick setzt die Karte auf das Datum",
    "beleg": "plenara.X Trends, Ausbreitung",
    "pruefen": true
   },
   {
-   "rang": 89,
+   "rang": 88,
    "stufe": "D",
    "titel": "Ausbreitung: Bundesländer im Vergleich",
    "beleg": "plenara.X Trends, Ausbreitung"
   },
   {
-   "rang": 90,
+   "rang": 89,
    "stufe": "D",
    "titel": "Alle Analysen mit denselben Suchen und Filtern wie die Startseite",
    "beleg": "Über Plenara.X"
   },
   {
-   "rang": 91,
+   "rang": 90,
    "stufe": "D",
    "titel": "Trends: Zeitraum wählbar (30, 90, 180 Tage)",
    "beleg": "plenara.X Trends"
   },
   {
-   "rang": 92,
+   "rang": 91,
    "stufe": "D",
    "titel": "Trends: Veränderung je Themenfeld",
    "beleg": "plenara.X Trends"
   },
   {
-   "rang": 93,
+   "rang": 92,
    "stufe": "D",
    "titel": "Trends: Trendkarte",
    "beleg": "plenara.X Trends"
   },
   {
-   "rang": 94,
+   "rang": 93,
    "stufe": "D",
    "titel": "Beschlusslage: Vertagungen und Ablehnungen sichtbar",
    "beleg": "plenara.X Trends, Reiter Beschlusslage"
   },
   {
-   "rang": 95,
+   "rang": 94,
    "stufe": "D",
    "titel": "Beschlusslage: Anteil einstimmiger Entscheidungen",
    "beleg": "plenara.X Trends, Reiter Beschlusslage"
   },
   {
-   "rang": 96,
+   "rang": 95,
    "stufe": "D",
    "titel": "Beschlusslage: Wie oft Vorlagen geändert werden",
    "beleg": "plenara.X Trends, Reiter Beschlusslage"
   },
   {
-   "rang": 97,
+   "rang": 96,
    "stufe": "D",
    "titel": "Beschlusslage: Durchlaufzeit bis zum Beschluss",
    "beleg": "plenara.X Trends, Reiter Beschlusslage"
   },
   {
-   "rang": 98,
+   "rang": 97,
    "stufe": "D",
    "titel": "Vergleich: typische und gemeinsame Begriffe",
    "beleg": "plenara.X Atlas, Vergleich"
   },
   {
-   "rang": 99,
+   "rang": 98,
    "stufe": "D",
    "titel": "Vergleich: Einträge je Einwohner (nur als Anhaltspunkt)",
    "beleg": "plenara.X Atlas, Vergleich; Grenze ausdrücklich nennen"
   },
   {
-   "rang": 100,
+   "rang": 99,
    "stufe": "D",
    "titel": "Themennetz: Knoten anklicken zeigt Details",
    "beleg": "plenara.X Themennetz"
   },
   {
-   "rang": 101,
+   "rang": 100,
    "stufe": "D",
    "titel": "Themennetz: Länder und Gremien als Knoten",
    "beleg": "plenara.X Themennetz",
    "pruefen": true
   },
   {
-   "rang": 102,
+   "rang": 101,
    "stufe": "D",
    "titel": "Gremien: Dauer eines Übergangs",
    "beleg": "plenara.X Gremien"
   },
   {
-   "rang": 103,
+   "rang": 102,
    "stufe": "D",
    "titel": "Gremien: Gremienarten als Knoten",
    "beleg": "plenara.X Gremien"
   },
   {
-   "rang": 104,
+   "rang": 103,
    "stufe": "D",
    "titel": "Zu jeder Analyse der wissenschaftliche Hintergrund",
    "beleg": "Über Plenara.X"
   },
   {
-   "rang": 105,
+   "rang": 104,
    "stufe": "D",
    "titel": "Zu jeder Analyse die Grenzen in Klartext",
    "beleg": "Über Plenara.X"
   },
   {
-   "rang": 106,
+   "rang": 105,
    "stufe": "D",
    "titel": "Fakten: übliche Spanne und Median je Wert",
    "beleg": "plenara.X Fakten",
    "pruefen": true
   },
   {
-   "rang": 107,
+   "rang": 106,
    "stufe": "D",
    "titel": "Atlas: Anteil an allen Sachvorgängen eines Orts",
    "beleg": "plenara.X Atlas",
    "pruefen": true
   },
   {
-   "rang": 108,
+   "rang": 107,
    "stufe": "D",
    "titel": "Hinter jeder Zahl die Liste der Vorgänge",
    "beleg": "plenara.X: Klick auf eine Zahl zeigt die Vorgänge",
