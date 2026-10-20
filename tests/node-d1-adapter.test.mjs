@@ -57,6 +57,21 @@ test('first(), first(Spalte), all(), run() und raw() liefern die Formen von D1',
   assert.deepEqual(await db.prepare('SELECT id, v FROM t').raw({ columnNames: true }), [['id', 'v'], [1, 'x']]);
 });
 
+test('all() liefert gewöhnliche Objekte wie zuvor: doppelte Namen (die letzte gewinnt), __proto__ als Eigenschaft', async () => {
+  const { db } = fresh();
+  await db.exec('CREATE TABLE t(id INTEGER PRIMARY KEY, v TEXT)');
+  await db.exec("INSERT INTO t(v) VALUES('a'),('b')");
+  const sql = "SELECT id, v, 1 AS d, 2 AS d, 'p' AS __proto__ FROM t ORDER BY id";
+  const { results } = await db.prepare(sql).all();
+  assert.deepEqual(results.map((r) => Object.keys(r)), [['id', 'v', 'd', '__proto__'], ['id', 'v', 'd', '__proto__']]);
+  assert.equal(results[0].d, 2);
+  assert.equal(Object.getPrototypeOf(results[1]), Object.prototype);
+  assert.equal(Object.getOwnPropertyDescriptor(results[1], '__proto__').value, 'p');
+  // dieselbe zwischengespeicherte Anweisung: first() und raw() danach unverändert
+  assert.deepEqual({ ...(await db.prepare(sql).first()) }, { ...results[0] });
+  assert.deepEqual(await db.prepare('SELECT id, v FROM t ORDER BY id').raw(), [[1, 'a'], [2, 'b']]);
+});
+
 test('RETURNING funktioniert mit first() und all()', async () => {
   const { db } = fresh();
   await db.exec('CREATE TABLE s(key TEXT PRIMARY KEY, value TEXT)');
