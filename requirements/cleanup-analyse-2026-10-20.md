@@ -98,3 +98,21 @@ Branch `cleanup/backend` (von `main` 3b22a0f8). Nur gelesen, nichts geändert. F
 7. C nach Entscheidung.
 
 Je Paket eigener Commit, danach `node --test tests/*.test.mjs`, `tsc --noEmit`, `node scripts/build-node.mjs`; vor A3/B3–B5 den Branch `claude/lucid-cray-28b349` klären.
+
+## Umsetzung Pakete 1–3 (20.10.2026, Branch `cleanup/backend`)
+
+Nach jedem Paket: `npm run typecheck` fehlerfrei, `npm test` grün bis auf die zwei bekannten Windows-Fehler, nach Paket 3 `node scripts/build-node.mjs` ohne neue Warnung. `npm run lint` im ganzen Repo: vorher 25 Fehler (nur Backend gezählt), jetzt 0 Fehler, 62 Warnungen (davon 2 im Backend, beide in Dateien des offenen Branches).
+
+- **Paket 1 (dedcc4b7):** A1 umgesetzt; 25 explizite `any` durch Typen ersetzt (nur Typen); `npm test`, `npm run typecheck`.
+- **Paket 2 (1afb6292):** A2 umgesetzt: `pio.mjs`, unbenutzte Importe/Variablen/Konstanten, Label-Studie labels-v2, `measure-funding.mjs`, `ai-result-batches.mjs`, `cmdk`, `class-variance-authority`, Kommentare und README-Absatz.
+- **Paket 3 (3479795e):** `server/integrations/source-common.mjs` (zeichengleiche Helfer aus 21 Lesern), `norm` der Suche einmal, `scripts/sqlite-adapter.mjs`, `BUDGET_REACHED` statt Literal.
+
+Bewusst nicht gemacht, mit Grund:
+- Rund 100 Exporte, die nur in ihrer eigenen Datei vorkommen: werden dort alle benutzt, also kein toter Code; viele liegen in Dateien des offenen Branches.
+- `system_state`-Helfer: Zugriffe zu uneinheitlich (Batches, Bedingungen, JSON-Werte), teils in Dateien des offenen Branches.
+- `/Zeitbudget/.test(e.message)` (44×) als Helfer und `maxDurationMs=300000` als Konstante: ein Helfer mit `String(e)` verhielte sich bei geworfenen Nicht-Errors anders; reine Umbenennung ohne Nutzen.
+- `requireSameOrigin` doppelt: verschiedene Fehlerklassen und Texte, Sicherheitscode; gehört zu A4 (Routen-Rahmen).
+- `guard`/`guarded`/`statusOf`/`plain` der Leser: hängen an Modul- oder Funktionsvariablen (A4).
+- `pnpm-workspace.yaml` (`allowBuilds: core-js`, doppelte `overrides`) und `deploy.sh`: Bereitstellung, nicht ohne Rücksprache.
+- README: historische Kapitel mit entfernten Skripten bleiben als Protokoll; korrigiert nur Aussagen zum heutigen Stand.
+- Dateien des offenen Branches `claude/lucid-cray-28b349` an denselben Stellen (`nightly.mjs` `queueJob`, `failures.mjs`, `schedules.mjs` `STEP_MIN`, Kommentar in `work-failures.mjs`): nach dessen Merge nachziehen.
