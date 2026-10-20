@@ -11,8 +11,9 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (577 Zeilen, ⚠14)
-- app/ratsmonitor.css (596 Zeilen, ⚠38)
+- app/ratsmonitor.css (606 Zeilen, ⚠38)
 
+absolute ratsmonitor.css:601
 admin-access admin.css:6
 admin-activation admin.css:6
 admin-ai-kinds admin.css:10
@@ -258,6 +259,7 @@ field-help ratsmonitor.css:34
 field-input ratsmonitor.css:28
 field-label ratsmonitor.css:31
 figure design-styles.css:197
+fixed ratsmonitor.css:602
 font-bold ratsmonitor.css:66
 font-medium ratsmonitor.css:68
 font-semibold ratsmonitor.css:67
@@ -590,6 +592,7 @@ text-link ratsmonitor.css:97
 text-slate-500 ratsmonitor-info.css:417
 text-slate-900 ratsmonitor.css:162
 text-teal-700 ratsmonitor-info.css:415
+text-teal-700 ratsmonitor.css:601
 text-white ratsmonitor.css:176
 timeline design-styles.css:204
 top-3 ratsmonitor.css:395
@@ -750,7 +753,7 @@ z- ratsmonitor.css:395
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
-- SearchBox.tsx (380, ⚠1): isSearchInput, focusSearch, SearchBox
+- SearchBox.tsx (381, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (68): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - Segmented.tsx (66): Segmented
@@ -769,7 +772,7 @@ z- ratsmonitor.css:395
 - ResultsPanel.tsx (216): ResultsPanel
 
 ### components/ratsmonitor/components/
-- suggestRows.ts (234): Row, notePick, takePickedText, RowContext, buildRows
+- suggestRows.ts (214): Row, notePick, takePickedText, RowContext, buildRows
 
 ### components/ratsmonitor/info/
 - AccountPages.tsx (640): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
@@ -846,7 +849,7 @@ z- ratsmonitor.css:395
 - useDarkMode.ts (40): useDarkMode
 - useInstall.ts (27): isStandalone, useInstall
 - useLongPress.ts (32): useLongPress
-- usePhone.ts (19): PHONE_QUERY, isPhone, usePhone
+- usePhone.ts (30): PHONE_QUERY, isPhone, usePhone, useTinyPhone
 - useSwipe.ts (30): useSwipe
 - uuid.ts (12): newId
 - viewClamp.ts (18): NetViewState, NetBox, clampView
@@ -889,10 +892,10 @@ z- ratsmonitor.css:395
 - DiffusionSearch.tsx (93, ⚠4): PlayState, DiffusionSearch
 - FaktenPage.tsx (381, ⚠6): FaktenPage
 - FraktionenPage.tsx (200, ⚠7): FraktionenPage
-- GraphView.tsx (386, ⚠2): GNode, GEdge, KIND, seeded, GraphView
-- GremiennetzPage.tsx (212, ⚠3): GremiennetzPage
+- GraphView.tsx (388, ⚠2): GNode, GEdge, KIND, seeded, GraphView
+- GremiennetzPage.tsx (220, ⚠4): GremiennetzPage
 - Kennzahlen.tsx (132, ⚠1): weekAgo, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (296, ⚠9): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (304, ⚠9): KnowledgeGraphPage
 - Laden.tsx (32): Laden
 - ListRow.tsx (34, ⚠1): ListRow
 - ListSkeleton.tsx (13): ListSkeleton
@@ -901,7 +904,7 @@ z- ratsmonitor.css:395
 - MeinOrtNeu.tsx (41): MeinOrtNeu
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
 - NetControls.tsx (50): Level, netLevel, LevelSegmented, LevelPill, NetLegend, NetZoom
-- NetView.tsx (319): NNode, NEdge, ROLE, NetKind, NET_KIND, netKind, NetView
+- NetView.tsx (320): NNode, NEdge, ROLE, NetKind, NET_KIND, netKind, NetView
 - NewsradarPage.tsx (138, ⚠1): NewsradarPage
 - PageBand.tsx (23): PageBand
 - RadarDrill.tsx (130, ⚠3): DrillItem, StatusDot, RadarDrill
@@ -914,7 +917,7 @@ z- ratsmonitor.css:395
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (331, ⚠10): XAtlasView
 - XBusy.tsx (14): busyProps, PendingVeil, HERO_MAIN, HERO_PANEL
-- XKopf.tsx (211, ⚠1): XKopf, XWeiter, ThemenLeiste
+- XKopf.tsx (218, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (369, ⚠4): XTrendsPage
 - XTrendsParts.tsx (153, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun

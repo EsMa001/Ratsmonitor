@@ -75,7 +75,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
           </button>}
           {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 max-sm:order-1 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} trail={phone && follow ? 56 : 0} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
           <div className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white [&_input]:rounded-xl" onFocusCapture={() => setTyping(true)} onBlurCapture={() => window.setTimeout(() => { if (!document.activeElement?.closest('[role="search"]')) setTyping(false); }, 150)}>
-            <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} listUp={filterUp && phone} listMax={filterUp && phone ? 6 : undefined} />
+            <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} listUp={filterUp && phone} listMax={filterUp && phone ? 300 : undefined} />
           </div>
           {follow && <div className={`flex-none max-sm:order-2 sm:hidden ${typing ? "max-sm:hidden" : ""}`}>{follow}</div>}
           {phone && typing && <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => { (document.activeElement as HTMLElement | null)?.blur(); setTyping(false); }} className="h-12 flex-none px-1 text-[16px] font-medium text-teal-700">Abbrechen</button>}

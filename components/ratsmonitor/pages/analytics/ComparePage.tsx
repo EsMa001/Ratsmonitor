@@ -170,7 +170,7 @@ export function ComparePage() {
           <section className="mt-5 max-sm:mt-5">
             <h2 className="text-[22px] font-semibold">So unterscheiden sich die Orte</h2>
             <div className="mt-3"><div className="border-t border-slate-200 text-[16px]">
-              <div className={rowCls + " items-end"}>
+              <div className={rowCls + " items-end max-sm:sticky max-sm:top-[42px] max-sm:z-20 max-sm:bg-[var(--rm-white)] max-sm:py-2"}>
                 <span className="hidden md:block" />
                 {res.places.map((p, i) => <span key={p.ags + p.scope} className="flex items-center gap-2 font-semibold"><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="min-w-0 truncate">{names[i]}</span></span>)}
                 <span className="hidden text-[14px] text-slate-500 md:block">Unterschied</span>

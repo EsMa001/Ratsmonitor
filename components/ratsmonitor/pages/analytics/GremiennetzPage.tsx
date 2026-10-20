@@ -115,7 +115,7 @@ export function GremiennetzPage() {
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} /></div>
               {res.nodes.length > 7 && <LevelSegmented options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]]} value={level} onPick={setLevel} />}
               <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[360px] max-sm:h-[400px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
-                <LevelPill value={level} onPick={setLevel} />
+                {!sel && <LevelPill value={level} onPick={setLevel} />}
                 {pending && <PendingVeil />}
                 <NetView route={routeIds.length > 1 ? routeIds : null} nodes={net.nodes} edges={net.edges} selected={selected} onSelect={(id) => { setRouteNo(null); setSelected(id); }} zoomRef={zoomRef} />
                 <NetLegend items={(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => ({ key: r, label: NET_KIND[r].label, dot: { background: NET_KIND[r].fill } }))} note={<p className="mt-1.5 opacity-70 max-sm:hidden">Größe: Durchsatz · Linie: Vorgänge</p>} />
@@ -134,6 +134,14 @@ export function GremiennetzPage() {
                       <button type="button" onClick={() => setSelected("")} className="text-[14px] text-slate-500 hover:text-slate-900">Schließen</button>
                     </div>
                     {around.from.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500 max-sm:hidden">Danach: {around.from.slice(0, 3).map((e) => e.b).join(", ")}</p>}
+                    {/* Handy: Davor und Danach als wischbare Chips, ein Tipp wählt das Gremium */}
+                    {(around.into.length > 0 || around.from.length > 0) && (
+                      <div className="-mx-4 mt-2 flex gap-1.5 overflow-x-auto px-4 pb-0.5 [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden" role="group" aria-label="Verbunden mit">
+                        {[...around.into.slice(0, 5).map((e) => ({ id: e.a, pre: "←" })), ...around.from.slice(0, 5).map((e) => ({ id: e.b, pre: "→" }))].map((c) => (
+                          <button key={c.pre + c.id} type="button" onClick={() => { setRouteNo(null); setSelected(c.id); }} className="inline-flex h-9 shrink-0 items-center gap-1 rounded-full border border-slate-200 bg-white/80 px-3 text-[14px] text-slate-800"><span aria-hidden="true" className="text-slate-500">{c.pre}</span>{c.id}</button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </section>

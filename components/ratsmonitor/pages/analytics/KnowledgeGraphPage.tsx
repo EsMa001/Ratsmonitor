@@ -204,9 +204,9 @@ export function KnowledgeGraphPage() {
       {/* Detailstufe über dem Netz, als Umschalter wie auf den übrigen Seiten */}
       {res && !empty && <LevelSegmented options={(Object.keys(LEVELS) as Level[]).map((l) => [l, LEVELS[l].label])} value={level} onPick={setLevel} />}
       {/* Handy: das Netz lässt sich ein- und ausklappen */}
-      <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:mt-0 max-sm:inline-flex max-sm:min-h-[30px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
+      <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:mt-0 max-sm:inline-flex max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
       <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[400px] sm:h-[620px]`} aria-label="Themennetz">
-        <LevelPill value={level} onPick={setLevel} />
+        {!sel && <LevelPill value={level} onPick={setLevel} />}
         {pending && <PendingVeil />}
         {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
@@ -239,6 +239,14 @@ export function KnowledgeGraphPage() {
             </div>
             {activePair && <p className="mt-2 text-[14px] text-slate-700">Verbindung mit „{byId.get(activePair.b)?.label}“: gemeinsam in {n(activePair.n)} Einträgen.</p>}
             {links.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500 max-sm:hidden">Verbunden mit: {links.slice(0, 6).map((l) => l.other.label).join(", ")}</p>}
+            {/* Handy: verbundene Knoten als wischbare Chips, ein Tipp wählt sie (statt kleiner Punkte im Netz zu treffen) */}
+            {links.length > 0 && (
+              <div className="-mx-4 mt-2 flex gap-1.5 overflow-x-auto px-4 pb-0.5 [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden" role="group" aria-label="Verbunden mit">
+                {links.slice(0, 10).map((l) => (
+                  <button key={l.other.id} type="button" onClick={() => setSelected(l.other.id)} className="inline-flex h-9 shrink-0 items-center rounded-full border border-slate-200 bg-white/80 px-3 text-[14px] text-slate-800">{l.other.label}</button>
+                ))}
+              </div>
+            )}
             {/* Was man mit der Auswahl tun kann, mit kurzer Erklärung */}
             {(sel.type === "term" || sel.type === "topic" || (res.q && String(sel.type) !== "center")) && (
               <div className="mt-3 max-sm:mt-2 flex flex-wrap gap-2">

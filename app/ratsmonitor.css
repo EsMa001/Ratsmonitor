@@ -593,3 +593,13 @@ html.rm-dark{--xg-pop:linear-gradient(135deg,rgba(40,48,47,.96),rgba(23,33,42,.9
   .pl-band .rm-band-mid>p:first-child span:first-child{font-size:22px !important}
   .rm-mapbox{height:calc(100svh - 92px - var(--rm-tabbar,50px)) !important;min-height:150px}
 }
+
+/* Handy: Tippflächen von mindestens 44 px, ohne dass sich das Layout ändert.
+   Textlinks und -knöpfe in Petrol ohne feste Höhe: Innenabstand und gleich großer negativer Rand.
+   Chips und Pillen mit fester Höhe h-8 (32 px): ein unsichtbarer Rand um sechs Pixel nach oben und unten. */
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px){
+  main#inhalt :is(a,button,summary).text-teal-700:not([class*="h-"]):not([class*="rounded"]):not(.absolute){padding-block:12px;margin-block:-12px}
+  main#inhalt :is(a,button,summary)[class~="h-8"]:not(.absolute):not(.fixed),main#inhalt :is(a,button,summary)[class~="h-9"]:not(.absolute):not(.fixed),main#inhalt :is(a,button)[class~="min-h-8"]:not(.absolute):not(.fixed){position:relative}
+  main#inhalt :is(a,button,summary)[class~="h-8"]:not(.absolute):not(.fixed)::after,main#inhalt :is(a,button,summary)[class~="h-9"]:not(.absolute):not(.fixed)::after,main#inhalt :is(a,button)[class~="min-h-8"]:not(.absolute):not(.fixed)::after{content:"";position:absolute;inset:-6px -2px}
+  main#inhalt :is(a,button,summary)[class~="h-9"]:not(.absolute):not(.fixed)::after{inset:-4px -2px}
+}

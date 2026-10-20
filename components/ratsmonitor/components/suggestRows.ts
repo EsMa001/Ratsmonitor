@@ -9,9 +9,6 @@ import type { useSearch, useSearchResults } from "../state/search";
 /* Zeilen der Vorschlagsliste unter dem Suchfeld: was bei leerer Suche, bei erkanntem Ort und bei Tippen erscheint.
    Reine Funktion der Eingaben (kein eigener Zustand); der Aufrufer (SearchBox) hält Zustand und Anzeige. */
 
-/** Vorschläge für die leere Suche; vor Änderung prüfen, dass es Treffer gibt */
-const BEISPIELE = ["Solarpark", "Windpark", "Wärmeplanung", "Hebesatz", "Bebauungsplan"];
-
 export type Row =
   | { kind: "head"; label: string; action?: { label: string; run: () => void } }
   | { kind: "item"; entry: PlaceEntry; sel: boolean; pick: () => void; scope?: "only" | "with" }
@@ -101,23 +98,6 @@ export function buildRows(c: RowContext): Row[] {
                 if (view !== "overview" && !stay) goOverview();
                 closeAndBlur();
               }
-            },
-          });
-      }
-      /* Beispiele (alle gegen die Daten geprüft, Treffer vorhanden): für Neue, die noch nichts gesucht haben */
-      const ex = BEISPIELE.filter((q) => !recent.includes(q));
-      if (ex.length) {
-        out.push({ kind: "head", label: "Beispiele" });
-        for (const q of ex)
-          out.push({
-            kind: "recent",
-            label: q,
-            prefetch: () => search.prefetchText(q),
-            pick: () => {
-              notePick(q);
-              apply(q);
-              search.commitPlaces();
-              closeAndBlur();
             },
           });
       }

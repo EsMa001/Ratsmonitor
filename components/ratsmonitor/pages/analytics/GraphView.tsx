@@ -369,6 +369,8 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef, all
                 <g className="rm-gin" style={{ animationDelay: `${Math.min(700, i * 26)}ms` }}>
                   {center && <circle className="rm-gpulse" r={n.r + 8} fill="none" stroke="var(--st-edge-hi)" strokeWidth="1.5" />}
                   {center && <circle className="rm-gpulse rm-gpulse2" r={n.r + 8} fill="none" stroke="var(--st-edge-hi)" strokeWidth="1" />}
+                  {/* Tippfläche: mindestens 22 Bildschirm-Pixel Radius, auch bei kleinen Knoten */}
+                  <circle r={Math.max(n.r * 1.9, 22 / view.k)} fill="transparent" />
                   {/* Hof: weicher Schein um jeden Knoten, stärker bei Auswahl */}
                   <circle r={n.r * (hot ? 2.6 : 1.9)} fill={glow} opacity={hot ? 0.32 : center ? 0.28 : 0.16} style={{ transition: "all .25s" }} />
                   <circle r={n.r} fill={center ? "var(--st-center)" : topic ? "var(--st-accent)" : "var(--st-mid)"} stroke={hot ? "var(--st-text)" : "none"} strokeWidth={hot ? 2 : 0} />

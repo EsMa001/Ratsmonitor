@@ -298,6 +298,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef, route = nul
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.24} style={{ cursor: "pointer", transition: "opacity .25s" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}
                 role="button" tabIndex={0} aria-pressed={sel} aria-label={`${n.name}, ${k.label}, ${n.in.toLocaleString("de-DE")} rein, ${n.out.toLocaleString("de-DE")} raus`} onFocus={() => setHover(n.id)} onBlur={() => setHover("")}
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(sel ? "" : n.id); } else if (e.key === "Escape" && sel) { e.preventDefault(); onSelect(""); } }}>
+                <circle r={Math.max(n.r * 1.9, 22 / view.k)} fill="transparent" />
                 <g className="rm-gin" style={{ animationDelay: `${Math.min(700, idx * 26)}ms` }}>
                   {kind === "rat" && <circle className="rm-gpulse" r={Math.max(n.r, 7 / view.k) + 6} fill="none" stroke="var(--st-edge-hi)" strokeWidth="1.5" />}
                   {kind === "rat" && <circle className="rm-gpulse rm-gpulse2" r={Math.max(n.r, 7 / view.k) + 6} fill="none" stroke="var(--st-edge-hi)" strokeWidth="1" />}
