@@ -442,7 +442,7 @@ export function StartseitePage() {
           <form onSubmit={submit}>
             <label>
               <span className="sr-only">Suchbegriff</span>
-              <input
+              <input autoComplete="off"
                 type="search"
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
@@ -459,7 +459,7 @@ export function StartseitePage() {
           <h2 className="pl-h2 text-[22px] font-[600] text-[var(--rm-c900)]" style={{ margin: "16px 0 0" }}>Ist mein Ort dabei?</h2>
           <label>
             <span className="sr-only">Ort</span>
-            <input
+            <input autoComplete="off"
               type="search"
               value={place}
               onChange={(e) => setPlace(e.target.value)}

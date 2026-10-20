@@ -278,7 +278,7 @@ export function KalenderPage() {
               ))}
             </ul>
             <div className="relative mt-4 flex flex-wrap items-center gap-2">
-              <input value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort oder Kreis hinzufügen …" aria-label="Ort oder Kreis hinzufügen" className="h-11 min-w-0 flex-1 basis-[220px] rounded-xl bg-slate-50 px-4 text-[16px] outline-none placeholder:text-slate-400 focus:bg-white focus:shadow-focus" />
+              <input autoComplete="off" value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort oder Kreis hinzufügen …" aria-label="Ort oder Kreis hinzufügen" className="h-11 min-w-0 flex-1 basis-[220px] rounded-xl bg-slate-50 px-4 text-[16px] outline-none placeholder:text-slate-400 focus:bg-white focus:shadow-focus" />
               <FilterSelect
                 id="k-umkreis"
                 label="Umkreis"

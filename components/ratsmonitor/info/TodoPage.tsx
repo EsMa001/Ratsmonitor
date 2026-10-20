@@ -198,7 +198,7 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
           </div>
         </div>
         <div className="admin-todo-filters" role="group" aria-label="Aufgaben filtern">
-          <label className="admin-todo-search"><Search size={16} aria-hidden="true"/><input type="search" aria-label="Aufgaben suchen" placeholder="Aufgaben suchen" value={query} onChange={(event) => setQuery(event.target.value)}/></label>
+          <label className="admin-todo-search"><Search size={16} aria-hidden="true"/><input autoComplete="off" type="search" aria-label="Aufgaben suchen" placeholder="Aufgaben suchen" value={query} onChange={(event) => setQuery(event.target.value)}/></label>
           <TodoChoice label="Bearbeiter filtern" value={personFilter} onChange={setPersonFilter} options={[{ value: "all", label: "Alle Bearbeiter" }, ...TODO_PEOPLE.map((person) => ({ value: person.id, label: person.name })), { value: "unassigned", label: "Nicht zugewiesen" }]}/>
           <TodoChoice label="Priorität filtern" value={priorityFilter} onChange={setPriorityFilter} options={[{ value: "all", label: "Alle Prioritäten" }, ...TODO_PRIORITIES.map((priority) => ({ value: String(priority.id), label: priority.label }))]}/>
           <TodoChoice label="Abschluss filtern" value={resolutionFilter} onChange={changeResolutionFilter} options={[{ value: "all", label: "Alle Abschlüsse" }, { value: "open", label: "Nicht geschlossen" }, ...TODO_RESOLUTIONS.map((resolution) => ({ value: resolution.id, label: resolution.label }))]}/>

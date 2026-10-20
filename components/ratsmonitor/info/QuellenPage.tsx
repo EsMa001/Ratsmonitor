@@ -120,7 +120,7 @@ export function QuellenPage() {
             <div>
               <div className="relative max-w-[640px]">
                 <span className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-slate-500"><Icon name="search" size={18} /></span>
-                <input type="search" value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort eingeben, z. B. Münster" aria-label="Ort suchen" className="h-14 w-full rounded-full border border-slate-300 bg-white pl-12 pr-5 text-[16px] text-slate-900 outline-none focus:border-teal-600" />
+                <input autoComplete="off" type="search" value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort eingeben, z. B. Münster" aria-label="Ort suchen" className="h-14 w-full rounded-full border border-slate-300 bg-white pl-12 pr-5 text-[16px] text-slate-900 outline-none focus:border-teal-600" />
               </div>
               {q.length >= 2 && (
                 <ul className="m-0 mt-4 max-w-[640px] list-none border-t border-slate-200 p-0">
