@@ -609,6 +609,10 @@ Rückweg: Basic-Auth-Block wieder einsetzen. Den Schalter `ADMIN_LEGACY_HEADER` 
 Mails landen im Dev-Postfach (`/konto/postfach`), Anmelden ohne Mail über `/api/dev/login`. Die Administration bleibt
 im Dev-Server ohne Anmeldung offen.
 
+## Fehler aus dem Browser (seit 20.10.2026)
+
+Unbehandelte Fehler im Browser (und Fehler beim Aufbau einer Seite) meldet `components/ratsmonitor/lib/reportError.ts` an `POST /api/client-error`; der Server schreibt je Meldung eine Zeile `[client-error] {…}` ins Log. Ansehen: `journalctl -u ratsmonitor --since today | grep client-error`. Nur im Produktionsbau, höchstens 5 Meldungen je Seitenaufruf, je Prozess 60 pro Minute, keine Datenbank, keine IP-Adresse, Seite ohne Suchparameter (`server/integrations/client-errors.mjs`, Test `tests/client-errors.test.mjs`). Im Einladungsmodus kommen nur Meldungen angemeldeter Nutzer an.
+
 ## Vor dem Öffnen für andere
 
 Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain erreichbar wird:

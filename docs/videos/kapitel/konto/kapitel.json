@@ -9,15 +9,15 @@
  "einblendungen": [
   {
    "satz": 3,
-   "text": "{{v.85|text}}"
-  },
-  {
-   "satz": 4,
    "text": "{{v.84|text}}"
   },
   {
-   "satz": 5,
+   "satz": 4,
    "text": "{{v.83|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.82|text}}"
   }
  ]
 }

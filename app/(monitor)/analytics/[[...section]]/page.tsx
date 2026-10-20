@@ -17,6 +17,6 @@ const SEITEN:Record<string,[string,string]>={
 export async function generateMetadata({params}:{params:Promise<{section?:string[]}>}):Promise<Metadata>{
  const {section=[]}=await params;const s=section[0]?SEITEN[section[0]]:undefined;if(!s)return {};
  const bild={url:'/og.png',width:1200,height:630,alt:'plenara: Besser verstehen, was vor Ort beraten wird.'};
- return {title:s[0],description:s[1],openGraph:{type:'website',locale:'de_DE',siteName:'plenara',title:s[0],description:s[1],images:[bild]},twitter:{card:'summary_large_image',title:s[0],description:s[1],images:['/og.png']}};
+ return {title:s[0],description:s[1],alternates:{canonical:`/analytics/${section[0]}`},openGraph:{type:'website',locale:'de_DE',siteName:'plenara',url:`/analytics/${section[0]}`,title:s[0],description:s[1],images:[bild]},twitter:{card:'summary_large_image',title:s[0],description:s[1],images:['/og.png']}};
 }
 export default async function Page({params}:{params:Promise<{section?:string[]}>}){const {section=[]}=await params;if(section.length!==1||!SEITEN[section[0]])notFound();return null;}

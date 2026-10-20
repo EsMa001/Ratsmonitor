@@ -29,14 +29,15 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
   const [typing, setTyping] = useState(false);
   const chips = filterChips(res.snapshot, geo);
   const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
-  const round = "relative grid border border-slate-200 bg-white hover:bg-slate-50 h-11 w-11 flex-none place-items-center rounded-xl max-sm:h-12 max-sm:w-12 transition-colors";
+  /* Form und Fläche der Knöpfe und des Felds: Klassen rm-xbtn und rm-xfield in ratsmonitor.css (dort auch die Glas-Pille von plenara.X) */
+  const round = "rm-xbtn relative grid h-11 w-11 flex-none place-items-center max-sm:h-12 max-sm:w-12 transition-colors";
   const filterBtn = (
     <button
       type="button"
       aria-expanded={open}
       aria-controls="filter-body"
       title={open ? "Filter einklappen" : "Filter anzeigen"}
-      aria-label={open ? "Filter einklappen" : "Filter anzeigen"}
+      aria-label={open ? "Filter einklappen" : filterCount > 0 ? `Filter anzeigen, ${filterCount} aktiv` : "Filter anzeigen"}
       onClick={() => {
         if (!open && !allowFeature("filters")) return;
         setFiltersOpen(!open);
@@ -74,7 +75,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
             )}
           </button>}
           {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 max-sm:order-1 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel toggle={filterBtn} extra={extra} trail={phone && follow ? 56 : 0} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
-          <div className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white [&_input]:rounded-xl" onFocusCapture={() => setTyping(true)} onBlurCapture={() => window.setTimeout(() => { if (!document.activeElement?.closest('[role="search"]')) setTyping(false); }, 150)}>
+          <div className="rm-xfield min-w-0 flex-1" onFocusCapture={() => setTyping(true)} onBlurCapture={() => window.setTimeout(() => { if (!document.activeElement?.closest('[role="search"]')) setTyping(false); }, 150)}>
             <SearchBox stay keepFocus={keepFocus} onSubmit={onSubmit} listUp={filterUp && phone} listMax={filterUp && phone ? 300 : undefined} />
           </div>
           {follow && <div className={`flex-none max-sm:order-2 sm:hidden ${typing ? "max-sm:hidden" : ""}`}>{follow}</div>}

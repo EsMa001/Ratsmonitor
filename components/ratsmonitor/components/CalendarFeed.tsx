@@ -76,7 +76,7 @@ export function CalendarFeed({ compact = false }: { compact?: boolean }) {
               <label htmlFor="cal-feed-url" className="block text-[12px] font-semibold uppercase tracking-wide text-slate-500">
                 Abo-Link
               </label>
-              <input id="cal-feed-url" readOnly value={url} onFocus={(e) => e.currentTarget.select()} className="mt-1 h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 text-[14px] text-slate-900" />
+              <input id="cal-feed-url" readOnly value={url} onFocus={(e) => e.currentTarget.select()} className="mt-1 h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 text-[14px] text-slate-900 max-sm:text-[16px]" />
               <p className="m-0 mt-1 text-[12px] text-slate-500">Der Link wird nur jetzt angezeigt. Geben Sie ihn nicht weiter: Wer ihn kennt, sieht die Termine Ihrer Gebiete.</p>
               <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
                 <button type="button" className={link} onClick={() => void copyText(url).then((ok) => toast(ok ? "Abo-Link kopiert." : "Kopieren nicht möglich. Bitte den Link markieren und kopieren."))}>

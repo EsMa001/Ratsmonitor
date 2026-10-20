@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { AnalyticsLogo } from "../../components/Brand";
 import { IS_DEV, setTier, UPGRADE_TEXT } from "../../lib/tier";
-import { PageBand } from "./PageBand";
+import { XKopf } from "./XKopf";
 import { LiveThumb } from "../../info/BranchenLive";
 import { ANALYSEN, NEU_NAME, type AnalyseId } from "../../info/branchen-enterprise";
 
@@ -27,12 +26,13 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
   const title = v ? NEU_NAME[v.id] || ANALYSEN[v.id].name : "";
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-12 text-slate-900">
-      <PageBand>
-        <p className="text-[14px] text-slate-500">plenara.X</p>
-        <h1 className="mb-6 mt-4"><span className="sr-only">plenara.X</span><AnalyticsLogo size={56} plainP /></h1>
-        <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Die Analysen von plenara.X gehören zur Stufe Enterprise, für Organisationen, in denen mehrere Personen informiert werden sollen.</p>
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Link href="/kontakt" className="btn-primary">Enterprise: {UPGRADE_TEXT}</Link>
+      {/* Gleicher Kopf wie die Seite selbst (Titel und Frage); darunter, was Enterprise freischaltet */}
+      <XKopf seite={(path.split("/").pop() || "atlas") as Parameters<typeof XKopf>[0]["seite"]} />
+      <section aria-label="Freischalten" className="mt-2 max-w-[760px]">
+        {v && <p className="m-0 text-[18px] leading-relaxed text-slate-700">{v.text}</p>}
+        <p className="mt-3 text-[16px] text-slate-500">Die Analysen von plenara.X gehören zur Stufe Enterprise, für Organisationen, in denen mehrere Personen informiert werden sollen.</p>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <Link href="/kontakt" className="btn-primary max-w-full whitespace-normal">Enterprise: {UPGRADE_TEXT}</Link>
           <Link href="/preise" className="btn-secondary">Was kann plenara.X?</Link>
           {IS_DEV && (
             <button type="button" onClick={() => setTier("enterprise")} className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
@@ -40,15 +40,12 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
             </button>
           )}
         </div>
-      </PageBand>
-      {v && (
-        <section className="mt-10 grid grid-cols-1 items-start gap-8 md:grid-cols-[minmax(0,1fr)_320px]" aria-label={`Vorschau: ${title}`}>
-          <div>
-            <h2 className="m-0 text-[22px] font-semibold">{title}</h2>
-            <p className="mt-2 max-w-[560px] text-[16px] leading-relaxed text-slate-500">{v.text}</p>
-            {v.thumb !== false && <p className="mt-4 max-w-[560px] text-[14px] text-slate-500">Die Vorschau zeigt echte Daten.</p>}
-          </div>
-          {v.thumb !== false && <LiveThumb id={v.id} term={v.term} />}
+      </section>
+      {/* Live-Vorschau mit echten Daten, wo es eine gibt */}
+      {v && v.thumb !== false && (
+        <section className="mt-10 max-w-[420px]" aria-label={`Vorschau: ${title}`}>
+          <LiveThumb id={v.id} term={v.term} />
+          <p className="mt-3 text-[14px] text-slate-500">Die Vorschau zeigt echte Daten.</p>
         </section>
       )}
     </main>

@@ -76,7 +76,7 @@ export function DetailPage(){
         <h1 lang="de" className="mb-3 mt-3 max-w-[64ch] hyphens-auto text-[22px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-[28px]">{t.title}</h1>
         {rule?<Excerpt text={rule.short} source={excerptSource} size="short"/>:shortText?<p className="max-w-none border-l-2 border-teal-600 pl-4 text-[16px] leading-relaxed text-slate-500 sm:text-[18px]">{shortText}</p>:null}
 
-        <div className="mt-8 grid gap-10 border-t border-slate-200 pt-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="mt-8 grid grid-cols-1 gap-10 border-t border-slate-200 pt-8 lg:grid-cols-[minmax(0,1fr)_300px]">
           {/* Hauptspalte: Inhalt und Verlauf */}
           <div className="min-w-0">
             <section>
@@ -120,7 +120,7 @@ export function DetailPage(){
               <p className="mb-4 text-[14px] text-slate-500">Originaltitel: {t.officialTitle}</p>
               <p className="mb-4 text-[14px] text-slate-500">Ohne Gewähr. Maßgeblich sind die Originalunterlagen.</p>
               {docs.length?(
-                <ul className="m-0 grid list-none gap-x-8 border-t border-slate-200 p-0 sm:grid-cols-2">
+                <ul className="m-0 grid grid-cols-1 list-none gap-x-8 border-t border-slate-200 p-0 sm:grid-cols-2">
                   {docs.map((d,i)=><li key={i} className="border-b border-slate-200"><a href={d.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 py-3 text-[16px] text-slate-900 no-underline"><IconDoc size={28} className="flex-none text-teal-700"/><span className="min-w-0 flex-1 break-words group-hover:text-teal-700">{d.title||'Dokument'}</span><span aria-hidden="true" className="flex-none text-teal-700">↗</span></a></li>)}
                 </ul>
               ):<p className="text-[14px] text-slate-500">Keine Unterlagen verlinkt.</p>}

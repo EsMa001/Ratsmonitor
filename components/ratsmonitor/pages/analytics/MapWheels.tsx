@@ -73,7 +73,7 @@ export function MapWheels({ label, items, value, onPick, subs, subValue = "", on
             return (
               <li key={it.id || "alle"} role="option" aria-selected={on}>
                 <button type="button" onClick={() => { if (list === "sub") onSub?.(it.id); else onPick(it.id); setList(null); }}
-                  className={`flex h-9 w-full items-center gap-2 rounded-2xl px-2.5 text-left text-[13.5px] ${on ? "bg-white/80 font-semibold text-slate-900 shadow-sm" : "text-slate-700"}`}>
+                  className={`flex h-9 w-full items-center gap-2 rounded-2xl px-2.5 text-left text-[14px] ${on ? "bg-white/80 font-semibold text-slate-900 shadow-sm" : "text-slate-700"}`}>
                   <span className="flex-none text-slate-500">{it.icon}</span><span className="min-w-0 flex-1 truncate">{it.label}</span>
                   {on && <Check size={15} strokeWidth={2} aria-hidden="true" className="flex-none text-teal-700" />}
                 </button>
@@ -96,7 +96,7 @@ export function MapPill({ label, items, value, onPick }: { label: string; items:
   return (
     <div className="pointer-events-none absolute right-[calc(8px-max(1vw,16px))] top-[66px] z-30 sm:hidden print:hidden">
       {open && <div aria-hidden="true" className="pointer-events-auto fixed inset-0 z-[-1]" onClick={() => setOpen(false)} />}
-      <button type="button" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(!open)} className="rm-legend pointer-events-auto ml-auto flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] text-slate-800">
+      <button type="button" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(!open)} className="rm-legend pointer-events-auto ml-auto flex h-9 items-center gap-1.5 rounded-full px-3 text-[12px] text-slate-800">
         <span className="text-slate-500">{label}:</span><span className="max-w-[130px] truncate font-semibold">{cur.label}</span>
         <ChevronsUpDown size={14} aria-hidden="true" className="flex-none text-slate-400" />
       </button>
@@ -106,7 +106,7 @@ export function MapPill({ label, items, value, onPick }: { label: string; items:
             const on = it.id === value;
             return (
               <li key={it.id || "alle"} role="option" aria-selected={on}>
-                <button type="button" onClick={() => { onPick(it.id); setOpen(false); }} className={`flex h-9 w-full items-center gap-2 rounded-2xl px-2.5 text-left text-[13.5px] ${on ? "bg-white/80 font-semibold text-slate-900 shadow-sm" : "text-slate-700"}`}>
+                <button type="button" onClick={() => { onPick(it.id); setOpen(false); }} className={`flex h-9 w-full items-center gap-2 rounded-2xl px-2.5 text-left text-[14px] ${on ? "bg-white/80 font-semibold text-slate-900 shadow-sm" : "text-slate-700"}`}>
                   <span className="min-w-0 flex-1 truncate">{it.label}</span>
                   {it.count && <span className="flex-none tabular-nums text-slate-500">{it.count}</span>}
                   {on && <Check size={15} strokeWidth={2} aria-hidden="true" className="flex-none text-teal-700" />}

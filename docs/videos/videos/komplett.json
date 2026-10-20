@@ -43,13 +43,6 @@
    }
   },
   {
-   "kapitel": "export",
-   "text": "lang",
-   "parameter": {
-    "thema": "Wärmeplanung"
-   }
-  },
-  {
    "kapitel": "kalender",
    "text": "lang"
   },

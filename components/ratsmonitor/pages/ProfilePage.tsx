@@ -13,7 +13,7 @@ import { AccountApiError, accountChanged, api, logout, shortDate, touchAccount, 
 import { buildPayload, discardLocal, downloadFile, hasLocal, importFile, importLocal, localSummary, resultText, saveLocalFile, useLocalData } from "../lib/browserData";
 import { clearRecent } from "../lib/recentSearches";
 
-const field = "h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 text-[14px] outline-none hover:border-slate-300 focus:border-teal-600 focus:shadow-focus";
+const field = "h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 text-[14px] max-sm:text-[16px] outline-none hover:border-slate-300 focus:border-teal-600 focus:shadow-focus";
 const label = "mb-1 block text-[12px] font-semibold uppercase tracking-wide text-slate-500";
 const h2 = "m-0 text-[18px] font-semibold";
 const block = "mt-10 border-t border-slate-200 pt-6";
@@ -60,7 +60,7 @@ export function ProfilePage() {
           <section className={block} aria-labelledby="abo-title">
             <h2 id="abo-title" className={h2}>Kalender-Abo</h2>
             <p className="m-0 mt-1 text-[14px] text-slate-500">
-              Sitzungen Ihrer <Link href="/konto/kalender" className="text-teal-700 hover:underline">Kalendergebiete</Link> in Apple Kalender, Outlook oder Google Kalender.
+              Sitzungen Ihrer <Link href="/konto/kalender" className="text-teal-700 underline underline-offset-2">Kalendergebiete</Link> in Apple Kalender, Outlook oder Google Kalender.
             </p>
             <CalendarFeed />
           </section>
@@ -99,7 +99,7 @@ function Personal() {
     }
   };
   return (
-    <form className="grid gap-4 sm:grid-cols-2" onSubmit={(e) => void save(e)}>
+    <form className="grid grid-cols-1 gap-4 sm:grid-cols-2" onSubmit={(e) => void save(e)}>
       <h2 className={`${h2} sm:col-span-2`}>Persönliche Angaben</h2>
       <label>
         <span className={label}>Name</span>
@@ -109,7 +109,7 @@ function Personal() {
         <label htmlFor="profil-email" className={label}>E-Mail</label>
         <input id="profil-email" type="email" className={`${field} bg-slate-50 text-slate-600`} value={me.user?.email ?? ""} readOnly aria-describedby="profil-email-help" />
         <p id="profil-email-help" className="m-0 mt-1 text-[12px] text-slate-500">
-          Adresse ändern: bitte über <Link href="/kontakt" className="text-teal-700 hover:underline">Kontakt</Link>.
+          Adresse ändern: bitte über <Link href="/kontakt" className="text-teal-700 underline underline-offset-2">Kontakt</Link>.
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-3 border-t border-slate-200 pt-4 sm:col-span-2">
@@ -286,7 +286,7 @@ function BrowserData({ signedIn }: { signedIn: boolean }) {
         )}
         {signedIn && (
           <>
-            <input ref={file} id="import-file" type="file" accept="application/json,.json" className="sr-only" onChange={(e) => void upload(e.target.files?.[0])} />
+            <input ref={file} id="import-file" aria-label="Datei mit Browserdaten übernehmen" type="file" accept="application/json,.json" className="sr-only" onChange={(e) => void upload(e.target.files?.[0])} />
             <button type="button" disabled={busy} className={link} onClick={() => file.current?.click()}>
               Datei übernehmen →
             </button>

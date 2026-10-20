@@ -139,7 +139,7 @@ export function XWeiter({ links }: { links: [string, string][] }) {
         {/* Diese Ansicht weitergeben: die Auswahl steckt in der Adresse */}
         <ShareButton title={typeof document === "undefined" ? "plenara.X" : document.title} url={typeof window === "undefined" ? "" : window.location.href} label className="-my-2" />
       </div>
-      <ul className="m-0 mt-3 grid list-none gap-3 p-0 max-sm:mt-1 max-sm:gap-0 max-sm:divide-y max-sm:divide-slate-200 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]">
+      <ul className="m-0 mt-3 grid grid-cols-1 list-none gap-3 p-0 max-sm:mt-1 max-sm:gap-0 max-sm:divide-y max-sm:divide-slate-200 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]">
         {links.map(([href, name]) => {
           /* Seite und Frage aus SEITEN (überall gleich); eigener Text nur, wenn die Seite dort fehlt */
           const path = href.split("?")[0], z = SEITEN[path.split("/").pop()!];

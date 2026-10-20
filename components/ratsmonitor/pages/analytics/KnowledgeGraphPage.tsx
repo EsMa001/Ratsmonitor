@@ -197,7 +197,7 @@ export function KnowledgeGraphPage() {
         <div className="mt-4 print:hidden max-sm:hidden">
           <p className="m-0 text-[14px] text-slate-600 max-sm:text-[12px]">Mit einem Begriff beginnen:</p>
           <div className="mt-2 flex flex-wrap gap-2 max-sm:-mx-[max(1vw,16px)] max-sm:flex-nowrap max-sm:gap-1.5 max-sm:overflow-x-auto max-sm:px-[max(1vw,16px)] max-sm:pb-1 max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden">
-            {einstieg.map((x) => <button key={x.id} type="button" onClick={() => { remember(); search.applySearch(x.label); runAfterChange(); }} className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-800 max-sm:h-8 max-sm:shrink-0 max-sm:rounded-full max-sm:px-3 max-sm:text-[13px] hover:border-slate-400">{x.label}</button>)}
+            {einstieg.map((x) => <button key={x.id} type="button" onClick={() => { remember(); search.applySearch(x.label); runAfterChange(); }} className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-[14px] text-slate-800 max-sm:h-8 max-sm:shrink-0 max-sm:rounded-full max-sm:px-3 max-sm:text-[12px] hover:border-slate-400">{x.label}</button>)}
           </div>
         </div>
       )}
@@ -269,7 +269,7 @@ export function KnowledgeGraphPage() {
           {!!res.partial?.length && (
             <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); start(); }} className="font-medium text-teal-700">Nur ganze Wörter →</button></p>
           )}
-          <div className="mt-10 grid gap-x-12 gap-y-10 lg:grid-cols-2 max-sm:mt-5 max-sm:gap-y-5">
+          <div className="mt-10 grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-2 max-sm:mt-5 max-sm:gap-y-5">
             <section>
               <h2 className="text-[22px] font-semibold">{gesamt ? "Auffällige Verbindungen" : "Stärkste Verbindungen"}</h2>
               <p className="mb-3 mt-1 text-[14px] text-slate-500">{gesamt ? "Begriffe, die viel öfter zusammen vorkommen, als es ihre Häufigkeit erwarten lässt." : "Begriffe, die in denselben Einträgen vorkommen."}</p>

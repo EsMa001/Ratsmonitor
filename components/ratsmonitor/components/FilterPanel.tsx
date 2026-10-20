@@ -92,7 +92,7 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0 }: { /*
         )}
       </div>
       {/* Ein Satz: was gerade gefiltert ist */}
-      {chipList.length > 0 && <p className="m-0 px-4 text-[13px] leading-snug text-slate-600 max-sm:hidden">{chipList.map((c) => c.value).join(" · ")}</p>}
+      {chipList.length > 0 && <p className="m-0 px-4 text-[12px] leading-snug text-slate-600 max-sm:hidden">{chipList.map((c) => c.value).join(" · ")}</p>}
       <div className="flex flex-col gap-2.5 px-4 max-sm:gap-[3px] sm:gap-1.5">
         {phone && extra}
         {state.area.length >= 5 && geo && <AreaBar compact />}

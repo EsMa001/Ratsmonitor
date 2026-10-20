@@ -40,7 +40,7 @@ function EnterpriseSection({ terms }: { terms: string[] }) {
         <p className="m-0 text-[14px] text-slate-500">In der Stufe Enterprise</p>
       </div>
       
-      <div className="grid gap-x-10 gap-y-8 sm:grid-cols-3" style={{ marginTop: 24 }}>
+      <div className="grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-3" style={{ marginTop: 24 }}>
         {PLENARAX_VORTEILE.map(([id, title, text], i) => (
           <Reveal key={title} delay={i * 110}>
             <button type="button" onClick={() => router.push(NEU_HREF[id]?.(terms[0]) ?? ANALYSEN[id].href)} className="group flex w-full flex-col justify-start text-left">
@@ -79,7 +79,7 @@ function BranchePageAlt({ b }: { b: Branche }) {
       {/* Nutzen je Rolle: Icon und Name der Rolle, darunter ihr konkreter Nutzen */}
       <section className="ri-sec ri-sec--tight">
         <h2 className="ri-h2">Für Ihre Rolle</h2>
-        <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
+        <div className="grid grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
           {(b.rollen ?? []).map((rolle) => (
             <div key={rolle.name}>
               <div className="flex items-center gap-3">

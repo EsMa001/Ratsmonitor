@@ -18,7 +18,7 @@ export function LevelSegmented({ options, value, onPick }: { options: [Level, st
 /** Handy: Glas-Pille auf dem Netz mit den zwei Stufen */
 export function LevelPill({ value, onPick }: { value: Level; onPick: (l: Level) => void }) {
   return (
-    <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-2 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[13px] sm:hidden">
+    <div role="group" aria-label="Detailstufe" className="rm-stage-chip absolute bottom-2 left-1/2 z-[7] flex -translate-x-1/2 gap-0.5 rounded-full p-0.5 text-[12px] sm:hidden">
       {(["overview", "normal"] as const).map((l) => <button key={l} type="button" aria-pressed={value === l} onClick={() => onPick(l)} className={`h-8 rounded-full px-4 ${value === l ? "bg-teal-700 text-white" : "text-slate-700"}`}>{l === "overview" ? "Normal" : "Detail"}</button>)}
     </div>
   );
@@ -27,7 +27,7 @@ export function LevelPill({ value, onPick }: { value: Level; onPick: (l: Level) 
 /** Legende oben links auf dem Netz (Handy: waagerecht, mittig, so breit wie der Inhalt) */
 export function NetLegend({ items, note }: { items: { key: string; label: string; dot: React.CSSProperties }[]; note?: ReactNode }) {
   return (
-    <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:left-1/2 max-sm:w-max max-sm:max-w-[calc(100%-16px)] max-sm:-translate-x-1/2 max-sm:top-2 max-sm:px-3 max-sm:py-1.5 max-sm:text-[11px]">
+    <div className="rm-stage-chip absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] max-sm:left-1/2 max-sm:w-max max-sm:max-w-[calc(100%-16px)] max-sm:-translate-x-1/2 max-sm:top-2 max-sm:px-3 max-sm:py-1.5 max-sm:text-[12px]">
       <ul className="m-0 flex list-none flex-col gap-1 p-0 max-sm:flex-row max-sm:flex-wrap max-sm:justify-center max-sm:gap-x-3 max-sm:gap-y-0.5">
         {items.map((i) => <li key={i.key} className="flex items-center gap-2"><i className="inline-block h-3 w-3 rounded-full" style={{ ...i.dot, boxShadow: "0 0 0 1px rgba(24,24,27,.25)" }} />{i.label}</li>)}
       </ul>

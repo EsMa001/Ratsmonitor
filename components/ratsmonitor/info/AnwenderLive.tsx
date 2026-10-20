@@ -88,7 +88,7 @@ function VideoMitKapiteln({ b, dark }: { b: Branche; dark: boolean }) {
           {kap.map((k, i) => (
             <li key={k.titel}>
               <button type="button" onClick={() => gehe(i)} aria-current={aktiv === i} className={"flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left text-[16px] leading-snug " + (aktiv === i ? "bg-teal-50 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50")}>
-                <span className={"mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full text-[13px] font-semibold " + (aktiv === i ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-700")}>{i + 1}</span>
+                <span className={"mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full text-[12px] font-semibold " + (aktiv === i ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-700")}>{i + 1}</span>
                 {k.titel}
               </button>
             </li>
@@ -127,7 +127,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
       {/* Rollen: je Rolle ein konkreter Nutzen (Überschrift und Satz) und ein Suchlink */}
       <section className="ri-sec ri-sec--tight">
         <h2 className="ri-h2">Für Ihre Rolle</h2>
-        <div className="grid gap-x-10 gap-y-10 max-sm:gap-y-6 sm:grid-cols-3" style={{ marginTop: 24 }}>
+        <div className="grid grid-cols-1 gap-x-10 gap-y-10 max-sm:gap-y-6 sm:grid-cols-3" style={{ marginTop: 24 }}>
           {(b.rollen ?? []).map((rolle) => {
             const n = b.benefits.find(([, , , , r]) => r === rolle.name);
             return (

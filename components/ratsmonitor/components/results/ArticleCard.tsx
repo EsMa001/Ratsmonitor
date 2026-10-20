@@ -84,7 +84,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
     >
       <div aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-2.5 pt-0.5 text-center sm:pr-3">
         <span className="text-[22px] font-semibold leading-none tracking-[-.02em]">{Number(d) || "—"}</span>
-        <span className="mt-1 text-[12px] font-semibold uppercase tracking-[.06em] text-teal-700">{MONTH_SHORT[Number(m) - 1]}</span>
+        <span className="mt-1 text-[12px] font-semibold uppercase tracking-[.06em] text-teal-800">{MONTH_SHORT[Number(m) - 1]}</span>
         <span className="text-[12px] text-slate-500">{y?.slice(2)}</span>
       </div>
       <div className="min-w-0">
@@ -152,7 +152,7 @@ export function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }
   const today = todayLocal();
   const current = shown.reduce((c, st, i) => (st.d <= today ? i : c), -1);
   return (
-    <ol aria-label="Verlauf des Vorgangs" className="mt-2.5 flex items-start overflow-x-auto pb-0.5 [scrollbar-width:none]">
+    <ol aria-label="Verlauf des Vorgangs" tabIndex={0} className="mt-2.5 flex items-start overflow-x-auto pb-0.5 [scrollbar-width:none]">
       {steps.length > shown.length && <li className="mr-2 self-center text-[12px] text-slate-500">+{steps.length - shown.length}</li>}
       {shown.map((st, i) => {
         const last = i === shown.length - 1, now = i === current, future = st.d > today, nextFuture = !last && shown[i + 1].d > today;

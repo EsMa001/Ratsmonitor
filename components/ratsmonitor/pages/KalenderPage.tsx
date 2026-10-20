@@ -211,7 +211,7 @@ export function KalenderPage() {
               /* Heute im Fokus: groß und warm, danach ruhig die kommenden Tage */
               <div className="rounded-[22px] border border-amber-200 bg-gradient-to-br from-amber-50 to-white px-5 py-4">
                 <p className="m-0 text-[12px] font-semibold uppercase tracking-wide text-amber-700">Heute</p>
-                <h2 className="m-0 mt-0.5 text-[28px] font-semibold capitalize leading-tight text-slate-900 max-sm:text-[24px]">{dayLabel}</h2>
+                <h2 className="m-0 mt-0.5 text-[28px] font-semibold capitalize leading-tight text-slate-900 max-sm:text-[22px]">{dayLabel}</h2>
                 <p className="m-0 mt-1 text-[14px] text-slate-600">{dayEvents.length ? `${dayEvents.length} ${dayEvents.length === 1 ? "Sitzung" : "Sitzungen"} in deinen Gebieten` : "Heute keine Sitzungen in deinen Gebieten."}</p>
               </div>
             ) : <h2 className="m-0 text-[18px] font-semibold text-slate-900">{dayLabel}</h2>}
@@ -278,7 +278,7 @@ export function KalenderPage() {
               ))}
             </ul>
             <div className="relative mt-4 flex flex-wrap items-center gap-2">
-              <input value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort oder Kreis hinzufügen …" aria-label="Ort oder Kreis hinzufügen" className="h-11 min-w-0 flex-1 basis-[220px] rounded-xl bg-slate-50 px-4 text-[16px] outline-none placeholder:text-slate-400 focus:bg-white focus:shadow-focus" />
+              <input autoComplete="off" value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort oder Kreis hinzufügen …" aria-label="Ort oder Kreis hinzufügen" className="h-11 min-w-0 flex-1 basis-[220px] rounded-xl bg-slate-50 px-4 text-[16px] outline-none placeholder:text-slate-400 focus:bg-white focus:shadow-focus" />
               <FilterSelect
                 id="k-umkreis"
                 label="Umkreis"
@@ -321,7 +321,7 @@ export function KalenderPage() {
         <section className="ri-sec ri-sec--tight">
           <h2 className="m-0 text-[18px] font-semibold text-slate-900">Auf dem Laufenden bleiben</h2>
           <p className="m-0 mt-1 text-slate-500">Per E-Mail informiert werden oder alle Sitzungen in Apple Kalender, Outlook oder Google Kalender übernehmen.</p>
-          <div className="mt-6 grid gap-x-10 gap-y-8 md:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-3">
             <div className="border-t border-slate-200 pt-5">
               <IconBell size={28} className="text-teal-700" />
               <h3 className="m-0 mt-3 text-[16px] font-semibold text-slate-900">Per E-Mail benachrichtigen</h3>
