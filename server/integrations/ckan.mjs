@@ -17,15 +17,13 @@ import {windowStart} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
 import {sourceDecision} from './source-fields.mjs';
 import {category,hash,sourceSummary} from './oparl.mjs';
+import {RESTRICTED,httpsUrl as https,isoDay} from './source-common.mjs';
 
 export const CKAN_API='api/3/action/';
 export const CKAN_ROWS=100,CKAN_MAX_PAGES=10;
 export const CKAN_NOTE='Datensätze eines Open-Data-Portals (CKAN) nach dem Abfrageprofil des Eintrags; ohne Sitzung und Ergebnis.';
 export const CKAN_NO_PROFILE='CKAN-Portal erkannt (API verfügbar), Leser/Connector fehlt: Abfrageprofil für die Ratsdaten noch nicht festgelegt.';
-const RESTRICTED=/nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich/i;
 const slug=s=>String(s||'').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'x';
-const isoDay=value=>{const m=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:null;};
-const https=url=>{try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}};
 
 /** Address of an action of the API (status_show, package_search …) below the portal's base. */
 export const ckanUrl=(base,action,params={})=>new URL(CKAN_API+action+(Object.keys(params).length?'?'+new URLSearchParams(params):''),base).href;

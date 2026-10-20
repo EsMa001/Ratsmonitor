@@ -4,7 +4,7 @@
    Beide müssen gleich sein: eine Gruppe hat eine Adresse und damit einen Host. */
 import {DatabaseSync} from 'node:sqlite';
 import {existsSync,readdirSync} from 'node:fs';
-import {sqliteAdapter} from './ai-job.mjs';
+import {sqliteAdapter} from './sqlite-adapter.mjs';
 import {runQualityCheck,sharedByHosts} from '../server/integrations/quality-check.mjs';
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
 const file=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;

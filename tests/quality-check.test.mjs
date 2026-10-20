@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {QUALITY_CHECKS,QUALITY_BY_ID,QUALITY_GROUPS,qualitySummary} from '../shared/quality-checks.mjs';
 import {storedQualityChecks,runQualityCheck} from '../server/integrations/quality-check.mjs';
 const TITLE='Bebauungsplan Nr. 7 „Am Mühlenweg“, Satzungsbeschluss';

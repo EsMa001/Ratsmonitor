@@ -4,14 +4,13 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {fnv,germanDayStrict as day} from './source-common.mjs';
 // Public pages of SD.NET RIM (Sternberg). Only plain links of the public site are followed:
 // the paper list, the calendar export and the meeting pages. The calendar's data endpoint is not used,
 // because it answers only with a session cookie and a form token (HTTP 403 otherwise).
-const day=value=>{const m=String(value).match(/(\d{2})\.(\d{2})\.(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:null;};
 const cell=(row,name)=>row.match(new RegExp(`<td[^>]*class=["'][^"']*column-${name}[^"']*["'][^>]*>([\\s\\S]*?)<\\/td>`,'i'))?.[1]||'';
 const anchors=html=>[...html.matchAll(/<a\b([^>]*?)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi)].map(m=>({url:decode(m[2]),attributes:m[1]+m[3],label:text(m[4])}));
 const title=a=>decode(a.attributes.match(/title=["']([^"']*)/)?.[1]||'');
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 /** Meetings named in the paper list: every scheduled paper links its meeting. */
 export function paperListMeetings(html,source){
  const meetings=[];

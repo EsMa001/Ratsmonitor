@@ -4,27 +4,15 @@ import {fileURLToPath} from 'node:url';
 import {DatabaseSync} from 'node:sqlite';
 import {articleResult} from '../shared/ai-job.mjs';
 import {applyAiResults,getAiJob} from '../server/integrations/ai-jobs.mjs';
+import {sqliteAdapter} from './sqlite-adapter.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 function findDatabase(){
  const dir=path.join(root,'.wrangler','state','v3','d1');if(!fs.existsSync(dir))throw Error('Lokale D1-Datenbank fehlt.');
  const matches=fs.readdirSync(dir,{recursive:true}).filter(p=>String(p).endsWith('.sqlite')).map(p=>path.join(dir,String(p))).filter(p=>{let db;try{db=new DatabaseSync(p,{readOnly:true});return ['topics','article_analyses','data_revisions'].every(name=>db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(name));}catch{return false;}finally{db?.close();}});
  if(matches.length!==1)throw Error('Keine eindeutige Ratsmonitor-Datenbank gefunden: '+matches.length);return matches[0];
 }
-/** D1-artiger Zugriff auf eine node:sqlite-Datenbank (Skripte und Tests). bind gibt wie D1 eine neue Anweisung zurück;
- *  dieselbe vorbereitete Anweisung lässt sich also mehrfach mit verschiedenen Werten binden. */
-export function sqliteAdapter(sql){
- const statement=(query,args)=>({
-  bind:(...values)=>statement(query,values),
-  async first(){return sql.prepare(query).get(...args)||null;},
-  async all(){return {results:sql.prepare(query).all(...args)};},
-  async run(){return {meta:{changes:Number(sql.prepare(query).run(...args).changes)}};},
-  execute(){const prepared=sql.prepare(query);return prepared.columns().length?{results:prepared.all(...args)}:{meta:{changes:Number(prepared.run(...args).changes)}};}
- });
- return {
-  prepare:query=>statement(query,[]),
-  async batch(statements){sql.exec('BEGIN IMMEDIATE');try{const result=statements.map(s=>s.execute());sql.exec('COMMIT');return result;}catch(e){sql.exec('ROLLBACK');throw e;}}
- };
-}
+// Weiter exportiert für ältere Aufrufer; neue importieren aus sqlite-adapter.mjs.
+export {sqliteAdapter};
 export async function main(){
  const [action,jobFile,resultFile,...rest]=process.argv.slice(2);if(!['validate','apply'].includes(action)||!jobFile||!resultFile||rest.length)throw Error('Aufruf: node scripts/ai-job.mjs validate|apply <Auftrag.json> <Ergebnisse.json>');
  const job=JSON.parse(fs.readFileSync(jobFile,'utf8')),output=JSON.parse(fs.readFileSync(resultFile,'utf8'));

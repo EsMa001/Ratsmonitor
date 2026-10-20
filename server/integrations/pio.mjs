@@ -5,22 +5,17 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {createSession} from './allris.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {RESTRICTED,asciiSlug as slug,fnv,germanDay as day,germanLongDay as longDay} from './source-common.mjs';
 // PIO, the "Politisches Informationssystem Offenbach" (own development of the city of Offenbach am Main). Every paper,
 // invitation and decision is one HTML document (a converted Word file) under index.php?aktiv=doc. Read are plain links
 // of the public site only: the agenda overview (one archive list per body), the invitation of each meeting, the page of
 // each paper on a public agenda and the decision extracts linked from it. No search form, no "Mappe", no login.
 // - Only items above a heading of the non-public part are taken; PIO publishes the public part only.
 // - A result is taken from the "Auszug aus der Niederschrift" of the same meeting, which names body and date.
-const MONTHS={januar:1,februar:2,märz:3,maerz:3,april:4,mai:5,juni:6,juli:7,august:8,september:9,oktober:10,november:11,dezember:12};
-const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
-const longDay=value=>{const m=String(value).match(/(\d{1,2})\.\s*(Januar|Februar|März|Maerz|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+(\d{4})/i);return m?`${m[3]}-${String(MONTHS[m[2].toLowerCase()]).padStart(2,'0')}-${m[1].padStart(2,'0')}`:day(value);};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const address=(href,source)=>{if(!source)return null;try{return allowed(new URL(decode(href),source.base).href,source);}catch{return null;}};
 // The non-public part. The invitations are converted Word files that write its heading in many ways ("II.
 // Nichtöffentlicher Teil", "B) Nicht öffentliche Sitzung", "Nicht öffentlich:", "Vertraulicher Teil", "Teil B –
 // nicht öffentlich"). A line that begins with such a word, and any short line that names it, ends the public part.
-const RESTRICTED=/nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich/i;
 const closing=line=>RESTRICTED.test(line)&&(line.length<80||/^(?:[IVX]+|[A-Za-z]|\d+)?[.):]?\s*[-–]?\s*(?:nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich)/i.test(line));
 // Names of a body as the overview and an extract write them ("Ausschuss für Umwelt …", "des Ausschusses für Umwelt …").
 const nameWords=name=>new Set((String(name).toLowerCase().match(/[a-zäöüß]{3,}/g)||[]).filter(w=>!/^(?:für|und|der|des|die|dem|den|sowie)$/.test(w)).map(w=>w.replace(/(?:es|s)+$/,'')).filter(Boolean));

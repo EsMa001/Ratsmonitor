@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {matchTitle,scoreCard,socialTopics,draftText} from '../server/integrations/social-topics.mjs';
 
 const terms=t=>matchTitle(t).map(h=>h.term);

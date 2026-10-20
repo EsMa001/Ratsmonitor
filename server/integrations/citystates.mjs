@@ -28,17 +28,14 @@ import {sourceDecision} from './source-fields.mjs';
 import {category,hash,sourceSummary} from './oparl.mjs';
 import {collectRegionalOparl} from './oparl-regional.mjs';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
+import {RESTRICTED,fnv,httpsUrl as https,isoDay} from './source-common.mjs';
 
 export const HAMBURG_DISTRICTS=['Altona','Bergedorf','Eimsbüttel','Hamburg-Mitte','Hamburg-Nord','Harburg','Wandsbek'];
 export const HAMBURG_NOTE='Drucksachen und Sitzungen mit öffentlicher Tagesordnung der Bezirksversammlungen sowie Mitteilungen des Senats an die Bürgerschaft aus dem Transparenzportal; Sitzungen erst mit der Niederschrift, ohne Ergebnis.';
 export const BERLIN_CONSENT_MISSING='Freigabe fehlt: Die Systeme der Bezirksverordnetenversammlungen sperren Programme technisch aus (HTTP 403). Ohne eingetragene Freigabe wird nichts abgerufen.';
-const RESTRICTED=/nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich/i;
 const norm=s=>String(s||'').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]/g,'');
 const slug=s=>norm(s)||'x';
-const isoDay=value=>{const m=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:null;};
 const extra=ckanExtra;
-const https=url=>{try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 
 /**
  * Query of one page of register objects of a district, changed since the start of the period (CKAN/Solr syntax):

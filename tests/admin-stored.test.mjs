@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {writeStored,readStored,storedMeta,PART_CHARS,gzipText} from '../server/integrations/admin-stored.mjs';
 import {storedEstimate,storedEstimateText,estimateHead,computeEstimate} from '../server/integrations/admin-estimate-store.mjs';
 import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';

@@ -1,4 +1,5 @@
 import {decode} from './sessionnet.mjs';
+import {safeDecode} from './source-common.mjs';
 // Text of a town's own website and of the PDF files it publishes (invitations, announcements, minutes, Amtsblatt),
 // split into meetings with the items of their public part. Pure functions without network; the reader in website.mjs
 // fetches, these only read.
@@ -158,7 +159,6 @@ export function mentionsNonPublic(s){
 // Also "(geschl.)", "geheim" and a name part "np" (gr-2026-09-16-np.pdf).
 const LABEL_ONLY=/(?<![a-z0-9])(?:teil[\s\-_]*n|geschlossen(?:e[rns]?)?|geschl\.?|geheim|np|interna?)(?![a-z0-9])|\(intern\)|(?<![a-z0-9])interne[rns]?[\s\-_]+(?:teil|sitzung|sitzungsteil|beratung)/;
 const latinPercent=s=>s.replace(/%([0-9a-f]{2})/gi,(m,h)=>String.fromCharCode(parseInt(h,16)));
-const safeDecode=s=>{try{return decodeURIComponent(s);}catch{return s;}};
 /** Whether a label, title, address or line names the non-public part (in any Unicode form, encoding or spelling). */
 export const isNonPublicText=s=>{
  const raw=String(s??'');

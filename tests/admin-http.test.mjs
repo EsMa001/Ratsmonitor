@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {etagMatches,fnv,readResponse} from '../server/services/admin-etag.mjs';
 import {adminStand,derivedStand,storedStand} from '../server/integrations/admin-stand.mjs';
 import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';

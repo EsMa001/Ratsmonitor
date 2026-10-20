@@ -6,6 +6,7 @@ import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {asciiSlug as slug,clip} from './source-common.mjs';
 // Ratsinformationssystem of the municipal website system "ecics" (pages /ris?action=show_sitzungsliste and
 // /ris?action=show_sitzung&sitzung_id=N, documents /ris/V_….pdf), as used by many small municipalities of Baden-Württemberg
 // (Ilsfeld, Güglingen, Pfaffenhofen, Lauffen, Cleebronn, Zaberfeld, Beilstein, …). The pages exist in several templates
@@ -14,10 +15,8 @@ import {committeePart} from './oparl-regional.mjs';
 // - the page of a meeting: the public agenda ("TOP n" / "Tagesordnungspunkt n") with the papers (Vorlagen, PDF) of each item
 //   and, in some municipalities, the minutes of the item ("Protokoll"), from which the resolution is taken.
 // The page shows the public part only; the member area (/system?action=user_login) is never requested. Documents are only linked.
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const MORE={bdquo:'„',ldquo:'“',rdquo:'”',lsquo:'‘',rsquo:'’',laquo:'«',raquo:'»',sect:'§',euro:'€',hellip:'…',middot:'·',deg:'°'};
 const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ')).replace(/&(\w+);/g,(m,k)=>MORE[k]??m).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
-const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 const LIST='ris?action=show_sitzungsliste',PAGE='ris?action=show_sitzung&sitzung_id=';
 // Pages the reader requests: the list and the page of a meeting, nothing else.
 const guard=(url,source)=>{const u=new URL(url),rest=u.pathname.slice(new URL(source.base).pathname.length)+u.search;if(!/^ris\?action=show_sitzung(?:sliste|&sitzung_id=\d+)$/.test(rest))throw Error('Nicht freigegebene Quelladresse');return url;};
