@@ -147,9 +147,6 @@ export function subjectOf(text){
 const PLAN=/bebauungsplan|bebauungs- und|flächennutzungsplan|bauleitplan|\bfnp\b|\bb-plan/i;
 const PLAN_ENERGY=/wind(?:energie|kraft|park|rad)|bürgerwind|photovoltaik|freiflächen|solar|pv-?park|pv-anlage|\bpv\b|agri-?pv/i;
 const BUDGET=/haushalts(?:plan|satzung|entwurf|ausführung|rede|beratung|jahr|sicherung|konsolidierung)|(?<![a-zäöüß])haushalt(?:s|es)?\b|nachtragshaushalt|doppelhaushalt|jahresabschl|gesamtabschl|abschlussprüfer|\bwirtschaftsplan|investitionsplan|stellenplan|hebes[aä]tz|grundsteuer|gewerbesteuer|hundesteuer|zweitwohnungssteuer|vergnügungssteuer|steuersatzung/i;
-// Annahme von Spenden ist Routine (Konzept 5.2.1); Sammelpunkte ohne einzelnes Thema bleiben offen, auch mit Text.
-const ROUTINE=/annahme.{0,60}(?:spende|sponsor|schenkung|zuwendung)|^(?:spenden|zuwendungen)\b|pflichtenbelehrung|^(?:bestellung|benennung|entsendung|wahl|nachwahl|neuwahl|berufung|abberufung|besetzung|neubesetzung|umbesetzung)\b.{0,100}(?:vertret|mitglied|gesellschafterversammlung|aufsichtsrat|verbandsversammlung|beirat|vorstand|schöffen|schiedsperson|stellvertret|vorsitz|delegiert|gremien)|^(?:ausschusssitzung|sitzung de[rs])\b|^angelegenheit(?:en|\/en)?\b|sitzungstermin|sitzungsplan|jahresplanung.{0,30}sitzung|beschlusscontrolling|beschlusskontrolle/i;
-const COLLECTION=/^(?:(?:neue |mündliche |schriftliche |allgemeine )?(?:anfragen|mitteilungen|berichte|informationen|bekanntgaben|eingänge|anträge|kenntnisnahmen|verschiedenes|sonstiges|termine)\b(?!\s*(?:zu|zum|zur|über|betr|:))|bericht(?:e)? de[rs] (?:bürgermeister|oberbürgermeister|verwaltung|landrat|ortsvorsteher|amtsdirektor|vorsitzenden)|mitteilung(?:en)? de[rs]|einwohnerfragestunde|fragestunde|bürgerfragestunde)/i;
 
 function hitsOf(s){
  const out=[];

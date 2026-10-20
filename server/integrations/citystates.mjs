@@ -217,7 +217,7 @@ export function eligibleSystems(source){
  return systems.filter(s=>s.oparl!==false&&!/HTTP 40[13]\b/.test(String(s.error||'')));
 }
 export async function collectOparlDistricts(source,options={}){
- const now=options.now||new Date(),fromDay=windowStart(now,options.window).toISOString().slice(0,10),get=options.get||fetchText;
+ const now=options.now||new Date(),fromDay=windowStart(now,options.window).toISOString().slice(0,10);
  const consent=consentValid(source.consent),listed=(source.systems||[]).filter(s=>s&&s.district&&https(s.system));
  const empty=issues=>({topics:[],marks:{},readMeetings:0,coverage:{regionId:source.id,method:'oparl',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:0,sourceCount:0,complete:false,quiet:false,issues,sourceUrl:source.base||''}});
  if(!listed.length)return empty(['Keine OParl-Adresse eines Bezirks eingetragen (scripts/source-discovery/stadtstaaten.mjs berlin).']);
@@ -282,7 +282,7 @@ export async function* streamText(url,{timeoutMs=150000,request=fetch}={}){
  const tail=decoder.decode();if(tail)yield tail;
 }
 
-export async function collectPardok(source,{now=new Date(),get=fetchText,stream=streamText,window:lookback,maxDurationMs=120000,onProgress=()=>{}}={}){
+export async function collectPardok(source,{now=new Date(),stream=streamText,window:lookback,maxDurationMs=120000,onProgress=()=>{}}={}){
  const deadline=Date.now()+maxDurationMs-3000;
  const fromDay=windowStart(now,lookback).toISOString().slice(0,10),today=now.toISOString().slice(0,10),pardok=source.pardok||{};
  const base=pardok.base||'https://www.parlament-berlin.de/',issues=[],warnings=[],kept=new Map();

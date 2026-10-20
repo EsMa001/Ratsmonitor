@@ -367,7 +367,6 @@ export function kitaFeeOf(title,text){
    Erhöhung, Senkung, unverändert, sonst festgesetzt (Gebühren für ein Jahr oder neue Satzung ohne Richtung). Betrag nur, wenn
    ausdrücklich die Jahresgebühr eines 120-l-Restabfallbehälters genannt ist. Gebühren je Liter, Tonne, Leerung oder Person sind
    nicht vergleichbar. Nicht: Anfragen, Anträge, Bürgereingaben, Deponie- und Kreisgebühren im Text, Sperrmüll allein. */
-const WASTE_TITLE=/(Abfall|Müll|Restabfall)[\p{L}-]{0,30}(gebühr|entgelt)|Abfall(?:wirtschafts|entsorgungs|beseitigungs)?(?:gebühren)?satzung|Müllabfuhrgebühr|Abfallgebühr/iu;
 const WASTE_UP=/Erhöhung|Anhebung|erhöht|angehoben|steigen|steigt|Steigerung/i,WASTE_DOWN=/\bSenkung|Absenkung|gesenkt|Reduzierung der Gebühr|reduziert|sinken|sinkt/i,WASTE_SAME=/unverändert|stabil|bleiben gleich|gleichbleibend|keine Erhöhung|Beibehaltung/i;
 /** {value, euro} oder null */
 export function wasteFeeOf(title,text){

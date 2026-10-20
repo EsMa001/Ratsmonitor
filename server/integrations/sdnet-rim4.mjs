@@ -18,7 +18,6 @@ import {committeePart} from './oparl-regional.mjs';
 const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
 const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ')).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
-const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 const ICS='termine/ics/SD.NET_RIM.ics';
 // Pages the reader requests, relative to the application: the calendar, agendas and processes.
 const PATHS=/^(?:termine\/ics\/SD\.NET_RIM\.ics|tops\/|vorgang\/)$/;

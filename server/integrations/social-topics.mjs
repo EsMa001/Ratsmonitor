@@ -156,39 +156,11 @@ const PARTIES=[
  [/freie wähler|\bfw\b/,{nom:'die Freien Wähler',gen:'der Freien Wähler',plural:true}],[/\bvolt\b/,{nom:'Volt',gen:'von Volt'}],
 ];
 const inPlace=r=>/^(Kreis|Landkreis) |-Kreis |kreis$|land$/i.test(r)&&!/^(Stadt|Gemeinde) /.test(r)?'im '+r:'in '+r;
-const zu=d=>d.startsWith('der ')?'zur '+d.slice(4):d.startsWith('dem ')?'zum '+d.slice(4):'zu '+d;
 const hashtag=t=>String(t).split(/[^A-Za-zÄÖÜäöüß0-9]+/).filter(Boolean).map(w=>w[0].toUpperCase()+w.slice(1)).join('');
 const cap=t=>t[0].toUpperCase()+t.slice(1);
-// Straßennamen: ein Wort auf -straße/-allee/-platz/-damm/-ufer/-weg oder „Name-er Straße“; keine Gattungswörter.
-const STREET=/\b([A-ZÄÖÜ][A-Za-zäöüß]+(?:-[A-ZÄÖÜ][A-Za-zäöüß]+)*(?:straße|allee|platz|damm|ufer|weg|ring)|[A-ZÄÖÜ][a-zäöüß-]+er Straße)\b/;
-const NOT_STREET=/^(Gehweg|Radweg|Fußgängerüberweg|Feldweg|Wirtschaftsweg|Rettungsweg|Fahrradweg|Umweg|Zuweg|Waldweg|Bürgerweg|Radschnellweg|Schulstraße|Fahrradstraße|Kreisstraße|Landesstraße|Bundesstraße|Staatsstraße|Hauptstraße|Zuwegung|Fußweg|Wanderweg|Spielplatz|Marktplatz|Sportplatz|Parkplatz|Bolzplatz|Kirchplatz)$/;
-// Sprechendere Gegenstände je nach Wortlaut des Titels.
-const OVERRIDE={
- 'Bürgerbegehren':[[/petition/,'einer Petition','eine Petition'],[/einwohnerantrag/,'einem Einwohnerantrag','einen Einwohnerantrag'],
-  [/bürgerentscheid/,'einem Bürgerentscheid','einen Bürgerentscheid'],[/unterschriften|unterschriftensammlung/,'einer Unterschriftensammlung','eine Unterschriftensammlung'],
-  [/bürgerinitiative/,'einer Bürgerinitiative','eine Bürgerinitiative'],[/volksbegehren/,'einem Volksbegehren','ein Volksbegehren']],
- 'Fahrradstraße':[[/pop-up-radweg/,'einem Pop-up-Radweg','einen Pop-up-Radweg'],[/radschnellweg/,'einem Radschnellweg','einen Radschnellweg'],[/radspur/,'einer Radspur','eine Radspur'],[/fahrradstadt/,'der Fahrradstadt-Planung','die Fahrradstadt-Planung']],
- 'Unterkunft':[[/obdachlos|wohnungslos/,'der Unterbringung Obdachloser','die Unterbringung Obdachloser'],
-  [/flüchtling|geflüchtet|asyl/,'einer Unterkunft für Geflüchtete','eine Unterkunft für Geflüchtete'],[/./,'einer Unterkunft','eine Unterkunft']],
-};
 // Hier stimmt der feste Satzbaustein immer; bei allen anderen Stichwörtern steht das Wort aus dem Titel („Thema „Schließzeiten““),
 // weil die Bewertung zeigte, dass allgemeine Bausteine sonst Falsches behaupten (Schließzeiten als Schließung, Gewerbe- als Grundsteuer).
 const SAFE_FORMS=new Set(['Tempo 30','Bezahlkarte','Windkraft','Fahrradstraße','Solarpark','Gendern','Moschee / Religion','Flagge / Symbol','Rechtsextremismus','Verpackungs- / Bettensteuer','Hundesteuer','Feuerwerk','Sonntagsöffnung']);
-function matchedWord(title,term){
- for(const g of GROUPS)for(const [t,re] of g.terms){
-  if(t!==term)continue;
-  const m=re.exec(' '+title.toLowerCase()+' ');
-  if(!m)return '';
-  const start=m.index-1,end=start+m[0].length;
-  let a=Math.max(0,start),b=Math.min(title.length,end);
-  while(a>0&&/[A-Za-zÄÖÜäöüß-]/.test(title[a-1]))a--;
-  while(b<title.length&&/[A-Za-zÄÖÜäöüß-]/.test(title[b]))b++;
-  const w=title.slice(a,b).replace(/^-+|-+$/g,'');
-  return w.length>2&&w.length<30?cap(w):'';
- }
- return '';
-}
-
 /**
  * Titel für den Aufhänger bereinigen: Nachtragskopf, Fraktionskopf („Antrag der CDU-Fraktion vom …:“), „hier:“, Aktenzeichen,
  * Klammern mit Daten und Paragraphen entfernen, auf höchstens `max` Zeichen an einer Wortgrenze kürzen.

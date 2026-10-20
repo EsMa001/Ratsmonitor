@@ -82,7 +82,6 @@ export async function requireAdmin(){
  if(state.kind==='setup')throw new AdminError(403,'Der Admin-Zugang muss zuerst freigeschaltet werden.');
  throw new AdminError(403,'Kein Zugriff auf die Administration.');
 }
-/** Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. */
 /**
  * Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. accounts:false heißt: auf dieser Umgebung gibt es
  * keine Konten (Cloudflare-Build, Server ohne Kontendatei); dann gelten keine Stufengrenzen, alles bleibt wie früher.

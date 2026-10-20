@@ -1,7 +1,6 @@
 import {readNrwSnapshot} from '../scripts/nrw-snapshot-file.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
 import sources from '../server/integrations/nearby-sources.json' with {type:'json'};
 import catalog from '../shared/nrw-regions.json' with {type:'json'};
 import {NRW_SOURCES} from '../server/integrations/source-catalog.mjs';

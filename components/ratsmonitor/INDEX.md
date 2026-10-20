@@ -682,14 +682,14 @@ z- ratsmonitor.css:395
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (114, ⚠8): AdminAiLocal
 - admin-altbestand.tsx (138, ⚠8): AdminAltbestand
-- admin-atlas.tsx (205, ⚠29): AdminAtlas
+- admin-atlas.tsx (204, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
 - admin-chrome.tsx (143, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
 - admin-cockpit.tsx (98, ⚠1): AdminCockpit
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (114, ⚠7): AdminRuns, AdminReview, AdminStock
+- admin-dashboard.tsx (114, ⚠8): AdminRuns, AdminReview, AdminStock
 - admin-debug.tsx (144, ⚠9): AdminDebug
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
 - admin-fehler.tsx (80, ⚠4): AdminFehler
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (41): IconName, Icon

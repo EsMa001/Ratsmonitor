@@ -188,7 +188,7 @@ export async function searchFilters(db,catalog,f){
 }
 export async function searchMonitor(db,catalog,params){
  const f=parseMonitorSearch(params),limit=f.size;
- const {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page,placeScoped,plainSearch,formalReady}=await searchFilters(db,catalog,f);
+ const {places,regions,byId,scopedIds,nameHit,nameIds,base,cand,candidates,labelId,page,placeScoped,plainSearch,formalReady}=await searchFilters(db,catalog,f);
  /* Relevanz: Treffer im Titel zählen dreifach, im übrigen Text einfach; bei Gleichstand das Neueste zuerst */
  const rterms=f.sort==='relevance'?[...new Set(f.terms||[])]:[];
  /* LIMIT und OFFSET als Kommazahl: Als Ganzzahl (so bindet der Node-Server, d1-sqlite.mjs) kennt SQLite die Seitengröße und

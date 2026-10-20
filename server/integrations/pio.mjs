@@ -1,4 +1,4 @@
-import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
+import {sourceDecision} from './source-fields.mjs';
 import {windowStart} from './history-window.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
@@ -126,81 +126,6 @@ export function parsePioDecision(html){
 }
 /** The decision on one paper: the block headed by its number, or the only block if the extract names none. */
 export const pioResult=(decision,reference)=>decision?.results.find(r=>r.reference===reference)||(decision?.results.length===1&&!decision.results[0].reference?decision.results[0]:null);
-// The decision extracts state the outcome in words ("beschließt gemäß Antrag", "lehnt … ab", "zurückzuverweisen").
-// A status is given only on evidence; whatever the words do not show stays unknown (null), never a guess.
-// - Sentences end at '.' or ':' before a space, not at an abbreviation ("gem. Abs. 2 der GO", "a. M."), an ordinal
-//   ("am 24. September") or the number of a list item ("wie folgt: 1. Der Magistrat …"). A date or year ends one
-//   ("vom 13.05.2026. Der …"), and so does a number before an article ("gemäß Ziffer 2. Der …").
-// - Only the opening sentence counts. When it ends with ':' the next sentence is read with it if it speaks of the paper
-//   itself ("Der Antrag wird abgelehnt.") or names an outcome ("Die Vertagung …"). Otherwise that sentence is the
-//   decided text, which the body adopted, whatever its own words ("…beauftragt, Anträge abzulehnen"); an amendment or
-//   another paper named there instead ("Der Änderungsantrag wird …") leaves the outcome unknown.
-// - Postponed or referred to a body: postponed. Rejection words: rejected. Both, a settlement ("Erledigung"), or a
-//   negation that is not a rejection ("beschließt, das Grundstück nicht zu verkaufen"): unknown. Approval needs
-//   positive words: gemäß Antrag/Vorlage/Beschlussvorschlag, stimmt … zu, angenommen, zugestimmt, beschließt den
-//   Antrag, beschließt … wie folgt or ':' with the decided text. A vote count that contradicts the words: unknown.
-const L='(?<!\\p{L})',R='(?!\\p{L})',rx=source=>new RegExp(source,'iu');
-const PAPER_WORD='(?:Antrag|Vorlage|Magistratsvorlage|Drucksache|Beschlussvorschlag|Beschlussempfehlung)';
-const PAPER=rx(`^(?:Der|Die|Das|Dem|Den)\\s+(?:[\\p{L}-]+\\s+)?${PAPER_WORD}${R}`);
-const OTHER_PAPER=rx(`^(?:Der|Die|Das|Dem|Den)\\s+(?:[\\p{L}-]+\\s+)?[\\p{L}-]+(?:antrag|vorlage)`);
-const OUTCOME=rx(`^(?:(?:Die|Eine)\\s+)?(?:Vertagung|Zurückstellung|Zurückverweisung|Überweisung|Verweisung|Absetzung|Ablehnung|Erledigung|Kenntnisnahme)${R}`);
-const ENUMERATION=/^(?:\d{1,2}(?:\.\d{1,2})*\.|[a-z]\))\s+/;
-const ABBREVIATIONS=new Set(['gem','abs','nr','nrn','dez','ziff','lt','bzw','ggf','vgl','art','pkt','anl','stv','dr','ca','bzgl','evtl','inkl','zzgl','mio','tsd','str','hs','sog','gez']);
-// Capitalised only at the start of a sentence; an ordinal is never followed by one ("Ziffer 2. Der …").
-const SENTENCE_START=/^(?:Der|Die|Das|Dem|Den|Des|Ein|Eine[mnrs]?|Es|Er|Sie|Dies(?:e[mnrs]?)?|Hierzu|Dabei|Damit|Zudem|Ferner|Außerdem|Weiterhin|Im|In|Mit|Zur|Zum)(?![\p{L}\d])/u;
-const endsSentence=(before,after)=>{
- const raw=before.match(/\S*$/)[0],token=raw.replace(/^[(§"„'«»]+/,'');
- if(!token)return true;
- if(/^\d{1,2}\.\d{1,2}\.\d{2,4}$|^\d{3,}$/.test(token))return true;
- if(/^\d{1,2}(?:\.\d{1,2})*$/.test(token))return before.trim()!==raw&&(!after.trim()||SENTENCE_START.test(after.trim()));
- return !(ABBREVIATIONS.has(token.toLowerCase())||/^\p{L}$|^(?:\p{L}{1,2}\.)+\p{L}{1,2}$/u.test(token));
-};
-/** Sentences of a decision, each with its closing '.' or ':'. */
-function sentences(value){
- const s=String(value??'').replace(/\s+/g,' ').trim(),out=[];let start=0;
- for(let i=0;i<s.length;i++){
-  if((s[i]!=='.'&&s[i]!==':')||(i+1<s.length&&s[i+1]!==' '))continue;
-  if(s[i]==='.'&&!endsSentence(s.slice(start,i),s.slice(i+1)))continue;
-  out.push(s.slice(start,i+1).trim());start=i+1;
- }
- if(s.slice(start).trim())out.push(s.slice(start).trim());
- return out;
-}
-const SETTLED=rx(`${L}erledig`);
-const POSTPONED=rx(`${L}(?:vertag|zurück(?:zu|ge)?(?:stell|verweis|verwies)|ab(?:zu|ge)?setz)`);
-// "überweisen"/"verweisen" only towards a body: "die Überweisung von 5.000 Euro" and "verweist auf" are no referral.
-const REFERRAL=rx(`${L}(?:über|ver)(?:zu|ge)?w(?:eis|ies)`),REFERRAL_TARGET=rx(`${L}(?:an|in)\\s+(?:den|die|das)\\s+(?:[\\p{L}-]+\\s+){0,3}?[\\p{L}-]*(?:ausschuss|ausschüsse|magistrat|beirat|kommission|gremium|gremien|ältestenrat)`);
-const REJECTED=[
- rx(`${L}ab(?:ge|zu)lehn`),rx(`${L}lehnt${R}.*${L}ab${R}`),
- rx(`${L}die\\s+Ablehnung${R}|${L}Ablehnung\\s+(?:des|der|dieses|dieser)\\s+(?:[\\p{L}-]+\\s+)?${PAPER_WORD}(?:e?s)?${R}`),
- rx(`${L}stimmt${R}.*${L}nicht\\s+zu(?=\\s*(?:[.,;:]|$))`),rx(`${L}nicht\\s+(?:zuzustimmen|zugestimmt|angenommen|anzunehmen|beschlossen)${R}`),
- rx(`${L}gegen\\s+(?:den|die|das)\\s+(?:[\\p{L}-]+\\s+)?${PAPER_WORD}${R}`),
- // "dagegen" as a vote, not as a count ("20 dagegen", "dagegen: 20") nor as "on the other hand".
- rx(`${L}(?:stimm\\p{L}*|einstimmig|mehrheitlich)${R}.*(?<!\\d\\s*)${L}dagegen${R}(?!\\s*:?\\s*\\d)`),
-];
-const NEGATION=rx(`${L}(?:nicht|kein(?:e[mnrs]?)?)${R}`),VOTE_WORDS=rx(`${L}kein\\p{L}*\\s+(?:Gegenstimme|Enthaltung|Stimmenthaltung)\\p{L}*`);
-const NOTED=rx(`${L}zur\\s+Kenntnis${R}|${L}Kenntnis\\s+genommen${R}|${L}Kenntnisnahme${R}`);
-const DECIDES=rx(`${L}(?:beschlie(?:ß|ss)t|fasst\\s+(?:\\S+\\s+){0,3}Beschluss)${R}`);
-const INFINITIVE=/(?<!\p{L})zu\s+(?!(?:den|dem|der|einem|einer)(?!\p{L}))\p{Ll}{2,}(?:en|ern|eln)(?!\p{L})|(?<!\p{L})\p{Ll}+zu\p{Ll}+en(?!\p{L})/u;
-const APPROVED=[
- rx(`${L}(?:gemäß|gem\\.|laut|lt\\.|entsprechend)\\s+(?:(?:Ziffer|Ziff\\.|Punkt|Nr\\.)\\s*[\\d.]+\\s+)?(?:(?:dem|der|des)\\s+)?(?:[\\p{L}-]+\\s+)?${PAPER_WORD}(?:e?s)?${R}`),
- rx(`${L}stimmt${R}.*${L}zu(?=\\s*(?:[.,;:]|$)|\\s+(?:und|sowie)${R})`),rx(`${L}(?:angenommen|anzunehmen|zugestimmt|zuzustimmen)${R}`),
- rx(`${L}(?:beschlie(?:ß|ss)t|fasst)${R}.*${L}(?:wie\\s+folgt|folgenden\\s+Beschluss)${R}`),
-];
-const ADOPTS=rx(`${L}beschlie(?:ß|ss)t\\s+(?:[\\p{L}-]+\\s+){0,3}?(?:den|die|das)\\s+(?:[\\p{L}-]+\\s+)?${PAPER_WORD}${R}`),PASSED=rx(`${L}beschlossen${R}`);
-/** Outcome a clause states: a status, null when its words leave it open, '' when it states none. */
-function outcome(clause,parts){
- if(SETTLED.test(clause))return null;
- const postponed=POSTPONED.test(clause)||REFERRAL.test(clause)&&REFERRAL_TARGET.test(clause),rejected=REJECTED.some(r=>r.test(clause));
- if(postponed)return rejected?null:'postponed';
- if(rejected)return 'rejected';
- if(NEGATION.test(clause.replace(VOTE_WORDS,'')))return null;
- if(NOTED.test(clause))return 'info';
- if(APPROVED.some(r=>r.test(clause))||ADOPTS.test(clause)&&!INFINITIVE.test(clause)||parts.some(p=>PAPER.test(p)&&PASSED.test(p)))return 'approved';
- return '';
-}
-const tally=(clause,source)=>{const m=clause.match(rx(source));return m?Number(m[1]??m[2]):null;};
-const YES=`(\\d+)\\s*(?:Ja(?:-Stimmen)?|Stimmen\\s+dafür|dafür)${R}|${L}(?:Ja|dafür)\\s*:\\s*(\\d+)`,NO=`(\\d+)\\s*(?:Nein(?:-Stimmen)?|Gegenstimmen|Stimmen\\s+dagegen|dagegen)${R}|${L}(?:Nein|dagegen|Gegenstimmen)\\s*:\\s*(\\d+)`;
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs.
 export async function collectPio(source,{now=new Date(),get=fetchText,request=fetch,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks}={}){
  get=budgeted(get,maxDurationMs,2);
