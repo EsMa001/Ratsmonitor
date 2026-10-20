@@ -2,7 +2,7 @@
 // Auswahl per SHA-256(id + Salz), damit sie wiederholbar und unabhängig von den Regeln ist. Je Bericht: Titel, Anfang des
 // Beschlussvorschlags aus der Textfassung (PDF-Ablage, ohne Sitzungsunterlagen) und Regel-Kurzfassung, falls vorhanden.
 //   node scripts/theme-study/sample.mjs --name=theme-dev --salt=dev-2026-10-13 --n=300
-import {existsSync,readdirSync,writeFileSync} from 'node:fs';
+import {readdirSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';

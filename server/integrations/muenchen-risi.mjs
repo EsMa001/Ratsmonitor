@@ -6,6 +6,7 @@ import {createSession} from './allris.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {fnv} from './source-common.mjs';
 // RIS of the City of Munich (risi.muenchen.de/risi), an own development on Apache Wicket behind an F5 firewall.
 // - robots.txt disallows every address containing "jsessionid" for all programs. Wicket writes the session id into the
 //   redirect of a session's first request and into the links of its first page. It is removed from every address before
@@ -23,7 +24,6 @@ const monthOf=label=>{const m=String(label).match(/([A-Za-zÄäÖöÜü]+)\s+(\d
 const dayOf=label=>{const m=String(label).match(/(\d{1,2})\.\s*([A-Za-zÄäÖöÜü]+)\s+(\d{4})/),month=m&&monthOf(m[2]+' '+m[3]);return month?`${month}-${m[1].padStart(2,'0')}`:null;};
 const shift=(month,n)=>{const [y,m]=month.split('-').map(Number);return new Date(Date.UTC(y,m-1+n,1)).toISOString().slice(0,7);};
 const german=date=>date.split('-').reverse().join('.');
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 const anchors=html=>[...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)].map(m=>({attributes:m[1],href:decode(m[1].match(/\bhref=["']([^"']*)["']/i)?.[1]||''),html:m[2]}));
 const value=(html,key)=>text(html.match(new RegExp(`<div class=["']keyvalue-key["']>\\s*${key}:\\s*<\\/div>\\s*<div class=["']keyvalue-value[^"']*["']>([\\s\\S]*?)<\\/div>`,'i'))?.[1]||'');
 // The plenary is called "Vollversammlung" by the source; as the city council it decides finally (DECIDING_BODY).

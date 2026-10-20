@@ -2,7 +2,7 @@ import {extractText,getDocumentProxy} from 'unpdf';
 import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
 import {windowStart} from './history-window.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
-import {budgeted,isRejectionPage,REFUSED} from './request-budget.mjs';
+import {BUDGET_REACHED,budgeted,isRejectionPage,REFUSED,statusError} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {bodyBytes} from './body-bytes.mjs';
 import {parseRobots,robotsAllow} from './robots.mjs';
@@ -10,6 +10,7 @@ import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {SMALL_WORDS,htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
 import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST} from './website-feeds.mjs';
+import {fnv,safeDecode} from './source-common.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
 // its bodies — notices with agenda (every Land requires them), reports and minutes, its gazette as PDF, and the outputs
 // its CMS offers anyway (RSS/Atom, iCal, WordPress REST, JSON-LD events, sitemap.xml). The catalog entry names the pages
@@ -68,7 +69,7 @@ async function fetchSite(url,source,timeoutMs,request,accept,limit){
   if(seen.has(next))throw Error('Wiederholte Weiterleitung der Quelle');seen.add(next);
   // Every hop, also a redirect target, must be a path robots.txt leaves open.
   if(gate&&!await gate(next))throw Error(ROBOTS_BLOCKED);
-  const remaining=deadline-Date.now();if(remaining<=0)throw Error('Zeitbudget der Quelle erreicht');
+  const remaining=deadline-Date.now();if(remaining<=0)throw Error(BUDGET_REACHED);
   const r=await request(next,{redirect:'manual',signal:AbortSignal.timeout(remaining),headers:{'User-Agent':SOURCE_USER_AGENT,Accept:accept}});
   if([301,302,303,307,308].includes(r.status)||r.type==='opaqueredirect'){
    const location=r.headers.get('location');await r.body?.cancel();
@@ -79,7 +80,7 @@ async function fetchSite(url,source,timeoutMs,request,accept,limit){
    if(closed('',next)||isRisLink(next)||isSearchLink(next))throw Error(NOT_READ);
    continue;
   }
-  if(!r.ok){await r.body?.cancel();throw Error('Quelle antwortet mit HTTP '+r.status);}
+  if(!r.ok){await r.body?.cancel();throw statusError('Quelle antwortet mit HTTP ',r);}
   // A page is read up to the limit of pages also where a document was asked for.
   const type=r.headers.get('content-type')||'',bytes=await bodyBytes(r,/html|xml|json|text\//i.test(type)?Math.min(limit,LIMITS.htmlBytes):limit);
   return {bytes,type};
@@ -140,11 +141,9 @@ export async function robotsGate(get,source){
  return allows;
 }
 
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 const fold=s=>composeUmlauts(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
 const slug=s=>fold(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const words=s=>' '+fold(s).replace(/[^a-z0-9]+/g,' ').trim()+' ';
-const safeDecode=s=>{try{return decodeURIComponent(s);}catch{return s;}};
 const ddmmyyyy=iso=>iso.split('-').reverse().join('.');
 // Also what the score of links reads as the non-public part ("…_vertr.pdf", "N-Teil", "-N.pdf"), so that a redirect target is
 // checked as strictly as a link.

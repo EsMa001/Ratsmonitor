@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {PAST_SQL,NEXT_SQL,rollCardDates} from '../server/integrations/search-card-dates.mjs';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 
 const MIGRATION=fs.readFileSync(new URL('../drizzle/0024_search_cards_next_date.sql',import.meta.url),'utf8');
 const day=n=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);

@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const { chromium } = createRequire(`${homedir()}/code/video-tools/`)("playwright");
-const { w, h, pts } = JSON.parse(readFileSync(`${root}public/data/gemeinde-punkte.json`, "utf8"));
+const { h, pts } = JSON.parse(readFileSync(`${root}public/data/gemeinde-punkte.json`, "utf8"));
 const scale = 520 / h, X0 = 650, Y0 = 55;
 let dots = "";
 for (let i = 0; i < pts.length; i += 2) dots += `<circle cx="${(X0 + pts[i] * scale).toFixed(1)}" cy="${(Y0 + pts[i + 1] * scale).toFixed(1)}" r="1.9"/>`;

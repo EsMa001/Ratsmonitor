@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../ai-job.mjs';
+import {sqliteAdapter} from '../sqlite-adapter.mjs';
 import {accountsConfig} from '../../server/accounts/config.mjs';
 import {sendMail,processOutbox,warnOperator} from '../../server/accounts/mail.mjs';
 import {removeUser} from '../../server/accounts/account.mjs';

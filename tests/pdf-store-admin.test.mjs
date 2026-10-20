@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {gzipSync} from 'node:zlib';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {pdfStoreState,requestPdfJob,removePdfJob,requestStop,requestCount,errorsCsv,normalizeJobs,addJob,laneOf,STATS_KEY,JOB_KEY,HEARTBEAT_KEY,PROGRESS_KEYS,ERRORS_KEY,QUEUE_MAX} from '../server/integrations/pdf-store-admin.mjs';
 import {JOBS,settingOf,dueNow,nextRun,slotAt,setSchedule,runScheduleNow,schedulesState} from '../server/integrations/schedules.mjs';
 import {diskDue,storageState,requestDiskCount} from '../server/integrations/server-storage.mjs';

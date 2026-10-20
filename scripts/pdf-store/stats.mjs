@@ -43,7 +43,7 @@ for(const r of db.prepare("SELECT event_date AS date,active,json_extract(payload
  for(const x of docs)if(x?.url&&x.kind==='application/pdf'){const o=linked.get(x.url);if(o===undefined||d&&(!o||d<o))linked.set(x.url,d);}
  const p=primaryPdf(docs,{uses:u=>uses.get(u)||0});if(!p?.url)continue;
  primary.add(p.url);
- // Berichte mit Text im Hauptdokument und davon mit Regel-Zusammenfassung (nur aktive, wie summaries.mjs)
+ // Berichte mit Text im Hauptdokument und davon mit Regel-Zusammenfassung (nur aktive)
  if(r.active===1&&at.get(p.url)?.textStatus==='ok'){sumText++;if(r.sum)sumDone++;}
 }
 

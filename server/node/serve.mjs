@@ -8,7 +8,7 @@
  *   und ein POST endet mit 502.
  * - Bei SIGTERM/SIGINT (systemctl stop/restart) laufende Anfragen kurz ausklingen lassen und die Datenbank schließen.
  * - Hält die Daten von plenara.X im Arbeitsspeicher (warmData): 5 s nach dem Start und alle 10 Minuten liest er x_cases und
- *   seine Indizes einmal ganz, für alle Seiten gleich, ohne Ansichten vorzurechnen. Ergebnisse merkt sich jede Route je Bau
+ *   seine Indizes einmal ganz (mit plenara.X-Worker in einem eigenen Thread), für alle Seiten gleich, ohne Ansichten vorzurechnen. Ergebnisse merkt sich jede Route je Bau
  *   (xCached, revision-cache.mjs). Aus: RM_SKIP_WARM=1.
  * - Prüft vor dem Start die Datenbank. Ohne sie würden die Seiten still den mitgelieferten, alten Stand zeigen;
  *   deshalb startet der Server dann nicht (Ausnahme für Tests: RM_ALLOW_NO_DB=1).
@@ -19,6 +19,7 @@
 import fs from 'node:fs';
 import { isAbsolute, join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
+import { Worker } from 'node:worker_threads';
 import { startProdServer } from 'vinext/server/prod-server';
 
 // Leere Werte gelten wie überall in der Umgebungsdatei als nicht gesetzt (|| statt ??).
@@ -92,7 +93,6 @@ try {
   if (file && fs.existsSync(file)) {
     const db = new DatabaseSync(file, { readOnly: true });
     if (db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name IN ('users','sessions') LIMIT 1").get()) console.warn('[ratsmonitor] Die Inhaltsdatei enthält Kontotabellen (users/sessions), etwa aus einer lokalen Kopie. Konten gehören in ACCOUNTS_FILE.');
-    if (process.env.ACCOUNTS_FILE && process.env.ADMIN_LEGACY_HEADER !== '1' && db.prepare("SELECT 1 FROM system_state WHERE key='admin-owner-v1'").get()) console.warn('[ratsmonitor] admin-owner-v1 (alter Admin-Weg) besteht noch, gilt aber nicht mehr (ADMIN_LEGACY_HEADER ist aus). Nach dem Übergang: ratsmonitor-accounts cleanup-legacy.');
     db.close();
   }
 } catch { /* nur ein Hinweis */ }
@@ -125,7 +125,20 @@ const X_WARM_SQL = [
   "SELECT count(*) FROM x_cases INDEXED BY idx_x_cases_atlas WHERE date>=''",
   "SELECT count(*) FROM x_signals",
 ];
+// Mit plenara.X-Worker liest ein kurzer eigener Thread (dieselbe Datei, Nachricht warm, warmX in x-cases.mjs): Der Vollscan
+// von x_cases hielt sonst alle 10 Minuten jede Anfrage an, je nach Seitencache 0,3 s bis einige Sekunden.
 function warmData() {
+  if (process.env.RM_X_WORKER) {
+    try {
+      const worker = new Worker(process.env.RM_X_WORKER, { env: process.env });
+      worker.unref();
+      const done = () => { void worker.terminate(); };
+      worker.once('message', done);
+      worker.once('error', done);
+      worker.postMessage({ id: 0, warm: true });
+    } catch { /* nächster Lauf */ }
+    return;
+  }
   let db;
   try {
     db = new DatabaseSync(process.env.DATABASE_FILE, { readOnly: true });

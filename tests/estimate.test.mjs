@@ -7,7 +7,7 @@ import {summarizeSize,areaMeans,estimateVolume,SIZE_FIELDS,SIZE_RULES,VARIANTS,P
 import {documentType,primaryDocument,DOCUMENT_TYPES} from '../shared/document-type.mjs';
 import {adminEstimate} from '../server/integrations/admin-estimate.mjs';
 import {storedEstimate,computeEstimate} from '../server/integrations/admin-estimate-store.mjs';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';
 import frame from '../shared/germany-population.json' with {type:'json'};
 import population from '../shared/nrw-population.json' with {type:'json'};

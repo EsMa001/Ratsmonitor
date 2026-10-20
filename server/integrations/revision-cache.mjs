@@ -38,6 +38,9 @@ export const paramsKey=(kind,params)=>`${kind}|${new Date().toISOString().slice(
    the first view after an import then does not wait for a scan. revisionSql: own revision instead of the content revision
    (plenara.X: X_REVISION_SQL, the numbers change only with a new build of x_cases). */
 const byFilter=new WeakMap(),KEEP_PER_KIND=20,STALE_MS=6*3600e3;
+/* Laufende Rechnungen je Schlüssel und Revision: Gleiche Anfragen bei leerem Zwischenspeicher (nach einem Bau, um Mitternacht,
+   mehrere Besucher) warten auf dieselbe Rechnung, statt sie jede selbst zu starten. Gehalten wird nur das fertige Ergebnis. */
+const running=new WeakMap();
 export async function atRevisionStale(db,key,compute,{revisionSql=''}={}){
  const row=await db.prepare(revisionSql||CONTENT_REVISION_SQL).first();
  const revision=revisionSql?String(row?.revision??''):Number(row?.revision||0);
@@ -54,5 +57,10 @@ export async function atRevisionStale(db,key,compute,{revisionSql=''}={}){
   if(!hit.busy){hit.busy=true;fresh().catch(()=>{}).finally(()=>{hit.busy=false;});}
   return hit.value;
  }
- return fresh();
+ let pending=running.get(db);if(!pending){pending=new Map();running.set(db,pending);}
+ const slot=key+'\u0000'+revision,same=pending.get(slot);
+ if(same)return same;
+ const result=fresh().finally(()=>pending.delete(slot));
+ pending.set(slot,result);
+ return result;
 }

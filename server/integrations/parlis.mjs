@@ -5,6 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {RESTRICTED,asciiSlug as slug,clip,fnv,germanDay as day} from './source-common.mjs';
 // PARLIS, the "PARLamentsInformationsSystem" of Frankfurt am Main (www.stvv.frankfurt.de, own development of the city).
 // Read are plain addresses of the public site only:
 // - the lists of minutes (Niederschriften, DOKUMENTTYP=NIED) and of current agendas (Tagesordnungen, TAGO), newest
@@ -18,9 +19,6 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 // (robots-policy.mjs, decision of 05.10.2026).
 export const PARLIS_NONPUBLIC='Nichtöffentlicher Teil von PARLIS; wird nicht abgefragt.';
 const MAX_LIST_PAGES=80;
-const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 // Word writes non-breaking hyphens and spaces and sometimes umlauts as letter plus combining mark ("Ka&#776;tches…");
 // the text of an item uses plain hyphens, spaces and composed letters.
 const plain=html=>text(html).normalize('NFC').replace(/[‐‑]/g,'-').replace(/ /g,' ').replace(/\s+/g,' ').trim();
@@ -63,7 +61,6 @@ const LABEL=/^(Beschluss|Bericht|Abstimmung|Sonstige Voten|Vorg\.)\s*:\s*/i;
 const STATEMENT=/^(?:[a-z]\)\s|\d{1,2}\.\s|Es dient|Die |Der |Das |Dem |Den |Gemäß )/;
 // A short heading or line that names the non-public part ("Nichtöffentlicher Teil", "Tagesordnung II - nicht
 // öffentlich", "Vertrauliche Punkte") ends the public part, wherever it stands and whatever tag carries it.
-const RESTRICTED=/nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich/i;
 /** The public part of a document: everything before the link to its non-public part and before such a heading. */
 export function parlisPublicPart(html){
  let end=html.search(/PARLIS2S/i);if(end<0)end=html.length;
@@ -143,7 +140,6 @@ export function parlisStatus(result,committee,{report=false,reference=''}={}){
  if(rejected||approved)return report?'recommended':approved?'approved':'rejected';
  return resultStatus(part,committee)||(/zur Kenntnis/i.test(part)?'info':null);
 }
-const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 /** The reports of one document, by meeting: a row per item with its event. */
 export function parlisItems(parsed,meeting,source,now=new Date()){
  const date=parsed.date||meeting.date,committee=parsed.committee||meeting.meeting,today=now.toISOString().slice(0,10),minutes=meeting.kind==='minutes';

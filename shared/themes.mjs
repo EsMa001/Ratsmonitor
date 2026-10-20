@@ -114,8 +114,12 @@ const B='(?:(?<![\\p{L}\\d])(?=[\\p{L}\\d])|(?<=[\\p{L}\\d])(?![\\p{L}\\d]))';
 const reOf=words=>new RegExp(words.join("|").replace(/\\b/g,B),'iu');
 /* Kurznamen der Unterthemen für die Anzeige im Atlas (Pillen, Listen); Suche, Filter und Administration behalten den vollen Namen */
 const SUB_SHORT={'Bauleitplanung und Raumordnung':'Bauleitplanung','Grundstücke und Liegenschaften':'Grundstücke','Stadtentwicklung, Sanierung und Denkmal':'Stadtentwicklung','Wohnungsbau und Wohnraum':'Wohnungsbau','Erschließung und Baugebiete':'Baugebiete','Öffentliche Gebäude und Plätze':'Öffentliche Gebäude','Haushalt und Finanzplanung':'Haushalt','Jahresabschluss und Prüfung':'Jahresabschluss','Beteiligungen und Eigenbetriebe':'Beteiligungen','Über- und außerplanmäßige Ausgaben':'Außerplanmäßiges','Steuern und Hebesätze':'Steuern','Kredite, Umlagen und Zuweisungen':'Kredite und Umlagen','Straßen, Brücken und Beleuchtung':'Straßen und Brücken','Verkehrssicherheit und Tempo':'Verkehrssicherheit','Gehwege und Barrierefreiheit':'Gehwege','Verkehrsplanung und neue Mobilität':'Verkehrsplanung','Kita-Ausbau und Plätze':'Kita-Ausbau','Kita-Betrieb, Träger und Beiträge':'Kita-Betrieb','Schulbau und Sanierung':'Schulbau','Schulbetrieb und Ausstattung':'Schulbetrieb','Ganztag und Hort':'Ganztag','Schulentwicklung und Schülerbeförderung':'Schulentwicklung','Berufs- und Erwachsenenbildung':'Weiterbildung','Natur, Bäume und Grünflächen':'Natur und Grün','Wasser und Abwasser':'Wasser','Abfall und Entsorgung':'Abfall','Erneuerbare Energien':'Erneuerbare','Wärme und Energieversorgung':'Wärme','Klimaschutz und Energieeffizienz':'Klimaschutz','Klimaanpassung, Hochwasser und Starkregen':'Hochwasser und Starkregen','Kinder, Jugend und Familie':'Kinder und Familie','Integration und Geflüchtete':'Integration','Inklusion und Gleichstellung':'Inklusion','Gesundheitsversorgung':'Gesundheit','Beratung und soziale Träger':'Soziale Träger','Armut, Wohnungslosigkeit und Grundsicherung':'Armut und Grundsicherung','Sportstätten und Bäder':'Sport und Bäder','Kultur und Kunst':'Kultur','Feste und Veranstaltungen':'Feste','Vereinsförderung und Ehrenamt':'Vereine und Ehrenamt','Spiel- und Freizeitanlagen':'Spielplätze','Heimat, Partnerschaften und Gedenken':'Heimat und Gedenken','Bibliotheken und Musikschule':'Bibliothek und Musikschule','Feuerwehrhäuser, Bedarfsplan und Organisation':'Feuerwehrhäuser','Feuerwehrfahrzeuge und Ausrüstung':'Feuerwehrfahrzeuge','Katastrophen- und Bevölkerungsschutz':'Katastrophenschutz','Öffentliche Ordnung und Sicherheit':'Öffentliche Ordnung','Friedhöfe und Bestattung':'Friedhöfe','Märkte, Sondernutzung und Gewerbeaufsicht':'Märkte und Sondernutzung','Ortsrecht und Satzungen':'Satzungen','Personal und Organisation':'Personal','Digitalisierung und IT':'Digitalisierung','Breitband und Mobilfunk':'Breitband','Bürgerbeteiligung und Beiräte':'Bürgerbeteiligung','Zusammenarbeit und Gebietsfragen':'Zusammenarbeit','Wirtschaftsförderung und Ansiedlung':'Wirtschaftsförderung','Innenstadt, Stadtmarketing und Einzelhandel':'Innenstadt und Handel','Arbeitsmarkt und Fachkräfte':'Fachkräfte','Regionalentwicklung und LEADER':'LEADER','Landwirtschaft und Forst':'Land- und Forstwirtschaft'};
-for(const s of SUBTOPICS){s.re=reOf(s.words);s.short=SUB_SHORT[s.name]||s.name;}
-const THEME_RE=Object.fromEntries(Object.entries(THEME_WORDS).filter(([,w])=>w.length).map(([t,w])=>[t,reOf(w)]));
+for(const s of SUBTOPICS)s.short=SUB_SHORT[s.name]||s.name;
+/* Muster erst bei der ersten Einordnung: Die Oberfläche lädt diese Datei für die Namen (Suche, Filter, Atlas) und braucht
+   die 70 Ausdrücke nie; sie zu bauen kostete jede Seite beim Laden rund 50 ms. */
+const reFor=st=>st.re??=reOf(st.words);
+let THEME_RE=null;
+const themeRe=()=>THEME_RE??=Object.entries(THEME_WORDS).filter(([,w])=>w.length).map(([t,w])=>[t,reOf(w)]);
 export const subtopicName=id=>SUBTOPICS.find(s=>s.id===id)?.name||'';
 export const themeName=id=>THEMES.find(t=>t.id===id)?.name||'noch nicht zugeordnet';
 
@@ -147,19 +151,16 @@ export function subjectOf(text){
 const PLAN=/bebauungsplan|bebauungs- und|flächennutzungsplan|bauleitplan|\bfnp\b|\bb-plan/i;
 const PLAN_ENERGY=/wind(?:energie|kraft|park|rad)|bürgerwind|photovoltaik|freiflächen|solar|pv-?park|pv-anlage|\bpv\b|agri-?pv/i;
 const BUDGET=/haushalts(?:plan|satzung|entwurf|ausführung|rede|beratung|jahr|sicherung|konsolidierung)|(?<![a-zäöüß])haushalt(?:s|es)?\b|nachtragshaushalt|doppelhaushalt|jahresabschl|gesamtabschl|abschlussprüfer|\bwirtschaftsplan|investitionsplan|stellenplan|hebes[aä]tz|grundsteuer|gewerbesteuer|hundesteuer|zweitwohnungssteuer|vergnügungssteuer|steuersatzung/i;
-// Annahme von Spenden ist Routine (Konzept 5.2.1); Sammelpunkte ohne einzelnes Thema bleiben offen, auch mit Text.
-const ROUTINE=/annahme.{0,60}(?:spende|sponsor|schenkung|zuwendung)|^(?:spenden|zuwendungen)\b|pflichtenbelehrung|^(?:bestellung|benennung|entsendung|wahl|nachwahl|neuwahl|berufung|abberufung|besetzung|neubesetzung|umbesetzung)\b.{0,100}(?:vertret|mitglied|gesellschafterversammlung|aufsichtsrat|verbandsversammlung|beirat|vorstand|schöffen|schiedsperson|stellvertret|vorsitz|delegiert|gremien)|^(?:ausschusssitzung|sitzung de[rs])\b|^angelegenheit(?:en|\/en)?\b|sitzungstermin|sitzungsplan|jahresplanung.{0,30}sitzung|beschlusscontrolling|beschlusskontrolle/i;
-const COLLECTION=/^(?:(?:neue |mündliche |schriftliche |allgemeine )?(?:anfragen|mitteilungen|berichte|informationen|bekanntgaben|eingänge|anträge|kenntnisnahmen|verschiedenes|sonstiges|termine)\b(?!\s*(?:zu|zum|zur|über|betr|:))|bericht(?:e)? de[rs] (?:bürgermeister|oberbürgermeister|verwaltung|landrat|ortsvorsteher|amtsdirektor|vorsitzenden)|mitteilung(?:en)? de[rs]|einwohnerfragestunde|fragestunde|bürgerfragestunde)/i;
 
 function hitsOf(s){
  const out=[];
  for(const st of SUBTOPICS){
-  const m=s.match(st.re);if(!m)continue;
+  const m=s.match(reFor(st));if(!m)continue;
   if(st.not&&st.not.test(s))continue;
   if(st.needs&&!st.needs.test(s))continue;
   out.push({sub:st,i:m.index,word:m[0],strong:st.strong||!WEAK_THEMES.has(st.theme)});
  }
- for(const [t,re] of Object.entries(THEME_RE)){const m=s.match(re);if(m)out.push({sub:null,theme:t,i:m.index,word:m[0],strong:!WEAK_THEMES.has(t)});}
+ for(const [t,re] of themeRe()){const m=s.match(re);if(m)out.push({sub:null,theme:t,i:m.index,word:m[0],strong:!WEAK_THEMES.has(t)});}
  for(const h of out)h.theme??=h.sub.theme;
  return out;
 }

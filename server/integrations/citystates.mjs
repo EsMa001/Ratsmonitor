@@ -23,22 +23,19 @@ import {fetchText,text} from './sessionnet.mjs';
 import {isNonPublicText} from './website-text.mjs';
 import {ckanSearchUrl,ckanExtra,ckanLinks,ckanActive,ckanSession,CKAN_ROWS,CKAN_MAX_PAGES} from './ckan.mjs';
 import {windowStart} from './history-window.mjs';
-import {budgeted} from './request-budget.mjs';
+import {budgeted,statusError} from './request-budget.mjs';
 import {sourceDecision} from './source-fields.mjs';
 import {category,hash,sourceSummary} from './oparl.mjs';
 import {collectRegionalOparl} from './oparl-regional.mjs';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
+import {RESTRICTED,fnv,httpsUrl as https,isoDay} from './source-common.mjs';
 
 export const HAMBURG_DISTRICTS=['Altona','Bergedorf','Eimsbüttel','Hamburg-Mitte','Hamburg-Nord','Harburg','Wandsbek'];
 export const HAMBURG_NOTE='Drucksachen und Sitzungen mit öffentlicher Tagesordnung der Bezirksversammlungen sowie Mitteilungen des Senats an die Bürgerschaft aus dem Transparenzportal; Sitzungen erst mit der Niederschrift, ohne Ergebnis.';
 export const BERLIN_CONSENT_MISSING='Freigabe fehlt: Die Systeme der Bezirksverordnetenversammlungen sperren Programme technisch aus (HTTP 403). Ohne eingetragene Freigabe wird nichts abgerufen.';
-const RESTRICTED=/nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich/i;
 const norm=s=>String(s||'').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]/g,'');
 const slug=s=>norm(s)||'x';
-const isoDay=value=>{const m=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:null;};
 const extra=ckanExtra;
-const https=url=>{try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 
 /**
  * Query of one page of register objects of a district, changed since the start of the period (CKAN/Solr syntax):
@@ -217,7 +214,7 @@ export function eligibleSystems(source){
  return systems.filter(s=>s.oparl!==false&&!/HTTP 40[13]\b/.test(String(s.error||'')));
 }
 export async function collectOparlDistricts(source,options={}){
- const now=options.now||new Date(),fromDay=windowStart(now,options.window).toISOString().slice(0,10),get=options.get||fetchText;
+ const now=options.now||new Date(),fromDay=windowStart(now,options.window).toISOString().slice(0,10);
  const consent=consentValid(source.consent),listed=(source.systems||[]).filter(s=>s&&s.district&&https(s.system));
  const empty=issues=>({topics:[],marks:{},readMeetings:0,coverage:{regionId:source.id,method:'oparl',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:0,sourceCount:0,complete:false,quiet:false,issues,sourceUrl:source.base||''}});
  if(!listed.length)return empty(['Keine OParl-Adresse eines Bezirks eingetragen (scripts/source-discovery/stadtstaaten.mjs berlin).']);
@@ -276,13 +273,13 @@ export async function pardokBlocks(chunks,onBlock){
 /** Text chunks of a download, without redirects, with our name and a timeout for the whole transfer. */
 export async function* streamText(url,{timeoutMs=150000,request=fetch}={}){
  const r=await fetchNoRedirect(url,{signal:AbortSignal.timeout(timeoutMs),headers:{'User-Agent':SOURCE_USER_AGENT,Accept:'application/xml,text/xml'}},request);
- if(!r.ok){await r.body?.cancel();throw Error('Quelle antwortet mit HTTP '+r.status);}
+ if(!r.ok){await r.body?.cancel();throw statusError('Quelle antwortet mit HTTP ',r);}
  const reader=r.body.getReader(),decoder=new TextDecoder('utf-8');
  for(;;){const {done,value}=await reader.read();if(done)break;yield decoder.decode(value,{stream:true});}
  const tail=decoder.decode();if(tail)yield tail;
 }
 
-export async function collectPardok(source,{now=new Date(),get=fetchText,stream=streamText,window:lookback,maxDurationMs=120000,onProgress=()=>{}}={}){
+export async function collectPardok(source,{now=new Date(),stream=streamText,window:lookback,maxDurationMs=120000,onProgress=()=>{}}={}){
  const deadline=Date.now()+maxDurationMs-3000;
  const fromDay=windowStart(now,lookback).toISOString().slice(0,10),today=now.toISOString().slice(0,10),pardok=source.pardok||{};
  const base=pardok.base||'https://www.parlament-berlin.de/',issues=[],warnings=[],kept=new Map();

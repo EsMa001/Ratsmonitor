@@ -24,7 +24,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../ai-job.mjs';
+import {sqliteAdapter} from '../sqlite-adapter.mjs';
 import {accountsConfig} from '../../server/accounts/config.mjs';
 import {randomId,randomToken,sha256hex,hmacHex} from '../../server/accounts/crypto.mjs';
 import {normalizeEmail,TOKEN_MS} from '../../server/accounts/login.mjs';

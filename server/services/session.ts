@@ -5,14 +5,13 @@ import {after} from 'next/server';
 import {context,currentSession,accountState} from '../accounts/login.mjs';
 import {accountsConfig,isDev} from '../accounts/config.mjs';
 import {failure} from '../accounts/http.mjs';
-import {getChatGPTUser} from '@/app/chatgpt-auth';
-import {AdminError,adminAccess} from '../integrations/admin-access.mjs';
+import {AdminError} from '../integrations/admin-access.mjs';
 import {FEATURES} from '@/shared/plans.mjs';
 import {validBearer} from '../integrations/prepared-access.mjs';
 
 // Sitzung, Rollen und Rechte für Routen und Seiten (requirements/konten-konzept.md, Abschnitte 5.2, 6.1, 7).
 type Later=Array<()=>Promise<unknown>>;
-type Handler=(ctx:any)=>Promise<{response:Response;later?:Later}>;
+type Handler=(ctx:ReturnType<typeof context>)=>Promise<{response:Response;later?:Later}>;
 
 /** Arbeit nach der Antwort (Mails, alles Adressabhängige); außerhalb einer Anfrage einfach anstoßen */
 export function schedule(task:()=>Promise<unknown>){
@@ -38,11 +37,10 @@ async function requestFromHeaders(){
  const host=(h.get('host')||'localhost').trim();
  return new Request(`${proto}://${host}/`,{headers:{cookie:h.get('cookie')||'','user-agent':h.get('user-agent')||''}});
 }
-export type AdminState={kind:'admin'|'anonymous'|'stale'|'denied'|'setup'|'totp'|'totp-setup'|'unavailable';user?:{userId:string;displayName:string;email:string};legacy?:boolean;totpConfirmed?:boolean;adminHost?:boolean};
+export type AdminState={kind:'admin'|'anonymous'|'stale'|'denied'|'totp'|'totp-setup'|'unavailable';user?:{userId:string;displayName:string;email:string};totpConfirmed?:boolean;adminHost?:boolean};
 /**
  * Die eine Prüfung für die Administration (Routen und Seite). Admin ist, wer eine Sitzung hat, die Rolle admin,
  * eine Anmeldung jünger als 7 Tage und über einen Admin-Host kommt (ADMIN_HOSTS, nur http im Tunnel).
- * Der alte Weg über die Kopfzeilen oai-authenticated-user-* gilt nur mit ADMIN_LEGACY_HEADER=1 (Cloudflare, Übergang).
  * Im lokalen Dev-Server bleibt die Administration ohne Anmeldung offen (wie bisher).
  */
 export async function adminState():Promise<AdminState>{
@@ -59,15 +57,7 @@ export async function adminState():Promise<AdminState>{
     if(admin==='ok')return {kind:'admin',user,totpConfirmed,adminHost};
     state={kind:admin==='stale'?'stale':admin==='totp'?'totp':admin==='setup'?'totp-setup':'denied',user};
    }
-  }catch(error){if(!cfg.legacyHeader)return {kind:'unavailable'};console.error('[konten] Admin-Prüfung über Konten fehlgeschlagen:',error instanceof Error?error.message:String(error));}
- }
- if(cfg.legacyHeader){
-  const user=await getChatGPTUser();
-  if(user){
-   const access=await adminAccess(env.DB,user);
-   if(access.kind==='owner')return {kind:'admin',user:{userId:user.userId,displayName:user.displayName,email:user.email},legacy:true};
-   if(state.kind==='anonymous')return {kind:access.kind==='setup'?'setup':'denied',user:{userId:user.userId,displayName:user.displayName,email:user.email},legacy:true};
-  }
+  }catch(error){console.error('[konten] Admin-Prüfung über Konten fehlgeschlagen:',error instanceof Error?error.message:String(error));return {kind:'unavailable'};}
  }
  return state;
 }
@@ -79,15 +69,20 @@ export async function requireAdmin(){
  if(state.kind==='stale')throw new AdminError(401,'Bitte neu anmelden (Admin-Anmeldung älter als 7 Tage).');
  if(state.kind==='totp')throw new AdminError(401,'Bitte den Code aus der Authenticator-App eingeben (/admin).');
  if(state.kind==='totp-setup')throw new AdminError(403,'Der zweite Faktor ist noch nicht eingerichtet (einmal über den Tunnel).');
- if(state.kind==='setup')throw new AdminError(403,'Der Admin-Zugang muss zuerst freigeschaltet werden.');
  throw new AdminError(403,'Kein Zugriff auf die Administration.');
 }
-/** Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. */
 /**
  * Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. accounts:false heißt: auf dieser Umgebung gibt es
  * keine Konten (Cloudflare-Build, Server ohne Kontendatei); dann gelten keine Stufengrenzen, alles bleibt wie früher.
  */
-export async function requestTier(request:Request){
+export function requestTier(request:Request){
+ let tier=tiers.get(request);
+ if(!tier){tier=readTier(request);tiers.set(request,tier);}
+ return tier;
+}
+/* Je Anfrage einmal: guard() und die Route fragen dieselbe Anfrage (Suche: vorher zwei Sitzungsabfragen, drei SHA-256) */
+const tiers=new WeakMap<Request,ReturnType<typeof readTier>>(),internals=new WeakMap<Request,Promise<boolean>>();
+async function readTier(request:Request){
  const cfg=accountsConfig(env);
  const guest={accounts:true,tier:'guest',features:FEATURES.guest,userId:null as string|null};
  if(!cfg.db||!cfg.secret)return {...guest,accounts:false};
@@ -104,8 +99,10 @@ export async function requestTier(request:Request){
 // ---------------------------------------------------------------- Zugang (Einladungsmodus) und Stufen in Datenrouten
 const DENY={'Cache-Control':'private, no-store, max-age=0','Vary':'Cookie'};
 /** Interne Aufrufe (serve.mjs wärmt vor, Runner): Bearer IMPORT_TOKEN, mindestens 16 Zeichen */
-export async function internalCall(request:Request){
- return validBearer(request.headers.get('authorization'),env.IMPORT_TOKEN,16);
+export function internalCall(request:Request){
+ let internal=internals.get(request);
+ if(!internal){internal=Promise.resolve(validBearer(request.headers.get('authorization'),env.IMPORT_TOKEN,16));internals.set(request,internal);}
+ return internal;
 }
 /**
  * Zweite Linie hinter der Middleware: im Einladungsmodus nur mit Sitzung; mit feature nur, wenn die Stufe es erlaubt.

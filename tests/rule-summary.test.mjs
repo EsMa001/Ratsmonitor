@@ -1,9 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {ruleSummary,splitSentences,buildRuleSummary,isLetter,isMinutes,sections} from '../server/integrations/rule-summary.mjs';
-import {enrichDocument,sourceFor} from '../server/integrations/documents.mjs';
-import {compactSummaryAttempt} from '../server/integrations/compact-summary.mjs';
-import {preserveArticleContent} from '../shared/article-record.mjs';
+import {sourceFor} from '../server/integrations/documents.mjs';
 
 const DOC = `Sitzungsvorlage
 Beschlussvorschlag:
@@ -41,15 +39,6 @@ test('Güte liegt zwischen 0 und 100; ohne erkennbare Struktur gibt es keine Zus
   const flat = 'Ein Satz ohne jede Struktur steht hier im Text und geht lange weiter. Noch ein zweiter Satz folgt direkt danach im Text hier.\nUnd ein dritter Satz gehört auch noch dazu und endet hier ohne Marke.';
   assert.equal(buildRuleSummary(flat, 'Etwas ganz anderes'), null);
 });
-test('Zusammenfassung wird am Artikel gespeichert und überlebt Quellenaktualisierung', async () => {
-  const topic = { title: 'Finanzzwischenbericht', officialTitle: 'Finanzzwischenbericht', sourceText: 'x', longSummary: [], documents: [{ title: 'Vorlage', kind: 'application/pdf', url: 'https://example.org/a.pdf' }] };
-  const out = await enrichDocument(topic, async () => DOC);
-  assert.equal(out.ruleSummary.generatedBy, 'Regelbasierte Zusammenfassung');
-  const stored = await compactSummaryAttempt({ ...topic, metadata: {} }, out, '2026-10-09T00:00:00Z');
-  assert.equal(stored.topic.ruleSummary.score, out.ruleSummary.score);
-  assert.equal(preserveArticleContent({ ruleSummary: out.ruleSummary }, { title: 'neu' }).ruleSummary.score, out.ruleSummary.score);
-});
-
 test('Dokumentquellen werden nach Herkunft und Pfad zugeordnet', () => {
   assert.equal(sourceFor('https://sessionnet.owl-it.de/bad-wildungen/bi/getfile.asp?id=1&type=do').base, 'https://sessionnet.owl-it.de/bad-wildungen/bi/');
   assert.equal(sourceFor('https://evil.example/x.pdf').base, 'https://invalid.local/');
@@ -62,13 +51,6 @@ test('Briefe und Einwendungen bekommen keine Zusammenfassung, Fraktionsanträge 
   const motion = 'Sehr geehrter Herr Vorsteher,\nwir bitten, folgenden Antrag zu behandeln.\nAntrag: Der Magistrat wird beauftragt, eine Verkehrszählung in der Straße der Jugend durchzuführen und das Ergebnis vorzulegen.\nBegründung:\nDie Straße wird vermehrt als Abkürzung benutzt, obwohl es eine Verbindung über die Kreisstraße gibt. Wir bitten um Unterstützung des Antrages von allen Fraktionen.';
   assert.ok(ruleSummary(motion, 'Antrag der Fraktion - Verkehrszählung'));
   assert.equal(isLetter(DOC, 'Finanzzwischenbericht', true), false);
-});
-
-test('Eine frühere Zusammenfassung bleibt nicht stehen, wenn die Regeln jetzt keine mehr erzeugen', async () => {
-  const letter = 'Sehr geehrter Herr Schwarz,\nhiermit erhebe ich Einwendungen gegen das Protokoll. Ich beantrage daher eine Änderung. Meine Bitte blieb unbeantwortet, mir fehlt die Antwort.\nMit freundlichen Grüßen';
-  const topic = { title: 'Einwendungen gegen die Niederschrift', sourceText: 'x', longSummary: [], ruleSummary: { score: 50 }, documents: [{ title: 'Vorlage', kind: 'application/pdf', url: 'https://example.org/a.pdf' }] };
-  const out = await enrichDocument(topic, async () => letter);
-  assert.equal(out.ruleSummary, undefined);
 });
 
 test('Auszug nennt Quelle und markiert Lücken zwischen nicht angrenzenden Sätzen', () => {
@@ -102,17 +84,4 @@ test('Gliederungsziffer vor der Überschrift', () => {
 test('Darstellung der Sach- und Rechtslage ist eine Überschrift', () => {
   const { facts } = sections('Antrag: Der Rat beschließt die Einrichtung einer Anliegerstraße in der Hauptstraße.\nDarstellung der Sach- und Rechtslage: Der Antrag der Fraktion vom 23.03.2026 ist als Anlage beigefügt.\nAnlagen: keine');
   assert.ok(facts.trim().startsWith('Der Antrag der Fraktion'));
-});
-
-test('enrichDocument leaves documents of the whole session alone (minutes, invitation, linked from many reports)',async()=>{
- const doc=title=>({title,kind:'application/pdf',url:'https://ris.example.de/'+encodeURIComponent(title)+'.pdf'});
- const read=async()=>{throw Error('darf nicht gelesen werden');};
- for(const d of [doc('Niederschrift öffentlich'),doc('Einladung')]){
-  const out=await enrichDocument({title:'Einführung neuer Mitglieder',documents:[d],longSummary:[],sourceText:''},read);
-  assert.match(out.documentIssue,/ganzen Sitzung/);assert.equal(out.ruleSummary,undefined);
- }
- const shared=doc('Vorlage 12/26');
- const out=await enrichDocument({title:'Mitteilungen',documents:[shared],longSummary:[],sourceText:''},read,{uses:()=>5});
- assert.match(out.documentIssue,/ganzen Sitzung/);
- await assert.rejects(enrichDocument({title:'Radweg',documents:[shared],longSummary:[],sourceText:''},read,{uses:()=>2}),/darf nicht gelesen werden/);
 });

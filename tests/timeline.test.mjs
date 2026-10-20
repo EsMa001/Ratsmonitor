@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {bucketStart,mergeAreas,rangeStart,timelineSeries,timelineStats,TIMELINE_BUCKETS,TIMELINE_RANGES,TIMELINE_BASES} from '../shared/timeline.mjs';
 import {adminTimeline} from '../server/integrations/admin-timeline.mjs';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';
 test('buckets start on the day, on Monday or on the first of the month',()=>{
  assert.deepEqual(Object.keys(TIMELINE_BUCKETS),['day','week','month']);assert.deepEqual(Object.keys(TIMELINE_RANGES),['3m','12m','24m','all']);assert.deepEqual(Object.keys(TIMELINE_BASES),['event','import']);

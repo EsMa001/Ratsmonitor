@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {acquireImport,lockedUntil,IMPORT_LEASE_MS} from '../server/integrations/import-lock.mjs';
 function fixture(){const sql=new DatabaseSync(':memory:');for(const f of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+f,import.meta.url),'utf8'));return {sql,db:sqliteAdapter(sql)};}
 const keys=sql=>sql.prepare("SELECT key FROM system_state WHERE key LIKE 'import-%' ORDER BY key").all().map(r=>r.key);

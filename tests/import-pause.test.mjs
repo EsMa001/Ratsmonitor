@@ -2,7 +2,7 @@
 // wird zurückgestellt statt den ganzen Auftrag anzuhalten; die OParl-Sonde wird gemerkt (pipeline-jobs.mjs,
 // request-budget.mjs, collect-region.mjs).
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {pipelineAction,provider,serverLimit,PER_PROVIDER} from '../server/integrations/pipeline-jobs.mjs';
 import {budgeted,refusalGate,retryAfterMs,statusError,isRefusal,BUDGET_REACHED,REFUSED} from '../server/integrations/request-budget.mjs';
 import {collectRegion,PROBE_DAYS} from '../server/integrations/collect-region.mjs';

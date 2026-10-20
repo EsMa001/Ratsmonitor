@@ -57,8 +57,6 @@ export const READERS={
  // SIM Hannover (Sitzungsmanagement of the city, Domino): lists of meetings per body, agenda pages and the papers with
  // their "Beratungsverlauf"; pages of items and minutes (confidential items) are never requested.
  'sim-hannover':{name:'SIM Hannover (öffentliches Sitzungsmanagement)',collect:collectSimHannover,detect:async(url,html)=>pick(detectSimHannover(url,html),['base'])},
- // SD.NET RIM 4 (newer web interface of SD.NET, /termine /tops /vorgang) hosted by the municipality itself: the iCalendar
- // of the meetings, the agenda of each and the process of its items. The hosts of ratsinfomanagement.net are not served.
  // TYPO3 Bürgerinformationssystem (extension risportal, /bi with /api/meetings/): month lists and the public agenda of each meeting.
  'typo3-bi':{name:'TYPO3-Bürgerinformationssystem (öffentliche Seiten)',collect:collectTypo3Bi,detect:async(url,html)=>pick(detectTypo3Bi(url,html),['base'])},
  // Meeting Mobile / RIS Web (Lotus Domino XPages, meeting-mobile.de/mm/<ort>/ris_web.nsf): the list of meetings and the public
@@ -67,6 +65,8 @@ export const READERS={
  // Provox IIP (Bürger- und Ratsinformationssystem, ASP.NET, <host>/ris/<client>/) hosted by the municipality: the JSON feed
  // of the month calendar, the agenda of each meeting and the paper of its items. Only the block "Öffentlich" is read.
  'provox-iip':{name:'Provox IIP (öffentliche Seiten)',collect:collectProvoxIip,detect:async(url,html)=>pick(detectProvoxIip(url,html),['base'])},
+ // SD.NET RIM 4 (newer web interface of SD.NET, /termine /tops /vorgang) hosted by the municipality itself: the iCalendar
+ // of the meetings, the agenda of each and the process of its items. The hosts of ratsinfomanagement.net are not served.
  'sdnet-rim4':{name:'SD.NET RIM 4 (öffentliche Seiten)',collect:collectRim4,detect:async(url,html)=>pick(detectRim4(url,html),['base'])},
  // Ratsinformationsmodul (hwratssystem) of Hirsch & Wölfl in municipal TYPO3 websites (Baden-Württemberg): the month data of
  // the meeting calendar page with the public items of each meeting; the non-public items are never read.
@@ -93,12 +93,12 @@ export const READERS={
  // Sitzungsdienst of mein-intra.net embedded in the municipality's website: recognised from the website page that
  // embeds it (export script and token); the entry names the system, the token and that page.
  councilservice:{name:'Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website)',collect:collectCouncilservice,detect:async(url,html)=>pick(detectCouncilservice(url,html),['base','token','page'])},
- // Website of a municipality without council system (notices, minutes, feeds of its CMS). No page of a council system
- // is one, so verify.mjs never recognises it; only the website search (scripts/source-discovery/website.mjs) assigns it.
  // CKAN portal of open data (ckan.mjs), like OParl a generic interface: recognised from a page of the portal, read by
  // the query profile of its entry (ckan: {queries, committee}). Without a profile it reads nothing, and the check names
  // the area "API verfügbar, Leser/Connector fehlt" (shared/source-access.mjs).
  ckan:{name:'CKAN-Portal (offene Schnittstelle)',collect:collectCkan,detect:async(url,html)=>detectCkan(url,html)},
+ // Website of a municipality without council system (notices, minutes, feeds of its CMS). No page of a council system
+ // is one, so verify.mjs never recognises it; only the website search (scripts/source-discovery/website.mjs) assigns it.
  website:{name:WEBSITE_READER_NAME,collect:collectSite,detect:async()=>null},
  // City states (citystates.mjs, entries in citystate-sources.json). Neither is recognised from a page.
  'hamburg-transparenz':{name:'Transparenzportal Hamburg (Drucksachen und Sitzungen der Bezirksversammlungen, Mitteilungen des Senats)',collect:collectHamburgTransparenz,detect:async()=>null},

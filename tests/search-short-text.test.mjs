@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {refreshSearchWords} from '../server/integrations/search-words.mjs';
 /* drizzle/0019: a card shows and searches only what the result list shows: title, short text and committee. The short
    text follows the article page (DetailPage.tsx): KI short summary, else the short rule summary, else the automatic

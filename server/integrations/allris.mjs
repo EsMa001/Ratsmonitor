@@ -6,6 +6,7 @@ import {resultStatus} from './sdnet.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {germanDayStrict as day} from './source-common.mjs';
 // Public pages of ALLRIS 4 (CC e-gov), for areas whose OParl interface is not switched on. Read are the monthly
 // calendar (si010), the agenda of each meeting (to010) and the page of each paper on a public agenda (vo020).
 //
@@ -18,7 +19,6 @@ import {committeePart} from './oparl-regional.mjs';
 // - Some systems put the vendor's access check against automated requests in front of their pages ("Zugriff
 //   pruefen"). That is respected the same way: reading ends, the check is not solved.
 // - Only agenda items of the public part are taken. Some systems also print the titles of the non-public part.
-const day=value=>{const m=String(value).match(/(\d{2})\.(\d{2})\.(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:null;};
 const cell=(row,name)=>row.match(new RegExp(`<td[^>]*class=["'](?:[^"']*\\s)?${name}(?:\\s[^"']*)?["'][^>]*>([\\s\\S]*?)<\\/td>`,'i'))?.[1]||'';
 const byId=(html,id)=>html.match(new RegExp(`<span[^>]*id=["']${id}["'][^>]*>([\\s\\S]*?)<\\/span>`,'i'))?.[1]||'';
 // Record number in an address; inside HTML the parameters are separated by "&amp;".

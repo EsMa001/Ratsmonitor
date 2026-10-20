@@ -6,6 +6,7 @@ import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {asciiSlug as slug} from './source-common.mjs';
 // Ratsinformationsmodul "hwratssystem" of Hirsch & Wölfl (TYPO3 extension in the websites of small municipalities,
 // Baden-Württemberg). Read are plain addresses of the public site only, all below the page of the meeting calendar
 // (source.base = address of that page, e.g. …/ratsinformationssystem/sitzungskalender):
@@ -18,7 +19,6 @@ import {committeePart} from './oparl-regional.mjs';
 export const HW_TYPO3='hw-typo3';
 const PLUGIN=/hwratssystem__sitzungstermin__calendar_wrapper/;
 const ROUTE='tx_hwratssystem_sitzungstermincalendar';
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(String(html||'').replace(/<br\s*\/?>/gi,' ').replace(/<\/p>/gi,' ')).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
 // Items that are no matter of their own: formal points of every session.
 const FORMAL=/^(?:eröffnung|begrüßung|feststellung der|bürgerfragestunde|einwohnerfragestunde|einwohnerfrage|fragestunde|bürgerfrage|bekanntgabe|bekanntgaben|verschiedenes|anfragen|anregungen|fragen und anträge|wünsche|mitteilungen|schlusswort|genehmigung (?:der |des )?(?:niederschrift|protokoll)|kenntnisnahme (?:der |des )?(?:niederschrift|protokoll)|protokoll|niederschrift|tagesordnung|nicht\s*öffentlich|ende der sitzung)/i;

@@ -10,7 +10,7 @@
  *
  * Status: 'ok' (Datei liegt), 'error' (HTTP-Fehler, Zeitüberschreitung, zu groß; wird nach `retryDays` erneut versucht),
  * 'unsupported' (Antwort ist kein PDF), 'text-only' (PDF fiel aus dem Budget, scripts/pdf-store/budget.mjs; nur die Textfassung bleibt). Gefüllt von scripts/pdf-store/fetch.mjs; gelesen von readDocument
- * (server/integrations/documents.mjs, über useDocumentStore) und fetchSource (scripts/ai-batch/lib.mjs), wenn RM_PDF_STORE gesetzt ist.
+ * (server/integrations/documents.mjs, über useDocumentStore), wenn RM_PDF_STORE gesetzt ist.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -34,8 +34,8 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   CREATE TABLE IF NOT EXISTS texts(sha256 TEXT PRIMARY KEY,status TEXT NOT NULL,method TEXT,version INTEGER NOT NULL,pages INTEGER,ocr_pages INTEGER,ocr_needed INTEGER,chars INTEGER,error TEXT,made_at TEXT NOT NULL);
   CREATE INDEX IF NOT EXISTS idx_texts_ocr ON texts(ocr_needed) WHERE ocr_needed>0;
   CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY,value TEXT);
-  -- Prüfsumme der Textfassung (sha256 über die .txt-Datei) je Datei und Stand made_at: summaries.mjs vergleicht sie mit
-  -- ruleSummaryTried, ohne die Datei bei jedem Lauf zu lesen. facts_keys: Eingaben der letzten Fakten je Bericht (facts.mjs).
+  -- text_hashes, facts_keys: Altlast der Skripte summaries.mjs und facts.mjs (entfernt 20.10.2026, ersetzt durch report_rules);
+  -- die Tabellen bleiben in bestehenden Ablagen, niemand liest oder schreibt sie mehr.
   CREATE TABLE IF NOT EXISTS text_hashes(sha256 TEXT PRIMARY KEY,made_at TEXT NOT NULL,hash TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS facts_keys(topic_id TEXT PRIMARY KEY,key TEXT NOT NULL);
   -- Verdrängte PDFs, die für die OCR nachgeladen werden sollten (Auftrag „OCR starten“) und nicht kamen: kein neuer Versuch
@@ -63,8 +63,6 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   size:db.prepare("SELECT COALESCE(SUM(bytes),0) AS b FROM (SELECT DISTINCT sha256,bytes FROM pdfs WHERE status='ok')"),
   text:db.prepare('SELECT status,method,version,pages,ocr_pages AS ocrPages,ocr_needed AS ocrNeeded,chars FROM texts WHERE sha256=?'),
   mark:db.prepare("SELECT p.sha256 AS sha,t.made_at AS madeAt FROM pdfs p JOIN texts t ON t.sha256=p.sha256 WHERE p.url=? AND p.status IN ('ok','text-only') AND t.status='ok'"),
-  hashGet:db.prepare('SELECT hash FROM text_hashes WHERE sha256=? AND made_at=?'),
-  hashSet:db.prepare('INSERT INTO text_hashes(sha256,made_at,hash) VALUES(?,?,?) ON CONFLICT(sha256) DO UPDATE SET made_at=excluded.made_at,hash=excluded.hash'),
   putText:db.prepare(`INSERT INTO texts(sha256,status,method,version,pages,ocr_pages,ocr_needed,chars,error,made_at,head_type) VALUES(?,?,?,?,?,?,?,?,?,?,?)
    ON CONFLICT(sha256) DO UPDATE SET status=excluded.status,method=excluded.method,version=excluded.version,pages=excluded.pages,ocr_pages=excluded.ocr_pages,
    ocr_needed=excluded.ocr_needed,chars=excluded.chars,error=excluded.error,made_at=excluded.made_at,head_type=excluded.head_type`),
@@ -141,16 +139,6 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   },
   /** Stand der Textfassung zur Adresse ('<sha256>:<made_at>') ohne die Datei zu lesen, oder null ohne Text (wie getText). */
   textMark(url){const m=q.mark.get(url);return m?`${m.sha}:${m.madeAt}`:null;},
-  /** sha256 (hex) über die Textfassung zur Adresse, je Datei und made_at einmal gerechnet und gemerkt; null ohne Text. */
-  textHash(url){
-   const m=q.mark.get(url);if(!m)return null;
-   const kept=q.hashGet.get(m.sha,m.madeAt);if(kept)return kept.hash;
-   let text;try{text=fs.readFileSync(fileOf(m.sha,'.txt'),'utf8');}catch{return null;}
-   const hash=crypto.createHash('sha256').update(text).digest('hex');q.hashSet.run(m.sha,m.madeAt,hash);return hash;
-  },
-  /** Eingaben der letzten Fakten je Bericht (facts.mjs): Map topic_id → key, und Schreiben. */
-  factsKeys(){return new Map(db.prepare('SELECT topic_id,key FROM facts_keys').all().map(r=>[r.topic_id,r.key]));},
-  setFactsKey:(()=>{let st;return (id,key)=>{st??=db.prepare('INSERT INTO facts_keys(topic_id,key) VALUES(?,?) ON CONFLICT(topic_id) DO UPDATE SET key=excluded.key');st.run(id,key);};})(),
   /** Textfassung vollständig, keine Seite wartet mehr auf OCR (ein Eintrag im Fehlerspeicher dazu ist dann veraltet). */
   ocrDone(sha){const t=q.text.get(sha);return !!t&&t.status==='ok'&&!(t.ocrNeeded>0);},
   /** Seiten der Textfassung zu einer Prüfsumme (für die OCR-Runde) oder null. */

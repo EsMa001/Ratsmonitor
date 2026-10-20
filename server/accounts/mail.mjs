@@ -56,7 +56,7 @@ export async function processOutbox(db,cfg,options={}){
    console.warn(`[konten] Mail ${row.template} (#${id}) Versuch ${row.attempts} fehlgeschlagen: ${clean(error)}`);
    await db.prepare(last?"UPDATE mail_outbox SET status='failed',\"to\"=NULL,data=NULL WHERE id=?":"UPDATE mail_outbox SET status='queued',next_at=? WHERE id=?")
     .bind(...(last?[id]:[iso(now+RETRY_MS[Math.min(row.attempts-1,RETRY_MS.length-1)]),id])).run();
-   last?counts.failed++:counts.retry++;
+   if(last)counts.failed++;else counts.retry++;
   }
  }
  return counts;

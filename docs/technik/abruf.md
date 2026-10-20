@@ -79,7 +79,7 @@ sequenceDiagram
    `article_versions` und ein Upsert in `topics`. Geschrieben wird in Batches zu höchstens 80 Anweisungen; eine Identitätsgruppe
    bleibt in einem Batch.
 9. **Quellenstand und Protokoll:** `importHealth` bewertet den Versuch, `source_coverage` wird per Upsert geschrieben; Marken und
-   Sitzungsliste gespeichert; nur für Münster `latest-decision` und Push; `import_runs` auf `completed` oder `partial`; Aufzeichnung
+   Sitzungsliste gespeichert; `import_runs` auf `completed` oder `partial`; Aufzeichnung
    unter `import-debug:<gebiet>` (höchstens 1.500 Anfragen).
 10. **Nacharbeiten in `runSync`:** `refreshSearchWords` (nur bei `stored > 0`, `onlyIfBuilt`, höchstens 20.000 Karten), `rollCardDates`,
     `refreshRegionFacts` (nur ohne `resume`, 1 s Budget); im `finally` `invalidateReads()` und Sperre freigeben. Bei einer Ausnahme
@@ -99,7 +99,6 @@ sequenceDiagram
 | Weg | Was passiert |
 |---|---|
 | Admin-Seite „Abruf“ (`components/admin-processing.tsx`) | legt mit `create` an und arbeitet im Browser mit `run` ab: bis 8 Bahnen je Anfrage, je 90 s (`POST /api/admin/pipeline`, dieselbe Ausführungsfunktion wie der Prozess). „Im Hintergrund abrufen“ legt den Auftrag nur an; der Job `import` holt ihn binnen 10 Minuten. Prozess und Browser dürfen denselben Auftrag treiben (jedes Gebiet genau einmal) |
-| `POST /api/admin/import` | ein Gebiet, Standardzeitraum |
 | `POST /api/internal/sync` (Bearer `IMPORT_TOKEN`) | ein Gebiet; älterer Weg von außen über `scripts/run-imports.mjs` (Gebiet für Gebiet, 3 Versuche, danach `/api/internal/admin-refresh`) |
 | `import-worker.mjs --direct --regions … --window …` | ohne Auftrag, direkt je Gebiet (Nacharbeit, Altbestand) |
 | Seite Altbestand | rückwirkender Abruf je 8 Gebiete, 1 bis 24 Monate |
@@ -223,12 +222,12 @@ Regeln ([Pipeline](pipeline.md)).
 | `article_versions` | vorige Fassung als Diff (`diff-v1`, `shared/article-version.mjs`, Wiederherstellung `restoreVersions`) | nur wenn sich der Bericht ändert |
 | `source_coverage` | je Gebiet ein JSON: `Coverage` des Lesers zusammengeführt plus `importHealth` (`lastAttemptAt`, `lastSuccessAt`, `lastCompleteAt`, `attemptStatus`, `failureCount`, `nextRetryAt`), `importedAt`, `window`, `oparlProbeAt`, `apiCheck` | jeder Versuch, auch gescheiterte |
 | `import_runs` | `running` zu Beginn, am Ende `completed`/`partial`/`failed` mit `details` (mode, region, trigger, window, count …) | jeder Lauf; Läufe älter als 30 Tage werden gelöscht |
-| `system_state` | `import-marks:<gebiet>`, `import-list:<gebiet>`, `import-debug:<gebiet>`, `latest-decision` (Münster) | |
+| `system_state` | `import-marks:<gebiet>`, `import-list:<gebiet>`, `import-debug:<gebiet>` | |
 | Trigger | `search_cards` (+ `search_fts`, `search_cards_gone`), `data_revisions` `content` und `search`, `region_revisions`; `source_coverage` erhöht `coverage` | mit jedem Schreiben |
 | Fehlerspeicher | `work_failures` (`step='import'`, `key=<gebiet>`, `host=provider`), `source_hosts` | über `noteImport` |
 
 Reihenfolge in `runSync`: `import_runs` → Batches aus `article_versions` und `topics` → `source_coverage` → Marken und Liste →
-`latest-decision` → `import_runs` → `import-debug` → `refreshSearchWords` → `rollCardDates` → `refreshRegionFacts` → Sperre frei.
+`import_runs` → `import-debug` → `refreshSearchWords` → `rollCardDates` → `refreshRegionFacts` → Sperre frei.
 
 **Der Abruf löscht nie.** Ein leerer Abruf behält den alten Bestand, ein kürzerer Zeitraum verkürzt die belegte Spanne nicht.
 
@@ -304,8 +303,8 @@ Nur gelesen, nicht zur Laufzeit geprüft:
    nennt alte Uhrzeiten (Sicherung 03:30, Wortliste 04:15).
 2. **Exit-Code 2** („pausierter frischer Auftrag“) kann kaum eintreten: `ensureJob` zählt pausierte Aufträge als veraltet und ersetzt
    sie.
-3. **`RM_PDF_STORE` im Importprozess** hat im Metadaten-Abruf keine Wirkung: der Pfad ruft weder `readDocument` noch
-   `enrichDocument` auf (die nur der Modus `summaries` nutzt). `docs/betrieb/node-server.md` beschreibt, der Import lege jedes
+3. **`RM_PDF_STORE` im Importprozess** hat im Metadaten-Abruf keine Wirkung: der Pfad ruft `readDocument` nicht auf
+   (`enrichDocument` und der Modus `summaries` sind seit 20.10.2026 entfernt). `docs/betrieb/node-server.md` beschreibt, der Import lege jedes
    gelesene PDF ab; das trifft so nicht zu.
 4. **Zwei Schlüsselarten in `source_hosts`:** der Abruf schreibt den Servergruppennamen (`provider`), die PDF-Schritte den Host der
    Adresse; `deferredRegions` sucht nach `provider(id)`.
@@ -313,6 +312,7 @@ Nur gelesen, nicht zur Laufzeit geprüft:
 6. **`refreshSummaries`** (Modus `summaries` von `runSync`) ist kein Teil des Metadaten-Abrufs: nur von Hand über `POST
    /api/admin/analyse` und nur mit `OPENAI_API_KEY` (Methode `openai-summary-v1`, `ai-summary.mjs`). Das widerspricht dem Satz in
    `requirements/ai-processing.md`, es gebe keinen Weg zu automatischen Modellanfragen, sobald der Schlüssel gesetzt ist; in der
-   Vorlage `ratsmonitor.env.example` ist er leer.
+   Vorlage `ratsmonitor.env.example` ist er leer. **Erledigt 20.10.2026:** Modus `summaries`, `refreshSummaries`,
+   `/api/admin/analyse` und `ai-summary.mjs` sind entfernt (`requirements/cleanup-analyse-2026-10-20.md`, C2).
 7. Ob andere Leser (sim-hannover „Beratungsverlauf“, sdnet-rim4 `vorgang`, allris `vo020`) Stationen aus der Beratungsfolge der
    Vorlage bilden, ist ungeprüft; `MAX_MEETINGS = 400` gilt nur für SessionNet.

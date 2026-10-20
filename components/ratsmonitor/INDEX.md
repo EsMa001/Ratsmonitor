@@ -15,7 +15,6 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 absolute ratsmonitor.css:611
 admin-access admin.css:6
-admin-activation admin.css:6
 admin-ai-kinds admin.css:10
 admin-ai-local admin.css:431
 admin-ai-local-article admin.css:455
@@ -671,10 +670,9 @@ z- ratsmonitor.css:399
 - page.tsx (4): metadata, Page
 
 ### app/admin/
-- page.tsx (90, ⚠7): dynamic, metadata, AdminPage
+- page.tsx (82, ⚠5): dynamic, metadata, AdminPage
 
 ### app/
-- chatgpt-auth.ts (92): ChatGPTUser, getChatGPTUser, chatGPTSignInAvailable, chatGPTSignInPath, chatGPTSignOutPath
 - error.tsx (13, ⚠1): PageError
 - global-error.tsx (14, ⚠1): GlobalError
 - layout.tsx (12, ⚠2): metadata, viewport, RootLayout
@@ -684,17 +682,16 @@ z- ratsmonitor.css:399
 - sitemap.ts (12): sitemap
 
 ### components/
-- admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (114, ⚠8): AdminAiLocal
 - admin-altbestand.tsx (138, ⚠8): AdminAltbestand
-- admin-atlas.tsx (205, ⚠29): AdminAtlas
+- admin-atlas.tsx (204, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
 - admin-chrome.tsx (143, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
 - admin-cockpit.tsx (98, ⚠1): AdminCockpit
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (114, ⚠7): AdminRuns, AdminReview, AdminStock
+- admin-dashboard.tsx (114, ⚠8): AdminRuns, AdminReview, AdminStock
 - admin-debug.tsx (144, ⚠9): AdminDebug
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
 - admin-fehler.tsx (80, ⚠4): AdminFehler
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (41): IconName, Icon
@@ -794,7 +791,7 @@ z- ratsmonitor.css:399
 - QuellenPage.tsx (174, ⚠3): QuellenPage
 - StartseitePage.tsx (508, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
-- TodoPage.tsx (267, ⚠24): TodoPage
+- TodoPage.tsx (267, ⚠25): TodoPage
 - VideosPage.tsx (172): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - XAuszug.tsx (220, ⚠2): XAuszug
@@ -839,6 +836,7 @@ z- ratsmonitor.css:399
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
+- reportError.ts (28): reportError, installErrorReporting
 - routes.ts (10): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (151): SavedArticle, toggleSavedArticle, removeSavedArticle, restoreSavedArticle, useSavedArticles, useSavedArticlesReady
 - savedSearch.ts (155, ⚠1): SearchSnapshot, snapshotOf, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, hasScope, splitTerms, suggestName
@@ -935,7 +933,7 @@ z- ratsmonitor.css:399
 
 ### components/ratsmonitor/state/
 - account.tsx (108): AccountProvider, useAccount, useSavedStats
-- data.tsx (36, ⚠1): DataProvider, useData
+- data.tsx (40, ⚠1): DataProvider, useData
 - nav.ts (17, ⚠1): View, viewOf, noteRoute, cameFromApp, overviewScroll, useAppNav
 - search.tsx (665, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast

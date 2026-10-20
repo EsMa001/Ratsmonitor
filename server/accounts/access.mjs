@@ -35,7 +35,7 @@ export async function auditAdmin(request,env,{cfg=accountsConfig(env),now=Date.n
  try{
   const ctx=context(request,env,{cfg,now});
   const session=await currentSession(ctx);
-  const user=session?((await accountState(ctx,session)).adminHere?session.user_id:null):(cfg.legacyHeader?'legacy':null);
+  const user=session?((await accountState(ctx,session)).adminHere?session.user_id:null):null;
   if(!user)return false;
   const at=new Date(now).toISOString(),hour=at.slice(0,13);
   await cfg.db.prepare(`INSERT INTO admin_audit(at,user_id,method,path,action,hour,count) VALUES(?,?,?,?,?,?,1)

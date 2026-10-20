@@ -27,8 +27,7 @@ flowchart LR
   keine Stufengrenzen: Cloudflare-Build); `guard()` lässt interne Aufrufe immer durch, antwortet bei `invite` ohne Konto 401 und bei
   fehlender Funktion der Stufe 403; `gated(handler, {feature:'analytics'|'calendar'})` umhüllt eine Datenroute und macht `public`
   zu `private` mit `Vary: Cookie`; `adminState()` liefert `admin`, `stale` (Anmeldung älter als 7 Tage), `totp`, `totp-setup` oder
-  `denied`; der alte Kopfzeilenweg (`Oai-Authenticated-User-*` aus Caddy, `admin-owner-v1`) nur mit `ADMIN_LEGACY_HEADER=1` oder
-  solange keine Kontendatei eingerichtet ist.
+  `denied`; den alten Kopfzeilenweg (`Oai-Authenticated-User-*` aus Caddy, `admin-owner-v1`) gibt es seit 20.10.2026 nicht mehr.
 - **Admin-Routen:** `adminRead()` = `requireAdmin` + `readResponse` mit schwachem ETag (304 bei passendem `If-None-Match`, ohne den
   Body zu bauen; `admin-etag.mjs`); Kopfzeilen `private, no-cache`; `/api/admin/static?v=` für immer im Cache.
 - **Kontorouten:** `requireSameOrigin` (`server/accounts/http.mjs`): `Origin` gleich, nicht `cross-site`, `Content-Type` JSON, sonst 403
@@ -49,7 +48,6 @@ flowchart LR
 | `GET /api/x`, `/api/x/signale` | plenara.X (`feature:'analytics'`); `/api/x/teaser` ohne Enterprise |
 | `GET /api/analytics/{compare,decisions,fraktionen,graph,network,news,trends}` | Tools (`feature:'analytics'`); `diffusion` nur `gated()` |
 | `GET /api/calendar`, `/api/calendar/ics`, `/api/calendar/feed/[token]` | Sitzungstermine als JSON und ICS (`feature:'calendar'`), Abo mit Token statt Cookie |
-| `/api/push/config`, `/api/push/latest`, `POST\|DELETE /api/push/subscribe` | Web-Push (eigene Herkunftsprüfung) |
 
 **Konto** (`POST` mit `requireSameOrigin`)
 
@@ -61,9 +59,9 @@ flowchart LR
 | `GET /api/me` | Stufe, Rollen, Rechte, Zugangsmodus |
 | `/api/me/searches`, `articles`, `settings`, `sessions`, `calendar-feed`, `import`, `export`, `delete`, `view-tier` | gespeicherte Suchen und Berichte, Einstellungen, Geräte, Abo-Link, Browserdaten übernehmen, Datenauskunft, Konto löschen (mit Code), Admins „ansehen als“ |
 
-**Administration** (29 Routen, alle `requireAdmin`): `ai-local`, `ai-job`, `altbestand`, `analyse`, `area`, `areas`, `static`, `atlas`,
-`coverage`, `timeline`, `summary`, `claim` (alt), `database` (Export), `debug`, `run-debug`, `estimate`, `export` (CSV), `import`,
-`pipeline`, `pdf-ablage`, `pdf-ablage/fehler`, `prepared-analysis`, `quality`, `refresh`, `review`, `social`, `speicher`, `todos`,
+**Administration** (25 Routen, alle `requireAdmin`): `ai-local`, `ai-job`, `altbestand`, `area`, `areas`, `static`, `atlas`,
+`coverage`, `timeline`, `summary`, `database` (Export), `debug`, `run-debug`, `estimate`, `export` (CSV),
+`pipeline`, `pdf-ablage`, `pdf-ablage/fehler`, `quality`, `refresh`, `review`, `social`, `speicher`, `todos`,
 `zeitplaene`.
 
 **Intern** (Bearer `IMPORT_TOKEN`): `GET /api/internal/health` (Hauptdatenbank, Kontendatei, Migrationen, Mails, Zugang; vom Deploy
@@ -164,8 +162,6 @@ Tests: `tests/accounts-login.test.mjs`, `accounts-data.test.mjs`, `accounts-rule
   `--rm-*`), `app/ratsmonitor-info.css` (`ri-*`), `app/design-styles.css` (wirkt auch auf Admin und Analysen), `app/admin.css`,
   `app/analyse-admin.css`. Designregeln und Prüfbefehle in `FRONTEND.md`.
 - **Kalender:** `calendar-events.mjs` (höchstens 200 Gebiete, 100 Tage), `calendar-ics.ts`; Abo-Link mit Token aus `calendar_feeds`.
-- **Web-Push:** `public/sw.js` holt bei `push` `/api/push/latest`; Server `push.ts` (`dispatchDecisionPush` aus dem Abruf, nur Münster);
-  im Frontend wurde keine Registrierung des Service Workers und kein Aufruf von `/api/push/*` gefunden (Abschnitt 6).
 
 ### Administration (`/admin?seite=…`, `components/admin-*.tsx`)
 
@@ -236,9 +232,8 @@ Kommt neuer Text dazu (OCR, Nacharbeit, Altbestand), ändert sich der Eingabehas
 Liste. Ein erneut gesendetes gleiches Ergebnis ist idempotent. `ai_fail` schreibt `article_analyses` `ai-local-attempt`, die alten
 Inhalte bleiben. Der Job `rule-texts` zählt den Stand (`ai-counts`); Letzte Nacht und Altbestand zeigen ihn.
 
-Weitere Wege: `ai-jobs.mjs` und `scripts/ai-job.mjs` (Altweg per Datei, nur für vorbereitete Altaufträge), `prepared-analysis.mjs`
-(festes Bündel Billerbeck, `codex-direct-v1`), Modus `summaries` von `runSync` mit OpenAI (`ai-summary.mjs`, nur von Hand, nur mit
-`OPENAI_API_KEY`; siehe [Abruf](abruf.md), Befund 6). `manual-analysis.mjs` ist keine KI, sondern die Titelregel in Paketen.
+Weitere Wege: `ai-jobs.mjs` und `scripts/ai-job.mjs` (Altweg per Datei, nur für vorbereitete Altaufträge). Seit 20.10.2026
+entfernt: `prepared-analysis.mjs` (festes Bündel Billerbeck) und der Modus `summaries` mit OpenAI (`ai-summary.mjs`). `manual-analysis.mjs` ist keine KI, sondern die Titelregel in Paketen.
 Verbrauch: `ai_usage`, Auswertung `scripts/ai-usage.mjs` mit Preisen aus `scripts/ai-prices.json`.
 
 **Kundendienst** (`npm run mcp:customer`, `mcp-customer-data.mjs`): reine Recherche mit `reports_regions`, `reports_search`,
@@ -261,6 +256,7 @@ stammen nie aus der Datenbank; keine interne Verbindung an Kunden geben.
 ## 6. Befunde beim Schreiben dieser Dokumentation (17.10.2026)
 
 1. **Web-Push ist nicht verdrahtet:** Service Worker, Routen und `push.ts` existieren, im Frontend fehlen Registrierung und Abo-Aufruf.
+   **Erledigt 20.10.2026:** Web-Push ist entfernt (`requirements/cleanup-analyse-2026-10-20.md`, C1).
 2. `tests/accounts-tiers.test.mjs` (genannt in `shared/plans.mjs`) und `tests/accounts-session.test.mjs` (genannt in
    `server/accounts/dev.mjs`) gibt es nicht; den Vergleich mit `docs/produkt/stufen.md` macht `tests/accounts-rules.test.mjs`.
 3. `FRONTEND.md` nennt `/analytics/methodik`; die Route steht weder in `ANALYTICS_PATHS` noch als Stub, die Methodik erscheint als

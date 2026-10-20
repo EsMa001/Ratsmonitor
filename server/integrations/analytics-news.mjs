@@ -106,7 +106,7 @@ function prescore(c,facts,today,week){
 }
 
 /** Meldung im Agenturstil aus einem bewerteten Vorgang */
-export function article({card,topic,facts,ev,sentences,more,today,regionName,member=null}){
+export function article({card,topic,facts,sentences,more,today,regionName,member=null}){
  /* ort: Gebiet des Ratsinformationssystems (Gremien, Quelle); mark: Ortsmarke, bei Verbänden die Mitgliedsgemeinde */
  const ort=place(regionName),mark=member?place(member):ort,all=[...(topic.events||[])].filter(e=>e?.date).sort((a,b)=>a.date.localeCompare(b.date));
  /* Platzhalter-Gremien neben einem benannten am selben Tag und doppelte Einträge zählen nicht */

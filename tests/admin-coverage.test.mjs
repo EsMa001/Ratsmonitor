@@ -1,8 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
-import {DatabaseSync} from 'node:sqlite';
 import {coverageOf,dataCoverageSeries,reachBucket,freshBucket,sizeClassOf,tally,monthlyReports} from '../shared/coverage.mjs';
 import {adminCoverage,connectedIds} from '../server/integrations/admin-coverage.mjs';
 import {adminAtlas} from '../server/integrations/admin-atlas.mjs';
@@ -13,7 +10,7 @@ import atlas from '../server/integrations/source-atlas.json' with {type:'json'};
 import {ATLAS_CATEGORY_BY_ID} from '../shared/atlas-categories.mjs';
 import {ACCESS_BY_ID} from '../shared/source-access.mjs';
 import {memoryDb} from './helpers/d1.mjs';
-const root=path.resolve(import.meta.dirname,'..'),{sql:sqlite,db}=memoryDb();
+const {sql:sqlite,db}=memoryDb();
 
 // Coverage by areas and population (shared/coverage.mjs), the overview (admin-coverage.mjs) and the gap atlas of the
 // administration (admin-atlas.mjs), on an in-memory database with the real migrations.

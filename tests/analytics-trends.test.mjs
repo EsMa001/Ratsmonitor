@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {trends,parseTrends,trendSpread} from '../server/integrations/analytics-trends.mjs';
 import {buildXCases} from '../server/integrations/x-cases.mjs';
 

@@ -1,7 +1,7 @@
 // Alle regelbasierten Ergebnisse je Bericht in einem Durchlauf (readReport, server/integrations/report-rules.mjs; Plan:
 // requirements/regel-schritt-plan.md): Art des Punkts, Thema und „Was geschieht“ (im Bericht: itemKind, theme, stage), Regel-Zusammenfassung kurz und
 // lang (ruleSummary) und Fakten (topic_facts). Liest nur Quellen: Titel, Dokumentliste und den Text des Hauptdokuments aus der
-// PDF-Ablage (für einzelne Fakten auch passender Anlagen, factAttachments), ohne Internet und ohne KI. Ersetzt summaries.mjs und facts.mjs.
+// PDF-Ablage (für einzelne Fakten auch passender Anlagen, factAttachments), ohne Internet und ohne KI. Ersetzt die früheren Skripte summaries.mjs und facts.mjs (entfernt 20.10.2026).
 // Nur Berichte, deren Eingaben sich geändert haben: Schlüssel je Bericht in report_rules (Migration 0032), gebildet aus den
 // Regelfassungen, Titel, Hauptdokument, Sitzungsunterlage ja/nein und Stand der Textfassung. --all verwirft alle Schlüssel.
 // KI-Felder (shortSummary, longSummary, generatedBy, labelAssessments, contentAnalysis, article_analyses) bleiben unberührt.

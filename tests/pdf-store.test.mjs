@@ -96,15 +96,3 @@ test('rankPdf: one score 0..1 from type, formal, text amount and size; too large
  assert.equal(r({bytes:MAX_BYTES+1}).keep,false,'über 10 MB auch Vorlagen nur Text');
  assert.equal(r({type:'nonsense'}).score,r({type:'other'}).score);
 });
-
-test('the AI batch reads the stored text version and does not go to the network',async()=>{
- const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-store-ai-'));process.env.RM_PDF_STORE=dir;
- const s=openPdfStore(dir),url='https://a.example/vorlage.pdf';s.put(url,pdf('v'));s.putText(s.entry(url).sha256,['Erste Seite.\n','Zweite Seite.'],{method:'ocr',version:1});s.close();
- const fetch0=globalThis.fetch;globalThis.fetch=async()=>{throw Error('Netz');};
- try{
-  const {fetchSource}=await import('../scripts/ai-batch/lib.mjs');
-  const r=await fetchSource(url);
-  assert.equal(r.via,'pdf-store-text');assert.equal(r.status,'ok');
-  assert.match(r.text,/Erste Seite\.[\s\S]*Zweite Seite\./);assert.equal(r.pagesTotal,2);
- }finally{globalThis.fetch=fetch0;delete process.env.RM_PDF_STORE;}
-});

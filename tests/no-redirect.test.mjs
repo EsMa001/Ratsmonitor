@@ -5,7 +5,7 @@ import path from 'node:path';
 import {fetchNoRedirect} from '../server/integrations/no-redirect.mjs';
 import {mergeImport} from '../server/integrations/merge-import.mjs';
 import {pipelineAction} from '../server/integrations/pipeline-jobs.mjs';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {DatabaseSync} from 'node:sqlite';
 test('fetchNoRedirect asks for manual redirects and refuses every redirect itself',async()=>{
  const calls=[];const fake=status=>async(url,init)=>{calls.push(init);return new Response(status===200?'{}':null,{status,headers:status===200?{}:{location:'https://elsewhere.example/'}});};

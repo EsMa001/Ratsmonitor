@@ -35,7 +35,7 @@ import {labelName} from '../../shared/labels.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {where as placeOf} from './member-place.mjs';
 import {POPULATION} from '../../shared/catalog.mjs';
-import {peerGroup,wilson,quantile,classify,windowOf,NORM_RULE} from './peer-norms.mjs';
+import {peerGroup,quantile,classify,windowOf,NORM_RULE} from './peer-norms.mjs';
 
 export const X_BY=['region','month','theme','sub','stage','status'];
 export const X_FACTS=['faction','annual_result','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate','ee_power','land_price','plot_price','dog_tax','waste_fee','plan_area','wind_count','project','road','house_type','housing','budget','second_home_tax','amusement_tax'];

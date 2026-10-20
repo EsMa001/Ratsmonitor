@@ -1,7 +1,7 @@
 import {parseAttendance} from './sessionnet-details.mjs';
 import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
 import {windowStart,calendarMonthsBack} from './history-window.mjs';
-import {budgeted,paced,isRejectionPage,REFUSED,statusError} from './request-budget.mjs';
+import {BUDGET_REACHED,budgeted,paced,isRejectionPage,REFUSED,statusError} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {bodyBytes} from './body-bytes.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
@@ -50,7 +50,7 @@ export async function fetchText(url,source,timeoutMs=20000,request=fetch){
  const deadline=Date.now()+timeoutMs,seen=new Set();let next=allowed(url,source);
  for(let hop=0;hop<=3;hop++){
   if(seen.has(next))throw Error('Wiederholte Weiterleitung der Quelle');seen.add(next);
-  const remaining=deadline-Date.now();if(remaining<=0)throw Error('Zeitbudget der Quelle erreicht');
+  const remaining=deadline-Date.now();if(remaining<=0)throw Error(BUDGET_REACHED);
   const r=await request(next,{redirect:'manual',signal:AbortSignal.timeout(remaining),headers:{'User-Agent':SOURCE_USER_AGENT,'Accept':'text/html,application/json'}});
   if([301,302,303,307,308].includes(r.status)){
    const location=r.headers.get('location');await r.body?.cancel();

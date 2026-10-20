@@ -6,6 +6,7 @@ import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
 import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
+import {fnv,germanDay as day} from './source-common.mjs';
 // Public pages of KOMFA-RIS (kommunalfabrik, ris-<name>.komfa.de). Read are the month view of the calendar, through the
 // link the calendar itself offers for the previous and the next month (action=cal&SetFilter=calstartdate&FilterValue=
 // <first day>), and the agenda page of each meeting (action=to&id=<id>).
@@ -19,8 +20,6 @@ import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
 //   The prefix is dropped where it is the area itself; organizations (optional, oparl-regional.mjs) keeps the meetings of
 //   one member by that name.
 const MONTH_NAMES=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 const attribute=(tag,name)=>decode(String(tag).match(new RegExp(`\\b${name}=["']([^"']*)["']`,'i'))?.[1]||'');
 // Typographic entities of the editor KOMFA uses ("&bdquo;Auenhöfe&ldquo;"), which the shared decode does not know.
 const TYPOGRAPHIC={bdquo:'„',ldquo:'“',rdquo:'”',sbquo:'‚',lsquo:'‘',rsquo:'’',laquo:'«',raquo:'»',hellip:'…',euro:'€',sect:'§',eacute:'é',egrave:'è',agrave:'à',ccedil:'ç',bull:'•',middot:'·'};

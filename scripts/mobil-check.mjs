@@ -18,7 +18,7 @@ for (const path of ROUTES) {
     await page.waitForTimeout(5000);
     const m = await page.evaluate((OK) => {
       const bad = {}; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      while (w.nextNode()) { const e = w.currentNode.parentElement; if (!e || !w.currentNode.textContent.trim()) continue; const r = e.getBoundingClientRect(); const s = getComputedStyle(e); if (!r.width || !r.height || s.visibility === "hidden" || s.display === "none") continue; const f = Math.round(parseFloat(s.fontSize) * 10) / 10; if (!OK.includes(f)) { const k = f + "px"; (bad[k] ||= []).length < 2 && bad[k].push(w.currentNode.textContent.trim().slice(0, 28)); bad[k].n = (bad[k].n || 0) + 1; } }
+      while (w.nextNode()) { const e = w.currentNode.parentElement; if (!e || !w.currentNode.textContent.trim()) continue; const r = e.getBoundingClientRect(); const s = getComputedStyle(e); if (!r.width || !r.height || s.visibility === "hidden" || s.display === "none") continue; const f = Math.round(parseFloat(s.fontSize) * 10) / 10; if (!OK.includes(f)) { const k = f + "px"; if ((bad[k] ||= []).length < 2) bad[k].push(w.currentNode.textContent.trim().slice(0, 28)); bad[k].n = (bad[k].n || 0) + 1; } }
       return { cls: +window.__cls.toFixed(3), bad: Object.fromEntries(Object.entries(bad).map(([k, v]) => [k, `${v.n}× ${v.join(" | ")}`])) };
     }, [...OK]);
     console.log(path.padEnd(32), "CLS", m.cls, JSON.stringify(m.bad));

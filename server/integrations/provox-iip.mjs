@@ -5,6 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {MONTHS,asciiSlug as slug,clip} from './source-common.mjs';
 // Provox IIP ("Bürger- und Ratsinformationssystem" of Provox, ASP.NET, <host>/ris/<client>/…), as hosted by a
 // municipality itself (ris.hameln.de/ris/hameln/). Read are plain addresses of the public site only:
 // - meeting/ShowEvents?start=<day>&end=<day>: the JSON feed of the month calendar: id, body, start and, for a meeting
@@ -17,10 +18,7 @@ import {committeePart} from './oparl-regional.mjs';
 //   matter of their own and are left out.
 // Files (file/getfile/<id>) are only linked, not read. Login, members' area ("Erst Anmelden") and the pages of
 // persons, votings and minutes extracts are never requested.
-const MONTHS={januar:1,februar:2,märz:3,maerz:3,april:4,mai:5,juni:6,juli:7,august:8,september:9,oktober:10,november:11,dezember:12};
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ')).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
-const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 const dayOf=value=>{
  const iso=String(value).match(/(\d{4})-(\d{2})-(\d{2})/);if(iso)return iso[0];
  const num=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);if(num)return `${num[3]}-${num[2].padStart(2,'0')}-${num[1].padStart(2,'0')}`;
