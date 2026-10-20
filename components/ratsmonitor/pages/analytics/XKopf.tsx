@@ -205,11 +205,12 @@ function MarkenAbzeichen() {
 function BandMitte({ kurz }: { kurz: string }) {
   const fig = useBandFigure();
   const value = useCountUp(fig?.value ?? "");
-  if (!fig) return <p className="rm-band-mid m-0 whitespace-nowrap text-center text-[22px] opacity-90 max-sm:whitespace-normal max-sm:order-3 max-sm:col-span-2 max-sm:text-left">{kurz}</p>;
+  if (!fig) return <p className="rm-band-mid m-0 whitespace-nowrap text-center text-[22px] opacity-90 max-sm:whitespace-normal max-sm:order-3 max-sm:col-span-2 max-sm:basis-full max-sm:text-left">{kurz}</p>;
+  /* Handy: Kennzahl immer in eigener Zeile (basis-full); sonst passt sie beim Hochzählen erst neben den Titel und bricht dann um, das Band springt */
   const when = [fig.period, fig.week ? `+${fig.week.toLocaleString("de-DE")} in 7 Tagen` : ""].filter(Boolean).join(" · ");
   return (
-    <div className="rm-band-mid text-left max-sm:order-3 max-sm:col-span-2" title={kurz}>
-      <p className="m-0 flex items-baseline gap-2 leading-none"><span className="shrink-0 whitespace-nowrap text-[44px] font-semibold tabular-nums max-sm:text-[28px]">{value}</span><span className="text-[18px] font-medium max-sm:leading-[1.2]">{fig.label}</span></p>
+    <div className="rm-band-mid text-left max-sm:order-3 max-sm:col-span-2 max-sm:basis-full max-sm:min-h-[33px]" title={kurz}>
+      <p className="m-0 flex items-baseline gap-2 leading-none"><span className="shrink-0 whitespace-nowrap text-[44px] font-semibold tabular-nums max-sm:text-[28px]">{value || "\u00a0" /* Platz halten, bis die Zahl da ist: sonst springt das Band und mit ihm die Seite */}</span><span className="text-[18px] font-medium max-sm:leading-[1.2]">{fig.label}</span></p>
       <p className="m-0 mt-1.5 text-[14px] opacity-85">{fig.scope || kurz}</p>
       {when && <p className="m-0 text-[14px] opacity-70">{when}</p>}
     </div>

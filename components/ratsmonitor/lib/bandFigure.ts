@@ -23,7 +23,7 @@ export function useCountUp(text: string): string {
     if (!Number.isFinite(target) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let raf = 0;
     const t0 = performance.now();
-    const step = (t: number) => { const p = Math.min(1, (t - t0) / 700); setShown(Math.round(target * (1 - (1 - p) ** 3))); if (p < 1) raf = requestAnimationFrame(step); else setShown(null); };
+    const step = (t: number) => { /* Der Zeitstempel des ersten Bilds kann vor t0 liegen: nie unter 0, sonst kurz eine negative Zahl */ const p = Math.max(0, Math.min(1, (t - t0) / 700)); setShown(Math.round(target * (1 - (1 - p) ** 3))); if (p < 1) raf = requestAnimationFrame(step); else setShown(null); };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [target]);
