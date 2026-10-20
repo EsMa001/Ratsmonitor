@@ -26,13 +26,13 @@ function RowWheel({ label, items, value, onPick, onOpen }: { label: string; item
     }, 160);
   };
   return (
-    <div role="group" aria-label={label} className="relative min-w-0 flex-1 overflow-hidden" style={{ height: ROW }}>
+    <div role="group" aria-label={label} className="relative min-w-0 flex-1 overflow-hidden max-[359px]:w-full" style={{ height: ROW }}>
       <ul ref={ref} onScroll={onScroll} className="m-0 list-none snap-y snap-mandatory overflow-y-auto p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" style={{ height: ROW, overscrollBehavior: "contain" }}>
         {items.map((it, i) => (
           <li key={it.id || "alle"} className="snap-center" style={{ height: ROW, scrollSnapStop: "always" }}>
             <button type="button" aria-haspopup="listbox" aria-label={`${label}: ${it.label}, Liste öffnen`} onClick={onOpen}
               className={`flex w-full items-center gap-2 pl-4 pr-7 text-left text-[14px] ${i === 0 && !value ? "font-semibold text-slate-900" : "text-slate-800"}`} style={{ height: ROW }}>
-              <span className="flex-none text-slate-500">{it.icon}</span><span className="min-w-0 truncate font-medium">{it.label}</span>
+              <span className="flex-none text-slate-500">{it.icon}</span><span className="min-w-0 truncate font-medium max-[359px]:line-clamp-2 max-[359px]:whitespace-normal max-[359px]:leading-tight max-[359px]:hyphens-auto">{it.label}</span>
             </button>
           </li>
         ))}
@@ -57,16 +57,17 @@ export function MapWheels({ label, items, value, onPick, subs, subValue = "", on
   return (
     <div className={`pointer-events-none sm:hidden print:hidden ${inline ? "relative z-30 mb-3" : "absolute left-[calc(8px-max(1vw,16px))] right-[calc(8px-max(1vw,16px))] top-2 z-30"}`}>
       {list && <div aria-hidden="true" className="pointer-events-auto fixed inset-0 z-[-1]" onClick={() => setList(null)} />}
-      <div className="rm-legend pointer-events-auto flex items-center overflow-hidden rounded-full">
+      {/* Sehr schmal (unter 360 px, auch bei 200 % Schrift): zwei Walzen untereinander, sonst bliebe für den Text kaum Platz */}
+      <div className="rm-legend pointer-events-auto flex items-center overflow-hidden rounded-full max-[359px]:flex-col max-[359px]:items-stretch max-[359px]:rounded-[24px]">
         <RowWheel label={label} items={items} value={value} onPick={onPick} onOpen={() => setList(list === "theme" ? null : "theme")} />
-        {!single && <span aria-hidden="true" className="flex-none text-slate-300">›</span>}
+        {!single && <span aria-hidden="true" className="flex-none text-slate-300 max-[359px]:hidden">›</span>}
         {single ? null : hasSub
           ? <RowWheel label={subLabel} items={subItems} value={subValue} onPick={(id) => onSub?.(id)} onOpen={() => setList(list === "sub" ? null : "sub")} />
           /* Noch kein Thema: die zweite Walze steht schon da (blass), damit man sieht, dass es zwei Walzen sind */
-          : <div aria-disabled="true" className="flex min-w-0 flex-1 items-center gap-2 pl-4 pr-7 text-[14px] text-slate-400" style={{ height: ROW }}><span className="min-w-0 truncate font-medium">{subAll}</span><ChevronsUpDown size={16} aria-hidden="true" className="ml-auto flex-none text-slate-300" /></div>}
+          : <div aria-disabled="true" className="flex min-w-0 flex-1 items-center gap-2 pl-4 pr-7 text-[14px] text-slate-400 max-[359px]:w-full max-[359px]:border-t max-[359px]:border-slate-200/60" style={{ height: ROW }}><span className="min-w-0 truncate font-medium">{subAll}</span><ChevronsUpDown size={16} aria-hidden="true" className="ml-auto flex-none text-slate-300" /></div>}
       </div>
       {list && (
-        <ul role="listbox" aria-label={list === "sub" ? subLabel : label} className={`rm-wheel-list pointer-events-auto absolute top-full mt-2 m-0 max-h-[46vh] list-none overflow-y-auto rounded-[22px] p-1 ${list === "sub" ? "right-0 w-[62%]" : "left-0 w-[62%]"}`}>
+        <ul role="listbox" aria-label={list === "sub" ? subLabel : label} className={`rm-wheel-list pointer-events-auto absolute top-full mt-2 m-0 max-h-[46vh] list-none overflow-y-auto rounded-[22px] p-1 ${list === "sub" ? "right-0 w-[62%] max-[359px]:w-full" : "left-0 w-[62%] max-[359px]:w-full"}`}>
           {shown.map((it) => {
             const on = it.id === cur;
             return (

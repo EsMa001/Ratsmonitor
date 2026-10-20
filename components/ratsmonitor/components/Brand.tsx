@@ -258,7 +258,6 @@ export function Brand({ onClick, asLink = true }: { onClick?: () => void; asLink
   return (
     <Link
       href="/"
-      aria-label={`${name}, zur Übersicht`}
       onClick={(e) => {
         if (onClick) {
           e.preventDefault();
@@ -267,7 +266,9 @@ export function Brand({ onClick, asLink = true }: { onClick?: () => void; asLink
       }}
       className="rm-logo max-sm:min-w-[44px] max-sm:py-2 [grid-area:brand]"
     >
-      <Logo />
+      {/* Name als Text statt aria-label: sichtbar steht ohne das gezeichnete „p“ nur „lenara“ (WCAG 2.5.3) */}
+      <span className="sr-only">{name}, zur Übersicht</span>
+      <span aria-hidden="true" style={{ display: "contents" }}><Logo /></span>
     </Link>
   );
 }

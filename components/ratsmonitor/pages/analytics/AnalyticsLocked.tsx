@@ -42,7 +42,7 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
         </div>
       </PageBand>
       {v && (
-        <section className="mt-10 grid items-start gap-8 md:grid-cols-[minmax(0,1fr)_320px]" aria-label={`Vorschau: ${title}`}>
+        <section className="mt-10 grid grid-cols-1 items-start gap-8 md:grid-cols-[minmax(0,1fr)_320px]" aria-label={`Vorschau: ${title}`}>
           <div>
             <h2 className="m-0 text-[22px] font-semibold">{title}</h2>
             <p className="mt-2 max-w-[560px] text-[16px] leading-relaxed text-slate-500">{v.text}</p>

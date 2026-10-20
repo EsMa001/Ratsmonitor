@@ -51,7 +51,8 @@ export function AdminReview({initial}:{initial:AdminDashboard}){
  const state=useDashboard(initial,true),data=state.data;
  const [issue,setIssue]=useState('labels'),[reviewRegion,setReviewRegion]=useState('all'),[review,setReview]=useState(initial.review),[reviewBusy,setReviewBusy]=useState(false),[reviewError,setReviewError]=useState('');
  const firstReview=useRef(true);
- const names=useMemo(()=>new Map(data.sources.map(s=>[s.id,s.name])),[data.sources]),regionName=(id:string)=>names.get(id)||id;
+ const names=useMemo(()=>new Map(data.sources.map(s=>[s.id,s.name])),[data.sources]);
+ const regionName=(id:string)=>names.get(id)||id;
  const areaOptions=useMemo(()=>data.sources.filter(s=>s.count>0).map(s=>({id:s.id,name:s.name})),[data.sources]);
  useEffect(()=>{
   if(firstReview.current){firstReview.current=false;return;}

@@ -184,6 +184,13 @@ export function ResultsPanel() {
             <IconChevronRight size={20} />
           </button>
         )}
+        {/* Gäste: sagen, warum nach der ersten Seite Schluss ist (der Server liefert ohne Konto keine zweite Seite) */}
+        {ready && Number.isFinite(limits.maxResults) && res.hasMore && (
+          <span className="w-full text-center text-[14px] text-slate-500">
+            Weitere Treffer sehen Sie mit einem Konto.{" "}
+            <button type="button" className="font-medium text-teal-700 hover:underline" onClick={() => push("/anmelden")}>Anmelden →</button>
+          </span>
+        )}
         {res.page >= MAX_PAGE && pages > MAX_PAGE && <span className="w-full text-center text-[14px] text-slate-500">Für weitere Treffer bitte die Suche eingrenzen.</span>}
       </nav>
     </section>

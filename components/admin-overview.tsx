@@ -73,9 +73,11 @@ function BucketBar({buckets,of,kind}:{buckets:Bucket[];of:'areas'|'population';k
 /** Admin page "Übersicht": coverage by areas and population, today and over time, and analyses of the stock. Reads only. */
 /** displayName and signOutPath are still passed by the callers; the frame (admin-chrome.tsx) shows them now. */
 export const AdminOverview:(props:{displayName?:string;signOutPath?:string})=>React.JSX.Element=function AdminOverview(){
- const [data,setData]=useState<Coverage|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0),[refreshing,setRefreshing]=useState(false),[hover,setHover]=useState<number|null>(null),[of,setOf]=useState<'areas'|'population'>('areas');
- useEffect(()=>{const c=new AbortController();setError('');
-  fetch('/api/admin/coverage',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Coverage&{error?:string};if(!r.ok)throw Error(d.error||'Die Abdeckung konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setError(e instanceof Error?e.message:'Die Abdeckung konnte nicht geladen werden.');}).finally(()=>{if(!c.signal.aborted)setRefreshing(false);});
+ const [data,setData]=useState<Coverage|null>(null),[failed,setFailed]=useState({at:-1,text:''}),[attempt,setAttempt]=useState(0),[refreshing,setRefreshing]=useState(false),[hover,setHover]=useState<number|null>(null),[of,setOf]=useState<'areas'|'population'>('areas');
+ // Fehler gelten nur für den Abruf, der sie gemeldet hat
+ const error=failed.at===attempt?failed.text:'';
+ useEffect(()=>{const c=new AbortController();
+  fetch('/api/admin/coverage',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Coverage&{error?:string};if(!r.ok)throw Error(d.error||'Die Abdeckung konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setFailed({at:attempt,text:e instanceof Error?e.message:'Die Abdeckung konnte nicht geladen werden.'});}).finally(()=>{if(!c.signal.aborted)setRefreshing(false);});
   return()=>c.abort();},[attempt]);
  // Values per area just computed by the catch-up steps (admin-store.ts): read again.
  useEffect(()=>{const again=()=>setAttempt(a=>a+1);window.addEventListener(ADMIN_REGIONS_DONE,again);return()=>window.removeEventListener(ADMIN_REGIONS_DONE,again);},[]);

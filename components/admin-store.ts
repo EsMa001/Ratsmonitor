@@ -61,6 +61,8 @@ export function useRegionCatchUp():CatchUp{
 let staticVersion='',staticKept:{v:string;data:{areas:unknown[]}}|null=null;
 /** The version of the static list the server rendered the page with; the list is then cached by the browser for good. */
 export function setAdminStaticVersion(version:string){staticVersion=version;}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- ungeprüfte JSON-Antworten der Admin-Routen; die Aufrufer legen die Form fest
+type Json=any;
 async function readJson<T>(response:Response,fallback:string):Promise<T>{
  // An aborted read (the page was left or its effect ran twice) is an abort, not an empty answer: it must not be kept as data.
  const data=await response.json().catch(e=>{if((e as {name?:string})?.name==='AbortError')throw e;return {};}) as T&{error?:string};
@@ -84,12 +86,12 @@ async function staticAreasData(signal?:AbortSignal){
  */
 export async function fetchDashboard({review=false,signal}:{review?:boolean;signal?:AbortSignal}={}):Promise<import('@/shared/admin-types').AdminDashboard>{
  const [summary,areas,statics,list]=await Promise.all([
-  fetch('/api/admin/summary',{cache:'no-store',signal}).then(r=>readJson<Record<string,any>>(r,'Der Datenbankstand konnte nicht geladen werden.')),
+  fetch('/api/admin/summary',{cache:'no-store',signal}).then(r=>readJson<Record<string,Json>>(r,'Der Datenbankstand konnte nicht geladen werden.')),
   fetch('/api/admin/areas',{cache:'no-cache',signal}).then(r=>readJson<{fields:string[];rows:unknown[][]}>(r,'Der Datenbankstand konnte nicht geladen werden.')),
   staticAreasData(signal),
-  review?fetch('/api/admin/review?issue=labels&region=all',{cache:'no-store',signal}).then(r=>readJson<Record<string,any>>(r,'Die Prüfliste konnte nicht geladen werden.')):Promise.resolve(null),
+  review?fetch('/api/admin/review?issue=labels&region=all',{cache:'no-store',signal}).then(r=>readJson<Record<string,Json>>(r,'Die Prüfliste konnte nicht geladen werden.')):Promise.resolve(null),
  ]);
  if(!Array.isArray((areas as {fields?:unknown}).fields)||!Array.isArray((areas as {rows?:unknown}).rows))throw Error('Die Werte der Gebiete sind unvollständig angekommen. Bitte die Seite neu laden.');
  const {toSources}=await import('@/shared/admin-areas.mjs');
- return {...summary,sources:toSources(statics as {areas:any[]},areas as {fields:string[];rows:any[][]}),review:list||{issue:'labels',total:summary.counts?.unlabelled??0,articles:[]}} as unknown as import('@/shared/admin-types').AdminDashboard;
+ return {...summary,sources:toSources(statics as {areas:Json[]},areas as {fields:string[];rows:Json[][]}),review:list||{issue:'labels',total:summary.counts?.unlabelled??0,articles:[]}} as unknown as import('@/shared/admin-types').AdminDashboard;
 }

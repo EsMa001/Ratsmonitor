@@ -55,6 +55,7 @@ export function AdminSchedules(){
   try{const r=await fetch('/api/admin/zeitplaene',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Die Jobs konnten nicht geladen werden.');setData(d);setError('');}
   catch(e){setError(e instanceof Error?e.message:'Die Jobs konnten nicht geladen werden.');}
  },[]);
+ // eslint-disable-next-line react-hooks/set-state-in-effect -- Abruf beim Öffnen; State wird erst nach dem await gesetzt
  useEffect(()=>{load();const t=setInterval(load,60000);return ()=>clearInterval(t);},[load]);
  const post=async(body:Record<string,unknown>,confirmText?:string)=>{
   if(confirmText&&!window.confirm(confirmText))return;

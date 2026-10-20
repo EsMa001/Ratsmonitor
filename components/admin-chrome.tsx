@@ -133,6 +133,7 @@ export function AdminFrame({page,displayName,signOutPath,accountSignOut,tabs=tru
   <main id="inhalt" className="w-full px-[max(1vw,16px)] text-slate-900">{children}
    <footer className="mt-16 flex flex-wrap justify-between gap-x-6 gap-y-2 border-t border-slate-100 py-4 text-[12px] text-slate-500">
     <span className="max-w-[820px]">{page?FOOT[page]:null}</span>
+    {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- raus aus der Administration mit vollem Laden (eigenes Layout und eigene Stile) */}
     <span className="flex gap-5">{page&&<Link href={adminHref('abdeckung')+'#begriffe'} className="text-teal-600">Begriffe →</Link>}<a href="/" className="text-teal-600">Zur öffentlichen Website →</a></span>
    </footer>
   </main>

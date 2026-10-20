@@ -462,7 +462,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  const {geo,place}=useData();
  /* Gäste (und Konten ohne freigeschaltete Stufe) sehen nur die erste Seite mit 10 Treffern; der Server kürzt selbst.
     Eine für Gäste gekürzte Antwort im Zwischenspeicher gilt nach dem Anmelden nicht mehr (siehe unten). */
- const limited=!Number.isFinite(useMe().limits.maxResults);
+ const limited=Number.isFinite(useMe().limits.maxResults);
  const limitedNow=useRef(limited);
  useEffect(()=>{limitedNow.current=limited;},[limited]);
  const local=useMemo(()=>computeLocal(state,geo,place,pageSize),[state,geo,place,pageSize]);

@@ -42,12 +42,14 @@ const matchesFilter=(s:AdminSource,filter:string,selected:Set<string>,today:stri
 // retry: reads and the steps of a job may be asked again when the server does not answer properly (it restarts, or a reply is
 // not JSON at all: an error page). The state of the job is kept on the server, so a repeated step only continues it. onWait
 // reports that the page is waiting for the server.
-async function api(url:string,body?:unknown,retry?:{onWait?:(waiting:boolean)=>void}):Promise<any>{
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- ungeprüfte JSON-Antworten der Admin-Routen; die Aufrufer legen die Form fest
+type Json=any;
+async function api(url:string,body?:unknown,retry?:{onWait?:(waiting:boolean)=>void}):Promise<Json>{
  for(let attempt=0;;attempt++){
   let failure='';
   try{
    const r=await fetch(url,{cache:'no-store',...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{} )});
-   let data:any=null;try{data=await r.json();}catch{/* not JSON: an error page of the server */}
+   let data:Json=null;try{data=await r.json();}catch{/* not JSON: an error page of the server */}
    if(data&&r.ok){retry?.onWait?.(false);return data;}
    if(data?.error)throw Error(data.error);
    failure=`Der Server hat nicht richtig geantwortet (HTTP ${r.status}).`;
@@ -76,6 +78,7 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
  async function drain(start:PipelineJob){
   pause.current=false;setRunning(true);
   const runner=runnerFor(start.stage);
+  // eslint-disable-next-line react-hooks/purity -- drain läuft auf Knopfdruck, nicht beim Rendern
   let latest=start,stopped=false,reloading=false,reloaded=Date.now(),rest=60000;
   // Replies of parallel requests can arrive out of order, and most list only the areas changed since the state the
   // page named; mergeJob keeps the newest state of every area and of the job.

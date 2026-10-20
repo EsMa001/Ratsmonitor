@@ -31,10 +31,13 @@ function Bars({rows,max}:{rows:{key:string;label:React.ReactNode;bytes:number;no
 
 export function AdminStorage(){
  const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ // Zeitpunkt, zu dem die Seite geöffnet wurde (beim Rendern kein Date.now())
+ const [openedAt]=useState(()=>Date.now());
  const load=useCallback(async()=>{
   try{const r=await fetch('/api/admin/speicher',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Die Messung konnte nicht geladen werden.');setData(d);setError('');}
   catch(e){setError(e instanceof Error?e.message:'Die Messung konnte nicht geladen werden.');}
  },[]);
+ // eslint-disable-next-line react-hooks/set-state-in-effect -- Abruf beim Öffnen; State wird erst nach dem await gesetzt
  useEffect(()=>{load();},[load]);
  const pending=!!data?.count&&!data.count.finishedAt;
  useEffect(()=>{if(!pending)return;const t=setInterval(load,30000);return ()=>clearInterval(t);},[pending,load]);
@@ -102,7 +105,7 @@ export function AdminStorage(){
      <b className="text-right font-semibold tabular-nums">{size(b.bytes)}</b>
     </li>)}
    </ol>:<p className="mt-3 flex gap-2 text-[14px] font-medium text-slate-900"><Icon name="alert" size={18}/>Keine Sicherung gefunden in {d.backups.dir}.</p>)}
-   {d&&dbBackups.length>0&&<p className="mt-2 text-[14px] text-slate-700">{n(dbBackups.length)} Datenbank-{dbBackups.length===1?'Kopie':'Kopien'}, zusammen {gb(dbBackups.reduce((a,b)=>a+b.bytes,0))}; neueste vom {when(dbBackups[0].at)}.{dbBackups[0].at&&Date.now()-Date.parse(dbBackups[0].at)>36*3600000?' Älter als anderthalb Tage: Job „Datensicherung“ prüfen.':''}</p>}
+   {d&&dbBackups.length>0&&<p className="mt-2 text-[14px] text-slate-700">{n(dbBackups.length)} Datenbank-{dbBackups.length===1?'Kopie':'Kopien'}, zusammen {gb(dbBackups.reduce((a,b)=>a+b.bytes,0))}; neueste vom {when(dbBackups[0].at)}.{dbBackups[0].at&&openedAt-Date.parse(dbBackups[0].at)>36*3600000?' Älter als anderthalb Tage: Job „Datensicherung“ prüfen.':''}</p>}
    {d&&rest.length>0&&<p className="mt-2 text-[14px] text-slate-500">Dazu {n(rest.length)} weitere Dateien im Ordner (Protokolle, Skripte), zusammen {size(rest.reduce((a,b)=>a+b.bytes,0))}.</p>}
    {d&&d.backups.env.length>0&&<p className="mt-2 text-[14px] text-slate-500">Dazu {n(d.backups.env.length)} Sicherungen der Einstellungsdatei (zusammen {gb(d.backups.env.reduce((a,b)=>a+b.bytes,0))}).</p>}
   </section>

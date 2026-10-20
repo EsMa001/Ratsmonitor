@@ -15,7 +15,7 @@
     @apply h-9 rounded-lg px-3 text-[14px];
   }
   .btn-danger {
-    @apply text-rose-700 hover:border-rose-200 hover:bg-rose-50;
+    @apply text-amber-700 hover:border-amber-200 hover:bg-amber-50;
   }
   .link-btn {
     @apply border-0 bg-transparent p-0 text-sm font-medium text-teal-700 underline underline-offset-[3px] hover:text-teal-700;
@@ -172,7 +172,7 @@ html.rm-dark .btn-primary:hover,html.rm-dark .ri-btn--dark:hover{background:var(
 html.rm-dark .ratsmonitor .bg-teal-700{background-color:var(--rm-btn)}
 /* Farbkonzept „Petrol klar“: die einzigen Farben der Oberfläche. Grau (slate), Petrol (teal), Dunkelblau (sky: beschlossen, Info), Orange-Braun (amber: abgelehnt, Fehler, Warnung), dazu Weiß (--rm-on) und Schwarz (--rm-black). Erzeugt aus palette.mjs; andere Farben nicht verwenden. */
 :root{--rm-on:#fff;--rm-black:#000;--rm-btn:#268478;--rm-btn2:#1f7065;--color-slate-50:#fafafa;--color-slate-100:#f4f4f5;--color-slate-200:#e4e4e7;--color-slate-300:#d4d4d8;--color-slate-400:#a1a1aa;--color-slate-500:#52525b;--color-slate-600:#52525b;--color-slate-700:#3f3f46;--color-slate-800:#27272a;--color-slate-900:#18181b;--color-slate-950:#18181b;--color-teal-50:#e6f3f1;--color-teal-100:#c4e5e0;--color-teal-200:#a8dcd5;--color-teal-300:#86cbc1;--color-teal-400:#4fa89b;--color-teal-500:#268478;--color-teal-600:#268478;--color-teal-700:#268478;--color-teal-800:#1f7065;--color-teal-900:#0c3d37;--color-teal-950:#0a2f2a;--color-sky-50:#eef3f7;--color-sky-100:#dbe5ee;--color-sky-200:#bccbd8;--color-sky-300:#93abc0;--color-sky-400:#7f9fb7;--color-sky-500:#6f93ad;--color-sky-600:#3f6a8a;--color-sky-700:#1f557a;--color-sky-800:#134c70;--color-sky-900:#0c4a6e;--color-sky-950:#0a3a57;--color-amber-50:#fbf3ec;--color-amber-100:#f6e3d2;--color-amber-200:#ecc6a5;--color-amber-300:#dfa475;--color-amber-400:#d38c50;--color-amber-500:#c8732f;--color-amber-600:#c2610f;--color-amber-700:#b45309;--color-amber-800:#8f420a;--color-amber-900:#6b3108;--color-amber-950:#4a2206}
-html.rm-dark{--rm-btn:#268478;--rm-btn2:#2f9688;--color-slate-50:#1b2120;--color-slate-100:#212827;--color-slate-200:#323a39;--color-slate-300:#3d4544;--color-slate-400:#9a9ca2;--color-slate-500:#b4b5ba;--color-slate-600:#c4c5ca;--color-slate-700:#d0d1d5;--color-slate-800:#dfe0e3;--color-slate-900:#ececee;--color-slate-950:#f0f0f2;--color-teal-50:#173531;--color-teal-100:#1e4540;--color-teal-200:#265852;--color-teal-300:#367d74;--color-teal-400:#46a498;--color-teal-500:#46a498;--color-teal-600:#268478;--color-teal-700:#7ac6bc;--color-teal-800:#a8dcd5;--color-teal-900:#c9ece7;--color-teal-950:#e0f4f1;--color-sky-50:#17212a;--color-sky-100:#1e2c38;--color-sky-200:#2c3f50;--color-sky-300:#3e5870;--color-sky-400:#56738b;--color-sky-500:#6f93ad;--color-sky-600:#8fb0c8;--color-sky-700:#8fb8d6;--color-sky-800:#b0cde2;--color-sky-900:#cfe0ec;--color-sky-950:#e3eef5;--color-amber-50:#2a1f16;--color-amber-100:#3a2a1c;--color-amber-200:#5a3d22;--color-amber-300:#8a5a30;--color-amber-400:#b5753f;--color-amber-500:#e09a5c;--color-amber-600:#f0a868;--color-amber-700:#fdba74;--color-amber-800:#fdcb98;--color-amber-900:#fee0c0;--color-amber-950:#fff0e0}
+html.rm-dark{--rm-btn:#268478;--rm-btn2:#1f7065;--color-slate-50:#1b2120;--color-slate-100:#212827;--color-slate-200:#323a39;--color-slate-300:#3d4544;--color-slate-400:#9a9ca2;--color-slate-500:#b4b5ba;--color-slate-600:#c4c5ca;--color-slate-700:#d0d1d5;--color-slate-800:#dfe0e3;--color-slate-900:#ececee;--color-slate-950:#f0f0f2;--color-teal-50:#173531;--color-teal-100:#1e4540;--color-teal-200:#265852;--color-teal-300:#367d74;--color-teal-400:#46a498;--color-teal-500:#46a498;--color-teal-600:#268478;--color-teal-700:#7ac6bc;--color-teal-800:#a8dcd5;--color-teal-900:#c9ece7;--color-teal-950:#e0f4f1;--color-sky-50:#17212a;--color-sky-100:#1e2c38;--color-sky-200:#2c3f50;--color-sky-300:#3e5870;--color-sky-400:#56738b;--color-sky-500:#6f93ad;--color-sky-600:#8fb0c8;--color-sky-700:#8fb8d6;--color-sky-800:#b0cde2;--color-sky-900:#cfe0ec;--color-sky-950:#e3eef5;--color-amber-50:#2a1f16;--color-amber-100:#3a2a1c;--color-amber-200:#5a3d22;--color-amber-300:#8a5a30;--color-amber-400:#b5753f;--color-amber-500:#e09a5c;--color-amber-600:#f0a868;--color-amber-700:#fdba74;--color-amber-800:#fdcb98;--color-amber-900:#fee0c0;--color-amber-950:#fff0e0}
 html.rm-dark .text-white{color:#fff}html.rm-dark .bg-slate-900{background-color:var(--rm-fill)}html.rm-dark .bg-slate-900:hover,html.rm-dark .hover\:bg-slate-800:hover{background-color:var(--rm-btn2)}
 /* Dunkel: Trennlinie unter der obersten Kachel (Karte, Seitenkopf) in Akzentfarbe */
 html.rm-dark .rm-flat>section:first-child,html.rm-dark .ri-head,html.rm-dark .rm-topline{border-bottom-color:var(--rm-fill)}
@@ -509,13 +509,13 @@ html.rm-search .rm-footcta{display:none}
 }
 
 /* Desktop: Die Suchzeile der plenara.X-Seiten bleibt beim Scrollen unter der Kopfzeile stehen (Zeitraum und Filter in Reichweite) */
-@media (min-width:640px){
+@media (min-width:640px) and (not ((max-height:500px) and (pointer:coarse) and (max-width:1000px))){
   div:has(> .rm-xsearch){position:sticky;top:var(--hdr,58px);z-index:30;background:color-mix(in srgb,var(--rm-white) 80%,transparent);-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);padding:0 0 8px;margin-top:12px}
 }
 @media print{div:has(> .rm-xsearch){position:static}}
 
 /* Desktop: Zeitraum, Schritt und Art bleiben unter der fixierten Suchzeile stehen (Höhe der Suchzeile 62 px) */
-@media (min-width:640px){
+@media (min-width:640px) and (not ((max-height:500px) and (pointer:coarse) and (max-width:1000px))){
   .rm-xfilter{position:sticky;top:calc(var(--hdr,58px) + 62px);z-index:29;background:var(--rm-white);padding:6px 0;margin-top:0 !important}
 }
 @media print{.rm-xfilter{position:static}}

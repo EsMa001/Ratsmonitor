@@ -15,7 +15,7 @@ export const alt='plenara: Besser verstehen, was vor Ort beraten wird.';
 export const size={width:1200,height:630};
 export const contentType='image/png';
 
-const PETROL='#27857b',WEISS='#ffffff';
+const PETROL='#268478',WEISS='#ffffff';
 const cut=(s:string,n:number)=>s.length>n?s.slice(0,n-1).trimEnd()+'…':s;
 
 /* Schrift lesen: im Node-Server aus dem Ordner public, sonst (Entwicklung, Worker) von der eigenen Adresse; scheitert beides, folgt Stufe B */

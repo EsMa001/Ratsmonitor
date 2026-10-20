@@ -40,14 +40,16 @@ const Regions=memo(function Regions({shapes,fills,selected,fine,onPick,onHover}:
 /** Admin page "Lückenatlas". Reads only. */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
- const [data,setData]=useState<Atlas|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0),[geo,setGeo]=useState<{shapes:Shape[];states:string[];free:Free[]}|null>(null),[freeHover,setFreeHover]=useState<Free|null>(null),[geoError,setGeoError]=useState(false);
+ const [data,setData]=useState<Atlas|null>(null),[failed,setFailed]=useState({at:-1,text:''}),[attempt,setAttempt]=useState(0),[geo,setGeo]=useState<{shapes:Shape[];states:string[];free:Free[]}|null>(null),[freeHover,setFreeHover]=useState<Free|null>(null),[geoError,setGeoError]=useState(false);
  const [cats,setCats]=useState<Set<string>|null>(null),[access,setAccess]=useState<Set<string>|null>(null),[reach,setReach]=useState<Set<string>|null>(null),[fresh,setFresh]=useState<Set<string>|null>(null),[colorBy,setColorBy]=useState('cat'),[layer,setLayer]=useState('city'),[land,setLand]=useState('all'),[type,setType]=useState('all'),[operator,setOperator]=useState('all'),[query,setQuery]=useState(''),[sort,setSort]=useState('pop'),[selected,setSelected]=useState<string|null>(null),[hover,setHover]=useState<string|null>(null),[shown,setShown]=useState(PAGE);
  const [view,setView]=useState<View|null>(null);const svgRef=useRef<SVGSVGElement>(null),drag=useRef<{x:number;y:number;view:View;moved:boolean}|null>(null),lastDrag=useRef(0);
  // Data: now and every five minutes while the tab is visible (and when it comes back after more than five minutes); never
  // two requests at once. The shapes once.
- useEffect(()=>{const c=new AbortController();setError('');
+ // Fehler gelten nur für den Abruf, der sie gemeldet hat
+ const error=failed.at===attempt?failed.text:'';
+ useEffect(()=>{const c=new AbortController();
   let running=false,loadedAt=0;
-  const fetchNow=()=>fetch('/api/admin/atlas',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Atlas&{error?:string};if(!r.ok)throw Error(d.error||'Der Lückenatlas konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setError(e instanceof Error?e.message:'Der Lückenatlas konnte nicht geladen werden.');});
+  const fetchNow=()=>fetch('/api/admin/atlas',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Atlas&{error?:string};if(!r.ok)throw Error(d.error||'Der Lückenatlas konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setFailed({at:attempt,text:e instanceof Error?e.message:'Der Lückenatlas konnte nicht geladen werden.'});});
   const load=()=>{if(running||document.visibilityState!=='visible')return Promise.resolve();running=true;return fetchNow().finally(()=>{running=false;loadedAt=Date.now();});};
   const onVisible=()=>{if(document.visibilityState==='visible'&&Date.now()-loadedAt>=REFRESH_MS)void load();};
   document.addEventListener('visibilitychange',onVisible);
@@ -60,6 +62,7 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
  // Values per area just computed by the catch-up steps (admin-store.ts): read again.
  useEffect(()=>{const again=()=>setAttempt(a=>a+1);window.addEventListener(ADMIN_REGIONS_DONE,again);return()=>window.removeEventListener(ADMIN_REGIONS_DONE,again);},[]);
  // "farbe" in the address preselects the colour of the map (links of the overview).
+ // eslint-disable-next-line react-hooks/set-state-in-effect -- Adresse erst nach dem Hydrieren lesen (der Server rendert ohne sie)
  useEffect(()=>{const f=new URLSearchParams(window.location.search).get('farbe');if(f&&COLOR_MODES.includes(f))setColorBy(f);},[]);
  // Every area with its reach and freshness bucket, judged at the time of the data.
  const atlasAreas=useMemo(()=>{const today=(data?.asOf||'').slice(0,10);return (data?.areas||[]).map(a=>({...a,rk:reachBucket(a.fe,today),fk:freshBucket(a.le,today)}));},[data]);
@@ -78,6 +81,9 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
   const by:Record<string,(a:Area,b:Area)=>number>={pop:(a,b)=>(isCityLevel(b)?b.p:b.p*.001)-(isCityLevel(a)?a.p:a.p*.001)||a.n.localeCompare(b.n,'de'),name:(a,b)=>a.n.localeCompare(b.n,'de'),land:(a,b)=>a.l.localeCompare(b.l)||a.n.localeCompare(b.n,'de'),reports:(a,b)=>(b.cnt||0)-(a.cnt||0)||a.n.localeCompare(b.n,'de')};
   return rows.sort(by[sort]||by.pop);
  },[atlasAreas,matches,sort]);
+ // Neue Auswahl oder Sortierung: Liste wieder auf die erste Seite. Im Effekt, weil matches bei jedem Rendern neu entsteht
+ // (beim Rendern nachgezogen ergäbe das eine Endlosschleife).
+ // eslint-disable-next-line react-hooks/set-state-in-effect -- siehe oben
  useEffect(()=>setShown(PAGE),[matches,sort]);
  const shapes=useMemo(()=>(geo?.shapes||[]).filter(r=>byId.has(r.id)&&(layer==='city'?r.kind==='city':r.kind==='district')&&(land==='all'||r.ags.startsWith(land))),[geo,byId,layer,land]);
  // css=true: for list dots and legends (CSS background); otherwise a fill of the SVG map (pattern "atlas-empty").
@@ -85,11 +91,13 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
  const fills=useMemo(()=>new Map(shapes.map(r=>{const a=byId.get(r.id)!;return [r.id,matches.has(r.id)?colorOf(a):DIM];})),[shapes,byId,matches,colorOf]);
  // The whole map, or the chosen Land; zoom and pan like the standalone page.
  const full=useMemo(()=>{const list=shapes.length?shapes:geo?.shapes||[];let [x0,y0,x1,y1]=[Infinity,Infinity,-Infinity,-Infinity];for(const {bounds:b} of list){if(b[0]<x0)x0=b[0];if(b[1]<y0)y0=b[1];if(b[2]>x1)x1=b[2];if(b[3]>y1)y1=b[3];}return list.length?{x:x0-6,y:y0-6,w:x1-x0+12,h:y1-y0+12}:{x:0,y:0,w:600,h:790};},[shapes,geo]);
- useEffect(()=>setView(null),[land,layer]);
+ // Anderes Land oder andere Ebene: Ausschnitt zurück auf die ganze Karte (beim Rendern nachgezogen)
+ const [viewFor,setViewFor]=useState({land,layer});
+ if(viewFor.land!==land||viewFor.layer!==layer){setViewFor({land,layer});setView(null);}
  const current=view||full;
  const zoomAt=(factor:number,cx?:number,cy?:number)=>{const svg=svgRef.current;if(!svg)return;const r=svg.getBoundingClientRect();const px=cx===undefined?current.x+current.w/2:current.x+(cx-r.left)/r.width*current.w,py=cy===undefined?current.y+current.h/2:current.y+(cy-r.top)/r.height*current.h;const w=Math.min(full.w*1.4,Math.max(4,current.w/factor)),h=current.h*w/current.w;setView({x:px-(px-current.x)*w/current.w,y:py-(py-current.y)*h/current.h,w,h});};
  // React registers onWheel passively, so the page would scroll while the map zooms: a native listener instead.
- const zoomRef=useRef(zoomAt);zoomRef.current=zoomAt;
+ const zoomRef=useRef(zoomAt);useEffect(()=>{zoomRef.current=zoomAt;});
  useEffect(()=>{const svg=svgRef.current;if(!svg)return;const onWheel=(e:WheelEvent)=>{e.preventDefault();zoomRef.current(e.deltaY<0?1.25:.8,e.clientX,e.clientY);};svg.addEventListener('wheel',onWheel,{passive:false});return()=>svg.removeEventListener('wheel',onWheel);},[geo,geoError,data]);
  const pick=useCallback((id:string)=>{if(Date.now()-lastDrag.current<400)return;setSelected(prev=>prev===id?null:id);},[]);
  const detail=selected?byId.get(selected):null,hovered=hover?byId.get(hover):null,todo=detail?ATLAS_TODO[detail.c]:undefined;

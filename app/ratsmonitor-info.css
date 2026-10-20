@@ -444,7 +444,8 @@ html.rm-dark .rm-banddots{opacity:.35}
 :is(.pl-band,.ri-head) :is(.rm-band-mid,.ri-lead){animation:rmBandIn .45s cubic-bezier(.2,.8,.2,1) .12s both}
 @media (prefers-reduced-motion:reduce){:is(.pl-band,.ri-head) :is(h1,.ri-h1,.rm-band-mid,.ri-lead){animation:none}}
 /* Handy: Kopfbänder schlanker (plenara.X: ohne Zurück, Symbol und Zeitraumzeilen; Info- und Kontoseiten: ohne großes Symbol, Einleitung auf 2 Zeilen) */
-@media (max-width:639px){
+/* Handy wie PHONE_QUERY (lib/usePhone.ts): schmal oder Handy quer */
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px){
   /* Auszüge der Anwender-Seiten: am Handy nur die ersten drei Zeilen */
   .pl-cut3>li:nth-child(n+4){display:none}
   /* Kopfband der Info- und Kontoseiten: überall so hoch wie bei plenara.X (Name groß, darunter eine Zeile); Überschrift, Satz und Zusätze stehen darunter (PageHead) */
@@ -533,7 +534,7 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
 
 
 /* Handy: Drücken gibt Rückmeldung (leicht einsinken), überall gleich; Schalter und Felder bleiben ruhig */
-@media (max-width:639px) and (hover:none){
+@media (max-width:639px) and (hover:none),(max-height:500px) and (pointer:coarse) and (max-width:1000px) and (hover:none){
   :is(button,a[href],[role="button"]):not([role="tab"],[role="menuitem"],input,.rm-headtitle){transition:transform .12s ease-out}
   :is(button,a[href],[role="button"]):not([role="tab"],[role="menuitem"],.rm-headtitle):active{transform:scale(.97)}
   nav a[href]:active,nav button:active{transform:scale(.94)}

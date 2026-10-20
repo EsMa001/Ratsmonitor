@@ -33,7 +33,7 @@ export function AdminProcessingMap({sources,selected,onToggle,layer,mode,land='a
   return {fills:new Map(shapes.map(r=>[r.id,color(byId.get(r.id)!)])),titles:new Map(shapes.map(r=>{const s=byId.get(r.id)!;return [r.id,s.name+': '+s.count+' Berichte. '+s.state+(s.accessLabel?'. Zugang: '+s.accessLabel:'')];}))};
  },[shapes,byId,sources,mode,pattern,most]);
  // Die Auswahlfunktion der Seite entsteht bei jedem ihrer Durchläufe neu; die Flächen erhalten eine gleichbleibende.
- const toggleRef=useRef(onToggle);toggleRef.current=onToggle;const toggle=useCallback((id:string)=>toggleRef.current(id),[]);
+ const toggleRef=useRef(onToggle);useEffect(()=>{toggleRef.current=onToggle;});const toggle=useCallback((id:string)=>toggleRef.current(id),[]);
  const legend=useMemo((): [string,string][]=>{
   const e=(t:number)=>Math.round(10**(t*most)-1).toLocaleString('de-DE'),hatch:[string,string]=[HATCH_CSS,'Angebunden, ohne Berichte'],none:[string,string]=[AC.zero,'Nicht angebunden'];
   if(mode==='coverage')return [[COVERAGE.data,'Berichte, keine Lücke gemeldet'],[COVERAGE.partial,'Teilstand'],[COVERAGE.failed,'Letzter Abruf fehlgeschlagen'],hatch,none];

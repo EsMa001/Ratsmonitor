@@ -65,6 +65,7 @@ export function AdminPdf(){
   try{const r=await fetch('/api/admin/pdf-ablage',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Der Stand konnte nicht geladen werden.');setData(d);setError('');}
   catch(e){setError(e instanceof Error?e.message:'Der Stand konnte nicht geladen werden.');}
  },[]);
+ // eslint-disable-next-line react-hooks/set-state-in-effect -- Abruf beim Öffnen; State wird erst nach dem await gesetzt
  useEffect(()=>{load();},[load]);
  // Solange etwas läuft oder wartet, alle 30 Sekunden neu laden
  const live=!!data&&(!!data.progress.chain||!!data.progress.ocr||data.jobs.queue.length>0||Object.values(data.jobs.running).some(j=>j?.state==='running')||!!data.count&&!data.count.finishedAt);

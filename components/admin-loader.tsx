@@ -21,15 +21,17 @@ const SKELETON:Record<DashboardPage,[string,number][]>={
 // navigation (RegionCatchUp, admin-catch-up.tsx), which computes them in steps.
 export function AdminLoader({page,staticVersion='',initialSelection=[],initialFilter}:{page:DashboardPage;staticVersion?:string;initialSelection?:string[];initialFilter?:string}){
  if(staticVersion)setAdminStaticVersion(staticVersion);
- const [data,setData]=useState<AdminDashboard|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0);
+ const [data,setData]=useState<AdminDashboard|null>(null),[failed,setFailed]=useState({key:'',text:''}),[attempt,setAttempt]=useState(0);
+ // Fehler gelten nur für den Abruf, der sie gemeldet hat (neuer Abruf: kein Zurücksetzen im Effekt nötig)
+ const key=page+'|'+attempt,error=failed.key===key?failed.text:'';
  useEffect(()=>{
-  const controller=new AbortController();setError('');
+  const controller=new AbortController();
   // Only the Prüfliste asks with the review list.
   fetchDashboard({review:page==='pruefliste',signal:controller.signal})
    .then(d=>{setData(d);})
-   .catch(e=>{if(!controller.signal.aborted)setError(e instanceof Error?e.message:'Der Datenbankstand konnte nicht geladen werden.');});
+   .catch(e=>{if(!controller.signal.aborted)setFailed({key,text:e instanceof Error?e.message:'Der Datenbankstand konnte nicht geladen werden.'});});
   return()=>controller.abort();
- },[page,attempt]);
+ },[page,attempt,key]);
  if(data){
   if(page==='pruefliste')return <AdminReview initial={data}/>;
   if(page==='bestand')return <AdminStock initial={data}/>;

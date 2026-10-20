@@ -85,7 +85,7 @@ function sections(brand: string): Section[] {
       title: "Zulässige Nutzung und Nutzungsrechte",
       paras: [
         `Wir räumen Ihnen für die Dauer des Vertrags ein einfaches, nicht übertragbares Recht ein, ${brand} für Ihre eigenen Zwecke zu nutzen. Im Tarif Enterprise gilt das für Ihre Organisation und die von Ihnen benannten Empfänger.`,
-        "Einzelne Treffer, Zusammenfassungen, Exporte und Verweise dürfen Sie für eigene, auch geschäftliche, Zwecke und in üblichem Umfang unter Angabe der Quelle verwenden. Die Rechte der Kommunen und Dritter an den Originalunterlagen bleiben unberührt.",
+        "Einzelne Treffer, Zusammenfassungen und Verweise dürfen Sie für eigene, auch geschäftliche, Zwecke und in üblichem Umfang unter Angabe der Quelle verwenden. Die Rechte der Kommunen und Dritter an den Originalunterlagen bleiben unberührt.",
         {
           text: "Nicht gestattet ist insbesondere:",
           list: [

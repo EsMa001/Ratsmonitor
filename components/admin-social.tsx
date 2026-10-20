@@ -51,6 +51,7 @@ export function AdminSocial(){
  // Auswahl pro Betrachter merken (nur Bequemlichkeit)
  useEffect(()=>{
   const s=store.get('social.sort'),m=Number(store.get('social.min')),g=store.get('social.group');
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- gemerkte Auswahl erst nach dem Hydrieren aus dem Browser lesen (Server kennt sie nicht)
   if(s==='datum'||s==='eignung')setSort(s);
   if(Number.isFinite(m)&&m>=0&&m<=100)setMinFit(Math.round(m/5)*5);
   if(g)setGroup(g);
@@ -62,6 +63,7 @@ export function AdminSocial(){
   catch(e){setError(e instanceof Error?e.message:'Die Vorschläge konnten nicht geladen werden.');}
   finally{setBusy(false);}
  },[]);
+ // eslint-disable-next-line react-hooks/set-state-in-effect -- Abruf beim Öffnen; State wird erst nach dem await gesetzt
  useEffect(()=>{load();},[load]);
  const all=useMemo(()=>(data?.days||[]).flatMap(d=>d.topics),[data]);
  const groups=useMemo(()=>{const c=new Map<string,number>();for(const t of all)c.set(t.group,(c.get(t.group)||0)+1);return [...c.entries()].sort((a,b)=>b[1]-a[1]);},[all]);

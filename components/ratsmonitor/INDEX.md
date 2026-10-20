@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (577 Zeilen, ⚠14)
+- app/ratsmonitor-info.css (578 Zeilen, ⚠14)
 - app/ratsmonitor.css (606 Zeilen, ⚠38)
 
 absolute ratsmonitor.css:601
@@ -229,8 +229,8 @@ admin-todo-wait-filter admin.css:262
 admin-todo-waiting admin.css:296
 admin-todo-wip admin.css:275
 admin-zoom admin.css:70
-animate-pulse ratsmonitor-info.css:553
-animate-spin ratsmonitor-info.css:553
+animate-pulse ratsmonitor-info.css:554
+animate-spin ratsmonitor-info.css:554
 back-btn ratsmonitor-info.css:427
 back-btn ratsmonitor.css:23
 bg-slate-900 ratsmonitor.css:176
@@ -269,7 +269,7 @@ gap-8 ratsmonitor-info.css:391
 gap-y-12 ratsmonitor-info.css:346
 gap-y-6 ratsmonitor-info.css:389
 gap-y-8 ratsmonitor-info.css:347
-grid ratsmonitor-info.css:476
+grid ratsmonitor-info.css:477
 grid ratsmonitor.css:373
 group ratsmonitor.css:163
 h-16 ratsmonitor-info.css:367
@@ -332,7 +332,7 @@ pl-band ratsmonitor-info.css:409
 pl-band ratsmonitor.css:322
 pl-cta ratsmonitor-info.css:332
 pl-ctawrap ratsmonitor-info.css:401
-pl-cut3 ratsmonitor-info.css:449
+pl-cut3 ratsmonitor-info.css:450
 pl-footer-accent ratsmonitor-info.css:323
 pl-grid ratsmonitor-info.css:401
 pl-h1 ratsmonitor-info.css:401
@@ -351,7 +351,7 @@ pl-slogan ratsmonitor-info.css:401
 pl-source ratsmonitor-info.css:401
 pl-stand ratsmonitor-info.css:401
 pl-still ratsmonitor-info.css:401
-pl-top ratsmonitor-info.css:473
+pl-top ratsmonitor-info.css:474
 pl-tp ratsmonitor-info.css:399
 pl-trends ratsmonitor-info.css:401
 popover ratsmonitor.css:52
@@ -374,9 +374,9 @@ ri ratsmonitor-info.css:13
 ri ratsmonitor.css:153
 ri-actions ratsmonitor-info.css:29
 ri-anw ratsmonitor-info.css:336
-ri-below ratsmonitor-info.css:455
-ri-below__h ratsmonitor-info.css:456
-ri-below__lead ratsmonitor-info.css:457
+ri-below ratsmonitor-info.css:456
+ri-below__h ratsmonitor-info.css:457
+ri-below__lead ratsmonitor-info.css:458
 ri-bid ratsmonitor-info.css:35
 ri-bid__icon ratsmonitor-info.css:36
 ri-bid__label ratsmonitor-info.css:37
@@ -467,7 +467,7 @@ ri-tl__step ratsmonitor-info.css:64
 ri-tl__step--out ratsmonitor-info.css:66
 ri-tl__title ratsmonitor-info.css:69
 ri-tl__title ratsmonitor.css:151
-ri-toc ratsmonitor-info.css:564
+ri-toc ratsmonitor-info.css:565
 ri-topnav ratsmonitor-info.css:297
 right-3 ratsmonitor.css:310
 rm-analytics ratsmonitor-info.css:378
@@ -500,7 +500,7 @@ rm-glass-pop ratsmonitor.css:91
 rm-gpulse ratsmonitor.css:534
 rm-gpulse2 ratsmonitor.css:535
 rm-gtext ratsmonitor.css:184
-rm-headtitle ratsmonitor-info.css:496
+rm-headtitle ratsmonitor-info.css:497
 rm-karte-toggle ratsmonitor.css:281
 rm-legalbar ratsmonitor.css:257
 rm-legend ratsmonitor.css:87
@@ -517,7 +517,7 @@ rm-mapwrap ratsmonitor.css:267
 rm-netstage ratsmonitor.css:393
 rm-noplay ratsmonitor.css:279
 rm-pagein ratsmonitor.css:562
-rm-pmark ratsmonitor-info.css:498
+rm-pmark ratsmonitor-info.css:499
 rm-rail-open ratsmonitor.css:385
 rm-rail-sub ratsmonitor.css:283
 rm-sbar ratsmonitor.css:242
@@ -528,9 +528,9 @@ rm-sec ratsmonitor.css:578
 rm-sec-m ratsmonitor.css:578
 rm-sec-s ratsmonitor.css:578
 rm-solid ratsmonitor.css:91
-rm-spinner ratsmonitor-info.css:553
+rm-spinner ratsmonitor-info.css:554
 rm-spinner ratsmonitor.css:114
-rm-stage ratsmonitor-info.css:477
+rm-stage ratsmonitor-info.css:478
 rm-stage-chip ratsmonitor.css:394
 rm-statusstrip ratsmonitor.css:488
 rm-step ratsmonitor.css:557
@@ -598,7 +598,7 @@ timeline design-styles.css:204
 top-3 ratsmonitor.css:395
 topic design-styles.css:140
 touch-pan-y ratsmonitor.css:291
-truncate ratsmonitor-info.css:459
+truncate ratsmonitor-info.css:460
 z- ratsmonitor.css:395
 
 ## Dateien (Zeilen, Exporte)
@@ -669,12 +669,12 @@ z- ratsmonitor.css:395
 - page.tsx (4): metadata, Page
 
 ### app/admin/
-- page.tsx (89, ⚠7): dynamic, metadata, AdminPage
+- page.tsx (90, ⚠7): dynamic, metadata, AdminPage
 
 ### app/
 - chatgpt-auth.ts (92): ChatGPTUser, getChatGPTUser, chatGPTSignInAvailable, chatGPTSignInPath, chatGPTSignOutPath
-- error.tsx (8, ⚠1): PageError
-- global-error.tsx (10, ⚠1): GlobalError
+- error.tsx (9, ⚠1): PageError
+- global-error.tsx (11, ⚠1): GlobalError
 - layout.tsx (12, ⚠2): metadata, viewport, RootLayout
 - not-found.tsx (4): metadata, NotFound
 
@@ -682,35 +682,35 @@ z- ratsmonitor.css:395
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (114, ⚠8): AdminAiLocal
 - admin-altbestand.tsx (138, ⚠8): AdminAltbestand
-- admin-atlas.tsx (197, ⚠29): AdminAtlas
+- admin-atlas.tsx (205, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
-- admin-chrome.tsx (142, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
+- admin-chrome.tsx (143, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
 - admin-cockpit.tsx (98, ⚠1): AdminCockpit
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (113, ⚠7): AdminRuns, AdminReview, AdminStock
+- admin-dashboard.tsx (114, ⚠7): AdminRuns, AdminReview, AdminStock
 - admin-debug.tsx (144, ⚠9): AdminDebug
 - admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-fehler.tsx (80, ⚠4): AdminFehler
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (41): IconName, Icon
-- admin-loader.tsx (45): DashboardPage, AdminLoader
+- admin-loader.tsx (47): DashboardPage, AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
-- admin-overview.tsx (168, ⚠13): AdminOverview
+- admin-overview.tsx (170, ⚠13): AdminOverview
 - admin-pdf-parts.tsx (169, ⚠10): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
-- admin-pdf.tsx (271, ⚠20): AdminPdf
+- admin-pdf.tsx (272, ⚠20): AdminPdf
 - admin-pipeline-parts.tsx (99, ⚠2): n, Step, FailRow, Glossary, stepSentence, StepList, result, Timeline, FailureTable, HostTable
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
-- admin-processing.tsx (188, ⚠19): AdminProcessing
+- admin-processing.tsx (191, ⚠19): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
 - admin-rule-texts.tsx (300, ⚠21): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
-- admin-schedules.tsx (116, ⚠4): AdminSchedules
+- admin-schedules.tsx (117, ⚠4): AdminSchedules
 - admin-signout.tsx (13): AdminSignOut
-- admin-social.tsx (135, ⚠1): AdminSocial
+- admin-social.tsx (137, ⚠1): AdminSocial
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
 - admin-stand.tsx (28): standText, StandLine
-- admin-storage.tsx (124, ⚠9): AdminStorage
-- admin-store.ts (96): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
+- admin-storage.tsx (127, ⚠9): AdminStorage
+- admin-store.ts (98): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
 - admin-texts.ts (399, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, ZUSTAND, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, STATE_HELP, ATLAS_TODO, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, PROTOKOLL, TITLES, HOCHRECHNUNG
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
@@ -730,7 +730,7 @@ z- ratsmonitor.css:395
 - ArtIcon.tsx (71, ⚠1): ArtIcon
 - BandDots.tsx (50): BandDots
 - BottomNav.tsx (55, ⚠1): BottomNav
-- Brand.tsx (274): AnalyticsX, AnalyticsLogo, Brand
+- Brand.tsx (275): AnalyticsX, AnalyticsLogo, Brand
 - CalendarFeed.tsx (106): CalendarFeed
 - ChipRail.tsx (35, ⚠1): RailItem, ChipRail, kurz
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
@@ -769,7 +769,7 @@ z- ratsmonitor.css:395
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (174, ⚠2): Highlight, ArticleCard, StepTimeline
-- ResultsPanel.tsx (216): ResultsPanel
+- ResultsPanel.tsx (223): ResultsPanel
 
 ### components/ratsmonitor/components/
 - suggestRows.ts (214): Row, notePick, takePickedText, RowContext, buildRows
@@ -787,7 +787,7 @@ z- ratsmonitor.css:395
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (86): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
-- StartseitePage.tsx (506, ⚠1): StartseitePage
+- StartseitePage.tsx (508, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (172): VideosPage
@@ -850,6 +850,7 @@ z- ratsmonitor.css:395
 - useInstall.ts (27): isStandalone, useInstall
 - useLongPress.ts (32): useLongPress
 - usePhone.ts (30): PHONE_QUERY, isPhone, usePhone, useTinyPhone
+- useScrollMemory.ts (49): useScrollMemory
 - useSwipe.ts (30): useSwipe
 - uuid.ts (12): newId
 - viewClamp.ts (18): NetViewState, NetBox, clampView
@@ -900,7 +901,7 @@ z- ratsmonitor.css:395
 - ListRow.tsx (34, ⚠1): ListRow
 - ListSkeleton.tsx (13): ListSkeleton
 - MapHint.tsx (23): MapHint
-- MapWheels.tsx (121, ⚠2): MapWheels, MapPill
+- MapWheels.tsx (122, ⚠3): MapWheels, MapPill
 - MeinOrtNeu.tsx (41): MeinOrtNeu
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
 - NetControls.tsx (50): Level, netLevel, LevelSegmented, LevelPill, NetLegend, NetZoom
