@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (577 Zeilen, ⚠14)
-- app/ratsmonitor.css (581 Zeilen, ⚠39)
+- app/ratsmonitor.css (582 Zeilen, ⚠38)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -475,28 +475,28 @@ rm-band-mid ratsmonitor-info.css:444
 rm-band-mid ratsmonitor.css:323
 rm-banddots ratsmonitor-info.css:440
 rm-bandicon ratsmonitor-info.css:435
-rm-bar ratsmonitor.css:552
+rm-bar ratsmonitor.css:549
 rm-brandtag ratsmonitor-info.css:432
 rm-chip ratsmonitor.css:89
 rm-dark admin.css:461
 rm-dark ratsmonitor-info.css:327
 rm-dark ratsmonitor.css:85
 rm-deskbar ratsmonitor.css:339
-rm-dialog ratsmonitor.css:566
+rm-dialog ratsmonitor.css:563
 rm-dotfield ratsmonitor-info.css:405
 rm-dotfield-on ratsmonitor-info.css:406
 rm-dots ratsmonitor.css:114
-rm-draw ratsmonitor.css:548
+rm-draw ratsmonitor.css:545
 rm-flat ratsmonitor.css:71
-rm-focusrows ratsmonitor.css:553
-rm-footcta ratsmonitor.css:503
+rm-focusrows ratsmonitor.css:550
+rm-footcta ratsmonitor.css:500
 rm-fpop ratsmonitor.css:449
-rm-gflow ratsmonitor.css:537
-rm-gin ratsmonitor.css:534
+rm-gflow ratsmonitor.css:534
+rm-gin ratsmonitor.css:531
 rm-glass ratsmonitor.css:80
 rm-glass-pop ratsmonitor.css:88
-rm-gpulse ratsmonitor.css:535
-rm-gpulse2 ratsmonitor.css:536
+rm-gpulse ratsmonitor.css:532
+rm-gpulse2 ratsmonitor.css:533
 rm-gtext ratsmonitor.css:181
 rm-headtitle ratsmonitor-info.css:496
 rm-karte-toggle ratsmonitor.css:278
@@ -514,7 +514,7 @@ rm-mapctl ratsmonitor.css:246
 rm-mapwrap ratsmonitor.css:264
 rm-netstage ratsmonitor.css:391
 rm-noplay ratsmonitor.css:276
-rm-pagein ratsmonitor.css:563
+rm-pagein ratsmonitor.css:560
 rm-pmark ratsmonitor-info.css:498
 rm-rail-open ratsmonitor.css:382
 rm-rail-sub ratsmonitor.css:280
@@ -522,24 +522,24 @@ rm-sbar ratsmonitor.css:239
 rm-schritt-std ratsmonitor.css:286
 rm-search ratsmonitor-info.css:316
 rm-search ratsmonitor.css:228
-rm-sec ratsmonitor.css:579
-rm-sec-m ratsmonitor.css:579
-rm-sec-s ratsmonitor.css:579
+rm-sec ratsmonitor.css:576
+rm-sec-m ratsmonitor.css:576
+rm-sec-s ratsmonitor.css:576
 rm-solid ratsmonitor.css:88
 rm-spinner ratsmonitor-info.css:553
 rm-spinner ratsmonitor.css:111
 rm-stage ratsmonitor-info.css:477
 rm-stage-chip ratsmonitor.css:392
-rm-statusstrip ratsmonitor.css:489
-rm-step ratsmonitor.css:558
+rm-statusstrip ratsmonitor.css:486
+rm-step ratsmonitor.css:555
 rm-sub-std ratsmonitor.css:374
 rm-sub-wide ratsmonitor.css:374
 rm-tabbar ratsmonitor.css:217
 rm-topline ratsmonitor.css:175
-rm-wheel-list ratsmonitor.css:463
+rm-wheel-list ratsmonitor.css:462
 rm-xebene ratsmonitor.css:284
 rm-xfilter ratsmonitor.css:277
-rm-xhandle ratsmonitor.css:493
+rm-xhandle ratsmonitor.css:490
 rm-xhero ratsmonitor.css:362
 rm-xhero-panel ratsmonitor.css:362
 rm-xlegend ratsmonitor.css:443
@@ -750,7 +750,7 @@ z- ratsmonitor.css:393
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
-- SearchBox.tsx (570, ⚠1): isSearchInput, focusSearch, SearchBox
+- SearchBox.tsx (380, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (68): SearchFilterPanel
 - SearchOverlay.tsx (87): SearchOverlay
 - Segmented.tsx (66): Segmented
@@ -873,12 +873,14 @@ z- ratsmonitor.css:393
 - AnalyticsAbout.tsx (232, ⚠18): ANALYSE_THUMBS, MethodikText
 - AnalyticsLocked.tsx (57): AnalyticsLocked
 - AnalyticsPages.tsx (61): AnalyticsPages
+- AtlasMap.tsx (107, ⚠2): AtlasMap
 - AtlasPage.tsx (76): ATLAS_THEMEN, atlasHref, AtlasPage
+- AtlasParts.tsx (186, ⚠1): Row, Result, Fact, n, MIN_BASE, isRest, restLast, Bars, Hint, OrtImVergleich, Level, AtlasExtra, PartList, PlaceChip
 - Befund.tsx (70): Befund, zuThema, Leer, Fehler
 - BeschluessePage.tsx (239, ⚠13): BeschluessePage
 - CompareCharts.tsx (69, ⚠2): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (437, ⚠13): ComparePage
+- ComparePage.tsx (369, ⚠10): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (93, ⚠4): PlayState, DiffusionSearch
 - FaktenPage.tsx (381, ⚠6): FaktenPage
@@ -907,6 +909,7 @@ z- ratsmonitor.css:393
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (331, ⚠10): XAtlasView
+- XBusy.tsx (14): busyProps, PendingVeil, HERO_MAIN, HERO_PANEL
 - XKopf.tsx (211, ⚠1): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (369, ⚠4): XTrendsPage
 - XTrendsParts.tsx (153, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve

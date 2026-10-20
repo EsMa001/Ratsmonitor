@@ -450,12 +450,11 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   /* Filterfenster: Milchglas, klappt nach oben auf und deckt die Breite der Suchleiste ab (links bis links, unten bis unten) */
   main#inhalt .rm-xsearch [role=search]{position:relative}
   main#inhalt .rm-xsearch [role=search]>div.relative{position:static}
-  main#inhalt .rm-xsearch .rm-fpop{border-radius:28px !important;background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(236,246,244,.95)) !important;border:1px solid rgba(255,255,255,.9) !important;-webkit-backdrop-filter:blur(22px) saturate(180%) !important;backdrop-filter:blur(22px) saturate(180%) !important;box-shadow:0 12px 32px rgba(24,24,27,.14),inset 0 1px 0 rgba(255,255,255,.9) !important}
+  main#inhalt .rm-xsearch .rm-fpop{border-radius:28px !important;background:var(--xg-pop) !important;border:1px solid var(--xg-pop-line) !important;-webkit-backdrop-filter:blur(22px) saturate(180%) !important;backdrop-filter:blur(22px) saturate(180%) !important;box-shadow:var(--xg-pop-shadow) !important}
   /* Auswahlfelder im Filterfenster: runde Glas-Pillen statt weißer Kästchen */
   main#inhalt .rm-xsearch .rm-fpop .select-base{border-radius:9999px !important;background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(230,243,241,.55)) !important;border:1px solid rgba(255,255,255,.92) !important;box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.85) !important}
   main#inhalt .rm-xsearch .rm-fpop .select-base.select-active{background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(204,232,228,.8)) !important;border-color:rgba(38,132,120,.35) !important}
   html.rm-dark main#inhalt .rm-xsearch .rm-fpop .select-base{background:linear-gradient(135deg,rgba(60,70,69,.6),rgba(33,43,52,.5)) !important;border-color:rgba(255,255,255,.14) !important}
-  html.rm-dark main#inhalt .rm-xsearch .rm-fpop{background:linear-gradient(135deg,rgba(40,48,47,.97),rgba(23,33,42,.95)) !important;border-color:rgba(255,255,255,.14) !important}
 }
 
 /* Handy: keine Unschärfe über der Karte (kostet beim Scrollen Leistung), die Flächen sind dafür fast deckend */
@@ -467,9 +466,8 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
   html.rm-dark main#inhalt .rm-xsearch [role=search]{background:linear-gradient(135deg,rgba(40,48,47,.94),rgba(23,33,42,.9)) !important;border-color:rgba(255,255,255,.12) !important;box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06) !important}
   html:not(.rm-dark) .rm-wheel-list{background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(236,246,244,.94)) !important}
   /* Auswahllisten im Filterfenster (Stand, Thema, Bundesland, Zeitraum): rundes Milchglas wie die übrigen Listen */
-  main#inhalt .rm-xsearch .rm-fpop [role=listbox]{background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(236,246,244,.95)) !important;border:1px solid rgba(255,255,255,.9) !important;border-radius:20px !important;padding:6px !important;box-shadow:0 12px 32px rgba(24,24,27,.14),inset 0 1px 0 rgba(255,255,255,.9) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+  main#inhalt .rm-xsearch .rm-fpop [role=listbox]{background:var(--xg-pop) !important;border:1px solid var(--xg-pop-line) !important;border-radius:20px !important;padding:6px !important;box-shadow:var(--xg-pop-shadow) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
   main#inhalt .rm-xsearch .rm-fpop [role=listbox] :is(button,li){border-radius:14px !important}
-  html.rm-dark main#inhalt .rm-xsearch .rm-fpop [role=listbox]{background:linear-gradient(135deg,rgba(40,48,47,.96),rgba(23,33,42,.94)) !important;border-color:rgba(255,255,255,.14) !important;box-shadow:0 12px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08) !important}
 }
 
 /* Handy, Themenatlas: aufgeklappte Liste der Walzen als Milchglas, kompakt */
@@ -477,8 +475,7 @@ html.rm-dark,html.rm-dark .admin-app{--color-accent:#7ac6bc;--color-accent-hover
 html.rm-dark .rm-wheel-list{background:linear-gradient(135deg,rgba(40,48,47,.9),rgba(23,33,42,.82));border-color:rgba(255,255,255,.14);box-shadow:0 12px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08)}
 /* Handy, alle plenara.X-Seiten: Vorschlagsliste der Suche als Milchglas (ohne Unschärfe), rund und kompakt; Hero-Fläche ohne Punktmuster */
 @media (max-width:639px){
-  main#inhalt .rm-xsearch [role=listbox]{background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(236,246,244,.95)) !important;border:1px solid rgba(255,255,255,.9) !important;border-radius:22px !important;box-shadow:0 12px 32px rgba(24,24,27,.14),inset 0 1px 0 rgba(255,255,255,.9) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
-  html.rm-dark main#inhalt .rm-xsearch [role=listbox]{background:linear-gradient(135deg,rgba(40,48,47,.96),rgba(23,33,42,.94)) !important;border-color:rgba(255,255,255,.14) !important}
+  main#inhalt .rm-xsearch [role=listbox]{background:var(--xg-pop) !important;border:1px solid var(--xg-pop-line) !important;border-radius:22px !important;box-shadow:var(--xg-pop-shadow) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
 }
 @media (max-width:1099px){
   main.rm-xhero .rm-xhero-panel{background:none !important;border-right:0 !important;padding:0 !important}
@@ -578,3 +575,7 @@ html.rm-dark .rm-dialog{background:linear-gradient(135deg,rgba(40,48,47,.85),rgb
 /* Abstand zwischen Abschnitten der plenara.X-Seiten: Desktop 48 / 40 / 32 px, am Handy überall 20 px (statt je Stelle einzelner Klassen) */
 .rm-sec{margin-top:3rem}.rm-sec-m{margin-top:2.5rem}.rm-sec-s{margin-top:2rem}
 @media (max-width:639px){.rm-sec,.rm-sec-m,.rm-sec-s{margin-top:1.25rem}}
+
+/* Fläche für Filterfenster und Vorschlagslisten (Hell und Dunkel an einer Stelle) */
+:root{--xg-pop:linear-gradient(135deg,rgba(255,255,255,.97),rgba(236,246,244,.95));--xg-pop-line:rgba(255,255,255,.9);--xg-pop-shadow:0 12px 32px rgba(24,24,27,.14),inset 0 1px 0 rgba(255,255,255,.9)}
+html.rm-dark{--xg-pop:linear-gradient(135deg,rgba(40,48,47,.96),rgba(23,33,42,.94));--xg-pop-line:rgba(255,255,255,.14);--xg-pop-shadow:0 12px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08)}
