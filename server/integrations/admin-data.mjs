@@ -135,7 +135,7 @@ async function seriesStatuses(db,areas){
 // Totals over three large tables: count(*) reads a whole index each (3.3 s on the server with 1.3 million reports), on every
 // opening of the administration. They only grow slowly and are only shown: held for a minute per process.
 const TOTALS_MAX_AGE_MS=60000,totals=new WeakMap();
-const TOTALS_SQL='SELECT (SELECT count(*) FROM article_versions) versions,(SELECT count(*) FROM article_analyses) analysisVersions,(SELECT count(*) FROM topics) stored,(SELECT count(*) FROM push_subscriptions) pushSubscriptions';
+const TOTALS_SQL='SELECT (SELECT count(*) FROM article_versions) versions,(SELECT count(*) FROM article_analyses) analysisVersions,(SELECT count(*) FROM topics) stored';
 async function storedTotals(db,{maxAgeMs=TOTALS_MAX_AGE_MS}={}){
  const hit=totals.get(db),at=Date.now();
  if(hit&&at-hit.at<maxAgeMs)return hit.row;
@@ -143,7 +143,7 @@ async function storedTotals(db,{maxAgeMs=TOTALS_MAX_AGE_MS}={}){
  totals.set(db,{at,row});
  return row;
 }
-export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushConfigured=false,review=true,sources:withSources=true,totalsMaxAgeMs=TOTALS_MAX_AGE_MS}={}){
+export async function loadAdminData(db,{now=new Date(),review=true,sources:withSources=true,totalsMaxAgeMs=TOTALS_MAX_AGE_MS}={}){
  const week=new Date(now.getTime()-7*86400000).toISOString();
  // The scan of the reports is kept until the reports change (revision-cache.mjs); "updated in the last seven days" moves
  // with the clock, so a kept result also ends with the hour.
@@ -172,5 +172,5 @@ export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushCo
  const runs=runRows.results.map(r=>{const d=readJson(r.details);return {id:r.id,startedAt:r.started_at,finishedAt:r.finished_at,status:r.status,region:d.region||'muenster',mode:d.mode||'metadata',trigger:d.trigger||'unbekannt',count:typeof(d.count??d.processed)==='number'?(d.count??d.processed):null,issueCount:Array.isArray(d.issues)?d.issues.length:0,abandoned:r.status==='running'&&Date.parse(r.started_at)<now.getTime()-600000};});
  const until=lockedUntil(lockRows.results[0]?.value);
  // The default review list shows the reports without a label; their number is known from the scan.
- return {asOf:now.toISOString(),...(figures?.pending?{statsPending:figures.pending}:{}),processing:{...state,regions:undefined},counts,sources,statuses:statuses.results,labels:LABELS.map(l=>({id:l.id,name:l.name,count:sum('label_'+l.id)})),runs,lastScheduledAt:scheduled.results[0]?.lastScheduledAt||null,importBusyUntil:until>now.getTime()?new Date(until).toISOString():null,operations:{aiConfigured,pushConfigured},review:review?await adminReview(db,'labels','all',{total:counts.unlabelled}):{issue:'labels',total:counts.unlabelled,articles:[]}};
+ return {asOf:now.toISOString(),...(figures?.pending?{statsPending:figures.pending}:{}),processing:{...state,regions:undefined},counts,sources,statuses:statuses.results,labels:LABELS.map(l=>({id:l.id,name:l.name,count:sum('label_'+l.id)})),runs,lastScheduledAt:scheduled.results[0]?.lastScheduledAt||null,importBusyUntil:until>now.getTime()?new Date(until).toISOString():null,review:review?await adminReview(db,'labels','all',{total:counts.unlabelled}):{issue:'labels',total:counts.unlabelled,articles:[]}};
 }

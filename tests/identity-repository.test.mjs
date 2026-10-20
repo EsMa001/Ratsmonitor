@@ -17,10 +17,7 @@ const stubs={
  'cloudflare:workers':'export const env=globalThis.identityFixture.env;',
  '@/server/repositories/seed':'export async function ensureData(){}',
  './seed':'export async function ensureData(){}',
- '@/server/integrations/collect-region.mjs':'export async function collectRegion(id,options){globalThis.identityFixture.options=options;if(globalThis.identityFixture.error)throw Error("upstream unavailable");return globalThis.identityFixture.fresh;}',
- '@/server/integrations/documents.mjs':'export async function enrichDocument(t){return t;}',
- '@/server/integrations/ai-summary.mjs':'export async function summarize(t){return t;}',
- '@/server/services/push':'export async function dispatchDecisionPush(){}'
+ '@/server/integrations/collect-region.mjs':'export async function collectRegion(id,options){globalThis.identityFixture.options=options;if(globalThis.identityFixture.error)throw Error("upstream unavailable");return globalThis.identityFixture.fresh;}'
 };
 const cache=new Map();
 function load(file){if(cache.has(file))return cache.get(file);let code=fs.readFileSync(file,'utf8');if(file.endsWith('.json'))return uri('export default '+code+';');
@@ -125,9 +122,6 @@ test('public reads never initialise storage or label new articles, and imports d
   assert.equal((await sync.runSync('metadata','billerbeck',trigger)).status,200);
   assert.equal(JSON.parse(db.prepare('SELECT payload FROM topics').get().payload).classification,undefined);
  }
- const runs=db.prepare('SELECT count(*) n FROM import_runs').get().n;
- assert.equal((await sync.runSync('summaries','billerbeck','scheduled')).status,403);
- assert.equal(db.prepare('SELECT count(*) n FROM import_runs').get().n,runs);
 });
 test('marks of read meetings reach the collector, are stored after the reports and withheld when storing fails',async()=>{
  reset();const a=make('a'),meeting=a.events[0].url,mark=['2026-09-20','abc',Date.now(),'p',1];insert(a);
@@ -174,6 +168,4 @@ test('every import leaves a record for the debug view; warnings are kept apart f
  globalThis.identityFixture.error=true;const failed=await sync.runSync('metadata','billerbeck');globalThis.identityFixture.error=false;assert.equal(failed.status,502);
  record=debug();assert.equal(record.status,'failed');assert.equal(record.error,'upstream unavailable');assert.equal(record.window,'12m');assert.equal(details().error,'upstream unavailable');assert.equal(details().debug.requests,0);
  assert.equal(db.prepare('SELECT count(*) AS n FROM topics').get().n,2);
- // Reading documents for summaries is not an import of official data and leaves the record alone.
- await sync.runSync('summaries','billerbeck');assert.equal(debug().status,'failed');
 });

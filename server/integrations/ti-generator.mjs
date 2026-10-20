@@ -1,7 +1,7 @@
 import {sourceDecision} from './source-fields.mjs';
 import {windowStart} from './history-window.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
-import {budgeted} from './request-budget.mjs';
+import {budgeted,statusError} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {extractText,getDocumentProxy} from 'unpdf';
@@ -223,7 +223,7 @@ export function detectTiGenerator(url,html){
 /** Text of a notice (PDF of the site, at most 3 MB and 12 pages), read in memory; never kept. */
 export async function readNoticePdf(url,source){
  const r=await fetchNoRedirect(allowed(url,source),{signal:AbortSignal.timeout(30000),headers:{'User-Agent':SOURCE_USER_AGENT}});
- if(!r.ok){await r.body?.cancel();throw Error('Quelle antwortet mit HTTP '+r.status);}
+ if(!r.ok){await r.body?.cancel();throw statusError('Quelle antwortet mit HTTP ',r);}
  const bytes=await bodyBytes(r,3e6);
  const pdf=await getDocumentProxy(bytes,{isEvalSupported:false,verbosity:0});
  try{if(pdf.numPages>12)throw Error('Quelldokument zu umfangreich');return (await extractText(pdf,{mergePages:true})).text;}finally{await (pdf.destroy?pdf.destroy():pdf.loadingTask?.destroy?.());}

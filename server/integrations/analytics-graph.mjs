@@ -1,4 +1,4 @@
-import {LABELS} from '../../shared/labels.mjs';
+import {LABELS,labelName} from '../../shared/labels.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
@@ -78,8 +78,7 @@ export async function knowledgeGraph(db,catalog,params){
  /* Themen, Gremien, Länder: je Art die häufigsten */
  const countAll=pick=>{const m=new Map();for(const d of docs)for(const v of pick(d))m.set(v,(m.get(v)||0)+1);return [...m].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0]))).slice(0,PER_KIND);};
  const count=pick=>{const m=new Map();for(const d of docs){const v=pick(d);if(v)m.set(v,(m.get(v)||0)+1);}return [...m].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0]))).slice(0,PER_KIND);};
- const labelName=id=>LABELS.find(l=>l.id===id)?.name||null;
- const topics=count(d=>labelName(d.label)&&d.label!=='unklar'?d.label:null),committees=countAll(d=>d.gremien.filter(g=>g.length>=4)),lands=count(d=>d.land);
+ const topics=count(d=>d.label!=='unklar'&&LABELS.some(l=>l.id===d.label)?d.label:null),committees=countAll(d=>d.gremien.filter(g=>g.length>=4)),lands=count(d=>d.land);
  const nodes=[{id:'q',type:'center',label:f.q||'Gesamter Datenbestand',count:total}];
  for(const c of chosen)nodes.push({id:'t:'+c.k,type:'term',label:shown.get(c.k),count:c.n});
  for(const [id,n] of topics)nodes.push({id:'k:'+id,type:'topic',label:labelName(id),count:n});

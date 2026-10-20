@@ -116,7 +116,7 @@ und `topic_facts`; Zeilen in `article_versions`, `article_analyses`, `report_rul
 | `data_revisions` | globale Datenstände | PK `id` ∈ {`content`, `search`, `coverage`}; `revision` | Trigger und einzelne Skripte (Abschnitt 3) | 0004, 0017, 0018 |
 | `work_failures` | Fehlerspeicher je Schritt und Gegenstand | PK `(step, key)`; `host`, `class`, `reason`, `http`, `tries`, `first_at`, `last_at`, `next_try_at`, `event_date`, `origin`, `release`; Indizes `next_try_at`, `host` | `work-failures.mjs` für Abruf (`noteImport`) und Ablage (`failures.mjs`); Nacharbeit, Altbestand, `job.mjs`; liest Debug, Altbestand, `pipeline-worker.mjs`, `text.mjs` | 0040 |
 | `source_hosts` | Serverstufe je Server | PK `host`; `state`, `fails`, `level`, `next_try_at`, `last_ok_at`, `last_fail_at`, `reason`, `updated_at` | `work-failures.mjs`, `failures.mjs`, `job.mjs`; liest Abrufer, Debug, `stats.mjs` | 0040 |
-| `push_subscriptions` | Web-Push-Abonnements | PK `id`; `endpoint`, `auth`, `p256dh`, `created_at`, `last_sent_at` | `/api/push/subscribe`, `push.ts` | 0000 |
+| `push_subscriptions` | Web-Push-Abonnements | PK `id`; `endpoint`, `auth`, `p256dh`, `created_at`, `last_sent_at` | niemand (Web-Push seit 20.10.2026 entfernt; die Tabelle bleibt) | 0000 |
 | `d1_migrations` | Buchführung der Migrationen (wie Wrangler) | `id`, `name` UNIQUE, `applied_at` | `scripts/node-migrate.mjs`; `serve.mjs` prüft die Tabelle beim Start | (Code) |
 
 ### View `topic_effective_labels` (Fassung `0038`)
@@ -176,7 +176,7 @@ Zwischenspeicher im Prozess: `server/services/read-cache.mjs` (30 s, 3 Einträge
 | | `import-lock`, `import-run:<gebiet>` | Importsperre (`<expiry>` exklusiv oder `shared`), Marke je Gebiet; auch von KI-Übernahme, Analysen, Titelregel genutzt |
 | | `import-marks:<gebiet>`, `import-list:<gebiet>` | gelesene Sitzungen, gemerkte Sitzungsliste |
 | | `import-debug:<gebiet>` | Anfragen des letzten Abrufs |
-| | `latest-decision` | letzter erkannter Beschluss (Push, nur Münster) |
+| | `latest-decision` | Altlast: letzter erkannter Beschluss für Web-Push (Münster), seit 20.10.2026 nicht mehr geschrieben |
 | | `seed-init-lock`, `regional-v5-…`, `nrw-<rev>`, `history-backfill-*`, `last-data-restore` | Sperren und Marken der Erstbefüllung, Nachladung, Wiederherstellung |
 | Suche | `search-words`, `search-words-lease` | Stand (`{rowid, topId, revision, complete, counted, hasHits, words, postings, at}`) und Sperre der Wortliste |
 | Regeln, plenara.X | `x-cases` | Baustand von `x_cases` (= X-Revision) |
@@ -240,7 +240,7 @@ Geheimnisse nur als SHA-256, Adressen nur dort im Klartext, wohin versendet wird
 | `pdfs` | PK `url`; `sha256`, `bytes`, `pages`, `status` (`ok`, `error`, `unsupported`, `text-only`), `http`, `error`, `fetched_at`, `region_id`, `topic_id`, `doc_type`, `formal`, `event_date`, `role` (`other` = Anlage, leer = Hauptdokument); Indizes `sha`, `(status, fetched_at)` | eine Zeile je **Adresse** |
 | `texts` | PK `sha256`; `status`, `method` (`text`, `ocr`, `mixed`), `version` (`TEXT_VERSION`), `pages`, `ocr_pages`, `ocr_needed`, `chars`, `error`, `made_at`, `head_type`; Teilindex `WHERE ocr_needed>0` | eine Zeile je **Datei** (Textfassung) |
 | `meta` | `key`, `value` | `doc-type-version`, `failures-seeded` |
-| `text_hashes`, `facts_keys` | | Altlasten der Skripte `summaries.mjs` und `facts.mjs` (ersetzt durch `report_rules`) |
+| `text_hashes`, `facts_keys` | | Altlasten der Skripte `summaries.mjs` und `facts.mjs` (entfernt 20.10.2026, ersetzt durch `report_rules`); niemand liest oder schreibt sie |
 | `ocr_refetch`, `ocr_slow` | | Altlasten, einmal in den Fehlerspeicher übertragen, danach nur noch ohne Fehlerspeicher geschrieben |
 
 Dateien `files/<sha256[0..1]>/<sha256>.pdf` und `.txt` (Seiten getrennt durch `\f`); gleiche Bytes liegen einmal, auch unter
@@ -267,7 +267,7 @@ mehreren Adressen. Das Laufprotokoll liegt nicht hier, sondern in `system_state`
    bis `schemaOk` den vollen Aufbau auslöst.
 4. `scripts/pdf-store/summaries.mjs` und `facts.mjs` ruft kein Job mehr auf; sie schreiben aber noch `topics`, `article_analyses`,
    `topic_facts`, `data_revisions` sowie `text_hashes`/`facts_keys`. Fakt-Art `funding` (Kommentar in 0025) gibt es im heutigen
-   `factsOf` nicht mehr.
+   `factsOf` nicht mehr. **Erledigt 20.10.2026:** beide Skripte sind entfernt.
 5. `requirements/plenara-x-konzept.md` beschreibt `x_cases` mit `id`, `member_id`, `routine`, `text_state` sowie `x_docs`, `x_stats`
    und `plenara-x-build.mjs`; so ist es nicht umgesetzt.
 6. Zwei Schreibweisen des Vorgangsschlüssels: gelesene Berichte `titleKey` (Satzzeichen zu Leerzeichen), ungelesene `lower(title)`

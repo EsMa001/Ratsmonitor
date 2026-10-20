@@ -18,7 +18,7 @@ import type {AdminDashboard} from '@/shared/admin-types';
 // review:false leaves out the review list of page 2 (a scan of its own); its total is still reported.
 export async function getAdminDashboard({review=true}:{review?:boolean}={}):Promise<AdminDashboard>{
  if(!env.DB)throw Error('Datenbank fehlt');
- return await loadAdminData(env.DB,{aiConfigured:!!env.OPENAI_API_KEY,pushConfigured:!!env.VAPID_PRIVATE_KEY&&!!env.VAPID_PUBLIC_KEY,review}) as unknown as AdminDashboard;
+ return await loadAdminData(env.DB,{review}) as unknown as AdminDashboard;
 }
 export async function getAdminReview(issue:string,region:string){if(!env.DB)throw Error('Datenbank fehlt');return adminReview(env.DB,issue,region);}
 // The estimate is kept in the database and computed only on request: GET reads (estimateView), POST computes.
@@ -62,7 +62,7 @@ export const staticVersion=()=>staticAreas().v;
 export const areasView=()=>view(s=>['a1',VERSIONS,s.stockSum,s.statsStamp,s.content,STATIC_VER,staticAreas().v,hour()],async(db,s)=>({...await buildAreas(db),stand:derivedStand(s,'stats')}));
 export async function getAdminSummary(){
  if(!env.DB)throw Error('Datenbank fehlt');
- const [data,stand]=await Promise.all([loadAdminData(env.DB,{aiConfigured:!!env.OPENAI_API_KEY,pushConfigured:!!env.VAPID_PRIVATE_KEY&&!!env.VAPID_PUBLIC_KEY,review:false,sources:false}),adminStand(env.DB)]);
+ const [data,stand]=await Promise.all([loadAdminData(env.DB,{review:false,sources:false}),adminStand(env.DB)]);
  const {sources:_sources,review:_review,...rest}=data as unknown as AdminDashboard;
  return {...rest,stand:derivedStand(stand as Stand,'stats')};
 }

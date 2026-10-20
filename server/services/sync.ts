@@ -1,5 +1,3 @@
-import {compactSummaryAttempt,withRuleSummary} from '../integrations/compact-summary.mjs';
-import {RULE_SUMMARY_VERSION} from '../integrations/rule-summary.mjs';
 import {versionPayload} from '@/shared/article-version.mjs';
 import {invalidateReads} from './read-cache.mjs';
 import {importHealth} from '../integrations/import-health.mjs';
@@ -14,58 +12,50 @@ import {metadataChanged,stableJson} from '@/shared/article-record.mjs';
 import {batches} from '../integrations/batches.mjs';
 import {refreshSearchWords} from '../integrations/search-words.mjs';
 import {rollCardDates} from '../integrations/search-card-dates.mjs';
-import {FACTS_VERSION} from '../../shared/topic-facts.mjs';
-import {readReport} from '../integrations/report-rules.mjs';
 import {refreshRegionFacts} from '../integrations/region-facts.mjs';
 import {REGIONS} from '@/shared/regions';
 import { env } from 'cloudflare:workers';
 import { ensureData } from '@/server/repositories/seed';
-import { qualityCheck } from '@/server/integrations/oparl.mjs';
 import { collectRegion } from '@/server/integrations/collect-region.mjs';
-import { enrichDocument } from '@/server/integrations/documents.mjs';
-import { summarize } from '@/server/integrations/ai-summary.mjs';
-import { insertUsage } from '@/shared/ai-usage.mjs';
-import { dispatchDecisionPush } from '@/server/services/push';
 import type { StoredTopic as Topic, ImportData as FeedData } from '@/server/types';
 const FAILURE_CAUSE = 'Fehlerursache: ';
 /** Import runs (import_runs) are kept this long; the record of each area's last import stays in import-debug. */
 export const RUNS_KEEP_DAYS = 30;
 /** options.window selects the look-back period for metadata imports ('1d' | '1w' | '1m' | '3m' | '12m' | '24m'; default twelve months). */
-export async function runSync(mode: 'metadata' | 'summaries',region='muenster', trigger: 'manual' | 'scheduled' = 'manual', options: {window?: string} = {}) { if(mode==='summaries'&&trigger!=='manual')return {status:403,data:{error:'Textverarbeitung startet ausschließlich manuell im Adminbereich.'}};
+export async function runSync(mode: 'metadata',region='muenster', trigger: 'manual' | 'scheduled' = 'manual', options: {window?: string} = {}) {
     let lookback: string; try { lookback = historyWindow(options.window); } catch { return { status: 400, data: { error: 'Ungültiger Zeitraum für den Abruf.' } }; }
     if (!env.DB)
     return { status: 503, data: { error: 'Datenbank fehlt' } }; await ensureData();
     const coverageRow = await env.DB.prepare('SELECT payload FROM source_coverage WHERE region_id=?').bind(region).first<{payload:string}>();
     const previousCoverage = coverageRow ? JSON.parse(coverageRow.payload) : {};
-    if(mode==='metadata' && trigger==='scheduled' && Date.parse(previousCoverage.nextRetryAt || '')>Date.now())
+    if(trigger==='scheduled' && Date.parse(previousCoverage.nextRetryAt || '')>Date.now())
         return {status:200,data:{skipped:true,reason:'cooldown',nextRetryAt:previousCoverage.nextRetryAt,coverage:previousCoverage}};
     const id = crypto.randomUUID(), started = new Date().toISOString();
-    // Imports of different areas run side by side; reading documents for summaries changes the stock and runs alone.
-    const lock = await acquireImport(env.DB, region, { shared: mode === 'metadata' }); if (!lock.ok)
+    // Imports of different areas run side by side.
+    const lock = await acquireImport(env.DB, region, { shared: true }); if (!lock.ok)
     // busy: 'area' (this area is being imported elsewhere) or 'stock' (something else holds the whole stock); the job
     // sets the area back for a while or waits as a whole (pipeline-jobs.mjs).
     return { status: 409, data: { error: 'Import läuft bereits', retryAfter: 60, busy: (lock as { reason?: string }).reason } };
     // Every import of official data is recorded for the debug view (import-trace.mjs).
-    const trace = mode === 'metadata' ? createTrace(region, { window: lookback }) : null;
+    const trace = createTrace(region, { window: lookback });
     // Cached analysis results go when the reports may have changed: always, except after an import that wrote nothing.
     let wrote = true;
     try {
-    await env.DB.prepare('INSERT INTO import_runs(id,started_at,status,details) VALUES(?,?,?,?)').bind(id, started, 'running', JSON.stringify(mode==='metadata'?{mode,region,trigger,window:lookback}:{mode,region,trigger})).run();
+    await env.DB.prepare('INSERT INTO import_runs(id,started_at,status,details) VALUES(?,?,?,?)').bind(id, started, 'running', JSON.stringify({mode,region,trigger,window:lookback})).run();
     // Runs older than RUNS_KEEP_DAYS go, a few hundred per import, oldest first (index on started_at); the table stays bounded.
-    if (mode === 'metadata') { try { await env.DB.prepare('DELETE FROM import_runs WHERE id IN (SELECT id FROM import_runs WHERE started_at<? ORDER BY started_at LIMIT 200)').bind(new Date(Date.now() - RUNS_KEEP_DAYS * 864e5).toISOString()).run(); } catch { /* nicht wichtig für den Import */ } }
-    const data = await (mode === 'summaries' ? refreshSummaries(id, started,region) : refreshMetadata(id, started,region,previousCoverage,lookback,trace!,lock.renew));
-    if (mode === 'metadata') wrote = Boolean((data as { stored?: number }).stored);
-    if (mode === 'metadata') {
-        /* Wortliste der Suche nachführen, wenn dieser Import Vorgänge geschrieben hat (nur Neues; fehlt sie noch oder
-           schlägt es fehl, sucht die Suche wie gewohnt). Änderungen ohne Import holt der nächste Import mit Änderungen
-           oder das nächtliche Nachführen nach. */
-        if ((data as { stored?: number }).stored) { try { await refreshSearchWords(env.DB, { onlyIfBuilt: true, maxCards: 20000, kinds: new Map(REGIONS.map((r) => [r.id, r.kind])), names: new Map(REGIONS.map((r) => [r.id, r.name])) }); } catch { /* nicht wichtig für den Import */ } }
-        /* Werte je Gebiet der Administration für dieses Gebiet nachrechnen (region-facts.mjs), nach dem letzten Teilabruf,
-           höchstens eine Sekunde: Die Rechnung hält den Prozess an, auch die anderen Importe. Reicht die Zeit nicht oder
-           schlägt es fehl, holt der nächste Rechenschritt der Administration es nach. */
-        /* Suchkarten, deren nächste Sitzung erreicht ist, auf diese Sitzung nachrücken (drizzle/0024; meist nichts zu tun) */
-        try { await rollCardDates(env.DB); } catch { /* nicht wichtig für den Import */ }
-        if (!(data as { resume?: boolean }).resume) { try { await refreshRegionFacts(env.DB, { regions: [region], budgetMs: 1000 }); } catch { /* nicht wichtig für den Import */ } } }
+    try { await env.DB.prepare('DELETE FROM import_runs WHERE id IN (SELECT id FROM import_runs WHERE started_at<? ORDER BY started_at LIMIT 200)').bind(new Date(Date.now() - RUNS_KEEP_DAYS * 864e5).toISOString()).run(); } catch { /* nicht wichtig für den Import */ }
+    const data = await refreshMetadata(id, started,region,previousCoverage,lookback,trace,lock.renew);
+    wrote = Boolean(data.stored);
+    /* Wortliste der Suche nachführen, wenn dieser Import Vorgänge geschrieben hat (nur Neues; fehlt sie noch oder
+       schlägt es fehl, sucht die Suche wie gewohnt). Änderungen ohne Import holt der nächste Import mit Änderungen
+       oder das nächtliche Nachführen nach. */
+    if ((data as { stored?: number }).stored) { try { await refreshSearchWords(env.DB, { onlyIfBuilt: true, maxCards: 20000, kinds: new Map(REGIONS.map((r) => [r.id, r.kind])), names: new Map(REGIONS.map((r) => [r.id, r.name])) }); } catch { /* nicht wichtig für den Import */ } }
+    /* Werte je Gebiet der Administration für dieses Gebiet nachrechnen (region-facts.mjs), nach dem letzten Teilabruf,
+       höchstens eine Sekunde: Die Rechnung hält den Prozess an, auch die anderen Importe. Reicht die Zeit nicht oder
+       schlägt es fehl, holt der nächste Rechenschritt der Administration es nach. */
+    /* Suchkarten, deren nächste Sitzung erreicht ist, auf diese Sitzung nachrücken (drizzle/0024; meist nichts zu tun) */
+    try { await rollCardDates(env.DB); } catch { /* nicht wichtig für den Import */ }
+    if (!(data as { resume?: boolean }).resume) { try { await refreshRegionFacts(env.DB, { regions: [region], budgetMs: 1000 }); } catch { /* nicht wichtig für den Import */ } }
     return { status: 200, data };
 }
 catch (e) {
@@ -73,16 +63,14 @@ catch (e) {
     const cause = (e instanceof Error ? e.message : 'Importfehler').slice(0, 300);
     // The source refused a request (collect-region.mjs, refusalGate): the job pauses its server and asks again later.
     const refused = (e as { refused?: { retryAfterMs: number | null } })?.refused;
-    const record = trace ? trace.finish({ runId: id, status: 'failed', error: cause }) : null;
+    const record = trace.finish({ runId: id, status: 'failed', error: cause });
     await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), 'failed', JSON.stringify({ mode,region,trigger,error: cause, ...(record ? { debug: brief(record) } : {}) }), id).run();
     // The record must never hide the failure it describes.
     if (record) try { await saveDebug(env.DB, record); } catch {}
-    if(mode==='metadata'){
-        const coverage={...previousCoverage,regionId:region,...importHealth(previousCoverage,{at:started,failed:true}),complete:false,issues:[...new Set([...(previousCoverage.issues||[]).filter((i:string)=>!String(i).startsWith(FAILURE_CAUSE)),'Abruf fehlgeschlagen; letzter übernommener Bestand bleibt erhalten.',FAILURE_CAUSE+cause])]};
-        // After a failure the OParl probe is sent again (it may be the reason: "OParl vorhanden").
-        delete coverage.oparlProbeAt;
-        await env.DB.prepare('INSERT INTO source_coverage(region_id,payload) VALUES(?,?) ON CONFLICT(region_id) DO UPDATE SET payload=excluded.payload').bind(region,JSON.stringify(coverage)).run();
-    }
+    const coverage={...previousCoverage,regionId:region,...importHealth(previousCoverage,{at:started,failed:true}),complete:false,issues:[...new Set([...(previousCoverage.issues||[]).filter((i:string)=>!String(i).startsWith(FAILURE_CAUSE)),'Abruf fehlgeschlagen; letzter übernommener Bestand bleibt erhalten.',FAILURE_CAUSE+cause])]};
+    // After a failure the OParl probe is sent again (it may be the reason: "OParl vorhanden").
+    delete coverage.oparlProbeAt;
+    await env.DB.prepare('INSERT INTO source_coverage(region_id,payload) VALUES(?,?) ON CONFLICT(region_id) DO UPDATE SET payload=excluded.payload').bind(region,JSON.stringify(coverage)).run();
     return { status: 502, data: { error: 'Import fehlgeschlagen; der angezeigte Bestand kann teilweise aktualisiert sein', cause, ...(refused ? { refused } : {}) } };
 }
 finally {
@@ -91,78 +79,6 @@ finally {
 } }
 // What of a record goes into the details of the run.
 const brief = (record: {summary: {requests: number; failed: number; networkMs: number}; durationMs: number}) => ({ requests: record.summary.requests, failed: record.summary.failed, networkMs: record.summary.networkMs, durationMs: record.durationMs });
-async function refreshSummaries(id: string, started: string,region:string) { if (!env.DB)
-    throw Error('Datenbank fehlt'); const rows = await env.DB.prepare("SELECT id,payload FROM topics WHERE region_id=? AND active=1 ORDER BY updated_at DESC").bind(region).all<{
-    id: string;
-    payload: string;
-}>();
-    /* Wie oft hängt ein PDF an Berichten des Gebiets? Unterlagen der ganzen Sitzung werden nicht zusammengefasst (sessionDocument) */
-    const uses = new Map<string, number>();
-    for (const row of rows.results) { try { for (const d of JSON.parse(row.payload).documents || []) if (d.kind === 'application/pdf') uses.set(d.url, (uses.get(d.url) || 0) + 1); } catch { /* kaputter Payload: zählt nicht */ } }
-    let processed = 0; for (const row of rows.results) {
-    const old = JSON.parse(row.payload);
-    const ai = String(old.generatedBy || '').startsWith('KI-Zusammenfassung');
-    if (!old.documents.some((d: {
-        kind: string;
-    }) => d.kind === 'application/pdf') || (!ai && old.summaryAttemptedAt))
-        continue;
-    /* KI-Zusammenfassung: zusätzlich die Regel-Zusammenfassung aus dem Hauptdokument, ohne KI (Entscheidung 12.10.2026); nur
-       ruleSummary wird geschrieben (withRuleSummary), einmal je Regelfassung. Die Nachtkette der PDF-Ablage versucht es mit
-       ihrem Text erneut (read-reports.mjs, Schlüssel in report_rules). */
-    if (ai) {
-        if (old.ruleSummary || String(old.ruleSummaryTried || '').startsWith(`${RULE_SUMMARY_VERSION}:`))
-            continue;
-        let t = old;
-        try { t = await enrichDocument({ ...old }, undefined, { uses: (url: string) => uses.get(url) || 0 }); }
-        catch { /* Dokument nicht lesbar: als Versuch gemerkt */ }
-        const rules = readReport(old, { uses: (url: string) => uses.get(url) || 0, pages: t.readText ? [t.readText] : null, at: started });
-        await env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify({ ...withRuleSummary(old, t, `${RULE_SUMMARY_VERSION}:import`), itemKind: rules.itemKind, theme: rules.theme, stage: rules.stage }), old.id).run();
-        processed++;
-        if (processed >= 8)
-            break;
-        continue;
-    }
-    if (!env.OPENAI_API_KEY && (old.documentText || old.hasDocumentText))
-        continue;
-    let t = {...old};
-    try {
-        if (!(t.documentText || t.hasDocumentText))
-            t = await enrichDocument(t, undefined, { uses: (url: string) => uses.get(url) || 0 });
-        t = await summarize(t, { apiKey: env.OPENAI_API_KEY, model: env.OPENAI_MODEL });
-    }
-    catch {
-        t.documentIssue = 'Dokument konnte noch nicht gelesen werden.';
-    }
-    if (env.OPENAI_API_KEY)
-        t.summaryAttemptedAt = started;
-    if (region==='muenster' && t.generatedBy !== 'KI-Zusammenfassung')
-        t.quality = await qualityCheck(t);
-    const u=t.aiUsage;
-    const compact=await compactSummaryAttempt(old,t,started);
-    /* Art des Punkts, Thema und Fakten aus denselben Regeln wie der Job rule-texts (readReport, report-rules.mjs) mit dem hier
-       gelesenen Text; readText geht nicht in den Payload (compactSummaryAttempt übernimmt es nicht). Der Job liest den Bericht
-       später noch einmal mit dem Text der Ablage (report_rules kennt diesen Lauf nicht), mit gleichem Ergebnis. */
-    const readText: string = t.readText || '';
-    const rules = readReport(old, { uses: (url: string) => uses.get(url) || 0, pages: readText ? [readText] : null, at: started });
-    compact.topic.itemKind = rules.itemKind; compact.topic.theme = rules.theme; compact.topic.stage = rules.stage;
-    await env.DB.batch([
-      // Keine Versionskopie: die Zusammenfassung steht in article_analyses (Art 'summary'). Gescheiterte Versuche ersetzen
-      // einander (höchstens einer je Bericht), gelungene KI-Zusammenfassungen bleiben.
-      env.DB.prepare("DELETE FROM article_analyses WHERE topic_id=? AND kind='summary' AND coalesce(json_extract(payload,'$.status'),'')<>'completed'").bind(old.id),
-      env.DB.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(compact.analysis.id,old.id,'summary',compact.analysis.method,compact.analysis.inputHash,started,JSON.stringify(compact.analysis)),
-      env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(compact.topic),old.id),
-      ...(u?[insertUsage(env.DB,{...u,topicId:old.id,regionId:region})]:[])
-    ]);
-    /* Fakten für plenara.X (readReport oben). Ohne Migration 0025 schlägt es fehl und wird übergangen. */
-    try {
-      const db = env.DB!;
-      await db.batch([db.prepare("DELETE FROM topic_facts WHERE topic_id=? AND method LIKE 'facts-%'").bind(old.id),
-        ...rules.facts.map((x) => db.prepare('INSERT OR REPLACE INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)').bind(old.id, x.kind, x.value, x.detail, `${FACTS_VERSION}:${readText ? 'text' : 'title'}`))]);
-    } catch { /* nicht wichtig für die Zusammenfassung */ }
-    processed++;
-    if (processed >= 8)
-        break;
-} await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), 'completed', JSON.stringify({ mode: "summaries", region, processed, aiConfigured: !!env.OPENAI_API_KEY }), id).run(); return { processed, more: processed === 8, aiConfigured: !!env.OPENAI_API_KEY }; }
 async function refreshMetadata(id: string, started: string,region:string,previousCoverage:Record<string, unknown>,lookback:string,trace:ReturnType<typeof createTrace>,renew:()=>Promise<void>) {
     if (!env.DB)
         throw Error('Datenbank fehlt');
@@ -219,11 +135,6 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     // Only now, with the reports stored, do the marks of this import count. Unchanged marks and lists are not written again.
     if (fresh.marks) { const marks = writeMarks({...known,...fresh.marks}, new Date()); if (marks !== marksRow?.value) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(marksKey(region), marks).run(); }
     if (fresh.list) { const list = JSON.stringify(fresh.list); if (list !== listRow?.value) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(listKey(region), list).run(); }
-    if (decisions.length && region==='muenster') {
-        const t = decisions.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
-        await env.DB.prepare("INSERT INTO system_state(key,value) VALUES('latest-decision',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(JSON.stringify({ id: t.id, title: t.title, shortSummary: t.shortSummary, detectedAt: started, count: decisions.length })).run();
-        await dispatchDecisionPush();
-    }
     const status = fresh.coverage.complete || quiet ? 'completed' : 'partial';
     const record = trace.finish({ runId: id, status, adapter: fresh.coverage.method || null, meetings: fresh.coverage.meetings, unchangedMeetings: unchanged, readMeetings: fresh.readMeetings ?? null, reports: fresh.topics.length, stockBefore: old.size, written, marksKnown: Object.keys(known).length, collectMs, storeMs: Date.now() - collectStarted - collectMs, issues: fresh.coverage.issues, warnings });
     await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), status, JSON.stringify({ mode:'metadata',region, window: lookback, quiet, count: fresh.topics.length, unchangedMeetings: unchanged, decisions: decisions.length, issues: fresh.coverage.issues, warnings, debug: brief(record) }), id).run();

@@ -10,7 +10,7 @@
  * - `env.ACCOUNTS`: die Kontendatei aus ACCOUNTS_FILE (eigene Datei, requirements/konten-konzept.md 3.2), eigener
  *   globalThis-Schlüssel, secure_delete an. `env.ACCOUNTS_HOOKS`: Löschprotokoll neben der Datei (deleted.log) und
  *   wal_checkpoint, nur hier im Node-Betrieb; unter Miniflare fehlen sie (die Kontomodule rufen sie optional auf).
- * - alle anderen Schlüssel (ADMIN_SETUP_HASH, IMPORT_TOKEN, OPENAI_API_KEY, VAPID_*, …) aus process.env,
+ * - alle anderen Schlüssel (ADMIN_SETUP_HASH, IMPORT_TOKEN, …) aus process.env,
  *   gelesen beim Zugriff. Leere Werte gelten als nicht gesetzt.
  *
  * Lokal (npm run dev) wird dieses Modul nicht benutzt; dort kommt `env` weiter von Miniflare.

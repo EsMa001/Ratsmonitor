@@ -305,7 +305,7 @@ export const QUALITY_FIGURE_HELP:Record<string,string>={
  'Ohne KI-Kennzeichnung':'Alle übrigen Berichte.',
  'Mit PDF-Unterlage':'Berichte mit mindestens einer verlinkten PDF-Datei.',
  // geprüft: quality.passed ist bei Quellenüberblicken immer false; es wird true, wenn alle automatischen Prüfungen des Berichts
- // bestehen (oparl.mjs qualityCheck: Quelle, Verfahrensstand, Länge der Kurzfassung, Öffentlichkeit; ai-summary.mjs: dazu Belege und KI-Gegenprüfung).
+ // bestehen (oparl.mjs qualityCheck: Quelle, Verfahrensstand, Länge der Kurzfassung, Öffentlichkeit; bei älteren KI-Zusammenfassungen, bis 20.10.2026 ai-summary.mjs: dazu Belege und KI-Gegenprüfung).
  'Textprüfung bestanden':'Alle automatischen Prüfungen des Berichts sind bestanden (Quelle, Verfahrensstand, Länge der Kurzfassung, Öffentlichkeit; bei KI-Zusammenfassungen zusätzlich Belege und KI-Gegenprüfung). Ein reiner Quellenüberblick besteht sie nicht.',
  'KI-Inhaltsanalyse abgeschlossen':'Die KI hat die Unterlagen gelesen und eine Analyse gespeichert.',
  'Zu wenig lesbarer Text':'Die Unterlagen enthielten zu wenig lesbaren Text, etwa nur einen Scan.',
