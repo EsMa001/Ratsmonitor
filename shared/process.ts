@@ -1,5 +1,4 @@
 import type { TopicCard, TopicEvent } from './types';
-export const PROCESS_STEPS = ['Tagesordnung', 'Beratung', 'Empfehlung', 'Entscheidung'] as const;
 // A proposal or a past meeting date alone does not prove that a debate took place.
 export function processStage(topic: TopicCard & {
     events?: TopicEvent[];

@@ -1,14 +1,6 @@
 import {LABELS} from './labels.mjs';
 import {itemKind} from './item-kind.mjs';
 
-export const MAP_VIEWS=[
- {id:'share',name:'Themenanteil',question:'Wie stark ist das Thema vertreten?',description:'Blau zeigt den Anteil passender Vorgänge an allen erfassten Vorgängen eines Gebiets.',scope:'subject'},
- {id:'count',name:'Anzahl der Vorgänge',question:'Wo gibt es viele passende Vorgänge?',description:'Violett zeigt absolute Trefferzahlen. Die festen Größenklassen machen auch kleinere Bestände sichtbar.',scope:'subject'},
- {id:'change',name:'Veränderung im Zeitraum',question:'Wo wächst oder sinkt der Themenanteil?',description:'Blau bedeutet Zunahme, Orange Abnahme. Verglichen werden die Anteile in zwei gleich langen Abschnitten.',scope:'subject'},
- {id:'dominant',name:'Häufigstes Sachgebiet',question:'Welches Sachgebiet kommt am häufigsten vor?',description:'Jede Farbe steht für ein Sachgebiet. Allgemeine, formale und offene Einordnungen können nicht gewinnen.',scope:'all'},
- {id:'unlabelled',name:'Anteil offener Labels',question:'Wo fehlen noch thematische Einordnungen?',description:'Je dunkler der Orangeton, desto mehr Vorgänge haben noch kein eindeutiges Hauptlabel.',scope:'all'},
- {id:'coverage',name:'Datenabdeckung',question:'Wo ist der Vergleich nur eingeschränkt möglich?',description:'Die Farben unterscheiden Teilstände und Zeiträume ohne gemeldete Quellenlücke.',scope:'all'}
-];
 const DAY=86400000;
 export const MIN_MAP_SAMPLE=10;
 export function mapPeriods(from,to){

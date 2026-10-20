@@ -13,7 +13,6 @@ import {committeePart} from './oparl-regional.mjs';
 // A few installations (Reutlingen) render the meeting list with JavaScript links only; their meetings are taken from
 // documents_month.xsp, which links the meetings of the current month (the month tabs are page state and are not used).
 // No form, login, session or postback is needed: the pages are complete without cookies.
-export const MM_RESTRICTED='Nichtöffentlicher Teil; wird nicht abgefragt.';
 const PATHS=/^(?:meeting_period_doc\.xsp|documents_month\.xsp|meeting_doc\.xsp)$/;
 const guard=(url,source)=>{const u=new URL(url),rest=u.pathname.slice(new URL(source.base).pathname.length);if(!PATHS.test(rest))throw Error('Nicht freigegebene Quelladresse');
  if([...u.searchParams.keys()].some(k=>!['documentId','action'].includes(k)))throw Error('Nicht freigegebene Quelladresse');return url;};

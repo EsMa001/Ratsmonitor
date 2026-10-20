@@ -15,7 +15,6 @@ import {committeePart} from './oparl-regional.mjs';
 // - the process vorgang/?__=<token>: subject, department and the "Beratungsfolge" with the resolution of each body.
 // The tokens in the addresses are stable. Documents (sdnetrim/…) are only linked, not read here. The classic SD.NET
 // (ratsinfomanagement.net, reader "sdnet") has other pages; the hosts of ratsinfomanagement.net are not served by this reader.
-export const RIM4_RESTRICTED='Nichtöffentlicher Teil; wird nicht abgefragt.';
 const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
 const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ')).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();

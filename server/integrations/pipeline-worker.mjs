@@ -1,4 +1,4 @@
-import {pipelineAction,selectedRegions,provider,noteImport,PER_PROVIDER} from './pipeline-jobs.mjs';
+import {pipelineAction,selectedRegions,provider,noteImport,PER_PROVIDER,PARTIAL_PREFIX} from './pipeline-jobs.mjs';
 import {hasFailureStore,hostStates,hostWaiting,currentRelease} from './work-failures.mjs';
 import {refreshStep} from './admin-refresh.mjs';
 /**
@@ -48,7 +48,7 @@ export const nightlyBusy=(job,now=Date.now())=>!!job&&job.owner==='nightly'&&ope
 export async function deferredRegions(db,ids,now=Date.now()){
  if(!await hasFailureStore(db))return {};
  // Einträge „teilweise:“ halten den Nachtlauf nicht auf: das Gebiet liefert, nur ein Teil fehlte; die Nacharbeit holt den Rest
- const {results}=await db.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step='import' AND coalesce(reason,'') NOT LIKE 'teilweise: %'").all();
+ const {results}=await db.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step='import' AND coalesce(reason,'') NOT LIKE ?").bind(PARTIAL_PREFIX+'%').all();
  const own=new Map((results||[]).map(r=>[r.key,r])),hosts=await hostStates(db),out={};
  for(const id of ids){
   const e=own.get(id),h=hosts.get(provider(id));

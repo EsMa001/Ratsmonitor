@@ -36,8 +36,6 @@ export const ACCESS_BY_ID=Object.freeze(Object.fromEntries(ACCESS_STATUSES.map(s
 export const accessLabel=id=>ACCESS_BY_ID[id]?.label||'';
 /** Whether programs can read the area at all: false only for a technical block or nothing found. */
 export const automatedAccess=id=>ACCESS_BY_ID[id]?.automated===true;
-/** Whether data arrives: 'yes' (read today), 'later' (a reader is missing), 'no' (blocked or nothing found). */
-export const accessData=id=>ACCESS_BY_ID[id]?.data||'no';
 
 /**
  * The status from what was found for an area, by the hierarchy above. Each channel: {found, blocked, reader};

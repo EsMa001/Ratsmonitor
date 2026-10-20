@@ -15,7 +15,6 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 // Items without a paper (opening, minutes, announcements) carry no matter of their own and are left out. Pages of
 // the item (TOPS/…) and the minutes (TO/…_P) are not read: confidential items state there that they are not published.
 // robots.txt of the site allows everything except the bots "phantom" and "PhantomJS" (checked 09.10.2026).
-export const SIM_RESTRICTED='Nicht zur Veröffentlichung im Internet freigegeben.';
 const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
 const keyDay=key=>`${key.slice(0,4)}-${key.slice(4,6)}-${key.slice(6,8)}`;
 const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');

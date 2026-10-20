@@ -91,7 +91,6 @@ const T={
   html:page('Hinweis',[p(String(message||''))]),
  }),
 };
-export const TEMPLATES=Object.keys(T);
 export function render(template,data,{site}){
  const fn=T[template];
  if(!fn)throw new Error('Unbekannte Mailvorlage: '+template);

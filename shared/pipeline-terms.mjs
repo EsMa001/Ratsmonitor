@@ -45,8 +45,6 @@ export const stepName=id=>byId.get(id)?.name||id;
 export const isStep=(name,id)=>{const s=byId.get(id);return !!s&&(name===s.name||!!s.aliases?.includes(name));};
 /** Heutiger Name zu einem gespeicherten (auch alten) Schrittnamen; unbekannte bleiben, wie sie sind */
 export const displayStep=name=>STEPS.find(s=>s.name===name||s.aliases?.includes(name))?.name||name;
-/** Stufe eines Schritts (null für Rahmenschritte) */
-export const stepPhase=id=>byId.get(id)?.phase??null;
 
 /** Gründe im Fehlerspeicher (work-failures.mjs, classify) in Worten, mit dem, was daraufhin geschieht */
 export const CLASS_TERMS=Object.freeze({

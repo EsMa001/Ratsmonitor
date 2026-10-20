@@ -73,14 +73,6 @@ const accountHooks = {
   async checkpoint() { await accounts()?.exec('PRAGMA wal_checkpoint(TRUNCATE)'); },
 };
 
-/** Für den Server-Einstieg (server/node/serve.mjs): Verbindungen beim Beenden sauber schließen. */
-export function closeDatabase() {
-  try { state.database?.close(); } catch { /* schon zu */ }
-  state.database = undefined;
-  try { accountState.database?.close(); } catch { /* schon zu */ }
-  accountState.database = undefined;
-}
-
 const value = (key) => {
   const v = process.env[key];
   return v === undefined || v === '' ? undefined : v;

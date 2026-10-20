@@ -17,7 +17,6 @@ import {committeePart} from './oparl-regional.mjs';
 //   matter of their own and are left out.
 // Files (file/getfile/<id>) are only linked, not read. Login, members' area ("Erst Anmelden") and the pages of
 // persons, votings and minutes extracts are never requested.
-export const IIP_RESTRICTED='Nur nach Anmeldung; wird nicht abgefragt.';
 const MONTHS={januar:1,februar:2,märz:3,maerz:3,april:4,mai:5,juni:6,juli:7,august:8,september:9,oktober:10,november:11,dezember:12};
 const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ')).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();

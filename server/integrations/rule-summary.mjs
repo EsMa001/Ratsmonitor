@@ -137,14 +137,10 @@ export function titleOf(text, title) {
 }
 
 // Einleitung: der Satz, der das Thema der Vorlage am besten benennt (Wörter aus dem Titel, Kontexthinweise, früh im Text)
-export function introScores(body, head, title) {
-  return pickIntro(body, head, title, true);
-}
-function pickIntro(body, head, title, debug = false, budget = Infinity) {
+function pickIntro(body, head, title, budget = Infinity) {
   const tw = stems(title);
   const headStems = stems(head.join(' '));
   let best = null;
-  const scores = [];
   body.slice(0, 12).forEach((s, i) => {
     if (ANAPHORIC.test(s) || LEGAL_ONLY.test(s) || ROUTINE.test(s) || wordCount(s) > budget) return;
     const sw = stems(s);
@@ -153,10 +149,8 @@ function pickIntro(body, head, title, debug = false, budget = Infinity) {
     const near = [...sw].filter(w => headStems.has(w)).length;
     const v = (tw.size ? overlap / Math.sqrt(tw.size) : 0) + Math.min(near, 3) * 0.15 + (CONTEXT.test(s) ? 0.4 : 0) + (i < 4 ? 1 - i * 0.25 : 0) - (dup ? 1 : 0)
       - (/^(Entsprechend|Nach der|Gemäß|Laut)\b/.test(s) ? 1 : 0) - (s.includes('§') ? 1.2 : 0) - (PRIOR.test(s) ? 0.9 : 0) - (/^(Insgesamt|Zusammenfassend|Abschließend|Fazit|Im Ergebnis)\b/.test(s) ? 0.8 : 0) - (/^(Am|Im|Seit|Vom) [\d\p{Lu}]/u.test(s) && /^\S+ \d/.test(s) ? 0.5 : 0) - (wordCount(s) > 35 ? 1.2 : wordCount(s) > 25 ? 0.7 : 0);
-    scores.push([i, +v.toFixed(2), s.slice(0, 60)]);
     if (!best || v > best.v) best = { i, v };
   });
-  if (debug) return scores;
   return best && best.v >= 0.4 ? best : { i: -1, v: best ? best.v : 0 };
 }
 
@@ -188,7 +182,7 @@ export function ruleSummary(text, { target = 30, max = 40, title = '' } = {}) {
   }
   // Pflichtsätze dürfen das Ziel um höchstens ein Viertel überschreiten: Die Einleitung bekommt, was der Beschluss übrig lässt.
   const room = target <= 40 ? max : Math.round(max * 1.25) - (head[0] ? wordCount(head[0]) : 0);
-  const intro = room >= 12 ? pickIntro(body, head, titleOf(text, title), false, room) : { i: -1, v: 0 };
+  const intro = room >= 12 ? pickIntro(body, head, titleOf(text, title), room) : { i: -1, v: 0 };
   const introAt = intro.i;
   const slots = [];
   const add = i => { if (i >= 0 && i !== introAt && !slots.includes(i)) slots.push(i); };
