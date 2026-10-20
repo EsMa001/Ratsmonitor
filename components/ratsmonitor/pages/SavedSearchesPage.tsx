@@ -235,7 +235,7 @@ export function WeeklyReport({ bare = false }: { /** ohne eigene Überschrift (s
     <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-200 pb-5 text-[14px]">
       <span className={bare ? "sr-only" : "font-semibold text-slate-900"}>Wochenbericht</span>
       <span className="text-slate-500">Alle neuen Treffer Ihrer Suchen in einer E-Mail, täglich oder an dem Wochentag, den Sie wählen:</span>
-      <select aria-label="Rhythmus des Wochenberichts" aria-describedby="weekly-later" disabled value={String(day)} className="h-8 rounded-md border border-slate-200 bg-slate-50 px-2 text-[14px] text-slate-500">
+      <select aria-label="Rhythmus des Wochenberichts" aria-describedby="weekly-later" disabled value={String(day)} className="h-8 rounded-md border border-slate-200 bg-slate-50 px-2 text-[14px] max-sm:text-[16px] text-slate-500">
         {[1, 2, 3, 4, 5, 6, 0].map((i) => (
           <option key={i} value={String(i)}>
             Jeden {WEEK_DAYS[i]}

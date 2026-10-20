@@ -8,7 +8,7 @@ import {useAccount} from '../state/account';
 import {logout,setViewTier,useMe} from '../lib/account';
 import {IS_DEV,TIER_LABEL,type Tier} from '../lib/tier';
 
-/** Aufklappmenü: schließt bei Klick daneben und mit Escape (Fokus zurück auf den Knopf), setzt den Fokus auf den ersten Eintrag */
+/** Aufklappmenü: schließt bei Klick daneben, mit Escape (Fokus zurück auf den Knopf) und wenn der Fokus es per Tab verlässt; setzt den Fokus auf den ersten Eintrag */
 function useMenu(){
  const [open,setOpen]=useState(false);
  const ref=useRef<HTMLDivElement>(null);
@@ -16,9 +16,11 @@ function useMenu(){
   if(!open)return;
   const down=(e:MouseEvent)=>{if(!ref.current?.contains(e.target as Node))setOpen(false);};
   const key=(e:KeyboardEvent)=>{if(e.key!=='Escape')return;setOpen(false);if(ref.current?.contains(document.activeElement))ref.current.querySelector<HTMLElement>('button[aria-haspopup]')?.focus();};
-  document.addEventListener('mousedown',down);document.addEventListener('keydown',key);
-  ref.current?.querySelector<HTMLElement>('[role^="menuitem"]')?.focus();
-  return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',key);};
+  const out=(e:FocusEvent)=>{const next=e.relatedTarget as Node|null;if(next&&!ref.current?.contains(next))setOpen(false);};
+  const box=ref.current;
+  document.addEventListener('mousedown',down);document.addEventListener('keydown',key);box?.addEventListener('focusout',out);
+  box?.querySelector<HTMLElement>('[role^="menuitem"]')?.focus();
+  return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',key);box?.removeEventListener('focusout',out);};
  },[open]);
  return {open,setOpen,ref};
 }
@@ -73,7 +75,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
     </button>
     {isAdmin&&<div className="border-t border-slate-100 px-3 pb-1 pt-2">
      <label htmlFor="view-tier" className="block text-[12px] text-slate-500">Ansehen als</label>
-     <select id="view-tier" className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-[14px] text-slate-900" value={me.viewTier??''}
+     <select id="view-tier" className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-[14px] max-sm:text-[16px] text-slate-900" value={me.viewTier??''}
       onChange={e=>{const v=e.target.value;void setViewTier(v?(v as Tier):null);}}>
       {VIEWS.map(([t,label])=><option key={label} value={t??''}>{label}</option>)}
      </select>

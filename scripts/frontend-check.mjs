@@ -60,6 +60,8 @@ for (const name of browsers) {
         if (o.page > 0 || o.elements.length) problems.push(`${label}: Überlauf ${o.page} px ${o.elements.join(", ")}`);
         for (const e of errors) problems.push(`${label}: Seitenfehler ${e}`);
         if (AxeBuilder && name === "chromium" && AXE_SIZES.has(size)) {
+          // Erst messen, wenn Einblendungen fertig sind (sonst zählt halbe Deckkraft als zu wenig Kontrast)
+          await page.evaluate(() => Promise.race([Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))), new Promise((r) => setTimeout(r, 3000))]));
           const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
           for (const v of r.violations.filter((v) => v.impact === "serious" || v.impact === "critical"))
             problems.push(`${label}: axe ${v.id} (${v.nodes.length}×, z. B. ${v.nodes[0]?.target.join(" ").slice(0, 60)})`);

@@ -252,7 +252,7 @@ export function ComparePage() {
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
               <label className="flex items-center gap-2 text-[14px] text-slate-700">Thema
-                <select value={vThema} onChange={(e) => setVSel({ key: ranKey, thema: e.target.value })} className="h-9 rounded-xl border border-slate-200 bg-white px-2 text-[14px] text-slate-900 max-sm:h-11">
+                <select value={vThema} onChange={(e) => setVSel({ key: ranKey, thema: e.target.value })} className="h-9 rounded-xl border border-slate-200 bg-white px-2 text-[14px] text-slate-900 max-sm:h-11 max-sm:text-[16px]">
                   <option value="">Alle Themen</option>
                   {THEMES.map((t: { id: string; name: string }) => <option key={t.id} value={t.name}>{t.name}</option>)}
                 </select>

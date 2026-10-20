@@ -13,7 +13,7 @@ import { AccountApiError, accountChanged, api, logout, shortDate, touchAccount, 
 import { buildPayload, discardLocal, downloadFile, hasLocal, importFile, importLocal, localSummary, resultText, saveLocalFile, useLocalData } from "../lib/browserData";
 import { clearRecent } from "../lib/recentSearches";
 
-const field = "h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 text-[14px] outline-none hover:border-slate-300 focus:border-teal-600 focus:shadow-focus";
+const field = "h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 text-[14px] max-sm:text-[16px] outline-none hover:border-slate-300 focus:border-teal-600 focus:shadow-focus";
 const label = "mb-1 block text-[12px] font-semibold uppercase tracking-wide text-slate-500";
 const h2 = "m-0 text-[18px] font-semibold";
 const block = "mt-10 border-t border-slate-200 pt-6";

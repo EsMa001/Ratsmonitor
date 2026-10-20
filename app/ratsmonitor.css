@@ -129,8 +129,12 @@ input[data-search="q"]:-webkit-autofill,input[data-search="q"]:-webkit-autofill:
   html, body { background:var(--rm-white) !important; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   header, footer, .ri-menu, .skip-link, .rm-glass button, .rm-glass[class*="absolute"], .rm-legend button, .rm-legend[class*="absolute"] { display: none !important; }
+  /* Bedienelemente ohne Nutzen auf Papier: Suchleiste (Stern, Feld, Filter), Zurück, Blättern, Sortierung und Ansicht über der Liste */
+  [role="search"], .back-btn, nav[aria-label="Ergebnisseiten"], section[aria-label="Suche und Filter"] button, main article button { display: none !important; }
   main { padding-left: 0 !important; padding-right: 0 !important; }
-  main section, main li, main figure, main dl > div, main details { break-inside: avoid; }
+  /* Kleine Bausteine nicht zerteilen; ganze Abschnitte schon (sonst rückt eine lange Trefferliste komplett auf die nächste Seite) */
+  main article, main li, main figure, main dl > div, main details { break-inside: avoid; }
+  main section:not(:has(article, ol, ul, section)) { break-inside: avoid; }
   main h1, main h2, main h3 { break-after: avoid; }
   main a { color:inherit !important; text-decoration: none !important; }
   main [style*="opacity: 0"] { opacity: 1 !important; transform: none !important; }

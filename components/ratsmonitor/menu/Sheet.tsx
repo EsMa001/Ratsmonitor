@@ -12,10 +12,25 @@ export function Sheet({ open, onClose, label, children }: { open: boolean; onClo
   }, [path, onClose]);
   useEffect(() => {
     if (!open) return;
-    const key = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    /* Tastatur: Tab bleibt im Blatt (aria-modal), beim Schließen geht der Fokus zurück auf den Knopf, der es geöffnet hat */
+    const opener = document.activeElement as HTMLElement | null, sheet = ref.current;
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") return onClose();
+      const box = ref.current;
+      if (e.key !== "Tab" || !box) return;
+      const items = [...box.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter((el) => el.offsetParent !== null);
+      if (!items.length) return;
+      const at = items.indexOf(document.activeElement as HTMLElement);
+      if (e.shiftKey && at <= 0) { e.preventDefault(); items[items.length - 1].focus(); }
+      else if (!e.shiftKey && (at === -1 || at === items.length - 1)) { e.preventDefault(); items[0].focus(); }
+    };
     document.addEventListener("keydown", key);
     ref.current?.focus({ preventScroll: true });
-    return () => document.removeEventListener("keydown", key);
+    return () => {
+      document.removeEventListener("keydown", key);
+      const active = document.activeElement;
+      if (opener?.isConnected && (!active || active === document.body || sheet?.contains(active))) opener.focus({ preventScroll: true });
+    };
   }, [open, onClose]);
   /* Weiches Ein- und Ausfahren: das Blatt bleibt nach dem Schließen kurz eingehängt, damit es auch hinausgleiten kann */
   const [prevOpen, setPrevOpen] = useState(open);
