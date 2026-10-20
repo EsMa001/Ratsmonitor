@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { busyProps } from "./XBusy";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Befund, Fehler, Leer } from "./Befund";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
@@ -202,7 +203,7 @@ export function XTrendsPage() {
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden karte text="Trends werden berechnet …" />}
       {res && lists && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
+        <div {...busyProps(loading)}>
           {/* Antwort zuerst */}
           {top && <div className="max-sm:hidden"><Befund>
             Am stärksten zugenommen: „{prettyTerm(top.term)}“ ({ratio(top)}, {oft(top)}{wide?.s && wide.t.key === top.key && wide.s.added > 0 ? `, +${n(wide.s.added)} Gebiete, die meisten neuen` : ""})
@@ -348,7 +349,7 @@ function Steckbrief({ begriff, row, spread, df, error, firsts, day, onDay, playi
           ))}
         </ol>
 
-        {row && <div className="mt-8 max-sm:mt-5"><RadarDrill base="/api/analytics/trends?list=1" query={listQuery} by="term" value={row.key} label={`Vorgänge mit „${name}“ im Zeitraum`} limit={5} /></div>}
+        {row && <div className="rm-sec-s"><RadarDrill base="/api/analytics/trends?list=1" query={listQuery} by="term" value={row.key} label={`Vorgänge mit „${name}“ im Zeitraum`} limit={5} /></div>}
       </>)}
     </section>
   );

@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (577 Zeilen, ⚠14)
-- app/ratsmonitor.css (577 Zeilen, ⚠39)
+- app/ratsmonitor.css (581 Zeilen, ⚠39)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -522,6 +522,9 @@ rm-sbar ratsmonitor.css:239
 rm-schritt-std ratsmonitor.css:286
 rm-search ratsmonitor-info.css:316
 rm-search ratsmonitor.css:228
+rm-sec ratsmonitor.css:579
+rm-sec-m ratsmonitor.css:579
+rm-sec-s ratsmonitor.css:579
 rm-solid ratsmonitor.css:88
 rm-spinner ratsmonitor-info.css:553
 rm-spinner ratsmonitor.css:111
@@ -872,18 +875,18 @@ z- ratsmonitor.css:393
 - AnalyticsPages.tsx (61): AnalyticsPages
 - AtlasPage.tsx (76): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (70): Befund, zuThema, Leer, Fehler
-- BeschluessePage.tsx (238, ⚠13): BeschluessePage
+- BeschluessePage.tsx (239, ⚠13): BeschluessePage
 - CompareCharts.tsx (69, ⚠2): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (437, ⚠13): ComparePage
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (93, ⚠4): PlayState, DiffusionSearch
 - FaktenPage.tsx (381, ⚠6): FaktenPage
-- FraktionenPage.tsx (199, ⚠7): FraktionenPage
+- FraktionenPage.tsx (200, ⚠7): FraktionenPage
 - GraphView.tsx (386, ⚠2): GNode, GEdge, KIND, seeded, GraphView
-- GremiennetzPage.tsx (211, ⚠3): GremiennetzPage
+- GremiennetzPage.tsx (212, ⚠3): GremiennetzPage
 - Kennzahlen.tsx (132, ⚠1): weekAgo, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, MeinOrt, Folgen
-- KnowledgeGraphPage.tsx (295, ⚠9): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (296, ⚠9): KnowledgeGraphPage
 - Laden.tsx (32): Laden
 - ListRow.tsx (34, ⚠1): ListRow
 - ListSkeleton.tsx (13): ListSkeleton
@@ -891,8 +894,9 @@ z- ratsmonitor.css:393
 - MapWheels.tsx (121, ⚠2): MapWheels, MapPill
 - MeinOrtNeu.tsx (41): MeinOrtNeu
 - Methodik.tsx (43): METHODIK_VON, MethodikUnten, MethodikNote
+- NetControls.tsx (50): Level, netLevel, LevelSegmented, LevelPill, NetLegend, NetZoom
 - NetView.tsx (319): NNode, NEdge, ROLE, NetKind, NET_KIND, netKind, NetView
-- NewsradarPage.tsx (137, ⚠1): NewsradarPage
+- NewsradarPage.tsx (138, ⚠1): NewsradarPage
 - PageBand.tsx (23): PageBand
 - RadarDrill.tsx (130, ⚠3): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
@@ -902,9 +906,9 @@ z- ratsmonitor.css:393
 - SplitHandle.tsx (51): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
-- XAtlasView.tsx (606, ⚠13): XAtlasView
+- XAtlasView.tsx (331, ⚠10): XAtlasView
 - XKopf.tsx (211, ⚠1): XKopf, XWeiter, ThemenLeiste
-- XTrendsPage.tsx (368, ⚠4): XTrendsPage
+- XTrendsPage.tsx (369, ⚠4): XTrendsPage
 - XTrendsParts.tsx (153, ⚠1): DAY, toDay, toIso, fmt, AGE_LEGEND, SpreadRegion, keysOf, SpreadMap, PlayButton, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
 - useAnalyticsQuery.ts (81): useAnalyticsQuery

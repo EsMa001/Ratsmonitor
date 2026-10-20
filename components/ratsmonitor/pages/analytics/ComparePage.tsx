@@ -297,7 +297,7 @@ export function ComparePage() {
 
           <TabPane on={phone || tab === "themen"}>
           <Reveal>
-          <section className="mt-12 max-sm:mt-5">
+          <section className="rm-sec">
             <h2 className="text-[22px] font-semibold">Worüber die beiden Orte beraten</h2>
             <Hinweis className="mb-3 mt-1">Anteil der Themen an den Vorgängen mit Thema. Die Marke zeigt den Wert für alle Gebiete.</Hinweis>
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
@@ -355,7 +355,7 @@ export function ComparePage() {
               </div>
             );
             return (
-              <section className="mt-12 max-sm:mt-5">
+              <section className="rm-sec">
                 <h2 className="text-[22px] font-semibold">Welche Begriffe die Orte prägen</h2>
                 <Hinweis className="mb-4 mt-1">Links und rechts: Begriffe, die im Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). In der Mitte: Begriffe beider Orte. Ein Klick zeigt die Vorgänge dahinter.</Hinweis>
                 <div className="mb-4 sm:hidden"><Segmented label="Begriffe" fill options={[["a", names[0]], ["b", "In beiden"], ["c", names[1]]]} value={termTab} onPick={setTermTab} /></div>
@@ -406,7 +406,7 @@ export function ComparePage() {
                 ); })}
               </div>
             </div>
-          <div className="mt-8 max-sm:mt-5">
+          <div className="rm-sec-s">
             <h3 className="text-[18px] font-semibold">Stand der Vorlagen</h3>
             <p className="mb-4 mt-1 text-[14px] text-slate-500">Wie die Vorgänge je Ort stehen (Anteile in %). Ein Balken öffnet die Beschlusslage des Ortes.</p>
             {[...res.places.map((p, i) => ({ label: names[i], list: p.status.list, color: PLACE_COLORS[i], ags: p.ags })), { label: "Alle Gebiete", list: res.base.status.list, color: "var(--rm-c600)", ags: "" }].map((row) => {

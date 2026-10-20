@@ -1,4 +1,5 @@
 import { ShareButton } from "../../components/ShareButton";
+import { busyProps, HERO_MAIN, HERO_PANEL } from "./XBusy";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Segmented, Folgen, useOrtInAdresse } from "./Kennzahlen";
@@ -88,7 +89,7 @@ export function NewsradarPage() {
   const own = !!new URLSearchParams(query).get("from");
 
   return (
-    <main id="inhalt" className="rm-xwide rm-xhero rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className={HERO_MAIN}>
       <XKopf seite="news" />
       <SplitHandle />
 
@@ -108,10 +109,10 @@ export function NewsradarPage() {
       {loading && !res && <Laden text="Vorgänge werden bewertet …" />}
 
       {res && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
+        <div {...busyProps(loading)}>
           {res.items.length === 0 ? <Leer tipp="Einen längeren Zeitraum wählen oder den Suchbegriff kürzen; gezeigt werden nur Vorgänge mit zitierbarer Zusammenfassung.">Keine berichtenswerten Vorgänge in diesem Zeitraum.</Leer> : (
             <>
-              <div className="rm-xsplit-map rm-xhero-panel rm-netstage">
+              <div className={HERO_PANEL}>
               <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
                 {!own && <div className="rm-xtop"><div className="rm-xzeit"><Segmented label="Zeitraum" options={SPANS.map(([dd, l]) => [String(dd), l] as [string, string])} value={String(days)} onPick={(k) => setDays(+k)} /></div></div>}
               </div>

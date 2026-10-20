@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { busyProps, HERO_MAIN, HERO_PANEL } from "./XBusy";
 import { Kennzahlen, Folgen } from "./Kennzahlen";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { ListSkeleton } from "./ListSkeleton";
@@ -68,7 +69,7 @@ export function FraktionenPage() {
   const busiest = parties[0];
 
   return (
-    <main id="inhalt" className="rm-xwide rm-xhero rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className={HERO_MAIN}>
       <XKopf seite="fraktionen" />
       <SplitHandle />
 
@@ -78,10 +79,10 @@ export function FraktionenPage() {
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
       {res && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
+        <div {...busyProps(loading)}>
           {parties.length === 0 ? <Leer>Keine Anträge oder Anfragen einer Fraktion für diese Auswahl.</Leer> : (
             <>
-              <div className="rm-xsplit-map rm-xhero-panel rm-netstage">
+              <div className={HERO_PANEL}>
               <Befund noPhone>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.withFaction)} Anträge und Anfragen einer Fraktion zugeordnet. Die meisten stellt ${busiest.name} (${n(busiest.n)}).`}</Befund>
               <Kennzahlen rest items={([
                   ["Vorgänge mit Fraktion", n(res.totals.withFaction)],
@@ -95,7 +96,7 @@ export function FraktionenPage() {
               <div className={pending ? "hidden" : undefined}>
               <div className="mt-8 max-sm:hidden print:hidden"><Segmented label="Teil der Auswertung" options={[["je", "Anträge je Fraktion"], ["themen", "Themenprofil"], ["ausgang", "Was aus den Anträgen wird"]]} value={tab} onPick={setTab} /></div>
               <TabPane on={tab === "je"}>
-              <Reveal><section className="mt-12 max-sm:mt-5">
+              <Reveal><section className="rm-sec">
                 <h2 className="text-[22px] font-semibold">Anträge und Anfragen je Fraktion</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Gemeinsame Anträge zählen bei jeder beteiligten Fraktion. <span className="sm:hidden">Zahl rechts: Anträge und Anfragen zusammen; Tippen zeigt die Liste.</span></p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
@@ -123,7 +124,7 @@ export function FraktionenPage() {
               {parties.length > 6 && <button type="button" onClick={() => setAllP(!allP)} className="mt-3 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{allP ? "Weniger Fraktionen zeigen" : `Alle ${parties.length} Fraktionen zeigen`}</button>}
               </TabPane>
               <TabPane on={tab === "themen"}>
-              <Reveal><section className="mt-12 max-sm:mt-5">
+              <Reveal><section className="rm-sec">
                 <h2 className="text-[22px] font-semibold">Themenprofil</h2>
                 <p className="mb-4 max-sm:mb-2 mt-1 max-w-[760px] text-[14px] text-slate-500 max-sm:line-clamp-2">Anteil je Themenfeld an den Anträgen und Anfragen einer Fraktion. Kräftiges Petrol: deutlich häufiger als bei den anderen.</p>
                 {/* Handy: je Fraktion eine Zeile mit den Themen untereinander statt der breiten Tabelle (kein Querscrollen) */}
@@ -174,7 +175,7 @@ export function FraktionenPage() {
               </TabPane>
 
               <TabPane on={tab === "ausgang"}>
-              <Reveal><section className="mt-12 max-sm:mt-5">
+              <Reveal><section className="rm-sec">
                 <h2 className="text-[22px] font-semibold">Was aus den Anträgen wird</h2>
                 <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil beschlossener Anträge an den entschiedenen, je Fraktion ab 10 Anträgen. Empfiehlt die Vorlage, dem Antrag nicht zu folgen, zählt er als abgelehnt.</p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">

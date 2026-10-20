@@ -1,4 +1,5 @@
 import { Kennzahlen, Folgen } from "./Kennzahlen";
+import { busyProps, PendingVeil } from "./XBusy";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { ListSkeleton } from "./ListSkeleton";
 import { SplitHandle } from "./SplitHandle";
@@ -100,7 +101,7 @@ export function GremiennetzPage() {
       {loading && !res && <Laden text="Netz wird berechnet …" />}
 
       {res && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
+        <div {...busyProps(loading)}>
           {empty ? (
             <Leer tipp={"Mit einer weiteren Auswahl, etwa ohne Ort oder mit längerem Zeitraum, wird das Netz aussagekräftiger."}>Zu wenige Vorgänge, die durch mehrere Gremien gelaufen sind ({n(res.paths)}).</Leer>
           ) : (
@@ -115,7 +116,7 @@ export function GremiennetzPage() {
               {res.nodes.length > 7 && <LevelSegmented options={[["overview", "Überblick"], ["normal", "Normal"], ["detail", "Detail"]]} value={level} onPick={setLevel} />}
               <section ref={netRef} className={`${netz ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[360px] max-sm:h-[400px] overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 sm:h-[640px]`} aria-label="Beratungswege">
                 <LevelPill value={level} onPick={setLevel} />
-                {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
+                {pending && <PendingVeil />}
                 <NetView route={routeIds.length > 1 ? routeIds : null} nodes={net.nodes} edges={net.edges} selected={selected} onSelect={(id) => { setRouteNo(null); setSelected(id); }} zoomRef={zoomRef} />
                 <NetLegend items={(["rat", "haupt", "fach", "sonst"] as NetKind[]).map((r) => ({ key: r, label: NET_KIND[r].label, dot: { background: NET_KIND[r].fill } }))} note={<p className="mt-1.5 opacity-70 max-sm:hidden">Größe: Durchsatz · Linie: Vorgänge</p>} />
                 <NetZoom zoomRef={zoomRef} />
@@ -180,7 +181,7 @@ export function GremiennetzPage() {
               </div>
 
               <TabPane on={tab === "rollen"}><Reveal>
-              <section className="mt-12 max-sm:mt-5">
+              <section className="rm-sec">
                 <h2 className="text-[22px] font-semibold">Wer anfängt und wer entscheidet</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Durchsatz je Gremium: eingehende und ausgehende Übergänge. Durchgänge verbinden Einstieg und Entscheidung.</p>
                 <ol className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 max-sm:block max-sm:border-t max-sm:border-slate-200">

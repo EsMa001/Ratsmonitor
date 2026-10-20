@@ -574,3 +574,7 @@ html.rm-dark .rm-dialog{background:linear-gradient(135deg,rgba(40,48,47,.85),rgb
 @keyframes rm-fpop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
 .rm-fpop{animation:rm-fpop .22s cubic-bezier(.2,.8,.3,1) both;transform-origin:top left}
 @media (prefers-reduced-motion:reduce){.rm-fpop{animation:none}}
+
+/* Abstand zwischen Abschnitten der plenara.X-Seiten: Desktop 48 / 40 / 32 px, am Handy überall 20 px (statt je Stelle einzelner Klassen) */
+.rm-sec{margin-top:3rem}.rm-sec-m{margin-top:2.5rem}.rm-sec-s{margin-top:2rem}
+@media (max-width:639px){.rm-sec,.rm-sec-m,.rm-sec-s{margin-top:1.25rem}}

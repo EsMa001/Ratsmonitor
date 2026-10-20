@@ -1,4 +1,5 @@
 import { Folgen } from "./Kennzahlen";
+import { PendingVeil } from "./XBusy";
 import { LevelPill, LevelSegmented, NetLegend, NetZoom, netLevel, type Level } from "./NetControls";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
 import { ListSkeleton } from "./ListSkeleton";
@@ -206,7 +207,7 @@ export function KnowledgeGraphPage() {
       <button type="button" onClick={() => { const open = !netz; setNetz(open); if (open) setTimeout(() => graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }} aria-expanded={netz} className="mt-6 max-sm:mt-0 max-sm:inline-flex max-sm:min-h-[30px] max-sm:items-center text-[14px] font-medium text-teal-700 sm:hidden print:hidden">{netz ? "Netz ausblenden" : "Netz anzeigen →"}</button>
       <section ref={graphRef} className={`${netz || !res || empty ? "" : "max-sm:hidden"} rm-xstage rm-netstage relative mt-3 max-sm:mt-1 h-[420px] max-sm:scroll-mt-14 overflow-hidden rounded-[22px] max-sm:rounded-2xl border border-slate-200 max-sm:h-[400px] sm:h-[620px]`} aria-label="Themennetz">
         <LevelPill value={level} onPick={setLevel} />
-        {pending && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] animate-pulse bg-slate-100/70" />}
+        {pending && <PendingVeil />}
         {res && !empty ? <GraphView allLabels={level !== "overview"} nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="rm-netstage absolute inset-0" />}
 
         {trail.length > 0 && res && !empty && (
