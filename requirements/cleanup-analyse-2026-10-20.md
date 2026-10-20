@@ -180,3 +180,21 @@ Nicht im laufenden Server geprüft (kein Start auf der lokalen Kopie, kein Deplo
   - B15 (`--precompress` in `deploy.sh`): Bereitstellung, nur mit Rücksprache.
   - `scripts/frontend-check.mjs` nicht gelaufen (braucht laufenden Server und Playwright).
 - **Neu aufgefallen (Entscheidung):** `LABELS` in `shared/labels.mjs` tragen Hex-Farben außerhalb von „Petrol klar“ (`COLORS`). Die Oberfläche nutzt nach Suche im Code nur Namen und IDs. Klären, ob die Farben weg können.
+
+## Umsetzung Paket 6: Rahmen und große Module (20.10.2026, Branch `cleanup/paket-6`)
+
+- **6a:** `server/services/data-response.mjs`
+  - `dataFailure` und `X_CACHE` ersetzen 13 gleiche catch-Blöcke und 11 gleiche Cache-Angaben.
+  - Die internen Routen prüfen den Bearer über `internalCall`.
+  - Neu ist `tests/route-access.test.mjs`: Jede Route unter `app/api` prüft ihren Zugang, ändernde Admin-Routen auch die Herkunft. Die Gegenprobe mit `gated` testweise entfernt schlägt an.
+- **6b:** `sync.ts`
+  - `bestEffort` statt leerer catch-Blöcke: Fehler kommen als Warnung ins Log.
+  - Die irreführenden Zeilen sind gerade gezogen, die SQL-Texte stehen als Konstanten da.
+- **6c:** `text-repair.mjs` übernimmt die Textreparatur aus `website-text.mjs`. Der Teil zu nichtöffentlichen Abschnitten bleibt dort, weil er an `normalizeLine` hängt.
+- **6d:** `sourceSummary(t,{place})` in 29 Lesern.
+  - Behebt das Ersetzen von „in Münster…“ im Titel.
+  - Ein gemeinsamer Abschluss für die Qualitätsangaben lohnt nicht, die Texte sind je Leser eigen.
+- **Zurückgestellt:**
+  - Rahmen für die Admin-POST-Routen (`adminRoute`): nach C3 (#18), sonst Konflikte in `admin-auth.ts` und `tests/admin.test.mjs`.
+  - Verteilung in `collect-region.mjs`.
+  - `collectWebsite` aufteilen.
