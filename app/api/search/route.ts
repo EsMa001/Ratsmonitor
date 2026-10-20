@@ -3,6 +3,7 @@ import {REGIONS} from '@/shared/regions';
 import {cachedSearch,SearchError} from '@/server/integrations/monitor-search.mjs';
 import {guard,requestTier,internalCall} from '@/server/services/session';
 import {guestPageBlocked,trimResult,trimStream} from '@/server/accounts/guest-search.mjs';
+import {dataFailure} from '@/server/services/data-response.mjs';
 // Der Zwischenspeicher der Suche ist für alle gleich; gekürzt wird für Gäste erst danach (shared/plans.mjs, Gast 10 Treffer).
 // Die Antwort hängt damit an der Sitzung: privat zwischenspeichern.
 const CACHE='private, max-age=30, stale-while-revalidate=120';
@@ -28,5 +29,5 @@ export async function GET(request:Request){
   }
   return Response.json(guest?trimResult(result):result,{headers:{'Cache-Control':CACHE,'Vary':'Cookie'}});
  }
- catch(error){return Response.json({error:error instanceof SearchError?error.message:'Der Datenbestand ist gerade nicht erreichbar. Bitte erneut versuchen.'},{status:error instanceof SearchError?error.status:503,headers:{'Cache-Control':'no-store'}});}
+ catch(error){return dataFailure(error,SearchError);}
 }

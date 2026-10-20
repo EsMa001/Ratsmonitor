@@ -1,10 +1,10 @@
 // Zustand für deploy.sh und Überwachung (Bearer IMPORT_TOKEN): Inhaltsdatei, Kontendatei, Migrationen, Postausgang, Zugang.
 import {env} from 'cloudflare:workers';
-import {validBearer} from '@/server/integrations/prepared-access.mjs';
+import {internalCall} from '@/server/services/session';
 import {accountsConfig} from '@/server/accounts/config.mjs';
 export const dynamic='force-dynamic';
 export async function GET(request:Request){
- if(!await validBearer(request.headers.get('authorization'),env.IMPORT_TOKEN,16))return Response.json({error:'Nicht berechtigt.'},{status:401,headers:{'Cache-Control':'no-store'}});
+ if(!await internalCall(request))return Response.json({error:'Nicht berechtigt.'},{status:401,headers:{'Cache-Control':'no-store'}});
  const cfg=accountsConfig(env);
  const out:Record<string,unknown>={content:!!env.DB,accounts:!!cfg.db,access:cfg.access??null,mailTransport:cfg.mail.transport,siteUrl:!!cfg.siteUrl,secret:!!cfg.secret};
  try{
