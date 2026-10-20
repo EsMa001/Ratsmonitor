@@ -10,8 +10,8 @@ export async function GET(request:Request){
  try{
   if(cfg.db){
    out.accountsMigrations=(await cfg.db.prepare('SELECT count(*) n FROM accounts_migrations').first() as {n:number}|null)?.n??0;
-   const mails=await cfg.db.prepare("SELECT status,count(*) n FROM mail_outbox WHERE created_at>? GROUP BY status").bind(new Date(Date.now()-86400000).toISOString()).all();
-   out.mails24h=Object.fromEntries((mails.results||[]).map((r:any)=>[r.status,r.n]));
+   const mails=await (cfg.db as D1Database).prepare("SELECT status,count(*) n FROM mail_outbox WHERE created_at>? GROUP BY status").bind(new Date(Date.now()-86400000).toISOString()).all<{status:string;n:number}>();
+   out.mails24h=Object.fromEntries((mails.results||[]).map(r=>[r.status,r.n]));
   }
  }catch(error){out.error=error instanceof Error?error.message:String(error);}
  const ok=!!env.DB&&(!cfg.db||!!cfg.access)&&(!cfg.access||cfg.access==='open'||(!!cfg.db&&!!cfg.secret&&!!cfg.siteUrl))&&!out.error;

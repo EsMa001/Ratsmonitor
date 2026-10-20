@@ -12,7 +12,7 @@ import {validBearer} from '../integrations/prepared-access.mjs';
 
 // Sitzung, Rollen und Rechte für Routen und Seiten (requirements/konten-konzept.md, Abschnitte 5.2, 6.1, 7).
 type Later=Array<()=>Promise<unknown>>;
-type Handler=(ctx:any)=>Promise<{response:Response;later?:Later}>;
+type Handler=(ctx:ReturnType<typeof context>)=>Promise<{response:Response;later?:Later}>;
 
 /** Arbeit nach der Antwort (Mails, alles Adressabhängige); außerhalb einer Anfrage einfach anstoßen */
 export function schedule(task:()=>Promise<unknown>){

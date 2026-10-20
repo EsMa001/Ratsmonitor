@@ -20,8 +20,8 @@ export function analysisQuery(params:URLSearchParams){
  return {region,from,to,label,topicId,level};
 }
 export async function getAnalytics(params:URLSearchParams){
- const query=analysisQuery(params);const cacheKey='analytics:'+JSON.stringify(query);const cached=cachedRead(cacheKey);if(cached)return cached;let topics:any[]=[...seed.topics,...regional.topics];let storageAvailable=true;
+ const query=analysisQuery(params);const cacheKey='analytics:'+JSON.stringify(query);const cached=cachedRead(cacheKey);if(cached)return cached;let topics:Record<string,unknown>[]=[...seed.topics,...regional.topics];let storageAvailable=true;
  try{if(!env.DB)throw Error('DB fehlt');topics=await loadAnalyticsTopics(env.DB);}catch{storageAvailable=false;topics.push(...await fallbackNrwTopics(undefined,t=>({id:t.id,regionId:t.regionId,title:t.title,officialTitle:t.officialTitle,sourceUrl:t.sourceUrl,eventDate:t.eventDate,updatedAt:t.updatedAt,events:t.events,identity:t.identity,classification:t.classification,analysisFeatures:t.analysisFeatures})));}
  if(query.topicId){const focus=resolveTopic(topics,query.topicId);if(!focus||(focus.regionId||'muenster')!==query.region)throw new InvalidAnalysis('Der gewählte Vergleichsartikel gehört nicht zu diesem Gebiet oder ist nicht verfügbar.');query.topicId=focus.id;}
- const coverage=await getRegionCoverage();const result={...buildAnalytics(topics,coverage,REGIONS as unknown as any[],query),regionAvailability:regionAvailability(coverage),storageAvailable};if(storageAvailable)rememberRead(cacheKey,result);return result;
+ const coverage=await getRegionCoverage();const result={...buildAnalytics(topics,coverage,REGIONS,query),regionAvailability:regionAvailability(coverage),storageAvailable};if(storageAvailable)rememberRead(cacheKey,result);return result;
 }

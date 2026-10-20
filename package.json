@@ -8,7 +8,9 @@
   "scripts": {
     "dev": "node scripts/run-framework.mjs dev",
     "build": "node scripts/run-framework.mjs build",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .local-backups --ignore-pattern tmp",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"tests/*.test.mjs\"",
     "build:node": "node scripts/build-node.mjs",
     "start:node": "node dist/standalone/serve.mjs",
     "mcp:internal": "node scripts/mcp-internal.mjs",

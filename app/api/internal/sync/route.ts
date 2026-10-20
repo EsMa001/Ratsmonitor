@@ -23,6 +23,6 @@ export async function GET(request: Request) {
     if (!await authorized(request))
         return Response.json({error:'Nicht autorisiert'},{status:401});
     if(!env.DB)return Response.json({error:'Datenbank fehlt'},{status:503});
-    const runs=await env.DB.prepare('SELECT id,started_at,finished_at,status,details FROM import_runs ORDER BY started_at DESC LIMIT 50').all();
-    return Response.json({runs:runs.results.map((r:any)=>({...r,details:JSON.parse(r.details)}))},{headers:{'Cache-Control':'no-store'}});
+    const runs=await env.DB.prepare('SELECT id,started_at,finished_at,status,details FROM import_runs ORDER BY started_at DESC LIMIT 50').all<{id:string;started_at:string;finished_at:string|null;status:string;details:string}>();
+    return Response.json({runs:runs.results.map(r=>({...r,details:JSON.parse(r.details)}))},{headers:{'Cache-Control':'no-store'}});
 }
