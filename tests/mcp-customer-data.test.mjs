@@ -145,7 +145,7 @@ test('search materializes only the bounded page before reading payloads and aggr
   await service.searchReports({...WINDOW,limit:1});await service.aggregateReports({...WINDOW,groupBy:'region'});
   const [search,aggregate]=queries;
   const page=search.sql.slice(0,search.sql.indexOf(') SELECT'));
-  assert.match(page,/WITH page AS MATERIALIZED/u);assert.match(page,/ORDER BY sc.date DESC,sc.id ASC LIMIT CAST\(\? AS REAL\)/u);
+  assert.match(page,/WITH page AS MATERIALIZED/u);assert.match(page,/ORDER BY sc.date DESC,sc.id ASC LIMIT \?/u);
   assert.equal(search.args.at(-1),2);
   assert.doesNotMatch(page,/payload|json_extract/iu);
   assert.match(search.sql,/\) SELECT[\s\S]+json_extract\(t.payload[\s\S]+FROM page sc JOIN topics t/u);
@@ -155,5 +155,8 @@ test('search materializes only the bounded page before reading payloads and aggr
     assert.match(plan,/SEARCH inactive USING INDEX idx_topics_inactive \(id=\?\)/u);
     assert.match(plan,/SEARCH canonical(?: EXISTS)? USING INDEX sqlite_autoindex_topics_1 \(id=\?\)/u);
     if (query === search) assert.match(plan,/MATERIALIZE page/u);
+    // Über die Gebiete, nie über den Datumsindex (der läse alle Karten des Zeitraums, Server: 40 s statt 6 ms)
+    assert.match(plan,/SEARCH sc USING (?:COVERING )?INDEX idx_search_cards_(?:facets|noformal) \(region_id=\?/u);
+    assert.doesNotMatch(plan,/idx_search_cards_date/u);
   }
 });

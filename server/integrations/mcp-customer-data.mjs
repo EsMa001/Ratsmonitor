@@ -107,7 +107,10 @@ export function createCustomerData(db,{customerId,allowedRegionIds,allowSourceTe
     if (input.status !== undefined && !STATUSES.has(input.status)) fail('Unknown status.');
     const limit=input.limit ?? (extra.includes('groupBy') ? 50 : 20);
     if (!Number.isInteger(limit) || limit < 1 || limit > 100) fail('Limit must be between 1 and 100.');
-    const where=[CANONICAL,'sc.region_id IN (SELECT value FROM json_each(?))','sc.date>=?','sc.date<=?'],args=[JSON.stringify(ids),from,to];
+    // Jede Abfrage ist auf die freigegebenen Gebiete begrenzt: über den Gebietsindex (idx_search_cards_facets) statt über den
+    // Datumsindex, das „+“ hält SQLite vom Datumsindex fern. Server 21.10.2026, Billerbeck „Radweg“: 6 ms statt 40 s
+    // (420 Karten im Gebiet, 1,43 Mio. im Jahr). Gleiches Ergebnis.
+    const where=[CANONICAL,'sc.region_id IN (SELECT value FROM json_each(?))','+sc.date>=?','+sc.date<=?'],args=[JSON.stringify(ids),from,to];
     for (const term of terms) { where.push('instr(sc.search,?)>0');args.push(term); }
     if (input.label !== undefined) { where.push('sc.label=?');args.push(input.label); }
     if (input.status !== undefined) { where.push('sc.status=?');args.push(input.status); }
@@ -139,12 +142,10 @@ export function createCustomerData(db,{customerId,allowedRegionIds,allowSourceTe
       const f=filters(input,['cursor']),args=[...f.args];let where=f.where;
       if (input.cursor !== undefined) {
         const edge=cursor(input.cursor,f.fingerprint);
-        where+=' AND (sc.date<? OR (sc.date=? AND sc.id>?))';args.push(edge.date,edge.date,edge.id);
+        where+=' AND (+sc.date<? OR (+sc.date=? AND sc.id>?))';args.push(edge.date,edge.date,edge.id);
       }
-      /* LIMIT als Kommazahl wie in der Suche (monitor-search.mjs): als Ganzzahl liest SQLite alle Karten statt über den Datumsindex
-         nach einer Seite aufzuhören (Server 16.10.2026: 800 statt 1 ms). Gleiches Ergebnis. */
       const {results}=await db.prepare(`WITH page AS MATERIALIZED (
-        SELECT ${CARD_COLUMNS} FROM search_cards sc WHERE ${where} ORDER BY sc.date DESC,sc.id ASC LIMIT CAST(? AS REAL)
+        SELECT ${CARD_COLUMNS} FROM search_cards sc WHERE ${where} ORDER BY sc.date DESC,sc.id ASC LIMIT ?
       ) SELECT ${CARD_SELECT} FROM page sc JOIN topics t ON t.id=sc.id AND t.region_id=sc.region_id ORDER BY sc.date DESC,sc.id ASC`).bind(...args,f.limit+1).all();
       const rows=results.slice(0,f.limit);
       return {reports:rows.map(card),nextCursor:results.length > f.limit ? encodeCursor(rows.at(-1),f.fingerprint) : null,scope:f.scope};
