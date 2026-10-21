@@ -30,7 +30,9 @@ try{console.log('Stand:',fs.readlinkSync('/srv/ratsmonitor/app/current').split('
 
 head('Schalter im Zeitplaner (aus = läuft nicht nach Plan)');
 const sched=state('schedules')||{};
-const off=Object.entries(sched).filter(([,s])=>s?.enabled===false).map(([id])=>id);
+// Ein Schalter ohne Laufeintrag gehört zu einem Job, den es nicht mehr gibt (search-words seit 14.10.2026)
+const known=state('schedule-runs')||{};
+const off=Object.entries(sched).filter(([,s])=>s?.enabled===false).map(([id])=>known[id]?id:id+' (kein Job mehr)');
 console.log(off.length?`aus: ${off.join(', ')}`:'alle Jobs an');
 /* Auslöser (systemd-Timer und Pfade, Stand aus scripts/schedule.mjs): ein von Hand gestoppter Timer lässt den Job nie wieder starten */
 const units=state('systemd-units');

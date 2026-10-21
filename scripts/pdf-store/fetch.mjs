@@ -90,7 +90,10 @@ else if(!flag('all-hosts')&&!Number.isFinite(o.retryDays)){
 let skipped=0;
 // --others: Adressen, die in irgendeinem Bericht Hauptdokument sind, lädt der normale Lauf (mit OCR)
 // Hauptdokument wie in Zusammenfassung und Fakten: nie ein PDF, das an vielen Berichten hängt (Unterlage der ganzen Sitzung)
-const uses=pdfUses(db),usesOf=u=>uses.get(u)||0;
+// --urls und --regions (Nacharbeit, Altbestand): Nutzung nur aus den betroffenen Gebieten statt aus allen 1,5 Mio. Berichten
+// (Server 21.10.2026: die Nacharbeit brauchte 4 bis 5 Minuten je Lauf für drei Adressen, fast alles dafür)
+const usesRegions=urlList?db.prepare('SELECT DISTINCT region_id FROM topics WHERE id IN (SELECT value FROM json_each(?))').all(JSON.stringify(urlTopics())).map(r=>r.region_id):o.regions||null;
+const uses=pdfUses(db,{regions:usesRegions}),usesOf=u=>uses.get(u)||0;
 const others=flag('others'),primaryUrls=new Set();
 if(others){
  const t0=Date.now();

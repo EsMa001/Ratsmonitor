@@ -76,3 +76,34 @@ test('read-reports: alle Regeln in einem Lauf, KI-Felder bleiben, zweiter Lauf l
   assert.equal(second.read,0,'unveränderte Eingaben: nichts zu lesen');
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+// --ids (Nacharbeit, Folgekette nach der OCR): nur die genannten Berichte, immer neu gelesen; die Nutzung je Adresse kommt
+// aus den Gebieten dieser Berichte, eine Sitzungsunterlage wird also weiter erkannt
+test('read-reports --ids: liest nur die genannten Berichte, erkennt Sitzungsunterlagen im Gebiet, liest sie erneut',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'read-reports-ids-'));
+ try{
+  const file=path.join(dir,'db.sqlite'),storeDir=path.join(dir,'store'),idFile=path.join(dir,'ids.txt');
+  const db=new DatabaseSync(file);
+  db.exec(`CREATE TABLE topics(id TEXT PRIMARY KEY,region_id TEXT,active INTEGER,payload TEXT);
+   CREATE TABLE data_revisions(id TEXT PRIMARY KEY,revision INTEGER);INSERT INTO data_revisions VALUES('content',1);`);
+  for(const m of ['0025','0032','0035'])db.exec(fs.readFileSync('drizzle/'+fs.readdirSync('drizzle').find(f=>f.startsWith(m)),'utf8').replace(/CREATE TRIGGER[\s\S]*?END;/g,''));
+  const store=openPdfStore(storeDir);
+  const topic=(id,region,title,docs)=>db.prepare('INSERT INTO topics VALUES(?,?,1,?)').run(id,region,JSON.stringify({id,title,officialTitle:title,
+   documents:docs.map(([t,u])=>({title:t,url:u,kind:'application/pdf'}))}));
+  const put=url=>{store.put(url,new Uint8Array(Buffer.from(`%PDF-1.4\n% ${url}\n%%EOF`,'latin1')));store.putText(store.entry(url).sha256,[DOC],{method:'text',version:1});};
+  put('https://x.test/vorlage.pdf');put('https://x.test/sitzung.pdf');
+  topic('a','r','Finanzzwischenbericht 2025',[['Sitzungsvorlage','https://x.test/vorlage.pdf']]);
+  // Ein Dokument an fünf Berichten desselben Gebiets ist eine Sitzungsunterlage, auch wenn nur einer davon gelesen wird
+  for(let i=0;i<5;i++)topic('s'+i,'r',`Punkt ${i} der Sitzung`,[['Unterlage','https://x.test/sitzung.pdf']]);
+  topic('andere','q','Finanzzwischenbericht 2025',[['Sitzungsvorlage','https://x.test/vorlage.pdf']]);
+  store.close();db.close();
+  const run=()=>{const out=execFileSync(process.execPath,['--no-warnings','scripts/pdf-store/read-reports.mjs','--ids',idFile],{env:{...process.env,DATABASE_FILE:file,RM_PDF_STORE:storeDir},encoding:'utf8'});return JSON.parse(out.slice(out.indexOf('{')));};
+  fs.writeFileSync(idFile,'a\ns0\n');
+  const first=run();
+  assert.equal(first.berichte,2,'nur die genannten Berichte werden betrachtet');assert.equal(first.read,2);
+  const after=new DatabaseSync(file),issues=Object.fromEntries(after.prepare('SELECT topic_id,summary_issue FROM report_rules').all().map(r=>[r.topic_id,r.summary_issue]));
+  assert.deepEqual(issues,{a:null,s0:'session-document'},'andere Berichte bleiben ungelesen');
+  after.close();
+  assert.equal(run().read,2,'--ids liest immer neu');
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});

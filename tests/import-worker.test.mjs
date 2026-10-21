@@ -222,3 +222,12 @@ test('teilweise mit Netzfehler: vermerkt für die Nacharbeit, ohne Server-Bremse
  assert.equal(partialCause({attemptComplete:true,coverage:{complete:false,issues:['fetch failed']}}),null,'Versuch vollständig');
  sql.close();
 });
+
+test('catchUp ends without an error while another writer holds the database, other errors still surface',async()=>{
+ const locked={prepare(){throw new Error('D1_ERROR: database is locked');}};
+ const warnings=[];
+ assert.equal(await catchUp(locked,{maxSteps:5,budgetMs:50,sleep:async()=>{},busyRounds:2,warn:m=>warnings.push(m)}),0);
+ assert.equal(warnings.length,1);assert.match(warnings[0],/gesperrt/);
+ const broken={prepare(){throw new Error('no such table: region_stats');}};
+ await assert.rejects(()=>catchUp(broken,{maxSteps:5,budgetMs:50,sleep:async()=>{}}),/no such table/);
+});

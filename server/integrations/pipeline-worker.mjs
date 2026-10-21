@@ -124,10 +124,19 @@ export async function workJob(db,run,{lanes=24,sleep=pause,log=()=>{},warn=()=>{
  * After the imports: brings the values per area of the administration up to date in steps (admin-refresh.mjs), so the
  * pages open without computing. Best effort; returns the number of steps.
  */
-export async function catchUp(db,{maxSteps=400,budgetMs=5000,sleep=pause}={}){
- let steps=0;
+export async function catchUp(db,{maxSteps=400,budgetMs=5000,sleep=pause,busyRounds=3,warn=console.warn}={}){
+ let steps=0,busy=0;
  while(steps<maxSteps){
-  const result=await refreshStep(db,{action:'step',target:'regions',budgetMs});
+  let result;
+  // Die Verarbeitung (Zahlen für plenara.X) hält die Schreibsperre auch mal Minuten: dann kurz warten und nach busyRounds
+  // Anläufen ohne Fehler aufhören, der nächste Lauf holt nach (Server 21.10.2026, 06:32: sonst endete der Lauf als
+  // „database is locked“ mit Fehler, obwohl nichts zu tun war)
+  try{result=await refreshStep(db,{action:'step',target:'regions',budgetMs});}
+  catch(e){
+   if(!/locked|busy/i.test(String(e?.message||e)))throw e;
+   if(++busy>busyRounds){warn(`Kennzahlen der Administration: Datenbank gesperrt, nach ${steps} Schritten vertagt`);break;}
+   await sleep(3000);continue;
+  }
   steps++;
   if(result.state==='done'||result.missing)break;
   if(result.state==='busy')await sleep(3000);

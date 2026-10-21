@@ -38,12 +38,16 @@ for(const [table,mig] of [['report_rules','0032'],['topic_facts','0025']])
  if(!has(table)&&!(dry&&table==='report_rules')){console.error(`Tabelle ${table} fehlt: erst Migration ${mig} einspielen (scripts/node-migrate.mjs).`);process.exit(1);}
 
 // Ein Durchlauf: Schlüssel je Bericht ohne den Text zu lesen (Hauptdokument, Sitzungsunterlage, Stand der Textfassung)
-const t0=Date.now(),uses=pdfUses(db),U=u=>uses.get(u)||0,hasText=u=>!!store.textMark(u);
-const keys=all||!has('report_rules')?new Map():new Map(db.prepare('SELECT topic_id,key FROM report_rules').all().map(r=>[r.topic_id,r.key]));
+// --ids (Nacharbeit, Folgekette nach der OCR): nur diese Berichte lesen, Nutzung je Adresse nur aus ihren Gebieten, keine
+// Schlüssel laden. Vorher lief das über alle 1,5 Mio. Berichte: 8 bis 16 Minuten je Lauf für ein bis sechs Berichte (Server,
+// 20./21.10.2026). Ein Dokument, das Berichte mehrerer Gebiete teilen, zählt der nächtliche volle Lauf nach (Schlüssel ändert sich).
+const idList=onlyIds?JSON.stringify([...onlyIds]):null;
+const idRegions=onlyIds?db.prepare('SELECT DISTINCT region_id FROM topics WHERE id IN (SELECT value FROM json_each(?))').all(idList).map(r=>r.region_id):null;
+const t0=Date.now(),uses=pdfUses(db,{regions:idRegions}),U=u=>uses.get(u)||0,hasText=u=>!!store.textMark(u);
+const keys=all||onlyIds||!has('report_rules')?new Map():new Map(db.prepare('SELECT topic_id,key FROM report_rules').all().map(r=>[r.topic_id,r.key]));
 const todo=[];let total=0;
 for(const r of db.prepare(`SELECT id,region_id,coalesce(json_extract(payload,'$.officialTitle'),json_extract(payload,'$.title'),'') AS title,
-  json_extract(payload,'$.documents') AS docs FROM topics WHERE active=1`).iterate()){
- if(onlyIds&&!onlyIds.has(r.id))continue;
+  json_extract(payload,'$.documents') AS docs FROM topics WHERE active=1${onlyIds?' AND id IN (SELECT value FROM json_each(?))':''}`).iterate(...(onlyIds?[idList]:[]))){
  total++;let docs=[];try{docs=JSON.parse(r.docs||'[]');}catch{/* ohne Dokumente */}
  const {doc,session}=mainDocument(docs,{uses:U,hasText});
  const textSha=doc&&!session?store.textMark(doc.url)||'':'';
