@@ -11,7 +11,7 @@
 //   revoke-key <kennung> <schlüssel-id>
 //   account-add <kennung> <konto-id>       Konto (u_…, aus ratsmonitor-accounts list) darf sich per OAuth anmelden
 //   account-remove <kennung> <konto-id>    gilt sofort, auch für schon ausgegebene Zugangstoken
-import {readFileSync,writeFileSync,renameSync,statSync,existsSync,chmodSync} from 'node:fs';
+import {readFileSync,writeFileSync,renameSync,statSync,existsSync,chmodSync,chownSync} from 'node:fs';
 import {dirname,join,basename} from 'node:path';
 import {parseArgs} from 'node:util';
 import {randomBytes} from 'node:crypto';
@@ -40,14 +40,16 @@ function load(){
  try{return parseCustomers(JSON.parse(readFileSync(file,'utf8').replace(/^﻿/,'')));}
  catch(error){fail(error.message||'Kundendatei ungültig.');}
 }
-/** Atomar schreiben: Kopie im selben Ordner, dann umbenennen; Rechte der alten Datei bleiben */
+/** Atomar schreiben: Kopie im selben Ordner, dann umbenennen; Rechte, Besitzer und Gruppe der alten Datei bleiben
+ *  (als root geschrieben gehörte die neue Datei sonst root:root, und der Dienst könnte sie nicht mehr lesen) */
 function save(data){
  let checked;
  try{checked=parseCustomers(JSON.parse(JSON.stringify(data)));}catch(error){fail(error.message);}
  const tmp=join(dirname(file),'.'+basename(file)+'.'+process.pid+'.tmp');
- const mode=existsSync(file)?statSync(file).mode&0o777:0o640;
+ const old=existsSync(file)?statSync(file):null,mode=old?old.mode&0o777:0o640;
  writeFileSync(tmp,JSON.stringify(checked,null,1)+'\n',{mode});
  chmodSync(tmp,mode);
+ if(old&&process.getuid?.()===0)chownSync(tmp,old.uid,old.gid);
  renameSync(tmp,file);
 }
 const find=(data,identity)=>data.customers.find(c=>c.identity===identity)||fail(`Kein Kunde ${identity}.`);
