@@ -146,7 +146,7 @@ input[data-search="q"]:-webkit-autofill, input[data-search="q"]:-webkit-autofill
   }
   /* Suchleiste samt Chips: im kleinen Blatt am unteren Rand der Karte, im vollen Blatt im Streifen oben (nur eine kleine Fläche, läuft mit dem Blatt) */
   html.rm-search .rm-sbar {
-    transition: top .34s cubic-bezier(.22,.9,.28,1),bottom .34s cubic-bezier(.22,.9,.28,1),transform .34s cubic-bezier(.22,.9,.28,1) !important;
+    transition: top .34s cubic-bezier(.22,.9,.28,1),bottom .34s cubic-bezier(.22,.9,.28,1),transform .34s cubic-bezier(.22,.9,.28,1);
   }
   /* Die Suchleiste unten auf der Karte wechselt mit der Stufe den Platz (bottom, beim Tippen weich; beim Ziehen ohne Übergang) und rutscht per transform im Gleichschritt mit dem Blatt: --sb ist --drag, auf ihren Weg umgerechnet (OverviewPage) */
   html.rm-search .rm-sbar[data-low] {
@@ -157,7 +157,7 @@ input[data-search="q"]:-webkit-autofill, input[data-search="q"]:-webkit-autofill
     transform: translateY(var(--sb,0px));
   }
   html.rm-search .rm-flat[data-drag] .rm-sbar {
-    transition: none !important;
+    transition: none;
   }
   html.rm-search .rm-flat[data-stage=voll] .rm-sbar:not([data-low]) {
     top: 62px !important;

@@ -6,14 +6,14 @@
     grid-template-columns: minmax(0,1fr) minmax(460px,38%);
   }
   .rm-xsplit--solo {
-    grid-template-columns: minmax(0,1fr) !important;
+    grid-template-columns: minmax(0,1fr);
   }
   .rm-xsplit>* {
-    grid-column: auto !important;
+    grid-column: auto;
   }
   .rm-xsplit-map {
     position: sticky;
-    top: calc(var(--hdr,58px) + 92px) !important;
+    top: calc(var(--hdr,58px) + 92px);
     height: calc(100dvh - var(--hdr,58px) - 108px);
     min-height: 420px;
     display: flex;
@@ -77,9 +77,8 @@
     flex-wrap: nowrap;
   }
   main.rm-xwide .rm-xsplit-map {
-    grid-area: 2 / 1 / span 80;
+    grid-row: 2 / span 80;
     align-self: start;
-    top: var(--xt);
     height: var(--xmh);
     min-height: 0;
   }
@@ -262,7 +261,6 @@
     margin: 0;
     height: 48px;
     min-height: 0;
-    padding: 6px max(1vw,16px) 8px !important;
     border-radius: 0;
     width: auto;
   }
@@ -649,8 +647,6 @@
     align-items: center;
     gap: 20px;
     min-height: 0;
-    padding-top: 6px !important;
-    padding-bottom: 8px !important;
     margin-bottom: 16px;
   }
   main:not(.rm-xwide):not(.rm-xnet) .pl-band>div:not(.hidden) {
@@ -722,11 +718,11 @@
     gap: 2px 12px;
   }
   .pl-band h1 {
-    font-size: 22px !important;
+    font-size: 22px;
     line-height: 1.15;
   }
   .pl-band .rm-band-mid p:first-child>span:first-child {
-    font-size: 20px !important;
+    font-size: 20px;
   }
   /* Handy, alle plenara.X-Seiten: Legende ohne Kasten; Suche, Filter und Herz als eine Pille statt dreier Kästchen */
   main#inhalt .rm-xlegend {
@@ -948,21 +944,13 @@
 @media (max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band {
     min-height: 0;
-    padding-top: 2px;
-    padding-bottom: 8px !important;
     margin-bottom: 6px;
   }
   .pl-band .back-btn, .pl-band .rm-band-mid>p:nth-child(n+2) {
     display: none;
   }
-  .pl-band h1 {
-    font-size: 20px;
-  }
   .pl-band h1>* {
     display: none;
-  }
-  .pl-band .rm-band-mid>p:first-child span:first-child {
-    font-size: 22px;
   }
 }
 
@@ -992,12 +980,6 @@
 }
 
 /* Handy: Raster einspaltig, Zeitleiste senkrecht, lange Knöpfe brechen um */
-@media (max-width:760px) {
-  .ri-head {
-    padding-top: 16px;
-    padding-bottom: 44px;
-  }
-}
 
 /* Kompakter Kopf ohne großen Titel (Kontoseiten) */
 .ri-head--compact {
@@ -1005,26 +987,16 @@
   padding-bottom: 40px;
 }
 
-.ri-anw .ri-head {
-  padding-bottom: 36px;
-}
-
 @media (max-width:640px) {
-  .ri-anw .ri-head {
-    padding-bottom: 24px;
-  }
-  .ri-konto .ri-head {
-    padding-bottom: 20px;
-  }
   /* plenara.X und ihre Unterseiten auf dem Handy kompakter: weniger Weißraum zwischen Bändern, Kacheln und Überschriften */
   html.rm-analytics main .pb-10 {
-    padding-bottom: 18px !important;
+    padding-bottom: 18px;
   }
   html.rm-analytics main .mb-8 {
-    margin-bottom: 14px !important;
+    margin-bottom: 14px;
   }
   html.rm-analytics main .mt-16 {
-    margin-top: 30px !important;
+    margin-top: 30px;
   }
   html.rm-analytics main .mt-12 {
     margin-top: 22px;
@@ -1036,7 +1008,7 @@
     margin-top: 14px;
   }
   html.rm-analytics main .mt-6 {
-    margin-top: 12px !important;
+    margin-top: 12px;
   }
   html.rm-analytics main .mt-5 {
     margin-top: 8px;
@@ -1045,7 +1017,7 @@
     margin-top: 8px;
   }
   html.rm-analytics main .gap-y-12 {
-    row-gap: 18px !important;
+    row-gap: 18px;
   }
   html.rm-analytics main .gap-y-8 {
     row-gap: 14px;
@@ -1054,61 +1026,49 @@
     row-gap: 12px;
   }
   html.rm-analytics main .gap-10 {
-    gap: 16px !important;
+    gap: 16px;
   }
   html.rm-analytics main .gap-8 {
-    gap: 14px !important;
+    gap: 14px;
   }
   html.rm-analytics main .gap-6 {
-    gap: 12px !important;
+    gap: 12px;
   }
   html.rm-analytics main .space-y-8>:not([hidden])~:not([hidden]) {
-    margin-top: 14px !important;
+    margin-top: 14px;
   }
   html.rm-analytics main .space-y-6>:not([hidden])~:not([hidden]) {
-    margin-top: 12px !important;
+    margin-top: 12px;
   }
   html.rm-analytics main .py-10 {
-    padding-top: 18px !important;
-    padding-bottom: 18px !important;
+    padding-top: 18px;
+    padding-bottom: 18px;
   }
 }
 
 /* Seitenkopf wie die Fußleiste: hell kräftiges Petrol mit weißer Schrift; dunkel Grund mit Petrol-Linie (wie footer.pl-footer-accent) */
 html:not(.rm-dark) :is(.pl-band, .ri-head) {
   background: var(--rm-ac);
-  border-bottom: 0 !important;
+  border-bottom: 0;
 }
 
-html:not(.rm-dark) :is(.pl-band, .ri-head), html:not(.rm-dark) :is(.pl-band, .ri-head) * {
+/* Schrift und Linien im Band weiß; die weiße Beispielkarte der Anwenderseiten (.ri-pv__card) behält ihre eigenen Farben */
+html:not(.rm-dark) :is(.pl-band, .ri-head), html:not(.rm-dark) :is(.pl-band, .ri-head) :where(:not(.ri-pv__card, .ri-pv__card *)) {
   color: var(--rm-on);
-  border-color: rgba(255,255,255,.3) !important;
+  border-color: rgba(255,255,255,.3);
 }
 
 html:not(.rm-dark) :is(.pl-band, .ri-head) :is([class*="bg-slate-"], [class*="bg-teal-"], [class*="bg-white"]) {
-  background: rgba(255,255,255,.16) !important;
+  background: rgba(255,255,255,.16);
 }
 
-/* Weiße Karte im Kopf (Anwenderseiten): Text wieder dunkel, sonst weiß auf weiß; Akzent und Grautöne über die Inline-Farbe */
+/* Weiße Karte im Kopf (Anwenderseiten): Text dunkel, Linien hell; Farben aus Klassen und Inline-Stilen der Karte gelten */
+html:not(.rm-dark) .ri-head .ri-pv__card {
+  color: var(--rm-c900);
+}
+
 html:not(.rm-dark) .ri-head .ri-pv__card, html:not(.rm-dark) .ri-head .ri-pv__card * {
-  color: var(--rm-c900) !important;
-  border-color: var(--rm-c200) !important;
-}
-
-html:not(.rm-dark) .ri-head .ri-pv__card [style*="--rm-ac"] {
-  color: var(--rm-ac) !important;
-}
-
-html:not(.rm-dark) .ri-head .ri-pv__card .text-teal-700 {
-  color: var(--rm-ac) !important;
-}
-
-html:not(.rm-dark) .ri-head .ri-pv__card [style*="--rm-c700"] {
-  color: var(--rm-c700) !important;
-}
-
-html:not(.rm-dark) .ri-head .ri-pv__card [style*="--rm-c500"], html:not(.rm-dark) .ri-head .ri-pv__card .text-slate-500 {
-  color: var(--rm-c500) !important;
+  border-color: var(--rm-c200);
 }
 
 html.rm-dark :is(.pl-band, .ri-head) {
@@ -1116,21 +1076,47 @@ html.rm-dark :is(.pl-band, .ri-head) {
   border-bottom: 2px solid var(--rm-fill);
 }
 
-/* Alle Seitenköpfe gleich knapp: gleicher Innenabstand, Überschrift einheitlich 28 px */
+/* Abstände der Kopfbänder an einer Stelle: plenara.X (.pl-band) und Info-/Kontoseiten (.ri-head). Am Handy liegt die Kopfzeile über dem Band, deshalb oben 46 px. */
 :is(.pl-band, .ri-head) {
-  padding-top: 16px !important;
-  padding-bottom: 24px !important;
+  padding-top: 16px;
+  padding-bottom: 24px;
+}
+
+@media (min-width:1024px) {
+  .pl-band {
+    padding-top: 6px;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width:640px) {
+  .ri-anw .ri-head {
+    padding-bottom: 24px;
+  }
+  .ri-konto .ri-head {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
+  :is(.pl-band, .ri-head) {
+    padding-top: 8px;
+    padding-bottom: 12px;
+  }
+  .pl-band.pl-top, html:has(.ri-head) .ri-head {
+    padding-top: 46px;
+  }
 }
 
 /* Anwenderseiten: Überschrift größer */
 .ri-anw .ri-head .ri-h1 {
-  font-size: 40px !important;
-  line-height: 1.15 !important;
+  font-size: 40px;
+  line-height: 1.15;
 }
 
 @media (max-width:640px) {
   .ri-anw .ri-head .ri-h1 {
-    font-size: 28px !important;
+    font-size: 28px;
   }
 }
 
@@ -1139,9 +1125,9 @@ html.rm-dark :is(.pl-band, .ri-head) {
 }
 
 .ri-head :is(h1, .ri-h1) {
-  font-size: 28px !important;
-  line-height: 1.2 !important;
-  margin-top: 8px !important;
+  font-size: 28px;
+  line-height: 1.2;
+  margin-top: 8px;
   margin-bottom: 0;
 }
 
@@ -1151,17 +1137,17 @@ html.rm-dark :is(.pl-band, .ri-head) {
   max-width: 860px;
 }
 
-.ri-head .ri-bid svg {
+.ri-head .ri-bid svg:not(.ri-bid__icon) {
   width: 28px;
   height: 28px;
 }
 
 .ri-head .back-btn {
-  margin-bottom: 8px !important;
+  margin-bottom: 8px;
 }
 
 .ri-head .ri-actions {
-  margin-top: 16px !important;
+  margin-top: 16px;
 }
 
 /* Symbol der Seite rechts im Kopfband, weiß (Info- und Kontoseiten; plenara.X setzt es in XKopf.tsx) */
@@ -1170,8 +1156,8 @@ html.rm-dark :is(.pl-band, .ri-head) {
   right: calc(var(--ri-pad) + 24px);
   top: 50%;
   transform: translateY(-50%);
-  width: 44px !important;
-  height: 44px !important;
+  width: 44px;
+  height: 44px;
 }
 
 @media (max-width:640px) {
@@ -1179,8 +1165,8 @@ html.rm-dark :is(.pl-band, .ri-head) {
     top: 50px;
     transform: none;
     right: var(--ri-pad);
-    width: 36px !important;
-    height: 36px !important;
+    width: 36px;
+    height: 36px;
   }
 }
 
@@ -1243,7 +1229,6 @@ html.rm-dark .rm-banddots {
   /* Kopfband der Info- und Kontoseiten: überall so hoch wie bei plenara.X (Name groß, darunter eine Zeile); Überschrift, Satz und Zusätze stehen darunter (PageHead) */
   .ri-head {
     min-height: 135px;
-    padding-bottom: 16px !important;
   }
   html .ri-head .ri-bid .ri-bid__name {
     font-size: 28px;
@@ -1251,20 +1236,13 @@ html.rm-dark .rm-banddots {
     line-height: 1.15;
   }
   .ri-head .ri-lead {
-    display: none !important;
+    display: none;
   }
   .ri-head .ri-bid + .ri-h1, .ri-head .ri-h1 {
-    font-size: 18px;
     font-weight: 500;
-    line-height: 1.3;
-    margin-top: 6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-  :is(.pl-band, .ri-head) {
-    padding-top: 8px !important;
-    padding-bottom: 12px !important;
   }
   .pl-band .back-btn {
     display: none;
@@ -1275,35 +1253,15 @@ html.rm-dark .rm-banddots {
   .ri-head .ri-bid__icon {
     display: none;
   }
-  .ri-head .back-btn {
-    margin-bottom: 2px;
-  }
   .ri-head .ri-bid__label {
     display: none;
   }
   .ri-head .ri-h1 {
-    font-size: 22px !important;
-    line-height: 1.2 !important;
-    margin-top: 6px;
-    margin-bottom: 0;
-  }
-  .ri-head .ri-lead {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-  }
-  html:has(.pl-top) header {
-    position: absolute;
-    inset: 0 0 auto 0;
-    background: transparent;
-    border-bottom: 0;
+    font-size: 22px;
+    line-height: 1.2;
   }
   html:has(.pl-top) header .rm-logo svg {
     filter: brightness(0) invert(1);
-  }
-  .pl-band.pl-top {
-    padding-top: 46px !important;
   }
   .pl-band.pl-top .grid {
     margin-top: 0;
@@ -1313,15 +1271,6 @@ html.rm-dark .rm-banddots {
   }
   html:has(.pl-top) main#inhalt {
     padding-bottom: 0;
-  }
-  html:not(.rm-dark):has(.ri-head) header {
-    position: absolute;
-    inset: 0 0 auto 0;
-    background: transparent;
-    border-bottom: 0;
-  }
-  html:has(.ri-head) .ri-head {
-    padding-top: 46px;
   }
   html:has(.ri-head) .ri-head > div:not(.rm-banddots) {
     display: flex;
@@ -1342,15 +1291,12 @@ html.rm-dark .rm-banddots {
     display: none;
   }
   /* Seiten mit Band: Kopfzeile bleibt oben und färbt sich beim Scrollen weich ein (--hp 0 bis 1, aus Header.tsx) */
-  html:has(.pl-top, .ri-head) header {
-    position: sticky !important;
+  html:has(.pl-top, .ri-head) header.sticky {
+    position: sticky;
     top: 0;
     margin-bottom: -42px;
-    border-bottom: 0 !important;
-    background: color-mix(in srgb,var(--rm-ac) calc(var(--hb,0) * 100%),transparent) !important;
-  }
-  html.rm-dark:has(.pl-top, .ri-head) header {
-    background: color-mix(in srgb,var(--rm-page) calc(var(--hb,0) * 100%),transparent);
+    border-bottom: 0;
+    background: color-mix(in srgb,var(--rm-ac) calc(var(--hb,0) * 100%),transparent);
   }
   html:has(.pl-top, .ri-head) main#inhalt {
     min-height: calc(100dvh + 150px);
@@ -1371,7 +1317,7 @@ html:not(.rm-dark) :is(.pl-band, .ri-head) .back-btn {
 }
 
 html:not(.rm-dark) :is(.pl-band, .ri-head) .back-btn:hover, html:not(.rm-dark) :is(.pl-band, .ri-head) .back-btn:active {
-  background: rgba(255,255,255,.14) !important;
+  background: rgba(255,255,255,.14);
 }
 
 html:not(.rm-dark) :is(.pl-band, .ri-head) .back-btn:focus-visible {

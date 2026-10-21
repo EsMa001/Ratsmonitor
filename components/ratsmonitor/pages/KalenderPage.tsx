@@ -386,7 +386,7 @@ function KalenderTeaser() {
             </div>
           ))}
         </div>
-        <div className="ri-actions" style={{ marginTop: 40 }}>
+        <div className="ri-actions ri-actions--far">
           <Link href="/kontakt" className="ri-btn ri-btn--dark">
             Enterprise: {UPGRADE_TEXT}
           </Link>

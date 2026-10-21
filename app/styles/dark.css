@@ -107,16 +107,17 @@ html.rm-dark .ri-dark .ri-btn--inv, html.rm-dark .ri-dark .ri-btn--inv:hover {
   color: var(--rm-on);
 }
 
-html.rm-dark footer {
+/* Allgemeine Fußzeile; die Akzent-Fußzeile der Startseite regelt info.css */
+html.rm-dark footer:not(.pl-footer-accent) {
   background: var(--rm-tint);
   border-color: var(--rm-tint2);
 }
 
-html.rm-dark footer .border-slate-100 {
+html.rm-dark footer:not(.pl-footer-accent) .border-slate-100 {
   border-color: var(--rm-tint2);
 }
 
-html.rm-dark footer {
+html.rm-dark footer:not(.pl-footer-accent) {
   background: var(--rm-tint);
   background-image: none;
 }
@@ -134,7 +135,7 @@ html.rm-dark footer p {
 }
 
 html.rm-dark footer a {
-  color: var(--rm-c600) !important;
+  color: var(--rm-c600);
 }
 
 html.rm-dark footer a:hover {

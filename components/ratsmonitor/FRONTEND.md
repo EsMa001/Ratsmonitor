@@ -62,7 +62,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
   - `info.css`: Info-, Konto- und Rechtsseiten (`ri-…`), Startseite, Fußzeile. Achtung: setzt Grundstile zurück; Tailwind-Abstände greifen dort manchmal nicht → dann Inline-Style oder Wrapper.
   - `search.css`: Suche (Karte, Suchleiste, Suchblatt `data-stage`, Trefferliste).
   - `glass.css`: Milchglas `.rm-glass`, Chips, Filterfenster `#filter-body`, Auswahllisten.
-  - `analytics.css`: plenara.X (Band, Karte und Liste, Netze, Leisten, `rm-x…`, `rm-solid`).
+  - `analytics.css`: plenara.X (Band, Karte und Liste, Netze, Leisten, `rm-x…`, `rm-solid`). Dort auch die Kopfbänder aller Seiten (`.pl-band`, `.ri-head`): Abstände in einem Block („Abstände der Kopfbänder“), Farben hell/dunkel.
   - `print.css`: Druckansicht.
 - Regeln für neue und geänderte Stile:
   - Erst Tailwind im JSX; eigene CSS nur für Wiederkehrendes, Zustände, Pseudoelemente und Handy-Sonderfälle.

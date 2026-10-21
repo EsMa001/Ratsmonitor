@@ -421,14 +421,14 @@ export function StartseitePage() {
 
   return (
     <>
-      <section className="ri-sec pl-hero" style={{ paddingTop: 56 }}>
+      <section className="ri-sec pl-hero">
         <div className="pl-grid mx-auto grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-start gap-12">
           <div className="pl-left pt-10">
             <h1 className="pl-h1 text-[clamp(28px,8vw,44px)] font-[600] leading-[1.08] tracking-[-0.02em] text-[var(--rm-c900)]">
               Deutschlands Kommunalpolitik<br /> <span className="text-[var(--rm-ac)]">in Echtzeit.</span>
             </h1>
-            <p className="pl-slogan text-[18px] leading-normal text-[var(--rm-c500)]" style={{ margin: "20px 0 0" }}>Besser verstehen, was vor Ort beraten wird.</p>
-            <p className="pl-num flex flex-wrap items-baseline gap-x-[14px] gap-y-1" style={{ margin: "28px 0 0" }}>
+            <p className="pl-slogan text-[18px] leading-normal text-[var(--rm-c500)]">Besser verstehen, was vor Ort beraten wird.</p>
+            <p className="pl-num flex flex-wrap items-baseline gap-x-[14px] gap-y-1">
               <span className="text-[44px] font-[600] leading-none tabular-nums text-[var(--rm-c900)]">{total !== null ? <CountUp value={total} /> : zFehler ? "–" : "…"}</span>
               <span className="text-[16px] text-[var(--rm-c500)]">Berichte aus Räten und Ausschüssen in den letzten 30 Tagen</span>
               {zFehler && total === null && <Ladefehler text="Die Zahl ist gerade nicht verfügbar." onRetry={() => { setZFehler(false); setVersuch((n) => n + 1); }} />}
@@ -438,7 +438,7 @@ export function StartseitePage() {
               Stand {day(today)}
             </p>
               <div className="pl-search mt-6 max-w-[460px] border-t border-[var(--rm-c200)]">
-          <h2 className="pl-h2 text-[22px] font-[600] text-[var(--rm-c900)]" style={{ margin: "16px 0 0" }}>Thema suchen</h2>
+          <h2 className="pl-h2 text-[22px] font-[600] text-[var(--rm-c900)]">Thema suchen</h2>
           <form onSubmit={submit}>
             <label>
               <span className="sr-only">Suchbegriff</span>
@@ -456,7 +456,7 @@ export function StartseitePage() {
             <TrendPops items={trends.filter((t) => pops.some((p) => p.label === t.topic))} onPick={(t) => openSearch(t)} />
             {cov && (
         <div className="pl-ort border-t border-[var(--rm-c200)]">
-          <h2 className="pl-h2 text-[22px] font-[600] text-[var(--rm-c900)]" style={{ margin: "16px 0 0" }}>Ist mein Ort dabei?</h2>
+          <h2 className="pl-h2 text-[22px] font-[600] text-[var(--rm-c900)]">Ist mein Ort dabei?</h2>
           <label>
             <span className="sr-only">Ort</span>
             <input autoComplete="off"
@@ -487,7 +487,7 @@ export function StartseitePage() {
         </div>
       )}
             <div className="pl-ctawrap mt-7">
-              <Link href="/suche" className="ri-btn pl-cta" style={{ borderRadius: 999, border: 0, color: "var(--rm-white)", background: "var(--rm-ac)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
+              <Link href="/suche" className="ri-btn pl-cta">
                 {me.user ? "Suche starten →" : "Ohne Anmeldung starten →"}
               </Link>
             </div>

@@ -80,7 +80,7 @@ const Square = () => <span style={{ display: "inline-block", width: ".15em", hei
 function Quorumo() {
   return (
     <span style={{ fontSize: 28, letterSpacing: "-0.42px" }}>
-      <svg className="rm-logo__mark" viewBox="14 14 76 76" aria-hidden="true" style={{ ...INLINE, height: ".86em", width: ".86em", verticalAlign: "-0.16em", marginRight: ".01em" }}>
+      <svg className="rm-logo__mark" viewBox="14 14 76 76" aria-hidden="true" style={{ ...INLINE }}>
         <circle cx="50" cy="50" r="30" stroke={TEAL} strokeWidth="8.5" fill="none" />
         <path d="M62 62L84 84" stroke={TEAL} strokeWidth="9.775" strokeLinecap="round" />
         <path d="M30.3 44.7A20.4 20.4 0 0 1 43.0 30.8" stroke={TEAL} strokeWidth="5" fill="none" strokeLinecap="round" />
@@ -100,7 +100,7 @@ function Quorumo() {
 function QuorumoSeats({ v3, square }: { v3?: boolean; square?: boolean }) {
   return (
     <span style={{ fontSize: 28, letterSpacing: "-.015em" }}>
-      <svg className="rm-logo__mark" viewBox="8 8 84 84" overflow="visible" aria-hidden="true" style={{ ...INLINE, height: ".86em", width: ".86em", verticalAlign: "-0.16em", marginRight: ".02em" }}>
+      <svg className="rm-logo__mark" viewBox="8 8 84 84" overflow="visible" aria-hidden="true" style={{ ...INLINE }}>
         {v3 ? (
           <>
             <Dots dots={QUORUMO_Q3} />
@@ -150,7 +150,7 @@ function Plenara() {
 function PlenaraV2({ square, size = 28, noDot = false }: { square?: boolean; size?: number; noDot?: boolean }) {
   return (
     <span style={{ fontSize: size, letterSpacing: "-.015em" }}>
-      <svg className="rm-logo__mark rm-logo__mark--p" viewBox="15 15 70 70" overflow="visible" aria-hidden="true" style={{ ...INLINE, height: ".66em", width: ".66em", verticalAlign: "-0.07em", marginRight: ".01em" }}>
+      <svg className="rm-logo__mark rm-logo__mark--p" viewBox="15 15 70 70" overflow="visible" aria-hidden="true" style={{ ...INLINE }}>
         <Dots dots={PLENARA_P} />
         <path d="M22 108V50A28 28 0 0 1 38.2 24.6" stroke={TEAL} strokeWidth="7" fill="none" strokeLinecap="round" />
       </svg>

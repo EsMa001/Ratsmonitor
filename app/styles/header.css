@@ -1,4 +1,19 @@
 /* Kopfzeile, Logo, Menüs, untere Leiste am Handy. */
+
+/* Bildmarke im Logo (Brand.tsx): Grundgröße; schmal, am Handy und im großen Logo unten angepasst */
+.rm-logo__mark {
+  height: .86em;
+  width: .86em;
+  vertical-align: -.16em;
+  margin-right: .01em;
+}
+
+.rm-logo__mark--p {
+  height: .66em;
+  width: .66em;
+  vertical-align: -.07em;
+}
+
 @media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   :root {
     --rm-tabbar: calc(54px + env(safe-area-inset-bottom,0px));
@@ -69,15 +84,15 @@
   }
   /* ohne Schriftzug trägt die Bildmarke allein: etwas größer, mittig in der Zeile */
   .rm-logo__mark {
-    height: 1.3em !important;
-    width: 1.3em !important;
-    margin: 0 !important;
-    vertical-align: middle !important;
+    height: 1.3em;
+    width: 1.3em;
+    margin: 0;
+    vertical-align: middle;
   }
   .rm-logo__mark--p {
-    height: 1em !important;
-    width: 1em !important;
-    vertical-align: -.12em !important;
+    height: 1em;
+    width: 1em;
+    vertical-align: -.12em;
   }
 }
 
@@ -294,17 +309,6 @@
     overflow: visible;
     clip: auto;
   }
-  .rm-logo--big .rm-logo__mark {
-    height: .66em;
-    width: .66em;
-    vertical-align: -.07em;
-    margin: 0 .01em 0 0;
-  }
-  .rm-logo--big .rm-logo__mark--p {
-    height: .66em;
-    width: .66em;
-    vertical-align: -.07em;
-  }
 }
 
 @media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
@@ -336,16 +340,11 @@
   header .rm-logo {
     font-size: 18px;
   }
+  /* Im Kopf am Handy auch das P so groß wie die übrigen Marken */
   header .rm-logo__mark {
-    height: .86em !important;
-    width: .86em !important;
-    margin: 0 .01em 0 0;
-    vertical-align: -.16em !important;
-  }
-  header .rm-logo__mark--p {
-    height: .66em;
-    width: .66em;
-    vertical-align: -.07em;
+    height: .86em;
+    width: .86em;
+    vertical-align: -.16em;
   }
   html:not(.rm-dark) header .rm-logo {
     color: var(--rm-on);
