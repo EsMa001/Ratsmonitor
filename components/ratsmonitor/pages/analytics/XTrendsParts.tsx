@@ -9,12 +9,12 @@ import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 
 export const DAY = 86400000;
 export const toDay = (iso: string) => Math.floor(Date.parse(iso.slice(0, 10) + "T00:00:00Z") / DAY);
-export const toIso = (d: number) => new Date(d * DAY).toISOString().slice(0, 10);
+const toIso = (d: number) => new Date(d * DAY).toISOString().slice(0, 10);
 export const fmt = (iso: string | null | undefined) => (iso ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "–");
 /* Rahmenlos wie die übrigen plenara.X-Seiten (rm-legend statt rm-glass) */
 const glass = "rm-legend";
 /* Wie die Ausbreitung: je länger die erste Erwähnung her ist, desto dunkler */
-export const AGE_LEGEND: [string, string][] = [["var(--rm-map1)", "bis 1 Monat"], ["var(--rm-map2)", "bis 3 Monate"], ["var(--rm-map3)", "bis 6 Monate"], ["var(--rm-ac)", "länger"]];
+const AGE_LEGEND: [string, string][] = [["var(--rm-map1)", "bis 1 Monat"], ["var(--rm-map2)", "bis 3 Monate"], ["var(--rm-map3)", "bis 6 Monate"], ["var(--rm-ac)", "länger"]];
 const levelAt = (first: string, today: number) => { const age = today - toDay(first); return age < 0 ? 0 : age <= 31 ? 1 : age <= 92 ? 2 : age <= 183 ? 3 : 4; };
 
 export interface SpreadRegion { ags: string; name: string; first: string; n: number; members?: string[]; atStart?: boolean }
@@ -89,7 +89,7 @@ export function SpreadMap({ regions, day, firstDay, lastDay, onDay, playing, onT
   );
 }
 
-export function PlayButton({ playing, onToggle }: { playing: boolean; onToggle: () => void }) {
+function PlayButton({ playing, onToggle }: { playing: boolean; onToggle: () => void }) {
   return (
     <button type="button" onClick={onToggle} aria-label={playing ? "Zeitraffer anhalten" : "Zeitraffer abspielen"} title={playing ? "Zeitraffer anhalten" : "Zeitraffer abspielen"}
       className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-teal-700 text-white hover:bg-teal-800">

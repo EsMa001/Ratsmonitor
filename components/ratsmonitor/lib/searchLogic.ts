@@ -6,7 +6,7 @@ export type Parse = (q: string, s: SearchState) => ParseResult;
 type Scope = "only" | "with";
 
 /** Ortsfilter steht fest (aus Karte, Gebietsfilter oder übernommen) und hängt nicht mehr am Suchtext */
-export const isCommitted = (s: SearchState) => !!s.area && s.areaSrc !== "search";
+const isCommitted = (s: SearchState) => !!s.area && s.areaSrc !== "search";
 
 /**
  * Neuer Suchtext. Ist noch kein fester Ortsfilter gesetzt, wird der erste erkannte Ort live als Gebiet

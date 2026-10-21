@@ -1,5 +1,5 @@
 /** Kleinschreibung, Umlaute und ß gefaltet, damit „dulmen“ auch „Dülmen“ findet */
-export function normChar(c: string): string {
+function normChar(c: string): string {
   const l = c.toLowerCase();
   if (l === "ß") return "ss";
   return l.normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -12,7 +12,7 @@ export function norm(s: string): string {
 }
 
 /** Füllwörter, die die Suche ignoriert (gleiche Liste wie server/integrations/monitor-search.mjs) */
-export const FILLER = new Set(["und", "oder", "der", "die", "das", "den", "dem", "des", "ein", "eine", "einer", "in", "im", "am", "an", "zu", "zum", "zur", "von", "vom", "fur", "mit", "bei", "auf", "aus", "nach"]);
+const FILLER = new Set(["und", "oder", "der", "die", "das", "den", "dem", "des", "ein", "eine", "einer", "in", "im", "am", "an", "zu", "zum", "zur", "von", "vom", "fur", "mit", "bei", "auf", "aus", "nach"]);
 
 export function terms(text: string): string[] {
   /* Füllwörter (wie serverseitig) nicht hervorheben */
@@ -67,7 +67,7 @@ export function highlightSegments(str: string, ts: string[]): Segment[] {
 
 export const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 
-export function parseDate(iso: string): Date {
+function parseDate(iso: string): Date {
   const [y, m, d] = iso.split("-").map(Number);
   return new Date(y, m - 1, d);
 }
@@ -88,7 +88,7 @@ export function todayLocal(days = 0): string {
   return isoDay(new Date(d.getFullYear(), d.getMonth(), d.getDate() + days));
 }
 
-export const MONTH_FMT = new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" });
+const MONTH_FMT = new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" });
 export const MONTH_SHORT = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 
 export const monthLabel = (ym: string) => MONTH_FMT.format(parseDate(ym + "-01"));

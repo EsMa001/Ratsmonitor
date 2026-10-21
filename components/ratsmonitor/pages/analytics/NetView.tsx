@@ -20,7 +20,7 @@ export const NET_KIND: Record<NetKind, { label: string; fill: string }> = {
   fach: { label: "Fachausschuss", fill: "var(--st-light)" },
   sonst: { label: "Beiräte, Sonstige", fill: "var(--st-grey)" },
 };
-export function netKind(name: string): NetKind {
+function netKind(name: string): NetKind {
   if (/(^|[\s-])(rat\b|kreistag|gemeinderat|stadtrat|stadtverordneten|gemeindevertretung|bezirksvertretung|ortsrat|kreisrat|samtgemeinderat|verbandsgemeinderat)/i.test(name) || /gemeinderat|ortsrat/i.test(name)) return "rat";
   if (/sonstige|beir|bezirksgremium/i.test(name)) return "sonst";
   if (/haupt|verwaltungsausschuss|finanz|rechnungsprüfung|bau-|planungs|stadtentwicklung|kreisausschuss/i.test(name)) return "haupt";

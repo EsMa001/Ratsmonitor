@@ -282,7 +282,7 @@ export function MainMenu() {
 }
 
 /** Gruppenname mit grauem Abzeichen plenara.X (wie neben den Seitentiteln), alles auf einer Grundlinie */
-export function XGruppe({ name }: { name: string }) {
+function XGruppe({ name }: { name: string }) {
   return (
     <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
       {name}

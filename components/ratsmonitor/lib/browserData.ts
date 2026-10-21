@@ -20,7 +20,7 @@ const WEEKLY_KEY = "ratsmonitor:weekly:v1";
 const WEEKLY_DAY_KEY = "ratsmonitor:weekly-day:v1";
 const PROFILE_KEY = "ratsmonitor:profile:v1";
 const TIER_KEY = "ratsmonitor:tier:v1";
-export const IMPORTED_KEY = "ratsmonitor:imported:v1";
+const IMPORTED_KEY = "ratsmonitor:imported:v1";
 /* „Später“: in dieser Sitzung nicht wieder von selbst fragen */
 const LATER_KEY = "ratsmonitor:import-later:v1";
 const KEYS = [SAVED_SEARCHES_KEY, ARTICLES_KEY, CALENDAR_KEY, WEEKLY_KEY, WEEKLY_DAY_KEY, PROFILE_KEY, IMPORTED_KEY];

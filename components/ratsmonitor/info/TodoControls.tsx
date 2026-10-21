@@ -41,7 +41,7 @@ export function TodoChoice({ label, value, options, onChange, children, classNam
   </Popover.Root>;
 }
 
-export function TodoPerson({ person }: { person?: TodoPersonId | null }) {
+function TodoPerson({ person }: { person?: TodoPersonId | null }) {
   const selected = TODO_PEOPLE.find((option) => option.id === person);
   return <span className="admin-todo-person"><span className={`admin-todo-avatar ${selected ? `is-${selected.id}` : "is-unassigned"}`} aria-hidden="true">{selected?.initials ?? <UserRound size={14}/>}</span><span>{selected?.name ?? "Nicht zugewiesen"}</span></span>;
 }

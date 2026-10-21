@@ -30,7 +30,7 @@ const SORT_IN: Record<string, SearchState["sort"]> = { alt: "asc", relevanz: "re
 export const readableQuery = (q: string) => q.replace(/%40/g, "@").replace(/%2C/g, ",").replace(/%3A/g, ":");
 
 /** Alle Schlüssel, die zur Suche gehören (andere Parameter der Adresse bleiben unberührt) */
-export const SEARCH_URL_KEYS = ["q", "ort", "ortq", "umfang", "ebene", "km", "mehr", "thema", "monat", "von", "bis", "status", "sort", "zukunft", "formalien", "alle", "genau"];
+const SEARCH_URL_KEYS = ["q", "ort", "ortq", "umfang", "ebene", "km", "mehr", "thema", "monat", "von", "bis", "status", "sort", "zukunft", "formalien", "alle", "genau"];
 
 /** Suchstand → Teil der Adresse (feste Reihenfolge, damit gleiche Suchen dieselbe Adresse haben) */
 export function searchToUrl(s: SearchState): string {

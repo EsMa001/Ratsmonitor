@@ -44,10 +44,6 @@ export const NEU_HREF: Partial<Record<AnalyseId, (term?: string) => string>> = {
   trends: () => "/analytics/trends",
 };
 export const NEU_NAME: Partial<Record<AnalyseId, string>> = { diffusion: "Ausbreitung in plenara.X Trends", trends: "plenara.X Trends", vergleich: "plenara.X Ortsvergleich", beschluesse: "plenara.X Beschlusslage", gremien: "Gremien", fraktionen: "Fraktionen", news: "Aktuelles" };
-/** Seiten der Gruppe plenara.X Einblicke (keine eigene Übersichtsseite); Ortsvergleich und Beschlüsse sind Reiter in Atlas und Trends */
-export const EINBLICKE: AnalyseId[] = ["signale", "ausschreibungen", "news", "fakten"];
-/** Seiten der Gruppe plenara.X Hintergründe: wer beteiligt ist und was zusammenhängt */
-export const HINTERGRUENDE: AnalyseId[] = ["fraktionen", "gremien", "graph"];
 
 export const PLENARAX_VORTEILE: [AnalyseId, string, string][] = [
   ["diffusion", "Ausbreitung in Trends sehen", "Wo ein Begriff zuerst auftaucht und in welchen Kommunen er danach folgt."],

@@ -1,7 +1,7 @@
 import {useCallback} from 'react';
 import {usePathname,useRouter} from 'next/navigation';
 export type View='overview'|'detail'|'konto'|'info';
-export const viewOf=(p:string):View=>p.startsWith('/beschluss/')?'detail':p.startsWith('/konto')?'konto':p==='/suche'?'overview':'info';
+const viewOf=(p:string):View=>p.startsWith('/beschluss/')?'detail':p.startsWith('/konto')?'konto':p==='/suche'?'overview':'info';
 /* Seitenwechsel innerhalb der App seit dem Laden (App.tsx zählt jeden Pfad, der erste ist der Aufruf selbst). Nur dann
    führt „Zurück“ über den Browserverlauf; wer von außen kommt (Link aus E-Mail, Messenger, Suchmaschine), landet sonst dort. */
 let routes=0;

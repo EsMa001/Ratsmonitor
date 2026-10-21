@@ -18,7 +18,7 @@ const MARKS = {
 } as const;
 
 /** Adresse des Tab-Symbols für die gewählte Logo-Variante */
-export const faviconHref = (logo: LogoId) => `data:image/svg+xml,${encodeURIComponent(MARKS[LOGOS[logo].brand])}`;
+const faviconHref = (logo: LogoId) => `data:image/svg+xml,${encodeURIComponent(MARKS[LOGOS[logo].brand])}`;
 
 /** Setzt das Tab-Symbol. Vom Framework verwaltete rel=icon-Einträge (Metadaten im Layout) werden nur umgeschrieben, nie entfernt: React löscht sie bei der Navigation selbst und stürzt sonst ab (removeChild von null). */
 export function setFavicon(logo: LogoId) {

@@ -379,7 +379,7 @@ function warmSearch(local:{key:string;around:unknown}){
  INFLIGHT.set(requestKey,job);job.catch(()=>{});
 }
 /** Zustand einer gespeicherten Suche (ohne ihn anzuwenden): für applySaved, das Vorausladen und savedSearchQuery */
-export function savedSearchState(sv: SavedSearch, geo: DataValue["geo"], place: DataValue["place"], sort: SearchState["sort"] = "desc"): SearchState | null {
+function savedSearchState(sv: SavedSearch, geo: DataValue["geo"], place: DataValue["place"], sort: SearchState["sort"] = "desc"): SearchState | null {
         let radius: Radius | null = null;
         if (sv.radius) {
           const c = sv.radius.x != null && sv.radius.y != null ? { x: sv.radius.x, y: sv.radius.y } : geo?.center(sv.radius.ags);

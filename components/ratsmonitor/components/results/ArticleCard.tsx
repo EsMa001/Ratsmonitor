@@ -13,7 +13,7 @@ import { useEntitlements } from "../../lib/entitlements";
 import { useToast } from "../../state/toast";
 import { useSwipe } from "../../lib/useSwipe";
 
-export function Highlight({ text, terms }: { text: string; terms: string[] }) {
+function Highlight({ text, terms }: { text: string; terms: string[] }) {
   return (
     <>
       {highlightSegments(text, terms).map((s, i) => (s.hl ? <mark key={i}>{s.text}</mark> : <span key={i}>{s.text}</span>))}

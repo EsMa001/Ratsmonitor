@@ -80,7 +80,7 @@ const ATLAS_OF: Record<string, [string, string, string]> = {
 
 /* Ort aus der Adresse (useOrtInAdresse hält ?ort aktuell, auch ohne den Router) */
 const ortNow = () => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("ort") ?? "");
-export const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort = "", erstmals = "", basis = "/analytics/signale" }: { signal?: string; phase?: string; art?: string; zeit?: string; ort?: string; erstmals?: string; basis?: string }) => {
+const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort = "", erstmals = "", basis = "/analytics/signale" }: { signal?: string; phase?: string; art?: string; zeit?: string; ort?: string; erstmals?: string; basis?: string }) => {
   const p = new URLSearchParams();
   if (signal) p.set("signal", signal);
   if (phase) p.set("stand", phase);

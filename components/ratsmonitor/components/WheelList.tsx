@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-export const WHEEL_ROW = 68;
+const WHEEL_ROW = 68;
 
 /**
  * Handy: Walze zum Wischen. Genau drei gleich hohe Zeilen sichtbar (nie eine angeschnittene), die Zeilen rasten oben ein; ganz oben

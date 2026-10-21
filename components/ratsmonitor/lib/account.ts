@@ -37,7 +37,7 @@ export interface Me {
   rev: number;
 }
 
-export const ACCOUNT_REV = "ratsmonitor:account-rev:v1";
+const ACCOUNT_REV = "ratsmonitor:account-rev:v1";
 
 const guestLimits = (): TierLimits => ({ ...(PLAN_LIMITS.guest as TierLimits) });
 const INITIAL: Me = {
@@ -129,7 +129,7 @@ export function touchAccount() {
 let loading: Promise<void> | null = null;
 let renewed = false;
 /** GET /api/me (mit ETag) und den Stand übernehmen; ein laufender Abruf wird geteilt */
-export function loadMe(): Promise<void> {
+function loadMe(): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
   loading ??= (async () => {
     try {

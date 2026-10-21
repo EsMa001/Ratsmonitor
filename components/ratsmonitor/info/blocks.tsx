@@ -4,7 +4,7 @@ import { StepTimeline } from "../components/results/ArticleCard";
 import { useBrandText } from "../lib/brand";
 import { cameFromApp, useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
-import type { Example, Qa, Rich as RichText } from "./content";
+import type { Example, Qa } from "./content";
 import { Icon, type IconName } from "./icons";
 import { IconChevronLeft } from "../components/icons";
 import { Reveal } from "../pages/analytics/Reveal";
@@ -25,14 +25,6 @@ export function useOpenSearch() {
   );
 }
 
-/** Text mit **fett** markierten Stellen */
-export function Rich({ text }: { text: RichText }) {
-  return (
-    <>
-      {text.split("**").map((part, i) => (i % 2 ? <b key={i}>{part}</b> : part))}
-    </>
-  );
-}
 
 /** Kopfbereich: graues Icon, türkise Zeile, Seitenname, große Überschrift, Einleitung */
 /** Seiten, die am Handy ein Ziel der unteren Leiste sind: kein „Zurück“ */
@@ -142,7 +134,7 @@ export function SearchTermButton({ term, light }: { term: string; light?: boolea
 }
 
 
-export function PlacePill({ place }: { place: string }) {
+function PlacePill({ place }: { place: string }) {
   return (
     <span className="ri-place">
       <Icon name="mapPin" size={12} />

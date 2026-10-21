@@ -74,7 +74,7 @@ export interface FilterChip {
 }
 
 /** Anzeigename eines Orts samt Umfang, z. B. „Billerbeck & Kreis Coesfeld“ */
-export function placeLabel(ags: string, scope: "only" | "with" | undefined, geo: GeoModel | null): string {
+function placeLabel(ags: string, scope: "only" | "with" | undefined, geo: GeoModel | null): string {
   const name = (a: string) => (geo ? geo.info(a).name : a);
   if (!hasScope(ags, geo) || scope !== "with") return name(ags);
   return ags.length === 5 ? `${name(ags)} & Gemeinden` : `${name(ags)} & ${name(ags.slice(0, 5))}`;

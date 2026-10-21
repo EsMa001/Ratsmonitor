@@ -8,13 +8,13 @@ import { SubtopicIcon } from "../../components/SubtopicIcon";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 
 /** Themen des Atlas: „Alle Themen“ und die 10 Themen aus shared/themes.mjs (dieselben wie im Themenfilter der Suche) */
-export const ATLAS_THEMEN: [string, string][] = [["", "Alle Themen"], ...THEMES.map((t: { id: string; name: string }) => [t.id, t.name] as [string, string])];
+const ATLAS_THEMEN: [string, string][] = [["", "Alle Themen"], ...THEMES.map((t: { id: string; name: string }) => [t.id, t.name] as [string, string])];
 const THEME_IDS = new Set(THEMES.map((t: { id: string }) => t.id));
 const SUB_IDS = new Map(SUBTOPICS.map((s: { id: string; theme: string }) => [s.id, s.theme]));
 
 /* Ort aus der Adresse (useOrtInAdresse hält ?ort aktuell, auch ohne den Router) */
 const ortNow = () => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("ort") ?? "");
-export const atlasHref = ({ thema = "", sub = "", zeit = "", ort = "" }: { thema?: string; sub?: string; zeit?: string; ort?: string }) => {
+const atlasHref = ({ thema = "", sub = "", zeit = "", ort = "" }: { thema?: string; sub?: string; zeit?: string; ort?: string }) => {
   const p = new URLSearchParams();
   if (thema) p.set("thema", thema);
   if (sub) p.set("sub", sub);

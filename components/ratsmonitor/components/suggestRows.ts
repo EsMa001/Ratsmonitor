@@ -21,7 +21,7 @@ export type Row =
 /* Text der zuletzt gewählten Zeile (Verlauf, gespeicherte Suche): bleibt im Feld stehen, bis der Chip erscheint. Gesetzt
    im Klick, gelesen beim Bestätigen derselben Suche; nur das sichtbare Feld wählt, deshalb genügt eine Stelle. */
 let pickedText = "";
-export const notePick = (text: string) => {
+const notePick = (text: string) => {
   pickedText = text;
 };
 /** Gewählten Text einmal abholen (die Zeile setzt ihn beim Klick, das Feld liest ihn beim Bestätigen) */
