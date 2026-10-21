@@ -3,10 +3,10 @@ import { itemKind } from '../../shared/item-kind.mjs';
 // Aufbau: Beschlussvorschlag (bis zu 2 Sätze), dann je ein Satz für Anlass, Zahlen/Kosten und Begründung.
 // Nur für Artikel mit verlinktem Dokument; ohne brauchbaren Text, ohne erkennbare Struktur (Mitteilungen, „Verschiedenes“, Protokollauszüge)
 // und für persönliche Schreiben gibt es keine Zusammenfassung (null).
-export const RULE_SUMMARY_VERSION = 3;
+export const RULE_SUMMARY_VERSION = 4;
 const ABBR = /(?:^|[\s(])(?:z|d|u|v|bzw|ca|Nr|Abs|Art|Tel|ggf|evtl|inkl|einschl|max|min|vgl|Dr|Prof|St|Str|usw|etc|sog|zzgl|gem|lt|Mio|Mrd|Tsd|ff|Std|ggfls|ggfs|zt|zz|zzt|rd|insb|ehem|bspw|sog|Fa|Hr|Fr|Flst|Fl|Gmkg|Gemkg|Gmk|Gemarkung|Az|stellv|bzgl|allg|lfd|Lfd|[a-z])\.$/i;
 const DOTTED = /^[(„"]?(?:\p{L}\.){2,}$|\.(?:Nr|Abs|Fl|Flst)\.$/u;
-const ANAPHORIC = /^(Dabei|Hierzu|Hierbei|Hiermit|Dazu|Dies|Diese[rsnm]?|Damit|Daher|Deshalb|Zudem|Außerdem|Ferner|Ebenso|Hinzu|Der Schwerpunkt|Inzwischen|Mittlerweile|Zwischenzeitlich|Nun|Danach|Anschließend|Darüber hinaus|Weiterhin|Ebenfalls|Hierfür|Hiervon|Davon|Dafür|Aufgrund dessen|Daraufhin|Allerdings|Jedoch|Dennoch|Trotzdem|Somit|Es geht (?:dabei|hierbei|hier))\b/;
+const ANAPHORIC = /^(Er|Weiter|Bzw\.|Oder|Und|Dabei|Hierzu|Hierbei|Hiermit|Dazu|Dies|Diese[rsnm]?|Damit|Daher|Deshalb|Zudem|Außerdem|Ferner|Ebenso|Hinzu|Der Schwerpunkt|Inzwischen|Mittlerweile|Zwischenzeitlich|Nun|Danach|Anschließend|Darüber hinaus|Weiterhin|Ebenfalls|Hierfür|Hiervon|Davon|Dafür|Aufgrund dessen|Daraufhin|Allerdings|Jedoch|Dennoch|Trotzdem|Somit|Es geht (?:dabei|hierbei|hier))\b/;
 const LEGAL_ONLY = /^(Gemäß|Nach|Laut|Entsprechend) § /;
 const ROUTINE = /^(Die|Der) (Verwaltung|Kämmerin) wird .* (vorlegen|berichten)/;
 const AMOUNT = /(\d[\d.,]*\s*(?:Mio\.?|Millionen|Mrd\.?|Milliarden|Tsd\.?|Tausend)?\s*(?:Euro|€)|€\s*\d|\d[\d.,]*\s*%|Prozent)/;
@@ -17,6 +17,10 @@ export function cleanText(text) {
   return String(text || '').replace(/\r/g, '').replace(/[ \t]+/g, ' ')
     .replace(/(\p{L})-\n(?:\d{1,3}\n)?(\p{Ll})/gu, '$1$2')
     .replace(/\n\d{1,3}\n(?=\p{Ll})/gu, '\n')
+    // Unterschriftsvermerk („gez. gez.“) ist kein Satzende
+    .replace(/(?:^|\s)gez\.(?=\s|$)/gm, ' ')
+    // gesperrte Überschriften („S a c h v e r h a l t :“) zusammenziehen
+    .replace(/(?<![\p{L}\d])\p{L}(?: \p{L}){3,}(?![\p{L}\d])/gu, m => m.replace(/ /g, ''))
     // Anrede („Sehr geehrter Herr Oberbürgermeister,“) gehört in keinen Auszug, auch nicht mitten im Satz
     .replace(/\b[Ss]ehr geehrte[rn]?\s[^,\n]{0,70},\s*/gu, '');
 }
@@ -25,7 +29,7 @@ export function cleanText(text) {
 // Begründung, Sach- und Rechtslage …) und Ende (Anlagen, Finanzielle Auswirkungen, Abstimmungsergebnis …). Eine Marke gilt als Überschrift,
 // wenn nach ihr ein Doppelpunkt oder das Zeilenende folgt; die Reihenfolge im Dokument ist egal. Ohne Marken zählt alles als Sachverhalt.
 const HEAD_DECISION = /^(Beschlussvorschl[aä]ge?|Vorschlag zum Beschluss|Beschlussempfehlung|Beschlussantrag|Beschlussentwurf|Beschlusstext|Beschluss|Antrag)(?:\s+(?:für|der|des|an)\b[^:\n]*)?\s*(?::\s*(.*)|$)/i;
-const HEAD_FACTS = /^((?:Darstellung der |Kurzdarstellung des? )?Sachverhalt(?:sdarstellung)?(?:\s*(?:\/|und)\s*Begründung)?|Begründung(?:\s*\/\s*Sachverhalt)?|Sachstand|Sachdarstellung|(?:Darstellung der )?Sach- und Rechtslage|Problembeschreibung\/Begründung|Erläuterungen?|Ausgangslage|Bericht)\s*(?::\s*(.*)|$)/i;
+const HEAD_FACTS = /^((?:Darstellung der |Kurzdarstellung des? )?Sachverhalt(?:sdarstellung)?(?:\s*(?:\/|und)\s*Begründung)?|Begründung(?:\s*\/\s*Sachverhalt)?|Sachstand|Sachdarstellung|(?:Darstellung der )?Sach- und Rechtslage|Problembeschreibung\/Begründung|Erläuterungen?|Ausgangslage|Bericht|Kurzbegründung|Kurzzusammenfassung|Sachtext|Inhalt der Mitteilung|Zusammenfassende Darstellung|Zusammenfassung|Kurzfassung|Inhalt|Mitteilung|Information|Text der Anfrage|Anfrage|Antwort(?: der Verwaltung)?|Beantwortung(?: der Anfrage)?|Stellungnahme der Verwaltung)\s*(?::\s*(.*)|$)/i;
 // Überschrift und Text in derselben Zeile ohne Doppelpunkt („Sachverhalt und Begründung Die Amtszeit …“): nur bei eindeutigen Überschriften
 const INLINE_FACTS = /^(Sachverhalt(?:sdarstellung)?(?:\s*(?:\/|und)\s*Begründung)?|Sach- und Rechtslage|Sachdarstellung|Begründung)\s+(\p{Lu}.*)$/u;
 const INLINE_DECISION = /^(Beschlussvorschl[aä]ge?|Beschlussempfehlung|Beschlussentwurf)\s+(\p{Lu}.*)$/u;
@@ -54,6 +58,47 @@ export function sections(text) {
   return { decision: decision.replace(/^\s*(Beschlussvorschl[aä]g[^:\n]*:)\s*/i, ''), facts: marked || cleanText(text) };
 }
 
+// Dokumente ohne Überschriften (Anfragen, Mitteilungen, Vorlagen ohne Gliederung, Auszüge aus der Niederschrift): der Inhalt beginnt
+// nach dem Kopf (Drucksache, Gremium, Datum, Beratungsfolge) mit dem Betreff bzw. dem Titel des Punkts. Liefert den Text danach
+// oder '' (Betreff nicht in den ersten 4000 Zeichen gefunden).
+const flatKey = s => String(s).toLowerCase().replace(/[^\p{L}\d]+/gu, '');
+const BETREFF = /(?:^|\n)\s*(?:Betreff|Betrifft|Betr\.|Beratungsgegenstand[^:\n]*|Gegenstand|Tagesordnungspunkt|TOP\s*[\d.]*)\s*:?\s*/gi;
+export function afterHeader(text, title) {
+  const clean = cleanText(text), head = clean.slice(0, 4000);
+  // Titel ohne Satzzeichen und Leerraum im Kopf suchen; Ende des Titels = Anfang des Inhalts
+  // Vorsätze des Portals („Nachtrag: 18.06.2026 Nummer 1“, „zu TOP 4:“) und Klammerzusätze stehen nicht im Dokument
+  const core = String(title).replace(/^Nachtrag:\s*\d{1,2}\.\d{1,2}\.\d{4}\s*(?:Nummer\s*\d+\s*)?/i, '').replace(/^(?:zu\s+)?TOP\s*[\d.]+\s*:?\s*/i, '').replace(/\s*\([^)]*\)?\s*$/, '');
+  let flat = '';
+  const pos = [];
+  for (let i = 0; i < head.length; i++) if (/[\p{L}\d]/u.test(head[i])) { flat += head[i].toLowerCase(); pos.push(i); }
+  // erst der lange Titelanfang, dann ein kürzerer (Titel im Portal oft anders fortgesetzt als im Dokument)
+  for (const key of [...new Set([flatKey(core).slice(0, 60), flatKey(core).slice(0, 30)])]) {
+    if (key.length < 12) continue;
+    const f = flat.indexOf(key);
+    if (f < 0) continue;
+    // so weit der Titel im Dokument weitergeht (lange Titel laufen über mehrere Zeilen)
+    const full = flatKey(core);
+    let n = key.length;
+    while (n < full.length && f + n < flat.length && flat[f + n] === full[n]) n++;
+    const at = pos[f + n - 1] + 1;
+    {
+      // Rest der Titelzeile gehört noch zum Titel
+      const nl = clean.indexOf('\n', at);
+      return clean.slice(nl >= 0 && nl - at < 200 ? nl + 1 : at);
+    }
+  }
+  let m, last = -1;
+  BETREFF.lastIndex = 0;
+  while ((m = BETREFF.exec(head))) last = m.index + m[0].length;
+  if (last < 0) return '';
+  const nl = clean.indexOf('\n', last);
+  return nl >= 0 ? clean.slice(nl + 1) : '';
+}
+
+// Auszug für genau diesen Punkt (Niederschrift, Protokoll, Beschluss): kein Protokoll der ganzen Sitzung
+const EXCERPT = /Auszug aus (?:der|dem) (?:Sitzungs)?(?:Niederschrift|Protokoll)|Niederschriftsauszug|Protokollauszug|Beschlussauszug|Auszug aus (?:der|dem) Beschlussbuch|B\s?E\s?S\s?C\s?H\s?L\s?U\s?S\s?S\b/i;
+export const isExcerpt = text => EXCERPT.test(String(text).slice(0, 600));
+
 // Kurze Zeilen ohne Satzzeichen zwischen Absätzen sind Zwischenüberschriften und gehören in keinen Satz
 function dropHeadings(block) {
   const lines = block.split('\n').map(l => l.trim());
@@ -75,16 +120,22 @@ export function splitSentences(block) {
   toks.forEach((tok, k) => {
     if (tok === '¶') { if (cur.length > 20) out.push(cur); cur = ''; return; }
     cur += (cur ? ' ' : '') + tok;
-    const nextLower = /^\p{Ll}/u.test(toks[k + 1] || '');
+    // Aufzählungsbuchstabe („d. Es hat …“) beginnt einen neuen Satz, obwohl er kleingeschrieben ist
+    const nextLower = /^\p{Ll}/u.test(toks[k + 1] || '') && !/^[a-h]\.$/.test(toks[k + 1] || '');
     const ends = /[.!?]["“”)]?$/.test(tok) && !nextLower && !ABBR.test(' ' + tok) && !DOTTED.test(tok)
       && !/^\d{1,2}\.$/.test(tok) && !/^\d{1,2}\.\d{1,2}\.?$/.test(tok);
     if (ends) { out.push(cur); cur = ''; }
   });
   if (cur.length > 20) out.push(cur);
   // Kopfzeilen am Satzanfang („Seite 2 von 2 Antragstext: …“) gehören nicht zum Satz
-  return out.map(s => s.replace(/^\d{1,2}[.)]?\s+(?=\p{Lu})/u, '').replace(/^[•\-–]\s*/, '').trim()
+  return out.map(s => s.replace(/\s[a-h][.)]$/, '').replace(/^\S{1,6}\)\s+(?=\p{Lu})/u, '').replace(/^[a-h][.)]\s+(?=\p{Lu})/u, '').replace(/^\d{1,2}[.)]?\s+(?=\p{Lu})/u, '').replace(/^[•\-–]\s*/, '').trim()
     .replace(/^(?:Seite\s*\d+\s*(?:von|\/)\s*\d+\s*)?(?:(?:Antragstext|Antrag|Beschlusstext|Text|Historie und Sachverhalt|(?:[IVX]+\.\s*)?Sachentscheidung|Inhalt und Begründung|Finanzielle Auswirkungen\s*:\s*Beschlussvorschlag|Beschlussvorschlag|Finanzielle Auswirkungen)\s*:?\s+)?(?=\p{L})/u, m => m && /Seite|:/.test(m) ? '' : m)
-    .replace(/^.{0,80}?\b(?:Antragstext|Beschlusstext)\s*:\s*/u, '')
+    .replace(/^.{0,120}?\b(?:Antragstext|Beschlusstext|Inhalt der Mitteilung|Sachtext|Text der Anfrage|Mitteilungstext|Sachstandsbericht|Antragsinhalt)\s*:\s*/u, '')
+    // Zwischenüberschrift ohne Satzzeichen vor dem Satz („Mitteilung der Verwaltung Die nachfolgende …“): ein großgeschriebener
+    // Satzanfang mitten im Satz direkt nach einem Wort; „Fraktion Die Linke“, „Bündnis 90/Die Grünen“ sind Namen
+    .replace(/^(?:[^\s.!?:;,]+ ){1,7}?[\p{L}\d)]+ (?=(?:Die|Der|Das|Es|Ein|Eine|Wir|Im|Zur|Zum|Seit|Bereits|Nach dem|Aufgrund) (?!Linke|Grünen|PARTEI|Partei|Partei\b)\p{Ll})/u, m => /\b(?:und|oder|sowie|bzw)\s*$/.test(m) ? m : '')
+    // Bezeichnung am Satzanfang („Erläuterungen:“, „Darstellung des Sachverhaltes:“, „Kenntnisnahme/Empfehlung:“, „Frage 1:“)
+    .replace(/^(?:[\p{L}\d/-]+ ?){1,5}:\s+(?=\p{Lu})/u, m => /^(?:Der|Die|Das|Ein|Eine|Wir|Es|Ich|Er|Sie)\b|\b(?:beschließt|beschliesst|fasst|wird|werden|empfiehlt|empfehlen|stellt|stellen|bittet|bitten|beauftragt|nimmt|lautet|folgt|wie folgt)\b/u.test(m) ? m : '')
     .replace(/^\p{Ll}/u, c => c.toUpperCase()));
 }
 
@@ -93,14 +144,16 @@ export function splitSentences(block) {
 // Anrede und Grußformeln gehören nicht in einen Auszug
 const SALUTATION = /^(Sehr geehrte|Liebe[rn]? |Guten Tag|Hallo\b)/;
 const proseLike = s => { const w = s.match(/\p{L}{3,}/gu) || []; return w.length > 0 && w.filter(x => /^\p{Ll}/u.test(x)).length / w.length >= 0.25; };
+// OCR-Reste („Si Z tä di k' it d“): viele Wortstücke aus ein oder zwei Buchstaben
+const ocrJunk = s => { const t = s.split(/\s+/).filter(x => /\p{L}/u.test(x)); return t.length >= 6 && t.filter(x => x.replace(/[^\p{L}]/gu, '').length <= 2).length / t.length > 0.3; };
 // Beschlusssätze enden im PDF oft ohne Punkt; im Beschlussabschnitt genügt ein vollständiger Satz ohne Schlusszeichen
 const usableDecision = s => !FORM.test(s) && !CAPS(s) && proseLike(s) && !SALUTATION.test(s) && (usable(s) || s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && (s.match(/\p{L}{3,}/gu) || []).length >= 6 && /[\p{L}\d)]$/u.test(s) && (s.match(/\d/g) || []).length / s.length < 0.15);
 // Formularfelder im Satz (Kopf eines Vordrucks) und Sätze, die mitten im Gedanken abbrechen („… an die Firma“), taugen nicht
-const FORM = /\b(?:Betreff|Sachbearbeiter(?:\/-?in)?|Datum|Aktenzeichen|Vorlagen?-?(?:Nr|nummer)|Sachdarstellung\s*\/\s*Begründung|Alternative)\s*:|^Hier\s*:|^Siehe\b|\bBeratungsfolge\b|\d{2}\.\d{2}\.\d{4}\s+(?:Vorberatung|Entscheidung|Kenntnisnahme)|bittet um Beantwortung|^Anfrage im\b|Bezeichnung des Tagesordnungspunktes|Abstimmungsergebnis\s*:|•|\s\d{1,2}\.\s[A-ZÄÖÜ][\s\S]{3,120}?\s\d{1,2}\.\s[A-ZÄÖÜ]|\bSitzungsdatum\b|\bnöf\b|^(?:Gemeindeordnung|Baugesetzbuch|Bauordnung|Kommunalverfassung|Landesbauordnung)\b|\bbitte (?:lassen|nehmen|setzen|stellen) Sie\b|^(?:Er|Sie|Es) (?:hat|ist|wird)\b|\bTOP \d+\b.*\bTOP \d+\b|Kostenstelle\/Konto|^(?:Zur|Zum)\s.*[^.!?]$|\b(?:der|die|das|den|dem|des|an|zu|zur|zum|für|von|mit|gemäß|Firma|und|oder)$/i;
+const FORM = /\bnachfolgende Information wird zur Kenntnis genommen|\bDarlegung der Geschlechterdifferenzierung|\bWenn die Begründung länger als|\bAuswirkungen auf Ziele, Kennzahlen|\bAuszug aus (?:der|dem) (?:Sitzungs)?(?:Niederschrift|Protokoll)|\bum Aufnahme des (?:o\. ?g\.|oben genannten) (?:Punktes|Tagesordnungspunktes)|\bAnliegen baldmöglichst konkretisieren|\bZeit- und Personalkostenaufwand\b|\bEinbeziehung des Senioren\b|^(?:Für|Zur) (?:die )?Sitzung (?:des|der|am)\b|^[A-ZÄÖÜ][a-zäöüß]+, (?!dass|wie|ob|die|der|das|wenn|weil)[a-zäöüß]|(?:%[^%]*){3,}|^Aus (?:der|dem) (?:Sitzungs)?(?:Niederschrift|Protokoll)\b|\böffentlicher Teil\b|\b(?:Bitte|bitten?) um Veröffentlichung|\bfür die nächste Sitzung vorzusehen|^Übersandt mit\b|\b(?:Betreff|Sachbearbeiter(?:\/-?in)?|Datum|Aktenzeichen|Vorlagen?-?(?:Nr|nummer)|Sachdarstellung\s*\/\s*Begründung|Alternative)\s*:|^Hier\s*:|^Siehe\b|\bBeratungsfolge\b|\d{2}\.\d{2}\.\d{4}\s+(?:Vorberatung|Entscheidung|Kenntnisnahme)|bittet um Beantwortung|^Anfrage im\b|Bezeichnung des Tagesordnungspunktes|Abstimmungsergebnis\s*:|•|\s\d{1,2}\.\s[A-ZÄÖÜ][\s\S]{3,120}?\s\d{1,2}\.\s[A-ZÄÖÜ]|\bSitzungsdatum\b|\bnöf\b|^(?:Gemeindeordnung|Baugesetzbuch|Bauordnung|Kommunalverfassung|Landesbauordnung)\b|\bbitte (?:lassen|nehmen|setzen|stellen) Sie\b|^(?:Er|Sie|Es) (?:hat|ist|wird)\b|\bTOP \d+\b.*\bTOP \d+\b|Kostenstelle\/Konto|^(?:Zur|Zum)\s.*[^.!?]$|\b(?:der|die|das|den|dem|des|an|zu|zur|zum|für|von|mit|gemäß|Firma|und|oder)$/i;
 // Zeilen aus Folien und Plänen in Großbuchstaben („UNTERSUCHUNGSRAUM (RHEINAU-SÜD) AUSGANGSLAGE“)
 const CAPS = s => (s.match(/(?<![\p{L}])\p{Lu}{4,}(?![\p{L}])/gu) || []).length >= 3;
 const usable = s => !FORM.test(s) && !CAPS(s) && s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && /[.!?]$/.test(s)
-  && (s.match(/\p{L}{3,}/gu) || []).length >= 6 && (s.match(/\d/g) || []).length / s.length < 0.15 && proseLike(s) && !SALUTATION.test(s);
+  && (s.match(/\p{L}{3,}/gu) || []).length >= 6 && (s.match(/\d/g) || []).length / s.length < 0.15 && proseLike(s) && !SALUTATION.test(s) && !ocrJunk(s);
 
 // Persönliche Schreiben (Einwendungen, Briefe, Beschwerden) haben keinen Beschluss und keinen Sachverhalt: eine Auswahl von Sätzen
 // ergäbe Bruchstücke. Merkmale: Anrede oder Grußformel, Ich-Form, Titel eines Schreibens, kein Beschlusstext. Ab drei Merkmalen
@@ -159,13 +212,22 @@ function pickIntro(body, head, title, budget = Infinity) {
 // was nicht mehr passt, wird übersprungen, ein kürzerer Satz darf nachrücken. Ausgegeben wird in Dokumentreihenfolge,
 // die Einleitung steht immer vorn.
 export function ruleSummary(text, { target = 30, max = 40, title = '' } = {}) {
-  const { decision, facts } = sections(text);
+  let { decision, facts } = sections(text);
   const head = splitSentences(decision).filter(usableDecision).slice(0, 2);
-  const body = splitSentences(facts).filter(usable);
+  let hasFacts = facts.length > 0 && facts !== cleanText(text);
+  let body = splitSentences(facts).filter(usable);
+  // Ohne Beschluss und ohne verwertbaren Sachverhalt (keine Marke, oder unter der Marke kaum Text): der Text nach dem Betreff gilt
+  // als Sachverhalt, wenn er mindestens zwei brauchbare Sätze hat
+  if (!head.length && (!hasFacts || body.length < 2) && title) {
+    const rest = afterHeader(text, title), restBody = rest ? splitSentences(rest).filter(usable) : [];
+    if (restBody.length >= 2) { facts = rest; body = restBody; hasFacts = true; }
+  }
+  if (title) {
+    const tk = flatKey(title).slice(0, 40);
+    if (tk.length >= 20) body = body.filter(x => !flatKey(x).startsWith(tk));
+  }
   if (!head.length && body.length < 2) return null;
-  if (isLetter(text, titleOf(text, title), head.length > 0) || isMinutes(text)) return null;
-  // Ohne erkennbare Struktur (weder Beschlusstext noch Sachverhalt-Abschnitt) wäre die Auswahl geraten: keine Zusammenfassung
-  const hasFacts = facts.length > 0 && facts !== cleanText(text);
+  if (isLetter(text, titleOf(text, title), head.length > 0) || isMinutes(text) && !isExcerpt(text)) return null;
   // Ohne Gliederung (weder Beschluss noch Sachverhalt): nur bei Sachpunkten ein Satz, der eindeutig vom Gegenstand handelt
   // (mindestens drei Wortstämme des Titels, aber keine bloße Wiederholung des Titels), unter den ersten zehn Sätzen
   if (!head.length && !hasFacts) {

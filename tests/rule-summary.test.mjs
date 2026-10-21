@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ruleSummary,splitSentences,buildRuleSummary,isLetter,isMinutes,sections} from '../server/integrations/rule-summary.mjs';
+import {ruleSummary,splitSentences,buildRuleSummary,isLetter,isMinutes,isExcerpt,sections,afterHeader,cleanText} from '../server/integrations/rule-summary.mjs';
 import {sourceFor} from '../server/integrations/documents.mjs';
 
 const DOC = `Sitzungsvorlage
@@ -84,4 +84,65 @@ test('Gliederungsziffer vor der Überschrift', () => {
 test('Darstellung der Sach- und Rechtslage ist eine Überschrift', () => {
   const { facts } = sections('Antrag: Der Rat beschließt die Einrichtung einer Anliegerstraße in der Hauptstraße.\nDarstellung der Sach- und Rechtslage: Der Antrag der Fraktion vom 23.03.2026 ist als Anlage beigefügt.\nAnlagen: keine');
   assert.ok(facts.trim().startsWith('Der Antrag der Fraktion'));
+});
+
+// Dokumente ohne Überschriften (Stichprobe Server 21.10.2026: 71 % der Berichte ohne Zusammenfassung trotz Text)
+const ANFRAGE = `Drucksachen-Nr. 0559/2025-2030
+Datum 09.02.2026
+An den Bezirksbürgermeister als Vorsitzender der Bezirksvertretung Heepen
+Anfrage
+Gremium Sitzung am Öffentlichkeitsstatus
+Bezirksvertretung Heepen 19.02.2026 öffentlich
+Beratungsgegenstand (Bezeichnung des Tagesordnungspunktes):
+Ausstattung des Freizeitzentrums
+Baumheide
+Die Sanierung des Freizeitzentrums Baumheide ist abgeschlossen und der Regelbetrieb ist wieder aufgenommen worden.
+Nach Auskunft der Besucherinnen und Besucher fehlen jedoch Möbel und Spielgeräte für den offenen Treff.
+Welche Ausstattung ist für das Freizeitzentrum Baumheide in diesem Jahr noch vorgesehen?`;
+
+test('ohne Überschriften: Text nach dem Betreff ist der Sachverhalt', () => {
+  const rest = afterHeader(ANFRAGE, 'Ausstattung des Freizeitzentrums Baumheide (Anfrage der CDU-Fraktion vom 02.02.2026)');
+  assert.ok(rest.startsWith('Die Sanierung'), rest.slice(0, 60));
+  const r = ruleSummary(ANFRAGE, { target: 100, max: 140, title: 'Ausstattung des Freizeitzentrums Baumheide (Anfrage der CDU-Fraktion vom 02.02.2026)' });
+  assert.ok(r && r.sentences[0].startsWith('Die Sanierung des Freizeitzentrums'));
+  assert.ok(!r.sentences.some(x => /Drucksachen|Gremium|Bezirksbürgermeister/.test(x)));
+  // ohne Titel trägt die Marke „Anfrage“: Kopfzeilen bleiben trotzdem draußen
+  const plain = ruleSummary(ANFRAGE, { target: 100, max: 140 });
+  assert.ok(plain && !plain.sentences.some(x => /Drucksachen|Gremium|Bezirksbürgermeister/.test(x)));
+});
+
+test('Vorsatz des Portals im Titel stört die Suche nach dem Betreff nicht', () => {
+  const doc = 'Stadt Remscheid\nBetreff: Parkplätze Zimmerstraße\nWarum besteht in der Zimmerstraße ein Parkverbot, obwohl dort Parkplätze markiert sind?\nSeit dem Umbau der Zimmerstraße ist der Parkstreifen straßenrechtlich als Gehweg gewidmet.';
+  assert.ok(afterHeader(doc, 'Nachtrag: 15.06.2026 Nummer 3 Parkplätze Zimmerstraße (Anfrage)').startsWith('Warum besteht'));
+});
+
+test('Auszug aus der Niederschrift für einen Punkt ist kein Protokoll der Sitzung', () => {
+  const doc = 'Auszug aus der Niederschrift über die Sitzung der Bezirksvertretung vom 12.05.2026\nAnwesend: siehe Niederschrift\nTagesordnungspunkt: 21.2 Sichere Kreuzung an der Aktienstraße\nDie Verwaltung erläutert, der Antrag sei bereits im Frühjahr im Verkehrsausschuss beraten worden.\nDie Bezirksvertretung bittet die Verwaltung, bis zum Herbst eine Planung für die Kreuzung vorzulegen.';
+  assert.equal(isMinutes(doc), true);
+  assert.equal(isExcerpt(doc), true);
+  const r = ruleSummary(doc, { target: 100, max: 140, title: 'Sichere Kreuzung an der Aktienstraße' });
+  assert.ok(r && r.sentences.some(x => x.startsWith('Die Bezirksvertretung bittet')));
+  assert.ok(!r.sentences.some(x => /Auszug aus der Niederschrift/.test(x)));
+});
+
+test('gesperrte Schrift, Unterschriftsvermerk und Aufzählungsbuchstaben', () => {
+  assert.ok(cleanText('S a c h v e r h a l t :\nDer Text').startsWith('Sachverhalt :'));
+  assert.ok(!cleanText('Der Bericht wird vorgestellt. gez. gez. Entfällt').includes('gez.'));
+  assert.deepEqual(splitSentences('An der Neubesetzung wird die Gemeinde beteiligt sein. d. Es hat eine Ortsbegehung zur Löschwassersituation stattgefunden.'),
+    ['An der Neubesetzung wird die Gemeinde beteiligt sein.', 'Es hat eine Ortsbegehung zur Löschwassersituation stattgefunden.']);
+});
+
+test('Zwischenüberschrift und Bezeichnung vor dem Satz fallen weg, Entscheider bleibt', () => {
+  assert.deepEqual(splitSentences('Mitteilung der Verwaltung Die nachfolgende Übersicht zeigt den Stand der Arbeiten im Rathaus.'), ['Die nachfolgende Übersicht zeigt den Stand der Arbeiten im Rathaus.']);
+  assert.deepEqual(splitSentences('Erläuterungen: Der Antrag der Fraktion ist als Anlage beigefügt und wird erläutert.'), ['Der Antrag der Fraktion ist als Anlage beigefügt und wird erläutert.']);
+  // Fehltreffer: Parteinamen und Satzanfänge mit Verb bleiben
+  assert.deepEqual(splitSentences('Die Fraktion Die Linke stellt in der Sitzung die nachfolgende Anfrage.'), ['Die Fraktion Die Linke stellt in der Sitzung die nachfolgende Anfrage.']);
+  assert.ok(splitSentences('Der Stadtentwicklungsausschuss beschließt: Der Planentwurf wird gebilligt und ausgelegt.')[0].startsWith('Der Stadtentwicklungsausschuss beschließt'));
+});
+
+test('Standardsätze der Vordrucke und Wiederholung des Titels sind kein Inhalt', () => {
+  const doc = 'Betreff: Sachstand Glasfaserausbau im Gemeindegebiet\nSachstand Glasfaserausbau im Gemeindegebiet der Gemeinde wird hier erneut genannt.\nDie nachfolgende Information wird zur Kenntnis genommen.\nZeit- und Personalkostenaufwand für die Beantwortung 0,30 Stunden und 30,14 Euro.\nDer Glasfaserausbau befindet sich aktuell in einer komplexen Umsetzungsphase mit mehreren Unternehmen.\nBis Ende des Jahres sollen weitere 400 Haushalte an das Netz angeschlossen werden.';
+  const r = ruleSummary(doc, { target: 100, max: 140, title: 'Sachstand Glasfaserausbau im Gemeindegebiet' });
+  assert.ok(r);
+  assert.ok(!r.sentences.some(x => /nachfolgende Information|Personalkostenaufwand|^Sachstand Glasfaser/.test(x)), r.sentences.join(' | '));
 });
