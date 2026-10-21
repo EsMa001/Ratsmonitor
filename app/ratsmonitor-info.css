@@ -305,8 +305,8 @@ select.ri-input{padding-right:12px;cursor:pointer}
 @media(max-width:639px){.ri-menu__panel:not(.ri-menu__panel--flyout){width:min(256px,calc(100vw - 16px))}}
 /* Großes Logo im Seitenkopf (plenara.X): immer mit Schriftzug, auch auf schmalen Handys */
 @media (max-width:439px){.rm-logo--big .rm-logo__text{position:static;width:auto;height:auto;overflow:visible;clip:auto}
-.rm-logo--big .rm-logo__mark{height:.66em!important;width:.66em!important;vertical-align:-.07em!important;margin:0 .01em 0 0!important}
-.rm-logo--big .rm-logo__mark--p{height:.66em!important;width:.66em!important;vertical-align:-.07em!important}}
+.rm-logo--big .rm-logo__mark{height:.66em;width:.66em;vertical-align:-.07em;margin:0 .01em 0 0}
+.rm-logo--big .rm-logo__mark--p{height:.66em;width:.66em;vertical-align:-.07em}}
 
 /* Punktraster oben auf allen Anwenderseiten, wie auf der Startseite */
 .ri{position:relative;isolation:isolate}
@@ -321,12 +321,12 @@ html:not(.rm-search) .ri{background:transparent}
 
 /* Fußleiste der Startseite in Akzentfarbe */
 footer.pl-footer-accent{background:var(--rm-ac) !important;border-color:var(--rm-ac2)}
-.pl-footer-accent,.pl-footer-accent *{color:#fff !important;border-color:rgba(255,255,255,.25) !important}
+.pl-footer-accent,.pl-footer-accent *{color:#fff;border-color:rgba(255,255,255,.25) !important}
 .pl-footer-accent a:hover{text-decoration:underline}
 
-html.rm-dark footer.pl-footer-accent{background:var(--rm-page) !important;border-top:2px solid var(--rm-fill)}
+html.rm-dark footer.pl-footer-accent{background:var(--rm-page);border-top:2px solid var(--rm-fill)}
 html.rm-dark .pl-footer-accent,html.rm-dark .pl-footer-accent *{border-color:rgba(255,255,255,.12) !important}
-html.rm-dark footer.pl-footer-accent{border-top-color:var(--rm-fill) !important}
+html.rm-dark footer.pl-footer-accent{border-top-color:var(--rm-fill)}
 
 /* Startknopf der Startseite im Dark Mode in Akzentfarbe */
 html.rm-dark .pl-cta{background:var(--rm-btn) !important;color:#fff !important}
@@ -341,30 +341,30 @@ html.rm-dark .ri-bid__label{color:var(--rm-ac)}
 /* Anwenderseiten auf dem Handy kompakter: weniger Weißraum zwischen Abschnitten und Kacheln */
 @media (max-width:640px){
   .ri-anw .ri-sec{padding-top:28px !important;padding-bottom:28px !important}
-  .ri-anw .ri-sec--tight{padding-top:18px !important;padding-bottom:18px !important}
-  .ri-anw .ri-head{padding-bottom:24px !important}
+  .ri-anw .ri-sec--tight{padding-top:18px;padding-bottom:18px}
+  .ri-anw .ri-head{padding-bottom:24px}
   .ri-anw .gap-y-12{row-gap:18px !important}
-  .ri-anw .gap-y-8{row-gap:14px !important}
+  .ri-anw .gap-y-8{row-gap:14px}
   .ri-anw .space-y-6>:not([hidden])~:not([hidden]){margin-top:12px !important}
   .ri-anw .mt-5{margin-top:10px !important}
-  .ri-anw .ri-h2{margin-bottom:0 !important}
+  .ri-anw .ri-h2{margin-bottom:0}
 }
 
 /* Gespeicherte Suchen, Artikel und Kalender auf dem Handy kompakter */
 @media (max-width:640px){
-  .ri-konto .ri-sec{padding-top:18px !important;padding-bottom:18px !important}
-  .ri-konto .ri-head{padding-bottom:20px !important}
-  .ri-konto .gap-10{gap:18px !important}
-  .ri-konto .gap-y-8{row-gap:14px !important}
+  .ri-konto .ri-sec{padding-top:18px;padding-bottom:18px}
+  .ri-konto .ri-head{padding-bottom:20px}
+  .ri-konto .gap-10{gap:18px}
+  .ri-konto .gap-y-8{row-gap:14px}
   .ri-konto .mb-6{margin-bottom:12px !important}
-  .ri-konto .mt-6{margin-top:14px !important}
-  .ri-konto .mt-5{margin-top:10px !important}
-  .ri-konto .mt-4{margin-top:8px !important}
-  .ri-konto .mt-3{margin-top:6px !important}
+  .ri-konto .mt-6{margin-top:14px}
+  .ri-konto .mt-5{margin-top:10px}
+  .ri-konto .mt-4{margin-top:8px}
+  .ri-konto .mt-3{margin-top:6px}
   .ri-konto .py-3{padding-top:8px !important;padding-bottom:8px !important}
-  .ri-konto .py-2\.5{padding-top:6px !important;padding-bottom:6px !important}
+  .ri-konto .py-2\.5{padding-top:6px;padding-bottom:6px}
   .ri-konto .py-6{padding-top:12px !important;padding-bottom:12px !important}
-  .ri-konto .h-16{height:3.25rem !important}
+  .ri-konto .h-16{height:3.25rem}
   .ri-konto .ri-points{gap:6px 0 !important;margin-top:14px !important}
   .ri-konto .ri-point{padding-top:12px !important;padding-bottom:6px}
   .ri-konto .ri-point h3{margin-top:4px !important;font-size:16px !important}
@@ -378,15 +378,15 @@ html.rm-dark .ri-bid__label{color:var(--rm-ac)}
   html.rm-analytics main .pb-10{padding-bottom:18px !important}
   html.rm-analytics main .mb-8{margin-bottom:14px !important}
   html.rm-analytics main .mt-16{margin-top:30px !important}
-  html.rm-analytics main .mt-12{margin-top:22px !important}
-  html.rm-analytics main .mt-10{margin-top:18px !important}
-  html.rm-analytics main .mt-8{margin-top:14px !important}
+  html.rm-analytics main .mt-12{margin-top:22px}
+  html.rm-analytics main .mt-10{margin-top:18px}
+  html.rm-analytics main .mt-8{margin-top:14px}
   html.rm-analytics main .mt-6{margin-top:12px !important}
-  html.rm-analytics main .mt-5{margin-top:8px !important}
-  html.rm-analytics main .mt-4{margin-top:8px !important}
+  html.rm-analytics main .mt-5{margin-top:8px}
+  html.rm-analytics main .mt-4{margin-top:8px}
   html.rm-analytics main .gap-y-12{row-gap:18px !important}
-  html.rm-analytics main .gap-y-8{row-gap:14px !important}
-  html.rm-analytics main .gap-y-6{row-gap:12px !important}
+  html.rm-analytics main .gap-y-8{row-gap:14px}
+  html.rm-analytics main .gap-y-6{row-gap:12px}
   html.rm-analytics main .gap-10{gap:16px !important}
   html.rm-analytics main .gap-8{gap:14px !important}
   html.rm-analytics main .gap-6{gap:12px !important}
@@ -398,7 +398,7 @@ html.rm-dark .ri-bid__label{color:var(--rm-ac)}
 /* Startseite (vorher als \3c style> in StartseitePage.tsx) */
 .pl-tp{animation:pltp .6s cubic-bezier(.2,.9,.3,1.2) both}@keyframes pltp{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.pl-tp{animation:none}}
 .pl-pop{animation:plpop 5.6s ease-out both}@keyframes plpop{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}.pl-ping{transform-box:fill-box;transform-origin:center;animation:plping 1.6s ease-out infinite}@keyframes plping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.4);opacity:0}}@media (prefers-reduced-motion:reduce){.pl-pop,.pl-ping{animation:none}}
-@media (max-width:640px){.pl-hero{padding-top:12px !important;padding-bottom:16px !important}.pl-grid{display:flex !important;flex-direction:column;align-items:stretch !important;gap:0 !important}.pl-left{display:contents}.pl-h1{order:1;font-size:22px !important;line-height:1.1 !important}.pl-slogan{order:2;margin:6px 0 0 !important;font-size:14px !important}.pl-num{order:3;margin:10px 0 0 !important}.pl-num span:first-child{font-size:44px !important;line-height:1 !important;color:var(--rm-ac) !important}.pl-num span:last-child{font-size:12px !important}.pl-stand,.pl-source{display:none !important}.pl-h2{margin:0 0 6px !important;font-size:18px !important}.pl-trends{order:6;margin:8px 0 0 !important;min-height:0 !important;gap:8px !important;flex-wrap:nowrap !important}.pl-trends>button{flex:0 0 calc(50% - 4px);min-width:0;width:auto !important;padding:6px 10px !important}.pl-trends>button:nth-of-type(n+3){display:none}.pl-mapwrap{order:4;margin:6px 0 0 !important}.pl-mapwrap p[aria-live]{display:none}.pl-mapwrap{max-width:none !important;width:100% !important}.pl-mapwrap>div:first-child{width:min(270px,74vw);margin:0 auto}.pl-mapwrap>p:nth-of-type(1){display:none !important}.pl-pop text:nth-of-type(1),.pl-still text:nth-of-type(1){font-size:34px !important;stroke-width:2.4px !important;stroke-opacity:.6}.pl-pop text:nth-of-type(2),.pl-still text:nth-of-type(2){font-size:26px !important;transform:translateY(16px);stroke-width:1.8px !important;stroke-opacity:.35;fill:var(--rm-c900) !important}.pl-search{order:5;margin:10px 0 0 !important;border-top:0 !important}.pl-ort{order:8;margin:22px 0 0 !important;border-top:0 !important}.pl-search input,.pl-ort input{margin-top:0 !important;height:42px !important}.pl-ort [aria-live]{margin-top:4px !important}.pl-ctawrap{order:9;margin:24px 0 0 !important;text-align:center}.pl-ctawrap a{min-height:44px !important;padding:0 20px !important}}
+@media (max-width:640px){.pl-hero{padding-top:12px !important;padding-bottom:16px}.pl-grid{display:flex;flex-direction:column;align-items:stretch;gap:0}.pl-left{display:contents}.pl-h1{order:1;font-size:22px;line-height:1.1}.pl-slogan{order:2;margin:6px 0 0 !important;font-size:14px}.pl-num{order:3;margin:10px 0 0 !important}.pl-num span:first-child{font-size:44px;line-height:1;color:var(--rm-ac)}.pl-num span:last-child{font-size:12px}.pl-stand,.pl-source{display:none}.pl-h2{margin:0 0 6px !important;font-size:18px}.pl-trends{order:6;margin:8px 0 0;min-height:0;gap:8px;flex-wrap:nowrap}.pl-trends>button{flex:0 0 calc(50% - 4px);min-width:0;width:auto;padding:6px 10px}.pl-trends>button:nth-of-type(n+3){display:none}.pl-mapwrap{order:4;margin:6px 0 0}.pl-mapwrap p[aria-live]{display:none}.pl-mapwrap{max-width:none !important;width:100% !important}.pl-mapwrap>div:first-child{width:min(270px,74vw);margin:0 auto}.pl-mapwrap>p:nth-of-type(1){display:none !important}.pl-pop text:nth-of-type(1),.pl-still text:nth-of-type(1){font-size:34px;stroke-width:2.4px !important;stroke-opacity:.6}.pl-pop text:nth-of-type(2),.pl-still text:nth-of-type(2){font-size:26px;transform:translateY(16px);stroke-width:1.8px !important;stroke-opacity:.35;fill:var(--rm-c900)}.pl-search{order:5;margin:10px 0 0;border-top:0}.pl-ort{order:8;margin:22px 0 0;border-top:0}.pl-search input,.pl-ort input{margin-top:0;height:42px}.pl-ort [aria-live]{margin-top:4px}.pl-ctawrap{order:9;margin:24px 0 0;text-align:center}.pl-ctawrap a{min-height:44px !important;padding:0 20px !important}}
 .pl-pulse{animation:plpulse 2.4s ease-in-out infinite}@keyframes plpulse{0%,100%{box-shadow:0 0 0 0 rgba(38,132,120,.45)}60%{box-shadow:0 0 0 7px rgba(38,132,120,0)}}@media (prefers-reduced-motion:reduce){.pl-pulse{animation:none}}
 .pl-opt:hover,.pl-opt:focus-visible{background:var(--rm-c100) !important}.pl-opt:focus-visible{outline:2px solid var(--rm-fill);outline-offset:-2px}
 /* Punktraster mit Mausbewegung (DotField.tsx); ersetzt das CSS-Raster, wenn aktiv */
@@ -406,8 +406,8 @@ html.rm-dark .ri-bid__label{color:var(--rm-ac)}
 html.rm-dotfield-on body::before{display:none}
 html.rm-search .rm-dotfield{display:none}
 /* Seitenkopf wie die Fußleiste: hell kräftiges Petrol mit weißer Schrift; dunkel Grund mit Petrol-Linie (wie footer.pl-footer-accent) */
-html:not(.rm-dark) :is(.pl-band,.ri-head){background:var(--rm-ac) !important;border-bottom:0 !important}
-html:not(.rm-dark) :is(.pl-band,.ri-head),html:not(.rm-dark) :is(.pl-band,.ri-head) *{color:var(--rm-on) !important;border-color:rgba(255,255,255,.3) !important}
+html:not(.rm-dark) :is(.pl-band,.ri-head){background:var(--rm-ac);border-bottom:0 !important}
+html:not(.rm-dark) :is(.pl-band,.ri-head),html:not(.rm-dark) :is(.pl-band,.ri-head) *{color:var(--rm-on);border-color:rgba(255,255,255,.3) !important}
 html:not(.rm-dark) :is(.pl-band,.ri-head) :is([class*="bg-slate-"],[class*="bg-teal-"],[class*="bg-white"]){background:rgba(255,255,255,.16) !important}
 /* Weiße Karte im Kopf (Anwenderseiten): Text wieder dunkel, sonst weiß auf weiß; Akzent und Grautöne über die Inline-Farbe */
 html:not(.rm-dark) .ri-head .ri-pv__card,html:not(.rm-dark) .ri-head .ri-pv__card *{color:var(--rm-c900) !important;border-color:var(--rm-c200) !important}
@@ -415,25 +415,25 @@ html:not(.rm-dark) .ri-head .ri-pv__card [style*="--rm-ac"]{color:var(--rm-ac) !
 html:not(.rm-dark) .ri-head .ri-pv__card .text-teal-700{color:var(--rm-ac) !important}
 html:not(.rm-dark) .ri-head .ri-pv__card [style*="--rm-c700"]{color:var(--rm-c700) !important}
 html:not(.rm-dark) .ri-head .ri-pv__card [style*="--rm-c500"],html:not(.rm-dark) .ri-head .ri-pv__card .text-slate-500{color:var(--rm-c500) !important}
-html.rm-dark :is(.pl-band,.ri-head){background:var(--rm-page) !important;border-bottom:2px solid var(--rm-fill) !important}
+html.rm-dark :is(.pl-band,.ri-head){background:var(--rm-page);border-bottom:2px solid var(--rm-fill)}
 /* Alle Seitenköpfe gleich knapp: gleicher Innenabstand, Überschrift einheitlich 28 px */
 :is(.pl-band,.ri-head){padding-top:16px !important;padding-bottom:24px !important}
 /* Anwenderseiten: Überschrift größer */
 .ri-anw .ri-head .ri-h1{font-size:40px !important;line-height:1.15 !important}
 @media (max-width:640px){.ri-anw .ri-head .ri-h1{font-size:28px !important}}
 .ri-head{min-height:217px}
-.ri-head :is(h1,.ri-h1){font-size:28px !important;line-height:1.2 !important;margin-top:8px !important;margin-bottom:0 !important}
-.ri-head :is(p,.ri-lead){font-size:16px !important;margin-top:8px !important;max-width:860px}
+.ri-head :is(h1,.ri-h1){font-size:28px !important;line-height:1.2 !important;margin-top:8px !important;margin-bottom:0}
+.ri-head :is(p,.ri-lead){font-size:16px;margin-top:8px;max-width:860px}
 .ri-head .ri-bid svg{width:28px;height:28px}.ri-head .back-btn{margin-bottom:8px !important}.ri-head .ri-actions{margin-top:16px !important}
 /* Symbol der Seite rechts im Kopfband, weiß (Info- und Kontoseiten; plenara.X setzt es in XKopf.tsx) */
 .ri-head .ri-bid__icon{position:absolute;right:calc(var(--ri-pad) + 24px);top:50%;transform:translateY(-50%);width:44px !important;height:44px !important}
 @media (max-width:640px){.ri-head .ri-bid__icon{top:50px;transform:none;right:var(--ri-pad);width:36px !important;height:36px !important}}
 /* plenara.X-Abzeichen im Petrol-Band: weiß mit Originalfarben, sonst kaum lesbar */
-html:not(.rm-dark) .pl-band .rm-brandtag{background:#fff !important}
-html:not(.rm-dark) .pl-band .rm-brandtag,html:not(.rm-dark) .pl-band .rm-brandtag *{color:var(--rm-c700) !important}
+html:not(.rm-dark) .pl-band .rm-brandtag{background:#fff}
+html:not(.rm-dark) .pl-band .rm-brandtag,html:not(.rm-dark) .pl-band .rm-brandtag *{color:var(--rm-c700)}
 /* Seitensymbol im Kopfband: zurückhaltend, dünne Linien, halbtransparent */
-:is(.rm-bandicon svg,.ri-head .ri-bid__icon){stroke-width:1.1 !important;opacity:.45}
-:is(.rm-bandicon svg,.ri-head .ri-bid__icon) *{stroke-width:1.1 !important}
+:is(.rm-bandicon svg,.ri-head .ri-bid__icon){stroke-width:1.1;opacity:.45}
+:is(.rm-bandicon svg,.ri-head .ri-bid__icon) *{stroke-width:1.1}
 .rm-bandicon{cursor:pointer;background:none;border:0}.rm-bandicon:hover svg,.rm-bandicon[aria-expanded=true] svg{opacity:1}.rm-bandicon svg{transition:opacity .15s}
 /* Kopfband: Punktraster (BandDots.tsx) nach rechts kräftiger, Auftritt von Titel und Mitte beim Laden */
 :is(.pl-band,.ri-head){position:relative;isolation:isolate;overflow:hidden}
@@ -450,9 +450,9 @@ html.rm-dark .rm-banddots{opacity:.35}
   .pl-cut3>li:nth-child(n+4){display:none}
   /* Kopfband der Info- und Kontoseiten: überall so hoch wie bei plenara.X (Name groß, darunter eine Zeile); Überschrift, Satz und Zusätze stehen darunter (PageHead) */
   .ri-head{min-height:135px;padding-bottom:16px !important}
-  html .ri-head .ri-bid .ri-bid__name{font-size:28px !important;font-weight:600 !important;line-height:1.15 !important}
+  html .ri-head .ri-bid .ri-bid__name{font-size:28px;font-weight:600;line-height:1.15}
   .ri-head .ri-lead{display:none !important}
-  .ri-head .ri-bid + .ri-h1,.ri-head .ri-h1{font-size:18px !important;font-weight:500 !important;line-height:1.3 !important;margin-top:6px !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ri-head .ri-bid + .ri-h1,.ri-head .ri-h1{font-size:18px;font-weight:500;line-height:1.3;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ri-below{padding:16px var(--ri-pad) 4px}
   .ri-below__h{margin:0;font-size:22px;font-weight:600;line-height:1.2;letter-spacing:-.01em;color:var(--rm-c900)}
   .ri-below__lead{margin:8px 0 0;font-size:16px;line-height:1.5;color:var(--rm-c500)}
@@ -460,12 +460,12 @@ html.rm-dark .rm-banddots{opacity:.35}
   main#inhalt button[class*="hover:underline"]:not(.truncate){display:inline-flex;align-items:center;min-height:44px}
   main#inhalt button.truncate[class*="hover:underline"]{line-height:44px}
   :is(.pl-band,.ri-head){padding-top:8px !important;padding-bottom:12px !important}
-  .pl-band .back-btn,.pl-band .rm-bandicon{display:none !important}
+  .pl-band .back-btn,.pl-band .rm-bandicon{display:none}
   .pl-band .rm-band-mid>p:nth-child(n+2){display:none}
-  .ri-head .ri-bid__icon{display:none !important}
-  .ri-head .back-btn{margin-bottom:2px !important}
+  .ri-head .ri-bid__icon{display:none}
+  .ri-head .back-btn{margin-bottom:2px}
   .ri-head .ri-bid__label{display:none}
-  .ri-head .ri-h1{font-size:22px !important;line-height:1.2 !important;margin-top:6px !important;margin-bottom:0 !important}
+  .ri-head .ri-h1{font-size:22px !important;line-height:1.2 !important;margin-top:6px;margin-bottom:0}
   .ri-head .ri-lead{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
   html:not(.rm-dark) header{background:var(--rm-ac);border-bottom-color:transparent}
   html:not(.rm-dark) header .rm-logo svg{filter:brightness(0) invert(1)}
@@ -473,32 +473,32 @@ html.rm-dark .rm-banddots{opacity:.35}
   html:not(.rm-dark) header button[aria-haspopup="menu"][aria-expanded="true"]{background:rgba(255,255,255,.18);color:var(--rm-on);border-radius:9999px;height:40px;width:40px}
   html:has(.pl-top) header{position:absolute;inset:0 0 auto 0;background:transparent;border-bottom:0}
   html:has(.pl-top) header .rm-logo svg{filter:brightness(0) invert(1)}
-  .pl-band.pl-top{padding-top:46px !important}
+  .pl-band.pl-top{padding-top:46px}
   .pl-band.pl-top .grid{margin-top:0}
- .rm-stage{touch-action:pan-y !important} 
- html:has(.pl-top) main#inhalt{padding-bottom:0 !important} 
+ .rm-stage{touch-action:pan-y} 
+ html:has(.pl-top) main#inhalt{padding-bottom:0} 
   html:not(.rm-dark):has(.ri-head) header{position:absolute;inset:0 0 auto 0;background:transparent;border-bottom:0}
-  html:has(.ri-head) .ri-head{padding-top:46px !important}
+  html:has(.ri-head) .ri-head{padding-top:46px}
   html:has(.ri-head) .ri-head > div:not(.rm-banddots){display:flex;flex-direction:column}
-  html:has(.ri-head) .ri-head .ri-bid{display:flex;align-items:center;margin:0 0 4px !important;padding:0}
-  html:has(.ri-head) .ri-head .ri-bid__name{font-size:28px !important;line-height:1.15;font-weight:600}
-  html:has(.ri-head) .ri-head .back-btn{display:none !important}
-  header .rm-logo__text{position:static !important;width:auto !important;height:auto !important;overflow:visible !important;clip:auto !important}
+  html:has(.ri-head) .ri-head .ri-bid{display:flex;align-items:center;margin:0 0 4px;padding:0}
+  html:has(.ri-head) .ri-head .ri-bid__name{font-size:28px;line-height:1.15;font-weight:600}
+  html:has(.ri-head) .ri-head .back-btn{display:none}
+  header .rm-logo__text{position:static;width:auto;height:auto;overflow:visible;clip:auto}
   header .rm-logo{font-size:18px}
-  header .rm-logo__mark{height:.86em !important;width:.86em !important;margin:0 .01em 0 0 !important;vertical-align:-.16em !important}
-  header .rm-logo__mark--p{height:.66em !important;width:.66em !important;vertical-align:-.07em !important}
+  header .rm-logo__mark{height:.86em !important;width:.86em !important;margin:0 .01em 0 0;vertical-align:-.16em !important}
+  header .rm-logo__mark--p{height:.66em;width:.66em;vertical-align:-.07em}
   html:not(.rm-dark) header .rm-logo{color:var(--rm-on)}
   header .rm-logo{opacity:calc(1 - var(--hp,0))}
   header[data-title="1"] .rm-logo{pointer-events:none}
   /* Seiten mit Band: Kopfzeile bleibt oben und färbt sich beim Scrollen weich ein (--hp 0 bis 1, aus Header.tsx) */
-  html:has(.pl-top,.ri-head) header{position:sticky !important;top:0 !important;margin-bottom:-42px !important;border-bottom:0 !important;background:color-mix(in srgb,var(--rm-ac) calc(var(--hb,0) * 100%),transparent) !important}
-  html.rm-dark:has(.pl-top,.ri-head) header{background:color-mix(in srgb,var(--rm-page) calc(var(--hb,0) * 100%),transparent) !important}
-  html.rm-dark header[data-title="1"]{border-bottom:2px solid var(--rm-fill) !important}
+  html:has(.pl-top,.ri-head) header{position:sticky !important;top:0;margin-bottom:-42px;border-bottom:0 !important;background:color-mix(in srgb,var(--rm-ac) calc(var(--hb,0) * 100%),transparent) !important}
+  html.rm-dark:has(.pl-top,.ri-head) header{background:color-mix(in srgb,var(--rm-page) calc(var(--hb,0) * 100%),transparent)}
+  html.rm-dark header[data-title="1"]{border-bottom:2px solid var(--rm-fill)}
   .rm-headtitle{opacity:var(--hp,0);pointer-events:none}
   /* Dünne Kopfzeile: das P des Logos steht schon an der Stelle des Logos, davon mit etwas Abstand der Titel; Logo blendet aus, das P der Titelzeile ein (Summe bleibt 1, das P bleibt stehen) */
   .rm-pmark{transform:translateY(-3px)}
-  .rm-pmark .rm-logo{opacity:1 !important}
-  .rm-pmark .rm-logo__text{display:none !important}
+  .rm-pmark .rm-logo{opacity:1}
+  .rm-pmark .rm-logo__text{display:none}
   header[data-title="1"] .rm-headtitle{pointer-events:auto}
   .rm-headtitle{color:var(--rm-c900);background:transparent;border:0;padding:0}
   html:not(.rm-dark) .rm-headtitle{color:var(--rm-on)}
@@ -572,6 +572,6 @@ html:has(.pl-band) body::before,html:has(.pl-band) .rm-dotfield{display:none}
 @media print{.ri-toc{display:none !important}}
 
 /* Zurück-Knopf im Petrol-Band: nur ein zarter heller Schleier beim Überfahren statt einer hellen Fläche mit Rahmen */
-html:not(.rm-dark) :is(.pl-band,.ri-head) .back-btn{border:0 !important;background:transparent !important;box-shadow:none !important;transition:background-color .15s}
+html:not(.rm-dark) :is(.pl-band,.ri-head) .back-btn{border:0;background:transparent;box-shadow:none;transition:background-color .15s}
 html:not(.rm-dark) :is(.pl-band,.ri-head) .back-btn:hover,html:not(.rm-dark) :is(.pl-band,.ri-head) .back-btn:active{background:rgba(255,255,255,.14) !important}
 html:not(.rm-dark) :is(.pl-band,.ri-head) .back-btn:focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:1px}
