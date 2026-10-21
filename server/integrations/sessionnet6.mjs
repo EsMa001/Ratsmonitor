@@ -149,7 +149,7 @@ export async function collectSessionNet6(source,{now=new Date(),get=fetchText,ol
   rows.sort((a,b)=>(a.event.date+a.sourceUrl).localeCompare(b.event.date+b.sourceUrl));const row=rows.at(-1),last=row.event,events=rows.map(r=>r.event);
   const sourceData={...row.sourceData,records:rows.flatMap(r=>r.sourceData.records),detailStatus:rows.some(r=>r.sourceData.detailStatus==='partial')?'partial':'completed',issues:[...new Set(rows.flatMap(r=>r.sourceData.issues))]};
   const t={...row,events,sourceData,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...rows.flatMap(r=>r.documents),{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Schnittstelle des SessionNet-Bürgerinformationssystems; nur Tagesordnungspunkte des öffentlichen Teils.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  const listed=meetings.size-upcoming;

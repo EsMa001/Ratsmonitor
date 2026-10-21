@@ -158,7 +158,7 @@ export async function collectHamburgTransparenz(source,{now=new Date(),get=fetch
  const topics=[],fetchedAt=now.toISOString(),checks=detail=>[{name:'Originalquelle',passed:true,detail},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}];
  const topic=async(t,place,detail)=>{
   t.events.forEach(e=>{e.attendance={status:'not_collected',sourceUrl:e.url,fetchedAt,people:[]};e.decision=sourceDecision(e);});
-  Object.assign(t,sourceSummary(t));if(t.longSummary?.[0])t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+place);
+  Object.assign(t,sourceSummary(t,{place}));
   t.quality={passed:false,checks:checks(detail),checkedAt:fetchedAt,sourceHash:await hash(t.sourceText)};topics.push(t);
  };
  for(const [key,p] of papers){
@@ -318,7 +318,7 @@ export async function collectPardok(source,{now=new Date(),stream=streamText,win
    relevanceReason:'Öffentlicher Vorgang des Abgeordnetenhauses von Berlin',sourceText:[title,p.type,p.system,p.descriptors.join(', '),...events.map(e=>e.date+' '+e.description)].filter(Boolean).join('\n'),
    identityLinks:documents.map(d=>d.url),events,documents,sourceUrl:last.url,
    sourceData:{version:'public-source-fields-v1',method:'berlin-pardok',fetchedAt:now.toISOString(),records:[{kind:'procedure',url:last.url,fields:{id:p.id,type:p.type,system:p.system,descriptors:p.descriptors}}],detailStatus:'completed',issues:[]}};
-  Object.assign(t,sourceSummary(t));if(t.longSummary?.[0])t.longSummary[0]=t.longSummary[0].replace('in Münster','in Berlin');
+  Object.assign(t,sourceSummary(t,{place:'Berlin'}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Parlamentsdokumentation des Abgeordnetenhauses von Berlin (offene Daten).'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};
   topics.push(t);
  }

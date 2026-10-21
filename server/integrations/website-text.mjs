@@ -1,5 +1,6 @@
-import {decode} from './sessionnet.mjs';
+import {decodeEntities,repairMojibake,composeUmlauts} from './text-repair.mjs';
 import {safeDecode} from './source-common.mjs';
+export {decodeEntities,repairMojibake,composeUmlauts};
 // Text of a town's own website and of the PDF files it publishes (invitations, announcements, minutes, Amtsblatt),
 // split into meetings with the items of their public part. Pure functions without network; the reader in website.mjs
 // fetches, these only read.
@@ -9,34 +10,12 @@ import {safeDecode} from './source-common.mjs';
 //   non-public part, or an item marked N/NÖ, ends the public part for the rest of the meeting.
 // - Towns write by hand: numbers, offices ("1. Bürgermeister"), times ("19.00 Uhr"), dates and vote counts look alike.
 //   Where a line is not clearly an item it is not one.
-const MORE={bdquo:'„',ldquo:'“',rdquo:'”',lsquo:'‘',rsquo:'’',sbquo:'‚',laquo:'«',raquo:'»',shy:'',hellip:'…',sect:'§',euro:'€',minus:'−',ndash:'–',mdash:'—',thinsp:' ',ensp:' ',emsp:' ',zwnj:'',zwj:'',middot:'·',bull:'•',deg:'°',eacute:'é',egrave:'è',aacute:'á',agrave:'à',ccedil:'ç',
- ZeroWidthSpace:'',NegativeThinSpace:'',NegativeMediumSpace:'',NegativeThickSpace:'',NegativeVeryThinSpace:'',NoBreak:'',NonBreakingSpace:' ',hyphen:'-',dash:'-',ast:'*',midast:'*',quest:'?',lpar:'(',rpar:')',colon:':',comma:',',period:'.',sol:'/',num:'#',excl:'!'};
-// Entities are decoded until nothing changes: CMS exports escape an escaped text again ("Nicht&amp;ouml;ffentlich").
-const decodeOnce=s=>decode(String(s).replace(/&([a-z]+);/gi,(m,k)=>MORE[k]??m));
-/** Text with its HTML entities decoded, also entities escaped once or twice more. */
-export function decodeEntities(s){let t=String(s??'');for(let k=0;k<5&&/&(?:#x?[0-9a-f]+|[a-z]+);/i.test(t);k++){const n=decodeOnce(t);if(n===t)break;t=n;}return t;}
 const entities=decodeEntities;
-// UTF-8 read as Windows-1252 or Latin-1 ("NichtÃ¶ffentlich"): the bytes of each run are read again as UTF-8.
-const CP1252={0x20ac:0x80,0x201a:0x82,0x0192:0x83,0x201e:0x84,0x2026:0x85,0x2020:0x86,0x2021:0x87,0x02c6:0x88,0x2030:0x89,0x0160:0x8a,0x2039:0x8b,0x0152:0x8c,0x017d:0x8e,0x2018:0x91,0x2019:0x92,0x201c:0x93,0x201d:0x94,0x2022:0x95,0x2013:0x96,0x2014:0x97,0x02dc:0x98,0x2122:0x99,0x0161:0x9a,0x203a:0x9b,0x0153:0x9c,0x017e:0x9e,0x0178:0x9f};
-const CONT='[\\u0080-\\u00bf\\u0152\\u0153\\u0160\\u0161\\u0178\\u017d\\u017e\\u0192\\u02c6\\u02dc\\u2013\\u2014\\u2018-\\u201a\\u201c-\\u201e\\u2020-\\u2022\\u2026\\u2030\\u2039\\u203a\\u20ac\\u2122]';
-const MOJIBAKE=new RegExp(`[\\u00c2-\\u00df]${CONT}|[\\u00e0-\\u00ef]${CONT}{2}|[\\u00f0-\\u00f4]${CONT}{3}`,'g');
-const UTF8=new TextDecoder('utf-8',{fatal:true});
-/** Text with UTF-8 sequences that were read as Windows-1252/Latin-1 put right (also when that happened twice). */
-export function repairMojibake(s){
- let t=String(s??'');
- for(let k=0;k<3&&/[Â-ô]/.test(t);k++){
-  const n=t.replace(MOJIBAKE,m=>{const bytes=[...m].map(c=>{const p=c.codePointAt(0);return p<256?p:CP1252[p];});try{return UTF8.decode(Uint8Array.from(bytes));}catch{return m;}});
-  if(n===t)break;t=n;
- }
- return t;
-}
 /** Words that make a page, link or document worth reading for meetings. */
 export const SESSION_WORDS=/Sitzung|Tagesordnung|Einladung|Bekanntmachung[^.]{0,80}Sitzung|Niederschrift|Protokoll|Sitzungsbericht|Beschlüsse|Beschlussübersicht|Gemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Ausschuss|Ratssitzung|Stadtverordnetenversammlung|Gemeindevertretung|Stadtvertretung|Ortschaftsrat|Ortsrat|Ortsbeirat|Kreistag/i;
 /** Link texts, titles and addresses of the non-public part; such documents are not read. */
 // Also the short forms "nö", "(NÖ)", "N.Ö.", "…_noe_…" and "nichtoeff-…" of labels and file names.
 export const NONPUBLIC_WORDS=/nicht(?:[\s_.-]|%20|%2D)*(?:ö|oe|o|%C3%B6)ffentl|nicht(?:[\s_.-]|%20|%2D)*(?:ö|oe|%C3%B6)ff(?!\p{L})|vertraulich|geschlossene[rn]?[\s_-]+(?:Sitzung|Teil)|Ausschlu(?:ss|ß)[\s_-]+der[\s_-]+(?:Ö|Oe)ffentlichkeit|(?<![\p{L}\p{N}])(?:N\.?\s?Ö\.?|NOE)(?!\p{L})/iu;
-/** Umlauts as one character: pdf.js and some editors write "ö" as "o" with a combining (U+0308) or spacing (U+00A8) diaeresis. */
-export const composeUmlauts=s=>String(s??'').replace(/¨\s?([AOUaou])/g,'$1̈').replace(/([AOUaou])¨/g,'$1̈').normalize('NFC');
 
 // --- mentions of the non-public part ---------------------------------------------------------------------------------
 // Lines that report on the non-public part from the public one: "Bekanntgabe von Beschlüssen aus nichtöffentlicher

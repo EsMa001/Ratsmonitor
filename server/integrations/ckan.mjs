@@ -128,7 +128,7 @@ export async function collectCkan(source,{now=new Date(),get=fetchText,maxDurati
   const t={id:`${source.id}-ckan-${slug(key)}`,regionId:source.id,source:source.kind,public:true,title,officialTitle:title,reference,category:category(title),status,committee,eventDate:date,updatedAt:fetchedAt,
    relevanceReason:'Öffentlicher Datensatz: '+committee,sourceText:[title,reference&&'Nummer '+reference,notes].filter(Boolean).join('\n'),identityLinks:[url],events:[event],documents,sourceUrl:url,
    sourceData:{version:'public-source-fields-v1',method:'ckan',fetchedAt,records:[{kind:'dataset',url,fields:{name:pkg.name||'',reference,published:date,modified:isoDay(pkg.metadata_modified)}}],detailStatus:'completed',issues:[]}};
-  Object.assign(t,sourceSummary(t));if(t.longSummary?.[0])t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+(source.name||'dem Gebiet'));
+  Object.assign(t,sourceSummary(t,{place:source.name||'dem Gebiet'}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Open-Data-Portal (CKAN) nach dem Abfrageprofil des Eintrags.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:fetchedAt,sourceHash:await hash(t.sourceText)};
   topics.push(t);
  }
