@@ -61,7 +61,7 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0 }: { /*
     el?.focus({ preventScroll: true });
   }, [trail]);
   const phone = usePhone();
-  const full = "min-w-0 [&_button]:!w-full [&_button]:!min-w-0 [&_button]:!max-w-none";
+  const full = "min-w-0 [&_button]:w-full [&_button]:min-w-0 [&_button]:max-w-none";
   return (
     <div
       ref={ref}

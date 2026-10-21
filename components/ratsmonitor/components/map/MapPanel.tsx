@@ -280,7 +280,8 @@ export function MapPanel({ active }: { active: boolean }) {
     setExplore(false);
     engine?.focusArea("");
   };
-  const ctl = "grid h-11 w-11 place-items-center rounded-full text-slate-600 hover:bg-white/60 hover:text-slate-900";
+  const ctlShape = "grid h-11 w-11 place-items-center rounded-full hover:bg-white/60 hover:text-slate-900";
+  const ctl = `${ctlShape} text-slate-600`;
   const ctlSm = "grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-white/60 hover:text-slate-900";
   const STYLES: { id: MapStyle; label: string; icon: ReactNode }[] = [
     { id: "flaechen", label: "Flächen", icon: <path d="m4 7 5-3 6 3 5-3v13l-5 3-6-3-5 3zM9 4v13M15 7v13" /> },
@@ -322,7 +323,7 @@ export function MapPanel({ active }: { active: boolean }) {
       {/* Darstellung oben links (rückt unter der Kopfzeile mit), klappt nach unten auf; Handy: rechts direkt über dem Filter-Knopf der Suchleiste, darüber die Zoom-Leiste (alle drei auf einer Achse), klappt nach oben auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
       {explore && (
         <div className={`rm-mapctl rm-glass absolute z-[7] flex rounded-full ${mobile ? "right-[17px] flex-col-reverse" : "left-4 flex-col"}`} style={mobile ? { bottom: PHONE_STACK_LAYERS } : { top: 16 + topShift }}>
-          <button type="button" title="Darstellung" aria-label="Darstellung der Karte" aria-expanded={styleOpen} onClick={() => setStyleOpen((o) => !o)} className={`${ctl} ${styleOpen ? "!text-slate-900" : ""}`}>
+          <button type="button" title="Darstellung" aria-label="Darstellung der Karte" aria-expanded={styleOpen} onClick={() => setStyleOpen((o) => !o)} className={`${ctlShape} ${styleOpen ? "text-slate-900" : "text-slate-600"}`}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z" /><path d="m3 13 9 5 9-5" /></svg>
           </button>
           {styleOpen && (

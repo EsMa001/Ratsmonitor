@@ -121,6 +121,10 @@
   box-shadow: none;
 }
 
+.rm-solid .rm-chip:hover {
+  background: var(--rm-c50);
+}
+
 @media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* !important: FilterPanel setzt right und width inline (gemessen); unter der Karte gilt die volle Breite */
   main#inhalt .rm-mapwrap .rm-fpop {

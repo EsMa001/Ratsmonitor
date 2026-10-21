@@ -43,7 +43,8 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
     else toast(`Gespeichert: ${name}`);
   };
 
-  const round = "rm-glass relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12 transition-colors disabled:cursor-default disabled:opacity-50";
+  const roundShape = "rm-glass relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12 transition-colors disabled:cursor-default";
+  const round = `${roundShape} disabled:opacity-50`;
   const filterBtn = (
       <button
         type="button"
@@ -71,7 +72,7 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
         title={savedHit ? "Gespeicherte Suche entfernen" : active ? "Suche speichern" : "Erst suchen oder filtern, dann speichern"}
         aria-label={savedHit ? "Gespeicherte Suche entfernen" : "Suche speichern"}
         /* Nicht ausgegraut: ohne Suche nur nicht klickbar, damit der Stern sichtbar bleibt */
-        className={`${round} disabled:!opacity-100 ${savedHit ? "text-teal-700" : "text-slate-700 enabled:hover:text-teal-700"}`}
+        className={`${roundShape} ${savedHit ? "text-teal-700" : "text-slate-700 enabled:hover:text-teal-700"}`}
       >
         <IconStar size={20} filled={!!savedHit} />
       </button>

@@ -58,8 +58,8 @@ export function DateRangeSelect({ withIcon = true }: { withIcon?: boolean }) {
           value={value}
           options={[...RANGE_PRESETS.map((p) => ({ value: p.id, label: p.id === "y0" || p.id === "y1" ? `${p.label} (${p.range()[0].slice(0, 4)})` : p.label })), { value: CUSTOM, label: value === CUSTOM && (von || bis) ? rangeLabel(...resolveRange(von, bis)) : "Zeitraum wählen …" }]}
           onChange={onChange}
-          /* Pfeil etwas weiter links, damit er nicht am Rand klebt */
-          className="min-w-0 [&_button]:!w-full [&_button]:!min-w-0 [&_button]:!max-w-none [&_svg]:!right-5"
+          /* Pfeil etwas weiter links, damit er nicht am Rand klebt (! gegen #filter-body .select-base svg in glass.css) */
+          className="min-w-0 [&_button]:w-full [&_button]:min-w-0 [&_button]:max-w-none [&_svg]:!right-5"
         />
       </div>
     </div>

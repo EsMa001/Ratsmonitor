@@ -115,7 +115,7 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
       {(b.video || IS_DEV) && (
         <section className="ri-sec ri-sec--tight">
           <div className="mx-auto max-w-[1100px]">
-            <h2 className="ri-h2 max-sm:!text-[22px] max-sm:!mb-4" style={{ margin: "0 auto 32px", fontSize: 34, textAlign: "center" }}>Plenara für {b.name} in einer Minute</h2>
+            <h2 className="ri-h2 ri-h2--live">Plenara für {b.name} in einer Minute</h2>
             <VideoMitKapiteln b={b} dark={dark} />
           </div>
         </section>

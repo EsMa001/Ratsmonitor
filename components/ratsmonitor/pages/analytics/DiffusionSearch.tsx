@@ -51,8 +51,8 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
   const label = play === "loading" ? "Wird berechnet" : play === "playing" ? "Pause" : startLabel;
   const chipsBlock = (
     <div className="rm-solid relative z-10">
-      {/* Chips flach statt Milchglas und ohne Scrollbalken: die Zeile bricht um */}
-      <div className={`mt-2 flex pl-[52px] ${phone && slot ? "max-sm:mt-0 max-sm:pl-0 max-sm:[&:has(.rm-chip)]:mt-2" : "max-sm:pl-[56px]"} [&>div]:!my-0 [&>div]:!max-h-none [&>div]:!flex-wrap [&>div]:!overflow-visible [&>div]:!px-0 [&>div]:!py-0 [&_.rm-chip]:!border-slate-200 [&_.rm-chip]:!bg-white [&_.rm-chip]:!shadow-none [&_.rm-chip]:![backdrop-filter:none] [&_.rm-chip:hover]:!bg-slate-50`}>
+      {/* Chips ohne Scrollbalken: die Zeile bricht um; flach (weiß, feine Linie) über .rm-solid in glass.css */}
+      <div className={`mt-2 flex pl-[52px] ${phone && slot ? "max-sm:mt-0 max-sm:pl-0 max-sm:[&:has(.rm-chip)]:mt-2" : "max-sm:pl-[56px]"} [&>div]:my-0 [&>div]:max-h-none [&>div]:flex-wrap [&>div]:overflow-visible [&>div]:px-0 [&>div]:py-0`}>
         <ActiveFilters />
       </div>
     </div>

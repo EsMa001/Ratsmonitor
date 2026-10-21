@@ -61,7 +61,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   </div>
   <div ref={ref} className="relative">
    <button type="button" title="Konto" aria-label="Konto" aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(o=>!o)} className={cls(currentPage==='profil'||open)}>
-    <IconUser size={19} className="max-sm:!h-[23px] max-sm:!w-[23px]"/>
+    <IconUser size={19} className="max-sm:h-[23px] max-sm:w-[23px]"/>
    </button>
    {open&&<div role="menu" onKeyDown={e=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role^="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}}} className="absolute right-0 top-[calc(100%+13px)] z-[1100] w-[220px] max-sm:w-[230px] sm:top-[calc(100%+17px)] rounded-2xl border border-slate-200 bg-white p-1.5 shadow-pop">
     {loggedIn&&<p className="m-0 truncate px-3 pb-1 pt-2 text-[12px] text-slate-500" title={me.user?.email}>{me.user?.email}</p>}

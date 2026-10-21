@@ -48,7 +48,8 @@ export function SearchFilterPanel() {
             onChange={(v) => search.setSort(v as "asc" | "desc" | "relevance")}
             size="sm"
             highlight={false}
-            className="ml-auto [&_button]:!w-auto [&_button]:!min-w-0 [&_button]:!border-transparent [&_button]:!bg-transparent [&_button]:!font-normal [&_button]:!text-slate-500 [&_button]:!shadow-none [&_button:hover]:!text-slate-900"
+            look="text"
+            className="ml-auto [&_button]:w-auto [&_button]:min-w-0"
           />
           {/* Ein Umschalter rechts neben der Sortierung: Icon und Bezeichnung der Ansicht, zu der gewechselt wird */}
           <button

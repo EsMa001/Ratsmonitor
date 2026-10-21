@@ -21,10 +21,12 @@ interface Props {
   className?: string;
   /** aktive Auswahl farbig hervorheben (für Filter ja, für die Sortierung nein) */
   highlight?: boolean;
+  /** "text": ohne Feldrahmen, grau wie Text (Sortierung über Listen); ohne select-base, damit Feld-, Glas- und Dunkelregeln nicht greifen */
+  look?: "field" | "text";
 }
 
 /** Eigene Auswahlliste (kein Browser-Dropdown); aktive Auswahl in Teal, Zähler rechts */
-export function FilterSelect({ id, label, allLabel, value, options, counts, onChange, size = "md", className = "", highlight = true }: Props) {
+export function FilterSelect({ id, label, allLabel, value, options, counts, onChange, size = "md", className = "", highlight = true, look = "field" }: Props) {
   const sm = size === "sm";
   const [open, setOpen] = useState(false);
   /* Im Filterfenster auf der Karte: die Liste bleibt innerhalb der Karte (nach unten, sonst nach oben) und scrollt, wenn sie nicht ganz hineinpasst */
@@ -61,7 +63,7 @@ export function FilterSelect({ id, label, allLabel, value, options, counts, onCh
                 toggle(true);
               }
             }}
-            className={`select-base relative flex w-full items-center text-left ${sm ? "!h-9 max-sm:!h-11 !rounded-lg !pl-3 !pr-8 !text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${value && highlight ? "select-active" : ""}`}
+            className={`${look === "text" ? "cursor-pointer appearance-none border border-transparent bg-transparent font-normal text-slate-500 outline-none hover:text-slate-900 focus-visible:shadow-focus" : "select-base"} relative flex w-full items-center text-left ${sm ? "h-9 max-sm:h-11 rounded-lg pl-3 pr-8 text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${value && highlight ? "select-active" : ""}`}
           >
             {(() => {
               const short = all.find((o) => o.value === value)?.short;

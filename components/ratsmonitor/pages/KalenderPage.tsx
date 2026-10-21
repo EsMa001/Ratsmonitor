@@ -288,7 +288,7 @@ export function KalenderPage() {
                 onChange={(v) => setKm(+v)}
                 size="sm"
                 highlight={false}
-                className="[&_button]:!h-11 [&_button]:!w-auto [&_button]:!min-w-[170px]"
+                className="[&_button]:h-11 [&_button]:w-auto [&_button]:min-w-[170px]"
               />
               {matches.length > 0 && (
                 <div className="popover absolute left-0 right-0 top-[calc(100%+6px)] z-10 p-1.5">

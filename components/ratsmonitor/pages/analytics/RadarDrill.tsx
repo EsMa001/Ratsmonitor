@@ -22,7 +22,8 @@ const StatusDot = ({ status }: { status: string }) => (DOT[status] ? <span aria-
 
 /** base: Adresse der Auswertung mit Listenmodus (by=…), etwa /api/x?list=1. limit: nur so viele Einträge zeigen und statt
     „Weitere laden“ den Weg zur ganzen Liste (onAll); footer: weitere Wege unter der Liste (etwa „Auf … eingrenzen“). */
-/** Aktionszeile in der Walze (Handy): Symbol, Text, Pfeil; die ganze Zeile ist antippbar (der Knopf deckt sie per ::after) */
+/** Aktionszeile in der Walze (Handy): Symbol, Text, Pfeil; die ganze Zeile ist antippbar (der Knopf deckt sie per ::after).
+ *  [&_button]:!block und !mt-0 gegen die Tippflächen-Regel main#inhalt button[class*="hover:underline"] (app/styles/base.css) */
 function ActionRow({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   return (
     <div className="relative flex h-[calc(100%-12px)] items-center gap-3 rounded-xl border border-teal-600/30 px-3 text-teal-800 [&_button]:!mt-0 [&_button]:!block [&_button]:flex-1 [&_button]:text-left [&_button]:no-underline [&_button]:after:absolute [&_button]:after:inset-0 [&_button]:after:content-['']" style={{ marginBlock: 6 }}>

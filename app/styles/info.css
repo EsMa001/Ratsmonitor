@@ -642,6 +642,19 @@ select.ri-input {
   }
 }
 
+/* Ab 1280 px (Tailwind xl) steht das Menü ausgeschrieben in der Kopfzeile; am Handy öffnet das Hauptmenü über die untere Leiste */
+@media (min-width:80rem) {
+  .ri-burger {
+    display: none;
+  }
+}
+
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
+  .ri-burger--no-phone {
+    display: none;
+  }
+}
+
 .ratsmonitor .ri-burger:focus-visible {
   outline: 2px solid var(--rm-fill);
   outline-offset: 2px;
@@ -1178,5 +1191,27 @@ html.rm-dark .ri-bid__label {
   }
   .ri-toc a:hover {
     color: var(--rm-c900);
+  }
+}
+
+/* Abschnitt am Handy enger (Videos); am Dateiende, damit es alle .ri-sec-Abstände übersteuert */
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
+  .ri-sec--snug {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+}
+
+/* Überschrift der Live-Seite für Anwender (AnwenderLive.tsx): groß und mittig, am Handy kleiner */
+.ri-h2.ri-h2--live {
+  margin: 0 auto 32px;
+  font-size: 34px;
+  text-align: center;
+}
+
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
+  .ri-h2.ri-h2--live {
+    margin-bottom: 16px;
+    font-size: 22px;
   }
 }

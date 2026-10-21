@@ -267,7 +267,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
           aria-label="Erkannte Orte und Vorschläge"
           onMouseDown={(e) => e.preventDefault()}
           style={{ maxHeight: listMax ?? 380 }}
-          className={`popover scroll-thin absolute left-0 right-0 z-[1200] min-w-[280px] max-sm:min-w-0 overflow-y-auto p-1.5 ${glass ? "rm-glass rm-glass-pop !rounded-[28px] !p-2.5" : stay ? "!rounded-[28px] !p-2.5" : ""} ${listUp ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"}`}
+          className={`popover scroll-thin absolute left-0 right-0 z-[1200] min-w-[280px] max-sm:min-w-0 overflow-y-auto ${glass ? "rm-glass rm-glass-pop rounded-[28px] p-2.5" : stay ? "rounded-[28px] p-2.5" : "p-1.5"} ${listUp ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"}`}
         >
           {rows.map((r, i) => {
             if (r.kind === "head")

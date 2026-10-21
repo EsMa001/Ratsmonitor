@@ -84,7 +84,7 @@ function AdminMenu({page}:{page?:AdminPage}){
  const item=(p:AdminEntry)=><li key={p.id}><Link href={adminHref(p.id)} prefetch={false} className="ri-menu__sub" aria-current={page===p.id?'page':undefined} onClick={close}>
   <Icon name={p.icon} size={15}/><span className="shrink-0">{p.label}</span><span className="ml-auto whitespace-nowrap pl-5 text-[12px] font-normal text-slate-400 max-sm:hidden">{p.hint}</span></Link></li>;
  return <>
-  <button ref={btnRef} type="button" data-admin-menu className="ri-burger xl:!hidden" aria-label={open==='all'?'Menü schließen':'Menü öffnen'} aria-expanded={open==='all'} aria-controls="adminmenue" onClick={e=>toggle('all',e.currentTarget)}>
+  <button ref={btnRef} type="button" data-admin-menu className="ri-burger" aria-label={open==='all'?'Menü schließen':'Menü öffnen'} aria-expanded={open==='all'} aria-controls="adminmenue" onClick={e=>toggle('all',e.currentTarget)}>
    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" aria-hidden="true"><path d="M4 6.5h16M4 12h12M4 17.5h8"/></svg>
   </button>
   <nav aria-label="Adminseiten" className="ri-topnav order-last !ml-6 hidden xl:flex">

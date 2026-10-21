@@ -69,7 +69,7 @@ export function SavedArticlesPage() {
               </button>
             ))}
           </div>
-          <FilterSelect id="sa-sort" label="Sortierung" allLabel="" value={sort} options={[{ value: "saved", label: "Zuletzt gespeichert" }, { value: "date", label: "Nach Sitzungsdatum" }]} onChange={(v) => setSort(v as "saved" | "date")} size="sm" highlight={false} className="[&_button]:!border-transparent [&_button]:!bg-transparent [&_button]:!text-slate-500" />
+          <FilterSelect id="sa-sort" label="Sortierung" allLabel="" value={sort} options={[{ value: "saved", label: "Zuletzt gespeichert" }, { value: "date", label: "Nach Sitzungsdatum" }]} onChange={(v) => setSort(v as "saved" | "date")} size="sm" highlight={false} look="text" />
         </div>
       )}
       {list.length > 0 && !shown.length && <p className="m-0 py-6 text-slate-500">Keine gespeicherten Artikel passen zu Ihrer Suche.</p>}

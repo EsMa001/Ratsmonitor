@@ -139,7 +139,7 @@ export function MainMenu() {
 
   return (
     <>
-      <button ref={btnRef} type="button" data-menu-trigger className="ri-burger max-sm:!hidden xl:!hidden" aria-label={open === "all" ? "Menü schließen" : "Menü öffnen"} aria-expanded={open === "all"} aria-controls="hauptmenue" onClick={(e) => toggle("all", e.currentTarget)}>
+      <button ref={btnRef} type="button" data-menu-trigger className="ri-burger ri-burger--no-phone" aria-label={open === "all" ? "Menü schließen" : "Menü öffnen"} aria-expanded={open === "all"} aria-controls="hauptmenue" onClick={(e) => toggle("all", e.currentTarget)}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" aria-hidden="true">
           <path d="M4 6.5h16M4 12h12M4 17.5h8" />
         </svg>
