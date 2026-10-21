@@ -27,7 +27,7 @@ const publicNames=async()=>['93.90.195.235'];
 
 test('redirects are followed by hand, every target checked, at most three hops',async()=>{
  const asked=[];
- const request=async(url,init)=>{asked.push(url);assert.equal(init.redirect,'manual');assert.match(init.headers['User-Agent'],/Plenara/);
+ const request=async(url,init)=>{asked.push(url);assert.equal(init.redirect,'manual');assert.match(init.headers['User-Agent'],/^VorOrt-PoliticalTopics\/[^ ]+ \(public council information; Dokumentenansicht\)$/);
   if(url==='https://a.example/1')return redirect('/2');if(url==='https://a.example/2')return redirect('https://b.example/3',301);return pdf();};
  const {response,url}=await fetchDocument('https://a.example/1',{request,lookup:publicNames});
  assert.equal(response.status,200);assert.equal(url,'https://b.example/3');assert.deepEqual(asked,['https://a.example/1','https://a.example/2','https://b.example/3']);

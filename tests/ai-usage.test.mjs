@@ -1,30 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { summarize } from '../server/integrations/ai-summary.mjs';
 import { summarizeUsage } from '../shared/ai-usage.mjs';
-
-const source = 'Der Rat beschließt die Satzung über Kostenerstattungsbeträge für Ausgleichsmaßnahmen im Stadtgebiet. Die Kosten betragen 120 Euro je Quadratmeter.';
-const topic = { sourceUrl: 'https://x/y', public: true, officialTitle: 'Satzung', status: 'consulting', events: [], sourceText: source, hasDocumentText: true };
-const good = { title: 'Satzung zur Kostenerstattung', shortSummary: 'Der Rat berät eine Satzung.', longSummary: ['Absatz eins.', 'Absatz zwei.'], evidence: [source.slice(0, 60), source.slice(60, 120)] };
-const reply = (content, usage) => ({ ok: true, json: async () => ({ choices: [{ message: { content: JSON.stringify(content) } }], usage }) });
-const run = async (answers) => { const real = globalThis.fetch; let i = 0; globalThis.fetch = async () => answers[i++]; try { return await summarize(topic, { apiKey: 'k', model: 'm1' }); } finally { globalThis.fetch = real; } };
-
-test('Token beider Aufrufe werden erfasst', async () => {
-  const t = await run([reply(good, { prompt_tokens: 100, completion_tokens: 20, prompt_tokens_details: { cached_tokens: 40 } }), reply({ passed: true, issues: [] }, { prompt_tokens: 150, completion_tokens: 5 })]);
-  assert.equal(t.aiUsage.model, 'm1');
-  assert.deepEqual(t.aiUsage.summary, { prompt: 100, completion: 20, cached: 40 });
-  assert.deepEqual(t.aiUsage.check, { prompt: 150, completion: 5, cached: 0 });
-  assert.equal(t.aiUsage.total, 275);
-  assert.equal(t.aiUsage.outcome, 'ok');
-  assert.deepEqual([t.aiUsage.words, t.aiUsage.sources, t.aiUsage.attachments], [18, 1, 0]);
-});
-
-test('fehlgeschlagene Prüfung wird trotzdem erfasst', async () => {
-  const t = await run([reply(good, { prompt_tokens: 100, completion_tokens: 20 }), reply({ passed: false, issues: ['x'] }, { prompt_tokens: 150, completion_tokens: 5 })]);
-  assert.equal(t.summaryIssue, 'Sachprüfung fehlgeschlagen');
-  assert.equal(t.aiUsage.total, 275);
-  assert.equal(t.aiUsage.outcome, 'Sachprüfung fehlgeschlagen');
-});
 
 test('Auswertung: Summe, Durchschnitt, Kosten nur mit Preistabelle, unbekannt separat', () => {
   const row = (model, total, outcome = 'ok', words = 1000) => ({ method: 'x', agent: 'a', model, outcome, total_tokens: total, input_tokens: total - 10, output_tokens: 10, cached_tokens: 0, word_count: words, source_count: 2, attachment_count: 1 });

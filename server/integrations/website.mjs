@@ -2,7 +2,7 @@ import {extractText,getDocumentProxy} from 'unpdf';
 import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
 import {windowStart} from './history-window.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
-import {BUDGET_REACHED,budgeted,isRejectionPage,REFUSED} from './request-budget.mjs';
+import {BUDGET_REACHED,budgeted,isRejectionPage,REFUSED,statusError} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {bodyBytes} from './body-bytes.mjs';
 import {parseRobots,robotsAllow} from './robots.mjs';
@@ -80,7 +80,7 @@ async function fetchSite(url,source,timeoutMs,request,accept,limit){
    if(closed('',next)||isRisLink(next)||isSearchLink(next))throw Error(NOT_READ);
    continue;
   }
-  if(!r.ok){await r.body?.cancel();throw Error('Quelle antwortet mit HTTP '+r.status);}
+  if(!r.ok){await r.body?.cancel();throw statusError('Quelle antwortet mit HTTP ',r);}
   // A page is read up to the limit of pages also where a document was asked for.
   const type=r.headers.get('content-type')||'',bytes=await bodyBytes(r,/html|xml|json|text\//i.test(type)?Math.min(limit,LIMITS.htmlBytes):limit);
   return {bytes,type};

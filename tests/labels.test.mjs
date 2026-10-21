@@ -32,7 +32,7 @@ test('Titelregel ist readReport ohne Text: gleiche Art des Punkts, gleiches Them
 });
 test('Katalog: 10 Themen in der Reihenfolge von themes.mjs, dann unklar; Übersetzung der 16 alten Labels',()=>{
  assert.deepEqual(LABELS.map(l=>l.id),[...THEMES.map(t=>t.id),'unklar']);
- assert.ok(LABELS.every(l=>/^#[0-9a-f]{6}$/.test(l.color)));
+ assert.ok(LABELS.every(l=>Object.keys(l).join()==='id,name'),'nur id und Name, keine Farben außerhalb der Palette');
  assert.equal(Object.keys(LEGACY_LABELS).length,16);
  assert.ok(Object.values(LEGACY_LABELS).every(id=>LABELS.some(l=>l.id===id)));
  assert.deepEqual([labelOf('klima','labels-v2'),labelOf('sport','labels-v2'),labelOf('gesundheit','labels-v2'),labelOf('sitzung','labels-v2'),labelOf('kultur',LABEL_VERSION),labelOf('sport',LABEL_VERSION),labelOf('bauen','labels-v1')],

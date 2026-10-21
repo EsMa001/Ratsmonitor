@@ -1,20 +1,11 @@
 // E5 and E6 of the code analysis: patterns over foreign text stay linear; internal tokens are compared in constant time.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {extractPassages} from '../server/integrations/documents.mjs';
 import {htmlToLines} from '../server/integrations/website-text.mjs';
 import {parseRobots,robotsAllow,robotsPathMatches} from '../server/integrations/robots.mjs';
 import {validBearer,validPreparedToken} from '../server/integrations/prepared-access.mjs';
 
 const timed=fn=>{const t=performance.now();const r=fn();return [r,performance.now()-t];};
-
-test('passages of a document without sentence ends are found in linear time, sentences as before',()=>{
- const [none,ms]=timed(()=>extractPassages('Sachverhalt: '+'wort '.repeat(12000)));
- assert.ok(ms<500,'60.000 Zeichen ohne Satzzeichen: '+Math.round(ms)+' ms');assert.deepEqual(none,[]);
- const text='Beschlussvorschlag: Der Rat beschließt den Neubau der Grundschule am Standort Nord mit einem Kostenrahmen von vier Millionen Euro. Die Verwaltung wird beauftragt, die Planung bis zum Frühjahr vorzulegen und den Förderantrag beim Land zu stellen! Abs. 3 gilt entsprechend für den Ausbau der Mensa im Jahr 2027 mit allen Nebenanlagen? Seite 2';
- const passages=extractPassages(text);
- assert.equal(passages.length,3);assert.match(passages[0],/^Beschlussvorschlag: Der Rat beschließt/);assert.match(passages[1],/^Die Verwaltung/);assert.match(passages[2],/^3 gilt entsprechend/,'"Abs." ends a sentence, as before');
-});
 
 test('a tag followed by a long run of spaces does not stall the page reader',()=>{
  const [lines,ms]=timed(()=>htmlToLines('<html><body><p>Vorher</p><a '+' '.repeat(60000)+'>Link</a><p>Nachher</p></body></html>'));

@@ -87,6 +87,41 @@ Branch `cleanup/backend` (von `main` 3b22a0f8). Nur gelesen, nichts geändert. F
 9. `/api/dokument` aus der PDF-Ablage statt live (schneller, bricht aber „nichts wird gespeichert“).
 10. Farben: `app/api/dokument` `errorPage` nutzt `#18181b`, `#52525b`, `#268478` außerhalb von „Petrol klar“.
 
+### Entschieden am 20.10.2026
+
+| Nr. | Entscheidung | Umsetzung |
+|---|---|---|
+| C1 Push | Entfernen. Keine Vorliebe angegeben, also die Empfehlung; ein Einspruch geht noch. | `app/api/push/*`, `server/services/push.ts`, `dispatchDecisionPush` in `sync.ts`, `pushConfigured`, `public/sw.js`, VAPID-Zeilen der Vorlage |
+| C2 Admin-Routen | Alle drei entfernen. | `/api/admin/analyse`, `/import`, `/prepared-analysis`, dazu `refreshSummaries` mit OpenAI-Zusammenfassung (`runSync` Modus `summaries`), `server/data/billerbeck-content-v1.json`; Tests anpassen |
+| C3 Alter Admin-Weg | Entfernen. Berichtigt: Auf dem Server ist er laut `docs/betrieb/node-server.md` seit 19.10. aus (`ADMIN_LEGACY_HEADER=0`), nicht an. | `admin/claim`, `adminAccess`, `getChatGPTUser`, `Vary: oai-authenticated-user-id`; vorher auf dem Server `cleanup-legacy` (nur nach Rückfrage) |
+| C4 Skripte | Entfernen: `summaries.mjs`, `facts.mjs`, `read-reports-check.mjs`, `scripts/ai-batch/`, `dedupe-analyses.mjs`, `check-dup-shared.mjs`, verworfene Thema-Varianten samt Fixtures. Bleiben: `compact-/prune-versions` (dokumentierte Wartung), `ocr-mac`/`ocr-import` (Test). | CLAUDE.md und Doku mitziehen |
+| C5 Rückfall-Startdaten | Eigenes Paket nach Paket 6 (D11). | Funktionen, Startdaten und Rückfallwege zusammen |
+| C6 `labelName` | Vereinheitlichen auf `shared/labels.mjs`. Noch drei Kopien: `analytics-decisions`, `analytics-factions`, `analytics-graph`. | Vorher prüfen, ob `graph` `null` zum Ausfiltern braucht |
+| C7 User-Agent | Projektkennung. `requirements/freischaltung-anfragen.md` sagt den Kommunen „keine Browser-Kennung“ zu. | `document-proxy.mjs` wie der Abruf, Zusatz Dokumentenansicht |
+| C8 Retry-After | Angleichen. | `website.mjs`, `citystates.mjs`, `ti-generator.mjs` über `statusError` |
+| C9 Dokumente aus der Ablage | Später, eigenes Thema: Aktualität und Rechtliches erst klären. | – |
+| C10 Farben der Fehlerseite | Berichtigt, keine Entscheidung nötig: `#18181b`, `#52525b` und `#268478` sind die Palettenwerte (Text, Grautext, Petrol). Die eigenständige HTML-Seite hat keine CSS-Variablen. | bleibt |
+| C11 Themenfarben | Entfernen. `LABELS` in `shared/labels.mjs` tragen Hex-Farben außerhalb der Palette, die Oberfläche nutzt sie nicht. | `color`/`COLORS` raus, `tests/labels.test.mjs` anpassen |
+
+### Umsetzung (20.10.2026)
+
+- **Paket C (Branch `cleanup/entscheidungen`, Commit b9322ea1):** C1, C2, C4, C6, C7, C8, C11 wie entschieden. Typecheck, Lint (0 Fehler), Tests (nur die zwei bekannten Windows-Fehler) und `build-node` laufen durch.
+- **Folgen von C2 und C4**, entfernt, weil kein Aufrufer mehr da war:
+  - `compact-summary.mjs`
+  - `enrichDocument` und `extractPassages` in `documents.mjs`
+  - `sharedByHosts` in `quality-check.mjs`
+  - die Ablage-Methoden für `text_hashes`/`facts_keys` in `pdf-store.mjs`
+- **`qualityCheck` bleibt:** `oparl.mjs` ruft es beim Abruf von Münster selbst auf. Die neue Lint-Regel `no-undef` hat das gezeigt.
+- **C3 (eigener Branch `cleanup/legacy-admin`):**
+  - Rückfrage: Den Cloudflare-Build braucht niemand mehr. Damit ist Variante a aus `requirements/konten-konzept.md` aufgehoben.
+  - Entfernt sind alter Weg, Freischaltung, `bind-admin-owner.mjs` und `legacyHeader`.
+  - `tests/admin.test.mjs` prüft die Admin-Routen jetzt über den Kontoweg.
+  - Die Zeile `admin-owner-v1` bleibt auf dem Server (entschieden, ungelesen). Einen Befehl `cleanup-legacy` gab es nie, nur die Warnung in `serve.mjs` nannte ihn.
+  - Laut Konzept wird zwei Wochen nach Schritt 4 (19.10.) aufgeräumt, also frühestens am 02.11. Bis dahin wäre `ADMIN_LEGACY_HEADER=1` der Rückweg.
+- **Neu aufgefallen, außerhalb von „Petrol klar“ (nicht geändert):**
+  - Konto-Mails: `server/accounts/mail-templates.mjs` (`#0f5e66`, `#1f2937`, `#6b7280`, `#f6f7f9`).
+  - Kategorien des Lückenatlas: `shared/atlas-categories.mjs` (Grün, Violett, Rot).
+
 ## Vorgeschlagene Pakete
 
 1. A1 Sicherheitsnetz (Lint grün für Backend, `test`/`typecheck`).

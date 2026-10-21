@@ -6,11 +6,10 @@ import {THEMES,OPEN,themeOf} from './themes.mjs';
 import {itemKind} from './item-kind.mjs';
 export const LABEL_VERSION='labels-v3';
 export const CLASSIFIER_VERSION='title-rules-v7';
-const COLORS={bauen:'#945432',finanzen:'#526086',mobilitaet:'#2b6f91',bildung:'#2352ad',umwelt:'#31774f',soziales:'#965775',
- kultur:'#a14a60',sicherheit:'#965134',verwaltung:'#64606e',wirtschaft:'#86682e'};
+/* Ohne Farben: Die Oberfläche färbt Themen nicht nach Katalog, Farben kommen nur aus der Palette „Petrol klar“ (app/ratsmonitor.css). */
 export const LABELS=[
- ...THEMES.map(t=>({id:t.id,name:t.name,color:COLORS[t.id]})),
- {id:'unklar',name:'Sonstiges',color:'#777777'}
+ ...THEMES.map(t=>({id:t.id,name:t.name})),
+ {id:'unklar',name:'Sonstiges'}
 ];
 /** Übersetzung der 16 Labels aus labels-v2; Formalien erkennt die Suche über itemKind (drizzle/0033), nicht über ein Label. */
 export const LEGACY_LABELS={bildung:'bildung',bauen:'bauen',mobilitaet:'mobilitaet',umwelt:'umwelt',klima:'umwelt',soziales:'soziales',

@@ -8,9 +8,8 @@ export async function POST(request: Request) {
     if (!await authorized(request))
         return Response.json({ error: 'Nicht autorisiert' }, { status: 401 });
     const mode = new URL(request.url).searchParams.get('mode') || 'metadata';
-    if (mode !== 'metadata' && mode !== 'summaries')
+    if (mode !== 'metadata')
         return Response.json({ error: 'Ungültiger Importmodus' }, { status: 400 });
-    if(mode==='summaries')return Response.json({error:'Textverarbeitung ist hier deaktiviert. Bitte im angemeldeten Adminbereich manuell starten.'},{status:403});
     const region=new URL(request.url).searchParams.get('region')||'muenster';
     if(!validRegion(region))return Response.json({error:'Unbekanntes Gebiet'},{status:400});
     // window: look-back period ('1d' … '24m'); without it the established twelve months. An unknown value is refused by runSync.

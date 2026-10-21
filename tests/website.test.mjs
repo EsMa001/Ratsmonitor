@@ -548,3 +548,11 @@ test('the file storage of a website CMS is read only where the entry names it; o
  for(const url of ['https://www.elsewhere.example.test/a.pdf','https://daten2.verwaltungsportal.de.example.test/a.pdf','http://daten2.verwaltungsportal.de/a.pdf'])assert.throws(()=>siteAllowed(url,s),/Nicht freigegebene/,url);
  assert.throws(()=>siteAllowed('https://daten2.verwaltungsportal.de/a.pdf',{base:'https://www.lychen.de/'}),/Nicht freigegebene/,'not without alsoFrom');
 });
+
+test('fetchSiteText gives the waiting time of a refusal (429, 503 with Retry-After) like fetchText',async()=>{
+ const request=fakeFetch({[base+'busy']:{status:429,headers:{'retry-after':'120'}},[base+'down']:{status:503,headers:{'retry-after':'30'}},[base+'gone']:{status:404}});
+ const error=async u=>{try{await fetchSiteText(u,{base},5000,request);}catch(e){return e;}throw Error('no error for '+u);};
+ const busy=await error(base+'busy');assert.equal(busy.message,'Quelle antwortet mit HTTP 429');assert.equal(busy.retryAfterMs,120000);
+ assert.equal((await error(base+'down')).retryAfterMs,30000);
+ const gone=await error(base+'gone');assert.equal(gone.message,'Quelle antwortet mit HTTP 404');assert.equal(gone.retryAfterMs,undefined);
+});

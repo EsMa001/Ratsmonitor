@@ -23,7 +23,7 @@ import {fetchText,text} from './sessionnet.mjs';
 import {isNonPublicText} from './website-text.mjs';
 import {ckanSearchUrl,ckanExtra,ckanLinks,ckanActive,ckanSession,CKAN_ROWS,CKAN_MAX_PAGES} from './ckan.mjs';
 import {windowStart} from './history-window.mjs';
-import {budgeted} from './request-budget.mjs';
+import {budgeted,statusError} from './request-budget.mjs';
 import {sourceDecision} from './source-fields.mjs';
 import {category,hash,sourceSummary} from './oparl.mjs';
 import {collectRegionalOparl} from './oparl-regional.mjs';
@@ -273,7 +273,7 @@ export async function pardokBlocks(chunks,onBlock){
 /** Text chunks of a download, without redirects, with our name and a timeout for the whole transfer. */
 export async function* streamText(url,{timeoutMs=150000,request=fetch}={}){
  const r=await fetchNoRedirect(url,{signal:AbortSignal.timeout(timeoutMs),headers:{'User-Agent':SOURCE_USER_AGENT,Accept:'application/xml,text/xml'}},request);
- if(!r.ok){await r.body?.cancel();throw Error('Quelle antwortet mit HTTP '+r.status);}
+ if(!r.ok){await r.body?.cancel();throw statusError('Quelle antwortet mit HTTP ',r);}
  const reader=r.body.getReader(),decoder=new TextDecoder('utf-8');
  for(;;){const {done,value}=await reader.read();if(done)break;yield decoder.decode(value,{stream:true});}
  const tail=decoder.decode();if(tail)yield tail;
