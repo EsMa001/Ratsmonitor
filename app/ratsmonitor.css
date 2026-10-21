@@ -264,33 +264,33 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
 
 /* plenara.X mit Karte (Themenatlas, Werte, Projekte): wie die Suche am breiten Bildschirm: Karte groß links und fest, Liste rechts daneben */
 @media (min-width:1024px){
-  .rm-xsplit{grid-template-columns:minmax(0,1fr) minmax(460px,38%) !important}
+  .rm-xsplit{grid-template-columns:minmax(0,1fr) minmax(460px,38%)}
   .rm-xsplit--solo{grid-template-columns:minmax(0,1fr) !important}
   .rm-xsplit>*{grid-column:auto !important}
-  .rm-xsplit-map{position:sticky !important;top:calc(var(--hdr,58px) + 92px) !important;height:calc(100dvh - var(--hdr,58px) - 108px);min-height:420px;display:flex;flex-direction:column}
+  .rm-xsplit-map{position:sticky;top:calc(var(--hdr,58px) + 92px) !important;height:calc(100dvh - var(--hdr,58px) - 108px);min-height:420px;display:flex;flex-direction:column}
   .rm-xsplit-map :has(.rm-mapwrap){display:flex;flex-direction:column;flex:1 1 0;min-height:0}
   .rm-xsplit-map .rm-mapwrap{display:flex;flex-direction:column;flex:1 1 0;min-height:0}
-  .rm-xsplit-map .rm-mapbox{height:auto !important;flex:1 1 0;min-height:0}
+  .rm-xsplit-map .rm-mapbox{height:auto;flex:1 1 0;min-height:0}
 }
 
 /* Themenatlas am breiten Bildschirm: dünnes Petrol-Band über die ganze Breite, darunter links die Karte (Hälfte, randlos, Suche und Filter darauf)
    und rechts Themenkacheln und Listen. Die Zwischenebenen werden mit display:contents aufgelöst; Karte und Platzhalter belegen die linke
    Spalte, alles andere fällt automatisch nach rechts. */
 @media (min-width:1024px){
-  main.rm-xwide{display:grid;grid-template-columns:minmax(0,var(--xl,1.1fr)) minmax(0,1fr);column-gap:12px;align-items:start;padding-left:0 !important;padding-right:max(1vw,16px) !important}
+  main.rm-xwide{display:grid;grid-template-columns:minmax(0,var(--xl,1.1fr)) minmax(0,1fr);column-gap:12px;align-items:start;padding-left:0;padding-right:max(1vw,16px)}
   main.rm-xwide::before{content:"";grid-area:2 / 1 / span 80;align-self:stretch;background:var(--rm-c50);border-right:1px solid var(--rm-c200)}
   main.rm-xwide section[aria-label="Auswertung des Themas"],main.rm-xwide section[aria-label="Auswertung des Themas"]>div[aria-busy],main.rm-xwide>div[aria-busy],main.rm-xwide .rm-xsplit{display:contents}
   main:is(.rm-xwide,.rm-xnet).rm-noplay div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch)>div{padding-left:52px}
-  main.rm-xwide .rm-xfilter{position:static !important;min-height:0 !important;margin:0 !important;padding:0 !important;background:none !important}
-  main.rm-xwide .rm-art-std,main.rm-xwide .rm-karte-toggle,main.rm-xwide nav[aria-label="Wert"],main.rm-xwide .rm-xsplit-map>p{display:none !important}
+  main.rm-xwide .rm-xfilter{position:static;min-height:0;margin:0;padding:0;background:none}
+  main.rm-xwide .rm-art-std,main.rm-xwide .rm-karte-toggle,main.rm-xwide nav[aria-label="Wert"],main.rm-xwide .rm-xsplit-map>p{display:none}
   main.rm-xwide nav.rm-xrail ul>li{width:auto}
   main.rm-xwide nav.rm-xrail ul:not(.rm-rail-sub){flex-wrap:nowrap}
-  main.rm-xwide .rm-xsplit-map{grid-area:2 / 1 / span 80 !important;align-self:start;top:var(--xt) !important;height:var(--xmh);min-height:0}
+  main.rm-xwide .rm-xsplit-map{grid-area:2 / 1 / span 80;align-self:start;top:var(--xt);height:var(--xmh);min-height:0}
   main.rm-xwide .rm-xsplit-map .rm-mapbox{border:0;border-radius:0;background:transparent}
   /* Alles auf der Karte rund und als Milchglas wie in der Suche: Suchleiste, Knöpfe, Ebene */
   main:is(.rm-xwide,.rm-xnet) .rm-xebene{position:absolute;right:14px;bottom:12px;z-index:6;margin:0;padding:4px 6px;border-radius:9999px;background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75)}
   /* Zeitraum ebenfalls auf der Karte (oben, neben der Ebene), die Fassung rechts entfällt */
-  main:is(.rm-xwide,.rm-xnet) .rm-zeit-std,main:is(.rm-xwide,.rm-xnet) .rm-schritt-std{display:none !important}
+  main:is(.rm-xwide,.rm-xnet) .rm-zeit-std,main:is(.rm-xwide,.rm-xnet) .rm-schritt-std{display:none}
   main:is(.rm-xwide,.rm-xnet) .rm-xzeit{display:block}
   main:is(.rm-xwide,.rm-xnet) .rm-xzeit .touch-pan-y{padding:3px;gap:2px;border-radius:9999px;background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75)}
   main:is(.rm-xwide,.rm-xnet) .rm-xzeit .touch-pan-y>span[aria-hidden]{border-radius:9999px;top:3px;bottom:3px;box-shadow:0 2px 8px rgba(24,24,27,.14)}
@@ -308,7 +308,7 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
   html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xebene,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>button,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.relative>button,html.rm-dark main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0{background:linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));border-color:rgba(154,156,162,.22);box-shadow:0 8px 28px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
   /* Karte wie in der Suche: Suchleiste mit Play und Filter in der Mitte; mit Auswahl (Chips) springt sie nach unten, die Chips stehen darüber */
   main:is(.rm-xwide,.rm-xnet)::after{content:"";grid-area:1 / 1 / 2 / -1;height:0}
-  main:is(.rm-xwide,.rm-xnet){--xt:calc(var(--hdr,58px) + 48px);--xmh:calc(100dvh - var(--xt));padding-top:48px !important}
+  main:is(.rm-xwide,.rm-xnet){--xt:calc(var(--hdr,58px) + 48px);--xmh:calc(100dvh - var(--xt));padding-top:48px}
   main.rm-xwide .rm-mapbox>div.inset-x-16{top:56px;bottom:auto}
   /* Zoom-Knöpfe unten links, damit die Themenleiste ganz oben rechts beginnen kann */
   main.rm-xwide .rm-mapbox>.right-3{right:auto;left:12px;top:auto;bottom:14px}
@@ -323,7 +323,7 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
   main:is(.rm-xwide,.rm-xnet) div:has(>.rm-xsearch)>:not(.rm-solid){order:3;padding-left:0;text-align:left}
 
   /* Band: eine dünne Zeile (Zurück, Titel, Zahl, Seiten), bis an den rechten Rand */
-  main:is(.rm-xwide,.rm-xnet) .pl-band{position:fixed;top:var(--hdr,58px);left:0;right:0;z-index:40;display:flex;align-items:center;gap:20px;margin:0 !important;height:48px;min-height:0;padding:6px max(1vw,16px) 8px !important;border-radius:0;width:auto}
+  main:is(.rm-xwide,.rm-xnet) .pl-band{position:fixed;top:var(--hdr,58px);left:0;right:0;z-index:40;display:flex;align-items:center;gap:20px;margin:0;height:48px;min-height:0;padding:6px max(1vw,16px) 8px !important;border-radius:0;width:auto}
   main:is(.rm-xwide,.rm-xnet) .pl-band>div:not(.hidden){display:contents}
   main:is(.rm-xwide,.rm-xnet) .pl-band .back-btn{margin:0;order:1}
   main:is(.rm-xwide,.rm-xnet) .pl-band h1{order:2;font-size:20px;margin:0}
@@ -332,18 +332,18 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
   main:is(.rm-xwide,.rm-xnet) .pl-band .rm-band-mid p:not(:first-child){display:none}
   main:is(.rm-xwide,.rm-xnet) .pl-band nav[aria-label="Auswertungen"]{order:4;margin-left:auto}
   /* Themen und Unterthemen als Milchglas auf der Karte (rechter Rand, unter den Zoom-Knöpfen); Unterthemen klappen unter dem gewählten Thema auf, die übrigen treten zurück */
-  main:is(.rm-xwide,.rm-xnet) nav.rm-xrail{grid-area:2 / 1 / span 80;justify-self:end;align-self:start;position:sticky;top:var(--xt);z-index:35;margin:0 !important;height:var(--xmh);width:168px;padding:12px 12px 14px 0;pointer-events:none}
+  main:is(.rm-xwide,.rm-xnet) nav.rm-xrail{grid-area:2 / 1 / span 80;justify-self:end;align-self:start;position:sticky;top:var(--xt);z-index:35;margin:0;height:var(--xmh);width:168px;padding:12px 12px 14px 0;pointer-events:none}
   main:is(.rm-xwide,.rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub){display:flex;flex-direction:column;gap:6px;height:auto;pointer-events:none}
   main:is(.rm-xwide,.rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li{flex:0 0 44px;min-height:0}
   main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button{pointer-events:auto;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;width:100%;height:100%;min-height:0;padding:0 10px;text-align:left;font-size:12px;line-height:1.15;border-radius:18px;color:var(--rm-c800);background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75);transition:background .25s,opacity .25s,box-shadow .25s}
   main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button:hover{background:rgba(255,255,255,.85)}
   main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button[aria-pressed=true]{background:rgba(255,255,255,.94);color:var(--rm-c900);font-weight:600}
   main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button svg{width:20px;height:20px;flex:none}
-  main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button[aria-pressed=true]>svg{color:var(--rm-fill) !important}
+  main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button[aria-pressed=true]>svg{color:var(--rm-fill)}
   html.rm-dark main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button{background:linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));border-color:rgba(154,156,162,.22);color:var(--rm-c800)}
   html.rm-dark main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button[aria-pressed=true]{background:rgba(255,255,255,.16)}
   /* Die schmale Titelzeile unter der Kopfzeile ändert deren Höhe beim Scrollen: die Karte würde wackeln */
-  html:has(main:is(.rm-xwide,.rm-xnet)) .rm-deskbar{display:none !important}
+  html:has(main:is(.rm-xwide,.rm-xnet)) .rm-deskbar{display:none}
   /* Ruhiger: ein gemeinsamer, leichter Schatten für alles auf der Karte, Legende ohne Kasten */
   main:is(.rm-xwide,.rm-xnet) .rm-xebene,main:is(.rm-xwide,.rm-xnet) .rm-xzeit .touch-pan-y,main:is(.rm-xwide,.rm-xnet) nav.rm-xrail button,main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>button,main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.relative>button,main:is(.rm-xwide,.rm-xnet) .rm-xsearch [role=search]>div.min-w-0,main:is(.rm-xwide,.rm-xnet) .rm-mapbox>.right-3{box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7)}
   /* Eine Glasoptik für alles auf der Karte */
@@ -375,12 +375,12 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
   /* Legende ohne Kasten, schlicht auf der Karte */
   main:is(.rm-xwide,.rm-xnet) .rm-mapbox>.rm-legend:not(.right-3){background:none;-webkit-backdrop-filter:none;backdrop-filter:none;border:0;box-shadow:none;padding-left:2px}
   /* Trends: Karte der Ausbreitung und Platzhalter füllen die Zelle; Zeitleiste unten, Suche darüber; Legende und Zoom weichen */
-  main.rm-xwide .rm-xsplit-map>section[aria-label="Karte der Ausbreitung"],main.rm-xwide .rm-xsplit-map>div.grid{flex:1 1 0;height:auto !important;min-height:0;border:0 !important;border-radius:0 !important}
+  main.rm-xwide .rm-xsplit-map>section[aria-label="Karte der Ausbreitung"],main.rm-xwide .rm-xsplit-map>div.grid{flex:1 1 0;height:auto;min-height:0;border:0;border-radius:0}
   main.rm-xwide:has(section[aria-label="Karte der Ausbreitung"]) .rm-xtop{bottom:78px}
   main.rm-xwide section[aria-label="Karte der Ausbreitung"]>.rm-legend.left-3{top:60px}
   main.rm-xwide section[aria-label="Karte der Ausbreitung"]>.rm-legend.right-3{right:auto;left:12px;top:auto;bottom:78px}
   main:is(.rm-xwide,.rm-xnet) .rm-sub-std,main:is(.rm-xwide,.rm-xnet) .rm-sub-wide{display:none}
-  main:is(.rm-xwide,.rm-xnet) .rm-rail-sub{display:flex;flex-direction:column;gap:4px;position:absolute;right:calc(100% + 8px);top:0;width:176px;margin:0 !important;padding:0 !important;list-style:none;pointer-events:none;animation:rm-subout .28s cubic-bezier(.22,.9,.28,1) both;transform-origin:right top}
+  main:is(.rm-xwide,.rm-xnet) .rm-rail-sub{display:flex;flex-direction:column;gap:4px;position:absolute;right:calc(100% + 8px);top:0;width:176px;margin:0;padding:0;list-style:none;pointer-events:none;animation:rm-subout .28s cubic-bezier(.22,.9,.28,1) both;transform-origin:right top}
   main:is(.rm-xwide,.rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li:nth-child(n+7) .rm-rail-sub{top:auto;bottom:0;transform-origin:right bottom}
   @keyframes rm-subout{from{opacity:0;transform:translateX(14px) scale(.96)}to{opacity:1;transform:none}}
   main:is(.rm-xwide,.rm-xnet) .rm-rail-sub li{height:34px;flex:none}
@@ -391,18 +391,18 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
   main:is(.rm-xwide,.rm-xnet) nav.rm-xrail .rm-rail-sub button svg{width:16px;height:16px}
   main:is(.rm-xwide,.rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li.rm-rail-open{position:relative;z-index:2}
   /* Themennetz und Gremiennetz: Netz als Bühne über die Höhe des Fensters, Suche, Detailstufe und Themen als Glas darauf; Rest darunter */
-  main.rm-xnet{display:grid;grid-template-columns:minmax(0,var(--xl,1fr)) minmax(0,1fr);column-gap:12px;align-items:start;padding-left:0 !important;padding-right:max(1vw,16px) !important}
+  main.rm-xnet{display:grid;grid-template-columns:minmax(0,var(--xl,1fr)) minmax(0,1fr);column-gap:12px;align-items:start;padding-left:0;padding-right:max(1vw,16px)}
   main.rm-xnet::before{content:"";grid-area:2 / 1 / span 80;align-self:stretch;background:var(--rm-c50);border-right:1px solid var(--rm-c200)}
   main.rm-xnet>:not(.pl-band):not(.rm-xstage):not(nav.rm-xrail):not(.rm-xseg):not(:has(>.rm-xsearch)){margin-left:0;margin-right:0}
   main.rm-xnet>div[aria-busy]{display:contents}
-  main.rm-xnet section.rm-xstage{grid-area:2 / 1 / span 80 !important;align-self:start;position:sticky;top:var(--xt);height:var(--xmh) !important;margin:0 !important;border:0 !important;border-radius:0 !important}
+  main.rm-xnet section.rm-xstage{grid-area:2 / 1 / span 80;align-self:start;position:sticky;top:var(--xt);height:var(--xmh);margin:0;border:0;border-radius:0}
   /* Das Netz selbst lässt rechts Platz für die Themenkacheln, die auf der Bühne liegen; Zoom und Legende rücken daneben */
-  main.rm-xnet .rm-xstage>.rm-netstage{right:192px;background:none !important}
+  main.rm-xnet .rm-xstage>.rm-netstage{right:192px;background:none}
   main.rm-xnet .rm-xstage>.rm-stage-chip.right-3{right:204px}
   main.rm-xnet .rm-xstage>.rm-stage-chip.left-3.top-3:not(.z-\[7\]){right:204px}
-  main.rm-xnet nav.rm-xrail{margin:0 !important}
+  main.rm-xnet nav.rm-xrail{margin:0}
   main.rm-xnet div:has(>.rm-xsearch){padding:12px 14px 0 14px;margin:0 192px 0 0}
-  main.rm-xnet .rm-xseg{grid-area:2 / 1 / span 80;justify-self:center;align-self:start;position:sticky;top:calc(var(--xt) + var(--xmh) - 52px);z-index:30;margin:0 192px 0 0 !important;display:block;height:0;overflow:visible}
+  main.rm-xnet .rm-xseg{grid-area:2 / 1 / span 80;justify-self:center;align-self:start;position:sticky;top:calc(var(--xt) + var(--xmh) - 52px);z-index:30;margin:0 192px 0 0;display:block;height:0;overflow:visible}
   main.rm-xnet .rm-xseg .touch-pan-y{padding:3px;gap:2px;border-radius:9999px;background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(230,243,241,.46));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.82);box-shadow:0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7)}
   main.rm-xnet .rm-xseg .touch-pan-y>span[aria-hidden]{border-radius:9999px;top:3px;bottom:3px;box-shadow:0 2px 8px rgba(24,24,27,.14)}
   main.rm-xnet .rm-xseg button{height:32px;border-radius:9999px;padding:0 12px}
@@ -410,14 +410,14 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
   html.rm-dark main.rm-xnet .rm-xseg .touch-pan-y>span[aria-hidden]{background:rgba(255,255,255,.16)}
   /* Bühne: Legende und Zurück unten, Hinweise unten statt oben, Karte der Detailstufe oben rechts */
   main.rm-xnet .rm-xstage .rm-stage-chip.left-3.top-3:not(.z-\[7\]){top:auto;bottom:12px;left:auto;right:12px}
-  main.rm-xnet .rm-xstage .rm-stage-chip.z-\[7\]{top:auto !important;bottom:12px;left:12px}
+  main.rm-xnet .rm-xstage .rm-stage-chip.z-\[7\]{top:auto;bottom:12px;left:12px}
   main.rm-xnet .rm-xstage .inset-x-16.top-3,main.rm-xnet .rm-xstage .inset-x-16.bottom-3{top:auto;bottom:62px}
   main.rm-xnet .rm-xstage .rm-glass.rm-liquid{bottom:64px !important}
 }
 
 /* Dünnes Kopfband auch auf den übrigen plenara.X-Seiten (Ortsvergleich, Beschlusslage, Fraktionen, Nachrichten, Trends): eine Zeile mit Zurück, Titel, Zahl und Seiten; die Titelzeile unter der Kopfzeile entfällt, damit sich die Kopfhöhe beim Scrollen nicht ändert */
 @media (min-width:1024px){
-  main:not(.rm-xwide):not(.rm-xnet) .pl-band{display:flex;align-items:center;gap:20px;min-height:0 !important;padding-top:6px !important;padding-bottom:8px !important;margin-bottom:16px !important}
+  main:not(.rm-xwide):not(.rm-xnet) .pl-band{display:flex;align-items:center;gap:20px;min-height:0;padding-top:6px !important;padding-bottom:8px !important;margin-bottom:16px}
   main:not(.rm-xwide):not(.rm-xnet) .pl-band>div:not(.hidden){display:contents}
   main:not(.rm-xwide):not(.rm-xnet) .pl-band .back-btn{margin:0;order:1}
   main:not(.rm-xwide):not(.rm-xnet) .pl-band h1{order:2;font-size:20px;margin:0}
@@ -427,7 +427,7 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
   main:not(.rm-xwide):not(.rm-xnet) .pl-band p.rm-band-mid{font-size:16px}
   main:not(.rm-xwide):not(.rm-xnet) .pl-band nav[aria-label="Ansicht"]{order:3;margin:0 !important}
   main:not(.rm-xwide):not(.rm-xnet) .pl-band nav[aria-label="Auswertungen"]{order:4;margin-left:auto}
-  html:has(.pl-band) .rm-deskbar{display:none !important}
+  html:has(.pl-band) .rm-deskbar{display:none}
   main:not(.rm-xwide):not(.rm-xnet) .pl-band{position:sticky;top:var(--hdr,58px);z-index:40;height:48px}
   main:not(.rm-xwide):not(.rm-xnet) div:has(>.rm-xsearch){top:calc(var(--hdr,58px) + 48px)}
   main:not(.rm-xwide):not(.rm-xnet) .rm-xfilter{top:calc(var(--hdr,58px) + 48px + 62px) !important}
@@ -442,7 +442,7 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
 
 /* Handy, alle plenara.X-Seiten: Kopfband auf eine kompakte Zeile (Titel und Kennzahl nebeneinander), damit die Karte höher steht */
 @media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px){
-  .pl-band .grid{display:flex !important;align-items:baseline;flex-wrap:wrap;gap:2px 12px}
+  .pl-band .grid{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 12px}
   .pl-band h1{font-size:22px !important;line-height:1.15}
   .pl-band .rm-band-mid p:first-child>span:first-child{font-size:20px !important}
 }
@@ -489,7 +489,7 @@ html.rm-dark .rm-wheel-list{background:linear-gradient(135deg,rgba(40,48,47,.9),
   main#inhalt .rm-xsearch [role=listbox]{background:var(--xg-pop);border:1px solid var(--xg-pop-line);border-radius:22px;box-shadow:var(--xg-pop-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
 }
 @media (max-width:1023px){
-  main.rm-xhero .rm-xhero-panel{background:none !important;border-right:0 !important;padding:0 !important}
+  main.rm-xhero .rm-xhero-panel{background:none;border-right:0;padding:0}
 }
 
 /* Handy, plenara.X-Seiten: ein schmaler fester Streifen in der Farbe des Bandes ganz oben, damit die Statusleiste von Anfang an Petrol (bzw. dunkel) zeigt und nicht erst nach dem Scrollen */
@@ -531,7 +531,7 @@ html.rm-search .rm-footcta{display:none}
 
 /* Desktop: Zeitraum, Schritt und Art bleiben unter der fixierten Suchzeile stehen (Höhe der Suchzeile 62 px) */
 @media (min-width:640px) and (not ((max-height:500px) and (pointer:coarse) and (max-width:1000px))){
-  .rm-xfilter{position:sticky;top:calc(var(--hdr,58px) + 62px);z-index:29;background:var(--rm-white);padding:6px 0;margin-top:0 !important}
+  .rm-xfilter{position:sticky;top:calc(var(--hdr,58px) + 62px);z-index:29;background:var(--rm-white);padding:6px 0;margin-top:0}
 }
 @media print{.rm-xfilter{position:static}}
 
@@ -601,11 +601,11 @@ html.rm-dark{--xg-pop:linear-gradient(135deg,rgba(40,48,47,.96),rgba(23,33,42,.9
 /* Handy quer (kurz, Touch, bis 1000 px): das Handy-Layout bekommt wenig Höhe. Das Band wird eine schmale Zeile (Titel und Zahl),
    die Karte füllt den Rest zwischen Kopf und unterer Leiste. */
 @media (max-height:500px) and (pointer:coarse) and (max-width:1000px){
-  .pl-band{min-height:0 !important;padding-top:2px !important;padding-bottom:8px !important;margin-bottom:6px !important}
+  .pl-band{min-height:0;padding-top:2px;padding-bottom:8px !important;margin-bottom:6px}
   .pl-band .back-btn,.pl-band .rm-band-mid>p:nth-child(n+2){display:none}
-  .pl-band h1{font-size:20px !important}
+  .pl-band h1{font-size:20px}
   .pl-band h1>*{display:none}
-  .pl-band .rm-band-mid>p:first-child span:first-child{font-size:22px !important}
+  .pl-band .rm-band-mid>p:first-child span:first-child{font-size:22px}
   .rm-mapbox{height:calc(100svh - 92px - var(--rm-tabbar,50px));min-height:150px}
 }
 
