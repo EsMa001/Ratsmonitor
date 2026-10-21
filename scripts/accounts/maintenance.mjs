@@ -35,6 +35,10 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
  await count('authEvents','DELETE FROM auth_events WHERE at<?',iso(now-RETENTION.authEvents));
  await count('mailOutbox',"DELETE FROM mail_outbox WHERE created_at<? AND status NOT IN ('queued','sending')",iso(now-RETENTION.mailOutbox));
  await count('adminAudit','DELETE FROM admin_audit WHERE at<?',iso(now-RETENTION.adminAudit));
+ // OAuth des Kunden-MCP: abgelaufene Codes und Erneuerungstoken, Anwendungen ohne gültiges Token nach 90 Tagen
+ await count('oauthCodes','DELETE FROM oauth_codes WHERE expires_at<?',iso(now-RETENTION.tokensAfterExpiry));
+ await count('oauthGrants','DELETE FROM oauth_grants WHERE expires_at<? OR revoked_at<?',iso(now),iso(now-RETENTION.tokensAfterExpiry));
+ await count('oauthClients','DELETE FROM oauth_clients WHERE coalesce(last_used_at,created_at)<? AND id NOT IN (SELECT client_id FROM oauth_grants)',iso(now-90*DAY));
  const site=cfg.siteUrl;
  // Testzugang endet: einmal, 14 Tage vorher (AGB)
  const ending=(await db.prepare(`SELECT g.id,g.user_id,g.tier,g.ends_at,u.email FROM plan_grants g JOIN users u ON u.id=g.user_id

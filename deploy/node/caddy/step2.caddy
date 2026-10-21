@@ -8,7 +8,8 @@ http://localhost:8080, http://127.0.0.1:8080 {
 187-7-72-52.sslip.io {
 	header X-Robots-Tag "noindex, nofollow"
 	import public_site
-	basicauth {
+	import mcp_routes
+	basicauth @site_password {
 		plenara HASH_NUR_AUF_DEM_SERVER
 	}
 	import app_proxy

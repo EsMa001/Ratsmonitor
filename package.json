@@ -14,7 +14,9 @@
     "build:node": "node scripts/build-node.mjs",
     "start:node": "node dist/standalone/serve.mjs",
     "mcp:internal": "node scripts/mcp-internal.mjs",
-    "mcp:customer": "node scripts/mcp-customer.mjs"
+    "mcp:customer": "node scripts/mcp-customer.mjs",
+    "mcp:http": "node scripts/mcp-http.mjs",
+    "mcp:customers": "node scripts/mcp-customers.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.1",

@@ -1,6 +1,6 @@
 // Ziel nach der Anmeldung: nur eigene, bekannte Pfade (requirements/konten-konzept.md, Abschnitt 11).
 // Geprüft wird NACH der Normalisierung durch URL: '/.//x' wird sonst zu '//x' (andere Origin im Browser).
-const PREFIXES=['/suche','/konto','/beschluss/','/thema/','/analytics','/admin','/lena','/preise','/datenabdeckung'];
+const PREFIXES=['/suche','/konto','/beschluss/','/thema/','/analytics','/admin','/lena','/preise','/datenabdeckung','/verbinden'];
 export function safeNext(value){
  if(typeof value!=='string'||!value.startsWith('/')||value.length>500)return '/';
  if(/[\u0000-\u001f\u007f\\]/.test(value))return '/';

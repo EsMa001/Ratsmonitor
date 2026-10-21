@@ -1,7 +1,7 @@
 {
   "mode": "internal",
-  "identity": "internal-local",
-  "databaseFile": "../../tmp/mcp-demo/reports.sqlite",
-  "sourceDirectory": "../../tmp/mcp-demo/pdf-store",
+  "identity": "claude-max",
+  "databaseFile": "/srv/ratsmonitor/data/ratsmonitor.sqlite",
+  "sourceDirectory": "/srv/ratsmonitor/data/pdf-store",
   "requestsPerMinute": 120
 }

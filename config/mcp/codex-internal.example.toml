@@ -1,7 +1,8 @@
-# Operator-owned configuration for INTERNAL data preparation, not for customers.
-# Replace the absolute checkout path as needed. Run scripts/mcp-demo.mjs first.
+# Interner Zugang (KI-Aufbereitung, schreibt): Prozess auf dem Server über SSH, nie für Kunden.
+# Voraussetzung: SSH-Alias "ratsmonitor" und ein Betreiberprofil auf dem Server (Vorlage internal.example.json).
 [mcp_servers.ratsmonitor_internal]
-command = "node"
-args = ["C:/Git/vor-ort-quellcode/scripts/mcp-internal.mjs", "--config", "C:/Git/vor-ort-quellcode/config/mcp/internal.example.json"]
-startup_timeout_sec = 20
+command = "ssh"
+args = ["-T", "-a", "-x", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=yes", "-o", "ClearAllForwardings=yes", "-o", "ConnectTimeout=15", "ratsmonitor",
+  "exec sudo -n -u ratsmonitor -- /usr/bin/node /srv/ratsmonitor/app/current/scripts/mcp-internal.mjs --config /srv/ratsmonitor/config/mcp/internal-max.json"]
+startup_timeout_sec = 30
 tool_timeout_sec = 120

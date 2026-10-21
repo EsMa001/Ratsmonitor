@@ -52,8 +52,19 @@ const failure = (status,detail) => {const [code,message] = errors[status];return
 const safeDetail = (mode,status,error) => mode === 'internal' && status === 400 && typeof error?.detail === 'string' &&
   error.detail.length <= 300 && !/[\u0000-\u001f]/u.test(error.detail) ? error.detail : undefined;
 
+/** Requests of the last minute; shared by all servers of one connection (HTTP creates one server per request). */
+export function minuteLimiter(requestsPerMinute) {
+  const recent = [];
+  return {take(now = Date.now()) {
+    while (recent.length && recent[0] <= now - 60000) recent.shift();
+    if (recent.length >= requestsPerMinute) return false;
+    recent.push(now);
+    return true;
+  }};
+}
+
 /** Mode and identity belong to the trusted connection configuration, never tool arguments. */
-export function createRatsmonitorMcpServer({mode,work,customer,identity='local',requestsPerMinute=60,audit}={}) {
+export function createRatsmonitorMcpServer({mode,work,customer,identity='local',requestsPerMinute=60,audit,limiter}={}) {
   if (!['internal','customer'].includes(mode)) throw Error('A fixed internal or customer MCP mode is required.');
   if (typeof identity !== 'string' || !identity.trim() || identity.length > 200 || /[\u0000-\u001f]/u.test(identity)) throw Error('A valid MCP connection identity is required.');
   if (!Number.isInteger(requestsPerMinute) || requestsPerMinute < 1 || requestsPerMinute > 600) throw Error('MCP requestsPerMinute must be between 1 and 600.');
@@ -68,16 +79,14 @@ export function createRatsmonitorMcpServer({mode,work,customer,identity='local',
       : `Customer research access is read-only and limited to the regions granted to this connection. ${untrusted} Use reports_regions before searching. Date filters cover at most 366 days; omission defaults to the previous twelve months. Searches match all query terms in indexed report search text, not entire attachments. Paginate search results, cite report IDs and source links, distinguish AI and rule summaries and do not describe a limited page as a full count. Use reports_aggregate for counts; grouping may be limited. No internal preparation tools, raw SQL or local file access are available.`,
   });
   let tail = Promise.resolve();
-  const recent = [];
+  const limit = limiter ?? minuteLimiter(requestsPerMinute);
   async function record(tool,success,status,started) {
     try { await audit?.({tool,identity,success,status,durationMs:Math.max(0,Date.now() - started)}); } catch { /* Audit failures must not replay a committed mutation. */ }
   }
   function register(name,description,schema,method,{readOnlyHint=false,idempotentHint=false}={}) {
     server.registerTool(name,{description,inputSchema:schema,annotations:{readOnlyHint,idempotentHint,destructiveHint:false,openWorldHint:false}},async(args,extra) => {
       const started = Date.now();
-      while (recent.length && recent[0] <= started - 60000) recent.shift();
-      if (recent.length >= requestsPerMinute) { await record(name,false,429,started);return failure(429); }
-      recent.push(started);
+      if (!limit.take(started)) { await record(name,false,429,started);return failure(429); }
       // One in-flight service operation bounds DB load and avoids races in per-source reading state.
       const pending = tail.then(async() => {
         if (extra.signal.aborted) { await record(name,false,408,started);return failure(408); }

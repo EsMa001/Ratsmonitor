@@ -45,6 +45,9 @@ export function accountsConfig(env,{dev=isDev()}={}){
   totpLogin:env?.LOGIN_TOTP==='1',
   hooks:env?.ACCOUNTS_HOOKS,
   internalToken:env?.IMPORT_TOKEN,
+  // Kunden-MCP über das Netz (server/accounts/oauth.mjs): Geheimnis der Zugangstoken und Kundendatei des Betreibers,
+  // beide aus /etc/ratsmonitor/mcp.env; im Dev-Server feste Werte und tmp/mcp-customers.json
+  mcp:{secret:env?.MCP_TOKEN_SECRET||(dev?DEV_SECRET:undefined),customersFile:env?.MCP_CUSTOMERS_FILE||(dev?'tmp/mcp-customers.json':undefined)},
  };
 }
 /** Anmelden per Link und Code aus der Mail: nur mit echtem Versand (Transport log verschickt nichts) */

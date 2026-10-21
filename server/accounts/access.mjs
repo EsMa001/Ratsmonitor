@@ -6,7 +6,10 @@ import {context,currentSession,accountState} from './login.mjs';
 import {validBearer} from '../integrations/prepared-access.mjs';
 
 const FREE=[/^\/anmelden(\/|$)/,/^\/registrieren$/,/^\/api\/auth\//,/^\/api\/me$/,/^\/(impressum|datenschutz|agb|widerruf|kontakt)$/,
- /^\/api\/internal\//,/^\/api\/calendar\/feed\//,/^\/api\/dev\//];
+ /^\/api\/internal\//,/^\/api\/calendar\/feed\//,/^\/api\/dev\//,
+ // OAuth für den Kunden-MCP: Registrierung, Token und Widerruf rufen Anwendungen ohne Sitzung auf; die Zustimmung
+ // (/verbinden, /api/oauth/*) verlangt weiter eine Anmeldung
+ /^\/oauth\/(authorize|token|register|revoke)$/];
 /** Statische Dateien (Bündel, Schriften, Kartendaten, Symbole) prüft die Sperre nicht */
 export const STATIC=/^\/(_next\/|fonts\/|data\/|geo\/|branchen\/|videos\/|favicon|apple-touch-icon|icon-|manifest\.webmanifest$|sw\.js$|og\.png$|robots\.txt$)/;
 

@@ -202,11 +202,12 @@ Werkzeugzugriff) arbeitet über den internen MCP-Dienst und liest nur lokal gesp
 `createAiLocalWork` (`server/integrations/ai-local-work.mjs`, Operationen `list`, `claim`, `read`, `renew`, `release`, `submit`,
 `fail`, Reservierung 30 Minuten); Quellen liefert `server/node/ai-local-sources.mjs` aus der PDF-Ablage sowie `documentText`/`sourceText`.
 
-Drei Zugänge auf dieselbe Logik:
+Zugänge auf dieselbe Logik (der Kunden-MCP nutzt nur die Recherche):
 
 | Zugang | Start | Hinweis |
 |---|---|---|
 | MCP intern (STDIO, kein Port) | `npm run mcp:internal` → `server/mcp/stdio.mjs` → `openMcpRuntime('internal')`; Werkzeuge `ai_list`, `ai_claim`, `ai_read`, `ai_renew`, `ai_release`, `ai_submit`, `ai_fail` (`server/mcp/server.mjs`) | Konfiguration mit `databaseFile`, `sourceDirectory`, `identity`, `requestsPerMinute` (`RM_MCP_CONFIG`, Vorlagen `config/mcp/`); läuft aus dem Quelltext, wird nicht gebaut; keine Unit auf dem Server |
+| MCP Kunde (HTTPS, nur lesend) | `https://plenara.de/mcp` → `server/mcp/http.mjs` (Dienst `ratsmonitor-mcp`); Werkzeuge `reports_regions`, `reports_search`, `reports_get`, `reports_aggregate` | Anmeldung per OAuth mit dem Plenara-Konto (`server/accounts/oauth.mjs`, Zustimmung `/verbinden`) oder Schlüssel; Rechte nur aus der Kundendatei (`MCP_CUSTOMERS_FILE`); `docs/betrieb/claude-mcp-einbindung.md` |
 | Kommandozeile | `scripts/ai-local.mjs list\|claim\|read\|renew\|release\|submit\|fail` | Datenbank aus `DATABASE_FILE`, sonst die Miniflare-Datei |
 | HTTP | `GET\|POST /api/admin/ai-local` (`requireAdmin`, `requireSameOrigin`, Body ≤ 3 MB), Seite „Verarbeitung“ | braucht `env.AI_LOCAL_SOURCES` (nur Node); im Dev fängt `build/ai-local-dev-plugin.mjs` die Route ab (nur Loopback) |
 

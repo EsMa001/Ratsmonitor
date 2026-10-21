@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "customers": [
+    {
+      "identity": "kunde-beispiel",
+      "name": "Beispielkunde",
+      "allowedRegionIds": ["billerbeck"],
+      "requestsPerMinute": 60,
+      "accounts": [],
+      "keys": [],
+      "disabled": false
+    }
+  ]
+}

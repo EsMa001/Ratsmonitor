@@ -3,6 +3,7 @@ import { QuellenPage } from "./QuellenPage";
 import { BenachrichtigungenPage } from "./BenachrichtigungenPage";
 import { useEffect, type ComponentType } from "react";
 import { ConfirmLoginPage, KontaktPage, LoginPage, RegisterPage } from "./AccountPages";
+import { ConnectPage } from "./ConnectPage";
 import { BranchePage } from "./BranchenPages";
 import { brancheOf } from "../lib/routes";
 import { FaqPage } from "./FaqPage";
@@ -21,6 +22,7 @@ const PAGES: Record<string, ComponentType> = {
   "/preise": PreisePage,
   "/anmelden": LoginPage,
   "/anmelden/bestaetigen": ConfirmLoginPage,
+  "/verbinden": ConnectPage,
   "/kontakt": KontaktPage,
   "/agb": AgbPage,
   "/widerruf": WiderrufPage,
