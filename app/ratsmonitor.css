@@ -152,16 +152,16 @@ html.rm-dark{--color-ink:#e4e4e7}html.rm-dark .ratsmonitor{background:var(--rm-p
 /* Dunkel: Abschlusskachel und Fußzeile */
 html.rm-dark .ri{background:var(--rm-page);color:var(--rm-c500)}
 html.rm-dark .ri-dark{background:var(--rm-page);color:var(--rm-c900)}
-html.rm-dark .ri-dark::before,html.rm-dark .ri-dark::after{background:none!important;opacity:0}
+html.rm-dark .ri-dark::before,html.rm-dark .ri-dark::after{background:none;opacity:0}
 html.rm-dark .ri-dark h2{color:var(--rm-c900)}
 html.rm-dark .ri-dark__sub{color:var(--rm-c500)}
 html.rm-dark .ri-dark .ri-btn--inv,html.rm-dark .ri-dark .ri-btn--inv:hover{background:var(--rm-btn2);color:#fff}
 html.rm-dark footer{background:var(--rm-tint);border-color:var(--rm-tint2)}
 html.rm-dark footer .border-slate-100{border-color:var(--rm-tint2)}
-html.rm-dark footer{background:var(--rm-tint)!important;background-image:none!important}html.rm-dark footer *{--tw-gradient-from:transparent}
+html.rm-dark footer{background:var(--rm-tint);background-image:none}html.rm-dark footer *{--tw-gradient-from:transparent}
 html.rm-dark footer p:first-child,html.rm-dark footer .text-slate-900{color:var(--rm-c900)!important}html.rm-dark footer p{color:var(--rm-c500)!important}html.rm-dark footer a{color:var(--rm-c600)!important}html.rm-dark footer a:hover{color:var(--rm-ac)!important}
-html.rm-dark article h3 a,html.rm-dark h3 a.text-slate-900{color:var(--rm-c900)!important}html.rm-dark .group:hover h3 a{color:var(--color-teal-200)!important}
-html.rm-dark article p>span{color:var(--rm-c600)!important}html.rm-dark article p>span mark,html.rm-dark article mark{color:var(--rm-c900)}
+html.rm-dark article h3 a,html.rm-dark h3 a.text-slate-900{color:var(--rm-c900)}html.rm-dark .group:hover h3 a{color:var(--color-teal-200)!important}
+html.rm-dark article p>span{color:var(--rm-c600)}html.rm-dark article p>span mark,html.rm-dark article mark{color:var(--rm-c900)}
 :root{--rm-page:#fff;--rm-dot:rgba(38,132,120,.22);--rm-ac2:#1f7065;--rm-fill:#268478;--rm-ok:#0c4a6e;--rm-ok2:#6f93ad;--rm-ok3:#bccbd8;--rm-no:#b45309;--rm-map1:#bfe6e0;--rm-map2:#86cbc1;--rm-map3:#4fa89b;--rm-rose:var(--rm-no);--rm-link:#29467a;--rm-warn:var(--rm-no);--rm-ac:#268478;--rm-tint:#e6f3f1;--rm-tint2:#c4e5e0;--rm-c900:#18181b;--rm-c800:#27272a;--rm-c700:#3f3f46;--rm-c600:#52525b;--rm-c500:#52525b;--rm-c400:#a1a1aa;--rm-c300:#d4d4d8;--rm-c200:#e4e4e7;--rm-c100:#f4f4f5;--rm-c50:#fafafa;--rm-white:#fff}
 html.rm-dark{--rm-page:#191e1d;--rm-dot:rgba(122,198,188,.34);--rm-ac2:#a8dcd5;--rm-fill:#46a498;--rm-ok:#8fb8d6;--rm-ok2:#6f93ad;--rm-ok3:#3a4a57;--rm-no:#fdba74;--rm-map1:#265852;--rm-map2:#367d74;--rm-map3:#46a498;--rm-rose:var(--rm-no);--rm-link:#9fb2d1;--rm-warn:var(--rm-no);--rm-ac:#7ac6bc;--rm-tint:#173531;--rm-tint2:#265852;--rm-c900:#e4e4e7;--rm-c800:#dfe0e3;--rm-c700:#d0d1d5;--rm-c600:#c4c5ca;--rm-c500:#b4b5ba;--rm-c400:#9a9ca2;--rm-c300:#3d4544;--rm-c200:#323a39;--rm-c100:#212827;--rm-c50:#1b2120;--rm-white:#1c2221}
 html.rm-dark .ratsmonitor{--color-slate-400:#9a9ca2;--color-slate-500:#b4b5ba;--color-slate-600:#c4c5ca;--color-slate-700:#d0d1d5;--color-slate-800:#dfe0e3;--color-slate-900:#e4e4e7;--color-slate-950:#f0f0f2;--color-teal-500:#46a498;--color-teal-600:#268478;--color-teal-700:#7ac6bc;--color-teal-800:#a8dcd5;--color-teal-900:#c9ece7}
@@ -235,7 +235,7 @@ html.rm-dark .rm-solid .rm-glass,html.rm-dark .rm-solid .rm-glass:hover,html.rm-
   html.rm-search .rm-flat:not([hidden]){--klein:63px;position:fixed;inset:44px 0 var(--rm-tabbar) 0;overflow:hidden}
   html.rm-search .rm-flat[data-peek]:not([hidden]){--klein:221px}
   /* Kartenhöhe bleibt in beiden kleinen Stufen gleich (sonst rechnet die Karte beim Wechsel neu und die Liste ruckelt); die Vorschau schiebt sich über ihren unteren Rand */
-  html.rm-search .rm-flat>section{position:absolute !important;inset:0 0 auto 0;height:calc(100% - 63px) !important;min-height:0;border-bottom:0}
+  html.rm-search .rm-flat>section{position:absolute;inset:0 0 auto 0;height:calc(100% - 63px);min-height:0;border-bottom:0}
   html.rm-search .rm-flat main{position:absolute;inset:auto 0 0 0;height:calc(100% - 176px);z-index:5;overflow:hidden;background:var(--rm-white);border-top:1px solid var(--rm-c200);transform:translateY(calc(100% - var(--klein) + var(--drag,0px)));transition:transform .34s cubic-bezier(.22,.9,.28,1);will-change:transform}
   html.rm-search .rm-flat[data-drag] main{transition:none}
   html.rm-search .rm-flat[data-stage=voll] main{transform:translateY(var(--drag,0px));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
@@ -513,8 +513,8 @@ html.rm-search .rm-footcta{display:none}
 /* Desktop (breit): Karte links, Trefferliste rechts daneben; die Karte bleibt beim Scrollen stehen (wie das Blatt am Handy: Liste und Karte gleichzeitig) */
 @media (min-width:1100px){
   html.rm-search .rm-flat:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) minmax(520px,40%);align-items:start}
-  html.rm-search .rm-flat>section:first-child{position:sticky !important;top:58px;height:calc(100dvh - 58px) !important;min-height:0;border-bottom:0;border-right:1px solid var(--rm-c200)}
-  html.rm-search .rm-flat main{max-width:none !important;margin:0 !important;min-width:0}
+  html.rm-search .rm-flat>section:first-child{position:sticky;top:58px;height:calc(100dvh - 58px);min-height:0;border-bottom:0;border-right:1px solid var(--rm-c200)}
+  html.rm-search .rm-flat main{max-width:none;margin:0;min-width:0}
 }
 
 /* Suchzeile der plenara.X-Seiten (DiffusionSearch): Grundform der Knöpfe und des Felds; die Regeln weiter oben machen daraus
@@ -606,7 +606,7 @@ html.rm-dark{--xg-pop:linear-gradient(135deg,rgba(40,48,47,.96),rgba(23,33,42,.9
   .pl-band h1{font-size:20px !important}
   .pl-band h1>*{display:none}
   .pl-band .rm-band-mid>p:first-child span:first-child{font-size:22px !important}
-  .rm-mapbox{height:calc(100svh - 92px - var(--rm-tabbar,50px)) !important;min-height:150px}
+  .rm-mapbox{height:calc(100svh - 92px - var(--rm-tabbar,50px));min-height:150px}
 }
 
 /* Handy: Tippflächen von mindestens 44 px, ohne dass sich das Layout ändert.
