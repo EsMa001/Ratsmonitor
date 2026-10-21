@@ -611,6 +611,10 @@ im Dev-Server ohne Anmeldung offen.
 
 Unbehandelte Fehler im Browser (und Fehler beim Aufbau einer Seite) meldet `components/ratsmonitor/lib/reportError.ts` an `POST /api/client-error`; der Server schreibt je Meldung eine Zeile `[client-error] {…}` ins Log. Ansehen: `journalctl -u ratsmonitor --since today | grep client-error`. Nur im Produktionsbau, höchstens 5 Meldungen je Seitenaufruf, je Prozess 60 pro Minute, keine Datenbank, keine IP-Adresse, Seite ohne Suchparameter (`server/integrations/client-errors.mjs`, Test `tests/client-errors.test.mjs`). Im Einladungsmodus kommen nur Meldungen angemeldeter Nutzer an.
 
+## Kunden-MCP über HTTPS (seit 21.10.2026)
+
+`ratsmonitor-mcp.service` (`scripts/mcp-http.mjs`, 127.0.0.1:3002, nur lesend) beantwortet `https://plenara.de/mcp`; Caddy leitet `/mcp` und `/.well-known/oauth-*` dorthin (`import mcp_routes`, Seitenpasswort nur für `@site_password`). Die OAuth-Anmeldung (`/oauth/*`, Zustimmung `/verbinden`) macht die Web-App mit dem Plenara-Konto. Werte in `/etc/ratsmonitor/mcp.env` (Vorlage `deploy/node/mcp.env.example`, gelesen von `ratsmonitor` und `ratsmonitor-mcp`), Kunden in `/srv/ratsmonitor/config/mcp/customers.json` (`scripts/mcp-customers.mjs`). Der Dienst sieht den Kontenordner nicht und bekommt weder `ratsmonitor.env` noch `accounts.env`. Nach einem Deploy: `systemctl restart ratsmonitor-mcp`. Einrichtung, Clients und Fehlerbehebung: `docs/betrieb/claude-mcp-einbindung.md`. Der interne MCP läuft weiter per SSH (STDIO, kein Port).
+
 ## Vor dem Öffnen für andere
 
 Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain erreichbar wird:

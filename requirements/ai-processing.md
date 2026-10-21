@@ -49,8 +49,12 @@ Cloudflare ohne lokale Textablage meldet diese Funktion als nicht verfügbar.
 Der interne MCP-Dienst nutzt dieselbe Fachlogik wie die Agenten-CLI. Der
 Kundendienst bietet ausschliesslich Recherche an. Die Rolle steht beim Start
 fest, ist kein Werkzeugparameter und laesst sich waehrend einer Verbindung
-nicht umschalten. Beide Dienste verwenden das offizielle MCP-SDK und STDIO,
-oeffnen keinen HTTP-Port und rufen weder Webseiten noch eine Modell-API auf.
+nicht umschalten. Beide Dienste verwenden das offizielle MCP-SDK und rufen weder
+Webseiten noch eine Modell-API auf. Seit 21.10.2026 laufen beide auf dem Server:
+intern per SSH als STDIO-Prozess, der Kundendienst per HTTPS unter
+`https://plenara.de/mcp` mit OAuth oder Schluessel (Betrieb und Einbindung:
+`docs/betrieb/claude-mcp-einbindung.md`). Die lokalen Startwege unten sind nur
+fuer Entwicklung und Tests.
 
 | Zugang | Werkzeuge | Datenbank |
 | --- | --- | --- |
@@ -61,9 +65,9 @@ oeffnen keinen HTTP-Port und rufen weder Webseiten noch eine Modell-API auf.
 
 ```powershell
 node scripts/mcp-demo.mjs
-node scripts/mcp-internal.mjs --config config/mcp/internal.example.json
+node scripts/mcp-internal.mjs --config <eigene Konfiguration auf tmp/mcp-demo/reports.sqlite>
 # Alternativer Start fuer die reine Kunden-Recherche:
-node scripts/mcp-customer.mjs --config config/mcp/customer.example.json
+node scripts/mcp-customer.mjs --config <eigene Konfiguration mit databaseFile und allowedRegionIds>
 ```
 
 Die Startbefehle warten auf einen MCP-Client, nicht auf interaktive Texteingaben.

@@ -692,9 +692,9 @@ z- ratsmonitor.css:402
 - admin-chrome.tsx (143, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
 - admin-cockpit.tsx (98, ⚠1): AdminCockpit
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (114, ⚠7): AdminRuns, AdminReview, AdminStock
+- admin-dashboard.tsx (114, ⚠8): AdminRuns, AdminReview, AdminStock
 - admin-debug.tsx (144, ⚠9): AdminDebug
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
 - admin-fehler.tsx (80, ⚠4): AdminFehler
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (41): IconName, Icon
@@ -787,14 +787,14 @@ z- ratsmonitor.css:402
 - BranchenLive.tsx (244): LiveThumb
 - BranchenPages.tsx (121): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (46): InfoPages
+- InfoPages.tsx (48): InfoPages
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (86): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
 - StartseitePage.tsx (508, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
-- TodoPage.tsx (267, ⚠24): TodoPage
+- TodoPage.tsx (267, ⚠25): TodoPage
 - VideosPage.tsx (172): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - XAuszug.tsx (220, ⚠2): XAuszug

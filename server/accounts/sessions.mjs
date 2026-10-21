@@ -58,4 +58,7 @@ export const eventStatement=(db,{userId=null,kind,detail=null,now=Date.now()})=>
 export const revokeAllStatements=(db,{userId,email})=>[
  db.prepare('DELETE FROM sessions WHERE user_id=?').bind(userId),
  db.prepare('DELETE FROM login_tokens WHERE (user_id=? OR email=?) AND used_at IS NULL').bind(userId,email),
+ // Verbundene KI-Assistenten (OAuth des Kunden-MCP): Codes und Erneuerungstoken; Zugangstoken laufen nach 30 Minuten ab
+ db.prepare('DELETE FROM oauth_codes WHERE user_id=?').bind(userId),
+ db.prepare('DELETE FROM oauth_grants WHERE user_id=?').bind(userId),
 ];

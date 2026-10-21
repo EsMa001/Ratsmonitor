@@ -1,5 +1,5 @@
 // Jede Route unter app/api prüft ihren Zugang (CLAUDE.md, Konten): Daten über gated()/guard(), Administration über
-// requireAdmin/adminRead, Konten über accountRoute(), interne Aufrufe über den Bearer (internalCall). Ändernde Admin-Routen
+// requireAdmin/adminRead, Konten und die OAuth-Zustimmung über accountRoute(), interne Aufrufe über den Bearer (internalCall). Ändernde Admin-Routen
 // prüfen zusätzlich die Herkunft (requireSameOrigin). Ausnahmen stehen mit Grund in OPEN bzw. ORIGIN_IN.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -8,7 +8,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..'),api=path.join(root,'app/api');
 const routes=fs.readdirSync(api,{recursive:true}).map(f=>String(f).split(path.sep).join('/')).filter(f=>f.endsWith('/route.ts')).map(f=>f.slice(0,-'/route.ts'.length));
-const RULES={admin:/\brequireAdmin\b|\badminRead\(/,auth:/\baccountRoute\(/,me:/\baccountRoute\(/,dev:/\baccountRoute\(/,internal:/\binternalCall\(/};
+const RULES={admin:/\brequireAdmin\b|\badminRead\(/,auth:/\baccountRoute\(/,me:/\baccountRoute\(/,dev:/\baccountRoute\(/,oauth:/\baccountRoute\(/,internal:/\binternalCall\(/};
 const DATA=/\bgated\(|\bguard\(/;
 /** Ohne Prüfung in der Route, mit Grund */
 const OPEN={

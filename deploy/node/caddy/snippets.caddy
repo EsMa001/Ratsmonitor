@@ -60,6 +60,19 @@
 # Jede öffentliche Site: keine Admin-Kennung und keine Prerender-Kopfzeilen von außen, Sicherheitskopfzeilen.
 # Die Administration prüft die App selbst: Rolle admin, Anmeldung jünger als 7 Tage und über die öffentliche Adresse der
 # zweite Faktor (Code aus der Authenticator-App, requirements/konten-konzept.md 6.4).
+# Kunden-MCP (ratsmonitor-mcp.service, 127.0.0.1:3002) und die OAuth-Endpunkte der App: ohne Seitenpasswort erreichbar,
+# sie prüfen selbst (Schlüssel oder Token, PKCE). In der Site vor basicauth importieren und basicauth auf @site_password
+# begrenzen. Die Zustimmung (/verbinden) bleibt hinter dem Passwort und verlangt die Anmeldung.
+(mcp_routes) {
+	@mcp_service path /mcp /mcp/* /.well-known/oauth-protected-resource /.well-known/oauth-protected-resource/* /.well-known/oauth-authorization-server /.well-known/oauth-authorization-server/*
+	handle @mcp_service {
+		reverse_proxy 127.0.0.1:3002 {
+			flush_interval -1
+		}
+	}
+	@site_password not path /mcp /mcp/* /.well-known/oauth-protected-resource /.well-known/oauth-protected-resource/* /.well-known/oauth-authorization-server /.well-known/oauth-authorization-server/* /oauth/authorize /oauth/token /oauth/register /oauth/revoke
+}
+
 (public_site) {
 	request_header -Oai-Authenticated-User-Id
 	request_header -Oai-Authenticated-User-Email

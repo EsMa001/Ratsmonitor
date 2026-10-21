@@ -298,7 +298,9 @@ export async function sessionsRevoke(ctx){
  const {revoke}=await readJson(ctx.request,1024);
  const {db,now}=ctx;
  if(revoke==='all'||revoke==='others'){
+  // Verbundene KI-Assistenten (OAuth des Kunden-MCP) zählen wie andere Geräte
   await db.batch([db.prepare(`DELETE FROM sessions WHERE user_id=?${revoke==='others'?' AND id<>?':''}`).bind(...(revoke==='others'?[session.user_id,session.id]:[session.user_id])),
+   db.prepare('DELETE FROM oauth_grants WHERE user_id=?').bind(session.user_id),
    eventStatement(db,{userId:session.user_id,kind:'logout_all',detail:{scope:revoke},now})]);
  }else if(typeof revoke==='string'&&/^[a-f0-9]{12}$/.test(revoke)){
   await db.prepare("DELETE FROM sessions WHERE user_id=? AND substr(id,1,12)=?").bind(session.user_id,revoke).run();

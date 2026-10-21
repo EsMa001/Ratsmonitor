@@ -347,6 +347,8 @@ export async function collectUserData(db,userId,email){
   mails:await all('SELECT created_at,template,status FROM mail_outbox WHERE user_id=? ORDER BY created_at',userId),
   adminAktionen:await all('SELECT at,method,path,action,count FROM admin_audit WHERE user_id=? ORDER BY at',userId),
   offeneAnmeldungen:await all('SELECT purpose,created_at,expires_at FROM login_tokens WHERE (email=? OR user_id=?) AND used_at IS NULL',email,userId),
+  // KI-Assistenten mit Zugang über den Kunden-MCP (OAuth): je Erneuerungstoken Anwendung, Zugang und Zeiten, ohne Token
+  verbundeneAnwendungen:await all('SELECT c.name anwendung,g.customer zugang,g.created_at,g.expires_at,g.used_at,g.revoked_at FROM oauth_grants g JOIN oauth_clients c ON c.id=g.client_id WHERE g.user_id=? ORDER BY g.created_at',userId),
  };
 }
 

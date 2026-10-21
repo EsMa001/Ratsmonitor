@@ -5,6 +5,7 @@ import {after} from 'next/server';
 import {context,currentSession,accountState} from '../accounts/login.mjs';
 import {accountsConfig,isDev} from '../accounts/config.mjs';
 import {failure} from '../accounts/http.mjs';
+import {oauthFailure} from '../accounts/oauth.mjs';
 import {getChatGPTUser} from '@/app/chatgpt-auth';
 import {AdminError,adminAccess} from '../integrations/admin-access.mjs';
 import {FEATURES} from '@/shared/plans.mjs';
@@ -19,6 +20,13 @@ export function schedule(task:()=>Promise<unknown>){
  try{after(task);}catch{Promise.resolve().then(task).catch(error=>console.error('[konten] Nacharbeit fehlgeschlagen:',error instanceof Error?error.message:String(error)));}
 }
 /** Hülle für Kontorouten: Kontext aus Anfrage und Umgebung, Fehler als JSON, Nacharbeit nach der Antwort */
+/** Hülle für die OAuth-Endpunkte des Kunden-MCP (server/accounts/oauth.mjs): Fehler im Format von RFC 6749 */
+export function oauthRoute(handler:Handler){
+ return async(request:Request)=>{
+  try{return (await handler(context(request,env))).response;}
+  catch(error){return oauthFailure(error);}
+ };
+}
 export function accountRoute(handler:Handler){
  return async(request:Request)=>{
   try{

@@ -1,8 +1,6 @@
-# Local demonstration of the restricted customer tool surface.
-# Do NOT add the internal connection to a customer's client configuration.
-# Not a remote customer login. Run scripts/mcp-demo.mjs first.
-[mcp_servers.ratsmonitor_customer]
-command = "node"
-args = ["C:/Git/vor-ort-quellcode/scripts/mcp-customer.mjs", "--config", "C:/Git/vor-ort-quellcode/config/mcp/customer.example.json"]
-startup_timeout_sec = 20
+# Kundenzugang (nur lesend) über HTTPS. Schlüssel vom Betreiber (scripts/mcp-customers.mjs key) in der Umgebungsvariable
+# PLENARA_MCP_KEY; ohne Schlüssel meldet sich der Client per OAuth mit dem Plenara-Konto an.
+[mcp_servers.plenara]
+url = "https://plenara.de/mcp"
+bearer_token_env_var = "PLENARA_MCP_KEY"
 tool_timeout_sec = 60

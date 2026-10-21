@@ -14,6 +14,8 @@ WorkingDirectory=/srv/ratsmonitor/app/current
 EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
 # Konten: Kontendatei, Geheimnis, Mailschlüssel (nur dieser Dienst und der Kontojob; fehlt die Datei, ohne Konten)
 EnvironmentFile=-/etc/ratsmonitor/accounts.env
+# Kunden-MCP: Geheimnis der Zugangstoken und Kundendatei für die OAuth-Anmeldung (fehlt die Datei, antwortet OAuth mit 503)
+EnvironmentFile=-/etc/ratsmonitor/mcp.env
 ExecStart=/usr/bin/node dist/standalone/serve.mjs
 Restart=always
 RestartSec=3

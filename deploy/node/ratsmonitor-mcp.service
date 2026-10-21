@@ -1,0 +1,38 @@
+# Kunden-MCP über HTTPS (server/node/mcp-http-server.mjs, docs/betrieb/claude-mcp-einbindung.md). Nur lesend, eigener
+# Prozess auf 127.0.0.1:3002; Caddy leitet /mcp und /.well-known/oauth-* hierher (deploy/node/caddy/snippets.caddy).
+# Installieren:
+#   cp deploy/node/ratsmonitor-mcp.service /etc/systemd/system/ && systemctl daemon-reload && systemctl enable --now ratsmonitor-mcp
+# Werte nur aus /etc/ratsmonitor/mcp.env (Vorlage mcp.env.example): keine ratsmonitor.env (IMPORT_TOKEN) und keine
+# accounts.env, der Kontenordner ist für diesen Dienst unsichtbar (requirements/konten-konzept.md 3.2).
+[Unit]
+Description=Ratsmonitor Kunden-MCP (HTTP, nur lesend)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/etc/ratsmonitor/mcp.env
+ExecStart=/usr/bin/node scripts/mcp-http.mjs
+Restart=always
+RestartSec=3
+TimeoutStopSec=15
+MemoryHigh=1500M
+MemoryMax=2G
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadOnlyPaths=/srv/ratsmonitor
+# Die Inhaltsdatei liegt im WAL-Modus: auch nur lesend braucht SQLite die -shm-Datei im Datenordner
+ReadWritePaths=/srv/ratsmonitor/data
+InaccessiblePaths=-/srv/ratsmonitor/accounts -/etc/ratsmonitor/accounts.env
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target
