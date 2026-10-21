@@ -94,7 +94,7 @@ in_use() { for p in /proc/[0-9]*; do c=$(readlink "$p/cwd" 2>/dev/null) || conti
 for old in $(ls -1dt "$APP"/releases/* | grep -v -e '[.]build$' -e '[.]old$' | grep -vxF "$REL" | tail -n +3); do
   if in_use "$old"; then echo "Hinweis: $(basename "$old") wird noch von einem laufenden Job genutzt, bleibt bis zum nächsten Ausrollen"; else rm -rf "$old"; fi
 done
-jobs=$(systemctl list-units 'ratsmonitor-*.service' --state=active --no-legend 2>/dev/null | awk '{print $1}' | tr '\n' ' ')
+jobs=$(systemctl list-units 'ratsmonitor-*.service' --state=active --no-legend 2>/dev/null | awk '{print $1}' | grep -vx 'ratsmonitor-mcp.service' | tr '\n' ' ')
 [ -n "$jobs" ] && echo "Hinweis: laufende Jobs ($jobs) arbeiten mit ihrem bisherigen Stand weiter; der nächste Lauf nimmt den neuen"
 true
 REMOTE
