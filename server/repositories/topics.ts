@@ -45,7 +45,7 @@ export async function getFeedPage(page: PageRequest = { limit: PAGE_SIZE, offset
             throw e;
         console.error('Datenbank nicht verfügbar; mitgelieferter Stand');
         const filtered=(await sortedInitial(page.region)).filter(t=>(t.regionId||'muenster')===page.region&&matchesFilter(t.status,page.filter));
-        return finish(filtered.slice(page.offset,page.offset+page.limit),([...regional.coverage,...nrw.coverage] as Coverage[]).find((c:any)=>c.regionId===page.region)||(page.region==='muenster'?initial.coverage:pendingCoverage(page.region)),filtered.length,false,page);
+        return finish(filtered.slice(page.offset,page.offset+page.limit),([...regional.coverage,...nrw.coverage] as (Coverage&{regionId?:string})[]).find(c=>c.regionId===page.region)||(page.region==='muenster'?initial.coverage:pendingCoverage(page.region)),filtered.length,false,page);
     }
 }
 export async function getSourceStats(): Promise<SourceStats> {

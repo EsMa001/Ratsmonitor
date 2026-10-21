@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {setup} from './helpers/accounts.mjs';
 import {requestLink,enterCode,me} from '../server/accounts/login.mjs';
-import {searchesList,searchesWrite,articlesList,articlesWrite,settingsRead,settingsWrite,importData,exportData,deleteAccount,cleanState} from '../server/accounts/account.mjs';
+import {searchesList,searchesWrite,articlesList,articlesWrite,settingsRead,importData,exportData,deleteAccount,cleanState} from '../server/accounts/account.mjs';
 
 async function signedIn(h,email,{tier='pro',admin=false}={}){
  const id=h.addUser(email,{tier,admin});

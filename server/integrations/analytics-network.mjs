@@ -83,7 +83,7 @@ export async function networkList(db,catalog,params){
 
 export async function network(db,catalog,params){
  const f=parseNetwork(params);
- const {seqs,pool,k,single}=await sequences(db,catalog,f);
+ const {seqs,pool,single}=await sequences(db,catalog,f);
  const nodes=new Map(),edges=new Map(),routes=new Map();
  const node=id=>{if(!nodes.has(id))nodes.set(id,{id,in:0,out:0,starts:0,ends:0,stage:0,stageN:0});return nodes.get(id);};
  let paths=0;

@@ -102,7 +102,7 @@ Alles regelbasiert; Messung und Freigabe stehen im Admin „Themen & Texte“ (`
 **Gebraucht:** die Tools. Sie zählen über denselben Weg (Suche → `x_cases`); Fraktionsprofil und Newsradar nutzen zusätzlich einzelne Regeln. Ihre Ergebnisse sind Zählungen und brauchen keine eigene Messung.
 
 **Nicht mehr gebraucht oder nur Rückfall:**
-- `scripts/pdf-store/summaries.mjs` und `facts.mjs`: alter Weg vor `read-reports.mjs`, nur noch Rückfall.
+- `scripts/pdf-store/summaries.mjs` und `facts.mjs`: alter Weg vor `read-reports.mjs`, seit 20.10.2026 entfernt.
 - `scripts/ai-job.mjs`: nur für vorbereitete Altaufträge.
 - „Kosten im Straßenbau“ (`road`): keine Seite zeigt den Wert (Signale ohne Kennzahlen, Karte gesperrt); die Kategorie Straßen zählt über eigene Regeln (`street`).
 - Gliederung `stage` in `/api/x`: der Atlas fragt sie nicht mehr ab, die Abfrage kann sie noch (Listen, Ort im Vergleich).

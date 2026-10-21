@@ -4,7 +4,7 @@
 // wenn die Regel das Dokument als Sitzungsunterlage verwirft. Art: aus dem Titel im Zusammenhang des Berichts (reportTypes), aus dem Textanfang
 // (documentTypeFromText) und beides (effectiveType). Sitzungsunterlage: sessionDocument mit der Zahl der Berichte derselben Sitzung.
 import fs from 'node:fs';
-import {documentType,documentTypeFromText,effectiveType,primaryPdf,reportTypes,sessionDocument} from '../../shared/document-type.mjs';
+import {documentTypeFromText,effectiveType,primaryPdf,reportTypes,sessionDocument} from '../../shared/document-type.mjs';
 const arg=(k,d)=>process.argv.find(a=>a.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const ref=JSON.parse(fs.readFileSync(new URL('../../tests/fixtures/'+arg('set','doc-dev')+'.json',import.meta.url),'utf8'));
 const CODE={paper:'p',decision:'d',attachment:'a',minutes:'m',invitation:'i',other:'o'};

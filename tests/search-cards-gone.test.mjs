@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {refreshSearchWords,precomputedTotal,precomputedFacets,candidateCards,knownWords,GONE_MAX,TOO_COMMON} from '../server/integrations/search-words.mjs';
 /* The real schema with its triggers (drizzle/0006 … 0015): search_cards is written from topics, replaced or deleted cards
    are logged in search_cards_gone. */

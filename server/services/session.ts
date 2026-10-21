@@ -12,7 +12,7 @@ import {validBearer} from '../integrations/prepared-access.mjs';
 
 // Sitzung, Rollen und Rechte für Routen und Seiten (requirements/konten-konzept.md, Abschnitte 5.2, 6.1, 7).
 type Later=Array<()=>Promise<unknown>>;
-type Handler=(ctx:any)=>Promise<{response:Response;later?:Later}>;
+type Handler=(ctx:ReturnType<typeof context>)=>Promise<{response:Response;later?:Later}>;
 
 /** Arbeit nach der Antwort (Mails, alles Adressabhängige); außerhalb einer Anfrage einfach anstoßen */
 export function schedule(task:()=>Promise<unknown>){
@@ -82,12 +82,18 @@ export async function requireAdmin(){
  if(state.kind==='setup')throw new AdminError(403,'Der Admin-Zugang muss zuerst freigeschaltet werden.');
  throw new AdminError(403,'Kein Zugriff auf die Administration.');
 }
-/** Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. */
 /**
  * Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. accounts:false heißt: auf dieser Umgebung gibt es
  * keine Konten (Cloudflare-Build, Server ohne Kontendatei); dann gelten keine Stufengrenzen, alles bleibt wie früher.
  */
-export async function requestTier(request:Request){
+export function requestTier(request:Request){
+ let tier=tiers.get(request);
+ if(!tier){tier=readTier(request);tiers.set(request,tier);}
+ return tier;
+}
+/* Je Anfrage einmal: guard() und die Route fragen dieselbe Anfrage (Suche: vorher zwei Sitzungsabfragen, drei SHA-256) */
+const tiers=new WeakMap<Request,ReturnType<typeof readTier>>(),internals=new WeakMap<Request,Promise<boolean>>();
+async function readTier(request:Request){
  const cfg=accountsConfig(env);
  const guest={accounts:true,tier:'guest',features:FEATURES.guest,userId:null as string|null};
  if(!cfg.db||!cfg.secret)return {...guest,accounts:false};
@@ -104,8 +110,10 @@ export async function requestTier(request:Request){
 // ---------------------------------------------------------------- Zugang (Einladungsmodus) und Stufen in Datenrouten
 const DENY={'Cache-Control':'private, no-store, max-age=0','Vary':'Cookie'};
 /** Interne Aufrufe (serve.mjs wärmt vor, Runner): Bearer IMPORT_TOKEN, mindestens 16 Zeichen */
-export async function internalCall(request:Request){
- return validBearer(request.headers.get('authorization'),env.IMPORT_TOKEN,16);
+export function internalCall(request:Request){
+ let internal=internals.get(request);
+ if(!internal){internal=Promise.resolve(validBearer(request.headers.get('authorization'),env.IMPORT_TOKEN,16));internals.set(request,internal);}
+ return internal;
 }
 /**
  * Zweite Linie hinter der Middleware: im Einladungsmodus nur mit Sitzung; mit feature nur, wenn die Stufe es erlaubt.

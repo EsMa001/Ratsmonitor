@@ -64,7 +64,7 @@ if(all)say('Alle neu erstellen');
 /* Schritt 0 (Betriebsplan 15.10.2026): Titelregel für neue und veraltete Berichte (classification, Label der Suche). Der
    Nachtimport ordnet nicht ein; ohne diesen Schritt hatten neue Berichte bis zum nächsten Handstart kein Label. */
 await step(stepName('title'),'scripts/reclassify-rules.mjs',[]);
-const sum=await step(stepName('rules'),'scripts/pdf-store/read-reports.mjs',all?['--all']:[]);
+await step(stepName('rules'),'scripts/pdf-store/read-reports.mjs',all?['--all']:[]);
 /* Stand der Fakten für den Reiter (einmal je Lauf gezählt, damit die Seite beim Öffnen nichts rechnet): Berichte mit Fakten,
    davon aus dem Text des Hauptdokuments, in der aktuellen Fassung der Regeln */
 let facts=null;

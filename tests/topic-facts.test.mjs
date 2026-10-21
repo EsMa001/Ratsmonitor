@@ -22,10 +22,9 @@ test('parties named elsewhere do not count as applicants',()=>{
 
 
 test('factsOf: Fraktion, keine Förderung mehr',()=>{
- const only=(t,x)=>factsOf(t,x).filter(r=>!r.kind.startsWith('radar:'));
- assert.deepEqual(only('Antrag der CDU-Fraktion: Sportplatz','Wir beantragen Fördermittel aus der Sportstättenförderung.'),[
+ assert.deepEqual(factsOf('Antrag der CDU-Fraktion: Sportplatz','Wir beantragen Fördermittel aus der Sportstättenförderung.'),[
   {kind:'faction',value:'CDU/CSU',detail:'antrag'}],'Förderung ist kein Fakt mehr');
- assert.deepEqual(only('Antrag der CDU-Fraktion: Sportplatz',''),[{kind:'faction',value:'CDU/CSU',detail:'antrag'}]);
+ assert.deepEqual(factsOf('Antrag der CDU-Fraktion: Sportplatz',''),[{kind:'faction',value:'CDU/CSU',detail:'antrag'}]);
 });
 
 
@@ -126,12 +125,6 @@ test('fehltreffer nach der bewertung vom 11.10.2026: personal, feste tagesordnun
  assert.deepEqual(feeRateOf('Tarife für die Wasserversorgung','Der Wasserpreis wurde von 1,60 €/m³ (netto) auf 1,80 €/m³ (netto) erhöht.'),[{kind:'Trinkwasser',from:'1.6',to:'1.8',unit:'m³'}]);
  assert.deepEqual(feeRateOf('Neu-Kalkulation der Wassergebühren','Diese betragen derzeit: Verbrauchsgebühr 1,10 € / m³ (netto). Die Verwaltung schlägt vor, die Verbrauchsgebühr auf 1,42 €/ m³ (netto) zu erhöhen.'),[{kind:'Trinkwasser',from:'',to:'1.42',unit:'m³'}]);
  assert.deepEqual(feeRateOf('Nachkalkulation der Abwassergebühren 2025','Schmutzwassergebühr 2,15 €/m³.'),[]);
-});
-
-test('Förderung: Hintergrund, alte Bescheide und Anfragen zählen nicht als bewilligt',async()=>{
- const {factsOf}=await import('../shared/topic-facts.mjs');
- const old='Vergabe der Fliesenarbeiten im Oktober 2026 im Rathaus. Mit Bescheid vom 18.12.2023 wurden Fördermittel in Höhe von 8.840.000 Euro bewilligt.';
- const now='Sitzung 2026. Die Fördermittel in Höhe von 450.000 Euro wurden bewilligt. Umsetzung bis 2030.';
 });
 
 test('faction: amendment to another motion belongs to the amending factions; housing: existing units are no plan',()=>{

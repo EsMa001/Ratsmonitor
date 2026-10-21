@@ -8,9 +8,11 @@
  * What remains: a name that resolves differently for the check and for the request (DNS rebinding) is not caught;
  * such a target would still need a valid certificate for that very name (certificates are always checked).
  */
+import {SOURCE_USER_AGENT} from './no-redirect.mjs';
 export const MAX_HOPS=3,HEADERS_MS=20000,IDLE_MS=30000,MAX_BYTES=30*1024*1024;
 export const VIEWABLE=/^(application\/pdf|image\/(png|jpe?g|gif|webp))$/i;
-export const USER_AGENT='Mozilla/5.0 (Plenara Dokumentenansicht)';
+/** Wie der Abruf: das Projekt, keine Browser-Kennung (requirements/freischaltung-anfragen.md, robots-policy.mjs). */
+export const USER_AGENT=SOURCE_USER_AGENT.replace(/\)$/,'; Dokumentenansicht)');
 const isIp=host=>/^\d{1,3}(?:\.\d{1,3}){3}$/.test(host)||host.includes(':');
 /** Whether an address belongs to the own machine or network: loopback, private, link-local, multicast, reserved. */
 export function privateAddress(ip){

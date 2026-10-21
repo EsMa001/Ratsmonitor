@@ -5,6 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {clip} from './source-common.mjs';
 // Shared frame of the small readers (ris, hhdocuments, rio-sys, hitcom Rats-Info-System): each reader lists the meetings
 // of the period and reads one page per meeting; this frame turns the items into reports (topics), keeps marks and builds
 // the coverage in the same way as sdnet-rim4.mjs. Only public pages are read.
@@ -12,7 +13,6 @@ export const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{
 export const slug=value=>String(value).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const EXTRA={bdquo:'„',ldquo:'“',rdquo:'”',sbquo:'‚',lsquo:'‘',rsquo:'’',euro:'€',hellip:'…',sect:'§',laquo:'«',raquo:'»',middot:'·',shy:'',eacute:'é',egrave:'è',agrave:'à',ccedil:'ç',deg:'°',sup2:'²',sup3:'³',frac12:'½',bull:'•',times:'×',ensp:' ',emsp:' ',thinsp:' ',copy:'©',reg:'®',szlig:'ß'};
 export const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ').replace(/<\/p>/gi,' ').replace(/&(\w+);/g,(m,k)=>EXTRA[k]??m)).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
-export const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 /** Items every meeting has and that carry no matter of their own. */
 export const FORMAL=/^(?:eröffnung|begrüßung|feststellung|genehmigung|bekanntgaben?|mitteilung(?:en)?|anfragen?|anregung(?:en)?|verschiedenes|einwohner|bürgerfragestunde|fragestunde|fragen|niederschrift|protokoll|sitzungsniederschrift|kurzbericht|schließung|ende der sitzung|wünsche|tagesordnung|regularien|verpflichtung)/i;
 /** Status of an item from the resolution text of a past meeting. */
@@ -86,7 +86,7 @@ export async function collectSmall(source,spec,{now=new Date(),get=fetchText,req
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Sitzung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:`Öffentliche Seiten (${spec.label}); nur der öffentliche Teil.`},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:meetings.size,...(withoutAgenda?{upcomingWithoutAgenda:withoutAgenda}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),...(warnings.length||part.warnings().length?{warnings:[...warnings,...part.warnings()]}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0||withoutAgenda>0||meetings.size>0),issues:topics.length||unchanged||withoutAgenda||meetings.size?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};

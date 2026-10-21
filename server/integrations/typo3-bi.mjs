@@ -6,6 +6,7 @@ import {fetchText,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
 import {statusOf} from './sdnet-rim4.mjs';
+import {asciiSlug as slug} from './source-common.mjs';
 // TYPO3 "Bürgerinformationssystem" of a municipality (stadtrat.monheim.de/bi, extension risportal: calendar, meeting
 // pages and a small interface below /api/meetings/). Read are addresses of the public site only:
 // - /api/meetings/month/YYYY-MM: JSON list {name,start,uri} of the meetings of a month,
@@ -18,7 +19,6 @@ const PATHS=/^api\/meetings\/(?:month\/\d{4}-\d{2}|stream\/\d+)$/;
 const guard=(url,source)=>{const u=new URL(url);if(u.protocol!=='https:'||u.origin+'/'!==origin(source)||!PATHS.test(u.pathname.slice(1)))throw Error('Nicht freigegebene Quelladresse');return u.href;};
 /** Address of a page of the interface (month list or agenda of a meeting). */
 export const typo3Url=(path,source)=>guard(new URL(path,origin(source)).href,source);
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(html).normalize('NFC').replace(/\s+/g,' ').trim();
 export function detectTypo3Bi(url,html=''){
  const page=String(html);
@@ -115,7 +115,7 @@ export async function collectTypo3Bi(source,{now=new Date(),get=fetchText,reques
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Bürgerinformationssystems (TYPO3); nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:meetings.size,...(withoutAgenda?{upcomingWithoutAgenda:withoutAgenda}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),...(warnings.length||part.warnings().length?{warnings:[...warnings,...part.warnings()]}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0||withoutAgenda>0),issues:topics.length||unchanged||withoutAgenda?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};

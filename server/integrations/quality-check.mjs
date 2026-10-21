@@ -109,7 +109,7 @@ export async function runQualityCheck(db,id){
 // all row checks of a chunk come from one scan of the chunk. "Same address under several areas" runs per host of the
 // source address: the chunks of areas note which areas hold addresses of which host (admin_agg, list 'host'), then each
 // host with two or more areas is one unit. A group has one address and so one host: the units divide the groups exactly
-// (an earlier division by configured server missed 239 of 2,618 groups; scripts/check-dup-shared.mjs compares). The
+// (an earlier division by configured server missed 239 of 2,618 groups). The
 // checks of the catalog and of orphans run in one step each, as before.
 const ROW_CHECKS=Object.keys(CONDITIONS),SINGLE_CHECKS=['regionUnknown','orphanAnalyses','orphanVersions'];
 const IN_UNIT=' AND region_id IN (SELECT value FROM json_each(?))';
@@ -144,13 +144,6 @@ async function sharedUnit(db,ids,host){
  const total=await db.prepare(`SELECT count(*) groups,coalesce(sum(c-1),0) extra FROM (SELECT count(*) c ${group})`).bind(ids,host).first();
  const samples=Number(total.groups)?await db.prepare(`SELECT ${url} url,min(${title}) title,min(event_date) date,min(region_id) regionId,group_concat(DISTINCT region_id) regions,count(*) count,group_concat(id,' ') ids ${group} ORDER BY count(*) DESC,url LIMIT ?`).bind(ids,host,SAMPLES).all():{results:[]};
  return {count:Number(total.extra),groups:Number(total.groups),samples:samples.results.map(s=>trimIds({...s,regions:String(s.regions).split(','),ids:String(s.ids).split(' ')}))};
-}
-/** "Same address under several areas" per host, with the hosts read in one query over the whole stock (read-only
- * comparison in scripts/check-dup-shared.mjs). */
-export async function sharedByHosts(db){
- const units=(await db.prepare(`SELECT ${HOST} host,json_group_array(DISTINCT region_id) ids ${SHARED_ROWS} GROUP BY 1 HAVING count(DISTINCT region_id)>1 ORDER BY 1`).all()).results;
- let partial;for(const u of units)partial=addUnit(partial,await sharedUnit(db,String(u.ids),String(u.host)),{order:sharedOrder,ms:0});
- return {units:units.length,...(partial||{count:0,groups:0,samples:[]})};
 }
 /** Adds the result of a unit to the partial result of a check: counts add up, examples keep their order and the first SAMPLES. */
 function addUnit(partial,result,{order,ms}){

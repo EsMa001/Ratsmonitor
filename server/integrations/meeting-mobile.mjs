@@ -110,7 +110,7 @@ export async function collectMeetingMobile(source,{now=new Date(),get=fetchText,
    meetings.set(r.url,r);
   }
  }catch(e){issues.push('Sitzungsliste: '+e.message);}
- const grouped=new Map(),held={};let count=0,limited=false,unchanged=0,done=0,unread=0,empty=0;
+ const grouped=new Map(),held={};let count=0,limited=false,unchanged=0,done=0,unread=0;
  await parallel([...meetings.values()].sort((a,b)=>oldestFirst?String(a.date).localeCompare(String(b.date)):String(b.date).localeCompare(String(a.date))),async m=>{
   const mark=m.date?usableMark(marks,m,now):null,known=mark&&String(mark.print).startsWith(period)?mark:null;
   if(known?.trusted){held[m.url]=marks.known[m.url];unchanged++;return;}
@@ -120,7 +120,6 @@ export async function collectMeetingMobile(source,{now=new Date(),get=fetchText,
    if(!parsed.committee&&!parsed.date){issues.push('Unbekanntes Format der Sitzungsseite: '+m.url);return;}
    const meeting={...m,date:parsed.date||m.date,body:parsed.committee||m.body};
    if(monthOnly&&(meeting.date<fromDay||!part.keep(meeting.body,m.id)))return;
-   if(!parsed.publicBlock)empty++;
    const rows=mmItems(parsed,meeting,source,now),print=period+(await hash(JSON.stringify(rows.map(r=>[r.id,r.title,r.record,r.status,r.documents.map(d=>d.url)])))).slice(0,16);
    if(known?.print===print){held[m.url]=marks.known[m.url];unchanged++;return;}
    for(const row of rows){
@@ -138,7 +137,7 @@ export async function collectMeetingMobile(source,{now=new Date(),get=fetchText,
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Ratsinformationssystems (Meeting Mobile, RIS Web); nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  const wp=[...warnings,...part.warnings(),...(withoutPage?[`${withoutPage} Sitzungen ohne Seitenadresse in der Liste.`]:[])];

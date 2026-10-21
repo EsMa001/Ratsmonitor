@@ -6,6 +6,7 @@ import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {createSession} from './allris.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {RESTRICTED,asciiSlug as slug,fnv,germanDay as day,germanLongDay as longDay} from './source-common.mjs';
 // PIWi, the "Politisches Informationssystem Wiesbaden" (own development of the city, Apache Wicket). Read are plain
 // addresses of the public site only:
 // - the calendar export of all bodies (gremium/ical/gremium/0); it reaches back to January of the current year only,
@@ -16,11 +17,6 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 // not released sends the reader to the members' login (extranet): that address is never requested. The non-public
 // agenda is never requested either. Decisions themselves are published as PDF only and are linked, not read.
 export const LOGIN='Quelle leitet zur Anmeldung um; keine öffentliche Seite.';
-const MONTHS={januar:1,februar:2,märz:3,maerz:3,april:4,mai:5,juni:6,juli:7,august:8,september:9,oktober:10,november:11,dezember:12};
-const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
-const longDay=value=>{const m=String(value).match(/(\d{1,2})\.\s*(Januar|Februar|März|Maerz|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+(\d{4})/i);return m?`${m[3]}-${String(MONTHS[m[2].toLowerCase()]).padStart(2,'0')}-${m[1].padStart(2,'0')}`:day(value);};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 // Wicket writes the session into a link (";jsessionid=…", also "….node1") when a request carries no session cookie.
 const clean=url=>url.replace(/;jsessionid=[^?#/]*/gi,'');
 const anchors=html=>[...html.matchAll(/<a\b([^>]*?)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi)].map(m=>({url:clean(decode(m[2])),attributes:m[1]+m[3],label:text(m[4])}));
@@ -29,7 +25,6 @@ const quoted=value=>value.match(/„([^“]+)“/)?.[1]||'';
 const address=(href,page,source)=>{try{const u=new URL(clean(href),page);u.search='';u.hash='';return allowed(clean(u.href),source);}catch{return null;}};
 const pdfs=(html,page,source)=>anchors(html).filter(a=>/\/dokument\/\w+\/\d+/.test(a.url)).map(a=>({title:(quoted(title(a))||a.label||'Originalunterlage').replace(/\.pdf$/i,''),url:address(a.url,page,source),kind:'application/pdf'})).filter(d=>d.url);
 // A heading of the non-public part, however it is written ("Nichtöffentliche Tagesordnung", "Vertraulicher Teil").
-const RESTRICTED=/nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich/i;
 const berlin=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit'});
 // Times in the export are UTC ("…Z"); the day of a meeting is the day in Wiesbaden.
 const localDay=stamp=>{const m=stamp.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?/);if(!m)return null;return m[7]?berlin.format(new Date(Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5],+m[6]))):`${m[1]}-${m[2]}-${m[3]}`;};
@@ -186,7 +181,7 @@ export async function collectPiwi(source,{now=new Date(),get=fetchText,request=f
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Vorgang / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche PIWi-Seite; nur Punkte der öffentlichen Tagesordnung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  const listed=meetings.size-upcoming;

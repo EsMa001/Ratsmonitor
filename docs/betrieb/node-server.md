@@ -258,9 +258,8 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
    Betreff und Beschlussvorschlag), Regel-Zusammenfassung (`ruleSummary`) und Fakten (`topic_facts`, `shared/topic-facts.mjs`,
    `FACTS_VERSION`). Jede Regel liest nur Quellen, nie das Ergebnis einer anderen. Für den Bestand `read-reports.mjs`: nur
    Berichte mit geänderten Eingaben (Schlüssel in `report_rules`, Migration `0032`, aus den Regelfassungen, Titel,
-   Hauptdokument, Sitzungsunterlage und Textstand), `--all` liest alle neu. KI-Felder bleiben unberührt. Im Import
-   `refreshSummaries` (je Lauf höchstens 8 Berichte je Gebiet) dieselbe Funktion mit dem dort gelesenen Text.
-   `summaries.mjs` und `facts.mjs` bleiben eine Fassung lang als Rückfall.
+   Hauptdokument, Sitzungsunterlage und Textstand), `--all` liest alle neu. KI-Felder bleiben unberührt. Der alte Weg
+   (`refreshSummaries` im Import, `summaries.mjs`, `facts.mjs`) ist seit 20.10.2026 entfernt.
 5. (entfällt, in Stufe 4)
 6. **Suche**: `refresh-search-words.mjs` nach Stufe 4 im Bestand (neue Zusammenfassungen ändern den Suchtext);
    im Import führt `runSync` die Wortliste und `rollCardDates` selbst nach.

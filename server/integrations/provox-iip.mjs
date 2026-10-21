@@ -5,6 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {MONTHS,asciiSlug as slug,clip} from './source-common.mjs';
 // Provox IIP ("Bürger- und Ratsinformationssystem" of Provox, ASP.NET, <host>/ris/<client>/…), as hosted by a
 // municipality itself (ris.hameln.de/ris/hameln/). Read are plain addresses of the public site only:
 // - meeting/ShowEvents?start=<day>&end=<day>: the JSON feed of the month calendar: id, body, start and, for a meeting
@@ -17,10 +18,7 @@ import {committeePart} from './oparl-regional.mjs';
 //   matter of their own and are left out.
 // Files (file/getfile/<id>) are only linked, not read. Login, members' area ("Erst Anmelden") and the pages of
 // persons, votings and minutes extracts are never requested.
-const MONTHS={januar:1,februar:2,märz:3,maerz:3,april:4,mai:5,juni:6,juli:7,august:8,september:9,oktober:10,november:11,dezember:12};
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ')).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
-const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 const dayOf=value=>{
  const iso=String(value).match(/(\d{4})-(\d{2})-(\d{2})/);if(iso)return iso[0];
  const num=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);if(num)return `${num[3]}-${num[2].padStart(2,'0')}-${num[1].padStart(2,'0')}`;
@@ -184,7 +182,7 @@ export async function collectProvoxIip(source,{now=new Date(),get=fetchText,requ
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n')+(row.text?'\n'+row.text:''),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Sitzung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;delete t.text;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Bürger- und Ratsinformationssystems (Provox IIP); nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:meetings.size,...(withoutAgenda?{upcomingWithoutAgenda:withoutAgenda}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),...(warnings.length||part.warnings().length?{warnings:[...warnings,...part.warnings()]}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0||withoutAgenda>0),issues:topics.length||unchanged||withoutAgenda?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};

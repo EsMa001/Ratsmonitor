@@ -7,6 +7,7 @@ import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {organizationFilter} from './oparl-regional.mjs';
 import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
+import {fnv,germanDay as day} from './source-common.mjs';
 // RIS-Portal of comundus regisafe (<name>.ris-portal.de): a Liferay portal "Ratsinformation" with the portlet RisSitzung.
 // Read are the addresses the public site asks for every visitor, nothing that needs a login:
 // - the meetings of one month (portlet resource loadSessions, JSON: sitzungId, start, sessionLink and the body),
@@ -21,8 +22,6 @@ import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
 // A shared system (a Gemeindeverwaltungsverband with the councils of its members, vghexental.ris-portal.de) is separated
 // by the field organizations of the catalog entry ({include, exclude} name patterns, as in oparl-regional.mjs); a meeting
 // whose body the filter does not assign is not read.
-const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 const attribute=(tag,name)=>decode(tag.match(new RegExp(`\\b${name}=["']([^"']*)["']`,'i'))?.[1]||'');
 // Titles keep the line breaks of the source as spaces ("… (RLG)<br>hier: …").
 const plain=html=>text(String(html||'').replace(/<br\s*\/?>/gi,' '));
@@ -199,7 +198,7 @@ export async function collectRisPortal(source,{now=new Date(),get=fetchText,olde
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Tagesordnungspunkt: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.committee+': '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seite des RIS-Portals; nur Punkte des öffentlichen Teils.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:meetings.size-upcoming,...(upcoming?{upcomingWithoutAgenda:upcoming}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),...(warnings.length?{warnings}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};

@@ -275,8 +275,7 @@ sonst nur fehlende.
 
 `import-worker.mjs` schaltet mit `useDocumentStore(openPdfStore(RM_PDF_STORE))` den Lesezugriff ein; `readDocument`
 (`documents.mjs`) liest erst die Textfassung (`getText`, über 150 Seiten Fehler, sonst `mergePages` bis 65.000 Zeichen), dann das PDF
-(`get`), sonst aus dem Netz (30 s, 12 MB) und legt es mit `put` ab, ohne Gebiet und Rang. Der KI-Stapel (`scripts/ai-batch/lib.mjs`
-`fetchSource`) geht denselben Weg.
+(`get`), sonst aus dem Netz (30 s, 12 MB) und legt es mit `put` ab, ohne Gebiet und Rang.
 
 ## 5. Verarbeitung im Detail: Regeln je Bericht
 
@@ -315,9 +314,6 @@ flowchart TD
   `no-text`, `too-long`, `unreadable`; `topic_facts` mit `method = 'facts-v27:text|title'`; am Ende Datenstand `content` + 1.
   KI-Felder (`shortSummary`, `longSummary`, `labelAssessments.ai`, `contentAnalysis`) bleiben unberührt.
 - **Vorgang:** `case_key` = `region_id + '|' + titleKey(coalesce(officialTitle, title))`; gleiche Titel je Gebiet sind ein Vorgang.
-- **Auch der Modus `summaries`** von `runSync` (`refreshSummaries` in `sync.ts`: nur von Hand über `POST /api/admin/analyse` und nur
-  mit `OPENAI_API_KEY`, nicht der nächtliche Abruf) ruft `readReport` mit dem dort gelesenen Text und schreibt `itemKind`, `theme`,
-  `stage` und `topic_facts`, aber nicht `report_rules`; der Job liest diese Berichte später noch einmal.
 - **Regel-Zusammenfassung** (`rule-summary.mjs`): nur Originalsätze, nichts wird umformuliert. Der Text wird in Beschluss, Sachverhalt
   und Ende geteilt; gewählt werden bis zu 2 Beschlusssätze, eine Einleitung, ein Satz mit Betrag, ein Begründungssatz, dann weitere
   nach Gewicht. Kurz = ein Satz (Ziel 30, höchstens 40 Wörter), lang = Ziel 100, höchstens 140 Wörter, in Dokumentreihenfolge mit
@@ -570,7 +566,7 @@ Risiken, aus dem Code gelesen:
    bis 22 Uhr den Altbestand, bis jemand anhält.
 5. **PDF-Aufträge außerhalb des Fensters** halten `pendingWork('pdf-job')` wahr; der Zeitplaner startet `job.mjs` alle 10 Minuten, der
    sich jedes Mal ohne Start beendet.
-6. **Abruf und KI-Stapel umgehen die Grenze:** `readDocument` und `fetchSource` legen PDFs mit `put` ab, ohne `keeper`, Gebiet und
+6. **Abruf umgeht die Grenze:** `readDocument` legt PDFs mit `put` ab, ohne `keeper`, Gebiet und
    Rang; nur der Sicherungsschritt der Nacht fängt das auf.
 7. **Score ohne Titel:** `ranked` ruft `effectiveType` ohne Titel; die Titel-Ausnahme „beginnt mit Anlage“ greift im Score nicht.
 8. Mit `--include-slow` sind zu langsame Dateien nach dem ersten Versuch sofort wieder in der Reihe, nach dem zweiten dauerhaft

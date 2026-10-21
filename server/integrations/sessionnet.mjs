@@ -1,7 +1,7 @@
 import {parseAttendance} from './sessionnet-details.mjs';
 import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
 import {windowStart,calendarMonthsBack} from './history-window.mjs';
-import {budgeted,paced,isRejectionPage,REFUSED,statusError} from './request-budget.mjs';
+import {BUDGET_REACHED,budgeted,paced,isRejectionPage,REFUSED,statusError} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {bodyBytes} from './body-bytes.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
@@ -50,7 +50,7 @@ export async function fetchText(url,source,timeoutMs=20000,request=fetch){
  const deadline=Date.now()+timeoutMs,seen=new Set();let next=allowed(url,source);
  for(let hop=0;hop<=3;hop++){
   if(seen.has(next))throw Error('Wiederholte Weiterleitung der Quelle');seen.add(next);
-  const remaining=deadline-Date.now();if(remaining<=0)throw Error('Zeitbudget der Quelle erreicht');
+  const remaining=deadline-Date.now();if(remaining<=0)throw Error(BUDGET_REACHED);
   const r=await request(next,{redirect:'manual',signal:AbortSignal.timeout(remaining),headers:{'User-Agent':SOURCE_USER_AGENT,'Accept':'text/html,application/json'}});
   if([301,302,303,307,308].includes(r.status)){
    const location=r.headers.get('location');await r.body?.cancel();
@@ -258,7 +258,7 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Vorlage / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SessionNet-Seite; konservative Statusauswertung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
+  Object.assign(t,sourceSummary(t,{place:source.name}));t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SessionNet-Seite; konservative Statusauswertung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  // Unchanged meetings are a successful reading: their reports are in the database already.
  const warnings=[...(otherClients.size?[`${otherClients.size} Sitzungen anderer Mandanten des gemeinsamen Systems ausgelassen.`]:[]),...part.warnings()];

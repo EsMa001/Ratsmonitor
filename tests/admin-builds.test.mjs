@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {startBuild,stepBuild,readBuild,cancelBuild,buildStatus,isBuildTarget} from '../server/integrations/admin-builds.mjs';
 import {QUALITY_BUILDS,runQualityCheck,storedQualityChecks} from '../server/integrations/quality-check.mjs';
 import {refreshStep} from '../server/integrations/admin-refresh.mjs';

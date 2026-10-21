@@ -1,5 +1,4 @@
-import {LABELS} from '../../shared/labels.mjs';
-import {searchFilters} from './monitor-search.mjs';
+import {labelName} from '../../shared/labels.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {source,xState} from './plenara-x-query.mjs';
@@ -19,7 +18,6 @@ import {listPage,offsetOf} from './analytics-lists.mjs';
 const MIN_PARTY=10,MIN_CELL=5,DECIDED=['approved','rejected','postponed'];
 /* Restkategorien der Themeneinordnung sind keine Sachthemen: nicht im Themenprofil */
 const NO_TOPIC=new Set(['unklar']);
-const labelName=id=>LABELS.find(l=>l.id===id)?.name||id;
 const share=(a,b)=>b?Math.round((a/b)*1000)/10:null;
 
 /** Tabelle topic_facts vorhanden? Ohne Migration 0025 gibt es nichts auszuwerten. */

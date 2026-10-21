@@ -8,6 +8,7 @@ import {createSession} from './allris.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {germanDayStrict as day} from './source-common.mjs';
 // Public pages of ALLRIS net, the older ALLRIS generation (ALLRIS 3): .asp programs in one folder. Read are the monthly
 // calendar (si010, si010_e, si010_j, si010_a or the responsive si010_r), the agenda of each meeting (to010) and the page
 // of each paper on a public agenda (vo020). Every program follows the scheme two letters, three digits, an optional
@@ -22,7 +23,6 @@ import {committeePart} from './oparl-regional.mjs';
 //   "(nichtöffentlich)" or left out, and public items can follow it.
 // - Attachments are linked under temporary addresses (___tmp) and are not kept. Documents of a paper are kept under the
 //   address of the document program (do027), the same link the responsive pages give.
-const day=value=>{const m=String(value).match(/(\d{2})\.(\d{2})\.(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:null;};
 const cell=(row,name)=>row.match(new RegExp(`<td[^>]*class=["'](?:[^"']*\\s)?${name}(?:\\s[^"']*)?["'][^>]*>([\\s\\S]*?)<\\/td>`,'i'))?.[1]||'';
 const byId=(html,id)=>html.match(new RegExp(`<span[^>]*id=["']${id}["'][^>]*>([\\s\\S]*?)<\\/span>`,'i'))?.[1]||'';
 // Classic pages: a label cell (class kb1) followed by its value cell.
@@ -292,7 +292,7 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Vorlage / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche ALLRIS-net-Seite (ALLRIS 3); nur Tagesordnungspunkte des öffentlichen Teils.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  const listed=meetings.size-upcoming,found=[...new Set(issues)];

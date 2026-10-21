@@ -6,6 +6,7 @@ import {createSession} from './allris.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {fnv} from './source-common.mjs';
 // RIS of the City of Munich (risi.muenchen.de/risi), an own development on Apache Wicket behind an F5 firewall.
 // - robots.txt disallows every address containing "jsessionid" for all programs. Wicket writes the session id into the
 //   redirect of a session's first request and into the links of its first page. It is removed from every address before
@@ -23,7 +24,6 @@ const monthOf=label=>{const m=String(label).match(/([A-Za-zÄäÖöÜü]+)\s+(\d
 const dayOf=label=>{const m=String(label).match(/(\d{1,2})\.\s*([A-Za-zÄäÖöÜü]+)\s+(\d{4})/),month=m&&monthOf(m[2]+' '+m[3]);return month?`${month}-${m[1].padStart(2,'0')}`:null;};
 const shift=(month,n)=>{const [y,m]=month.split('-').map(Number);return new Date(Date.UTC(y,m-1+n,1)).toISOString().slice(0,7);};
 const german=date=>date.split('-').reverse().join('.');
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 const anchors=html=>[...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)].map(m=>({attributes:m[1],href:decode(m[1].match(/\bhref=["']([^"']*)["']/i)?.[1]||''),html:m[2]}));
 const value=(html,key)=>text(html.match(new RegExp(`<div class=["']keyvalue-key["']>\\s*${key}:\\s*<\\/div>\\s*<div class=["']keyvalue-value[^"']*["']>([\\s\\S]*?)<\\/div>`,'i'))?.[1]||'');
 // The plenary is called "Vollversammlung" by the source; as the city council it decides finally (DECIDING_BODY).
@@ -233,7 +233,7 @@ export async function collectMuenchenRisi(source,{now=new Date(),get=fetchText,r
   // A paper can stand twice on one agenda, once withdrawn: the item that was dealt with comes last.
   row.events.sort((a,b)=>a.date.localeCompare(b.date)||(b.result==='abgesetzt')-(a.result==='abgesetzt'));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Vorlage / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seite des Ratsinformationssystems München; nur Tagesordnungspunkte der öffentlichen Tagesordnung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  // Unchanged meetings are a successful reading: their reports are in the database already.

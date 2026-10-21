@@ -6,6 +6,7 @@ import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {asciiSlug as slug} from './source-common.mjs';
 // Ratsinformationsmodul "hwratssystem" of Hirsch & Wölfl (TYPO3 extension in the websites of small municipalities,
 // Baden-Württemberg). Read are plain addresses of the public site only, all below the page of the meeting calendar
 // (source.base = address of that page, e.g. …/ratsinformationssystem/sitzungskalender):
@@ -18,7 +19,6 @@ import {committeePart} from './oparl-regional.mjs';
 export const HW_TYPO3='hw-typo3';
 const PLUGIN=/hwratssystem__sitzungstermin__calendar_wrapper/;
 const ROUTE='tx_hwratssystem_sitzungstermincalendar';
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(String(html||'').replace(/<br\s*\/?>/gi,' ').replace(/<\/p>/gi,' ')).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
 // Items that are no matter of their own: formal points of every session.
 const FORMAL=/^(?:eröffnung|begrüßung|feststellung der|bürgerfragestunde|einwohnerfragestunde|einwohnerfrage|fragestunde|bürgerfrage|bekanntgabe|bekanntgaben|verschiedenes|anfragen|anregungen|fragen und anträge|wünsche|mitteilungen|schlusswort|genehmigung (?:der |des )?(?:niederschrift|protokoll)|kenntnisnahme (?:der |des )?(?:niederschrift|protokoll)|protokoll|niederschrift|tagesordnung|nicht\s*öffentlich|ende der sitzung)/i;
@@ -145,7 +145,7 @@ export async function collectHwTypo3(source,{now=new Date(),get=fetchText,reques
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Tagesordnungspunkt: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Ratsinformationsmoduls der Gemeinde (Hirsch & Wölfl); nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:meetings.size+noItems,...(noItems?{meetingsWithoutItems:noItems}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),...(warnings.length||part.warnings().length?{warnings:[...warnings,...part.warnings()]}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0||noItems>0),issues:topics.length||unchanged||noItems?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {searchMonitor} from '../server/integrations/monitor-search.mjs';
 /* drizzle/0023: the full text index follows the cards through every write, and the search gives the same result with
    and without it (the index only narrows, instr still checks). */

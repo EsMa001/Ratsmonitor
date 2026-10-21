@@ -1,12 +1,13 @@
 import {sourceDecision} from './source-fields.mjs';
 import {windowStart} from './history-window.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
-import {budgeted} from './request-budget.mjs';
+import {budgeted,statusError} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {extractText,getDocumentProxy} from 'unpdf';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {bodyBytes} from './body-bytes.mjs';
+import {fnv,germanDayStrict as day} from './source-common.mjs';
 // Public pages of the "TI-Generator" (Town Hall Information WEB-Generator, Bartel Software Engineering): static sites
 // that the Rats-Manager writes to a web host. The start page holds a menu with one entry per committee and list; the
 // page's script loads each list from listen/<file> (the address of the menu entry itself answers 404). Read are the
@@ -27,8 +28,6 @@ export const STALE_DAYS=120;
 const MORE={sbquo:',',bdquo:'„',ldquo:'“',rdquo:'”',lsquo:'‘',rsquo:'’',sect:'§',euro:'€',minus:'-',hellip:'…',laquo:'«',raquo:'»',deg:'°',eacute:'é',egrave:'è',aacute:'á',agrave:'à',ccedil:'ç',middot:'·',bull:'•',shy:''};
 // The generator writes "&sbquo;" where a comma stands ("Bau&sbquo; Wirtschaft").
 const clean=s=>text(String(s||'').replace(/&([a-z]+);/gi,(m,k)=>MORE[k]??m));
-const day=value=>{const m=String(value).match(/(\d{2})\.(\d{2})\.(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:null;};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 const slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 // "09", "10.3." and "10.3" name the same item.
 const topKey=n=>String(n).replace(/\.$/,'').split('.').map(p=>p.replace(/^0+(?=\d)/,'')).join('.');
@@ -224,7 +223,7 @@ export function detectTiGenerator(url,html){
 /** Text of a notice (PDF of the site, at most 3 MB and 12 pages), read in memory; never kept. */
 export async function readNoticePdf(url,source){
  const r=await fetchNoRedirect(allowed(url,source),{signal:AbortSignal.timeout(30000),headers:{'User-Agent':SOURCE_USER_AGENT}});
- if(!r.ok){await r.body?.cancel();throw Error('Quelle antwortet mit HTTP '+r.status);}
+ if(!r.ok){await r.body?.cancel();throw statusError('Quelle antwortet mit HTTP ',r);}
  const bytes=await bodyBytes(r,3e6);
  const pdf=await getDocumentProxy(bytes,{isEvalSupported:false,verbosity:0});
  try{if(pdf.numPages>12)throw Error('Quelldokument zu umfangreich');return (await extractText(pdf,{mergePages:true})).text;}finally{await (pdf.destroy?pdf.destroy():pdf.loadingTask?.destroy?.());}
@@ -330,7 +329,7 @@ async function collectOneTi(source,{now=new Date(),get=fetchText,getPdf=readNoti
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seite des TI-Generators; nur Tagesordnungspunkte der öffentlichen Tagesordnung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  const listed=meetings.size-upcoming;

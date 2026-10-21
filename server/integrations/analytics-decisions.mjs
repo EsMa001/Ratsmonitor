@@ -1,4 +1,4 @@
-import {LABELS} from '../../shared/labels.mjs';
+import {labelName} from '../../shared/labels.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
@@ -34,7 +34,6 @@ export function kindOf(gremium){
 const kinds1=new Map();
 const kindOfCached=g=>{let k=kinds1.get(g);if(k===undefined){k=kindOf(g);if(kinds1.size<50000)kinds1.set(g,k);}return k;};
 export const KINDS=[['rat','Rat und Kreistag'],['ortsgemeinde','Ortsgemeinderäte (in Verbandsgemeinden)'],['ausschuss','Ausschüsse und Beiräte'],['ortsebene','Orts- und Bezirksebene'],['sonstige','Sonstige']];
-const labelName=id=>LABELS.find(l=>l.id===id)?.name||id;
 
 export function parseDecisions(params){
  const copy=new URLSearchParams(params);

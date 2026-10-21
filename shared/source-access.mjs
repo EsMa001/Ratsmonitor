@@ -15,7 +15,7 @@
 // robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs); the label says what it says about the
 // HTML pages, it does not stop a reader.
 //
-// Used by the gap atlas (scripts/dashboard/build.mjs, which also writes server/integrations/source-access.json for the
+// Used by the gap atlas (scripts/dashboard/build.mjs, which also writes server/integrations/source-atlas.json for the
 // areas without source) and by the admin view (server/integrations/admin-data.mjs).
 
 /**

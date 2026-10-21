@@ -12,7 +12,7 @@ import {serverGroups,serverOf,hostOf,MUENSTER} from '../server/integrations/sour
 import {NRW_SOURCES} from '../server/integrations/source-catalog.mjs';
 import {SOURCES} from '../server/integrations/regions.mjs';
 import {provider,PER_PROVIDER} from '../server/integrations/pipeline-jobs.mjs';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {searchMonitor} from '../server/integrations/monitor-search.mjs';
 import {radiusParam,areaKeys} from '../shared/radius-areas.mjs';
 import {sourceAddress} from '../scripts/source-discovery/reasons.mjs';

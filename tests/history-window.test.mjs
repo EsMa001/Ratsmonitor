@@ -9,7 +9,7 @@ import {collectRegion} from '../server/integrations/collect-region.mjs';
 import {mergeImport} from '../server/integrations/merge-import.mjs';
 import {importHealth} from '../server/integrations/import-health.mjs';
 import {pipelineAction} from '../server/integrations/pipeline-jobs.mjs';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 const source={id:'test',name:'Test',kind:'city',extension:'asp',base:'https://example.test/'};
 const now=new Date('2026-09-27T12:00:00Z');
 test('twelve-month calendar window clamps leap day and preserves month ends',()=>{

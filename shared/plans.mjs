@@ -24,8 +24,6 @@ export const FEATURES={
  pro:{analytics:false,calendar:false,lenaPerMin:30},
  enterprise:{analytics:true,calendar:true,lenaPerMin:60},
 };
-/** Übersichten der Auswertungen, die ohne Enterprise offen sind (pages/analytics/AnalyticsPages.tsx) */
-export const FREE_ANALYTICS=[];
 export const TIER_LABEL={guest:'Gast',basic:'Basic',pro:'Pro',enterprise:'Enterprise'};
 /** Preise: Platzhalter bis zur Entscheidung (konten-konzept.md, Abschnitt 15). null heißt „Preis folgt“. */
 export const PRICES={basic:null,pro:null,enterprise:null};

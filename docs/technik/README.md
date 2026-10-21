@@ -122,7 +122,7 @@ tagsüber nachgearbeitet ([Pipeline](pipeline.md)).
 | `app/` | Next-App (vinext): `(monitor)/` Seiten der Oberfläche (Stubs, gerendert vom Client), `api/` alle Routen (78 `route.ts`), `admin/` die Administration, CSS-Dateien |
 | `components/ratsmonitor/` | die eigentliche Oberfläche: `App.tsx`, `components/`, `pages/` (auch `analytics/`), `info/`, `lib/`, `state/`, `menu/`; Karte `FRONTEND.md`, Index `INDEX.md` |
 | `components/admin-*.tsx` | Reiter und Bausteine der Administration; `components/ui/` shadcn |
-| `server/services/` | Kernlogik: `sync.ts` (Abruf je Gebiet), `session.ts` (Zugang), `admin-http.ts`, `calendar-ics.ts`, `push.ts`, `read-cache.mjs` |
+| `server/services/` | Kernlogik: `sync.ts` (Abruf je Gebiet), `session.ts` (Zugang), `admin-http.ts`, `calendar-ics.ts`, `read-cache.mjs` |
 | `server/integrations/` | fachliche Module (ca. 150 Dateien): Leser je Ratsinformationsprodukt (`sessionnet.mjs`, `oparl*.mjs`, `allris*.mjs` …, Registry `readers.mjs`, Auswahl `collect-region.mjs`), Quellenkataloge (`*-sources.json`), Abrufauftrag (`pipeline-jobs.mjs`, `pipeline-worker.mjs`), Suche (`monitor-search.mjs`, `search-words.mjs`), Regeln (`report-rules.mjs`, `rule-summary.mjs`), plenara.X (`plenara-x-*.mjs`, `x-cases.mjs`, `analytics-*.mjs`), Administration (`admin-*.mjs`, `region-facts.mjs`), Betrieb (`schedules.mjs`, `work-failures.mjs`, `pdf-store-admin.mjs`, `altbestand-admin.mjs`), KI (`ai-local-work.mjs`, `ai-jobs.mjs`) |
 | `server/node/` | Node-Laufzeit: `serve.mjs` (Einstieg), `d1-sqlite.mjs` (D1-Adapter), `cloudflare-workers.mjs` (Ersatzmodul), `import-worker.mjs`, `x-worker.mjs`, `pdf-store.mjs`, `mcp-runtime.mjs`, `ai-local-*.mjs` |
 | `server/accounts/` | Konten: Anmeldung, Anmeldesitzungen, Zugang, Mail, TOTP |
@@ -198,7 +198,7 @@ Browser ─▶ Caddy (plenara.de :443 mit Let's Encrypt, HSTS, noindex; Tunnel 1
 **Umgebungsvariablen** (`ratsmonitor.env.example`): `DATABASE_FILE`, `DATABASE_READONLY`, `DATABASE_BUSY_TIMEOUT_MS`, `DATABASE_SLOW_MS`,
 `HOST`, `PORT`, `NODE_ENV`, `TZ=UTC`, `VINEXT_TRUST_PROXY`, `NODE_OPTIONS`, `SITE_URL`, `RM_ACCESS` (`open`/`invite`), `ADMIN_HOSTS`,
 `ADMIN_LEGACY_HEADER`, `MAIL_TRANSPORT` (`http`/`log`/`outbox`), `LOGIN_TOTP`, `MAIL_API_URL`, `MAIL_FROM`, `MAIL_REPLY_TO`,
-`OPERATOR_EMAIL`, `ADMIN_SETUP_HASH` (alt), `IMPORT_TOKEN`, `OPENAI_API_KEY`/`OPENAI_MODEL` (optional, Modus `summaries`), `VAPID_*`,
+`OPERATOR_EMAIL`, `ADMIN_SETUP_HASH` (alt), `IMPORT_TOKEN`,
 `RM_PDF_STORE`, `OCR_TOOLS`, `OCR_CACHE`, `RM_X_WORKERS`. Nicht in der Vorlage: `SHUTDOWN_GRACE_MS`, `RM_ALLOW_PUBLIC_BIND`,
 `RM_ALLOW_NO_DB`, `RM_SKIP_WARM`, `RM_X_WORKER`, `IMPORT_BUSY_TIMEOUT_MS` (Einheiten 30 s), `ACCOUNTS_BUSY_TIMEOUT_MS`, `RM_TRIGGER_DIR`,
 `ACCOUNTS_OPEN_SIGNUP`, `ACCOUNTS_IN_MAIN_DB`, `BACKUP_REMOTE`, `BACKUP_DIR`, `KEEP`, `ZSTD_LEVEL`, `RM_MCP_CONFIG`, `ROBOTS_POLICY`.

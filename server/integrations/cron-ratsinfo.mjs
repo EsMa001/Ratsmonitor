@@ -4,6 +4,7 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted,paced,REFUSED,BUDGET_REACHED} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {fnv} from './source-common.mjs';
 // Public pages of the TYPO3 extension "cronmmratsinfo" (cron IT), e.g. ris.helmstedt.de. Read are the list "Alle Sitzungen"
 // with its agenda option, which names every meeting and the numbered items of its public agenda on one page, and the page
 // of each meeting in the period, which links the papers of those items (PDF).
@@ -19,7 +20,6 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 //   identified by the paper's record number, or by the meeting's record number with the item's number and title.
 const MONTHS={januar:1,februar:2,märz:3,april:4,mai:5,juni:6,juli:7,august:8,september:9,oktober:10,november:11,dezember:12};
 const day=value=>{const m=String(value).toLowerCase().match(/(\d{1,2})\.\s*([a-zä]+)\s+(\d{4})/),month=m&&MONTHS[m[2]];return month?`${m[3]}-${String(month).padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 const key=value=>String(value).toLowerCase().replace(/\s+/g,'');
 // Titles of list and page compared without case, spacing and punctuation; one of them may be cut short.
 const plain=value=>String(value).toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'');
@@ -174,7 +174,7 @@ export async function collectCronRatsinfo(source,{now=new Date(),get=fetchText,m
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[paperKey(d),d])).values()]};delete t.event;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seite der TYPO3-Erweiterung cronmmratsinfo; nur Tagesordnungspunkte, die die Sitzungsliste öffentlich ausweist.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  // Past meetings without public items are listed by the source as non-public (or not released): not a gap.

@@ -7,7 +7,7 @@ import population from '../shared/nds-population.json' with {type:'json'};
 import map from '../public/geo/germany.json' with {type:'json'};
 import {CATALOG,LANDS} from '../shared/catalog.mjs';
 import {matchesBody} from '../server/integrations/body-identity.mjs';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {searchMonitor,searchCoverage} from '../server/integrations/monitor-search.mjs';
 import {sourceAddress} from '../scripts/source-discovery/reasons.mjs';
 

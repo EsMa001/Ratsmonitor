@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {buildXCases} from '../server/integrations/x-cases.mjs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {knowledgeGraph,parseGraph,tokens} from '../server/integrations/analytics-graph.mjs';
 import {parseTerms} from '../server/integrations/x-terms.mjs';
 

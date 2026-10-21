@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {parseMonitorSearch,searchMonitor,searchCoverage,cachedSearch} from '../server/integrations/monitor-search.mjs';
 import {refreshSearchWords,candidateCards} from '../server/integrations/search-words.mjs';
 
@@ -90,6 +90,26 @@ test('every facet counts with all filters but its own, from one grouping',async(
  assert.deepEqual(one.articles.map(a=>a.id).sort(),['o1','o2']);
  /* Ergebnisseite mit großer Auswahl (Ausschluss der Kreise) und mit kleiner (Einschluss) liefert dieselben Treffer */
  assert.deepEqual(all.articles.map(a=>a.id).sort(),['b0','b1','b2','o1','o2','s0','s1','s2','s3']);
+ }finally{sql.close();}
+});
+test('the grouping of the facets runs once per base filter and data revision; place, theme and status reuse it',async()=>{
+ const {sql,db,put}=fixture();try{
+ const bau={classification:{method:'title-rules-v2',version:'labels-v2',primary:'bauen',evidence:'Neubau Feuerwehrhaus'},title:'Neubau Feuerwehrhaus',officialTitle:'Neubau Feuerwehrhaus'};
+ for(let i=0;i<4;i++)put('s'+i);for(let i=0;i<3;i++)put('b'+i,'billerbeck',bau);put('o1','other');put('o2','other',bau);
+ let groupings=0;const counted={...db,prepare:(q,...a)=>{if(/GROUP BY region_id,label,status/.test(q))groupings++;return db.prepare(q,...a);},batch:(...a)=>db.batch(...a)};
+ /* ohne Ort zählt die Ebene, mit Ort der ganze Katalog: zwei Grundfilter */
+ const qs=['level=city','level=city&label=Bauen%20%26%20Wohnen','level=city&status=consulting','level=city&area=05558012&scope=only','level=city&area=05558008&scope=only&status=approved'];
+ const kept=[];for(const q of qs)kept.push(await searchMonitor(counted,catalog,new URLSearchParams(q)));
+ assert.equal(groupings,qs.length,'prepared every time');
+ /* gleiche Zahlen wie ohne Zwischenspeicher (eigene Datenbankhülle, also eigener Speicher) */
+ for(const [i,q] of qs.entries()){const fresh=await searchMonitor({...db},catalog,new URLSearchParams(q));assert.deepEqual(kept[i],fresh,q);}
+ let ran=0;const executed={...db,prepare:q=>{const s=db.prepare(q);return /GROUP BY region_id,label,status/.test(q)?{bind:(...a)=>{const b=s.bind(...a);return {...b,execute:()=>{ran++;return b.execute();},all:()=>{ran++;return b.all();}};}}:s;},batch:(...a)=>db.batch(...a)};
+ for(const q of qs)await searchMonitor(executed,catalog,new URLSearchParams(q));
+ assert.equal(ran,2,'five variants, two base filters');
+ /* neuer Datenstand: neu gruppiert, die Zahlen stimmen */
+ put('o3','other');
+ const after=await searchMonitor(executed,catalog,new URLSearchParams('level=city&area=05558012&scope=only'));
+ assert.equal(ran,3);assert.equal(after.total,3);
  }finally{sql.close();}
 });
 test('search results are kept while the data revision stays the same',async()=>{
@@ -189,4 +209,12 @@ test('nur das Gebiet: kreisfreie Stadt mit Kreisschlüssel ist die Stadt selbst'
  assert.deepEqual(await ids('area=05315&scope=only'),['koeln']);
  assert.deepEqual(await ids('area=05558&scope=only'),['kreis']);
  assert.deepEqual(await ids('area=05558&scope=with'),['bil','kreis']);
+});
+test('two equal searches at the same time run one search',async()=>{
+ const {sql,db,put}=fixture();try{
+ for(let i=0;i<3;i++)put('k'+i);
+ let pages=0;const counted={...db,prepare:(q,...a)=>{if(/ORDER BY/.test(q))pages++;return db.prepare(q,...a);},batch:(...a)=>db.batch(...a)};
+ const [a,b]=await Promise.all([cachedSearch(counted,catalog,new URLSearchParams('q=dulmen&level=city')),cachedSearch(counted,catalog,new URLSearchParams('level=city&q=dulmen'))]);
+ assert.equal(a,b);assert.equal(pages,1);assert.equal(a.total,3);
+ }finally{sql.close();}
 });

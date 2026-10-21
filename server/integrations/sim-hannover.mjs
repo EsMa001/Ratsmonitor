@@ -4,6 +4,7 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {asciiSlug as slug,clip,germanDay as day} from './source-common.mjs';
 // SIM, the Sitzungsmanagement of the Landeshauptstadt Hannover (e-government.hannover-stadt.de/lhhsimwebre.nsf, a Domino
 // application of the city). Read are plain addresses of the public site only:
 // - the list of a body (Termine.xsp for the Ratsversammlung, Termine.xsp?view=Termine&grem=<code> for a committee,
@@ -15,11 +16,8 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 // Items without a paper (opening, minutes, announcements) carry no matter of their own and are left out. Pages of
 // the item (TOPS/…) and the minutes (TO/…_P) are not read: confidential items state there that they are not published.
 // robots.txt of the site allows everything except the bots "phantom" and "PhantomJS" (checked 09.10.2026).
-const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
 const keyDay=key=>`${key.slice(0,4)}-${key.slice(4,6)}-${key.slice(6,8)}`;
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(html).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
-const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 const PATHS=/^(?:Termine\.xsp|Ausschuesse\.xsp|AuswahlStadtbezirke\.xsp|TM\/\d{8}_[A-Za-z0-9]+|DS\/[0-9][\w-]*)$/;
 // Only the public pages above, below the application path of the source.
 const guard=(url,source)=>{const u=new URL(url),rest=u.pathname.slice(new URL(source.base).pathname.length);if(!PATHS.test(rest))throw Error('Nicht freigegebene Quelladresse');return url;};
@@ -166,7 +164,7 @@ export async function collectSimHannover(source,{now=new Date(),get=fetchText,re
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n')+(row.text?'\n'+row.text:''),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Sitzung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;delete t.text;
-  Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
+  Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Sitzungsmanagements der Landeshauptstadt Hannover.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:meetings.size,...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),...(warnings.length?{warnings}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};

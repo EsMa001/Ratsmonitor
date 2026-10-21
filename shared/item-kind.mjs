@@ -7,7 +7,6 @@
 // ist ein Sachpunkt. Nur der Titel zählt; nichts hängt von einem späteren Schritt ab.
 // Messen: node scripts/item-study/measure.mjs --set=item-dev [--fehler=neu]
 export const ITEM_KIND_VERSION='item-kind-v4';
-export const ITEM_KINDS=['formal','collection','routine','subject'];
 
 /** Titel ohne Nummerierung, Klammerzusätze am Anfang und Personen am Ende. */
 export function cleanTitle(title){
