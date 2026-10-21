@@ -5,6 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {clip} from './source-common.mjs';
 // Shared frame of the small readers (ris, hhdocuments, rio-sys, hitcom Rats-Info-System): each reader lists the meetings
 // of the period and reads one page per meeting; this frame turns the items into reports (topics), keeps marks and builds
 // the coverage in the same way as sdnet-rim4.mjs. Only public pages are read.
@@ -12,7 +13,6 @@ export const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{
 export const slug=value=>String(value).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const EXTRA={bdquo:'„',ldquo:'“',rdquo:'”',sbquo:'‚',lsquo:'‘',rsquo:'’',euro:'€',hellip:'…',sect:'§',laquo:'«',raquo:'»',middot:'·',shy:'',eacute:'é',egrave:'è',agrave:'à',ccedil:'ç',deg:'°',sup2:'²',sup3:'³',frac12:'½',bull:'•',times:'×',ensp:' ',emsp:' ',thinsp:' ',copy:'©',reg:'®',szlig:'ß'};
 export const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ').replace(/<\/p>/gi,' ').replace(/&(\w+);/g,(m,k)=>EXTRA[k]??m)).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
-export const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 /** Items every meeting has and that carry no matter of their own. */
 export const FORMAL=/^(?:eröffnung|begrüßung|feststellung|genehmigung|bekanntgaben?|mitteilung(?:en)?|anfragen?|anregung(?:en)?|verschiedenes|einwohner|bürgerfragestunde|fragestunde|fragen|niederschrift|protokoll|sitzungsniederschrift|kurzbericht|schließung|ende der sitzung|wünsche|tagesordnung|regularien|verpflichtung)/i;
 /** Status of an item from the resolution text of a past meeting. */

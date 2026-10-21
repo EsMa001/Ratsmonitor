@@ -7,7 +7,7 @@ import {analysisSignature} from '../shared/article-record.mjs';
 import {LABEL_VERSION,CLASSIFIER_VERSION} from '../shared/labels.mjs';
 import {THEMES_VERSION} from '../shared/themes.mjs';
 import {AI_LOCAL_METHOD} from '../shared/ai-local-content.mjs';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {refreshSearchWords,precomputedFacets} from '../server/integrations/search-words.mjs';
 
 const topic=overrides=>({id:'report',regionId:'r1',title:'Haushalt Spielplatz',officialTitle:'Haushalt Spielplatz',status:'consulting',

@@ -65,7 +65,7 @@ test('outcomeOf liest Platzhalter der Importe nicht als Ergebnis',()=>{
 });
 
 test('Newsradar wählt wie alle plenara.X-Seiten über x_cases aus: künftige Vorgänge ja, private Bauanträge nein; andere Seiten nur bis heute',async()=>{
- const fs=await import('node:fs'),{DatabaseSync}=await import('node:sqlite'),{sqliteAdapter}=await import('../scripts/ai-job.mjs');
+ const fs=await import('node:fs'),{DatabaseSync}=await import('node:sqlite'),{sqliteAdapter}=await import('../scripts/sqlite-adapter.mjs');
  const {buildXCases}=await import('../server/integrations/x-cases.mjs'),{news}=await import('../server/integrations/analytics-news.mjs'),{xQuery}=await import('../server/integrations/plenara-x-query.mjs');
  const sql=new DatabaseSync(':memory:');
  for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8').replaceAll('--> statement-breakpoint',''));

@@ -12,7 +12,7 @@ import {validBearer} from '../integrations/prepared-access.mjs';
 
 // Sitzung, Rollen und Rechte für Routen und Seiten (requirements/konten-konzept.md, Abschnitte 5.2, 6.1, 7).
 type Later=Array<()=>Promise<unknown>>;
-type Handler=(ctx:any)=>Promise<{response:Response;later?:Later}>;
+type Handler=(ctx:ReturnType<typeof context>)=>Promise<{response:Response;later?:Later}>;
 
 /** Arbeit nach der Antwort (Mails, alles Adressabhängige); außerhalb einer Anfrage einfach anstoßen */
 export function schedule(task:()=>Promise<unknown>){
@@ -82,7 +82,6 @@ export async function requireAdmin(){
  if(state.kind==='setup')throw new AdminError(403,'Der Admin-Zugang muss zuerst freigeschaltet werden.');
  throw new AdminError(403,'Kein Zugriff auf die Administration.');
 }
-/** Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. */
 /**
  * Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. accounts:false heißt: auf dieser Umgebung gibt es
  * keine Konten (Cloudflare-Build, Server ohne Kontendatei); dann gelten keine Stufengrenzen, alles bleibt wie früher.

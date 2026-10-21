@@ -233,7 +233,7 @@ export function ruleSummary(text, { target = 30, max = 40, title = '' } = {}) {
 // Güte von 0 bis 100: misst, wie verlässlich die Regeln ausgewählt haben, nicht ob der Inhalt stimmt.
 // Teile (Summe 100): Struktur 25, Einleitung 20, Titelabdeckung 15, Satzqualität 15, Länge 10, Dokumenttext 10, Betrag 5.
 // Formelstand 2: Satzzahl und Betrag werden nur an der langen Fassung geprüft (Stand 1 verlangte sie auch von der einsätzigen kurzen).
-function scoreSummary({ compact, text, title, decision, head, intro, sentences, words, target, hasFacts }) {
+function scoreSummary({ compact, text, title, head, intro, sentences, words, target, hasFacts }) {
   const clamp = (v, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, v));
   const structure = (head.length && hasFacts ? 25 : head.length || hasFacts ? 12 : 0);
   const introPart = intro.i >= 0 ? clamp(intro.v / 1.3) * 20 : head.length ? 12 : 0;

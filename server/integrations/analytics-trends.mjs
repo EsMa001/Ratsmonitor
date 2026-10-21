@@ -28,7 +28,6 @@ export function parseTrends(params){
  return {f,window:Number(raw)};
 }
 
-const labelName=id=>LABELS.find(l=>l.id===id)?.name||null;
 
 export async function trends(db,catalog,params,now=Date.now()){
  const {f,window:W}=parseTrends(params);

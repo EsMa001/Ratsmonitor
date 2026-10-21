@@ -6,6 +6,7 @@ import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {asciiSlug as slug,germanDay as day} from './source-common.mjs';
 // SD.NET RIM 4 (Somacos, the newer web interface of the SD.NET Ratsinformationssystem: /termine, /tops, /vorgang),
 // as hosted by a municipality itself (ris.wesel.de). Read are plain addresses of the public site only:
 // - the iCalendar of the meeting calendar (termine/ics/SD.NET_RIM.ics): every meeting with its day, body and the address
@@ -15,10 +16,7 @@ import {committeePart} from './oparl-regional.mjs';
 // - the process vorgang/?__=<token>: subject, department and the "Beratungsfolge" with the resolution of each body.
 // The tokens in the addresses are stable. Documents (sdnetrim/…) are only linked, not read here. The classic SD.NET
 // (ratsinfomanagement.net, reader "sdnet") has other pages; the hosts of ratsinfomanagement.net are not served by this reader.
-const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ')).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
-const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 const ICS='termine/ics/SD.NET_RIM.ics';
 // Pages the reader requests, relative to the application: the calendar, agendas and processes.
 const PATHS=/^(?:termine\/ics\/SD\.NET_RIM\.ics|tops\/|vorgang\/)$/;

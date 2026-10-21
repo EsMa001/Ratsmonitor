@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import{statusOf,readList,checkedUrl,qualityCheck}from'../server/integrations/oparl.mjs';import{validateSummary}from'../server/integrations/ai-summary.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import{statusOf,readList,checkedUrl}from'../server/integrations/oparl.mjs';import{validateSummary}from'../server/integrations/ai-summary.mjs';
 const past={start:'2026-09-17'},future={start:'2099-01-01'};
 test('Ein Beschlussvorschlag und ein vergangener Termin sind keine Entscheidung',()=>{assert.equal(statusOf({consultation:'x',name:'Das Vorhaben wird beschlossen'},{role:'Entscheidung'},past),'consulting')});
 test('Vorberatung bleibt Empfehlung, auch bei einstimmigem Beschluss',()=>{assert.equal(statusOf({result:'einstimmig beschlossen'},{role:'Vorberatung'},past),'recommended')});

@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {searchMonitor,searchCoverage,cachedSearch,cachedCoverage,FORMAL,NOT_FORMAL} from '../server/integrations/monitor-search.mjs';
 import {refreshSearchWords,SEARCH_REVISION_SQL} from '../server/integrations/search-words.mjs';
 

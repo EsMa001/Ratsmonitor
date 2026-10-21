@@ -195,24 +195,24 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
      if(!complete)issues.push('Tagesordnungsliste der Körperschaft nur teilweise gelesen (60 Seiten).');
     }
    }catch(e){issues.push('Tagesordnungsliste: '+e.message);}
-   for(const [m,list] of agendaOf)list.sort((a,b)=>Number(a.order??0)-Number(b.order??0));
+   for(const [,list] of agendaOf)list.sort((a,b)=>Number(a.order??0)-Number(b.order??0));
   }
  }
  // marks (optional): what earlier imports read completely, see meeting-marks.mjs. The meeting object says when it
  // was last modified and lists its agenda; if that is unchanged, the items, papers and files behind it are not
  // asked again. An import that ran out of time or requests continues behind the meetings it read.
- const grouped=new Map(),held={};let unchanged=0,done=0,unread=0,spent=false;
+ const grouped=new Map(),held={};let unchanged=0,done=0,spent=false;
  await parallel(meetings,async m=>{
   const meeting=m.id?{url:allowed(m.id),date:m.start.slice(0,10)}:null,known=meeting&&usableMark(marks,meeting,now);
   if(known?.trusted){held[meeting.url]=marks.known[meeting.url];unchanged++;return;}
   // Time or requests are used up: this meeting is left for the next step. Reading on would store its agenda
   // items without their papers.
-  if(spent||Date.now()>=deadline){spent=true;unread++;return;}
-  if(m.listed){try{m=await get(m.id);}catch(e){if(exhausted(e.message)){spent=true;unread++;}issues.push(e.message);return;}if(m.deleted||!m.start)return;}
+  if(spent||Date.now()>=deadline){spent=true;return;}
+  if(m.listed){try{m=await get(m.id);}catch(e){if(exhausted(e.message)){spent=true;}issues.push(e.message);return;}if(m.deleted||!m.start)return;}
   // Committee filter: decided before the agenda is asked. Organizations are fetched once per address (cache of get).
   // A skipped meeting gets no mark, so a changed filter reads it at the next import.
   let org=null;
-  if(filter){const found=[];for(const o of [].concat(m.organization||[])){const id=typeof o==='string'?o:o?.id||'';try{const x=await object(o);found.push({id:x?.id||id,name:clean(x?.name),shortName:clean(x?.shortName)});}catch(e){if(exhausted(e.message)){spent=true;unread++;issues.push(e.message);return;}found.push({id,name:'',shortName:''});}}
+  if(filter){const found=[];for(const o of [].concat(m.organization||[])){const id=typeof o==='string'?o:o?.id||'';try{const x=await object(o);found.push({id:x?.id||id,name:clean(x?.name),shortName:clean(x?.shortName)});}catch(e){if(exhausted(e.message)){spent=true;issues.push(e.message);return;}found.push({id,name:'',shortName:''});}}
    const verdict=filter(found);if(verdict!=='kept'){skipped[verdict]++;return;}org=found.map(o=>o.name||o.shortName||'Gremium laut Originalquelle');}
   if(agendaOf&&!m.agendaItem&&m.id)m={...m,agendaItem:agendaOf.get(allowed(m.id))||[]};
   const print=(await hash(JSON.stringify([m.modified||'',(m.agendaItem||[]).map(a=>typeof a==='string'?a:[a.id,a.modified||'',a.result||''])]))).slice(0,16);
@@ -233,7 +233,7 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
    const topicId=source.id+'-oparl-'+(await hash(key)).slice(0,20);events++;
    if(grouped.has(key)){const prev=grouped.get(key);prev.events.push(event);prev.documents.push(...documents);prev.identityLinks.push(allowed(a.id));}else grouped.set(key,{id:topicId,regionId:source.id,source:source.kind,public:true,title:officialTitle,officialTitle,sourceData:{version:'public-source-fields-v1',method:'oparl',fetchedAt:now.toISOString(),records:[compactOparl(p,'paper'),compactOparl(a,'agenda'),compactOparl(c,'consultation'),compactOparl(m,'meeting')].filter(Boolean)},metadata:{sourceModifiedAt:p?.modified||a.modified||null},reference:clean(p?.reference),category:category(officialTitle),updatedAt:now.toISOString(),sourceUrl:key,identityLinks:[key,allowed(a.id)],events:[event],documents,relevanceReason:'Öffentlicher Vorgang: '+source.name});
   }catch(e){fail('Tagesordnungspunkt: '+e.message);}}
-  if(cut)unread++;else if(meeting&&!failed){held[meeting.url]=newMark(meeting,print,now,events);done++;}
+  if(!cut&&meeting&&!failed){held[meeting.url]=newMark(meeting,print,now,events);done++;}
  },3);
  const topics=[];for(const t of grouped.values()){t.events.sort((a,b)=>a.date.localeCompare(b.date));const last=t.events.at(-1);Object.assign(t,{status:last.status,eventDate:last.date,committee:last.committee});t.documents=[...new Map(t.documents.map(d=>[d.url,d])).values()];t.sourceText=t.title+'\n'+t.events.map(e=>e.description).join('\n');Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name.replace(/^(Stadt|Gemeinde) /,''));t.quality={passed:false,checks:[{name:'Öffentliche Quelle',passed:true,detail:'Öffentlichkeit durch Kennzeichen oder ausdrücklich bezeichneten öffentlichen Sitzungsabschnitt belegt.'},{name:'Inhaltsprüfung',passed:false,detail:'Automatischer Quellenüberblick; keine redaktionelle Freigabe.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);}
  onProgress(source.name+': '+topics.length+' Artikel');

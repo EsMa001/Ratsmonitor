@@ -53,7 +53,7 @@ export async function runSync(mode: 'metadata' | 'summaries',region='muenster', 
     await env.DB.prepare('INSERT INTO import_runs(id,started_at,status,details) VALUES(?,?,?,?)').bind(id, started, 'running', JSON.stringify(mode==='metadata'?{mode,region,trigger,window:lookback}:{mode,region,trigger})).run();
     // Runs older than RUNS_KEEP_DAYS go, a few hundred per import, oldest first (index on started_at); the table stays bounded.
     if (mode === 'metadata') { try { await env.DB.prepare('DELETE FROM import_runs WHERE id IN (SELECT id FROM import_runs WHERE started_at<? ORDER BY started_at LIMIT 200)').bind(new Date(Date.now() - RUNS_KEEP_DAYS * 864e5).toISOString()).run(); } catch { /* nicht wichtig für den Import */ } }
-    const data = await (mode === 'summaries' ? refreshSummaries(id, started,region) : refreshMetadata(id, started,region,previousCoverage,lookback,trace,lock.renew));
+    const data = await (mode === 'summaries' ? refreshSummaries(id, started,region) : refreshMetadata(id, started,region,previousCoverage,lookback,trace!,lock.renew));
     if (mode === 'metadata') wrote = Boolean((data as { stored?: number }).stored);
     if (mode === 'metadata') {
         /* Wortliste der Suche nachführen, wenn dieser Import Vorgänge geschrieben hat (nur Neues; fehlt sie noch oder
@@ -90,7 +90,7 @@ finally {
     await lock.release();
 } }
 // What of a record goes into the details of the run.
-const brief = (record: any) => ({ requests: record.summary.requests, failed: record.summary.failed, networkMs: record.summary.networkMs, durationMs: record.durationMs });
+const brief = (record: {summary: {requests: number; failed: number; networkMs: number}; durationMs: number}) => ({ requests: record.summary.requests, failed: record.summary.failed, networkMs: record.summary.networkMs, durationMs: record.durationMs });
 async function refreshSummaries(id: string, started: string,region:string) { if (!env.DB)
     throw Error('Datenbank fehlt'); const rows = await env.DB.prepare("SELECT id,payload FROM topics WHERE region_id=? AND active=1 ORDER BY updated_at DESC").bind(region).all<{
     id: string;
@@ -115,7 +115,7 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
         let t = old;
         try { t = await enrichDocument({ ...old }, undefined, { uses: (url: string) => uses.get(url) || 0 }); }
         catch { /* Dokument nicht lesbar: als Versuch gemerkt */ }
-        const rules = readReport(old, { uses: (url: string) => uses.get(url) || 0, pages: (t as any).readText ? [(t as any).readText] : null, at: started });
+        const rules = readReport(old, { uses: (url: string) => uses.get(url) || 0, pages: t.readText ? [t.readText] : null, at: started });
         await env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify({ ...withRuleSummary(old, t, `${RULE_SUMMARY_VERSION}:import`), itemKind: rules.itemKind, theme: rules.theme, stage: rules.stage }), old.id).run();
         processed++;
         if (processed >= 8)
@@ -137,12 +137,12 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
         t.summaryAttemptedAt = started;
     if (region==='muenster' && t.generatedBy !== 'KI-Zusammenfassung')
         t.quality = await qualityCheck(t);
-    const u=(t as any).aiUsage;
+    const u=t.aiUsage;
     const compact=await compactSummaryAttempt(old,t,started);
     /* Art des Punkts, Thema und Fakten aus denselben Regeln wie der Job rule-texts (readReport, report-rules.mjs) mit dem hier
        gelesenen Text; readText geht nicht in den Payload (compactSummaryAttempt übernimmt es nicht). Der Job liest den Bericht
        später noch einmal mit dem Text der Ablage (report_rules kennt diesen Lauf nicht), mit gleichem Ergebnis. */
-    const readText: string = (t as any).readText || '';
+    const readText: string = t.readText || '';
     const rules = readReport(old, { uses: (url: string) => uses.get(url) || 0, pages: readText ? [readText] : null, at: started });
     compact.topic.itemKind = rules.itemKind; compact.topic.theme = rules.theme; compact.topic.stage = rules.stage;
     await env.DB.batch([
@@ -163,7 +163,7 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
     if (processed >= 8)
         break;
 } await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), 'completed', JSON.stringify({ mode: "summaries", region, processed, aiConfigured: !!env.OPENAI_API_KEY }), id).run(); return { processed, more: processed === 8, aiConfigured: !!env.OPENAI_API_KEY }; }
-async function refreshMetadata(id: string, started: string,region:string,previousCoverage:any,lookback:string,trace:any,renew:()=>Promise<void>) {
+async function refreshMetadata(id: string, started: string,region:string,previousCoverage:Record<string, unknown>,lookback:string,trace:ReturnType<typeof createTrace>,renew:()=>Promise<void>) {
     if (!env.DB)
         throw Error('Datenbank fehlt');
     const previous = await env.DB.prepare('SELECT id,payload FROM topics WHERE region_id=?').bind(region).all<{
@@ -189,7 +189,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const collectMs = Date.now() - collectStarted, written = { created: 0, changed: 0, unchanged: 0 };
     const unchanged = Number(fresh.coverage.unchangedMeetings || 0), warnings = fresh.coverage.warnings || [];
     const decisions: Topic[] = [];
-    const groups=new Map<string,any[]>(),touch:any[]=[];
+    const groups=new Map<string,D1PreparedStatement[]>(),touch:D1PreparedStatement[]=[];
     const combined=mergeImport({topics:[...old.values()],coverage:previousCoverage},fresh);
     for(const incoming of fresh.topics.length?combined.topics:[]){
         const p=old.get(incoming.id);let t:Topic=preserveAnalysis(incoming,p);
@@ -211,7 +211,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     // A short window without meetings is a successful attempt; the stored stock and its status stay as they are.
     const quiet=Boolean(combined.quiet);
     const health=importHealth(previousCoverage,{at:started,count:fresh.topics.length+unchanged,complete:fresh.coverage.complete,quiet});
-    const coverage:any={...combined.coverage,regionId:region,...health,importedAt:health.lastSuccessAt};
+    const coverage:Record<string, unknown>={...combined.coverage,regionId:region,...health,importedAt:health.lastSuccessAt};
     // The negative OParl probe this import relied on (collect-region.mjs); without one the next import asks again.
     if(fresh.coverage.oparlProbeAt)coverage.oparlProbeAt=fresh.coverage.oparlProbeAt;else delete coverage.oparlProbeAt;
     // Missing items remain in the archive. A partial scan never deletes an article.

@@ -1,6 +1,6 @@
 import {gated} from '@/server/services/session';
 import {env} from 'cloudflare:workers';
-import {getRegionCoverage} from '@/server/repositories/regions';
+import {getRegionCoverage,type RegionCoverage} from '@/server/repositories/regions';
 import {atRevision} from '@/server/integrations/revision-cache.mjs';
 import {REGIONS} from '@/shared/regions';
 import {POPULATION} from '@/shared/catalog.mjs';
@@ -9,11 +9,11 @@ import {ALL_LANDS} from '@/shared/lands.mjs';
 const METHOD:Record<string,string>={oparl:'OParl-Schnittstelle','official-api':'Offizielle Portalschnittstelle',scraper:'Öffentliche RIS-Seiten'};
 
 async function sourcesSummary(){
- const coverage:any[]=await getRegionCoverage();
+ const coverage=await getRegionCoverage() as RegionCoverage[];
  const byId=new Map(REGIONS.map(r=>[r.id,r]));
  const connected=coverage.filter(c=>c.method&&c.method!=='pending');
  const sources=connected.map(c=>{const r=byId.get(c.regionId);return {
-  id:c.regionId,name:r?.name??c.regionId,kind:r?.kind??'city',method:METHOD[c.method]??'Öffentliche RIS-Seiten',
+  id:c.regionId,name:r?.name??c.regionId,kind:r?.kind??'city',method:METHOD[c.method as string]??'Öffentliche RIS-Seiten',
   lastImport:c.lastSuccessAt||c.importedAt||null,articles:Math.max(0,Number(c.articleCount)||0),meetings:Number(c.meetings)||0,
   from:c.from||null,complete:!!c.complete,failed:c.attemptStatus==='failed',
  };}).sort((a,b)=>b.articles-a.articles||a.name.localeCompare(b.name,'de'));

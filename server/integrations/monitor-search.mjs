@@ -1,5 +1,6 @@
 import {LABELS,labelFilterName} from '../../shared/labels.mjs';
 import {knownWords,candidateCards,precomputedTotal,precomputedFacets,listCurrent,SEARCH_REVISION_SQL} from './search-words.mjs';
+import {norm} from './x-terms.mjs';
 
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
@@ -8,7 +9,6 @@ export class SearchError extends Error { constructor(message,status=400){super(m
 export const FORMAL=['%niederschrift%','mitteilungen%','anfragen%','% anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%protokolls der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','bericht des vorsitzenden%','bericht des oberbürgermeisters%','bericht des bürgermeisters%','%verpflichtung%','%anträge der fraktionen%'];
 /* Ausnahmen: Titel mit eigenem Gegenstand sind keine Formalien („Mitteilungen; Beschaffung …“, „Widerspruch … gegen den Beschluss …“) */
 export const NOT_FORMAL=['mitteilungen;%','widerspruch%','%gegen den beschluss%'];
-const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
 /* Ganzes Wort in der Suchspalte (nur a–z, 0–9, sonst Trenner): Muster für GLOB am Anfang, in der Mitte und am Ende; Sonderzeichen des Begriffs in [ ] gefasst */
 const wholeWord=t=>{const e=t.replace(/[*?[]/g,c=>'['+c+']');return [e+'[^a-z0-9à-ÿ]*','*[^a-z0-9à-ÿ]'+e+'[^a-z0-9à-ÿ]*','*[^a-z0-9à-ÿ]'+e];};
 const FILLER=new Set(['und','oder','der','die','das','den','dem','des','ein','eine','einer','in','im','am','an','zu','zum','zur','von','vom','fur','mit','bei','auf','aus','nach']);
@@ -188,7 +188,7 @@ export async function searchFilters(db,catalog,f){
 }
 export async function searchMonitor(db,catalog,params){
  const f=parseMonitorSearch(params),limit=f.size;
- const {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page,placeScoped,plainSearch,formalReady}=await searchFilters(db,catalog,f);
+ const {places,regions,byId,scopedIds,nameHit,nameIds,base,cand,candidates,labelId,page,placeScoped,plainSearch,formalReady}=await searchFilters(db,catalog,f);
  /* Relevanz: Treffer im Titel zählen dreifach, im übrigen Text einfach; bei Gleichstand das Neueste zuerst */
  const rterms=f.sort==='relevance'?[...new Set(f.terms||[])]:[];
  /* LIMIT und OFFSET als Kommazahl: Als Ganzzahl (so bindet der Node-Server, d1-sqlite.mjs) kennt SQLite die Seitengröße und

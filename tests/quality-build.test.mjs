@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {QUALITY_CHECKS} from '../shared/quality-checks.mjs';
 import {runQualityCheck,storedQualityChecks} from '../server/integrations/quality-check.mjs';
 import {startBuild,stepBuild} from '../server/integrations/admin-builds.mjs';
@@ -21,7 +21,6 @@ function stock(){
  const raw=new DatabaseSync(':memory:');for(const f of fs.readdirSync(path.join(root,'drizzle')).filter(f=>f.endsWith('.sql')).sort())raw.exec(fs.readFileSync(path.join(root,'drizzle',f),'utf8'));
  const put=raw.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)');
  const insert=(id,extra={},{region='billerbeck',date='2026-09-17',column}={})=>{const t={id,regionId:region,source:'city',title:TITLE,officialTitle:TITLE,eventDate:date,events:[{date,committee:'Rat'}],documents:[{title:'Vorlage',url:'https://example.org/v.pdf',kind:'pdf'}],identity:{version:'official-records-v1'},...extra};put.run(id,region,'city',column??date,'2026-10-01T00:00:00Z','unknown',JSON.stringify(t));};
- let k=0;
  for(const [i,region] of AREAS.entries()){
   for(let j=0;j<4;j++)insert('clean-'+region+'-'+j,{title:'Haushaltssatzung '+j+' für das Jahr 2027 der Gemeinde',officialTitle:'Haushaltssatzung '+j+' für das Jahr 2027 der Gemeinde'},{region,date:'2026-09-'+String(10+j).padStart(2,'0')});
   insert('empty-'+i,{title:'',officialTitle:''},{region});
@@ -32,7 +31,6 @@ function stock(){
   insert('conflict-'+i,{identity:{conflict:true}},{region});
   if(i%2){insert('alias-missing-'+i,{identity:{mergedInto:'nowhere-'+i}},{region});insert('alias-chain-'+i,{identity:{mergedInto:'alias-missing-'+i}},{region});}
   for(let j=0;j<i%3+2;j++)insert('meeting-'+i+'-'+j,{title:'Bestellung der Schiedsperson für den Bezirk Mitte',officialTitle:'Bestellung der Schiedsperson für den Bezirk Mitte'},{region,date:'2026-07-15'});
-  k++;
  }
  // Bad meeting date only in the last area (a chunk without it counts nothing).
  insert('baddate',{},{region:'warendorf',column:'2026-13-45'});

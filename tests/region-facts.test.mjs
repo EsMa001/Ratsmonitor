@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';
 import {readSeries,pendingRegions,SERIES_VERSION,FIGURES_VERSION} from '../server/integrations/region-series.mjs';
 
@@ -20,7 +20,7 @@ const rows=(sql,table)=>sql.prepare(`SELECT * FROM ${table} ORDER BY region_id`)
 const random=seed=>()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;};
 const AREAS=['billerbeck','muenster','coesfeld','de-02000000','area-x'];
 const DAYS=['2026-08-01','2026-08-01T10:00','2026-09-20','2026-1-5','unbekannt',null];
-function randomTopic(rand,id){
+function randomTopic(rand){
  const pick=list=>list[Math.floor(rand()*list.length)];
  const events=Array.from({length:Math.floor(rand()*3)},()=>({date:pick(DAYS)})).filter(e=>e.date!==null);
  const documents=Array.from({length:Math.floor(rand()*3)},()=>({kind:pick(['application/pdf','pdf','text/html'])}));

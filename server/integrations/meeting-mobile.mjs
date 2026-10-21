@@ -110,7 +110,7 @@ export async function collectMeetingMobile(source,{now=new Date(),get=fetchText,
    meetings.set(r.url,r);
   }
  }catch(e){issues.push('Sitzungsliste: '+e.message);}
- const grouped=new Map(),held={};let count=0,limited=false,unchanged=0,done=0,unread=0,empty=0;
+ const grouped=new Map(),held={};let count=0,limited=false,unchanged=0,done=0,unread=0;
  await parallel([...meetings.values()].sort((a,b)=>oldestFirst?String(a.date).localeCompare(String(b.date)):String(b.date).localeCompare(String(a.date))),async m=>{
   const mark=m.date?usableMark(marks,m,now):null,known=mark&&String(mark.print).startsWith(period)?mark:null;
   if(known?.trusted){held[m.url]=marks.known[m.url];unchanged++;return;}
@@ -120,7 +120,6 @@ export async function collectMeetingMobile(source,{now=new Date(),get=fetchText,
    if(!parsed.committee&&!parsed.date){issues.push('Unbekanntes Format der Sitzungsseite: '+m.url);return;}
    const meeting={...m,date:parsed.date||m.date,body:parsed.committee||m.body};
    if(monthOnly&&(meeting.date<fromDay||!part.keep(meeting.body,m.id)))return;
-   if(!parsed.publicBlock)empty++;
    const rows=mmItems(parsed,meeting,source,now),print=period+(await hash(JSON.stringify(rows.map(r=>[r.id,r.title,r.record,r.status,r.documents.map(d=>d.url)])))).slice(0,16);
    if(known?.print===print){held[m.url]=marks.known[m.url];unchanged++;return;}
    for(const row of rows){

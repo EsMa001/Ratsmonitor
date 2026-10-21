@@ -73,12 +73,12 @@ test('ensureJob creates a job only while none is open; catchUp ends on an empty 
 test('a lane that throws rests and goes on; lanes that keep failing give up and are reported',async()=>{
  const {sql,db}=memoryDb();
  await pipelineAction(db,{action:'create',stage:'metadata',regions,window:'1w'},()=>{});
- let thrown=0;const warned=[];
+ const warned=[];
  // The step throws when the lease cannot be taken (a lock held too long); here: the first attempt of every lane. (Failing
  // at the release of the lease would leave it behind for 30 s, which is not what a lock error does.)
  const original=db.prepare.bind(db);let fail=2;
  db.prepare=sql=>{if(fail>0&&sql.includes("VALUES('pipeline-lease'")){fail--;throw Error('D1_ERROR: database is locked');}return original(sql);};
- const result=await workJob(db,async()=>done,{lanes:2,sleep:async()=>{thrown++;},warn:m=>warned.push(m)});
+ const result=await workJob(db,async()=>done,{lanes:2,sleep:async()=>{},warn:m=>warned.push(m)});
  assert.equal(result.state,'completed');assert.equal(result.failures,2);assert.equal(warned.length,2);assert.match(warned[0],/database is locked; weiter in 5 s/);
  // Nothing but failures: every lane gives up after its retries, the job stays as it is, the caller learns the count.
  const {sql:sql2,db:db2}=memoryDb();

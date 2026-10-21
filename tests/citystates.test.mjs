@@ -266,6 +266,7 @@ test('standard rule: Berlin districts are read unless they refuse technically; t
  const d=await collectPardok(be,{now,window:'1m',get:async()=>'User-agent: *\nDisallow: /opendata/\n',stream:async function*(url){files.push(url);if(url.endsWith('wp20.xml'))throw Error('Quelle antwortet mit HTTP 404');yield xml;}});
  assert.equal(files.length,2);assert.equal(d.topics.length,1);
  const shut=[];
+ // eslint-disable-next-line require-yield -- the stream fails before its first chunk
  const refused=await collectPardok(be,{now,window:'1m',get:async()=>'',stream:async function*(url){shut.push(url);throw Error('Quelle antwortet mit HTTP 403');}});
  assert.equal(shut.length,1,'no second file after HTTP 403');assert.equal(refused.topics.length,0);assert.match(refused.coverage.issues[0],/HTTP 403/);
 }));

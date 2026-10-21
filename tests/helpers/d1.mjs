@@ -2,7 +2,7 @@
 // drizzle/ und dem D1-artigen Adapter aus scripts/ai-job.mjs. Statt eigener Adapter je Testdatei.
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../../scripts/sqlite-adapter.mjs';
 const MIGRATIONS=new URL('../../drizzle/',import.meta.url);
 /** {sql, db}: sql ist die node:sqlite-Datenbank, db der D1-artige Zugriff (prepare/bind/first/all/run, batch). */
 export function memoryDb({migrations=true,skip=()=>false}={}){

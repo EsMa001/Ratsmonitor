@@ -6,7 +6,7 @@
    Der Dev-Server hält dieselbe Datei offen: busy_timeout. Nach einer Änderung von CLASSIFIER_VERSION nötig, bis alle durch sind. */
 import {DatabaseSync} from 'node:sqlite';
 import {readdirSync} from 'node:fs';
-import {sqliteAdapter} from './ai-job.mjs';
+import {sqliteAdapter} from './sqlite-adapter.mjs';
 import {analysePending} from '../server/integrations/manual-analysis.mjs';
 // Server: DATABASE_FILE (wie die übrigen Skripte), lokal die Datei des Dev-Servers unter .wrangler/
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';

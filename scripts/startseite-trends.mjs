@@ -7,7 +7,7 @@
 import {DatabaseSync} from 'node:sqlite';
 import {existsSync,readdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {diffusion} from '../server/integrations/analytics-diffusion.mjs';
-import {sqliteAdapter} from './ai-job.mjs';
+import {sqliteAdapter} from './sqlite-adapter.mjs';
 const {REGIONS}=await import('../shared/regions.ts');
 const KEY='startseite-trends';
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';

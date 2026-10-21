@@ -8,7 +8,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {existsSync,readdirSync} from 'node:fs';
 import {refreshSearchWords} from '../server/integrations/search-words.mjs';
 import {rollCardDates} from '../server/integrations/search-card-dates.mjs';
-import {sqliteAdapter} from './ai-job.mjs';
+import {sqliteAdapter} from './sqlite-adapter.mjs';
 const quiet=process.argv.includes('--quiet'),say=(...a)=>{if(!quiet)console.log(...a);};
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
 // Auf dem eigenen Server (Node-Betrieb) nennt DATABASE_FILE die Datei; lokal die Miniflare-Datei unter .wrangler/.

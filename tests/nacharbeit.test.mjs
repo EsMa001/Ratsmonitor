@@ -35,7 +35,7 @@ test('a run executes due steps; success clears, failure moves on, untouched entr
  await recordFailure(db,{step:'import',key:'billerbeck',error:'fetch failed'},T0-2*H);
  const calls=[];let clock=T0;
  // pdf: 1 gelingt, 2 scheitert erneut, 3 wird nicht angefasst; rules: gelingt
- const exec=async(script,args)=>{
+ const exec=async(script)=>{
   calls.push(script);
   if(script.endsWith('fetch.mjs')){clock+=60000;await clearFailure(db,{step:'pdf',key:'https://a.de/1.pdf'});await recordFailure(db,{step:'pdf',key:'https://a.de/2.pdf',host:'a.de',http:404},clock);}
   if(script.endsWith('read-reports.mjs'))await clearFailure(db,{step:'rules',key:'topic-9'});

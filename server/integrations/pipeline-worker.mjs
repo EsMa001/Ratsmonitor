@@ -1,5 +1,5 @@
 import {pipelineAction,selectedRegions,provider,noteImport,PER_PROVIDER,PARTIAL_PREFIX} from './pipeline-jobs.mjs';
-import {hasFailureStore,hostStates,hostWaiting,currentRelease} from './work-failures.mjs';
+import {hasFailureStore,hostStates,hostWaiting} from './work-failures.mjs';
 import {refreshStep} from './admin-refresh.mjs';
 /**
  * Drives the stored import job of the administration from a process of its own (server/node/import-worker.mjs, A14 of

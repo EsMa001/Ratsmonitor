@@ -1,5 +1,4 @@
 import {LABELS} from '../../shared/labels.mjs';
-import {searchFilters} from './monitor-search.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {source,xState} from './plenara-x-query.mjs';

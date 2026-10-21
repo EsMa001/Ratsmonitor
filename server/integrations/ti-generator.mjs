@@ -7,6 +7,7 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {extractText,getDocumentProxy} from 'unpdf';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {bodyBytes} from './body-bytes.mjs';
+import {fnv,germanDayStrict as day} from './source-common.mjs';
 // Public pages of the "TI-Generator" (Town Hall Information WEB-Generator, Bartel Software Engineering): static sites
 // that the Rats-Manager writes to a web host. The start page holds a menu with one entry per committee and list; the
 // page's script loads each list from listen/<file> (the address of the menu entry itself answers 404). Read are the
@@ -27,8 +28,6 @@ export const STALE_DAYS=120;
 const MORE={sbquo:',',bdquo:'„',ldquo:'“',rdquo:'”',lsquo:'‘',rsquo:'’',sect:'§',euro:'€',minus:'-',hellip:'…',laquo:'«',raquo:'»',deg:'°',eacute:'é',egrave:'è',aacute:'á',agrave:'à',ccedil:'ç',middot:'·',bull:'•',shy:''};
 // The generator writes "&sbquo;" where a comma stands ("Bau&sbquo; Wirtschaft").
 const clean=s=>text(String(s||'').replace(/&([a-z]+);/gi,(m,k)=>MORE[k]??m));
-const day=value=>{const m=String(value).match(/(\d{2})\.(\d{2})\.(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:null;};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 const slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 // "09", "10.3." and "10.3" name the same item.
 const topKey=n=>String(n).replace(/\.$/,'').split('.').map(p=>p.replace(/^0+(?=\d)/,'')).join('.');

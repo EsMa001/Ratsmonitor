@@ -7,6 +7,7 @@ import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {organizationFilter} from './oparl-regional.mjs';
 import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
+import {fnv,germanDay as day} from './source-common.mjs';
 // RIS-Portal of comundus regisafe (<name>.ris-portal.de): a Liferay portal "Ratsinformation" with the portlet RisSitzung.
 // Read are the addresses the public site asks for every visitor, nothing that needs a login:
 // - the meetings of one month (portlet resource loadSessions, JSON: sitzungId, start, sessionLink and the body),
@@ -21,8 +22,6 @@ import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
 // A shared system (a Gemeindeverwaltungsverband with the councils of its members, vghexental.ris-portal.de) is separated
 // by the field organizations of the catalog entry ({include, exclude} name patterns, as in oparl-regional.mjs); a meeting
 // whose body the filter does not assign is not read.
-const day=value=>{const m=String(value).match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null;};
-const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 const attribute=(tag,name)=>decode(tag.match(new RegExp(`\\b${name}=["']([^"']*)["']`,'i'))?.[1]||'');
 // Titles keep the line breaks of the source as spaces ("… (RLG)<br>hier: …").
 const plain=html=>text(String(html||'').replace(/<br\s*\/?>/gi,' '));

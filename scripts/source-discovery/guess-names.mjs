@@ -30,7 +30,7 @@ async function get(url){
  try{const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(10000),headers:{'User-Agent':UA,Accept:'text/html'}});
   if(!r.ok){await r.body?.cancel();return {status:r.status,url:r.url,body:''};}
   return {status:r.status,url:r.url,body:new TextDecoder('utf-8').decode((await r.arrayBuffer()).slice(0,600000))};}
- catch(e){return {status:0,url,body:''};}
+ catch{return {status:0,url,body:''};}
 }
 const SYS=/sessionnet|si0040|allris|sd\.net|ratsinfo|oparl|more! ?rubin|sitzung|gremien|tagesordnung/i;
 async function one(id){

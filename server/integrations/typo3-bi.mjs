@@ -6,6 +6,7 @@ import {fetchText,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
 import {statusOf} from './sdnet-rim4.mjs';
+import {asciiSlug as slug} from './source-common.mjs';
 // TYPO3 "Bürgerinformationssystem" of a municipality (stadtrat.monheim.de/bi, extension risportal: calendar, meeting
 // pages and a small interface below /api/meetings/). Read are addresses of the public site only:
 // - /api/meetings/month/YYYY-MM: JSON list {name,start,uri} of the meetings of a month,
@@ -18,7 +19,6 @@ const PATHS=/^api\/meetings\/(?:month\/\d{4}-\d{2}|stream\/\d+)$/;
 const guard=(url,source)=>{const u=new URL(url);if(u.protocol!=='https:'||u.origin+'/'!==origin(source)||!PATHS.test(u.pathname.slice(1)))throw Error('Nicht freigegebene Quelladresse');return u.href;};
 /** Address of a page of the interface (month list or agenda of a meeting). */
 export const typo3Url=(path,source)=>guard(new URL(path,origin(source)).href,source);
-const slug=value=>String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const plain=html=>text(html).normalize('NFC').replace(/\s+/g,' ').trim();
 export function detectTypo3Bi(url,html=''){
  const page=String(html);

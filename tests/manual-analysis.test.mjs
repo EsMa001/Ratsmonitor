@@ -1,7 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import {DatabaseSync} from 'node:sqlite';
 import {analysePending,ANALYSIS_BATCH_SIZE} from '../server/integrations/manual-analysis.mjs';
 import {loadAnalyticsTopics} from '../server/repositories/analytics-input.mjs';
 import {hasCurrentLabel,storedClassification,preserveAnalysis} from '../shared/analysis-state.mjs';

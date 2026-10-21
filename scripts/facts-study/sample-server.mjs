@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
-import {primaryPdf,sessionDocument} from '../../shared/document-type.mjs';
+import {primaryPdf} from '../../shared/document-type.mjs';
 const [salt='f1',n='20',kinds='']=process.argv.slice(2);
 const root='/srv/ratsmonitor/data/';
 const db=new DatabaseSync(root+'ratsmonitor.sqlite',{readOnly:true}),idx=new DatabaseSync(root+'pdf-store/index.sqlite',{readOnly:true});
@@ -20,7 +20,6 @@ for(const kind of kinds.split(',').filter(Boolean)){
   const t=db.prepare("SELECT json_extract(payload,'$.title') title,json_extract(payload,'$.documents') docs FROM topics WHERE id=?").get(r.topic_id)||{};
   let docs=[];try{docs=JSON.parse(t.docs||'[]');}catch{}
   const p=primaryPdf(docs),s=p&&shaOf.get(p.url),tx=s?text(s.sha):'';
-  const v=String(r.value??'').replace(/\D/g,'').slice(0,3)||String(r.value??'').slice(0,12);
   const keys=[String(r.detail||'').replace('.',','),String(r.detail||''),String(r.value||'').split(' ')[0]].filter(k=>k&&k.length>1);let i=-1;if(tx){const d=String(r.detail||'').replace('.',',');const re={plan_area:d&&new RegExp(d.replace(/,/,'[.,]')+'\\s*(ha|Hektar)'),wind_count:/Windenergie|Windkraft|Windpark|WEA/}[kind];if(re){const m=re.exec(tx);if(m)i=m.index;}if(i<0)for(const k of keys){i=tx.indexOf(k);if(i>=0)break;}}
   const ctx=i>=0?tx.slice(Math.max(0,i-160),i+160):'';
   const {topic_id,kind:_,...rest}=r;

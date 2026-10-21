@@ -9,7 +9,7 @@
 import {DatabaseSync} from 'node:sqlite';
 import {existsSync,readdirSync} from 'node:fs';
 import {refreshStep} from '../server/integrations/admin-refresh.mjs';
-import {sqliteAdapter} from './ai-job.mjs';
+import {sqliteAdapter} from './sqlite-adapter.mjs';
 const args=process.argv.slice(2),quiet=args.includes('--quiet'),say=(...a)=>{if(!quiet)console.log(...a);};
 const build=args.includes('--build')?args[args.indexOf('--build')+1]:null;
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';

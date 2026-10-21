@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {createTrace,summarize,requestKind,saveDebug,readDebug,debugKey} from '../server/integrations/import-trace.mjs';
 import {collectOparl,requestJson,OPARL,BODY} from '../server/integrations/oparl.mjs';
 import {collectSessionNet} from '../server/integrations/sessionnet.mjs';

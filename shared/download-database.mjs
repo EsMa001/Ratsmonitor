@@ -1,6 +1,6 @@
 import {TRANSFER_FORMAT,TRANSFER_TABLES,hashText} from './database-transfer.mjs';
 // Read-only snapshot. Any intervening article change invalidates the entire download.
-export async function downloadDatabase(request,onProgress=(done,total)=>{}){
+export async function downloadDatabase(request,onProgress=(_done,_total)=>{}){
  const manifest=await request({action:'manifest'});
  if(manifest.format!==TRANSFER_FORMAT||manifest.tables.length!==Object.keys(TRANSFER_TABLES).length)throw Error('Unbekanntes Datenformat');
  const parts=[JSON.stringify({manifest})+'\n'];let done=0;const total=manifest.tables.reduce((n,t)=>n+t.count,0);

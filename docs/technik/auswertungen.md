@@ -188,7 +188,7 @@ Mitgliedsname als Wort im Titel. Rückgabe `{key, label}`; genutzt in Listen, Si
 `fact-coverage`. Bei der Gebietsauswahl der Suche zählt der Schlüssel eines Mitglieds zu seinem Verband (`isPlace`).
 
 **Frontend:** Seiten unter `components/ratsmonitor/pages/analytics/` (`AnalyticsPages.tsx` zeigt sie nur bei Stufe `enterprise`, sonst
-`AnalyticsLocked`; `FREE_ANALYTICS` ist leer); gemeinsamer Kopf `XKopf.tsx`, Befund `Befund.tsx`, Ergebnis je Adresse 10 Minuten
+`AnalyticsLocked`); gemeinsamer Kopf `XKopf.tsx`, Befund `Befund.tsx`, Ergebnis je Adresse 10 Minuten
 gemerkt (`useAnalysisRun.ts`), Abfrage aus Suche und Filtern `useAnalyticsQuery.ts`; Adressen in `lib/routes.ts`.
 
 ## 6. Startseite: Karte und Trends (`scripts/startseite-trends.mjs`)
