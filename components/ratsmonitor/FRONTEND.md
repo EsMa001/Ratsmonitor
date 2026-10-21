@@ -54,7 +54,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 ## Stile
 
 - Eigene Stile in `app/styles/`, nach Thema; `app/globals.css` lädt sie in dieser Reihenfolge (bei gleicher Genauigkeit gewinnt die spätere Datei):
-  - `tokens.css`: Farbkonzept „Petrol klar“ und alle Variablen (hell `:root`, dunkel `html.rm-dark`), Handygrenze `max-sm`/`sm`.
+  - `tokens.css`: alle Variablen und Farben an einer Stelle, je Selektor ein Block: Handygrenze `max-sm`/`sm`, Tailwind-`@theme`, hell `:root` und `.ratsmonitor`, dunkel `html.rm-dark` und `html.rm-dark .ratsmonitor`.
   - `base-layer.css`: Tailwind-Bausteine (`@layer base/components`).
   - `base.css`: Seite, Schrift, Links, Fokus, Animationen, allgemeine Hilfsklassen.
   - `dark.css`: Dunkelmodus über die Variablen hinaus.
@@ -64,7 +64,13 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
   - `glass.css`: Milchglas `.rm-glass`, Chips, Filterfenster `#filter-body`, Auswahllisten.
   - `analytics.css`: plenara.X (Band, Karte und Liste, Netze, Leisten, `rm-x…`, `rm-solid`).
   - `print.css`: Druckansicht.
-- Neue Regel in die Datei ihres Themas; Klasse finden über `components/ratsmonitor/INDEX.md`.
+- Regeln für neue und geänderte Stile:
+  - Erst Tailwind im JSX; eigene CSS nur für Wiederkehrendes, Zustände, Pseudoelemente und Handy-Sonderfälle.
+  - Neue Regel in die Datei ihres Themas, neben verwandte Regeln (Klasse finden über `components/ratsmonitor/INDEX.md`). Handy-Regeln in einen `@media`-Block mit derselben Abfrage wie `max-sm` (`(max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px)`, = `PHONE_QUERY` in `lib/usePhone.ts`); gleiche Abfragen direkt hintereinander zu einem Block zusammenfassen.
+  - Farben nur als Variable (`var(--rm-…)`, `var(--color-teal-…)`); Hex-Werte und neue Variablen nur in `tokens.css`, immer hell und dunkel. Transparenz als `rgba()` mit den RGB-Werten einer Palettenfarbe.
+  - Dunkelmodus: zuerst über die Variablen lösen; nur wenn das nicht reicht, eine Regel `html.rm-dark …` in `dark.css` (bzw. bei plenara.X in `analytics.css`).
+  - Kein neues `!important`. Gewinnt eine Regel nicht, den Gegenspieler suchen (Chrome: Elemente → Stile) und die Regel genauer machen (`.pl-band.pl-top` statt `.pl-top`) oder den Gegenspieler ändern. `!important` nur gegen Inline-Stile aus JS, Tailwind-`!`-Klassen, ein anderes `!important` sowie für Druck, reduzierte Bewegung und Autofill; dann mit kurzem Kommentar, wogegen. Ein bestehendes `!important` nur entfernen, wenn es im Gesamtstand nicht mehr gebraucht wird (Fehler 21.10.2026: Band am Handy unter der Kopfzeile, weil der Gegenspieler sein `!important` behielt).
+  - Schreibweise: eine Deklaration je Zeile, zwei Leerzeichen Einzug, Selektorliste in einer Zeile, Leerzeile zwischen Regeln, Kommentar über der Regel.
 - Sonst Tailwind direkt im JSX. `app/admin.css`: Stile der Administration, geladen von `app/admin/page.tsx`; neue Admin-Stile im bestehenden Design ergänzen. `app/analyse-admin.css` gehört den Analyse-Seiten. `app/globals.css` (nur Einstieg und Theme) nicht ändern. `app/design-styles.css` wirkt auch auf Admin/Analysen: Änderungen dort immer auch dort prüfen.
 
 ## Designregeln (vereinbart)

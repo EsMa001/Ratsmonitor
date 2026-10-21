@@ -90,27 +90,15 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   .rm-glass, .rm-glass:hover {
     background: rgba(255,255,255,.94);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   .rm-glass-pop, .rm-glass-pop:hover {
     background: rgba(255,255,255,.97);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   .rm-chip, .rm-chip:hover {
     background: rgba(255,255,255,.95);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   #filter-body .select-base, #filter-body .select-base:hover {
     background: rgba(255,255,255,.9);
   }
@@ -118,7 +106,7 @@
 
 /* plenara.X: Suche und Filter ohne Milchglas (flach, weiß, feine Linie); die Startseite behält das Glas. Steht hinter den Glas- und Touch-Regeln, damit es ohne !important gewinnt */
 .rm-solid .rm-glass, .rm-solid .rm-glass:hover, .rm-solid .rm-glass-pop, .rm-solid .rm-glass-pop:hover {
-  background: #fff;
+  background: var(--rm-on);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   border-color: var(--rm-c200);
@@ -126,7 +114,7 @@
 }
 
 .rm-solid .rm-chip, .rm-solid .rm-chip:hover, .rm-solid #filter-body .select-base, .rm-solid #filter-body .select-base:hover {
-  background: #fff;
+  background: var(--rm-on);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   border-color: var(--rm-c200);
@@ -149,9 +137,6 @@
   .rm-legend {
     background: linear-gradient(135deg,rgba(255,255,255,.95),rgba(236,246,244,.92));
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   html:not(.rm-dark) .rm-wheel-list {
     background: linear-gradient(135deg,rgba(255,255,255,.96),rgba(236,246,244,.94));
   }

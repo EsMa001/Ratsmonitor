@@ -41,34 +41,6 @@
 /* Dunkler Modus: Tailwind-Farben der Oberfläche umgekehrt (Klasse auf <html>, gesetzt von useDarkMode) */
 html.rm-dark {
   color-scheme: dark;
-  --color-white: #1c2221;
-  --color-slate-50: #1b2120;
-  --color-slate-100: #212827;
-  --color-slate-200: #323a39;
-  --color-slate-300: #3d4544;
-  --color-slate-400: #9a9ca2;
-  --color-slate-500: #b4b5ba;
-  --color-slate-600: #c4c5ca;
-  --color-slate-700: #d0d1d5;
-  --color-slate-800: #dfe0e3;
-  --color-slate-900: #e4e4e7;
-  --color-slate-950: #f0f0f2;
-  --color-gray-50: var(--color-slate-50);
-  --color-gray-100: var(--color-slate-100);
-  --color-gray-200: var(--color-slate-200);
-  --color-gray-300: var(--color-slate-300);
-  --color-gray-500: var(--color-slate-500);
-  --color-gray-600: var(--color-slate-600);
-  --color-gray-700: var(--color-slate-700);
-  --color-gray-900: var(--color-slate-900);
-  --color-teal-50: #173531;
-  --color-teal-100: #1e4540;
-  --color-teal-200: #265852;
-  --color-teal-600: #268478;
-  --color-teal-700: #7ac6bc;
-  --color-teal-800: #a8dcd5;
-  --color-map-ground: #191e1d;
-  --shadow-card: 0 1px 2px #0006,0 6px 20px #0004;
 }
 
 html.rm-dark body {
@@ -103,7 +75,7 @@ html.rm-dark .ri-h1, html.rm-dark .ri-h2, html.rm-dark .ri-bid__name, html.rm-da
 }
 
 html.rm-dark .btn-primary {
-  color: #fff;
+  color: var(--rm-on);
 }
 
 /* Dunkel: Abschlusskachel und Fußzeile */
@@ -132,7 +104,7 @@ html.rm-dark .ri-dark__sub {
 
 html.rm-dark .ri-dark .ri-btn--inv, html.rm-dark .ri-dark .ri-btn--inv:hover {
   background: var(--rm-btn2);
-  color: #fff;
+  color: var(--rm-on);
 }
 
 html.rm-dark footer {
@@ -185,32 +157,17 @@ html.rm-dark article p>span mark, html.rm-dark article mark {
   color: var(--rm-c900);
 }
 
-html.rm-dark .ratsmonitor {
-  --color-slate-400: #9a9ca2;
-  --color-slate-500: #b4b5ba;
-  --color-slate-600: #c4c5ca;
-  --color-slate-700: #d0d1d5;
-  --color-slate-800: #dfe0e3;
-  --color-slate-900: #e4e4e7;
-  --color-slate-950: #f0f0f2;
-  --color-teal-500: #46a498;
-  --color-teal-600: #268478;
-  --color-teal-700: #7ac6bc;
-  --color-teal-800: #a8dcd5;
-  --color-teal-900: #c9ece7;
-}
-
 html.rm-dark .ri-btn--dark {
   color: var(--rm-page);
 }
 
 html.rm-dark .ri-btn--dark:hover {
-  background: #fff;
+  background: var(--rm-on);
 }
 
 html.rm-dark .btn-primary, html.rm-dark .ri-btn--dark {
   background: var(--rm-btn);
-  color: #fff;
+  color: var(--rm-on);
 }
 
 html.rm-dark .btn-primary:hover, html.rm-dark .ri-btn--dark:hover {
@@ -224,7 +181,7 @@ html.rm-dark .ratsmonitor .bg-teal-700 {
 }
 
 html.rm-dark .text-white {
-  color: #fff;
+  color: var(--rm-on);
 }
 
 html.rm-dark .bg-slate-900 {
@@ -352,21 +309,12 @@ html.rm-dark .bg-teal-600:hover {
   html.rm-dark .rm-glass, html.rm-dark .rm-glass:hover {
     background: rgba(23,33,42,.94);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   html.rm-dark .rm-glass-pop, html.rm-dark .rm-glass-pop:hover {
     background: rgba(23,33,42,.97);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   html.rm-dark .rm-chip, html.rm-dark .rm-chip:hover {
     background: rgba(22,27,26,.94);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   html.rm-dark #filter-body .select-base, html.rm-dark #filter-body .select-base:hover {
     background: rgba(30,44,56,.9);
   }
@@ -382,85 +330,49 @@ html.rm-dark .rm-solid .rm-glass, html.rm-dark .rm-solid .rm-glass:hover, html.r
     background: linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));
     border-color: rgba(154,156,162,.22);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y>span[aria-hidden] {
     background: rgba(255,255,255,.16);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xebene button[aria-pressed=true] {
     background: rgba(255,255,255,.16);
     box-shadow: 0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xebene, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0 {
     background: linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));
     border-color: rgba(154,156,162,.22);
     box-shadow: 0 8px 28px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button {
     background: linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));
     border-color: rgba(154,156,162,.22);
     color: var(--rm-c800);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button[aria-pressed=true] {
     background: rgba(255,255,255,.16);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xebene, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y, html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button:not([aria-pressed=true]), html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.right-3, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-mapbox>div.inset-x-16>span, html.rm-dark main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) .rm-chip {
     background: linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5));
     border-color: rgba(255,255,255,.14);
     box-shadow: 0 1px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xschritt button[aria-haspopup] {
     background: linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5));
     border-color: rgba(255,255,255,.14);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xschritt ul[role=listbox] {
     background: linear-gradient(135deg,rgba(40,48,47,.88),rgba(23,33,42,.82));
     border-color: rgba(255,255,255,.14);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail .rm-rail-sub button[aria-pressed=true] {
     background: rgba(28,34,33,.85);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main.rm-xnet .rm-xseg .touch-pan-y {
     background: linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5));
     border-color: rgba(255,255,255,.14);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main.rm-xnet .rm-xseg .touch-pan-y>span[aria-hidden] {
     background: rgba(255,255,255,.16);
   }
-}
-
-@media (min-width:1024px) {
   html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>button, html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.relative>button, html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.min-w-0, html.rm-dark main:not(.rm-xwide):not(.rm-xnet) .rm-chip {
     background: linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5));
     border-color: rgba(255,255,255,.14);
@@ -473,9 +385,6 @@ html.rm-dark .rm-solid .rm-glass, html.rm-dark .rm-solid .rm-glass:hover, html.r
     border-color: rgba(255,255,255,.12);
     box-shadow: 0 8px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-dark main#inhalt .rm-xsearch .rm-fpop .select-base {
     background: linear-gradient(135deg,rgba(60,70,69,.6),rgba(33,43,52,.5));
     border-color: rgba(255,255,255,.14);
@@ -486,9 +395,6 @@ html.rm-dark .rm-solid .rm-glass, html.rm-dark .rm-solid .rm-glass:hover, html.r
   html.rm-dark .rm-legend {
     background: linear-gradient(135deg,rgba(40,48,47,.94),rgba(23,33,42,.9));
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   html.rm-dark main#inhalt .rm-xsearch [role=search] {
     background: linear-gradient(135deg,rgba(40,48,47,.94),rgba(23,33,42,.9));
     border-color: rgba(255,255,255,.12);

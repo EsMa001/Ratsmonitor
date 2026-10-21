@@ -42,30 +42,18 @@
     opacity: 1 !important;
     transform: none !important;
   }
-}
-
-@media print {
   :root {
     --rm-tabbar: 0px;
   }
   .ratsmonitor {
     padding-bottom: 0;
   }
-}
-
-@media print {
   div:has(> .rm-xsearch) {
     position: static;
   }
-}
-
-@media print {
   .rm-xfilter {
     position: static;
   }
-}
-
-@media print {
   .ri-toc {
     display: none !important;
   }

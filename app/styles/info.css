@@ -38,7 +38,7 @@
 
 .ri-btn--dark {
   background: var(--rm-ac);
-  color: #fff;
+  color: var(--rm-on);
   border-radius: 999px;
   padding-inline: 22px;
 }
@@ -653,37 +653,22 @@ select.ri-input {
   .ri-lead {
     font-size: 16px;
   }
-}
-
-@media (max-width:760px) {
   .ri-btn {
     white-space: normal;
   }
-}
-
-@media (max-width:760px) {
   .ri-sec {
     padding-top: 52px;
     padding-bottom: 54px;
   }
-}
-
-@media (max-width:760px) {
   .ri-tl {
     grid-template-columns: minmax(0,1fr);
     gap: 0;
     border-top: 0;
     margin-top: 28px;
   }
-}
-
-@media (max-width:760px) {
   .ri-tl::before {
     display: none;
   }
-}
-
-@media (max-width:760px) {
   .ri-tl__step {
     display: grid;
     grid-template-columns: 40px minmax(0,1fr);
@@ -692,79 +677,43 @@ select.ri-input {
     padding: 10px 0 10px 18px;
     border-left: 2px solid var(--rm-fill);
   }
-}
-
-@media (max-width:760px) {
   .ri-tl__step--out {
     border-left-color: var(--rm-c200);
   }
-}
-
-@media (max-width:760px) {
   .ri-tl__icon {
     grid-row: span 2;
   }
-}
-
-@media (max-width:760px) {
   .ri-tl__label {
     margin-top: 0;
   }
-}
-
-@media (max-width:760px) {
   .ri-dark {
     padding-top: 56px;
     padding-bottom: 60px;
   }
-}
-
-@media (max-width:760px) {
   .ri-form {
     padding: 22px 18px;
   }
-}
-
-@media (max-width:760px) {
   .ri-table {
     font-size: 14px;
   }
-}
-
-@media (max-width:760px) {
   .ri-table th, .ri-table td {
     padding: 8px 6px;
     height: auto;
   }
-}
-
-@media (max-width:760px) {
   .ri-table thead th {
     word-break: break-all;
   }
-}
-
-@media (max-width:760px) {
   .ri-table small {
     display: block;
     font-size: 12px;
   }
-}
-
-@media (max-width:760px) {
   .ri-table__first {
     width: auto;
   }
-}
-
-@media (max-width:760px) {
   .ri-qa summary {
     padding: 16px 18px;
     font-size: 16px;
   }
-}
-
-@media (max-width:760px) {
   .ri-qa__a {
     padding: 0 18px 18px;
   }
@@ -783,7 +732,7 @@ select.ri-input {
 /* Heller Abschluss mit Farbverlauf statt Petrol-Fläche: Petrol nur noch für den Button */
 .ri-dark .ri-btn--inv {
   background: var(--rm-ac);
-  color: #fff;
+  color: var(--rm-on);
   border-radius: 999px;
   padding-inline: 22px;
 }
@@ -843,8 +792,8 @@ select.ri-input {
   pointer-events: none;
   background-image: radial-gradient(circle,var(--rm-dot) 1.3px,transparent 1.8px);
   background-size: 22px 22px;
-  -webkit-mask-image: linear-gradient(to bottom,#000 0,transparent 100%);
-  mask-image: linear-gradient(to bottom,#000 0,transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom,var(--rm-black) 0,transparent 100%);
+  mask-image: linear-gradient(to bottom,var(--rm-black) 0,transparent 100%);
 }
 
 .ri::before {
@@ -858,7 +807,7 @@ footer.pl-footer-accent {
 }
 
 .pl-footer-accent, .pl-footer-accent * {
-  color: #fff;
+  color: var(--rm-on);
   border-color: rgba(255,255,255,.25) !important;
 }
 
@@ -882,7 +831,7 @@ html.rm-dark footer.pl-footer-accent {
 /* Startknopf der Startseite im Dark Mode in Akzentfarbe */
 html.rm-dark .pl-cta {
   background: var(--rm-btn) !important;
-  color: #fff !important;
+  color: var(--rm-on) !important;
 }
 
 html.rm-dark .ri-bid__label {
@@ -910,157 +859,85 @@ html.rm-dark .ri-bid__label {
     padding-top: 28px !important;
     padding-bottom: 28px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-anw .ri-sec--tight {
     padding-top: 18px;
     padding-bottom: 18px;
   }
-}
-
-@media (max-width:640px) {
   .ri-anw .gap-y-12 {
     row-gap: 18px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-anw .gap-y-8 {
     row-gap: 14px;
   }
-}
-
-@media (max-width:640px) {
   .ri-anw .space-y-6>:not([hidden])~:not([hidden]) {
     margin-top: 12px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-anw .mt-5 {
     margin-top: 10px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-anw .ri-h2 {
     margin-bottom: 0;
   }
-}
-
-/* Gespeicherte Suchen, Artikel und Kalender auf dem Handy kompakter */
-@media (max-width:640px) {
+  /* Gespeicherte Suchen, Artikel und Kalender auf dem Handy kompakter */
   .ri-konto .ri-sec {
     padding-top: 18px;
     padding-bottom: 18px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .gap-10 {
     gap: 18px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .gap-y-8 {
     row-gap: 14px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .mb-6 {
     margin-bottom: 12px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .mt-6 {
     margin-top: 14px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .mt-5 {
     margin-top: 10px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .mt-4 {
     margin-top: 8px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .mt-3 {
     margin-top: 6px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .py-3 {
     padding-top: 8px !important;
     padding-bottom: 8px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .py-2\.5 {
     padding-top: 6px;
     padding-bottom: 6px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .py-6 {
     padding-top: 12px !important;
     padding-bottom: 12px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .h-16 {
     height: 3.25rem;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .ri-points {
     gap: 6px 0 !important;
     margin-top: 14px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .ri-point {
     padding-top: 12px !important;
     padding-bottom: 6px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .ri-point h3 {
     margin-top: 4px !important;
     font-size: 16px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .ri-point p {
     margin-top: 2px !important;
     font-size: 14px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .ri-actions {
     margin-top: 18px !important;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .ri-h2 {
     font-size: 18px !important;
   }
@@ -1098,74 +975,44 @@ html.rm-dark .ri-bid__label {
     padding-top: 12px !important;
     padding-bottom: 16px;
   }
-}
-
-@media (max-width:640px) {
   .pl-grid {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
   }
-}
-
-@media (max-width:640px) {
   .pl-left {
     display: contents;
   }
-}
-
-@media (max-width:640px) {
   .pl-h1 {
     order: 1;
     font-size: 22px;
     line-height: 1.1;
   }
-}
-
-@media (max-width:640px) {
   .pl-slogan {
     order: 2;
     margin: 6px 0 0 !important;
     font-size: 14px;
   }
-}
-
-@media (max-width:640px) {
   .pl-num {
     order: 3;
     margin: 10px 0 0 !important;
   }
-}
-
-@media (max-width:640px) {
   .pl-num span:first-child {
     font-size: 44px;
     line-height: 1;
     color: var(--rm-ac);
   }
-}
-
-@media (max-width:640px) {
   .pl-num span:last-child {
     font-size: 12px;
   }
-}
-
-@media (max-width:640px) {
   .pl-stand, .pl-source {
     display: none;
   }
-}
-
-@media (max-width:640px) {
   .pl-h2 {
     margin: 0 0 6px !important;
     font-size: 18px;
   }
-}
-
-@media (max-width:640px) {
   .pl-trends {
     order: 6;
     margin: 8px 0 0;
@@ -1173,65 +1020,38 @@ html.rm-dark .ri-bid__label {
     gap: 8px;
     flex-wrap: nowrap;
   }
-}
-
-@media (max-width:640px) {
   .pl-trends>button {
     flex: 0 0 calc(50% - 4px);
     min-width: 0;
     width: auto;
     padding: 6px 10px;
   }
-}
-
-@media (max-width:640px) {
   .pl-trends>button:nth-of-type(n+3) {
     display: none;
   }
-}
-
-@media (max-width:640px) {
   .pl-mapwrap {
     order: 4;
     margin: 6px 0 0;
   }
-}
-
-@media (max-width:640px) {
   .pl-mapwrap p[aria-live] {
     display: none;
   }
-}
-
-@media (max-width:640px) {
   .pl-mapwrap {
     max-width: none !important;
     width: 100% !important;
   }
-}
-
-@media (max-width:640px) {
   .pl-mapwrap>div:first-child {
     width: min(270px,74vw);
     margin: 0 auto;
   }
-}
-
-@media (max-width:640px) {
   .pl-mapwrap>p:nth-of-type(1) {
     display: none !important;
   }
-}
-
-@media (max-width:640px) {
   .pl-pop text:nth-of-type(1), .pl-still text:nth-of-type(1) {
     font-size: 34px;
     stroke-width: 2.4px !important;
     stroke-opacity: .6;
   }
-}
-
-@media (max-width:640px) {
   .pl-pop text:nth-of-type(2), .pl-still text:nth-of-type(2) {
     font-size: 26px;
     transform: translateY(16px);
@@ -1239,31 +1059,19 @@ html.rm-dark .ri-bid__label {
     stroke-opacity: .35;
     fill: var(--rm-c900);
   }
-}
-
-@media (max-width:640px) {
   .pl-ort {
     order: 8;
     margin: 22px 0 0;
     border-top: 0;
   }
-}
-
-@media (max-width:640px) {
   .pl-ort [aria-live] {
     margin-top: 4px;
   }
-}
-
-@media (max-width:640px) {
   .pl-ctawrap {
     order: 9;
     margin: 24px 0 0;
     text-align: center;
   }
-}
-
-@media (max-width:640px) {
   .pl-ctawrap a {
     min-height: 44px !important;
     padding: 0 20px !important;
@@ -1297,15 +1105,9 @@ html.rm-dark .ri-bid__label {
   .pl-cut3>li:nth-child(n+4) {
     display: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-below {
     padding: 16px var(--ri-pad) 4px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-below__h {
     margin: 0;
     font-size: 22px;
@@ -1314,9 +1116,6 @@ html.rm-dark .ri-bid__label {
     letter-spacing: -.01em;
     color: var(--rm-c900);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-below__lead {
     margin: 8px 0 0;
     font-size: 16px;
@@ -1339,9 +1138,6 @@ html.rm-dark .ri-bid__label {
     width: 260px;
     height: 100%;
   }
-}
-
-@media (min-width:1100px) {
   .ri-toc>div {
     position: sticky;
     top: calc(var(--hdr,58px) + 16px);
@@ -1351,9 +1147,6 @@ html.rm-dark .ri-bid__label {
     border-left: 1px solid var(--rm-c200);
     padding-left: 16px;
   }
-}
-
-@media (min-width:1100px) {
   .ri-toc a {
     padding: 4px 0;
     font-size: 14px;
@@ -1361,9 +1154,6 @@ html.rm-dark .ri-bid__label {
     color: var(--rm-c500);
     text-decoration: none;
   }
-}
-
-@media (min-width:1100px) {
   .ri-toc a:hover {
     color: var(--rm-c900);
   }

@@ -5,21 +5,12 @@
   .rm-xsplit {
     grid-template-columns: minmax(0,1fr) minmax(460px,38%);
   }
-}
-
-@media (min-width:1024px) {
   .rm-xsplit--solo {
     grid-template-columns: minmax(0,1fr) !important;
   }
-}
-
-@media (min-width:1024px) {
   .rm-xsplit>* {
     grid-column: auto !important;
   }
-}
-
-@media (min-width:1024px) {
   .rm-xsplit-map {
     position: sticky;
     top: calc(var(--hdr,58px) + 92px) !important;
@@ -28,38 +19,26 @@
     display: flex;
     flex-direction: column;
   }
-}
-
-@media (min-width:1024px) {
   .rm-xsplit-map :has(.rm-mapwrap) {
     display: flex;
     flex-direction: column;
     flex: 1 1 0;
     min-height: 0;
   }
-}
-
-@media (min-width:1024px) {
   .rm-xsplit-map .rm-mapwrap {
     display: flex;
     flex-direction: column;
     flex: 1 1 0;
     min-height: 0;
   }
-}
-
-@media (min-width:1024px) {
   .rm-xsplit-map .rm-mapbox {
     height: auto;
     flex: 1 1 0;
     min-height: 0;
   }
-}
-
-/* Themenatlas am breiten Bildschirm: dünnes Petrol-Band über die ganze Breite, darunter links die Karte (Hälfte, randlos, Suche und Filter darauf)
+  /* Themenatlas am breiten Bildschirm: dünnes Petrol-Band über die ganze Breite, darunter links die Karte (Hälfte, randlos, Suche und Filter darauf)
    und rechts Themenkacheln und Listen. Die Zwischenebenen werden mit display:contents aufgelöst; Karte und Platzhalter belegen die linke
    Spalte, alles andere fällt automatisch nach rechts. */
-@media (min-width:1024px) {
   main.rm-xwide {
     display: grid;
     grid-template-columns: minmax(0,var(--xl,1.1fr)) minmax(0,1fr);
@@ -68,9 +47,6 @@
     padding-left: 0;
     padding-right: max(1vw,16px);
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide::before {
     content: "";
     grid-area: 2 / 1 / span 80;
@@ -78,21 +54,12 @@
     background: var(--rm-c50);
     border-right: 1px solid var(--rm-c200);
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide section[aria-label="Auswertung des Themas"], main.rm-xwide section[aria-label="Auswertung des Themas"]>div[aria-busy], main.rm-xwide>div[aria-busy], main.rm-xwide .rm-xsplit {
     display: contents;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet).rm-noplay div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch)>div {
     padding-left: 52px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide .rm-xfilter {
     position: static;
     min-height: 0;
@@ -100,27 +67,15 @@
     padding: 0;
     background: none;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide .rm-art-std, main.rm-xwide .rm-karte-toggle, main.rm-xwide nav[aria-label="Wert"], main.rm-xwide .rm-xsplit-map>p {
     display: none;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide nav.rm-xrail ul>li {
     width: auto;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide nav.rm-xrail ul:not(.rm-rail-sub) {
     flex-wrap: nowrap;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide .rm-xsplit-map {
     grid-area: 2 / 1 / span 80;
     align-self: start;
@@ -128,17 +83,11 @@
     height: var(--xmh);
     min-height: 0;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide .rm-xsplit-map .rm-mapbox {
     border: 0;
     border-radius: 0;
     background: transparent;
   }
-}
-
-@media (min-width:1024px) {
   /* Alles auf der Karte rund und als Milchglas wie in der Suche: Suchleiste, Knöpfe, Ebene */
   main:is(.rm-xwide, .rm-xnet) .rm-xebene {
     position: absolute;
@@ -154,22 +103,13 @@
     border: 1px solid rgba(255,255,255,.75);
     box-shadow: 0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75);
   }
-}
-
-@media (min-width:1024px) {
   /* Zeitraum ebenfalls auf der Karte (oben, neben der Ebene), die Fassung rechts entfällt */
   main:is(.rm-xwide, .rm-xnet) .rm-zeit-std, main:is(.rm-xwide, .rm-xnet) .rm-schritt-std {
     display: none;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xzeit {
     display: block;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y {
     padding: 3px;
     gap: 2px;
@@ -180,39 +120,24 @@
     border: 1px solid rgba(255,255,255,.75);
     box-shadow: 0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y>span[aria-hidden] {
     border-radius: 9999px;
     top: 3px;
     bottom: 3px;
     box-shadow: 0 2px 8px rgba(24,24,27,.14);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xzeit button {
     height: 32px;
     border-radius: 9999px;
     padding: 0 12px;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xebene>span {
     display: none;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xebene {
     padding: 3px;
     gap: 2px;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xebene button {
     background: transparent;
     border: 0;
@@ -222,24 +147,15 @@
     border-radius: 9999px;
     transition: background .25s,box-shadow .25s,color .25s;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xebene button:hover {
     color: var(--rm-c900);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xebene button[aria-pressed=true] {
     background: rgba(255,255,255,.92);
     color: var(--rm-c900);
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(24,24,27,.14),inset 0 1px 0 #fff;
+    box-shadow: 0 2px 8px rgba(24,24,27,.14),inset 0 1px 0 var(--rm-on);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0 {
     border-radius: 9999px;
     background: linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42));
@@ -248,40 +164,25 @@
     border: 1px solid rgba(255,255,255,.75);
     box-shadow: 0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0 *:not([role=listbox]):not([role=listbox] *) {
     background: transparent;
     border-radius: 9999px;
   }
-}
-
-@media (min-width:1024px) {
   /* Karte wie in der Suche: Suchleiste mit Play und Filter in der Mitte; mit Auswahl (Chips) springt sie nach unten, die Chips stehen darüber */
   main:is(.rm-xwide, .rm-xnet)::after {
     content: "";
     grid-area: 1 / 1 / 2 / -1;
     height: 0;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) {
     --xt: calc(var(--hdr,58px) + 48px);
     --xmh: calc(100dvh - var(--xt));
     padding-top: 48px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide .rm-mapbox>div.inset-x-16 {
     top: 56px;
     bottom: auto;
   }
-}
-
-@media (min-width:1024px) {
   /* Zoom-Knöpfe unten links, damit die Themenleiste ganz oben rechts beginnen kann */
   main.rm-xwide .rm-mapbox>.right-3 {
     right: auto;
@@ -289,9 +190,6 @@
     top: auto;
     bottom: 14px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide .rm-xtop {
     display: flex;
     align-items: center;
@@ -302,25 +200,16 @@
     bottom: 14px;
     z-index: 40;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide .rm-xtop .rm-xebene {
     position: static;
     transform: none;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide .rm-mapbox>.rm-legend:not(.right-3) {
     top: auto;
     left: auto;
     right: 14px;
     bottom: 14px;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) {
     grid-area: 2 / 1 / span 80;
     align-self: start;
@@ -344,37 +233,22 @@
     backdrop-filter: none;
     transition: padding-bottom .45s cubic-bezier(.22,.9,.28,1);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch)>* {
     pointer-events: auto;
     width: 100%;
     max-width: 620px;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch) {
     order: 2;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch)>.rm-xsearch {
     order: 1;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch)>:not(.rm-solid) {
     order: 3;
     padding-left: 0;
     text-align: left;
   }
-}
-
-@media (min-width:1024px) {
   /* Band: eine dünne Zeile (Zurück, Titel, Zahl, Seiten), bis an den rechten Rand */
   main:is(.rm-xwide, .rm-xnet) .pl-band {
     position: fixed;
@@ -392,55 +266,31 @@
     border-radius: 0;
     width: auto;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .pl-band>div:not(.hidden) {
     display: contents;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .pl-band .back-btn {
     margin: 0;
     order: 1;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .pl-band h1 {
     order: 2;
     font-size: 20px;
     margin: 0;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .pl-band .rm-band-mid {
     order: 3;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .pl-band .rm-band-mid p:first-child>span:first-child {
     font-size: 22px;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .pl-band .rm-band-mid p:not(:first-child) {
     display: none;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .pl-band nav[aria-label="Auswertungen"] {
     order: 4;
     margin-left: auto;
   }
-}
-
-@media (min-width:1024px) {
   /* Themen und Unterthemen als Milchglas auf der Karte (rechter Rand, unter den Zoom-Knöpfen); Unterthemen klappen unter dem gewählten Thema auf, die übrigen treten zurück */
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail {
     grid-area: 2 / 1 / span 80;
@@ -455,9 +305,6 @@
     padding: 12px 12px 14px 0;
     pointer-events: none;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub) {
     display: flex;
     flex-direction: column;
@@ -465,16 +312,10 @@
     height: auto;
     pointer-events: none;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li {
     flex: 0 0 44px;
     min-height: 0;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button {
     pointer-events: auto;
     display: flex;
@@ -498,51 +339,30 @@
     box-shadow: 0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75);
     transition: background .25s,opacity .25s,box-shadow .25s;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button:hover {
     background: rgba(255,255,255,.85);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button[aria-pressed=true] {
     background: rgba(255,255,255,.94);
     color: var(--rm-c900);
     font-weight: 600;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button svg {
     width: 20px;
     height: 20px;
     flex: none;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button[aria-pressed=true]>svg {
     color: var(--rm-fill);
   }
-}
-
-@media (min-width:1024px) {
   /* Die schmale Titelzeile unter der Kopfzeile ändert deren Höhe beim Scrollen: die Karte würde wackeln */
   html:has(main:is(.rm-xwide, .rm-xnet)) .rm-deskbar {
     display: none;
   }
-}
-
-@media (min-width:1024px) {
   /* Ruhiger: ein gemeinsamer, leichter Schatten für alles auf der Karte, Legende ohne Kasten */
   main:is(.rm-xwide, .rm-xnet) .rm-xebene, main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y, main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0, main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.right-3 {
     box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7);
   }
-}
-
-@media (min-width:1024px) {
   /* Eine Glasoptik für alles auf der Karte */
   main:is(.rm-xwide, .rm-xnet) .rm-xebene, main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y, main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button:not([aria-pressed=true]), main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0, main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.right-3, main:is(.rm-xwide, .rm-xnet) .rm-mapbox>div.inset-x-16>span, main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) .rm-chip {
     background: linear-gradient(135deg,rgba(255,255,255,.62),rgba(230,243,241,.46));
@@ -551,27 +371,18 @@
     backdrop-filter: blur(18px) saturate(170%);
     box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7);
   }
-}
-
-@media (min-width:1024px) {
   @media (hover:none) {
     main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) .rm-chip {
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
     }
   }
-}
-
-@media (min-width:1024px) {
   /* Chips über der Suchleiste: bündig mit dem Suchfeld (nach Play und Filter), Milchglas wie der Rest */
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch)>.rm-solid:not(.rm-xsearch)>div {
     padding-left: 104px;
     margin: 8px 0 0;
     justify-content: flex-start;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) .rm-chip {
     color: var(--rm-c900);
     height: 32px;
@@ -579,9 +390,6 @@
     padding-right: 8px;
     gap: 6px;
   }
-}
-
-@media (min-width:1024px) {
   /* Vorschlagsliste der Suche: deckend und rund, nicht durchsichtig */
   main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=listbox] {
     background: var(--rm-white);
@@ -591,30 +399,18 @@
     border-radius: 22px;
     box-shadow: 0 12px 32px rgba(24,24,27,.14);
   }
-}
-
-@media (min-width:1024px) {
   /* Schritt-Auswahl der Projekte als Glas auf der Karte, das Menü öffnet nach oben */
   main:is(.rm-xwide, .rm-xnet) .rm-xschritt {
     display: block;
     order: -1;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide .rm-xtop, main.rm-xwide .rm-xtop .rm-xebene {
     flex-wrap: nowrap;
     white-space: nowrap;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide:has(.rm-xschritt) .rm-mapbox>.rm-legend:not(.right-3) {
     bottom: 68px;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xschritt button[aria-haspopup] {
     height: 38px;
     border-radius: 9999px;
@@ -626,9 +422,6 @@
     box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7);
     color: var(--rm-c800);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xschritt ul[role=listbox] {
     top: auto;
     bottom: 100%;
@@ -641,28 +434,16 @@
     border: 1px solid rgba(255,255,255,.85);
     box-shadow: 0 12px 32px rgba(24,24,27,.14),inset 0 1px 0 rgba(255,255,255,.9);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xschritt ul[role=listbox] button {
     border-radius: 14px;
     background: transparent;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xschritt ul[role=listbox] button:hover {
     background: rgba(255,255,255,.7);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xschritt ul[role=listbox] li[aria-selected=true]>button {
     background: rgba(255,255,255,.95);
   }
-}
-
-@media (min-width:1024px) {
   /* Beschlusslage, Fraktionen, Nachrichten: die Kernaussage als Bühne links (Suche oben, Themenleiste rechts darauf), die Auswertung rechts daneben */
   main.rm-xhero .rm-xhero-panel {
     display: block;
@@ -671,34 +452,19 @@
     min-height: 0;
     border-right: 1px solid var(--rm-c200);
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xhero .rm-xhero-panel {
     justify-content: center;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xhero .rm-xhero-panel>* {
     max-width: 640px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xhero .rm-xhero-panel>p:first-child {
     font-size: 22px;
     line-height: 1.35;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xhero .rm-xhero-panel .rm-xtop {
     max-width: none;
   }
-}
-
-@media (min-width:1024px) {
   /* Legende ohne Kasten, schlicht auf der Karte */
   main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.rm-legend:not(.right-3) {
     background: none;
@@ -708,9 +474,6 @@
     box-shadow: none;
     padding-left: 2px;
   }
-}
-
-@media (min-width:1024px) {
   /* Trends: Karte der Ausbreitung und Platzhalter füllen die Zelle; Zeitleiste unten, Suche darüber; Legende und Zoom weichen */
   main.rm-xwide .rm-xsplit-map>section[aria-label="Karte der Ausbreitung"], main.rm-xwide .rm-xsplit-map>div.grid {
     flex: 1 1 0;
@@ -719,36 +482,21 @@
     border: 0;
     border-radius: 0;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide:has(section[aria-label="Karte der Ausbreitung"]) .rm-xtop {
     bottom: 78px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide section[aria-label="Karte der Ausbreitung"]>.rm-legend.left-3 {
     top: 60px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xwide section[aria-label="Karte der Ausbreitung"]>.rm-legend.right-3 {
     right: auto;
     left: 12px;
     top: auto;
     bottom: 78px;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-sub-std, main:is(.rm-xwide, .rm-xnet) .rm-sub-wide {
     display: none;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-rail-sub {
     display: flex;
     flex-direction: column;
@@ -764,24 +512,15 @@
     animation: rm-subout .28s cubic-bezier(.22,.9,.28,1) both;
     transform-origin: right top;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li:nth-child(n+7) .rm-rail-sub {
     top: auto;
     bottom: 0;
     transform-origin: right bottom;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-rail-sub li {
     height: 34px;
     flex: none;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail .rm-rail-sub button {
     font-size: 11.5px;
     border-radius: 14px;
@@ -789,30 +528,18 @@
     gap: 6px;
     pointer-events: auto;
   }
-}
-
-@media (min-width:1024px) {
   /* Nicht gedrückte Unterknöpfe tragen das Glas der Leiste (Regel unten), gedrückte das helle Feld */
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail .rm-rail-sub button[aria-pressed=true] {
     background: rgba(255,255,255,.82);
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail .rm-rail-sub button svg {
     width: 16px;
     height: 16px;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li.rm-rail-open {
     position: relative;
     z-index: 2;
   }
-}
-
-@media (min-width:1024px) {
   /* Themennetz und Gremiennetz: Netz als Bühne über die Höhe des Fensters, Suche, Detailstufe und Themen als Glas darauf; Rest darunter */
   main.rm-xnet {
     display: grid;
@@ -822,9 +549,6 @@
     padding-left: 0;
     padding-right: max(1vw,16px);
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet::before {
     content: "";
     grid-area: 2 / 1 / span 80;
@@ -832,22 +556,13 @@
     background: var(--rm-c50);
     border-right: 1px solid var(--rm-c200);
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet>:not(.pl-band):not(.rm-xstage):not(nav.rm-xrail):not(.rm-xseg):not(:has(>.rm-xsearch)) {
     margin-left: 0;
     margin-right: 0;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet>div[aria-busy] {
     display: contents;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet section.rm-xstage {
     grid-area: 2 / 1 / span 80;
     align-self: start;
@@ -858,42 +573,24 @@
     border: 0;
     border-radius: 0;
   }
-}
-
-@media (min-width:1024px) {
   /* Das Netz selbst lässt rechts Platz für die Themenkacheln, die auf der Bühne liegen; Zoom und Legende rücken daneben */
   main.rm-xnet .rm-xstage>.rm-netstage {
     right: 192px;
     background: none;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet .rm-xstage>.rm-stage-chip.right-3 {
     right: 204px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet .rm-xstage>.rm-stage-chip.left-3.top-3:not(.z-\[7\]) {
     right: 204px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet nav.rm-xrail {
     margin: 0;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet div:has(>.rm-xsearch) {
     padding: 12px 14px 0 14px;
     margin: 0 192px 0 0;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet .rm-xseg {
     grid-area: 2 / 1 / span 80;
     justify-self: center;
@@ -906,9 +603,6 @@
     height: 0;
     overflow: visible;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet .rm-xseg .touch-pan-y {
     padding: 3px;
     gap: 2px;
@@ -919,26 +613,17 @@
     border: 1px solid rgba(255,255,255,.82);
     box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7);
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet .rm-xseg .touch-pan-y>span[aria-hidden] {
     border-radius: 9999px;
     top: 3px;
     bottom: 3px;
     box-shadow: 0 2px 8px rgba(24,24,27,.14);
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet .rm-xseg button {
     height: 32px;
     border-radius: 9999px;
     padding: 0 12px;
   }
-}
-
-@media (min-width:1024px) {
   /* Bühne: Legende und Zurück unten, Hinweise unten statt oben, Karte der Detailstufe oben rechts */
   main.rm-xnet .rm-xstage .rm-stage-chip.left-3.top-3:not(.z-\[7\]) {
     top: auto;
@@ -946,31 +631,19 @@
     left: auto;
     right: 12px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet .rm-xstage .rm-stage-chip.z-\[7\] {
     top: auto;
     bottom: 12px;
     left: 12px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet .rm-xstage .inset-x-16.top-3, main.rm-xnet .rm-xstage .inset-x-16.bottom-3 {
     top: auto;
     bottom: 62px;
   }
-}
-
-@media (min-width:1024px) {
   main.rm-xnet .rm-xstage .rm-glass.rm-liquid {
     bottom: 64px !important;
   }
-}
-
-/* Dünnes Kopfband auch auf den übrigen plenara.X-Seiten (Ortsvergleich, Beschlusslage, Fraktionen, Nachrichten, Trends): eine Zeile mit Zurück, Titel, Zahl und Seiten; die Titelzeile unter der Kopfzeile entfällt, damit sich die Kopfhöhe beim Scrollen nicht ändert */
-@media (min-width:1024px) {
+  /* Dünnes Kopfband auch auf den übrigen plenara.X-Seiten (Ortsvergleich, Beschlusslage, Fraktionen, Nachrichten, Trends): eine Zeile mit Zurück, Titel, Zahl und Seiten; die Titelzeile unter der Kopfzeile entfällt, damit sich die Kopfhöhe beim Scrollen nicht ändert */
   main:not(.rm-xwide):not(.rm-xnet) .pl-band {
     display: flex;
     align-items: center;
@@ -980,105 +653,60 @@
     padding-bottom: 8px !important;
     margin-bottom: 16px;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band>div:not(.hidden) {
     display: contents;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band .back-btn {
     margin: 0;
     order: 1;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band h1 {
     order: 2;
     font-size: 20px;
     margin: 0;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band .rm-band-mid {
     order: 3;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band .rm-band-mid p:first-child>span:first-child {
     font-size: 22px;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band .rm-band-mid p:not(:first-child) {
     display: none;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band p.rm-band-mid {
     font-size: 16px;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band nav[aria-label="Ansicht"] {
     order: 3;
     margin: 0 !important;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band nav[aria-label="Auswertungen"] {
     order: 4;
     margin-left: auto;
   }
-}
-
-@media (min-width:1024px) {
   html:has(.pl-band) .rm-deskbar {
     display: none;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .pl-band {
     position: sticky;
     top: var(--hdr,58px);
     z-index: 40;
     height: 48px;
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) div:has(>.rm-xsearch) {
     top: calc(var(--hdr,58px) + 48px);
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .rm-xfilter {
     top: calc(var(--hdr,58px) + 48px + 62px) !important;
   }
-}
-
-/* Übrige plenara.X-Seiten (Ortsvergleich, Beschlusslage, Fraktionen, Nachrichten): Suchleiste, Knöpfe und Chips rund im selben leichten Glasstil wie auf den Seiten mit Bühne, ohne den Aufbau zu ändern */
-@media (min-width:1024px) {
+  /* Übrige plenara.X-Seiten (Ortsvergleich, Beschlusslage, Fraktionen, Nachrichten): Suchleiste, Knöpfe und Chips rund im selben leichten Glasstil wie auf den Seiten mit Bühne, ohne den Aufbau zu ändern */
   main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>button, main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.relative>button, main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.min-w-0, main:not(.rm-xwide):not(.rm-xnet) .rm-chip {
     border-radius: 9999px;
     background: linear-gradient(135deg,rgba(255,255,255,.9),rgba(230,243,241,.6));
     border: 1px solid var(--rm-c200);
     box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.8);
   }
-}
-
-@media (min-width:1024px) {
   main:not(.rm-xwide):not(.rm-xnet) .rm-xsearch [role=search]>div.min-w-0 *:not([role=listbox]):not([role=listbox] *) {
     background: transparent;
     border-radius: 9999px;
@@ -1093,23 +721,14 @@
     flex-wrap: wrap;
     gap: 2px 12px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band h1 {
     font-size: 22px !important;
     line-height: 1.15;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band .rm-band-mid p:first-child>span:first-child {
     font-size: 20px !important;
   }
-}
-
-/* Handy, alle plenara.X-Seiten: Legende ohne Kasten; Suche, Filter und Herz als eine Pille statt dreier Kästchen */
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
+  /* Handy, alle plenara.X-Seiten: Legende ohne Kasten; Suche, Filter und Herz als eine Pille statt dreier Kästchen */
   main#inhalt .rm-xlegend {
     background: none;
     border: 0;
@@ -1118,9 +737,6 @@
     backdrop-filter: none;
     padding-left: 2px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt .rm-xsearch [role=search] {
     gap: 0;
     padding: 0;
@@ -1131,44 +747,26 @@
     backdrop-filter: blur(18px) saturate(170%);
     box-shadow: 0 8px 24px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.9);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt .rm-xsearch [role=search]>* {
     border: 0;
     box-shadow: none;
     background: transparent;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt .rm-xsearch [role=search] .min-w-0 {
     border-radius: 9999px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt .rm-xsearch [role=search]>div>button {
     border: 0;
     background: transparent;
     box-shadow: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* Filterfenster: Milchglas, klappt nach oben auf und deckt die Breite der Suchleiste ab (links bis links, unten bis unten) */
   main#inhalt .rm-xsearch [role=search] {
     position: relative;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt .rm-xsearch [role=search]>div.relative {
     position: static;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt .rm-xsearch .rm-fpop {
     border-radius: 28px;
     background: var(--xg-pop);
@@ -1177,9 +775,6 @@
     backdrop-filter: blur(22px) saturate(180%);
     box-shadow: var(--xg-pop-shadow);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* Auswahlfelder im Filterfenster: runde Glas-Pillen statt weißer Kästchen */
   main#inhalt .rm-xsearch .rm-fpop .select-base {
     border-radius: 9999px;
@@ -1187,9 +782,6 @@
     border: 1px solid rgba(255,255,255,.92);
     box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.85);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt .rm-xsearch .rm-fpop .select-base.select-active {
     background: linear-gradient(135deg,rgba(255,255,255,.92),rgba(204,232,228,.8));
     border-color: rgba(38,132,120,.35);
@@ -1203,15 +795,9 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   main#inhalt .rm-xsearch [role=search] {
     background: linear-gradient(135deg,rgba(255,255,255,.95),rgba(236,246,244,.92));
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   /* Auswahllisten im Filterfenster (Stand, Thema, Bundesland, Zeitraum): rundes Milchglas wie die übrigen Listen */
   main#inhalt .rm-xsearch .rm-fpop [role=listbox] {
     background: var(--xg-pop);
@@ -1222,9 +808,6 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none) {
   main#inhalt .rm-xsearch .rm-fpop [role=listbox] :is(button, li) {
     border-radius: 14px;
   }
@@ -1271,9 +854,6 @@
     touch-action: none;
     outline: none;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xhandle::after {
     content: "";
     position: absolute;
@@ -1285,9 +865,6 @@
     background: transparent;
     transition: background .15s;
   }
-}
-
-@media (min-width:1024px) {
   main:is(.rm-xwide, .rm-xnet) .rm-xhandle:hover::after, main:is(.rm-xwide, .rm-xnet) .rm-xhandle:focus-visible::after, main:is(.rm-xwide, .rm-xnet) .rm-xhandle[data-drag]::after {
     background: var(--rm-fill);
   }
@@ -1331,10 +908,7 @@
     padding: 0 0 8px;
     margin-top: 12px;
   }
-}
-
-/* Desktop: Zeitraum, Schritt und Art bleiben unter der fixierten Suchzeile stehen (Höhe der Suchzeile 62 px) */
-@media (min-width:640px) and (not ((max-height:500px) and (pointer:coarse) and (max-width:1000px))) {
+  /* Desktop: Zeitraum, Schritt und Art bleiben unter der fixierten Suchzeile stehen (Höhe der Suchzeile 62 px) */
   .rm-xfilter {
     position: sticky;
     top: calc(var(--hdr,58px) + 62px);
@@ -1378,27 +952,15 @@
     padding-bottom: 8px !important;
     margin-bottom: 6px;
   }
-}
-
-@media (max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band .back-btn, .pl-band .rm-band-mid>p:nth-child(n+2) {
     display: none;
   }
-}
-
-@media (max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band h1 {
     font-size: 20px;
   }
-}
-
-@media (max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band h1>* {
     display: none;
   }
-}
-
-@media (max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band .rm-band-mid>p:first-child span:first-child {
     font-size: 22px;
   }
@@ -1451,118 +1013,61 @@
   .ri-anw .ri-head {
     padding-bottom: 24px;
   }
-}
-
-@media (max-width:640px) {
   .ri-konto .ri-head {
     padding-bottom: 20px;
   }
-}
-
-/* plenara.X und ihre Unterseiten auf dem Handy kompakter: weniger Weißraum zwischen Bändern, Kacheln und Überschriften */
-@media (max-width:640px) {
+  /* plenara.X und ihre Unterseiten auf dem Handy kompakter: weniger Weißraum zwischen Bändern, Kacheln und Überschriften */
   html.rm-analytics main .pb-10 {
     padding-bottom: 18px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .mb-8 {
     margin-bottom: 14px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .mt-16 {
     margin-top: 30px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .mt-12 {
     margin-top: 22px;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .mt-10 {
     margin-top: 18px;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .mt-8 {
     margin-top: 14px;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .mt-6 {
     margin-top: 12px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .mt-5 {
     margin-top: 8px;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .mt-4 {
     margin-top: 8px;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .gap-y-12 {
     row-gap: 18px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .gap-y-8 {
     row-gap: 14px;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .gap-y-6 {
     row-gap: 12px;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .gap-10 {
     gap: 16px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .gap-8 {
     gap: 14px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .gap-6 {
     gap: 12px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .space-y-8>:not([hidden])~:not([hidden]) {
     margin-top: 14px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .space-y-6>:not([hidden])~:not([hidden]) {
     margin-top: 12px !important;
   }
-}
-
-@media (max-width:640px) {
   html.rm-analytics main .py-10 {
     padding-top: 18px !important;
     padding-bottom: 18px !important;
@@ -1681,7 +1186,7 @@ html.rm-dark :is(.pl-band, .ri-head) {
 
 /* plenara.X-Abzeichen im Petrol-Band: weiß mit Originalfarben, sonst kaum lesbar */
 html:not(.rm-dark) .pl-band .rm-brandtag {
-  background: #fff;
+  background: var(--rm-on);
 }
 
 html:not(.rm-dark) .pl-band .rm-brandtag, html:not(.rm-dark) .pl-band .rm-brandtag * {
@@ -1712,8 +1217,8 @@ html:not(.rm-dark) .pl-band .rm-brandtag, html:not(.rm-dark) .pl-band .rm-brandt
   height: 100%;
   z-index: -1;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to right,transparent 15%,#000 85%);
-  mask-image: linear-gradient(to right,transparent 15%,#000 85%);
+  -webkit-mask-image: linear-gradient(to right,transparent 15%,var(--rm-black) 85%);
+  mask-image: linear-gradient(to right,transparent 15%,var(--rm-black) 85%);
 }
 
 html.rm-dark .rm-banddots {
@@ -1740,23 +1245,14 @@ html.rm-dark .rm-banddots {
     min-height: 135px;
     padding-bottom: 16px !important;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html .ri-head .ri-bid .ri-bid__name {
     font-size: 28px;
     font-weight: 600;
     line-height: 1.15;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-head .ri-lead {
     display: none !important;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-head .ri-bid + .ri-h1, .ri-head .ri-h1 {
     font-size: 18px;
     font-weight: 500;
@@ -1766,148 +1262,85 @@ html.rm-dark .rm-banddots {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   :is(.pl-band, .ri-head) {
     padding-top: 8px !important;
     padding-bottom: 12px !important;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band .back-btn {
     display: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band .rm-band-mid>p:nth-child(n+2) {
     display: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-head .ri-bid__icon {
     display: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-head .back-btn {
     margin-bottom: 2px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-head .ri-bid__label {
     display: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-head .ri-h1 {
     font-size: 22px !important;
     line-height: 1.2 !important;
     margin-top: 6px;
     margin-bottom: 0;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .ri-head .ri-lead {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:has(.pl-top) header {
     position: absolute;
     inset: 0 0 auto 0;
     background: transparent;
     border-bottom: 0;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:has(.pl-top) header .rm-logo svg {
     filter: brightness(0) invert(1);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band.pl-top {
     padding-top: 46px !important;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band.pl-top .grid {
     margin-top: 0;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .rm-stage {
     touch-action: pan-y;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:has(.pl-top) main#inhalt {
     padding-bottom: 0;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:not(.rm-dark):has(.ri-head) header {
     position: absolute;
     inset: 0 0 auto 0;
     background: transparent;
     border-bottom: 0;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:has(.ri-head) .ri-head {
     padding-top: 46px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:has(.ri-head) .ri-head > div:not(.rm-banddots) {
     display: flex;
     flex-direction: column;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:has(.ri-head) .ri-head .ri-bid {
     display: flex;
     align-items: center;
     margin: 0 0 4px;
     padding: 0;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:has(.ri-head) .ri-head .ri-bid__name {
     font-size: 28px;
     line-height: 1.15;
     font-weight: 600;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:has(.ri-head) .ri-head .back-btn {
     display: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* Seiten mit Band: Kopfzeile bleibt oben und färbt sich beim Scrollen weich ein (--hp 0 bis 1, aus Header.tsx) */
   html:has(.pl-top, .ri-head) header {
     position: sticky !important;
@@ -1916,15 +1349,9 @@ html.rm-dark .rm-banddots {
     border-bottom: 0 !important;
     background: color-mix(in srgb,var(--rm-ac) calc(var(--hb,0) * 100%),transparent) !important;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-dark:has(.pl-top, .ri-head) header {
     background: color-mix(in srgb,var(--rm-page) calc(var(--hb,0) * 100%),transparent);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html:has(.pl-top, .ri-head) main#inhalt {
     min-height: calc(100dvh + 150px);
   }

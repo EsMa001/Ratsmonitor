@@ -1,41 +1,4 @@
 /* Grundlagen: Seite, Schrift, Links, Fokus, Animationen, allgemeine Hilfsklassen. */
-@theme {
-  --breakpoint-tab: 901px;
-  --breakpoint-desk: 1121px;
-  --container-page: calc(100% - 2 * max(1vw,16px));
-  --color-map-ground: #ffffff;
-  --color-map-zero: #dcdcdf;
-  --color-map-s1: #bfe6e0;
-  --color-map-s2: #86cbc1;
-  --color-map-s3: #4fa89b;
-  --color-map-s4: #0f5249;
-  --color-map-hatch: #cfcfd3;
-  --shadow-card: 0 1px 2px #0f172a0a,0 6px 20px #0f172a0d;
-  --shadow-pop: 0 16px 40px #0f172a24,0 2px 6px #0f172a0f;
-  --shadow-seg: 0 1px 2px #0f172a14;
-  --shadow-focus: 0 0 0 4px #0d948833;
-  --animate-menuIn: menuIn .14s ease-out;
-  --animate-cardIn: cardIn .22s ease-out both;
-  @keyframes menuIn {
-    from {
-      opacity: 0;
-      transform: translateY(-4px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @keyframes cardIn {
-    from {
-      opacity: .3;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-}
-
 @media (prefers-reduced-motion:reduce) {
   .ratsmonitor * {
     animation: none !important;
@@ -59,22 +22,6 @@ body .font-medium {
 
 body h1, body h2, body h3 {
   font-weight: 600;
-}
-
-/* Nur ein Schwarz, ein Grau und ein Petrol (Teal-600) für Text und Akzente; die Karte zeichnet eigene Farben */
-.ratsmonitor {
-  --color-slate-400: #52525b;
-  --color-slate-500: #52525b;
-  --color-slate-600: #52525b;
-  --color-slate-700: #52525b;
-  --color-slate-800: #52525b;
-  --color-slate-900: #18181b;
-  --color-slate-950: #18181b;
-  --color-teal-500: #268478;
-  --color-teal-600: #268478;
-  --color-teal-700: #268478;
-  --color-teal-800: #1f7065;
-  --color-teal-900: #0c3d37;
 }
 
 /* Hauptaktion: schwarze Pille mit Pfeil; Nebenaktionen: Petrol-Text ohne Rahmen */
@@ -412,33 +359,21 @@ svg g[data-node]:focus-visible text {
   .rm-sec, .rm-sec-m, .rm-sec-s {
     margin-top: 1.25rem;
   }
-}
-
-/* Handy: Tippflächen von mindestens 44 px, ohne dass sich das Layout ändert.
+  /* Handy: Tippflächen von mindestens 44 px, ohne dass sich das Layout ändert.
    Textlinks und -knöpfe in Petrol ohne feste Höhe: Innenabstand und gleich großer negativer Rand.
    Chips und Pillen mit fester Höhe h-8 (32 px): ein unsichtbarer Rand um sechs Pixel nach oben und unten. */
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt :is(a, button, summary).text-teal-700:not([class*="h-"]):not([class*="rounded"]):not(.absolute) {
     padding-block: 12px;
     margin-block: -12px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt :is(a, button, summary)[class~="h-8"]:not(.absolute):not(.fixed), main#inhalt :is(a, button, summary)[class~="h-9"]:not(.absolute):not(.fixed), main#inhalt :is(a, button)[class~="min-h-8"]:not(.absolute):not(.fixed) {
     position: relative;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt :is(a, button, summary)[class~="h-8"]:not(.absolute):not(.fixed)::after, main#inhalt :is(a, button, summary)[class~="h-9"]:not(.absolute):not(.fixed)::after, main#inhalt :is(a, button)[class~="min-h-8"]:not(.absolute):not(.fixed)::after {
     content: "";
     position: absolute;
     inset: -6px -2px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt :is(a, button, summary)[class~="h-9"]:not(.absolute):not(.fixed)::after {
     inset: -4px -2px;
   }
@@ -595,8 +530,8 @@ svg g[data-node]:focus-visible text {
   height: 640px;
   z-index: -1;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom,#000 0,transparent 100%);
-  mask-image: linear-gradient(to bottom,#000 0,transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom,var(--rm-black) 0,transparent 100%);
+  mask-image: linear-gradient(to bottom,var(--rm-black) 0,transparent 100%);
 }
 
 html.rm-dotfield-on body::before {
@@ -621,22 +556,13 @@ html.rm-dotfield-on body::before {
     align-items: center;
     min-height: 44px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   main#inhalt button.truncate[class*="hover:underline"] {
     line-height: 44px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* Dünne Kopfzeile: das P des Logos steht schon an der Stelle des Logos, davon mit etwas Abstand der Titel; Logo blendet aus, das P der Titelzeile ein (Summe bleibt 1, das P bleibt stehen) */
   .rm-pmark {
     transform: translateY(-3px);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   @keyframes rmHeadIn {
     from {
       opacity: 0;
@@ -681,15 +607,9 @@ html.rm-dotfield-on body::before {
     align-items: center;
     min-height: 44px;
   }
-}
-
-@media (pointer:coarse) and (min-width:640px) {
   main#inhalt button.truncate[class*="hover:underline"] {
     line-height: 44px;
   }
-}
-
-@media (pointer:coarse) and (min-width:640px) {
   main#inhalt button[class*="h-7"][class*="rounded-full"], main#inhalt a[class*="h-7"][class*="rounded-full"] {
     min-height: 40px;
   }

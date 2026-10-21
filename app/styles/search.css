@@ -46,8 +46,8 @@ input[data-search="q"]:-webkit-autofill, input[data-search="q"]:-webkit-autofill
   height: 18px;
   border-radius: 50%;
   background: conic-gradient(from 0deg,rgba(38,132,120,0),var(--rm-fill));
-  -webkit-mask: radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));
-  mask: radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));
+  -webkit-mask: radial-gradient(farthest-side,transparent calc(100% - 2.5px),var(--rm-black) calc(100% - 2px));
+  mask: radial-gradient(farthest-side,transparent calc(100% - 2.5px),var(--rm-black) calc(100% - 2px));
   animation: rmSpin .8s linear infinite;
 }
 
@@ -92,15 +92,9 @@ input[data-search="q"]:-webkit-autofill, input[data-search="q"]:-webkit-autofill
     inset: 44px 0 var(--rm-tabbar) 0;
     overflow: hidden;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-peek]:not([hidden]) {
     --klein: 221px;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* Kartenhöhe bleibt in beiden kleinen Stufen gleich (sonst rechnet die Karte beim Wechsel neu und die Liste ruckelt); die Vorschau schiebt sich über ihren unteren Rand */
   html.rm-search .rm-flat>section {
     position: absolute;
@@ -109,9 +103,6 @@ input[data-search="q"]:-webkit-autofill, input[data-search="q"]:-webkit-autofill
     min-height: 0;
     border-bottom: 0;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat main {
     position: absolute;
     inset: auto 0 0 0;
@@ -124,33 +115,21 @@ input[data-search="q"]:-webkit-autofill, input[data-search="q"]:-webkit-autofill
     transition: transform .34s cubic-bezier(.22,.9,.28,1);
     will-change: transform;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-drag] main {
     transition: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-stage=voll] main {
     transform: translateY(var(--drag,0px));
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-stage=voll] main>section:first-child {
     position: sticky;
     top: 0;
     z-index: 4;
     background: var(--rm-white);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat::after {
     content: "";
     position: absolute;
@@ -162,89 +141,50 @@ input[data-search="q"]:-webkit-autofill, input[data-search="q"]:-webkit-autofill
     transition: opacity .2s;
     background: linear-gradient(to top,var(--rm-white),transparent);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-stage=klein][data-peek]::after {
     opacity: 1;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* Suchleiste samt Chips: im kleinen Blatt am unteren Rand der Karte, im vollen Blatt im Streifen oben (nur eine kleine Fläche, läuft mit dem Blatt) */
   html.rm-search .rm-sbar {
     transition: top .34s cubic-bezier(.22,.9,.28,1),bottom .34s cubic-bezier(.22,.9,.28,1),transform .34s cubic-bezier(.22,.9,.28,1) !important;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* Die Suchleiste unten auf der Karte wechselt mit der Stufe den Platz (bottom, beim Tippen weich; beim Ziehen ohne Übergang) und rutscht per transform im Gleichschritt mit dem Blatt: --sb ist --drag, auf ihren Weg umgerechnet (OverviewPage) */
   html.rm-search .rm-sbar[data-low] {
     transform: translateY(calc(63px - var(--klein) + var(--sb,0px)));
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-stage=voll] .rm-sbar[data-low] {
     bottom: calc(100% - 164px) !important;
     transform: translateY(var(--sb,0px));
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-drag] .rm-sbar {
     transition: none !important;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-stage=voll] .rm-sbar:not([data-low]) {
     top: 62px !important;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* Mit Vorschau schiebt sich das Blatt über den unteren Kartenrand: Kartenknöpfe und Quellenangabe rutschen um deren Höhe hoch (die Karte selbst behält ihre Größe) */
   html.rm-search .rm-flat[data-stage=klein] :is(.rm-mapctl, .rm-attr) {
     transform: translateY(calc(63px - var(--klein) + var(--lf,0px)));
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-drag] :is(.rm-mapctl, .rm-attr) {
     transition: none !important;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search :is(.rm-mapctl, .rm-attr) {
     transition: opacity .2s,transform .34s cubic-bezier(.22,.9,.28,1);
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search .rm-flat[data-stage=voll] .rm-mapctl {
     opacity: 0;
     pointer-events: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   @media (prefers-reduced-motion:reduce) {
     html.rm-search .rm-flat main, html.rm-search .rm-sbar {
       transition: none !important;
     }
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   /* Suche: genau eine Bildschirmhöhe, die Rechtlich-Zeile steht in „Mehr“ */
   html.rm-search .rm-legalbar {
     display: none;
   }
-}
-
-@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   html.rm-search body {
     overflow: hidden;
   }
@@ -262,9 +202,6 @@ html.rm-search .rm-footcta {
     grid-template-columns: minmax(0,1fr) minmax(520px,40%);
     align-items: start;
   }
-}
-
-@media (min-width:1100px) {
   html.rm-search .rm-flat>section:first-child {
     position: sticky;
     top: 58px;
@@ -273,9 +210,6 @@ html.rm-search .rm-footcta {
     border-bottom: 0;
     border-right: 1px solid var(--rm-c200);
   }
-}
-
-@media (min-width:1100px) {
   html.rm-search .rm-flat main {
     max-width: none;
     margin: 0;
@@ -306,8 +240,8 @@ html:not(.rm-search) body::before {
   pointer-events: none;
   background-image: radial-gradient(circle,var(--rm-dot) 1.3px,transparent 1.8px);
   background-size: 22px 22px;
-  -webkit-mask-image: linear-gradient(to bottom,#000 0,transparent 100%);
-  mask-image: linear-gradient(to bottom,#000 0,transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom,var(--rm-black) 0,transparent 100%);
+  mask-image: linear-gradient(to bottom,var(--rm-black) 0,transparent 100%);
 }
 
 html:not(.rm-search) .ratsmonitor {
@@ -324,9 +258,6 @@ html:not(.rm-search) .ri {
     margin: 10px 0 0;
     border-top: 0;
   }
-}
-
-@media (max-width:640px) {
   .pl-search input, .pl-ort input {
     margin-top: 0;
     height: 42px;
