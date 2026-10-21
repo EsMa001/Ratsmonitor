@@ -1840,7 +1840,7 @@ html.rm-dark .rm-banddots {
 
 @media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
   .pl-band.pl-top {
-    padding-top: 46px;
+    padding-top: 46px !important;
   }
 }
 
