@@ -65,6 +65,8 @@ rm -rf "$REL.old"
 # Lauf des Timers nimmt den neuen Stand. Nur zur Kenntnis.
 for unit in ratsmonitor-import ratsmonitor-import-nightly; do systemctl is-active --quiet "$unit" 2>/dev/null && echo "Hinweis: $unit läuft gerade (alter Stand bis zu seinem Ende; Protokoll: journalctl -u $unit)"; done
 systemctl restart ratsmonitor
+# Kunden-MCP (ratsmonitor-mcp.service) liest den Stand nur beim Start; ist er nicht eingerichtet, passiert nichts
+systemctl try-restart ratsmonitor-mcp 2>/dev/null || true
 # Im Einladungsmodus (RM_ACCESS=invite) leitet die Startseite um (302) und die Suche verlangt eine Anmeldung; geprüft wird
 # dann mit dem internen Token (IMPORT_TOKEN), der Gesundheitsweg meldet Inhalts- und Kontendatei.
 AUTH=(); if [ -n "${IMPORT_TOKEN:-}" ]; then HF="$(mktemp)"; trap 'rm -f "$HF"' EXIT; printf 'Authorization: Bearer %s\n' "$IMPORT_TOKEN" > "$HF"; AUTH=(-H @"$HF"); fi
