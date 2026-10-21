@@ -53,14 +53,24 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 
 ## Stile
 
-- `app/ratsmonitor.css`: App (Startseite, Karte, Milchglas `.rm-glass`, Filterfenster `#filter-body`).
-- `app/ratsmonitor-info.css`: Info- und Kontoseiten (Klassen `ri-…`). Achtung: Die Datei setzt Grundstile zurück; Tailwind-Klassen greifen dort manchmal nicht → dann Inline-Style.
+- Eigene Stile in `app/styles/`, nach Thema; `app/globals.css` lädt sie in dieser Reihenfolge (bei gleicher Genauigkeit gewinnt die spätere Datei):
+  - `tokens.css`: Farbkonzept „Petrol klar“ und alle Variablen (hell `:root`, dunkel `html.rm-dark`), Handygrenze `max-sm`/`sm`.
+  - `base-layer.css`: Tailwind-Bausteine (`@layer base/components`).
+  - `base.css`: Seite, Schrift, Links, Fokus, Animationen, allgemeine Hilfsklassen.
+  - `dark.css`: Dunkelmodus über die Variablen hinaus.
+  - `header.css`: Kopfzeile, Logo, Menüs, untere Leiste am Handy.
+  - `info.css`: Info-, Konto- und Rechtsseiten (`ri-…`), Startseite, Fußzeile. Achtung: setzt Grundstile zurück; Tailwind-Abstände greifen dort manchmal nicht → dann Inline-Style oder Wrapper.
+  - `search.css`: Suche (Karte, Suchleiste, Suchblatt `data-stage`, Trefferliste).
+  - `glass.css`: Milchglas `.rm-glass`, Chips, Filterfenster `#filter-body`, Auswahllisten.
+  - `analytics.css`: plenara.X (Band, Karte und Liste, Netze, Leisten, `rm-x…`, `rm-solid`).
+  - `print.css`: Druckansicht.
+- Neue Regel in die Datei ihres Themas; Klasse finden über `components/ratsmonitor/INDEX.md`.
 - Sonst Tailwind direkt im JSX. `app/admin.css`: Stile der Administration, geladen von `app/admin/page.tsx`; neue Admin-Stile im bestehenden Design ergänzen. `app/analyse-admin.css` gehört den Analyse-Seiten. `app/globals.css` (nur Einstieg und Theme) nicht ändern. `app/design-styles.css` wirkt auch auf Admin/Analysen: Änderungen dort immer auch dort prüfen.
 
 ## Designregeln (vereinbart)
 
 - Schrift IBM Plex Sans; Größen nur 12, 14, 16, 18, 22, 28, 44 px.
-- Farbkonzept „Petrol klar“ (seit 17.10.2026, Übersicht `docs/farbschema-petrol-klar-2026-10-17.pdf`): nur vier Farbfamilien plus Weiß/Schwarz. Grau (slate) für Text `#18181b` und Grautext `#52525b`; Petrol (teal) `#268478` = Ton der Deutschlandkarte für Marke, Hauptaktion, Hervorhebung, Balken, Karte, Fußleiste (als Text 4,5:1); Dunkelblau (sky) für beschlossen, Links, Neues; Orange-Braun (amber) für abgelehnt, Fehler, Warnung. Andere Tailwind-Farben (rose, red, emerald, violet …) nicht verwenden. Alle Werte stehen einmal in `app/ratsmonitor.css` (Block „Farbkonzept“, hell `:root`, dunkel `html.rm-dark`), dazu die Rollen `--rm-c50`…`--rm-c900`, `--rm-ac`/`--rm-ac2`, `--rm-btn`/`--rm-btn2` (Hauptaktion), `--rm-fill`, `--rm-link`, `--rm-ok`/`--rm-ok2`/`--rm-ok3`/`--rm-no`, `--rm-map1`…`3`, `--rm-tint`/`--rm-tint2`, `--rm-on` (Weiß auf Petrol), `--rm-black`. Statusfarben für Diagramme: `STATUS_COLOR` in `lib/constants.ts`; Zahlenformate: `lib/format.ts`. Im Code keine Hex-Werte und keine Fallbacks `var(--x,#…)`; Ausnahmen nur Kartenmotor und Export (`lib/constants.ts`, `lib/geo/`, `lib/exportArticle.ts`), dort nur Werte aus der Palette.
+- Farbkonzept „Petrol klar“ (seit 17.10.2026, Übersicht `docs/farbschema-petrol-klar-2026-10-17.pdf`): nur vier Farbfamilien plus Weiß/Schwarz. Grau (slate) für Text `#18181b` und Grautext `#52525b`; Petrol (teal) `#268478` = Ton der Deutschlandkarte für Marke, Hauptaktion, Hervorhebung, Balken, Karte, Fußleiste (als Text 4,5:1); Dunkelblau (sky) für beschlossen, Links, Neues; Orange-Braun (amber) für abgelehnt, Fehler, Warnung. Andere Tailwind-Farben (rose, red, emerald, violet …) nicht verwenden. Alle Werte stehen einmal in `app/styles/tokens.css` (Block „Farbkonzept“, hell `:root`, dunkel `html.rm-dark`), dazu die Rollen `--rm-c50`…`--rm-c900`, `--rm-ac`/`--rm-ac2`, `--rm-btn`/`--rm-btn2` (Hauptaktion), `--rm-fill`, `--rm-link`, `--rm-ok`/`--rm-ok2`/`--rm-ok3`/`--rm-no`, `--rm-map1`…`3`, `--rm-tint`/`--rm-tint2`, `--rm-on` (Weiß auf Petrol), `--rm-black`. Statusfarben für Diagramme: `STATUS_COLOR` in `lib/constants.ts`; Zahlenformate: `lib/format.ts`. Im Code keine Hex-Werte und keine Fallbacks `var(--x,#…)`; Ausnahmen nur Kartenmotor und Export (`lib/constants.ts`, `lib/geo/`, `lib/exportArticle.ts`), dort nur Werte aus der Palette.
 - Weiß, Linien statt Kästen/Kacheln; keine bunten Abzeichen.
 - Hauptaktion: Petrol-Pille mit „→“; Nebenaktion: Petrol-Text mit „→“.
 - Symbole ohne Beschriftung (Teilen, Folgen, Speichern, Exportieren).

@@ -2,7 +2,7 @@
 
 Stand: 08.10.2026. Abgeleitet aus der öffentlichen Webseite, so wie sie heute ist (ohne Admin-Bereich). **Ist-Stand** heißt: so steht es im Code und sieht man auf der Seite. **Vorschlag** heißt: von mir ergänzt, damit das Design vollständig wird, bitte freigeben oder ändern.
 
-Die Ansicht dazu: [`styleguide.html`](styleguide.html) (im Browser öffnen). Quellen im Code: `app/ratsmonitor.css`, `app/ratsmonitor-info.css`, `components/ratsmonitor/components/Brand.tsx`, `components/ratsmonitor/lib/constants.ts`, `components/ratsmonitor/FRONTEND.md`.
+Die Ansicht dazu: [`styleguide.html`](styleguide.html) (im Browser öffnen). Quellen im Code: `app/styles/*.css` (Farben in `tokens.css`), `components/ratsmonitor/components/Brand.tsx`, `components/ratsmonitor/lib/constants.ts`, `components/ratsmonitor/FRONTEND.md`.
 
 ## 1. Marke
 

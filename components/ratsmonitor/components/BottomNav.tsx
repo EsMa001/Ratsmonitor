@@ -9,7 +9,7 @@ import { isAnalyticsPath } from "../lib/routes";
 
 /** Untere Leiste auf dem Handy (unter 640 px) wie in einer App: fünf feste Ziele für alle Stufen (Suche mit Karte und Treffern, plenara.X als Auswahl der Analysen, Einblicke und Hintergründe, Folgen = gespeicherte Suchen mit Benachrichtigung, Artikel = gemerkte Artikel, Mehr als Blatt; der Kalender liegt für Enterprise im Umschalter der beiden), das aktive in Petrol. Die Startseite erreicht man über das Logo.
  *  plenara.X öffnet ein Blatt mit allen Seiten (XSheet), Mehr eines mit Konto, Anwendern und Informationen.
- *  Höhe und sicherer Rand unten stehen in `--rm-tabbar` (app/ratsmonitor.css), damit Seiten darüber enden. */
+ *  Höhe und sicherer Rand unten stehen in `--rm-tabbar` (app/styles/tokens.css), damit Seiten darüber enden. */
 export function BottomNav() {
   const p = usePathname();
   /* Höchstens ein Blatt gleichzeitig; ein zweiter Tipp auf dasselbe Symbol schließt es */

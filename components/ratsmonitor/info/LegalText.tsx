@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 /* Textbausteine der Rechtstexte (Impressum, Datenschutz, AGB, Widerruf).
-   Abstände als Inline-Style: ratsmonitor-info.css setzt Ränder zurück, Tailwind-Abstände greifen dort nicht. */
+   Abstände als Inline-Style: app/styles/info.css setzt Ränder zurück, Tailwind-Abstände greifen dort nicht. */
 export function H2({ children }: { children: ReactNode }) {
   return <h2 style={{ margin: "44px 0 12px", fontSize: 18, lineHeight: 1.35, fontWeight: 600, color: "var(--rm-c900)" }}>{children}</h2>;
 }

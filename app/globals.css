@@ -4,8 +4,17 @@
 @import "../vendor/shadcn-tailwind-4.13.0.css";
 @import "./design-tokens.css";
 @import "./design-styles.css" layer(base);
-@import "./ratsmonitor.css";
-@import "./ratsmonitor-info.css";
+/* Stile der App, nach Thema (app/styles/, Reihenfolge = Vorrang bei gleicher Genauigkeit; Übersicht in components/ratsmonitor/FRONTEND.md) */
+@import "./styles/tokens.css";
+@import "./styles/base-layer.css";
+@import "./styles/base.css";
+@import "./styles/dark.css";
+@import "./styles/header.css";
+@import "./styles/info.css";
+@import "./styles/search.css";
+@import "./styles/glass.css";
+@import "./styles/analytics.css";
+@import "./styles/print.css";
 @import "./analyse-admin.css";
 /* Die Regeln nur der Administration stehen in admin.css; die lädt app/admin/page.tsx. */
 @source "../app";

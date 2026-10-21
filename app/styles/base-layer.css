@@ -1,0 +1,57 @@
+/* Tailwind-Bausteine (@layer base/components): Knöpfe, Felder, Karten, Grundstile. */
+@layer base {.ratsmonitor{min-height:100vh;background:var(--rm-white);color:var(--rm-c900);font-size:16px;line-height:1.5}.ratsmonitor a{color:inherit}.ratsmonitor button{cursor:pointer}.ratsmonitor button:disabled{cursor:default}.ratsmonitor :focus-visible{outline:2px solid var(--rm-fill);outline-offset:3px}.ratsmonitor mark{background:var(--color-amber-100);color:inherit;border-radius:3px}.ratsmonitor dialog{margin:auto}.ratsmonitor p{overflow-wrap:anywhere}}
+@layer components {
+  /* Schaltflächen */
+  .btn-primary {
+    @apply inline-flex h-11 items-center justify-center gap-[7px] whitespace-nowrap rounded-full border border-transparent bg-teal-700 px-5 text-sm font-medium text-white transition-colors hover:bg-teal-800 disabled:pointer-events-none disabled:opacity-[.45];
+  }
+  .btn-secondary {
+    @apply inline-flex h-11 items-center justify-center gap-[7px] whitespace-nowrap rounded-[10px] border border-transparent bg-transparent px-4 text-sm font-medium text-teal-600 transition-colors hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-[.45];
+  }
+  .btn-sm {
+    @apply h-9 rounded-lg px-3 text-[14px];
+  }
+  .btn-danger {
+    @apply text-amber-700 hover:border-amber-200 hover:bg-amber-50;
+  }
+  .link-btn {
+    @apply border-0 bg-transparent p-0 text-sm font-medium text-teal-700 underline underline-offset-[3px] hover:text-teal-700;
+  }
+  .back-btn {
+    @apply inline-flex h-[34px] max-sm:h-11 items-center gap-1.5 rounded-lg border-0 bg-transparent pl-1.5 pr-2.5 text-[14px] font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900;
+  }
+
+  /* Formularfelder */
+  .field-input {
+    @apply h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 text-[14px] text-slate-900 outline-none transition-[border-color,box-shadow] hover:border-slate-400/70 focus:border-teal-600 focus:shadow-focus aria-[invalid=true]:border-rose-600 aria-[invalid=true]:focus:shadow-[0_0_0_4px_rgba(180,83,9,.15)];
+  }
+  .field-label {
+    @apply text-[14px] font-semibold text-slate-900;
+  }
+  .field-help {
+    @apply m-0 text-[12px] leading-[1.45] text-slate-500;
+  }
+   
+  .select-base {
+    @apply h-11 cursor-pointer appearance-none rounded-[10px] border border-slate-200 bg-white pl-3.5 pr-9 text-sm font-normal text-slate-900 outline-none transition-[border-color,box-shadow,background-color] hover:border-slate-300 focus:border-teal-600 focus:shadow-focus;
+  }
+  .select-active {
+    @apply border-teal-200 bg-teal-50 text-teal-700;
+  }
+
+  /* Karten, Chips, Badges */
+  .card-shell {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-card;
+  }
+   
+   
+   
+  .popover {
+    @apply animate-menuIn rounded-xl border border-slate-200 bg-white shadow-pop;
+  }
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme(colors.slate.300) transparent;
+  }
+}
+@layer base {.ratsmonitor .prose{margin-top:28px}.ratsmonitor .page-note{font-size:14px;line-height:1.6;margin-top:10px}}

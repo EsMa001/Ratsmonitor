@@ -29,7 +29,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
   const [typing, setTyping] = useState(false);
   const chips = filterChips(res.snapshot, geo);
   const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
-  /* Form und Fläche der Knöpfe und des Felds: Klassen rm-xbtn und rm-xfield in ratsmonitor.css (dort auch die Glas-Pille von plenara.X) */
+  /* Form und Fläche der Knöpfe und des Felds: Klassen rm-xbtn und rm-xfield in app/styles/analytics.css (dort auch die Glas-Pille von plenara.X) */
   const round = "rm-xbtn relative grid h-11 w-11 flex-none place-items-center max-sm:h-12 max-sm:w-12 transition-colors";
   const filterBtn = (
     <button
@@ -58,7 +58,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
     </div>
   );
   return (
-    /* rm-solid: Filter und Vorschläge flach statt Milchglas (ratsmonitor.css) */
+    /* rm-solid: Filter und Vorschläge flach statt Milchglas (app/styles/analytics.css) */
     <>
       {(() => {
         const bar = (

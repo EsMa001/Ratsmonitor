@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 /** Ergebnisblatt der Suche am Handy, zwei Stufen: „klein“ (Karte groß, nur die Zeile mit der Trefferzahl) und „voll“ (Liste groß, Karte als schmaler Streifen mit der Suchleiste).
- *  Nur für die Darstellung unter 640 px (app/ratsmonitor.css, `data-stage`); am Desktop ohne Wirkung. Bleibt beim Wechsel auf Artikelseiten erhalten. */
+ *  Nur für die Darstellung unter 640 px (app/styles/search.css, `data-stage`); am Desktop ohne Wirkung. Bleibt beim Wechsel auf Artikelseiten erhalten. */
 export type SheetStage = "klein" | "voll";
 let stage: SheetStage = "klein";
 const listeners = new Set<() => void>();

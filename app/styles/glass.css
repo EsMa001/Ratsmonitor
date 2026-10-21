@@ -1,0 +1,38 @@
+/* Milchglas: Leisten, Chips, Filterfenster, Auswahl- und Vorschlagslisten auf Karten. */
+/* Milchglas (Liquid Glass) für Suchleiste und runde Knöpfe auf der Karte */
+.rm-glass{background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75)}
+.rm-glass:hover{background:linear-gradient(135deg,rgba(255,255,255,.65),rgba(230,243,241,.55))}
+/* plenara.X: Legenden und Knöpfe auf Karten und Netzen ohne Rahmen und Schatten (Linien statt Kästen) */
+/* Legenden, Zoomknöpfe und Karten auf Karten und Netzen: Milchglas (durchscheinend, weicher Rand, Lichtkante) */
+.rm-legend{background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(230,243,241,.5));border:1px solid rgba(255,255,255,.85);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 8px 24px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.9)}
+/* Filterfenster: Felder und aufklappende Listen ebenfalls Milchglas */
+#filter-body .select-base{height:32px;padding-left:12px;padding-right:28px;border-radius:12px;font-size:14px;background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.75);box-shadow:inset 0 1px 2px rgba(24,24,27,.04);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px){#filter-body .select-base{height:36px}}
+#filter-body .select-base:hover{background:rgba(255,255,255,.55)}
+#filter-body .select-base svg{right:10px}
+#filter-body .select-active{background:rgba(196,229,224,.45);border-color:rgba(168,220,213,.9);color:var(--rm-ac)}
+.rm-glass-pop,.rm-glass-pop:hover{background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(230,243,241,.55));border-color:rgba(255,255,255,.8);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
+.rm-glass-pop button:not([aria-selected=true]):not(.bg-teal-50):hover{background:rgba(255,255,255,.6)}
+/* Chips auf der Karte: weißes Milchglas, dunkle Schrift für Lesbarkeit */
+.rm-chip{color:var(--rm-c900);background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 14px rgba(24,24,27,.12),inset 0 1px 0 rgba(255,255,255,.95)}
+.rm-chip:hover{background:rgba(255,255,255,.88)}
+/* Handy und Touch (Code-Analyse C8): kein Weichzeichner über der laufend neu gezeichneten Karte, das kostet dort jedes Bild;
+   stattdessen fast deckende Flächen im selben Ton. */
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none){.rm-glass,.rm-glass:hover,.rm-glass-pop,.rm-glass-pop:hover,.rm-chip,.rm-chip:hover,#filter-body .select-base,#filter-body .select-base:hover{-webkit-backdrop-filter:none;backdrop-filter:none}}
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none){.rm-glass,.rm-glass:hover{background:rgba(255,255,255,.94)}}
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none){.rm-glass-pop,.rm-glass-pop:hover{background:rgba(255,255,255,.97)}}
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none){.rm-chip,.rm-chip:hover{background:rgba(255,255,255,.95)}}
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none){#filter-body .select-base,#filter-body .select-base:hover{background:rgba(255,255,255,.9)}}
+/* plenara.X: Suche und Filter ohne Milchglas (flach, weiß, feine Linie); die Startseite behält das Glas. Steht hinter den Glas- und Touch-Regeln, damit es ohne !important gewinnt */
+.rm-solid .rm-glass,.rm-solid .rm-glass:hover,.rm-solid .rm-glass-pop,.rm-solid .rm-glass-pop:hover{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;border-color:var(--rm-c200);box-shadow:0 8px 24px rgba(24,24,27,.08)}
+.rm-solid .rm-chip,.rm-solid .rm-chip:hover,.rm-solid #filter-body .select-base,.rm-solid #filter-body .select-base:hover{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;border-color:var(--rm-c200);box-shadow:none}
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px){/* !important: FilterPanel setzt right und width inline (gemessen); unter der Karte gilt die volle Breite */
+  main#inhalt .rm-mapwrap .rm-fpop{left:0 !important;right:0 !important;bottom:0 !important;top:auto !important;width:auto !important;max-width:none !important}}
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none){.rm-legend{background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(236,246,244,.92))}}
+@media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px),(hover:none){html:not(.rm-dark) .rm-wheel-list{background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(236,246,244,.94))}}
+/* Handy, Themenatlas: aufgeklappte Liste der Walzen als Milchglas, kompakt */
+.rm-wheel-list{background:linear-gradient(135deg,rgba(255,255,255,.86),rgba(230,243,241,.78));border:1px solid rgba(255,255,255,.88);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);box-shadow:0 12px 32px rgba(24,24,27,.14),inset 0 1px 0 rgba(255,255,255,.9)}
+/* Filterfenster: weiches Einblenden */
+@keyframes rm-fpop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+.rm-fpop{animation:rm-fpop .22s cubic-bezier(.2,.8,.3,1) both;transform-origin:top left}
+@media (prefers-reduced-motion:reduce){.rm-fpop{animation:none}}

@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-/** Die eine Handygrenze der App, dieselbe wie Tailwind max-sm (app/ratsmonitor.css): schmal (unter 640 px) oder Handy quer (kurz, Touch, bis 1000 px breit). Wer im Code „Handy“ meint, nimmt diese. */
+/** Die eine Handygrenze der App, dieselbe wie Tailwind max-sm (app/styles/tokens.css): schmal (unter 640 px) oder Handy quer (kurz, Touch, bis 1000 px breit). Wer im Code „Handy“ meint, nimmt diese. */
 export const PHONE_QUERY = "(max-width: 639px), (max-height: 500px) and (pointer: coarse) and (max-width: 1000px)";
 
 /** Jetzt Handybreite? (außerhalb von React, auf dem Server false) */

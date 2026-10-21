@@ -2,7 +2,7 @@ import {MAP_COLORS} from '@/components/ratsmonitor/lib/constants';
 // Farben der Adminseiten: dieselben wie auf der Startseite (Petrol, Schwarz, Grautöne). Die Farben in shared/coverage.mjs,
 // shared/source-access.mjs und shared/atlas-categories.mjs bleiben unverändert, denn der eigenständige Atlas
 // (scripts/dashboard/build.mjs) nutzt sie; der Admin überschreibt sie hier.
-// Linien, Text und Flächen folgen dem hellen und dem dunklen Modus (Variablen --rm-* in app/ratsmonitor.css).
+// Linien, Text und Flächen folgen dem hellen und dem dunklen Modus (Variablen --rm-* in app/styles/tokens.css).
 export const AC={accent:'var(--color-teal-500)',ink:'var(--rm-c900)',muted:'var(--rm-c400)',grid:'var(--rm-c200)',base:'var(--rm-c300)',axis:'var(--rm-c500)',track:'var(--rm-c100)',
  zero:MAP_COLORS.zero,hatch:MAP_COLORS.hatch,scale:MAP_COLORS.scale,warn:MAP_COLORS.ring,selection:'var(--rm-c900)',land:MAP_COLORS.national} as const;
 /** Schraffur „angebunden, ohne Berichte“: CSS-Fläche (Legende, Listenpunkt, Balken). */

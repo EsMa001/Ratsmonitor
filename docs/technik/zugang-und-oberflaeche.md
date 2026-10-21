@@ -159,8 +159,8 @@ Tests: `tests/accounts-login.test.mjs`, `accounts-data.test.mjs`, `accounts-rule
 - **Datenzugriff:** kein einzelner Client. `lib/fetchJson.ts` (`fetchJson`, `readJson`, `ApiError` mit deutschen Fehlertexten),
   `lib/account.ts` `api()` für `/api/me/*` (optimistisch mit Rücknahme, Abgleich zwischen Tabs), die Suche über `state/search.tsx`;
   daneben rohes `fetch` in vielen Komponenten.
-- **Stile:** `app/globals.css` (Tailwind 4, Tokens; nicht ändern), `app/ratsmonitor.css` (App, Block „Farbkonzept“ Petrol klar mit
-  `--rm-*`), `app/ratsmonitor-info.css` (`ri-*`), `app/design-styles.css` (wirkt auch auf Admin und Analysen), `app/admin.css`,
+- **Stile:** `app/globals.css` (Tailwind 4, Tokens; nicht ändern), `app/styles/*.css` (nach Thema; Block „Farbkonzept“ Petrol klar
+  mit `--rm-*` in `tokens.css`, Info- und Kontoseiten `ri-*` in `info.css`), `app/design-styles.css` (wirkt auch auf Admin und Analysen), `app/admin.css`,
   `app/analyse-admin.css`. Designregeln und Prüfbefehle in `FRONTEND.md`.
 - **Kalender:** `calendar-events.mjs` (höchstens 200 Gebiete, 100 Tage), `calendar-ics.ts`; Abo-Link mit Token aus `calendar_feeds`.
 

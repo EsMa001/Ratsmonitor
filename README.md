@@ -6,7 +6,7 @@ Responsive MVP zum Lesen öffentlicher Kommunalpolitik. 396 NRW-Städte und Geme
 
 ## Aktuelle Oberfläche (28.09.2026)
 
-Das Design aus `ratsmonitor-react.zip` ersetzt die öffentliche Startseite. Komponenten: `components/ratsmonitor/`, Seiten: `app/(monitor)/`, Styles: `app/ratsmonitor.css`. Technische Grundlage bleibt die bestehende Vinext-/React-/D1-Anwendung. Der ZIP-Demobestand und dessen simulierte Anmeldung werden nicht verwendet.
+Das Design aus `ratsmonitor-react.zip` ersetzt die öffentliche Startseite. Komponenten: `components/ratsmonitor/`, Seiten: `app/(monitor)/`, Styles: `app/styles/` (Übersicht in `components/ratsmonitor/FRONTEND.md`). Technische Grundlage bleibt die bestehende Vinext-/React-/D1-Anwendung. Der ZIP-Demobestand und dessen simulierte Anmeldung werden nicht verwendet.
 
 - Karte, Ortserkennung, Umkreis, Freitext, Thema, Monat und Status arbeiten mit `GET /api/search` und dem verbundenen D1-Bestand. Kommunen und Kreise sind getrennt auswählbar. Pro Seite werden 30 Vorgänge geladen. Ändert sich der Datenstand, erfordert Weiterblättern ein Neuladen. Ohne Datenbank zeigt die Suche einen Fehler.
 - `/beschluss/:id` und die bisherigen `/thema/:id` zeigen echte Details, Originalquellen und bestehende Analysen. `/analysen`, `/quellen` und `/mitteilungen` bleiben erreichbar.
