@@ -16,7 +16,7 @@ export interface Me {
   accounts: boolean;
   tier: Tier;
   limits: TierLimits;
-  features: { analytics: boolean; calendar: boolean; lenaPerMin: number };
+  features: { analytics: boolean; calendar: boolean; mcp: boolean; lenaPerMin: number };
   user: { id: string; email: string; name: string | null } | null;
   tierUntil: string | null;
   tierSource: "beta" | "manual" | "stripe" | null;

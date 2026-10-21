@@ -19,10 +19,12 @@ export const LIMITS={
 };
 /** Funktionen je Stufe, die der Server prüft (requireFeature) */
 export const FEATURES={
- guest:{analytics:false,calendar:false,lenaPerMin:10},
- basic:{analytics:false,calendar:false,lenaPerMin:30},
- pro:{analytics:false,calendar:false,lenaPerMin:30},
- enterprise:{analytics:true,calendar:true,lenaPerMin:60},
+ // mcp: KI-Assistenten über den Kunden-MCP per OAuth verbinden (server/accounts/oauth.mjs); dazu braucht es weiter einen
+ // Eintrag in der Kundendatei des Betreibers. Schlüssel des Betreibers hängen an keiner Stufe.
+ guest:{analytics:false,calendar:false,mcp:false,lenaPerMin:10},
+ basic:{analytics:false,calendar:false,mcp:false,lenaPerMin:30},
+ pro:{analytics:false,calendar:false,mcp:false,lenaPerMin:30},
+ enterprise:{analytics:true,calendar:true,mcp:true,lenaPerMin:60},
 };
 export const TIER_LABEL={guest:'Gast',basic:'Basic',pro:'Pro',enterprise:'Enterprise'};
 /** Preise: Platzhalter bis zur Entscheidung (konten-konzept.md, Abschnitt 15). null heißt „Preis folgt“. */

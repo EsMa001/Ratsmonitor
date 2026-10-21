@@ -77,6 +77,7 @@ test('Stufen: eine Quelle, gleich dem Frontend und stufen.md; Konto ohne Freisch
  assert.deepEqual(row('Gemerkte Artikel'),tiers.map(t=>val(LIMITS[t].bookmarks)));
  assert.deepEqual(row('Gespeicherte Suchen'),tiers.map(t=>val(LIMITS[t].savedSearches)));
  assert.deepEqual(row('Kalender'),tiers.map(t=>val(FEATURES[t].calendar)));
+ assert.deepEqual(row('KI-Assistenten (MCP)'),tiers.map(t=>val(FEATURES[t].mcp)));
  const front=fs.readFileSync(new URL('components/ratsmonitor/lib/tier.ts',root),'utf8');
  for(const t of tiers)assert.ok(front.includes(`${t}: { maxResults: ${LIMITS[t].maxResults===Number.POSITIVE_INFINITY?'INF':LIMITS[t].maxResults}`),t);
  assert.equal(ACCOUNT_DEFAULT_TIER,'guest');

@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (578 Zeilen, ⚠14)
-- app/ratsmonitor.css (621 Zeilen, ⚠35)
+- app/ratsmonitor.css (621 Zeilen, ⚠34)
 
 absolute ratsmonitor.css:616
 admin-access admin.css:6
@@ -664,6 +664,9 @@ z- ratsmonitor.css:402
 ### app/(monitor)/thema/[id]/
 - page.tsx (8): Page
 
+### app/(monitor)/verbinden/
+- page.tsx (4): metadata, Page
+
 ### app/(monitor)/videos/
 - page.tsx (4): metadata, Page
 
@@ -679,6 +682,20 @@ z- ratsmonitor.css:402
 - global-error.tsx (14, ⚠1): GlobalError
 - layout.tsx (12, ⚠2): metadata, viewport, RootLayout
 - not-found.tsx (4): metadata, NotFound
+
+### app/oauth/authorize/
+- route.ts (6): dynamic, GET
+
+### app/oauth/register/
+- route.ts (7): dynamic, POST, OPTIONS
+
+### app/oauth/revoke/
+- route.ts (7): dynamic, POST, OPTIONS
+
+### app/oauth/token/
+- route.ts (7): dynamic, POST, OPTIONS
+
+### app/
 - robots.ts (12): robots
 - site-url.ts (3): SITE_URL
 - sitemap.ts (12): sitemap
@@ -786,6 +803,7 @@ z- ratsmonitor.css:402
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
 - BranchenLive.tsx (244): LiveThumb
 - BranchenPages.tsx (121): BranchePage
+- ConnectPage.tsx (146): ConnectPage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (48): InfoPages
 - LegalText.tsx (20): H2, P, Ul
