@@ -692,9 +692,9 @@ z- ratsmonitor.css:402
 - admin-chrome.tsx (143, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
 - admin-cockpit.tsx (98, ⚠1): AdminCockpit
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (114, ⚠8): AdminRuns, AdminReview, AdminStock
+- admin-dashboard.tsx (114, ⚠7): AdminRuns, AdminReview, AdminStock
 - admin-debug.tsx (144, ⚠9): AdminDebug
-- admin-estimate.tsx (355, ⚠52): AdminEstimate
+- admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-fehler.tsx (80, ⚠4): AdminFehler
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (41): IconName, Icon
@@ -936,7 +936,7 @@ z- ratsmonitor.css:402
 
 ### components/ratsmonitor/state/
 - account.tsx (108): AccountProvider, useAccount, useSavedStats
-- data.tsx (36, ⚠1): DataProvider, useData
+- data.tsx (40, ⚠1): DataProvider, useData
 - nav.ts (17, ⚠1): View, noteRoute, cameFromApp, overviewScroll, useAppNav
 - search.tsx (665, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
