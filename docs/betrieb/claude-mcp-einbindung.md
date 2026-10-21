@@ -1,6 +1,6 @@
 # Plenara-MCP: interner Zugang und Kundenzugang
 
-Stand: 21.10.2026. Beide Zugänge arbeiten auf dem Server mit der Produktionsdatenbank, nicht mit lokalen Kopien.
+Stand: 21.10.2026. Beide Zugänge arbeiten auf dem Server mit der Produktionsdatenbank, nicht mit lokalen Kopien. Eingerichtet am 21.10.2026: `ratsmonitor-mcp` läuft, die Caddy-Route ist offen (Sicherung `/etc/caddy/Caddyfile.bak-vor-mcp-20261021-1459`), erster Kunde `plenara-intern` (Billerbeck, Konto Max).
 
 | | Interner Zugang | Kundenzugang |
 |---|---|---|
@@ -111,7 +111,7 @@ Die Datei gehört `root:ratsmonitor` mit den Rechten 640. Das Werkzeug schreibt 
 
 1. `/etc/ratsmonitor/mcp.env` aus `deploy/node/mcp.env.example` (root:ratsmonitor, 640). Das Geheimnis erzeugt `openssl rand -base64 48` auf dem Server.
 2. Kundendatei anlegen: `mcp-customers.mjs --file /srv/ratsmonitor/config/mcp/customers.json init`, danach `chown root:ratsmonitor` und `chmod 640`.
-3. `deploy/node/ratsmonitor.service` (lädt zusätzlich `mcp.env`) und `deploy/node/ratsmonitor-mcp.service` nach `/etc/systemd/system/` kopieren, dann:
+3. Die Web-App liest `mcp.env` über ein Drop-in `/etc/systemd/system/ratsmonitor.service.d/mcp.conf` (`[Service]` und `EnvironmentFile=-/etc/ratsmonitor/mcp.env`, wie in `deploy/node/ratsmonitor.service`). `deploy/node/ratsmonitor-mcp.service` nach `/etc/systemd/system/` kopieren, dann:
    ```bash
    systemctl daemon-reload
    systemctl restart ratsmonitor
@@ -130,7 +130,7 @@ Die Datei gehört `root:ratsmonitor` mit den Rechten 640. Das Werkzeug schreibt 
    ```
    `POST /mcp` ohne Schlüssel antwortet mit 401 und `WWW-Authenticate: Bearer resource_metadata=…`.
 
-Die Migration `0004_oauth.sql` spielt `deploy.sh` mit den übrigen Kontomigrationen ein. Nach einem Deploy liest `ratsmonitor-mcp` den neuen Stand erst nach `systemctl restart ratsmonitor-mcp`.
+Die Migration `0004_oauth.sql` spielt `deploy.sh` mit den übrigen Kontomigrationen ein. Nach dem Ausrollen startet `deploy.sh` den Dienst neu (`systemctl try-restart ratsmonitor-mcp`).
 
 ## 4. Fehlerbehebung
 
