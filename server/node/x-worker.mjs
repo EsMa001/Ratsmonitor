@@ -7,12 +7,15 @@ import {openD1} from './d1-sqlite.mjs';
 import {CATALOG} from '../../shared/catalog.mjs';
 import {X_FUNCTIONS} from '../integrations/x-registry.mjs';
 import {AnalyticsError} from '../integrations/analytics-diffusion.mjs';
+import {warmX} from '../integrations/x-cases.mjs';
 
 const file=workerData?.file||process.env.DATABASE_FILE;
 let db;
 const database=()=>db??=openD1(file,{readOnly:true,busyTimeoutMs:Number(process.env.DATABASE_BUSY_TIMEOUT_MS||5000)});
 
-parentPort.on('message',async({id,kind,params})=>{
+parentPort.on('message',async({id,kind,params,warm})=>{
+ /* {warm:true} von serve.mjs: x_cases und seine Indizes einmal lesen (warmX), Antwort die Dauer in ms */
+ if(warm){try{parentPort.postMessage({id,ok:true,value:warmX(database().sqlite)});}catch(error){parentPort.postMessage({id,ok:false,message:error?.message||String(error)});}return;}
  const fn=X_FUNCTIONS[kind];
  if(!fn){parentPort.postMessage({id,unknown:true});return;}
  try{parentPort.postMessage({id,ok:true,value:await fn(database(),CATALOG,new URLSearchParams(params))});}

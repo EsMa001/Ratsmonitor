@@ -116,3 +116,20 @@ Bewusst nicht gemacht, mit Grund:
 - `pnpm-workspace.yaml` (`allowBuilds: core-js`, doppelte `overrides`) und `deploy.sh`: Bereitstellung, nicht ohne Rücksprache.
 - README: historische Kapitel mit entfernten Skripten bleiben als Protokoll; korrigiert nur Aussagen zum heutigen Stand.
 - Dateien des offenen Branches `claude/lucid-cray-28b349` an denselben Stellen (`nightly.mjs` `queueJob`, `failures.mjs`, `schedules.mjs` `STEP_MIN`, Kommentar in `work-failures.mjs`): nach dessen Merge nachziehen.
+
+## Umsetzung Paket 4: Server-Performance (20.10.2026, Branch `cleanup/server-performance`)
+
+Gemessen lokal auf der D1-Kopie (1,33 Mio. `search_cards`, Node 24, nur lesend), Ergebnisse jeweils mit der alten Fassung verglichen (gleich). Die lokale Kopie hat kein `x_cases`; plenara.X ist deshalb mit Tests und Nachbauten geprüft, nicht gemessen.
+
+| Punkt | Änderung | Messung lokal |
+|---|---|---|
+| B4 | `d1-sqlite.mjs`: Zeilen als Arrays lesen, Objektbauer je Anweisung (`setReturnArrays`, sonst wie bisher) | 600.000 × 5 Spalten 2,4 s → 1,2 s; 200.000 × 8 1,2 s → 0,6 s; Facettengruppen 290 → 170 ms |
+| B2 | Suche: Gruppen der Zähler je Grundfilter und Datenstand gemerkt (`keptGroups`), Ort/Thema/Status filtert JS | „schule“ + Status 2,96 s → 27 ms; ohne Formalien + Thema 240 → 30 ms (jeder weitere Filter auf denselben Grundfilter) |
+| B7 | Seite und Strom nach Datum: erst die IDs (`WITH ids AS MATERIALIZED`), dann die Stationen | großes Gebiet 136 → 17 ms; älteste zuerst (Kreise) 1,5 s → 39 ms; Strom mit Gebiet 180 → 32 ms; Seite 40 31 → 6 ms; Relevanz unverändert |
+| B3 | `/api/x/teaser` rechnet im plenara.X-Worker (`xOffload`, ohne Worker wie bisher) | Hauptprozess frei (Test mit eigenem Worker) |
+| B5 | `warmData` mit Worker in einem eigenen Thread (Nachricht `warm`, `warmX`) | Hauptprozess frei (Test) |
+| B6 | Gleiche laufende Rechnungen geteilt (`atRevisionStale`, `cachedSearch`) | zwei gleichzeitige Anfragen: eine Rechnung (Tests) |
+| B12 | `requestTier`/`internalCall` einmal je Anfrage (WeakMap) | Suche: eine statt zwei Sitzungsabfragen, ein statt drei SHA-256 |
+| B13 | plenara.X-Routen: JSON-Text und schwaches ETag je gemerktem Ergebnis, 304 (`server/services/cached-json.mjs`) | kein `JSON.stringify` je Treffer mehr; 304 bei gleichem Stand |
+
+Nicht im laufenden Server geprüft (kein Start auf der lokalen Kopie, kein Deploy). Auf dem Server nach dem Deploy messen: Suche mit Gebiet, Filterklicks, `/api/x` nach dem Bau.

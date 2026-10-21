@@ -53,3 +53,16 @@ test('Trends, Gremien, Ausgang: nur die Kurzfassung',async()=>{
  const au=await xTeaser(null,[],'ausgang',{decisionsFn:async()=>({totals:{decided:10},rates:{approval:90,postponement:6,rejection:4},duration:{median:14},votes:{all:{unanimous:70}}})});
  assert.deepEqual([au.approval,au.postponement,au.rejection,au.median,au.unanimous],[90,6,4,14,70]);
 });
+
+test('mit plenara.X-Worker rechnet der Auszug dort (Art wie x-registry.mjs), nicht im Hauptprozess',async()=>{
+ const os=await import('node:os'),path=await import('node:path');
+ const {xOffloadStop}=await import('../server/integrations/x-offload.mjs');
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'x-teaser-')),worker=path.join(dir,'worker.mjs');
+ fs.writeFileSync(worker,"import {parentPort} from 'node:worker_threads';\nparentPort.on('message',({id,kind,params})=>parentPort.postMessage(kind==='trends'?{id,ok:true,value:{window:new URLSearchParams(params).get('scope'),rising:[{term:'Wärmeplanung',nr:4,ratio:2,regions:3,regionsPrev:1}]}}:{id,unknown:true}));\n");
+ process.env.RM_X_WORKER=worker;process.env.RM_X_WORKERS='1';
+ try{
+  // db null: rechnete der Hauptprozess, schlüge es fehl
+  const r=await xTeaser(null,[],'trend-alle');
+  assert.equal(r.window,'with');assert.deepEqual(r.items,[{term:'Wärmeplanung',count:4,ratio:2,regions:3,regionsPrev:1}]);
+ }finally{await xOffloadStop();delete process.env.RM_X_WORKER;delete process.env.RM_X_WORKERS;fs.rmSync(dir,{recursive:true,force:true});}
+});

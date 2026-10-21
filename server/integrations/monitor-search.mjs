@@ -43,7 +43,12 @@ export function parseMonitorSearch(params){
 }
 
 /* Spalten einer Ergebniszeile (mit den Stationen des Vorgangs), gemeinsam für Seite und Strom */
-const ROW_SELECT=`SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src FROM search_cards`;
+const ROW_COLUMNS=`id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src`;
+const ROW_SELECT=`SELECT ${ROW_COLUMNS} FROM search_cards`;
+/* Seite nach Datum: erst die Karten-IDs (Datumsindex, nur id), dann die Stationen aus topics.payload für genau diese Zeilen.
+   Sonst wertete SQLite die Unterabfragen für jede Karte eines Sitzungstags aus, bevor LIMIT griff (lokal: bis zum vollsten Tag
+   1,3 s → 46 ms, großes Gebiet 160 → 84 ms). Gleiche Zeilen in gleicher Reihenfolge; limit: LIMIT/OFFSET mit Platzhaltern. */
+const datePage=(where,dir,limit)=>`WITH ids AS MATERIALIZED (SELECT id FROM search_cards WHERE ${where} ORDER BY date ${dir},id ASC ${limit}) SELECT ${ROW_COLUMNS} FROM ids JOIN search_cards USING(id) ORDER BY search_cards.date ${dir},search_cards.id ASC`;
 /* Strom: Karten in Stücken nach Datum durchsuchen (erstes Stück klein, dann wachsend) */
 const STREAM_FIRST=2000,STREAM_MAX=150000,SMALL_SCOPE=30;
 /* Datenstand der Suche (drizzle/0017): steigt nur, wenn sich ein Vorgang ändert; ohne Migration der allgemeine Datenstand */
@@ -210,7 +215,7 @@ export async function searchMonitor(db,catalog,params){
    /* Seltenes Wort: alle Treffer stehen in der Kandidatenliste, eine einzige Abfrage genügt */
    /* Kleiner Ort (wenige Gebiete): der Gebietsindex liefert die Treffer direkt, eine einzige Abfrage genügt auch ohne Kandidatenliste */
    if(candidates||(places.length||f.within)&&scopedIds.size<=SMALL_SCOPE){
-    const res=await db.prepare(`${ROW_SELECT} WHERE ${page.where} ORDER BY date DESC,id ASC LIMIT ?`).bind(...page.args,limit+1).all();
+    const res=await db.prepare(datePage(page.where,'DESC','LIMIT ?')).bind(...page.args,limit+1).all();
     yield {known:res.results.length?'yes':'no'};
     if(res.results.length)yield {articles:mapStream(res.results.slice(0,limit))};
     yield {end:true,hasMore:res.results.length>limit,revision,pageSize:limit};
@@ -228,7 +233,7 @@ export async function searchMonitor(db,catalog,params){
    while(true){
     const edge=await db.prepare('SELECT date FROM search_cards WHERE date<? ORDER BY date DESC LIMIT 1 OFFSET ?').bind(upper,size).first();
     const lower=edge?.date??'';
-    const res=await db.prepare(`${ROW_SELECT} WHERE date>=? AND date<? AND ${page.where} ORDER BY date DESC,id ASC LIMIT ?`).bind(lower,upper,...page.args,limit+1-found).all();
+    const res=await db.prepare(datePage(`date>=? AND date<? AND ${page.where}`,'DESC','LIMIT ?')).bind(lower,upper,...page.args,limit+1-found).all();
     const rows=res.results.slice(0,limit-found);
     if(rows.length)yield {articles:mapStream(rows)};
     found+=res.results.length;
@@ -241,11 +246,12 @@ export async function searchMonitor(db,catalog,params){
  }
  /* Veralteter Datenstand beim Blättern: vor der Arbeit melden, nicht danach */
  if(f.revision!==null){const now=String((await db.prepare(REVISION_SQL).first())?.revision??0);if(now!==f.revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);}
- const pageSql=db.prepare(`${ROW_SELECT} WHERE ${page.where} ${order.sql}`).bind(...page.args,...order.args,limit+(f.part==='page'?1:0),(f.page-1)*limit);
+ const pageSql=db.prepare(rterms.length?`${ROW_SELECT} WHERE ${page.where} ${order.sql}`:datePage(page.where,f.sort==='asc'?'ASC':'DESC','LIMIT CAST(? AS REAL) OFFSET CAST(? AS REAL)')).bind(...page.args,...order.args,limit+(f.part==='page'?1:0),(f.page-1)*limit);
  /* Ohne Formalien und ohne Begriff: über den Teilindex zählen (deckt Gebiet, Thema, Status und Datum ab). Ohne Hinweis nahm das
     SQLite von Miniflare den Datumsindex und las jede Karte einzeln (über 40 s statt rund 1,5 s); das Ergebnis bleibt gleich. */
  const noformalIndex=f.noformal&&formalReady&&!candidates&&!(f.groups||[f.terms]).some(g=>g.length)?' INDEXED BY idx_search_cards_noformal':'';
- const facetSql=db.prepare(`SELECT region_id rid,label,status,count(*) n FROM search_cards${noformalIndex} ${facet.where} GROUP BY region_id,label,status`).bind(...facet.args);
+ const facetText=`SELECT region_id rid,label,status,count(*) n FROM search_cards${noformalIndex} ${facet.where} GROUP BY region_id,label,status`;
+ const facetSql=db.prepare(facetText).bind(...facet.args);
  /* Häufiges Wort ohne Filter: die Zahlen je Gebiet, Thema und Status stehen vorberechnet in der Wortliste, dann entfällt die
     Gruppierung über alle Einträge. null: wie gewohnt gruppieren. */
  /* Ort und Umkreis zählen nicht als Filter für die Gebietszahlen (die Karte zählt über alle Gebiete): die kommen weiter vorberechnet,
@@ -255,10 +261,16 @@ export async function searchMonitor(db,catalog,params){
  /* Reihenfolge der Antwort: Datenstand, dann je nach part die Seite und/oder die Zähler (Gruppierung) */
  /* Vorberechnete Gebietszahlen mit Ort: Thema und Status nur für die Gebiete des Orts zählen */
  const placeSql=pre&&placeScoped?(()=>{const b=base(),region=regionCondition([...scopedIds],catalog);return db.prepare(`SELECT label,status,count(*) n FROM search_cards WHERE ${[region.sql,...b.where].join(' AND ')} GROUP BY label,status`).bind(region.arg,...b.args);})():null;
- const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(f.part==='page'||pre?[]:[facetSql]),...(placeSql?[placeSql]:[])];
- const answers=await db.batch(statements);
- const rev=answers[0],rows=f.part==='facets'?{results:[]}:answers[1],placeRows=placeSql?answers[answers.length-1]:null,groups=pre?{results:[]}:answers[answers.length-1];
+ /* Die Gruppierung hängt nur am Grundfilter: liegt sie zum selben Datenstand schon vor (keptGroups), entfällt sie */
+ const grouping=!(f.part==='page'||pre),facetKey=grouping?facetText+'\u0000'+JSON.stringify(facet.args):null;
+ let kept=facetKey?keptGroups(db,facetKey):null;
+ const statementsOf=withFacets=>[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(withFacets?[facetSql]:[]),...(placeSql?[placeSql]:[])];
+ let answers=await db.batch(statementsOf(grouping&&!kept));
+ /* Datenstand geändert: noch einmal mit Gruppierung, damit Seite, Zähler und Datenstand aus einem Lesestand stammen */
+ if(kept&&String(answers[0].results[0].revision)!==kept.revision){kept=null;answers=await db.batch(statementsOf(true));}
+ const rev=answers[0],rows=f.part==='facets'?{results:[]}:answers[1],placeRows=placeSql?answers[answers.length-1]:null,groups=pre?{results:[]}:kept?{results:kept.rows}:answers[answers.length-1];
  const revision=String(rev.results[0].revision);
+ if(grouping&&!kept)keepGroups(db,facetKey,revision,groups.results);
  const mapRows=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Sonstiges'}));
  if(f.revision!==null&&f.revision!==revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);
  /* Ergebnisseite ohne Gesamtzahl: einen Treffer mehr gelesen als angezeigt, daran erkennt „Weiter“, ob es weitergeht */
@@ -314,17 +326,41 @@ export async function searchCoverage(db,catalog,level){
 /*
  * Fertige Suchergebnisse je Anfrage, solange sich der Datenstand nicht ändert: Die Startabfrage ist für alle Besucher
  * eines Tages gleich, Zurückblättern und Filter zurücksetzen fragen dasselbe erneut. Gehalten im Speicher des laufenden
- * Workers (höchstens 200 Anfragen, älteste zuerst verdrängt), nur fertige Ergebnisse, nie eine laufende Abfrage.
+ * Workers (höchstens 200 Anfragen, älteste zuerst verdrängt), nur fertige Ergebnisse; eine gleiche Anfrage, die gerade läuft,
+ * wird nicht noch einmal gestartet.
  * Ein Treffer kostet eine Abfrage (der Datenstand) statt drei.
  */
-const results=new WeakMap();
+/*
+ * Gruppen der Zähler (Gebiet × Thema × Status) je Grundfilter (Ebene, Zeitraum, Formalien, Begriffe) und Datenstand:
+ * Ort, Umkreis, Thema und Status filtert erst searchMonitor in JS, ein Klick darauf gruppiert so nicht noch einmal über
+ * alle Karten (Server: bis rund 1,5 s). Nur zu lesen, nie zu ändern; höchstens FACET_ROWS Zeilen zusammen, älteste zuerst
+ * verdrängt (die letzte bleibt immer).
+ */
+const FACET_ROWS=400000;
+const facetGroups=new WeakMap();
+function keptGroups(db,key){
+ const entries=facetGroups.get(db),kept=entries?.get(key);
+ if(kept){entries.delete(key);entries.set(key,kept);}
+ return kept??null;
+}
+function keepGroups(db,key,revision,rows){
+ let entries=facetGroups.get(db);if(!entries){entries=new Map();facetGroups.set(db,entries);}
+ entries.delete(key);entries.set(key,{revision,rows});
+ let size=0;for(const e of entries.values())size+=e.rows.length;
+ for(const [k,e] of entries){if(size<=FACET_ROWS||entries.size===1)break;entries.delete(k);size-=e.rows.length;}
+}
+const results=new WeakMap(),searching=new WeakMap();
 export async function cachedSearch(db,catalog,params,{max=200}={}){
  if(new URLSearchParams(params).get('part')==='stream')return searchMonitor(db,catalog,params);
  const query=new URLSearchParams(params);query.sort();const key=query.toString();
  let entries=results.get(db);if(!entries){entries=new Map();results.set(db,entries);}
  const hit=entries.get(key);
  if(hit){const now=String((await db.prepare(REVISION_SQL).first())?.revision??0);if(now===hit.value.revision){entries.delete(key);entries.set(key,hit);return hit.value;}}
- const value=await searchMonitor(db,catalog,params);
+ /* Gleiche Anfrage läuft schon (mehrere Besucher der Startseite): auf deren Ergebnis warten statt noch einmal zu suchen */
+ let pending=searching.get(db);if(!pending){pending=new Map();searching.set(db,pending);}
+ let job=pending.get(key);
+ if(!job){job=searchMonitor(db,catalog,params).finally(()=>pending.delete(key));pending.set(key,job);}
+ const value=await job;
  entries.delete(key);entries.set(key,{value});
  while(entries.size>max)entries.delete(entries.keys().next().value);
  return value;

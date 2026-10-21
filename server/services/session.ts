@@ -86,7 +86,14 @@ export async function requireAdmin(){
  * Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. accounts:false heißt: auf dieser Umgebung gibt es
  * keine Konten (Cloudflare-Build, Server ohne Kontendatei); dann gelten keine Stufengrenzen, alles bleibt wie früher.
  */
-export async function requestTier(request:Request){
+export function requestTier(request:Request){
+ let tier=tiers.get(request);
+ if(!tier){tier=readTier(request);tiers.set(request,tier);}
+ return tier;
+}
+/* Je Anfrage einmal: guard() und die Route fragen dieselbe Anfrage (Suche: vorher zwei Sitzungsabfragen, drei SHA-256) */
+const tiers=new WeakMap<Request,ReturnType<typeof readTier>>(),internals=new WeakMap<Request,Promise<boolean>>();
+async function readTier(request:Request){
  const cfg=accountsConfig(env);
  const guest={accounts:true,tier:'guest',features:FEATURES.guest,userId:null as string|null};
  if(!cfg.db||!cfg.secret)return {...guest,accounts:false};
@@ -103,8 +110,10 @@ export async function requestTier(request:Request){
 // ---------------------------------------------------------------- Zugang (Einladungsmodus) und Stufen in Datenrouten
 const DENY={'Cache-Control':'private, no-store, max-age=0','Vary':'Cookie'};
 /** Interne Aufrufe (serve.mjs wärmt vor, Runner): Bearer IMPORT_TOKEN, mindestens 16 Zeichen */
-export async function internalCall(request:Request){
- return validBearer(request.headers.get('authorization'),env.IMPORT_TOKEN,16);
+export function internalCall(request:Request){
+ let internal=internals.get(request);
+ if(!internal){internal=Promise.resolve(validBearer(request.headers.get('authorization'),env.IMPORT_TOKEN,16));internals.set(request,internal);}
+ return internal;
 }
 /**
  * Zweite Linie hinter der Middleware: im Einladungsmodus nur mit Sitzung; mit feature nur, wenn die Stufe es erlaubt.
