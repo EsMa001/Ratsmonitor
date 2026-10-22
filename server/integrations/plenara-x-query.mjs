@@ -30,7 +30,7 @@
  */
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {THEMES,SUBTOPICS,subtopicName} from '../../shared/themes.mjs';
-import {STAGES,SONST,stageName} from '../../shared/stage.mjs';
+import {STAGES,RULE_STAGES,SONST,RULE_SONST,stageName} from '../../shared/stage.mjs';
 import {labelName} from '../../shared/labels.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {where as placeOf} from './member-place.mjs';
@@ -67,7 +67,8 @@ const factNum=(kind,detail)=>{if(!X_FACT_NUM[kind])return null;const parts=Strin
 const fmtNum=(v,unit)=>`${v.toLocaleString('de-DE',{maximumFractionDigits:Math.abs(v)>=100?0:2})} ${unit}`;
 const median=vs=>{const s=[...vs].sort((a,b)=>a-b),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
 const THEME_IDS=new Set([...THEMES.map(t=>t.id),'unklar']),SUB_BY_ID=new Map(SUBTOPICS.map(s=>[s.id,s]));
-const STAGE_IDS=new Set([...STAGES.map(s=>s.id),SONST]);
+// Vorgangsarten des Modells; die Werte der früheren Regel gelten weiter, solange Berichte sie noch tragen
+const STAGE_IDS=new Set([...STAGES.map(s=>s.id),SONST,...RULE_STAGES.map(s=>s.id),RULE_SONST]);
 const OWN=['theme','sub','stage','by','list','value','offset','view','sum','region'];
 
 /** Parameter prüfen: Filter der Suche plus Auswahl und Gliederung */

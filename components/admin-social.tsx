@@ -79,7 +79,7 @@ export function AdminSocial(){
  return <>
   <AdminPageHead page="social">
    <p className="text-[14px] text-slate-500">
-    {busy?'Wird berechnet (kann einige Sekunden dauern) …':data?`${all.length} Vorschläge in den letzten 30 Tagen (${dmy(data.from)} bis ${dmy(data.to)}); ${data.matched.toLocaleString('de-DE')} von ${data.scanned.toLocaleString('de-DE')} Einträgen enthalten ein Streitwort.`:''}
+    {busy?'Wird berechnet (kann einige Sekunden dauern) …':data?`${all.length} Vorschläge in den letzten 30 Tagen (${dmy(data.from)} bis ${dmy(data.to)}); ${data.matched.toLocaleString('de-DE')} von ${data.scanned.toLocaleString('de-DE')} Sachpunkten haben ein Unterthema des Modells.`:''}
     {' '}<button type="button" className="text-teal-600" disabled={busy} onClick={()=>load(true)}>Neu berechnen →</button>
    </p>
   </AdminPageHead>
@@ -91,8 +91,8 @@ export function AdminSocial(){
    {label:'Tage mit Vorschlag',value:data?data.summary.daysWithTopic:undefined,of:data?.summary.days,note:'schwache Tage bleiben leer'},
   ]}/></div>
   <p className="mt-4 max-w-[760px] text-[12px] leading-[1.5] text-slate-500">
-   Eignung = Themenwert (30, gelernte Streitquote und Urteil unabhängiger Bewerter) + Streit im Vorgang (15) + Alltagsnähe (15) + Reichweite des Ortes (10) + Aktualität (10) + Konkretheit (10) + Verständlichkeit (10) − Abzüge für Einzelstraßen, Ortsteil-Gremien und Planungsverfahren. Punkte über 62 werden gespreizt (Faktor 1,6), damit starke Vorschläge sichtbar vorn liegen.
-   Reine Regelrechnung, keine Vorhersage von Klicks; es liegen keine Nutzungsdaten vor.
+   Eignung = Themenwert (30, gelernte Streitquote des Unterthemas) + Streit im Vorgang (15) + Reichweite des Ortes (10) + Aktualität (10) + Konkretheit (10) + Verständlichkeit (10), auf 100 gestreckt, − Abzüge für Einzelstraßen, Ortsteil-Gremien, Planungsverfahren und Routinesatzungen. Punkte über 62 werden gespreizt (Faktor 1,6).
+   Seit 22.10.2026 wählt das Modell aus (Unterthema, Vorgangsart, Antragsteller) statt fester Streitwörter. Die Eignung ist noch nicht gemessen: Urteil der Bewerter und Alltagsnähe hingen an den Streitwörtern und fallen weg. Rangordnung, keine Vorhersage von Klicks.
   </p>
 
   <section aria-label="Sortieren und filtern" className="mt-6 flex flex-wrap items-end gap-x-6 gap-y-3 rounded-xl border border-slate-200 bg-white p-4">

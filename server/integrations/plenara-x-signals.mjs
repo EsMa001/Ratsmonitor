@@ -12,6 +12,7 @@ import {stageName} from '../../shared/stage.mjs';
 import {AnalyticsError,dataStarts} from './analytics-diffusion.mjs';
 import {where as placeOf} from './member-place.mjs';
 import {cardsById} from './monitor-search.mjs';
+import {MODEL_SIGNALS} from './model-signals.mjs';
 
 const F=`SELECT DISTINCT rr.case_key ck FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE`;
 /* Filterwerte („Art“) je Vorgang: Zeilen (ck, a) aus Fakten; mehrere Werte je Vorgang möglich */
@@ -20,8 +21,9 @@ const A=(kind,{value='f.value',where=''}={})=>`SELECT rr.case_key ck,${value} a 
 const P=(kind,col='value')=>`(SELECT f.${col} FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE rr.case_key=x.case_key AND +f.kind='${kind}' LIMIT 1)`;
 const GEWERBE="('Gewerbe','Industrie','Logistik','Rechenzentrum','Batteriespeicher und Wasserstoff','Hotel, Camping und Freizeit','Einzelhandel')";
 const SHOPS="('Supermarkt und Discounter','Drogerie','Fachmarkt')";
-/* Die 10 Kategorien von docs/produkt/plenara-x-signale.md, in dieser Reihenfolge. phase: Stand (plan, heat_plan, tender-Detail oder stage). */
-export const SIGNALS=[
+/* Frühere Signale aus Fakten-Regeln (bis 22.10.2026), nicht mehr angewendet: seitdem kommen die Signale aus dem Modell
+   (model-signals.mjs, Begriffsbuch Abschnitt 8). phase: Stand (plan, heat_plan, tender-Detail oder stage). */
+export const RULE_SIGNALS=[
  {id:'vergaben',name:'Ausschreibungen und Vergaben',who:'Bauindustrie, Ingenieurbüros, Lieferanten, IT',
   cases:`${F} f.kind='tender'`,art:A('tender'),artName:'Leistung',phase:P('tender','detail'),phaseText:'Ausschreibung, Vergabe oder Nachtrag, aus dem Titel.'},
  {id:'wohnbau',name:'Neue Wohnbaugebiete',who:'Fertighaus, Bauträger, Makler, Banken',
@@ -47,6 +49,8 @@ export const SIGNALS=[
  {id:'mobil',name:'Mobilität',who:'Mobilitätsanbieter, Ladeinfrastruktur, ÖPNV',
   cases:`${F} f.kind='project' AND f.value<>'Öffentliches WLAN'`,art:A('project',{where:"f.value<>'Öffentliches WLAN'"}),artName:'Angebot',phase:'x.stage',phaseText:'Art des Vorgangs, aus dem Titel.'},
 ];
+/** Signale aus dem Modell */
+export const SIGNALS=MODEL_SIGNALS;
 const BY_ID=new Map(SIGNALS.map(s=>[s.id,s]));
 export const SIGNAL_SIZE=50;
 

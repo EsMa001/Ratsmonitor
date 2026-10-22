@@ -6,7 +6,6 @@
 import {SIGNALS} from './plenara-x-signals.mjs';
 import {readResult} from './analytics-decisions.mjs';
 import {termsText} from './x-terms.mjs';
-import {privateBuild} from '../../shared/topic-facts.mjs';
 export const X_CASES_KEY='x-cases';
 /** Stand der Zahlen für den Zwischenspeicher der Route (atRevisionStale): ändert sich nur mit einem neuen Bau, nicht mit jedem Import */
 export const X_REVISION_SQL="SELECT coalesce((SELECT value FROM system_state WHERE key='x-cases'),'') AS revision";
@@ -86,15 +85,20 @@ function buildXSteps(sql){
  if(!cols.has('steps'))return null;
  const terms=cols.has('terms');
  const up=sql.prepare(`UPDATE x_cases SET first_date=?,steps=?,days=?,vote=?,changed=?${terms?',terms=?,private_build=?':''} WHERE case_key=?`);let n=0;
- for(const r of sql.prepare("SELECT x.case_key k,x.date d,x.status st,c.gremium g,c.title ti,json_extract(t.payload,'$.events') ev FROM x_cases x LEFT JOIN topics t ON t.id=x.card_id LEFT JOIN search_cards c ON c.id=x.card_id").iterate()){
+ /* Privater Bauantrag (Begriffsbuch Abschnitt 8): Vorgangsart Genehmigung für Dritte und Unterthema bauen.dritte nach dem Modell,
+    für die Karte des Vorgangs; bis 22.10.2026 die Titelregel privateBuild */
+ const ml=!!sql.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='model_labels'").get();
+ for(const r of sql.prepare(`SELECT x.case_key k,x.date d,x.status st,c.gremium g,c.title ti,json_extract(t.payload,'$.events') ev${ml?",(m.process='permit' AND EXISTS(SELECT 1 FROM json_each(m.subs) j WHERE j.value='bauen.dritte')) pb":',0 pb'}
+  FROM x_cases x LEFT JOIN topics t ON t.id=x.card_id LEFT JOIN search_cards c ON c.id=x.card_id${ml?' LEFT JOIN model_labels m ON m.topic_id=x.card_id':''}`).iterate()){
   let ev=[];try{ev=r.ev?JSON.parse(r.ev):[];}catch{/* kaputter Zeitstrahl: ohne Stationen */}
-  const c=caseSteps(ev,{date:r.d,status:r.st,gremium:r.g||''});const more=terms?[termsText(r.ti||''),privateBuild(r.ti)?1:0]:[];up.run(c.first,c.steps,c.days,c.vote,c.changed,...more,r.k);n++;
+  const c=caseSteps(ev,{date:r.d,status:r.st,gremium:r.g||''});const more=terms?[termsText(r.ti||''),r.pb?1:0]:[];up.run(c.first,c.steps,c.days,c.vote,c.changed,...more,r.k);n++;
  }
  return n;
 }
 
 /* Fraktionen (Migration 0043): je Vorgang die Fraktionen aus den Fakten aller seiner Karten und ob eine Karte empfiehlt, dem
-   Antrag nicht zu folgen. Ohne Spalten (Migration fehlt) bleibt alles wie vorher. */
+   Antrag nicht zu folgen. Bleibt vorerst bei der Regel (factionsOf, über 90 % gemessen): die Frage „Wer“ des Modells liegt bei
+   44 % (22.10.2026, die Partei steht oft nur auf der ersten Seite der Vorlage). Ohne Spalten (Migration fehlt) bleibt alles wie vorher. */
 function buildXFactions(sql){
  const cols=new Set(sql.prepare("SELECT name FROM pragma_table_info('x_cases')").all().map(r=>r.name));
  if(!cols.has('factions'))return null;

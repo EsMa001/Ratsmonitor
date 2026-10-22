@@ -813,7 +813,7 @@ z- analytics.css:582
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (191, ⚠19): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (300, ⚠21): AdminRuleTexts
+- admin-rule-texts.tsx (187, ⚠10): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-schedules.tsx (117, ⚠4): AdminSchedules
 - admin-signout.tsx (13): AdminSignOut

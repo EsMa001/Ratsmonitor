@@ -20,7 +20,8 @@ export function mapFacts(items,matchedIds,periods){
  };
  const first=periods?part(periods.first):null,second=periods?part(periods.second):null;
  // Offen sind nur Sachpunkte ohne Thema; Formalien, Sammelpunkte und Routine (itemKind) haben keins und fehlen nicht
- const unlabelled=items.filter(t=>t.classification.primary==='unklar'&&itemKind(t.officialTitle||t.title||'')==='subject').length;
+ // Art aus dem Modell (payload.itemKind, readReport); ohne Angabe zählt der Bericht als Sachpunkt
+ const unlabelled=items.filter(t=>t.classification.primary==='unklar'&&(t.itemKind||'subject')==='subject').length;
  return {unlabelled,dominant:{leaders,count:max,share:items.length?100*max/items.length:null},comparison:{first,second,delta:first&&second&&first.share!==null&&second.share!==null?second.share-first.share:null}};
 }
 const shareColors=['#ffffff','#dbe7fb','#98b7e8','#537dc4','#183d80'];

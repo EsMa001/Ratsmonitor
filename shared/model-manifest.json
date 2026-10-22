@@ -1,0 +1,22 @@
+{
+ "note": "Modelldateien liegen nicht in Git (RM_MODEL_DIR, Server /srv/ratsmonitor/models); scripts/model/apply.mjs prüft sie gegen diese Prüfsummen.",
+ "encoder": {
+  "version": "e5-small-ft1",
+  "base": "intfloat/multilingual-e5-small (MIT), nachtrainiert mit scripts/model/finetune.py",
+  "files": {
+   "config.json": "51d8afcd56f9cdaf391c71abe73f1179fb52e71baa944234d27d070992917a9d",
+   "tokenizer.json": "0b44a9d7b51c3c62626640cda0e2c2f70fdacdc25bbbd68038369d14ebdf4c39",
+   "tokenizer_config.json": "a1d6bc8734a6f635dc158508bef000f8e2e5a759c7d92f984b2c86e5ff53425b",
+   "onnx/model_quantized.onnx": "2f15b703342eb122580ebee18aed7746db6c3f5e7423be9074943a3c7a606b64"
+  }
+ },
+ "heads": {
+  "version": "heads-dbc392293089",
+  "input": "input-v1",
+  "trainedAt": "2026-10-22T04:59:45.671Z",
+  "files": {
+   "heads.json": "369439f908bf331ec8cd3a07e02c455dcc56a5be01ca1556561e339cf5f0f4ab",
+   "heads.bin": "dbc3922930898b62aa3548f02306438bace9f5f2b0b15c3c1d6abe09c12ec413"
+  }
+ }
+}

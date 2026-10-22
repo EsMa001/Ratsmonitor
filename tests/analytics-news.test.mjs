@@ -77,6 +77,8 @@ test('Newsradar wählt wie alle plenara.X-Seiten über x_cases aus: künftige Vo
  put('Sanierung der Sporthalle',day(-3),'rejected');
  put('Neubau der Feuerwache',day(5),'announced');
  put('Bauantrag Carport, Flurstück 12',day(-2),'rejected');
+ // Privater Bauantrag nach dem Modell: Genehmigung für Dritte, Unterthema bauen.dritte
+ sql.prepare(`INSERT INTO model_labels(topic_id,model,key,kind,kind_p,status,status_p,themes,subs,process,process_p,at) VALUES('t3','test','k','subject',0.99,'rejected',0.9,'["bauen"]','["bauen.dritte"]','permit',0.9,'2026-01-01')`).run();
  buildXCases(sql,{today:day(0)});
  const db=sqliteAdapter(sql),catalog=[{id:'a',kind:'city',name:'Stadt Alt',ags:'05558008'}];
  const r=await news(db,catalog,new URLSearchParams(''));

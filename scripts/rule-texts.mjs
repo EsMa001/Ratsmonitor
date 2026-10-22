@@ -1,8 +1,10 @@
 // Regelbasierte Texte (Job „rule-texts“, Admin-Reiter „Regelbasierte Texte“ und „Jobs & Zeitpläne“): erzeugt aus den Texten der
 // PDF-Ablage, was sich ohne KI daraus ableiten lässt. Getrennt vom PDF-Import (Entscheidung 13.10.2026): der lädt, speichert und
 // liest nur (Textebene, OCR); hier entstehen die Inhalte. Reihenfolge fest:
-//   0. reclassify-rules.mjs        Titelregel (classification, Label der Suche) für neue und veraltete Berichte (seit 15.10.2026)
-//   1. pdf-store/read-reports.mjs  alle Regeln je Bericht in einem Durchlauf (readReport): Art des Punkts, Thema,
+//   1. model/apply.mjs             Modell anwenden (seit 22.10.2026, requirements/modell-konzept.md): neun Fragen je Bericht
+//                                  (model_labels), sicherer Status in den Bericht; ersetzt die Titelregel und die Regeln für
+//                                  Hauptdokument, Art, Thema und „Was geschieht“ (Vorgangsart)
+//   2. pdf-store/read-reports.mjs  je Bericht in einem Durchlauf (readReport): Ergebnisse des Modells übernehmen,
 //                                  Regel-Zusammenfassung, Fakten; nur Berichte mit geänderten Eingaben (report_rules)
 //   2. refresh-search-words.mjs    Wortliste nachführen, immer (Zusammenfassungen ändern den Suchtext; rückt auch das Datum
 //                                  „Stand heute“ der Karten nach; seit 14.10.2026 gibt es keinen eigenen Wortlisten-Job mehr)
@@ -61,9 +63,11 @@ async function step(name,script,stepArgs=[],{fatal=true}={}){
 }
 
 if(all)say('Alle neu erstellen');
-/* Schritt 0 (Betriebsplan 15.10.2026): Titelregel für neue und veraltete Berichte (classification, Label der Suche). Der
-   Nachtimport ordnet nicht ein; ohne diesen Schritt hatten neue Berichte bis zum nächsten Handstart kein Label. */
-await step(stepName('title'),'scripts/reclassify-rules.mjs',[]);
+/* Modell vor den Regeln (22.10.2026): read-reports.mjs übernimmt Hauptdokument, Art, Thema und Vorgangsart von dort und liest
+   Berichte ohne Antwort des Modells nicht. Die Titelregel (reclassify-rules.mjs, früher Schritt 0) läuft nicht mehr. Ohne
+   Modelldateien (shared/model-manifest.json) scheitert der Schritt; Zusammenfassung und Fakten laufen dann nur für schon
+   eingeordnete Berichte. */
+await step(stepName('model'),'scripts/model/apply.mjs',all?['--all']:[]);
 await step(stepName('rules'),'scripts/pdf-store/read-reports.mjs',all?['--all']:[]);
 /* Stand der Fakten für den Reiter (einmal je Lauf gezählt, damit die Seite beim Öffnen nichts rechnet): Berichte mit Fakten,
    davon aus dem Text des Hauptdokuments, in der aktuellen Fassung der Regeln */

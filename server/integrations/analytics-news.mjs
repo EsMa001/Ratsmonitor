@@ -2,12 +2,15 @@ import {source,xState,PLACEHOLDER} from './plenara-x-query.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
-import {cleanTitle,matchTitle,evidenceOf} from './social-topics.mjs';
+import {cleanTitle,evidenceOf} from './social-topics.mjs';
+import {subRate} from './social-model.mjs';
+import {subtopicName} from '../../shared/themes.mjs';
 import {where} from './member-place.mjs';
 
 /*
  * Plenara.X – Newsradar: berichtenswerte Vorgänge der letzten 30 und nächsten 10 Tage (dieselben Filter wie die Suche),
- * nach Nachrichtenwert geordnet, je Vorgang eine Meldung im Agenturstil. Alles regelbasiert, ohne Modell: Ortsmarke,
+ * nach Nachrichtenwert geordnet, je Vorgang eine Meldung im Agenturstil. Status, Unterthemen, Vorgangsart, Schritt und Antragsteller
+ * aus dem Modell (seit 22.10.2026); Richtung „Erhöhung/Senkung“ und Abstimmungsart werden wörtlich aus Titel und Ergebnis gelesen. Ortsmarke,
  * Gremium und Datum aus den Sitzungen, der Kern nur aus wörtlichen Sätzen der Regel-Zusammenfassung (als Zitat), dazu
  * Fakten aus topic_facts (Fraktion, Förderung, Kita-Beiträge, Bauleitplanung), Unterthemen und „Was geschieht“ aus report_rules
  * (Gebühren, Haushaltssicherung, Steuern), Petitionen und Einwohneranträge aus dem Titel. Wohnungszahlen sind wie in der
@@ -23,10 +26,10 @@ import {where} from './member-place.mjs';
 const BACK=30,SPANS=[30,90,365],AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
 // Förderung gibt es seit 15.10.2026 nicht mehr als Fakt (Stand bewilligt/beantragt war nur 36–64 % richtig)
 // Fraktion aus x_cases (factions), die übrigen aus topic_facts über die Karten des Vorgangs
-const FACT_KINDS=['kita_fee','plan'];
+// Seit 22.10.2026 Schritt (Satzungsbeschluss) und Antragsteller (Einwohner) aus dem Modell (model_labels), nicht aus Fakt und Titel
+const FACT_KINDS=['kita_fee'];
 /* Signale aus readReport (report_rules, Migration 0035): Unterthemen und „Was geschieht“; Richtung und Art aus dem Titel */
 const UP=/Erhöhung|Anhebung|erhöht|angehoben/i,DOWN=/Senkung|gesenkt|Reduzierung|Absenkung/i;
-const CITIZEN=/Petition|Einwohnerantr|Bürgerantr|Bürgerbegehren|Bürgerentscheid|Bürgereingabe|Anregungen und Beschwerden/i;
 const day=d=>new Date(Date.now()+d*864e5).toISOString().slice(0,10);
 // Personal- und Besetzungsfragen der Gremien sind keine Meldung (Formalien, die „Formalien ausblenden“ nicht erfasst)
 const NOT_NEWS=/Schriftführ|Bestellung (einer|eines|des|der) |Wahl (der|des|eines|einer) (stellvertretend|Vorsitz|Mitglied|Schrift|sachkundig)|Benennung (von|der|des|eines|einer) |Besetzung (von|der|des) |Nachbesetzung|Umbesetzung|Ausschussumbesetzung/i;
@@ -93,12 +96,14 @@ function prescore(c,facts,today,week){
  const party=facts.filter(x=>x.kind==='faction');if(party.length)add(8,`Antrag ${party.map(p=>p.value).join(' und ')}`);
  const fee=facts.find(x=>x.kind==='kita_fee');if(fee&&fee.value!=='Neufassung')add(18,`Kita-Beiträge: ${fee.value}`);
  const t=c.title||'',subs=','+(c.subs||'')+',',raise=UP.test(t)&&!/\bkeine[nr]?\s+(Erhöhung|Anhebung)|nicht\s+(zu\s+)?erhöh/i.test(t);
- if(c.stage==='abgaben'&&!subs.includes(',finanzen.steuer,')&&(raise||DOWN.test(t)))add(14,`Gebühren-${raise?'Erhöhung':'Senkung'}`);
+ if((c.stage==='abgaben'||c.stage==='money')&&!subs.includes(',finanzen.steuer,')&&(raise||DOWN.test(t)))add(14,`Gebühren-${raise?'Erhöhung':'Senkung'}`);
  if(subs.includes(',finanzen.hsk,'))add(8,'Haushaltssicherung');
  if(subs.includes(',finanzen.steuer,')&&raise)add(12,'Steuererhöhung');
- const bt=t.match(CITIZEN);if(bt)add(12,/Petition/i.test(bt[0])?'Petition':/Bürger(begehren|entscheid)/i.test(bt[0])?'Bürgerbegehren':'Einwohnerantrag');
- if(facts.some(x=>x.kind==='plan'&&x.value==='Satzungsbeschluss'))add(8,'Bebauungsplan vor dem Satzungsbeschluss');
- const hits=matchTitle(c.title||'');if(hits.length)add(10,`Alltagsthema: ${hits[0].term}`);
+ if(String(c.appl||'').includes('"residents"'))add(12,'Antrag aus der Einwohnerschaft');
+ if(c.step==='beschluss'&&subs.includes(',bauen.plan,'))add(8,'Bebauungsplan vor dem Satzungsbeschluss');
+ // Streitthema: Unterthema des Modells mit deutlich höherer Streitquote als im Mittel (shared/social-calibration-model.json)
+ const hot=String(c.subs||'').split(',').filter(Boolean).map(u=>({u,...subRate(u)})).filter(r=>r.n>=15&&r.rate>=r.base+0.08).sort((a,b)=>b.rate-a.rate)[0];
+ if(hot)add(10,`Streitthema: ${subtopicName(hot.u)}`);
  // Titel ohne Gegenstand („Anregung“, „Antrag“) ergeben keine verständliche Überschrift
  const ct=cleanTitle(c.title||'',200);if(ct.length<20||/^(und|oder|sowie|bzw\.?|der|die|das|des|dem|den)\s/i.test(ct))add(-15,'Titel ohne Gegenstand');
  if(c.date>today)add(6,`steht am ${longDay(c.date)} an`);else if(c.date>=week)add(10,'in den letzten sieben Tagen');
@@ -168,8 +173,9 @@ export async function news(db,catalog,params){
  const src=await source(db,catalog,f,{noPrivate:true,factions:true});
  const today=day(0),week=day(-7);
  /* Stufe 1: alle Vorgänge des Zeitraums mit ihren Fakten, ohne Payload */
- const {results:rows}=await db.prepare(`SELECT x.card_id id,x.region_id region,x.date date,x.status status,x.stage stage,x.subs subs,x.factions factions,c.title title,c.gremium gremium
-  FROM ${src.from} JOIN search_cards c ON c.id=x.card_id`).bind(...src.args).all();
+ const ml=await db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='model_labels'").first();
+ const {results:rows}=await db.prepare(`SELECT x.card_id id,x.region_id region,x.date date,x.status status,x.stage stage,x.subs subs,x.factions factions,c.title title,c.gremium gremium${ml?',m.step step,m.applicants appl':''}
+  FROM ${src.from} JOIN search_cards c ON c.id=x.card_id${ml?' LEFT JOIN model_labels m ON m.topic_id=x.card_id':''}`).bind(...src.args).all();
  const {results:factRows}=await db.prepare(`SELECT DISTINCT x.card_id id,fa.kind kind,fa.value value,fa.detail detail FROM ${src.from}
   JOIN report_rules rr ON rr.case_key=x.case_key JOIN topic_facts fa ON fa.topic_id=rr.topic_id AND fa.kind IN (${FACT_KINDS.map(()=>'?').join(',')})`).bind(...src.args,...FACT_KINDS).all();
  const factsOf=new Map();for(const x of factRows){const l=factsOf.get(x.id)||[];l.push({kind:x.kind,value:x.value,detail:x.detail});factsOf.set(x.id,l);}

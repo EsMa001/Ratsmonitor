@@ -89,6 +89,7 @@ journalctl -u ratsmonitor -f
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
 | `/srv/ratsmonitor/data/pdf-store/` | PDF-Ablage (`RM_PDF_STORE`): Originale, Textfassungen, `index.sqlite`; gefüllt von der nächtlichen Kette |
 | `/srv/ratsmonitor/ocr-tools/`, `data/ocr-cache/` | OCR-Werkzeuge (tesseract.js, @napi-rs/canvas) und Sprachdaten |
+| `/srv/ratsmonitor/models/` (`RM_MODEL_DIR`), `/srv/ratsmonitor/model-tools/` (`MODEL_TOOLS`), `data/model-store.sqlite` (`RM_MODEL_STORE`) | Modell: Encoder (`encoder/`, ONNX 8 Bit, 407 MB) und Köpfe (`heads/`), nicht in Git, beim Ausrollen kopiert und gegen `shared/model-manifest.json` geprüft; transformers.js; Einbettungen je Text (8 Bit, etwa 1,2 GB für den Bestand) |
 | `/etc/systemd/system/ratsmonitor-pdf-nightly.*` | nächtliche Kette der PDF-Ablage, 05:30 Uhr; Vorlage `deploy/node/ratsmonitor-pdf-nightly.*` |
 
 Der Server startet nicht ohne gültige Datenbank. Sonst würden die Seiten still den mitgelieferten, alten Stand zeigen.
@@ -447,6 +448,20 @@ Dokumente; das Förderradar braucht die Volltexte.
 Lücken: Der Import legt das PDF ab, aber nicht den daraus gelesenen Text (die Kette holt ihn nachts nach), und macht kein
 OCR; der Job `rule-texts` liest danach jeden Bericht mit dem Text der Ablage. Nach einer Änderung an einer Regelfassung
 (`READ_VERSION` setzt sich aus allen zusammen) läuft das von selbst beim nächsten Job; nach `TEXT_VERSION` liest die Kette alle Texte neu (Nächte).
+
+## Modell (seit 22.10.2026, noch nicht auf dem Server eingerichtet)
+
+Ein lokal laufendes Modell (requirements/modell-konzept.md, Fragen im Begriffsbuch requirements/begriffsbuch-kern.md) ordnet jeden Bericht ein: Art, Thema, Unterthemen, Unter-Unterthemen, Vorgangsart, Status, Vorhaben, Schritt, Antragsteller, Leistungsart, Dokumentart, Haupt- und Ergebnisdokument. Kein fremder Dienst. Schritt „Modell anwenden“ (`scripts/model/apply.mjs`) im Job „Themen & Texte“ vor Zusammenfassung und Fakten, auch in Nacharbeit und OCR-Kette; Ergebnisse in `model_labels` (Migration 0046), Thema über `payload.theme` (Fassung `model-v1`, Migration 0047), sicherer Status (ab 0,7) direkt in `topics.status`.
+
+Einrichten (einmal):
+1. Migrationen 0046 und 0047 einspielen.
+2. `mkdir -p /srv/ratsmonitor/model-tools && cd /srv/ratsmonitor/model-tools && npm install @huggingface/transformers@3.7.5`, dann `chown -R ratsmonitor:ratsmonitor`.
+3. Modelldateien nach `/srv/ratsmonitor/models` kopieren (lokal `tmp/model/encoder` und `tmp/model/heads`, etwa 450 MB); `apply.mjs` prüft sie gegen `shared/model-manifest.json` und bricht sonst ab.
+4. Umgebung aus `deploy/node/ratsmonitor.env.example` (`RM_MODEL_DIR`, `MODEL_TOOLS`, `RM_MODEL_STORE`, `MODEL_THREADS`).
+5. Messen: `node scripts/model/apply.mjs --measure 200` (bettet 200 Berichte ein, schreibt nichts, meldet ms je Text). Daraus die Dauer des ersten Durchlaufs (1,5 Mio. Berichte, etwa 3 Mio. Texte).
+6. Erster Durchlauf: der nächtliche Job arbeitet alles ab, was fehlt; er lässt sich jederzeit anhalten und setzt fort (gespeicherte Einbettungen bleiben). Bis dahin behalten noch nicht eingeordnete Berichte ihre bisherigen Werte; `read-reports.mjs` liest sie nicht (Zahl „noch ohne Modell“).
+
+Neues Modell: lokal nachtrainieren bzw. Köpfe neu lernen (`scripts/model/finetune.py`, `export.py`, `train.mjs`), `node scripts/model/manifest.mjs`, Manifest committen, Dateien kopieren. Neue Köpfe brauchen kein neues Einbetten; ein neuer Encoder schon (alle Texte).
 
 ## Betriebsplan: Tagespipeline, Nacharbeit, Altbestand (seit 15.10.2026)
 
