@@ -7,7 +7,7 @@ import {inputOf,encoderTexts,reportSparse,flags,DOCTYPES,KIND,STATUS,THEMES,PROC
 import {classify,loadHeads} from '../shared/model/heads.mjs';
 import {readReport} from '../server/integrations/report-rules.mjs';
 import {modelSummary,tidy} from '../shared/model/summary.mjs';
-import {candidates} from '../shared/model/sentences.mjs';
+import {candidates} from '../server/model/sentences.mjs';
 
 const payload={title:'Bebauungsplan Nr. 12  „Am Bach“',committee:'Rat',eventDate:'2026-11-03',
  events:[{date:'2026-09-01',committee:'Bauausschuss',result:'Empfehlung an den Rat'},{date:'2026-11-03',committee:'Rat',result:'Öffentlicher Tagesordnungspunkt; Ergebnis nicht belegt'}],

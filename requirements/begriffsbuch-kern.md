@@ -324,7 +324,7 @@ Nicht abgedeckt und bewusst später: Werte aus den Unterlagen (Fakten), Kernsät
 
 ## 12. Kernsätze (Zusammenfassung kurz und lang, seit 22.10.2026)
 
-Die Zusammenfassung besteht aus wörtlichen Sätzen des Hauptdokuments, nichts wird umformuliert. Eingeordnet wird je Bericht, welche der nummerierten Sätze (Satzkandidaten, `shared/model/sentences.mjs`) in die Kurz- und welche in die Langfassung gehören. Nur was im Satz steht, zählt.
+Die Zusammenfassung besteht aus wörtlichen Sätzen des Hauptdokuments, nichts wird umformuliert. Eingeordnet wird je Bericht, welche der nummerierten Sätze (Satzkandidaten, `server/model/sentences.mjs`) in die Kurz- und welche in die Langfassung gehören. Nur was im Satz steht, zählt.
 
 **Kurzfassung:** 1 oder 2 Sätze, zusammen höchstens etwa 40 Wörter. Sie sagen, worum es geht und was beschlossen werden soll (bei Beschlussvorlagen meist ein Satz aus dem Beschlussvorschlag) bzw. was berichtet oder beantragt wird. Der erste Satz muss allein verständlich sein: kein „dies“, „diese Maßnahme“, „wie oben“ ohne Bezug im Satz.
 

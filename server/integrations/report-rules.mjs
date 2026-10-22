@@ -21,7 +21,7 @@ import {mergePages} from './documents.mjs';
 import {MODEL_THEME_VERSION} from '../../shared/model/features.mjs';
 import {factFits,stepFacts,MODEL_COVERED} from '../../shared/model/fact-gate.mjs';
 import {overviewOf} from '../../shared/model/overview.mjs';
-import {candidates} from '../../shared/model/sentences.mjs';
+import {candidates} from '../model/sentences.mjs';
 import {modelSummary} from '../../shared/model/summary.mjs';
 
 export const READ_VERSION=`read-v4:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:${STAGE_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}`;

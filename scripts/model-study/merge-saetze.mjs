@@ -2,7 +2,7 @@
 // Langfassung, beide „keine“), fehlende oder ungültige Einträge werden gezählt; mit --write= die Einordnung als gold in die Stichprobe.
 //   node scripts/model-study/merge-saetze.mjs tests/fixtures/kern-saetze.json <dir> [--write=tests/fixtures/kern-saetze.json]
 import fs from 'node:fs';
-import {candidates} from '../../shared/model/sentences.mjs';
+import {candidates} from '../../server/model/sentences.mjs';
 const [file,dir]=process.argv.slice(2),write=process.argv.find(a=>a.startsWith('--write='))?.slice(8);
 const data=JSON.parse(fs.readFileSync(file,'utf8')),got=new Map(),dup=new Map();let packs=0,bad=0,invalid=0;
 for(const f of fs.readdirSync(dir).filter(f=>/^paket-\d+\.out\.json$/.test(f))){

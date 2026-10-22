@@ -1,10 +1,10 @@
 // Pakete für die Einordnung der Kernsätze (Begriffsbuch Abschnitt 12): je Paket --size Berichte mit nummerierten Satzkandidaten
-// (shared/model/sentences.mjs); 10 % der Berichte ein zweites Mal in einem anderen Paket (Schlüssel mit „d“), um die
+// (server/model/sentences.mjs); 10 % der Berichte ein zweites Mal in einem anderen Paket (Schlüssel mit „d“), um die
 // Übereinstimmung zu messen. Schreibt <dir>/paket-N.json und <dir>/anleitung.md (Abschnitt 12 des Begriffsbuchs und das Format).
 //   node scripts/model-study/pack-saetze.mjs tests/fixtures/kern-saetze.json <dir> [--size=15]
 import fs from 'node:fs';
 import path from 'node:path';
-import {candidates} from '../../shared/model/sentences.mjs';
+import {candidates} from '../../server/model/sentences.mjs';
 const [file,dir]=process.argv.slice(2),size=+(process.argv.find(a=>a.startsWith('--size='))?.slice(7)||15);
 const data=JSON.parse(fs.readFileSync(file,'utf8'));fs.mkdirSync(dir,{recursive:true});
 const items=data.rows.map((r,i)=>({k:'s'+i,title:r.title,committee:r.committee,document:r.doc.name,sentences:candidates(r.text).map(c=>`${c.i}: ${c.text}`)}));

@@ -1,5 +1,5 @@
 // Lernt den Satzkopf der Zusammenfassung (Kernsätze, Begriffsbuch Abschnitt 12) und misst ihn gegen die Regel-Zusammenfassung.
-// Je Satzkandidat (shared/model/sentences.mjs) zwei Ja/Nein-Fragen: gehört er in die Kurzfassung, gehört er in die Langfassung.
+// Je Satzkandidat (server/model/sentences.mjs) zwei Ja/Nein-Fragen: gehört er in die Kurzfassung, gehört er in die Langfassung.
 // Merkmale ohne Einbettung (auf dem Server wären es rund 30 Millionen Sätze): Wortteile des Satzes, Abschnitt, Stelle, Länge,
 // Zahlen und Beträge, Nähe zum Titel, Satzanfang (shared/model/summary.mjs). Schwellen auf einem Abstimmungsteil (i % 7 == 0),
 // danach neu gelernt auf allen Lernberichten; gemessen auf den Prüfberichten (set check).
@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {candidates} from '../../shared/model/sentences.mjs';
+import {candidates} from '../../server/model/sentences.mjs';
 import {sentenceFeatures,pickSummary,SUMMARY_FEATURES_VERSION} from '../../shared/model/summary.mjs';
 import {buildRuleSummary} from '../../server/integrations/rule-summary.mjs';
 

@@ -2,7 +2,7 @@
 // die Regel-Zusammenfassung (cleanText, splitSentences, sections in server/integrations/rule-summary.mjs), aber ohne deren Auswahl:
 // welche Sätze Kernsätze sind, lernt das Modell aus den Einordnungen (Begriffsbuch Abschnitt 12). Jeder Satz mit Abschnitt
 // (decision: Beschlussvorschlag, facts: Sachverhalt, other: sonst) und Stelle. Die ersten MAX_CANDIDATES Sätze ab 30 Zeichen.
-import {cleanText,splitSentences,sections} from '../../server/integrations/rule-summary.mjs';
+import {cleanText,splitSentences,sections} from '../integrations/rule-summary.mjs';
 
 export const SENTENCES_VERSION='sentences-v1';
 export const MAX_CANDIDATES=60;
