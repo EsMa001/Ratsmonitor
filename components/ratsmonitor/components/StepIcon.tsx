@@ -15,7 +15,7 @@ const STEP_ICONS: Record<string, LucideIcon> = {
   Information: Info, "Antrag aus der Politik": Megaphone, "Antrag und Anfrage": Megaphone, "Genehmigung für Dritte": FileCheck,
   "Planung und Regelung": ClipboardList, "Bau und Vergabe": Construction, Geld: Coins, "Vertrag und Grundstück": Handshake,
   // Status (Ausschreibungen)
-  Angekündigt: Hourglass, "In Beratung": Lightbulb, Empfohlen: ThumbsUp, Beschlossen: CircleCheck, Abgelehnt: CircleX,
+  Angekündigt: Hourglass, "In Beratung": Lightbulb, Empfohlen: ThumbsUp, Empfehlung: ThumbsUp, Beschlossen: CircleCheck, Abgelehnt: CircleX,
   Vertagt: CirclePause, "Zur Kenntnis": Eye, "Stand offen": CircleHelp,
   Ausschreibung: Megaphone, Vergabe: Rocket, Nachtrag: FilePen,
 };
