@@ -89,7 +89,7 @@ journalctl -u ratsmonitor -f
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
 | `/srv/ratsmonitor/data/pdf-store/` | PDF-Ablage (`RM_PDF_STORE`): Originale, Textfassungen, `index.sqlite`; gefüllt von der nächtlichen Kette |
 | `/srv/ratsmonitor/ocr-tools/`, `data/ocr-cache/` | OCR-Werkzeuge (tesseract.js, @napi-rs/canvas) und Sprachdaten |
-| `/srv/ratsmonitor/models/` (`RM_MODEL_DIR`), `/srv/ratsmonitor/model-tools/` (`MODEL_TOOLS`), `data/model-store.sqlite` (`RM_MODEL_STORE`) | Modell: Encoder (`encoder/`, ONNX 8 Bit, 407 MB) und Köpfe (`heads/`), nicht in Git, beim Ausrollen kopiert und gegen `shared/model-manifest.json` geprüft; transformers.js; Einbettungen je Text (8 Bit, etwa 1,2 GB für den Bestand) |
+| `/srv/ratsmonitor/models/` (`RM_MODEL_DIR`), `/srv/ratsmonitor/model-tools/` (`MODEL_TOOLS`), `data/model-store.sqlite` (`RM_MODEL_STORE`) | Modell: Encoder (`encoder/`, ONNX 8 Bit, 407 MB), Köpfe (`heads/`) und Satzkopf der Zusammenfassung (`summary/summary.json`, 1,3 MB), nicht in Git, beim Ausrollen kopiert und gegen `shared/model-manifest.json` geprüft; transformers.js; Einbettungen je Text (8 Bit, etwa 1,2 GB für den Bestand) |
 | `/etc/systemd/system/ratsmonitor-pdf-nightly.*` | nächtliche Kette der PDF-Ablage, 05:30 Uhr; Vorlage `deploy/node/ratsmonitor-pdf-nightly.*` |
 
 Der Server startet nicht ohne gültige Datenbank. Sonst würden die Seiten still den mitgelieferten, alten Stand zeigen.
@@ -456,7 +456,7 @@ Ein lokal laufendes Modell (requirements/modell-konzept.md, Fragen im Begriffsbu
 Einrichten (einmal):
 1. Migrationen 0046 und 0047 einspielen.
 2. `mkdir -p /srv/ratsmonitor/model-tools && cd /srv/ratsmonitor/model-tools && npm install @huggingface/transformers@3.7.5`, dann `chown -R ratsmonitor:ratsmonitor`.
-3. Modelldateien nach `/srv/ratsmonitor/models` kopieren (lokal `tmp/model/encoder` und `tmp/model/heads`, etwa 450 MB); `apply.mjs` prüft sie gegen `shared/model-manifest.json` und bricht sonst ab.
+3. Modelldateien nach `/srv/ratsmonitor/models` kopieren (lokal `tmp/model/encoder`, `tmp/model/heads` und `tmp/model/summary`, etwa 450 MB); `apply.mjs` prüft sie gegen `shared/model-manifest.json` und bricht sonst ab.
 4. Umgebung aus `deploy/node/ratsmonitor.env.example` (`RM_MODEL_DIR`, `MODEL_TOOLS`, `RM_MODEL_STORE`, `MODEL_THREADS`).
 5. Messen: `node scripts/model/apply.mjs --measure 200` (bettet 200 Berichte ein, schreibt nichts, meldet ms je Text). Daraus die Dauer des ersten Durchlaufs (1,5 Mio. Berichte, etwa 3 Mio. Texte).
 6. Erster Durchlauf: der nächtliche Job arbeitet alles ab, was fehlt; er lässt sich jederzeit anhalten und setzt fort (gespeicherte Einbettungen bleiben). Bis dahin behalten noch nicht eingeordnete Berichte ihre bisherigen Werte; `read-reports.mjs` liest sie nicht (Zahl „noch ohne Modell“).

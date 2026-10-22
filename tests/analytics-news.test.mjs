@@ -62,6 +62,8 @@ test('outcomeOf liest Platzhalter der Importe nicht als Ergebnis',()=>{
  assert.equal(outcomeOf('Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.'),null);
  assert.equal(outcomeOf('Beschlussvorlage'),null);
  assert.equal(outcomeOf('Beschluss: einstimmig'),'einstimmig beschlossen');
+ assert.equal(outcomeOf('Ja: 0, Nein: 0, Enthaltungen: 0'),null,'leere Zähler');
+ assert.equal(outcomeOf('6 Ja-Stimme(n), 0 Gegenstimme(n), 0 Stimmenthaltung(en)'),'einstimmig beschlossen');
 });
 
 test('Newsradar wählt wie alle plenara.X-Seiten über x_cases aus: künftige Vorgänge ja, private Bauanträge nein; andere Seiten nur bis heute',async()=>{

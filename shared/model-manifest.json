@@ -18,5 +18,12 @@
    "heads.json": "d107723bb37716b6b76156c083212c00def09ade8e16e3b3c4e502ac0330ca55",
    "heads.bin": "9526894c8afa118abe7dc9cb8baec8824b1275c5c71d858f91d346ffaf98d079"
   }
+ },
+ "summary": {
+  "version": "summary-b9e66a697035",
+  "trainedAt": "2026-10-22T07:00:20.136Z",
+  "files": {
+   "summary.json": "0381aa888e9b4e617f915f3313b17689cb6f8efbd23a3d1654088285d49c1edc"
+  }
  }
 }

@@ -13,6 +13,8 @@ test('result text is read for vote and amendment',()=>{
  assert.deepEqual(readResult('ungeändert beschlossen'),{vote:null,change:'unchanged'});
  assert.deepEqual(readResult('geändert beschlossen'),{vote:null,change:'changed'});
  assert.deepEqual(readResult('vertagt'),{vote:null,change:null});
+ assert.deepEqual(readResult('Ja: 25, Nein: 6'),{vote:'majority',change:null},'Stimmenzahlen');
+ assert.deepEqual(readResult('Ergebnis im erfassten Text nicht belegt'),{vote:null,change:null});
 });
 test('decisions count status and outcome exactly and read votes, amendments and duration from the stations',async()=>{
  const sql=new DatabaseSync(':memory:');

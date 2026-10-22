@@ -7,6 +7,7 @@
 // Antrag einer Fraktion) und durch den Status (abgelehnt und vertagt sind lauter als beschlossen).
 // Je Tag höchstens `perDay` Einträge, je Ort und Tag höchstens einer, ein Ort höchstens einmal je Gruppe und Woche.
 
+import {classifyResult} from '../../shared/vote-result.mjs';
 import calibrationFile from '../../shared/social-calibration.json' with {type:'json'};
 import ratingsFile from '../../shared/social-ratings.json' with {type:'json'};
 
@@ -325,25 +326,10 @@ export function scoreCard(card){
 }
 
 // ---- Ergebnisse aus den Berichten (events[].result): belegen, ob ein Vorgang streitig endete -----------------------
-const R_REJ=/abgelehnt|nicht angenommen|nicht beschlossen|keine mehrheit|nicht empfohlen/i;
-const R_POST=/vertagt|zurückgestellt|zurückgezogen|abgesetzt|verwiesen|überwiesen|ohne beschluss|vertagung/i;
-const R_UNAN=/einstimmig|ohne gegenstimme|einvernehmlich|einhellig/i;
-const R_MAJ=/mehrheitlich|mit mehrheit|gegen \d+ stimme|\d+ gegenstimme|stimmenmehrheit|bei \d+ (nein|gegen)|\d+ nein/i;
-const R_OK=/beschlossen|empfohlen|zugestimmt|angenommen|genehmigt|zur kenntnis|kenntnis genommen|erledigt/i;
-/** 'rej' | 'post' | 'maj' | 'unan' | 'ok' | null */
-// Platzhalter der Importe („Ergebnis … nicht belegt“, „Sitzung steht noch aus“) sind kein Ergebnis
-const NO_RESULT=/nicht belegt|steht noch aus|liegt als Dokument vor|ohne Beschluss geführt/i;
-export function classifyResult(t){
- if(!t||NO_RESULT.test(t))return null;
- if(R_REJ.test(t))return 'rej';
- if(R_POST.test(t))return 'post';
- if(R_UNAN.test(t))return 'unan';
- if(R_MAJ.test(t))return 'maj';
- if(R_OK.test(t))return 'ok';
- return null;
-}
+// Regel für den Ausgang: shared/vote-result.mjs (auch für plenara.X Beschlüsse)
 const ORDER=['rej','post','maj','unan','ok'];
 /** Stärkstes Ergebnis aller Sitzungen eines Vorgangs und Zahl der Sitzungen; payload-Felder events, event, sourceData.records. */
+export {classifyResult};
 export function evidenceOf({events,event,records}){
  const texts=[];
  for(const e of events||[]){if(e?.result)texts.push(e.result);if(e?.description)texts.push(e.description);}

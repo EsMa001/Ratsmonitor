@@ -1,4 +1,5 @@
 import {source,xState,PLACEHOLDER} from './plenara-x-query.mjs';
+import {outcomeOf,NO_RESULT} from '../../shared/vote-result.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
@@ -64,29 +65,8 @@ export function quotable(x){
  return /[.!?“”"]$/.test(t)&&!/verwiesen|als Anlage|siehe Anlage|s\.\s*Anlage|\(Anlage|Anlage\s*\d|beigefügt|anliegend/i.test(t)&&!PDF_NOISE.test(t)&&!FRAGMENT.test(t)&&amounts(t)<3&&t.length>40&&t.length<600?t:null;
 }
 
-/** Ausgang einer Sitzung aus ihrem Ergebnistext: Kenntnisnahme und Empfehlung sind kein Beschluss, Zurückziehen keine Vertagung.
-    Platzhalter der Importe („ein Beschlussergebnis ist im erfassten Text nicht belegt“, „die Sitzung steht noch aus“, „der
-    Beschlusstext liegt als Dokument vor“) sind kein Ergebnis. */
-export const NO_RESULT=/nicht belegt|steht noch aus|liegt als Dokument vor|ohne Beschluss geführt/i;
-export function outcomeOf(text){
- const t=String(text||'').toLowerCase();if(!t.trim()||NO_RESULT.test(t))return null;
- if(/zurückgezogen/.test(t))return 'zurückgezogen';
- if(/abgelehnt|nicht angenommen|nicht beschlossen|keine mehrheit|nicht empfohlen/.test(t))return 'abgelehnt';
- if(/vertagt|zurückgestellt|abgesetzt|vertagung|ohne beschluss/.test(t))return 'vertagt';
- if(/verwiesen|überwiesen/.test(t))return 'verwiesen';
- if(/kenntnis/.test(t)&&!/beschlossen|zugestimmt|angenommen/.test(t))return 'zur Kenntnis genommen';
- // Stimmenzahlen („Ja: 21, Nein: 0“, „29 Ja-Stimme(n), 0 Gegenstimme(n)“, „20 Stimmen dafür 0 Stimmen dagegen“): ohne Nein-Stimme
- // einstimmig, mehr Ja als Nein mit Mehrheit, sonst abgelehnt (Enthaltungen zählen nicht)
- const yes=t.match(/(?:\bja\s*:?\s*(\d+)|(\d+)\s*(?:ja-stimme|ja\b|stimmen? dafür|stimme\(n\) dafür|dafür))/),no=t.match(/(?:\bnein\s*:?\s*(\d+)|(\d+)\s*(?:nein-stimme|nein\b|gegenstimme|stimmen? dagegen|stimme\(n\) dagegen|dagegen))/);
- if(yes&&no&&!/abgelehnt|vertagt|zurückgezogen|verwiesen|kenntnis/.test(t)){const y=+(yes[1]??yes[2]),n=+(no[1]??no[2]);
-  if(y>n)return (n===0?'einstimmig ':'mit Mehrheit ')+(/empfohlen|empfiehlt|empfehlung/.test(t)&&!/beschlossen/.test(t)?'empfohlen':'beschlossen');
-  return 'abgelehnt';}
- if(/^(?:zustimmung|befürwortet|antrag angenommen)\b/.test(t.trim()))return /befürwortet/.test(t)?'empfohlen':'beschlossen';
- const how=/einstimmig|ohne gegenstimme|einhellig/.test(t)?'einstimmig ':/mehrheitlich|mit mehrheit|stimmenmehrheit|[1-9]\d* (?:nein|gegenstimme)/.test(t)?'mit Mehrheit ':'';
- if(/empfohlen|empfiehlt|empfehlung/.test(t)&&!/beschlossen/.test(t))return how+'empfohlen';
- if(/beschlossen|zugestimmt|angenommen|genehmigt/.test(t)||how)return how+'beschlossen';
- return null;
-}
+// Ausgang einer Sitzung: eine Regel für Newsradar, Social Media und plenara.X Beschlüsse (shared/vote-result.mjs)
+export {outcomeOf,NO_RESULT};
 const STATUS_OUTCOME={approved:'beschlossen',rejected:'abgelehnt',postponed:'vertagt',info:'zur Kenntnis genommen',recommended:'empfohlen'};
 
 /** Nachrichtenwert ohne Bericht (Stufe 1): Status, Fakten, Stichwörter, Datum */

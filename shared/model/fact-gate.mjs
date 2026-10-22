@@ -19,17 +19,20 @@ export function factFits(fact,{kind,subs=[],process=null}){
  return kind==='subject'&&subs.some(s=>want.includes(s));
 }
 
-/* Fakten, deren Wert eine Einordnung ist (Verfahrensschritt): mit Modell kommt der Wert aus dessen Schritt (Begriffsbuch 4b),
-   übersetzt in die Namen, die Atlas, Signale und Fakten-Seite kennen. Planname und Nummer bleiben Werte aus dem Text. */
+/* Fakten, deren Wert eine Einordnung ist (Verfahrensschritt): mit Modell kommen sie ganz aus dessen Antworten (Begriffsbuch 4b),
+   übersetzt in die Namen, die Atlas, Signale und Fakten-Seite kennen. Bauleitplanung (seit 22.10.2026): Sachpunkt mit Unterthema
+   Bauleitplanung oder Erschließung und Schritt; die Regel für Planname und Nummer läuft dann nicht mehr (beides war nirgends sichtbar). */
+export const PLAN_SUBS=['bauen.plan','bauen.erschl'];
 export const PLAN_STEP_NAME={start:'Aufstellung',frueh:'Frühzeitige Beteiligung',entwurf:'Offenlage',abwaegung:'Abwägung',beschluss:'Satzungsbeschluss',aufhebung:'Aufhebung',umsetzung:'Sonstiger Schritt',sonst:'Sonstiger Schritt'};
 export const HEAT_STEP_NAME={start:'Start und Beauftragung',frueh:'Analyse und Zwischenstand',entwurf:'Entwurf und Beteiligung',abwaegung:'Entwurf und Beteiligung',beschluss:'Wärmeplan vorgelegt',umsetzung:'Umsetzung und Fortschreibung'};
 /**
- * Fakten mit dem Modell nachziehen: Schritt des Bebauungsplans aus dem Modell; Schritt der Wärmeplanung nur bei Unter-Unterthema
+ * Fakten mit dem Modell nachziehen: Bauleitplanung mit Schritt aus Unterthema und Schritt des Modells; Schritt der Wärmeplanung nur bei Unter-Unterthema
  * kommunale Wärmeplanung und mit Schritt des Modells (sonst kein Fakt).
  * @param {{kind:string,value:string,detail:string}[]} facts @param {{subsubs?:string[],step?:string|null}} model
  */
 export function stepFacts(facts,model){
- const out=facts.filter(f=>f.kind!=='heat_plan').map(f=>f.kind==='plan'&&model.step&&PLAN_STEP_NAME[model.step]?{...f,value:PLAN_STEP_NAME[model.step]}:f);
+ const out=facts.filter(f=>f.kind!=='heat_plan'&&f.kind!=='plan');
+ if((model.subs||[]).some(x=>PLAN_SUBS.includes(x))&&PLAN_STEP_NAME[model.step])out.push({kind:'plan',value:PLAN_STEP_NAME[model.step],detail:''});
  if((model.subsubs||[]).includes('umwelt.waerme.waermeplan')&&HEAT_STEP_NAME[model.step])out.push({kind:'heat_plan',value:HEAT_STEP_NAME[model.step],detail:''});
  return out;
 }

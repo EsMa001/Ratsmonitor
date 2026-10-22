@@ -21,6 +21,8 @@ import {mergePages} from './documents.mjs';
 import {MODEL_THEME_VERSION} from '../../shared/model/features.mjs';
 import {factFits,stepFacts,MODEL_COVERED} from '../../shared/model/fact-gate.mjs';
 import {overviewOf} from '../../shared/model/overview.mjs';
+import {candidates} from '../../shared/model/sentences.mjs';
+import {modelSummary} from '../../shared/model/summary.mjs';
 
 export const READ_VERSION=`read-v4:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:${STAGE_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}`;
 // Wie readDocument im Import: sehr lange Dokumente werden nicht zusammengefasst, der Text ist für die Zusammenfassung gekürzt
@@ -81,7 +83,7 @@ export function readKey({title,mainUrl,session,textSha,attSha='',modelKey=''}){
  * @param {{uses?:(url:string)=>number,hasText?:((url:string)=>boolean)|null,pages?:string[]|null,textSha?:string,at?:string}} [o]
  *   pages: Seiten des Hauptdokuments (wie in der PDF-Ablage), nur wenn mainDocument(...) sie geliefert hat
  */
-export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha='',attachments=[],at=new Date().toISOString(),model=null}={}){
+export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha='',attachments=[],at=new Date().toISOString(),model=null,summaryModel=null}={}){
  const title=report.officialTitle||report.title||'';
  // 1. Dokumente
  const {doc,session}=mainDocument(report.documents,model?{uses,hasText,mainUrl:model.mainUrl}:{uses,hasText});
@@ -100,6 +102,8 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  else if(!pages)summaryIssue='no-text';
  else if(pages.length>MAX_PAGES)summaryIssue='too-long';
  else if(text.trim().length<MIN_CHARS)summaryIssue='unreadable';
+ // mit Satzkopf (summary.json, nur Node) wählt das Modell die Kernsätze (Begriffsbuch Abschnitt 12), sonst die Regel
+ else if(summaryModel)ruleSummary=kind==='subject'?modelSummary(candidates(text),title,summaryModel,{at,source:{url:doc.url,title:doc.title}}):null;
  else ruleSummary=buildRuleSummary(text.slice(0,MAX_SUMMARY_CHARS),title,at,{url:doc.url,title:doc.title},model?kind:null)||null;
  if(!ruleSummary&&!summaryIssue)summaryIssue='no-summary';
  // 5. Fakten
@@ -122,7 +126,7 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  // Überblick (Vorgang, Sitzungen, Unterlagen) aus dem Modell, statt des Standardsatzes des Imports
  const overview=model?overviewOf(report,model,{parties:facts.filter(f=>f.kind==='faction').map(f=>f.value),today:at.slice(0,10)}):null;
  return {
-  version:READ_VERSION,overview,key:readKey({title,mainUrl:doc?.url,session,textSha,attSha,modelKey:model?.key||''}),
+  version:READ_VERSION,overview,key:readKey({title,mainUrl:doc?.url,session,textSha,attSha,modelKey:(model?.key||'')+(summaryModel?'|'+summaryModel.version:'')}),
   mainUrl:doc?.url||null,session,itemKind:kind,stage,
   theme:{id:theme.theme,subs:theme.subs,source:theme.source,version:model?MODEL_THEME_VERSION:THEMES_VERSION,evidence:title},
   ruleSummary,summaryIssue,facts,

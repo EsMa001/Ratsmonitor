@@ -1,8 +1,8 @@
 'use client';
 /* Admin „Themen & Texte“ (seit 22.10.2026): Kernstück ist das Modell (requirements/modell-konzept.md). Es beantwortet je Bericht
    neun Fragen (Begriffsbuch requirements/begriffsbuch-kern.md); die früheren Regeln für Art, Thema, „Was geschieht“, Dokumente
-   und die Signal-Regeln werden nicht mehr angewendet und hier nicht mehr gezeigt. Darunter Lauf, Themen, Zusammenfassung und
-   Fakten (die bleiben Regeln). Messwerte des Modells: shared/model-quality.json (schreibt scripts/model/train.mjs), Fassung:
+   und die Signal-Regeln werden nicht mehr angewendet und hier nicht mehr gezeigt. Darunter Lauf, Themen, Zusammenfassung (Kernsätze aus dem
+   Modell, shared/model-summary-quality.json) und Fakten (die bleiben Regeln). Messwerte des Modells: shared/model-quality.json (schreibt scripts/model/train.mjs), Fassung:
    shared/model-manifest.json; Fakten: shared/rule-quality.json (Gruppe facts). */
 import {isStep} from '@/shared/pipeline-terms.mjs';
 import {useCallback,useEffect,useRef,useState} from 'react';
@@ -13,6 +13,7 @@ import type {Stand} from '@/shared/admin-types';
 import {THEMES,SUBTOPICS} from '@/shared/themes.mjs';
 import QUALITY from '@/shared/rule-quality.json';
 import MODEL_QUALITY from '@/shared/model-quality.json';
+import SUMMARY_QUALITY from '@/shared/model-summary-quality.json';
 import MANIFEST from '@/shared/model-manifest.json';
 import {MAP_FACTS} from '@/shared/map-facts.mjs';
 import {MODEL_COVERED} from '@/shared/model/fact-gate.mjs';
@@ -109,13 +110,18 @@ const THEME_NAME:Record<string,string>={...Object.fromEntries(THEMES.map((t:{id:
 const FACT_ROWS=(QUALITY.groups.find(g=>g.id==='facts')?.rows??[]) as FactRow[];
 const ALL_RULE_ROWS=QUALITY.groups.flatMap(g=>g.rows as unknown as FactRow[]);
 /* Regeln, die neben dem Modell weiter laufen (ohne die Werte der Karte, die stehen darunter), mit Grund */
+/* Messwerte der Kernsätze (scripts/model/train-summary.mjs) */
+const SUMMARY_ROWS:{key:'short'|'longAcc'|'longCov'|'none';name:string;what:string;min:number}[]=[
+ {key:'short',name:'Kurzfassung',what:'Mindestens ein Satz der Kurzfassung ist auch von Hand gewählt.',min:60},
+ {key:'longAcc',name:'Langfassung: Genauigkeit',what:'Von den gewählten Sätzen sind so viele auch von Hand gewählt.',min:60},
+ {key:'longCov',name:'Langfassung: Abdeckung',what:'Von den von Hand gewählten Sätzen findet das Modell so viele.',min:60},
+ {key:'none',name:'Keine Zusammenfassung',what:'Richtig erkannt, ob es überhaupt eine geben soll (etwa bei leeren Deckblättern).',min:90},
+];
 const KEPT_RULES:{id:string;name:string;why:string}[]=[
- {id:'summary',name:'Zusammenfassung',why:'Sätze aus dem Hauptdokument, das das Modell wählt. Bleibt Regel, bis es eine gelernte Fassung mit markierten Kernsätzen gibt.'},
  {id:'member',name:'Mitgliedsgemeinde',why:'Schlägt Gemeindenamen im Katalog nach (Gremium, „der Gemeinde X“), ordnet nichts ein.'},
  {id:'faction',name:'Partei des Antragstellers (Fraktionsprofil)',why:'Liest den Namen in „Antrag der …-Fraktion“ (ein Wert aus dem Text). Läuft nur, wenn das Modell einen Antrag aus der Politik mit Antragsteller Fraktion erkennt.'},
- {id:'outcome',name:'Ausgang im Newsradar',why:'Liest aus den Ergebnistexten der Sitzungen, wie abgestimmt wurde (einstimmig, mit Mehrheit, abgelehnt). Der Status selbst kommt vom Modell.'},
+ {id:'outcome',name:'Ausgang der Abstimmung',why:'Liest aus den Ergebnistexten der Sitzungen, wie abgestimmt wurde (einstimmig, mit Mehrheit, abgelehnt, auch aus Stimmenzahlen) und ob der Beschlussvorschlag geändert wurde. Eine Regel für Newsradar, Social Media und plenara.X Beschlüsse (shared/vote-result.mjs). Der Status selbst kommt vom Modell.'},
  {id:'doc_type',name:'Dokumentart beim ersten Laden der PDFs',why:'Erste Schätzung für die Ablage, solange es noch keinen Text gibt. Sobald das Modell den Bericht eingeordnet hat, bewertet die Ablage mit dessen Dokumentart und Art des Punkts.'},
- {id:'plan',name:'Planname im Atlas',why:'Liest Planname und Nummer („Bebauungsplan Nr. 12“) aus dem Text. Der Verfahrensschritt kommt vom Modell, ebenso der Schritt der Wärmeplanung.'},
 ];
 /* Werte für die Karte (Zahl je Gemeinde); Fraktion und Bausteine der früheren Signal-Regeln zeigt die Seite nicht mehr */
 const VALUE_FACTS=new Set((MAP_FACTS as [string,string,boolean][]).map(([k])=>k).filter(k=>!MODEL_COVERED.has(k)));
@@ -162,8 +168,8 @@ export function AdminRuleTexts(){
   {label:'Sachpunkte mit Thema',value:ms?.subject?pct(ms.withTheme||0,ms.subject):undefined,note:ms?.subject?n(ms.subject)+' Sachpunkte; ohne Thema heißt in der Suche „Sonstiges“':'nach dem nächsten Lauf'},
  ];
  const sum=[
-  {label:'Im Artikel steht',value:c?pct(ai+rule,docs):undefined,note:c?'eine Zusammenfassung, bei '+n(docs)+' Artikeln mit Dokument: '+n(rule)+' regelbasiert, '+n(ai)+' von der KI':undefined},
-  {label:'Ø Güte der regelbasierten Texte',value:c?(avg===undefined?'–':avg):undefined,of:avg===undefined?undefined:'von 100',note:c?(rule?'Mittel über '+n(rule)+' Artikel':'Noch keine gespeichert'):undefined},
+  {label:'Im Artikel steht',value:c?pct(ai+rule,docs):undefined,note:c?'eine Zusammenfassung, bei '+n(docs)+' Artikeln mit Dokument: '+n(rule)+' automatisch, '+n(ai)+' von der KI':undefined},
+  {label:'Ø Güte der automatischen Texte',value:c?(avg===undefined?'–':avg):undefined,of:avg===undefined?undefined:'von 100',note:c?(rule?'Mittel über '+n(rule)+' Artikel':'Noch keine gespeichert'):undefined},
   {label:'Berichte mit Fakten',value:facts?n(facts.reports):job?'–':undefined,note:facts?n(facts.fromText)+' aus dem Text des Hauptdokuments; Fassung '+facts.version:'nach dem nächsten Lauf'},
  ];
  const factRows=FACT_ROWS.filter(r=>VALUE_FACTS.has(r.id));
@@ -174,7 +180,7 @@ export function AdminRuleTexts(){
   {error&&<Alert onRetry={load}>{error}</Alert>}
   <section id="regeltexte-modell" className="admin-section">
    <div className="admin-section-heading"><h2>Modell</h2></div>
-   <p className="admin-note">Das Modell ordnet jeden Bericht ein: worum es geht, was für ein Vorgang es ist und wie er ausgegangen ist. Es läuft auf unserem Server, ohne fremden Dienst, und hat die früheren Regeln für Art, Thema, „Was geschieht“, Dokumente und Signale abgelöst. Zusammenfassung und Fakten bleiben Regeln.</p>
+   <p className="admin-note">Das Modell ordnet jeden Bericht ein: worum es geht, was für ein Vorgang es ist und wie er ausgegangen ist. Es läuft auf unserem Server, ohne fremden Dienst, und hat die früheren Regeln für Art, Thema, „Was geschieht“, Dokumente, Signale und die Auswahl der Sätze für die Zusammenfassung abgelöst. Fakten bleiben Regeln.</p>
    <h3 className="mt-6">So arbeitet es</h3>
    <ol className="m-0 mt-2 list-none space-y-3 p-0 text-[14px] text-slate-700">
     <li><span className="font-medium text-slate-900">1. Lesen.</span> Je Bericht der Titel mit Gremium, die Ergebnisse der Sitzungen und von jedem PDF der Name, die erste Seite und der Beschlussvorschlag. Den übrigen Text liest es nicht.</li>
@@ -235,8 +241,15 @@ export function AdminRuleTexts(){
   </section>
   <section id="regeltexte-texte" className="admin-section">
    <div className="admin-section-heading"><h2>Zusammenfassung und Fakten</h2></div>
-   <p className="admin-note">Regeln über dem Text des Hauptdokuments, das das Modell wählt. Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst die regelbasierte. Fakten sind an das Modell gebunden: ein Wert zählt nur bei passendem Unterthema (Hebesatz bei Steuern und Haushalt, Gebühren bei Wasser und Abwasser, Bebauungsplan bei Bauleitplanung und Erschließung; shared/model/fact-gate.mjs). So fallen Vergleichs- und Hintergrundwerte weg, etwa ein Bebauungsplan in einem Bauantrag.</p>
+   <p className="admin-note">Beides liest den Text des Hauptdokuments, das das Modell wählt. Die Zusammenfassung besteht aus wörtlichen Sätzen des Dokuments: das Modell wählt die Kernsätze (Kurzfassung ein bis zwei, Langfassung bis sechs Sätze), nur bei Sachpunkten. Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst diese. Fakten sind an das Modell gebunden: ein Wert zählt nur bei passendem Unterthema (Hebesatz bei Steuern und Haushalt, Gebühren bei Wasser und Abwasser, Bebauungsplan bei Bauleitplanung und Erschließung; shared/model/fact-gate.mjs). So fallen Vergleichs- und Hintergrundwerte weg, etwa ein Bebauungsplan in einem Bauantrag.</p>
    <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen und Fakten" items={sum}/></div>
+   <h3 className="mt-6">Kernsätze: Modell und frühere Regel</h3>
+   <p className="admin-note mt-1">Gemessen an {SUMMARY_QUALITY.model.n} Prüfberichten ({SUMMARY_QUALITY.version}, {shortDate(SUMMARY_QUALITY.measuredAt)}), die das Modell nicht gelernt hat; Vergleich ist die Auswahl von Hand nach Begriffsbuch Abschnitt 12. Die Zahlen sind eher zu günstig, weil Lern- und Prüfberichte aus derselben Stichprobe stammen.</p>
+   <ul className="m-0 mt-2 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{SUMMARY_ROWS.map(r=><li key={r.key} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
+    <div className="min-w-0"><span className="font-medium text-slate-900">{r.name}</span><small className="mt-1 block text-[12px] leading-snug text-slate-500">{r.what}</small></div>
+    <Meter label="Modell" v={SUMMARY_QUALITY.model[r.key]} min={r.min}/>
+    <Meter label="frühere Regel" v={SUMMARY_QUALITY.rule[r.key]} min={r.min}/>
+   </li>)}</ul>
    <h3 className="mt-6">Werte für plenara.X Fakten</h3>
    <p className="admin-note mt-1">Qualität aus der letzten ungesehenen Stichprobe (shared/rule-quality.json); auf der Karte ab {GOAL} %.</p>
    <ul className="m-0 mt-2 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{factRows.map(r=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">

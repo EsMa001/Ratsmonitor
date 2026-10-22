@@ -6,6 +6,8 @@ import fs from 'node:fs';
 import {inputOf,encoderTexts,reportSparse,flags,DOCTYPES,KIND,STATUS,THEMES,PROCESS,STEPS,SERVICE,APPLICANTS,MODEL_THEME_VERSION} from '../shared/model/features.mjs';
 import {classify,loadHeads} from '../shared/model/heads.mjs';
 import {readReport} from '../server/integrations/report-rules.mjs';
+import {modelSummary,tidy} from '../shared/model/summary.mjs';
+import {candidates} from '../shared/model/sentences.mjs';
 
 const payload={title:'Bebauungsplan Nr. 12  „Am Bach“',committee:'Rat',eventDate:'2026-11-03',
  events:[{date:'2026-09-01',committee:'Bauausschuss',result:'Empfehlung an den Rat'},{date:'2026-11-03',committee:'Rat',result:'Öffentlicher Tagesordnungspunkt; Ergebnis nicht belegt'}],
@@ -83,7 +85,9 @@ test('Fakten an das Modell gebunden: passendes Unterthema, Schritte aus dem Mode
  const report={title,documents:[]};
  const base={key:'m|k',kind:'subject',themes:['bauen'],subs:['bauen.plan'],subsubs:['bauen.plan.wohnen'],process:'planning',mainUrl:null};
  const plan=readReport(report,{model:{...base,step:'beschluss'}}).facts.find(f=>f.kind==='plan');
- assert.equal(plan.value,'Satzungsbeschluss','Schritt vom Modell, nicht aus dem Titel');assert.match(plan.detail,/nr\. 7/);
+ assert.equal(plan.value,'Satzungsbeschluss','Schritt vom Modell, nicht aus dem Titel');assert.equal(plan.detail,'','kein Planname mehr');
+ assert.equal(readReport({title:'Neubaugebiet Mühlenfeld',documents:[]},{model:{...base,step:'entwurf'}}).facts.find(f=>f.kind==='plan')?.value,'Offenlage','auch ohne Plannamen im Text');
+ assert.equal(readReport(report,{model:{...base,step:null}}).facts.some(f=>f.kind==='plan'),false,'ohne Schritt kein Planverfahren');
  assert.equal(readReport(report,{model:{...base,subs:['bauen.dritte'],step:null}}).facts.some(f=>f.kind==='plan'),false,'Bauantrag Dritter: kein Planverfahren');
  const heat=readReport({title:'Kommunale Wärmeplanung – Vorstellung der Bestandsanalyse',documents:[]},{model:{...base,themes:['umwelt'],subs:['umwelt.waerme'],subsubs:['umwelt.waerme.waermeplan'],step:'frueh'}}).facts;
  assert.deepEqual(heat.filter(f=>f.kind==='heat_plan').map(f=>f.value),['Analyse und Zwischenstand']);
@@ -102,4 +106,25 @@ test('Überblick: Vorgang, Sitzungen und Unterlagen aus dem Modell, nur sichere 
  assert.match(overviewOf(report,{...m,processP:.4,themeP:.3},{today:'2026-10-21'}).text,/^Am 03\.09\.26/,'unsicher: kein Vorgang, kein Thema');
  assert.match(overviewOf({events:[]},{kind:'procedure',kindP:.95},{}).text,/^Punkt des Sitzungsablaufs/);
  assert.equal(overviewOf({events:[]},null),null);
+});
+
+test('Zusammenfassung aus dem Modell: wörtliche Sätze ohne Vorspann, Format der Regel, keine ohne Kernsatz, neu lesen bei neuem Satzkopf',()=>{
+ assert.equal(tidy('Beschlussvorschlag: 1. Der Rat beschließt die Satzung.'),'Der Rat beschließt die Satzung.');
+ assert.equal(tidy('V. Beschlussvorschlag: Der Ausschuss beschließt.'),'Der Ausschuss beschließt.');
+ assert.equal(tidy('Der Kreistag möge Folgendes beschließen: Der Kreistag stimmt zu.'),'Der Kreistag stimmt zu.');
+ const text='Sachverhalt: Die Gemeinde plant eine neue Kindertagesstätte an der Schulstraße.\nDie Kosten betragen 2,1 Mio. Euro und werden aus dem Haushalt 2027 finanziert.\nBeschlussvorschlag: 1. Der Rat beschließt den Bau der Kindertagesstätte an der Schulstraße.';
+ const cands=candidates(text);assert.ok(cands.length>=3);
+ // Satzkopf, der nur Sätze mit „beschließt“ wählt
+ const sm={version:'summary-test',thresholds:{tNone:0.3,tLong:0.4},bias:[-4,-1],weights:{'w:beschließt':[8,6],'eur':[0,2]}};
+ const s=modelSummary(cands,'Neubau Kita',sm,{at:'2026-10-22T00:00:00Z',source:{url:'https://x/1.pdf',title:'Vorlage'}});
+ assert.equal(s.generatedBy,'Zusammenfassung aus dem Modell');assert.equal(s.model,'summary-test');
+ assert.deepEqual(s.short.sentences,['Der Rat beschließt den Bau der Kindertagesstätte an der Schulstraße.']);
+ assert.ok(s.long.sentences.length>=2&&s.long.sentences.every(x=>text.includes(x)));
+ assert.equal(modelSummary(cands,'Neubau Kita',{...sm,weights:{}}),null,'kein Satz über der Schwelle: keine Zusammenfassung');
+ const report={title:'Neubau Kita',documents:[{url:'https://x/1.pdf',title:'Vorlage'}]},model={key:'m|k',kind:'subject',themes:['soziales'],subs:[],process:'planning',mainUrl:'https://x/1.pdf'};
+ const pg=[text,'Seite zwei mit weiterem Text zur Begründung des Vorhabens, damit genug Zeichen vorliegen.'];
+ const r=readReport(report,{model,pages:pg,summaryModel:sm});
+ assert.equal(r.ruleSummary?.generatedBy,'Zusammenfassung aus dem Modell');
+ assert.notEqual(r.key,readReport(report,{model,pages:pg,summaryModel:{...sm,version:'summary-neu'}}).key);
+ assert.equal(readReport(report,{model:{...model,kind:'procedure'},pages:pg,summaryModel:sm}).ruleSummary,null,'Formalien ohne Zusammenfassung');
 });

@@ -1,4 +1,5 @@
 import {labelName} from '../../shared/labels.mjs';
+import {readResult} from '../../shared/vote-result.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
@@ -47,13 +48,8 @@ export function parseDecisions(params){
 const rate=(c)=>{const d=c.approved+c.rejected+c.postponed;return d?Math.round((c.approved/d)*1000)/10:null;};
 const blank=()=>({approved:0,rejected:0,postponed:0,announced:0,consulting:0,recommended:0,info:0,unknown:0});
 const quant=(sorted,p)=>sorted.length?sorted[Math.min(sorted.length-1,Math.floor(p*sorted.length))]:null;
-/** Ausgang einer Station aus dem Ergebnistext */
-export function readResult(text){
- const t=String(text||'').toLowerCase();
- const vote=/einstimmig/.test(t)?'unanimous':/mehrheit|gegen\s+\d|\d+\s*gegen|stimmen|enthalt/.test(t)?'majority':null;
- const change=/ungeändert|unverändert|ohne änderung/.test(t)?'unchanged':/geändert|änderung|ergänz|mit maßgabe/.test(t)?'changed':null;
- return {vote,change};
-}
+// Ausgang einer Station aus dem Ergebnistext: eine Regel mit Newsradar und Social Media (shared/vote-result.mjs)
+export {readResult};
 
 /* Zwischenspeicher je Bau: in der Route (xCached), wie alle plenara.X-Routen */
 export async function decisions(db,catalog,params){

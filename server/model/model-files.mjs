@@ -20,7 +20,7 @@ const sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest
 /** Prüft alle Dateien gegen das Manifest; Fehlerliste (leer = in Ordnung) */
 export function checkFiles(m=manifest(),dir=modelDir()){
  const bad=[];
- for(const [part,files] of [['encoder',m.encoder.files],['heads',m.heads.files]])for(const [f,h] of Object.entries(files)){
+ for(const [part,files] of [['encoder',m.encoder.files],['heads',m.heads.files],['summary',m.summary?.files||{}]])for(const [f,h] of Object.entries(files)){
   const p=path.join(dir,part,f);if(!fs.existsSync(p))bad.push(`${part}/${f} fehlt`);else if(sha(p)!==h)bad.push(`${part}/${f} hat eine andere Prüfsumme`);}
  return bad;
 }
@@ -28,6 +28,10 @@ export function checkFiles(m=manifest(),dir=modelDir()){
 export function readHeads(dir=modelDir()){
  const json=JSON.parse(fs.readFileSync(path.join(dir,'heads/heads.json'),'utf8')),bin=fs.readFileSync(path.join(dir,'heads/heads.bin'));
  return loadHeads(json,bin);
+}
+/** Satzkopf der Zusammenfassung (summary/summary.json, scripts/model/train-summary.mjs); null, wenn nicht vorhanden */
+export function readSummaryModel(dir=modelDir()){
+ const p=path.join(dir,'summary/summary.json');return fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
 }
 /**
  * Encoder: Texte → normierte Einbettungen (Mittelwert, „query: “ davor, wie beim Lernen). Rechnet mit höchstens `threads` Kernen.

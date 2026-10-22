@@ -321,3 +321,21 @@ Nicht abgedeckt und bewusst später: Werte aus den Unterlagen (Fakten), Kernsät
 13. **Status über mehrere Gremien:** Hat ein späteres Gremium (Sitzung vorbei) nur einen Platzhalter, ist der Stand offen, auch wenn ein früheres ein Ergebnis hatte; Ausnahme: das frühere Ergebnis beendet den Vorgang („zurückgezogen“, „abgelehnt“ im entscheidenden Gremium).
 14. **Wärmeplanung:** „Vorstellung der kommunalen Wärmeplanung“ ohne Beschluss → `frueh` (früher `analyse`); mit Beschluss des Plans → `beschluss`. Zustimmung oder Stellungnahme einer Ortsgemeinde zum Flächennutzungsplan der Verbandsgemeinde → Genehmigung für Dritte, Planschritt `sonst`.
 15. **Angekündigt mit Vorgeschichte:** Hat ein früheres Gremium der Beratungsfolge schon ein Ergebnis (empfohlen, beschlossen, vertagt), ist der Status dieses Ergebnis, auch wenn die nächste Sitzung noch aussteht; Angekündigt nur ohne jedes frühere Ergebnis.
+
+## 12. Kernsätze (Zusammenfassung kurz und lang, seit 22.10.2026)
+
+Die Zusammenfassung besteht aus wörtlichen Sätzen des Hauptdokuments, nichts wird umformuliert. Eingeordnet wird je Bericht, welche der nummerierten Sätze (Satzkandidaten, `shared/model/sentences.mjs`) in die Kurz- und welche in die Langfassung gehören. Nur was im Satz steht, zählt.
+
+**Kurzfassung:** 1 oder 2 Sätze, zusammen höchstens etwa 40 Wörter. Sie sagen, worum es geht und was beschlossen werden soll (bei Beschlussvorlagen meist ein Satz aus dem Beschlussvorschlag) bzw. was berichtet oder beantragt wird. Der erste Satz muss allein verständlich sein: kein „dies“, „diese Maßnahme“, „wie oben“ ohne Bezug im Satz.
+
+**Langfassung:** 3 bis 6 Sätze, zusammen etwa 80 bis 140 Wörter, in der Reihenfolge des Dokuments. Sie enthält die Sätze der Kurzfassung und dazu, was ein Leser zum Verständnis braucht: Anlass, Ziel, wichtige Zahlen (Kosten, Beträge, Fristen, Mengen, Flächen), Folgen und, falls genannt, die Haltung der Verwaltung.
+
+**Nicht nehmen:** Kopfzeilen und Formularfelder (Drucksache, Datum, Beratungsfolge, Öffentlichkeitsstatus), Anrede und Grußformeln, bloße Wiederholung des Titels, reine Aufzählungen von Rechtsgrundlagen („gemäß § 5 Abs. 2 …“ ohne Inhalt), Verweise ohne Inhalt („siehe Anlage“), Tabellenreste und abgebrochene Sätze, Sätze über andere Tagesordnungspunkte.
+
+**Keine Zusammenfassung** (beide leer): wenn kein Satz den Gegenstand trägt, etwa bei einer Niederschrift der ganzen Sitzung, einem Deckblatt, einer Einladung, einem Schreiben ohne Inhalt oder unlesbarem Text.
+
+Grenzfälle:
+- Antrag einer Fraktion: Kurzfassung ist der beantragte Beschluss („Die Verwaltung wird beauftragt, …“), nicht die Begründung.
+- Mitteilung, Bericht, Antwort auf eine Anfrage: Kurzfassung ist der Satz mit der eigentlichen Auskunft, nicht „Die Verwaltung teilt Folgendes mit“.
+- Bebauungsplan: Kurzfassung ist der Beschluss mit Planname und Schritt; in die Langfassung Lage, Ziel des Plans, Größe.
+- Haushalt und Gebühren: Beträge und Sätze gehören in die Langfassung, wenn sie im Satz stehen.
