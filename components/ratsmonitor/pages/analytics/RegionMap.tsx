@@ -45,20 +45,24 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   const [boxH, setBoxH] = useState<number | null>(null);
   useEffect(() => {
     if (!phoneStage) return;
-    let raf = 0;
+    let raf = 0, lastW = window.innerWidth;
+    /* Stabile Fensterhöhe (documentElement.clientHeight): window.innerHeight ändert sich am Handy, wenn beim Scrollen die
+       Adressleiste ein- und ausfährt; die Karte würde dann jedes Mal ihre Höhe ändern und die Seite darunter springen */
     const measure = () => {
       raf = 0;
-      const el = boxRef.current, bar = document.querySelector<HTMLElement>(".rm-tabbar");
-      if (!el || !isPhone() || window.innerHeight < 500) { setBoxH(null); return; }
-      const h = window.innerHeight - (el.getBoundingClientRect().top + window.scrollY) - (bar?.offsetHeight ?? 0) - 6;
+      const el = boxRef.current, bar = document.querySelector<HTMLElement>(".rm-tabbar"), vh = document.documentElement.clientHeight;
+      if (!el || !isPhone() || vh < 500) { setBoxH(null); return; }
+      const h = vh - (el.getBoundingClientRect().top + window.scrollY) - (bar?.offsetHeight ?? 0) - 6;
       setBoxH(Math.max(240, Math.round(h)));
     };
     const schedule = () => { if (!raf) raf = requestAnimationFrame(measure); };
     schedule();
     const ro = new ResizeObserver(schedule);
     ro.observe(document.body);
-    window.addEventListener("resize", schedule);
-    return () => { ro.disconnect(); window.removeEventListener("resize", schedule); if (raf) cancelAnimationFrame(raf); };
+    /* Nur bei geänderter Breite (Drehen) neu messen, nicht bei reiner Höhenänderung durch die Adressleiste */
+    const onResize = () => { if (window.innerWidth !== lastW) { lastW = window.innerWidth; schedule(); } };
+    window.addEventListener("resize", onResize);
+    return () => { ro.disconnect(); window.removeEventListener("resize", onResize); if (raf) cancelAnimationFrame(raf); };
   }, [phoneStage]);
   const [topInset, setTopInset] = useState(0);
   useEffect(() => {

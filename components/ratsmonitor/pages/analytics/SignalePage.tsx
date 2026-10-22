@@ -19,7 +19,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Fehler, Leer } from "./Befund";
-import { Folgen, Kennzahlen, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, ZeitPills, countScale, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { AktiveFilter, Dropdown } from "../../components/Dropdown";
 import { StepIcon } from "../../components/StepIcon";
 import { ArtIcon } from "../../components/ArtIcon";
@@ -115,13 +115,10 @@ function SignalMap({ places, onPlace, hover = "", zeit, onZeit, schritt, wheels,
     if (level === "district") { const k = p.ags.slice(0, 5); if (k.length === 5) { const o = byAgs.get(k); byAgs.set(k, { name: p.ags.length === 5 ? p.name : o?.name ?? `Kreis ${k}`, count: (o?.count ?? 0) + p.count }); } continue; }
     for (const a of [...own, ...(p.members ?? []).filter((m) => m.length === 8)]) if (!byAgs.has(a) || own.includes(a)) byAgs.set(a, p);
   }
-  /* Ein Punkt je Vorgang (Signale zeigen einzelne Vorhaben, der Atlas Mengen als Flächen); Verbände verteilen ihre Punkte auf die Mitglieder */
-  const dots: Record<string, number> = {};
-  for (const p of places) {
-    if (level === "district") { const k = p.ags.slice(0, 5); if (k.length === 5) dots[k] = (dots[k] ?? 0) + p.count; continue; }
-    const keys = p.ags.length === 8 ? [p.ags] : (p.members ?? []).filter((m) => m.length === 8);
-    keys.forEach((a, i) => { const k = Math.floor(p.count / keys.length) + (i < p.count % keys.length ? 1 : 0); if (k) dots[a] = (dots[a] ?? 0) + k; });
-  }
+  /* Flächen wie im Atlas: Gemeinden (bzw. Kreise) mit Vorgängen eingefärbt, vier Stufen nach Vierteln der Gebiete (countScale) */
+  const scale = countScale([...byAgs.values()].map((x) => x.count));
+  const levels: Record<string, number> = {};
+  for (const [a, x] of byAgs) levels[a] = scale.level(x.count);
   /* Vorschau: das Gebiet der überfahrenen Zeile (bei Verbänden die erste Mitgliedsgemeinde, auf Kreisebene der Kreis) */
   const hov = hover ? places.find((p) => p.region === hover) : undefined;
   const hovAgs = hov ? (level === "district" ? hov.ags.slice(0, 5) : hov.ags.length === 8 ? hov.ags : hov.members?.[0] ?? "") : "";
@@ -130,8 +127,8 @@ function SignalMap({ places, onPlace, hover = "", zeit, onZeit, schritt, wheels,
   return (
     <section className="relative print:hidden" aria-label="Karte">
       {/* Klick wählt das Gebiet als Ort (Gemeinde oder Kreis), wie im Atlas */}
-      <RegionMap tall phoneStage level={level} levels={{}} dots={dots} colors={["var(--rm-fill)"]} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={["1 Punkt = 1 Vorgang"]}
-        note="Punkte liegen zufällig im Gebiet" label={`Karte: Vorgänge der Auswahl je ${level === "district" ? "Kreis" : "Gemeinde"}`}
+      <RegionMap tall phoneStage level={level} levels={levels} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); if (picked !== a && byAgs.has(a)) onPlace(a); }} legend={scale.legend}
+        note="ohne Farbe: keine Vorgänge" label={`Karte: Vorgänge der Auswahl je ${level === "district" ? "Kreis" : "Gemeinde"}`}
         info={sel ? <><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">{n(sel.count)} {sel.count === 1 ? "Vorgang" : "Vorgänge"}</span></> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
       {wheels}
       {pill}
@@ -253,8 +250,6 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
         const bereiche = [{ key: "", name: "Alle Bereiche", count: 0 }, ...(res.subs ?? []).slice(0, 10)];
         const short = (k: string, name: string) => SUBTOPICS.find((x: { id: string }) => x.id === k)?.short ?? name;
         return <>
-          <MapWheels inline single label="Bereich" value={subId} onPick={(id) => setSub(id)}
-            items={bereiche.map((b) => ({ id: b.key, label: b.key ? short(b.key, b.name) : b.name, icon: b.key ? <SubtopicIcon id={b.key} size={16} /> : <LayoutGrid size={16} strokeWidth={1.4} className="text-slate-500" /> }))} />
           <nav aria-label="Bereich" className="rm-xrail mb-4 hidden sm:block print:hidden">
             <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 min-[640px]:grid-cols-11">
               {bereiche.map((b) => { const on = b.key === subId; return <li key={b.key || "alle"}>
@@ -323,7 +318,11 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-5 min-[640px]:grid-cols-12`}>
             {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 min-[640px]:sticky min-[640px]:top-4 min-[640px]:col-span-6 min-[640px]:self-start">
               {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} 
-                wheels={<MapWheels label="Kategorie" subLabel="Art" subAll="Alle Arten" value={signal === standard ? "" : signal} onPick={(id) => pick({ signal: id, phase: "", art: "" })}
+                /* Ausschreibungen: keine Kategorien (eine feste Kategorie); Handy: Bereich und Leistung als Doppelwalze auf der Karte, wie die Kategorie auf Projekte */
+                wheels={fest ? <MapWheels label="Bereich" subLabel={res.signal.art ?? "Leistung"} subAll="Alle Leistungen" value={subId} onPick={(id) => setSub(id)}
+                  items={[{ id: "", label: "Alle Bereiche", icon: <LayoutGrid size={16} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" /> }, ...(res.subs ?? []).slice(0, 10).map((b) => ({ id: b.key, label: SUBTOPICS.find((x: { id: string }) => x.id === b.key)?.short ?? b.name, icon: <SubtopicIcon id={b.key} size={16} /> }))]}
+                  subs={res.signal.id === signal && (res.arts ?? []).length > 0 ? res.arts.filter((a) => a.key).map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={14} className="text-slate-500" /> })) : undefined} subValue={art} onSub={(id) => pick({ art: id })} />
+                  : <MapWheels label="Kategorie" subLabel="Art" subAll="Alle Arten" value={signal === standard ? "" : signal} onPick={(id) => pick({ signal: id, phase: "", art: "" })}
                   items={MIT_ALLE.map(([id, lab]) => { const I = ICONS[id]; return { id: id === standard ? "" : id, label: lab, icon: I ? <I size={16} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" /> : undefined }; })}
                   subs={signal !== ALLE && res.signal.id === signal && (res.arts ?? []).length > 0 ? res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={14} className="text-slate-500" /> })) : undefined} subValue={art} onSub={(id) => pick({ art: id })} />} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
             </div>}
@@ -344,25 +343,25 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                       return <span title={pfad.join(" › ")}>{pfad.map((t, i) => <span key={t + i} className={i === pfad.length - 1 ? "" : "font-normal text-slate-500"}>{i > 0 && <span aria-hidden="true" className="mx-1 font-normal text-slate-300">›</span>}{t}</span>)}{areaAgs && res.places.length === 1 ? <span className="font-normal text-slate-500"> in {res.places[0].name}</span> : null}</span>;
                     })()} />
                   {/* Schritt als Filter direkt über der Liste, mit denselben Farben wie in den Zeilen; bei „Alle Projekte“ nicht (die Kategorien haben verschiedene Schritte), bei Ausschreibungen nicht (dort ist er der Status, den das Filterfenster schon hat) */}
-                  {!fest && signal !== ALLE && res.signal.id === signal && res.phases.length > 1 && <ul aria-label="Schritt" className="m-0 mt-3 flex list-none flex-wrap gap-1.5 p-0 print:hidden">
+                  {!fest && signal !== ALLE && res.signal.id === signal && res.phases.length > 1 && <ul aria-label="Schritt" className="m-0 mt-3 flex list-none flex-wrap gap-1.5 p-0 print:hidden max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none]">
                     {[{ key: "", name: "Alle Schritte", count: res.phases.reduce((a, p) => a + p.count, 0) }, ...res.phases].map((p) => {
                       const on = p.key === phase;
-                      return <li key={p.key || "alle"}><button type="button" aria-pressed={on} title={`${p.name}: ${n(p.count)}`} onClick={() => pick({ phase: on ? "" : p.key })}
-                        className={`flex h-[76px] w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                      return <li key={p.key || "alle"} className="max-sm:shrink-0"><button type="button" aria-pressed={on} title={`${p.name}: ${n(p.count)}`} onClick={() => pick({ phase: on ? "" : p.key })}
+                        className={`flex h-[76px] w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-center text-[12px] leading-tight max-sm:h-8 max-sm:w-auto max-sm:flex-row max-sm:gap-1.5 max-sm:whitespace-nowrap max-sm:rounded-full max-sm:border max-sm:px-3 max-sm:[&_svg]:h-4 max-sm:[&_svg]:w-4 ${on ? "bg-slate-100 font-semibold text-slate-900 max-sm:border-slate-300" : "text-slate-700 hover:bg-slate-50 max-sm:border-slate-200"}`}>
                         {p.key ? <StepIcon name={p.name} size={20} className={toneOf(p.name, phaseOrder)} /> : <LayoutGrid size={20} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" />}
-                        <span className="line-clamp-2 w-full hyphens-auto break-words">{p.key ? p.name : "Alle"}</span>
+                        <span className="line-clamp-2 w-full hyphens-auto break-words max-sm:w-auto max-sm:line-clamp-none">{p.key ? p.name : "Alle"}</span>
                         <span className="tabular-nums text-slate-500">{n(p.count)}</span></button></li>;
                     })}
                   </ul>}
                   {/* Ausschreibungen: die Leistung als zweite Kachelreihe (auf Projekte klappt sie aus der Kategorie auf) */}
-                  {fest && res.signal.id === signal && (res.arts ?? []).length > 1 && <p className="m-0 mt-3 text-[12px] font-medium uppercase tracking-wide text-slate-500 print:hidden">{res.signal.art ?? "Leistung"}: was eingekauft wird</p>}
-                  {fest && res.signal.id === signal && (res.arts ?? []).length > 1 && <ul aria-label={res.signal.art ?? "Leistung"} className="m-0 mt-1 flex list-none flex-wrap gap-1.5 p-0 print:hidden">
+                  {fest && res.signal.id === signal && (res.arts ?? []).length > 1 && <p className="m-0 mt-3 max-sm:hidden text-[12px] font-medium uppercase tracking-wide text-slate-500 print:hidden">{res.signal.art ?? "Leistung"}: was eingekauft wird</p>}
+                  {fest && res.signal.id === signal && (res.arts ?? []).length > 1 && <ul aria-label={res.signal.art ?? "Leistung"} className="m-0 mt-1 max-sm:hidden flex list-none flex-wrap gap-1.5 p-0 print:hidden max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none]">
                     {[{ key: "", name: "Alle", count: res.arts.reduce((a2, x) => a2 + x.count, 0) }, ...res.arts].map((x) => {
                       const on = x.key === art;
-                      return <li key={x.key || "alle"}><button type="button" aria-pressed={on} title={`${x.name}: ${n(x.count)}`} onClick={() => pick({ art: on ? "" : x.key })}
-                        className={`flex h-[76px] w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                      return <li key={x.key || "alle"} className="max-sm:shrink-0"><button type="button" aria-pressed={on} title={`${x.name}: ${n(x.count)}`} onClick={() => pick({ art: on ? "" : x.key })}
+                        className={`flex h-[76px] w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-center text-[12px] leading-tight max-sm:h-8 max-sm:w-auto max-sm:flex-row max-sm:gap-1.5 max-sm:whitespace-nowrap max-sm:rounded-full max-sm:border max-sm:px-3 max-sm:[&_svg]:h-4 max-sm:[&_svg]:w-4 ${on ? "bg-slate-100 font-semibold text-slate-900 max-sm:border-slate-300" : "text-slate-700 hover:bg-slate-50 max-sm:border-slate-200"}`}>
                         {x.key ? <ArtIcon value={x.key} size={20} className="text-teal-700" /> : <LayoutGrid size={20} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" />}
-                        <span className="line-clamp-2 w-full hyphens-auto break-words">{x.key ? artShort(x.name) : "Alle"}</span>
+                        <span className="line-clamp-2 w-full hyphens-auto break-words max-sm:w-auto max-sm:line-clamp-none">{x.key ? artShort(x.name) : "Alle"}</span>
                         <span className="tabular-nums text-slate-500">{n(x.count)}</span></button></li>;
                     })}
                   </ul>}
@@ -370,9 +369,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                   {fest && res.signal.id === signal && <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 print:hidden">
                     <span className="text-[12px] font-medium uppercase tracking-wide text-slate-500">Stand</span>
                     <Segmented label="Stand" options={[["", "Alle"], ["offen", "Noch offen", "angekündigt, in Beratung, empfohlen, vertagt"], ["entschieden", "Entschieden", "beschlossen, abgelehnt, zur Kenntnis"]]} value={gruppe} onPick={(k) => pick({ gruppe: k, phase: "" })} />
-                    {gruppe && res.phases.length > 1 && <ul aria-label="Genauer Stand" className="m-0 flex list-none flex-wrap gap-1.5 p-0">
-                      {res.phases.map((p) => { const on = p.key === phase; return <li key={p.key}><button type="button" aria-pressed={on} onClick={() => pick({ phase: on ? "" : p.key })}
-                        className={`inline-flex h-7 items-center gap-1.5 rounded-md border px-2 text-[12px] ${on ? "border-teal-700 bg-teal-50 font-semibold text-teal-900" : "border-slate-200 text-slate-700 hover:text-teal-700"}`}>
+                    {res.phases.length > 1 && <ul aria-label="Genauer Stand" className="m-0 flex list-none flex-wrap gap-1.5 p-0 max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none]">
+                      {res.phases.map((p) => { const on = p.key === phase; return <li key={p.key} className="max-sm:shrink-0"><button type="button" aria-pressed={on} onClick={() => pick({ phase: on ? "" : p.key })}
+                        className={`inline-flex h-7 items-center gap-1.5 whitespace-nowrap rounded-md border px-2 text-[12px] ${on ? "border-teal-700 bg-teal-50 font-semibold text-teal-900" : "border-slate-200 text-slate-700 hover:text-teal-700"}`}>
                         <StepIcon name={p.name} size={14} className={toneOf(p.name, phaseOrder)} />{p.name}<span className="tabular-nums text-slate-500">{n(p.count)}</span></button></li>; })}
                     </ul>}
                   </div>}
