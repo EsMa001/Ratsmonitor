@@ -14,7 +14,7 @@ Ein Bericht ist ein Tagesordnungspunkt mit Titel, Gremium, Sitzungsdatum, Ergebn
 | 4. Wie ist es ausgegangen? | Status (8) | 4 |
 | 5. Ist das ein konkretes Vorhaben? | ja oder nein (Grundlage der Signale) | 4a |
 | 6. Wo steht das Verfahren? | Schritt (8), bei Planung und Regelung | 4b |
-| 7. Wer stellt den Antrag? | Antragsteller, bei Anträgen aus der Politik | 4b |
+| 7. Wer stellt den Antrag? | Art des Antragstellers (Fraktion, Mitglied, Gremium, Einwohner); die Partei liest der Fakt | 4b |
 | 8. Was wird beauftragt? | Leistungsart (5), bei Bau und Vergabe mit Auftrag | 3 |
 | 9. Welche Dokumente? | Dokumentart je PDF, Hauptdokument, Ergebnisdokument | 5 |
 
@@ -116,7 +116,7 @@ Nur bei Sachpunkten: ja oder nein. Ein Vorhaben ist etwas Bestimmtes, das gebaut
 
 Die bisherigen Einordnungen gelten übersetzt: Planschritt aufstellung → start, fruehzeitig → frueh, satzung → beschluss, übrige gleich; Schritt der Wärmeplanung analyse → frueh, übrige gleich. Eingeordnet sind bisher nur Bauleit- und Wärmepläne; Beispiele anderer Planungen kommen mit der nächsten Nachlieferung.
 
-**Antragsteller** (für das Fraktionsprofil): bei Anträgen und Anfragen aus der Politik, wer ihn stellt, als Liste: `cdu`, `csu`, `spd`, `gruene`, `fdp`, `afd`, `linke`, `bsw`, `fw` (Freie Wähler, auch FWG, FWV, Freie Wählergemeinschaft), `local` (örtliche Wählergemeinschaft, Liste, Gruppe), `other` (andere Partei), `member` (einzelnes Mitglied ohne erkennbare Fraktion), `body` (Gremium als Antragsteller: Ortsbeirat, Ortschaftsrat, Beirat, Jugendrat, Ausschuss), `residents` (Einwohner, Bürger, Initiative, Beschwerde von Anwohnern). Gemeinsame Anträge: alle. Sonst leer.
+**Antragsteller** bei Anträgen und Anfragen aus der Politik, ein Wert (seit 22.10.2026): `fraction` (Fraktion, Gruppe, Partei, Wählergemeinschaft, auch gemeinsame Anträge), `member` (einzelnes Mitglied ohne erkennbare Fraktion), `body` (Gremium als Antragsteller: Ortsbeirat, Ortschaftsrat, Beirat, Jugendrat, Ausschuss), `residents` (Einwohner, Bürger, Initiative, Bürgerbegehren). Welche Partei, ist ein Name im Text und kommt aus dem Fakt `faction` (nur, wenn hier `fraction` steht). Frühere Einordnungen mit Parteien gelten übersetzt (`applicantKind` in shared/model/features.mjs: Partei → fraction, sonst Gremium vor Mitglied vor Einwohner).
 
 ## 5. Hilfsschritte: Hauptdokument, Ergebnisdokument, Dokumentart
 
@@ -266,7 +266,7 @@ Nur dort, wo die Signale (`docs/produkt/plenara-x-signale.md`) feinere Filter br
 - **Routinepunkte** (plenara.X): Art Ablauf oder Personalie.
 - **Ausgang** (Newsradar): Status.
 - **Status eines Vorgangs** (mehrere Berichte derselben Vorlage, `case_key`): das letzte belegte Ergebnis aller Berichte bis zum Stichtag; Angekündigt nur, wenn keiner ein Ergebnis hat.
-- **Fraktionsprofil:** Antragsteller und Status. Vorerst (22.10.2026) noch aus dem Fakt `faction`, bis „Wer“ des Modells genauer ist (44 % gegen über 90 %).
+- **Fraktionsprofil:** Partei aus dem Fakt `faction`, gelesen nur bei Antrag aus der Politik mit Antragsteller Fraktion; Status aus dem Modell.
 - **Schritt der Signale:** Schritt, sonst Vorgangsart.
 - **Signale:** nur konkrete Vorhaben (Abschnitt 4a); Kategorie, Filter und Schritt aus Thema, Unterthema, Unter-Unterthema, Vorgangsart und Status:
 

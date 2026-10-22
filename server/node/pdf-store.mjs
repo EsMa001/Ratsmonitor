@@ -49,7 +49,8 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
  // role: 'other' für PDFs, die nicht Hauptdokument sind (fetch.mjs --others); leer = Hauptdokument. Für die OCR zählen beide,
  // bei gleicher Seitenzahl gehen Hauptdokumente vor (ocrQueue).
  const cols=new Set(db.prepare('PRAGMA table_info(pdfs)').all().map(c=>c.name));
- for(const [c,t] of [['doc_type','TEXT'],['formal','INTEGER'],['event_date','TEXT'],['role','TEXT']])if(!cols.has(c))db.exec(`ALTER TABLE pdfs ADD COLUMN ${c} ${t}`);
+ // model_type, model_formal: Dokumentart und Formalie nach dem Modell (scripts/model/apply.mjs, seit 22.10.2026); gehen im Rang vor
+ for(const [c,t] of [['doc_type','TEXT'],['formal','INTEGER'],['event_date','TEXT'],['role','TEXT'],['model_type','TEXT'],['model_formal','INTEGER']])if(!cols.has(c))db.exec(`ALTER TABLE pdfs ADD COLUMN ${c} ${t}`);
  const fileOf=(sha,ext='.pdf')=>path.join(dir,'files',sha.slice(0,2),sha+ext);
  const write=(file,data)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file+'.tmp',data);fs.renameSync(file+'.tmp',file);};
  const q={
@@ -57,6 +58,7 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   upsert:db.prepare(`INSERT INTO pdfs(url,sha256,bytes,pages,status,http,error,fetched_at,region_id,topic_id) VALUES(?,?,?,?,?,?,?,?,?,?)
    ON CONFLICT(url) DO UPDATE SET sha256=excluded.sha256,bytes=excluded.bytes,pages=COALESCE(excluded.pages,pdfs.pages),status=excluded.status,http=excluded.http,error=excluded.error,
    fetched_at=excluded.fetched_at,region_id=COALESCE(excluded.region_id,pdfs.region_id),topic_id=COALESCE(excluded.topic_id,pdfs.topic_id)`),
+  model:db.prepare('UPDATE pdfs SET model_type=?,model_formal=? WHERE url=? AND (model_type IS NOT ? OR model_formal IS NOT ?)'),
   meta:db.prepare('UPDATE pdfs SET doc_type=COALESCE(?,doc_type),formal=COALESCE(?,formal),event_date=COALESCE(?,event_date),role=COALESCE(?,role) WHERE url=?'),
   drop:db.prepare("UPDATE pdfs SET status='text-only' WHERE sha256=? AND status='ok'"),
   stats:db.prepare('SELECT status,COUNT(*) AS n,SUM(bytes) AS bytes FROM pdfs GROUP BY status'),
@@ -120,6 +122,8 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   stats:()=>q.stats.all().map(r=>({...r})),
   /** Angaben für den Rang: {docType, formal, eventDate, role}; fehlende bleiben, wie sie sind. */
   setMeta(url,{docType=null,formal=null,eventDate=null,role=null}={}){q.meta.run(docType,formal==null?null:Number(!!formal),eventDate,role,url);},
+  /** Dokumentart (Wörter der Ablage: paper, decision, minutes, attachment, invitation, other) und Formalie nach dem Modell; true bei Änderung */
+  setModel(url,type,formal){const f=Number(!!formal);return q.model.run(type,f,url,type,f).changes>0;},
   /** Löscht das PDF einer Prüfsumme, die Textfassung bleibt (Status 'text-only' für alle Adressen dieser Datei). */
   dropPdf(sha){q.drop.run(sha);try{fs.unlinkSync(fileOf(sha));}catch{/* schon weg */}},
   /** Viele PDFs löschen: erst alle Einträge in einer Transaktion auf 'text-only', dann die Dateien. Endet der Prozess dazwischen,

@@ -7,7 +7,7 @@
  */
 import {SUBTOPICS} from '../../shared/themes.mjs';
 import {SUBSUBS} from '../../shared/model/subsubs.mjs';
-import {PROCESS_STAGES} from '../../shared/stage.mjs';
+import {STEP_NAMES,SERVICE_NAMES,STATUS_NAMES,PROCESS_NAMES} from '../../shared/model/names.mjs';
 
 const q=s=>`'${String(s).replace(/'/g,"''")}'`;
 const list=a=>`(${a.map(q).join(',')})`;
@@ -18,10 +18,7 @@ const caseMap=(expr,pairs,other='NULL')=>`CASE ${expr} ${pairs.map(([k,v])=>`WHE
 const subName=id=>SUBTOPICS.find(s=>s.id===id)?.name||id;
 const subsubsOf=parents=>Object.keys(SUBSUBS).filter(k=>parents.some(p=>k.startsWith(p+'.')));
 
-export const STEP_NAMES={start:'Start',frueh:'Frühe Phase',entwurf:'Entwurf',abwaegung:'Abwägung',beschluss:'Beschluss',umsetzung:'Umsetzung',aufhebung:'Aufhebung',sonst:'Sonstiger Schritt'};
-export const SERVICE_NAMES={construction:'Bauleistung',planning:'Planung und Ingenieurleistung',supply:'Lieferung und Fahrzeuge',it:'IT und Digitales',service:'Dienstleistung'};
-export const STATUS_NAMES={announced:'Angekündigt',consulting:'In Beratung',recommended:'Empfohlen',approved:'Beschlossen',rejected:'Abgelehnt',postponed:'Vertagt',info:'Zur Kenntnis',unknown:'Stand offen'};
-const PROCESS_NAMES=Object.fromEntries(PROCESS_STAGES.map(s=>[s.id,s.name]));
+export {STEP_NAMES,SERVICE_NAMES,STATUS_NAMES};
 
 /** Vorgänge: konkrete Vorhaben mit Bedingung über die Antworten eines Berichts */
 const cases=cond=>`SELECT DISTINCT rr.case_key ck FROM ${ML} WHERE ml.project=1 AND (${cond})`;

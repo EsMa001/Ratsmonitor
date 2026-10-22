@@ -20,6 +20,6 @@ export const X_FUNCTIONS={
  compare,'compare-list':compareList,
  decisions,'decisions-list':decisionList,
  diffusion,'diffusion-list':diffusionList,
- 'x-v6':xQuery,
- 'x-signale-v8':xSignals,
+ 'x-v7':xQuery,
+ 'x-signale-v9':xSignals,
 };

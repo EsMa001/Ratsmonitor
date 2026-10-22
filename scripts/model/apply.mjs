@@ -63,7 +63,9 @@ const heads=readHeads(),threads=Number(process.env.MODEL_THREADS||2),encode=awai
 const getTopic=db.prepare('SELECT payload FROM topics WHERE id=?');
 const put=db.prepare(`INSERT OR REPLACE INTO model_labels(topic_id,model,key,kind,kind_p,status,status_p,themes,theme_p,subs,subsubs,process,process_p,project,step,service,applicants,main_url,result_url,doctypes,at)
  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
-const stats={statusSet:0,done:0,embedded:0,reused:0,kind:{},sure:{kind:0,status:0,process:0},subject:0,theme:0,embedMs:0};
+// Dokumentart des Modells in die PDF-Ablage (Rang der Dateien): Wörter der Ablage
+const STORE_TYPE={paper:'paper',bundle:'paper',attachment:'attachment',result:'decision',minutes:'minutes',session:'invitation',other:'other'};
+const stats={storeTypes:0,statusSet:0,done:0,embedded:0,reused:0,kind:{},sure:{kind:0,status:0,process:0},subject:0,theme:0,embedMs:0};
 let stopped=false;for(const s of ['SIGTERM','SIGINT'])process.on(s,()=>{stopped=true;});
 const BATCH=64;
 for(let o=0;o<todo.length&&!stopped;o+=BATCH){
@@ -76,19 +78,20 @@ for(let o=0;o<todo.length&&!stopped;o+=BATCH){
  for(let i=0;i<hs.length;i+=16){const vs=await encode(hs.slice(i,i+16).map(h=>need.get(h)));vs.forEach((v,j)=>got.set(hs[i+j],v));}
  stats.embedMs+=Date.now()-te;stats.embedded+=hs.length;
  if(measure)continue;
- db.exec('BEGIN');edb.exec('BEGIN');
+ db.exec('BEGIN');edb.exec('BEGIN');store.db.exec('BEGIN');
  try{
   for(const [h,v] of got)ePut.run(h,pack(v));
   for(const it of items){const E=new Map();for(const x of it.texts){E.set(x.k,x.v||got.get(x.h));if(x.v)stats.reused++;}
    const out=classify(it.input,k=>E.get(k)||null,heads,today),url=i=>i==null?null:it.input.pdfs.find(p=>p.i===i)?.url||null;
    put.run(it.id,version,it.key,out.kind,out.kindP,out.status,out.statusP,JSON.stringify(out.themes),out.themeP,JSON.stringify(out.subs),JSON.stringify(out.subsubs),
     out.process,out.processP,out.project==null?null:Number(out.project),out.step,out.service,JSON.stringify(out.applicants),url(out.main),url(out.result),JSON.stringify(out.doctypes),new Date().toISOString());
+   out.doctypes.forEach((t,j)=>{const u=it.input.pdfs[j]?.url;if(u&&store.setModel(u,STORE_TYPE[t]||'other',out.kind!=='subject'))stats.storeTypes++;});
    stats.done++;stats.kind[out.kind]=(stats.kind[out.kind]||0)+1;
    if(out.kindP>=0.7)stats.sure.kind++;if(out.statusP>=0.7)stats.sure.status++;
    if(out.kind==='subject'){stats.subject++;if(out.themes.length)stats.theme++;if(out.processP>=0.7)stats.sure.process++;}
   }
-  db.exec('COMMIT');edb.exec('COMMIT');
- }catch(e){db.exec('ROLLBACK');edb.exec('ROLLBACK');throw e;}
+  db.exec('COMMIT');edb.exec('COMMIT');store.db.exec('COMMIT');
+ }catch(e){db.exec('ROLLBACK');edb.exec('ROLLBACK');store.db.exec('ROLLBACK');throw e;}
  if((o/BATCH)%20===0)say(`${Math.min(o+BATCH,todo.length)} / ${todo.length}, ${stats.embedded} Texte eingebettet (${(stats.embedMs/Math.max(1,stats.embedded)).toFixed(0)} ms je Text), ${((Date.now()-t0)/1000).toFixed(0)} s`);
 }
 // Sicherer Status des Modells in den Bericht (auch nach einem Import, der ihn zurückgesetzt hat), in Stücken
@@ -99,7 +102,7 @@ if(!measure&&!stopped){const ids=db.prepare(`SELECT m.topic_id id,m.status FROM 
 const perText=stats.embedded?Math.round(stats.embedMs/stats.embedded):null;
 if(measure){await encode.dispose();say(`Messung: ${stats.embedded} Texte aus ${todo.length} Berichten in ${(stats.embedMs/1000).toFixed(0)} s, ${perText} ms je Text, ${(stats.embedded/Math.max(1,todo.length)).toFixed(2)} Texte je Bericht, ${threads} Kerne`);process.exitCode=0;}
 else{
-const summary={version,total,statusSet:stats.statusSet,todo:todo.length,done:stats.done,stopped,embedded:stats.embedded,reused:stats.reused,msPerText:perText,kind:stats.kind,subject:stats.subject,
+const summary={version,total,statusSet:stats.statusSet,storeTypes:stats.storeTypes,todo:todo.length,done:stats.done,stopped,embedded:stats.embedded,reused:stats.reused,msPerText:perText,kind:stats.kind,subject:stats.subject,
  withTheme:stats.theme,sure:stats.sure,seconds:Math.round((Date.now()-t0)/1000)};
 stepSummary(summary);say(JSON.stringify(summary));
 await encode.dispose();

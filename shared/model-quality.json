@@ -1,5 +1,5 @@
 {
- "version": "heads-dbc392293089",
+ "version": "heads-9526894c8afa",
  "measuredAt": "2026-10-22",
  "sample": "kern-big Prüfberichte (770, zufällig vom Server 21.10.2026)",
  "note": "Prüfberichte wurden für die Wahl der Modellvariante mehrfach genutzt; die Werte sind deshalb etwas zu gut (keine frische Stichprobe, Entscheidung 22.10.2026).",
@@ -62,8 +62,7 @@
    "n": 350
   },
   "applicants": {
-   "acc": 44,
-   "cov": 53,
+   "acc": 77,
    "n": 43
   }
  }

@@ -14,7 +14,11 @@ export const STATUS=['announced','consulting','recommended','approved','rejected
 export const PROCESS=['information','political','permit','planning','build','money','contract','other'];
 export const STEPS=['start','frueh','entwurf','abwaegung','beschluss','umsetzung','aufhebung','sonst'];
 export const SERVICE=['construction','planning','supply','it','service','none'];
-export const APPLICANTS=['cdu','csu','spd','gruene','fdp','afd','linke','bsw','fw','local','other','member','body','residents'];
+// Art des Antragstellers (Begriffsbuch 4b, seit 22.10.2026): welche Partei, liest der Fakt faction (ein Name im Text, keine Einordnung)
+export const APPLICANTS=['fraction','member','body','residents'];
+const PARTY_IDS=new Set(['cdu','csu','spd','gruene','fdp','afd','linke','bsw','fw','local','other']);
+/** Art des Antragstellers aus einer Einordnung mit Parteien (frühere Fassung des Begriffsbuchs): Fraktion vor Gremium, Mitglied, Einwohner */
+export const applicantKind=list=>{const a=list||[];return a.some(x=>PARTY_IDS.has(x)||x==='fraction')?'fraction':a.includes('body')?'body':a.includes('member')?'member':a.includes('residents')?'residents':null;};
 export const DOCTYPES=['paper','bundle','attachment','result','minutes','session','other'];
 
 /** Platzhalter der Importe, die kein Ergebnis sind */

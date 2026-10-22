@@ -12,6 +12,6 @@ export const GET=gated(analyticsGet,{feature:'analytics'});
 // Auswertungen gehören zu Enterprise (shared/plans.mjs); interne Aufrufe (Vorwärmen) kommen durch.
 async function analyticsGet(request:Request){
  try {const params=new URL(request.url).searchParams;
-  return cachedJson(request,await xCached(env.DB,'x-signale-v8',params,()=>xSignals(env.DB,REGIONS,params)),{'Cache-Control':X_CACHE});}
+  return cachedJson(request,await xCached(env.DB,'x-signale-v9',params,()=>xSignals(env.DB,REGIONS,params)),{'Cache-Control':X_CACHE});}
  catch(error){return dataFailure(error,AnalyticsError);}
 }

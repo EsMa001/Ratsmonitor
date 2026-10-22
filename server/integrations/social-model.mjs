@@ -15,7 +15,6 @@ const iso=t=>new Date(t).toISOString().slice(0,10);
 const shift=(d,n)=>iso(Date.parse(d+'T00:00:00Z')+n*DAY);
 const subName=id=>SUBTOPICS.find(s=>s.id===id)?.name||id;
 const themeName=id=>THEMES.find(t=>t.id===id)?.name||id;
-const PARTY_IDS=new Set(['cdu','csu','spd','gruene','fdp','afd','linke','bsw','fw','local','other']);
 const arr=v=>{try{const a=JSON.parse(v||'[]');return Array.isArray(a)?a:[];}catch{return [];}};
 
 /** Streitquote eines Unterthemas, zum Mittel hin gezogen (wenig Belege = nah am Mittel) */
@@ -34,7 +33,7 @@ export function scoreCard(card,cal=calibrationFile){
   return {sub:id,group:id.split('.')[0],groupName:themeName(id.split('.')[0]),term:ss?SUBSUBS[ss]||subName(id):subName(id),rate:r.rate,weight:2+6*r.rate};})
   .sort((a,b)=>b.weight-a.weight);
  let score=hits[0].weight+Math.min(hits.length-1,2)*.4;
- const party=card.process==='political'&&applicants.some(a=>PARTY_IDS.has(a));
+ const party=card.process==='political'&&applicants.includes('fraction');
  if(party)score+=.5;
  score*=STATUS_BOOST[card.status]??.9;
  return {score:Math.round(score*100)/100,hits,party,residents:applicants.includes('residents')};

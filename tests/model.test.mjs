@@ -77,3 +77,18 @@ test('gespeichertes Modell: dieselben Antworten auf die Prüfberichte wie beim L
   const o=classify(r,E,model,check.today);if(JSON.stringify(o)===JSON.stringify(c.out))same++;}
  assert.equal(same,check.rows.length);
 });
+
+test('Fakten an das Modell gebunden: passendes Unterthema, Schritte aus dem Modell, Fraktion nur bei Antrag einer Fraktion',()=>{
+ const title='Bebauungsplan Nr. 7 „Mühlenfeld“ – Aufstellungsbeschluss';
+ const report={title,documents:[]};
+ const base={key:'m|k',kind:'subject',themes:['bauen'],subs:['bauen.plan'],subsubs:['bauen.plan.wohnen'],process:'planning',mainUrl:null};
+ const plan=readReport(report,{model:{...base,step:'beschluss'}}).facts.find(f=>f.kind==='plan');
+ assert.equal(plan.value,'Satzungsbeschluss','Schritt vom Modell, nicht aus dem Titel');assert.match(plan.detail,/nr\. 7/);
+ assert.equal(readReport(report,{model:{...base,subs:['bauen.dritte'],step:null}}).facts.some(f=>f.kind==='plan'),false,'Bauantrag Dritter: kein Planverfahren');
+ const heat=readReport({title:'Kommunale Wärmeplanung – Vorstellung der Bestandsanalyse',documents:[]},{model:{...base,themes:['umwelt'],subs:['umwelt.waerme'],subsubs:['umwelt.waerme.waermeplan'],step:'frueh'}}).facts;
+ assert.deepEqual(heat.filter(f=>f.kind==='heat_plan').map(f=>f.value),['Analyse und Zwischenstand']);
+ const motion={title:'Antrag der SPD-Fraktion: Tempo 30 vor der Grundschule',documents:[]};
+ const pol={...base,themes:['mobilitaet'],subs:['mobilitaet.sicher'],subsubs:[],process:'political'};
+ assert.ok(readReport(motion,{model:{...pol,applicants:['fraction']}}).facts.some(f=>f.kind==='faction'));
+ assert.equal(readReport(motion,{model:{...pol,applicants:['residents']}}).facts.some(f=>f.kind==='faction'),false);
+});

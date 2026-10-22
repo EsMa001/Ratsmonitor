@@ -6,7 +6,7 @@ import {scoreCard,fitScore,draftText,subRate} from '../server/integrations/socia
 
 const cal={baseline:{contested:.3},subs:{'umwelt.ee':{res:200,contested:.5},'verwaltung.org':{res:200,contested:.1}}};
 const card=o=>({id:'x',region_id:'r',date:'2026-10-20',status:'consulting',title:'Windpark am Hohen Feld – Antrag der SPD-Fraktion',gremium:'Rat',
- kind:'subject',subs:'["umwelt.ee"]',subsubs:'["umwelt.ee.wind"]',process:'political',applicants:'["spd"]',...o});
+ kind:'subject',subs:'["umwelt.ee"]',subsubs:'["umwelt.ee.wind"]',process:'political',applicants:'["fraction"]',...o});
 
 test('Unterthema des Modells statt Streitwort: Ablauf und Punkte ohne Unterthema fallen weg',()=>{
  assert.equal(scoreCard(card({kind:'procedure'}),cal),null);

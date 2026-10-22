@@ -19,6 +19,7 @@ import {factsOf,FACTS_VERSION} from '../../shared/topic-facts.mjs';
 import {buildRuleSummary,RULE_SUMMARY_VERSION} from './rule-summary.mjs';
 import {mergePages} from './documents.mjs';
 import {MODEL_THEME_VERSION} from '../../shared/model/features.mjs';
+import {factFits,stepFacts,MODEL_COVERED} from '../../shared/model/fact-gate.mjs';
 
 export const READ_VERSION=`read-v4:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:${STAGE_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}`;
 // Wie readDocument im Import: sehr lange Dokumente werden nicht zusammengefasst, der Text ist für die Zusammenfassung gekürzt
@@ -101,16 +102,22 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  else ruleSummary=buildRuleSummary(text.slice(0,MAX_SUMMARY_CHARS),title,at,{url:doc.url,title:doc.title},model?kind:null)||null;
  if(!ruleSummary&&!summaryIssue)summaryIssue='no-summary';
  // 5. Fakten
- const facts=factsOf(title,text).filter(f=>kind==='subject'||ALWAYS_FACTS.has(f.kind));
+ // Fraktion: mit Modell nur bei Antrag aus der Politik mit Antragsteller Fraktion (Begriffsbuch 4b); sonst wie bisher
+ const factionOk=!model||(model.process==='political'&&(model.applicants||[]).includes('fraction'));
+ // Fakten an das Modell gebunden (shared/model/fact-gate.mjs): ein Wert zählt nur bei passendem Unterthema bzw. Vorgangsart
+ const fits=f=>!model||!MODEL_COVERED.has(f.kind)&&factFits(f.kind,{kind:model.kind,subs:model.subs||[],process:model.process});
+ const facts=factsOf(title,text).filter(f=>ALWAYS_FACTS.has(f.kind)?factionOk&&fits(f):kind==='subject'&&fits(f));
  if(kind==='subject'){
   const have=new Set(facts.map(f=>f.kind));
   for(const a of attachments||[]){
    if(!a?.pages||![...a.kinds].some(k=>!have.has(k)))continue;
-   const got=factsOf(title,mergePages(a.pages)).filter(f=>a.kinds.has(f.kind)&&!have.has(f.kind));
+   const got=factsOf(title,mergePages(a.pages)).filter(f=>a.kinds.has(f.kind)&&!have.has(f.kind)&&fits(f));
    for(const f of got)facts.push(f);for(const f of got)have.add(f.kind);
   }
  }
  const attSha=(attachments||[]).map(a=>a.textSha||'').join(',');
+ // Verfahrensschritte (Bebauungsplan, Wärmeplanung) aus dem Modell
+ if(model&&kind==='subject'){const next=stepFacts(facts,model);facts.length=0;facts.push(...next);}
  return {
   version:READ_VERSION,key:readKey({title,mainUrl:doc?.url,session,textSha,attSha,modelKey:model?.key||''}),
   mainUrl:doc?.url||null,session,itemKind:kind,stage,

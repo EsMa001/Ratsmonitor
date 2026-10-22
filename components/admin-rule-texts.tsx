@@ -5,7 +5,7 @@
    Fakten (die bleiben Regeln). Messwerte des Modells: shared/model-quality.json (schreibt scripts/model/train.mjs), Fassung:
    shared/model-manifest.json; Fakten: shared/rule-quality.json (Gruppe facts). */
 import {isStep} from '@/shared/pipeline-terms.mjs';
-import {useCallback,useEffect,useState} from 'react';
+import {useCallback,useEffect,useRef,useState} from 'react';
 import {StandLine} from '@/components/admin-stand';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
 import {when,dur} from '@/components/admin-pdf-parts';
@@ -15,6 +15,9 @@ import QUALITY from '@/shared/rule-quality.json';
 import MODEL_QUALITY from '@/shared/model-quality.json';
 import MANIFEST from '@/shared/model-manifest.json';
 import {MAP_FACTS} from '@/shared/map-facts.mjs';
+import {MODEL_COVERED} from '@/shared/model/fact-gate.mjs';
+import {SUBSUBS} from '@/shared/model/subsubs.mjs';
+import {KIND_NAMES,STATUS_NAMES,PROCESS_NAMES,STEP_NAMES,SERVICE_NAMES,APPLICANT_NAMES,DOCTYPE_NAMES} from '@/shared/model/names.mjs';
 type Counts={online:number;aiSummaries:number;ruleSummaries:number;ruleScoreSum:number;pdfArticles:number;aiLabels:number;unlabelled:number};
 type Summary={counts:Counts;stand?:Stand;statsPending?:number};
 type Step={name:string;seconds:number;ok:boolean;summary:Record<string,unknown>|null};
@@ -39,12 +42,49 @@ const QUESTIONS:{key:string;name:string;what:string;list?:boolean;sure?:boolean}
  {key:'status',name:'4. Status',what:'Angekündigt bis Stand offen. Ist das Modell sicher (ab 0,7), steht sein Status im Bericht, sonst der des Imports.',sure:true},
  {key:'project',name:'5. Vorhaben',what:'Konkretes Vorhaben ja oder nein: Grundlage der Signale.'},
  {key:'step',name:'6. Schritt',what:'Wo ein Verfahren steht (Start bis Aufhebung), bei Planung und Regelung. Bisher an Bauleit- und Wärmeplänen gelernt.'},
- {key:'applicants',name:'7. Wer',what:'Antragsteller bei Anträgen aus der Politik (Fraktion, Mitglied, Gremium, Einwohner). Genauigkeit: Liste genau richtig; Abdeckung: mindestens einer richtig. Das Fraktionsprofil nutzt vorerst noch die Fakten-Regel (über 90 %): die Partei steht oft nur auf der ersten Seite der Vorlage, die das Modell nicht Wort für Wort liest.',list:true},
+ {key:'applicants',name:'7. Wer',what:'Art des Antragstellers bei Anträgen aus der Politik: Fraktion, einzelnes Mitglied, Gremium oder Einwohner. Welche Partei, liest der Fakt aus dem Text (ein Name, keine Einordnung), und zwar nur, wenn hier Fraktion steht.'},
  {key:'service',name:'8. Leistungsart',what:'Was beauftragt wird, bei Bau und Vergabe: Bauleistung, Planung, Lieferung, IT, Dienstleistung oder keine.'},
  {key:'doctype',name:'9. Dokumentart',what:'Je PDF: Vorlage, Sammeldokument, Anlage, Ergebnis, Niederschrift, Sitzungsunterlage, Sonstiges.'},
  {key:'main',name:'Hauptdokument',what:'Das PDF, das den Gegenstand trägt; aus ihm kommen Zusammenfassung und Fakten.'},
  {key:'result',name:'Ergebnisdokument',what:'Das PDF mit dem Ergebnis (Beschlussauszug, sonst Niederschrift); Beleg für den Status.'},
 ];
+/* Alle möglichen Antworten je Frage (ohne Zahlen), für das Fenster beim Klick auf den Namen */
+type Group={head?:string;items:string[]};
+const subName=(id:string)=>(SUBTOPICS as {id:string;name:string}[]).find(u=>u.id===id)?.name||id;
+const THEME_LIST=(THEMES as {id:string;name:string}[]);
+const VALUES:Record<string,Group[]>={
+ kind:[{items:Object.values(KIND_NAMES)}],
+ theme:[{items:[...THEME_LIST.map(t=>t.name),'Sonstiges (kein Thema erkennbar)']}],
+ sub:THEME_LIST.map(t=>({head:t.name,items:(SUBTOPICS as {theme:string;name:string}[]).filter(u=>u.theme===t.id).map(u=>u.name)})),
+ subsub:[...new Set(Object.keys(SUBSUBS).map(k=>k.split('.').slice(0,2).join('.')))].map(p=>({head:subName(p),items:Object.entries(SUBSUBS as Record<string,string>).filter(([k])=>k.startsWith(p+'.')).map(([,v])=>v)})),
+ process:[{items:Object.values(PROCESS_NAMES)}],
+ status:[{items:Object.values(STATUS_NAMES)}],
+ project:[{items:['Konkretes Vorhaben','Kein konkretes Vorhaben']}],
+ step:[{items:Object.values(STEP_NAMES)}],
+ applicants:[{items:Object.values(APPLICANT_NAMES)}],
+ service:[{items:[...Object.values(SERVICE_NAMES),'Keine (eigenes Vorhaben ohne Auftrag)']}],
+ doctype:[{items:Object.values(DOCTYPE_NAMES)}],
+ main:[{items:['Ein PDF des Berichts (Vorlage oder Sammeldokument, bei Anträgen der Antrag)','Keins (nur Anlagen oder Sitzungsunterlagen)']}],
+ result:[{items:['Beschlussauszug oder Abstimmungsergebnis zu diesem Punkt','Sonst die Niederschrift der Sitzung','Keins']}],
+};
+/* Fenster mit allen Antworten einer Frage; Escape und Klick auf „Schließen“ schließen es */
+function ValuesDialog({q,onClose}:{q:{key:string;name:string;what:string}|null;onClose:()=>void}){
+ const ref=useRef<HTMLDialogElement>(null);
+ useEffect(()=>{const d=ref.current;if(!d)return;if(q&&!d.open)d.showModal();if(!q&&d.open)d.close();},[q]);
+ const groups=q?VALUES[q.key]||[]:[];
+ return <dialog ref={ref} onClose={onClose} aria-labelledby="werte-titel" className="w-[min(560px,calc(100vw-32px))] max-h-[min(80dvh,720px)] rounded-xl border border-slate-200 bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/30">
+  {q&&<div className="flex max-h-[min(80dvh,720px)] flex-col">
+   <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+    <div><h2 id="werte-titel" className="m-0 text-[18px] font-semibold">{q.name.replace(/^\d+\.\s*/,'')}</h2><p className="m-0 mt-1 text-[14px] leading-snug text-slate-600">{q.what}</p></div>
+    <button type="button" onClick={onClose} className="shrink-0 rounded-full px-3 py-1 text-[14px] text-teal-700 hover:bg-slate-50">Schließen</button>
+   </div>
+   <div className="overflow-y-auto px-5 py-4">{groups.map((g,i)=><div key={i} className={i?'mt-4':''}>
+    {g.head&&<h3 className="m-0 mb-1 text-[12px] font-medium uppercase tracking-wide text-slate-500">{g.head}</h3>}
+    <ul className="m-0 list-none p-0 text-[14px]">{g.items.map(v=><li key={v} className="border-b border-slate-100 py-1.5">{v}</li>)}</ul>
+   </div>)}</div>
+  </div>}
+ </dialog>;
+}
 /* „i“ neben dem Namen: was gemessen wird; Klick öffnet, für Tastatur und Touch */
 const Info=({text}:{text:string})=>{const [open,setOpen]=useState(false);return <>
  <button type="button" aria-label="Was gemessen wird" aria-expanded={open} title={text} onClick={()=>setOpen(o=>!o)} className={'inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border text-[12px] font-semibold leading-none '+(open?'border-teal-600 bg-teal-600 text-white':'border-slate-300 text-slate-500 hover:border-teal-600 hover:text-teal-700')}>i</button>
@@ -72,14 +112,14 @@ const ALL_RULE_ROWS=QUALITY.groups.flatMap(g=>g.rows as unknown as FactRow[]);
 const KEPT_RULES:{id:string;name:string;why:string}[]=[
  {id:'summary',name:'Zusammenfassung',why:'Sätze aus dem Hauptdokument, das das Modell wählt. Bleibt Regel, bis es eine gelernte Fassung mit markierten Kernsätzen gibt.'},
  {id:'member',name:'Mitgliedsgemeinde',why:'Schlägt Gemeindenamen im Katalog nach (Gremium, „der Gemeinde X“), ordnet nichts ein.'},
- {id:'faction',name:'Fraktion (Fraktionsprofil)',why:'Liest „Antrag der …-Fraktion“ in Titel und Vorlage. Bleibt, bis die Frage „Wer“ des Modells genauer ist (44 %).'},
- {id:'faction_advice',name:'Empfehlung zum Antrag (Fraktionsprofil)',why:'Liest, ob der Beschlussvorschlag empfiehlt, dem Antrag nicht zu folgen. Im Begriffsbuch gestrichen, bis es genug Beispiele gibt.'},
+ {id:'faction',name:'Partei des Antragstellers (Fraktionsprofil)',why:'Liest den Namen in „Antrag der …-Fraktion“ (ein Wert aus dem Text). Läuft nur, wenn das Modell einen Antrag aus der Politik mit Antragsteller Fraktion erkennt.'},
+ {id:'plan_use',name:'Nutzung im Plan (Atlas)',why:'Liest die Art des Plangebiets (Wohnen, Gewerbe …) aus Titel und Vorlage. Bleibt Regel: auf den Prüfberichten 8 von 8 richtig, das Modell 10 von 14. Die Signale nutzen die Unter-Unterthemen des Modells.'},
  {id:'outcome',name:'Ausgang im Newsradar',why:'Liest aus den Ergebnistexten der Sitzungen, wie abgestimmt wurde (einstimmig, mit Mehrheit, abgelehnt). Der Status selbst kommt vom Modell.'},
- {id:'doc_type',name:'Dokumentart beim Laden der PDFs',why:'Bewertet PDFs schon beim Laden für die Ablage, wenn es noch keinen Text gibt. Danach entscheidet das Modell.'},
- {id:'plan',name:'Bauleitplanung als Wert im Atlas',why:'Liest Planname und Verfahrensschritt aus dem Text für die Gliederung im Atlas. Der Schritt für Signale kommt vom Modell.'},
+ {id:'doc_type',name:'Dokumentart beim ersten Laden der PDFs',why:'Erste Schätzung für die Ablage, solange es noch keinen Text gibt. Sobald das Modell den Bericht eingeordnet hat, bewertet die Ablage mit dessen Dokumentart und Art des Punkts.'},
+ {id:'plan',name:'Planname im Atlas',why:'Liest Planname und Nummer („Bebauungsplan Nr. 12“) aus dem Text. Der Verfahrensschritt kommt vom Modell, ebenso der Schritt der Wärmeplanung.'},
 ];
 /* Werte für die Karte (Zahl je Gemeinde); Fraktion und Bausteine der früheren Signal-Regeln zeigt die Seite nicht mehr */
-const VALUE_FACTS=new Set((MAP_FACTS as [string,string,boolean][]).map(([k])=>k));
+const VALUE_FACTS=new Set((MAP_FACTS as [string,string,boolean][]).map(([k])=>k).filter(k=>!MODEL_COVERED.has(k)));
 const ON_MAP=new Set((MAP_FACTS as [string,string,boolean][]).filter(([,,on])=>on).map(([k])=>k));
 const MQ=MODEL_QUALITY.quality as Record<string,Q>;
 
@@ -128,6 +168,8 @@ export function AdminRuleTexts(){
   {label:'Berichte mit Fakten',value:facts?n(facts.reports):job?'–':undefined,note:facts?n(facts.fromText)+' aus dem Text des Hauptdokuments; Fassung '+facts.version:'nach dem nächsten Lauf'},
  ];
  const factRows=FACT_ROWS.filter(r=>VALUE_FACTS.has(r.id));
+ /* Fenster mit allen Antworten der angeklickten Frage */
+ const [shown,setShown]=useState<typeof QUESTIONS[number]|null>(null);
  return <>
   <AdminPageHead page="regeltexte"><StandLine stand={data?.stand} busy={busy} action="Aktualisieren" onAction={load}/></AdminPageHead>
   {error&&<Alert onRetry={load}>{error}</Alert>}
@@ -144,16 +186,17 @@ export function AdminRuleTexts(){
    <p className="admin-note mt-3">Was jede Antwort genau bedeutet, steht im Begriffsbuch (requirements/begriffsbuch-kern.md), Aufbau und Messung im Konzept (requirements/modell-konzept.md). Neue Kategorien entstehen dort und mit neuen Beispielen, nicht durch Einzelregeln.</p>
    <h3 className="mt-6">Wie gut es ist</h3>
    <p className="mt-3 text-[14px] text-slate-700">Encoder <span className="font-medium text-slate-900">{MANIFEST.encoder.version}</span> · Köpfe <span className="font-medium text-slate-900">{MANIFEST.heads.version}</span> · gelernt {shortDate(MANIFEST.heads.trainedAt)} · gemessen {shortDate(MODEL_QUALITY.measuredAt)}</p>
-   <p className="admin-note mt-1">Genauigkeit: so oft stimmt die Antwort. Abdeckung (bei Listen wie Thema): so oft findet es das Richtige überhaupt. Sicher: Anteil der Antworten ab 0,7 und wie oft diese stimmen. Gemessen an {MODEL_QUALITY.sample}, die das Modell beim Lernen nicht gesehen hat. {MODEL_QUALITY.note} Ziel {GOAL} %.</p>
+   <p className="admin-note mt-1">Ein Klick auf den Namen einer Frage zeigt alle möglichen Antworten. Genauigkeit: so oft stimmt die Antwort. Abdeckung (bei Listen wie Thema): so oft findet es das Richtige überhaupt. Sicher: Anteil der Antworten ab 0,7 und wie oft diese stimmen. Gemessen an {MODEL_QUALITY.sample}, die das Modell beim Lernen nicht gesehen hat. {MODEL_QUALITY.note} Ziel {GOAL} %.</p>
    <ul className="m-0 mt-4 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{QUESTIONS.map(qn=>{const q=MQ[qn.key];return <li key={qn.key} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
     <div className="min-w-0">
-     <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{qn.name}</span><Info text={qn.what}/></div>
+     <div className="flex flex-wrap items-center gap-2"><button type="button" onClick={()=>setShown(qn)} title="Alle möglichen Antworten zeigen" className="font-medium text-slate-900 underline decoration-slate-300 decoration-dotted underline-offset-4 hover:text-teal-700 hover:decoration-teal-600">{qn.name}</button><Info text={qn.what}/></div>
      <small className="mt-1 block text-[12px] leading-snug text-slate-500">{q?n(q.n)+' Prüffälle':'nicht gemessen'}{qn.sure&&q?.sureShare!=null?' · sicher bei '+q.sureShare+' %, dann '+q.sureAcc+' % richtig':''}{q&&q.n<60?' · zu wenige Prüffälle für eine belastbare Zahl':''}</small>
     </div>
     <Meter label="Genauigkeit" v={q?.acc} min={GOAL}/>
     {qn.list?<Meter label="Abdeckung" v={q?.cov} min={QUALITY.target.coverage}/>:qn.sure?<Meter label="Sicher richtig" v={q?.sureAcc} min={GOAL}/>:<div/>}
    </li>;})}</ul>
   </section>
+  <ValuesDialog q={shown} onClose={()=>setShown(null)}/>
   <section id="regeltexte-job" className="admin-section">
    <div className="admin-section-heading"><h2>Lauf</h2></div>
    <p className="admin-note">Nachts nach der PDF-Kette: Modell anwenden, Zusammenfassung und Fakten, Wortliste der Suche, Zahlen für plenara.X.</p>
@@ -192,7 +235,7 @@ export function AdminRuleTexts(){
   </section>
   <section id="regeltexte-texte" className="admin-section">
    <div className="admin-section-heading"><h2>Zusammenfassung und Fakten</h2></div>
-   <p className="admin-note">Regeln über dem Text des Hauptdokuments, das das Modell wählt. Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst die regelbasierte.</p>
+   <p className="admin-note">Regeln über dem Text des Hauptdokuments, das das Modell wählt. Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst die regelbasierte. Fakten sind an das Modell gebunden: ein Wert zählt nur bei passendem Unterthema (Hebesatz bei Steuern und Haushalt, Gebühren bei Wasser und Abwasser, Bebauungsplan bei Bauleitplanung und Erschließung; shared/model/fact-gate.mjs). So fallen Vergleichs- und Hintergrundwerte weg, etwa ein Bebauungsplan in einem Bauantrag.</p>
    <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen und Fakten" items={sum}/></div>
    <h3 className="mt-6">Werte für plenara.X Fakten</h3>
    <p className="admin-note mt-1">Qualität aus der letzten ungesehenen Stichprobe (shared/rule-quality.json); auf der Karte ab {GOAL} %.</p>

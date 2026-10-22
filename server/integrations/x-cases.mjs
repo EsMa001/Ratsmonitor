@@ -96,9 +96,9 @@ function buildXSteps(sql){
  return n;
 }
 
-/* Fraktionen (Migration 0043): je Vorgang die Fraktionen aus den Fakten aller seiner Karten und ob eine Karte empfiehlt, dem
-   Antrag nicht zu folgen. Bleibt vorerst bei der Regel (factionsOf, über 90 % gemessen): die Frage „Wer“ des Modells liegt bei
-   44 % (22.10.2026, die Partei steht oft nur auf der ersten Seite der Vorlage). Ohne Spalten (Migration fehlt) bleibt alles wie vorher. */
+/* Fraktionen (Migration 0043): je Vorgang die Parteien aus dem Fakt faction aller seiner Karten und ob eine Karte empfiehlt, dem
+   Antrag nicht zu folgen. Die Partei ist ein Name im Text (Fakt); readReport liest ihn mit dem Modell nur bei Antrag aus der Politik
+   mit Antragsteller Fraktion (Begriffsbuch 4b). Ohne Spalten (Migration fehlt) bleibt alles wie vorher. */
 function buildXFactions(sql){
  const cols=new Set(sql.prepare("SELECT name FROM pragma_table_info('x_cases')").all().map(r=>r.name));
  if(!cols.has('factions'))return null;

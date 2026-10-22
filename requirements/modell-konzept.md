@@ -109,6 +109,21 @@ Befunde:
 - Lokal geprüft auf 2.000 echten Berichten: 12 ms je Text auf dem Mac, zweiter Lauf ohne neue Arbeit. Server noch nicht eingerichtet; vor dem ersten Durchlauf messen (`apply.mjs --measure 200`).
 - Streitquote je Unterthema für Social Media erst nach dem ersten Lauf auf dem Server lernen (`scripts/learn-social.mjs`).
 
+## Nächste Stufe: was noch Regel ist und neue Einordnungen braucht (Stand 22.10.2026)
+
+Ohne neue Einordnungen ist abgelöst, was sich ablösen ließ; Fakten (Werte aus dem Text) und Einzelheiten (Wortzerlegung des Themennetzes, Nachschlagen der Mitgliedsgemeinde, Abstimmungsart aus dem Ergebnistext) bleiben bewusst Regeln. Für den Rest braucht das Modell Beispiele:
+
+| Was | Heute | Für das Modell nötig |
+|---|---|---|
+| Antrag oder Anfrage (Fraktionsprofil) | Wort im Titel (`factionsOf`, Feld detail) | neue Frage im Begriffsbuch, etwa 400 Anträge und Anfragen aus der Politik einordnen |
+| Empfehlung der Verwaltung zum Antrag | gestrichen (35 Beispiele) | dieselbe Nachlieferung: Beschlussvorschlag folgt dem Antrag, lehnt ab, keine |
+| Hausform | gestrichen (21 Beispiele) | etwa 300 Wohnbaupläne mit erster Seite |
+| Nutzung im Plan (Atlas) | Regel (8 von 8 richtig, Modell 10 von 14) | mehr Bauleitpläne mit Nutzung, damit die Unter-Unterthemen `bauen.plan.*` 90 % erreichen |
+| Kernsätze der Zusammenfassung | Regel `ruleSummary` | 1.500 bis 2.000 Berichte mit markierten Kernsätzen, eigener Kopf je Satz |
+| Schritt, Leistungsart (gemessen an 33 bzw. 36 Fällen) | Modell | mehr Prüffälle für eine belastbare Zahl |
+
+Vorgehen wie bei der großen Stichprobe: Begriffsbuch ergänzen, Stichprobe lesend vom Server, Hilfsagenten nur mit Anleitung und Begriffsbuch, 10 % doppelt.
+
 ## Offene Punkte
 
 - Grenzfälle im Begriffsbuch: entschieden 21.10.2026 (jeweils der Vorschlag).

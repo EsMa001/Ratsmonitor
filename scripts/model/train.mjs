@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {SUBTOPICS} from '../../shared/themes.mjs';
-import {KIND,THEMES,STATUS,PROCESS,STEPS,SERVICE,APPLICANTS,DOCTYPES,INPUT_VERSION,pdfSparse,reportSparse,flags,parts,cat} from '../../shared/model/features.mjs';
+import {KIND,THEMES,STATUS,PROCESS,STEPS,SERVICE,APPLICANTS,DOCTYPES,INPUT_VERSION,applicantKind,pdfSparse,reportSparse,flags,parts,cat} from '../../shared/model/features.mjs';
 import {DENSE_SCALE,SURE,classify,loadHeads} from '../../shared/model/heads.mjs';
 
 const arg=(k,d)=>process.argv.find(a=>a.startsWith('--'+k+'='))?.slice(k.length+3)??d;
@@ -44,8 +44,13 @@ class Head{
   Object.assign(this,{W,U,B});return this;}
  logits(x){const K=this.classes.length,s=[...new Set(x.s.map(f=>this.vocab.get(f)).filter(i=>i!==undefined))],out=[];
   for(let k=0;k<K;k++){let z=this.B[k];for(const i of s)z+=this.W[k*this.V+i];for(let j=0;j<this.DD;j++)z+=this.U[k*this.DD+j]*x.d[j]*DENSE_SCALE;out.push(z);}return out;}
+ prob(x){const z=this.logits(this.DD?x:{s:x.s,d:NOD}),out={};this.classes.forEach((c,k)=>{out[c]=1/(1+Math.exp(-z[k]));});return out;}
 }
 const NOD=new Float32Array(0);
+/* Kleine Köpfe (wenige hundert Beispiele): drei Bauarten, auf dem Abstimmungsteil gewählt (zweistufig, gemeinsam, nur Wortteile).
+   Bei „Wer“ trennt die Einbettung Parteien kaum („SPD“ und „CDU“ liegen nah), die zweistufige Bauart gibt dann die falsche Richtung vor. */
+const SMALL=['step','service','applicants'],VARIANTS=['stack','joint','sparse'];
+const fitVariant=(v,classes,X,Y)=>v==='stack'?new Stack(classes).fit(X,Y):v==='joint'?new Head(classes).fit(X,Y):new Head(classes).fit(X.map(x=>({s:x.s,d:NOD})),Y);
 class Stack{
  constructor(classes){this.classes=classes;}
  fit(X,Y){this.a=new Head(this.classes).fit(X.map(x=>({s:[],d:x.d})),Y);const off=X.map(x=>this.a.logits({s:[],d:x.d}));
@@ -79,7 +84,7 @@ const pdfX=(r,p)=>({s:pdfSparse(r,p),d:EK(r,'p.'+p.i)});
 const pdfRows=rs=>rs.flatMap(r=>r.pdfs.map(p=>({r,p})));
 let M=null;const F=new Map();
 /** Alle Köpfe auf einer Lernmenge; danach Merkmale aller Berichte neu (Haupt- und Ergebnisdokument folgen den Köpfen) */
-function build(tr){
+function build(tr,choice=null){
  const m={};const pr=pdfRows(tr);
  m.doctype=new Stack(DOCTYPES).fit(pr.map(({r,p})=>pdfX(r,p)),pr.map(({r,p})=>DOCTYPES.map(c=>r.gold.doctypes?.[p.i]===c?1:0)));
  const docX=(r,p)=>{const t=m.doctype.prob(pdfX(r,p));return {s:pdfSparse(r,p),d:cat(EK(r,'p.'+p.i),Float32Array.from(DOCTYPES.map(c=>t[c])))};};
@@ -90,15 +95,18 @@ function build(tr){
   F.set(r.i,{main,res,x:{s:reportSparse(r,main),d:cat(EK(r,'t'),main!=null?EK(r,'p.'+main):ZERO,res!=null?EK(r,'p.'+res):ZERO,EK(r,'r'),flags(r,main,res,STICHTAG))}});}
  const X=rs=>rs.map(r=>F.get(r.i).x);
  const single=(classes,get,filt)=>{const t=tr.filter(filt);return new Stack(classes).fit(X(t),t.map(r=>classes.map(c=>get(r)===c?1:0)));};
- const multi=(classes,get,filt)=>{const t=tr.filter(filt);return new Stack(classes).fit(X(t),t.map(r=>classes.map(c=>(get(r)||[]).includes(c)?1:0)));};
+ // kleine Köpfe: alle Bauarten (ohne Wahl) oder die gewählte
+ const small=(name,classes,get,filt,list=false)=>{const t=tr.filter(filt),Y=t.map(r=>classes.map(c=>(list?(get(r)||[]).includes(c):get(r)===c)?1:0));
+  if(choice)return fitVariant(choice[name],classes,X(t),Y);
+  const all={};for(const v of VARIANTS)all[v]=fitVariant(v,classes,X(t),Y);return all;};
  m.kind=single(KIND,r=>r.gold.kind,()=>true);
  m.status=single(STATUS,r=>r.gold.status,()=>true);
  {const t=tr.filter(isS);m.themes=new Stack(THEMES).fit([...X(t),...extra.map(e=>e.x)],[...t.map(r=>THEMES.map(c=>(r.gold.themes||[]).includes(c)?1:0)),...extra.map(e=>THEMES.map(c=>(e.themes||[]).includes(c)?1:0))]);}
  m.process=single(PROCESS,r=>r.gold.process,isS);
  m.project=single(['ja'],r=>r.gold.project?'ja':'nein',isS);
- m.step=single(STEPS,stepOf,r=>isS(r)&&!!stepOf(r));
- m.service=single(SERVICE,r=>r.gold.service||'none',r=>isS(r)&&r.gold.process==='build');
- m.applicants=multi(APPLICANTS,r=>r.gold.applicants,r=>isS(r)&&r.gold.process==='political');
+ m.step=small('step',STEPS,stepOf,r=>isS(r)&&!!stepOf(r));
+ m.service=small('service',SERVICE,r=>r.gold.service||'none',r=>isS(r)&&r.gold.process==='build');
+ m.applicants=small('applicants',APPLICANTS,r=>applicantKind(r.gold.applicants),r=>isS(r)&&r.gold.process==='political'&&!!applicantKind(r.gold.applicants));
  m.subs={};m.subsubs={};
  for(const T of THEMES){const cls=subsAll.filter(x=>x.startsWith(T+'.'));if(!cls.length)continue;
   const t=tr.filter(r=>isS(r)&&(r.gold.themes||[]).includes(T)),ex=extra.filter(e=>(e.themes||[]).includes(T));if(t.length+ex.length<10)continue;
@@ -126,7 +134,16 @@ const TH=best(t=>themeEval(tune,t)).t;
 const TS=best(t=>listEval(tune.filter(isS),r=>subsOf(r,themesOf(r,TH),t),r=>r.gold.subs)).t;
 const TSS=best(t=>listEval(tune.filter(r=>isS(r)&&(r.gold.subs||[]).length),r=>subsubsOf(r,r.gold.subs||[],t),r=>r.gold.subsubs)).t;
 console.log('Schwellen',{TH,TS,TSS});
-build(trainAll);console.log('neu gelernt auf allen Lernberichten',((Date.now()-t0)/1000).toFixed(0),'s');
+// Bauart der kleinen Köpfe: beste auf dem Abstimmungsteil (Treffer)
+const CHOICE={};
+for(const name of SMALL){
+ const gold=r=>name==='step'?stepOf(r):name==='service'?r.gold.service||'none':applicantKind(r.gold.applicants);
+ const rs=tune.filter(r=>isS(r)&&(name==='step'?!!stepOf(r):name==='service'?r.gold.process==='build':r.gold.process==='political'&&!!gold(r)));
+ const score=v=>{let ok=0;for(const r of rs)if(argmax(M[name][v].prob(F.get(r.i).x))[0]===gold(r))ok++;return ok/Math.max(1,rs.length);};
+ const sc=Object.fromEntries(VARIANTS.map(v=>[v,score(v)]));CHOICE[name]=VARIANTS.reduce((a,b)=>sc[b]>sc[a]?b:a);
+ console.log('Bauart',name,JSON.stringify(sc),'→',CHOICE[name],`(${rs.length} Abstimmungsfälle)`);
+}
+build(trainAll,CHOICE);console.log('neu gelernt auf allen Lernberichten',((Date.now()-t0)/1000).toFixed(0),'s');
 
 // Speichern: Float32, Wortteile ohne Gewicht (alle Klassen unter 1e-4) fallen weg
 const floats=[];let off=0;
@@ -134,12 +151,12 @@ const put=a=>{const o=[off,a.length];floats.push(Float32Array.from(a));off+=a.le
 const saveHead=h=>{const K=h.classes.length,keep=[];for(const [f,i] of h.vocab){let m=0;for(let k=0;k<K;k++)m=Math.max(m,Math.abs(h.W[k*h.V+i]));if(m>=1e-4)keep.push([f,i]);}
  const W=new Float32Array(K*keep.length);keep.forEach(([,i],n)=>{for(let k=0;k<K;k++)W[k*keep.length+n]=h.W[k*h.V+i];});
  return {classes:h.classes,DD:h.DD,vocab:keep.map(([f])=>f),W:put(W),U:put(h.U),B:put(h.B)};};
-const saveStack=st=>({classes:st.classes,a:saveHead(st.a),b:saveHead(st.b)});
+const saveStack=st=>st instanceof Stack?{classes:st.classes,a:saveHead(st.a),b:saveHead(st.b)}:saveHead(st);
 const heads={};for(const k of ['doctype','document','kind','status','themes','process','project','step','service','applicants'])heads[k]=saveStack(M[k]);
 heads.subs=Object.fromEntries(Object.entries(M.subs).map(([k,v])=>[k,saveStack(v)]));heads.subsubs=Object.fromEntries(Object.entries(M.subsubs).map(([k,v])=>[k,saveStack(v)]));
 const bin=Buffer.concat(floats.map(f=>Buffer.from(f.buffer,f.byteOffset,f.byteLength)));
 const version='heads-'+crypto.createHash('sha256').update(bin).digest('hex').slice(0,12);
-const json={version,input:INPUT_VERSION,encoder:arg('encoder','e5-small-ft1'),dim:D,denseScale:DENSE_SCALE,thresholds:{theme:TH,sub:TS,subsub:TSS},trainedAt:new Date().toISOString(),heads};
+const json={version,input:INPUT_VERSION,variants:CHOICE,encoder:arg('encoder','e5-small-ft1'),dim:D,denseScale:DENSE_SCALE,thresholds:{theme:TH,sub:TS,subsub:TSS},trainedAt:new Date().toISOString(),heads};
 fs.mkdirSync(OUT,{recursive:true});fs.writeFileSync(path.join(OUT,'heads.json'),JSON.stringify(json));fs.writeFileSync(path.join(OUT,'heads.bin'),bin);
 console.log('gespeichert',version,(bin.length/1e6).toFixed(1),'MB Gewichte,',(fs.statSync(path.join(OUT,'heads.json')).size/1e6).toFixed(1),'MB Aufbau');
 
@@ -162,9 +179,8 @@ const lst=(name,rs,got,gold)=>{const v=listEval(rs,r=>got(out.get(r.i)),gold);Q[
  Q.theme={acc:pc(right,given),cov:pc(hit,want),n:test.filter(isS).length};}
 lst('sub',test.filter(isS),o=>o.subs,r=>r.gold.subs);
 lst('subsub',test.filter(r=>isS(r)&&(r.gold.subs||[]).length),o=>o.subsubs,r=>r.gold.subsubs);
-{const rs=test.filter(r=>isS(r)&&r.gold.process==='political'&&(r.gold.applicants||[]).length);let exact=0,hit=0;
- for(const r of rs){const a=out.get(r.i).applicants,g=r.gold.applicants;if(JSON.stringify([...a].sort())===JSON.stringify([...g].sort()))exact++;if(a.some(x=>g.includes(x)))hit++;}
- Q.applicants={acc:pc(exact,rs.length),cov:pc(hit,rs.length),n:rs.length};}
+acc('applicants',test.filter(r=>isS(r)&&r.gold.process==='political'&&!!applicantKind(r.gold.applicants)),o=>o.applicants[0]||null,r=>applicantKind(r.gold.applicants));
+
 for(const [name,key,rs,gold] of [['kind','kindP',test,r=>r.gold.kind],['status','statusP',test,r=>r.gold.status],['process','processP',test.filter(isS),r=>r.gold.process]]){
  let n=0,ok=0;for(const r of rs){const o=out.get(r.i);if(o[key]>=SURE){n++;if(o[name]===gold(r))ok++;}}Q[name].sureAcc=pc(ok,n);Q[name].sureShare=pc(n,rs.length);}
 for(const [k,v] of Object.entries(Q))console.log(k.padEnd(11),JSON.stringify(v));

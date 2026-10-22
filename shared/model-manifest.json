@@ -11,12 +11,12 @@
   }
  },
  "heads": {
-  "version": "heads-dbc392293089",
+  "version": "heads-9526894c8afa",
   "input": "input-v1",
-  "trainedAt": "2026-10-22T04:59:45.671Z",
+  "trainedAt": "2026-10-22T05:44:31.257Z",
   "files": {
-   "heads.json": "369439f908bf331ec8cd3a07e02c455dcc56a5be01ca1556561e339cf5f0f4ab",
-   "heads.bin": "dbc3922930898b62aa3548f02306438bace9f5f2b0b15c3c1d6abe09c12ec413"
+   "heads.json": "d107723bb37716b6b76156c083212c00def09ade8e16e3b3c4e502ac0330ca55",
+   "heads.bin": "9526894c8afa118abe7dc9cb8baec8824b1275c5c71d858f91d346ffaf98d079"
   }
  }
 }
