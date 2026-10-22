@@ -37,6 +37,7 @@ export const STEPS=Object.freeze([
  {id:'xcases',name:'Zahlen rechnen',phase:'verarbeitung',what:'Zahlen für plenara.X',aliases:['Zahlen für plenara.X']},
  {id:'ai',name:'KI',phase:'verarbeitung',what:'Kurz- und Langfassung und KI-Einordnung (Agent über MCP, von Hand)'},
  {id:'trace',name:'Wege zählen',phase:null,what:'zählen, welchen Weg die Berichte genommen haben (Pipeline-Debug)'},
+ {id:'ops',name:'Betrieb prüfen',phase:null,what:'Auslöser, Tagespipeline, Sicherung, Platte und Datenbankgröße prüfen, neue Befunde als Sammelmail an den Betreiber (Job „betrieb“)'},
 ]);
 const byId=new Map(STEPS.map(s=>[s.id,s]));
 /** Name eines Schritts */

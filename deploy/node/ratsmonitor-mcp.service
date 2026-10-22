@@ -6,6 +6,7 @@
 # accounts.env, der Kontenordner ist für diesen Dienst unsichtbar (requirements/konten-konzept.md 3.2).
 [Unit]
 Description=Ratsmonitor Kunden-MCP (HTTP, nur lesend)
+OnFailure=ratsmonitor-notify@%n.service
 After=network-online.target
 Wants=network-online.target
 

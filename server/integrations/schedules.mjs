@@ -43,6 +43,11 @@ export const JOBS=Object.freeze([
   steps:['Abgelaufene Anmeldungen, Sitzungen und Einladungen löschen, Protokolle nach Frist','Hinweismails (Testzugang endet, Inaktivität)','Kontendatei verschlüsselt sichern (age, 7 Stände)'],
   limits:'Wenige Sekunden. Ohne Kontendatei (ACCOUNTS_FILE) nichts zu tun.',warn:'Ohne diesen Job gelten keine Löschfristen und es gibt keine Sicherung der Konten.',
   cmd:['bash','deploy/node/accounts-job.sh']},
+ {id:'betrieb',label:'Betriebsprüfung',flow:'tages',icon:'alert',time:'09:30',
+  what:'Prüft einmal am Tag, ob der Betrieb in Ordnung ist: systemd-Auslöser aktiv, Tagespipeline heute gelaufen, Sicherung jünger als 36 Stunden, Platte unter 85 %, Wachstum der Datenbank unter 3 GB je Tag. Neue Befunde gehen als eine Sammelmail an den Betreiber (OPERATOR_EMAIL), dieselbe Warnung höchstens einmal am Tag. Gehört nicht zur Abfolge der Tagespipeline.',
+  steps:['Auslöser, Läufe der Tagespipeline, Sicherung, Platte und Datenbankgröße prüfen (server/integrations/ops-check.mjs)','Neue Befunde als Sammelmail über den Postausgang des Webdienstes','Stand in system_state ops-check'],
+  limits:'Wenige Sekunden. Ohne OPERATOR_EMAIL oder IMPORT_TOKEN nur ein Eintrag im Protokoll.',warn:'Ohne diesen Job gibt es keine tägliche Sammelmail; die Fehlermails je Job (ratsmonitor-notify@) laufen weiter.',
+  cmd:['node','--no-warnings','scripts/ops-check.mjs']},
  /* Tagespipeline (jede Nacht, in dieser Reihenfolge): Sichern → Abruf → Extraktion → Verarbeitung. Namen: shared/pipeline-terms.mjs */
  {id:'backup',label:'Sichern',flow:'tages',icon:'shield',time:'00:30',
   what:'Legt eine in sich stimmige Kopie der Datenbank an, dazu Index und Texte der PDF-Ablage.',

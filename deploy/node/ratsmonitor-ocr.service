@@ -3,6 +3,7 @@
 # (text.mjs --child) lassen eine halb gelesene Datei in der Reihe, es geht nichts verloren.
 [Unit]
 Description=Ratsmonitor OCR, tagsüber (Tagesbereich 07–23 Uhr, Altbestand auf Anforderung 10–22 Uhr)
+OnFailure=ratsmonitor-notify@%n.service
 After=network-online.target ratsmonitor.service
 Wants=network-online.target
 

@@ -30,7 +30,7 @@ test('Sperre im Einladungsmodus: Seiten leiten um, API 401, Anmeldung, Rechtstex
  assert.deepEqual(await decide('/'),{redirect:'/anmelden?weiter=%2F'});
  assert.deepEqual(await decide('/beschluss/abc.rsc'),{redirect:'/anmelden?weiter=%2Fbeschluss%2Fabc'});
  assert.deepEqual(await decide('/api/search?q=x'),{status:401});
- for(const free of ['/anmelden','/anmelden/bestaetigen','/api/auth/link','/api/me','/impressum','/datenschutz','/agb','/_next/static/x.js','/fonts/a.ttf','/data/de_map.json','/favicon.ico','/api/calendar/feed/abc.ics','/api/internal/outbox'])
+ for(const free of ['/anmelden','/anmelden/bestaetigen','/api/auth/link','/api/me','/impressum','/datenschutz','/agb','/_next/static/x.js','/fonts/a.ttf','/data/de_map.json','/favicon.ico','/api/calendar/feed/abc.ics','/api/internal/outbox','/api/health'])
   assert.deepEqual(await decide(free),{allow:true},free);
  assert.deepEqual(await decide('/api/search',{auth:'Bearer internal-token-0123456789'}),{allow:true});
  assert.deepEqual(await decide('/api/search',{auth:'Bearer falsch-0123456789abc'}),{status:401});

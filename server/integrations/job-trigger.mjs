@@ -5,7 +5,7 @@
  * offenen Wunsch und führt ihn aus. Ohne Auslöser (lokal, Worker) bleibt es beim 10-Minuten-Takt der Timer.
  * Ordner: RM_TRIGGER_DIR, sonst „trigger“ neben der Datenbank (DATABASE_FILE); ohne beides kein Auslöser.
  */
-export const TRIGGER_JOBS=['accounts','import-nightly','backup','startseite-trends','pdf-nightly','rule-texts','import','pdf-job','ocr','nacharbeit','altbestand'];
+export const TRIGGER_JOBS=['accounts','betrieb','import-nightly','backup','startseite-trends','pdf-nightly','rule-texts','import','pdf-job','ocr','nacharbeit','altbestand'];
 
 export function triggerDir(env=globalThis.process?.env||{}){
  if(env.RM_TRIGGER_DIR)return env.RM_TRIGGER_DIR;

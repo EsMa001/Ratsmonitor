@@ -10,6 +10,7 @@
 # Protokoll: journalctl -u ratsmonitor-import -u ratsmonitor-import-nightly
 [Unit]
 Description=Ratsmonitor Importprozess
+OnFailure=ratsmonitor-notify@%n.service
 After=network-online.target ratsmonitor.service
 Wants=network-online.target
 

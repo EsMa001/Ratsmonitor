@@ -3,6 +3,7 @@
 # backups/startseite-trends.log.
 [Unit]
 Description=Ratsmonitor Startseite Karte und Trends
+OnFailure=ratsmonitor-notify@%n.service
 After=ratsmonitor.service
 
 [Service]

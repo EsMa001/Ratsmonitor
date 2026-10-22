@@ -4,6 +4,7 @@
 # Eine Sperre in der Ablage (nightly.lock) verhindert zwei Läufe; von Hand: systemctl start ratsmonitor-pdf-nightly.
 [Unit]
 Description=Ratsmonitor PDF-Ablage, nächtliche Kette
+OnFailure=ratsmonitor-notify@%n.service
 After=network-online.target ratsmonitor.service
 Wants=network-online.target
 

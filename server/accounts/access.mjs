@@ -7,6 +7,8 @@ import {validBearer} from '../integrations/prepared-access.mjs';
 
 const FREE=[/^\/anmelden(\/|$)/,/^\/registrieren$/,/^\/api\/auth\//,/^\/api\/me$/,/^\/(impressum|datenschutz|agb|widerruf|kontakt)$/,
  /^\/api\/internal\//,/^\/api\/calendar\/feed\//,/^\/api\/dev\//,
+ // Erreichbarkeitsprüfung für einen Uptime-Dienst (server/integrations/health.mjs): keine Daten, keine Personen, nur lesend
+ /^\/api\/health$/,
  // OAuth für den Kunden-MCP: Registrierung, Token und Widerruf rufen Anwendungen ohne Sitzung auf; die Zustimmung
  // (/verbinden, /api/oauth/*) verlangt weiter eine Anmeldung
  /^\/oauth\/(authorize|token|register|revoke)$/];

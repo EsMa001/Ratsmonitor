@@ -1,0 +1,12 @@
+# Alle 10 Minuten den Zeitplaner fragen (ratsmonitor-betrieb.service); ob die Betriebsprüfung dran ist, steht im Admin-Reiter „Jobs & Zeitpläne“.
+[Unit]
+Description=Ratsmonitor betrieb, Zeitplaner
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=false
+AccuracySec=1min
+Unit=ratsmonitor-betrieb.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,30 @@
+# Fehlermail an den Betreiber (Betriebsüberwachung, docs/betrieb/node-server.md „Betriebsüberwachung“): jede
+# ratsmonitor-*.service hat OnFailure=ratsmonitor-notify@%n.service; scheitert sie, startet systemd diese Einheit mit ihrem
+# Namen als Instanz (%i, etwa ratsmonitor-backup.service). scripts/notify-failure.mjs liest Ergebnis und Journal der Einheit
+# und schickt die Mail über den Webdienst (POST /api/internal/notify, Bearer IMPORT_TOKEN aus ratsmonitor.env) an
+# OPERATOR_EMAIL. Probe: systemctl start ratsmonitor-notify@test (schickt eine Testmail). Diese Einheit selbst hat kein
+# OnFailure (keine Schleife); scheitert sie, steht der Grund in journalctl -u 'ratsmonitor-notify@*'.
+# Installieren (als root): cp deploy/node/ratsmonitor-notify@.service /etc/systemd/system/ && systemctl daemon-reload
+[Unit]
+Description=Ratsmonitor: Fehlermail zu %i
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+# Journal der anderen Einheiten lesen (journalctl -u)
+SupplementaryGroups=systemd-journal
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+TimeoutStartSec=3min
+ExecStart=/usr/bin/node --no-warnings scripts/notify-failure.mjs %i
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+# Konten: diese Einheit sieht die Kontendatei nicht (requirements/konten-konzept.md 3.2); die Mail geht über den Webdienst
+InaccessiblePaths=-/srv/ratsmonitor/accounts

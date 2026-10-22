@@ -15,6 +15,7 @@ const OPEN={
  'calendar/feed/[token]':'Abo-Link für Kalender-Apps: das Token in der Adresse ist die Berechtigung (calendar_feeds)',
  'client-error':'Fehlermeldungen aus dem Browser, auch von Gästen: nur gleiche Herkunft, höchstens 4 KB, Mengenbegrenzung, schreibt nur ins Log (client-errors.mjs)',
  'admin/claim':'alter Admin-Weg über Kopfzeilen, entfällt mit C3 (requirements/cleanup-analyse-2026-10-20.md)',
+ 'health':'Erreichbarkeitsprüfung für einen Uptime-Dienst: nur lesend, keine Personendaten, keine Pfade (server/integrations/health.mjs, tests/health.test.mjs)',
 };
 /** Ändernde Admin-Routen, deren Herkunftsprüfung in einem Modul steht */
 const ORIGIN_IN={'admin/ai-local':'server/integrations/ai-local-http.mjs'};
