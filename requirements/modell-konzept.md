@@ -118,7 +118,7 @@ Ohne neue Einordnungen ist abgelöst, was sich ablösen ließ; Fakten (Werte aus
 | Antrag oder Anfrage (Fraktionsprofil) | Wort im Titel (`factionsOf`, Feld detail) | neue Frage im Begriffsbuch, etwa 400 Anträge und Anfragen aus der Politik einordnen |
 | Empfehlung der Verwaltung zum Antrag | gestrichen (35 Beispiele) | dieselbe Nachlieferung: Beschlussvorschlag folgt dem Antrag, lehnt ab, keine |
 | Hausform | gestrichen (21 Beispiele) | etwa 300 Wohnbaupläne mit erster Seite |
-| Nutzung im Plan (Atlas) | Regel (8 von 8 richtig, Modell 10 von 14) | mehr Bauleitpläne mit Nutzung, damit die Unter-Unterthemen `bauen.plan.*` 90 % erreichen |
+| Nutzung im Plan (Atlas) | nicht mehr im Atlas, Regel abgeschaltet (Modell 10 von 14, Regel 8 von 8) | mehr Bauleitpläne mit Nutzung; ab 90 % für `bauen.plan.*` als Gliederung im Atlas aus dem Modell |
 | Kernsätze der Zusammenfassung | Regel `ruleSummary` | 1.500 bis 2.000 Berichte mit markierten Kernsätzen, eigener Kopf je Satz |
 | Schritt, Leistungsart (gemessen an 33 bzw. 36 Fällen) | Modell | mehr Prüffälle für eine belastbare Zahl |
 

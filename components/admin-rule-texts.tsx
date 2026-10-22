@@ -113,7 +113,6 @@ const KEPT_RULES:{id:string;name:string;why:string}[]=[
  {id:'summary',name:'Zusammenfassung',why:'Sätze aus dem Hauptdokument, das das Modell wählt. Bleibt Regel, bis es eine gelernte Fassung mit markierten Kernsätzen gibt.'},
  {id:'member',name:'Mitgliedsgemeinde',why:'Schlägt Gemeindenamen im Katalog nach (Gremium, „der Gemeinde X“), ordnet nichts ein.'},
  {id:'faction',name:'Partei des Antragstellers (Fraktionsprofil)',why:'Liest den Namen in „Antrag der …-Fraktion“ (ein Wert aus dem Text). Läuft nur, wenn das Modell einen Antrag aus der Politik mit Antragsteller Fraktion erkennt.'},
- {id:'plan_use',name:'Nutzung im Plan (Atlas)',why:'Liest die Art des Plangebiets (Wohnen, Gewerbe …) aus Titel und Vorlage. Bleibt Regel: auf den Prüfberichten 8 von 8 richtig, das Modell 10 von 14. Die Signale nutzen die Unter-Unterthemen des Modells.'},
  {id:'outcome',name:'Ausgang im Newsradar',why:'Liest aus den Ergebnistexten der Sitzungen, wie abgestimmt wurde (einstimmig, mit Mehrheit, abgelehnt). Der Status selbst kommt vom Modell.'},
  {id:'doc_type',name:'Dokumentart beim ersten Laden der PDFs',why:'Erste Schätzung für die Ablage, solange es noch keinen Text gibt. Sobald das Modell den Bericht eingeordnet hat, bewertet die Ablage mit dessen Dokumentart und Art des Punkts.'},
  {id:'plan',name:'Planname im Atlas',why:'Liest Planname und Nummer („Bebauungsplan Nr. 12“) aus dem Text. Der Verfahrensschritt kommt vom Modell, ebenso der Schritt der Wärmeplanung.'},

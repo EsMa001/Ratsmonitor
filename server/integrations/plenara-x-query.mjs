@@ -49,9 +49,10 @@ export const X_FACT_NAMES={annual_result:'Jahresabschlüsse nach Ergebnis',plan:
 /* Tor seit 17.10.2026: Zahlenfakten nur mit Qualität ab 90 % und Werten für mindestens 10 % der Gemeinden (Admin „Themen & Texte“,
    docs/produkt/signale-und-fakten.md). Das erfüllen Hebesatz, Jahresergebnis und Wassergebühr; Zuschüsse (Qualität 89 %) und
    Gewerbegrundstücke (0,5 % der Gemeinden) nicht. Stand, Art und Fraktion (plan, plan_use, heat_plan, faction) sind keine Zahlenfakten. */
-export const X_FACT_GATE={budget:false,second_home_tax:false,amusement_tax:false,house_type:false,road:false,project:false,wind_count:false,waste_fee:false,plan_area:false,plan:true,hebesatz:true,faction:true,annual_result:true,kita_fee:false,plan_use:true,fee_rate:true,heat_plan:true,grant:false,ee_power:false,land_price:false,plot_price:false,dog_tax:false};
+export const X_FACT_GATE={budget:false,second_home_tax:false,amusement_tax:false,house_type:false,road:false,project:false,wind_count:false,waste_fee:false,plan_area:false,plan:true,hebesatz:true,faction:true,annual_result:true,kita_fee:false,plan_use:false,fee_rate:true,heat_plan:true,grant:false,ee_power:false,land_price:false,plot_price:false,dog_tax:false};
 export const X_SUM_GATE={housing:false};
-const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plan_area'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['waste_fee'],['ee_power'],['wind_count']],mobilitaet:[['project'],['road']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
+// Art des Plangebiets (plan_use) seit 22.10.2026 nicht mehr im Atlas: eine Einordnung, die die Signale aus dem Modell zeigen
+const ATLAS_FACTS={bauen:[['plan','housing'],['plan_area'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['waste_fee'],['ee_power'],['wind_count']],mobilitaet:[['project'],['road']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee']]};
 import {MAP_FACTS,MAP_FACT_NAMES} from '../../shared/map-facts.mjs';
 import {atRevisionStale,paramsKey} from './revision-cache.mjs';

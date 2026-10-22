@@ -36,5 +36,6 @@ export function stepFacts(facts,model){
 
 /* Fakten, die eine Einordnung sind und mit dem Modell nicht mehr gelesen werden (seit 22.10.2026): Bausteine der früheren
    Signal-Regeln (jetzt Vorgangsart, Leistungsart, Unter-Unterthemen) und die im Begriffsbuch gestrichenen Hausform und
-   Empfehlung. Die Nutzung im Plan (plan_use) bleibt Regel: auf den Prüfberichten 8 von 8 richtig gegen 10 von 14 beim Modell. */
-export const MODEL_COVERED=new Set(['tender','street','road','water','broadband','solar','energy','wind_step','school_build','wohnbau_art','area_dev','retail','care','project','house_type','faction_advice']);
+   Empfehlung. Ebenso die Nutzung im Plan (plan_use, Entscheidung 22.10.2026): die Signale nehmen die Unter-Unterthemen des
+   Modells, der Atlas zeigt sie nicht mehr (Modell 10 von 14 richtig, unter dem Tor von 90 %; Regel 8 von 8). */
+export const MODEL_COVERED=new Set(['tender','street','road','water','broadband','solar','energy','wind_step','school_build','wohnbau_art','area_dev','retail','care','project','house_type','faction_advice','plan_use']);
