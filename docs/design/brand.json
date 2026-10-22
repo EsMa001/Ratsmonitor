@@ -1,0 +1,160 @@
+{
+  "name": "Plenara",
+  "stand": "2026-10-22",
+  "quelle": "docs/design/corporate-design.md (verbindliche Regeln); diese Datei ist die maschinenlesbare Fassung für Vorlagen und Skripte",
+  "slogan": "Besser verstehen, was vor Ort beraten wird.",
+  "schreibweise": {
+    "produkt": "Plenara",
+    "analysen": "Plenara.X",
+    "logo": "plenara (Kleinschreibung nur im Schriftzug)"
+  },
+  "farben": {
+    "schema": "Petrol klar (seit 17.10.2026): nur Grau, Petrol, Dunkelblau, Orange-Braun plus Weiß und Schwarz; Werte in app/styles/tokens.css (Block Farbkonzept), Übersicht docs/farbschema-petrol-klar-2026-10-17.pdf",
+    "text": {
+      "hex": "#18181b",
+      "verwendung": "Überschriften, Logo-Schrift, wichtiger Text"
+    },
+    "grautext": {
+      "hex": "#52525b",
+      "verwendung": "Fließtext, Erläuterungen, Meta, Fußnoten"
+    },
+    "grauHell": {
+      "hex": "#a1a1aa",
+      "verwendung": "Seitenzahlen, Text auf dunklem Grund"
+    },
+    "petrol": {
+      "hex": "#268478",
+      "verwendung": "Marke, Hauptaktion, Hervorhebung, Balken, Karte, Flächen (als Text 4,5:1)"
+    },
+    "petrolDunkel": {
+      "hex": "#1f7065",
+      "verwendung": "Hover, kleiner Text auf hellen Petrol-Flächen"
+    },
+    "petrolHell": {
+      "hex": "#e6f3f1",
+      "verwendung": "zarte Flächen, Symbolkreise, Hinweisboxen"
+    },
+    "dunkelblau": {
+      "hex": "#0c4a6e",
+      "verwendung": "beschlossen, Neues, Info (Diagramme: zweite Farbe)"
+    },
+    "link": {
+      "hex": "#29467a",
+      "verwendung": "Links"
+    },
+    "orangeBraun": {
+      "hex": "#b45309",
+      "verwendung": "abgelehnt, Fehler, Warnung (Diagramme: dritte Farbe)"
+    },
+    "weiss": {
+      "hex": "#ffffff",
+      "verwendung": "Hintergrund"
+    },
+    "flaeche": {
+      "hex": "#f4f4f5",
+      "verwendung": "Karten, Bänder"
+    },
+    "linie": {
+      "hex": "#e4e4e7",
+      "verwendung": "Rahmen und Trennlinien"
+    },
+    "dunkel": {
+      "hex": "#191e1d",
+      "verwendung": "dunkle Flächen: Titel- und Schlussfolien, dunkle Fassung des Logos"
+    }
+  },
+  "schrift": {
+    "familie": "IBM Plex Sans",
+    "lizenz": "SIL OFL 1.1, Dateien in public/fonts",
+    "gewichte": {
+      "text": "Regular 400",
+      "hervorhebung": "SemiBold 600",
+      "menue": "Medium 500"
+    },
+    "windowsNamen": {
+      "regular": "IBM Plex Sans",
+      "semibold": "IBM Plex Sans SmBld"
+    },
+    "rueckfall": "Segoe UI, Calibri, systemeigene Sans-Serif",
+    "groessenWeb": [
+      12,
+      14,
+      16,
+      18,
+      22,
+      28,
+      44
+    ]
+  },
+  "logo": {
+    "ordner": "docs/design/logo",
+    "dateien": {
+      "wortmarke": "plenara-logo.svg / .png (auf Weiß, transparent)",
+      "wortmarkeDunkel": "plenara-logo-dunkel.svg / .png (auf Dunkel #0b1220)",
+      "bildmarke": "plenara-bildmarke.svg / .png",
+      "bildmarkeDunkel": "plenara-bildmarke-dunkel.svg",
+      "plenaraX": "plenara-x-logo.svg / .png",
+      "plenaraXDunkel": "plenara-x-logo-dunkel.svg / .png",
+      "profilbild": "plenara-profilbild.png, plenara-profilbild-dunkel.png (1024 × 1024)"
+    },
+    "schutzraum": "mindestens die Höhe des Buchstabens l auf allen Seiten",
+    "mindestgroesse": {
+      "wortmarke": "Schrifthöhe 20 px bzw. 6 mm",
+      "bildmarke": "16 px bzw. 5 mm"
+    },
+    "aufDunkel": "Schriftzug Weiß auf #191e1d, Bildmarke und Quadrat bleiben Petrol #268478",
+    "verboten": [
+      "strecken oder drehen",
+      "andere Farben als Petrol, Text-Grau und Weiß",
+      "Schatten oder Verläufe",
+      "Schriftzug neu setzen"
+    ],
+    "erzeugt": "node docs/design/tools/export-logos.mjs (aus der Geometrie in components/ratsmonitor/components/Brand.tsx)"
+  },
+  "praesentation": {
+    "vorlage": "docs/design/tools/deck-lib.mjs (Thema, Layouts, Bausteine); Fassungen: plenara-investoren.pptx (20 Folien, Investoren) und plenara-firmenpraesentation.pptx (18 Folien, Produkt) in docs/design/praesentation",
+    "format": "16:9, 10 × 5,625 Zoll",
+    "thema": {
+      "name": "Plenara",
+      "dk1": "18181B",
+      "lt1": "FFFFFF",
+      "dk2": "191E1D",
+      "lt2": "F4F4F5",
+      "accent1": "268478",
+      "accent2": "1F7065",
+      "accent3": "52525B",
+      "accent4": "A1A1AA",
+      "accent5": "E6F3F1",
+      "accent6": "E4E4E7",
+      "hlink": "29467A"
+    },
+    "layouts": {
+      "HELL": "weiße Inhaltsfolie: Eyebrow (10 pt, Teal dunkel, gesperrt), Titel (24 pt SemiBold), Logo unten links, Seitenzahl unten rechts",
+      "DUNKEL": "Titel und Schluss: Dunkel mit Punktraster, Logo-Fassung dunkel",
+      "TRENNER": "Abschnittsfolie: Dunkel, Titel 36 pt Weiß, Untertitel 16 pt"
+    },
+    "groessen": {
+      "titel": 24,
+      "zwischenueberschrift": "12,5 bis 15 SemiBold",
+      "text": "10 bis 13",
+      "fussnote": "9 bis 9,5",
+      "kennzahl": "24 bis 32 SemiBold"
+    },
+    "elemente": [
+      "Petrol-Quadrat als Aufzählungszeichen (0,1 Zoll)",
+      "Karten: Fläche #f4f4f5, Rahmen #e4e4e7, Radius 0,1 Zoll",
+      "Symbole: Feather-Linien in Petrol dunkel auf Kreis Teal hell",
+      "Screenshots in weißem Rahmen mit weichem Schatten",
+      "Diagramme nativ, eine Farbe (Petrol), Beschriftung 10 pt Grau",
+      "Diagramme: Petrol, Dunkelblau, Orange-Braun in dieser Reihenfolge"
+    ],
+    "nichtErlaubt": [
+      "Farbbalken und Akzentstreifen",
+      "Linien unter Titeln",
+      "Fotos aus Bilddatenbanken",
+      "Verläufe außer dem zarten Teal-Schimmer",
+      "mehr als eine Akzentfarbe"
+    ],
+    "bauen": "cd docs/design/tools && npm install && node screenshots.mjs (Tunnel zum Server) && node build-investoren.mjs && node build-praesentation.mjs && node render-praesentation.mjs [datei]"
+  }
+}
