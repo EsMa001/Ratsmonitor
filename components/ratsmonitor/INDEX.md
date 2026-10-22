@@ -1042,9 +1042,10 @@ z- analytics.css:632
 - PageBand.tsx (23): PageBand
 - RadarDrill.tsx (131, ⚠3): DrillItem, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
-- RegionMap.tsx (178, ⚠5): RegionMap
+- RailToggle.tsx (34): RailToggle
+- RegionMap.tsx (182, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (419, ⚠12): SignalePage
+- SignalePage.tsx (418, ⚠16): SignalePage
 - SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap

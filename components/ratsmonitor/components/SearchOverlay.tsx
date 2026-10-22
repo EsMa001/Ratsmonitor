@@ -6,7 +6,7 @@ import { useAccount, useSavedStats } from "../state/account";
 import { useData } from "../state/data";
 import { useSearch, useSearchResults } from "../state/search";
 import { useToast } from "../state/toast";
-import { IconFilter, IconStar } from "./icons";
+import { IconFilter, IconHeart } from "./icons";
 import { SearchBox } from "./SearchBox";
 import { FilterPanel } from "./FilterPanel";
 
@@ -74,10 +74,10 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
         aria-pressed={!!savedHit}
         title={savedHit ? "Gespeicherte Suche entfernen" : active ? "Suche speichern" : "Erst suchen oder filtern, dann speichern"}
         aria-label={savedHit ? "Gespeicherte Suche entfernen" : "Suche speichern"}
-        /* Nicht ausgegraut: ohne Suche nur nicht klickbar, damit der Stern sichtbar bleibt */
+        /* Nicht ausgegraut: ohne Suche nur nicht klickbar, damit das Herz sichtbar bleibt */
         className={`${roundShape} ${savedHit ? "text-teal-700" : "text-slate-700 enabled:hover:text-teal-700"}`}
       >
-        <IconStar size={20} filled={!!savedHit} />
+        <IconHeart size={20} filled={!!savedHit} />
       </button>
       <div className="min-w-0 flex-1">
         <SearchBox glass listMax={listMax} listUp={listUp} onSubmit={onSubmit} />
