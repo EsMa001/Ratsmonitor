@@ -1325,6 +1325,10 @@ html.rm-dark .rm-banddots {
   .rm-stage {
     touch-action: pan-y;
   }
+  /* Themen- und Gremiennetz: senkrecht wischen scrollt die Seite (wie bei der Karte); Tippen, seitlich Ziehen und zwei Finger bleiben beim Netz */
+  .rm-netstage.touch-none {
+    touch-action: pan-y;
+  }
   html:has(.pl-top) main#inhalt {
     padding-bottom: 0;
   }
@@ -1352,7 +1356,8 @@ html.rm-dark .rm-banddots {
     top: 0;
     margin-bottom: -42px;
     border-bottom: 0;
-    background: color-mix(in srgb,var(--rm-ac) calc(var(--hb,0) * 100%),transparent);
+    /* von Anfang an deckend in der Farbe des Bands: Safari färbt die Statusleiste nach dieser Kopfzeile, durchsichtig wurde sie hell */
+    background: var(--rm-ac);
   }
   html:has(.pl-top, .ri-head) main#inhalt {
     min-height: calc(100dvh + 150px);

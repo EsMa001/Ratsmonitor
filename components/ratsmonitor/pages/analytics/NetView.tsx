@@ -254,7 +254,8 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef, route = nul
         }
         const d = drag.current;
         if (!d) return;
-        if ("pan" in d) return put((v) => ({ ...v, x: d.vx + e.clientX - d.sx, y: d.vy + e.clientY - d.sy }));
+        /* Handy (touch-action pan-y): senkrecht scrollt die Seite, das Netz folgt einem Finger nur seitlich */
+        if ("pan" in d) { const side = e.pointerType === "touch" && getComputedStyle(e.currentTarget).touchAction === "pan-y"; return put((v) => ({ ...v, x: d.vx + e.clientX - d.sx, y: side ? d.vy : d.vy + e.clientY - d.sy })); }
         /* Gremien lassen sich nicht wegziehen; nur Anklicken wählt */
       }}
       onPointerCancel={(e) => { touches.current.delete(e.pointerId); pinch.current = null; drag.current = null; }}

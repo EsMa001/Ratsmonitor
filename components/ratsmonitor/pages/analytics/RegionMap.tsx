@@ -45,12 +45,14 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   const [boxH, setBoxH] = useState<number | null>(null);
   useEffect(() => {
     if (!phoneStage) return;
-    let raf = 0, lastW = window.innerWidth;
+    /* Fensterhöhe einmal je Breite festhalten: am Handy ändern sich beim Scrollen mit der Adressleiste auch clientHeight (iOS) und die
+       Seitenhöhe (100dvh), der Beobachter misst dann neu und Karte und Suchleiste rückten ein Stück */
+    let raf = 0, lastW = window.innerWidth, vh0 = document.documentElement.clientHeight;
     /* Stabile Fensterhöhe (documentElement.clientHeight): window.innerHeight ändert sich am Handy, wenn beim Scrollen die
        Adressleiste ein- und ausfährt; die Karte würde dann jedes Mal ihre Höhe ändern und die Seite darunter springen */
     const measure = () => {
       raf = 0;
-      const el = boxRef.current, bar = document.querySelector<HTMLElement>(".rm-tabbar"), vh = document.documentElement.clientHeight;
+      const el = boxRef.current, bar = document.querySelector<HTMLElement>(".rm-tabbar"), vh = vh0;
       if (!el || !isPhone() || vh < 500) { setBoxH(null); return; }
       const h = vh - (el.getBoundingClientRect().top + window.scrollY) - (bar?.offsetHeight ?? 0) - 6;
       setBoxH(Math.max(240, Math.round(h)));
@@ -60,7 +62,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     const ro = new ResizeObserver(schedule);
     ro.observe(document.body);
     /* Nur bei geänderter Breite (Drehen) neu messen, nicht bei reiner Höhenänderung durch die Adressleiste */
-    const onResize = () => { if (window.innerWidth !== lastW) { lastW = window.innerWidth; schedule(); } };
+    const onResize = () => { if (window.innerWidth !== lastW) { lastW = window.innerWidth; vh0 = document.documentElement.clientHeight; schedule(); } };
     window.addEventListener("resize", onResize);
     return () => { ro.disconnect(); window.removeEventListener("resize", onResize); if (raf) cancelAnimationFrame(raf); };
   }, [phoneStage]);
