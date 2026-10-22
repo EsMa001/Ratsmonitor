@@ -840,7 +840,6 @@ z- analytics.css:632
 - admin-totp.tsx (62): AdminTotp, AdminTotpSetup
 - admin-ui.tsx (87): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
 - admin-verarbeitung.tsx (77, ⚠3): AdminVerarbeitung
-- article-analysis.tsx (6, ⚠2): SessionDetails
 - database-admin.tsx (34, ⚠3): DatabaseAdmin
 
 ### components/ratsmonitor/
@@ -996,7 +995,7 @@ z- analytics.css:632
 - XSwitcher.tsx (34): XSheet
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (146, ⚠9): DetailPage
+- DetailPage.tsx (217, ⚠17): DetailPage
 - KalenderPage.tsx (427, ⚠3): KalenderPage
 - LegalPage.tsx (287): useInhalt, LegalPage
 - NotificationsPage.tsx (93, ⚠1): NotificationsPage

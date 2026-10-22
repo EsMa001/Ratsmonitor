@@ -63,6 +63,9 @@ export interface TopicDetail extends TopicCard {
     ruleSummary?: RuleSummary;
     /** Überblick des Vorgangs aus dem Modell (shared/model/overview.mjs): Vorgang, Sitzungen, Unterlagen; kein Auszug */
     overview?: {version:string;text:string};
+    /** Thema und Unterthemen (payload.theme aus readReport, mit Modell: Fassung model-v1) und Gebietsschlüssel, für die Einordnung im Artikel */
+    theme?: {id:string;subs:string[]};
+    regionAgs?: string|null;
     officialTitle: string;
     longSummary: string[];
     committee: string;
