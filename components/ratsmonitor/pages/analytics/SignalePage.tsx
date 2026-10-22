@@ -2,7 +2,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, LayoutGrid, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { XKopf, XWeiter } from "./XKopf";
+import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
+import { useRailFold } from "../../lib/useRailFold";
 import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -11,10 +12,9 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Fehler, Leer } from "./Befund";
-import { Folgen, Kennzahlen, MeinOrt, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
+import { Folgen, Kennzahlen, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { AktiveFilter, Dropdown } from "../../components/Dropdown";
 import { ArtIcon } from "../../components/ArtIcon";
-import { usePhone } from "../../lib/usePhone";
 import type { Article } from "../../types";
 import { MethodikNote } from "./Methodik";
 import { MapPill, MapWheels } from "./MapWheels";
@@ -37,7 +37,7 @@ const SIGNALE: [string, string][] = [
 ];
 /* Symbol je Kategorie (Reihenfolge wie SIGNALE) */
 const ICONS: Record<string, LucideIcon> = { alle: LayoutGrid, vergaben: FileSignature, wohnbau: House, gewerbe: Factory, wind: Wind, solar: Sun, waerme: Flame, schulen: School, strasse: Route, wasser: Droplets, breitband: RadioTower, mobil: Bus };
-/* „Alle Projekte“: Übersicht über alle Kategorien (kein eigenes Signal im Backend; die Zahlen je Kategorie kommen mit jeder Antwort) */
+/* „Alle Projekte“: alle Kategorien außer Ausschreibungen zusammen, wie eine Kategorie mit Karte und Liste (Filter ist die Kategorie) */
 const ALLE = "alle";
 const SIGNAL_IDS = new Set([ALLE, ...SIGNALE.map(([id]) => id)]);
 const MIT_ALLE: [string, string][] = [[ALLE, "Alle Projekte"], ...SIGNALE];
@@ -142,7 +142,6 @@ function SignalMap({ places, onPlace, hover = "", zeit, onZeit, schritt, wheels,
 const PILL = (on: boolean) => `inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[14px] ${on ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`;
 /* fest: Seite für genau eine Kategorie (plenara.X Ausschreibungen = Kategorie „vergaben“, eigene Adresse, ohne Kategorienwahl) */
 export function SignalePage({ fest }: { fest?: string } = {}) {
-  const phone = usePhone();
   const params = useSearchParams(), router = useRouter(), path = usePathname();
   const basis = fest ? "/analytics/ausschreibungen" : "/analytics/signale";
   /* Standard: die erste Kategorie (steht dann nicht in der Adresse); „Ausschreibungen und Vergaben“ ist seit 18.10.2026 eine eigene Seite unter Einblicke */
@@ -156,6 +155,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   /* Die Ansicht „Erstmals hier“ gibt es nicht mehr (Schalter und Überschrift entfallen); ältere Links mit ?erstmals=1 zeigen die normale Liste */
   const erstmals = "";
   const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string; erstmals?: string }) => router.push(signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), erstmals, ...next }), { scroll: false });
+  const [railRef, railFolded, railUnfold] = useRailFold(signal);
   // Ungültige Werte in der Adresse still berichtigen
   const target = signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
   const current = path + (params.size ? "?" + params : "");
@@ -169,7 +169,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   /* Zeitraum der Seite ersetzt den der Suche nur, wenn die Suche selbst keinen hat */
   const q = new URLSearchParams(query);
   if (fromOf(zeit) && !q.get("from")) q.set("from", fromOf(zeit));
-  const url = `/api/x/signale?signal=${signal === ALLE ? standard : signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}&${q}`;
+  const url = `/api/x/signale?signal=${signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}&${q}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
   /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
   const pending = loading && !!res && ranKey !== url;
@@ -217,7 +217,6 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const setKarte = (f: (k: boolean) => boolean) => setKartePick(f(karte));
   useOrtInAdresse(areaAgs, (a) => search.setArea(a, "ui"));
   /* Antwort mit Namen: die Orte mit den meisten Vorgängen */
-  const topPlaces = res ? [...res.places].sort((a, b) => b.count - a.count).slice(0, 3) : [];
   const phaseOrder = (res?.phases ?? []).map((p) => p.name);
 
   /* Schritt-Auswahl: in der Filterzeile, am breiten Bildschirm stattdessen als Glas auf der Karte */
@@ -225,19 +224,21 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
     items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} /> : null;
 
   return (
-    <main id="inhalt" className={`${karte && signal !== ALLE ? "rm-xwide rm-noplay " : ""}w-full px-[max(1vw,16px)] pb-10 text-slate-900`}>
+    <main id="inhalt" className={`${karte ? "rm-xwide rm-noplay " : ""}w-full px-[max(1vw,16px)] pb-10 text-slate-900`}>
       <XKopf seite={fest ? "ausschreibungen" : "signale"} />
       <SplitHandle />
 
       {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy: Auswahlfeld */}
-      {!fest && <nav aria-label="Signal" className="rm-xrail hidden sm:block print:hidden">
+      {/* Ausschreibungen: eine Kategorie, deshalb die Themen als Kacheln wie auf den übrigen Seiten */}
+      {fest && <ThemenLeiste />}
+      {!fest && <nav ref={railRef} aria-label="Signal" className={`rm-xrail hidden sm:block print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {MIT_ALLE.map(([id, label]) => {
             const on = id === signal;
             const Icon = ICONS[id];
             return (
               <li key={id} className={on && id !== ALLE ? "rm-rail-open" : undefined}>
-                <button type="button" aria-pressed={on} onClick={() => pick({ signal: id === standard ? "" : id, phase: "", art: "" })}
+                <button type="button" aria-pressed={on} onClick={() => { railUnfold(); pick({ signal: id === standard ? "" : id, phase: "", art: "" }); }}
                   className={`flex h-full min-h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   {Icon && <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
                   <span>{label}</span>
@@ -269,52 +270,13 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
 
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden text={fest ? "Ausschreibungen werden geladen …" : "Projekte werden geladen …"} />}
-      {res && signal === ALLE && (
-        <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
-          <Kennzahlen week={null} band="Projekte" scope="Alle Projekte" period={zeitText ?? ""} items={[{ value: n(res.signals.filter((s) => SIGNAL_IDS.has(s.id)).reduce((a, s) => a + s.count, 0)), label: "Projekte" }]} />
-          <p className="mb-3 mt-4 text-[14px] text-slate-500">Nach Kategorie, größte zuerst. Eine Kategorie anklicken zeigt ihre Projekte. Ausschreibungen und Vergaben stehen auf ihrer eigenen Seite.</p>
-          <ol className="rm-focusrows m-0 list-none border-t border-slate-200 p-0">
-            {[...res.signals].filter((s) => SIGNAL_IDS.has(s.id)).sort((a, b) => b.count - a.count).map((s) => {
-              const I = ICONS[s.id], max = Math.max(1, ...res.signals.filter((x) => SIGNAL_IDS.has(x.id)).map((x) => x.count));
-              return (
-                <li key={s.id} className="border-b border-slate-200">
-                  <button type="button" onClick={() => pick({ signal: s.id === standard ? "" : s.id, phase: "", art: "" })}
-                    className="grid w-full grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,220px)_minmax(0,1fr)_auto_16px]">
-                    <span className="flex items-center gap-2 text-[16px] leading-snug">{I && <I size={18} strokeWidth={1.4} aria-hidden="true" className="shrink-0 text-slate-500" />}{s.name}</span>
-                    <span className="order-4 col-span-3 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="rm-bar block h-full origin-left rounded-full bg-teal-600" style={{ width: `${(s.count / max) * 100}%` }} /></span>
-                    <span className="text-right text-[14px] font-semibold tabular-nums text-teal-700">{n(s.count)}</span>
-                    <span aria-hidden="true" className="text-center text-[14px] text-teal-700">›</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-      )}
-      {res && signal !== ALLE && (
+      {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst: große Kennzahlen, über die ganze Breite */}
           {res.total === 0 ? <Leer tipp="Einen längeren Zeitraum, eine andere Art oder „Alle Themen“ wählen, oder den Ort entfernen.">{`Keine Vorgänge für diese Auswahl: ${res.signal.name}${zeit !== "alle" ? `, letzte ${zeit} Monate` : ""}.`}</Leer>
             : <Kennzahlen week={week} band={fest ? "Ausschreibungen" : "Projekte"} scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
-              <span className="max-sm:hidden">{res.signal.name}{art ? ` · ${artShort(art)}` : ""}{phase ? ` · Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : ""}</span>
-              <MeinOrt current={areaAgs && res.places.length === 1 ? { ags: areaAgs, name: res.places[0].name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
             </Kennzahlen>}
 
-          {topPlaces.length > 1 && res.total > 0 && <p className="mt-3 text-[18px] max-sm:hidden font-semibold leading-snug">Am meisten in {topPlaces.map((p, i) => <span key={p.region}>
-            {i ? (i === topPlaces.length - 1 ? " und " : ", ") : ""}
-            <button type="button" onClick={() => search.setArea(p.ags || p.members?.[0] || "", "ui")} className="font-semibold text-teal-700 hover:underline" aria-label={p.name}>
-            <span aria-hidden="true" className="max-sm:hidden">
-            {p.name}
-            </span>
-            <span aria-hidden="true" className="sm:hidden">
-            {p.name.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt|Landkreis|Kreis) /, "")}
-            </span>
-            </button> ({n(p.count)})</span>)}.</p>}
-          {(ATLAS_OF[signal] || TRENDS_OF[signal]) && <p className="mt-1 text-[14px] text-slate-500 max-sm:hidden">
-            {ATLAS_OF[signal] && <>Wie viel Raum das Thema in den Räten hat: <Link href={`/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}`} className="font-medium text-teal-700 underline underline-offset-2">{ATLAS_OF[signal][2]} im Atlas →</Link></>}
-            {ATLAS_OF[signal] && TRENDS_OF[signal] && " · "}
-            {TRENDS_OF[signal] && <>Wie es sich ausbreitet: <Link href={`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`} className="font-medium text-teal-700 underline underline-offset-2">„{TRENDS_OF[signal]}“ in den Trends →</Link></>}
-          </p>}
           {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 1024 px nebeneinander */}
           <div className="rm-karte-toggle mt-4 print:hidden max-sm:hidden">
             <button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
@@ -368,9 +330,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
         </div>
       )}
     <XWeiter links={[...(fest ? [["/analytics/signale", "Was entsteht? (Projekte)"]] : []), ["/analytics/news", "Was ist berichtenswert? (Nachrichten)"],
-      /* Handy: Atlas und Trends gleich mit dem Thema bzw. Begriff dieser Seite (die Zeile mit den Links oben entfällt dort) */
-      [phone && ATLAS_OF[signal] ? `/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}` : "/analytics/atlas", "Wie viel? (Themenatlas)"],
-      ...(phone && TRENDS_OF[signal] ? [[`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`, "Was verändert sich? (Trends)"]] : [])] as [string, string][]} />
+      /* Atlas und Trends gleich mit dem Thema bzw. Begriff dieser Seite */
+      [ATLAS_OF[signal] ? `/analytics/atlas?thema=${ATLAS_OF[signal][0]}${ATLAS_OF[signal][1] ? `&sub=${ATLAS_OF[signal][1]}` : ""}` : "/analytics/atlas", "Wie viel? (Themenatlas)"],
+      ...(TRENDS_OF[signal] ? [[`/analytics/trends?begriff=${encodeURIComponent(TRENDS_OF[signal])}`, "Was verändert sich? (Trends)"]] : [])] as [string, string][]} />
     </main>
   );
 }

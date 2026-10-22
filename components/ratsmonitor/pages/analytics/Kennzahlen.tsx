@@ -1,7 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { Bell, Heart } from "lucide-react";
-import { useHomePlace } from "../../lib/homePlace";
 import { useUi } from "../../state/ui";
 import { publishBandFigure, useCountUp } from "../../lib/bandFigure";
 import { Segmented } from "../../components/Segmented";
@@ -100,20 +99,6 @@ export function useOrtInAdresse(area: string, setArea: (ags: string) => void) {
 
 /** Umschalter für die Sortierung einer Liste (Trends, Fakten): helle Fläche, gewählte Wahl weiß hervorgehoben */
 export { Segmented } from "../../components/Segmented";
-
-/**
- * „Mein Ort“: Ist ein Ort gewählt, lässt er sich merken (Stern, im Konto, ohne Anmeldung im Browser); ist keiner gewählt, setzt ein Klick den gemerkten Ort.
- * current: der gewählte Ort (Schlüssel und Name) oder null.
- */
-export function MeinOrt({ current, onApply }: { current: { ags: string; name: string } | null; onApply: (ags: string) => void }) {
-  const [saved, save] = useHomePlace();
-  if (current) {
-    const mine = saved?.ags === current.ags;
-    return <button type="button" onClick={() => save(mine ? null : current)} aria-pressed={mine} className="inline-flex h-7 items-center gap-1 rounded-full px-2 text-[14px] text-teal-700 hover:bg-teal-50 print:hidden">
-      <span aria-hidden="true">{mine ? "★" : "☆"}</span>{mine ? "Favorit-Ort" : "Als Favorit-Ort merken"}</button>;
-  }
-  return saved ? <button type="button" onClick={() => onApply(saved.ags)} className="inline-flex h-7 items-center gap-1 rounded-full px-2 text-[14px] text-teal-700 hover:bg-teal-50 print:hidden"><span aria-hidden="true">★</span>Mein Ort: {saved.name} →</button> : null;
-}
 
 /**
  * „Folgen“: speichert die aktuelle Suche (Begriff, Ort, Filter, Thema) im Konto, dort mit Mail-Benachrichtigung bei neuen
