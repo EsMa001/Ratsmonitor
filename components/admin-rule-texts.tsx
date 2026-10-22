@@ -67,6 +67,17 @@ function stepNote(s:Step){
 }
 const THEME_NAME:Record<string,string>={...Object.fromEntries(THEMES.map((t:{id:string;name:string})=>[t.id,t.name])),unklar:'Sonstiges'};
 const FACT_ROWS=(QUALITY.groups.find(g=>g.id==='facts')?.rows??[]) as FactRow[];
+const ALL_RULE_ROWS=QUALITY.groups.flatMap(g=>g.rows as unknown as FactRow[]);
+/* Regeln, die neben dem Modell weiter laufen (ohne die Werte der Karte, die stehen darunter), mit Grund */
+const KEPT_RULES:{id:string;name:string;why:string}[]=[
+ {id:'summary',name:'Zusammenfassung',why:'Sätze aus dem Hauptdokument, das das Modell wählt. Bleibt Regel, bis es eine gelernte Fassung mit markierten Kernsätzen gibt.'},
+ {id:'member',name:'Mitgliedsgemeinde',why:'Schlägt Gemeindenamen im Katalog nach (Gremium, „der Gemeinde X“), ordnet nichts ein.'},
+ {id:'faction',name:'Fraktion (Fraktionsprofil)',why:'Liest „Antrag der …-Fraktion“ in Titel und Vorlage. Bleibt, bis die Frage „Wer“ des Modells genauer ist (44 %).'},
+ {id:'faction_advice',name:'Empfehlung zum Antrag (Fraktionsprofil)',why:'Liest, ob der Beschlussvorschlag empfiehlt, dem Antrag nicht zu folgen. Im Begriffsbuch gestrichen, bis es genug Beispiele gibt.'},
+ {id:'outcome',name:'Ausgang im Newsradar',why:'Liest aus den Ergebnistexten der Sitzungen, wie abgestimmt wurde (einstimmig, mit Mehrheit, abgelehnt). Der Status selbst kommt vom Modell.'},
+ {id:'doc_type',name:'Dokumentart beim Laden der PDFs',why:'Bewertet PDFs schon beim Laden für die Ablage, wenn es noch keinen Text gibt. Danach entscheidet das Modell.'},
+ {id:'plan',name:'Bauleitplanung als Wert im Atlas',why:'Liest Planname und Verfahrensschritt aus dem Text für die Gliederung im Atlas. Der Schritt für Signale kommt vom Modell.'},
+];
 /* Werte für die Karte (Zahl je Gemeinde); Fraktion und Bausteine der früheren Signal-Regeln zeigt die Seite nicht mehr */
 const VALUE_FACTS=new Set((MAP_FACTS as [string,string,boolean][]).map(([k])=>k));
 const ON_MAP=new Set((MAP_FACTS as [string,string,boolean][]).filter(([,,on])=>on).map(([k])=>k));
@@ -165,6 +176,19 @@ export function AdminRuleTexts(){
     <div className="admin-bar"><span style={{width:(100*v/themeTotal)+'%'}}/></div>
     {id!=='unklar'&&<small className="mt-1 block text-[12px] text-slate-500">{subsOf(id).map((u:{name:string;n:number})=>u.name+' '+pct(u.n,v)).join(' · ')}</small>}
    </div>)}</div>}
+  </section>
+  <section id="regeltexte-regeln" className="admin-section">
+   <div className="admin-section-heading"><h2>Regeln, die bleiben</h2></div>
+   <p className="admin-note">Regeln lesen Werte aus dem Text oder schlagen nach; was eingeordnet wird, macht das Modell. Qualität aus der letzten ungesehenen Stichprobe (shared/rule-quality.json). Die abgelösten Regeln für Art, Thema, „Was geschieht“, Hauptdokument und Signale stehen noch im Code, laufen aber nicht mehr.</p>
+   <ul className="m-0 mt-4 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{KEPT_RULES.map(k=>{const r=ALL_RULE_ROWS.find(x=>x.id===k.id);return <li key={k.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
+    <div className="min-w-0">
+     <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{k.name}</span>{r?.what&&<Info text={r.what}/>}</div>
+     <p className="m-0 mt-1 text-[14px] leading-snug text-slate-600">{k.why}</p>
+     {r&&<small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date)].filter(Boolean).join(' · ')}</small>}
+    </div>
+    <Meter label="Qualität" v={r?.quality} min={GOAL}/>
+    <div/>
+   </li>;})}</ul>
   </section>
   <section id="regeltexte-texte" className="admin-section">
    <div className="admin-section-heading"><h2>Zusammenfassung und Fakten</h2></div>
