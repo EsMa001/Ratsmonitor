@@ -122,6 +122,12 @@ function Datenschutz() {
         über eine persönliche, geheime Adresse abrufbar, die Sie jederzeit erneuern können.
       </P>
       <P>
+        Wenn Sie eine Benachrichtigung einschalten (Glocke an einer gespeicherten Suche oder einem Vorgang, Wochenbericht, Kalender), gleichen wir neu aufgenommene
+        Vorgänge mit Ihren gespeicherten Suchen, Vorgängen und Kalendergebieten ab und schicken Ihnen die Treffer per E-Mail. Damit nichts doppelt kommt, speichern wir
+        30 Tage lang, welche Vorgänge wir Ihnen gemeldet haben. Die E-Mails enthalten keine Zählpixel und keine verfolgten Links. Jede E-Mail enthält einen Link zum
+        Abbestellen, der ohne Anmeldung wirkt; er gilt 180 Tage. Im Konto können Sie Benachrichtigungen jederzeit aus- und wieder einschalten.
+      </P>
+      <P>
         Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung des Kontos und seiner Funktionen); der Nachweis Ihrer Zustimmung und die Protokolle zur Sicherheit
         beruhen auf Art. 6 Abs. 1 lit. f DSGVO. Sie können Ihre Daten im Konto jederzeit exportieren und Ihr Konto löschen.
       </P>
@@ -146,7 +152,7 @@ function Datenschutz() {
 
       <H2>7. E-Mail-Versand und Kontakt</H2>
       <P>
-        E-Mails zur Anmeldung, Einladungen und Hinweise zu Ihrem Konto verschicken wir über unser Postfach bei der IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, als
+        E-Mails zur Anmeldung, Einladungen, Benachrichtigungen und Hinweise zu Ihrem Konto verschicken wir über unser Postfach bei der IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, als
         Auftragsverarbeiter (Art. 28 DSGVO). Nach dem Versand löschen wir Empfängeradresse und Inhalt aus unserem Postausgang; der Versandvermerk ohne Adresse bleibt 30
         Tage. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
       </P>

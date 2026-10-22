@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { IconBell } from "../components/icons";
-import { NOTIFY_LATER } from "../components/FollowButton";
+import { FollowButton } from "../components/FollowButton";
 import { AccountLoading, LoginRequired, UsagePill } from "../components/TierNotice";
 import { PageHead } from "../info/blocks";
 import { Icon, type IconName } from "../info/icons";
@@ -9,8 +9,8 @@ import { useSavedArticles, useSavedArticlesReady } from "../lib/savedArticles";
 import { useAccount } from "../state/account";
 import { WeeklyReport } from "./SavedSearchesPage";
 
-/** Benachrichtigungen im Konto: alles an einem Ort, was Sie per Glocke oder E-Mail vorgemerkt haben (Suchen, Artikel, Kalender, Wochenbericht).
- *  Der Versand folgt mit den E-Mail-Benachrichtigungen; bis dahin zeigt die Seite die Vormerkungen und führt zu den Stellen, an denen man sie setzt. */
+/** Benachrichtigungen im Konto: alles an einem Ort, was per E-Mail meldet (Wochenbericht, Suchen und Artikel mit Glocke, Kalender).
+ *  Versand: Job notify auf dem Server (server/accounts/notify.mjs); geschaltet wird hier und an den Suchen, Artikeln und im Kalender. */
 export function NotificationsPage() {
   const { saved, ready } = useAccount();
   const articles = useSavedArticles();
@@ -26,6 +26,7 @@ export function NotificationsPage() {
       </>
     );
   const searches = saved.filter((s) => s.notify?.mail && s.active !== false);
+  const freq = { instant: "sofort", daily: "täglich", weekly: "wöchentlich" } as const;
   const followed = articles.filter((a) => a.follow && a.active !== false);
   const row = "flex items-center gap-3 border-b border-slate-200 py-3 text-[16px] text-slate-900 no-underline last:border-b-0 hover:text-teal-700";
   /* Handy: jeder Abschnitt als Karte mit Symbol */
@@ -35,13 +36,13 @@ export function NotificationsPage() {
   const empty = "m-0 py-3 text-[14px] text-slate-500";
   return (
     <>
-      <PageHead icon="bell" label="Konto" name="Benachrichtigungen" title={<>Früher wissen, was sich tut.</>} lead="Alles, was Sie per Glocke oder E-Mail vorgemerkt haben, an einem Ort.">
+      <PageHead icon="bell" label="Konto" name="Benachrichtigungen" title={<>Früher wissen, was sich tut.</>} lead="Neue Treffer Ihrer Suchen, Neuigkeiten zu Ihren Vorgängen und neue Sitzungen per E-Mail. Hier sehen Sie alles an einem Ort.">
         <div className="mt-4 flex flex-wrap gap-2">
           <UsagePill label="Benachrichtigungen" used={used.notifications} max={max.notifications} />
         </div>
       </PageHead>
       <section className="ri-sec ri-sec--tight">
-        <p className="m-0 mb-4 text-[14px] text-slate-500">{NOTIFY_LATER}. Ihre Vormerkungen bleiben bis dahin erhalten.</p>
+        <p className="m-0 mb-4 text-[14px] text-slate-500">Täglich und wöchentlich kommen die E-Mails um 7 Uhr, wöchentlich am Tag des Wochenberichts. Jede E-Mail enthält einen Link zum Abbestellen.</p>
 
         <div className={card}>
         <h2 className={head}>{ico("newspaper")}Wochenbericht</h2>
@@ -53,11 +54,11 @@ export function NotificationsPage() {
         {!ready ? <AccountLoading /> : searches.length ? (
           <ul className="m-0 list-none p-0">
             {searches.map((s) => (
-              <li key={s.id}><Link href="/konto/suchen" className={row}><IconBell size={18} filled /><span className="min-w-0 flex-1 truncate">{s.name}</span></Link></li>
+              <li key={s.id}><Link href="/konto/suchen" className={row}><IconBell size={18} filled /><span className="min-w-0 flex-1 truncate">{s.name}</span><span className="flex-none text-[12px] text-slate-500">{freq[s.notify.freq] ?? "täglich"}</span></Link></li>
             ))}
           </ul>
         ) : (
-          <p className={empty}>Noch keine Suche mit E-Mail vorgemerkt. Speichern Sie eine Suche mit dem Stern und schalten Sie die Glocke ein.</p>
+          <p className={empty}>Noch keine Suche mit Glocke. Speichern Sie eine Suche mit dem Stern neben dem Suchfeld und schalten Sie unter „Meine Suchen“ die Glocke ein.</p>
         )}
         </div>
 
@@ -66,18 +67,18 @@ export function NotificationsPage() {
         {!articlesReady ? <AccountLoading /> : followed.length ? (
           <ul className="m-0 list-none p-0">
             {followed.map((a) => (
-              <li key={a.id}><Link href={`/beschluss/${a.id}`} className={row}><IconBell size={18} filled /><span className="min-w-0 flex-1 truncate">{a.title}</span><span className="flex-none text-[12px] text-slate-500">{a.gemeinde}</span></Link></li>
+              <li key={a.id} className="flex items-center gap-1 border-b border-slate-200 last:border-b-0"><Link href={`/beschluss/${a.id}`} className={`${row} min-w-0 flex-1 border-b-0`}><span className="min-w-0 flex-1 truncate">{a.title}</span><span className="flex-none text-[12px] text-slate-500">{a.gemeinde}</span></Link><FollowButton article={a} size={18} /></li>
             ))}
           </ul>
         ) : (
-          <p className={empty}>Noch kein Artikel mit Glocke. Tippen Sie bei einem gemerkten Artikel auf die Glocke.</p>
+          <p className={empty}>Noch kein Vorgang mit Glocke. Tippen Sie auf einer Artikelseite oder bei einem gespeicherten Artikel auf die Glocke.</p>
         )}
         </div>
 
         <div className={card}>
         <h2 className={head}>{ico("clock")}Kalender</h2>
         <p className={empty}>
-          {limits.calendar ? "Termine Ihrer Suchen per E-Mail: der Schalter steht im Kalender." : "Der Kalender gehört zu Enterprise."}{" "}
+          {limits.calendar ? "Neue Sitzungen in Ihren Kalendergebieten per E-Mail: der Schalter steht im Kalender." : "Der Kalender gehört zu Enterprise."}{" "}
           <Link href="/konto/kalender" className="font-medium text-teal-700 hover:underline">Zum Kalender</Link>
         </p>
         </div>

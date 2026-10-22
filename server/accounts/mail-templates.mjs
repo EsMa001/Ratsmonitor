@@ -85,12 +85,53 @@ const T={
   text:`Ihr Plenara-Konto wurde seit zwei Jahren nicht genutzt. Melden Sie sich in den nächsten 30 Tagen unter ${site}/anmelden an, wenn Sie es behalten möchten; sonst löschen wir es mit allen gespeicherten Daten.`,
   html:page('Konto nicht genutzt',[p('Ihr Plenara-Konto wurde seit zwei Jahren nicht genutzt.'),p('Melden Sie sich in den nächsten 30 Tagen an, wenn Sie es behalten möchten; sonst löschen wir es mit allen gespeicherten Daten.'),button(site+'/anmelden','Anmelden')]),
  }),
+ notify:(data,{site})=>notifyMail(data,{site}),
  operator:({message})=>({
   subject:'Plenara: Hinweis aus dem Kontobetrieb',
   text:String(message||''),
   html:page('Hinweis',[p(String(message||''))]),
  }),
 };
+/*
+ * Benachrichtigung (server/accounts/notify.mjs): Abschnitte je Suche, Vorgang und Kalender. Der Betreff nennt keine Namen der
+ * Suchen (die schreibt der Nutzer selbst). Abbestellen: Kopfzeilen nach RFC 8058 (Ein-Klick-POST an die API) und Links
+ * auf die Seite /abbestellen, die erst nach einem Klick abbestellt.
+ * data: {token, groups:[{kind:'search'|'article'|'calendar', title, link, token, more, items:[{title, place, gremium, date,
+ * status, note, link}]}]}
+ */
+const SUBJECT={search:'zu Ihren Suchen',article:'zu Ihren Vorgängen',calendar:'in Ihren Kalendergebieten'};
+const GROUP_HEAD={search:'Neue Treffer der Suche',article:'Neues zum Vorgang',calendar:'Neue Sitzungen'};
+const GROUP_OFF={search:'Diese Suche nicht mehr melden',article:'Diesen Vorgang nicht mehr melden',calendar:'Keine Kalender-Mails mehr'};
+const DISCLAIMER='Ohne Gewähr. Maßgeblich sind die Originalunterlagen der Kommune.';
+const deDate=d=>/^\d{4}-\d{2}-\d{2}/.test(String(d||''))?String(d).slice(0,10).split('-').reverse().join('.'):'';
+function notifyMail({token,groups=[]},{site}){
+ const count=groups.reduce((n,g)=>n+(g.items?.length||0)+(g.more||0),0);
+ const kinds=[...new Set(groups.map(g=>g.kind))];
+ const subject=`Plenara: ${count} ${count===1?'Neuigkeit':'Neuigkeiten'} ${kinds.length===1?SUBJECT[kinds[0]]:'aus Ihren Benachrichtigungen'}`;
+ /* Token im Fragment wie beim Anmeldelink: erreicht nie ein Server-Protokoll; die Seite schickt es erst nach dem Klick */
+ const off=t=>`${site}/abbestellen#t=${encodeURIComponent(t)}`;
+ const settings=`${site}/konto/benachrichtigungen`;
+ const meta=i=>[i.place,i.gremium,deDate(i.date),i.status].filter(Boolean).join(' · ');
+ const text=[
+  ...groups.flatMap(g=>[
+   `${GROUP_HEAD[g.kind]}${g.title?` „${g.title}“`:''}`,'',
+   ...g.items.flatMap(i=>[`• ${i.title}`,`  ${meta(i)}`,...(i.note?[`  ${i.note}`]:[]),`  ${i.link}`,'']),
+   ...(g.more?[`… und ${g.more} weitere: ${g.link}`,'']:[]),
+   `${GROUP_OFF[g.kind]}: ${off(g.token)}`,'','',
+  ]),
+  DISCLAIMER,
+  `Einstellungen: ${settings}`,
+  `Alle Benachrichtigungen abbestellen: ${off(token)}`,
+ ].join('\n');
+ const small=(href,label)=>html`<p style="margin:8px 0 0;font-size:13px"><a href="${href}" style="color:#6b7280">${label}</a></p>`;
+ const body=[
+  ...groups.map(g=>html`<h2 style="margin:24px 0 8px;font-size:16px">${GROUP_HEAD[g.kind]}${g.title?html` „<a href="${g.link}" style="color:#0f5e66">${g.title}</a>“`:''}</h2>
+${g.items.map(i=>html`<div style="margin:0 0 14px"><a href="${i.link}" style="font-weight:bold;color:#1f2937;text-decoration:none">${i.title}</a><br><span style="font-size:13px;color:#6b7280">${meta(i)}</span>${i.note?html`<br><span style="font-size:13px;color:#0f5e66">${i.note}</span>`:''}</div>`)}
+${g.more?html`<p style="margin:0 0 8px"><a href="${g.link}" style="color:#0f5e66">… und ${g.more} weitere</a></p>`:''}${small(off(g.token),GROUP_OFF[g.kind])}`),
+  html`<p style="margin:28px 0 0;font-size:12px;color:#6b7280">${DISCLAIMER}<br><a href="${settings}" style="color:#6b7280">Einstellungen</a> · <a href="${off(token)}" style="color:#6b7280">Alle Benachrichtigungen abbestellen</a></p>`,
+ ];
+ return {subject,text,html:page(subject,body),headers:{'List-Unsubscribe':`<${site}/api/notify/unsubscribe?t=${encodeURIComponent(token)}>`,'List-Unsubscribe-Post':'List-Unsubscribe=One-Click'}};
+}
 export function render(template,data,{site}){
  const fn=T[template];
  if(!fn)throw new Error('Unbekannte Mailvorlage: '+template);

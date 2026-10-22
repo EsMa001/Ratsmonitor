@@ -3,7 +3,6 @@ import { api, useMe } from "../lib/account";
 import { areaOwners, calendarAgs, cleanAreas, type CalArea } from "../lib/calendarAreas";
 import { AccountLoading, LoginRequired } from "../components/TierNotice";
 import { CalendarFeed } from "../components/CalendarFeed";
-import { NOTIFY_LATER } from "../components/FollowButton";
 import { useToast } from "../state/toast";
 import { IconCalendarSync, IconDownload } from "../components/icons";
 import { FilterSelect } from "../components/FilterSelect";
@@ -17,6 +16,7 @@ import { useAccount } from "../state/account";
 import { norm } from "../lib/text";
 import { IconBell, IconChevronLeft, IconChevronRight, IconX } from "../components/icons";
 import { fetchJson } from "../lib/fetchJson";
+import type { NotifyFreq } from "../types";
 
 /* Gebiete des Kalenders stehen im Konto (/api/me/settings: calendar und die daraus gerechnete Schlüsselliste calendarAgs) */
 interface CalSettings { areas: CalArea[] }
@@ -36,13 +36,13 @@ export function KalenderPage() {
   const { saved } = useAccount();
   /* Gebiete aus dem Konto, je Konto und Kontostand geladen */
   const key = me.user && limits.calendar ? `${me.user.id}:${me.rev}` : "";
-  const [stored, setStored] = useState<{ key: string; areas: CalArea[]; agsSent: string[] } | null>(null);
+  const [stored, setStored] = useState<{ key: string; areas: CalArea[]; agsSent: string[]; mail: boolean; freq: NotifyFreq } | null>(null);
   useEffect(() => {
     if (!key) return;
     let live = true;
-    api<{ calendar?: unknown; calendarAgs?: string[] }>("/api/me/settings").then(
-      (d) => live && setStored({ key, areas: cleanAreas(d.calendar), agsSent: Array.isArray(d.calendarAgs) ? d.calendarAgs : [] }),
-      () => live && setStored({ key, areas: [], agsSent: [] }),
+    api<{ calendar?: unknown; calendarAgs?: string[]; calendarMail?: boolean; calendarFreq?: NotifyFreq }>("/api/me/settings").then(
+      (d) => live && setStored({ key, areas: cleanAreas(d.calendar), agsSent: Array.isArray(d.calendarAgs) ? d.calendarAgs : [], mail: !!d.calendarMail, freq: d.calendarFreq || "daily" }),
+      () => live && setStored({ key, areas: [], agsSent: [], mail: false, freq: "daily" }),
     );
     return () => {
       live = false;
@@ -57,6 +57,16 @@ export function KalenderPage() {
     const ags = calendarAgs(next.areas, geo);
     setStored({ ...stored, areas: next.areas, agsSent: ags });
     api("/api/me/settings", { method: "PUT", body: { calendar: next.areas, calendarAgs: ags } }).catch((e: Error) => {
+      setStored(before);
+      toast(e.message);
+    });
+  };
+  /* E-Mail bei neuen Sitzungen in den Gebieten (server/accounts/notify.mjs); bei Fehler zurück */
+  const saveMail = (next: { mail: boolean; freq: NotifyFreq }) => {
+    if (!stored) return;
+    const before = stored;
+    setStored({ ...stored, ...next });
+    api("/api/me/settings", { method: "PUT", body: { calendarMail: next.mail, calendarFreq: next.freq } }).catch((e: Error) => {
       setStored(before);
       toast(e.message);
     });
@@ -329,12 +339,28 @@ export function KalenderPage() {
                 Sie erhalten eine E-Mail, sobald in Ihren Gebieten <strong className="font-semibold text-slate-900">neue Sitzungen angesetzt</strong> werden, sofort, täglich oder wöchentlich.
               </p>
               <div className="mt-4 flex flex-wrap items-center gap-3 text-[14px]">
-                <button type="button" role="switch" aria-checked={false} aria-disabled="true" aria-label="Benachrichtigung per E-Mail" aria-describedby="cal-mail-later" className="relative h-6 w-10 flex-none cursor-default rounded-full bg-slate-200">
-                  <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" />
+                <button type="button" role="switch" aria-checked={!!stored?.mail} aria-label="Benachrichtigung per E-Mail" disabled={!loaded} onClick={() => stored && saveMail({ mail: !stored.mail, freq: stored.freq })} className={`relative h-6 w-10 flex-none rounded-full transition-colors ${stored?.mail ? "bg-teal-600" : "bg-slate-200"}`}>
+                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${stored?.mail ? "left-[18px]" : "left-0.5"}`} />
                 </button>
-                <span className="text-slate-500">Aus</span>
+                {stored?.mail ? (
+                  <FilterSelect
+                    id="cal-mail-freq"
+                    label="Häufigkeit"
+                    allLabel=""
+                    value={stored.freq}
+                    options={[
+                      { value: "instant", label: "Sofort" },
+                      { value: "daily", label: "Täglich" },
+                      { value: "weekly", label: "Wöchentlich" },
+                    ]}
+                    onChange={(v) => saveMail({ mail: true, freq: v as NotifyFreq })}
+                    size="sm"
+                    highlight={false}
+                  />
+                ) : (
+                  <span className="text-slate-500">Aus</span>
+                )}
               </div>
-              <p id="cal-mail-later" className="m-0 mt-3 text-[12px] text-slate-500">{NOTIFY_LATER}.</p>
             </div>
 
             <div className="border-t border-slate-200 pt-5">

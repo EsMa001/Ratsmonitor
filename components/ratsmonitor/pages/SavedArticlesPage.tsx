@@ -8,7 +8,7 @@ import { removeSavedArticle, restoreSavedArticle, useSavedArticles, useSavedArti
 import { useToast } from "../state/toast";
 import { queue } from "../lib/queue";
 import { loadTopic } from "../lib/topicCache";
-import { FollowButton, NOTIFY_LATER } from "../components/FollowButton";
+import { FollowButton } from "../components/FollowButton";
 import { MONTH_SHORT, fmtDate, todayLocal } from "../lib/text";
 import { STATUS_BY_ID } from "../lib/constants";
 import { useEntitlements } from "../lib/entitlements";
@@ -51,7 +51,7 @@ export function SavedArticlesPage() {
     );
   return (
     <>
-      <PageHead icon="fileText" label="Artikel" name={`Gespeicherte Artikel${list.length ? ` (${list.length})` : ""}`} title={<>Gemerkt. Und nichts verpasst.</>} lead={`Ihre gemerkten Vorgänge mit ihrem Verlauf. Benachrichtigungen zu einem Vorgang: ${NOTIFY_LATER.toLowerCase()}.`}>
+      <PageHead icon="fileText" label="Artikel" name={`Gespeicherte Artikel${list.length ? ` (${list.length})` : ""}`} title={<>Gemerkt. Und nichts verpasst.</>} lead="Ihre gemerkten Vorgänge mit ihrem Verlauf. Mit der Glocke erfahren Sie per E-Mail, sobald einer weiter beraten, vertagt oder beschlossen wird.">
         <div className="mt-4 flex flex-wrap gap-2">
           <UsagePill label="Artikel" used={used.bookmarks} max={max.bookmarks} />
         </div>
@@ -101,7 +101,7 @@ export function SavedArticlesPage() {
               </Link>
               <p className="m-0 mt-0.5 text-[14px] font-medium text-slate-500">{a.gemeinde}</p>
               {/^\d{4}-\d{2}-\d{2}/.test(a.date || "") && <p className="sr-only">Sitzung am {fmtDate(a.date)}</p>}
-              {a.follow && <p className="m-0 mt-1 text-[12px] text-slate-500">Benachrichtigung vorgemerkt ({NOTIFY_LATER.toLowerCase()})</p>}
+              {a.follow && a.active !== false && <p className="m-0 mt-1 text-[12px] text-slate-500">Benachrichtigung per E-Mail an</p>}
               {a.active === false && <p className="m-0 mt-1 text-[12px] text-amber-800">Nicht aktiv: über der Grenze Ihrer Stufe gespeichert.</p>}
               {/* Vorgangsverlauf: alle bisherigen Beratungen, der aktuelle Schritt rechts */}
               <Verlauf id={a.id} fallback={a.teaser} savedAt={a.savedAt} />

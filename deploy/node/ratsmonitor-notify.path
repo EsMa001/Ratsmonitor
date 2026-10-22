@@ -1,0 +1,10 @@
+# Sofortstart aus der Administration (server/integrations/job-trigger.mjs): /srv/ratsmonitor/data/trigger/notify
+[Unit]
+Description=Ratsmonitor: notify sofort starten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/notify
+Unit=ratsmonitor-notify.service
+
+[Install]
+WantedBy=multi-user.target

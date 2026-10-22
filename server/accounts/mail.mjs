@@ -4,15 +4,17 @@
 import {render} from './mail-templates.mjs';
 
 const iso=ms=>new Date(ms).toISOString();
-export const QUOTA_PER_HOUR={login:100,signup:20,account:50};
+export const QUOTA_PER_HOUR={login:100,signup:20,account:50,notify:1000};
 const RETRY_MS=[10000,60000];
 const MAX_ATTEMPTS=3;
 
 /**
  * Mail in den Postausgang. Ist das Kontingent der Stunde erschöpft, wird nichts eingereiht ({queued:false}),
  * höchstens einmal je Stunde geht eine Warnung an OPERATOR_EMAIL (zählt nicht mit).
+ * extra: Anweisungen, die in derselben Transaktion nach dem Einreihen laufen; last_insert_rowid() ist dort die ID der Mail
+ * (Benachrichtigungen markieren so ihre Treffer, notify.mjs: entweder beides oder nichts).
  */
-export async function sendMail(db,cfg,{to,template,data=null,userId=null,quota,discardAfterMs=null,now=Date.now()}){
+export async function sendMail(db,cfg,{to,template,data=null,userId=null,quota,discardAfterMs=null,extra=[],now=Date.now()}){
  if(quota!=='operator'){
   const row=await db.prepare('SELECT count(*) n FROM mail_outbox WHERE quota=? AND created_at>?').bind(quota,iso(now-3600000)).first();
   if(Number(row?.n||0)>=QUOTA_PER_HOUR[quota]){
@@ -21,8 +23,10 @@ export async function sendMail(db,cfg,{to,template,data=null,userId=null,quota,d
    return {queued:false};
   }
  }
- const row=await db.prepare('INSERT INTO mail_outbox(created_at,user_id,"to",template,data,status,attempts,next_at,discard_after,quota) VALUES(?,?,?,?,?,?,0,?,?,?) RETURNING id')
-  .bind(iso(now),userId,to,template,data?JSON.stringify(data):null,'queued',iso(now),discardAfterMs?iso(now+discardAfterMs):null,quota).first();
+ const insert=db.prepare('INSERT INTO mail_outbox(created_at,user_id,"to",template,data,status,attempts,next_at,discard_after,quota) VALUES(?,?,?,?,?,?,0,?,?,?) RETURNING id')
+  .bind(iso(now),userId,to,template,data?JSON.stringify(data):null,'queued',iso(now),discardAfterMs?iso(now+discardAfterMs):null,quota);
+ if(extra.length){const [first]=await db.batch([insert,...extra]);return {queued:true,id:first?.results?.[0]?.id};}
+ const row=await insert.first();
  return {queued:true,id:row?.id};
 }
 export async function warnOperator(db,cfg,message,now=Date.now()){
@@ -65,7 +69,7 @@ export async function processOutbox(db,cfg,options={}){
 const clean=error=>String(error instanceof Error?error.message:error).replace(/[^\s@]+@[^\s@]+/g,'<adresse>').replace(/(key|token|bearer)\s*[:=]?\s*\S+/gi,'$1 <entfernt>').slice(0,200);
 
 /** Versand je Transport: outbox (Dev-Postfach), log (nur Vorlage und Status), http (REST-API des Anbieters), smtp (Postfach, smtp.mjs) */
-async function deliver(db,cfg,{to,subject,text,html},{fetchImpl,now}){
+async function deliver(db,cfg,{to,subject,text,html,headers},{fetchImpl,now}){
  const transport=cfg.mail.transport;
  if(transport==='outbox'){
   const r=await db.prepare('INSERT INTO dev_mail(at,"to",subject,text,html) VALUES(?,?,?,?,?) RETURNING id').bind(iso(now),to,subject,text,html).first();
@@ -76,14 +80,14 @@ async function deliver(db,cfg,{to,subject,text,html},{fetchImpl,now}){
   if(!cfg.mail.apiUrl||!cfg.mail.apiKey)throw new Error('MAIL_API_URL oder MAIL_API_KEY fehlt');
   const response=await fetchImpl(cfg.mail.apiUrl,{method:'POST',signal:AbortSignal.timeout(10000),
    headers:{'Authorization':`Bearer ${cfg.mail.apiKey}`,'Content-Type':'application/json'},
-   body:JSON.stringify(providerPayload(cfg,{to,subject,text,html}))});
+   body:JSON.stringify(providerPayload(cfg,{to,subject,text,html,headers}))});
   if(!response.ok)throw new Error(`Anbieter antwortet ${response.status}`);
   const body=await response.json().catch(()=>({}));
   return body?.id||body?.messageId||body?.message_id||'ok';
  }
  if(transport==='smtp'){
   const {sendSmtp}=await import('./smtp.mjs');
-  return sendSmtp(cfg.mail.smtp,{from:cfg.mail.from,to,replyTo:cfg.mail.replyTo,subject,text,html,now});
+  return sendSmtp(cfg.mail.smtp,{from:cfg.mail.from,to,replyTo:cfg.mail.replyTo,subject,text,html,headers,now});
  }
  throw new Error('Unbekannter MAIL_TRANSPORT: '+transport);
 }
@@ -91,6 +95,6 @@ async function deliver(db,cfg,{to,subject,text,html},{fetchImpl,now}){
  * Übersetzung in das Format des Anbieters: die einzige Stelle, die beim Wechsel angepasst wird (Entscheidung offen,
  * konten-konzept.md Abschnitt 10). Klick- und Öffnungsverfolgung muss beim Anbieter abgeschaltet sein.
  */
-export function providerPayload(cfg,{to,subject,text,html}){
- return {from:cfg.mail.from,to:[to],...(cfg.mail.replyTo?{reply_to:cfg.mail.replyTo}:{}),subject,text,html};
+export function providerPayload(cfg,{to,subject,text,html,headers}){
+ return {from:cfg.mail.from,to:[to],...(cfg.mail.replyTo?{reply_to:cfg.mail.replyTo}:{}),subject,text,html,...(headers&&Object.keys(headers).length?{headers}:{})};
 }

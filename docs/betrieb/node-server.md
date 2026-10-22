@@ -609,6 +609,32 @@ Rückweg: `ADMIN_LEGACY_HEADER=1` (bis Schritt 4), Basic-Auth-Block wieder einse
 Mails landen im Dev-Postfach (`/konto/postfach`), Anmelden ohne Mail über `/api/dev/login`. Die Administration bleibt
 im Dev-Server ohne Anmeldung offen.
 
+## Benachrichtigungen per E-Mail (Thema 2, seit 22.10.2026 im Code)
+
+Konzept und Begründungen: `requirements/benachrichtigungen-konzept.md`. Der Import schreibt je neuem Bericht und je neuem
+Stand oder neuer Sitzung eines vorhandenen ein Ereignis (`notify_events`, `drizzle/0046`, `server/integrations/notify-events.mjs`).
+Der Job **notify** (Zeitplaner, alle 10 Minuten, `scripts/accounts/notify.mjs`, Logik `server/accounts/notify.mjs`) liest die
+Ereignisse der letzten 48 Stunden, prüft sie mit derselben Abfrage wie die Übersicht gegen gespeicherte Suchen mit Glocke, den
+Wochenbericht, gefolgte Vorgänge und Kalendergebiete (Enterprise), merkt jeden Treffer einmal (`notify_items`) und reiht fällige
+Treffer je Konto als eine Mail ein (sofort, täglich oder wöchentlich um 07:00 Uhr; Kontingent `notify`, 1.000 je Stunde).
+Abbestellen per Link oder Ein-Klick (`/abbestellen`, `POST /api/notify/unsubscribe`). Protokoll: `accounts/notify.log`.
+
+Einrichten (einmal, als root). `deploy.sh` bricht ab, solange `0046` fehlt, und nennt die Schritte: Importprozess und Timer
+anhalten, Dienst stoppen, sichern, migrieren, dann neu ausrollen. Danach die Einheiten:
+
+```bash
+cd /srv/ratsmonitor/app/current
+sudo -u ratsmonitor node scripts/node-migrate.mjs "$DATABASE_FILE"   # 0046_notify_events (die Kontendatei 0005 spielt deploy.sh selbst ein)
+cp deploy/node/ratsmonitor-notify.service deploy/node/ratsmonitor-notify.timer deploy/node/ratsmonitor-notify.path deploy/node/ratsmonitor-stop-notify.path /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now ratsmonitor-notify.timer ratsmonitor-notify.path ratsmonitor-stop-notify.path
+```
+
+Probelauf ohne Versand: `sudo -u ratsmonitor bash -c 'set -a; . /srv/ratsmonitor/ratsmonitor.env; . /etc/ratsmonitor/accounts.env; node scripts/accounts/notify.mjs --dry-run'`.
+Vorher eingeschaltete Glocken (Vormerkungen aus Thema 1) melden ab dem Einspielen von 0005, nicht rückwirkend. Ohne
+Migration 0046 meldet der Job „Ereignistabelle fehlt“ und tut nichts; der Import läuft auch ohne sie. Lokal:
+`node scripts/accounts/notify.mjs` (nimmt die D1-Datei des Dev-Servers für beides, Mails ins Dev-Postfach).
+
 ## Fehler aus dem Browser (seit 20.10.2026)
 
 Unbehandelte Fehler im Browser (und Fehler beim Aufbau einer Seite) meldet `components/ratsmonitor/lib/reportError.ts` an `POST /api/client-error`; der Server schreibt je Meldung eine Zeile `[client-error] {…}` ins Log. Ansehen: `journalctl -u ratsmonitor --since today | grep client-error`. Nur im Produktionsbau, höchstens 5 Meldungen je Seitenaufruf, je Prozess 60 pro Minute, keine Datenbank, keine IP-Adresse, Seite ohne Suchparameter (`server/integrations/client-errors.mjs`, Test `tests/client-errors.test.mjs`). Im Einladungsmodus kommen nur Meldungen angemeldeter Nutzer an.

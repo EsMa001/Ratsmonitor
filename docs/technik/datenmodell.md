@@ -223,13 +223,15 @@ Geheimnisse nur als SHA-256, Adressen nur dort im Klartext, wohin versendet wird
 | `login_flows` | laufende Anmeldeabläufe mit Versuchszähler und Ablauf (Flow-Cookie) |
 | `login_tokens` | Einmallinks und -codes (`id` = Hash des Tokens, `code_hash` aus Zweck, Flow und Code) für `login`, `signup`, `delete`, `export`, mit Ziel `next` und `used_at` |
 | `sessions` | Anmeldesitzungen (Hash des Cookie-Werts), gleitender und absoluter Ablauf, Admin-Host-Kennzeichen, Gerät; seit 0002 `admin_verified_at` (zweiter Faktor, 12 h) und `view_tier` („Ansehen als“) |
-| `saved_searches` | gespeicherte Suchen je Konto mit Zustand, Abfrage, Mail-Benachrichtigung |
-| `saved_articles` | gemerkte oder gefolgte Berichte mit Momentaufnahme und letztem Status; `topic_id` verweist ohne Fremdschlüssel auf die Hauptdatenbank |
-| `user_settings` | Wochenmail (an/aus, Wochentag), Kalenderauswahl als JSON |
+| `saved_searches` | gespeicherte Suchen je Konto mit Zustand, Abfrage, Mail-Benachrichtigung (`notify_mail`, `notify_freq`, seit 0005 `notify_since`) |
+| `saved_articles` | gemerkte oder gefolgte Berichte mit Momentaufnahme und letztem Status (seit 0005 `follow_since`); `topic_id` verweist ohne Fremdschlüssel auf die Hauptdatenbank |
+| `user_settings` | Wochenbericht (an/aus, Wochentag 0–6, 7 = täglich, `weekly_since`), Kalenderauswahl als JSON, seit 0005 Kalender-Mails (`calendar_mail`, `calendar_freq`, `calendar_since`) |
+| `notify_items` | Treffer der Benachrichtigungen je Konto, Bezug (`s:<Suche>`, `a:<Vorgang>`, `c` Kalender) und Bericht bzw. Ereignis, mit Fälligkeit, Karte, Mail-ID oder Verfall; 30 Tage (`server/accounts/notify.mjs`) |
+| `notify_tokens` | Abbestell-Tokens aus den Mails (SHA-256), je Bezug oder `*`; 180 Tage |
 | `calendar_feeds` | geheime Kalender-Abo-Kennungen je Konto mit Widerruf |
 | `auth_events` | Protokoll sicherheitsrelevanter Ereignisse |
 | `admin_audit` | ändernde Admin-Zugriffe, stundenweise verdichtet (`UNIQUE (user, path, action, hour)`) |
-| `mail_outbox` | Warteschlange ausgehender Mails mit Status, Versuchen, Verfall, Kontingentklasse; nach dem Versand werden Adresse und Inhalt gelöscht |
+| `mail_outbox` | Warteschlange ausgehender Mails mit Status, Versuchen, Verfall, Kontingentklasse (seit 0005 auch `notify`); nach dem Versand werden Adresse und Inhalt gelöscht |
 | `dev_mail` | im Dev-Betrieb abgefangene Mails (Postfach `/konto/postfach`) |
 | `user_totp` | TOTP-Schlüssel der Admins, AES-GCM-verschlüsselt mit `ACCOUNTS_SECRET`; `last_step` verhindert doppelte Codes |
 

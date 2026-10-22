@@ -477,8 +477,9 @@ function DevLogin({ next }: { next: string }) {
 /* Token aus dem Link (#t=…): einmal lesen und sofort aus der Adresse entfernen (auch bei doppeltem Effekt im Dev-Modus) */
 let linkToken: string | null = null;
 function takeToken(): string {
-  if (linkToken === null) {
-    const m = /(?:^#|&)t=([A-Za-z0-9_-]+)/.exec(window.location.hash);
+  /* Ein neuer Link (Anmelden, Abbestellen) ersetzt den gemerkten; ohne Fragment gilt der zuletzt gelesene */
+  const m = /(?:^#|&)t=([A-Za-z0-9_-]+)/.exec(window.location.hash);
+  if (m || linkToken === null) {
     linkToken = m ? m[1] : "";
     if (window.location.hash) history.replaceState(history.state, "", window.location.pathname + window.location.search);
   }
@@ -587,6 +588,107 @@ export function ConfirmLoginPage() {
               )}
               <button type="submit" disabled={busy} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
                 {busy ? "Wird angemeldet …" : data.purpose === "signup" ? "Konto anlegen und anmelden" : "Anmelden"}
+              </button>
+            </form>
+          ) : null}
+        </div>
+      </section>
+    </>
+  );
+}
+
+type Unsub = { kind: "all" | "search" | "article" | "calendar"; title: string };
+const UNSUB_WHAT: Record<Unsub["kind"], (t: string) => string> = {
+  all: () => "alle Benachrichtigungen per E-Mail",
+  search: (t) => (t ? `die Benachrichtigung zur Suche „${t}“` : "die Benachrichtigung zu dieser Suche"),
+  article: (t) => (t ? `die Benachrichtigung zum Vorgang „${t}“` : "die Benachrichtigung zu diesem Vorgang"),
+  calendar: () => "die E-Mails zu neuen Sitzungen in Ihren Kalendergebieten",
+};
+
+/** Abbestellen über den Link aus einer Benachrichtigung (#t=…, ohne Anmeldung). Wie beim Anmeldelink: erst der Klick
+ *  bestellt ab, damit Prüfprogramme der Postfächer nichts auslösen. Suchen und Artikel bleiben gespeichert. */
+export function UnsubscribePage() {
+  const [peek, setPeek] = useState<{ token: string; data: Unsub | { error: string } } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    const token = takeToken();
+    let live = true;
+    (token ? api<Unsub>("/api/notify/unsubscribe", { method: "POST", body: { t: token, peek: true } }) : Promise.reject(new Error("In der Adresse fehlt der Link aus der E-Mail. Bitte öffnen Sie ihn erneut.")))
+      .catch((e: Error) => ({ error: e.message }))
+      .then((data) => live && setPeek({ token, data }));
+    return () => {
+      live = false;
+    };
+  }, []);
+  useEffect(() => {
+    if (peek || done) heading.current?.focus();
+  }, [peek, done]);
+  const data = peek?.data;
+  const confirm = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!peek || !data || "error" in data) return;
+    setBusy(true);
+    setError("");
+    try {
+      await api("/api/notify/unsubscribe", { method: "POST", body: { t: peek.token } });
+      setDone(true);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const h2 = "m-0 text-[22px] font-semibold outline-none";
+  return (
+    <>
+      <PageHead icon="bell" label="Konto" name="Benachrichtigungen" title="Abbestellen" />
+      <section className="ri-sec">
+        <div className="ri-form ri-form--center">
+          {!peek && (
+            <p role="status" style={{ margin: 0 }}>
+              Link wird geprüft …
+            </p>
+          )}
+          {done && data && !("error" in data) ? (
+            <>
+              <h2 ref={heading} tabIndex={-1} className={h2}>
+                Abbestellt
+              </h2>
+              <p role="status" style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
+                Sie erhalten {UNSUB_WHAT[data.kind](data.title)} nicht mehr. Ihre gespeicherten Suchen und Artikel bleiben erhalten; einschalten können Sie die Benachrichtigungen jederzeit wieder im Konto.
+              </p>
+              <Link href="/konto/benachrichtigungen" className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+                Zu den Benachrichtigungen
+              </Link>
+            </>
+          ) : data && "error" in data ? (
+            <>
+              <h2 ref={heading} tabIndex={-1} className={h2}>
+                Link nicht gültig
+              </h2>
+              <p role="alert" style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
+                {data.error}
+              </p>
+              <Link href="/konto/benachrichtigungen" className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+                Im Konto ausschalten
+              </Link>
+            </>
+          ) : data ? (
+            <form noValidate onSubmit={confirm} aria-label="Benachrichtigung abbestellen">
+              <h2 ref={heading} tabIndex={-1} className={h2} style={{ overflowWrap: "anywhere" }}>
+                {data.kind === "all" ? "Alle Benachrichtigungen abbestellen?" : "Benachrichtigung abbestellen?"}
+              </h2>
+              <p style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>Sie erhalten danach {UNSUB_WHAT[data.kind](data.title)} nicht mehr. Gespeicherte Suchen und Artikel bleiben erhalten.</p>
+              {error && (
+                <p role="alert" className="ri-err">
+                  {error}
+                </p>
+              )}
+              <button type="submit" disabled={busy} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+                {busy ? "Wird abbestellt …" : "Abbestellen"}
               </button>
             </form>
           ) : null}

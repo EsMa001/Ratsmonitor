@@ -49,6 +49,10 @@ export function cleanState(input){
 const cleanQuery=q=>typeof q==='string'&&q.length<=2000&&!/[\u0000-\u001f]/.test(q)?q:null;
 const cleanName=n=>{const v=typeof n==='string'?n.normalize('NFC').replace(/\s+/g,' ').trim().slice(0,120):'';return v||null;};
 const FREQ=['instant','daily','weekly'];
+/** Beginn der Meldungen: beim Einschalten jetzt, beim Ausschalten leer (zwei Parameter: an 1/0, Zeitpunkt) */
+const SINCE=col=>`${col}=CASE WHEN ?=1 THEN coalesce(${col},?) ELSE NULL END`;
+/** Rhythmus des Wochenberichts: 0 bis 6 Wochentag, 7 täglich (notify.mjs, DAILY_REPORT) */
+const WEEKLY_DAYS=8;
 const searchRow=r=>({id:r.id,name:r.name,signature:r.signature,state:JSON.parse(r.ui_state),query:r.query,position:r.position,active:!!r.active,
  notify:{mail:!!r.notify_mail,freq:r.notify_freq||null},created:r.created_at,lastSeen:r.last_seen_at});
 
@@ -78,8 +82,8 @@ export async function searchesWrite(ctx){
   if(Number(count.n)>=user.limits.savedSearches)throw new AccountError(409,'Grenze der gespeicherten Suchen erreicht.',{limit:'savedSearches'});
   const mail=body.notify?.mail===true;
   if(mail)await checkNotifications(ctx,uid,user.limits);
-  const r=await db.prepare('INSERT INTO saved_searches(user_id,id,signature,name,ui_state,query,query_version,position,active,notify_mail,notify_freq,created_at,updated_at,last_seen_at) VALUES(?,?,?,?,?,?,1,?,1,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING id')
-   .bind(uid,id,signature,name,state,cleanQuery(body.query),Number(count.last)+1,mail?1:0,FREQ.includes(body.notify?.freq)?body.notify.freq:null,at,at,at).first();
+  const r=await db.prepare('INSERT INTO saved_searches(user_id,id,signature,name,ui_state,query,query_version,position,active,notify_mail,notify_freq,notify_since,created_at,updated_at,last_seen_at) VALUES(?,?,?,?,?,?,1,?,1,?,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING id')
+   .bind(uid,id,signature,name,state,cleanQuery(body.query),Number(count.last)+1,mail?1:0,FREQ.includes(body.notify?.freq)?body.notify.freq:null,mail?at:null,at,at,at).first();
   if(!r)throw new AccountError(409,'Diese Suche ist schon gespeichert.',{duplicate:true});
   return {response:respond({ok:true},{status:201})};
  }
@@ -90,7 +94,8 @@ export async function searchesWrite(ctx){
   if(body.notify!==undefined){
    const mail=body.notify?.mail===true;
    if(mail)await checkNotifications(ctx,uid,user.limits,{search:id});
-   sets.push('notify_mail=?','notify_freq=?');args.push(mail?1:0,FREQ.includes(body.notify?.freq)?body.notify.freq:null);
+   // Gemeldet wird ab dem Einschalten (notify.mjs); bleibt die Glocke an, bleibt auch der Zeitpunkt
+   sets.push('notify_mail=?','notify_freq=?',SINCE('notify_since'));args.push(mail?1:0,FREQ.includes(body.notify?.freq)?body.notify.freq:null,mail?1:0,at);
   }
   if(body.seen===true){sets.push('last_seen_at=?');args.push(at);}
   if(Number.isInteger(body.position)&&body.position>=0&&body.position<10000){sets.push('position=?');args.push(body.position);}
@@ -149,13 +154,13 @@ export async function articlesWrite(ctx){
   if(follow)await checkNotifications(ctx,uid,user.limits);
   const snap=(await articleSnapshots(ctx.content,[id])).get(id);
   if(!snap)throw new AccountError(404,'Vorgang nicht gefunden.');
-  const r=await db.prepare('INSERT INTO saved_articles(user_id,topic_id,follow,active,snapshot,last_status,saved_at) VALUES(?,?,?,1,?,?,?) ON CONFLICT DO NOTHING RETURNING topic_id')
-   .bind(uid,snap.id,follow?1:0,JSON.stringify(snap),snap.status??null,at).first();
+  const r=await db.prepare('INSERT INTO saved_articles(user_id,topic_id,follow,follow_since,active,snapshot,last_status,saved_at) VALUES(?,?,?,?,1,?,?,?) ON CONFLICT DO NOTHING RETURNING topic_id')
+   .bind(uid,snap.id,follow?1:0,follow?at:null,JSON.stringify(snap),snap.status??null,at).first();
   return {response:respond({ok:true,snapshot:snap,duplicate:!r},{status:r?201:200})};
  }
  if(method==='PATCH'){
   const sets=[],args=[];
-  if(typeof body.follow==='boolean'){if(body.follow)await checkNotifications(ctx,uid,user.limits,{article:id});sets.push('follow=?');args.push(body.follow?1:0);}
+  if(typeof body.follow==='boolean'){if(body.follow)await checkNotifications(ctx,uid,user.limits,{article:id});sets.push('follow=?',SINCE('follow_since'));args.push(body.follow?1:0,body.follow?1:0,at);}
   if(body.seen===true){sets.push('last_seen_at=?');args.push(at);}
   if(!sets.length)throw new AccountError(400,'Nichts zu ändern.');
   const r=await db.prepare(`UPDATE saved_articles SET ${sets.join(',')} WHERE user_id=? AND topic_id=?`).bind(...args,uid,id).run();
@@ -170,22 +175,32 @@ const cleanCalendar=list=>Array.isArray(list)?list.slice(0,200).filter(c=>c&&AGS
 const cleanAgs=list=>Array.isArray(list)?[...new Set(list.map(String).filter(a=>AGS.test(a)))].slice(0,200):[];
 export async function settingsRead(ctx){
  const {session}=await requireUser(ctx);
- const row=await ctx.db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,home_ags,home_name FROM user_settings WHERE user_id=?').bind(session.user_id).first();
- return {response:respond({name:session.name,email:session.email,home:row?.home_ags?{ags:row.home_ags,name:row.home_name??''}:null,weekly:!!row?.weekly,weeklyDay:row?.weekly_day??null,calendar:JSON.parse(row?.calendar||'[]'),calendarAgs:JSON.parse(row?.calendar_ags||'[]')})};
+ const row=await ctx.db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,calendar_mail,calendar_freq,home_ags,home_name FROM user_settings WHERE user_id=?').bind(session.user_id).first();
+ return {response:respond({name:session.name,email:session.email,home:row?.home_ags?{ags:row.home_ags,name:row.home_name??''}:null,weekly:!!row?.weekly,weeklyDay:row?.weekly_day??null,
+  calendar:JSON.parse(row?.calendar||'[]'),calendarAgs:JSON.parse(row?.calendar_ags||'[]'),calendarMail:!!row?.calendar_mail,calendarFreq:row?.calendar_freq||'daily'})};
 }
 export async function settingsWrite(ctx){
- const {session}=await requireUser(ctx,{write:true});
+ const {session,limits,features}=await requireUser(ctx,{write:true});
  const body=await readJson(ctx.request,65536);
  const {db,now}=ctx,at=iso(now),uid=session.user_id;
  const statements=[];
  if(body.name!==undefined)statements.push(db.prepare('UPDATE users SET name=? WHERE id=?').bind(cleanName(body.name),uid));
- const s=await db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,home_ags,home_name FROM user_settings WHERE user_id=?').bind(uid).first();
+ const s=await db.prepare('SELECT weekly,weekly_day,weekly_since,calendar,calendar_ags,calendar_mail,calendar_freq,calendar_since,home_ags,home_name FROM user_settings WHERE user_id=?').bind(uid).first();
  const weekly=body.weekly!==undefined?(body.weekly===true?1:0):(s?.weekly??0);
- const day=body.weeklyDay!==undefined?(Number.isInteger(body.weeklyDay)&&body.weeklyDay>=0&&body.weeklyDay<=6?body.weeklyDay:null):(s?.weekly_day??null);
+ const day=body.weeklyDay!==undefined?(Number.isInteger(body.weeklyDay)&&body.weeklyDay>=0&&body.weeklyDay<WEEKLY_DAYS?body.weeklyDay:null):(s?.weekly_day??null);
+ // Wochenbericht und Kalender-Mails nur mit Benachrichtigungen in der Stufe, Kalender nur mit dem Merkmal (shared/plans.mjs)
+ if(weekly&&!s?.weekly&&!limits.notifications)throw new AccountError(409,'Der Wochenbericht gehört nicht zu Ihrer Stufe.',{limit:'notifications'});
+ const calendarMail=body.calendarMail!==undefined?(body.calendarMail===true?1:0):(s?.calendar_mail??0);
+ if(calendarMail&&!s?.calendar_mail&&!features.calendar)throw new AccountError(409,'Kalender-Mails gehören zu Enterprise.',{limit:'calendar'});
+ const calendarFreq=body.calendarFreq!==undefined?(FREQ.includes(body.calendarFreq)?body.calendarFreq:null):(s?.calendar_freq??null);
+ const since=(on,old,col)=>on?(old?s?.[col]??at:at):null;
  const calendar=body.calendar!==undefined?JSON.stringify(cleanCalendar(body.calendar)):(s?.calendar??'[]');
  const ags=body.calendarAgs!==undefined?JSON.stringify(cleanAgs(body.calendarAgs)):(s?.calendar_ags??'[]');
  const home=body.home!==undefined?(body.home&&AGS.test(String(body.home.ags))?{ags:String(body.home.ags),name:str(body.home.name,120)??''}:null):(s?.home_ags?{ags:s.home_ags,name:s.home_name??''}:null);
- statements.push(db.prepare('INSERT INTO user_settings(user_id,weekly,weekly_day,calendar,calendar_ags,home_ags,home_name,updated_at) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET weekly=excluded.weekly,weekly_day=excluded.weekly_day,calendar=excluded.calendar,calendar_ags=excluded.calendar_ags,home_ags=excluded.home_ags,home_name=excluded.home_name,updated_at=excluded.updated_at').bind(uid,weekly,day,calendar,ags,home?.ags??null,home?.name??null,at));
+ statements.push(db.prepare(`INSERT INTO user_settings(user_id,weekly,weekly_day,weekly_since,calendar,calendar_ags,calendar_mail,calendar_freq,calendar_since,home_ags,home_name,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
+  ON CONFLICT(user_id) DO UPDATE SET weekly=excluded.weekly,weekly_day=excluded.weekly_day,weekly_since=excluded.weekly_since,calendar=excluded.calendar,calendar_ags=excluded.calendar_ags,
+  calendar_mail=excluded.calendar_mail,calendar_freq=excluded.calendar_freq,calendar_since=excluded.calendar_since,home_ags=excluded.home_ags,home_name=excluded.home_name,updated_at=excluded.updated_at`)
+  .bind(uid,weekly,day,since(weekly,s?.weekly,'weekly_since'),calendar,ags,calendarMail,calendarFreq,since(calendarMail,s?.calendar_mail,'calendar_since'),home?.ags??null,home?.name??null,at));
  await db.batch(statements);
  return {response:respond({ok:true})};
 }
@@ -215,8 +230,9 @@ export async function importData(ctx){
    const name=cleanName(s.name),signature=str(s.signature,2000);if(!name||!signature)throw 0;
    const state=cleanState(s.state);
    const active=activeSearches<user.limits.savedSearches;if(active)activeSearches++;
-   statements.push({kind:'search',id,stmt:db.prepare('INSERT INTO saved_searches(user_id,id,signature,name,ui_state,query,query_version,position,active,notify_mail,notify_freq,created_at,updated_at,last_seen_at) VALUES(?,?,?,?,?,?,1,?,?,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING id')
-    .bind(uid,id,signature,name,state,cleanQuery(s.query),position++,active?1:0,active?allowNotify(s.notify?.mail===true):0,FREQ.includes(s.notify?.freq)?s.notify.freq:null,str(s.created,30)??at,at,str(s.lastSeen,30)??null)});
+   const notify=active?allowNotify(s.notify?.mail===true):0;
+   statements.push({kind:'search',id,stmt:db.prepare('INSERT INTO saved_searches(user_id,id,signature,name,ui_state,query,query_version,position,active,notify_mail,notify_freq,notify_since,created_at,updated_at,last_seen_at) VALUES(?,?,?,?,?,?,1,?,?,?,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING id')
+    .bind(uid,id,signature,name,state,cleanQuery(s.query),position++,active?1:0,notify,FREQ.includes(s.notify?.freq)?s.notify.freq:null,notify?at:null,str(s.created,30)??at,at,str(s.lastSeen,30)??null)});
   }catch{result.searches.invalid.push(id??null);}
  }
  const ids=articles.map(a=>str(a?.id,200)).filter(id=>id&&TOPIC_ID.test(id));
@@ -227,13 +243,14 @@ export async function importData(ctx){
   const id=str(a?.id,200),snap=id&&snaps.get(id);
   if(!snap){result.articles.missing.push(id??null);continue;}
   const active=activeArticles<user.limits.bookmarks;if(active)activeArticles++;
-  statements.push({kind:'article',id,stmt:db.prepare('INSERT INTO saved_articles(user_id,topic_id,follow,active,snapshot,last_status,saved_at) VALUES(?,?,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING topic_id')
-   .bind(uid,snap.id,active?allowNotify(a.follow===true):0,active?1:0,JSON.stringify(snap),snap.status??null,str(a.savedAt,30)??at)});
+  const follow=active?allowNotify(a.follow===true):0;
+  statements.push({kind:'article',id,stmt:db.prepare('INSERT INTO saved_articles(user_id,topic_id,follow,follow_since,active,snapshot,last_status,saved_at) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING topic_id')
+   .bind(uid,snap.id,follow,follow?at:null,active?1:0,JSON.stringify(snap),snap.status??null,str(a.savedAt,30)??at)});
  }
  const settings=body.settings&&typeof body.settings==='object'?body.settings:null;
  const batch=statements.map(s=>s.stmt);
- if(settings)batch.push(db.prepare('INSERT INTO user_settings(user_id,weekly,weekly_day,calendar,calendar_ags,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET weekly=excluded.weekly,weekly_day=excluded.weekly_day,calendar=CASE WHEN excluded.calendar<>\'[]\' THEN excluded.calendar ELSE user_settings.calendar END,calendar_ags=CASE WHEN excluded.calendar_ags<>\'[]\' THEN excluded.calendar_ags ELSE user_settings.calendar_ags END,updated_at=excluded.updated_at')
-  .bind(uid,settings.weekly===true?1:0,Number.isInteger(settings.weeklyDay)&&settings.weeklyDay>=0&&settings.weeklyDay<=6?settings.weeklyDay:null,JSON.stringify(cleanCalendar(settings.calendar)),JSON.stringify(cleanAgs(settings.calendarAgs)),at));
+ if(settings)batch.push(db.prepare('INSERT INTO user_settings(user_id,weekly,weekly_day,weekly_since,calendar,calendar_ags,updated_at) VALUES(?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET weekly=excluded.weekly,weekly_day=excluded.weekly_day,weekly_since=CASE WHEN excluded.weekly=1 THEN coalesce(user_settings.weekly_since,excluded.weekly_since) END,calendar=CASE WHEN excluded.calendar<>\'[]\' THEN excluded.calendar ELSE user_settings.calendar END,calendar_ags=CASE WHEN excluded.calendar_ags<>\'[]\' THEN excluded.calendar_ags ELSE user_settings.calendar_ags END,updated_at=excluded.updated_at')
+  .bind(uid,settings.weekly===true?1:0,Number.isInteger(settings.weeklyDay)&&settings.weeklyDay>=0&&settings.weeklyDay<WEEKLY_DAYS?settings.weeklyDay:null,settings.weekly===true?at:null,JSON.stringify(cleanCalendar(settings.calendar)),JSON.stringify(cleanAgs(settings.calendarAgs)),at));
  if(typeof body.name==='string'&&!user.session.name)batch.push(db.prepare('UPDATE users SET name=? WHERE id=? AND name IS NULL').bind(cleanName(body.name),uid));
  const answers=batch.length?await db.batch(batch):[];
  statements.forEach((s,i)=>{
@@ -337,7 +354,7 @@ export async function collectUserData(db,userId,email){
   rollen:await all('SELECT role,granted_at FROM user_roles WHERE user_id=?',userId),
   stufen:await all('SELECT tier,source,starts_at,ends_at,note FROM plan_grants WHERE user_id=?',userId),
   zustimmungen:await all('SELECT doc,version,given_at,withdrawn_at,privacy_version FROM consents WHERE user_id=?',userId),
-  einstellungen:await db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,home_ags,home_name,updated_at FROM user_settings WHERE user_id=?').bind(userId).first(),
+  einstellungen:await db.prepare('SELECT weekly,weekly_day,weekly_since,calendar,calendar_ags,calendar_mail,calendar_freq,calendar_since,home_ags,home_name,updated_at FROM user_settings WHERE user_id=?').bind(userId).first(),
   suchen:(await all('SELECT * FROM saved_searches WHERE user_id=? ORDER BY position',userId)).map(searchRow),
   artikel:await all('SELECT topic_id,follow,active,snapshot,saved_at,last_seen_at FROM saved_articles WHERE user_id=?',userId),
   sitzungen:await all('SELECT device,created_at,auth_at,last_seen_at,expires_at FROM sessions WHERE user_id=?',userId),
@@ -345,6 +362,8 @@ export async function collectUserData(db,userId,email){
   zweiterFaktor:await all('SELECT created_at,confirmed_at FROM user_totp WHERE user_id=?',userId),
   ereignisse:await all('SELECT at,kind,detail FROM auth_events WHERE user_id=? ORDER BY at',userId),
   mails:await all('SELECT created_at,template,status FROM mail_outbox WHERE user_id=? ORDER BY created_at',userId),
+  // Treffer der Benachrichtigungen (server/accounts/notify.mjs): offen, verschickt oder verfallen, ohne Abbestell-Tokens
+  benachrichtigungen:(await all('SELECT ref,key,created_at,due_at,card,mail_id,dropped FROM notify_items WHERE user_id=? ORDER BY created_at',userId)).map(r=>({...r,card:JSON.parse(r.card)})),
   adminAktionen:await all('SELECT at,method,path,action,count FROM admin_audit WHERE user_id=? ORDER BY at',userId),
   offeneAnmeldungen:await all('SELECT purpose,created_at,expires_at FROM login_tokens WHERE (email=? OR user_id=?) AND used_at IS NULL',email,userId),
   // KI-Assistenten mit Zugang über den Kunden-MCP (OAuth): je Erneuerungstoken Anwendung, Zugang und Zeiten, ohne Token

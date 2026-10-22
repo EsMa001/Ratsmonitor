@@ -13,6 +13,7 @@ import {sqliteAdapter} from '../sqlite-adapter.mjs';
 import {accountsConfig} from '../../server/accounts/config.mjs';
 import {sendMail,processOutbox,warnOperator} from '../../server/accounts/mail.mjs';
 import {removeUser} from '../../server/accounts/account.mjs';
+import {NOTIFY_RETENTION} from '../../server/accounts/notify.mjs';
 import {TIER_LABEL} from '../../shared/plans.mjs';
 
 const DAY=86400000;
@@ -35,6 +36,10 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
  await count('authEvents','DELETE FROM auth_events WHERE at<?',iso(now-RETENTION.authEvents));
  await count('mailOutbox',"DELETE FROM mail_outbox WHERE created_at<? AND status NOT IN ('queued','sending')",iso(now-RETENTION.mailOutbox));
  await count('adminAudit','DELETE FROM admin_audit WHERE at<?',iso(now-RETENTION.adminAudit));
+ // Benachrichtigungen (server/accounts/notify.mjs): Treffer nach 30 Tagen, verschickt, verfallen oder nie fällig geworden;
+ // Abbestell-Tokens nach 180 Tagen (ältere Mails lassen sich dann nur noch im Konto abbestellen)
+ await count('notifyItems','DELETE FROM notify_items WHERE created_at<?',iso(now-NOTIFY_RETENTION.items));
+ await count('notifyTokens','DELETE FROM notify_tokens WHERE created_at<?',iso(now-NOTIFY_RETENTION.tokens));
  // OAuth des Kunden-MCP: abgelaufene Codes und Erneuerungstoken, Anwendungen ohne gültiges Token nach 90 Tagen
  await count('oauthCodes','DELETE FROM oauth_codes WHERE expires_at<?',iso(now-RETENTION.tokensAfterExpiry));
  await count('oauthGrants','DELETE FROM oauth_grants WHERE expires_at<? OR revoked_at<?',iso(now),iso(now-RETENTION.tokensAfterExpiry));

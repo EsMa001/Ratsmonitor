@@ -14,11 +14,13 @@ export function parseAddress(value){
 const formatAddress=({name,address})=>name?`${header(name)} <${address}>`:address;
 
 /** Die Mail als Text (Kopf und Körper, CRLF, ohne Punkt-Verdopplung) */
-export function buildMessage({from,to,replyTo,subject,text,html,now=Date.now(),id}){
+/** headers: weitere Kopfzeilen (List-Unsubscribe …), nur ASCII, ohne Zeilenumbruch */
+export function buildMessage({from,to,replyTo,subject,text,html,headers={},now=Date.now(),id}){
  const f=parseAddress(from),boundary='plenara-'+id.split('@')[0];
  const lines=[
   `From: ${formatAddress(f)}`,`To: ${to}`,...(replyTo?[`Reply-To: ${replyTo}`]:[]),`Subject: ${header(subject)}`,
   `Date: ${new Date(now).toUTCString().replace('GMT','+0000')}`,`Message-ID: <${id}>`,'MIME-Version: 1.0',
+  ...Object.entries(headers||{}).filter(([k,v])=>/^[A-Za-z][A-Za-z0-9-]*$/.test(k)&&/^[\x20-\x7e]*$/.test(String(v))).map(([k,v])=>`${k}: ${v}`),
  ];
  if(html){
   lines.push(`Content-Type: multipart/alternative; boundary="${boundary}"`,'',
@@ -33,7 +35,7 @@ export function buildMessage({from,to,replyTo,subject,text,html,now=Date.now(),i
  * Eine Mail verschicken. options: {host, port, secure (TLS ab Verbindungsbeginn, Port 465), user, pass, timeoutMs}.
  * connect(options) liefert für Tests einen eigenen Socket. Rückgabe: Message-ID. Wirft bei jeder Antwort außer 2xx/3xx.
  */
-export async function sendSmtp({host,port=465,secure=true,user,pass,timeoutMs=20000,connect},{from,to,replyTo,subject,text,html,now=Date.now()}){
+export async function sendSmtp({host,port=465,secure=true,user,pass,timeoutMs=20000,connect},{from,to,replyTo,subject,text,html,headers,now=Date.now()}){
  if(!host||!user||!pass)throw new Error('SMTP_HOST, SMTP_USER oder Passwort fehlt');
  const sender=parseAddress(from).address;
  const id=`${now.toString(36)}.${Math.random().toString(36).slice(2,10)}@${sender.split('@')[1]||'plenara.de'}`;
@@ -78,7 +80,7 @@ export async function sendSmtp({host,port=465,secure=true,user,pass,timeoutMs=20
   await step(`RCPT TO:<${to}>`,[2]);
   await step('DATA',[3]);
   // Punkt-Verdopplung am Zeilenanfang, Ende mit <CRLF>.<CRLF>
-  const body=buildMessage({from,to,replyTo,subject,text,html,now,id}).replace(/(^|\r\n)\./g,'$1..');
+  const body=buildMessage({from,to,replyTo,subject,text,html,headers,now,id}).replace(/(^|\r\n)\./g,'$1..');
   await step(body+'\r\n.',[2]);
   await step('QUIT',[2]).catch(()=>{});
   return id;

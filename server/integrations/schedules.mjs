@@ -43,6 +43,11 @@ export const JOBS=Object.freeze([
   steps:['Abgelaufene Anmeldungen, Sitzungen und Einladungen löschen, Protokolle nach Frist','Hinweismails (Testzugang endet, Inaktivität)','Kontendatei verschlüsselt sichern (age, 7 Stände)'],
   limits:'Wenige Sekunden. Ohne Kontendatei (ACCOUNTS_FILE) nichts zu tun.',warn:'Ohne diesen Job gelten keine Löschfristen und es gibt keine Sicherung der Konten.',
   cmd:['bash','deploy/node/accounts-job.sh']},
+ {id:'notify',label:'Benachrichtigungen',flow:'tages',icon:'megaphone',every:10,
+  what:'Prüft die neuen Berichte jedes Imports gegen die gespeicherten Suchen, gefolgten Vorgänge und Kalendergebiete der Konten und verschickt fällige Benachrichtigungen per E-Mail (sofort, täglich oder wöchentlich um 07:00 Uhr). Gehört nicht zur Abfolge der Tagespipeline.',
+  steps:['Ereignisse der letzten 48 Stunden aus dem Import lesen (notify_events, nur lesend)','Je Suche dieselbe Abfrage wie die Übersicht, nur über die neuen Berichte; jeder Treffer einmal','Fällige Treffer je Konto als eine Mail in den Postausgang, mit Abbestellen-Link','Postausgang anstoßen'],
+  limits:'Höchstens 8 Minuten je Lauf, der nächste setzt fort. Ohne Kontendatei (ACCOUNTS_FILE) oder ohne Migration 0046 nichts zu tun.',warn:'Ohne diesen Job bekommt niemand eine Benachrichtigung, obwohl die Glocken eingeschaltet sind.',
+  cmd:['node','--no-warnings','scripts/accounts/notify.mjs','--minutes','8']},
  /* Tagespipeline (jede Nacht, in dieser Reihenfolge): Sichern → Abruf → Extraktion → Verarbeitung. Namen: shared/pipeline-terms.mjs */
  {id:'backup',label:'Sichern',flow:'tages',icon:'shield',time:'00:30',
   what:'Legt eine in sich stimmige Kopie der Datenbank an, dazu Index und Texte der PDF-Ablage.',

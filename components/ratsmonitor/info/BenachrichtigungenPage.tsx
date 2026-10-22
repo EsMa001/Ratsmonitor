@@ -63,7 +63,7 @@ export function BenachrichtigungenPage() {
 
       <section className="ri-sec">
         <h2 className="ri-h2">So funktioniert es</h2>
-        <p className="ri-sub">Es gibt keine eigene Einstellungsseite: Sie schalten die Benachrichtigung direkt dort ein, wo Sie etwas beobachten.</p>
+        <p className="ri-sub">Sie schalten die Benachrichtigung direkt dort ein, wo Sie etwas beobachten; unter „Konto, Benachrichtigungen“ sehen Sie alle an einem Ort. Täglich und wöchentlich kommt die E-Mail um 7 Uhr, und jede E-Mail enthält einen Link zum Abbestellen.</p>
         <table className="w-full border-collapse text-left" style={{ marginTop: 24 }}>
           <tbody>
             {WAYS.map(([t, p, href, link]) => (

@@ -4,7 +4,7 @@ import {accessDecision,auditAdmin} from '@/server/accounts/access.mjs';
 // 1. Zugangssperre im Einladungsmodus (RM_ACCESS=invite, server/accounts/access.mjs); die Datenrouten prüfen zusätzlich
 //    selbst (guard in server/services/session.ts), falls die Middleware übersprungen würde.
 // 2. Administration, Anmeldung und Konto: nie zwischenspeichern, nicht indexieren.
-const PRIVATE=/^\/(admin|api\/admin|api\/auth|api\/me|anmelden|konto)(\/|$)/;
+const PRIVATE=/^\/(admin|api\/admin|api\/auth|api\/me|api\/notify|anmelden|abbestellen|konto)(\/|$)/;
 export async function middleware(request:NextRequest){
  const decision=await accessDecision(request,env) as {allow?:boolean;status?:number;redirect?:string};
  if(decision.status)return NextResponse.json({error:'Bitte anmelden.'},{status:decision.status,headers:{'Cache-Control':'private, no-store','Vary':'Cookie'}});

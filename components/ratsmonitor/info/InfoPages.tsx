@@ -2,7 +2,7 @@ import { useSearchParams } from "next/navigation";
 import { QuellenPage } from "./QuellenPage";
 import { BenachrichtigungenPage } from "./BenachrichtigungenPage";
 import { useEffect, type ComponentType } from "react";
-import { ConfirmLoginPage, KontaktPage, LoginPage, RegisterPage } from "./AccountPages";
+import { ConfirmLoginPage, KontaktPage, LoginPage, RegisterPage, UnsubscribePage } from "./AccountPages";
 import { ConnectPage } from "./ConnectPage";
 import { BranchePage } from "./BranchenPages";
 import { brancheOf } from "../lib/routes";
@@ -26,6 +26,7 @@ const PAGES: Record<string, ComponentType> = {
   "/kontakt": KontaktPage,
   "/agb": AgbPage,
   "/widerruf": WiderrufPage,
+  "/abbestellen": UnsubscribePage,
 };
 
 // Die Adressen stehen in lib/routes.ts (App.tsx braucht sie, ohne diese Seiten zu laden); PAGES muss sie alle bedienen.

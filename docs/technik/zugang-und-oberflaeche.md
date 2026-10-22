@@ -20,7 +20,7 @@ flowchart LR
 
 - **`middleware.ts`** ruft `accessDecision` (`server/accounts/access.mjs`): die Zugangssperre greift nur bei `RM_ACCESS=invite` und
   nicht im Dev; frei sind statische Dateien, Anmeldung, `/registrieren`, `/api/auth/*`, `/api/me`, Rechtstexte, `/api/internal/*`,
-  `/api/calendar/feed/*`, `/api/dev/*`, Bearer `IMPORT_TOKEN` und gültige Anmeldesitzungen. Für `/admin`, `/api/admin`, `/api/auth`,
+  `/api/calendar/feed/*`, `/api/dev/*`, `/abbestellen` und `/api/notify/unsubscribe` (Token aus der Benachrichtigung), Bearer `IMPORT_TOKEN` und gültige Anmeldesitzungen. Für `/admin`, `/api/admin`, `/api/auth`,
   `/api/me`, `/anmelden`, `/konto` setzt sie `private, no-store` und `X-Robots-Tag: noindex`. `auditAdmin` zählt ändernde Admin-Anfragen
   je Konto, Pfad und Stunde in `admin_audit`.
 - **`server/services/session.ts`:** `requestTier()` liest die Stufe aus der Anmeldesitzung (ohne Kontendatei `accounts:false`, dann
@@ -59,6 +59,7 @@ flowchart LR
 | `/api/auth/totp`, `totp/setup`, `totp-login` | zweiter Faktor der Admins (12 h), Einrichtung nur im Tunnel, Anmeldung mit Adresse und App-Code (`LOGIN_TOTP=1`) |
 | `GET /api/me` | Stufe, Rollen, Rechte, Zugangsmodus |
 | `/api/me/searches`, `articles`, `settings`, `sessions`, `calendar-feed`, `import`, `export`, `delete`, `view-tier` | gespeicherte Suchen und Berichte, Einstellungen, Geräte, Abo-Link, Browserdaten übernehmen, Datenauskunft, Konto löschen (mit Code), Admins „ansehen als“ |
+| `POST /api/notify/unsubscribe` | Benachrichtigungen abbestellen ohne Sitzung und ohne gleiche Herkunft: Ein-Klick des Mailprogramms (RFC 8058, `?t=`) und die Seite `/abbestellen` (`{t, peek}`); das Token ist die Berechtigung |
 
 **Administration** (26 Routen, alle `requireAdmin`): `ai-local`, `ai-job`, `altbestand`, `area`, `areas`, `static`, `atlas`,
 `coverage`, `timeline`, `summary`, `claim` (alt), `database` (Export), `debug`, `run-debug`, `estimate`, `export` (CSV),

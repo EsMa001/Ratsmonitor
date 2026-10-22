@@ -1,0 +1,26 @@
+# Benachrichtigungen per E-Mail über den Zeitplaner (scripts/schedule.mjs notify, Admin-Reiter „Jobs & Zeitpläne“, alle 10 Minuten):
+# Ereignisse des Imports gegen gespeicherte Suchen, gefolgte Vorgänge und Kalendergebiete prüfen, fällige Mails einreihen
+# (scripts/accounts/notify.mjs, requirements/benachrichtigungen-konzept.md). Liest die Hauptdatenbank nur.
+# Neben ratsmonitor.service und ratsmonitor-accounts.service die einzige Einheit, die die Kontendatei sieht.
+[Unit]
+Description=Ratsmonitor Benachrichtigungen
+After=ratsmonitor.service
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+EnvironmentFile=-/etc/ratsmonitor/accounts.env
+TimeoutStartSec=15min
+UMask=0077
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs notify
+StandardOutput=append:/srv/ratsmonitor/accounts/notify.log
+StandardError=append:/srv/ratsmonitor/accounts/notify.log
+MemoryMax=2G
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data -/srv/ratsmonitor/accounts

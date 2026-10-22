@@ -6,22 +6,23 @@ import { searchToUrl } from "../lib/searchUrl";
 import { INITIAL_SEARCH } from "../state/search";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { IconHeart } from "../components/icons";
+import { IconBell, IconHeart } from "../components/icons";
 import { filterChips } from "../lib/savedSearch";
 import { useAccount } from "../state/account";
 import { useEntitlements } from "../lib/entitlements";
 import { AccountLoading, LoginRequired, UsagePill } from "../components/TierNotice";
-import { NOTIFY_LATER } from "../components/FollowButton";
+import { FilterSelect } from "../components/FilterSelect";
 import { PageHead } from "../info/blocks";
 import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
 import { savedSearchQuery, useSearch } from "../state/search";
 import { fetchJson } from "../lib/fetchJson";
-import type { Article, SavedSearch } from "../types";
+import type { Article, NotifyFreq, SavedSearch } from "../types";
 import { MONTH_SHORT, todayLocal } from "../lib/text";
 import { useToast } from "../state/toast";
 import { queue } from "../lib/queue";
-import { api, useMe } from "../lib/account";
+import { AccountApiError, api, touchAccount, useMe } from "../lib/account";
+import { openLimitGate } from "../components/GateDialog";
 import { WEEK_DAYS } from "../lib/browserData";
 
 type Item = { id: string; title: string; date: string; gemeinde: string; gremium: string; teaser: string; status: Article["status"] };
@@ -62,7 +63,14 @@ function SavedCard({ s }: { s: SavedSearch }) {
   const search = useSearch();
   const { goOverview } = useAppNav();
   const preview = usePreview(s);
+  const { allow } = useEntitlements();
   const n = s.notify;
+  /* Glocke: per E-Mail bei neuen Treffern (server/accounts/notify.mjs); einschalten nur innerhalb der Grenze der Stufe */
+  const setNotify = (patch: Partial<SavedSearch["notify"]>) => void updateSaved(s.id, { notify: { ...n, ...patch } }).then((err) => err && toast(err));
+  const bell = () => {
+    if (!n.mail && !allow("notifications")) return;
+    setNotify({ mail: !n.mail });
+  };
   const chips = filterChips({ q: s.q, text: s.text, area: s.area, areaSrc: s.areaSrc, radius: s.radius, thema: s.thema, monat: s.monat, von: s.von, bis: s.bis, scope: s.scope, more: s.more, status: s.status, level: s.level }, geo);
   const ok = preview && preview !== "error" ? preview : null;
   const fresh = ok ? ok.items.filter((a) => a.date > s.lastSeen).length : 0;
@@ -72,7 +80,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
       goOverview();
     }
   };
-  /* Entfernen mit „Rückgängig“: samt vorgemerkter Benachrichtigung und Listenplatz wiederherstellbar */
+  /* Entfernen mit „Rückgängig“: samt Benachrichtigung und Listenplatz wiederherstellbar */
   const remove = async () => {
     const index = saved.findIndex((x) => x.id === s.id);
     const err = await removeSaved(s.id);
@@ -93,7 +101,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
   return (
     <>
     <article className="border-b border-slate-200 py-4 last:border-b-0" {...press.handlers}>
-      {/* Kopf wie bei gespeicherten Artikeln: Stern entfernt die Suche (E-Mail-Glocke folgt mit den Benachrichtigungen) */}
+      {/* Kopf wie bei gespeicherten Artikeln: Herz entfernt die Suche, Glocke schaltet die E-Mail bei neuen Treffern */}
       <div className="flex items-start gap-3">
         <button type="button" onClick={() => void remove()} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-700`}>
           <IconHeart size={20} filled />
@@ -109,6 +117,9 @@ function SavedCard({ s }: { s: SavedSearch }) {
           </p>
           {s.active === false && <p className="m-0 mt-0.5 text-[12px] text-amber-800">Nicht aktiv: über der Grenze Ihrer Stufe gespeichert.</p>}
         </div>
+        <button type="button" aria-pressed={!!n.mail} onClick={bell} title={n.mail ? "Benachrichtigung ausschalten" : "Bei neuen Treffern per E-Mail benachrichtigen"} aria-label={n.mail ? "Benachrichtigung ausschalten" : "Bei neuen Treffern per E-Mail benachrichtigen"} className={`${iconBtn} text-teal-700`}>
+          <IconBell size={20} filled={!!n.mail} />
+        </button>
         <ShareButton title={s.name} url={shareUrl} className="-mr-1" />
       </div>
 
@@ -139,11 +150,26 @@ function SavedCard({ s }: { s: SavedSearch }) {
       )}
       {ok && !ok.items.length && <p className="m-0 mt-2 pl-9 text-[14px] text-slate-500">Aktuell keine Treffer.</p>}
 
-      {/* Vorgemerkte Benachrichtigung (z. B. aus der Übernahme): Häufigkeit nur anzeigen, verschickt wird noch nichts */}
+      {/* Häufigkeit nur, wenn die Glocke an ist; täglich und wöchentlich um 7 Uhr (wöchentlich am Tag des Wochenberichts) */}
       {n.mail && (
-        <p className="m-0 mt-3 pl-9 text-[14px] text-slate-500">
-          Vorgemerkt: {n.freq === "instant" ? "sofort" : n.freq === "weekly" ? "wöchentlich" : "täglich"}. {NOTIFY_LATER}.
-        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2 pl-9 text-[14px] text-slate-500">
+          <span>E-Mail bei neuen Treffern:</span>
+          <FilterSelect
+            id={`freq-${s.id}`}
+            label="Häufigkeit"
+            allLabel=""
+            value={n.freq}
+            options={[
+              { value: "instant", label: "Sofort" },
+              { value: "daily", label: "Täglich" },
+              { value: "weekly", label: "Wöchentlich" },
+            ]}
+            onChange={(v) => setNotify({ freq: v as NotifyFreq })}
+            size="sm"
+            highlight={false}
+          />
+          {s.active === false && <span className="text-amber-800">Ruht, solange die Suche nicht aktiv ist.</span>}
+        </div>
       )}
     </article>
     {menu && <ContextMenu pos={menu} items={items} label={s.name} onClose={() => setMenu(null)} />}
@@ -212,10 +238,12 @@ export function SavedSearchesPage() {
   );
 }
 
-/** Wochenbericht: alle neuen Treffer der gespeicherten Suchen in einer E-Mail, täglich oder am gewählten Wochentag.
- *  Folgt mit den E-Mail-Benachrichtigungen: die Einstellung aus dem Konto (/api/me/settings) wird nur angezeigt. */
+/** Wochenbericht: alle neuen Treffer der gespeicherten Suchen ohne eigene Glocke in einer E-Mail, täglich oder am gewählten
+ *  Wochentag um 7 Uhr (server/accounts/notify.mjs). Einstellung im Konto (/api/me/settings, weeklyDay 7 = täglich). */
 export function WeeklyReport({ bare = false }: { /** ohne eigene Überschrift (steht schon über dem Abschnitt) */ bare?: boolean } = {}) {
   const me = useMe();
+  const toast = useToast();
+  const { allow } = useEntitlements();
   const key = me.user ? `${me.user.id}:${me.rev}` : "";
   const [got, setGot] = useState<{ key: string; weekly: boolean; day: number | null } | null>(null);
   useEffect(() => {
@@ -231,24 +259,36 @@ export function WeeklyReport({ bare = false }: { /** ohne eigene Überschrift (s
   }, [key]);
   const s = got?.key === key ? got : null;
   const day = s?.day ?? 1;
+  /* Sofort in der Anzeige, bei Fehler zurück; die Grenze der Stufe öffnet den Hinweis */
+  const save = async (next: { weekly: boolean; day: number }) => {
+    if (!s) return;
+    if (next.weekly && !s.weekly && !allow("notifications")) return;
+    const before = s;
+    setGot({ key, weekly: next.weekly, day: next.day });
+    try {
+      await api("/api/me/settings", { method: "PUT", body: { weekly: next.weekly, weeklyDay: next.day } });
+      touchAccount();
+    } catch (e) {
+      setGot(before);
+      if (!(e instanceof AccountApiError && e.status === 409 && openLimitGate(e.data.limit))) toast((e as Error).message);
+    }
+  };
   return (
     <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-200 pb-5 text-[14px]">
       <span className={bare ? "sr-only" : "font-semibold text-slate-900"}>Wochenbericht</span>
-      <span className="text-slate-500">Alle neuen Treffer Ihrer Suchen in einer E-Mail, täglich oder an dem Wochentag, den Sie wählen:</span>
-      <select aria-label="Rhythmus des Wochenberichts" aria-describedby="weekly-later" disabled value={String(day)} className="h-8 rounded-md border border-slate-200 bg-slate-50 px-2 text-[14px] max-sm:text-[16px] text-slate-500">
+      <span className="text-slate-500">Alle neuen Treffer Ihrer Suchen ohne eigene Glocke in einer E-Mail, täglich oder an dem Wochentag, den Sie wählen:</span>
+      <select aria-label="Rhythmus des Wochenberichts" disabled={!s} value={String(day)} onChange={(e) => void save({ weekly: !!s?.weekly, day: Number(e.target.value) })} className="h-8 rounded-md border border-slate-200 bg-white px-2 text-[14px] max-sm:text-[16px] text-slate-900">
+        <option value="7">Täglich</option>
         {[1, 2, 3, 4, 5, 6, 0].map((i) => (
           <option key={i} value={String(i)}>
             Jeden {WEEK_DAYS[i]}
           </option>
         ))}
       </select>
-      <button type="button" role="switch" aria-checked={!!s?.weekly} aria-disabled="true" aria-label="Wochenbericht" aria-describedby="weekly-later" className={`relative h-6 w-10 flex-none cursor-default rounded-full ${s?.weekly ? "bg-teal-600/40" : "bg-slate-200"}`}>
-        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow ${s?.weekly ? "left-[18px]" : "left-0.5"}`} />
+      <button type="button" role="switch" aria-checked={!!s?.weekly} aria-label="Wochenbericht" disabled={!s} onClick={() => void save({ weekly: !s?.weekly, day })} className={`relative h-6 w-10 flex-none rounded-full transition-colors ${s?.weekly ? "bg-teal-600" : "bg-slate-200"}`}>
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${s?.weekly ? "left-[18px]" : "left-0.5"}`} />
       </button>
-      <span id="weekly-later" className="text-slate-500">
-        {s?.weekly ? "Vorgemerkt. " : ""}
-        {NOTIFY_LATER}.
-      </span>
+      <span className="text-slate-500">{s?.weekly ? `An, um 7 Uhr${day === 7 ? " jeden Tag" : ""}.` : "Aus."}</span>
     </div>
   );
 }

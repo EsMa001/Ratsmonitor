@@ -1,0 +1,12 @@
+# Alle 10 Minuten den Zeitplaner fragen (ratsmonitor-notify.service); ob der Job dran ist, steht im Admin-Reiter „Jobs & Zeitpläne“.
+[Unit]
+Description=Ratsmonitor notify, Zeitplaner
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=false
+AccuracySec=1min
+Unit=ratsmonitor-notify.service
+
+[Install]
+WantedBy=timers.target

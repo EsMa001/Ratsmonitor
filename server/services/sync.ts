@@ -13,6 +13,7 @@ import {batches} from '../integrations/batches.mjs';
 import {refreshSearchWords} from '../integrations/search-words.mjs';
 import {rollCardDates} from '../integrations/search-card-dates.mjs';
 import {refreshRegionFacts} from '../integrations/region-facts.mjs';
+import {notifyEvent,NOTIFY_INSERT_SQL,NOTIFY_PRUNE_SQL,NOTIFY_KEEP_MS} from '../integrations/notify-events.mjs';
 import {REGIONS} from '@/shared/regions';
 import { env } from 'cloudflare:workers';
 import { ensureData } from '@/server/repositories/seed';
@@ -114,6 +115,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const collectMs = Date.now() - collectStarted, written = { created: 0, changed: 0, unchanged: 0 };
     const unchanged = Number(fresh.coverage.unchangedMeetings || 0), warnings = fresh.coverage.warnings || [];
     const decisions: Topic[] = [];
+    const events: unknown[][] = [];
     const groups=new Map<string,D1PreparedStatement[]>(),touch:D1PreparedStatement[]=[];
     const combined=mergeImport({topics:[...old.values()],coverage:previousCoverage},fresh);
     for(const incoming of fresh.topics.length?combined.topics:[]){
@@ -130,9 +132,18 @@ async function refreshMetadata(id: string, started: string,region:string,previou
         if(p)statements.push(env.DB.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),p.id,started,versionPayload(p,t)));
         statements.push(env.DB.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET event_date=excluded.event_date,updated_at=excluded.updated_at,status=excluded.status,payload=excluded.payload').bind(t.id,region,t.source,t.eventDate,t.updatedAt,t.status,JSON.stringify(t)));
         const group=t.identity?.mergedInto||t.id;groups.set(group,[...(groups.get(group)||[]),...statements]);
+        const event=notifyEvent(p,t,{at:started,hadStock:old.size>0,region});
+        if(event)events.push(event);
     }
     // Gebündelt schreiben: Identitätsgruppen bleiben zusammen in einem Batch (atomar), mehrere Gruppen teilen sich einen.
     for(const batch of batches([...groups.values(),...touch.map(s=>[s])]))await env.DB.batch(batch);
+    // Ereignisse für die Benachrichtigungen (notify-events.mjs), erst nach den Berichten: Der Job notify findet dann ihre
+    // Suchkarten. Ohne Tabelle (drizzle/0046 fehlt) oder bei einem Fehler bleibt der Import, wie er ist.
+    const db = env.DB;
+    if(events.length)await bestEffort('Ereignisse für Benachrichtigungen', async()=>{
+        for(const batch of batches(events.map(e=>[db.prepare(NOTIFY_INSERT_SQL).bind(...e)])))await db.batch(batch);
+        await db.prepare(NOTIFY_PRUNE_SQL).bind(new Date(Date.parse(started)-NOTIFY_KEEP_MS).toISOString()).run();
+    });
     // A short window without meetings is a successful attempt; the stored stock and its status stay as they are.
     const quiet=Boolean(combined.quiet);
     const health=importHealth(previousCoverage,{at:started,count:fresh.topics.length+unchanged,complete:fresh.coverage.complete,quiet});
@@ -148,7 +159,6 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const record = trace.finish({ runId: id, status, adapter: fresh.coverage.method || null, meetings: fresh.coverage.meetings, unchangedMeetings: unchanged, readMeetings: fresh.readMeetings ?? null, reports: fresh.topics.length, stockBefore: old.size, written, marksKnown: Object.keys(known).length, collectMs, storeMs: Date.now() - collectStarted - collectMs, issues: fresh.coverage.issues, warnings });
     await env.DB.prepare(FINISH_RUN_SQL).bind(new Date().toISOString(), status, JSON.stringify({ mode:'metadata',region, window: lookback, quiet, count: fresh.topics.length, unchangedMeetings: unchanged, decisions: decisions.length, issues: fresh.coverage.issues, warnings, debug: brief(record) }), id).run();
     // A record that cannot be stored does not undo a stored import.
-    const db = env.DB;
     await bestEffort('Aufzeichnung speichern', () => saveDebug(db, record));
     // A step that only got further in the meeting list has made progress too: the next one continues behind it.
     const listAdvanced = Boolean(fresh.list) && (fresh.list as {readAt?: number}).readAt !== keptList?.readAt;

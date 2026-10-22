@@ -82,7 +82,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
   {
     group: "Alarme und Stufen",
     items: [
-      { q: "Wie funktionieren die Benachrichtigungen und E-Mail-Alarme?", a: "Speichern Sie eine Suche mit dem Stern neben dem Suchfeld. Unter „Gespeicherte Suchen“ schalten Sie für jede Suche E-Mail-Benachrichtigungen ein und wählen, ob Sie sofort, täglich oder wöchentlich informiert werden." },
+      { q: "Wie funktionieren die Benachrichtigungen und E-Mail-Alarme?", a: "Speichern Sie eine Suche mit dem Stern neben dem Suchfeld. Unter „Meine Suchen“ schalten Sie für jede Suche mit der Glocke E-Mails bei neuen Treffern ein und wählen, ob Sie sofort, täglich oder wöchentlich informiert werden. Einem einzelnen Vorgang folgen Sie mit der Glocke auf seiner Seite: Sie erfahren, sobald er weiter beraten, vertagt oder beschlossen wird. Jede E-Mail enthält einen Link zum Abbestellen." },
       { q: "Was ist der Unterschied zwischen gespeicherter Suche und Bookmark?", a: "Eine gespeicherte Suche beobachtet ein Thema oder Gebiet und meldet neue Treffer. Ein Bookmark (gespeicherter Artikel) merkt sich einen einzelnen Vorgang; mit der Glocke werden Sie informiert, wenn er weiter beraten oder beschlossen wird." },
       { q: "Kann ich meine Stufe wechseln oder kündigen?", a: "Ja. Sie können jederzeit auf eine höhere Stufe wechseln. Kostenpflichtige Stufen sind jederzeit kündbar, eine Mindestlaufzeit gibt es nicht." },
     ],

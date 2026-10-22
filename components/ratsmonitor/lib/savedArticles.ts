@@ -10,7 +10,7 @@ export interface SavedArticle {
   gemeinde: string;
   teaser: string;
   savedAt: string;
-  /** Benachrichtigen, wenn es zu diesem Vorgang Neuigkeiten gibt (in Thema 1 nur vorgemerkt) */
+  /** Per E-Mail benachrichtigen, wenn der Vorgang eine neue Sitzung oder einen neuen Stand bekommt (server/accounts/notify.mjs) */
   follow?: boolean;
   /** false: über der Grenze der Stufe gespeichert, zählt nicht */
   active?: boolean;
@@ -111,6 +111,23 @@ export function toggleSavedArticle(a: Omit<SavedArticle, "savedAt">): Promise<st
   return list.some((x) => x.id === a.id) ? removeSavedArticle(a.id) : add(a, false);
 }
 
+
+/** Glocke an einem Vorgang ein- oder ausschalten. Ein noch nicht gemerkter Vorgang wird dabei gemerkt (die Glocke gehört
+ *  zum gemerkten Artikel). Sofort in der Anzeige, bei Fehler zurück. */
+export async function setArticleFollow(a: Omit<SavedArticle, "savedAt">, on: boolean): Promise<string | null> {
+  const hit = list.find((x) => x.id === a.id);
+  if (!hit) return on ? add(a, true) : null;
+  if (!!hit.follow === on) return null;
+  put(list.map((x) => (x.id === a.id ? { ...x, follow: on } : x)));
+  try {
+    await api("/api/me/articles", { method: "PATCH", body: { id: a.id, follow: on } });
+    touchAccount();
+    return null;
+  } catch (e) {
+    put(list.map((x) => (x.id === a.id ? { ...x, follow: hit.follow } : x)));
+    return failure(e);
+  }
+}
 
 /** Entfernt den Artikel (sofort in der Anzeige, bei Fehler wieder da) */
 export async function removeSavedArticle(id: string): Promise<string | null> {

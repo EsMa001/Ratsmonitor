@@ -681,7 +681,7 @@ Die Vorschau „neue Treffer“ (`lib/queue.ts`, ein Abruf je Suche) bleibt in T
 
 ## 9. Anschlüsse für Benachrichtigungen und Bezahlung
 
-**Thema 2 (Benachrichtigungen).** Aus Thema 1 vorhanden:
+**Thema 2 (Benachrichtigungen).** Umgesetzt am 22.10.2026, Konzept und Abweichungen: `requirements/benachrichtigungen-konzept.md`. Aus Thema 1 vorhanden:
 
 - die bestätigte Adresse und `user_settings`
 - `saved_searches.query`, `query_version`, `signature`, `notify_*`, `last_notified_at`

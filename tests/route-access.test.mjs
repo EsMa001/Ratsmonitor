@@ -8,7 +8,8 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..'),api=path.join(root,'app/api');
 const routes=fs.readdirSync(api,{recursive:true}).map(f=>String(f).split(path.sep).join('/')).filter(f=>f.endsWith('/route.ts')).map(f=>f.slice(0,-'/route.ts'.length));
-const RULES={admin:/\brequireAdmin\b|\badminRead\(/,auth:/\baccountRoute\(/,me:/\baccountRoute\(/,dev:/\baccountRoute\(/,oauth:/\baccountRoute\(/,internal:/\binternalCall\(/};
+// notify: Abbestellen aus der Mail (server/accounts/notify.mjs) läuft über accountRoute(), berechtigt ist das Token, nicht die Sitzung
+const RULES={admin:/\brequireAdmin\b|\badminRead\(/,auth:/\baccountRoute\(/,me:/\baccountRoute\(/,dev:/\baccountRoute\(/,oauth:/\baccountRoute\(/,notify:/\baccountRoute\(/,internal:/\binternalCall\(/};
 const DATA=/\bgated\(|\bguard\(/;
 /** Ohne Prüfung in der Route, mit Grund */
 const OPEN={

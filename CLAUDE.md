@@ -31,6 +31,13 @@
 - **Kontenverwaltung** nur per Kommandozeile (`scripts/accounts/manage.mjs`, auf dem Server `ratsmonitor-accounts`), Adressen nur über `--email-stdin`. Pflegejob `scripts/accounts/maintenance.mjs` (Fristen) im Zeitplaner-Job `accounts`.
 - **Tests:** `tests/accounts-login.test.mjs`, `accounts-data.test.mjs`, `accounts-rules.test.mjs` (Hilfen in `tests/helpers/accounts.mjs`).
 
+## Benachrichtigungen per E-Mail (Backend, `server/accounts/notify.mjs`, seit 22.10.2026)
+
+- **Was:** Glocke an gespeicherten Suchen (sofort, täglich, wöchentlich) und an Vorgängen (sofort), Wochenbericht (Suchen ohne Glocke, täglich oder Wochentag, `weekly_day` 7 = täglich), Kalender-Mails (Enterprise). Konzept: `requirements/benachrichtigungen-konzept.md`; Betrieb: `docs/betrieb/node-server.md`, „Benachrichtigungen“.
+- **Weg:** Der Import (`sync.ts`) schreibt Ereignisse in `notify_events` (`drizzle/0046`, `notifyEvent` in `server/integrations/notify-events.mjs`: neu nur bei Gebieten mit Bestand und Sitzung höchstens 30 Tage zurück; Änderung bei neuem Stand oder neuer Sitzung). Job `notify` (Zeitplaner, alle 10 Minuten) liest sie nur, prüft je Suche mit `searchFilters` (dieselbe Abfrage wie die Übersicht, `alertParams`: ohne „bis heute“ und Schnellauswahl), merkt jeden Treffer einmal in `notify_items` (Kontendatei, `drizzle-accounts/0005`) und reiht fällige je Konto als eine Mail ein (`sendMail` mit `extra`: Mail und Markierung in einer Transaktion). Gemeldet wird ab dem Einschalten (`notify_since`, `follow_since`, `weekly_since`, `calendar_since`).
+- **Regeln:** Abbestellen per Token (SHA-256 in `notify_tokens`), Ein-Klick nach RFC 8058 (`List-Unsubscribe`-Kopfzeilen, `POST /api/notify/unsubscribe`), Seite `/abbestellen#t=…` schreibt erst nach dem Klick. Betreff ohne Namen der Suchen. Weitere Empfänger (Enterprise `emails`) gibt es noch nicht. Web-Push (D5) ist nicht angebunden, Empfehlung: entfernen.
+- **Tests:** `tests/notify.test.mjs`.
+
 ## Suche: Wortliste (Backend, `server/integrations/search-words.mjs`)
 
 - **Was:** Tabellen `search_words` (jedes Wort aus `search_cards.search` ab 3 Zeichen, mit Kartenzahl), `search_postings` (Karten-IDs je Wort bis 500 Karten), `search_word_areas` und `search_word_facets` (vorberechnete Zahlen je Gebiet, Thema, Status für häufige Wörter), Stand in `system_state` `search-words`; `search_cards_gone` (Protokoll ersetzter und gelöschter Karten für das Nachführen). Schema: `drizzle/0013_search_words.sql`, `drizzle/0015_search_cards_gone.sql`. Die Daten selbst liegen nicht im Repo.

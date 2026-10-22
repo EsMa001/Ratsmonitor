@@ -60,12 +60,12 @@ const FEATURE: Record<GateFeature, { title: string; login: string; upgrade: stri
   },
   notifications: {
     title: "Benachrichtigungen",
-    login: "Melden Sie sich an, um Vorgänge und Suchen für Benachrichtigungen vorzumerken.",
-    upgrade: "Mit Basic ist 1 Benachrichtigung gleichzeitig vorgemerkt. Mit Pro sind es bis zu 100.",
+    login: "Melden Sie sich an, um per E-Mail von neuen Treffern und Neuigkeiten zu Vorgängen zu erfahren.",
+    upgrade: "Mit Basic ist 1 Benachrichtigung gleichzeitig aktiv. Mit Pro sind es bis zu 100.",
   },
   emails: {
     title: "Mehrere Empfänger",
-    login: "Melden Sie sich an, um Benachrichtigungen per E-Mail vorzumerken.",
+    login: "Melden Sie sich an, um Benachrichtigungen per E-Mail zu erhalten.",
     upgrade: "Mit Enterprise gehen Benachrichtigungen an bis zu 5 E-Mail-Adressen.",
   },
 };

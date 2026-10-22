@@ -7,6 +7,8 @@ import {validBearer} from '../integrations/prepared-access.mjs';
 
 const FREE=[/^\/anmelden(\/|$)/,/^\/registrieren$/,/^\/api\/auth\//,/^\/api\/me$/,/^\/(impressum|datenschutz|agb|widerruf|kontakt)$/,
  /^\/api\/internal\//,/^\/api\/calendar\/feed\//,/^\/api\/dev\//,
+ // Benachrichtigungen abbestellen per Token aus der Mail (server/accounts/notify.mjs), auch ohne Sitzung
+ /^\/abbestellen$/,/^\/api\/notify\/unsubscribe$/,
  // OAuth für den Kunden-MCP: Registrierung, Token und Widerruf rufen Anwendungen ohne Sitzung auf; die Zustimmung
  // (/verbinden, /api/oauth/*) verlangt weiter eine Anmeldung
  /^\/oauth\/(authorize|token|register|revoke)$/];
