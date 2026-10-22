@@ -149,7 +149,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     <div className={`rm-mapwrap relative${phoneStage ? " max-sm:-mx-[max(1vw,16px)] max-sm:-mt-3" : ""}`}>
     {/* Handy: Platz für die Suchleiste der Seite oben auf der Karte (siehe lib/mapSlot.ts) */}
     <div ref={slotRef} className={phoneStage ? "absolute inset-x-2 bottom-2 z-30 flex flex-col-reverse gap-1 empty:hidden sm:hidden" : "absolute inset-x-0 top-2 z-30 empty:hidden sm:hidden"} />
-    <div ref={boxRef} style={boxH ? { height: boxH } : undefined} className={`rm-mapbox relative h-[420px] overflow-hidden bg-slate-50 rounded-[22px] ${phoneStage ? "max-sm:rounded-none max-sm:h-[calc(100svh-170px-var(--rm-tabbar))]" : "max-sm:rounded-2xl max-sm:h-[300px]"} border max-sm:border-transparent border-slate-200 sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
+    <div ref={boxRef} style={boxH ? { height: boxH } : undefined} className={`rm-mapbox relative h-[420px] overflow-hidden bg-slate-50 rounded-[22px] ${phoneStage ? "max-sm:rounded-none max-sm:h-[calc(100svh-170px-var(--rm-tabbar))]" : "max-sm:rounded-2xl max-sm:h-[300px]"} border max-sm:border-transparent border-slate-200 sm:h-[540px] ${tall ? "min-[640px]:h-[720px]" : ""}`}>
       <div ref={stageRef} className="rm-stage absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={ghostRef} aria-hidden="true" className="pointer-events-none absolute left-0 top-0 block h-full w-full opacity-0" />

@@ -1,3 +1,4 @@
+import { RailToggle } from "./RailToggle";
 import { Segmented } from "../../components/Segmented";
 import { SubtopicIcon } from "../../components/SubtopicIcon";
 import { useSubParam } from "../../lib/subParam";
@@ -255,26 +256,26 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           <MapWheels inline single label="Bereich" value={subId} onPick={(id) => setSub(id)}
             items={bereiche.map((b) => ({ id: b.key, label: b.key ? short(b.key, b.name) : b.name, icon: b.key ? <SubtopicIcon id={b.key} size={16} /> : <LayoutGrid size={16} strokeWidth={1.4} className="text-slate-500" /> }))} />
           <nav aria-label="Bereich" className="rm-xrail mb-4 hidden sm:block print:hidden">
-            <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
+            <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 min-[640px]:grid-cols-11">
               {bereiche.map((b) => { const on = b.key === subId; return <li key={b.key || "alle"}>
-                <button type="button" aria-pressed={on} title={b.key ? `${b.name}: ${n(b.count)}` : undefined} onClick={() => setSub(on ? "" : b.key)}
+                <button type="button" aria-pressed={on} title={b.key ? `${b.name}: ${n(b.count)}` : b.name} onClick={() => setSub(on ? "" : b.key)}
                   className={`flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   {b.key ? <SubtopicIcon id={b.key} size={20} /> : <LayoutGrid size={20} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
                   <span className="line-clamp-2 min-w-0 flex-1">{b.key ? short(b.key, b.name) : b.name}</span>
                   {b.key ? <span className="tabular-nums text-slate-500">{n(b.count)}</span> : null}
                 </button></li>; })}
             </ul>
-          </nav>
+          <RailToggle /></nav>
         </>;
       })()}
       {!fest && <nav ref={railRef} aria-label="Signal" className={`rm-xrail hidden sm:block print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
-        <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
+        <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 min-[640px]:grid-cols-11">
           {MIT_ALLE.map(([id, label]) => {
             const on = id === signal;
             const Icon = ICONS[id];
             return (
               <li key={id} className={on && id !== ALLE ? "rm-rail-open" : undefined}>
-                <button type="button" aria-pressed={on} onClick={() => { railUnfold(); pick({ signal: id === standard ? "" : id, phase: "", art: "" }); }}
+                <button type="button" title={label} aria-pressed={on} onClick={() => { railUnfold(); pick({ signal: id === standard ? "" : id, phase: "", art: "" }); }}
                   className={`flex h-full min-h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   {Icon && <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
                   <span>{label}</span>
@@ -288,7 +289,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             );
           })}
         </ul>
-      </nav>}
+      <RailToggle /></nav>}
 
       <div className="mt-4 print:hidden"><DiffusionSearch filterUp follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {/* Desktop: eine Filterzeile unter der Suche: Zeitraum, Schritt, Art als Auswahllisten, aktive Filter als Chips (Handy: Blätter und Räder) */}
@@ -313,20 +314,20 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
             : <Kennzahlen week={week} band={fest ? "Ausschreibungen" : "Projekte"} scope={[res.signal.name, art ? artShort(art) : "", phase ? `Schritt „${res.phases.find((p) => p.key === phase)?.name ?? phase}“` : "", areaAgs && res.places.length === 1 ? res.places[0].name : ""].filter(Boolean).join(" · ")} period={zeit === "alle" ? "gesamter Zeitraum" : zeitText ? `letzte ${zeitText}` : undefined} items={[{ value: n(res.total), label: res.total === 1 ? "Vorgang" : "Vorgänge" }, { value: n(res.placeCount ?? res.places.length), label: (res.placeCount ?? res.places.length) === 1 ? "Gebiet" : "Gebiete" }]}>
             </Kennzahlen>}
 
-          {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 1024 px nebeneinander */}
+          {/* Links die Karte (bleibt stehen), rechts Filter und Vorgänge; ab 640 px nebeneinander */}
           <div className="rm-karte-toggle mt-4 print:hidden max-sm:hidden">
             <button type="button" aria-expanded={karte} aria-controls="signale-karte" onClick={() => setKarte((k) => !k)} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 hover:border-slate-400">
               {karte ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{karte ? "Karte ausblenden" : "Karte zeigen"}
             </button>
           </div>
-          <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-5 lg:grid-cols-12`}>
-            {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+          <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-5 min-[640px]:grid-cols-12`}>
+            {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 min-[640px]:sticky min-[640px]:top-4 min-[640px]:col-span-6 min-[640px]:self-start">
               {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} 
                 wheels={<MapWheels label="Kategorie" subLabel="Art" subAll="Alle Arten" value={signal === standard ? "" : signal} onPick={(id) => pick({ signal: id, phase: "", art: "" })}
                   items={MIT_ALLE.map(([id, lab]) => { const I = ICONS[id]; return { id: id === standard ? "" : id, label: lab, icon: I ? <I size={16} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" /> : undefined }; })}
                   subs={signal !== ALLE && res.signal.id === signal && (res.arts ?? []).length > 0 ? res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={14} className="text-slate-500" /> })) : undefined} subValue={art} onSub={(id) => pick({ art: id })} />} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
             </div>}
-            <div className={`min-w-0 ${karte ? "lg:col-span-6" : "lg:col-span-12"}`}>
+            <div className={`min-w-0 ${karte ? "min-[640px]:col-span-6" : "min-[640px]:col-span-12"}`}>
               {pending && <ListSkeleton />}
               <div className={pending ? "hidden" : undefined}>
 

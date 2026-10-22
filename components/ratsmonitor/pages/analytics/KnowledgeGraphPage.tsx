@@ -59,7 +59,7 @@ export function KnowledgeGraphPage() {
   /* Standard nach Platz: Desktop in voller Breite „Detail“, schmaler „Normal“, Handy „Überblick“ (weniger Punkte, lesbare Schrift) */
   const phone = usePhone();
   const [chosen, setLevel] = useState<Level | null>(null);
-  const wide = useClient(() => window.innerWidth >= 1024, false);
+  const wide = useClient(() => window.innerWidth >= 640, false);
   const level = netLevel(phone, wide, chosen);
   const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
@@ -269,7 +269,7 @@ export function KnowledgeGraphPage() {
           {!!res.partial?.length && (
             <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); start(); }} className="font-medium text-teal-700">Nur ganze Wörter →</button></p>
           )}
-          <div className="mt-10 grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-2 max-sm:mt-5 max-sm:gap-y-5">
+          <div className="mt-10 grid grid-cols-1 gap-x-12 gap-y-10 min-[640px]:grid-cols-2 max-sm:mt-5 max-sm:gap-y-5">
             <section>
               <h2 className="text-[22px] font-semibold">{gesamt ? "Auffällige Verbindungen" : "Stärkste Verbindungen"}</h2>
               <p className="mb-3 mt-1 text-[14px] text-slate-500">{gesamt ? "Begriffe, die viel öfter zusammen vorkommen, als es ihre Häufigkeit erwarten lässt." : "Begriffe, die in denselben Einträgen vorkommen."}</p>

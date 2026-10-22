@@ -30,7 +30,7 @@ export function SearchSplit() {
   const at = (e: React.PointerEvent) => { const box = grid(); return box ? box.getBoundingClientRect().right - e.clientX : null; };
   return (
     <div ref={ref} role="separator" aria-orientation="vertical" aria-label="Breite von Karte und Trefferliste ändern (Pfeiltasten, Doppelklick: zurücksetzen)" tabIndex={0}
-      className="rm-searchsplit"
+      className="rm-searchsplit" title="Ziehen, um die Breite zu ändern (Doppelklick: zurücksetzen)"
       onPointerDown={(e) => { drag.current = true; try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* zieht trotzdem */ } e.currentTarget.dataset.drag = "1"; }}
       onPointerMove={(e) => { if (!drag.current) return; const w = at(e); if (w !== null) apply(w); }}
       onPointerUp={(e) => { drag.current = false; delete e.currentTarget.dataset.drag; const w = at(e); if (w !== null) save(w); }}

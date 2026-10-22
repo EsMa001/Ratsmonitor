@@ -68,7 +68,7 @@ export function GremiennetzPage() {
   }, [res, selected]);
   /* Detailstufe wie im Themennetz: Überblick (die größten Gremien), Normal, Detail (alle); Standard nach Platz */
   const phone = usePhone();
-  const wide = useClient(() => window.innerWidth >= 1024, false);
+  const wide = useClient(() => window.innerWidth >= 640, false);
   const [chosen, setLevel] = useState<Level | null>(null);
   const level = netLevel(phone, wide, chosen);
   const routeIds = useMemo(() => {

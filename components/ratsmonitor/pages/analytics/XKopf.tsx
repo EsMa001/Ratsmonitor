@@ -1,3 +1,4 @@
+import { RailToggle } from "./RailToggle";
 import Link from "next/link";
 import { ShareButton } from "../../components/ShareButton";
 import { useScrollMemory } from "../../lib/useScrollMemory";
@@ -181,12 +182,12 @@ export function ThemenLeiste({ phone = true }: { phone?: boolean } = {}) {
         items={[{ id: "", label: "Alle Themen", icon: <ThemeIcon theme="alle" size={16} className="text-slate-500" /> }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.name, label: t.name, icon: <ThemeIcon theme={t.id} size={16} className="text-slate-500" /> }))]} />}
       {/* Ab Tablet Kacheln; ab Desktop alle 11 in einer Reihe (Breite teilt sich auf) */}
       <nav ref={railRef} {...peek.nav} aria-label="Thema" className={`rm-xrail mb-4 hidden sm:block print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
-        <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
+        <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 min-[640px]:grid-cols-11">
           {[{ id: "alle", name: "" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.id, name: t.name }))].map((t) => {
             const on = search.state.thema === t.name;
             return (
               <li key={t.id} {...(t.name ? peek.tile(t.id) : {})} className={[on && t.name ? "rm-rail-open" : "", t.name && peek.peek === t.id ? "rm-rail-peek" : ""].join(" ").trim() || undefined}>
-                <button type="button" aria-pressed={on} onClick={() => pickThema(t.name)}
+                <button type="button" title={t.name || "Alle Themen"} aria-pressed={on} onClick={() => pickThema(t.name)}
                   className={`flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   <ThemeIcon theme={t.id} size={22} className={on ? "text-teal-700" : "text-slate-500"} />
                   <span>{t.name || "Alle Themen"}</span>
@@ -202,7 +203,7 @@ export function ThemenLeiste({ phone = true }: { phone?: boolean } = {}) {
             );
           })}
         </ul>
-      </nav>
+      <RailToggle /></nav>
     </>
   );
 }

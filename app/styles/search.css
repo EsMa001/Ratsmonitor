@@ -241,7 +241,7 @@ html.rm-search .rm-footcta {
     transition: background .15s;
   }
   html.rm-search .rm-flat>.rm-searchsplit:hover::after, html.rm-search .rm-flat>.rm-searchsplit:focus-visible::after, html.rm-search .rm-flat>.rm-searchsplit[data-drag]::after {
-    background: var(--rm-fill);
+    background: var(--rm-c600);
   }
   html.rm-search .rm-flat>section:first-child {
     position: sticky;
