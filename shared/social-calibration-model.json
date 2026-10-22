@@ -1,0 +1,6 @@
+{
+ "note": "Noch nicht gelernt: nach dem ersten Lauf des Modells auf dem Server mit node scripts/learn-social.mjs neu erzeugen. Bis dahin gilt für alle Unterthemen das Mittel der früheren Stichwort-Kalibrierung (30,6 % streitig).",
+ "builtAt": null,
+ "baseline": {"n": 0, "res": 0, "contested": 0.306},
+ "subs": {}
+}

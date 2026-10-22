@@ -22,6 +22,8 @@ test('graph links terms, topics, committees and lands by co-occurrence and leave
  for(let i=0;i<4;i++)put('b','umwelt','Gemeinderat','Windenergie Artenschutz Gutachten '+'ABCD'[i]);
  put('b','unklar','Gemeinderat','Windenergie Sonstiges Thema');
  put('a','umwelt','Bauausschuss','Bauantrag Windenergie Carport Flurstück 12');
+ // Privater Bauantrag nach dem Modell (Genehmigung für Dritte, bauen.dritte)
+ sql.prepare(`INSERT INTO model_labels(topic_id,model,key,kind,kind_p,status,status_p,subs,process,at) VALUES(?,'test','k','subject',0.99,'info',0.9,'["bauen.dritte"]','permit','2026-01-01')`).run('c'+n);
  buildXCases(sql,{today:'2026-10-15'});
  try{
   const g=await knowledgeGraph(db,catalog,new URLSearchParams('q=Windenergie&to=2999-01-01'));

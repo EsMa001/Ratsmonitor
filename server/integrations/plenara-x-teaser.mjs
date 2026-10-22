@@ -48,7 +48,7 @@ const quart=(v,q)=>{const s=[...v].sort((a,b)=>a-b);return s[Math.min(s.length-1
 /* Die Rechnung im plenara.X-Worker (x-offload.mjs, Arten wie in x-registry.mjs): serve.mjs fragt nach jedem Bau alle
    Auszüge nacheinander ab, das hielt den Hauptprozess bis dahin sekundenlang an. Ohne Worker rechnet der Prozess selbst. */
 const inWorker=(kind,fn)=>async(db,catalog,params)=>(await xOffload(kind,params))??fn(db,catalog,params);
-const SIGNALS=inWorker('x-signale-v8',xSignals),QUERY=inWorker('x-v6',xQuery),NEWS=inWorker('news',xNews),
+const SIGNALS=inWorker('x-signale-v9',xSignals),QUERY=inWorker('x-v7',xQuery),NEWS=inWorker('news',xNews),
  TRENDS=inWorker('trends',xTrends),NETWORK=inWorker('network',xNetwork),DECISIONS=inWorker('decisions',xDecisions);
 export async function xTeaser(db,catalog,id,{today=new Date(),signals=SIGNALS,query=QUERY,newsFn=NEWS,trendsFn=TRENDS,networkFn=NETWORK,decisionsFn=DECISIONS}={}){
  const t=TEASERS[id];

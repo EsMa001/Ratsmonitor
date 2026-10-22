@@ -23,6 +23,7 @@ import {stepSummary} from './state.mjs';
 import {pdfUses} from './store-lib.mjs';
 import {readFileSync} from 'node:fs';
 import {openFailures} from './failures.mjs';
+import {readSummaryModel} from '../../server/model/model-files.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const dry=flag('dry-run'),all=flag('all'),limit=Number(opt('limit',0));
@@ -37,6 +38,14 @@ const hasCases=has('report_rules')&&db.prepare("SELECT 1 FROM pragma_table_info(
 for(const [table,mig] of [['report_rules','0032'],['topic_facts','0025']])
  if(!has(table)&&!(dry&&table==='report_rules')){console.error(`Tabelle ${table} fehlt: erst Migration ${mig} einspielen (scripts/node-migrate.mjs).`);process.exit(1);}
 
+// Modell (Migration 0046, scripts/model/apply.mjs läuft davor): Hauptdokument, Art, Thema, Unterthemen und Vorgangsart kommen von
+// dort. Berichte ohne Antwort des Modells werden nicht gelesen (die Regeln dafür gelten nicht mehr) und gezählt (ohneModell).
+const hasModel=has('model_labels');
+const mlGet=hasModel?db.prepare('SELECT model,key,kind,kind_p,themes,theme_p,subs,subsubs,process,process_p,step,service,applicants,doctypes,main_url FROM model_labels WHERE topic_id=?'):null;
+const modelOf=id=>{const m=mlGet?.get(id);if(!m)return null;return {key:m.model+'|'+m.key,kind:m.kind,kindP:m.kind_p,themeP:m.theme_p,processP:m.process_p,service:m.service||null,doctypes:JSON.parse(m.doctypes||'[]'),themes:JSON.parse(m.themes||'[]'),subs:JSON.parse(m.subs||'[]'),subsubs:JSON.parse(m.subsubs||'[]'),step:m.step||null,process:m.process,applicants:JSON.parse(m.applicants||'[]'),mainUrl:m.main_url||null};};
+// Satzkopf der Zusammenfassung (RM_MODEL_DIR/summary/summary.json): wählt die Kernsätze; fehlt die Datei, gilt die Regel
+const summaryModel=hasModel?readSummaryModel():null;
+let noModel=0;
 // Ein Durchlauf: Schlüssel je Bericht ohne den Text zu lesen (Hauptdokument, Sitzungsunterlage, Stand der Textfassung)
 // --ids (Nacharbeit, Folgekette nach der OCR): nur diese Berichte lesen, Nutzung je Adresse nur aus ihren Gebieten, keine
 // Schlüssel laden. Vorher lief das über alle 1,5 Mio. Berichte: 8 bis 16 Minuten je Lauf für ein bis sechs Berichte (Server,
@@ -49,14 +58,15 @@ const todo=[];let total=0;
 for(const r of db.prepare(`SELECT id,region_id,coalesce(json_extract(payload,'$.officialTitle'),json_extract(payload,'$.title'),'') AS title,
   json_extract(payload,'$.documents') AS docs FROM topics WHERE active=1${onlyIds?' AND id IN (SELECT value FROM json_each(?))':''}`).iterate(...(onlyIds?[idList]:[]))){
  total++;let docs=[];try{docs=JSON.parse(r.docs||'[]');}catch{/* ohne Dokumente */}
- const {doc,session}=mainDocument(docs,{uses:U,hasText});
+ const model=hasModel?modelOf(r.id):null;if(hasModel&&!model){noModel++;continue;}
+ const {doc,session}=mainDocument(docs,model?{uses:U,hasText,mainUrl:model.mainUrl}:{uses:U,hasText});
  const textSha=doc&&!session?store.textMark(doc.url)||'':'';
  const att=factAttachments(docs,doc?.url,{uses:U,hasText}).map(a=>({...a,textSha:store.textMark(a.url)||''}));
- const key=readKey({title:r.title,mainUrl:doc?.url,session,textSha,attSha:att.map(a=>a.textSha).join(',')});
- if(onlyIds||keys.get(r.id)!==key)todo.push([r.id,doc&&!session&&textSha?doc.url:null,textSha,r.region_id+'|'+titleKey(r.title),att.length?att:null]);
+ const key=readKey({title:r.title,mainUrl:doc?.url,session,textSha,attSha:att.map(a=>a.textSha).join(','),modelKey:(model?.key||'')+(summaryModel?'|'+summaryModel.version:'')});
+ if(onlyIds||keys.get(r.id)!==key)todo.push([r.id,doc&&!session&&textSha?doc.url:null,textSha,r.region_id+'|'+titleKey(r.title),att.length?att:null,model]);
 }
 keys.clear();
-console.log(`${total} Berichte, ${todo.length} zu lesen (${READ_VERSION}, ${((Date.now()-t0)/1000).toFixed(0)} s)`);
+console.log(`${total} Berichte, ${todo.length} zu lesen${hasModel?`, ${noModel} noch ohne Modell`:''} (${READ_VERSION}, ${((Date.now()-t0)/1000).toFixed(0)} s)`);
 
 const get=db.prepare('SELECT payload FROM topics WHERE id=?');
 const update=db.prepare('UPDATE topics SET payload=? WHERE id=?');
@@ -77,7 +87,7 @@ const write=fn=>{pending.push(fn);if(pending.length>=500)flush();};
 const KEEP=new Set(['no-text','too-long','unreadable']);
 const at=new Date().toISOString(),c={read:0,withText:0,changed:0,summary:0,dropped:0,facts:0,issues:{},kinds:{},themes:{}};
 const F=dry?null:await openFailures(),failedIds=F?F.known('rules'):new Set();c.crashed=0;
-for(const [id,url,textSha,caseKey,att] of todo){
+for(const [id,url,textSha,caseKey,att,model] of todo){
  if(limit&&c.read>=limit)break;
  const row=get.get(id);if(!row)continue;
  let old,pages,r;
@@ -85,13 +95,14 @@ for(const [id,url,textSha,caseKey,att] of todo){
   old=JSON.parse(row.payload);
   pages=url?store.getText(url)?.pages||null:null;
   const attachments=(att||[]).map(a=>({...a,pages:store.getText(a.url)?.pages||null}));
-  r=readReport(old,{uses:U,hasText,pages,textSha:pages?textSha:'',attachments,at});
+  r=readReport(old,{uses:U,hasText,pages,textSha:pages?textSha:'',attachments,at,model,summaryModel});
  }catch(e){c.crashed++;console.error('Regeln',id,e?.message||e);await F?.fail({step:'rules',key:id,cls:'internal',error:String(e?.stack||e).slice(0,300)});continue;}
  if(failedIds.has(id)){await F.ok({step:'rules',key:id});failedIds.delete(id);}
  c.read++;if(pages)c.withText++;
  c.kinds[r.itemKind]=(c.kinds[r.itemKind]||0)+1;c.themes[r.theme.id]=(c.themes[r.theme.id]||0)+1;
  if(r.summaryIssue)c.issues[r.summaryIssue]=(c.issues[r.summaryIssue]||0)+1;else c.summary++;
  const next={...old,itemKind:r.itemKind,theme:r.theme,stage:r.stage};delete next.ruleSummaryTried;
+ if(r.overview)next.overview=r.overview;else delete next.overview;
  if(r.ruleSummary)next.ruleSummary=r.ruleSummary;
  else if(next.ruleSummary&&!KEEP.has(r.summaryIssue)){delete next.ruleSummary;c.dropped++;}
  const json=JSON.stringify(next),changed=json!==row.payload;if(changed)c.changed++;
@@ -110,5 +121,5 @@ flush();
 if(!dry&&c.read)db.prepare("UPDATE data_revisions SET revision=revision+1 WHERE id='content'").run();
 console.log(JSON.stringify({berichte:total,...c,sekunden:Math.round((Date.now()-t0)/1000),geschrieben:!dry},null,1));
 F?.close();
-if(!dry)stepSummary({all,crashed:c.crashed,read:c.read,withText:c.withText,summaries:c.summary,dropped:c.dropped,unchanged:total-todo.length,issues:c.issues});
+if(!dry)stepSummary({all,noModel,crashed:c.crashed,read:c.read,withText:c.withText,summaries:c.summary,dropped:c.dropped,unchanged:total-todo.length,issues:c.issues});
 store.close();

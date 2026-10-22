@@ -2,7 +2,7 @@
 // genau richtig, und je Wert Genauigkeit (vergeben und richtig) und Abdeckung (gefunden von allen dieses Werts).
 //   node scripts/stage-study/measure.mjs --set=stage-a [--von=0 --bis=150] [--fehler]
 import fs from 'node:fs';
-import {stageOf,STAGES,SONST} from '../../shared/stage.mjs';
+import {stageOf,RULE_STAGES as STAGES,RULE_SONST as SONST} from '../../shared/stage.mjs';
 const arg=(k,d)=>process.argv.find(a=>a.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const ref=JSON.parse(fs.readFileSync(new URL('../../tests/fixtures/'+arg('set','stage-a')+'.json',import.meta.url),'utf8'));
 const from=+arg('von',0),to=+arg('bis',1e9),show=process.argv.includes('--fehler');

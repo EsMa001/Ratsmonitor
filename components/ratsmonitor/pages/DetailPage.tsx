@@ -46,8 +46,10 @@ export function DetailPage(){
   const host=(u:string)=>{try{return new URL(u).host;}catch{return '';}},events=t.events.filter(e=>!t.sourceUrl||!e.url||!host(e.url)||host(e.url)===host(t.sourceUrl)),status=STATUS[t.status]||STATUS.unknown;
   /* KI-Texte (Zusammenfassung, Zitate, Thema) zeigt das Frontend nicht; ohne Auszug aus der Vorlage bleibt der Abschnitt knapp */
   const ki=/^KI-Zusammenfassung/.test(t.generatedBy||'')||t.contentAnalysis?.status==='completed',rule=t.ruleSummary;
-  const shortText=ki?'':t.shortSummary;
-  const source=rule?{icon:<IconRules size={16} aria-hidden="true"/>,label:'Auszug aus der Vorlage (Originalsätze)'}:{icon:<IconDoc size={16} aria-hidden="true"/>,label:'Automatischer Quellenüberblick'};
+  /* Ohne Auszug der Überblick aus dem Modell (Vorgang, Sitzungen, Unterlagen), sonst der Text des Imports */
+  const overview=!ki&&!rule?t.overview?.text:'';
+  const shortText=ki?'':overview||t.shortSummary;
+  const source=rule?{icon:<IconRules size={16} aria-hidden="true"/>,label:'Auszug aus der Vorlage (Originalsätze)'}:overview?{icon:<IconDoc size={16} aria-hidden="true"/>,label:'Automatischer Überblick aus Sitzungen und Unterlagen'}:{icon:<IconDoc size={16} aria-hidden="true"/>,label:'Automatischer Quellenüberblick'};
   const excerptSource=rule?.source;
   const article={id:t.id,title:t.title,date:(t.eventDate||'').slice(0,10),gemeinde:regionName,teaser:shortText||''};
   /* Rohdaten der OParl-Schnittstelle (maschinenlesbares JSON) sind keine Unterlage für Menschen: ausblenden */
@@ -134,7 +136,7 @@ export function DetailPage(){
               {facts.map(([k,v])=><div key={k}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="m-0 text-slate-900">{v}</dd></div>)}
               {sourceLink(t.sourceUrl)&&<div><dt className="text-[12px] text-slate-500">Originalquelle</dt><dd className="m-0"><a className="text-teal-700 no-underline hover:underline" href={sourceLink(t.sourceUrl)} target="_blank" rel="noopener noreferrer">Im Ratsinformationssystem ↗</a></dd></div>}
             </dl>
-            <p className="mt-4 flex items-start gap-2 text-[14px] text-slate-500" title="Herkunft der Zusammenfassung"><span className="mt-0.5 text-teal-700">{source.icon}</span><span><span className="block text-[12px]">Zusammenfassung</span>{source.label}</span></p>
+            <p className="mt-4 flex items-start gap-2 text-[14px] text-slate-500" title={overview?"Herkunft des Überblicks":"Herkunft der Zusammenfassung"}><span className="mt-0.5 text-teal-700">{source.icon}</span><span><span className="block text-[12px]">{overview?"Überblick":"Zusammenfassung"}</span>{source.label}</span></p>
           </aside>
         </div>
       </article>

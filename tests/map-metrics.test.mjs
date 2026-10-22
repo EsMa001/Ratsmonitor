@@ -6,7 +6,8 @@ import {mapPeriods,mapReading,mapLegend} from '../shared/map-metrics.mjs';
 const region={id:'billerbeck',kind:'city',name:'Billerbeck'};
 const coverage=[{regionId:region.id,method:'scraper',from:'2026-01-01',to:'2026-09-27',complete:true}];
 const q={region:region.id,from:'2026-09-01',to:'2026-09-20',label:'bildung',now:new Date('2026-09-27T12:00:00Z')};
-const topic=(id,title,days)=>analysed({id,regionId:region.id,title,officialTitle:title,sourceUrl:'https://example.org/'+id,events:days.map(date=>analysed({date}))});
+// Art des Punkts wie nach readReport mit dem Modell: Sammelpunkte („Mitteilungen“) sind Ablauf (itemKind formal)
+const topic=(id,title,days)=>analysed({id,regionId:region.id,title,officialTitle:title,sourceUrl:'https://example.org/'+id,...(title==='Mitteilungen'?{itemKind:'formal'}:{}),events:days.map(date=>analysed({date}))});
 const data=items=>buildAnalytics(items,coverage,[region],q);
 
 test('map change uses equal calendar-day periods, including odd lengths, leap years and one-day selection',()=>{

@@ -211,7 +211,7 @@ function pickIntro(body, head, title, budget = Infinity) {
 // Reihenfolge der Kandidaten: Einleitung, Beschluss, Zahlen, Begründung, dann weitere Sätze nach Gewicht;
 // was nicht mehr passt, wird übersprungen, ein kürzerer Satz darf nachrücken. Ausgegeben wird in Dokumentreihenfolge,
 // die Einleitung steht immer vorn.
-export function ruleSummary(text, { target = 30, max = 40, title = '' } = {}) {
+export function ruleSummary(text, { target = 30, max = 40, title = '', kind = null } = {}) {
   let { decision, facts } = sections(text);
   const head = splitSentences(decision).filter(usableDecision).slice(0, 2);
   let hasFacts = facts.length > 0 && facts !== cleanText(text);
@@ -232,7 +232,8 @@ export function ruleSummary(text, { target = 30, max = 40, title = '' } = {}) {
   // (mindestens drei Wortstämme des Titels, aber keine bloße Wiederholung des Titels), unter den ersten zehn Sätzen
   if (!head.length && !hasFacts) {
     const t = titleOf(text, title);
-    if (!title || itemKind(title) !== 'subject' || target > 40 || /Ausführung (?:der|von) Beschl|Stand der Ausführung|Beschlusskontrolle/i.test(title)) return null;
+    // Art des Punkts aus dem Modell, wenn übergeben (readReport), sonst die Regel
+    if (!title || (kind || itemKind(title)) !== 'subject' || target > 40 || /Ausführung (?:der|von) Beschl|Stand der Ausführung|Beschlusskontrolle/i.test(title)) return null;
     const tw = stems(t), flatT = t.replace(/\W+/g, '').toLowerCase();
     const hit = body.slice(0, 10).find(x => {
       const own = [...stems(x)], shared = own.filter(w => tw.has(w)).length, fx = x.replace(/\W+/g, '').toLowerCase();
@@ -312,15 +313,15 @@ function scoreSummary({ compact, text, title, head, intro, sentences, words, tar
   const parts = { structure, intro: introPart, title: coverage, sentences: quality, length, document: docPart, amount };
   return { score: Math.round(Object.values(parts).reduce((a, b) => a + b, 0)), parts: Object.fromEntries(Object.entries(parts).map(([k, v]) => [k, Math.round(v * 10) / 10])) };
 }
-export const ruleSummaryShort = (text, title) => ruleSummary(text, { target: 30, max: 40, title });
-export const ruleSummaryLong = (text, title) => ruleSummary(text, { target: 100, max: 140, title });
+export const ruleSummaryShort = (text, title, kind = null) => ruleSummary(text, { target: 30, max: 40, title, kind });
+export const ruleSummaryLong = (text, title, kind = null) => ruleSummary(text, { target: 100, max: 140, title, kind });
 
 // Gespeicherte Fassung je Artikel (Feld `ruleSummary`): kurz und lang mit Güte; null ohne brauchbaren Text
 // source: Dokument, aus dem die Sätze stammen ({ url, title }); die Anzeige nennt es als Quelle des Auszugs
 // Mindestgüte: darunter ist der Auszug zu schwach für die Anzeige
 export const MIN_SCORE = 60;
-export function buildRuleSummary(text, title = '', at = new Date().toISOString(), source = null) {
-  const short = ruleSummaryShort(text, title), long = ruleSummaryLong(text, title);
+export function buildRuleSummary(text, title = '', at = new Date().toISOString(), source = null, kind = null) {
+  const short = ruleSummaryShort(text, title, kind), long = ruleSummaryLong(text, title, kind);
   if (!short || !long) return null;
   if (Math.round((short.score + long.score) / 2) < MIN_SCORE) return null;
   const pick = r => ({ sentences: r.sentences, gaps: r.gaps, words: r.words, score: r.score, parts: r.parts });

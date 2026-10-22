@@ -106,6 +106,8 @@ export async function followUp({sql,store,exec=runNode,tmp,regions=null,since=nu
  }
  if(ids.length&&left()>=0.5){
   const idf=path.join(tmp,'follow-ids.txt');fs.writeFileSync(idf,[...new Set(ids)].join('\n'));
+  // erst das Modell (Hauptdokument, Art, Thema), dann Zusammenfassung und Fakten
+  out.push({step:stepName('model'),reports:new Set(ids).size,code:await exec('scripts/model/apply.mjs',['--ids',idf])});
   out.push({step:stepName('rules'),reports:new Set(ids).size,code:await exec('scripts/pdf-store/read-reports.mjs',['--ids',idf])});
  }
  log(`Folgeschritte: ${out.map(s=>`${s.step} (${s.code})`).join(', ')||'keine'}`);

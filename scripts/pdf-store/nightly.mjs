@@ -172,6 +172,7 @@ if(ocrOnly){
   if(busy)skip(stepName('rules'),'„Verarbeitung, nachts“ läuft gerade; der neue Text kommt dort an');
   else if(ids.length){
    const idFile=path.join(dir,`ocr-ids-${process.pid}.txt`);fs.writeFileSync(idFile,ids.join('\n'));
+   await step(stepName('model'),'scripts/model/apply.mjs',['--ids',idFile]);
    await step(stepName('rules'),'scripts/pdf-store/read-reports.mjs',['--ids',idFile]);
    try{fs.unlinkSync(idFile);}catch{/* weg */}
    await step(stepName('search'),'scripts/refresh-search-words.mjs',['--quiet']);

@@ -73,10 +73,10 @@ test('Folgekette: gelingt ein Abruf, laufen für seine Gebiete gleich Extraktion
  const calls=[];let clock=now0+2*H;
  const exec=async(script,args)=>{calls.push([script.split('/').pop(),args.slice(0,2).join(' ')]);if(script.endsWith('import-worker.mjs'))await clearFailure(db,{step:'import',key:'billerbeck'});return 0;};
  const r=await nacharbeit({db,sql,exec,now:()=>clock,log:()=>{},hasImporter:true,store:null});
- assert.deepEqual(calls.map(c=>c[0]),['import-worker.mjs','fetch.mjs','fetch.mjs','text.mjs','read-reports.mjs']);
+ assert.deepEqual(calls.map(c=>c[0]),['import-worker.mjs','fetch.mjs','fetch.mjs','text.mjs','apply.mjs','read-reports.mjs']);
  assert.equal(calls[2][1],'--others --regions','Anlagen der abgerufenen Gebiete');
  assert.equal(r.readyForAi,1,'der geschriebene Bericht steht für die KI bereit');
- assert.deepEqual(r.followUp.map(f=>f.step),['PDF laden','Anlagen laden','Text lesen','Regeln anwenden']);
+ assert.deepEqual(r.followUp.map(f=>f.step),['PDF laden','Anlagen laden','Text lesen','Modell anwenden','Zusammenfassung und Fakten']);
  sql.close();
 });
 

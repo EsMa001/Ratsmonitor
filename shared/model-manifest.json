@@ -1,0 +1,29 @@
+{
+ "note": "Modelldateien liegen nicht in Git (RM_MODEL_DIR, Server /srv/ratsmonitor/models); scripts/model/apply.mjs prüft sie gegen diese Prüfsummen.",
+ "encoder": {
+  "version": "e5-small-ft1",
+  "base": "intfloat/multilingual-e5-small (MIT), nachtrainiert mit scripts/model/finetune.py",
+  "files": {
+   "config.json": "51d8afcd56f9cdaf391c71abe73f1179fb52e71baa944234d27d070992917a9d",
+   "tokenizer.json": "0b44a9d7b51c3c62626640cda0e2c2f70fdacdc25bbbd68038369d14ebdf4c39",
+   "tokenizer_config.json": "a1d6bc8734a6f635dc158508bef000f8e2e5a759c7d92f984b2c86e5ff53425b",
+   "onnx/model_quantized.onnx": "2f15b703342eb122580ebee18aed7746db6c3f5e7423be9074943a3c7a606b64"
+  }
+ },
+ "heads": {
+  "version": "heads-9526894c8afa",
+  "input": "input-v1",
+  "trainedAt": "2026-10-22T05:44:31.257Z",
+  "files": {
+   "heads.json": "d107723bb37716b6b76156c083212c00def09ade8e16e3b3c4e502ac0330ca55",
+   "heads.bin": "9526894c8afa118abe7dc9cb8baec8824b1275c5c71d858f91d346ffaf98d079"
+  }
+ },
+ "summary": {
+  "version": "summary-b9e66a697035",
+  "trainedAt": "2026-10-22T07:00:20.136Z",
+  "files": {
+   "summary.json": "0381aa888e9b4e617f915f3313b17689cb6f8efbd23a3d1654088285d49c1edc"
+  }
+ }
+}

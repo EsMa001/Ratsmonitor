@@ -1,0 +1,23 @@
+{
+ "version": "summary-b9e66a697035",
+ "measuredAt": "2026-10-22",
+ "sample": "kern-saetze Prüfberichte (300, zufällig vom Server 22.10.2026)",
+ "model": {
+  "n": 300,
+  "none": 91,
+  "short": 62,
+  "shortFirst": 62,
+  "longAcc": 57,
+  "longCov": 50,
+  "both": 268
+ },
+ "rule": {
+  "n": 300,
+  "none": 95,
+  "short": 33,
+  "shortFirst": 32,
+  "longAcc": 49,
+  "longCov": 40,
+  "both": 275
+ }
+}

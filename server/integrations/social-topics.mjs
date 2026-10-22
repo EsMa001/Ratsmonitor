@@ -1,9 +1,13 @@
-// Themenvorschläge für Social Media: regelbasiert aus den Suchkarten, ohne Modell.
+// Themenvorschläge für Social Media. Seit 22.10.2026 wählt social-model.mjs über die Antworten des Modells aus; die Stichwort-
+// Auswahl hier (GROUPS, matchTitle, scoreCard, fitScore, socialTopics) wird nicht mehr angewendet. Weiter genutzt: Titel säubern,
+// Ergebnisse lesen (evidenceOf), Parteien und Ortsform im Aufhänger.
+// Früher: regelbasiert aus den Suchkarten, ohne Modell.
 // Gesucht werden Einzelfälle in einem Ort, die polarisieren (Tempo 30, Windrad, Bezahlkarte, Bürgerbegehren …).
 // Je Eintrag zählt das stärkste Streitwort seines Titels, verstärkt durch Anzeichen für Streit (Bürgerbegehren,
 // Antrag einer Fraktion) und durch den Status (abgelehnt und vertagt sind lauter als beschlossen).
 // Je Tag höchstens `perDay` Einträge, je Ort und Tag höchstens einer, ein Ort höchstens einmal je Gruppe und Woche.
 
+import {classifyResult} from '../../shared/vote-result.mjs';
 import calibrationFile from '../../shared/social-calibration.json' with {type:'json'};
 import ratingsFile from '../../shared/social-ratings.json' with {type:'json'};
 
@@ -149,15 +153,15 @@ const FORMS={
  'Spielplatz':['einem Spielplatz','einen Spielplatz','Spielplatz'],
  'Spielhalle / Rotlicht':['Spielhallen und Vergnügungsstätten','Spielhallen und Vergnügungsstätten','Stadtentwicklung'],
 };
-const PARTIES=[
+export const PARTIES=[
  [/\bafd\b/,{nom:'die AfD',gen:'der AfD'}],[/\bcdu\b|\bcsu\b/,{nom:'die CDU',gen:'der CDU'}],[/\bspd\b/,{nom:'die SPD',gen:'der SPD'}],
  [/bündnis ?90|\bgrünen?\b|b['’]?90/,{nom:'die Grünen',gen:'der Grünen',plural:true}],[/\bfdp\b/,{nom:'die FDP',gen:'der FDP'}],
  [/\blinke\b|\blinken\b|die linke/,{nom:'die Linke',gen:'der Linken'}],[/\bbsw\b/,{nom:'das BSW',gen:'des BSW'}],
  [/freie wähler|\bfw\b/,{nom:'die Freien Wähler',gen:'der Freien Wähler',plural:true}],[/\bvolt\b/,{nom:'Volt',gen:'von Volt'}],
 ];
-const inPlace=r=>/^(Kreis|Landkreis) |-Kreis |kreis$|land$/i.test(r)&&!/^(Stadt|Gemeinde) /.test(r)?'im '+r:'in '+r;
-const hashtag=t=>String(t).split(/[^A-Za-zÄÖÜäöüß0-9]+/).filter(Boolean).map(w=>w[0].toUpperCase()+w.slice(1)).join('');
-const cap=t=>t[0].toUpperCase()+t.slice(1);
+export const inPlace=r=>/^(Kreis|Landkreis) |-Kreis |kreis$|land$/i.test(r)&&!/^(Stadt|Gemeinde) /.test(r)?'im '+r:'in '+r;
+export const hashtag=t=>String(t).split(/[^A-Za-zÄÖÜäöüß0-9]+/).filter(Boolean).map(w=>w[0].toUpperCase()+w.slice(1)).join('');
+export const cap=t=>t[0].toUpperCase()+t.slice(1);
 // Hier stimmt der feste Satzbaustein immer; bei allen anderen Stichwörtern steht das Wort aus dem Titel („Thema „Schließzeiten““),
 // weil die Bewertung zeigte, dass allgemeine Bausteine sonst Falsches behaupten (Schließzeiten als Schließung, Gewerbe- als Grundsteuer).
 const SAFE_FORMS=new Set(['Tempo 30','Bezahlkarte','Windkraft','Fahrradstraße','Solarpark','Gendern','Moschee / Religion','Flagge / Symbol','Rechtsextremismus','Verpackungs- / Bettensteuer','Hundesteuer','Feuerwerk','Sonntagsöffnung']);
@@ -297,7 +301,7 @@ const FORMAL=/^(einladung|niederschrift|bekanntgabe|genehmigung der niederschrif
 // Antrag einer Fraktion, Gruppe oder eines Ratsmitglieds: Oppositionsanträge enden in den Berichten deutlich öfter streitig
 // (55 bis 80 % gegenüber 22 % im Mittel aller Vorgänge, Auswertung von 12 Monaten).
 const PARTY_MOTION=/\b(afd|linke|grüne|grünen|cdu|csu|spd|fdp|bsw|fraktion|freie wähler|volt)[- ]?(antrag|anfrage)|antrag der (afd|linken|grünen|cdu|spd|fdp|fraktion)|ratsfraktion|ratsgruppe|kreistagsfraktion|bürgerschaftsfraktion|änderungsantrag|ergänzungsantrag|beschlussantrag|antrag der gruppe|antrag des (ratsmitglieds|ratsherrn|einzelmandats)|einzelratsmitglied|wählergemeinschaft|antrag (der|von) (frau|herrn)|fraktion[a-zäöüß]* (die|der|bündnis|b['’]90)/;
-const STATUS_BOOST={rejected:1.5,postponed:1.3,approved:1.1,recommended:1.15,consulting:1,announced:.95,info:.8,unknown:.9};
+export const STATUS_BOOST={rejected:1.5,postponed:1.3,approved:1.1,recommended:1.15,consulting:1,announced:.95,info:.8,unknown:.9};
 
 /** Streitwörter eines Titels: [{group,groupName,term,weight}] */
 export function matchTitle(title){
@@ -322,25 +326,10 @@ export function scoreCard(card){
 }
 
 // ---- Ergebnisse aus den Berichten (events[].result): belegen, ob ein Vorgang streitig endete -----------------------
-const R_REJ=/abgelehnt|nicht angenommen|nicht beschlossen|keine mehrheit|nicht empfohlen/i;
-const R_POST=/vertagt|zurückgestellt|zurückgezogen|abgesetzt|verwiesen|überwiesen|ohne beschluss|vertagung/i;
-const R_UNAN=/einstimmig|ohne gegenstimme|einvernehmlich|einhellig/i;
-const R_MAJ=/mehrheitlich|mit mehrheit|gegen \d+ stimme|\d+ gegenstimme|stimmenmehrheit|bei \d+ (nein|gegen)|\d+ nein/i;
-const R_OK=/beschlossen|empfohlen|zugestimmt|angenommen|genehmigt|zur kenntnis|kenntnis genommen|erledigt/i;
-/** 'rej' | 'post' | 'maj' | 'unan' | 'ok' | null */
-// Platzhalter der Importe („Ergebnis … nicht belegt“, „Sitzung steht noch aus“) sind kein Ergebnis
-const NO_RESULT=/nicht belegt|steht noch aus|liegt als Dokument vor|ohne Beschluss geführt/i;
-export function classifyResult(t){
- if(!t||NO_RESULT.test(t))return null;
- if(R_REJ.test(t))return 'rej';
- if(R_POST.test(t))return 'post';
- if(R_UNAN.test(t))return 'unan';
- if(R_MAJ.test(t))return 'maj';
- if(R_OK.test(t))return 'ok';
- return null;
-}
+// Regel für den Ausgang: shared/vote-result.mjs (auch für plenara.X Beschlüsse)
 const ORDER=['rej','post','maj','unan','ok'];
 /** Stärkstes Ergebnis aller Sitzungen eines Vorgangs und Zahl der Sitzungen; payload-Felder events, event, sourceData.records. */
+export {classifyResult};
 export function evidenceOf({events,event,records}){
  const texts=[];
  for(const e of events||[]){if(e?.result)texts.push(e.result);if(e?.description)texts.push(e.description);}
@@ -351,7 +340,7 @@ export function evidenceOf({events,event,records}){
 }
 const parse=v=>{if(typeof v!=='string')return v;try{return JSON.parse(v);}catch{return null;}};
 /** Beleg je Karte aus den Berichten, in Blöcken; fehlende Berichte ergeben keinen Eintrag. */
-async function loadEvidence(db,ids){
+export async function loadEvidence(db,ids){
  const out=new Map();
  try{
   for(let i=0;i<ids.length;i+=40){
@@ -364,11 +353,11 @@ async function loadEvidence(db,ids){
 }
 
 // ---- Eignung für Social Media (0 bis 100 %), nur aus festen Regeln --------------------------------------------------
-const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+export const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 // Alltagsnähe: je näher am Alltag der Leserinnen und Leser, desto eher wird geteilt.
 const EVERYDAY={verkehr:20,geld:18,alltag:17,migration:16,beteiligung:16,politik:16,identitaet:15,energie:12,bauen:8};
 const EVERYDAY_TERM={'Eintrittspreise':19,'Sonntagsöffnung':16,'Tierschutz':14,'Streichung / Sparliste':16,'Transparenz':10,'Vielfalt / Demokratie':12,'Innenstadt / Handel':14,'Tempo 30':20,'Grundsteuer / Hebesatz':20,'Schließung':19,'Bad / Bibliothek':18,'Bezahlkarte':16,'Kita-Beiträge':17,'Umspannwerk':6,'Wärme':8,'Mehrkosten':8,'Funk / Strom':9};
-const JARGON=/§|flst\.|fl\.-?nr|flurst|bebauungsplan|vorhabenbezogen|satzung|drucksache|\bbv\b|\bvo\/|geschäftsordnung|haushaltssatzung|aufstellungsbeschluss|einvernehmen|\bnr\.\s?\d/i;
+export const JARGON=/§|flst\.|fl\.-?nr|flurst|bebauungsplan|vorhabenbezogen|satzung|drucksache|\bbv\b|\bvo\/|geschäftsordnung|haushaltssatzung|aufstellungsbeschluss|einvernehmen|\bnr\.\s?\d/i;
 /** Streitquote eines Stichworts aus den Berichten der letzten 12 Monate, zum Mittel hin gezogen (wenig Belege = nah am Mittel). */
 export function termRate(term,cal=calibrationFile){
  const base=cal.baseline?.contested??.29,t=cal.terms?.[term];
@@ -383,9 +372,9 @@ export function termRating(term,rat=ratingsFile){
  const k=6;
  return {value:(t.eignung*t.n+mean*k)/(t.n+k),n:t.n,mean};
 }
-const SMALL_BODY=/ortsbeirat|ortsrat|ortschaftsrat|bezirksvertretung|bezirksausschuss|stadtteilbeirat|ortsgemeinderat|bezirksbeirat|ortsteilbeirat/i;
+export const SMALL_BODY=/ortsbeirat|ortsrat|ortschaftsrat|bezirksvertretung|bezirksausschuss|stadtteilbeirat|ortsgemeinderat|bezirksbeirat|ortsteilbeirat/i;
 const PLANNING=/bebauungsplan|flächennutzungsplan|vorhabenbezogen|aufstellungsbeschluss|öffentliche auslegung|bauantrag|bauvoranfrage|einvernehmen|bauleitplan|\d+\. änderung des/i;
-const STREET_WORD=/stra(ß|ss)e\b|str\.|\bweg\b|\bplatz\b|allee\b|\bring\b|damm\b|ufer\b/i;
+export const STREET_WORD=/stra(ß|ss)e\b|str\.|\bweg\b|\bplatz\b|allee\b|\bring\b|damm\b|ufer\b/i;
 /**
  * Eignung eines Eintrags als Social-Media-Beitrag in Prozent. Teile (Summe höchstens 100, danach Abzüge):
  * Themenwert 15 (Hälfte gelernte Streitquote aus den Berichten, Hälfte Urteil unabhängiger Bewerter), Streit im Vorgang 15,

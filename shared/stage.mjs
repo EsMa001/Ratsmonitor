@@ -30,7 +30,20 @@
 //     Sanierung, Ausbau, Neugestaltung, Bauvorhaben), Vertrag, Regelung (Satzung, Verordnung, Richtlinie, Geschäftsordnung),
 //     Beteiligung (Bürgerbeteiligung, Befragung, Petition, Bürgerversammlung), Bericht, Anfrage.
 export const STAGE_VERSION='stage-v4';
-export const STAGES=[
+// Seit 22.10.2026 (Modell, requirements/begriffsbuch-kern.md Abschnitt 3) steht in report_rules.stage und x_cases.stage die
+// Vorgangsart des Modells (PROCESS_STAGES); die Regel stageOf und ihre Werte (RULE_STAGES) gelten nur noch für Berichte, die das Modell
+// noch nicht eingeordnet hat, und werden weiter benannt.
+export const PROCESS_STAGES=[
+ {id:'information',name:'Information'},
+ {id:'political',name:'Antrag aus der Politik'},
+ {id:'permit',name:'Genehmigung für Dritte'},
+ {id:'planning',name:'Planung und Regelung'},
+ {id:'build',name:'Bau und Vergabe'},
+ {id:'money',name:'Geld'},
+ {id:'contract',name:'Vertrag und Grundstück'},
+ {id:'other',name:'Sonstiges'},
+];
+export const RULE_STAGES=[
  {id:'antrag',name:'Antrag und Anfrage'},
  {id:'planung',name:'Planung und Konzept'},
  {id:'vergabe',name:'Ausschreibung und Vergabe'},
@@ -45,12 +58,16 @@ export const STAGES=[
  {id:'beteiligung',name:'Beteiligung'},
  {id:'bericht',name:'Bericht und Sachstand'},
 ];
-export const SONST='sonst';
-export const stageName=id=>STAGES.find(s=>s.id===id)?.name||'Sonstiges';
+/** Werte für Auswahl und Gliederung: die Vorgangsarten */
+export const STAGES=PROCESS_STAGES;
+export const SONST='other';
+/** „Sonstiges“ der Regel stageOf */
+export const RULE_SONST='sonst';
+export const stageName=id=>PROCESS_STAGES.find(s=>s.id===id)?.name||RULE_STAGES.find(s=>s.id===id)?.name||'Sonstiges';
 
 const PARTY=String.raw`(?:spd|cdu|csu|fdp|afd|bsw|ödp|volt|grüne|grünen|linke|freie wähler|fwg|fw|uwg|piraten|bündnis)`;
 const FIRST=[
- [SONST,/straßen(?:be)?nennung|straßenname|hausnummer|tagesordnung|^\W*(?:verschiedenes|sonstiges|kleinere)\b|^\W*(?:anfragen|mitteilungen)\s+(?:und|oder)\s+(?:anfragen|mitteilungen)/i],
+ [RULE_SONST,/straßen(?:be)?nennung|straßenname|hausnummer|tagesordnung|^\W*(?:verschiedenes|sonstiges|kleinere)\b|^\W*(?:anfragen|mitteilungen)\s+(?:und|oder)\s+(?:anfragen|mitteilungen)/i],
  ['bericht',new RegExp(String.raw`^\W*(?:zur\s+)?(?:mündliche[nr]?\s+)?(?:mv:|mitteilungsvorlage|antwort|beantwortung|information(?:en)?\b|info\b|einblick|informatorisch|unterrichtung|sachst[aä]nd|bericht|mitteilung|vorstellung|bekanntgabe|bilanz|rückschau|rückblick|ergebnisse|auswertung|statistik|aktuelle[nrs]?\b|der aktuelle)|antwort (?:der verwaltung )?(?:auf|zu)|beantwortung|sachst[aä]nd|bearbeitungsst[aä]nd|quartalsbericht|finanzbericht|budgetbericht|controllingbericht|beteiligungsbericht|jahresbericht|controlling|mündliche[nr]? bericht`,'i')],
  ['planung',/^\W*(?:\d+\.\s*)?(?:änderung des\s+)?(?:vorhabenbezogene[nr]?\s+)?(?:bebauungsplan|b-plan|bauleitplanung|flächennutzungsplan)/i],
  ['bauantrag',/^(?!.*(?:widmung|einziehung|umstufung))(?:.*?)(?:\bbau(?:antr[aä]g|voranfrage|gesuch)|baugenehmigung|befreiung von den festsetzungen|isolierte befreiung|nutzungsänderung|vorbescheid|einvernehmen|§\s*36a?\s*baugb|immissionsschutzrechtlich|\bbimschg\b|wasserrechtlich|§\s*8\s*whg|\bflst\.?\s*\d|\bfl(?:st)?\.?\s?-?\s?nr\.?|\bflnr\b|flur-?nr|flurnummer|(?:ein|zwei|mehr)familien(?:wohn)?haus|\befh\b|\bcarport|tektur|^\W*bausachen|bauangelegenheiten|baurechtliche angelegenheiten|\(b\d{4}\/\d+\)|umnutzung|\baz\.?\s*[\d][\d-]{4,}|§\s*17[23]\s*baugb)/i],
@@ -77,7 +94,7 @@ const WORDS=[
 export function stageOf({title}){
  const s=String(title||'');
  for(const [id,re] of FIRST)if(re.test(s))return id;
- let best=SONST,at=Infinity;
+ let best=RULE_SONST,at=Infinity;
  for(const [id,re] of WORDS){const m=s.match(re);if(m&&m.index<at){at=m.index;best=id;}}
  return best;
 }

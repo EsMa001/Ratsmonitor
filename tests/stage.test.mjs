@@ -1,7 +1,7 @@
 // „Was geschieht“ (shared/stage.mjs): Vorrang nach dem Leitfaden im Kopf der Datei; Messung scripts/stage-study/measure.mjs.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {stageOf,STAGES,SONST} from '../shared/stage.mjs';
+import {stageOf,RULE_STAGES as STAGES,RULE_SONST as SONST} from '../shared/stage.mjs';
 import {readReport} from '../server/integrations/report-rules.mjs';
 const cases=[
  ['Straßenbenennung Neubaugebiet "Krahm" Bebauungsplan Nr. 02.11.1',SONST],

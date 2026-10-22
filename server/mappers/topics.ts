@@ -15,5 +15,5 @@ import {CATALOG} from '../../shared/catalog.mjs';
 const regionName=(id?:string)=>(CATALOG as {id:string;name:string}[]).find(r=>r.id===id)?.name??null;
 export function toDetail(t: StoredTopic): TopicDetail {
     const { officialTitle, longSummary, committee, eventDate, reference, documents, events, relevanceReason, quality, sourceUrl } = t;
-    return { ...toCard(t), regionName:regionName(t.regionId), metadata:t.metadata,contentAnalysis:t.contentAnalysis,labelAssessments:t.labelAssessments,ruleSummary:t.ruleSummary,analysisFeatures:t.analysisFeatures, identityState:identityState(t), officialTitle, longSummary, committee, eventDate, reference, documents, events, relevanceReason, quality, sourceUrl };
+    return { ...toCard(t), regionName:regionName(t.regionId), metadata:t.metadata,contentAnalysis:t.contentAnalysis,labelAssessments:t.labelAssessments,ruleSummary:t.ruleSummary,overview:t.overview,analysisFeatures:t.analysisFeatures, identityState:identityState(t), officialTitle, longSummary, committee, eventDate, reference, documents, events, relevanceReason, quality, sourceUrl };
 }

@@ -31,7 +31,7 @@ export const ADMIN_GROUPS:{id:string;label:string;pages:AdminEntry[]}[]=[
   {id:'verarbeitung',label:'Verarbeitung',icon:'tags',hint:'Was wird eingeordnet?'},
   {id:'altbestand',label:'Altbestand',icon:'archive',hint:'Was holen wir nach?'}]},
  {id:'qualitaet',label:'Qualität',pages:[
-  {id:'regeltexte',label:'Themen & Texte',icon:'text',hint:'Was ist für plenara.X frei?'},
+  {id:'regeltexte',label:'Themen & Texte',icon:'text',hint:'Wie ordnet das Modell die Berichte ein?'},
   {id:'pruefliste',label:'Prüfliste',icon:'checklist',hint:'Was braucht einen Blick?'},
   {id:'bestand',label:'Bestandsprüfung',icon:'database',hint:'Ist der Bestand stimmig?'}]},
  {id:'betrieb',label:'Betrieb',pages:[

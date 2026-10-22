@@ -1,98 +1,133 @@
 'use client';
+/* Admin „Themen & Texte“ (seit 22.10.2026): Kernstück ist das Modell (requirements/modell-konzept.md). Es beantwortet je Bericht
+   neun Fragen (Begriffsbuch requirements/begriffsbuch-kern.md); die früheren Regeln für Art, Thema, „Was geschieht“, Dokumente
+   und die Signal-Regeln werden nicht mehr angewendet und hier nicht mehr gezeigt. Darunter Lauf, Themen, Zusammenfassung (Kernsätze aus dem
+   Modell, shared/model-summary-quality.json) und Fakten (die bleiben Regeln). Messwerte des Modells: shared/model-quality.json (schreibt scripts/model/train.mjs), Fassung:
+   shared/model-manifest.json; Fakten: shared/rule-quality.json (Gruppe facts). */
 import {isStep} from '@/shared/pipeline-terms.mjs';
-import {useCallback,useEffect,useState} from 'react';
+import {useCallback,useEffect,useRef,useState} from 'react';
 import {StandLine} from '@/components/admin-stand';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
 import {when,dur} from '@/components/admin-pdf-parts';
 import type {Stand} from '@/shared/admin-types';
 import {THEMES,SUBTOPICS} from '@/shared/themes.mjs';
 import QUALITY from '@/shared/rule-quality.json';
+import MODEL_QUALITY from '@/shared/model-quality.json';
+import SUMMARY_QUALITY from '@/shared/model-summary-quality.json';
+import MANIFEST from '@/shared/model-manifest.json';
 import {MAP_FACTS} from '@/shared/map-facts.mjs';
+import {MODEL_COVERED} from '@/shared/model/fact-gate.mjs';
+import {SUBSUBS} from '@/shared/model/subsubs.mjs';
+import {KIND_NAMES,STATUS_NAMES,PROCESS_NAMES,STEP_NAMES,SERVICE_NAMES,APPLICANT_NAMES,DOCTYPE_NAMES} from '@/shared/model/names.mjs';
 type Counts={online:number;aiSummaries:number;ruleSummaries:number;ruleScoreSum:number;pdfArticles:number;aiLabels:number;unlabelled:number};
 type Summary={counts:Counts;stand?:Stand;statsPending?:number};
 type Step={name:string;seconds:number;ok:boolean;summary:Record<string,unknown>|null};
 type Facts={version:string;reports:number;fromText:number;stale:number};
 type JobState={setting:{enabled:boolean;time?:string};run:{lastStart?:string;lastEnd?:string;seconds?:number;result?:string;running?:{startedAt:string}|null}|null;now:string|null;next:string|null;last?:{finishedAt:string;result:string;all?:boolean;steps:Step[];facts?:Facts|null}|null;all?:{requestedAt:string}|null};
+type Q={acc:number|null;cov?:number|null;n:number;sureAcc?:number|null;sureShare?:number|null};
+type FactRow={id:string;name:string;version:string;quality:number|null;coverage:number|null;sample:string;date:string;note?:string;what?:string;lock?:string};
 const RESULT:Record<string,string>={ok:'fertig',done:'fertig',failed:'mit Fehler',stopped:'angehalten'};
+const n=(v:number)=>v.toLocaleString('de-DE');
+const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:a/b<.01?2:a/b<.1?1:0})+' %':'–';
+const shortDate=(d:string)=>d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4);
+/* Ziel für Genauigkeit und Abdeckung, wie bei den früheren Regeln */
+const GOAL=QUALITY.target.quality;
+/* Die neun Fragen (Begriffsbuch Abschnitt 0) mit den Messwerten aus shared/model-quality.json; list: Liste mit Abdeckung,
+   sure: Anteil sicherer Antworten (ab 0,7) */
+const QUESTIONS:{key:string;name:string;what:string;list?:boolean;sure?:boolean}[]=[
+ {key:'kind',name:'1. Art',what:'Sachpunkt, Ablauf (Formalien, Sammelpunkte) oder Personalie. Ablauf und Personalie bekommen kein Thema; „ohne Formalien“ in der Suche folgt daraus.',sure:true},
+ {key:'theme',name:'2. Thema',what:'Eines der 10 Themen der Suche. Genauigkeit: von den vergebenen Themen richtig; Abdeckung: von den Sachpunkten mit Thema das richtige erkannt.',list:true},
+ {key:'sub',name:'Unterthema',what:'70 Unterthemen, je Thema gelernt.',list:true},
+ {key:'subsub',name:'Unter-Unterthema',what:'Feinere Filter der Signale (zum Beispiel Freiflächen-PV, Grundschule), je Unterthema gelernt.',list:true},
+ {key:'process',name:'3. Vorgangsart',what:'Information, Antrag aus der Politik, Genehmigung für Dritte, Planung und Regelung, Bau und Vergabe, Geld, Vertrag und Grundstück, Sonstiges. Ersetzt „Was geschieht“.',sure:true},
+ {key:'status',name:'4. Status',what:'Angekündigt bis Stand offen. Ist das Modell sicher (ab 0,7), steht sein Status im Bericht, sonst der des Imports.',sure:true},
+ {key:'project',name:'5. Vorhaben',what:'Konkretes Vorhaben ja oder nein: Grundlage der Signale.'},
+ {key:'step',name:'6. Schritt',what:'Wo ein Verfahren steht (Start bis Aufhebung), bei Planung und Regelung. Bisher an Bauleit- und Wärmeplänen gelernt.'},
+ {key:'applicants',name:'7. Wer',what:'Art des Antragstellers bei Anträgen aus der Politik: Fraktion, einzelnes Mitglied, Gremium oder Einwohner. Welche Partei, liest der Fakt aus dem Text (ein Name, keine Einordnung), und zwar nur, wenn hier Fraktion steht.'},
+ {key:'service',name:'8. Leistungsart',what:'Was beauftragt wird, bei Bau und Vergabe: Bauleistung, Planung, Lieferung, IT, Dienstleistung oder keine.'},
+ {key:'doctype',name:'9. Dokumentart',what:'Je PDF: Vorlage, Sammeldokument, Anlage, Ergebnis, Niederschrift, Sitzungsunterlage, Sonstiges.'},
+ {key:'main',name:'Hauptdokument',what:'Das PDF, das den Gegenstand trägt; aus ihm kommen Zusammenfassung und Fakten.'},
+ {key:'result',name:'Ergebnisdokument',what:'Das PDF mit dem Ergebnis (Beschlussauszug, sonst Niederschrift); Beleg für den Status.'},
+];
+/* Alle möglichen Antworten je Frage (ohne Zahlen), für das Fenster beim Klick auf den Namen */
+type Group={head?:string;items:string[]};
+const subName=(id:string)=>(SUBTOPICS as {id:string;name:string}[]).find(u=>u.id===id)?.name||id;
+const THEME_LIST=(THEMES as {id:string;name:string}[]);
+const VALUES:Record<string,Group[]>={
+ kind:[{items:Object.values(KIND_NAMES)}],
+ theme:[{items:[...THEME_LIST.map(t=>t.name),'Sonstiges (kein Thema erkennbar)']}],
+ sub:THEME_LIST.map(t=>({head:t.name,items:(SUBTOPICS as {theme:string;name:string}[]).filter(u=>u.theme===t.id).map(u=>u.name)})),
+ subsub:[...new Set(Object.keys(SUBSUBS).map(k=>k.split('.').slice(0,2).join('.')))].map(p=>({head:subName(p),items:Object.entries(SUBSUBS as Record<string,string>).filter(([k])=>k.startsWith(p+'.')).map(([,v])=>v)})),
+ process:[{items:Object.values(PROCESS_NAMES)}],
+ status:[{items:Object.values(STATUS_NAMES)}],
+ project:[{items:['Konkretes Vorhaben','Kein konkretes Vorhaben']}],
+ step:[{items:Object.values(STEP_NAMES)}],
+ applicants:[{items:Object.values(APPLICANT_NAMES)}],
+ service:[{items:[...Object.values(SERVICE_NAMES),'Keine (eigenes Vorhaben ohne Auftrag)']}],
+ doctype:[{items:Object.values(DOCTYPE_NAMES)}],
+ main:[{items:['Ein PDF des Berichts (Vorlage oder Sammeldokument, bei Anträgen der Antrag)','Keins (nur Anlagen oder Sitzungsunterlagen)']}],
+ result:[{items:['Beschlussauszug oder Abstimmungsergebnis zu diesem Punkt','Sonst die Niederschrift der Sitzung','Keins']}],
+};
+/* Fenster mit allen Antworten einer Frage; Escape und Klick auf „Schließen“ schließen es */
+function ValuesDialog({q,onClose}:{q:{key:string;name:string;what:string}|null;onClose:()=>void}){
+ const ref=useRef<HTMLDialogElement>(null);
+ useEffect(()=>{const d=ref.current;if(!d)return;if(q&&!d.open)d.showModal();if(!q&&d.open)d.close();},[q]);
+ const groups=q?VALUES[q.key]||[]:[];
+ return <dialog ref={ref} onClose={onClose} aria-labelledby="werte-titel" className="w-[min(560px,calc(100vw-32px))] max-h-[min(80dvh,720px)] rounded-xl border border-slate-200 bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/30">
+  {q&&<div className="flex max-h-[min(80dvh,720px)] flex-col">
+   <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+    <div><h2 id="werte-titel" className="m-0 text-[18px] font-semibold">{q.name.replace(/^\d+\.\s*/,'')}</h2><p className="m-0 mt-1 text-[14px] leading-snug text-slate-600">{q.what}</p></div>
+    <button type="button" onClick={onClose} className="shrink-0 rounded-full px-3 py-1 text-[14px] text-teal-700 hover:bg-slate-50">Schließen</button>
+   </div>
+   <div className="overflow-y-auto px-5 py-4">{groups.map((g,i)=><div key={i} className={i?'mt-4':''}>
+    {g.head&&<h3 className="m-0 mb-1 text-[12px] font-medium uppercase tracking-wide text-slate-500">{g.head}</h3>}
+    <ul className="m-0 list-none p-0 text-[14px]">{g.items.map(v=><li key={v} className="border-b border-slate-100 py-1.5">{v}</li>)}</ul>
+   </div>)}</div>
+  </div>}
+ </dialog>;
+}
+/* „i“ neben dem Namen: was gemessen wird; Klick öffnet, für Tastatur und Touch */
+const Info=({text}:{text:string})=>{const [open,setOpen]=useState(false);return <>
+ <button type="button" aria-label="Was gemessen wird" aria-expanded={open} title={text} onClick={()=>setOpen(o=>!o)} className={'inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border text-[12px] font-semibold leading-none '+(open?'border-teal-600 bg-teal-600 text-white':'border-slate-300 text-slate-500 hover:border-teal-600 hover:text-teal-700')}>i</button>
+ {open&&<span className="basis-full rounded-md bg-slate-50 px-3 py-2 text-[14px] leading-snug text-slate-700">{text}</span>}
+</>;};
+/* Messwert als Balken mit Zielmarke; unter dem Ziel orange */
+const Meter=({label,v,min,hint}:{label:string;v:number|null|undefined;min:number;hint?:string})=><div className="min-w-0" title={hint}>
+ <div className="flex justify-between text-[12px] text-slate-500"><span>{label}</span><span className={'tabular-nums '+(v==null?'':v<min?'text-amber-700':'text-slate-900')}>{v==null?'–':v+' %'}</span></div>
+ <div className="relative mt-1 h-1.5 rounded-full bg-slate-100">{v!=null&&<span className={'block h-1.5 rounded-full '+(v<min?'bg-amber-500':'bg-teal-600')} style={{width:v+'%'}}/>}<span className="absolute -top-0.5 h-2.5 w-px bg-slate-400" style={{left:min+'%'}}/></div>
+</div>;
 /** Kurzfassung eines Schritts aus seiner Zusammenfassung */
 function stepNote(s:Step){
  const x=s.summary||{};
  if(x.skipped)return 'ausgelassen ('+x.skipped+')';
  if(!s.ok)return 'Fehler';
- if(s.name==='Zusammenfassungen'&&typeof x.summaries==='number')return n(x.summaries)+' neue von '+n(Number(x.withText)||0)+' mit Text';
- if(isStep(s.name,'rules')&&typeof x.read==='number')return n(x.read)+' Berichte neu gelesen, davon '+n(Number(x.withText)||0)+' mit Text, '+n(Number(x.summaries)||0)+' mit Zusammenfassung';
+ if(isStep(s.name,'model')&&typeof x.done==='number')return n(x.done)+' Berichte eingeordnet, '+n(Number(x.embedded)||0)+' Texte eingebettet'+(x.msPerText?' ('+x.msPerText+' ms je Text)':'')+(x.statusSet?', Status in '+n(Number(x.statusSet))+' Berichten':'');
+ if(isStep(s.name,'rules')&&typeof x.read==='number')return n(x.read)+' Berichte neu gelesen, davon '+n(Number(x.withText)||0)+' mit Text, '+n(Number(x.summaries)||0)+' mit Zusammenfassung'+(x.noModel?', '+n(Number(x.noModel))+' noch ohne Modell':'');
  if(isStep(s.name,'xcases')&&typeof x.cases==='number')return n(x.cases)+' Vorgänge'+(x.unread?', davon '+n(Number(x.unread))+' ungelesen':'');
  return 'fertig';
 }
-const n=(v:number)=>v.toLocaleString('de-DE');
-type QualityRow={id:string;name:string;version:string;quality:number|null;coverage:number|null;sample:string;date:string;note?:string;gate?:boolean;what?:string;/* Grund, warum ein Wert trotz Messung nicht auf die Karte kommt */lock?:string;
- /* Signale: Trefferquote der Kategorie und Qualität je Filter (docs/produkt/plenara-x-signale.md) */ recall?:number|null;art?:number|null;phase?:number|null;phaseFrom?:string;filters?:{name:string;quality:number|null}[]};
-/* „i“ neben dem Namen: was bei der Regel gemessen wird (what in rule-quality.json); Klick öffnet, für Tastatur und Touch */
-const Info=({text}:{text:string})=>{const [open,setOpen]=useState(false);return <>
- <button type="button" aria-label="Was gemessen wird" aria-expanded={open} title={text} onClick={()=>setOpen(o=>!o)} className={'inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border text-[12px] font-semibold leading-none '+(open?'border-teal-600 bg-teal-600 text-white':'border-slate-300 text-slate-500 hover:border-teal-600 hover:text-teal-700')}>i</button>
- {open&&<span className="basis-full rounded-md bg-slate-50 px-3 py-2 text-[14px] leading-snug text-slate-700">{text}</span>}
-</>;};
-const QT=QUALITY.target;
-/** „12 %“ mit Hinweis, wenn unter dem Ziel */
-/* Messwert als Balken mit Zielmarke; unter dem Ziel orange */
-/* Signale: offen erst, wenn alles gemessen ist: Qualität, Art und Stand ab 90 %, Trefferquote ab 80 % */
-const SIGNAL_RECALL=80;
-/* Signale, für die es noch keine Kategorie im Frontend gibt (Regel gemessen, Qualität unter 90 %) */
-const NO_CATEGORY=new Set(['sig_pflege','sig_handel']);
-/* Ausschreibungen und Vergaben ist seit 18.10.2026 eine eigene Seite unter Einblicke, keine Kategorie der Signale mehr */
-const OWN_PAGE='sig_tender';
-const TAB_IDS=['uebersicht','signale','fakten','lauf'];
-const GROUP_ORDER=['read','other','signals','facts'];
-const TABS:[string,string][]=[['uebersicht','Übersicht und Grundregeln'],['signale','Signale'],['fakten','Fakten'],['lauf','Lauf und Zahlen']];
-const TAB_OF:Record<string,string>={read:'uebersicht',other:'uebersicht',signals:'signale',facts:'fakten'};
-/* Fakten: Anteil der Gemeinden mit mindestens einem Wert, ab dem ein Fakt gilt (Entscheidung 17.10.2026) */
-const FACT_PLACES=10;
-const signalGate=(r:QualityRow)=>{const v=[r.quality,r.recall,r.art,r.phase];return v.some(x=>x===null||x===undefined)?'unmeasured':[r.quality,r.art,r.phase].every(x=>(x as number)>=QT.quality)&&(r.recall as number)>=SIGNAL_RECALL?'open':'closed';};
-const SignalGate=()=>{return <Info text="Offen, wenn alles gemessen ist: Qualität, Art und Stand je mindestens 90 %, Trefferquote mindestens 80 %."/>;};
-const SignalGateBadge=({r}:{r:QualityRow})=>{const g=signalGate(r);return <span title="Offen, wenn Qualität, Art und Stand je mindestens 90 % und die Trefferquote mindestens 80 % erreichen." className={'rounded-full px-2 py-0.5 text-[12px] '+(g==='open'?'bg-teal-50 text-teal-700':g==='closed'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{g==='open'?'offen':g==='closed'?'unter 90 %':'noch nicht alles gemessen'}</span>;};
-/* Erklärung beim Darüberfahren je Kennzahl */
-const METER_HINT:Record<string,string>={
- Qualität:'Genauigkeit: Von dem, was die Regel liefert, ist so viel richtig. Gemessen an zufälligen Treffern einer ungesehenen Stichprobe (zum Beispiel 36 von 40 echte Vergaben = 90 %).',
- Trefferquote:'Vollständigkeit: Von allen Vorgängen, die wirklich dazugehören, findet die Regel so viele. Gemessen an Vorgängen, die von Hand als passend erkannt sind (zum Beispiel 32 von 40 gefunden = 80 %).',
- Art:'Qualität der Art (Filter): Von den richtig zugeordneten Vorgängen ist die Art (zum Beispiel Hochbau, Freiflächen-PV) so oft richtig. Zusammen über alle Filter der Kategorie.',
- Stand:'Qualität des Stands: Von den richtig zugeordneten Vorgängen ist der Stand (zum Beispiel Vergabe, Satzungsbeschluss, Genehmigung) so oft richtig. Woher der Stand kommt, steht darunter.',
- Abdeckung:'Von dem, was einen Wert haben sollte, bekommt ihn so viel.',
- Gemeinden:'Anteil der Gemeinden mit mindestens einem Wert, von allen Gemeinden mit mindestens einem Sachvorgang in Plenara.',
-};
-/* Kennzahl mit Erklärung: beim Darüberfahren und, für das Handy, beim Antippen des Namens */
-const Meter=({label,v,min}:{label:string;v:number|null;min:number})=>{const [open,setOpen]=useState(false);const hint=METER_HINT[label];return <div className="min-w-0" title={hint}>
- <div className="flex justify-between text-[12px] text-slate-500">{hint?<button type="button" aria-expanded={open} onClick={()=>setOpen(o=>!o)} className="cursor-help text-left underline decoration-dotted underline-offset-2">{label}</button>:<span>{label}</span>}<span className={'tabular-nums '+(v===null?'':v<min?'text-amber-700':'text-slate-900')}>{v===null?'–':v+' %'}</span></div>
- <div className="relative mt-1 h-1.5 rounded-full bg-slate-100">{v!==null&&<span className={'block h-1.5 rounded-full '+(v<min?'bg-amber-500':'bg-teal-600')} style={{width:v+'%'}}/>}<span className="absolute -top-0.5 h-2.5 w-px bg-slate-400" style={{left:min+'%'}}/></div>
- {open&&hint&&<p className="m-0 mt-1 text-[12px] leading-snug text-slate-600">{hint}</p>}
-</div>;};
-/* Thema je Fakt wie im Atlas (ATLAS_FACTS in server/integrations/plenara-x-query.mjs) */
-const FACT_THEME:Record<string,string>={plan:'bauen',plan_use:'bauen',housing:'bauen',hebesatz:'finanzen',annual_result:'finanzen',dog_tax:'finanzen',waste_fee:'umwelt',plan_area:'bauen',wind_count:'umwelt',project:'mobilitaet',road:'mobilitaet',house_type:'bauen',heat_plan:'umwelt',fee_rate:'umwelt',ee_power:'umwelt',grant:'soziales',kita_fee:'bildung',land_price:'wirtschaft',budget:'finanzen',second_home_tax:'finanzen',amusement_tax:'finanzen',plot_price:'bauen'};
-/* Ohne Abdeckung: jeder Bericht oder jedes PDF bekommt einen Wert (Unterthemen, Hauptdokument, Dokumentart) oder es ist eine Rangfolge (Social Media) */
-const NO_COVERAGE=new Set(['stage','subs','main_doc','doc_type','social']);
-/* Fakten nach Verwendung: Werte für die Karte von plenara.X Fakten (Zahl je Gemeinde), Bausteine der Signale (Einordnungen für
-   Stand und Auswahl, keine Zahlen; stehen bei den Signalen), Fraktionsprofil (plenara.X Einblicke) */
-/* Konzept docs/produkt/signale-und-fakten.md: Fakt = Zahlenwert zum Vergleich; Signal = Ereignis mit Art, Stand und optional Größe */
-const SIGNAL_STAND=new Set(['plan','heat_plan','stage']);
-const SIGNAL_ART=new Set(['plan_use','house_type','road','project']);
-/* Ereignis statt Zahl: gehört zu den Signalen (Kita-Gebühren erhöht oder neu gefasst) */
-const SIGNAL_EREIGNIS=new Set(['kita_fee']);
-const PROFILE_FACTS=new Set(['faction','faction_advice']);
-const factArt=(id:string)=>SIGNAL_STAND.has(id)?'stand':SIGNAL_ART.has(id)?'art':SIGNAL_EREIGNIS.has(id)?'ereignis':PROFILE_FACTS.has(id)?'profil':'vergleich';
-/* Neue Signale, noch nicht gebaut (Konzept, Abschnitt „Kategorien: Was neu heißt“) */
-const SIGNAL_IDEAS:{name:string;what:string}[]=[
- {name:'Schrittwechsel eines Vorhabens',what:'Meldung, wenn der Stand eines bekannten Vorhabens wechselt („geht in die Auslegung“, „Satzungsbeschluss“). Braucht ein Gedächtnis je Vorhaben (Vorgang über mehrere Sitzungen).'},
- {name:'Änderung eines Fakts',what:'Hebesatz oder Gebühr ändert sich gegenüber dem Vorjahr. Der Fakt wird zum Signal; braucht frühere Werte desselben Orts.'},
- {name:'Neuer Standort',what:'Einzelhandel, Pflege oder Schule aus der Nutzung in der Bauleitplanung.'},
- {name:'Große Vergabe',what:'Vergabe über einer Schwelle je Branche (Betrag aus dem Titel oder Beschluss).'},
+const THEME_NAME:Record<string,string>={...Object.fromEntries(THEMES.map((t:{id:string;name:string})=>[t.id,t.name])),unklar:'Sonstiges'};
+const FACT_ROWS=(QUALITY.groups.find(g=>g.id==='facts')?.rows??[]) as FactRow[];
+const ALL_RULE_ROWS=QUALITY.groups.flatMap(g=>g.rows as unknown as FactRow[]);
+/* Regeln, die neben dem Modell weiter laufen (ohne die Werte der Karte, die stehen darunter), mit Grund */
+/* Messwerte der Kernsätze (scripts/model/train-summary.mjs) */
+const SUMMARY_ROWS:{key:'short'|'longAcc'|'longCov'|'none';name:string;what:string;min:number}[]=[
+ {key:'short',name:'Kurzfassung',what:'Mindestens ein Satz der Kurzfassung ist auch von Hand gewählt.',min:60},
+ {key:'longAcc',name:'Langfassung: Genauigkeit',what:'Von den gewählten Sätzen sind so viele auch von Hand gewählt.',min:60},
+ {key:'longCov',name:'Langfassung: Abdeckung',what:'Von den von Hand gewählten Sätzen findet das Modell so viele.',min:60},
+ {key:'none',name:'Keine Zusammenfassung',what:'Richtig erkannt, ob es überhaupt eine geben soll (etwa bei leeren Deckblättern).',min:90},
 ];
-/* Auf der Karte von plenara.X Fakten (shared/map-facts.mjs) */
-/* Zeilen der Fakten (für die Bausteine bei den Signalen) */
-const FACT_ROWS=(QUALITY.groups.find(g=>g.id==='facts')?.rows??[]) as QualityRow[];
+const KEPT_RULES:{id:string;name:string;why:string}[]=[
+ {id:'member',name:'Mitgliedsgemeinde',why:'Schlägt Gemeindenamen im Katalog nach (Gremium, „der Gemeinde X“), ordnet nichts ein.'},
+ {id:'faction',name:'Partei des Antragstellers (Fraktionsprofil)',why:'Liest den Namen in „Antrag der …-Fraktion“ (ein Wert aus dem Text). Läuft nur, wenn das Modell einen Antrag aus der Politik mit Antragsteller Fraktion erkennt.'},
+ {id:'outcome',name:'Ausgang der Abstimmung',why:'Liest aus den Ergebnistexten der Sitzungen, wie abgestimmt wurde (einstimmig, mit Mehrheit, abgelehnt, auch aus Stimmenzahlen) und ob der Beschlussvorschlag geändert wurde. Eine Regel für Newsradar, Social Media und plenara.X Beschlüsse (shared/vote-result.mjs). Der Status selbst kommt vom Modell.'},
+ {id:'doc_type',name:'Dokumentart beim ersten Laden der PDFs',why:'Erste Schätzung für die Ablage, solange es noch keinen Text gibt. Sobald das Modell den Bericht eingeordnet hat, bewertet die Ablage mit dessen Dokumentart und Art des Punkts.'},
+];
+/* Werte für die Karte (Zahl je Gemeinde); Fraktion und Bausteine der früheren Signal-Regeln zeigt die Seite nicht mehr */
+const VALUE_FACTS=new Set((MAP_FACTS as [string,string,boolean][]).map(([k])=>k).filter(k=>!MODEL_COVERED.has(k)));
 const ON_MAP=new Set((MAP_FACTS as [string,string,boolean][]).filter(([,,on])=>on).map(([k])=>k));
-const shortDate=(d:string)=>d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4);
-const THEME_NAME:Record<string,string>={...Object.fromEntries(THEMES.map((t:{id:string;name:string})=>[t.id,t.name])),unklar:'Ohne Thema (noch nicht eingeordnet)'};
-const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:a/b<.01?2:a/b<.1?1:0})+' %':'–';
-/** Anteil der Artikel mit KI-Text, mit regelbasiertem Text und ohne, jeweils für Zusammenfassungen und Labels. */
+const MQ=MODEL_QUALITY.quality as Record<string,Q>;
+
 export function AdminRuleTexts(){
  const [data,setData]=useState<Summary|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const load=useCallback(async()=>{
@@ -101,7 +136,6 @@ export function AdminRuleTexts(){
   catch(e){setError(e instanceof Error?e.message:'Die Zahlen konnten nicht geladen werden.');}
   finally{setBusy(false);}
  },[]);
- // Erstes Laden nach dem Rendern (setState nicht synchron im Effect)
  useEffect(()=>{const t=setTimeout(load,0);return ()=>clearTimeout(t);},[load]);
  /* Job „Themen & Texte“ (scripts/rule-texts.mjs) über die Zeitpläne: Stand, letzter Lauf, sofort starten */
  const [job,setJob]=useState<JobState|null>(null),[jobError,setJobError]=useState(''),[asking,setAsking]=useState(false);
@@ -110,190 +144,123 @@ export function AdminRuleTexts(){
   catch(e){setJobError(e instanceof Error?e.message:'Der Job konnte nicht geladen werden.');}
  },[]);
  useEffect(()=>{const t=setTimeout(loadJob,0);return ()=>clearTimeout(t);},[loadJob]);
- /* Berichte mit Text im Hauptdokument und wie viele davon eine Zusammenfassung haben (Zählung der PDF-Ablage, stats.mjs) */
- const [pdfSum,setPdfSum]=useState<{done:number;withText:number}|null>(null);
- useEffect(()=>{fetch('/api/admin/pdf-ablage',{cache:'no-store'}).then(r=>r.ok?r.json() as Promise<{stats?:{summaries?:{done:number;withText:number}}}>:null).then(d=>setPdfSum(d?.stats?.summaries||null)).catch(()=>{/* Kennzahl bleibt leer */});},[]);
- /* all: alle Zusammenfassungen neu (auch vorhandene) und die Wortliste voll neu, sonst nur Neues */
  const start=async(all=false)=>{
-  if(!window.confirm(all?'Alle regelbasierten Zusammenfassungen, Fakten und die Wortliste neu erstellen? Vorhandene Regel-Zusammenfassungen werden ersetzt; liefern die heutigen Regeln nichts, fallen sie weg. KI-Texte bleiben. Das dauert deutlich länger als ein normaler Lauf.':'Zusammenfassungen, Fakten und Wortliste jetzt erstellen? Der Job startet sofort.'))return;
+  if(!window.confirm(all?'Alle Berichte neu einordnen und Zusammenfassungen, Fakten und Wortliste neu erstellen? Das dauert deutlich länger als ein normaler Lauf; gespeicherte Einbettungen werden wiederverwendet.':'Modell anwenden, Zusammenfassungen, Fakten und Wortliste jetzt erstellen? Der Job startet sofort.'))return;
   setAsking(true);
   try{const r=await fetch('/api/admin/zeitplaene',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:all?'all':'now',id:'rule-texts'})});const d=await r.json() as {error?:string};if(!r.ok)throw Error(d.error||'Das ging nicht.');await loadJob();}
   catch(e){setJobError(e instanceof Error?e.message:'Das ging nicht.');}
   finally{setAsking(false);}
  };
  const running=!!job?.run?.running,requested=!!job?.now&&(!job.run?.lastStart||job.now>job.run.lastStart);
- /* Stand nachladen: alle 5 s, solange ein Start angefordert ist oder der Job läuft, sonst jede Minute */
  useEffect(()=>{const t=setInterval(loadJob,running||requested?5000:60000);return ()=>clearInterval(t);},[loadJob,running,requested]);
- const c=data?.counts;
- const ai=c?.aiSummaries??0,rule=c?.ruleSummaries??0,docs=c?.pdfArticles??0;
+ const c=data?.counts,ai=c?.aiSummaries??0,rule=c?.ruleSummaries??0,docs=c?.pdfArticles??0;
  const avg=rule?Math.round((c?.ruleScoreSum||0)/rule):undefined;
  const facts=job?.last?.facts;
- /* Hauptzahl zuerst: Abdeckung der Berichte mit Text; der Anteil im Artikel bezogen auf Artikel mit Dokument (ohne Dokument
-    gibt es nichts zusammenzufassen) */
- const sum=[
-  {label:'Aus PDF-Texten',value:pdfSum?pct(pdfSum.done,pdfSum.withText):undefined,note:pdfSum?n(pdfSum.done)+' von '+n(pdfSum.withText)+' Berichten mit Text im Hauptdokument haben eine Zusammenfassung; der Rest sind Sitzungsunterlagen und Texte, aus denen die Regeln nichts machen':undefined},
-  {label:'Im Artikel steht',value:c?pct(ai+rule,docs):undefined,note:c?'eine Zusammenfassung, bei '+n(docs)+' Artikeln mit Dokument: '+n(rule)+' regelbasiert, '+n(ai)+' von der KI; sonst und ohne Dokument der Platzhalter':undefined},
-  {label:'Ø Güte der regelbasierten Texte',value:c?(avg===undefined?'–':avg):undefined,of:avg===undefined?undefined:'von 100',note:c?(rule?'Mittel über '+n(rule)+' Artikel':'Noch keine gespeichert'):undefined},
- ];
- const fac=[
-  {label:'Berichte mit Fakten',value:facts?n(facts.reports):job?'–':undefined,note:facts?n(facts.fromText)+' davon aus dem Text des Hauptdokuments, die übrigen aus dem Titel':'nach dem nächsten Lauf'},
-  {label:'Fassung der Regeln',value:facts?facts.version:job?'–':undefined,note:facts?(facts.stale?n(facts.stale)+' Berichte noch mit älterer Fassung':'alle Berichte in dieser Fassung')+'; gezählt '+when(job?.last?.finishedAt):undefined},
- ];
- /* Vorgänge je Thema und Berichte je Fakt aus dem letzten Lauf (Schritt „Zahlen für plenara.X“, scripts/plenara-x/build-x-cases.mjs) */
+ /* Letzter Lauf des Modells (Schritt „Modell anwenden“, scripts/model/apply.mjs) */
+ const ms=job?.last?.steps.find(st=>isStep(st.name,'model'))?.summary as {done?:number;total?:number;todo?:number;subject?:number;withTheme?:number;sure?:{kind:number;status:number;process:number};statusSet?:number;msPerText?:number;version?:string}|undefined;
  const xs=job?.last?.steps.find(st=>isStep(st.name,'xcases'))?.summary as {themes?:Record<string,number>;subs?:Record<string,number>;facts?:Record<string,number>;factPlaces?:{total:number;places:Record<string,number>}}|undefined;
  const themeRows=xs?.themes?Object.entries(xs.themes).sort((a,b)=>b[1]-a[1]):[];
  const themeTotal=themeRows.reduce((a,[,v])=>a+v,0);
  const subsOf=(theme:string)=>SUBTOPICS.filter((u:{theme:string})=>u.theme===theme).map((u:{id:string;name:string})=>({name:u.name,n:xs?.subs?.[u.id]||0})).sort((a:{n:number},b:{n:number})=>b.n-a.n);
- const [tab,setTab]=useState<'uebersicht'|'signale'|'fakten'|'lauf'>('uebersicht');
- /* Reiter in der Adresse (#fakten): bleibt beim Neuladen und lässt sich teilen */
- const pick=(id:string)=>{setTab(id as typeof tab);try{window.history.replaceState(null,'','#'+id);}catch{/* ohne Adresszeile egal */}};
- useEffect(()=>{const read=()=>{const h=window.location.hash.slice(1);if(TAB_IDS.includes(h))setTab(h as typeof tab);};const t=setTimeout(read,0);window.addEventListener('hashchange',read);return ()=>{clearTimeout(t);window.removeEventListener('hashchange',read);};},[]);
- const allSig=(QUALITY.groups.find(g=>g.id==='signals')?.rows??[]) as QualityRow[];
- const sigTable=allSig.filter(r=>!NO_CATEGORY.has(r.id)&&r.id!==OWN_PAGE);
- const sigTender=allSig.filter(r=>r.id===OWN_PAGE);
- const sigNoCat=allSig.filter(r=>NO_CATEGORY.has(r.id));
- const factTable=FACT_ROWS.filter(r=>factArt(r.id)==='vergleich');
+ const run=[
+  {label:'Eingeordnet im letzten Lauf',value:ms?.done!==undefined?n(ms.done):job?'–':undefined,note:ms?.total!==undefined?'von '+n(ms.total)+' aktiven Berichten neu oder geändert'+(ms.msPerText?'; '+ms.msPerText+' ms je eingebettetem Text':''):'nach dem nächsten Lauf'},
+  {label:'Sicher eingeordnet',value:ms?.done?pct(ms.sure?.kind||0,ms.done):undefined,note:ms?.done?'Art; Status '+pct(ms.sure?.status||0,ms.done)+(ms.subject?', Vorgangsart '+pct(ms.sure?.process||0,ms.subject)+' der Sachpunkte':''):'Anteil der Antworten ab 0,7'},
+  {label:'Sachpunkte mit Thema',value:ms?.subject?pct(ms.withTheme||0,ms.subject):undefined,note:ms?.subject?n(ms.subject)+' Sachpunkte; ohne Thema heißt in der Suche „Sonstiges“':'nach dem nächsten Lauf'},
+ ];
+ const sum=[
+  {label:'Im Artikel steht',value:c?pct(ai+rule,docs):undefined,note:c?'eine Zusammenfassung, bei '+n(docs)+' Artikeln mit Dokument: '+n(rule)+' automatisch, '+n(ai)+' von der KI':undefined},
+  {label:'Ø Güte der automatischen Texte',value:c?(avg===undefined?'–':avg):undefined,of:avg===undefined?undefined:'von 100',note:c?(rule?'Mittel über '+n(rule)+' Artikel':'Noch keine gespeichert'):undefined},
+  {label:'Berichte mit Fakten',value:facts?n(facts.reports):job?'–':undefined,note:facts?n(facts.fromText)+' aus dem Text des Hauptdokuments; Fassung '+facts.version:'nach dem nächsten Lauf'},
+ ];
+ const factRows=FACT_ROWS.filter(r=>VALUE_FACTS.has(r.id));
+ /* Fenster mit allen Antworten der angeklickten Frage */
+ const [shown,setShown]=useState<typeof QUESTIONS[number]|null>(null);
  return <>
   <AdminPageHead page="regeltexte"><StandLine stand={data?.stand} busy={busy} action="Aktualisieren" onAction={load}/></AdminPageHead>
   {error&&<Alert onRetry={load}>{error}</Alert>}
-  {!!data?.statsPending&&<p role="status" className="mt-4 text-[14px] text-slate-500">Die Gebietszahlen werden noch nachgeführt ({n(data.statsPending)} Gebiete offen); die Werte können noch steigen.</p>}
-  <div role="tablist" aria-label="Themen & Texte" className="scroll-thin mt-6 flex gap-1 overflow-x-auto border-b border-slate-200">
-   {TABS.map(([id,t])=><button key={id} type="button" role="tab" id={'regeltexte-tab-'+id} aria-selected={tab===id} aria-controls={'regeltexte-panel'} onClick={()=>pick(id)}
-    className={'inline-flex h-10 shrink-0 items-center whitespace-nowrap border-b-2 px-3 text-[14px] '+(tab===id?'border-teal-600 font-medium text-slate-900':'border-transparent text-slate-500 hover:text-slate-900')}>{t}</button>)}
-  </div>
-  <div role="tabpanel" id="regeltexte-panel" aria-labelledby={'regeltexte-tab-'+tab}>
-  {tab==='uebersicht'&&<section id="regeltexte-uebersicht" className="admin-section">
-   <div className="admin-section-heading"><h2>Übersicht: Was ist frei?</h2></div>
-   <p className="admin-note">Qualität und Trefferquote aus der letzten ungesehenen Stichprobe vom Server, von Hand eingetragen (shared/rule-quality.json); Erklärung je Wert bei den Abschnitten darunter, beim Antippen des „i“. Signale zählen nach Qualität (ab {QT.quality} %) und Trefferquote (ab {SIGNAL_RECALL} %). Fakten nehmen wir nur auf, wenn wir sie für viele Gemeinden haben (ab {FACT_PLACES} % der Gemeinden{xs?.factPlaces?`, von ${xs.factPlaces.total.toLocaleString("de-DE")} mit Sachvorgängen`:""}) und die Werte stimmen (Qualität ab {QT.quality} %).</p>
-   <h3 className="mt-6">Signale mit Kategorie im Frontend ({sigTable.length})</h3>
-   <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[560px] border-collapse text-left text-[14px]">
-    <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Signal</th><th className="px-2 font-medium">Qualität</th><th className="px-2 font-medium">Treffer</th><th className="px-2 font-medium">Art</th><th className="px-2 font-medium">Stand</th><th className="pl-2 font-medium">Status</th></tr></thead>
-    <tbody>{sigTable.map(r=>{const g=signalGate(r);const miss=[['Qualität',r.quality,QT.quality],['Trefferquote',r.recall,SIGNAL_RECALL],['Art',r.art,QT.quality],['Stand',r.phase,QT.quality]].filter(([,v,t])=>v==null||(v as number)<(t as number)).map(([k])=>k);
-     const cell=(v:number|null|undefined,t:number)=><td className={'px-2 tabular-nums '+(v==null?'text-slate-400':(v as number)>=t?'text-teal-700':'text-amber-700')}>{v==null?'–':v+' %'}</td>;
-     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900"><span className="inline-flex flex-wrap items-center gap-2">{r.name}{r.what&&<Info text={r.what}/>}</span></td>{cell(r.quality,QT.quality)}{cell(r.recall,SIGNAL_RECALL)}{cell(r.art,QT.quality)}{cell(r.phase,QT.quality)}<td className={'pl-2 '+(g==='open'?'font-semibold text-teal-700':'text-slate-500')}>{g==='open'?'frei':'fehlt: '+miss.join(', ')}</td></tr>;})}</tbody>
-   </table></div>
-   {sigTender.length>0&&<><h3 className="mt-6">Seite Ausschreibungen (Einblicke)</h3>
-   <p className="admin-note mt-1">Keine Kategorie der Signale mehr, sondern eine eigene Seite. Die Vorgänge stehen weiter in ihren Fachkategorien; hier stehen alle mit einer Ausschreibung oder Vergabe im Titel.</p>
-   <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[560px] border-collapse text-left text-[14px]">
-    <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Seite</th><th className="px-2 font-medium">Qualität</th><th className="px-2 font-medium">Treffer</th><th className="px-2 font-medium">Art</th><th className="px-2 font-medium">Stand</th><th className="pl-2 font-medium">Status</th></tr></thead>
-    <tbody>{sigTender.map(r=>{const g=signalGate(r);const cell=(v:number|null|undefined,t:number)=><td className={'px-2 tabular-nums '+(v==null?'text-slate-400':(v as number)>=t?'text-teal-700':'text-amber-700')}>{v==null?'–':v+' %'}</td>;
-     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900"><span className="inline-flex flex-wrap items-center gap-2">{r.name}{r.what&&<Info text={r.what}/>}</span></td>{cell(r.quality,QT.quality)}{cell(r.recall,SIGNAL_RECALL)}{cell(r.art,QT.quality)}{cell(r.phase,QT.quality)}<td className={'pl-2 '+(g==='open'?'font-semibold text-teal-700':'text-slate-500')}>{g==='open'?'frei':'noch nicht alles gemessen'}</td></tr>;})}</tbody>
-   </table></div></>}
-   {sigNoCat.length>0&&<><h3 className="mt-6">Signale ohne Kategorie im Frontend ({sigNoCat.length})</h3>
-   <p className="admin-note mt-1">Die Regel ist gemessen, aber die Qualität liegt unter {QT.quality} %. Eine Kategorie im Frontend (Signale-Seite) entsteht erst, wenn sie darüber liegt.</p>
-   <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[460px] border-collapse text-left text-[14px]">
-    <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Signal</th><th className="px-2 font-medium">Qualität</th><th className="pl-2 font-medium">Status</th></tr></thead>
-    <tbody>{sigNoCat.map(r=><tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900"><span className="inline-flex flex-wrap items-center gap-2">{r.name}{r.what&&<Info text={r.what}/>}</span></td><td className={'px-2 tabular-nums '+(r.quality==null?'text-slate-400':r.quality>=QT.quality?'text-teal-700':'text-amber-700')}>{r.quality==null?'–':r.quality+' %'}</td><td className="pl-2 text-slate-500">{r.quality!=null&&r.quality>=QT.quality?'bereit für eine Kategorie':'Qualität unter '+QT.quality+' %, keine Kategorie'}</td></tr>)}</tbody>
-   </table></div></>}
-   <h3 className="mt-6">Fakten</h3>
-   <div className="overflow-x-auto"><table className="mt-2 w-full min-w-[460px] border-collapse text-left text-[14px]">
-    <thead><tr className="border-b border-slate-200 text-[12px] text-slate-500"><th className="py-2 pr-3 font-medium">Fakt</th><th className="px-2 font-medium">Qualität</th><th className="px-2 font-medium">Gemeinden</th><th className="pl-2 font-medium">Status</th></tr></thead>
-    <tbody>{factTable.map(r=>{const pl=xs?.factPlaces?Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10:null;const ok=r.quality!=null&&r.quality>=QT.quality&&pl!=null&&pl>=FACT_PLACES;
-     const why=r.quality==null?'nicht gemessen':r.quality<QT.quality?'Qualität unter '+QT.quality+' %':pl==null?'Gemeinden nach dem Lauf':pl<FACT_PLACES?'Gemeinden unter '+FACT_PLACES+' %':'';
-     return <tr key={r.id} className="border-b border-slate-100"><td className="py-2 pr-3 text-slate-900"><span className="inline-flex flex-wrap items-center gap-2">{r.name}{r.what&&<Info text={r.what}/>}</span></td><td className={'px-2 tabular-nums '+(r.quality==null?'text-slate-400':r.quality>=QT.quality?'text-teal-700':'text-amber-700')}>{r.quality==null?'–':r.quality+' %'}</td><td className={'px-2 tabular-nums '+(pl==null?'text-slate-400':pl>=FACT_PLACES?'text-teal-700':'text-amber-700')}>{pl==null?'–':pl.toLocaleString('de-DE')+' %'}</td><td className={'pl-2 '+(ok?'font-semibold text-teal-700':'text-slate-500')}>{ok?'frei':why}</td></tr>;})}</tbody>
-   </table></div>
-  </section>}
-   {[...QUALITY.groups].filter(g=>TAB_OF[g.id]===tab).sort((a,b)=>GROUP_ORDER.indexOf(a.id)-GROUP_ORDER.indexOf(b.id)).map(g=>{
-    const row=(r:QualityRow,gid:string=g.id)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
-     <div className="min-w-0">
-      <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
-       {gid==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':r.quality!=null&&r.quality<QT.quality?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte'+(xs?.factPlaces&&100*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total<FACT_PLACES?', Gemeinden unter '+FACT_PLACES+' %':''):r.quality==null?'nicht gemessen':r.quality<QT.quality?'unter '+QT.quality+' %':r.lock||'noch gesperrt'}</span>}</div>
-      <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),gid==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
-     </div>
-     <Meter label="Qualität" v={r.quality} min={QT.quality}/>
-     {gid==='facts'&&factArt(r.id)!=='vergleich'?<div className="min-w-0 text-[12px] text-slate-500">{xs?.facts?.[r.id]!==undefined?<><span className="block text-[18px] font-semibold tabular-nums text-slate-900">{n(xs.facts[r.id])}</span>Berichte</>:r.id==='stage'?'':'noch kein Lauf'}</div>
-      :gid==='facts'&&xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={FACT_PLACES}/>:r.id==='summary'&&c&&docs?<Meter label="Abdeckung" v={Math.round(100*(ai+rule)/docs)} min={QT.coverage}/>:NO_COVERAGE.has(r.id)?<div/>:<Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>}
-    </li>;
-    const list=(rows:QualityRow[],gid:string=g.id)=><ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{rows.map(r=>row(r,gid))}</ul>;
-    /* Signale: Kategorie mit Qualität der Zuordnung und Trefferquote, darunter die Filter mit eigener Qualität */
-    if(g.id==='signals')return <div key={g.id} id="regeltexte-signale" className="admin-section">
-     <div className="admin-section-heading"><h2>{g.name}</h2></div>
-     <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[14px]">{[['signale','Kategorien'],['sig-stand','Stand'],['sig-art','Art'],['sig-gebuehr','Gebührenänderungen'],['sig-weitere','Weitere Signale']].map(([id,t])=><button key={id} type="button" className="text-teal-700 hover:text-teal-800" onClick={()=>document.getElementById('regeltexte-'+id)?.scrollIntoView({behavior:'smooth',block:'start'})}>{t}</button>)}</div>
-     <p className="admin-note mt-1">Ein Signal ist ein Ereignis, das eine Branche wissen will („Wo entsteht gerade etwas Neues?“), mit Art und Stand. Zahlen wie Fläche oder Anlagenzahl gehören zu den Fakten, nicht zu den Signalen. Ein Fakt dagegen ist ein Zahlenwert zum Vergleich von Orten (siehe unten). Konzept: docs/produkt/signale-und-fakten.md.</p>
-     <p className="admin-note mt-1">Qualität: von den Vorgängen, die die Regel einer Kategorie oder einem Filter zuordnet, gehören so viele wirklich dazu. Trefferquote: von den Vorgängen, die dazugehören, findet die Regel so viele. Offen erst, wenn Qualität, Art und Stand je mindestens {QT.quality} % und die Trefferquote mindestens {SIGNAL_RECALL} % erreichen. Kategorien, Filter und Vorgehen: docs/produkt/plenara-x-signale.md.</p>
-     <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{(g.rows as QualityRow[]).map(r=><li key={r.id} className="py-3 text-[14px]">
-      <div className="grid gap-x-6 gap-y-2 md:grid-cols-[minmax(0,1fr)_120px_120px_120px_120px]">
-       <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
-         <SignalGateBadge r={r}/>{r.id===OWN_PAGE&&<span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">eigene Seite unter Einblicke</span>}{(r.id==='sig_pflege'||r.id==='sig_handel')&&<span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">Kategorie fehlt im Frontend</span>}<SignalGate/></div>
-        <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),r.phaseFrom&&'Stand: '+r.phaseFrom,r.note].filter(Boolean).join(' · ')}</small>
-       </div>
-       <Meter label="Qualität" v={r.quality} min={QT.quality}/>
-       <Meter label="Trefferquote" v={r.recall??null} min={SIGNAL_RECALL}/>
-       <Meter label="Art" v={r.art??null} min={QT.quality}/>
-       <Meter label="Stand" v={r.phase??null} min={QT.quality}/>
-      </div>
-      {r.filters&&r.filters.length>0&&<ul className="m-0 mt-2 grid list-none gap-x-6 gap-y-1 p-0 pl-4 sm:grid-cols-2 lg:grid-cols-3">{r.filters.map(f=><li key={f.name} className="flex items-baseline justify-between gap-3 border-b border-slate-100 py-1 text-[14px]">
-       <span className="text-slate-700">{f.name}</span>
-       <span className={'tabular-nums '+(f.quality===null?'text-slate-400':f.quality>=QT.quality?'font-semibold text-teal-700':'font-semibold text-slate-900')}>{f.quality===null?'nicht gemessen':f.quality+' %'}</span>
-      </li>)}</ul>}
-     </li>)}</ul>
-     <h4 id="regeltexte-sig-stand" className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Stand der Signale</h4>
-     <p className="admin-note mt-1">Verfahrensschritt eines Vorhabens (zum Beispiel eines Bebauungsplans oder der Wärmeplanung), keine Zahl. Rechts die Zahl der Berichte im letzten Lauf.</p>
-     {list(FACT_ROWS.filter(r=>factArt(r.id)==='stand'),'facts')}
-     <h4 id="regeltexte-sig-art" className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Art der Signale</h4>
-     <p className="admin-note mt-1">Was für ein Vorhaben es ist (Nutzung im Plan, Hausformen, Straßenbau, Mobilitätsprojekte). Sie bilden die Filter der Kategorien.</p>
-     {list(FACT_ROWS.filter(r=>factArt(r.id)==='art'),'facts')}
-     <h4 id="regeltexte-sig-gebuehr" className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Gebührenänderungen (Ereignisse)</h4>
-     <p className="admin-note mt-1">Kein Zahlenwert, sondern ein Ereignis: Gebühren erhöht oder neu gefasst. Gehört zu den Signalen; das Signal selbst gibt es noch nicht.</p>
-     {list(FACT_ROWS.filter(r=>factArt(r.id)==='ereignis'),'facts')}
-     <h4 id="regeltexte-sig-weitere" className="mb-0 mt-6 text-[16px] font-semibold text-slate-900">Weitere Signale (noch nicht gebaut)</h4>
-     <p className="admin-note mt-1">Vorschläge aus dem Konzept. Jedes bekommt erst eine Regel, dann eine Messung, dann ein Tor.</p>
-     <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{SIGNAL_IDEAS.map(i=><li key={i.name} className="py-3 text-[14px]"><div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{i.name}</span><span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500">geplant</span></div><small className="mt-1 block text-[12px] leading-snug text-slate-500">{i.what}</small></li>)}</ul>
-    </div>;
-    const rows=g.rows as QualityRow[];
-    /* Fakten nach Thema; ohne Thema („Alle Themen“) etwa der Haushalt */
-    const byTheme=(x:QualityRow[])=>[...THEMES.map((t:{id:string;name:string})=>[t.name,x.filter(r=>FACT_THEME[r.id]===t.id)] as [string,QualityRow[]]),['Alle Themen',x.filter(r=>!FACT_THEME[r.id])] as [string,QualityRow[]]].filter(([,y])=>y.length);
-    if(g.id==='facts')return <div key={g.id} id="regeltexte-fakten" className="admin-section">
-     <div className="admin-section-heading"><h2>{g.name}</h2></div>
-     <div>
-      <p className="admin-note mt-1">Ein Fakt ist ein Zahlenwert mit Einheit, vergleichbar über Orte und Zeit: Zahlen je Gemeinde für die Karte von plenara.X Fakten (Hebesätze, Gebühren, Steuern, Haushalt, Preise …).  Auch Größen von Vorhaben (Fläche, Wohneinheiten, Anlagenzahl, Leistung) sind Fakten. Qualität: von den gelesenen Werten sind so viele richtig. Gemeinden: Anteil der Gemeinden mit mindestens einem Wert. Ein Fakt gilt als frei, wenn die Qualität bei mindestens {QT.quality} % und der Anteil der Gemeinden bei mindestens {FACT_PLACES} % liegt. Auf der Karte stehen heute Fakten ab {QT.quality} % Qualität.</p>
-      {byTheme(rows.filter(r=>factArt(r.id)==='vergleich')).map(([t,y])=><div key={t} className="mt-4"><h4 className="mb-1 text-[14px] font-medium uppercase tracking-wide text-slate-500">{t}</h4>{list(y)}</div>)}
-     </div>
-     <div className="mt-8">
-      <h3>Fraktionsprofil (plenara.X Einblicke)</h3>
-      <p className="admin-note mt-1">Welche Fraktion einen Antrag stellt und ob der Beschlussvorschlag empfiehlt, ihn abzulehnen. Rechts die Zahl der Berichte im letzten Lauf.</p>
-      {list(rows.filter(r=>factArt(r.id)==='profil'))}
-     </div>
-    </div>;
-    return <div key={g.id} id={'regeltexte-'+(g.id==='read'?'grundregeln':g.id)} className="admin-section">
-     <div className="admin-section-heading"><h2>{g.id==='read'?'Grundregeln (für alle Seiten)':g.name}</h2></div>
-     {list(rows)}
-    </div>;})}
-  {tab==='lauf'&&<>
+  <section id="regeltexte-modell" className="admin-section">
+   <div className="admin-section-heading"><h2>Modell</h2></div>
+   <p className="admin-note">Das Modell ordnet jeden Bericht ein: worum es geht, was für ein Vorgang es ist und wie er ausgegangen ist. Es läuft auf unserem Server, ohne fremden Dienst, und hat die früheren Regeln für Art, Thema, „Was geschieht“, Dokumente, Signale und die Auswahl der Sätze für die Zusammenfassung abgelöst. Fakten bleiben Regeln.</p>
+   <h3 className="mt-6">So arbeitet es</h3>
+   <ol className="m-0 mt-2 list-none space-y-3 p-0 text-[14px] text-slate-700">
+    <li><span className="font-medium text-slate-900">1. Lesen.</span> Je Bericht der Titel mit Gremium, die Ergebnisse der Sitzungen und von jedem PDF der Name, die erste Seite und der Beschlussvorschlag. Den übrigen Text liest es nicht.</li>
+    <li><span className="font-medium text-slate-900">2. Verstehen.</span> Ein Sprachmodell (multilingual-e5-small, mit unseren Beispielen nachtrainiert) macht aus jedem Text eine Reihe von 384 Zahlen, die seine Bedeutung beschreiben: „Kläranlage sanieren“ und „Erneuerung des Klärwerks“ liegen nah beieinander, auch ohne gemeinsames Wort.</li>
+    <li><span className="font-medium text-slate-900">3. Entscheiden.</span> Für jede Frage ein kleiner Entscheider („Kopf“), gelernt an rund 5.000 Berichten, die nach dem Begriffsbuch eingeordnet sind. Er nutzt die Zahlen und die Wörter selbst und gibt zu jeder Antwort an, wie sicher er ist. Ab 0,7 gilt die Antwort als sicher; ein unsicheres Thema bleibt offen („Sonstiges“), statt geraten zu werden.</li>
+   </ol>
+   <p className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-[14px] leading-snug text-slate-700"><span className="font-medium text-slate-900">Beispiel:</span> „Bebauungsplan Nr. 12 ‚Am Bach‘ – Satzungsbeschluss“ im Rat → Sachpunkt · Bauen &amp; Wohnen, Bauleitplanung, Wohnen · Planung und Regelung · Schritt Beschluss · konkretes Vorhaben · Hauptdokument die Vorlage. Daraus folgen Suche, Kartenthema, Signal „Neue Wohnbaugebiete“ und der Stand im Atlas.</p>
+   <p className="admin-note mt-3">Ohne Auszug aus der Vorlage zeigen Artikel und Trefferliste einen Überblick, der aus den Antworten des Modells, den Sitzungen und der Dokumentliste entsteht (shared/model/overview.mjs), etwa: „Antrag einer Fraktion (SPD) zum Thema Straßen, Brücken und Beleuchtung (Mobilität &amp; Verkehr). Am 03.09.26 im Gremium „Bauausschuss“ empfohlen, am 01.10.26 im Gremium „Rat“ beschlossen. Unterlagen: Vorlage und zwei Anlagen.“ Er nennt nur sichere Antworten und übernimmt nichts aus dem Text.</p>
+   <p className="admin-note mt-3">Was jede Antwort genau bedeutet, steht im Begriffsbuch (requirements/begriffsbuch-kern.md), Aufbau und Messung im Konzept (requirements/modell-konzept.md). Neue Kategorien entstehen dort und mit neuen Beispielen, nicht durch Einzelregeln.</p>
+   <h3 className="mt-6">Wie gut es ist</h3>
+   <p className="mt-3 text-[14px] text-slate-700">Encoder <span className="font-medium text-slate-900">{MANIFEST.encoder.version}</span> · Köpfe <span className="font-medium text-slate-900">{MANIFEST.heads.version}</span> · gelernt {shortDate(MANIFEST.heads.trainedAt)} · gemessen {shortDate(MODEL_QUALITY.measuredAt)}</p>
+   <p className="admin-note mt-1">Ein Klick auf den Namen einer Frage zeigt alle möglichen Antworten. Genauigkeit: so oft stimmt die Antwort. Abdeckung (bei Listen wie Thema): so oft findet es das Richtige überhaupt. Sicher: Anteil der Antworten ab 0,7 und wie oft diese stimmen. Gemessen an {MODEL_QUALITY.sample}, die das Modell beim Lernen nicht gesehen hat. {MODEL_QUALITY.note} Ziel {GOAL} %.</p>
+   <ul className="m-0 mt-4 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{QUESTIONS.map(qn=>{const q=MQ[qn.key];return <li key={qn.key} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
+    <div className="min-w-0">
+     <div className="flex flex-wrap items-center gap-2"><button type="button" onClick={()=>setShown(qn)} title="Alle möglichen Antworten zeigen" className="font-medium text-slate-900 underline decoration-slate-300 decoration-dotted underline-offset-4 hover:text-teal-700 hover:decoration-teal-600">{qn.name}</button><Info text={qn.what}/></div>
+     <small className="mt-1 block text-[12px] leading-snug text-slate-500">{q?n(q.n)+' Prüffälle':'nicht gemessen'}{qn.sure&&q?.sureShare!=null?' · sicher bei '+q.sureShare+' %, dann '+q.sureAcc+' % richtig':''}{q&&q.n<60?' · zu wenige Prüffälle für eine belastbare Zahl':''}</small>
+    </div>
+    <Meter label="Genauigkeit" v={q?.acc} min={GOAL}/>
+    {qn.list?<Meter label="Abdeckung" v={q?.cov} min={QUALITY.target.coverage}/>:qn.sure?<Meter label="Sicher richtig" v={q?.sureAcc} min={GOAL}/>:<div/>}
+   </li>;})}</ul>
+  </section>
+  <ValuesDialog q={shown} onClose={()=>setShown(null)}/>
   <section id="regeltexte-job" className="admin-section">
-   <div className="admin-section-heading"><h2>Erstellen</h2></div>
-   <p className="admin-note">Drei Schritte nach festen Regeln, ohne KI: Regeln je Bericht (Thema, Zusammenfassung, Fakten), Wortliste der Suche, Zahlen für plenara.X (Atlas, Signale, Fakten).</p>
+   <div className="admin-section-heading"><h2>Lauf</h2></div>
+   <p className="admin-note">Nachts nach der PDF-Kette: Modell anwenden, Zusammenfassung und Fakten, Wortliste der Suche, Zahlen für plenara.X.</p>
    {jobError&&<Alert onRetry={loadJob}>{jobError}</Alert>}
    <ul className="m-0 mt-4 list-none space-y-1.5 p-0 text-[14px] text-slate-700">
     <li>{running?`Läuft seit ${when(job?.run?.running?.startedAt)}.`:requested?'Start angefordert …':job?.run?.lastStart?`Zuletzt ${when(job.run.lastStart)}${job.last?.all?' (alle neu)':''}, ${RESULT[job.run.result||'']||'–'}, ${dur(job.run.seconds)}.`:job?'Noch nicht gelaufen.':'–'}
      {job&&(job.setting.enabled?` Nächster Start ${when(job.next)} (täglich ${job.setting.time} Uhr, einstellbar unter Jobs & Zeitpläne).`:' Zeitplan ausgeschaltet (Jobs & Zeitpläne).')}</li>
     {job?.last?.steps.map(st=><li key={st.name}><span className="text-slate-500">{st.name}: </span>{stepNote(st)}, {dur(st.seconds)}</li>)}
    </ul>
+   <div className="mt-6"><Kpis label="Kennzahlen des letzten Laufs" items={run}/></div>
    <button type="button" className="mt-4 inline-flex h-10 items-center rounded-full bg-teal-700 px-5 text-[14px] font-medium text-white hover:bg-teal-800 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start()}>Jetzt erstellen →</button>
    <button type="button" className="ml-3 mt-4 inline-flex h-10 items-center rounded-full px-5 text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start(true)}>Alle neu erstellen →</button>
-   <p className="mt-2 text-[12px] text-slate-500">„Jetzt erstellen“: nur Neues. „Alle neu erstellen“: alles mit den heutigen Regeln, etwa nach Regeländerungen.{job?.all&&requested?' Neu erstellen angefordert.':''}</p>
-  </section>
-  <section id="regeltexte-zusammenfassungen" className="admin-section">
-   <div className="admin-section-heading"><h2>Zusammenfassungen</h2></div>
-   <p className="admin-note">Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst die regelbasierte, sonst der Platzhalter.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen" items={sum}/></div>
-  </section>
-  <section id="regeltexte-fakten-lauf" className="admin-section">
-   <div className="admin-section-heading"><h2>Berichte mit Fakten</h2></div>
-   <p className="admin-note">Werte (für plenara.X Fakten) und Einordnungen (für Signale und Fraktionsprofil) aus Titel, Hauptdokument und passenden Anlagen. Gezählt am Ende jedes Laufs.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Berichte mit Fakten" items={fac}/></div>
+   <p className="mt-2 text-[12px] text-slate-500">„Jetzt erstellen“: nur neue und geänderte Berichte. „Alle neu erstellen“: alle Berichte, etwa nach einem neuen Modell.{job?.all&&requested?' Neu erstellen angefordert.':''}</p>
   </section>
   <section id="regeltexte-themen" className="admin-section">
    <div className="admin-section-heading"><h2>Themen</h2></div>
-   <p className="admin-note">Anteil der Sachvorgänge je Thema (Formalien, Sammelpunkte und Routine zählen nicht), darunter die Unterthemen; ein Vorgang kann mehrere Unterthemen haben. Gezählt am Ende jedes Laufs{job?.last?.finishedAt?', zuletzt '+when(job.last.finishedAt):''}.</p>
+   <p className="admin-note">Anteil der Sachvorgänge je Thema (Ablauf und Personalien zählen nicht), darunter die Unterthemen; ein Vorgang kann mehrere Unterthemen haben. Gezählt am Ende jedes Laufs{job?.last?.finishedAt?', zuletzt '+when(job.last.finishedAt):''}.</p>
    {!themeRows.length?<p className="admin-empty">Nach dem nächsten Lauf von „Themen & Texte“.</p>:<div className="mt-4">{themeRows.map(([id,v])=><div key={id} className="admin-bar-row">
     <div><span>{THEME_NAME[id]||id}</span><span>{pct(v,themeTotal)} · {n(v)}</span></div>
     <div className="admin-bar"><span style={{width:(100*v/themeTotal)+'%'}}/></div>
     {id!=='unklar'&&<small className="mt-1 block text-[12px] text-slate-500">{subsOf(id).map((u:{name:string;n:number})=>u.name+' '+pct(u.n,v)).join(' · ')}</small>}
    </div>)}</div>}
   </section>
-  </>}
-  </div>
+  <section id="regeltexte-regeln" className="admin-section">
+   <div className="admin-section-heading"><h2>Regeln, die bleiben</h2></div>
+   <p className="admin-note">Regeln lesen Werte aus dem Text oder schlagen nach; was eingeordnet wird, macht das Modell. Qualität aus der letzten ungesehenen Stichprobe (shared/rule-quality.json). Die abgelösten Regeln für Art, Thema, „Was geschieht“, Hauptdokument und Signale stehen noch im Code, laufen aber nicht mehr.</p>
+   <ul className="m-0 mt-4 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{KEPT_RULES.map(k=>{const r=ALL_RULE_ROWS.find(x=>x.id===k.id);return <li key={k.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
+    <div className="min-w-0">
+     <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{k.name}</span>{r?.what&&<Info text={r.what}/>}</div>
+     <p className="m-0 mt-1 text-[14px] leading-snug text-slate-600">{k.why}</p>
+     {r&&<small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date)].filter(Boolean).join(' · ')}</small>}
+    </div>
+    <Meter label="Qualität" v={r?.quality} min={GOAL}/>
+    <div/>
+   </li>;})}</ul>
+  </section>
+  <section id="regeltexte-texte" className="admin-section">
+   <div className="admin-section-heading"><h2>Zusammenfassung und Fakten</h2></div>
+   <p className="admin-note">Beides liest den Text des Hauptdokuments, das das Modell wählt. Die Zusammenfassung besteht aus wörtlichen Sätzen des Dokuments: das Modell wählt die Kernsätze (Kurzfassung ein bis zwei, Langfassung bis sechs Sätze), nur bei Sachpunkten. Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst diese. Fakten sind an das Modell gebunden: ein Wert zählt nur bei passendem Unterthema (Hebesatz bei Steuern und Haushalt, Gebühren bei Wasser und Abwasser, Bebauungsplan bei Bauleitplanung und Erschließung; shared/model/fact-gate.mjs). So fallen Vergleichs- und Hintergrundwerte weg, etwa ein Bebauungsplan in einem Bauantrag.</p>
+   <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen und Fakten" items={sum}/></div>
+   <h3 className="mt-6">Kernsätze: Modell und frühere Regel</h3>
+   <p className="admin-note mt-1">Gemessen an {SUMMARY_QUALITY.model.n} Prüfberichten ({SUMMARY_QUALITY.version}, {shortDate(SUMMARY_QUALITY.measuredAt)}), die das Modell nicht gelernt hat; Vergleich ist die Auswahl von Hand nach Begriffsbuch Abschnitt 12. Die Zahlen sind eher zu günstig, weil Lern- und Prüfberichte aus derselben Stichprobe stammen.</p>
+   <ul className="m-0 mt-2 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{SUMMARY_ROWS.map(r=><li key={r.key} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
+    <div className="min-w-0"><span className="font-medium text-slate-900">{r.name}</span><small className="mt-1 block text-[12px] leading-snug text-slate-500">{r.what}</small></div>
+    <Meter label="Modell" v={SUMMARY_QUALITY.model[r.key]} min={r.min}/>
+    <Meter label="frühere Regel" v={SUMMARY_QUALITY.rule[r.key]} min={r.min}/>
+   </li>)}</ul>
+   <h3 className="mt-6">Werte für plenara.X Fakten</h3>
+   <p className="admin-note mt-1">Qualität aus der letzten ungesehenen Stichprobe (shared/rule-quality.json); auf der Karte ab {GOAL} %.</p>
+   <ul className="m-0 mt-2 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{factRows.map(r=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
+    <div className="min-w-0">
+     <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
+      <span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte':r.quality==null?'nicht gemessen':r.quality<GOAL?'unter '+GOAL+' %':r.lock||'noch gesperrt'}</span></div>
+     <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
+    </div>
+    <Meter label="Qualität" v={r.quality} min={GOAL}/>
+    {xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={10}/>:<div/>}
+   </li>)}</ul>
+  </section>
  </>;
 }

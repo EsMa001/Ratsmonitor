@@ -124,13 +124,14 @@ export async function ocrWithRefetch(store,sha,{download,read,halted=()=>false,f
 
 // Eine Zeile je Datei (gleiche Datei unter mehreren Adressen: der höchste Wert zählt). other: nur als übriges PDF verlinkt
 // (role 'other', fetch.mjs --others), dann gilt nur die Textebene, kein OCR.
-const FILES=`SELECT p.sha256 AS sha,MAX(p.bytes) AS bytes,GROUP_CONCAT(COALESCE(p.doc_type,'other')) AS types,MAX(COALESCE(p.formal,0)) AS formal,MIN(p.formal) AS minFormal,
+// Dokumentart und Formalie nach dem Modell gehen vor (model_type, model_formal); ohne Modell die Regel (Titel, Textanfang)
+const FILES=`SELECT p.sha256 AS sha,MAX(p.bytes) AS bytes,GROUP_CONCAT(COALESCE(p.model_type,p.doc_type,'other')) AS types,MAX(p.model_type IS NOT NULL) AS byModel,MAX(COALESCE(p.model_formal,p.formal,0)) AS formal,MIN(COALESCE(p.model_formal,p.formal)) AS minFormal,
  MIN(COALESCE(p.role,'')='other') AS other,
  MIN(p.event_date) AS eventDate,t.pages,t.ocr_pages AS ocrPages,t.ocr_needed AS ocrNeeded,t.chars,t.status AS textStatus,t.head_type AS headType
  FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok'`;
 const ranked=f=>{
  /* Art: die beste der Titel (gleiche Datei unter mehreren Adressen), berichtigt durch den Textanfang (effectiveType) */
- const type=effectiveType(f.types.split(',').sort((a,b)=>(TYPE_VALUE[b]??0)-(TYPE_VALUE[a]??0))[0],f.headType||null);
+ const best=f.types.split(',').sort((a,b)=>(TYPE_VALUE[b]??0)-(TYPE_VALUE[a]??0))[0],type=f.byModel?best:effectiveType(best,f.headType||null);
  const scan=f.pages>0&&((f.ocrPages||0)+(f.ocrNeeded||0))>=f.pages/2;
  const r=rankPdf({type,formal:f.minFormal===1,chars:f.textStatus==='ok'?f.chars:null,ocrNeeded:f.ocrNeeded,bytes:f.bytes});
  /* Feste Regel: übrige PDFs stehen immer unter allen Hauptdokumenten. order ist die Reihenfolge der Grenze (Score 0 bis 1,
