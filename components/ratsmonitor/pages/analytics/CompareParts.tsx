@@ -58,14 +58,14 @@ export function Duell({ a, b, na, nb }: { a: Place; b: Place; na: string; nb: st
       <p className="m-0 flex items-center gap-2 text-[16px] font-semibold max-sm:text-[14px]" style={{ justifyContent: i === 1 ? undefined : undefined }}><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="truncate">{name}</span></p>
       <p className="m-0 mt-1 text-[44px] font-semibold leading-none tabular-nums max-sm:text-[32px]" style={{ color: PLACE_COLORS[i] }}><DuellZahl v={v.toLocaleString("de-DE", { maximumFractionDigits: 1 })} /></p>
       <p className="m-0 mt-1 text-[14px] text-slate-500"><span className="max-sm:hidden">Vorgänge </span><span className="sm:hidden">pro</span><span className="max-sm:hidden">je</span> 1.000 Einwohner<span className="max-sm:hidden">{p.population ? ` · ${p.population.toLocaleString("de-DE")} Einwohner` : ""}</span></p>
-      <span className="mt-2 block h-[8px] overflow-hidden rounded-full bg-slate-100"><span className="rm-bar block h-full origin-left rounded-full" style={{ width: `${(v / max) * 100}%`, background: PLACE_COLORS[i], animationDelay: `${i * 120}ms` }} /></span>
+      <span className="mt-2 block h-[8px] overflow-hidden rounded-full bg-white max-sm:bg-slate-100"><span className="rm-bar block h-full origin-left rounded-full" style={{ width: `${(v / max) * 100}%`, background: PLACE_COLORS[i], animationDelay: `${i * 120}ms` }} /></span>
     </div>
   );
   return (
-    <div className="mt-5 grid grid-cols-2 items-center gap-x-6 gap-y-2 sm:grid-cols-[1fr_auto_1fr] sm:gap-x-10 print:hidden">
+    <div className="mt-5 grid grid-cols-2 items-center gap-x-6 gap-y-2 rounded-2xl bg-slate-50 px-6 py-5 max-sm:bg-transparent max-sm:p-0 sm:grid-cols-[1fr_auto_1fr] sm:gap-x-10 print:hidden">
       {side(na, x, 0, a)}
       <div className="col-span-2 order-last text-center max-sm:hidden sm:order-none sm:col-span-1">
-        <span className="inline-flex flex-col items-center rounded-full border border-slate-200 px-4 py-1.5 text-[14px] text-slate-600"><b className="text-[18px] font-semibold tabular-nums text-slate-900">{r <= 1.1 ? "≈ gleich" : `${r.toLocaleString("de-DE")}×`}</b>{r <= 1.1 ? "" : `${hi ? na : nb} mehr`}</span>
+        <span className="inline-flex h-24 w-24 flex-col items-center justify-center rounded-full bg-teal-700 text-center text-[12px] leading-tight text-white shadow-[0_8px_24px_rgba(15,118,110,.25)]"><b className="text-[22px] font-semibold tabular-nums">{r <= 1.1 ? "≈ gleich" : `${r.toLocaleString("de-DE")}×`}</b>{r <= 1.1 ? "" : `${hi ? na : nb} mehr`}</span>
       </div>
       {side(nb, y, 1, b)}
     </div>

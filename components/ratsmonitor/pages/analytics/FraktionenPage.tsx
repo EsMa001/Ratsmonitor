@@ -14,7 +14,9 @@ import { RadarDrill } from "./RadarDrill";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { MethodikNote } from "./Methodik";
 import { TabPane } from "./Tabs";
-import { Segmented } from "./Kennzahlen";
+import { ThemeIcon } from "../../components/icons";
+import { ListenKopf, Reiter } from "./ListenKopf";
+import { BarChart3, CircleCheck, LayoutGrid, type LucideIcon } from "lucide-react";
 
 interface Cell { id: string; name: string; n: number; share: number | null; index: number | null }
 interface Party {
@@ -35,7 +37,28 @@ const n = (v: number) => v.toLocaleString("de-DE");
 const cellColor = (i: number | null) => (i === null ? "transparent" : i >= 100 ? `rgba(38,132,120,${Math.min(0.85, (i - 100) / 150 + 0.08)})` : `rgba(161,161,170,${Math.min(0.5, (100 - i) / 160)})`);
 
 /* Töne der fünf größten Fraktionen im Anteilsbalken (nur Farben aus „Petrol klar“, keine Parteifarben) */
+/* Teile der Seite: Schlüssel, Reiter, Symbol, Titel im Kopf */
+const TEILE: ["je" | "themen" | "ausgang", string, LucideIcon, string][] = [
+  ["je", "Anträge je Fraktion", BarChart3, "Anträge und Anfragen je Fraktion"],
+  ["themen", "Themenprofil", LayoutGrid, "Themenprofil"],
+  ["ausgang", "Was aus den Anträgen wird", CircleCheck, "Was aus den Anträgen wird"],
+];
 const SHARE_TONES = ["bg-teal-700", "bg-sky-800", "bg-amber-600", "bg-teal-400", "bg-sky-500"];
+
+/* Verlauf der letzten 24 Monate als kleine Linie (Anträge und Anfragen je Monat) */
+function Spark({ months }: { months: { m: string; n: number }[] }) {
+  const last = months.slice(-24);
+  if (last.length < 3) return <span aria-hidden="true" />;
+  const max = Math.max(1, ...last.map((x) => x.n)), w = 80, h = 22;
+  const pts = last.map((x, i) => `${((i / (last.length - 1)) * w).toFixed(1)},${(h - 2 - (x.n / max) * (h - 4)).toFixed(1)}`).join(" ");
+  return <svg aria-hidden="true" width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="block overflow-visible"><polyline points={pts} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" /></svg>;
+}
+/* Themen, die eine Fraktion deutlich häufiger aufgreift als die übrigen (Index ab 120), als kleine Symbole */
+function TopThemen({ top, label = false }: { top: Cell[]; label?: boolean }) {
+  if (!top.length) return null;
+  return <span className="flex flex-wrap items-center gap-1">{top.map((c) => <span key={c.id} title={`${c.name}: ${((c.index ?? 100) / 100).toLocaleString("de-DE", { maximumFractionDigits: 1 })}-mal so häufig wie bei allen Fraktionen`}
+    className={`inline-flex h-6 items-center gap-1 rounded-md bg-teal-50 text-teal-800 ${label ? "px-1.5 text-[12px]" : "w-6 justify-center"}`}><ThemeIcon theme={c.id} size={14} />{label && <span>{c.name.split(/ [&,] /)[0]}</span>}</span>)}</span>;
+}
 
 /** plenara.X – Fraktionsprofil: Anträge und Anfragen je Fraktion, Themenprofil und was aus den Anträgen wird */
 export function FraktionenPage() {
@@ -111,14 +134,30 @@ export function FraktionenPage() {
                   <p className="m-0 mt-3 text-[12px] text-slate-500">Anteil an allen Anträgen und Anfragen einer Fraktion; gemeinsame Anträge zählen bei jeder beteiligten Fraktion.</p>
                 </div>;
               })()}
+              {/* Wer setzt welche Themen, und wie oft wird beschlossen: je größere Fraktion eine Zeile */}
+              <div className="mt-8 max-w-[900px] max-sm:hidden">
+                <p className="m-0 text-[12px] font-medium uppercase tracking-wide text-slate-500">Schwerpunkte und Beschlussquote</p>
+                <ul className="m-0 mt-2 list-none border-t border-slate-200 p-0">
+                  {parties.slice(0, 6).map((p) => <li key={p.name} className="grid grid-cols-[110px_minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 py-2">
+                    <span className="truncate text-[14px] font-semibold text-slate-900">{p.name}</span>
+                    {p.top.length ? <TopThemen top={p.top} label /> : <span className="text-[12px] text-slate-500">ohne deutlichen Schwerpunkt</span>}
+                    <span className="text-right text-[12px] text-slate-500" title={`${n(p.approved)} von ${n(p.decided)} entschiedenen Anträgen beschlossen`}>{p.rate !== null && p.decided >= 10 ? <><b className="text-[16px] font-semibold tabular-nums text-teal-700">{Math.round(p.rate)} %</b> beschlossen</> : "zu wenig entschieden"}</span>
+                  </li>)}
+                </ul>
+                <p className="m-0 mt-2 text-[12px] text-slate-500">Symbole: Themen, die die Fraktion deutlich häufiger aufgreift als alle Fraktionen zusammen.</p>
+              </div>
               </div>
 
               {pending && <ListSkeleton />}
               <div className={pending ? "hidden" : undefined}>
-              <div className="mt-8 max-sm:hidden print:hidden"><Segmented label="Teil der Auswertung" options={[["je", "Anträge je Fraktion"], ["themen", "Themenprofil"], ["ausgang", "Was aus den Anträgen wird"]]} value={tab} onPick={setTab} /></div>
+              {/* Kopf wie auf Projekte und Nachrichten, darunter die drei Teile als Reiter mit Symbol (Petrol-Linie unter dem gewählten) */}
+              <div className="mt-4 max-sm:hidden print:hidden">
+                <ListenKopf eyebrow="Fraktionen" icon={(() => { const I = TEILE.find(([k]) => k === tab)![2]; return <I size={20} strokeWidth={1.4} />; })()} title={TEILE.find(([k]) => k === tab)![3]} count={`${n(parties.length)} Fraktionen · ${n(res.totals.withFaction)} Vorgänge`} />
+                <div className="mt-4"><Reiter label="Teil der Auswertung" items={TEILE.map(([k, l, I]) => [k, l, I] as ["je" | "themen" | "ausgang", string, LucideIcon])} value={tab} onPick={setTab} /></div>
+              </div>
               <TabPane on={tab === "je"}>
               <Reveal><section className="rm-sec">
-                <h2 className="text-[22px] font-semibold">Anträge und Anfragen je Fraktion</h2>
+                <h2 className="text-[22px] font-semibold sm:sr-only">Anträge und Anfragen je Fraktion</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Gemeinsame Anträge zählen bei jeder beteiligten Fraktion. <span className="sm:hidden">Zahl rechts: Anträge und Anfragen zusammen; Tippen zeigt die Liste.</span></p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
                   <li className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm bg-teal-600" />Anträge</li>
@@ -127,12 +166,13 @@ export function FraktionenPage() {
                 <ol className="rm-focusrows m-0 list-none border-t border-slate-200 p-0">
                   {parties.map((p, i) => (
                     <li key={p.name} className={"border-b border-slate-200" + rowHide(i)}>
-                      <button type="button" onClick={() => toggle(`all:${p.name}`)} aria-expanded={open === `all:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] max-sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 max-sm:gap-2 py-3 max-sm:py-0.5 max-sm:min-h-[44px] text-left sm:grid-cols-[240px_minmax(0,1fr)_150px] ${open === `all:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
-                      <span className="truncate text-[16px] max-sm:text-[14px]">{p.name}</span>
+                      <button type="button" onClick={() => toggle(`all:${p.name}`)} aria-expanded={open === `all:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] max-sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 max-sm:gap-2 py-3 max-sm:py-0.5 max-sm:min-h-[44px] text-left sm:grid-cols-[200px_minmax(0,1fr)_80px_150px] ${open === `all:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
+                      <span className="min-w-0"><span className="block truncate text-[16px] max-sm:text-[14px]">{p.name}</span><span className="mt-1 block max-sm:hidden"><TopThemen top={p.top} /></span></span>
                       <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 max-sm:order-none max-sm:col-span-1 sm:order-none sm:col-span-1" role="img" aria-label={`${p.name}: ${n(p.antrag)} Anträge, ${n(p.anfrage)} Anfragen`}>
                         <span className="bg-teal-600" style={{ width: `${(p.antrag / maxN) * 100}%` }} />
                         <span className="bg-teal-200" style={{ width: `${(p.anfrage / maxN) * 100}%` }} />
                       </span>
+                      <span className="text-teal-700 max-sm:hidden" title="Anträge und Anfragen je Monat, letzte 24 Monate"><Spark months={p.months} /></span>
                       <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(p.n)}</b><span className="ml-2 text-slate-500 max-sm:hidden">{n(p.antrag)} / {n(p.anfrage)}</span></span>
                       </button>
                       {drill("all", p.name, `${p.name}: Anträge und Anfragen`)}
@@ -146,7 +186,7 @@ export function FraktionenPage() {
               </TabPane>
               <TabPane on={tab === "themen"}>
               <Reveal><section className="rm-sec">
-                <h2 className="text-[22px] font-semibold">Themenprofil</h2>
+                <h2 className="text-[22px] font-semibold sm:sr-only">Themenprofil</h2>
                 <p className="mb-4 max-sm:mb-2 mt-1 max-w-[760px] text-[14px] text-slate-500 max-sm:line-clamp-2">Anteil je Themenfeld an den Anträgen und Anfragen einer Fraktion. Kräftiges Petrol: deutlich häufiger als bei den anderen.</p>
                 {/* Handy: je Fraktion eine Zeile mit den Themen untereinander statt der breiten Tabelle (kein Querscrollen) */}
                 <ul className="m-0 list-none border-t border-slate-200 p-0 sm:hidden">
@@ -197,7 +237,7 @@ export function FraktionenPage() {
 
               <TabPane on={tab === "ausgang"}>
               <Reveal><section className="rm-sec">
-                <h2 className="text-[22px] font-semibold">Was aus den Anträgen wird</h2>
+                <h2 className="text-[22px] font-semibold sm:sr-only">Was aus den Anträgen wird</h2>
                 <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil beschlossener Anträge an den entschiedenen, je Fraktion ab 10 Anträgen. Empfiehlt die Vorlage, dem Antrag nicht zu folgen, zählt er als abgelehnt.</p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
                   {([["beschlossen", DEC_COLORS.approved, "approved"], ["vertagt", DEC_COLORS.postponed, "postponed"], ["abgelehnt", DEC_COLORS.rejected, "rejected"]] as const).map(([l, c, k]) => <li key={l} onMouseEnter={() => setHotOutcome(k)} onMouseLeave={() => setHotOutcome("")} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}

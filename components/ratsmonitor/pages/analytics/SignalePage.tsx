@@ -1,9 +1,13 @@
+import { Segmented } from "../../components/Segmented";
+import { SubtopicIcon } from "../../components/SubtopicIcon";
+import { useSubParam } from "../../lib/subParam";
+import { SUBTOPICS, THEMES } from "@/shared/themes.mjs";
 import { useDwell } from "../../lib/useDwell";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, LayoutGrid, Factory, FileSignature, Flame, House, Bus, Droplets, RadioTower, Route, School, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
+import { XKopf, XWeiter } from "./XKopf";
 import { useRailFold } from "../../lib/useRailFold";
 import { ListenKopf } from "./ListenKopf";
 import { SplitHandle } from "./SplitHandle";
@@ -30,7 +34,7 @@ interface Phase { key: string; name: string; count: number }
 interface Place { region: string; name: string; ags: string; count: number; members?: string[] }
 /* Karte wie in der Trefferliste der Suche (cardsById), dazu Ort im Verband und Stand */
 interface Item extends Partial<Article> { id: string; title: string; region: string; date: string; status: Article["status"]; phase: string; arts?: string[]; /* Schlüssel des Gebiets */ place?: string; /* erster Vorgang dieses Signals im Gebiet */ firstHere?: boolean }
-interface Result { signals: Signal[]; signal: { id: string; name: string; who: string; phaseText: string; art: string | null }; arts: Phase[]; phases: Phase[]; places: Place[]; placeCount?: number; /* Vorgänge, die in ihrem Ort die ersten dieses Signals sind (ohne den Filter) */ firstCount?: number; total: number; offset: number; size: number; builtAt: string; items: Item[] }
+interface Result { /* subs=1 (Ausschreibungen): Treffer je Unterthema */ subs?: Phase[]; signals: Signal[]; signal: { id: string; name: string; who: string; phaseText: string; art: string | null }; arts: Phase[]; phases: Phase[]; places: Place[]; placeCount?: number; /* Vorgänge, die in ihrem Ort die ersten dieses Signals sind (ohne den Filter) */ firstCount?: number; total: number; offset: number; size: number; builtAt: string; items: Item[] }
 
 /* Signale und Zeiträume in derselben Reihenfolge wie im Backend; die Zahlen kommen mit der Antwort */
 const SIGNALE: [string, string][] = [
@@ -83,14 +87,16 @@ const ATLAS_OF: Record<string, [string, string, string]> = {
 
 /* Ort aus der Adresse (useOrtInAdresse hält ?ort aktuell, auch ohne den Router) */
 const ortNow = () => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("ort") ?? "");
-const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort = "", erstmals = "", basis = "/analytics/signale" }: { signal?: string; phase?: string; art?: string; zeit?: string; ort?: string; erstmals?: string; basis?: string }) => {
+const signaleHref = ({ signal = "", phase = "", art = "", zeit = "", ort = "", erstmals = "", gruppe = "", sub = "", basis = "/analytics/signale" }: { signal?: string; phase?: string; art?: string; zeit?: string; ort?: string; erstmals?: string; gruppe?: string; sub?: string; basis?: string }) => {
   const p = new URLSearchParams();
   if (signal) p.set("signal", signal);
+  if (gruppe) p.set("gruppe", gruppe);
   if (phase) p.set("stand", phase);
   if (art) p.set("art", art);
   if (zeit) p.set("zeit", zeit);
   if (erstmals) p.set("erstmals", erstmals);
   if (ort) p.set("ort", ort);
+  if (sub) p.set("sub", sub);
   return `${basis}${p.size ? "?" + p : ""}`;
 };
 
@@ -151,16 +157,19 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const standard = fest ?? SIGNALE[0][0];
   const signal = fest ?? (SIGNAL_IDS.has(params.get("signal") ?? "") ? params.get("signal")! : standard);
   const phase = params.get("stand") ?? "";
+  /* Stand grob (Ausschreibungen): noch offen oder entschieden; der Schritt (stand) wählt darin genauer */
+  const gruppe = ["offen", "entschieden"].includes(params.get("gruppe") ?? "") ? params.get("gruppe")! : "";
+  const subNow = () => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("sub") ?? "");
   const art = params.get("art") ?? "";
   const zeitRaw = params.get("zeit");
   const zeit = zeitRaw === null ? "6" : ZEITRAUM.some(([k]) => k === zeitRaw) ? zeitRaw : "6";
   /* Nur Vorgänge, die in ihrem Ort die ersten dieses Signals sind */
   /* Die Ansicht „Erstmals hier“ gibt es nicht mehr (Schalter und Überschrift entfallen); ältere Links mit ?erstmals=1 zeigen die normale Liste */
   const erstmals = "";
-  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string; erstmals?: string }) => router.push(signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), erstmals, ...next }), { scroll: false });
+  const pick = (next: { signal?: string; phase?: string; art?: string; zeit?: string; erstmals?: string; gruppe?: string }) => router.push(signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, ort: ortNow(), erstmals, gruppe, sub: subNow(), ...next }), { scroll: false });
   const [railRef, railFolded, railUnfold] = useRailFold(signal);
   // Ungültige Werte in der Adresse still berichtigen
-  const target = signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
+  const target = signaleHref({ basis, signal: signal === standard ? "" : signal, phase, art, zeit: zeit === "6" ? "" : zeit, erstmals, gruppe, sub: params.get("sub") ?? "", ort: /^\d{5,9}$/.test(params.get("ort") ?? "") ? params.get("ort")! : "" });
   const current = path + (params.size ? "?" + params : "");
   useEffect(() => {
     /* alte Links (…/signale?signal=vergaben) führen auf die Seite Ausschreibungen */
@@ -169,10 +178,13 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   }, [current, target, router, params, fest, phase, art, zeit, erstmals]);
 
   const { query, search } = useAnalyticsQuery();
+  /* Unterthema aus der Themenleiste (?sub=), für den Kopf der Liste */
+  const [subId, setSub] = useSubParam();
+  const subTheme = THEMES.find((t: { id: string }) => t.id === SUBTOPICS.find((x: { id: string }) => x.id === subId)?.theme)?.name;
   /* Zeitraum der Seite ersetzt den der Suche nur, wenn die Suche selbst keinen hat */
   const q = new URLSearchParams(query);
   if (fromOf(zeit) && !q.get("from")) q.set("from", fromOf(zeit));
-  const url = `/api/x/signale?signal=${signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}&${q}`;
+  const url = `/api/x/signale?signal=${signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}${fest ? "&subs=1" : ""}${gruppe ? `&group=${gruppe}` : ""}&${q}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
   /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
   const pending = loading && !!res && ranKey !== url;
@@ -235,7 +247,26 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
 
       {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy: Auswahlfeld */}
       {/* Ausschreibungen: eine Kategorie, deshalb die Themen als Kacheln wie auf den übrigen Seiten */}
-      {fest && <ThemenLeiste />}
+      {/* Ausschreibungen: statt der Themen die Bereiche (Unterthemen) mit Treffern, die meisten zuerst; Handy: als Walze */}
+      {fest && res && (res.subs ?? []).length > 0 && (() => {
+        const bereiche = [{ key: "", name: "Alle Bereiche", count: 0 }, ...(res.subs ?? []).slice(0, 10)];
+        const short = (k: string, name: string) => SUBTOPICS.find((x: { id: string }) => x.id === k)?.short ?? name;
+        return <>
+          <MapWheels inline single label="Bereich" value={subId} onPick={(id) => setSub(id)}
+            items={bereiche.map((b) => ({ id: b.key, label: b.key ? short(b.key, b.name) : b.name, icon: b.key ? <SubtopicIcon id={b.key} size={16} /> : <LayoutGrid size={16} strokeWidth={1.4} className="text-slate-500" /> }))} />
+          <nav aria-label="Bereich" className="rm-xrail mb-4 hidden sm:block print:hidden">
+            <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
+              {bereiche.map((b) => { const on = b.key === subId; return <li key={b.key || "alle"}>
+                <button type="button" aria-pressed={on} title={b.key ? `${b.name}: ${n(b.count)}` : undefined} onClick={() => setSub(on ? "" : b.key)}
+                  className={`flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                  {b.key ? <SubtopicIcon id={b.key} size={20} /> : <LayoutGrid size={20} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
+                  <span className="line-clamp-2 min-w-0 flex-1">{b.key ? short(b.key, b.name) : b.name}</span>
+                  {b.key ? <span className="tabular-nums text-slate-500">{n(b.count)}</span> : null}
+                </button></li>; })}
+            </ul>
+          </nav>
+        </>;
+      })()}
       {!fest && <nav ref={railRef} aria-label="Signal" className={`rm-xrail hidden sm:block print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {MIT_ALLE.map(([id, label]) => {
@@ -305,7 +336,12 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                   {/* Kopf der Liste: Symbol der Kategorie bzw. Art, rechts die Zahl */}
                   <ListenKopf eyebrow="Neueste Vorgänge" count={`${n(res.total)} ${res.total === 1 ? "Vorgang" : "Vorgänge"}`}
                     icon={art ? <ArtIcon value={art} size={20} /> : (() => { const I = ICONS[res.signal.id]; return I ? <I size={20} strokeWidth={1.4} /> : null; })()}
-                    title={<>{art ? artShort(art) : res.signal.name}{areaAgs && res.places.length === 1 ? <span className="font-normal text-slate-500"> in {res.places[0].name}</span> : null}</>} />
+                    title={(() => {
+                      /* Wo man sich befindet: Kategorie, dann Thema, Unterthema, Art und Schritt der Auswahl, dahinter der Ort */
+                      const subName = SUBTOPICS.find((x: { id: string }) => x.id === subId)?.short;
+                      const pfad = [res.signal.name, search.state.thema, (!search.state.thema || subTheme === search.state.thema) ? subName : "", art ? artShort(art) : "", phase ? res.phases.find((p) => p.key === phase)?.name ?? "" : ""].filter(Boolean) as string[];
+                      return <span title={pfad.join(" › ")}>{pfad.map((t, i) => <span key={t + i} className={i === pfad.length - 1 ? "" : "font-normal text-slate-500"}>{i > 0 && <span aria-hidden="true" className="mx-1 font-normal text-slate-300">›</span>}{t}</span>)}{areaAgs && res.places.length === 1 ? <span className="font-normal text-slate-500"> in {res.places[0].name}</span> : null}</span>;
+                    })()} />
                   {/* Schritt als Filter direkt über der Liste, mit denselben Farben wie in den Zeilen; bei „Alle Projekte“ nicht (die Kategorien haben verschiedene Schritte), bei Ausschreibungen nicht (dort ist er der Status, den das Filterfenster schon hat) */}
                   {!fest && signal !== ALLE && res.signal.id === signal && res.phases.length > 1 && <ul aria-label="Schritt" className="m-0 mt-3 flex list-none flex-wrap gap-1.5 p-0 print:hidden">
                     {[{ key: "", name: "Alle Schritte", count: res.phases.reduce((a, p) => a + p.count, 0) }, ...res.phases].map((p) => {
@@ -318,7 +354,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                     })}
                   </ul>}
                   {/* Ausschreibungen: die Leistung als zweite Kachelreihe (auf Projekte klappt sie aus der Kategorie auf) */}
-                  {fest && res.signal.id === signal && (res.arts ?? []).length > 1 && <ul aria-label={res.signal.art ?? "Leistung"} className="m-0 mt-1.5 flex list-none flex-wrap gap-1.5 p-0 print:hidden">
+                  {fest && res.signal.id === signal && (res.arts ?? []).length > 1 && <p className="m-0 mt-3 text-[12px] font-medium uppercase tracking-wide text-slate-500 print:hidden">{res.signal.art ?? "Leistung"}: was eingekauft wird</p>}
+                  {fest && res.signal.id === signal && (res.arts ?? []).length > 1 && <ul aria-label={res.signal.art ?? "Leistung"} className="m-0 mt-1 flex list-none flex-wrap gap-1.5 p-0 print:hidden">
                     {[{ key: "", name: "Alle", count: res.arts.reduce((a2, x) => a2 + x.count, 0) }, ...res.arts].map((x) => {
                       const on = x.key === art;
                       return <li key={x.key || "alle"}><button type="button" aria-pressed={on} title={`${x.name}: ${n(x.count)}`} onClick={() => pick({ art: on ? "" : x.key })}
@@ -328,6 +365,16 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                         <span className="tabular-nums text-slate-500">{n(x.count)}</span></button></li>;
                     })}
                   </ul>}
+                  {/* Ausschreibungen: Stand erst grob (noch offen, entschieden), darin auf Wunsch der genaue Status */}
+                  {fest && res.signal.id === signal && <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 print:hidden">
+                    <span className="text-[12px] font-medium uppercase tracking-wide text-slate-500">Stand</span>
+                    <Segmented label="Stand" options={[["", "Alle"], ["offen", "Noch offen", "angekündigt, in Beratung, empfohlen, vertagt"], ["entschieden", "Entschieden", "beschlossen, abgelehnt, zur Kenntnis"]]} value={gruppe} onPick={(k) => pick({ gruppe: k, phase: "" })} />
+                    {gruppe && res.phases.length > 1 && <ul aria-label="Genauer Stand" className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+                      {res.phases.map((p) => { const on = p.key === phase; return <li key={p.key}><button type="button" aria-pressed={on} onClick={() => pick({ phase: on ? "" : p.key })}
+                        className={`inline-flex h-7 items-center gap-1.5 rounded-md border px-2 text-[12px] ${on ? "border-teal-700 bg-teal-50 font-semibold text-teal-900" : "border-slate-200 text-slate-700 hover:text-teal-700"}`}>
+                        <StepIcon name={p.name} size={14} className={toneOf(p.name, phaseOrder)} />{p.name}<span className="tabular-nums text-slate-500">{n(p.count)}</span></button></li>; })}
+                    </ul>}
+                  </div>}
                   {items.length === 0 && <Leer>Keine Vorgänge in dieser Auswahl.</Leer>}
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
                     {items.slice(0, shown).map((r) => (

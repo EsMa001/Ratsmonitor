@@ -13,10 +13,10 @@ export function useAnalyticsQuery() {
   const results = useSearchResults();
   /* Katalog nur mit Umkreis laden; bis er da ist, fragt die Seite ohne die Umkreisgrenze (wenige 100 ms) */
   const regions = useCatalog(!!search.state.radius);
-  /* Unterthema aus der Adresse (Themenleiste, ?sub=): nur wenn es zum gewählten Thema gehört */
+  /* Unterthema aus der Adresse (Themenleiste, Bereiche der Ausschreibungen, ?sub=): ohne Thema immer, mit Thema nur wenn es dazu gehört */
   const subRaw = useSearchParams().get("sub") ?? "";
   const subTheme = SUBTOPICS.find((s: { id: string }) => s.id === subRaw)?.theme;
-  const sub = subTheme && THEMES.find((t: { id: string }) => t.id === subTheme)?.name === search.state.thema ? subRaw : "";
+  const sub = subTheme && (!search.state.thema || THEMES.find((t: { id: string }) => t.id === subTheme)?.name === search.state.thema) ? subRaw : "";
   const query = useMemo(() => {
     const p = new URLSearchParams(results.key);
     for (const k of ["around", "sort", "size", "page", "part"]) p.delete(k);

@@ -228,12 +228,17 @@ svg g[data-node]:focus-visible text {
 }
 
 .rm-focusrows>li {
-  transition: opacity .2s;
+  transition: color .2s;
 }
 
+/* Überfahrene Zeile: Text in Petrol, kein Hintergrund, die übrigen Zeilen bleiben unverändert */
 @media (hover:hover) {
-  .rm-focusrows:has(>li:hover)>li:not(:hover) {
-    opacity: .5;
+  /* nur Text: Flächen mit eigener Farbe (Knöpfe wie ▶, Etiketten) behalten ihre Schriftfarbe */
+  .rm-focusrows>li:hover :is(span, b, a, p):not([class*="bg-"]) {
+    color: var(--rm-ac);
+  }
+  .rm-focusrows>li:hover :is(button, a) {
+    background-color: transparent;
   }
 }
 

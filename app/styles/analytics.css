@@ -479,6 +479,20 @@
   main.rm-xhero .rm-xhero-panel .rm-xtop {
     max-width: none;
   }
+  /* Bühne ohne sichtbaren Rollbalken (rollt weiter mit Mausrad und Trackpad); die Bedienzeile klebt unten und deckt den Inhalt nicht zu */
+  main.rm-xhero .rm-xhero-panel {
+    scrollbar-width: none;
+  }
+  main.rm-xhero .rm-xhero-panel::-webkit-scrollbar {
+    display: none;
+  }
+  main.rm-xwide.rm-xhero .rm-xhero-panel .rm-xtop {
+    position: sticky;
+    bottom: 0;
+    left: auto;
+    right: auto;
+    margin: 16px auto 0;
+  }
   /* Legende ohne Kasten, schlicht auf der Karte */
   main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.rm-legend:not(.right-3) {
     background: none;
@@ -550,6 +564,10 @@
     border-radius: 20px;
     pointer-events: auto;
   }
+  /* Leiste und Unterliste fast deckend: über der eingefärbten Karte ist sonst die Schrift schwer zu lesen */
+  main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul {
+    background: linear-gradient(135deg,rgba(255,255,255,.93),rgba(240,248,247,.9));
+  }
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail .rm-rail-sub button {
     font-size: 11.5px;
     border-radius: 14px;
@@ -565,7 +583,8 @@
     width: 16px;
     height: 16px;
   }
-  main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li.rm-rail-open {
+  /* Die Unterliste beginnt neben ihrer Kachel: die gewählte und die verweilte Kachel sind der Bezugspunkt */
+  main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li:is(.rm-rail-open, .rm-rail-peek) {
     position: relative;
     z-index: 2;
   }

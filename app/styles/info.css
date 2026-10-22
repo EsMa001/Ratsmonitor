@@ -1235,3 +1235,6 @@ html body .ri-dark.rm-xcta {
 html body .ri-dark.rm-xcta::before, html body .ri-dark.rm-xcta::after {
   display: none;
 }
+html body .ri-dark.rm-xcta #methodik h2 {
+  font-size: 16px;
+}

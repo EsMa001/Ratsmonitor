@@ -13,6 +13,7 @@ import {AnalyticsError,dataStarts} from './analytics-diffusion.mjs';
 import {where as placeOf} from './member-place.mjs';
 import {cardsById} from './monitor-search.mjs';
 import {MODEL_SIGNALS} from './model-signals.mjs';
+import {subtopicName} from '../../shared/themes.mjs';
 
 const F=`SELECT DISTINCT rr.case_key ck FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE`;
 /* Filterwerte („Art“) je Vorgang: Zeilen (ck, a) aus Fakten; mehrere Werte je Vorgang möglich */
@@ -59,6 +60,8 @@ export const ALL_PROJECTS={id:'alle',name:'Alle Projekte',who:'alle Branchen',me
  art:PROJECTS.map(s=>`SELECT ck,${sq(s.name)} a FROM (${s.cases})`).join(' UNION ALL '),
  artName:'Kategorie',phase:PROJECTS[0].phase,phaseText:PROJECTS[0].phaseText};
 const BY_ID=new Map([...SIGNALS,ALL_PROJECTS].map(s=>[s.id,s]));
+/* Stand grob (group, Ausschreibungen): noch offen oder entschieden, nach dem Status des Vorgangs (x_cases.status); „unknown“ in keiner Gruppe */
+export const STATUS_GROUPS={offen:['announced','consulting','recommended','postponed'],entschieden:['approved','rejected','info']};
 const NAME=new Map(SIGNALS.map(s=>[s.id,s.name]));
 /** Kennungen in x_signals, die zu einem Signal gehören (bei „Alle Projekte“ alle Kategorien außer Ausschreibungen) */
 const idsOf=sig=>JSON.stringify(sig.members||[sig.id]);
@@ -66,7 +69,7 @@ export const SIGNAL_SIZE=50;
 
 /* Schneller Weg über x_signals (Migration 0039, gebaut mit x_cases): Zahl je Signal in einer Abfrage, die Vorgänge des
    gewählten Signals einmal gelesen und in JS nach Stand, Art und Ort gezählt. null, solange die Tabelle fehlt oder leer ist. */
-async function fastSignals(db,catalog,{sig,from,args,phase,art,offset,state,first}){
+async function fastSignals(db,catalog,{sig,from,args,phase,art,offset,state,first,group}){
  let counts;
  try{counts=(await db.prepare(`SELECT s.signal k,count(DISTINCT s.case_key) n FROM ${from} JOIN x_signals s ON s.case_key=x.case_key GROUP BY s.signal`).bind(...args).all()).results;}catch{return null;}
  if(!state.signals)return null;
@@ -75,7 +78,8 @@ async function fastSignals(db,catalog,{sig,from,args,phase,art,offset,state,firs
  for(const r of results){let c=cases.get(r.ck);if(!c){c={...r,arts:new Set()};cases.set(r.ck,c);}const a=sig.members?NAME.get(r.sg):r.a;if(a)c.arts.add(a);}
  const isFirst=await firstOf(db,idsOf(sig));
  for(const c of cases.values())c.first=isFirst(c);
- const all=[...cases.values()],okPh=c=>!phase||c.ph===(phase===' '?'':phase),okArt=c=>!art||c.arts.has(art);
+ const okGroup=c=>!group||STATUS_GROUPS[group].includes(c.status);
+ const all=[...cases.values()].filter(okGroup),okPh=c=>!phase||c.ph===(phase===' '?'':phase),okArt=c=>!art||c.arts.has(art);
  const tally=(list,key)=>{const m=new Map();for(const c of list)for(const k of key(c))m.set(k,(m.get(k)||0)+1);return [...m].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n||(a.k<b.k?-1:a.k>b.k?1:0));};
  const base=all.filter(c=>okPh(c)&&okArt(c));
  const firstCount=base.filter(c=>c.first).length;
@@ -94,14 +98,19 @@ export async function xSignals(db,catalog,params){
  const id=params.get('signal')||SIGNALS[0].id,sig=BY_ID.get(id);if(!sig)throw new AnalyticsError('Unbekanntes Signal.');
  const phase=params.get('phase')||'',art=params.get('art')||'',offset=Math.max(0,Number(params.get('offset'))||0);
  const first=params.get('first')==='1';
- const copy=new URLSearchParams(params);for(const k of ['signal','phase','art','offset','first'])copy.delete(k);
+ const copy=new URLSearchParams(params);for(const k of ['signal','phase','art','offset','first','subs','group'])copy.delete(k);
+ const group=params.get('group')||'';if(group&&!STATUS_GROUPS[group])throw new AnalyticsError('Unbekannter Stand.');
  const state=await xState(db);if(!state)throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut.',503);
  const x=parseX(copy),{from,args}=await source(db,catalog,x.f);
- const fast=await fastSignals(db,catalog,{sig,from,args,phase,art,offset,state,first});if(fast)return fast;
+ // subs=1: Treffer je Unterthema unter allen übrigen Filtern, ohne das gewählte Unterthema (Bereichsleiste der Ausschreibungen)
+ const subsP=params.get('subs')==='1'?subCounts(db,catalog,x.f,sig,!!state.signals):null;
+ const withSubs=async r=>subsP?{...r,subs:await subsP}:r;
+ const fast=await fastSignals(db,catalog,{sig,from,args,phase,art,offset,state,first,group});if(fast)return withSubs(fast);
  // Ohne x_signals gibt es den Filter „erstmals hier“ nicht (firstCount fehlt, die Seite blendet ihn aus)
  // Zahl je Signal (für die Auswahl oben), dann die Vorgänge des gewählten Signals einmal als Zwischenmenge
  const counts=await Promise.all(SIGNALS.map(s=>db.prepare(`SELECT count(*) n FROM ${from} WHERE x.case_key IN (${s.cases})`).bind(...args).first()));
- const sel=`WITH sel AS MATERIALIZED (SELECT x.*,${sig.phase} ph FROM ${from} WHERE x.case_key IN (${sig.cases}))`;
+ const grp=group?` AND x.status IN (${STATUS_GROUPS[group].map(v=>`'${v}'`).join(',')})`:'';
+ const sel=`WITH sel AS MATERIALIZED (SELECT x.*,${sig.phase} ph FROM ${from} WHERE x.case_key IN (${sig.cases})${grp})`;
  // Art (zweiter Filter): Vorgänge mit diesem Filterwert
  const IN_ART=`case_key IN (SELECT ck FROM (${sig.art}) WHERE a=?)`;
  const where=[],pa=[];
@@ -117,7 +126,15 @@ export async function xSignals(db,catalog,params){
   db.prepare(`${sel} SELECT count(*) n FROM sel${cond}`).bind(...args,...pa).first(),
   db.prepare(`${sel} SELECT p.case_key ck,p.card_id id,p.region_id region,c.title,c.gremium,p.date,p.status,p.stage,p.ph,(SELECT json_group_array(DISTINCT av.a) FROM (${sig.art}) av WHERE av.ck=p.case_key) arts FROM (SELECT * FROM sel${cond} ORDER BY date DESC,case_key LIMIT ? OFFSET ?) p JOIN search_cards c ON c.id=p.card_id ORDER BY p.date DESC,p.case_key`).bind(...args,...pa,SIGNAL_SIZE,offset).all(),
  ]);
- return finish(db,catalog,{sig,state,offset,counts,phases:phases.results,arts:arts.results,places:places.results,total:Number(total?.n||0),page:page.results});
+ return withSubs(await finish(db,catalog,{sig,state,offset,counts,phases:phases.results,arts:arts.results,places:places.results,total:Number(total?.n||0),page:page.results}));
+}
+/** Vorgänge des Signals je Unterthema (x_cases.subs), unter den Filtern der Suche ohne das Unterthema; die meisten zuerst */
+async function subCounts(db,catalog,f,sig,fast){
+ const {sub:_,...g}=f,{from,args}=await source(db,catalog,g);
+ // Dieselben Vorgänge wie die Liste: über x_signals, solange gebaut, sonst über die Antworten des Modells
+ const cases=fast?'SELECT case_key FROM x_signals WHERE signal IN (SELECT value FROM json_each(?))':sig.cases,cargs=fast?[idsOf(sig)]:[];
+ const {results}=await db.prepare(`SELECT s.value k,count(DISTINCT x.case_key) n FROM ${from} JOIN json_each('["'||replace(x.subs,',','","')||'"]') s ON s.value<>'' WHERE x.case_key IN (${cases}) GROUP BY k ORDER BY n DESC,k`).bind(...args,...cargs).all();
+ return results.map(r=>({key:r.k,name:subtopicName(r.k),count:Number(r.n)}));
 }
 /* Antwort aus den gezählten Werten: Karten nur für die Vorgänge der Seite */
 async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,total,page,firstCount}){

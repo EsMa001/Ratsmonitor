@@ -264,13 +264,13 @@ export function XTrendsPage() {
                   ) : rows.length === 0 ? (
                     sort === "aus" && !sp ? <p className="mt-6 text-[16px] text-slate-500">Ausbreitung wird berechnet …</p> : <Leer tipp="Einen längeren Zeitraum oder „Alle Themen“ wählen.">Keine Begriffe in dieser Auswahl.</Leer>
                   ) : (
-                    <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0" onMouseLeave={() => setHover("")}>
+                    <ol className="rm-focusrows m-0 mt-3 list-none border-t border-slate-200 p-0" onMouseLeave={() => setHover("")}>
                       {rows.slice(0, shown).map((t) => {
                         const s = byKey.get(t.key);
                         return (
-                          <li key={t.key} className={`border-b border-slate-200 transition-opacity duration-200 ${hover && hover !== t.key ? "opacity-55" : ""}`}>
+                          <li key={t.key} className="border-b border-slate-200">
                             <button type="button" onClick={() => pick({ begriff: t.term })} onMouseEnter={() => hoverD(t.key)} onFocus={() => hoverD(t.key)} onBlur={() => hoverD("")}
-                              className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 py-3 text-left sm:grid-cols-[1fr_64px_88px_96px_32px] ${hover === t.key ? "bg-slate-50" : ""}`}>
+                              className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 py-3 text-left sm:grid-cols-[1fr_64px_88px_96px_32px]`}>
                               <span className="min-w-0 truncate text-[16px] text-slate-900">
                                 {prettyTerm(t.term)}{t.kind === "emerging" && <span className="ml-2 rounded-full bg-teal-50 px-2 py-0.5 text-[12px] font-medium text-teal-800">neu</span>}
                                 <span className="ml-2 text-[12px] text-slate-500 max-sm:hidden">{n(t.nr)} Vorgänge</span>
