@@ -19,3 +19,25 @@ export function useRailFold(key: string): [RefObject<HTMLElement | null>, boolea
   }, []);
   return [ref, foldedAt === key, () => setFoldedAt(null)];
 }
+
+/**
+ * Verweilen auf einer Kachel der Leiste (Desktop): nach kurzer Zeit (400 ms) klappt deren Unterliste auf, ohne sie zu wählen; verlässt die
+ * Maus die Leiste (samt Unterliste), schließt sie nach 250 ms wieder. Gibt die verweilte Kennung und die Ereignisse für Leiste und Kachel.
+ */
+export function useRailPeek() {
+  const [peek, setPeek] = useState("");
+  const enterT = useRef<ReturnType<typeof setTimeout> | null>(null), leaveT = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clear = (t: { current: ReturnType<typeof setTimeout> | null }) => { if (t.current) clearTimeout(t.current); t.current = null; };
+  useEffect(() => () => { clear(enterT); clear(leaveT); }, []);
+  return {
+    peek,
+    nav: {
+      onMouseEnter: () => clear(leaveT),
+      onMouseLeave: () => { clear(enterT); clear(leaveT); leaveT.current = setTimeout(() => setPeek(""), 250); },
+    },
+    tile: (id: string) => ({
+      onMouseEnter: () => { clear(enterT); enterT.current = setTimeout(() => setPeek(id), 400); },
+      onMouseLeave: () => clear(enterT),
+    }),
+  };
+}

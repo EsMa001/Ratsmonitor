@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { XKopf, XWeiter } from "./XKopf";
 import { SplitHandle } from "./SplitHandle";
-import { useRailFold } from "../../lib/useRailFold";
+import { useRailFold, useRailPeek } from "../../lib/useRailFold";
 import { XAtlasView } from "./XAtlasView";
 import { ThemeIcon } from "../../components/icons";
 import { SubtopicIcon } from "../../components/SubtopicIcon";
@@ -45,24 +45,25 @@ export function AtlasPage() {
   /* Eine Wahl ist ein Schritt im Verlauf: Zurück führt zur vorigen Auswahl */
   const pick = (next: { thema?: string; sub?: string; zeit?: string }) => router.push(atlasHref({ zeit, ort: ortNow(), ...next }), { scroll: false });
   const [railRef, railFolded, railUnfold] = useRailFold(thema);
+  const peek = useRailPeek();
   return (
     <main id="inhalt" className="rm-xwide rm-xatlas rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="atlas" />
       <SplitHandle />
       {/* Handy: Auswahlfeld; Tablet 6 Kacheln je Reihe; Desktop alle in einer Reihe (nie waagerecht scrollen) */}
-      <nav ref={railRef} aria-label="Thema" className={`rm-xrail mt-2 hidden sm:block print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
+      <nav ref={railRef} {...peek.nav} aria-label="Thema" className={`rm-xrail mt-2 hidden sm:block print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {ATLAS_THEMEN.map(([id, label]) => (
-            <li key={id || "alle"} className={id && id === thema ? "rm-rail-open" : undefined}>
+            <li key={id || "alle"} {...(id ? peek.tile(id) : {})} className={[id && id === thema ? "rm-rail-open" : "", id && peek.peek === id ? "rm-rail-peek" : ""].join(" ").trim() || undefined}>
               {/* Kacheln ohne Rahmen: Icon über dem Namen, nur das gewählte Thema mit heller Fläche (Linien statt Kästen) */}
               <button type="button" aria-pressed={id === thema} onClick={() => { railUnfold(); pick(id ? { thema: id } : {}); }}
                 className={`flex h-full min-h-[68px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${id === thema ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                 <ThemeIcon theme={id || "alle"} size={24} className={id === thema ? "text-teal-700" : "text-slate-500"} />
                 <span>{label}</span></button>
-              {/* Breiter Bildschirm: die Unterthemen klappen in der Leiste unter dem gewählten Thema auf (CSS blendet sie sonst aus) */}
-              {id && id === thema && <ul className="rm-rail-sub m-0 list-none p-0">
+              {/* Breiter Bildschirm: die Unterthemen klappen neben dem gewählten Thema auf, beim Verweilen auch neben einem anderen (CSS blendet sie sonst aus) */}
+              {id && <ul className="rm-rail-sub m-0 list-none p-0">
                 {SUBTOPICS.filter((x: { theme: string }) => x.theme === id).map((x: { id: string; short: string }) => (
-                  <li key={x.id}><button type="button" aria-pressed={x.id === sub} onClick={() => pick({ thema, sub: x.id === sub ? "" : x.id })}>
+                  <li key={x.id}><button type="button" aria-pressed={id === thema && x.id === sub} onClick={() => { railUnfold(); pick({ thema: id, sub: id === thema && x.id === sub ? "" : x.id }); }}>
                     <SubtopicIcon id={x.id} size={16} /><span>{x.short}</span></button></li>
                 ))}
               </ul>}

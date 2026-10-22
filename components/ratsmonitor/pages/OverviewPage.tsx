@@ -1,3 +1,4 @@
+import { SearchSplit } from "../components/SearchSplit";
 import { flushSync } from "react-dom";
 import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -161,6 +162,7 @@ export function OverviewPage({ active }: { active: boolean }) {
   return (
     <div hidden={!active} className="rm-flat" data-stage={stage} data-peek={peek ? "1" : undefined}>
       <MapPanel active={active} />
+      {active && <SearchSplit />}
       <main ref={mainRef} {...sheetTouch} id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page max-sm:max-w-none flex-col gap-[12px] pb-0 pt-0">
         {active && <h1 className="sr-only">Kommunalpolitik entdecken: öffentliche Vorgänge, Beratungen und Beschlüsse</h1>}
         <SearchFilterPanel />

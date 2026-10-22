@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { STATUS, THEMEN } from "../lib/constants";
 import { filterChips } from "../lib/savedSearch";
@@ -34,13 +35,16 @@ function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boo
 /** Milchglas-Filterfenster, oben links mit dem Filter-Knopf (toggle) verankert:
  *  Umkreis um den gesuchten Ort (dezent), Zeitraum, Thema, Status */
 /** up: Suchleiste steht unten (Kartenmodus) – das Fenster klappt nach oben auf, der Filter-Knopf bleibt an seiner Stelle */
-export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, noThema = false }: { /** plenara.X: ohne Thema (die Seiten haben dafür die Themenkacheln) */ noThema?: boolean; /** Handy: Breite der Knöpfe rechts vom Filter-Knopf (Herz): das Fenster reicht bis dorthin, der Filter-Knopf bleibt beim Aufklappen an seiner Stelle */ trail?: number; toggle: ReactNode; /** Handy: Zusatzfelder der Seite (z. B. Zeitraum, Folgen) oben im Blatt */ extra?: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
+export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, x: xProp = false }: { /** plenara.X: ohne Thema (die Seiten haben dafür die Themenkacheln), ohne Künftige und Formalien (plenara.X zählt nur Sachpunkte bis heute) */ x?: boolean; /** Handy: Breite der Knöpfe rechts vom Filter-Knopf (Herz): das Fenster reicht bis dorthin, der Filter-Knopf bleibt beim Aufklappen an seiner Stelle */ trail?: number; toggle: ReactNode; /** Handy: Zusatzfelder der Seite (z. B. Zeitraum, Folgen) oben im Blatt */ extra?: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
   const { geo } = useData();
   const search = useSearch();
   const { state } = search;
   const res = useSearchResults();
+  /* Auf allen plenara.X-Seiten derselbe Filter, auch wo die Suchleiste der Karte ihn öffnet */
+  const path = usePathname() ?? "";
+  const x = xProp || path.startsWith("/analytics/");
   /* auch aus dem Live-Zustand: auf dem Handy bleibt res.snapshot bis zum Schließen auf dem Stand beim Öffnen */
-  const liveActive = !!(state.thema || state.status || state.von || state.bis || state.monat || !state.noformal || state.allterms || state.exact || state.future || state.radius);
+  const liveActive = !!(state.status || state.von || state.bis || state.monat || state.allterms || state.exact || state.radius || (!x && (state.thema || !state.noformal || state.future)));
   const chipList = filterChips(res.snapshot, geo);
   const active = chipList.length > 0 || liveActive;
   /* Reicht der Platz rechts nicht (schmale Karte), öffnet das Fenster nach links; der Knopf sitzt dann oben rechts */
@@ -96,19 +100,21 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, noThem
       <div className="flex flex-col gap-2.5 px-4 max-sm:gap-[3px] sm:gap-1.5">
         {phone && extra}
         {state.area.length >= 5 && geo && <AreaBar compact />}
-        {phone ? <DateRangeFields /> : <DateRangeFilter />}
+        {!x && (phone ? <DateRangeFields /> : <DateRangeFilter />)}
         {/* Schalter wie am iPhone */}
-        <Toggle label="Künftige Sitzungen zeigen" hint="Auch Termine, die noch anstehen" on={!!state.future} set={search.setFuture} />
-        <Toggle label="Formalien ausblenden" hint="Ohne Niederschriften, Mitteilungen und Anfragen" on={!!state.noformal} set={search.setNoformal} />
+        {!x && <Toggle label="Künftige Sitzungen zeigen" hint="Auch Termine, die noch anstehen" on={!!state.future} set={search.setFuture} />}
+        {!x && <Toggle label="Formalien ausblenden" hint="Ohne Niederschriften, Mitteilungen und Anfragen" on={!!state.noformal} set={search.setNoformal} />}
         <Toggle label="Exakter Begriff" hint="Nur ganze Wörter, keine Wortteile (Groß-/Kleinschreibung egal)" on={!!state.exact} set={search.setExact} />
         <Toggle label="Begriffe kombinieren" hint="Alle Suchbegriffe müssen vorkommen; sonst genügt einer" on={!!state.allterms} set={search.setAllterms} />
+        {/* plenara.X: Zeitraum unter den Schaltern */}
+        {x && (phone ? <DateRangeFields /> : <DateRangeFilter />)}
         {/* Bundesland: setzt das Gebiet (2-stelliger Schlüssel), wie die Eingabe des Namens in der Suche; bei gewähltem Ort entfällt es */}
         {geo && state.area.length < 5 && geo.lands.length > 0 && (
           <FilterSelect id="f-land" label="Bundesland" allLabel="Alle Bundesländer" value={state.area.length === 2 ? state.area : ""} options={geo.lands.map((l) => ({ value: l.ags, label: l.name }))}
             onChange={(v) => { if (v) search.setArea(v, "ui", { zoom: true }); else search.clearArea(); }} className={full} />
         )}
-        <div className={noThema ? "" : "grid grid-cols-2 gap-2"}>
-          {!noThema && <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />}
+        <div className={x ? "" : "grid grid-cols-2 gap-2"}>
+          {!x && <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />}
           <FilterSelect id="f-status" label="Status" allLabel="Alle Stände" value={state.status} options={STATUS.map((s) => ({ value: s.id, label: s.label }))} counts={active ? res.statusCounts : undefined} onChange={(v) => search.setStatus(v as typeof state.status)} className={full} />
         </div>
         {/* Handy: „Zurücksetzen“ nicht in der Kopfzeile (dort sitzt die Zeitraum-Auswahl), sondern unten */}

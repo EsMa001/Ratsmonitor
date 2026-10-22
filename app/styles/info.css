@@ -1215,3 +1215,23 @@ html.rm-dark .ri-bid__label {
     font-size: 22px;
   }
 }
+
+/* plenara.X: niedrige Kachel am Seitenende (Fragen links, Methodik rechts) */
+.ri-dark.rm-xcta {
+  padding-top: 28px;
+  padding-bottom: 28px;
+  border-top: 1px solid var(--rm-c200);
+}
+.ri-dark.rm-xcta h2 {
+  font-size: 20px;
+}
+.ri-dark.rm-xcta .ri-btn {
+  margin-top: 12px;
+}
+/* plenara.X: die Kachel am Seitenende weiß wie die Seite (zwischen weißer Auswertung und Petrol-Fuß wirkte das Grau schwer) */
+html body .ri-dark.rm-xcta {
+  background: var(--rm-white);
+}
+html body .ri-dark.rm-xcta::before, html body .ri-dark.rm-xcta::after {
+  display: none;
+}

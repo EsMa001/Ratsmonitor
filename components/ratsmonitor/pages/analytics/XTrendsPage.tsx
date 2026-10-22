@@ -1,3 +1,4 @@
+import { useDwell } from "../../lib/useDwell";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { busyProps } from "./XBusy";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -47,7 +48,9 @@ const SORTS: [Sort, string, string][] = [
   ["aus", "Meiste Gebiete", "Meiste Gebiete, die den Begriff im Zeitraum zum ersten Mal beraten haben. Jeder Begriff lässt sich als Ausbreitung auf der Karte abspielen (▶ in der Zeile)"],
   ["ab", "Absteigend", "Deutlich seltener als im Zeitraum davor, geordnet nach Aussagekraft"],
 ];
-const WINDOWS: [string, string][] = [["30", "30 Tage"], ["90", "90 Tage"], ["180", "180 Tage"]];
+const WINDOWS: [string, string][] = [["90", "3 Monate"], ["180", "6 Monate"], ["365", "12 Monate"]];
+/* Vergleichszeitraum im Satz („gegenüber den 3 Monaten davor“) */
+const DAVOR: Record<string, string> = { "90": "3 Monaten", "180": "6 Monaten", "365": "12 Monaten" };
 const n = (v: number) => v.toLocaleString("de-DE");
 /** Einordnung in Worten: „×5,5“ heißt 5,5-mal so oft wie im Zeitraum davor */
 const oft = (t: Trend) => (t.np === 0 ? "davor kaum vorhanden" : t.ratio >= 1 ? `${t.ratio.toLocaleString("de-DE", { maximumFractionDigits: 1 })}-mal so oft wie davor` : `nur ${Math.round(t.ratio * 100)} % so oft wie davor`);
@@ -128,6 +131,8 @@ export function XTrendsPage() {
 
   /* Vorschau beim Überfahren einer Zeile (Tastatur: Fokus): die Ausbreitung dieses Begriffs auf der Karte */
   const [hover, setHover] = useState("");
+  /* Liste → Karte erst nach kurzem Verweilen */
+  const hoverD = useDwell(setHover, "");
 
   /* Gewählter Ort der Suche (Gemeinde, 8 Stellen): auf der Karte markiert */
   const area = new URLSearchParams(query).get("area") ?? "";
@@ -184,7 +189,7 @@ export function XTrendsPage() {
     for (const [id, v] of Object.entries(sp.moving)) for (const a of flat(id)) vals.push([a, v]);
     const scale = countScale(vals.map(([, v]) => v));
     for (const [a, v] of vals) levels[a] = Math.max(levels[a] ?? 0, scale.level(v));
-    return { levels, legend: scale.legend.map((l) => l.replace(/^1 Vorgänge$/, "1 Begriff").replace(/Vorgänge$/, "Begriffe")), colors: undefined, label: "Karte: wo sich gerade viel bewegt", note: "Begriffe der Liste, die das Gebiet im Zeitraum zum ersten Mal beraten hat" };
+    return { levels, legend: scale.legend.map((l) => l.replace(/^1 Vorgänge$/, "1 Begriff").replace(/Vorgänge$/, "Begriffe")), colors: undefined, label: "Karte: wo sich gerade viel bewegt" };
   }, [sp, hover, byKey, hoverName]);
 
   const moving = sp ? Object.keys(sp.moving).length : null;
@@ -208,7 +213,7 @@ export function XTrendsPage() {
             Am stärksten zugenommen: „{prettyTerm(top.term)}“ ({ratio(top)}, {oft(top)}{wide?.s && wide.t.key === top.key && wide.s.added > 0 ? `, +${n(wide.s.added)} Gebiete, die meisten neuen` : ""})
             {wide?.s && wide.t.key !== top.key && wide.s.added > 0 ? <>, am meisten neue Gebiete: „{prettyTerm(wide.t.term)}“ (+{n(wide.s.added)})</> : null}.
           </Befund></div>}
-          <Kennzahlen scope={`aus ${n(res.totals.recent)} Vorgängen`} period={`${zeitText} gegenüber den ${zeitText} davor`} items={[
+          <Kennzahlen scope={`aus ${n(res.totals.recent)} Vorgängen`} period={`${zeitText} gegenüber den ${DAVOR[zeit]} davor`} items={[
             { value: n(lists.up.length), label: "aufsteigende Begriffe" },
             { value: n(lists.up.filter((t) => t.kind === "emerging").length), label: "neu aufgekommen" },
             { value: moving === null ? "…" : n(moving), label: "Gebiete mit neuen Themen" },
@@ -244,7 +249,7 @@ export function XTrendsPage() {
           </Befund></div>}
               {begriff ? (
                 <Steckbrief begriff={begriff} row={selRow} spread={selSpread} df={df} error={diff.url === diffUrl ? diff.error : ""} firsts={firsts} day={day}
-                  onDay={(d) => { setPlaying(false); setDay(d); }} playing={playing} onToggle={toggle} res={res} area={area} zeitText={zeitText}
+                  onDay={(d) => { setPlaying(false); setDay(d); }} playing={playing} onToggle={toggle} res={res} area={area} zeitText={DAVOR[zeit]}
                   listQuery={`${query}&window=${zeit}`} onBack={() => (window.history.length > 1 ? router.back() : pick({ begriff: "" }))} />
               ) : (
                 <>
@@ -264,7 +269,7 @@ export function XTrendsPage() {
                         const s = byKey.get(t.key);
                         return (
                           <li key={t.key} className={`border-b border-slate-200 transition-opacity duration-200 ${hover && hover !== t.key ? "opacity-55" : ""}`}>
-                            <button type="button" onClick={() => pick({ begriff: t.term })} onMouseEnter={() => setHover(t.key)} onFocus={() => setHover(t.key)} onBlur={() => setHover("")}
+                            <button type="button" onClick={() => pick({ begriff: t.term })} onMouseEnter={() => hoverD(t.key)} onFocus={() => hoverD(t.key)} onBlur={() => hoverD("")}
                               className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 py-3 text-left sm:grid-cols-[1fr_64px_88px_96px_32px] ${hover === t.key ? "bg-slate-50" : ""}`}>
                               <span className="min-w-0 truncate text-[16px] text-slate-900">
                                 {prettyTerm(t.term)}{t.kind === "emerging" && <span className="ml-2 rounded-full bg-teal-50 px-2 py-0.5 text-[12px] font-medium text-teal-800">neu</span>}

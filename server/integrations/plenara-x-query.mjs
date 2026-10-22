@@ -86,6 +86,7 @@ export function parseX(params){
  if(!X_BY.includes(by)&&!X_FACTS.includes(fact))throw new AnalyticsError('Unbekannte Gliederung.');
  const sum=params.get('sum')||'';if(sum&&!X_SUMS[sum])throw new AnalyticsError('Unbekannte Summe.');
  const offset=Math.max(0,Number(params.get('offset'))||0);
+ if(sub)f.sub=sub;
  return {f,theme:sub?SUB_BY_ID.get(sub).theme:theme,sub,stage,by,fact,sum,region:params.get('region')||'',list:params.get('list')==='1',value:params.get('value')??'',offset};
 }
 
@@ -125,10 +126,12 @@ export async function source(db,catalog,f,opts={}){
     Gremiennetz 809→293 ms, Fraktionen 738→226, Themennetz 1283→670, Ausgang 1331→789). Mit Untergrenze (Trends-Fenster, Newsradar)
     liest der Index nur den Ausschnitt und bleibt. Ergebnis unverändert, nur der Zugriffsweg. */
  const where=!f.from&&!f.month?page.where.replace('date<=?','+date<=?'):page.where;
- if(!f.q)return {from:`(SELECT ${cols} FROM x_cases WHERE ${where}${np}) x`,args:page.args};
+ // Unterthema (plenara.X, Parameter sub): nur Vorgänge mit diesem Unterthema (x_cases.subs)
+ const sb=f.sub?" AND (','||subs||',') LIKE ?":'',sa=f.sub?['%,'+f.sub+',%']:[];
+ if(!f.q)return {from:`(SELECT ${cols} FROM x_cases WHERE ${where}${np}${sb}) x`,args:[...page.args,...sa]};
  // Die Suche einmal je Anfrage: Vorgänge der gefundenen Karten als Liste, alle Zählungen lesen nur noch sie
  const {results}=await db.prepare(`SELECT DISTINCT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k FROM (SELECT id,region_id,title FROM search_cards WHERE ${page.where}) c LEFT JOIN report_rules r ON r.topic_id=c.id`).bind(...page.args).all();
- return {from:`(SELECT ${cols} FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))${np}) x`,args:[JSON.stringify(results.map(r=>r.k))]};
+ return {from:`(SELECT ${cols} FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))${np}${sb}) x`,args:[JSON.stringify(results.map(r=>r.k)),...sa]};
 }
 /** Erste Sitzung eines Vorgangs (x_cases.first_date, beim Bau aus dem Zeitstrahl, Migration 0040); ohne Bau die letzte */
 export const FIRST_DATE=`coalesce(nullif(x.first_date,''),x.date)`;

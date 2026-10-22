@@ -1,10 +1,11 @@
 "use client";
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
+import { useMethodikHost } from "../../lib/methodikHost";
 import { createPortal } from "react-dom";
 import { MethodikText } from "./AnalyticsAbout";
 import type { AnalyseId } from "../../info/branchen-enterprise";
 
-/* Methodik einheitlich unten auf jeder plenara.X-Seite, über der Kachel „Fragen oder Anregungen?“: die Erklärtexte der Seite
+/* Methodik einheitlich unten auf jeder plenara.X-Seite, in der Kachel „Fragen oder Anregungen?“: die Erklärtexte der Seite
    (AnalyticsAbout) und die Anmerkungen zur jeweiligen Auswertung (MethodikNote). Das Symbol im Kopfband springt hierher (#methodik). */
 const METHODIK_VON: Record<string, [AnalyseId, string][]> = {
   atlas: [["atlas", "Themenatlas"]], vergleich: [["vergleich", "Vergleich"]], signale: [["signale", "Projekte"]], fakten: [["fakten", "Werte"]],
@@ -17,22 +18,20 @@ const subs = new Set<() => void>();
 const setSlot = (el: HTMLElement | null) => { if (slot === el) return; slot = el; subs.forEach((f) => f()); };
 const useSlot = () => useSyncExternalStore((cb) => { subs.add(cb); return () => { subs.delete(cb); }; }, () => slot, () => null);
 
-/** Block am Seitenende (AnalyticsPages) */
+/** Methodik der Seite (AnalyticsPages): vollständig in der grauen Kachel „Fragen oder Anregungen?“ der Fußzeile (#rm-methodik, Footer.tsx) */
 export function MethodikUnten({ seite }: { seite: string }) {
   const ids = METHODIK_VON[seite];
-  const [more, setMore] = useState(false);
-  if (!ids) return null;
-  return (
-    <section id="methodik" aria-labelledby="methodik-h" className="mx-[max(1vw,16px)] mt-12 max-sm:mt-3 scroll-mt-24 border-t border-slate-200 pt-6 print:break-before-page">
+  const host = useMethodikHost();
+  if (!ids || !host) return null;
+  return createPortal(
+    <section id="methodik" aria-labelledby="methodik-h" className="scroll-mt-24 print:break-before-page">
       <h2 id="methodik-h" className="m-0 text-[18px] font-semibold text-slate-900">Methodik</h2>
-      {/* eine Schrift (14 px, normal), nur drei Zeilen, der Rest hinter „Weiterlesen“; ! gegen die Grundstile für Überschriften und fette Klassen (app/styles/base.css) */}
-      <div className={`text-[14px] leading-5 [&_*]:!text-[14px] [&_*]:!font-normal [&_*]:!leading-5 print:!max-h-none ${more ? "" : "max-h-[68px] overflow-hidden"}`}>
-        <div ref={setSlot} className="mt-2 max-w-[900px] space-y-2 text-[14px] text-slate-600 empty:hidden" />
-        <div className="max-w-[900px]"><MethodikText ids={ids} offen /></div>
+      {/* eine Schrift (14 px, normal); ! gegen die Grundstile für Überschriften und fette Klassen (app/styles/base.css) */}
+      <div className="mt-1 line-clamp-3 text-[12px] leading-[18px] text-slate-600 [&_*]:!inline [&_*]:!text-[12px] [&_*]:!font-normal [&_*]:!leading-[18px] [&_p]:after:content-['_']">
+        <div ref={setSlot} className="empty:hidden" />
+        <div><MethodikText ids={ids} kurz /></div>
       </div>
-      <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mt-1 inline-flex min-h-[36px] items-center text-[14px] font-medium text-teal-700 hover:underline max-sm:min-h-[44px] print:hidden">{more ? "Weniger" : "Weiterlesen"}</button>
-    </section>
-  );
+    </section>, host);
 }
 
 /** Anmerkung einer Auswertung (Grundlage, Zählweise, Stand): erscheint im Methodik-Block unten */

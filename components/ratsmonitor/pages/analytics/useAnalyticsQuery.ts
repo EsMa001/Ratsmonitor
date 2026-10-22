@@ -3,6 +3,8 @@ import { useCatalog } from "../../lib/catalog";
 import { radiusParam } from "@/shared/radius-areas.mjs";
 import { useData } from "../../state/data";
 import { useSearch, useSearchResults } from "../../state/search";
+import { useSearchParams } from "next/navigation";
+import { SUBTOPICS, THEMES } from "@/shared/themes.mjs";
 
 /** Abfrage für plenara.X: dieselben Suchbegriffe und Filter wie auf der Startseite, Gemeindeebene, ohne Sortierung und Seiten */
 export function useAnalyticsQuery() {
@@ -11,10 +13,15 @@ export function useAnalyticsQuery() {
   const results = useSearchResults();
   /* Katalog nur mit Umkreis laden; bis er da ist, fragt die Seite ohne die Umkreisgrenze (wenige 100 ms) */
   const regions = useCatalog(!!search.state.radius);
+  /* Unterthema aus der Adresse (Themenleiste, ?sub=): nur wenn es zum gewählten Thema gehört */
+  const subRaw = useSearchParams().get("sub") ?? "";
+  const subTheme = SUBTOPICS.find((s: { id: string }) => s.id === subRaw)?.theme;
+  const sub = subTheme && THEMES.find((t: { id: string }) => t.id === subTheme)?.name === search.state.thema ? subRaw : "";
   const query = useMemo(() => {
     const p = new URLSearchParams(results.key);
     for (const k of ["around", "sort", "size", "page", "part"]) p.delete(k);
     p.set("level", "city");
+    if (sub) p.set("sub", sub);
     const r = search.state.radius;
     if (r && geo && regions) {
       const set = geo.within(r).set;
@@ -22,7 +29,7 @@ export function useAnalyticsQuery() {
       else { const [name, keys] = radiusParam(regions.filter((x) => x.kind === "city"), set, null); p.set(name, keys); }
     }
     return p.toString();
-  }, [results.key, search.state.radius, geo, regions]);
+  }, [results.key, search.state.radius, geo, regions, sub]);
   useSearchHistory(search);
   return { query, hasTerm: results.text.trim().length > 0, search };
 }

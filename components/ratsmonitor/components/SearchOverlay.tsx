@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { filterChips, suggestName } from "../lib/savedSearch";
 import { setFiltersOpen, useFiltersOpen } from "../lib/filtersOpen";
 import { useEntitlements } from "../lib/entitlements";
@@ -24,7 +25,9 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
   const active = chips.length > 0;
   const savedHit = signatures.get(res.signature);
   /* Zähler am Filter-Knopf: nur was im Filterfenster einstellbar ist (Orte stehen als Chips unter der Leiste) */
-  const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 0 : 1) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
+  /* plenara.X: Thema (Kacheln), Künftige und Formalien (dort ohnehin nur Sachpunkte bis heute) zählen nicht am Filterknopf */
+  const x = (usePathname() ?? "").startsWith("/analytics/");
+  const filterCount = chips.filter((c) => !["q", "area", "more", ...(x ? ["thema"] : [])].includes(c.key)).length + (x ? 0 : (search.state.future ? 1 : 0) + (search.state.noformal ? 0 : 1)) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
 
   /* Ein Klick speichert die Suche unter einem automatisch erzeugten Namen; erneuter Klick entfernt sie */
   const toggleSave = async () => {

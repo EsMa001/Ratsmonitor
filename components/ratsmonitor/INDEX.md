@@ -10,15 +10,15 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (24 Zeilen, ⚠2)
-- app/styles/analytics.css (1349 Zeilen, ⚠2)
+- app/styles/analytics.css (1415 Zeilen, ⚠2)
 - app/styles/base-layer.css (95 Zeilen, ⚠1)
 - app/styles/base.css (617 Zeilen)
-- app/styles/dark.css (431 Zeilen, ⚠3)
+- app/styles/dark.css (430 Zeilen, ⚠3)
 - app/styles/glass.css (180 Zeilen)
 - app/styles/header.css (410 Zeilen)
-- app/styles/info.css (1218 Zeilen)
+- app/styles/info.css (1238 Zeilen)
 - app/styles/print.css (61 Zeilen)
-- app/styles/search.css (276 Zeilen)
+- app/styles/search.css (317 Zeilen)
 - app/styles/tokens.css (311 Zeilen, ⚠1)
 
 absolute base.css:365
@@ -238,9 +238,9 @@ admin-todo-wait-filter admin.css:262
 admin-todo-waiting admin.css:296
 admin-todo-wip admin.css:275
 admin-zoom admin.css:70
-animate-pulse search.css:272
-animate-spin search.css:272
-back-btn analytics.css:283
+animate-pulse search.css:313
+animate-spin search.css:313
+back-btn analytics.css:285
 back-btn base-layer.css:53
 back-btn print.css:20
 bg-slate-900 dark.css:188
@@ -250,7 +250,7 @@ bg-teal-600 dark.css:301
 bg-teal-700 dark.css:180
 bg-white dark.css:257
 border-slate-100 dark.css:116
-bottom-3 analytics.css:658
+bottom-3 analytics.css:673
 btn-danger base-layer.css:47
 btn-primary admin.css:161
 btn-primary base-layer.css:38
@@ -274,26 +274,27 @@ field-input base-layer.css:57
 field-label base-layer.css:60
 figure design-styles.css:197
 fixed base.css:369
+flex-col analytics.css:1396
 font-bold base.css:11
 font-medium base.css:19
 font-semibold base.css:15
-gap-10 analytics.css:1050
+gap-10 analytics.css:1065
 gap-10 info.css:894
-gap-6 analytics.css:1056
-gap-8 analytics.css:1053
-gap-y-12 analytics.css:1041
+gap-6 analytics.css:1071
+gap-8 analytics.css:1068
+gap-y-12 analytics.css:1056
 gap-y-12 info.css:874
-gap-y-6 analytics.css:1047
-gap-y-8 analytics.css:1044
+gap-y-6 analytics.css:1062
+gap-y-8 analytics.css:1059
 gap-y-8 info.css:877
-grid analytics.css:493
+grid analytics.css:492
 group dark.css:149
 h-16 info.css:927
 heading-m design-styles.css:44
-hidden analytics.css:280
+hidden analytics.css:282
 icon design-styles.css:22
 inset-x-16 analytics.css:180
-inset-x-16 dark.css:354
+inset-x-16 dark.css:353
 is-assumed admin.css:196
 is-assumed analyse-admin.css:46
 is-clean admin.css:121
@@ -321,26 +322,26 @@ is-sample analyse-admin.css:47
 is-selected admin.css:10
 is-static admin.css:111
 is-stored analyse-admin.css:47
-left-3 analytics.css:503
+left-3 analytics.css:502
 legend design-styles.css:251
 link-btn base-layer.css:50
 map-canvas analyse-admin.css:33
 mb-6 info.css:900
-mb-8 analytics.css:1017
+mb-8 analytics.css:1032
 min-w-0 analytics.css:157
 min-w-0 dark.css:341
 monthly-mix analyse-admin.css:23
-mt-10 analytics.css:1026
-mt-12 analytics.css:1023
-mt-16 analytics.css:1020
+mt-10 analytics.css:1041
+mt-12 analytics.css:1038
+mt-16 analytics.css:1035
 mt-3 info.css:912
-mt-4 analytics.css:1038
+mt-4 analytics.css:1053
 mt-4 info.css:909
-mt-5 analytics.css:1035
+mt-5 analytics.css:1050
 mt-5 info.css:883
-mt-6 analytics.css:1032
+mt-6 analytics.css:1047
 mt-6 info.css:903
-mt-8 analytics.css:1029
+mt-8 analytics.css:1044
 needs-attention admin.css:6
 notice design-styles.css:245
 page design-styles.css:34
@@ -348,8 +349,8 @@ page-error-action analyse-admin.css:55
 page-note design-styles.css:36
 page-note base-layer.css:89
 page-note dark.css:201
-pb-10 analytics.css:1014
-pl-band analytics.css:265
+pb-10 analytics.css:1029
+pl-band analytics.css:267
 pl-cta info.css:844
 pl-ctawrap info.css:1105
 pl-cut3 info.css:1140
@@ -364,16 +365,16 @@ pl-mapwrap info.css:1067
 pl-num info.css:990
 pl-opt info.css:1126
 pl-ort info.css:1097
-pl-ort search.css:261
+pl-ort search.css:302
 pl-ping info.css:969
 pl-pop info.css:965
 pl-pulse info.css:1116
-pl-search search.css:256
+pl-search search.css:297
 pl-slogan info.css:986
 pl-source info.css:1044
 pl-stand info.css:1044
 pl-still info.css:1085
-pl-top analytics.css:1128
+pl-top analytics.css:1143
 pl-tp info.css:955
 pl-trends info.css:1051
 popover base-layer.css:76
@@ -385,7 +386,7 @@ process__step--open design-styles.css:122
 prose analyse-admin.css:8
 prose design-styles.css:201
 prose base-layer.css:86
-py-10 analytics.css:1065
+py-10 analytics.css:1080
 py-2 info.css:919
 py-3 info.css:915
 py-6 info.css:923
@@ -395,29 +396,29 @@ ratsmonitor dark.css:63
 ratsmonitor header.css:21
 ratsmonitor info.css:658
 ratsmonitor print.css:48
-ratsmonitor search.css:247
+ratsmonitor search.css:288
 ratsmonitor tokens.css:154
 relative analytics.css:157
 relative dark.css:341
 ri dark.css:82
 ri header.css:40
 ri info.css:2
-ri search.css:251
-ri-actions analytics.css:1171
+ri search.css:292
+ri-actions analytics.css:1186
 ri-actions info.css:76
 ri-actions--far info.css:83
-ri-anw analytics.css:1115
+ri-anw analytics.css:1130
 ri-anw info.css:854
 ri-below info.css:1143
 ri-below__h info.css:1146
 ri-below__lead info.css:1154
-ri-bid analytics.css:1162
+ri-bid analytics.css:1177
 ri-bid info.css:87
-ri-bid__icon analytics.css:1162
+ri-bid__icon analytics.css:1177
 ri-bid__icon info.css:93
-ri-bid__label analytics.css:1278
+ri-bid__label analytics.css:1293
 ri-bid__label info.css:99
-ri-bid__name analytics.css:1255
+ri-bid__name analytics.css:1270
 ri-bid__name dark.css:73
 ri-bid__name info.css:109
 ri-btn info.css:20
@@ -444,7 +445,7 @@ ri-field info.css:513
 ri-form info.css:501
 ri-form--center info.css:509
 ri-form__foot info.css:611
-ri-h1 analytics.css:1134
+ri-h1 analytics.css:1149
 ri-h1 dark.css:73
 ri-h1 info.css:117
 ri-h1--sm info.css:126
@@ -453,16 +454,16 @@ ri-h2 info.css:155
 ri-h2--gap info.css:453
 ri-h2--live info.css:1206
 ri-h2--md info.css:164
-ri-head analytics.css:980
+ri-head analytics.css:995
 ri-head dark.css:197
-ri-head--compact analytics.css:1007
-ri-head__grid analytics.css:985
-ri-head__grid--top analytics.css:992
+ri-head--compact analytics.css:1022
+ri-head__grid analytics.css:1000
+ri-head__grid--top analytics.css:1007
 ri-help info.css:564
 ri-input info.css:525
-ri-konto analytics.css:1118
+ri-konto analytics.css:1133
 ri-konto info.css:890
-ri-lead analytics.css:1156
+ri-lead analytics.css:1171
 ri-lead info.css:131
 ri-link info.css:595
 ri-menu header.css:40
@@ -484,7 +485,7 @@ ri-point__num info.css:344
 ri-points info.css:332
 ri-points--2 info.css:739
 ri-pv info.css:291
-ri-pv__card analytics.css:1078
+ri-pv__card analytics.css:1093
 ri-pv__card info.css:298
 ri-pv__topics-label info.css:307
 ri-qa info.css:390
@@ -513,44 +514,45 @@ ri-toc info.css:1163
 ri-toc print.css:57
 ri-topnav header.css:248
 right-3 analytics.css:185
-right-3 dark.css:354
-rm-analytics analytics.css:798
-rm-analytics dark.css:391
+right-3 dark.css:353
+rm-analytics analytics.css:813
+rm-analytics dark.css:390
 rm-art-std analytics.css:70
 rm-attr search.css:166
-rm-band-mid analytics.css:292
-rm-banddots analytics.css:1221
+rm-band-mid analytics.css:294
+rm-banddots analytics.css:1236
 rm-bar base.css:226
-rm-brandtag analytics.css:1196
-rm-chip analytics.css:378
+rm-brandtag analytics.css:1211
+rm-chip analytics.css:381
 rm-chip dark.css:68
 rm-chip glass.css:73
 rm-dark admin.css:461
-rm-dark analytics.css:1072
+rm-dark analytics.css:1087
 rm-dark dark.css:2
 rm-dark glass.css:144
 rm-dark header.css:315
 rm-dark info.css:834
 rm-dark tokens.css:170
-rm-deskbar analytics.css:370
+rm-deskbar analytics.css:373
 rm-dialog base.css:300
-rm-dialog dark.css:425
-rm-dotfield analytics.css:1329
+rm-dialog dark.css:424
+rm-dotfield analytics.css:1344
 rm-dotfield base.css:523
-rm-dotfield search.css:267
+rm-dotfield search.css:308
 rm-dotfield-on base.css:537
 rm-dots search.css:55
 rm-draw base.css:204
+rm-flat analytics.css:1380
 rm-flat dark.css:197
 rm-flat search.css:11
 rm-focusrows base.css:230
 rm-footcta search.css:194
-rm-fpop analytics.css:787
+rm-fpop analytics.css:802
 rm-fpop dark.css:324
 rm-fpop glass.css:108
 rm-gflow base.css:184
 rm-gin base.css:168
-rm-glass analytics.css:662
+rm-glass analytics.css:677
 rm-glass dark.css:14
 rm-glass glass.css:4
 rm-glass print.css:16
@@ -558,18 +560,18 @@ rm-glass-pop dark.css:243
 rm-glass-pop glass.css:61
 rm-gpulse base.css:174
 rm-gpulse2 base.css:180
-rm-gtext analytics.css:947
+rm-gtext analytics.css:962
 rm-gtext dark.css:215
 rm-headtitle header.css:361
 rm-karte-toggle analytics.css:70
 rm-legalbar search.css:185
-rm-legend analytics.css:219
+rm-legend analytics.css:218
 rm-legend dark.css:2
 rm-legend glass.css:19
 rm-legend print.css:16
-rm-liquid analytics.css:662
-rm-liquid dark.css:419
-rm-logo analytics.css:1285
+rm-liquid analytics.css:677
+rm-liquid dark.css:418
+rm-logo analytics.css:1300
 rm-logo dark.css:59
 rm-logo header.css:63
 rm-logo--big header.css:305
@@ -577,23 +579,26 @@ rm-logo__mark header.css:4
 rm-logo__mark--p header.css:11
 rm-logo__text header.css:77
 rm-mapbox analytics.css:34
-rm-mapbox dark.css:354
-rm-mapbox search.css:221
+rm-mapbox dark.css:353
+rm-mapbox search.css:262
 rm-mapctl search.css:166
 rm-mapwrap analytics.css:22
 rm-mapwrap glass.css:130
-rm-netstage analytics.css:596
+rm-netstage analytics.css:606
+rm-netzoom analytics.css:665
 rm-noplay analytics.css:60
 rm-pagein base.css:289
 rm-pmark base.css:563
 rm-pmark header.css:365
-rm-rail-folded analytics.css:531
-rm-rail-open analytics.css:558
+rm-rail-folded analytics.css:535
+rm-rail-open analytics.css:531
+rm-rail-peek analytics.css:531
 rm-rail-sub analytics.css:76
-rm-rail-sub dark.css:367
+rm-rail-sub dark.css:366
 rm-sbar search.css:148
 rm-schritt-std analytics.css:107
 rm-search search.css:89
+rm-searchsplit search.css:198
 rm-sec base.css:346
 rm-sec-m base.css:350
 rm-sec-s base.css:354
@@ -601,44 +606,46 @@ rm-solid analytics.css:60
 rm-solid dark.css:324
 rm-solid glass.css:108
 rm-spinner search.css:44
-rm-stage analytics.css:1291
-rm-stage-chip analytics.css:600
-rm-stage-chip dark.css:419
-rm-statusstrip dark.css:414
+rm-stage analytics.css:1306
+rm-stage-chip analytics.css:610
+rm-stage-chip dark.css:418
+rm-statusstrip dark.css:413
 rm-statusstrip header.css:28
 rm-step base.css:258
-rm-sub-std analytics.css:512
-rm-sub-wide analytics.css:512
+rm-sub-std analytics.css:511
+rm-sub-wide analytics.css:511
 rm-tabbar header.css:24
 rm-topline dark.css:197
-rm-wheel-list analytics.css:812
-rm-wheel-list dark.css:407
+rm-wheel-list analytics.css:827
+rm-wheel-list dark.css:406
 rm-wheel-list glass.css:144
-rm-xbtn analytics.css:901
+rm-xbtn analytics.css:916
+rm-xcta info.css:1220
 rm-xebene analytics.css:92
 rm-xebene dark.css:337
-rm-xfield analytics.css:901
+rm-xfield analytics.css:916
 rm-xfilter analytics.css:63
 rm-xfilter print.css:54
-rm-xhandle analytics.css:854
-rm-xhero analytics.css:459
-rm-xhero-panel analytics.css:459
-rm-xlegend analytics.css:749
+rm-xfilter-chips analytics.css:70
+rm-xhandle analytics.css:869
+rm-xhero analytics.css:462
+rm-xhero-panel analytics.css:462
+rm-xlegend analytics.css:764
 rm-xnet analytics.css:60
 rm-xnet dark.css:330
 rm-xrail analytics.css:73
 rm-xrail dark.css:346
-rm-xschritt analytics.css:414
-rm-xschritt dark.css:359
+rm-xschritt analytics.css:417
+rm-xschritt dark.css:358
 rm-xsearch analytics.css:60
 rm-xsearch dark.css:341
 rm-xsearch print.css:51
-rm-xseg analytics.css:578
-rm-xseg dark.css:370
+rm-xseg analytics.css:588
+rm-xseg dark.css:369
 rm-xsplit analytics.css:5
 rm-xsplit--solo analytics.css:8
 rm-xsplit-map analytics.css:14
-rm-xstage analytics.css:578
+rm-xstage analytics.css:588
 rm-xtop analytics.css:192
 rm-xwide analytics.css:42
 rm-xwide dark.css:330
@@ -648,11 +655,11 @@ rm-zeit-std analytics.css:107
 scroll-thin base-layer.css:79
 section design-styles.css:249
 section-title design-styles.css:39
-select-active analytics.css:804
+select-active analytics.css:819
 select-active base-layer.css:69
 select-active glass.css:55
 select-base admin.css:460
-select-base analytics.css:798
+select-base analytics.css:813
 select-base base-layer.css:66
 select-base dark.css:272
 select-base glass.css:28
@@ -666,13 +673,13 @@ setting__name design-styles.css:213
 share-button design-styles.css:82
 skip-link analyse-admin.css:6
 skip-link print.css:16
-space-y-6 analytics.css:1062
+space-y-6 analytics.css:1077
 space-y-6 info.css:880
-space-y-8 analytics.css:1059
+space-y-8 analytics.css:1074
 steps design-styles.css:114
 steps__bar design-styles.css:115
 steps__bar--done design-styles.css:116
-sticky analytics.css:1316
+sticky analytics.css:1331
 sticky dark.css:51
 switch design-styles.css:217
 tabs analyse-admin.css:7
@@ -687,12 +694,12 @@ text-slate-900 dark.css:129
 text-teal-700 base.css:365
 text-white dark.css:184
 timeline design-styles.css:204
-top-3 analytics.css:603
+top-3 analytics.css:613
 topic design-styles.css:140
 touch-pan-y analytics.css:113
 touch-pan-y dark.css:330
 truncate base.css:554
-z- analytics.css:603
+z- analytics.css:613
 
 ## Dateien (Zeilen, Exporte)
 
@@ -843,7 +850,7 @@ z- analytics.css:603
 - AccountMenu.tsx (90, ⚠4): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
-- ArtIcon.tsx (71, ⚠1): ArtIcon
+- ArtIcon.tsx (77, ⚠1): ArtIcon
 - BandDots.tsx (50): BandDots
 - BottomNav.tsx (55, ⚠1): BottomNav
 - Brand.tsx (275): AnalyticsX, AnalyticsLogo, Brand
@@ -858,10 +865,10 @@ z- analytics.css:603
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - DotField.tsx (86): DotField
 - Dropdown.tsx (66): DropItem, Dropdown, AktiveFilter
-- FilterPanel.tsx (124, ⚠2): FilterPanel
+- FilterPanel.tsx (130, ⚠2): FilterPanel
 - FilterSelect.tsx (124, ⚠1): FilterSelect
 - FollowButton.tsx (36): FollowButton
-- Footer.tsx (65): Footer
+- Footer.tsx (76): Footer
 - GateDialog.tsx (148): GateFeature, openGate, openLimitGate, GateDialog
 - Header.tsx (128, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
@@ -871,7 +878,8 @@ z- analytics.css:603
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (381, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (69): SearchFilterPanel
-- SearchOverlay.tsx (88): SearchOverlay
+- SearchOverlay.tsx (91): SearchOverlay
+- SearchSplit.tsx (48): SearchSplit
 - Segmented.tsx (66, ⚠1): Segmented
 - ShareButton.tsx (49): shareLink, ShareButton
 - StepIcon.tsx (28): StepIcon
@@ -946,6 +954,7 @@ z- analytics.css:603
 - iconStroke.ts (3): iconStroke
 - listView.ts (47): ListView, setListView, useListView
 - mapSlot.ts (18): setMapSlot, clearMapSlot, useMapSlot
+- methodikHost.ts (8): setMethodikHost, useMethodikHost
 - otherTab.ts (11): onOtherTab
 - pageTitle.ts (41): tabTitle
 - place.ts (287, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, removePhrase
@@ -960,6 +969,7 @@ z- analytics.css:603
 - searchUrl.ts (106): readableQuery, searchToUrl, onlyText, searchFromUrl
 - sheetStage.ts (26): SheetStage, setSheetStage, toggleSheetStage, useSheetStage, setPeekHidden, usePeekHidden
 - signedInHint.ts (7): SignedInHint, useSignedInHint
+- subParam.ts (17): useSubParam
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem
 - text.ts (96): norm, terms, Segment, highlightSegments, plural, fmtDate, isoDay, todayLocal, MONTH_SHORT, monthLabel
 - tier.ts (68): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, priceLabel, UPGRADE_TEXT, IS_DEV, getTier, setTier, useTier, usage
@@ -967,10 +977,11 @@ z- analytics.css:603
 - topicCache.ts (43): TopicError, seedTopic, peekTopic, loadTopic, prefetchDetail
 - useClient.ts (12): useClient, useHydrated
 - useDarkMode.ts (40): useDarkMode
+- useDwell.ts (19): useDwell
 - useInstall.ts (27): isStandalone, useInstall
 - useLongPress.ts (32): useLongPress
 - usePhone.ts (30): PHONE_QUERY, isPhone, usePhone, useTinyPhone
-- useRailFold.ts (22): useRailFold
+- useRailFold.ts (44): useRailFold, useRailPeek
 - useScrollMemory.ts (49): useScrollMemory
 - useSwipe.ts (30): useSwipe
 - uuid.ts (12): newId
@@ -989,7 +1000,7 @@ z- analytics.css:603
 - KalenderPage.tsx (427, ⚠3): KalenderPage
 - LegalPage.tsx (287): useInhalt, LegalPage
 - NotificationsPage.tsx (93, ⚠1): NotificationsPage
-- OverviewPage.tsx (172): OverviewPage
+- OverviewPage.tsx (174): OverviewPage
 - PersonalPage.tsx (28): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
@@ -1002,8 +1013,8 @@ z- analytics.css:603
 - AnalyticsLocked.tsx (54): AnalyticsLocked
 - AnalyticsPages.tsx (64): AnalyticsPages
 - AtlasMap.tsx (107, ⚠2): AtlasMap
-- AtlasPage.tsx (78): AtlasPage
-- AtlasParts.tsx (186, ⚠1): Row, Result, Fact, n, MIN_BASE, isRest, restLast, Bars, Hint, OrtImVergleich, Level, AtlasExtra, PartList, PlaceChip
+- AtlasPage.tsx (79): AtlasPage
+- AtlasParts.tsx (189, ⚠1): Row, Result, Fact, n, MIN_BASE, isRest, restLast, Bars, Hint, OrtImVergleich, Level, AtlasExtra, PartList, PlaceChip
 - Befund.tsx (70): Befund, zuThema, Leer, Fehler
 - BeschluessePage.tsx (239, ⚠13): BeschluessePage
 - CompareCharts.tsx (69, ⚠2): PLACE_COLORS, CompareLines, TopicPair
@@ -1012,7 +1023,7 @@ z- analytics.css:603
 - CompareParts.tsx (74, ⚠3): Share, Place, Result, ORT, asPlace, n, inhaltlich, datenlage, Hinweis, Duell
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (92, ⚠3): PlayState, DiffusionSearch
-- FaktenPage.tsx (382, ⚠6): FaktenPage
+- FaktenPage.tsx (385, ⚠6): FaktenPage
 - FraktionenPage.tsx (221, ⚠7): FraktionenPage
 - GraphView.tsx (388, ⚠2): GNode, GEdge, KIND, seeded, GraphView
 - GremiennetzPage.tsx (220, ⚠4): GremiennetzPage
@@ -1021,28 +1032,29 @@ z- analytics.css:603
 - Laden.tsx (32): Laden
 - ListRow.tsx (34, ⚠1): ListRow
 - ListSkeleton.tsx (13): ListSkeleton
+- ListenKopf.tsx (16): ListenKopf
 - MapHint.tsx (23): MapHint
 - MapWheels.tsx (122, ⚠3): MapWheels, MapPill
-- Methodik.tsx (43): MethodikUnten, MethodikNote
+- Methodik.tsx (42): MethodikUnten, MethodikNote
 - NetControls.tsx (50): Level, netLevel, LevelSegmented, LevelPill, NetLegend, NetZoom
 - NetView.tsx (320): NNode, NEdge, ROLE, NetKind, NET_KIND, NetView
-- NewsradarPage.tsx (138, ⚠1): NewsradarPage
+- NewsradarPage.tsx (148, ⚠2): NewsradarPage
 - PageBand.tsx (23): PageBand
 - RadarDrill.tsx (131, ⚠3): DrillItem, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (178, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (346, ⚠10): SignalePage
+- SignalePage.tsx (371, ⚠10): SignalePage
 - SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (327, ⚠10): XAtlasView
 - XBusy.tsx (14): busyProps, PendingVeil, HERO_MAIN, HERO_PANEL
-- XKopf.tsx (219, ⚠2): XKopf, XWeiter, ThemenLeiste
-- XTrendsPage.tsx (367, ⚠4): XTrendsPage
+- XKopf.tsx (234, ⚠2): XKopf, XWeiter, ThemenLeiste
+- XTrendsPage.tsx (372, ⚠4): XTrendsPage
 - XTrendsParts.tsx (153, ⚠1): DAY, toDay, fmt, SpreadRegion, keysOf, SpreadMap, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
-- useAnalyticsQuery.ts (81): useAnalyticsQuery
+- useAnalyticsQuery.ts (88): useAnalyticsQuery
 
 ### components/ratsmonitor/services/
 - api.ts (7, ⚠1): SAVED_SEARCHES_KEY, readSavedSearches

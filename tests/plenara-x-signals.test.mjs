@@ -59,6 +59,10 @@ test('Signale: Filter nach Stand und Gebiet, unbekanntes Signal',async()=>{
   const g=await xSignals(db,catalog,q('signal=gewerbe'));assert.deepEqual(g.arts,[{key:'Gewerbe',name:'Gewerbe',count:1}]);
   assert.equal((await xSignals(db,catalog,q('signal=gewerbe&art=Industrie'))).total,0);
   assert.equal((await xSignals(db,catalog,q('signal=gewerbe&art=Gewerbe&phase=Start'))).total,1);
+  // Unterthema (sub) als Filter der gemeinsamen Suche: gilt für alle plenara.X-Auswertungen über source()
+  assert.equal((await xSignals(db,catalog,q('signal=alle&sub=bauen.plan'))).total,2);
+  assert.equal((await xSignals(db,catalog,q('signal=alle&sub=umwelt.ee'))).total,1);
+  await assert.rejects(xSignals(db,catalog,q('signal=alle&sub=foo')),/Unterthema|Suchfilter/);
  }finally{sql.close();}
 });
 
