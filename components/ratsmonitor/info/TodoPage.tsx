@@ -5,7 +5,7 @@ import { PageHead } from "./blocks";
 import { TodoChoice, TodoEditor, TodoOrder, TodoOwner, TodoPriorityChoice, TodoStatusChoice } from "./TodoControls";
 import { useTodoBoard, type TodoPatch } from "./useTodoBoard";
 
-type View = "board" | "backlog";
+type View = "list" | "board";
 type Swimlane = "work" | "person" | "none";
 type BacklogScope = "backlog" | "all" | "open" | "done";
 type DueFilter = "all" | "overdue" | "today" | "undated";
@@ -25,12 +25,12 @@ const recentDone = (item: TodoItem, today: string) => {
 };
 const completionPatch = (item: TodoItem, status: TodoStatus, today: string, resolution?: TodoResolution): TodoPatch => ({ status, erledigt: status === "done", abschluss: status === "done" ? resolution ?? taskResolution(item) ?? "done" : null, erledigtAm: status === "done" ? taskStatus(item) === "done" ? item.erledigtAm : today : null });
 
-/** Both views edit the same persisted tasks; scheduling onto the board is always explicit. */
+/** Both views edit the same persisted tasks; the list opens first, the Kanban board only on request. */
 export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
   const store = useTodoBoard();
-  const [view, setView] = useState<View>("board");
+  const [view, setView] = useState<View>("list");
   const [swimlane, setSwimlane] = useState<Swimlane>("work");
-  const [scope, setScope] = useState<BacklogScope>("backlog");
+  const [scope, setScope] = useState<BacklogScope>("open");
   const [query, setQuery] = useState("");
   const [personFilter, setPersonFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -187,8 +187,8 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
         </dl>
         <div className="admin-todo-head">
           <div role="tablist" aria-label="Aufgabenansicht" className="admin-todo-tabs">
-            <button type="button" role="tab" id="todo-board-tab" aria-controls="todo-board-view" aria-selected={view === "board"} tabIndex={view === "board" ? 0 : -1} onClick={() => setView("board")} onKeyDown={(event) => { if (["ArrowRight", "ArrowLeft"].includes(event.key)) { event.preventDefault(); setView("backlog"); document.getElementById("todo-backlog-tab")?.focus(); } }}>Board<span>{board.length}</span></button>
-            <button type="button" role="tab" id="todo-backlog-tab" aria-controls="todo-backlog-view" aria-selected={view === "backlog"} tabIndex={view === "backlog" ? 0 : -1} onClick={() => setView("backlog")} onKeyDown={(event) => { if (["ArrowRight", "ArrowLeft"].includes(event.key)) { event.preventDefault(); setView("board"); document.getElementById("todo-board-tab")?.focus(); } }}>Backlog<span>{backlogCount}</span></button>
+            <button type="button" role="tab" id="todo-list-tab" aria-controls="todo-list-view" aria-selected={view === "list"} tabIndex={view === "list" ? 0 : -1} onClick={() => setView("list")} onKeyDown={(event) => { if (["ArrowRight", "ArrowLeft"].includes(event.key)) { event.preventDefault(); setView("board"); document.getElementById("todo-board-tab")?.focus(); } }}>To-do-Liste<span>{unfinished.length}</span></button>
+            <button type="button" role="tab" id="todo-board-tab" aria-controls="todo-board-view" aria-selected={view === "board"} tabIndex={view === "board" ? 0 : -1} onClick={() => setView("board")} onKeyDown={(event) => { if (["ArrowRight", "ArrowLeft"].includes(event.key)) { event.preventDefault(); setView("list"); document.getElementById("todo-list-tab")?.focus(); } }}>Kanban-Board<span>{board.length}</span></button>
           </div>
           <div className="admin-todo-head-actions">
             <span className="admin-todo-save-state" role="status" aria-live="polite">{store.saveState === "saving" ? <LoaderCircle size={14} className="admin-todo-spin"/> : store.saveState === "saved" && !store.dirty ? <Check size={14}/> : null}{saveMessage}</span>
@@ -237,10 +237,10 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
                 })}</div>
               </section>;
             })}
-            {!shownBoard.length && <div className="admin-todo-empty"><LayoutList size={24} aria-hidden="true"/><p>{board.length ? "Keine Aufgaben für diese Filter." : "Aktuell sind keine Aufgaben eingeplant."}</p><button type="button" className="admin-todo-text-action" onClick={board.length ? resetFilters : () => setView("backlog")}>{board.length ? "Filter zurücksetzen" : "Zum Backlog"}<ArrowRight size={16}/></button></div>}
+            {!shownBoard.length && <div className="admin-todo-empty"><LayoutList size={24} aria-hidden="true"/><p>{board.length ? "Keine Aufgaben für diese Filter." : "Aktuell sind keine Aufgaben eingeplant."}</p><button type="button" className="admin-todo-text-action" onClick={board.length ? resetFilters : () => setView("list")}>{board.length ? "Filter zurücksetzen" : "Zur Liste"}<ArrowRight size={16}/></button></div>}
           </div>
-        </div> : <div role="tabpanel" id="todo-backlog-view" aria-labelledby="todo-backlog-tab">
-          <div className="admin-todo-view-tools"><TodoChoice label="Backlog anzeigen" value={scope} onChange={(value) => setScope(value as BacklogScope)} options={[{ value: "backlog", label: "Nicht eingeplant" }, { value: "all", label: "Alle Aufgaben" }, { value: "open", label: "Offene Aufgaben" }, { value: "done", label: "Geschlossene Aufgaben" }]}/><button type="button" className="admin-todo-text-action" onClick={() => changeClosed(closed.length ? [] : store.categories.map((category) => category.id))}>{closed.length ? "Alle ausklappen" : "Alle einklappen"}<ChevronDown size={14}/></button></div>
+        </div> : <div role="tabpanel" id="todo-list-view" aria-labelledby="todo-list-tab">
+          <div className="admin-todo-view-tools"><TodoChoice label="Liste anzeigen" value={scope} onChange={(value) => setScope(value as BacklogScope)} options={[{ value: "open", label: "Offene Aufgaben" }, { value: "backlog", label: "Nicht eingeplant" }, { value: "all", label: "Alle Aufgaben" }, { value: "done", label: "Geschlossene Aufgaben" }]}/><button type="button" className="admin-todo-text-action" onClick={() => changeClosed(closed.length ? [] : store.categories.map((category) => category.id))}>{closed.length ? "Alle ausklappen" : "Alle einklappen"}<ChevronDown size={14}/></button></div>
           <div className="admin-todo-backlog">{store.categories.map((category) => {
             const rows = entries.filter((entry) => entry.categoryId === category.id);
             const visible = rows.filter((entry) => matches(entry) && (scope === "all" || scope === "backlog" && taskStatus(entry.item) === "backlog" || scope === "open" && taskStatus(entry.item) !== "done" || scope === "done" && taskStatus(entry.item) === "done")).sort((a, b) => Number(taskStatus(a.item) === "done") - Number(taskStatus(b.item) === "done") || todoPriority(a.item) - todoPriority(b.item) || order(a, b));
