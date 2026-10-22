@@ -813,7 +813,7 @@ z- analytics.css:582
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (191, ⚠19): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (254, ⚠12): AdminRuleTexts
+- admin-rule-texts.tsx (254, ⚠13): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-schedules.tsx (117, ⚠4): AdminSchedules
 - admin-signout.tsx (13): AdminSignOut
@@ -978,7 +978,7 @@ z- analytics.css:582
 - XSwitcher.tsx (34): XSheet
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (144, ⚠7): DetailPage
+- DetailPage.tsx (146, ⚠9): DetailPage
 - KalenderPage.tsx (401, ⚠2): KalenderPage
 - LegalPage.tsx (281): useInhalt, LegalPage
 - NotificationsPage.tsx (92): NotificationsPage

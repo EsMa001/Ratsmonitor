@@ -92,3 +92,14 @@ test('Fakten an das Modell gebunden: passendes Unterthema, Schritte aus dem Mode
  assert.ok(readReport(motion,{model:{...pol,applicants:['fraction']}}).facts.some(f=>f.kind==='faction'));
  assert.equal(readReport(motion,{model:{...pol,applicants:['residents']}}).facts.some(f=>f.kind==='faction'),false);
 });
+
+test('Überblick: Vorgang, Sitzungen und Unterlagen aus dem Modell, nur sichere Antworten, Formalien kurz',async()=>{
+ const {overviewOf}=await import('../shared/model/overview.mjs');
+ const report={events:[{date:'2026-09-03',committee:'Bauausschuss',status:'recommended'},{date:'2026-10-01',committee:'Rat',status:'approved'},{date:'2026-12-01',committee:'Rat',status:'unknown'},{date:'2026-10-01',committee:'Gremium laut Originalquelle'}]};
+ const m={kind:'subject',kindP:.99,themes:['mobilitaet'],themeP:.9,subs:['mobilitaet.strasse'],subsubs:[],process:'political',processP:.9,applicants:['fraction'],doctypes:['paper','attachment','attachment','minutes']};
+ const o=overviewOf(report,m,{parties:['SPD'],today:'2026-10-21'});
+ assert.equal(o.text,'Antrag einer Fraktion (SPD) zum Thema Straßen, Brücken und Beleuchtung (Mobilität & Verkehr). Am 03.09.26 im Gremium „Bauausschuss“ empfohlen, am 01.10.26 im Gremium „Rat“ beschlossen und am 01.12.26 im Gremium „Rat“ angesetzt. Unterlagen: Vorlage, zwei Anlagen und Niederschrift.');
+ assert.match(overviewOf(report,{...m,processP:.4,themeP:.3},{today:'2026-10-21'}).text,/^Am 03\.09\.26/,'unsicher: kein Vorgang, kein Thema');
+ assert.match(overviewOf({events:[]},{kind:'procedure',kindP:.95},{}).text,/^Punkt des Sitzungsablaufs/);
+ assert.equal(overviewOf({events:[]},null),null);
+});

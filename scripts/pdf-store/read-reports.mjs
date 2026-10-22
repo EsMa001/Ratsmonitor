@@ -40,8 +40,8 @@ for(const [table,mig] of [['report_rules','0032'],['topic_facts','0025']])
 // Modell (Migration 0046, scripts/model/apply.mjs läuft davor): Hauptdokument, Art, Thema, Unterthemen und Vorgangsart kommen von
 // dort. Berichte ohne Antwort des Modells werden nicht gelesen (die Regeln dafür gelten nicht mehr) und gezählt (ohneModell).
 const hasModel=has('model_labels');
-const mlGet=hasModel?db.prepare('SELECT model,key,kind,themes,subs,subsubs,process,step,applicants,main_url FROM model_labels WHERE topic_id=?'):null;
-const modelOf=id=>{const m=mlGet?.get(id);if(!m)return null;return {key:m.model+'|'+m.key,kind:m.kind,themes:JSON.parse(m.themes||'[]'),subs:JSON.parse(m.subs||'[]'),subsubs:JSON.parse(m.subsubs||'[]'),step:m.step||null,process:m.process,applicants:JSON.parse(m.applicants||'[]'),mainUrl:m.main_url||null};};
+const mlGet=hasModel?db.prepare('SELECT model,key,kind,kind_p,themes,theme_p,subs,subsubs,process,process_p,step,service,applicants,doctypes,main_url FROM model_labels WHERE topic_id=?'):null;
+const modelOf=id=>{const m=mlGet?.get(id);if(!m)return null;return {key:m.model+'|'+m.key,kind:m.kind,kindP:m.kind_p,themeP:m.theme_p,processP:m.process_p,service:m.service||null,doctypes:JSON.parse(m.doctypes||'[]'),themes:JSON.parse(m.themes||'[]'),subs:JSON.parse(m.subs||'[]'),subsubs:JSON.parse(m.subsubs||'[]'),step:m.step||null,process:m.process,applicants:JSON.parse(m.applicants||'[]'),mainUrl:m.main_url||null};};
 let noModel=0;
 // Ein Durchlauf: Schlüssel je Bericht ohne den Text zu lesen (Hauptdokument, Sitzungsunterlage, Stand der Textfassung)
 const t0=Date.now(),uses=pdfUses(db),U=u=>uses.get(u)||0,hasText=u=>!!store.textMark(u);
@@ -95,6 +95,7 @@ for(const [id,url,textSha,caseKey,att,model] of todo){
  c.kinds[r.itemKind]=(c.kinds[r.itemKind]||0)+1;c.themes[r.theme.id]=(c.themes[r.theme.id]||0)+1;
  if(r.summaryIssue)c.issues[r.summaryIssue]=(c.issues[r.summaryIssue]||0)+1;else c.summary++;
  const next={...old,itemKind:r.itemKind,theme:r.theme,stage:r.stage};delete next.ruleSummaryTried;
+ if(r.overview)next.overview=r.overview;else delete next.overview;
  if(r.ruleSummary)next.ruleSummary=r.ruleSummary;
  else if(next.ruleSummary&&!KEEP.has(r.summaryIssue)){delete next.ruleSummary;c.dropped++;}
  const json=JSON.stringify(next),changed=json!==row.payload;if(changed)c.changed++;

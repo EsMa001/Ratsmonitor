@@ -95,8 +95,9 @@ for(let o=0;o<todo.length&&!stopped;o+=BATCH){
  if((o/BATCH)%20===0)say(`${Math.min(o+BATCH,todo.length)} / ${todo.length}, ${stats.embedded} Texte eingebettet (${(stats.embedMs/Math.max(1,stats.embedded)).toFixed(0)} ms je Text), ${((Date.now()-t0)/1000).toFixed(0)} s`);
 }
 // Sicherer Status des Modells in den Bericht (auch nach einem Import, der ihn zurückgesetzt hat), in Stücken
-if(!measure&&!stopped){const ids=db.prepare(`SELECT m.topic_id id,m.status FROM model_labels m JOIN topics t ON t.id=m.topic_id WHERE m.model=? AND m.status_p>=? AND t.status IS NOT m.status`).all(version,SURE);
- const set=db.prepare('UPDATE topics SET status=? WHERE id=?');
+if(!measure&&!stopped){const ids=db.prepare(`SELECT m.topic_id id,m.status FROM model_labels m JOIN topics t ON t.id=m.topic_id WHERE m.model=? AND m.status_p>=? AND (t.status IS NOT m.status OR json_extract(t.payload,'$.status') IS NOT m.status)`).all(version,SURE);
+ // Spalte (Suche, Karten) und Bericht (Artikelseite) gleich
+ const set=db.prepare("UPDATE topics SET status=?1,payload=json_set(payload,'$.status',?1) WHERE id=?2");
  for(let i=0;i<ids.length;i+=500){db.exec('BEGIN IMMEDIATE');try{for(const r of ids.slice(i,i+500))stats.statusSet+=set.run(r.status,r.id).changes;db.exec('COMMIT');}catch(e){db.exec('ROLLBACK');throw e;}}
  if(stats.statusSet)say(`Status aus dem Modell in ${stats.statusSet} Berichten`);}
 const perText=stats.embedded?Math.round(stats.embedMs/stats.embedded):null;

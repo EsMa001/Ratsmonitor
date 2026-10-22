@@ -20,6 +20,7 @@ import {buildRuleSummary,RULE_SUMMARY_VERSION} from './rule-summary.mjs';
 import {mergePages} from './documents.mjs';
 import {MODEL_THEME_VERSION} from '../../shared/model/features.mjs';
 import {factFits,stepFacts,MODEL_COVERED} from '../../shared/model/fact-gate.mjs';
+import {overviewOf} from '../../shared/model/overview.mjs';
 
 export const READ_VERSION=`read-v4:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:${STAGE_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}`;
 // Wie readDocument im Import: sehr lange Dokumente werden nicht zusammengefasst, der Text ist für die Zusammenfassung gekürzt
@@ -118,8 +119,10 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  const attSha=(attachments||[]).map(a=>a.textSha||'').join(',');
  // Verfahrensschritte (Bebauungsplan, Wärmeplanung) aus dem Modell
  if(model&&kind==='subject'){const next=stepFacts(facts,model);facts.length=0;facts.push(...next);}
+ // Überblick (Vorgang, Sitzungen, Unterlagen) aus dem Modell, statt des Standardsatzes des Imports
+ const overview=model?overviewOf(report,model,{parties:facts.filter(f=>f.kind==='faction').map(f=>f.value),today:at.slice(0,10)}):null;
  return {
-  version:READ_VERSION,key:readKey({title,mainUrl:doc?.url,session,textSha,attSha,modelKey:model?.key||''}),
+  version:READ_VERSION,overview,key:readKey({title,mainUrl:doc?.url,session,textSha,attSha,modelKey:model?.key||''}),
   mainUrl:doc?.url||null,session,itemKind:kind,stage,
   theme:{id:theme.theme,subs:theme.subs,source:theme.source,version:model?MODEL_THEME_VERSION:THEMES_VERSION,evidence:title},
   ruleSummary,summaryIssue,facts,

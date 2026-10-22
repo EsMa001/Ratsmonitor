@@ -61,6 +61,8 @@ export interface TopicDetail extends TopicCard {
     analysisFeatures?: {subjects:string[];terms:string[];version:string;evidence:string;analysedAt:string};
     identityState?: 'paper'|'unlinked'|'conflict';
     ruleSummary?: RuleSummary;
+    /** Überblick des Vorgangs aus dem Modell (shared/model/overview.mjs): Vorgang, Sitzungen, Unterlagen; kein Auszug */
+    overview?: {version:string;text:string};
     officialTitle: string;
     longSummary: string[];
     committee: string;
