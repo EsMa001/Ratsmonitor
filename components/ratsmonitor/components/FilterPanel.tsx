@@ -34,7 +34,7 @@ function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boo
 /** Milchglas-Filterfenster, oben links mit dem Filter-Knopf (toggle) verankert:
  *  Umkreis um den gesuchten Ort (dezent), Zeitraum, Thema, Status */
 /** up: Suchleiste steht unten (Kartenmodus) – das Fenster klappt nach oben auf, der Filter-Knopf bleibt an seiner Stelle */
-export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0 }: { /** Handy: Breite der Knöpfe rechts vom Filter-Knopf (Herz): das Fenster reicht bis dorthin, der Filter-Knopf bleibt beim Aufklappen an seiner Stelle */ trail?: number; toggle: ReactNode; /** Handy: Zusatzfelder der Seite (z. B. Zeitraum, Folgen) oben im Blatt */ extra?: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
+export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, noThema = false }: { /** plenara.X: ohne Thema (die Seiten haben dafür die Themenkacheln) */ noThema?: boolean; /** Handy: Breite der Knöpfe rechts vom Filter-Knopf (Herz): das Fenster reicht bis dorthin, der Filter-Knopf bleibt beim Aufklappen an seiner Stelle */ trail?: number; toggle: ReactNode; /** Handy: Zusatzfelder der Seite (z. B. Zeitraum, Folgen) oben im Blatt */ extra?: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
   const { geo } = useData();
   const search = useSearch();
   const { state } = search;
@@ -107,8 +107,8 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0 }: { /*
           <FilterSelect id="f-land" label="Bundesland" allLabel="Alle Bundesländer" value={state.area.length === 2 ? state.area : ""} options={geo.lands.map((l) => ({ value: l.ags, label: l.name }))}
             onChange={(v) => { if (v) search.setArea(v, "ui", { zoom: true }); else search.clearArea(); }} className={full} />
         )}
-        <div className="grid grid-cols-2 gap-2">
-          <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />
+        <div className={noThema ? "" : "grid grid-cols-2 gap-2"}>
+          {!noThema && <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />}
           <FilterSelect id="f-status" label="Status" allLabel="Alle Stände" value={state.status} options={STATUS.map((s) => ({ value: s.id, label: s.label }))} counts={active ? res.statusCounts : undefined} onChange={(v) => search.setStatus(v as typeof state.status)} className={full} />
         </div>
         {/* Handy: „Zurücksetzen“ nicht in der Kopfzeile (dort sitzt die Zeitraum-Auswahl), sondern unten */}

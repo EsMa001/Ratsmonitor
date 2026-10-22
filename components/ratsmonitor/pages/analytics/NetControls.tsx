@@ -38,12 +38,12 @@ export function NetLegend({ items, note }: { items: { key: string; label: string
 
 /** Zoom-Knöpfe (nur Desktop; am Handy zoomt man mit zwei Fingern) */
 export function NetZoom({ zoomRef }: { zoomRef: MutableRefObject<((f: number | "fit") => void) | null> }) {
-  const btn = "grid h-10 w-10 place-items-center text-[var(--st-text)] hover:text-teal-700";
+  const btn = "grid h-8 w-8 place-items-center text-[var(--st-text)] hover:text-teal-700";
   return (
-    <div className="rm-stage-chip absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full max-sm:hidden">
-      <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className={btn}><IconPlus size={16} /></button>
-      <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className={btn}><IconMinus size={16} /></button>
-      <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className={btn}><IconCenter size={16} /></button>
+    <div className="rm-stage-chip absolute bottom-3 right-3 z-[6] flex flex-col overflow-hidden rounded-full max-sm:hidden">
+      <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className={btn}><IconPlus size={14} /></button>
+      <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className={btn}><IconMinus size={14} /></button>
+      <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className={btn}><IconCenter size={14} /></button>
     </div>
   );
 }

@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
 import { Befund, Fehler } from "./Befund";
-import { MeinOrtNeu } from "./MeinOrtNeu";
-import { Folgen, Kennzahlen, MeinOrt, ZeitPills, useOrtInAdresse, weekAgo, zeitText } from "./Kennzahlen";
+import { Folgen, Kennzahlen, ZeitPills, useOrtInAdresse, weekAgo, zeitText } from "./Kennzahlen";
 import { usePhone } from "../../lib/usePhone";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -194,7 +193,6 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   const cmp = res?.compare && !res.compare.insufficient ? res.compare : null;
   /* Gleicher Zeitraum wie der Vergleich (12 Monate); die Zahl der Auswahl steht in der Liste darunter */
   const placeRest = cmp ? `: ${n(cmp.n)} Sachvorgänge in den letzten 12 Monaten, verglichen mit ${n(cmp.group!.n)} ${cmp.group!.label}.` : "";
-  const areaAgs = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ?? "";
   /* Gewählter Ort (Filter der Suche): mit ✕ an der Antwortzeile, damit man ihn dort sieht und entfernen kann */
   const place = new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") ? (cmp?.region ?? res?.compare?.region ?? (allRegions.length === 1 ? allRegions[0].name : "")) : "";
 
@@ -219,7 +217,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           })}
         </ul>
       </nav>}
-      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch filterUp follow={<Folgen heart before={() => { const nm = THEMES.find((t: { id: string; name: string }) => t.id === theme)?.name; if (nm) search.setThema(nm); }} hint="Auswahl unter Meine Suchen speichern" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
+      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch filterUp noPlay follow={<Folgen heart before={() => { const nm = THEMES.find((t: { id: string; name: string }) => t.id === theme)?.name; if (nm) search.setThema(nm); }} hint="Auswahl unter Meine Suchen speichern" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden karte text="Auswertung wird berechnet …" />}
       {res && (
@@ -236,14 +234,12 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           </div> : (
             <>
               {/* Mit Ort: der Ort als Chip mit ✕ am Satzanfang (dort sieht man ihn und kann ihn entfernen); sonst große Kennzahlen */}
-              {place && cmp ? <Befund tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest} <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} /></Befund>
+              {place && cmp ? <Befund tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest}</Befund>
                 : <Kennzahlen week={week} scope={[what || "Alle Themen", res.selection.q ? `„${prettyTerm(res.selection.q)}“` : "", place || ""].filter(Boolean).join(" · ")} period={zeitText(zeit)} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }]}>
                   {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
                   <span className="rm-zeit-std max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></span>
-                  {place && <MeinOrt current={areaAgs ? { ags: areaAgs, name: place } : null} onApply={(ags) => search.setArea(ags, "ui")} />}
                 </Kennzahlen>}
 
-              {!place && <MeinOrtNeu onApply={(ags) => search.setArea(ags, "ui")} />}
               {place && cmp && <div className="rm-zeit-std mt-2 max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></div>}
               {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
               <div className="rm-xsplit mt-4 max-sm:mt-2 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-4 lg:grid-cols-12">

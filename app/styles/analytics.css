@@ -122,8 +122,6 @@
   }
   main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y>span[aria-hidden] {
     border-radius: 9999px;
-    top: 3px;
-    bottom: 3px;
     box-shadow: 0 2px 8px rgba(24,24,27,.14);
   }
   main:is(.rm-xwide, .rm-xnet) .rm-xzeit button {
@@ -183,31 +181,45 @@
     top: 56px;
     bottom: auto;
   }
-  /* Zoom-Knöpfe unten links, damit die Themenleiste ganz oben rechts beginnen kann */
+  /* Zoom-Knöpfe immer unten rechts (Karten und Netze), die Legende dafür unten links */
   main.rm-xwide .rm-mapbox>.right-3 {
-    right: auto;
-    left: 12px;
+    right: 14px;
+    left: auto;
     top: auto;
     bottom: 14px;
   }
+  /* Zeitraum klein und senkrecht links unter dem Filterknopf; Ebene (Gemeinden, Kreise) unten in der Mitte der Karte */
   main.rm-xwide .rm-xtop {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: contents;
+  }
+  main.rm-xwide .rm-xtop .rm-xzeit {
     position: absolute;
-    left: 70px;
-    top: auto;
-    bottom: 14px;
-    z-index: 40;
+    left: 14px;
+    top: 66px;
+    z-index: 20;
+  }
+  main.rm-xwide .rm-xtop .rm-xzeit .touch-pan-y {
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: 18px;
+  }
+  main.rm-xwide .rm-xtop .rm-xzeit button {
+    height: 26px;
+    padding: 0 9px;
+    font-size: 12px;
   }
   main.rm-xwide .rm-xtop .rm-xebene {
-    position: static;
-    transform: none;
+    position: absolute;
+    left: 50%;
+    right: auto;
+    bottom: 14px;
+    transform: translateX(-50%);
+    z-index: 20;
   }
   main.rm-xwide .rm-mapbox>.rm-legend:not(.right-3) {
     top: auto;
-    left: auto;
-    right: 14px;
+    left: 14px;
+    right: auto;
     bottom: 14px;
   }
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) {
@@ -464,6 +476,10 @@
   main.rm-xhero .rm-xhero-panel .rm-xtop {
     max-width: none;
   }
+  /* Mit Zeitraum links unter dem Filterknopf (Nachrichten): der Text rückt daneben */
+  main.rm-xhero .rm-xhero-panel:has(.rm-xzeit) {
+    padding-left: 144px;
+  }
   /* Legende ohne Kasten, schlicht auf der Karte */
   main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.rm-legend:not(.right-3) {
     background: none;
@@ -510,6 +526,10 @@
     pointer-events: none;
     animation: rm-subout .28s cubic-bezier(.22,.9,.28,1) both;
     transform-origin: right top;
+  }
+  /* Klick außerhalb der Leiste (Karte, Liste) schließt die Unterliste (useRailFold) */
+  main:is(.rm-xwide, .rm-xnet) nav.rm-xrail.rm-rail-folded .rm-rail-sub {
+    display: none;
   }
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li:nth-child(n+7) .rm-rail-sub {
     top: auto;
@@ -772,17 +792,18 @@
     backdrop-filter: blur(22px) saturate(180%);
     box-shadow: var(--xg-pop-shadow);
   }
-  /* Auswahlfelder im Filterfenster: runde Glas-Pillen statt weißer Kästchen */
-  main#inhalt .rm-xsearch .rm-fpop .select-base {
-    border-radius: 9999px;
-    background: linear-gradient(135deg,rgba(255,255,255,.72),rgba(230,243,241,.55));
-    border: 1px solid rgba(255,255,255,.92);
-    box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.85);
-  }
-  main#inhalt .rm-xsearch .rm-fpop .select-base.select-active {
-    background: linear-gradient(135deg,rgba(255,255,255,.92),rgba(204,232,228,.8));
-    border-color: rgba(38,132,120,.35);
-  }
+}
+
+/* Auswahlfelder im Filterfenster von plenara.X (Handy und Desktop): runde Glas-Pillen statt weißer Kästchen */
+html.rm-analytics #filter-body .select-base {
+  border-radius: 9999px;
+  background: linear-gradient(135deg,rgba(255,255,255,.72),rgba(230,243,241,.55));
+  border: 1px solid rgba(255,255,255,.92);
+  box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.85);
+}
+html.rm-analytics #filter-body .select-base.select-active {
+  background: linear-gradient(135deg,rgba(255,255,255,.92),rgba(204,232,228,.8));
+  border-color: rgba(38,132,120,.35);
 }
 
 /* Handy: keine Unschärfe über der Karte (kostet beim Scrollen Leistung), die Flächen sind dafür fast deckend */

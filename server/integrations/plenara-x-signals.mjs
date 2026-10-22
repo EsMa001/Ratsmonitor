@@ -3,7 +3,7 @@
  * als Anteil. 11 Kategorien, je Kategorie ein Filter („Art“) und der Stand. Route GET /api/x/signale. Je Signal die Sachvorgänge (x_cases) mit passenden Fakten (topic_facts aus readReport),
  * die jüngsten zuerst, mit Ort und Stand. Keine Kennzahlen: Zahlen gehören zu plenara.X Fakten.
  *
- * Parameter: dieselben Filter wie die Suche (area, scope, from, to, q …), signal=<id>, phase=<Stand>, art=<Filterwert>, offset=<n>.
+ * Parameter: dieselben Filter wie die Suche (area, scope, from, to, q …), signal=<id> (oder alle = alle Kategorien außer Ausschreibungen, Filter Kategorie), phase=<Stand>, art=<Filterwert>, offset=<n>.
  * Stand: bei Bauleitplänen der Verfahrensschritt (Fakt plan), bei Vergaben Ausschreibung/Vergabe/Nachtrag, bei Wind Planung/Genehmigung/Betrieb, bei Wärme der Schritt der Wärmeplanung, sonst „Was geschieht“.
  * Antwort: {signals:[{id,name,count}], signal, phases:[{key,name,count}], arts:[{key,name,count}], placeCount, places:[{region,name,ags,count,members?}] (alle), total, items, builtAt}
  */
@@ -51,7 +51,17 @@ export const RULE_SIGNALS=[
 ];
 /** Signale aus dem Modell */
 export const SIGNALS=MODEL_SIGNALS;
-const BY_ID=new Map(SIGNALS.map(s=>[s.id,s]));
+/* „Alle Projekte“: alle Kategorien außer Ausschreibungen zusammen, Filter ist die Kategorie, Stand wie in den Kategorien (Schritt, sonst Vorgangsart) */
+const PROJECTS=SIGNALS.filter(s=>s.id!=='vergaben'),sq=v=>`'${String(v).replace(/'/g,"''")}'`;
+if(new Set(PROJECTS.map(s=>s.phase)).size!==1)throw new Error('Alle Projekte: Kategorien mit verschiedenem Stand');
+export const ALL_PROJECTS={id:'alle',name:'Alle Projekte',who:'alle Branchen',members:PROJECTS.map(s=>s.id),
+ cases:PROJECTS.map(s=>`SELECT ck FROM (${s.cases})`).join(' UNION '),
+ art:PROJECTS.map(s=>`SELECT ck,${sq(s.name)} a FROM (${s.cases})`).join(' UNION ALL '),
+ artName:'Kategorie',phase:PROJECTS[0].phase,phaseText:PROJECTS[0].phaseText};
+const BY_ID=new Map([...SIGNALS,ALL_PROJECTS].map(s=>[s.id,s]));
+const NAME=new Map(SIGNALS.map(s=>[s.id,s.name]));
+/** Kennungen in x_signals, die zu einem Signal gehören (bei „Alle Projekte“ alle Kategorien außer Ausschreibungen) */
+const idsOf=sig=>JSON.stringify(sig.members||[sig.id]);
 export const SIGNAL_SIZE=50;
 
 /* Schneller Weg über x_signals (Migration 0039, gebaut mit x_cases): Zahl je Signal in einer Abfrage, die Vorgänge des
@@ -60,13 +70,13 @@ async function fastSignals(db,catalog,{sig,from,args,phase,art,offset,state,firs
  let counts;
  try{counts=(await db.prepare(`SELECT s.signal k,count(DISTINCT s.case_key) n FROM ${from} JOIN x_signals s ON s.case_key=x.case_key GROUP BY s.signal`).bind(...args).all()).results;}catch{return null;}
  if(!state.signals)return null;
- const {results}=await db.prepare(`SELECT x.case_key ck,x.card_id id,x.region_id region,x.date date,x.status status,s.phase ph,s.art a FROM ${from} JOIN x_signals s ON s.case_key=x.case_key WHERE s.signal=?`).bind(...args,sig.id).all();
+ const {results}=await db.prepare(`SELECT x.case_key ck,x.card_id id,x.region_id region,x.date date,x.status status,s.phase ph,s.art a,s.signal sg FROM ${from} JOIN x_signals s ON s.case_key=x.case_key WHERE s.signal IN (SELECT value FROM json_each(?))`).bind(...args,idsOf(sig)).all();
  const cases=new Map();
- for(const r of results){let c=cases.get(r.ck);if(!c){c={...r,arts:new Set()};cases.set(r.ck,c);}if(r.a)c.arts.add(r.a);}
- const isFirst=await firstOf(db,sig.id);
+ for(const r of results){let c=cases.get(r.ck);if(!c){c={...r,arts:new Set()};cases.set(r.ck,c);}const a=sig.members?NAME.get(r.sg):r.a;if(a)c.arts.add(a);}
+ const isFirst=await firstOf(db,idsOf(sig));
  for(const c of cases.values())c.first=isFirst(c);
  const all=[...cases.values()],okPh=c=>!phase||c.ph===(phase===' '?'':phase),okArt=c=>!art||c.arts.has(art);
- const tally=(list,key)=>{const m=new Map();for(const c of list)for(const k of key(c))m.set(k,(m.get(k)||0)+1);return [...m].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n);};
+ const tally=(list,key)=>{const m=new Map();for(const c of list)for(const k of key(c))m.set(k,(m.get(k)||0)+1);return [...m].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n||(a.k<b.k?-1:a.k>b.k?1:0));};
  const base=all.filter(c=>okPh(c)&&okArt(c));
  const firstCount=base.filter(c=>c.first).length;
  const sel=base.filter(c=>!first||c.first).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:a.ck<b.ck?-1:1);
@@ -101,9 +111,9 @@ export async function xSignals(db,catalog,params){
  const condPh=phase?" WHERE coalesce(ph,'')=?":'',paPh=phase?[phase===' '?'':phase]:[];
  const condArt=art?` WHERE ${IN_ART}`:'',paArt=art?[art]:[];
  const [phases,arts,places,total,page]=await Promise.all([
-  db.prepare(`${sel} SELECT coalesce(ph,'') k,count(*) n FROM sel${condArt} GROUP BY k ORDER BY n DESC`).bind(...args,...paArt).all(),
-  db.prepare(`${sel} SELECT av.a k,count(DISTINCT av.ck) n FROM (${sig.art}) av WHERE av.ck IN (SELECT case_key FROM sel${condPh}) GROUP BY k ORDER BY n DESC`).bind(...args,...paPh).all(),
-  db.prepare(`${sel} SELECT region_id k,count(*) n FROM sel${cond} GROUP BY k ORDER BY n DESC`).bind(...args,...pa).all(),
+  db.prepare(`${sel} SELECT coalesce(ph,'') k,count(*) n FROM sel${condArt} GROUP BY k ORDER BY n DESC,k`).bind(...args,...paArt).all(),
+  db.prepare(`${sel} SELECT av.a k,count(DISTINCT av.ck) n FROM (${sig.art}) av WHERE av.ck IN (SELECT case_key FROM sel${condPh}) GROUP BY k ORDER BY n DESC,k`).bind(...args,...paPh).all(),
+  db.prepare(`${sel} SELECT region_id k,count(*) n FROM sel${cond} GROUP BY k ORDER BY n DESC,k`).bind(...args,...pa).all(),
   db.prepare(`${sel} SELECT count(*) n FROM sel${cond}`).bind(...args,...pa).first(),
   db.prepare(`${sel} SELECT p.case_key ck,p.card_id id,p.region_id region,c.title,c.gremium,p.date,p.status,p.stage,p.ph,(SELECT json_group_array(DISTINCT av.a) FROM (${sig.art}) av WHERE av.ck=p.case_key) arts FROM (SELECT * FROM sel${cond} ORDER BY date DESC,case_key LIMIT ? OFFSET ?) p JOIN search_cards c ON c.id=p.card_id ORDER BY p.date DESC,p.case_key`).bind(...args,...pa,SIGNAL_SIZE,offset).all(),
  ]);
@@ -114,7 +124,7 @@ async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,tot
  const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
  // Karte wie in der Trefferliste der Suche (Kurztext, Gremium, Thema, Verlauf)
  const cards=new Map((await cardsById(db,catalog,page.map(r=>r.id))).map(c=>[c.id,c]));
- const first=page.length&&page[0].first!==undefined?new Set(page.filter(r=>r.first).map(r=>r.ck)):await firstHere(db,sig.id,page);
+ const first=page.length&&page[0].first!==undefined?new Set(page.filter(r=>r.first).map(r=>r.ck)):await firstHere(db,idsOf(sig),page);
  const phaseName=k=>sig.phase==='x.stage'?(k?stageName(k):'Noch nicht eingeordnet'):(k||'Ohne Angabe');
  return {
   signals:SIGNALS.map((s,i)=>({id:s.id,name:s.name,who:s.who,count:Number(counts[i]?.n||0)})),
@@ -138,14 +148,14 @@ async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,tot
  * Nur wenn der Bestand des Gebiets mindestens ein Jahr vor dem Vorgang beginnt; sonst wäre bei neu angebundenen Gebieten
  * alles „erstmals“. Ohne Tabelle x_signals (Rückfall) eine leere Menge.
  */
-async function firstHere(db,signal,page){
+async function firstHere(db,signals,page){
  if(!page.length)return new Set();
  try{
   const starts=await dataStarts(db);
   const year=d=>{const x=new Date(String(d).slice(0,10)+'T00:00:00Z');x.setUTCFullYear(x.getUTCFullYear()-1);return x.toISOString().slice(0,10);};
   const rows=page.filter(r=>r.ck&&(starts.get(r.region)||'9999').slice(0,10)<=year(r.date)).map(r=>[r.ck,r.region,String(r.date).slice(0,10)]);
   if(!rows.length)return new Set();
-  const {results}=await db.prepare(`SELECT j.value->>0 ck FROM json_each(?) j WHERE NOT EXISTS (SELECT 1 FROM x_cases x JOIN x_signals s ON s.case_key=x.case_key AND s.signal=? WHERE x.region_id=j.value->>1 AND x.date<j.value->>2 AND x.case_key<>j.value->>0)`).bind(JSON.stringify(rows),signal).all();
+  const {results}=await db.prepare(`SELECT j.value->>0 ck FROM json_each(?) j WHERE NOT EXISTS (SELECT 1 FROM x_cases x JOIN x_signals s ON s.case_key=x.case_key AND s.signal IN (SELECT value FROM json_each(?)) WHERE x.region_id=j.value->>1 AND x.date<j.value->>2 AND x.case_key<>j.value->>0)`).bind(JSON.stringify(rows),signals).all();
   return new Set(results.map(r=>r.ck));
  }catch{return new Set();}
 }
@@ -155,9 +165,9 @@ async function firstHere(db,signal,page){
  * ganzen Bestand (ohne die Filter der Suche, sonst wäre mit Zeitraum alles „erstmals“). Ein Vorgang ist „erstmals hier“, wenn er an
  * diesem Tag liegt und der Bestand des Gebiets mindestens ein Jahr davor beginnt. Gibt eine Prüffunktion je Vorgang zurück.
  */
-async function firstOf(db,signal){
+async function firstOf(db,signals){
  const [{results},starts]=await Promise.all([
-  db.prepare('SELECT x.region_id r,min(x.date) d FROM x_cases x JOIN x_signals s ON s.case_key=x.case_key WHERE s.signal=? GROUP BY x.region_id').bind(signal).all(),
+  db.prepare('SELECT x.region_id r,min(x.date) d FROM x_cases x JOIN x_signals s ON s.case_key=x.case_key WHERE s.signal IN (SELECT value FROM json_each(?)) GROUP BY x.region_id').bind(signals).all(),
   dataStarts(db),
  ]);
  const firstDay=new Map(results.map(r=>[r.r,String(r.d).slice(0,10)]));

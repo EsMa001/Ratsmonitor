@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Befund, Fehler } from "./Befund";
 import { XKopf, XWeiter } from "./XKopf";
+import { useRailFold } from "../../lib/useRailFold";
 import { ListSkeleton } from "./ListSkeleton";
 import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
@@ -14,7 +15,7 @@ import { RegionMap } from "./RegionMap";
 import { MapWheels } from "./MapWheels";
 import { MapHint } from "./MapHint";
 import { RadarDrill } from "./RadarDrill";
-import { Folgen, Kennzahlen, MeinOrt, Segmented, useOrtInAdresse } from "./Kennzahlen";
+import { Folgen, Kennzahlen, Segmented, useOrtInAdresse } from "./Kennzahlen";
 import { Baby, Banknote, Building2, Coins, Dog, Droplets, Factory, HandCoins, House, LayoutGrid, Map as MapIcon, Percent, Route, Sprout, Ticket, Trash2, Wind, Zap, type LucideIcon } from "lucide-react";
 import { num } from "../../lib/format";
 import { MethodikNote } from "./Methodik";
@@ -73,6 +74,7 @@ export function FaktenPage() {
     setPicked("");
     router.replace(`${path}${p.size ? "?" + p : ""}`, { scroll: false });
   };
+  const [railRef, railFolded, railUnfold] = useRailFold(fact?.kind ?? "");
 
   /* Stand heute (jüngster Wert) oder Veränderung zum vorigen Wert */
   const change = !overview && params.get("ansicht") === "veraenderung";
@@ -168,14 +170,14 @@ export function FaktenPage() {
       <SplitHandle />
 
       {/* Fakten als Kacheln wie die Themen im Atlas: Icon über dem Namen; Handy 4 je Reihe */}
-      <nav aria-label="Fakt" className="rm-xrail max-sm:hidden print:hidden">
+      <nav ref={railRef} aria-label="Fakt" className={`rm-xrail max-sm:hidden print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {[{ kind: "alle", name: "Alle" }, ...facts].map((f) => {
             const on = f.kind === "alle" ? allFacts : f === fact;
             const Icon = FACT_ICONS[f.kind] ?? Coins;
             return (
               <li key={f.kind} className={`sm:w-[104px]${on && f.kind !== "alle" && metrics.length > 1 ? " rm-rail-open" : ""}`}>
-                <button type="button" aria-pressed={on} onClick={() => pick(f.kind === "alle" ? { fakt: "alle", wert: "", ansicht: "" } : { fakt: f.kind, wert: "" })}
+                <button type="button" aria-pressed={on} onClick={() => { railUnfold(); pick(f.kind === "alle" ? { fakt: "alle", wert: "", ansicht: "" } : { fakt: f.kind, wert: "" }); }}
                   className={`flex h-[76px] max-sm:h-full max-sm:min-h-[64px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />
                   {/* Weiches Trennzeichen vor dem Wortende („Abwasser-gebühren“): auf dem Handy sonst abgeschnitten */}
@@ -225,7 +227,6 @@ export function FaktenPage() {
             : amount ? [{ value: num(ranked.reduce((a, x) => a + (x.sum ?? x.v), 0)), label: `${unit || "insgesamt"}` }, { value: n(ranked.length), label: "Gebiete" }]
             : change ? [{ value: n(ranked.filter((x) => x.v > 0).length), label: "Gebiete gestiegen" }, { value: n(ranked.filter((x) => x.v < 0).length), label: "gesunken" }]
             : [{ value: ranked.length ? `${num(mid(lasts))}` : "–", label: `Median${unit ? ` (${unit})` : ""}` }, { value: n(ranked.length), label: ranked.length === 1 ? "Gebiet mit Wert" : "Gebiete mit Wert" }, { value: n(up), label: "seit dem vorigen Wert höher" }]}>
-            <MeinOrt current={areaAgs && focus && focus.ags === areaAgs ? { ags: areaAgs, name: focus.name } : null} onApply={(ags) => search.setArea(ags, "ui")} />
           </Kennzahlen>
           <Zeitregler />
           {LINKS[fact?.kind ?? ""] && <p className="mt-1 text-[14px] text-slate-500">{[...LINKS[fact!.kind], ["/analytics/beschluesse", "Beschlüsse dazu"] as [string, string]].map(([h, text], i) => { const ort = /^\d{5,9}$/.test(areaAgs) ? areaAgs : "", href = h.includes("beschluesse") ? `${h}?q=${encodeURIComponent(fact!.name)}${ort ? `&ort=${ort}` : ""}` : ort ? `${h}${h.includes("?") ? "&" : "?"}ort=${ort}` : h; return <span key={h}>{i > 0 && " · "}<Link href={href} className="font-medium text-teal-700 hover:underline">{text}{ort && h.includes("beschluesse") && focus ? ` in ${focus.name}` : ""} →</Link></span>; })}</p>}

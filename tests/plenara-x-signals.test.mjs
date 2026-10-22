@@ -43,6 +43,11 @@ test('Signale: Zahl je Signal, Stand aus Schritt oder Vorgangsart',async()=>{
   assert.equal(w.items[0].phase,'Genehmigung für Dritte');
   const b=await xSignals(db,catalog,q('signal=breitband'));
   assert.deepEqual(b.items[0].arts,['öffentliches WLAN']);
+  // Alle Projekte: jeder Vorgang einmal, ohne Ausschreibungen, Filter ist die Kategorie
+  const a=await xSignals(db,catalog,q('signal=alle'));
+  assert.equal(a.signal.art,'Kategorie');assert.equal(a.total,new Set(a.items.map(i=>i.id)).size);assert.ok(a.total>=4);
+  assert.ok(a.arts.some(x=>x.key==='Windenergie'));assert.ok(!a.arts.some(x=>x.key==='Ausschreibungen und Vergaben'));
+  assert.equal((await xSignals(db,catalog,q('signal=alle&art=Windenergie'))).total,1);
  }finally{sql.close();}
 });
 test('Signale: Filter nach Stand und Gebiet, unbekanntes Signal',async()=>{
@@ -59,7 +64,7 @@ test('Signale: Filter nach Stand und Gebiet, unbekanntes Signal',async()=>{
 
 test('Signale: vorberechnete Tabelle x_signals ergibt dasselbe wie die Abfrage über die Antworten des Modells',async()=>{
  const {sql,db}=fixture();
- const cases=['signal=wohnbau','signal=gewerbe&phase=Start','signal=gewerbe&art=Gewerbe','signal=mobil','signal=wind','signal=wohnbau&area=05558012'];
+ const cases=['signal=wohnbau','signal=gewerbe&phase=Start','signal=gewerbe&art=Gewerbe','signal=mobil','signal=wind','signal=wohnbau&area=05558012','signal=alle','signal=alle&art=Windenergie'];
  assert.ok(sql.prepare('SELECT count(*) n FROM x_signals').get().n>0);
  // firstCount (Filter „erstmals hier“) gibt es nur auf dem schnellen Weg
  const fast=[];for(const c of cases){const r=await xSignals(db,catalog,q(c));delete r.firstCount;fast.push(r);}

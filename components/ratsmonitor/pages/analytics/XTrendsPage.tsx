@@ -15,7 +15,7 @@ import { THEMES } from "@/shared/themes.mjs";
 import { ThemeIcon } from "../../components/icons";
 import { RadarDrill } from "./RadarDrill";
 import { TrendMap, type Trend, type TrendKind } from "./TrendViews";
-import { Folgen, Kennzahlen, MeinOrt, Segmented, ZeitExtra, countScale, useOrtInAdresse } from "./Kennzahlen";
+import { Folgen, Kennzahlen, Segmented, ZeitExtra, countScale, useOrtInAdresse } from "./Kennzahlen";
 import { MiniCurve, SpreadChart, SpreadMap, fmt, keysOf, toDay, type SpreadRegion } from "./XTrendsParts";
 import { errorText, fetchJson } from "../../lib/fetchJson";
 import { isFiller, prettyTerm } from "../../lib/terms";
@@ -132,7 +132,6 @@ export function XTrendsPage() {
   /* Gewählter Ort der Suche (Gemeinde, 8 Stellen): auf der Karte markiert */
   const area = new URLSearchParams(query).get("area") ?? "";
   useOrtInAdresse(area, (a) => search.setArea(a, "ui"));
-  const areaName = useMemo(() => { if (!sp || !area) return ""; for (const p of Object.values(sp.places)) if (p.ags.includes(area)) return p.name; return ""; }, [sp, area]);
 
   /* Steckbrief: Ausbreitung des gewählten Begriffs wie im Tool Ausbreitung */
   const diffUrl = begriff ? `/api/analytics/diffusion?${(() => { const p = new URLSearchParams(nationwide(query)); p.set("q", begriff); return p; })()}` : "";
@@ -218,7 +217,6 @@ export function XTrendsPage() {
               {WINDOWS.map(([k, l]) => <button key={k} type="button" aria-pressed={k === zeit} onClick={() => pick({ zeit: k })}
                 className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[14px] ${k === zeit ? "border-teal-700 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-400"}`}>{l}</button>)}
             </span>
-            <MeinOrt current={area && areaName ? { ags: area, name: areaName } : null} onApply={(ags) => search.setArea(ags, "ui")} />
           </Kennzahlen>
 
           <div className="rm-xsplit mt-6 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12 max-sm:gap-y-5">
