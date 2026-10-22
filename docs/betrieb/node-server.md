@@ -454,12 +454,12 @@ OCR; der Job `rule-texts` liest danach jeden Bericht mit dem Text der Ablage. Na
 Ein lokal laufendes Modell (requirements/modell-konzept.md, Fragen im Begriffsbuch requirements/begriffsbuch-kern.md) ordnet jeden Bericht ein: Art, Thema, Unterthemen, Unter-Unterthemen, Vorgangsart, Status, Vorhaben, Schritt, Antragsteller, Leistungsart, Dokumentart, Haupt- und Ergebnisdokument. Kein fremder Dienst. Schritt „Modell anwenden“ (`scripts/model/apply.mjs`) im Job „Themen & Texte“ vor Zusammenfassung und Fakten, auch in Nacharbeit und OCR-Kette; Ergebnisse in `model_labels` (Migration 0046), Thema über `payload.theme` (Fassung `model-v1`, Migration 0047), sicherer Status (ab 0,7) direkt in `topics.status`.
 
 Einrichten (einmal):
-1. Migrationen 0046 und 0047 einspielen.
+1. Migrationen 0046, 0047 und 0048 einspielen (0048: Überblick als Kurztext der Suchkarte).
 2. `mkdir -p /srv/ratsmonitor/model-tools && cd /srv/ratsmonitor/model-tools && npm install @huggingface/transformers@3.7.5`, dann `chown -R ratsmonitor:ratsmonitor`.
 3. Modelldateien nach `/srv/ratsmonitor/models` kopieren (lokal `tmp/model/encoder`, `tmp/model/heads` und `tmp/model/summary`, etwa 450 MB); `apply.mjs` prüft sie gegen `shared/model-manifest.json` und bricht sonst ab.
 4. Umgebung aus `deploy/node/ratsmonitor.env.example` (`RM_MODEL_DIR`, `MODEL_TOOLS`, `RM_MODEL_STORE`, `MODEL_THREADS`).
 5. Messen: `node scripts/model/apply.mjs --measure 200` (bettet 200 Berichte ein, schreibt nichts, meldet ms je Text). Daraus die Dauer des ersten Durchlaufs (1,5 Mio. Berichte, etwa 3 Mio. Texte).
-6. Erster Durchlauf: der nächtliche Job arbeitet alles ab, was fehlt; er lässt sich jederzeit anhalten und setzt fort (gespeicherte Einbettungen bleiben). Bis dahin behalten noch nicht eingeordnete Berichte ihre bisherigen Werte; `read-reports.mjs` liest sie nicht (Zahl „noch ohne Modell“).
+6. Erster Durchlauf am Stück, ohne die Grenze von 3 Stunden des Jobs (Entscheidung 22.10.2026: die nächtlichen Jobs dürfen dafür aussetzen): `systemd-run --unit=ratsmonitor-model-first --uid=ratsmonitor --gid=ratsmonitor --working-directory=/srv/ratsmonitor/app/current -p EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env /usr/bin/node --no-warnings --max-old-space-size=6144 scripts/model/apply.mjs`, danach einmal „Alle neu erstellen“ im Admin. Läuft er noch, wenn der Job „Verarbeitung, nachts“ startet, endet dessen Schritt „Modell anwenden“ nach 3 Stunden; anhalten und neu starten ist jederzeit möglich (gespeicherte Einbettungen bleiben). Bis dahin behalten noch nicht eingeordnete Berichte ihre bisherigen Werte; `read-reports.mjs` liest sie nicht (Zahl „noch ohne Modell“).
 
 Neues Modell: lokal nachtrainieren bzw. Köpfe neu lernen (`scripts/model/finetune.py`, `export.py`, `train.mjs`), `node scripts/model/manifest.mjs`, Manifest committen, Dateien kopieren. Neue Köpfe brauchen kein neues Einbetten; ein neuer Encoder schon (alle Texte).
 

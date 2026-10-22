@@ -33,7 +33,7 @@ export const STEPS=Object.freeze([
  {id:'stats',name:'Stand zählen',phase:null,what:'Zahlen des Reiters PDF-Import neu zählen',aliases:['Stand']},
  {id:'title',name:'Titel einordnen',phase:'verarbeitung',what:'Sachgebiet nach der Titelregel (Label der Suche)',aliases:['Titelregel']},
  {id:'model',name:'Modell anwenden',phase:'verarbeitung',what:'Art, Thema, Unterthemen, Vorgangsart, Status, Dokumente und weitere Fragen je Bericht mit dem gelernten Modell',aliases:[]},
- {id:'rules',name:'Zusammenfassung und Fakten',phase:'verarbeitung',what:'Regel-Zusammenfassung und Fakten je Bericht (Art, Thema und Hauptdokument aus dem Modell)',aliases:['Regeln je Bericht','Regeln anwenden']},
+ {id:'rules',name:'Zusammenfassung und Fakten',phase:'verarbeitung',what:'Zusammenfassung (Kernsätze aus dem Modell) und Fakten je Bericht (Art, Thema und Hauptdokument aus dem Modell)',aliases:['Regeln je Bericht','Regeln anwenden']},
  {id:'search',name:'Suche aktualisieren',phase:'verarbeitung',what:'Wortliste der Suche nachführen',aliases:['Wortliste']},
  {id:'xcases',name:'Zahlen rechnen',phase:'verarbeitung',what:'Zahlen für plenara.X',aliases:['Zahlen für plenara.X']},
  {id:'ai',name:'KI',phase:'verarbeitung',what:'Kurz- und Langfassung und KI-Einordnung (Agent über MCP, von Hand)'},
