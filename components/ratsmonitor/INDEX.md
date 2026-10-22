@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (24 Zeilen, ⚠2)
-- app/styles/analytics.css (1434 Zeilen, ⚠2)
+- app/styles/analytics.css (1576 Zeilen, ⚠2)
 - app/styles/base-layer.css (95 Zeilen, ⚠1)
 - app/styles/base.css (622 Zeilen)
 - app/styles/dark.css (436 Zeilen, ⚠3)
@@ -591,13 +591,17 @@ rm-pagein base.css:294
 rm-pmark base.css:568
 rm-pmark header.css:365
 rm-rail-folded analytics.css:549
+rm-rail-mini analytics.css:1510
 rm-rail-open analytics.css:545
 rm-rail-peek analytics.css:545
 rm-rail-sub analytics.css:76
 rm-rail-sub dark.css:366
+rm-rail-toggle analytics.css:1549
 rm-sbar search.css:148
 rm-schritt-std analytics.css:107
+rm-search analytics.css:1479
 rm-search search.css:89
+rm-searchsplit analytics.css:1479
 rm-searchsplit search.css:198
 rm-sec base.css:351
 rm-sec-m base.css:355
@@ -1012,7 +1016,7 @@ z- analytics.css:632
 - AnalyticsLocked.tsx (54): AnalyticsLocked
 - AnalyticsPages.tsx (64): AnalyticsPages
 - AtlasMap.tsx (107, ⚠2): AtlasMap
-- AtlasPage.tsx (79): AtlasPage
+- AtlasPage.tsx (80): AtlasPage
 - AtlasParts.tsx (187, ⚠2): Row, Result, Fact, n, MIN_BASE, isRest, restLast, Bars, Hint, OrtImVergleich, Level, AtlasExtra, PartList, PlaceChip
 - Befund.tsx (70): Befund, zuThema, Leer, Fehler
 - BeschluessePage.tsx (239, ⚠13): BeschluessePage
@@ -1022,7 +1026,7 @@ z- analytics.css:632
 - CompareParts.tsx (74, ⚠3): Share, Place, Result, ORT, asPlace, n, inhaltlich, datenlage, Hinweis, Duell
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (92, ⚠3): PlayState, DiffusionSearch
-- FaktenPage.tsx (385, ⚠6): FaktenPage
+- FaktenPage.tsx (386, ⚠6): FaktenPage
 - FraktionenPage.tsx (261, ⚠8): FraktionenPage
 - GraphView.tsx (388, ⚠2): GNode, GEdge, KIND, seeded, GraphView
 - GremiennetzPage.tsx (220, ⚠4): GremiennetzPage
@@ -1043,14 +1047,14 @@ z- analytics.css:632
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (178, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (418, ⚠12): SignalePage
+- SignalePage.tsx (419, ⚠12): SignalePage
 - SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (300, ⚠9): XAtlasView
 - XBusy.tsx (14): busyProps, PendingVeil, HERO_MAIN, HERO_PANEL
-- XKopf.tsx (234, ⚠2): XKopf, XWeiter, ThemenLeiste
-- XTrendsPage.tsx (372, ⚠4): XTrendsPage
+- XKopf.tsx (235, ⚠2): XKopf, XWeiter, ThemenLeiste
+- XTrendsPage.tsx (372, ⚠5): XTrendsPage
 - XTrendsParts.tsx (153, ⚠1): DAY, toDay, fmt, SpreadRegion, keysOf, SpreadMap, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
 - useAnalyticsQuery.ts (88): useAnalyticsQuery

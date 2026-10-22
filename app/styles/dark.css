@@ -326,7 +326,7 @@ html.rm-dark .rm-solid .rm-glass:not(.rm-fpop), html.rm-dark .rm-solid .rm-glass
   border-color: rgba(154,156,162,.22);
 }
 
-@media (min-width:1024px) {
+@media (min-width:640px) and (not ((max-height:500px) and (pointer:coarse))) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y {
     background: linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));
     border-color: rgba(154,156,162,.22);
@@ -428,7 +428,7 @@ html.rm-dark .rm-dialog {
   color: var(--rm-c900);
 }
 
-@media (min-width:1024px) {
+@media (min-width:640px) and (not ((max-height:500px) and (pointer:coarse))) {
   html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul {
     background: linear-gradient(135deg,rgba(40,48,47,.94),rgba(23,33,42,.9));
   }

@@ -224,22 +224,22 @@ export function XTrendsPage() {
             </span>
           </Kennzahlen>
 
-          <div className="rm-xsplit mt-6 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12 max-sm:gap-y-5">
+          <div className="rm-xsplit mt-6 grid grid-cols-1 gap-x-8 gap-y-8 min-[640px]:grid-cols-12 max-sm:gap-y-5">
             {/* Links die Karte: immer Ausbreitung */}
-            <div className="rm-xsplit-map min-w-0 max-sm:relative lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+            <div className="rm-xsplit-map min-w-0 max-sm:relative min-[640px]:sticky min-[640px]:top-4 min-[640px]:col-span-6 min-[640px]:self-start">
               {/* Handy: Thema als Walze auf der Karte */}
               <MapWheels single label="Thema" value={search.state.thema} onPick={(name) => search.setThema(name)}
                 items={[{ id: "", label: "Alle Themen", icon: <ThemeIcon theme="alle" size={16} className="text-slate-500" /> }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.name, label: t.name, icon: <ThemeIcon theme={t.id} size={16} className="text-slate-500" /> }))]} />
               {begriff ? (df ? <SpreadMap regions={df.regions} day={day} firstDay={firstDay} lastDay={lastDay} onDay={(d) => { setPlaying(false); setDay(d); }} playing={playing} onToggle={toggle}
                   picked={mapPick || area} onPick={(a) => setMapPick(mapPick === a ? "" : a)}
                   info={(() => { const r = df.regions.find((x) => keysOf(x).includes(mapPick)); return r ? <><b className="font-semibold">{r.name}</b><br /><span className="text-slate-500">erste Erwähnung {fmt(r.first)} · {n(r.n)} {r.n === 1 ? "Eintrag" : "Einträge"}</span></> : undefined; })()} />
-                : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{diff.error && diff.url === diffUrl ? diff.error : "Ausbreitung wird berechnet …"}</div>)
+                : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] min-[640px]:h-[720px]">{diff.error && diff.url === diffUrl ? diff.error : "Ausbreitung wird berechnet …"}</div>)
                 : map ? <RegionMap tall phoneStage levels={map.levels} legend={map.legend} colors={map.colors} label={map.label} note={map.note} picked={area} onPick={(a) => search.setArea(a, "map")} />
-                : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] lg:h-[720px]">{spread.error || "Karte wird berechnet …"}</div>}
+                : <div className="grid h-[420px] place-items-center rounded-[22px] max-sm:rounded-2xl border max-sm:border-transparent border-slate-200 text-[14px] text-slate-500 sm:h-[540px] min-[640px]:h-[720px]">{spread.error || "Karte wird berechnet …"}</div>}
               <div className="rm-xtop"><div className="rm-xzeit"><Segmented label="Zeitraum" options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} /></div></div>
             </div>
 
-            <div className="min-w-0 lg:col-span-6">
+            <div className="min-w-0 min-[640px]:col-span-6">
               {pending && <ListSkeleton />}
               <div className={pending ? "hidden" : undefined}>
               {/* Handy: der Satz zur Auswertung steht unter der Karte statt davor */}
@@ -308,7 +308,7 @@ function Steckbrief({ begriff, row, spread, df, error, firsts, day, onDay, playi
   const name = prettyTerm(begriff);
   /* Auf dem Handy steht der Steckbrief unter der Karte: dorthin scrollen */
   const ref = useRef<HTMLElement>(null);
-  useEffect(() => { if (window.innerWidth < 1024) ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }, [begriff]);
+  useEffect(() => { if (window.innerWidth < 640) ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }, [begriff]);
   const here = df && area ? df.regions.findIndex((r) => keysOf(r).includes(area)) : -1;
   const maxLand = Math.max(1, ...(df?.lands.map((l) => l.regions) ?? [1]));
   const fresh = df ? df.regions.filter((r) => !r.atStart) : [];

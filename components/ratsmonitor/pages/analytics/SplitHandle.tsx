@@ -35,7 +35,7 @@ export function SplitHandle() {
   };
   return (
     <div ref={ref} role="separator" aria-orientation="vertical" aria-valuemin={Math.round(MIN * 100)} aria-valuemax={Math.round(MAX * 100)} aria-valuenow={50} aria-label="Breite von Karte und Auswertung ändern (Pfeiltasten, Doppelklick stellt zurück)" tabIndex={0}
-      className="rm-xhandle"
+      className="rm-xhandle" title="Ziehen, um die Breite zu ändern (Doppelklick: zurücksetzen)"
       onPointerDown={(e) => { drag.current = true; try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* ohne Erfassung zieht es trotzdem */ } e.currentTarget.dataset.drag = "1"; }}
       onPointerMove={(e) => { if (!drag.current) return; const p = at(e); if (p) apply(p.main, p.left); }}
       onPointerUp={(e) => { drag.current = false; delete e.currentTarget.dataset.drag; const p = at(e); if (p) save(p.left); }}

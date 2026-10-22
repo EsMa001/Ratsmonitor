@@ -138,9 +138,9 @@ export function FraktionenPage() {
               <div className="mt-8 max-w-[900px] max-sm:hidden">
                 <p className="m-0 text-[12px] font-medium uppercase tracking-wide text-slate-500">Schwerpunkte und Beschlussquote</p>
                 <ul className="m-0 mt-2 list-none border-t border-slate-200 p-0">
-                  {parties.slice(0, 6).map((p) => <li key={p.name} className="grid grid-cols-[110px_minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 py-2">
-                    <span className="truncate text-[14px] font-semibold text-slate-900">{p.name}</span>
-                    {p.top.length ? <TopThemen top={p.top} label /> : <span className="text-[12px] text-slate-500">ohne deutlichen Schwerpunkt</span>}
+                  {parties.slice(0, 6).map((p) => <li key={p.name} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 py-2">
+                    <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1"><span className="truncate text-[14px] font-semibold text-slate-900">{p.name}</span>
+                    {p.top.length ? <TopThemen top={p.top} label /> : <span className="text-[12px] text-slate-500">ohne deutlichen Schwerpunkt</span>}</span>
                     <span className="text-right text-[12px] text-slate-500" title={`${n(p.approved)} von ${n(p.decided)} entschiedenen Anträgen beschlossen`}>{p.rate !== null && p.decided >= 10 ? <><b className="text-[16px] font-semibold tabular-nums text-teal-700">{Math.round(p.rate)} %</b> beschlossen</> : "zu wenig entschieden"}</span>
                   </li>)}
                 </ul>

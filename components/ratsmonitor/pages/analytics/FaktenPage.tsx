@@ -1,3 +1,4 @@
+import { RailToggle } from "./RailToggle";
 import { useDwell } from "../../lib/useDwell";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -180,7 +181,7 @@ export function FaktenPage() {
             const Icon = FACT_ICONS[f.kind] ?? Coins;
             return (
               <li key={f.kind} className={`sm:w-[104px]${on && f.kind !== "alle" && metrics.length > 1 ? " rm-rail-open" : ""}`}>
-                <button type="button" aria-pressed={on} onClick={() => { railUnfold(); pick(f.kind === "alle" ? { fakt: "alle", wert: "", ansicht: "" } : { fakt: f.kind, wert: "" }); }}
+                <button type="button" title={f.name} aria-pressed={on} onClick={() => { railUnfold(); pick(f.kind === "alle" ? { fakt: "alle", wert: "", ansicht: "" } : { fakt: f.kind, wert: "" }); }}
                   className={`flex h-[76px] max-sm:h-full max-sm:min-h-[64px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />
                   {/* Weiches Trennzeichen vor dem Wortende („Abwasser-gebühren“): auf dem Handy sonst abgeschnitten */}
@@ -199,7 +200,7 @@ export function FaktenPage() {
             );
           })}
         </ul>
-      </nav>
+      <RailToggle /></nav>
       {metrics.length > 1 && <nav aria-label="Wert" className="mt-2 border-t-2 border-teal-600 pt-2 max-sm:hidden print:hidden">
         {/* Werte als kleine Kacheln mit Symbol (wie die Arten bei den Signalen) */}
         <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
@@ -235,9 +236,9 @@ export function FaktenPage() {
           {LINKS[fact?.kind ?? ""] && <p className="mt-1 text-[14px] text-slate-500">{[...LINKS[fact!.kind], ["/analytics/beschluesse", "Beschlüsse dazu"] as [string, string]].map(([h, text], i) => { const ort = /^\d{5,9}$/.test(areaAgs) ? areaAgs : "", href = h.includes("beschluesse") ? `${h}?q=${encodeURIComponent(fact!.name)}${ort ? `&ort=${ort}` : ""}` : ort ? `${h}${h.includes("?") ? "&" : "?"}ort=${ort}` : h; return <span key={h}>{i > 0 && " · "}<Link href={href} className="font-medium text-teal-700 hover:underline">{text}{ort && h.includes("beschluesse") && focus ? ` in ${focus.name}` : ""} →</Link></span>; })}</p>}
 
 
-          {/* Links die Karte (bleibt stehen), rechts Einordnung und Rangliste; ab 1024 px nebeneinander */}
-          <div className="rm-xsplit mt-4 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12 max-sm:gap-y-5">
-            <div className="rm-xsplit-map min-w-0 max-sm:relative lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+          {/* Links die Karte (bleibt stehen), rechts Einordnung und Rangliste; ab 640 px nebeneinander */}
+          <div className="rm-xsplit mt-4 grid grid-cols-1 gap-x-8 gap-y-8 min-[640px]:grid-cols-12 max-sm:gap-y-5">
+            <div className="rm-xsplit-map min-w-0 max-sm:relative min-[640px]:sticky min-[640px]:top-4 min-[640px]:col-span-6 min-[640px]:self-start">
               {/* Beim Öffnen kurz als Hinweis auf der Karte (statt des langen Absatzes über der Karte) */}
               <MapHint id="werte">Hier steht nur, was die Kommunen in ihren Originalunterlagen nennen.</MapHint>
               {/* Handy: Fakt und Wert als Walzen auf der Karte */}
@@ -261,7 +262,7 @@ export function FaktenPage() {
               {regionCount > 0 && <p className="mt-2 text-[14px] text-slate-500">Abdeckung: {n(ranked.length)} von {n(regionCount)} Gebieten mit Sachvorgängen haben einen Wert ({(Math.round((1000 * ranked.length) / regionCount) / 10).toLocaleString("de-DE")} %).</p>}
             </div>
 
-            <div className="min-w-0 lg:col-span-6">
+            <div className="min-w-0 min-[640px]:col-span-6">
               {pending && <ListSkeleton />}
               <div className={pending ? "hidden" : undefined}>
               {/* Ort im Vergleich: Wert des Orts auf der Skala aller Gebiete (Viertel und Median), dazu Kreis und Land */}

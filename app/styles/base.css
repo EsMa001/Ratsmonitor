@@ -110,7 +110,7 @@ html, html body {
   }
 }
 
-@media (min-width:1024px) {
+@media (min-width:640px) and (not ((max-height:500px) and (pointer:coarse))) {
   @keyframes rm-subout {
     from {
       opacity: 0;

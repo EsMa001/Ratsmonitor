@@ -142,7 +142,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   /* Auf dem Handy steht der Inhalt des Unterthemas unter der Karte: nach der Wahl dorthin scrollen */
   const subRef = useRef<HTMLElement>(null);
   const lastSub = useRef(sub);
-  useEffect(() => { if (sub && sub !== lastSub.current && window.innerWidth < 1024) subRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); lastSub.current = sub; }, [sub, res]);
+  useEffect(() => { if (sub && sub !== lastSub.current && window.innerWidth < 640) subRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); lastSub.current = sub; }, [sub, res]);
   const shownPreview = hoverKey && preview?.key === hoverKey ? preview : null;
   const partBase = `/api/x?list=1${theme ? "&theme=" + theme : ""}`;
   /* Mit Unterthema: Größe des Themas (für den Anteil) und die Unterthemen, die im selben Vorgang mit vorkommen (Antwort der Auswahl) */
@@ -214,13 +214,13 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                 </Kennzahlen>}
 
               {place && cmp && <div className="rm-zeit-std mt-2 max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></div>}
-              {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die Karte bleibt stehen */}
-              <div className="rm-xsplit mt-4 max-sm:mt-2 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-4 lg:grid-cols-12">
-                <div className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
+              {/* Links die Karte (halbe Breite, dafür höher), rechts die Listen zum Anklicken; ab 640 px nebeneinander, die Karte bleibt stehen */}
+              <div className="rm-xsplit mt-4 max-sm:mt-2 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-4 min-[640px]:grid-cols-12">
+                <div className="rm-xsplit-map min-w-0 min-[640px]:sticky min-[640px]:top-4 min-[640px]:col-span-6 min-[640px]:self-start">
                   {allRegions.length > 0 && <AtlasMap level={level} onLevel={setLevel} chips={mapChips} zeit={zeit} onZeit={onZeit} onPlace={(ags) => search.setArea(ags, "map")} regions={shownPreview ? shownPreview.rows : allRegions} preview={shownPreview ? (parts.find((p) => p.key === shownPreview.key)?.name ?? "") : undefined} facts={SHOW_FACTS && !shownPreview ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
                 </div>
 
-                <div className="min-w-0 lg:col-span-6">
+                <div className="min-w-0 min-[640px]:col-span-6">
                   {pending && <ListSkeleton />}
                   <div className={pending ? "hidden" : undefined}>
                   {theme && <nav aria-label="Unterthema" className="rm-sub-wide print:hidden">
