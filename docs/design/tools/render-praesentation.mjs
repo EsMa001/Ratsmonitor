@@ -45,13 +45,13 @@ const fillOf = (spPr) => { const noLn = spPr.replace(/<a:ln\b[\s\S]*?<\/a:ln>|<a
 function lineOf(spPr) { const m = spPr.match(/<a:ln\b([^>]*)>([\s\S]*?)<\/a:ln>/); if (!m) return null; if (/<a:noFill\/>/.test(m[2])) return null; const c = m[2].match(/<a:solidFill>([\s\S]*?)<\/a:solidFill>/); const w = attr(m[1], "w"); return { color: c ? color(c[1]) : null, w: w ? +w * PX : 1 }; }
 function xfrmOf(s) { const m = s.match(/<[ap]:xfrm([^>]*)>\s*<a:off x="(-?\d+)" y="(-?\d+)"\/>\s*<a:ext cx="(\d+)" cy="(\d+)"\/>/); if (!m) return null; return { x: +m[2] * PX, y: +m[3] * PX, w: +m[4] * PX, h: +m[5] * PX, flipV: /flipV="1"/.test(m[1]), flipH: /flipH="1"/.test(m[1]) }; }
 
-const rels = (p) => { const dir = p.replace(/[^/]+$/, ""), f = p.replace(/^.*\//, ""); const r = xml(dir + "_rels/" + f + ".rels"); const map = {}; for (const m of r.matchAll(/<Relationship\s+([^>]*)\/>/g)) { const id = attr(m[1], "Id"), t = attr(m[1], "Target"); map[id] = t.startsWith("../") ? "ppt/" + t.slice(3) : dir + t; } return map; };
+const rels = (p) => { const dir = p.replace(/[^/]+$/, ""), f = p.replace(/^.*\//, ""); const r = xml(dir + "_rels/" + f + ".rels"); const map = {}; for (const m of r.matchAll(/<Relationship\s+([^>]*)\/>/g)) { const id = attr(m[1], "Id"), t = attr(m[1], "Target"); map[id] = t.startsWith("/") ? t.slice(1) : t.startsWith("../") ? "ppt/" + t.slice(3) : dir + t; } return map; };
 
 // Folienreihenfolge
 const pres = xml("ppt/presentation.xml");
 const sz = pres.match(/<p:sldSz cx="(\d+)" cy="(\d+)"/); const SW = +sz[1] * PX, SH = +sz[2] * PX;
 const presRels = rels("ppt/presentation.xml");
-const slides = [...pres.matchAll(/<p:sldId [^>]*r:id="(rId\d+)"/g)].map((m) => presRels[m[1]]);
+const slides = [...pres.matchAll(/<p:sldId [^>]*r:id="(rId[0-9]+)"/g)].map((m) => presRels[m[1]]);
 
 const face = (bold) => (bold ? F.b : F.r);
 /** Pfaddaten selbst runden; opentype.js toPathData liefert bei manchen Werten NaN */
@@ -184,7 +184,7 @@ function shapeSvg(sp, box, id) {
 function bgSvg(part, partRels) {
   const bg = (part.match(/<p:bg>([\s\S]*?)<\/p:bg>/) || [])[1];
   if (!bg) return "";
-  const blip = bg.match(/<a:blip r:embed="(rId\d+)"/);
+  const blip = bg.match(/<a:blip r:embed="(rId[0-9]+)"/);
   if (blip) { const media = read(partRels[blip[1]]); return `<image x="0" y="0" width="${SW}" height="${SH}" preserveAspectRatio="none" href="data:image/png;base64,${media.toString("base64")}"/>`; }
   const c = color(bg);
   return c ? `<rect width="${SW}" height="${SH}" fill="#${c.hex}"/>` : "";
@@ -221,15 +221,68 @@ async function renderPart(part, partRels, phMap, isLayout, idPrefix) {
     }
     if (!box) { warnings.push(`${id}: keine Position`); continue; }
     if (kind === "pic") {
-      const blip = sp.match(/<a:blip r:embed="(rId\d+)"/); const media = blip && read(partRels[blip[1]]);
+      const blip = sp.match(/<a:blip r:embed="(rId[0-9]+)"/); const media = blip && read(partRels[blip[1]]);
       if (media) { const mime = partRels[blip[1]].endsWith(".jpg") || partRels[blip[1]].endsWith(".jpeg") ? "image/jpeg" : "image/png"; els.push(`<image x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" preserveAspectRatio="none" href="data:${mime};base64,${media.toString("base64")}"/>`); }
       continue;
     }
-    if (kind === "graphicFrame") { els.push(`<rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="6 4"/>`); els.push(pathSvg(glyphRun(F.r, "Diagramm (nativ, hier nicht gerendert)", box.x + 12, box.y + 28, 20).d, { hex: "64748B", alpha: 1 })); continue; }
+    if (kind === "graphicFrame") { const cm = sp.match(/<c:chart [^>]*r:id="(rId[0-9]+)"/); const cx = cm && partRels[cm[1]] ? xml(partRels[cm[1]]) : ""; if (cx) els.push(chartSvg(cx, box)); else els.push(`<rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="#f4f4f5" stroke="#a1a1aa" stroke-dasharray="6 4"/>`); continue; }
     els.push(shapeSvg(sp, box, id));
     svgText = [];
     drawText(sp, box, bodyPr, defaults, id);
     els.push(...svgText);
+  }
+  return els.join("");
+}
+
+/** Einfache Balken- und Säulendiagramme aus der Chart-XML (nur zur Prüfung; Farben und Werte wie in der Datei) */
+function chartSvg(chartXml, box) {
+  const els = [];
+  const col = (frag) => { const m = frag && frag.match(/<a:srgbClr val="([0-9A-Fa-f]{6})"/); return m ? m[1] : "268478"; };
+  const vals = (frag, tag) => { const part = (frag.match(new RegExp("<c:" + tag + ">[\\s\\S]*?</c:" + tag + ">")) || [""])[0]; return [...part.matchAll(/<c:pt idx="(\d+)">\s*<c:v>([^<]*)<\/c:v>/g)].map((m) => unesc(m[2])); };
+  const horizontal = /<c:barDir val="bar"/.test(chartXml);
+  const series = [...chartXml.matchAll(/<c:ser>([\s\S]*?)<\/c:ser>/g)].map((m) => {
+    const s = m[1];
+    const dpt = {}; for (const d of s.matchAll(/<c:dPt>([\s\S]*?)<\/c:dPt>/g)) { const i = +(d[1].match(/<c:idx val="(\d+)"/) || [0, 0])[1]; dpt[i] = col(d[1]); }
+    const sp = (s.replace(/<c:dPt>[\s\S]*?<\/c:dPt>/g, "").match(/<c:spPr>([\s\S]*?)<\/c:spPr>/) || [])[1];
+    return { name: unesc(((s.match(/<c:tx>[\s\S]*?<c:v>([^<]*)<\/c:v>/) || [])[1] || "")), color: col(sp), dpt, cats: vals(s, "cat"), vals: vals(s, "val").map(Number) };
+  });
+  if (!series.length) return "";
+  const title = unesc((chartXml.match(/<c:title>[\s\S]*?<a:t>([^<]*)<\/a:t>/) || [])[1] || "");
+  const legend = /<c:legend>/.test(chartXml);
+  const explicitMax = +(chartXml.match(/<c:max val="([\d.]+)"/) || [0, 0])[1];
+  const max = explicitMax || Math.max(...series.flatMap((s) => s.vals)) * 1.18;
+  const pt = (n) => (n * DPI) / 72;
+  let top = box.y + pt(6);
+  if (title) { els.push(pathSvg(glyphRun(F.b, title, box.x + pt(4), top + pt(11), pt(11)).d, { hex: "18181B", alpha: 1 })); top += pt(18); }
+  const bottom = box.y + box.h - (legend ? pt(16) : pt(4));
+  const cats = series[0].cats, n = cats.length, k = series.length;
+  const label = (t, x, y, size, color, right = false) => { const r = glyphRun(F.r, t, 0, null, size); els.push(pathSvg(glyphRun(F.r, t, right ? x - r.w : x, y, size).d, { hex: color, alpha: 1 })); };
+  if (horizontal) {
+    const labelW = Math.min(box.w * 0.34, Math.max(...cats.map((c) => glyphRun(F.r, c, 0, null, pt(8)).w)) + pt(8));
+    const x0 = box.x + labelW + pt(4), plotW = box.w - labelW - pt(44);
+    const rowH = (bottom - top) / n, barH = (rowH * 0.7) / k;
+    cats.forEach((c, i) => {
+      const yc = top + rowH * i + rowH / 2;
+      label(c, x0 - pt(6), yc + pt(3), pt(8), "52525B", true);
+      series.forEach((s, j) => {
+        const v = s.vals[i] || 0, w = (v / max) * plotW, y = yc - (k * barH) / 2 + j * barH;
+        els.push(`<rect x="${x0}" y="${y}" width="${Math.max(w, 0)}" height="${barH - 1}" fill="#${s.dpt[i] || s.color}"/>`);
+        label(String(v).replace(".", ","), x0 + w + pt(4), y + barH / 2 + pt(3), pt(8), "18181B");
+      });
+    });
+  } else {
+    const x0 = box.x + pt(6), plotW = box.w - pt(12), base = bottom - pt(16), plotH = base - top - pt(12);
+    const colW = plotW / n, barW = (colW * 0.65) / k;
+    cats.forEach((c, i) => {
+      const xc = x0 + colW * i + colW / 2;
+      const r = glyphRun(F.r, c, 0, null, pt(8)); label(c, xc - r.w / 2, base + pt(11), pt(8), "52525B");
+      series.forEach((s, j) => {
+        const v = s.vals[i] || 0, h = (v / max) * plotH, x = xc - (k * barW) / 2 + j * barW;
+        els.push(`<rect x="${x}" y="${base - h}" width="${barW - 2}" height="${h}" fill="#${s.dpt[i] || s.color}"/>`);
+        const lr = glyphRun(F.r, String(v), 0, null, pt(8)); label(String(v), x + barW / 2 - lr.w / 2, base - h - pt(3), pt(8), "18181B");
+      });
+    });
+    if (legend) { let lx = box.x + pt(6); for (const s of series) { els.push(`<rect x="${lx}" y="${box.y + box.h - pt(11)}" width="${pt(8)}" height="${pt(8)}" fill="#${s.color}"/>`); label(s.name, lx + pt(11), box.y + box.h - pt(4), pt(8), "52525B"); lx += pt(11) + glyphRun(F.r, s.name, 0, null, pt(8)).w + pt(14); } }
   }
   return els.join("");
 }

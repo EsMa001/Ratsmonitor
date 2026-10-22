@@ -1,6 +1,6 @@
 # Corporate Design Plenara
 
-Stand: 16.10.2026 (Logo-Dateien, Präsentation und Werkzeuge ergänzt; erste Fassung 08.10.2026). Abgeleitet aus der öffentlichen Webseite, so wie sie heute ist (ohne Admin-Bereich). **Ist-Stand** heißt: so steht es im Code und sieht man auf der Seite. **Vorschlag** heißt: von mir ergänzt, damit das Design vollständig wird, bitte freigeben oder ändern.
+Stand: 22.10.2026 (Farbschema Petrol klar in Abschnitt 3, 2 und 11; Investorenpräsentation mit Anwendungsfällen; erste Fassung 08.10.2026). Abgeleitet aus der öffentlichen Webseite, so wie sie heute ist (ohne Admin-Bereich). **Ist-Stand** heißt: so steht es im Code und sieht man auf der Seite. **Vorschlag** heißt: von mir ergänzt, damit das Design vollständig wird, bitte freigeben oder ändern.
 
 Die Ansicht dazu: [`styleguide.html`](styleguide.html) (im Browser öffnen). Quellen im Code: `app/styles/*.css` (Farben in `tokens.css`), `components/ratsmonitor/components/Brand.tsx`, `components/ratsmonitor/lib/constants.ts`, `components/ratsmonitor/FRONTEND.md`.
 
@@ -15,8 +15,8 @@ Die Ansicht dazu: [`styleguide.html`](styleguide.html) (im Browser öffnen). Que
 
 **Ist-Stand:** Das Logo in der Kopfzeile ist die Variante „Plenara v2 ■“ (`DEFAULT_LOGO = plenara-v2sq`).
 
-- Bildmarke: p aus Sitzpunkten (zwei Reihen, außen kräftig, innen blasser) mit einem Bogen links als Stiel, alles in Teal `#0d9488`.
-- Schriftzug „lenara“ in IBM Plex Sans Regular (400), Farbe Tinte `#0f172a`, Buchstabenabstand −0,015 em.
+- Bildmarke: p aus Sitzpunkten (zwei Reihen, außen kräftig, innen blasser) mit einem Bogen links als Stiel, alles in Petrol `#268478` (`--rm-fill`; bis 16.10.2026 Teal `#0d9488`).
+- Schriftzug „lenara“ in IBM Plex Sans Regular (400), Farbe Text `#18181b`, Buchstabenabstand −0,015 em.
 - Abschluss: ein Quadrat in Teal anstelle eines Punkts.
 - **Plenara.X:** Wortmarke ohne Schlussquadrat, dahinter ein X aus kleiner werdenden, verblassenden Quadraten, die von einem Mittelquadrat auf der Grundlinie ausgehen. Alles in Teal.
 - Auf schmalen Handys (unter 440 px) zeigt die Kopfzeile nur die Bildmarke ohne Schriftzug.
@@ -26,41 +26,36 @@ Die Ansicht dazu: [`styleguide.html`](styleguide.html) (im Browser öffnen). Que
 
 - Schutzraum um das Logo: mindestens die Höhe des Buchstabens „l“ auf allen Seiten.
 - Mindestgröße: Schriftzug nicht kleiner als 20 px Schrifthöhe (Druck 6 mm), Bildmarke allein nicht kleiner als 16 px (5 mm).
-- Auf dunklem Grund (`#0b1220`): Schriftzug Weiß, Bildmarke und Schlussquadrat bleiben Teal `#0d9488`.
+- Auf dunklem Grund (`#191e1d`): Schriftzug Weiß, Bildmarke und Schlussquadrat bleiben Petrol `#268478`.
 - Nicht erlaubt: Logo strecken, drehen, andere Farben als Teal, Tinte und Weiß, Schatten oder Verläufe, Schriftzug neu setzen.
 - **Logo-Dateien** liegen in `docs/design/logo/` (Schriftzug als Pfade, keine Schrift nötig): `plenara-logo.svg/.png` (auf Weiß), `plenara-logo-dunkel.svg/.png`, `plenara-bildmarke.svg/.png`, `plenara-bildmarke-dunkel.svg`, `plenara-x-logo.svg/.png`, `plenara-x-logo-dunkel.svg/.png`, Profilbilder `plenara-profilbild.png` und `plenara-profilbild-dunkel.png` (1024 × 1024). Erzeugt aus der Geometrie in `Brand.tsx` mit `node docs/design/tools/export-logos.mjs`; nach Änderungen am Logo im Code dort neu erzeugen.
 - Maschinenlesbare Fassung aller Festlegungen (Farben, Schrift, Logo, Präsentation): `docs/design/brand.json`.
 
 ## 3. Farben
 
-**Ist-Stand.** Die Seite nutzt die Tailwind-Paletten Slate (Grautöne) und Teal. Kontraste nach WCAG 2.x gegen Weiß.
+**Festgelegt (Farbschema „Petrol klar“, seit 17.10.2026; Übersicht `docs/farbschema-petrol-klar-2026-10-17.pdf`, Werte in `app/styles/tokens.css`, Block „Farbkonzept“).** Nur vier Farbfamilien plus Weiß und Schwarz: Grau, Petrol, Dunkelblau, Orange-Braun. Andere Farben, Töne oder Hex-Werte gibt es nicht, auch nicht in Präsentationen, Diagrammen oder Sonderfällen. Kontraste nach WCAG 2.x gegen Weiß.
 
-| Name | Hex | Verwendung | Kontrast auf Weiß |
-|---|---|---|---|
-| Tinte (slate-900) | `#0f172a` | Überschriften, Logo-Schrift, Hauptbutton, wichtiger Text | 17,9 : 1 |
-| Grau (slate-500) | `#64748b` | Fließtext, Erläuterungen, Meta, Symbole | 4,8 : 1 |
-| Grau hell (slate-400) | `#94a3b8` | Platzhalter, Hinweise, nur dekorativ | 2,6 : 1 |
-| **Teal (teal-600)** | `#0d9488` | **Akzent:** Logo, Links, Eyebrows, Häkchen, Fokus, Hauptfläche in Hinweisboxen | 3,7 : 1 |
-| Teal dunkel (teal-700) | `#0f766e` | Hover, höchste Kartenstufe, Auswahl auf der Karte | 5,5 : 1 |
-| Teal hell (teal-50) | `#f0fdfa` | zarte Flächen und Hinweise | |
-| Weiß | `#ffffff` | Hintergrund | |
-| Fläche (slate-50) | `#f8fafc` | Bänder, Kartenhintergrund | |
-| Fläche (slate-100) | `#f1f5f9` | Hover, Symbolflächen | |
-| Linie Abschnitt | `#eef1f4` | Trennlinien zwischen Abschnitten | |
-| Linie Karte | `#e8edf2` | Rahmen von Karten | |
-| Linie Feld | `#e2e8f0` | Rahmen von Eingabefeldern und Karten | |
-| Dunkel | `#0b1220` | dunkle Hinweiskarten, Auswahlrahmen Tarif | |
-| Fehler (rose-700) | `#be123c` | Fehlermeldungen unter Feldern | 6,3 : 1 |
-| Fehlerfläche (rose-50, Rand rose-200) | `#fff1f2`, Rand `#fecdd3` | Fehlerbox, z. B. „Die Suche konnte nicht abgeschlossen werden“ | |
-| Umkreis auf der Karte | `#d1665a` | Radius-Ring (Umkreissuche) | |
+| Name | Hex | Verwendung |
+|---|---|---|
+| Text | `#18181b` | Überschriften, Logo-Schrift, wichtiger Text |
+| Grautext | `#52525b` | Fließtext, Erläuterungen, Meta, Fußnoten (7,5 : 1) |
+| Grau hell | `#a1a1aa` | Seitenzahlen, Text auf dunklem Grund; auf Weiß nur dekorativ |
+| **Petrol** | `#268478` | Marke, Hauptaktion, Hervorhebung, Balken, Karte, Flächen; als Text 4,5 : 1 |
+| Petrol dunkel | `#1f7065` | Hover, kleiner Text auf hellen Petrol-Flächen |
+| Petrol hell | `#e6f3f1` | zarte Flächen, Symbolkreise, Hinweisboxen |
+| Dunkelblau | `#0c4a6e` | beschlossen, Neues, Info; zweite Diagrammfarbe |
+| Link | `#29467a` | Links |
+| Orange-Braun | `#b45309` | abgelehnt, Fehler, Warnung; dritte Diagrammfarbe |
+| Weiß | `#ffffff` | Hintergrund |
+| Fläche | `#f4f4f5` | Karten, Bänder |
+| Linie | `#e4e4e7` | Rahmen von Feldern und Karten, Trennlinien |
+| Dunkel | `#191e1d` | dunkle Flächen, Titel- und Schlussfolien, dunkle Fassung des Logos |
 
-Kartenstufen (Abdeckung, hell nach dunkel): `#b3dfda`, `#8ccdc7`, `#6ebfb8`, `#0f766e`. Karte: Grund `#ffffff`, Nachbarländer `#f8f9fa`, Linie `#d3d8df`.
+Kartenstufen (hell nach dunkel): `#bfe6e0`, `#86cbc1`, `#4fa89b`, `#0f5249`. Dunkelmodus: eigene Werte unter `html.rm-dark` in `tokens.css`.
 
-Warnhinweise nutzen Amber (Tailwind `amber-50` Fläche, `amber-200` Rand, `amber-800` Text). Sie kommen selten vor.
+**Regeln (aus `FRONTEND.md`):** Weiß, Linien statt Kästen und Kacheln, keine bunten Abzeichen, Status als schlichter Text. Petrol ist die einzige Farbe mit Bedeutung; Dunkelblau und Orange-Braun stehen nur für Status (beschlossen, abgelehnt) und Hinweise.
 
-**Regeln (Ist-Stand, aus `FRONTEND.md`):** Weiß, Linien statt Kästen und Kacheln, keine bunten Abzeichen, Status als schlichter grauer Text. Teal ist die einzige Farbe mit Bedeutung.
-
-**Vorschlag zum Kontrast:** Teal `#0d9488` erreicht auf Weiß nur 3,7 : 1. Das genügt für große Schrift, Linien und Symbole, aber nicht für kleinen Text (Richtwert 4,5 : 1). Das betrifft Links, die kleinen Eyebrow-Zeilen und weißen Text auf Teal-Flächen. Für kleinen Text auf Weiß empfehle ich `#0f766e` (5,5 : 1) und für Flächen mit weißem Text ebenfalls `#0f766e`. Das ändert den Eindruck kaum. **Entschieden (08.10.26):** `#0f766e` für kleinen Text und für Flächen mit weißem Text, `#0d9488` bleibt für große Flächen, Linien und Symbole.
+**Frühere Werte (bis 16.10.2026):** Teal `#0d9488` und `#0f766e`, Tinte `#0f172a`, Slate-Grautöne. Sie gelten nicht mehr; Logo-Dateien und Präsentationen sind am 22.10.2026 auf Petrol klar umgestellt. Das Favicon (`public/favicon.svg`, App-Symbole) trägt noch das alte Teal.
 
 ## 4. Schrift
 
@@ -149,9 +144,9 @@ Erledigt am 16.10.2026: Logo-Dateien, Schutzraum und Mindestgröße (Abschnitt 2
 
 ## 11. Präsentationen
 
-**Festgelegt (16.10.2026).** Es gibt zwei Fassungen auf derselben Vorlage: die Investorenpräsentation `docs/design/praesentation/plenara-investoren.pptx` (12 Folien, wenige Worte, große Aussagen) und die ausführliche Produktfassung `plenara-firmenpraesentation.pptx` (18 Folien: Plenara auf einen Blick, Datenfluss, Zielgruppen, Suche, Trefferliste, Artikel, Benachrichtigungen, plenara.X mit Signalen, Tools, Ausbreitung und Fakten, Qualität, Stufen) ist zugleich die Vorlage: Thema, Layouts und Bausteine daraus gelten für alle Präsentationen.
+**Festgelegt (16.10.2026).** Es gibt zwei Fassungen auf derselben Vorlage: die Investorenpräsentation `docs/design/praesentation/plenara-investoren.pptx` (20 Folien mit Screenshots der Seite, Anwendungsfällen und Kennzahlen) und die ausführliche Produktfassung `plenara-firmenpraesentation.pptx` (18 Folien: Plenara auf einen Blick, Datenfluss, Zielgruppen, Suche, Trefferliste, Artikel, Benachrichtigungen, plenara.X mit Signalen, Tools, Ausbreitung und Fakten, Qualität, Stufen) ist zugleich die Vorlage: Thema, Layouts und Bausteine daraus gelten für alle Präsentationen.
 
-- **Format** 16:9 (10 × 5,625 Zoll). **Thema „Plenara“** mit den Farben aus Abschnitt 3: Text Tinte, Hintergrund Weiß, zweite Fläche `#f8fafc`, dunkle Fläche `#0b1220`, Akzent 1 Teal `#0d9488`, Akzent 2 Teal dunkel `#0f766e`, Akzent 3 Grau, Akzent 4 Grau hell, Akzent 5 Teal hell `#f0fdfa`, Akzent 6 Linie `#e2e8f0`. Alle Elemente nutzen Themenfarben; wer das Thema ändert, ändert die ganze Präsentation.
+- **Format** 16:9 (10 × 5,625 Zoll). **Thema „Plenara“** mit den Farben aus Abschnitt 3: Text `#18181b`, Hintergrund Weiß, zweite Fläche `#f4f4f5`, dunkle Fläche `#191e1d`, Akzent 1 Petrol `#268478`, Akzent 2 Petrol dunkel `#1f7065`, Akzent 3 Grautext `#52525b`, Akzent 4 Grau hell `#a1a1aa`, Akzent 5 Petrol hell `#e6f3f1`, Akzent 6 Linie `#e4e4e7`; Diagramme in Petrol, Dunkelblau `#0c4a6e` und Orange-Braun `#b45309`. Alle Elemente nutzen Themenfarben; wer das Thema ändert, ändert die ganze Präsentation.
 - **Schrift** IBM Plex Sans; Überschriften SemiBold (Windows-Name der Schrift: „IBM Plex Sans SmBld“), Text Regular. Die Schrift muss auf dem Rechner installiert sein (`public/fonts`, OFL); ohne sie fällt PowerPoint auf eine Systemschrift zurück.
 - **Drei Layouts:** HELL (Inhaltsfolie: Eyebrow 10 pt in Teal dunkel gesperrt, Titel 24 pt SemiBold, Logo unten links, Seitenzahl unten rechts), DUNKEL (Titel- und Schlussfolie mit Punktraster, Logo-Fassung dunkel, Slogan 32 pt Weiß), TRENNER (Abschnitt: Titel 36 pt Weiß, Untertitel 16 pt Grau hell).
 - **Größen:** Titel 24, Zwischenüberschriften 12,5 bis 15 SemiBold, Text 10 bis 13, Fußnoten 9 bis 9,5 in Grau hell, Kennzahlen 24 bis 32 SemiBold. Ränder 0,5 Zoll, Inhalt zwischen 1,45 und 5,05 Zoll Höhe.
@@ -166,5 +161,5 @@ Erledigt am 16.10.2026: Logo-Dateien, Schutzraum und Mindestgröße (Abschnitt 2
 | `node export-logos.mjs` | Logo-Dateien aus `Brand.tsx` neu erzeugen (SVG mit Pfaden, PNG) |
 | `BASE=http://localhost:18080 node screenshots.mjs` | Screenshots der öffentlichen Seiten (Tunnel zum Server, siehe `docs/betrieb/node-server.md`) nach `praesentation/screenshots/` |
 | `node build-praesentation.mjs` | Produktfassung (18 Folien, ausführlich) neu bauen; Texte und Folien stehen im Skript, die Vorlage in `deck-lib.mjs` |
-| `node build-investoren.mjs` | Investorenfassung `plenara-investoren.pptx` (12 Folien: Problem, Lösung, Stand, Produkt, plenara.X, Markt, Geschäftsmodell, Warum Plenara, Warum jetzt, nächste Schritte); Plan und Preise aus `docs/strategie`, als Plan gekennzeichnet |
+| `node build-investoren.mjs` | Investorenfassung `plenara-investoren.pptx` (20 Folien: Problem, Lösung, Kern, Kennzahlen, sechs Anwendungsfälle mit Screenshots, plenara.X mit drei Analysen, Markt, Geschäftsmodell, Warum Plenara, nächste Schritte); Zahlen von plenara.de und den öffentlichen Auszügen, Plan und Preise aus `docs/strategie`, als Plan gekennzeichnet |
 | `node render-praesentation.mjs` | Folien ohne PowerPoint als PNG nach `tmp/praesentation-vorschau/` rendern (echte Plex-Schriften, meldet Textüberläufe; Diagramme nur als Rahmen) |

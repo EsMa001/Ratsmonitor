@@ -31,12 +31,13 @@ function applyTheme(file, theme) {
 }
 
 // ---------- Marke ----------
-const HEX = { ink: "0F172A", dark: "0B1220", white: "FFFFFF", face: "F8FAFC", teal: "0D9488", tealDark: "0F766E", tealLight: "F0FDFA", grey: "64748B", greyLight: "94A3B8", line: "E2E8F0", lineCard: "E8EDF2" };
+// Farbschema „Petrol klar“ (app/styles/tokens.css, seit 17.10.2026): Grau (zinc), Petrol, Dunkelblau (sky), Orange-Braun (amber)
+const HEX = { ink: "18181B", dark: "191E1D", white: "FFFFFF", face: "F4F4F5", teal: "268478", tealDark: "1F7065", tealLight: "E6F3F1", grey: "52525B", greyLight: "A1A1AA", line: "E4E4E7", lineCard: "E4E4E7", sky: "0C4A6E", amber: "B45309", link: "29467A" };
 const THEME = {
   name: "Plenara",
   headFontFace: "IBM Plex Sans SmBld",
   bodyFontFace: "IBM Plex Sans",
-  colors: { dk1: HEX.ink, lt1: HEX.white, dk2: HEX.dark, lt2: HEX.face, accent1: HEX.teal, accent2: HEX.tealDark, accent3: HEX.grey, accent4: HEX.greyLight, accent5: HEX.tealLight, accent6: HEX.line, hlink: HEX.tealDark, folHlink: HEX.tealDark },
+  colors: { dk1: HEX.ink, lt1: HEX.white, dk2: HEX.dark, lt2: HEX.face, accent1: HEX.teal, accent2: HEX.tealDark, accent3: HEX.grey, accent4: HEX.greyLight, accent5: HEX.tealLight, accent6: HEX.line, hlink: HEX.link, folHlink: HEX.link },
 };
 const SB = "IBM Plex Sans SmBld"; // SemiBold 600 für Hervorhebungen
 
@@ -73,7 +74,8 @@ const textH = (text, pt, bold, wIn, lh = 1.2) => (lineCount(text, pt, bold, wIn)
 const b64 = (buf) => "image/png;base64," + buf.toString("base64");
 const file = (p) => readFileSync(p);
 const LOGO = { light: file(join(REPO, "docs/design/logo/plenara-logo.png")), dark: file(join(REPO, "docs/design/logo/plenara-logo-dunkel.png")), xDark: file(join(REPO, "docs/design/logo/plenara-x-logo-dunkel.png")), mark: file(join(REPO, "docs/design/logo/plenara-bildmarke.png")) };
-const RATIO = { logo: 2400 / 809, logoDark: 2400 / 890, xDark: 2400 / 890, mark: 719 / 1024 };
+const dims = async (buf) => { const m = await sharp(buf).metadata(); return m.width / m.height; };
+const RATIO = { logo: await dims(LOGO.light), logoDark: await dims(LOGO.dark), xDark: await dims(LOGO.xDark), mark: await dims(LOGO.mark) };
 
 async function dotGrid(bg, dot, alpha) {
   const dots = [];
@@ -210,4 +212,4 @@ export async function finish(out) {
   console.log("geschrieben:", out, "Folien:", n);
 }
 export const count = () => n;
-export { pres, C, W, H, HEX, THEME, SB, b64, LOGO, RATIO, IMG, ic, textH, widthIn, slide, head, T, card, iconCircle, squareList, stat, picture, CHART_BASE, OUT_DIR, join };
+export { pres, C, W, H, HEX, THEME, SB, b64, LOGO, RATIO, IMG, shot, ic, textH, widthIn, slide, head, T, card, iconCircle, squareList, stat, picture, CHART_BASE, OUT_DIR, join };

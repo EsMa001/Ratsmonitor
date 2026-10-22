@@ -14,9 +14,9 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const OUT = join(REPO, "docs/design/logo");
 mkdirSync(OUT, { recursive: true });
 
-const TEAL = "#0d9488";
-const INK = "#0f172a";
-const DARK = "#0b1220";
+const TEAL = "#268478"; // Petrol „klar“ (--rm-fill, seit 17.10.2026)
+const INK = "#18181b";
+const DARK = "#191e1d";
 const WHITE = "#ffffff";
 
 const font = opentype.parse(require("node:fs").readFileSync(join(REPO, "public/fonts/IBMPlexSans-Regular.ttf")).buffer.slice(0));
