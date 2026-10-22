@@ -91,6 +91,14 @@ const T={
   text:String(message||''),
   html:page('Hinweis',[p(String(message||''))]),
  }),
+ /* Betriebsüberwachung (server/integrations/operator-notify.mjs): Fehlermail einer systemd-Einheit, tägliche Sammelmail.
+    Der Text ist vorformatiert (Protokollzeilen) und wird im HTML als pre gesetzt, maskiert wie alles andere */
+ ops:({subject,message})=>({
+  subject:'Plenara Betrieb: '+String(subject||'Hinweis'),
+  text:String(message||''),
+  html:page('Betrieb',[html`<p style="margin:0 0 12px;font-weight:bold">${String(subject||'Hinweis')}</p>`,
+   html`<pre style="margin:0;white-space:pre-wrap;font:13px/1.4 Consolas,Menlo,monospace">${String(message||'')}</pre>`]),
+ }),
 };
 /*
  * Benachrichtigung (server/accounts/notify.mjs): Abschnitte je Suche, Vorgang und Kalender. Der Betreff nennt keine Namen der

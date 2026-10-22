@@ -2,6 +2,7 @@
 # (rückwirkender Abruf mit Extraktion und Verarbeitung, alte Fehler erneut versuchen), 10 bis 22 Uhr. Protokoll in backups/altbestand.log.
 [Unit]
 Description=Ratsmonitor Altbestand (auf Anforderung, 10–22 Uhr)
+OnFailure=ratsmonitor-fehlermail@%n.service
 After=network-online.target ratsmonitor.service
 Wants=network-online.target
 

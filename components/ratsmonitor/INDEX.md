@@ -695,6 +695,9 @@ z- analytics.css:582
 ## Dateien (Zeilen, Exporte)
 
 
+### app/(monitor)/abbestellen/
+- page.tsx (4): metadata, Page
+
 ### app/(monitor)/agb/
 - page.tsx (4): metadata, Page
 

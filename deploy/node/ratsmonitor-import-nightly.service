@@ -3,6 +3,7 @@
 # beide Einheiten teilen sich den Auftrag über die Sperren in der Datenbank (jedes Gebiet genau einmal).
 [Unit]
 Description=Ratsmonitor Importprozess, nächtlicher Lauf
+OnFailure=ratsmonitor-fehlermail@%n.service
 After=network-online.target ratsmonitor.service
 Wants=network-online.target
 

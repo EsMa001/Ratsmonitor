@@ -3,6 +3,7 @@
 # in backups/rule-texts.log.
 [Unit]
 Description=Ratsmonitor Themen & Texte
+OnFailure=ratsmonitor-fehlermail@%n.service
 After=ratsmonitor.service
 
 [Service]

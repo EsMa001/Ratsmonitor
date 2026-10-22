@@ -90,6 +90,8 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/data/pdf-store/` | PDF-Ablage (`RM_PDF_STORE`): Originale, Textfassungen, `index.sqlite`; gefüllt von der nächtlichen Kette |
 | `/srv/ratsmonitor/ocr-tools/`, `data/ocr-cache/` | OCR-Werkzeuge (tesseract.js, @napi-rs/canvas) und Sprachdaten |
 | `/etc/systemd/system/ratsmonitor-pdf-nightly.*` | nächtliche Kette der PDF-Ablage, 05:30 Uhr; Vorlage `deploy/node/ratsmonitor-pdf-nightly.*` |
+| `/etc/systemd/system/ratsmonitor-fehlermail@.service` | Fehlermail an `OPERATOR_EMAIL`, wenn eine `ratsmonitor-*.service` scheitert (`OnFailure`, `scripts/notify-failure.mjs`; Abschnitt „Betriebsüberwachung“) |
+| `/etc/systemd/system/ratsmonitor-betrieb.*` | tägliche Betriebsprüfung 09:30 Uhr mit Sammelmail (Zeitplaner, `scripts/ops-check.mjs`; Stand in `system_state` `ops-check`) |
 
 Der Server startet nicht ohne gültige Datenbank. Sonst würden die Seiten still den mitgelieferten, alten Stand zeigen.
 
@@ -642,6 +644,66 @@ Unbehandelte Fehler im Browser (und Fehler beim Aufbau einer Seite) meldet `comp
 ## Kunden-MCP über HTTPS (seit 21.10.2026)
 
 `ratsmonitor-mcp.service` (`scripts/mcp-http.mjs`, 127.0.0.1:3002, nur lesend) beantwortet `https://plenara.de/mcp`; Caddy leitet `/mcp` und `/.well-known/oauth-*` dorthin (`import mcp_routes`, Seitenpasswort nur für `@site_password`). Die OAuth-Anmeldung (`/oauth/*`, Zustimmung `/verbinden`) macht die Web-App mit dem Plenara-Konto. Werte in `/etc/ratsmonitor/mcp.env` (Vorlage `deploy/node/mcp.env.example`, gelesen von `ratsmonitor` und `ratsmonitor-mcp`), Kunden in `/srv/ratsmonitor/config/mcp/customers.json` (`scripts/mcp-customers.mjs`). Der Dienst sieht den Kontenordner nicht und bekommt weder `ratsmonitor.env` noch `accounts.env`. Die Web-App liest `mcp.env` über das Drop-in `ratsmonitor.service.d/mcp.conf`; `deploy.sh` startet den MCP-Dienst nach dem Ausrollen neu. Einrichtung, Clients und Fehlerbehebung: `docs/betrieb/claude-mcp-einbindung.md`. Der interne MCP läuft weiter per SSH (STDIO, kein Port).
+
+## Betriebsüberwachung (seit 22.10.2026)
+
+Drei Teile, ohne Fremddienst, Mails über den vorhandenen Postausgang (SMTP seit 19.10.2026) an `OPERATOR_EMAIL`. Vorgeschichte:
+am 15./16.10.2026 stand der OCR-Timer zwei Tage unbemerkt still; es gab keinen Health-Endpunkt und keine Nachricht bei
+gescheiterten Jobs.
+
+**1. `GET /api/health`** (`app/api/health/route.ts`, `server/integrations/health.mjs`, Test `tests/health.test.mjs`): ohne Konto,
+ohne Stufe, nur lesend, frei in der Zugangssperre (`FREE` in `access.mjs`). Antwort 200 mit `database:true`, dem Datenstand
+(`revisions` aus `data_revisions`: `content`, `search`, `coverage`), Zeitpunkt und Alter in Stunden der letzten Sicherung
+(`backup`, aus dem Ende des Jobs „Sichern“ oder der Speichermessung) und des letzten erfolgreichen Abrufs (`import`,
+nächtlicher Lauf oder Abrufaufträge); 503 mit `database:false`, wenn die Datenbank nicht antwortet. Keine Personendaten,
+keine Pfade. Ein externer Uptime-Dienst (etwa Uptime Kuma auf einem anderen Rechner, Healthchecks.io, der Monitor des
+Hosters) fragt die Route alle 1 bis 5 Minuten ab und erwartet 200:
+
+```bash
+curl -fsS -u plenara:PASSWORT https://plenara.de/api/health
+```
+
+Solange die Seite hinter dem Seitenpasswort steht, gibt der Dienst Benutzer und Passwort (Basic Auth) mit; die meisten
+Dienste haben dafür ein Feld. Alternativ im Caddyfile die Route vom Passwort ausnehmen (`@site_password` um `not path /api/health`
+erweitern); das Snippet im Repository bleibt, wie es ist. Sinnvolle Prüfung im Dienst zusätzlich zum Status: Antwort
+enthält `"ok":true`; wer mehr will, prüft `backup.ageHours` unter 36. Intern bleibt `GET /api/internal/health` (Bearer) für `deploy.sh`.
+
+**2. Fehlermail je Einheit** (`deploy/node/ratsmonitor-fehlermail@.service`, `scripts/notify-failure.mjs`): jede `ratsmonitor-*.service`
+außer dem Webdienst hat `OnFailure=ratsmonitor-fehlermail@%n.service`. Scheitert ein Dienst (Exit ≠ 0, Zeitüberschreitung, Abbruch durch den Kernel),
+startet systemd die Fehlermail-Einheit mit dem Namen der Einheit; das Skript sammelt Ergebnis, Zeit, die letzten 30 Zeilen aus
+`journalctl -u <Einheit>` und, wenn die Einheit in eine Protokolldatei schreibt (`StandardOutput=append:…`, etwa `backup.log`),
+deren letzte 30 Zeilen, und schickt eine Mail. Die Einheit läuft als `ratsmonitor` mit `SupplementaryGroups=systemd-journal`
+(sonst ist das Journal leer) und sieht die Kontendatei nicht; die Mail geht deshalb über den Webdienst:
+`POST /api/internal/notify` (Bearer `IMPORT_TOKEN`, `server/integrations/operator-notify.mjs`) reiht sie in den Postausgang ein
+und verschickt sie sofort (Vorlage `ops`, Kontingent `operator`). Fünf Anläufe im Abstand von 10 s, weil der Webdienst nach
+einem Neustart kurz nicht antwortet. Ist der Webdienst selbst aus, kommt keine Mail; dafür gibt es die äußere Prüfung (1).
+`ratsmonitor-stop@.service` hat kein `OnFailure` (läuft als root, tut nur `systemctl stop`), die Fehlermail-Einheit selbst auch nicht (keine Schleife), der Webdienst `ratsmonitor.service` auch nicht (er startet mit `Restart=always` neu, und ohne ihn kann keine Mail hinaus; dafür gibt es die äußere Prüfung).
+
+**3. Tägliche Betriebsprüfung** (Job `betrieb`, 09:30, `scripts/ops-check.mjs`, Schwellen in `server/integrations/ops-check.mjs`,
+Test `tests/ops-check.test.mjs`): Auslöser inaktiv oder Zeitplaner nicht mehr aufgerufen (`systemd-units`), täglicher Job der
+Tagespipeline heute nicht gestartet, obwohl seine Zeit samt 3 h Nachholfrist vorbei ist (eingeschaltete Jobs; `rule-texts`
+erst nach der Rückfallzeit 08:50), Job heute mit Fehler geendet, Sicherung älter als 36 h oder keine (`BACKUP_DIR`, sonst
+`backups/` neben dem Datenordner), Platte über 85 % (statfs des Datenordners), Datenbank samt WAL wächst schneller als 3 GB je
+Tag gegen die Messung des vorigen Laufs. Neue Befunde gehen als **eine** Sammelmail; dieselbe Warnung höchstens einmal je Tag
+(deutsche Zeit), Stand in `system_state` `ops-check` (`date`, `sent`, `warnings`, `measure`). Scheitert der Versand, bleiben die
+Befunde ungemeldet und das Skript endet mit 1 (dann meldet die Fehlermail-Einheit, sobald der Webdienst wieder da ist). Grenzen
+über `OPS_BACKUP_HOURS`, `OPS_DISK_PERCENT`, `OPS_DB_GROWTH_GB` in `ratsmonitor.env`. Von Hand: `node scripts/ops-check.mjs --dry-run --print`.
+
+Einrichten (einmal, als root; Reihenfolge: Einheiten kopieren, neu laden, Probe):
+
+```bash
+cd /srv/ratsmonitor/app/current
+cp deploy/node/ratsmonitor-*.service deploy/node/ratsmonitor-betrieb.timer deploy/node/ratsmonitor-betrieb.path deploy/node/ratsmonitor-stop-betrieb.path /etc/systemd/system/
+systemctl daemon-reload
+systemctl start ratsmonitor-fehlermail@test        # Testmail an OPERATOR_EMAIL; Grund bei Ausbleiben: journalctl -u ratsmonitor-fehlermail@test
+systemctl enable --now ratsmonitor-betrieb.timer ratsmonitor-betrieb.path ratsmonitor-stop-betrieb.path
+systemd-run --unit ratsmonitor-betrieb-now --uid=ratsmonitor --gid=ratsmonitor -p EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env -p WorkingDirectory=/srv/ratsmonitor/app/current /usr/bin/node --no-warnings scripts/schedule.mjs betrieb --force
+```
+
+Das Kopieren aller `ratsmonitor-*.service` ersetzt die laufenden Dienstdateien nur um die Zeile `OnFailure`; `daemon-reload`
+genügt, laufende Jobs laufen weiter. Voraussetzungen in `ratsmonitor.env`: `OPERATOR_EMAIL`, `IMPORT_TOKEN` (mindestens 16
+Zeichen), `SITE_URL`; `MAIL_TRANSPORT=smtp` mit Zugangsdaten in `accounts.env` (mit `log` landet die Mail nur im Journal des
+Webdienstes: `[konten] Mail „Plenara Betrieb: …“ (Transport log, nicht verschickt)`).
 
 ## Vor dem Öffnen für andere
 

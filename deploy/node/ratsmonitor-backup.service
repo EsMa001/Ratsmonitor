@@ -2,6 +2,7 @@
 # Zeitpläne“, Standard 03:30 Uhr). Ersetzt den Eintrag in /etc/cron.d/ratsmonitor; Protokoll wie bisher in backups/backup.log.
 [Unit]
 Description=Ratsmonitor Sicherung der Datenbank
+OnFailure=ratsmonitor-fehlermail@%n.service
 After=ratsmonitor.service
 
 [Service]

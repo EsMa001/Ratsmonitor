@@ -4,6 +4,7 @@
 # warten deren Aufträge. Höchstens 12 Stunden (job.mjs startet nur, was in der Restzeit fertig wird).
 [Unit]
 Description=Ratsmonitor PDF-Ablage, Auftrag aus der Administration
+OnFailure=ratsmonitor-fehlermail@%n.service
 After=network-online.target ratsmonitor.service
 Wants=network-online.target
 

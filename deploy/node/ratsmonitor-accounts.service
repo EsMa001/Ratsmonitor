@@ -3,6 +3,7 @@
 # Nur diese Einheit und ratsmonitor.service sehen die Kontendatei; alle anderen haben InaccessiblePaths darauf.
 [Unit]
 Description=Ratsmonitor Konten: Pflege und Sicherung
+OnFailure=ratsmonitor-fehlermail@%n.service
 After=ratsmonitor.service
 
 [Service]

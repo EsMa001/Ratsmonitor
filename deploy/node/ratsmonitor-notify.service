@@ -4,6 +4,7 @@
 # Neben ratsmonitor.service und ratsmonitor-accounts.service die einzige Einheit, die die Kontendatei sieht.
 [Unit]
 Description=Ratsmonitor Benachrichtigungen
+OnFailure=ratsmonitor-fehlermail@%n.service
 After=ratsmonitor.service
 
 [Service]

@@ -1,0 +1,29 @@
+# Betriebsprüfung über den Zeitplaner (scripts/schedule.mjs betrieb, Admin-Reiter „Jobs & Zeitpläne“, Standard 09:30):
+# Auslöser, Läufe der Tagespipeline, Sicherung, Platte und Datenbankgröße prüfen, neue Befunde als eine Sammelmail an
+# OPERATOR_EMAIL (scripts/ops-check.mjs, server/integrations/ops-check.mjs; docs/betrieb/node-server.md „Betriebsüberwachung“).
+# Liest den Sicherungsordner nur (ProtectSystem=strict lässt Lesen zu) und schreibt allein in system_state.
+[Unit]
+Description=Ratsmonitor Betriebsprüfung (tägliche Sammelmail)
+After=network-online.target ratsmonitor.service
+Wants=network-online.target
+OnFailure=ratsmonitor-fehlermail@%n.service
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+TimeoutStartSec=10min
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs betrieb
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+# Konten: dieser Job sieht die Kontendatei nicht (requirements/konten-konzept.md 3.2); die Mail geht über den Webdienst
+InaccessiblePaths=-/srv/ratsmonitor/accounts
