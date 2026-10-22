@@ -1,5 +1,5 @@
 /** Farben der Orte (bis vier): Akzentfarbe, Schwarz, Grau, helle Akzentfarbe */
-export const PLACE_COLORS = ["var(--rm-fill)", "var(--rm-c900)", "var(--rm-c400)", "var(--color-teal-300)"];
+export const PLACE_COLORS = ["var(--rm-fill)", "var(--color-sky-800)", "var(--rm-c400)", "var(--color-teal-300)"];
 
 const mfmt = (m: string) => `${m.slice(5, 7)}/${m.slice(2, 4)}`;
 /** Monat ausgeschrieben („September 2026“) für Sätze */

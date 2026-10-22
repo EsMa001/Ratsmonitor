@@ -63,12 +63,19 @@ test('Signale: Filter nach Stand und Gebiet, unbekanntes Signal',async()=>{
   assert.equal((await xSignals(db,catalog,q('signal=alle&sub=bauen.plan'))).total,2);
   assert.equal((await xSignals(db,catalog,q('signal=alle&sub=umwelt.ee'))).total,1);
   await assert.rejects(xSignals(db,catalog,q('signal=alle&sub=foo')),/Unterthema|Suchfilter/);
+  // group: Stand grob nach dem Status (alle Vorgänge der Probe sind in Beratung, also offen)
+  assert.equal((await xSignals(db,catalog,q('signal=alle&group=offen'))).total,5);
+  assert.equal((await xSignals(db,catalog,q('signal=alle&group=entschieden'))).total,0);
+  await assert.rejects(xSignals(db,catalog,q('signal=alle&group=foo')),/Unbekannter Stand/);
+  // subs=1: Treffer je Unterthema ohne das gewählte Unterthema
+  const sb=await xSignals(db,catalog,q('signal=alle&sub=umwelt.ee&subs=1'));
+  assert.equal(sb.total,1);assert.deepEqual(sb.subs.find(x=>x.key==='bauen.plan'),{key:'bauen.plan',name:sb.subs.find(x=>x.key==='bauen.plan').name,count:2});
  }finally{sql.close();}
 });
 
 test('Signale: vorberechnete Tabelle x_signals ergibt dasselbe wie die Abfrage über die Antworten des Modells',async()=>{
  const {sql,db}=fixture();
- const cases=['signal=wohnbau','signal=gewerbe&phase=Start','signal=gewerbe&art=Gewerbe','signal=mobil','signal=wind','signal=wohnbau&area=05558012','signal=alle','signal=alle&art=Windenergie'];
+ const cases=['signal=alle&group=offen','signal=wohnbau','signal=gewerbe&phase=Start','signal=gewerbe&art=Gewerbe','signal=mobil','signal=wind','signal=wohnbau&area=05558012','signal=alle','signal=alle&art=Windenergie'];
  assert.ok(sql.prepare('SELECT count(*) n FROM x_signals').get().n>0);
  // firstCount (Filter „erstmals hier“) gibt es nur auf dem schnellen Weg
  const fast=[];for(const c of cases){const r=await xSignals(db,catalog,q(c));delete r.firstCount;fast.push(r);}

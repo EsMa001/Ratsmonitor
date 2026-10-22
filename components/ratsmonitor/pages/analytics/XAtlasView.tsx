@@ -124,33 +124,6 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   const firstPart = parts.find((p) => !isRest(p))?.key ?? "";
   const openPart = part === null ? (sub || firstPart) : part;
   /* Liste hinter einer Zeile: dieselbe Auswahl, aber ohne das gewählte Unterthema (sonst nur die Überschneidung) */
-  /* Richtung je Zeile: Anteil in den letzten N Monaten (Zeitraum der Seite, sonst 6) gegenüber den N Monaten davor; gezeigt nur,
-     wenn sich der Anteil deutlich ändert (Faktor ab 1,25, z ab 2, mindestens 5 Vorgänge), sonst nichts */
-  const span = Number(zeit) || 6;
-  const [dirs, setDirs] = useState<{ for: string; v: Map<string, number> } | null>(null);
-  const dirFor = `${partBy}|${theme}|${baseQuery}|${span}`;
-  useEffect(() => {
-    if (!res || new URLSearchParams(baseQuery).get("from")) return;
-    const ago = (m: number) => { const d = new Date(); d.setMonth(d.getMonth() - m); return d.toISOString().slice(0, 10); };
-    const get = (from: string, to: string) => { const q = new URLSearchParams(baseQuery); q.set("from", from); if (to) q.set("to", to); return fetch(`/api/x?by=${partBy}${theme ? "&theme=" + theme : ""}&${q}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ rows?: Row[] }>) : null)).then((b) => b?.rows ?? []); };
-    const c = new AbortController();
-    Promise.all([get(ago(span), ""), get(ago(2 * span), ago(span))]).then(([a, b]) => {
-      const sum = (l: Row[]) => l.filter((r) => !isRest(r)).reduce((x, r) => x + r.count, 0), A = sum(a), B = sum(b), prev = new Map(b.map((r) => [r.key, r.count]));
-      const v = new Map<string, number>();
-      if (A && B) for (const r of a) {
-        if (isRest(r)) continue;
-        const k = r.count, j = prev.get(r.key) ?? 0, pa = k / A, pb = j / B, pool = (k + j) / (A + B);
-        const z = (pa - pb) / (Math.sqrt(pool * (1 - pool) * (1 / A + 1 / B)) || 1e-9), ratio = (pa + 0.5 / A) / (pb + 0.5 / B);
-        if (k + j >= 5 && Math.abs(z) >= 2 && (ratio >= 1.25 || ratio <= 0.8)) v.set(r.key, ratio);
-      }
-      setDirs({ for: dirFor, v });
-    }).catch(() => {});
-    return () => c.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [res, dirFor]);
-  const dirOf = (r: Row) => { const x = dirs?.for === dirFor ? dirs.v.get(r.key) : undefined; if (!x) return null;
-    const up = x >= 1, f = (up ? x : 1 / x).toLocaleString("de-DE", { maximumFractionDigits: 1 });
-    return <span title={`Anteil der letzten ${span} Monate gegenüber den ${span} Monaten davor`} className={`ml-1 whitespace-nowrap text-[12px] font-medium tabular-nums ${up ? "text-teal-700" : "text-slate-500"}`}>{up ? "↑" : "↓"} {up ? "×" : "÷"}{f}</span>; };
   /* Vorschau auf der Karte beim Überfahren einer Zeile (Thema oder Unterthema): deren Gebiete, nach kurzer Pause geladen */
   const [hoverKey, setHoverKey] = useState("");
   const [preview, setPreview] = useState<{ key: string; rows: Row[] } | null>(null);
@@ -274,7 +247,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
                     </section>
                   </> : <section className={res.compare ? "rm-sec-s" : ""}>
                     <h2 className="flex items-center gap-2 text-[22px] font-semibold max-sm:text-[18px]">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? <>Unterthemen<span className="max-sm:hidden"> von {themeName}</span></> : "Themen"}{place ? <span className="font-normal text-slate-500"> in {place}</span> : null}</h2>
-                    <PartList rows={parts} icons={!theme} open={openPart} dir={dirOf} onHover={setHoverKey} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
+                    <PartList rows={parts} icons={!theme} open={openPart} onHover={setHoverKey} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
                       label={(r) => (phone ? `${n(r.count)} ${plural(r.count, "Vorgang", "Vorgänge")}` : `${n(r.count)}${r.share !== null && theme && !sub ? ` · ${pct(r.share)}` : ""}`)}
                       drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={all?.by === partBy && all.value === r.key ? undefined : theme ? 10 : 3} plain={!!theme}
                         onAll={() => setAll({ by: partBy, value: r.key, label: [themeName, r.name].filter(Boolean).join(" › ") })}

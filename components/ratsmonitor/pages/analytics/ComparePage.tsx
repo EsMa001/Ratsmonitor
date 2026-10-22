@@ -1,3 +1,5 @@
+import { Reiter } from "./ListenKopf";
+import { Info, LayoutGrid, Shapes, TextQuote, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { usePhone } from "../../lib/usePhone";
 import { prettyTerm } from "../../lib/terms";
@@ -71,6 +73,13 @@ export function ComparePage() {
     runQuery();
   };
 
+  /* Wie die übrigen plenara.X-Seiten ohne Start-Knopf: geänderte Orte oder Thema rechnen nach kurzer Pause von selbst neu */
+  useEffect(() => {
+    if (!stale || loading || !ort1 || !ort2 || ort1.ags === ort2.ags) return;
+    const tm = setTimeout(() => run(), 600);
+    return () => clearTimeout(tm);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stale, loading, ort1, ort2, thema]);
   const names = res ? res.places.map((p) => name(p.ags)) : [];
   const topicRows = useMemo(() => {
     if (!res) return [];
@@ -136,14 +145,14 @@ export function ComparePage() {
         </button>
       )}
       <section aria-label="Vergleich einstellen" className={`print:hidden mt-2 border-b border-slate-200 pb-5 max-sm:mt-3 max-sm:pb-3 ${res && !editOpen && !stale ? "max-sm:hidden" : ""}`}>
-        <div className="grid grid-cols-1 gap-4 max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:gap-y-3 md:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] md:items-end">
+        <div className="grid grid-cols-1 gap-4 max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:gap-y-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] md:items-end">
           <PlaceField label="Ort 1" color={PLACE_COLORS[0]} value={ort1} onChange={setOrt1} onEnter={() => run()} />
           <PlaceField label="Ort 2" color={PLACE_COLORS[1]} value={ort2} onChange={setOrt2} onEnter={() => run()} />
           <div className="min-w-0 max-sm:col-span-2">
             <label htmlFor="vergleich-thema" className="mb-1.5 max-sm:sr-only block text-[14px] font-medium text-slate-700">Thema <span className="font-normal text-slate-500">(optional)</span></label>
             <input autoComplete="off" id="vergleich-thema" type="search" value={thema} onChange={(e) => setThema(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder={phone ? "Thema (optional)" : "beliebiger Begriff"} className={FIELD} />
           </div>
-          <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center md:order-first justify-self-end rounded-xl max-sm:bg-teal-700 max-sm:text-white sm:border sm:border-slate-200 sm:bg-white sm:text-teal-700 sm:hover:bg-slate-50 max-sm:col-span-2 max-sm:h-11 max-sm:w-full max-sm:justify-self-stretch max-sm:gap-2 transition-opacity max-sm:hover:opacity-85 disabled:opacity-60 md:justify-self-auto">
+          <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center sm:hidden justify-self-end rounded-xl max-sm:bg-teal-700 max-sm:text-white sm:border sm:border-slate-200 sm:bg-white sm:text-teal-700 sm:hover:bg-slate-50 max-sm:col-span-2 max-sm:h-11 max-sm:w-full max-sm:justify-self-stretch max-sm:gap-2 transition-opacity max-sm:hover:opacity-85 disabled:opacity-60 md:justify-self-auto">
             {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" />
             </svg>}
@@ -152,7 +161,7 @@ export function ComparePage() {
         </div>
       </section>
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
-      {stale && <p className="mt-3 text-[14px] text-slate-500">Orte oder Thema wurden geändert. Mit „Vergleichen“ neu berechnen.</p>}
+      {stale && <p className="mt-3 text-[14px] text-slate-500 sm:hidden">Orte oder Thema wurden geändert. Mit „Vergleichen“ neu berechnen.</p>}
       {loading && !res && <Laden text="Vergleich wird berechnet …" />}
 
       {res && pending && <ListSkeleton rows={3} />}
@@ -164,7 +173,7 @@ export function ComparePage() {
             const hi = x >= y, r = Math.round((Math.max(x, y) / Math.min(x, y)) * 10) / 10;
             return <><Duell a={a} b={b} na={names[0]} nb={names[1]} /><Befund>{names[hi ? 0 : 1]} berät je 1.000 Einwohner {r <= 1.1 ? "etwa so viel wie" : `${r.toLocaleString("de-DE")}-mal so viel wie`} {names[hi ? 1 : 0]}.</Befund></>;
           })()}
-          <div className="mt-3 max-sm:hidden print:hidden"><Segmented label="Teil des Vergleichs" options={[["ueberblick", "Überblick"], ["themen", "Themen"], ["verlauf", "Verlauf"], ["begriffe", "Begriffe"], ["details", "Details"]]} value={tab} onPick={setTab} /></div>
+          <div className="mt-6 max-sm:hidden print:hidden"><Reiter label="Teil des Vergleichs" items={[["ueberblick", "Überblick", LayoutGrid], ["themen", "Themen", Shapes], ["verlauf", "Verlauf", TrendingUp], ["begriffe", "Begriffe", TextQuote], ["details", "Details", Info]]} value={tab} onPick={setTab} /></div>
           <TabPane on={phone || tab === "ueberblick"}>
           <Reveal>
           <section className="mt-5 max-sm:mt-5">

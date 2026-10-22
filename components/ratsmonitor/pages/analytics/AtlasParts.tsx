@@ -138,14 +138,12 @@ export function AtlasExtra({ level, onLevel }: { level: Level; onLevel: (l: Leve
 
 
 /** Gliederung rechts: Zeilen zum Aufklappen (Pfeil, Zahl in Petrol, Zeile reagiert); das gewählte Unterthema ist hervorgehoben */
-export function PartList({ rows, open, selected, onOpen, drill, label, icons = false, dir, onHover }: { /* Richtung gegenüber dem Zeitraum davor */ dir?: (r: Row) => React.ReactNode; /* Überfahren (Maus, Tastaturfokus): Vorschau auf der Karte; "" = keine */ onHover?: (key: string) => void; rows: Row[]; open: string; selected: string; icons?: boolean; onOpen: (key: string) => void; drill: (r: Row) => React.ReactNode; label: (r: Row) => string }) {
+export function PartList({ rows, open, selected, onOpen, drill, label, icons = false, onHover }: { /* Überfahren (Maus, Tastaturfokus): Vorschau auf der Karte; "" = keine */ onHover?: (key: string) => void; rows: Row[]; open: string; selected: string; icons?: boolean; onOpen: (key: string) => void; drill: (r: Row) => React.ReactNode; label: (r: Row) => string }) {
   /* Restposten („Sonstiges“) nicht als gleichrangige Zeile: klein darunter, aufklappbar wie die anderen */
   const main = rows.filter((r) => !isRest(r)), rests = rows.filter(isRest);
   const max = Math.max(1, ...main.map((r) => r.count));
-  /* Fokus: wer überfahren wird (oder aufgeklappt ist), bleibt klar, die übrigen Zeilen treten zurück */
+  /* Überfahren mit der Maus: die Zeile wird in Petrol hervorgehoben, die übrigen bleiben unverändert (am Handy nichts) */
   const [hot, setHot] = useState("");
-  /* Nur beim Überfahren mit der Maus: die übrigen Zeilen treten zurück (am Handy bleiben alle Zeilen normal) */
-  const focusKey = hot;
   /* Liste → Karte erst nach kurzem Verweilen; die Hervorhebung in der Liste sofort */
   const hoverD = useDwell((k: string) => onHover?.(k), "");
   const over = (k: string) => { if (typeof window !== "undefined" && window.matchMedia("(hover:hover)").matches) { setHot(k); hoverD(k); } };
@@ -157,10 +155,10 @@ export function PartList({ rows, open, selected, onOpen, drill, label, icons = f
         return (
           <li key={r.key} className="border-b border-slate-200">
             <button type="button" onClick={() => onOpen(r.key)} aria-expanded={on} onMouseEnter={() => over(r.key)} onMouseLeave={() => over("")} onFocus={() => over(r.key)} onBlur={() => over("")}
-              className={`grid w-full transition-opacity grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto_16px] ${focusKey && focusKey !== r.key ? "opacity-45" : ""}`}>
-              <span className={`flex items-center gap-2 text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${on || picked ? "font-semibold" : ""}`}>{icons && !rest && <ThemeIcon theme={r.key} size={18} className="shrink-0 text-slate-500" />}{r.name}{dir?.(r)}</span>
+              className={`grid w-full transition-colors grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto_16px] ${hot === r.key ? "text-teal-700" : ""}`}>
+              <span className={`flex items-center gap-2 text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${on || picked ? "font-semibold" : ""}`}>{icons && !rest && <ThemeIcon theme={r.key} size={18} className={`shrink-0 ${hot === r.key ? "text-teal-700" : "text-slate-500"}`} />}{r.name}</span>
               <span className="order-4 col-span-3 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1">
-                <span className={`block h-full rounded-full ${rest ? "bg-slate-300" : picked ? "bg-slate-900" : "bg-teal-600"}`} style={{ width: `${(r.count / max) * 100}%` }} />
+                <span className={`block h-full rounded-full ${rest ? "bg-slate-300" : picked ? "bg-slate-900" : hot === r.key ? "bg-teal-700" : "bg-teal-600"}`} style={{ width: `${(r.count / max) * 100}%` }} />
               </span>
               <span className={`text-right text-[14px] font-semibold tabular-nums ${rest ? "text-slate-500" : "text-teal-700"}`}>{label(r)}</span>
               <span aria-hidden="true" className={`text-center text-[14px] ${rest ? "text-slate-500" : "text-teal-700"}`}>{on ? "▾" : "›"}</span>

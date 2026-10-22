@@ -27,8 +27,9 @@ export function MethodikUnten({ seite }: { seite: string }) {
     <section id="methodik" aria-labelledby="methodik-h" className="scroll-mt-24 print:break-before-page">
       <h2 id="methodik-h" className="m-0 text-[18px] font-semibold text-slate-900">Methodik</h2>
       {/* eine Schrift (14 px, normal); ! gegen die Grundstile für Überschriften und fette Klassen (app/styles/base.css) */}
-      <div className="mt-1 line-clamp-3 text-[12px] leading-[18px] text-slate-600 [&_*]:!inline [&_*]:!text-[12px] [&_*]:!font-normal [&_*]:!leading-[18px] [&_p]:after:content-['_']">
-        <div ref={setSlot} className="empty:hidden" />
+      <div className="mt-1 line-clamp-2 text-[12px] leading-[18px] text-slate-600 [&_*]:!inline [&_*]:!text-[12px] [&_*]:!font-normal [&_*]:!leading-[18px] [&_p]:after:content-['_']">
+        {/* Anmerkungen der Auswertung (MethodikNote) bleiben im Code, die Kachel zeigt nur den einen Satz, was die Seite zeigt */}
+        <div ref={setSlot} hidden />
         <div><MethodikText ids={ids} kurz /></div>
       </div>
     </section>, host);

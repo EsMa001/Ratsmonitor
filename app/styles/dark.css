@@ -427,3 +427,9 @@ html.rm-dark .rm-dialog {
   box-shadow: 0 24px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);
   color: var(--rm-c900);
 }
+
+@media (min-width:1024px) {
+  html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul {
+    background: linear-gradient(135deg,rgba(40,48,47,.94),rgba(23,33,42,.9));
+  }
+}

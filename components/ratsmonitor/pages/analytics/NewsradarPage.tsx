@@ -116,13 +116,28 @@ export function NewsradarPage() {
             <>
               <div className={HERO_PANEL}>
               <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
-                {/* Bühne: die Meldungen als Inhaltsverzeichnis (Ort und Überschrift), ein Klick springt hin */}
-                <ol className="m-0 mt-6 list-none space-y-1 p-0 max-sm:hidden">
-                  {res.items.map((k, i) => <li key={k.id}><a href={`#meldung-${i + 1}`} className="group grid grid-cols-[24px_minmax(0,1fr)] gap-x-2 rounded-lg px-2 py-1.5 text-slate-900 no-underline hover:bg-white/70">
-                    <span className="text-[14px] font-semibold tabular-nums text-teal-700">{i + 1}</span>
-                    <span className="min-w-0"><span className="block text-[12px] text-slate-500">{k.dateline.place} · {datum(k.dateline.date)}</span><span className="line-clamp-2 text-[14px] leading-snug group-hover:text-teal-800">{k.headline.startsWith(`${k.dateline.place}: `) ? k.headline.slice(k.dateline.place.length + 2) : k.headline}</span></span>
-                  </a></li>)}
-                </ol>
+                {/* Bühne: warum die Meldungen berichtenswert sind (Gründe mit Häufigkeit) und die Rangliste nach Nachrichtenwert; ein Klick springt hin */}
+                {(() => {
+                  const max = Math.max(1, ...res.items.map((k) => k.score));
+                  const why = new Map<string, number>();
+                  for (const k of res.items) for (const w of new Set(k.why)) why.set(w, (why.get(w) ?? 0) + 1);
+                  const gruende = [...why].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8);
+                  return <div className="max-sm:hidden">
+                    <p className="m-0 mt-6 text-[12px] font-medium uppercase tracking-wide text-slate-500">Warum berichtenswert</p>
+                    <ul className="m-0 mt-2 flex list-none flex-wrap gap-1.5 p-0">
+                      {gruende.map(([w, c]) => <li key={w} className="inline-flex h-7 items-center gap-1.5 rounded-md bg-teal-50 px-2 text-[12px] text-teal-900"><b className="font-semibold tabular-nums text-teal-700">{c}×</b>{w}</li>)}
+                    </ul>
+                    <p className="m-0 mt-6 text-[12px] font-medium uppercase tracking-wide text-slate-500">Rangliste nach Nachrichtenwert</p>
+                    <ol className="m-0 mt-2 list-none space-y-1 p-0">
+                      {res.items.map((k, i) => <li key={k.id}><a href={`#meldung-${i + 1}`} title={k.headline} className="group grid grid-cols-[20px_120px_minmax(0,1fr)_32px] items-center gap-x-2 rounded-lg px-1.5 py-1 text-slate-900 no-underline hover:bg-teal-50">
+                        <span className="text-[12px] font-semibold tabular-nums text-teal-700">{i + 1}</span>
+                        <span className="truncate text-[12px] text-slate-700 group-hover:text-teal-900">{k.dateline.place}</span>
+                        <span className="block h-2 overflow-hidden rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600 group-hover:bg-teal-700" style={{ width: `${(k.score / max) * 100}%` }} /></span>
+                        <span className="text-right text-[12px] tabular-nums text-slate-500">{k.score}</span>
+                      </a></li>)}
+                    </ol>
+                  </div>;
+                })()}
                 {!own && <div className="rm-xtop"><div className="rm-xzeit"><Segmented label="Zeitraum" options={SPANS.map(([dd, l]) => [String(dd), l] as [string, string])} value={String(days)} onPick={(k) => setDays(+k)} /></div></div>}
               </div>
               {pending && <ListSkeleton />}

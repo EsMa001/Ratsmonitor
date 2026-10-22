@@ -1,3 +1,4 @@
+import { ListChecks, Map as MapIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { STATUS, THEMEN } from "../lib/constants";
@@ -80,7 +81,7 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, x: xPr
         setFiltersOpen(false);
         requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-controls="filter-body"]')?.focus());
       }}
-      className={`rm-glass rm-fpop absolute z-20 flex w-[300px] outline-none max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={{ ...(maxH ? { maxHeight: maxH } : null), ...(fit ? { right: fit.right, width: fit.width } : null) }}>
+      className={`rm-glass rm-fpop absolute z-20 flex ${x ? "w-[248px]" : "w-[300px]"} outline-none max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={{ ...(maxH ? { maxHeight: maxH } : null), ...(fit ? { right: fit.right, width: fit.width } : null) }}>
       <div className={`flex items-center gap-2 max-sm:pl-4 ${flip ? "flex-row-reverse" : ""}`} style={fit ? { paddingRight: -fit.right } : undefined}>
         {toggle}
         {phone && (
@@ -110,12 +111,16 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, x: xPr
         {x && (phone ? <DateRangeFields /> : <DateRangeFilter />)}
         {/* Bundesland: setzt das Gebiet (2-stelliger Schlüssel), wie die Eingabe des Namens in der Suche; bei gewähltem Ort entfällt es */}
         {geo && state.area.length < 5 && geo.lands.length > 0 && (
+          <div className="flex items-center gap-2">{x && <MapIcon size={18} strokeWidth={1.5} aria-hidden="true" className="flex-none text-slate-500" />}
           <FilterSelect id="f-land" label="Bundesland" allLabel="Alle Bundesländer" value={state.area.length === 2 ? state.area : ""} options={geo.lands.map((l) => ({ value: l.ags, label: l.name }))}
-            onChange={(v) => { if (v) search.setArea(v, "ui", { zoom: true }); else search.clearArea(); }} className={full} />
+            onChange={(v) => { if (v) search.setArea(v, "ui", { zoom: true }); else search.clearArea(); }} className={`${full} flex-1`} />
+          </div>
         )}
         <div className={x ? "" : "grid grid-cols-2 gap-2"}>
           {!x && <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />}
-          <FilterSelect id="f-status" label="Status" allLabel="Alle Stände" value={state.status} options={STATUS.map((s) => ({ value: s.id, label: s.label }))} counts={active ? res.statusCounts : undefined} onChange={(v) => search.setStatus(v as typeof state.status)} className={full} />
+          <div className="flex items-center gap-2">{x && <ListChecks size={18} strokeWidth={1.5} aria-hidden="true" className="flex-none text-slate-500" />}
+          <FilterSelect id="f-status" label="Status" allLabel="Alle Stände" value={state.status} options={STATUS.map((s) => ({ value: s.id, label: s.label }))} counts={active ? res.statusCounts : undefined} onChange={(v) => search.setStatus(v as typeof state.status)} className={`${full} flex-1`} />
+          </div>
         </div>
         {/* Handy: „Zurücksetzen“ nicht in der Kopfzeile (dort sitzt die Zeitraum-Auswahl), sondern unten */}
         {phone && active && (
