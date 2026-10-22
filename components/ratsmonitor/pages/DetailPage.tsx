@@ -157,7 +157,7 @@ export function DetailPage(){
         <section className="mt-14 max-sm:mt-10">
           <Kopf icon={History}>Verlauf</Kopf>
           {sorted.length?(<>
-            <ol className="m-0 list-none border-l border-slate-200 p-0 pl-6">
+            <ol className="m-0 ml-3 list-none border-l border-slate-200 p-0 pl-6">
               {verlaufSicht.map(([e,i])=>{const last=i===current,future=(e.date||'').slice(0,10)>today,lbl=STATUS[e.status]?.label||'Stand offen';return (
                 <li key={i} className="relative pb-6 last:pb-0">
                   <span aria-hidden="true" className={`absolute -left-[37px] top-0.5 grid h-6 w-6 place-items-center rounded-full ${last?'bg-teal-700 text-white':future?'border border-dashed border-slate-300 bg-white text-slate-400':'border border-slate-200 bg-white text-slate-500'}`}><StepIcon name={lbl} size={13}/></span>
