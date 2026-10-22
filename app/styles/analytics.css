@@ -779,13 +779,13 @@
 }
 
 /* Auswahlfelder im Filterfenster von plenara.X (Handy und Desktop): runde Glas-Pillen statt weißer Kästchen */
-html.rm-analytics .rm-fpop .select-base {
+html.rm-analytics #filter-body .select-base {
   border-radius: 9999px;
   background: linear-gradient(135deg,rgba(255,255,255,.72),rgba(230,243,241,.55));
   border: 1px solid rgba(255,255,255,.92);
   box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.85);
 }
-html.rm-analytics .rm-fpop .select-base.select-active {
+html.rm-analytics #filter-body .select-base.select-active {
   background: linear-gradient(135deg,rgba(255,255,255,.92),rgba(204,232,228,.8));
   border-color: rgba(38,132,120,.35);
 }

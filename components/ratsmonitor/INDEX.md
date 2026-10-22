@@ -13,7 +13,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/styles/analytics.css (1333 Zeilen, ⚠2)
 - app/styles/base-layer.css (95 Zeilen, ⚠1)
 - app/styles/base.css (617 Zeilen)
-- app/styles/dark.css (431 Zeilen, ⚠4)
+- app/styles/dark.css (431 Zeilen, ⚠3)
 - app/styles/glass.css (180 Zeilen)
 - app/styles/header.css (410 Zeilen)
 - app/styles/info.css (1218 Zeilen)
@@ -546,8 +546,8 @@ rm-flat search.css:11
 rm-focusrows base.css:230
 rm-footcta search.css:194
 rm-fpop analytics.css:771
-rm-fpop dark.css:391
-rm-fpop glass.css:130
+rm-fpop dark.css:324
+rm-fpop glass.css:108
 rm-gflow base.css:184
 rm-gin base.css:168
 rm-glass analytics.css:646
@@ -966,6 +966,7 @@ z- analytics.css:587
 - useInstall.ts (27): isStandalone, useInstall
 - useLongPress.ts (32): useLongPress
 - usePhone.ts (30): PHONE_QUERY, isPhone, usePhone, useTinyPhone
+- useRailFold.ts (22): useRailFold
 - useScrollMemory.ts (49): useScrollMemory
 - useSwipe.ts (30): useSwipe
 - uuid.ts (12): newId
@@ -1027,7 +1028,7 @@ z- analytics.css:587
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (178, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (339, ⚠11): SignalePage
+- SignalePage.tsx (346, ⚠10): SignalePage
 - SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap

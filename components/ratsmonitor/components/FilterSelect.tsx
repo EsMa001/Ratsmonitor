@@ -29,18 +29,18 @@ interface Props {
 export function FilterSelect({ id, label, allLabel, value, options, counts, onChange, size = "md", className = "", highlight = true, look = "field" }: Props) {
   const sm = size === "sm";
   const [open, setOpen] = useState(false);
-  /* Im Filterfenster auf der Karte: die Liste bleibt innerhalb der Karte (nach unten, sonst nach oben) und scrollt, wenn sie nicht ganz hineinpasst */
+  /* Im Filterfenster: die Liste zeigt möglichst alle Werte; sie öffnet nach unten, wenn sie dort ganz in den Bildschirm passt, sonst
+     nach oben, wenn sie dort passt, sonst zur größeren Seite und scrollt */
   const [place, setPlace] = useState<{ side: "bottom" | "top"; maxH?: number }>({ side: "bottom" });
   const measure = () => {
     const t = document.getElementById(id);
-    const map = t?.closest("#filter-body")?.closest("section");
-    if (!t || !map) return setPlace({ side: "bottom" });
+    if (!t || !t.closest("#filter-body")) return setPlace({ side: "bottom" });
     const tr = t.getBoundingClientRect();
-    const mr = map.getBoundingClientRect();
-    const below = mr.bottom - tr.bottom - 12;
-    const above = tr.top - mr.top - 12;
-    if (below >= 160 || below >= above) setPlace({ side: "bottom", maxH: Math.max(96, Math.floor(below)) });
-    else setPlace({ side: "top", maxH: Math.max(96, Math.floor(above)) });
+    const need = Math.min(320, (options.length + 1) * 36 + 12);
+    const below = window.innerHeight - tr.bottom - 12;
+    const above = tr.top - 12;
+    const side = below >= need || below >= above ? "bottom" : "top";
+    setPlace({ side, maxH: Math.max(96, Math.floor(side === "bottom" ? below : above)) });
   };
   const toggle = (o: boolean) => {
     if (o) measure();

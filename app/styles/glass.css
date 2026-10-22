@@ -104,8 +104,8 @@
   }
 }
 
-/* plenara.X: Suche und Filter ohne Milchglas (flach, weiß, feine Linie); die Startseite behält das Glas. Steht hinter den Glas- und Touch-Regeln, damit es ohne !important gewinnt */
-.rm-solid .rm-glass, .rm-solid .rm-glass:hover, .rm-solid .rm-glass-pop, .rm-solid .rm-glass-pop:hover {
+/* plenara.X: Suche und Vorschläge ohne Milchglas (flach, weiß, feine Linie); die Startseite behält das Glas. Das Filterfenster (.rm-fpop) bleibt Liquid Glas wie auf der Startseite. Steht hinter den Glas- und Touch-Regeln, damit es ohne !important gewinnt */
+.rm-solid .rm-glass:not(.rm-fpop), .rm-solid .rm-glass:not(.rm-fpop):hover, .rm-solid .rm-glass-pop, .rm-solid .rm-glass-pop:hover {
   background: var(--rm-on);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
@@ -113,7 +113,7 @@
   box-shadow: 0 8px 24px rgba(24,24,27,.08);
 }
 
-.rm-solid .rm-chip, .rm-solid .rm-chip:hover, .rm-solid #filter-body .select-base, .rm-solid #filter-body .select-base:hover {
+.rm-solid .rm-chip, .rm-solid .rm-chip:hover {
   background: var(--rm-on);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;

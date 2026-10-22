@@ -321,7 +321,7 @@ html.rm-dark .bg-teal-600:hover {
   }
 }
 
-html.rm-dark .rm-solid .rm-glass, html.rm-dark .rm-solid .rm-glass:hover, html.rm-dark .rm-solid .rm-glass-pop, html.rm-dark .rm-solid .rm-glass-pop:hover, html.rm-dark .rm-solid .rm-chip, html.rm-dark .rm-solid .rm-chip:hover, html.rm-dark .rm-solid #filter-body .select-base, html.rm-dark .rm-solid #filter-body .select-base:hover {
+html.rm-dark .rm-solid .rm-glass:not(.rm-fpop), html.rm-dark .rm-solid .rm-glass:not(.rm-fpop):hover, html.rm-dark .rm-solid .rm-glass-pop, html.rm-dark .rm-solid .rm-glass-pop:hover, html.rm-dark .rm-solid .rm-chip, html.rm-dark .rm-solid .rm-chip:hover {
   background: var(--rm-c50);
   border-color: rgba(154,156,162,.22);
 }
@@ -388,7 +388,7 @@ html.rm-dark .rm-solid .rm-glass, html.rm-dark .rm-solid .rm-glass:hover, html.r
   }
 }
 /* Auswahlfelder im Filterfenster von plenara.X (Handy und Desktop) */
-html.rm-dark.rm-analytics .rm-fpop .select-base {
+html.rm-dark.rm-analytics #filter-body .select-base {
   background: linear-gradient(135deg,rgba(60,70,69,.6),rgba(33,43,52,.5));
   border-color: rgba(255,255,255,.14);
 }

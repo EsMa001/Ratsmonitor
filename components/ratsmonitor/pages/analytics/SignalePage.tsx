@@ -14,10 +14,11 @@ import { errorText, fetchJson } from "../../lib/fetchJson";
 import { Fehler, Leer } from "./Befund";
 import { Folgen, Kennzahlen, ZeitPills, useOrtInAdresse, weekAgo } from "./Kennzahlen";
 import { AktiveFilter, Dropdown } from "../../components/Dropdown";
+import { StepIcon } from "../../components/StepIcon";
 import { ArtIcon } from "../../components/ArtIcon";
 import type { Article } from "../../types";
 import { MethodikNote } from "./Methodik";
-import { MapPill, MapWheels } from "./MapWheels";
+import { MapWheels } from "./MapWheels";
 import { ListSkeleton } from "./ListSkeleton";
 import { DateBadge } from "../../components/DateBadge";
 
@@ -60,12 +61,12 @@ const FIXED: Record<string, number> = {
 /* Kurze Namen der Filterwerte (Leistung u. a.) für Pillen und Liste */
 const ART_SHORT: Record<string, string> = { Planungsleistungen: "Planung", "Fahrzeuge und Ausstattung": "Fahrzeuge", "Sonstige Leistungen": "Sonstige", "Tiefbau und Straße": "Tiefbau", "Wasser und Abwasser": "Wasser", "IT und Glasfaser": "IT", "Batteriespeicher und Wasserstoff": "Speicher und Wasserstoff", "Hotel, Camping und Freizeit": "Hotel und Camping", "Bike- oder Lastenradverleih": "Radverleih", "Bürgerbus oder Rufbus": "Bürgerbus", "Sporthalle und Sportplatz": "Sport", "Weiterführende Schule": "Weiterf. Schule", "Gehweg und Barrierefreiheit": "Gehweg", "Ortsdurchfahrt und Kreisverkehr": "Ortsdurchfahrt", "Straßenausbau und -sanierung": "Straßenausbau", "Wärmenetz und Fernwärme": "Wärmenetz", "LED-Straßenbeleuchtung": "LED-Licht", "Hochwasser und Starkregen": "Hochwasser", "Bürger- und Kommunalbeteiligung": "Beteiligung", "Genehmigungsantrag (BImSchG)": "Genehmigung", "Glasfaser und Breitband": "Glasfaser" };
 const artShort = (a: string) => ART_SHORT[a] ?? a;
-/* Farbe des Stand-Punkts: die Flächenfarbe des Tons (bg-…-700) */
-const STEP_DOTS = ["bg-sky-900", "bg-sky-700", "bg-slate-500", "bg-amber-500", "bg-teal-700", "bg-teal-600", "bg-amber-700", "bg-slate-700"];
-const dotOf = (name: string, order: string[]) => {
-  if (/^Sonstig|Ohne Angabe|Noch nicht/.test(name)) return "bg-slate-400";
+/* Farbe des Stands (Icon in Filter und Liste): fester Ton je Schritt, sonst nach Reihenfolge */
+const STEP_TONES = ["text-sky-900", "text-sky-700", "text-slate-500", "text-amber-500", "text-teal-700", "text-teal-600", "text-amber-700", "text-slate-700"];
+const toneOf = (name: string, order: string[]) => {
+  if (/^Sonstig|Ohne Angabe|Noch nicht/.test(name)) return "text-slate-400";
   const i = name in FIXED ? FIXED[name] : Math.max(0, order.indexOf(name));
-  return STEP_DOTS[i % STEP_DOTS.length];
+  return STEP_TONES[i % STEP_TONES.length];
 };
 
 /* Thema (und Unterthema) im Atlas zur Kategorie: Hinweis unter der Antwortzeile */
@@ -220,8 +221,6 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const phaseOrder = (res?.phases ?? []).map((p) => p.name);
 
   /* Schritt-Auswahl: in der Filterzeile, am breiten Bildschirm stattdessen als Glas auf der Karte */
-  const schritt = res && res.signal.id === signal && res.phases.length > 0 ? <Dropdown label="Schritt" value={phase} onPick={(id) => pick({ phase: id })}
-    items={[{ id: "", label: "Alle Schritte", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count), dot: dotOf(p.name, phaseOrder) }))]} /> : null;
 
   return (
     <main id="inhalt" className={`${karte ? "rm-xwide rm-noplay " : ""}w-full px-[max(1vw,16px)] pb-10 text-slate-900`}>
@@ -258,7 +257,6 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
       {/* Desktop: eine Filterzeile unter der Suche: Zeitraum, Schritt, Art als Auswahllisten, aktive Filter als Chips (Handy: Blätter und Räder) */}
       <div className="rm-xfilter mt-3 flex min-h-9 flex-wrap items-center gap-2 max-sm:hidden print:hidden">
         <span className="rm-zeit-std contents"><ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} /></span>
-        {schritt && <span className="rm-schritt-std contents">{schritt}</span>}
         {res && res.signal.id === signal && (res.arts ?? []).length > 0 && <span className="rm-art-std contents"><Dropdown label={res.signal.art ?? "Art"} value={art} onPick={(id) => pick({ art: id })}
           items={[{ id: "", label: "Alle" }, ...res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={16} className="text-slate-500" /> }))]} /></span>}
         <AktiveFilter onReset={() => pick({ phase: "", art: "", zeit: "" })} chips={[
@@ -285,8 +283,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           </div>
           <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-5 lg:grid-cols-12`}>
             {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 lg:sticky lg:top-4 lg:col-span-6 lg:self-start">
-              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} schritt={schritt}
-                pill={res.phases.length > 0 ? <MapPill label="Schritt" value={phase} onPick={(id) => pick({ phase: id })} items={[{ id: "", label: "Alle", count: n(res.phases.reduce((a, p) => a + p.count, 0)) }, ...res.phases.map((p) => ({ id: p.key, label: p.name, count: n(p.count) }))]} /> : undefined}
+              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} 
                 wheels={<MapWheels label="Kategorie" subLabel="Art" subAll="Alle Arten" value={signal === standard ? "" : signal} onPick={(id) => pick({ signal: id, phase: "", art: "" })}
                   items={MIT_ALLE.map(([id, lab]) => { const I = ICONS[id]; return { id: id === standard ? "" : id, label: lab, icon: I ? <I size={16} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" /> : undefined }; })}
                   subs={res.signal.id === signal && (res.arts ?? []).length > 0 ? res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={14} className="text-slate-500" /> })) : undefined} subValue={art} onSub={(id) => pick({ art: id })} />} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
@@ -299,7 +296,17 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                 <section className="mt-6" aria-label="Neueste Vorgänge">
                   {/* Überschrift: was gewählt ist (Kategorie oder Art), mit Ort, falls einer gewählt ist; Schritt darunter klein */}
                   <h2 className="m-0 text-[22px] font-semibold leading-tight max-sm:text-[20px]">{art ? artShort(art) : res.signal.name}{areaAgs && res.places.length === 1 ? <span className="font-normal text-slate-500"> in {res.places[0].name}</span> : null}</h2>
-                  {phase && <p className="m-0 mt-1 text-[14px] text-slate-500">Schritt: {res.phases.find((p) => p.key === phase)?.name ?? phase}</p>}
+                  {/* Schritt als Filter direkt über der Liste, mit denselben Farbpunkten wie in den Zeilen */}
+                  {res.signal.id === signal && res.phases.length > 1 && <ul aria-label="Schritt" className="m-0 mt-3 flex list-none flex-wrap gap-1.5 p-0 print:hidden">
+                    {[{ key: "", name: "Alle Schritte", count: res.phases.reduce((a, p) => a + p.count, 0) }, ...res.phases].map((p) => {
+                      const on = p.key === phase;
+                      return <li key={p.key || "alle"}><button type="button" aria-pressed={on} title={`${p.name}: ${n(p.count)}`} onClick={() => pick({ phase: on ? "" : p.key })}
+                        className={`flex h-[76px] w-[76px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                        {p.key ? <StepIcon name={p.name} size={20} className={toneOf(p.name, phaseOrder)} /> : <LayoutGrid size={20} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" />}
+                        <span className="line-clamp-2 w-full hyphens-auto break-words">{p.key ? p.name : "Alle"}</span>
+                        <span className="tabular-nums text-slate-500">{n(p.count)}</span></button></li>;
+                    })}
+                  </ul>}
                   {items.length === 0 && <Leer>Keine Vorgänge in dieser Auswahl.</Leer>}
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
                     {items.slice(0, shown).map((r) => (
@@ -309,9 +316,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                           <span className="line-clamp-2 text-[14px] leading-snug max-sm:line-clamp-3 max-sm:text-[14px] sm:text-[16px]">{r.firstHere && <span title="Der erste Vorgang dieser Art in diesem Ort (Bestand seit mindestens einem Jahr davor)" className="mr-1.5 rounded-full bg-teal-50 px-2 py-0.5 align-[1px] text-[12px] font-medium text-teal-800">erstmals hier</span>}{r.title}</span>
                           <span className="block truncate text-[12px] text-slate-500">{[r.region, (r.status === "announced" || r.status === "consulting") && (r.status === "announced" ? "angekündigt" : "in Beratung"), r.gremium].filter(Boolean).join(" · ")}</span>
                         {/* Handy: Schritt und, solange keine Art gewählt ist, die Art stehen klein unter dem Titel; so bleibt Platz für den Titel */}
-                        <span className="mt-0.5 block truncate text-[12px] text-slate-600 sm:hidden"><span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${dotOf(r.phase, phaseOrder)}`} />{r.phase}{!art && r.arts?.length ? <span className="text-slate-900"> · {r.arts.map(artShort).join(", ")}</span> : null}</span>
+                        <span className="mt-0.5 block truncate text-[12px] text-slate-600 sm:hidden"><StepIcon name={r.phase} size={14} className={`mr-1 inline-block align-[-2px] ${toneOf(r.phase, phaseOrder)}`} />{r.phase}{!art && r.arts?.length ? <span className="text-slate-900"> · {r.arts.map(artShort).join(", ")}</span> : null}</span>
                         </Link>
-                        <span className="self-center whitespace-nowrap text-right text-[12px] text-slate-500 max-sm:hidden"><span className="block"><span aria-hidden="true" className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${dotOf(r.phase, phaseOrder)}`} />{r.phase}</span>{r.arts?.length ? <span className="block text-slate-900">{r.arts.map(artShort).join(", ")}</span> : null}</span>
+                        <span className="self-center whitespace-nowrap text-right text-[12px] text-slate-500 max-sm:hidden"><span className="block"><StepIcon name={r.phase} size={14} className={`mr-1 inline-block align-[-2px] ${toneOf(r.phase, phaseOrder)}`} />{r.phase}</span>{r.arts?.length ? <span className="block text-slate-900">{r.arts.map(artShort).join(", ")}</span> : null}</span>
                       </li>
                     ))}
                   </ol>
