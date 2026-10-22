@@ -104,10 +104,8 @@ export { Segmented } from "../../components/Segmented";
  * „Folgen“: speichert die aktuelle Suche (Begriff, Ort, Filter, Thema) im Konto, dort mit Mail-Benachrichtigung bei neuen
  * Vorgängen (derselbe Dialog wie „Suche speichern“). before: vorher die Auswahl der Seite in die Suche übernehmen (Atlas: Thema).
  */
-export function Folgen({ before, hint, showText = false, heart = false, line = false }: { before?: () => void; hint?: string; /** Handy: Name zeigen statt nur der Glocke */ showText?: boolean; /** Herz in der Größe der Suchleiste (neben dem Suchfeld) */ heart?: boolean; /** Zeile unter der Suchleiste: Herz und Satz, was das Speichern bringt (Desktop) */ line?: boolean }) {
+export function Folgen({ before, hint, showText = false, heart = false }: { before?: () => void; hint?: string; /** Handy: Name zeigen statt nur der Glocke */ showText?: boolean; /** Herz in der Größe der Suchleiste (neben dem Suchfeld) */ heart?: boolean }) {
   const { openSaveDialog } = useUi();
-  if (line) return <button type="button" onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }} className="inline-flex items-center gap-1.5 rounded-lg py-1 text-[14px] text-slate-500 hover:text-teal-700 print:hidden">
-    <Heart size={15} strokeWidth={1.5} aria-hidden="true" />Diese Auswahl unter „Meine Suchen“ speichern und später wieder öffnen</button>;
   if (heart) return <button type="button" title={hint ?? "Auswahl unter Meine Suchen speichern"} onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }} aria-label="Suche speichern"
     className="grid h-12 w-12 flex-none place-items-center rounded-xl border border-slate-200 bg-white text-teal-700 transition-colors hover:bg-slate-50 print:hidden"><Heart size={20} strokeWidth={1.5} aria-hidden="true" /></button>;
   return <button type="button" title={hint ?? "Neue Vorgänge zu dieser Auswahl per Mail"} onClick={() => { before?.(); setTimeout(openSaveDialog, 0); }}

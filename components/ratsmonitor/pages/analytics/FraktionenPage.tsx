@@ -34,6 +34,9 @@ const n = (v: number) => v.toLocaleString("de-DE");
 /* Index 100 = wie alle Fraktionen: darüber Petrol, darunter hell; Stärke nach Abstand */
 const cellColor = (i: number | null) => (i === null ? "transparent" : i >= 100 ? `rgba(38,132,120,${Math.min(0.85, (i - 100) / 150 + 0.08)})` : `rgba(161,161,170,${Math.min(0.5, (100 - i) / 160)})`);
 
+/* Töne der fünf größten Fraktionen im Anteilsbalken (nur Farben aus „Petrol klar“, keine Parteifarben) */
+const SHARE_TONES = ["bg-teal-700", "bg-sky-800", "bg-amber-600", "bg-teal-400", "bg-sky-500"];
+
 /** plenara.X – Fraktionsprofil: Anträge und Anfragen je Fraktion, Themenprofil und was aus den Anträgen wird */
 export function FraktionenPage() {
   const { query } = useAnalyticsQuery();
@@ -90,6 +93,24 @@ export function FraktionenPage() {
                   ["Anträge", n(parties.reduce((a, p) => a + p.antrag, 0))],
                   ["Anfragen", n(parties.reduce((a, p) => a + p.anfrage, 0))]
                 ] as [string, string][]).map(([label, value]) => ({ label, value }))} />
+              {/* Anteile der Fraktionen an allen Anträgen und Anfragen: ein Balken, die fünf größten einzeln, der Rest zusammen */}
+              {(() => {
+                const sum = parties.reduce((a, p) => a + p.n, 0) || 1, top = parties.slice(0, 5), rest = sum - top.reduce((a, p) => a + p.n, 0);
+                const parts = [...top.map((p, i) => ({ name: p.name, v: p.n, c: SHARE_TONES[i] })), ...(rest > 0 ? [{ name: "Übrige", v: rest, c: "bg-slate-300" }] : [])];
+                const pc = (v: number) => `${Math.round((v / sum) * 100)} %`;
+                return <div className="mt-6 max-w-[900px] max-sm:hidden">
+                  <div className="flex h-5 overflow-hidden rounded-full bg-slate-100" role="img" aria-label={parts.map((x) => `${x.name} ${pc(x.v)}`).join(", ")}>
+                    {parts.map((x) => <span key={x.name} className={x.c} style={{ width: `${(x.v / sum) * 100}%` }} />)}
+                  </div>
+                  <ul className="m-0 mt-3 grid list-none grid-cols-3 gap-x-4 gap-y-2 p-0">
+                    {parts.map((x) => <li key={x.name} className="flex items-baseline gap-2 text-[14px] text-slate-700">
+                      <i className={`inline-block h-3 w-3 flex-none translate-y-0.5 rounded-sm ${x.c}`} />
+                      <span className="min-w-0"><b className="text-[22px] font-semibold tabular-nums text-slate-900">{pc(x.v)}</b> <span className="break-words">{x.name}</span></span>
+                    </li>)}
+                  </ul>
+                  <p className="m-0 mt-3 text-[12px] text-slate-500">Anteil an allen Anträgen und Anfragen einer Fraktion; gemeinsame Anträge zählen bei jeder beteiligten Fraktion.</p>
+                </div>;
+              })()}
               </div>
 
               {pending && <ListSkeleton />}

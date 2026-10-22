@@ -122,8 +122,6 @@
   }
   main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y>span[aria-hidden] {
     border-radius: 9999px;
-    top: 3px;
-    bottom: 3px;
     box-shadow: 0 2px 8px rgba(24,24,27,.14);
   }
   main:is(.rm-xwide, .rm-xnet) .rm-xzeit button {
@@ -183,31 +181,45 @@
     top: 56px;
     bottom: auto;
   }
-  /* Zoom-Knöpfe unten links, damit die Themenleiste ganz oben rechts beginnen kann */
+  /* Zoom-Knöpfe immer unten rechts (Karten und Netze), die Legende dafür unten links */
   main.rm-xwide .rm-mapbox>.right-3 {
-    right: auto;
-    left: 12px;
+    right: 14px;
+    left: auto;
     top: auto;
     bottom: 14px;
   }
+  /* Zeitraum klein und senkrecht links unter dem Filterknopf; Ebene (Gemeinden, Kreise) unten in der Mitte der Karte */
   main.rm-xwide .rm-xtop {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: contents;
+  }
+  main.rm-xwide .rm-xtop .rm-xzeit {
     position: absolute;
-    left: 70px;
-    top: auto;
-    bottom: 14px;
-    z-index: 40;
+    left: 14px;
+    top: 66px;
+    z-index: 20;
+  }
+  main.rm-xwide .rm-xtop .rm-xzeit .touch-pan-y {
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: 18px;
+  }
+  main.rm-xwide .rm-xtop .rm-xzeit button {
+    height: 26px;
+    padding: 0 9px;
+    font-size: 12px;
   }
   main.rm-xwide .rm-xtop .rm-xebene {
-    position: static;
-    transform: none;
+    position: absolute;
+    left: 50%;
+    right: auto;
+    bottom: 14px;
+    transform: translateX(-50%);
+    z-index: 20;
   }
   main.rm-xwide .rm-mapbox>.rm-legend:not(.right-3) {
     top: auto;
-    left: auto;
-    right: 14px;
+    left: 14px;
+    right: auto;
     bottom: 14px;
   }
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) {
@@ -463,6 +475,10 @@
   }
   main.rm-xhero .rm-xhero-panel .rm-xtop {
     max-width: none;
+  }
+  /* Mit Zeitraum links unter dem Filterknopf (Nachrichten): der Text rückt daneben */
+  main.rm-xhero .rm-xhero-panel:has(.rm-xzeit) {
+    padding-left: 144px;
   }
   /* Legende ohne Kasten, schlicht auf der Karte */
   main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.rm-legend:not(.right-3) {

@@ -11,13 +11,13 @@ export function Segmented<K extends string>({ options, value, onPick, label, fil
   const drag = useRef<{ x: number; on: boolean } | null>(null);
   const moved = useRef(false);
   const [fx, setFx] = useState<number | null>(null);
-  const [rects, setRects] = useState<{ l: number; w: number }[]>([]);
+  const [rects, setRects] = useState<{ l: number; w: number; t: number; h: number }[]>([]);
   const idx = options.findIndex(([k]) => k === value);
   /* Lage jeder Stelle messen (nach Layout und bei Größenänderung) */
   useEffect(() => {
     const measure = () => {
       const tabs = [...(box.current?.querySelectorAll<HTMLElement>('[role="tab"]') ?? [])];
-      setRects(tabs.map((t) => ({ l: t.offsetLeft, w: t.offsetWidth })));
+      setRects(tabs.map((t) => ({ l: t.offsetLeft, w: t.offsetWidth, t: t.offsetTop, h: t.offsetHeight })));
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -28,7 +28,7 @@ export function Segmented<K extends string>({ options, value, onPick, label, fil
   const pill = (() => {
     if (pos === null || !rects.length) return null;
     const a = Math.min(rects.length - 1, Math.max(0, Math.floor(pos))), b = Math.min(rects.length - 1, a + 1), t = pos - a;
-    return { l: rects[a].l + (rects[b].l - rects[a].l) * t, w: rects[a].w + (rects[b].w - rects[a].w) * t };
+    return { l: rects[a].l + (rects[b].l - rects[a].l) * t, w: rects[a].w + (rects[b].w - rects[a].w) * t, t: rects[a].t + (rects[b].t - rects[a].t) * t, h: rects[a].h + (rects[b].h - rects[a].h) * t };
   })();
   const shown = fx === null ? idx : Math.round(fx);
   /* Fingerposition → Stelle als Kommazahl (zwischen den Mitten der Stellungen) */
@@ -53,7 +53,7 @@ export function Segmented<K extends string>({ options, value, onPick, label, fil
       onPointerUp={() => { const f = fx; drag.current = null; setFx(null); if (f === null) return; const k = options[Math.round(f)]?.[0]; if (k !== undefined && k !== value) { tick(); onPick(k); } }}
       onPointerCancel={() => { drag.current = null; setFx(null); }}
       onClickCapture={(e) => { if (moved.current) { e.stopPropagation(); e.preventDefault(); moved.current = false; } }}>
-      {pill && <span aria-hidden="true" className={`absolute inset-y-1 rounded-[10px] bg-white shadow-sm motion-reduce:transition-none ${fx === null ? "transition-[left,width] duration-[260ms] ease-[cubic-bezier(.3,.7,.3,1)]" : ""}`} style={{ left: pill.l, width: pill.w }} />}
+      {pill && <span aria-hidden="true" className={`absolute rounded-[10px] bg-white shadow-sm motion-reduce:transition-none ${fx === null ? "transition-[left,width,top,height] duration-[260ms] ease-[cubic-bezier(.3,.7,.3,1)]" : ""}`} style={{ left: pill.l, width: pill.w, top: pill.t, height: pill.h }} />}
       {options.map(([k, l, hint], i) => (
         <button key={k} role="tab" type="button" aria-selected={k === value} title={hint} onClick={() => onPick(k)}
           className={`relative z-10 h-9 max-sm:h-10 shrink-0 whitespace-nowrap rounded-[10px] px-3 text-[14px] ${i === shown ? "font-semibold text-slate-900" : "text-slate-600 hover:text-slate-900"}`}>

@@ -296,8 +296,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                 <section className="mt-6" aria-label="Neueste Vorgänge">
                   {/* Überschrift: was gewählt ist (Kategorie oder Art), mit Ort, falls einer gewählt ist; Schritt darunter klein */}
                   <h2 className="m-0 text-[22px] font-semibold leading-tight max-sm:text-[20px]">{art ? artShort(art) : res.signal.name}{areaAgs && res.places.length === 1 ? <span className="font-normal text-slate-500"> in {res.places[0].name}</span> : null}</h2>
-                  {/* Schritt als Filter direkt über der Liste, mit denselben Farbpunkten wie in den Zeilen */}
-                  {res.signal.id === signal && res.phases.length > 1 && <ul aria-label="Schritt" className="m-0 mt-3 flex list-none flex-wrap gap-1.5 p-0 print:hidden">
+                  {/* Schritt als Filter direkt über der Liste, mit denselben Farben wie in den Zeilen; bei „Alle Projekte“ nicht (die Kategorien haben verschiedene Schritte) */}
+                  {signal !== ALLE && res.signal.id === signal && res.phases.length > 1 && <ul aria-label="Schritt" className="m-0 mt-3 flex list-none flex-wrap gap-1.5 p-0 print:hidden">
                     {[{ key: "", name: "Alle Schritte", count: res.phases.reduce((a, p) => a + p.count, 0) }, ...res.phases].map((p) => {
                       const on = p.key === phase;
                       return <li key={p.key || "alle"}><button type="button" aria-pressed={on} title={`${p.name}: ${n(p.count)}`} onClick={() => pick({ phase: on ? "" : p.key })}

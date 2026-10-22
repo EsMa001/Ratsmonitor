@@ -72,9 +72,9 @@ export function SpreadMap({ regions, day, firstDay, lastDay, onDay, playing, onT
         </ul>
       </div>
       <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
-        <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>
-        <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={16} /></button>
-        <button type="button" title="Auf Ergebnis zentrieren" aria-label="Auf Ergebnis zentrieren" onClick={() => (regions.length ? engine?.focusMany(regions.flatMap(keysOf)) : engine?.focusArea(""))} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
+        <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-8 w-8 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={14} /></button>
+        <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className="grid h-8 w-8 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={14} /></button>
+        <button type="button" title="Auf Ergebnis zentrieren" aria-label="Auf Ergebnis zentrieren" onClick={() => (regions.length ? engine?.focusMany(regions.flatMap(keysOf)) : engine?.focusArea(""))} className="grid h-8 w-8 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={14} /></button>
       </div>
       {info && <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:inset-x-3 max-sm:bottom-[88px] max-sm:top-auto"><span className={`${glass} rounded-2xl px-4 py-2 text-center text-[14px] text-slate-900`}>{info}</span></div>}
       {regions.length > 0 && (

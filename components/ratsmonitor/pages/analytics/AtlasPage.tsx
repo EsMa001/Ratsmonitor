@@ -46,7 +46,7 @@ export function AtlasPage() {
   const pick = (next: { thema?: string; sub?: string; zeit?: string }) => router.push(atlasHref({ zeit, ort: ortNow(), ...next }), { scroll: false });
   const [railRef, railFolded, railUnfold] = useRailFold(thema);
   return (
-    <main id="inhalt" className="rm-xwide rm-xatlas w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+    <main id="inhalt" className="rm-xwide rm-xatlas rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <XKopf seite="atlas" />
       <SplitHandle />
       {/* Handy: Auswahlfeld; Tablet 6 Kacheln je Reihe; Desktop alle in einer Reihe (nie waagerecht scrollen) */}

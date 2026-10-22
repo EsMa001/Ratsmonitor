@@ -217,7 +217,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
           })}
         </ul>
       </nav>}
-      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch filterUp follow={<Folgen heart before={() => { const nm = THEMES.find((t: { id: string; name: string }) => t.id === theme)?.name; if (nm) search.setThema(nm); }} hint="Auswahl unter Meine Suchen speichern" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
+      <div className="mt-2 max-sm:mt-0 print:hidden"><DiffusionSearch filterUp noPlay follow={<Folgen heart before={() => { const nm = THEMES.find((t: { id: string; name: string }) => t.id === theme)?.name; if (nm) search.setThema(nm); }} hint="Auswahl unter Meine Suchen speichern" />} play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" extra={<AtlasExtra level={level} onLevel={setLevel} />} /></div>
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden karte text="Auswertung wird berechnet …" />}
       {res && (
