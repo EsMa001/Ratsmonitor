@@ -9,7 +9,7 @@ import {buildXCases} from '../server/integrations/x-cases.mjs';
 const catalog=[1,2,3,4,5].map(i=>({id:'r'+i,kind:'city',name:'Ort '+i,ags:'0555800'+i}));
 const NOW=Date.parse('2026-06-15T12:00:00Z'),day=n=>new Date(NOW-n*86400000).toISOString().slice(0,10);
 test('trends rejects unknown windows and short words',()=>{
- for(const q of ['window=7','window=x','q=ab'])assert.throws(()=>parseTrends(new URLSearchParams(q)));
+ for(const q of ['window=7','window=30','window=x','q=ab'])assert.throws(()=>parseTrends(new URLSearchParams(q)));
  assert.equal(parseTrends(new URLSearchParams('')).window,90);
 });
 test('trends separates rising, new and falling terms between two equal windows',async()=>{

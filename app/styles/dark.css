@@ -344,14 +344,13 @@ html.rm-dark .rm-solid .rm-glass:not(.rm-fpop), html.rm-dark .rm-solid .rm-glass
     box-shadow: 0 8px 28px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
   }
   html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button {
-    background: linear-gradient(135deg,rgba(22,27,26,.62),rgba(23,33,42,.52));
-    border-color: rgba(154,156,162,.22);
+    background: transparent;
     color: var(--rm-c800);
   }
   html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button[aria-pressed=true] {
     background: rgba(255,255,255,.16);
   }
-  html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xebene, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y, html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button:not([aria-pressed=true]), html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.right-3, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-mapbox>div.inset-x-16>span, html.rm-dark main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) .rm-chip {
+  html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xebene, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y, html.rm-dark main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.right-3, html.rm-dark main:is(.rm-xwide, .rm-xnet) .rm-mapbox>div.inset-x-16>span, html.rm-dark main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) .rm-chip {
     background: linear-gradient(135deg,rgba(40,48,47,.66),rgba(23,33,42,.5));
     border-color: rgba(255,255,255,.14);
     box-shadow: 0 1px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08);

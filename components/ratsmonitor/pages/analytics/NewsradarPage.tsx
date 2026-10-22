@@ -14,6 +14,8 @@ import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { MethodikNote } from "./Methodik";
+import { ListenKopf } from "./ListenKopf";
+import { Newspaper } from "lucide-react";
 
 interface Item {
   id: string; region: string; place: string; headline: string;
@@ -114,6 +116,13 @@ export function NewsradarPage() {
             <>
               <div className={HERO_PANEL}>
               <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
+                {/* Bühne: die Meldungen als Inhaltsverzeichnis (Ort und Überschrift), ein Klick springt hin */}
+                <ol className="m-0 mt-6 list-none space-y-1 p-0 max-sm:hidden">
+                  {res.items.map((k, i) => <li key={k.id}><a href={`#meldung-${i + 1}`} className="group grid grid-cols-[24px_minmax(0,1fr)] gap-x-2 rounded-lg px-2 py-1.5 text-slate-900 no-underline hover:bg-white/70">
+                    <span className="text-[14px] font-semibold tabular-nums text-teal-700">{i + 1}</span>
+                    <span className="min-w-0"><span className="block text-[12px] text-slate-500">{k.dateline.place} · {datum(k.dateline.date)}</span><span className="line-clamp-2 text-[14px] leading-snug group-hover:text-teal-800">{k.headline.startsWith(`${k.dateline.place}: `) ? k.headline.slice(k.dateline.place.length + 2) : k.headline}</span></span>
+                  </a></li>)}
+                </ol>
                 {!own && <div className="rm-xtop"><div className="rm-xzeit"><Segmented label="Zeitraum" options={SPANS.map(([dd, l]) => [String(dd), l] as [string, string])} value={String(days)} onPick={(k) => setDays(+k)} /></div></div>}
               </div>
               {pending && <ListSkeleton />}
@@ -121,6 +130,7 @@ export function NewsradarPage() {
               <nav aria-label="Meldungen" className="-mx-4 mt-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden">
                 {res.items.map((k, n) => (n >= sicht) ? null : <a key={k.id} href={`#meldung-${n + 1}`} className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 no-underline"><b className="font-semibold tabular-nums text-teal-700">{n + 1}</b>{k.dateline.place.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt) /, "")}</a>)}
               </nav>
+              <div className="mt-4 max-sm:hidden"><ListenKopf eyebrow="Meldungen" title="Berichtenswerte Vorgänge" icon={<Newspaper size={20} strokeWidth={1.4} />} count={`${n(res.items.length)} von ${n(res.totals.considered)}`} /></div>
               <Reveal><section className="mt-4 max-sm:mt-3 border-t border-slate-200">
                 {res.items.map((k, n) => <Meldung key={k.id} i={k} nr={n + 1} total={res.items.length} hide={n >= sicht} />)}
                 {res.items.length > sicht && <button type="button" onClick={() => setSicht((v) => v + 5)} className="inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{`Weitere ${Math.min(5, res.items.length - sicht)} Meldungen laden`}</button>}

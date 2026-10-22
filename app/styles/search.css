@@ -195,12 +195,53 @@ html.rm-search .rm-footcta {
   display: none;
 }
 
+.rm-searchsplit {
+  display: none;
+}
+
 /* Desktop (breit): Karte links, Trefferliste rechts daneben; die Karte bleibt beim Scrollen stehen (wie das Blatt am Handy: Liste und Karte gleichzeitig) */
 @media (min-width:1100px) {
   html.rm-search .rm-flat:not([hidden]) {
     display: grid;
-    grid-template-columns: minmax(0,1fr) minmax(520px,40%);
+    grid-template-columns: minmax(0,1fr) var(--rm-list,minmax(520px,40%));
     align-items: start;
+  }
+  /* Karte und Liste stehen in festen Zellen, damit der Ziehgriff (SearchSplit) dieselbe Zelle wie die Liste nutzen kann */
+  html.rm-search .rm-flat>section:first-child {
+    grid-area: 1 / 1;
+  }
+  html.rm-search .rm-flat>main {
+    grid-area: 1 / 2;
+  }
+  /* Ziehgriff am linken Rand der Liste: schmale Fläche über der Trennlinie, bei Berührung eine Petrol-Linie */
+  html.rm-search .rm-flat>.rm-searchsplit {
+    display: block;
+    grid-area: 1 / 2;
+    justify-self: start;
+    align-self: start;
+    position: sticky;
+    top: 58px;
+    height: calc(100dvh - 58px);
+    width: 16px;
+    margin-left: -9px;
+    z-index: 45;
+    cursor: col-resize;
+    touch-action: none;
+    outline: none;
+  }
+  html.rm-search .rm-flat>.rm-searchsplit::after {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    border-radius: 2px;
+    background: transparent;
+    transition: background .15s;
+  }
+  html.rm-search .rm-flat>.rm-searchsplit:hover::after, html.rm-search .rm-flat>.rm-searchsplit:focus-visible::after, html.rm-search .rm-flat>.rm-searchsplit[data-drag]::after {
+    background: var(--rm-fill);
   }
   html.rm-search .rm-flat>section:first-child {
     position: sticky;

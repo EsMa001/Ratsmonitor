@@ -41,7 +41,7 @@
    Spalte, alles andere fällt automatisch nach rechts. */
   main.rm-xwide {
     display: grid;
-    grid-template-columns: minmax(0,var(--xl,1.1fr)) minmax(0,1fr);
+    grid-template-columns: minmax(0,var(--xl,1fr)) minmax(0,1fr);
     column-gap: 12px;
     align-items: start;
     padding-left: 0;
@@ -67,7 +67,7 @@
     padding: 0;
     background: none;
   }
-  main.rm-xwide .rm-art-std, main.rm-xwide .rm-karte-toggle, main.rm-xwide nav[aria-label="Wert"], main.rm-xwide .rm-xsplit-map>p {
+  main.rm-xwide .rm-art-std, main.rm-xwide .rm-xfilter-chips, main.rm-xwide .rm-karte-toggle, main.rm-xwide nav[aria-label="Wert"], main.rm-xwide .rm-xsplit-map>p {
     display: none;
   }
   main.rm-xwide nav.rm-xrail ul>li {
@@ -181,45 +181,47 @@
     top: 56px;
     bottom: auto;
   }
-  /* Zoom-Knöpfe immer unten rechts (Karten und Netze), die Legende dafür unten links */
+  /* Karten: Zoom-Knöpfe unten links, die Legende unten rechts */
   main.rm-xwide .rm-mapbox>.right-3 {
-    right: 14px;
-    left: auto;
+    right: auto;
+    left: 14px;
     top: auto;
     bottom: 14px;
   }
-  /* Zeitraum klein und senkrecht links unter dem Filterknopf; Ebene (Gemeinden, Kreise) unten in der Mitte der Karte */
+  /* Unten in der Mitte der Karte eine Bedienzeile: Ebene (Gemeinden, Kreise) und Zeitraum, klein nebeneinander */
   main.rm-xwide .rm-xtop {
-    display: contents;
-  }
-  main.rm-xwide .rm-xtop .rm-xzeit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     position: absolute;
-    left: 14px;
-    top: 66px;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    width: max-content;
+    margin-inline: auto;
     z-index: 20;
+    white-space: nowrap;
+  }
+  main.rm-xwide .rm-xtop .rm-xebene, main.rm-xwide .rm-xtop .rm-xzeit {
+    position: static;
+    transform: none;
   }
   main.rm-xwide .rm-xtop .rm-xzeit .touch-pan-y {
-    flex-direction: column;
-    align-items: stretch;
-    border-radius: 18px;
+    border-radius: 9999px;
   }
   main.rm-xwide .rm-xtop .rm-xzeit button {
-    height: 26px;
-    padding: 0 9px;
+    height: 28px;
+    padding: 0 10px;
     font-size: 12px;
   }
-  main.rm-xwide .rm-xtop .rm-xebene {
-    position: absolute;
-    left: 50%;
-    right: auto;
-    bottom: 14px;
-    transform: translateX(-50%);
-    z-index: 20;
+  /* Legende (links) und Zoom (rechts) stehen über der Bedienzeile */
+  main.rm-xwide:has(.rm-xtop .rm-xebene, .rm-xtop .rm-xzeit) .rm-mapbox>:is(.right-3, .rm-legend:not(.right-3)) {
+    bottom: 58px;
   }
   main.rm-xwide .rm-mapbox>.rm-legend:not(.right-3) {
     top: auto;
-    left: 14px;
-    right: auto;
+    left: auto;
+    right: 14px;
     bottom: 14px;
   }
   main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) {
@@ -316,15 +318,18 @@
     padding: 12px 12px 14px 0;
     pointer-events: none;
   }
+  /* Ruhig: alle Themen in einer gemeinsamen Glasleiste statt einzelner Kacheln; das gewählte Thema hell hinterlegt */
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub) {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0;
     height: auto;
-    pointer-events: none;
+    padding: 4px;
+    border-radius: 22px;
+    pointer-events: auto;
   }
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li {
-    flex: 0 0 44px;
+    flex: 0 0 40px;
     min-height: 0;
   }
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button {
@@ -343,15 +348,13 @@
     line-height: 1.15;
     border-radius: 18px;
     color: var(--rm-c800);
-    background: linear-gradient(135deg,rgba(255,255,255,.5),rgba(230,243,241,.42));
-    -webkit-backdrop-filter: blur(18px) saturate(170%);
-    backdrop-filter: blur(18px) saturate(170%);
-    border: 1px solid rgba(255,255,255,.75);
-    box-shadow: 0 8px 28px rgba(24,24,27,.1),inset 0 1px 0 rgba(255,255,255,.75);
-    transition: background .25s,opacity .25s,box-shadow .25s;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    transition: background .25s,opacity .25s;
   }
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button:hover {
-    background: rgba(255,255,255,.85);
+    background: rgba(255,255,255,.55);
   }
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button[aria-pressed=true] {
     background: rgba(255,255,255,.94);
@@ -371,11 +374,11 @@
     display: none;
   }
   /* Ruhiger: ein gemeinsamer, leichter Schatten für alles auf der Karte, Legende ohne Kasten */
-  main:is(.rm-xwide, .rm-xnet) .rm-xebene, main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y, main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0, main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.right-3 {
+  main:is(.rm-xwide, .rm-xnet) .rm-xebene, main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y, main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0, main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.right-3 {
     box-shadow: 0 1px 8px rgba(24,24,27,.07),inset 0 1px 0 rgba(255,255,255,.7);
   }
   /* Eine Glasoptik für alles auf der Karte */
-  main:is(.rm-xwide, .rm-xnet) .rm-xebene, main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y, main:is(.rm-xwide, .rm-xnet) nav.rm-xrail button:not([aria-pressed=true]), main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0, main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.right-3, main:is(.rm-xwide, .rm-xnet) .rm-mapbox>div.inset-x-16>span, main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) .rm-chip {
+  main:is(.rm-xwide, .rm-xnet) .rm-xebene, main:is(.rm-xwide, .rm-xnet) .rm-xzeit .touch-pan-y, main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.relative>button, main:is(.rm-xwide, .rm-xnet) .rm-xsearch [role=search]>div.min-w-0, main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.right-3, main:is(.rm-xwide, .rm-xnet) .rm-mapbox>div.inset-x-16>span, main:is(.rm-xwide, .rm-xnet) div:has(>.rm-xsearch) .rm-chip {
     background: linear-gradient(135deg,rgba(255,255,255,.62),rgba(230,243,241,.46));
     border: 1px solid rgba(255,255,255,.82);
     -webkit-backdrop-filter: blur(18px) saturate(170%);
@@ -476,10 +479,6 @@
   main.rm-xhero .rm-xhero-panel .rm-xtop {
     max-width: none;
   }
-  /* Mit Zeitraum links unter dem Filterknopf (Nachrichten): der Text rückt daneben */
-  main.rm-xhero .rm-xhero-panel:has(.rm-xzeit) {
-    padding-left: 144px;
-  }
   /* Legende ohne Kasten, schlicht auf der Karte */
   main:is(.rm-xwide, .rm-xnet) .rm-mapbox>.rm-legend:not(.right-3) {
     background: none;
@@ -527,8 +526,13 @@
     animation: rm-subout .28s cubic-bezier(.22,.9,.28,1) both;
     transform-origin: right top;
   }
-  /* Klick außerhalb der Leiste (Karte, Liste) schließt die Unterliste (useRailFold) */
-  main:is(.rm-xwide, .rm-xnet) nav.rm-xrail.rm-rail-folded .rm-rail-sub {
+  /* Gezeigt wird die Unterliste des gewählten Eintrags (rm-rail-open) oder des Eintrags, auf dem die Maus kurz verweilt (rm-rail-peek, useRailPeek);
+     verweilt sie auf einem anderen Eintrag, tritt die des gewählten zurück */
+  main:is(.rm-xwide, .rm-xnet) nav.rm-xrail li:not(.rm-rail-open):not(.rm-rail-peek)>.rm-rail-sub, main:is(.rm-xwide, .rm-xnet) nav.rm-xrail:has(li.rm-rail-peek) li.rm-rail-open:not(.rm-rail-peek)>.rm-rail-sub {
+    display: none;
+  }
+  /* Klick außerhalb der Leiste (Karte, Liste) schließt die Unterliste (useRailFold); Verweilen öffnet sie trotzdem */
+  main:is(.rm-xwide, .rm-xnet) nav.rm-xrail.rm-rail-folded li:not(.rm-rail-peek)>.rm-rail-sub {
     display: none;
   }
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul:not(.rm-rail-sub)>li:nth-child(n+7) .rm-rail-sub {
@@ -539,6 +543,12 @@
   main:is(.rm-xwide, .rm-xnet) .rm-rail-sub li {
     height: 34px;
     flex: none;
+  }
+  main:is(.rm-xwide, .rm-xnet) nav.rm-xrail ul.rm-rail-sub {
+    gap: 0;
+    padding: 4px;
+    border-radius: 20px;
+    pointer-events: auto;
   }
   main:is(.rm-xwide, .rm-xnet) nav.rm-xrail .rm-rail-sub button {
     font-size: 11.5px;
@@ -619,7 +629,8 @@
     z-index: 30;
     margin: 0 192px 0 0;
     display: block;
-    height: 0;
+    /* eigene Höhe: so bleibt die klebende Leiste innerhalb des Netzes und ragt nicht in die Kachel am Seitenende */
+    height: 44px;
     overflow: visible;
   }
   main.rm-xnet .rm-xseg .touch-pan-y {
@@ -650,10 +661,14 @@
     left: auto;
     right: 12px;
   }
+  /* Zoom unten links wie auf den Karten, über der Detailstufe */
+  main.rm-xnet .rm-xstage .rm-netzoom {
+    bottom: 60px;
+  }
   main.rm-xnet .rm-xstage .rm-stage-chip.z-\[7\] {
     top: auto;
     bottom: 12px;
-    left: 12px;
+    left: 60px;
   }
   main.rm-xnet .rm-xstage .inset-x-16.top-3, main.rm-xnet .rm-xstage .inset-x-16.bottom-3 {
     top: auto;
@@ -1345,4 +1360,55 @@ html:not(.rm-dark) :is(.pl-band, .ri-head) .back-btn:hover, html:not(.rm-dark) :
 html:not(.rm-dark) :is(.pl-band, .ri-head) .back-btn:focus-visible {
   outline: 2px solid rgba(255,255,255,.7);
   outline-offset: 1px;
+}
+
+/* plenara.X, ab Tablet: Suche und Filter in der Schriftgröße der Themenleiste (12 px); am Handy bleibt 16 px (sonst zoomt iOS beim Tippen) */
+@media (min-width:640px) {
+  html.rm-analytics [role=search] input, html.rm-analytics [role=search] input::placeholder {
+    font-size: 14px;
+  }
+  html.rm-analytics [role=search] kbd {
+    font-size: 12px;
+  }
+  html.rm-analytics #filter-body, html.rm-analytics #filter-body :is(span, p, label, button, input) {
+    font-size: 12px;
+  }
+  html.rm-analytics #filter-body>div:first-child>span {
+    font-size: 14px;
+  }
+  /* Etiketten der aktiven Filter unter der Suche: klein wie die Leiste */
+  html.rm-analytics :is(main, .rm-flat) .rm-chip.rm-chip {
+    height: 24px;
+    padding-left: 8px;
+    padding-right: 6px;
+    gap: 4px;
+    font-size: 12px;
+  }
+  html.rm-analytics :is(main, .rm-flat) .rm-chip.rm-chip svg {
+    width: 12px;
+    height: 12px;
+  }
+  /* kompakt: engere Zeilen, flachere Felder, kleinere Schalter */
+  html.rm-analytics #filter-body {
+    gap: 4px;
+    padding-bottom: 10px;
+  }
+  html.rm-analytics #filter-body>div.flex-col {
+    gap: 4px;
+  }
+  html.rm-analytics #filter-body .select-base {
+    height: 28px;
+    padding-left: 10px;
+  }
+  html.rm-analytics #filter-body button[role=switch] {
+    transform: scale(.8);
+    transform-origin: right center;
+  }
+}
+
+/* plenara.X, Desktop: kein Weißraum zwischen Auswertung und der Kachel am Seitenende */
+@media (min-width:640px) {
+  main#inhalt:is(.rm-xwide, .rm-xnet) {
+    padding-bottom: 0;
+  }
 }

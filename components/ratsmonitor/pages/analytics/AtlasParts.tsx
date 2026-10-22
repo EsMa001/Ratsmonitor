@@ -1,3 +1,4 @@
+import { useDwell } from "../../lib/useDwell";
 import { useState } from "react";
 import { SUBTOPICS } from "@/shared/themes.mjs";
 import { plural } from "../../lib/text";
@@ -145,7 +146,9 @@ export function PartList({ rows, open, selected, onOpen, drill, label, icons = f
   const [hot, setHot] = useState("");
   /* Nur beim Überfahren mit der Maus: die übrigen Zeilen treten zurück (am Handy bleiben alle Zeilen normal) */
   const focusKey = hot;
-  const over = (k: string) => { if (typeof window !== "undefined" && window.matchMedia("(hover:hover)").matches) { setHot(k); onHover?.(k); } };
+  /* Liste → Karte erst nach kurzem Verweilen; die Hervorhebung in der Liste sofort */
+  const hoverD = useDwell((k: string) => onHover?.(k), "");
+  const over = (k: string) => { if (typeof window !== "undefined" && window.matchMedia("(hover:hover)").matches) { setHot(k); hoverD(k); } };
   return (
     <>
     <ol className="m-0 list-none border-t border-slate-200 p-0">

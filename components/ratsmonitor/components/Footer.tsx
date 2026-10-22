@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DarkCta } from "../info/blocks";
+import { setMethodikHost } from "../lib/methodikHost";
 import { useMe } from "../lib/account";
 import { useBrand, useBrandText } from "../lib/brand";
 
@@ -18,11 +19,21 @@ export function Footer() {
   const brandText = useBrandText();
   const path = usePathname();
   const me = useMe();
+  /* plenara.X: die Methodik der Seite steht in der Kachel (Methodik.tsx hängt sich in #rm-methodik ein), kein eigener Block darüber */
+  const x = path.startsWith("/analytics/");
   return (
     <>
     {/* Abstand, damit Inhalt wie die Seitenzahl nicht im Verlauf des Abschlusses steht */}
     {/* Handy: kein Abschlussband und kein großer Fuß (wirkt wie eine Webseite); nur eine schmale Zeile mit den Pflichtangaben */}
-    {!OWN_CTA(path) && <div className="ri rm-footcta pt-16 max-sm:hidden print:hidden">{
+    {!OWN_CTA(path) && x && <div className="ri rm-footcta max-sm:hidden print:hidden">
+      {/* plenara.X: links Fragen mit dem Kontaktknopf darunter, rechts die Methodik der Seite (Methodik.tsx hängt sich in #rm-methodik ein) */}
+      <section className="ri-dark rm-xcta"><div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-12">
+        <div><h2>Fragen oder Anregungen?</h2><p className="ri-dark__sub">{`Wir freuen uns über Ihr Feedback zu ${name}.`}</p>
+          <Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link></div>
+        <div id="rm-methodik" ref={setMethodikHost} />
+      </div></section>
+    </div>}
+    {!OWN_CTA(path) && !x && <div className="ri rm-footcta pt-16 max-sm:hidden print:hidden">{
       /* Ohne Anmeldung: Hinweis auf das Konto (nicht auf Konto- und Anmeldeseiten, nicht in der geschlossenen Testphase) */
       me.ready && me.accounts && !me.user && me.access !== "invite" && !(path.startsWith("/konto/") || path.startsWith("/anmelden") || path === "/registrieren") ? (
         <DarkCta title="Mit Konto speichern" sub="Suchen und Artikel im Konto speichern. Anmeldung mit einem Link per E-Mail, ohne Passwort." action={<Link href="/anmelden" className="ri-btn ri-btn--inv">Anmelden</Link>} />

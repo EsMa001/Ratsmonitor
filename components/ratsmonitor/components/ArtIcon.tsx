@@ -2,6 +2,12 @@ import { Armchair, Baby, Backpack, BatteryCharging, BatteryFull, Bike, Building2
 
 /* Icons der Filterwerte der Signale (Leistung, Vorhaben, Einrichtung …; Werte aus server/integrations/plenara-x-signals.mjs) */
 const ART_ICONS: Record<string, LucideIcon> = {
+  // Leistungsart aus dem Modell (shared/model/names.mjs SERVICE_NAMES)
+  "Bauleistung": Construction,
+  "Planung und Ingenieurleistung": PencilRuler,
+  "Lieferung und Fahrzeuge": Truck,
+  "IT und Digitales": Laptop,
+  "Dienstleistung": Handshake,
   "Glasfaser und Breitband": Cable,
   "Mobilfunk": RadioTower,
   "Batteriespeicher und Wasserstoff": BatteryCharging,

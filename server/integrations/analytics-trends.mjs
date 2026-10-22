@@ -12,7 +12,7 @@ import {listPage,offsetOf} from './analytics-lists.mjs';
  * einmal), Titel aus der Karte des Vorgangs. Alle Vorgänge je Fenster, keine Stichprobe. Verglichen werden Anteile an den Einträgen, nicht Rohzahlen; Maß ist ein Zwei-Stichproben-z-Test für Anteile.
  * Private Bauanträge zählen nicht.
  */
-const WINDOWS=[30,90,180],MIN_RECENT=5,RATIO=1.4,Z_MIN=2.5,LIST=15;
+const WINDOWS=[90,180,365],MIN_RECENT=5,RATIO=1.4,Z_MIN=2.5,LIST=15;
 const DAY=86400000;
 const iso=d=>new Date(d).toISOString().slice(0,10);
 

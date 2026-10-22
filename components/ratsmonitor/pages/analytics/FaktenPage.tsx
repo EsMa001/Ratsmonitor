@@ -1,3 +1,4 @@
+import { useDwell } from "../../lib/useDwell";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -156,6 +157,8 @@ export function FaktenPage() {
   const areaAgs = new URLSearchParams(query).get("area") ?? "";
   useOrtInAdresse(areaAgs, (a) => search.setArea(a, "ui"));
   const [hover, setHover] = useState("");
+  /* Liste → Karte erst nach kurzem Verweilen */
+  const hoverD = useDwell(setHover, "");
   const focus = sel ?? (areaAgs ? byAgs.get(areaAgs) : undefined);
   /* Antwort: Median, Spanne, Richtung seit dem vorigen Wert */
   const plain = !!fact && !overview && !amount && !change;
@@ -275,7 +278,7 @@ export function FaktenPage() {
                 {plain && <p className="mt-1 text-[14px] text-slate-500">↑ ↓ gegenüber dem vorigen Wert</p>}
                 <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0" onMouseLeave={() => setHover("")}>
                   {shown.map((x) => <li key={x.name} className="border-b border-slate-200">
-                    <button type="button" aria-expanded={listed === x.key && listedIn === "list"} onClick={() => show(x.key, "list")} onMouseEnter={() => setHover(x.ags)} onFocus={() => setHover(x.ags)} onBlur={() => setHover("")}
+                    <button type="button" aria-expanded={listed === x.key && listedIn === "list"} onClick={() => show(x.key, "list")} onMouseEnter={() => hoverD(x.ags)} onFocus={() => hoverD(x.ags)} onBlur={() => hoverD("")}
                       className={`flex w-full items-baseline justify-between gap-4 rounded-lg px-2 py-2.5 text-left text-[16px] hover:bg-slate-50 ${focus?.key === x.key ? "font-semibold" : ""}`}>
                       <span className="min-w-0 truncate">{x.name}</span>
                       <span className="flex shrink-0 items-baseline gap-2 tabular-nums">

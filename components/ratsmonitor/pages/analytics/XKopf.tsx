@@ -13,7 +13,10 @@ import { AnalyticsX } from "../../components/Brand";
 import { MapWheels } from "./MapWheels";
 import { ThemeIcon } from "../../components/icons";
 import { useSearch } from "../../state/search";
-import { THEMES } from "@/shared/themes.mjs";
+import { SUBTOPICS, THEMES } from "@/shared/themes.mjs";
+import { SubtopicIcon } from "../../components/SubtopicIcon";
+import { useRailFold, useRailPeek } from "../../lib/useRailFold";
+import { useSubParam } from "../../lib/subParam";
 import { useBandFigure, useCountUp } from "../../lib/bandFigure";
 
 /*
@@ -162,27 +165,39 @@ export function XWeiter({ links }: { links: [string, string][] }) {
   );
 }
 
-/** Die 10 Themen als Kacheln (Filter „Thema“ der gemeinsamen Suche), gleich auf Trends, Beschlusslage und den Einblicken */
+/** Die 10 Themen als Kacheln (Filter „Thema“ der gemeinsamen Suche), gleich auf Trends, Beschlusslage und den Einblicken; beim gewählten
+    Thema klappen seine Unterthemen auf (Filter ?sub=, useSubParam), ein Klick außerhalb der Leiste schließt sie */
 /* phone: false = am Handy ohne Walze (die Seite zeigt die Themen selbst auf der Karte) */
 export function ThemenLeiste({ phone = true }: { phone?: boolean } = {}) {
   const search = useSearch();
+  const [sub, setSub] = useSubParam();
+  const [railRef, railFolded, railUnfold] = useRailFold(search.state.thema);
+  const pickThema = (name: string) => { railUnfold(); if (sub) setSub(""); search.setThema(name); };
+  const peek = useRailPeek();
   return (
     <>
       {/* Handy: die Themen als eine Walzen-Zeile (wischen blättert, ein Tipp öffnet die Liste) */}
-      {phone && <MapWheels inline single label="Thema" value={search.state.thema} onPick={(name) => search.setThema(name)}
+      {phone && <MapWheels inline single label="Thema" value={search.state.thema} onPick={pickThema}
         items={[{ id: "", label: "Alle Themen", icon: <ThemeIcon theme="alle" size={16} className="text-slate-500" /> }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.name, label: t.name, icon: <ThemeIcon theme={t.id} size={16} className="text-slate-500" /> }))]} />}
       {/* Ab Tablet Kacheln; ab Desktop alle 11 in einer Reihe (Breite teilt sich auf) */}
-      <nav aria-label="Thema" className="rm-xrail mb-4 hidden sm:block print:hidden">
+      <nav ref={railRef} {...peek.nav} aria-label="Thema" className={`rm-xrail mb-4 hidden sm:block print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-11">
           {[{ id: "alle", name: "" }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.id, name: t.name }))].map((t) => {
             const on = search.state.thema === t.name;
             return (
-              <li key={t.id}>
-                <button type="button" aria-pressed={on} onClick={() => search.setThema(t.name)}
+              <li key={t.id} {...(t.name ? peek.tile(t.id) : {})} className={[on && t.name ? "rm-rail-open" : "", t.name && peek.peek === t.id ? "rm-rail-peek" : ""].join(" ").trim() || undefined}>
+                <button type="button" aria-pressed={on} onClick={() => pickThema(t.name)}
                   className={`flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   <ThemeIcon theme={t.id} size={22} className={on ? "text-teal-700" : "text-slate-500"} />
                   <span>{t.name || "Alle Themen"}</span>
                 </button>
+                {/* Breiter Bildschirm: die Unterthemen klappen neben dem gewählten Thema auf (CSS blendet sie sonst aus) */}
+                {t.name && <ul className="rm-rail-sub m-0 list-none p-0">
+                  {SUBTOPICS.filter((x: { theme: string }) => x.theme === t.id).map((x: { id: string; short: string }) => (
+                    <li key={x.id}><button type="button" aria-pressed={on && x.id === sub} onClick={() => { railUnfold(); if (!on) search.setThema(t.name); setSub(on && x.id === sub ? "" : x.id); }}>
+                      <SubtopicIcon id={x.id} size={16} /><span>{x.short}</span></button></li>
+                  ))}
+                </ul>}
               </li>
             );
           })}
