@@ -44,7 +44,7 @@ function TopicCard({t,showDate}:{t:Topic;showDate:boolean}){
  </li>;
 }
 
-/** Social Media: Themenvorschläge je Tag aus den letzten 30 Tagen (server/integrations/social-topics.mjs). */
+/** Social Media: Themenvorschläge je Tag aus den letzten 30 Tagen (server/integrations/social-model.mjs, Hilfen aus social-topics.mjs). */
 export function AdminSocial(){
  const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const [onlyFilled,setOnlyFilled]=useState(true),[sort,setSort]=useState<Sort>('datum'),[minFit,setMinFit]=useState(0),[group,setGroup]=useState('');

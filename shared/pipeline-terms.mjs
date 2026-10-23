@@ -31,7 +31,8 @@ export const STEPS=Object.freeze([
  {id:'doctype',name:'Dokumentart',phase:'extraktion',what:'Art des Dokuments aus dem Textanfang nachtragen',aliases:['Art nachtragen']},
  {id:'budget',name:'Grenze halten',phase:'extraktion',what:'PDFs über der festen Grenze der Ablage löschen (Text bleibt)',aliases:['Budget']},
  {id:'stats',name:'Stand zählen',phase:null,what:'Zahlen des Reiters PDF-Import neu zählen',aliases:['Stand']},
- {id:'title',name:'Titel einordnen',phase:'verarbeitung',what:'Sachgebiet nach der Titelregel (Label der Suche)',aliases:['Titelregel']},
+ // Seit 22.10.2026 ersetzt durch „Modell anwenden“; bleibt nur für alte Laufeinträge (ohne Stufe, erscheint nicht in den Schrittlisten).
+ {id:'title',name:'Titel einordnen',phase:null,what:'früher: Sachgebiet nach der Titelregel, ersetzt durch „Modell anwenden“',aliases:['Titelregel']},
  {id:'model',name:'Modell anwenden',phase:'verarbeitung',what:'Art, Thema, Unterthemen, Vorgangsart, Status, Dokumente und weitere Fragen je Bericht mit dem gelernten Modell',aliases:[]},
  {id:'rules',name:'Zusammenfassung und Fakten',phase:'verarbeitung',what:'Zusammenfassung (Kernsätze aus dem Modell) und Fakten je Bericht (Art, Thema und Hauptdokument aus dem Modell)',aliases:['Regeln je Bericht','Regeln anwenden']},
  {id:'search',name:'Suche aktualisieren',phase:'verarbeitung',what:'Wortliste der Suche nachführen',aliases:['Wortliste']},

@@ -9,8 +9,8 @@ import {fetchDashboard} from '@/components/admin-store';
 import type {AdminDashboard} from '@/shared/admin-types';
 
 /* Seite „Verarbeitung“ (dritte Stufe je Bericht, shared/pipeline-terms.mjs): wie weit der Bestand nach Regeln eingeordnet und
-   mit KI aufbereitet ist. Die Regeln laufen nachts im Job „Verarbeitung, nachts“ (scripts/rule-texts.mjs: Titel einordnen,
-   Regeln anwenden, Suche, Zahlen); „Jetzt verarbeiten“ startet ihn sofort (POST /api/admin/zeitplaene). Die KI arbeitet nur
+   mit KI aufbereitet ist. Die Regeln laufen nachts im Job „Verarbeitung, nachts“ (scripts/rule-texts.mjs: Modell anwenden,
+   Zusammenfassung und Fakten, Suche, Zahlen); „Jetzt verarbeiten“ startet ihn sofort (POST /api/admin/zeitplaene). Die KI arbeitet nur
    über den Agentenablauf; die Liste zeigt, was je Bericht bereitsteht. Was die Regeln erzeugen und wie gut, steht auf
    „Themen & Texte“. */
 type RunInfo={lastStart?:string;lastEnd?:string;result?:'ok'|'failed'|'stopped';running?:{startedAt:string}|null};

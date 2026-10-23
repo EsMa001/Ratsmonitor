@@ -173,7 +173,7 @@ export function AdminPdf(){
   {/* C. Texte */}
   <section className="mt-12" aria-label="Texte">
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="text" className="text-teal-600"/>Texte</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Zusammenfassungen, Fakten und die Wortliste der Suche entstehen aus diesen Texten im Reiter <Link href={adminHref('regeltexte')} className="text-teal-600 hover:text-teal-700">Themen &amp; Texte</Link>, nicht hier.</p>
+   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Einordnung, Zusammenfassungen, Fakten und die Suche entstehen aus diesen Texten im Reiter <Link href={adminHref('regeltexte')} className="text-teal-600 hover:text-teal-700">Themen &amp; Texte</Link>, nicht hier.</p>
    <div className="mt-5"><Kpis label="Texte" items={[
     {label:'Textfassungen',value:v(s=>n(s.texts.files)),note:'Dateien mit gelesenem Text (Textebene oder OCR)'},
     {label:'PDFs ohne Text',value:v(s=>s.texts.missing===undefined?'–':n(s.texts.missing)),note:s?.texts.missing?'abgelegt, Textebene noch nicht gelesen; mit „Textebene lesen“ nachholen':s?.texts.missing===0?'alle abgelegten PDFs haben Text':'nach dem nächsten Zählen'},

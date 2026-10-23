@@ -73,7 +73,7 @@ export function AdminSchedules(){
 
   <section className="mt-6" aria-label="Tagesablauf">
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="moon" className="text-teal-600"/>Ablauf der Nacht</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Die nächtlichen Jobs bauen aufeinander auf: erst Berichte abrufen, dann sichern, dann die Wortliste, dann PDFs und ihre Auswertung. Sie sollten sich nicht überschneiden.</p>
+   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Die nächtlichen Jobs bauen aufeinander auf: erst sichern, dann Berichte abrufen, dann PDFs, Texte und OCR, dann Einordnung, Suche und Zahlen. Sie sollten sich nicht überschneiden.</p>
    {data&&<DayPlan jobs={data.jobs}/>}
   </section>
 

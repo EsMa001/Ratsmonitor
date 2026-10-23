@@ -13,7 +13,7 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  nacht:{title:'Letzte Nacht',intro:'Die Tagespipeline im Blick: welcher Job wann lief, was Abruf, Extraktion, Verarbeitung und Nacharbeit getan haben und welchen Weg die Berichte genommen haben.'},
  abruf:{title:'Abruf',intro:'Zeigt je Gebiet, was gespeichert ist, und holt Berichte von Hand: Gebiete wählen, Zeitraum wählen, Auftrag anlegen. Nachts ruft die Tagespipeline von selbst ab; diese Seite ist für alles Weitere.'},
  pdf:{title:'PDF-Import',intro:'Lädt die PDF-Dokumente der Berichte in die eigene Ablage, liest ihren Text und hält die feste Grenze von 80 GB ein. Zeigt, was gerade läuft, wie vollständig die Ablage ist, was fehlschlägt und warum, und startet Läufe von Hand.'},
- verarbeitung:{title:'Verarbeitung',intro:'Zeigt, wie weit die Berichte eingeordnet und aufbereitet sind: nach Regeln (Titel, Thema, Zusammenfassung, Fakten) und mit KI. Die Regeln laufen nachts von selbst; die KI startet nur auf Klick.'},
+ verarbeitung:{title:'Verarbeitung',intro:'Zeigt, wie weit die Berichte eingeordnet und aufbereitet sind: mit dem Modell (Thema, Art, Vorgangsart), nach Regeln (Zusammenfassung, Fakten) und mit KI. Modell und Regeln laufen nachts von selbst; die KI arbeitet nur über den Agentenablauf.'},
  altbestand:{title:'Altbestand',intro:'Holt nach, was älter ist als der Tagesbereich oder vor dem 12.10.2026 gescheitert ist: Berichte rückwirkend abrufen, PDFs und Text extrahieren, alte Fehler erneut versuchen, Regeln neu anwenden. Nur auf Knopfdruck.'},
  regeltexte:{title:'Themen & Texte',intro:'Wie das Modell jeden Bericht einordnet (Art, Thema, Vorgangsart, Status und weitere Fragen), wie gut es gemessen ist und was der letzte Lauf getan hat. Dazu Zusammenfassung und Fakten, die Regeln bleiben. Die Seite zählt nur, was schon gespeichert ist.'},
  pruefliste:{title:'Prüfliste',intro:'Zeigt, wo der Bestand einen zweiten Blick braucht: Berichte ohne Thema, unklare Verfahrensstände und weitere Prüfgründe, je Gebiet. Dazu, wie viel als KI-Text gekennzeichnet und geprüft ist.'},
@@ -120,8 +120,8 @@ export const HELP:Record<string,Help>={
    'Ein Abruf, den diese Seite selbst ausführt, pausiert beim Schließen nach den laufenden Schritten; „Auftrag fortsetzen“ macht dort weiter.']},
  // Verarbeitung
  'verarbeitung.regeln':{title:'Nach Regeln',
-  sub:'Feste Regeln ordnen jeden Bericht nach seinem Titel ein, lesen das Hauptdokument und schreiben Thema, Zusammenfassung und Fakten. Ohne KI, ohne Kosten. Nachts von selbst, für Berichte mit neuen Eingaben.',
-  how:['Der Job „Verarbeitung, nachts“ ordnet zuerst die Titel ein (neue und veraltete Berichte), wendet dann die Regeln je Bericht an und führt danach Wortliste und Zahlen für plenara.X nach.',
+  sub:'Das Modell ordnet jeden Bericht ein (Art, Thema, Vorgangsart, Hauptdokument), danach schreiben feste Regeln Zusammenfassung und Fakten. Lokal, ohne fremden Dienst. Nachts von selbst, für Berichte mit neuen Eingaben.',
+  how:['Der Job „Verarbeitung, nachts“ wendet zuerst das Modell auf geänderte Berichte an, schreibt dann Zusammenfassung und Fakten je Bericht und führt danach Suche und Zahlen für plenara.X nach.',
    '„Alle neu erstellen“ (nach geänderten Regeln) steht auf „Themen & Texte“ und im Altbestand.']},
  'verarbeitung.ki':{title:'Mit KI',
   sub:'Die KI startet nie von selbst. Ein Agent liest die gespeicherten Originaltexte über die interne MCP-Verbindung; diese Liste zeigt je Bericht, was schon vorliegt, und liefert die IDs für den Auftrag.',
@@ -158,9 +158,9 @@ export const HELP:Record<string,Help>={
  // Prüfliste und Bestandsprüfung (früher „Qualität & Betrieb“)
  'qualitaet.inhalt':{title:'Prüfliste und Einordnung',
   sub:'Wie weit die Berichte aufbereitet sind, wie sie sich auf Themen und Verfahrensstände verteilen, und welche einen zweiten Blick brauchen.',
-  how:['Technische Prüfungen ersetzen keine fachliche Bewertung. Die Themen stammen aus den festen Regeln: zuerst aus dem Titel, dann aus Titel und Unterlage (Job „Verarbeitung, nachts“). Themen der KI und Einordnungen von Hand gehen vor; alte Einordnungen mit 16 Sachgebieten werden auf die 10 Themen übertragen.',
+  how:['Technische Prüfungen ersetzen keine fachliche Bewertung. Die Themen stammen aus dem Modell (Job „Verarbeitung, nachts“). Themen der KI und Einordnungen von Hand gehen vor.',
    '„Alle, auch Titeltest“: Diese Zahlen enthalten Ergebnisse des früheren Tests, bei dem die KI nur den Titel sah. Auf der Seite „Verarbeitung“ zählen nur Ergebnisse aus dem Inhalt.'],
-  todo:[{label:'Offene Berichte nach Regeln einordnen',href:href('verarbeitung')}]},
+  todo:[{label:'Offene Berichte einordnen',href:href('regeltexte')}]},
  'qualitaet.importe':{title:'Die letzten Abrufe',
   sub:'Die letzten 30 Läufe, die dieses System gestartet hat. Extern eingespielte Daten stehen im Quellenstand der Gebiete.',
   how:['„Status offen“: Der Lauf hat sich seit über 10 Minuten nicht zurückgemeldet und ist vermutlich abgebrochen; ein offener Auftrag lässt sich auf dieser Seite fortsetzen oder beenden.',
@@ -169,7 +169,7 @@ export const HELP:Record<string,Help>={
  'qualitaet.vollstaendig':{title:'Was ist wirklich gespeichert?',
   sub:'Prüft je Bericht elf Pflichtangaben; vollständig ist ein Bericht, wenn alle erfüllt sind. Die Prüfung liest nur, sie erstellt keine Einordnung und keine KI-Texte.',
   how:['Unbekannte Werte und Quellenlücken zählen nicht als vollständig. Anwesenheit bezieht sich auf die Sitzung, nicht auf einen einzelnen Tagesordnungspunkt.'],
-  todo:[{label:'Fehlende KI-Angaben',href:href('verarbeitung','#verarbeitung-ki')},{label:'Fehlende Regel-Einordnung',href:href('verarbeitung')}]},
+  todo:[{label:'Fehlende KI-Angaben',href:href('verarbeitung','#verarbeitung-ki')},{label:'Fehlende Einordnung',href:href('regeltexte')}]},
  'qualitaet.pruefung':{title:'Ist der Bestand in sich stimmig?',
   sub:'Vierzehn Prüfungen lesen den gespeicherten Bestand. Jede Prüfung läuft in Schritten, ihr Ergebnis bleibt gespeichert; nichts wird verändert oder zusammengeführt.',
   howLabel:'Was tun bei Treffern?',
@@ -197,7 +197,7 @@ export const TERMS:{term:string;text:string}[]=[
  {term:'Letzter Versuch',text:'Der letzte Abruf überhaupt, auch wenn er scheiterte.'},
  {term:'Teilstand',text:'Berichte sind gespeichert, aber der letzte Abruf hat nicht alles gelesen, etwa wegen eines Zeitlimits.'},
  {term:'Revision',text:'Laufende Nummer des Datenbestands. Sie steigt mit jeder Änderung an Berichten, früheren Fassungen und Analysen und mit jedem gespeicherten Abruf, auch wenn er nichts Neues brachte. Gleiche Nummer heißt: seitdem nichts gespeichert.'},
- {term:'Thema',text:'Eines der 10 Themen eines Berichts, etwa Bildung & Betreuung oder Mobilität & Verkehr. Feste Regeln vergeben es aus Titel und Unterlage, die KI aus dem Inhalt (Seite „Verarbeitung“). Formalien, Sammelpunkte und Routine haben keins. Im Code heißt es „Label“.'},
+ {term:'Thema',text:'Eines der 10 Themen eines Berichts, etwa Bildung & Betreuung oder Mobilität & Verkehr. Das Modell vergibt es (Seite „Themen & Texte“), die KI aus dem Inhalt (Seite „Verarbeitung“). Formalien, Sammelpunkte und Routine haben keins. Im Code heißt es „Label“.'},
  {term:'Titeltest',text:'Früherer Versuch, bei dem die KI nur den Titel sah (Billerbeck). Seine Ergebnisse werden getrennt gespeichert und zählen bei „aus dem Inhalt“ nicht.'},
  {term:'Erster Tagesordnungstag',text:'Der Tag, an dem ein Bericht zum ersten Mal auf einer Tagesordnung stand.'},
  {term:'Rückreichweite',text:'Wie weit die gespeicherten Berichte eines Gebiets zurückreichen, gemessen an der ältesten Sitzung.'},
@@ -274,7 +274,7 @@ export const ATLAS_TODO:Record<string,{sie?:string;dev?:string}>={
 
 // ---- 6.6 Prüfliste und Bestandsprüfung -----------------------------------------------------------------------------
 export const REVIEW_HELP:Record<string,string>={
- labels:'Sachpunkt ohne Thema: Die Regeln fanden weder im Titel noch in der Unterlage ein Thema. Formalien zählen nicht dazu.',
+ labels:'Sachpunkt ohne Thema: Das Modell hat kein sicheres Thema vergeben („Sonstiges“). Formalien zählen nicht dazu.',
  status:'Aus der Quelle geht nicht hervor, ob beraten, beschlossen oder abgelehnt wurde.',
  identity:'Quellen nennen für denselben Bericht verschiedene amtliche Vorgänge; er wurde deshalb nicht zusammengeführt.',
  summaries:'Eine Unterlage ist nicht lesbar, oder die KI-Analyse ist gescheitert, veraltet oder fand zu wenig Text.',
@@ -315,7 +315,7 @@ export const QUALITY_FIGURE_HELP:Record<string,string>={
 };
 export const QUALITY_TEXT={
  sachgebiete:'Themen',
- sachgebieteNotiz:'Nach den festen Regeln, Anteil an allen Berichten. „Sonstiges“: Sachpunkte ohne Thema; Formalien sind nicht mitgezählt.',
+ sachgebieteNotiz:'Nach dem Modell (vor ihm KI und Einordnung von Hand), Anteil an allen Berichten. „Sonstiges“: Sachpunkte ohne Thema; Formalien sind nicht mitgezählt.',
  unbekannt:'Aus der Quelle geht nicht hervor, wie weit der Vorgang ist.',
  pruefliste:'Prüfliste',
  prueflisteNotiz:'Bis zu 25 zuletzt geänderte Berichte, die zum Prüfgrund passen. Die Links öffnen den Bericht in einem neuen Tab.',

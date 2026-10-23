@@ -104,8 +104,8 @@ export function AdminAltbestand(){
   </section>
 
   <section className="mt-10" aria-label="Verarbeitung">
-   <H2 icon="text">3. Verarbeitung: Regeln und KI</H2>
-   <Lead>{stepName('title')} und {stepName('rules')} laufen nach jedem rückwirkenden Abruf schon für die geschriebenen Berichte. Für alle übrigen Berichte mit neuen Eingaben (etwa nach „{PDF_JOB_TERMS.texts}“ oder der OCR) gibt es diese Knöpfe.</Lead>
+   <H2 icon="text">3. Verarbeitung: Modell, Regeln und KI</H2>
+   <Lead>{stepName('model')} und {stepName('rules')} laufen nach jedem rückwirkenden Abruf schon für die geschriebenen Berichte. Für alle übrigen Berichte mit neuen Eingaben (etwa nach „{PDF_JOB_TERMS.texts}“ oder der OCR) gibt es diese Knöpfe.</Lead>
    <div className="mt-3 flex flex-wrap gap-4 text-[14px]">
     <button type="button" className={side} disabled={busy} onClick={()=>post({action:'rules'},'„Verarbeitung“ jetzt starten? Sie liest nur Berichte mit neuen Eingaben.',()=>'Angestoßen; der Job „Verarbeitung, nachts“ startet binnen 10 Minuten.')}>Verarbeitung jetzt starten →</button>
     <button type="button" className={side} disabled={busy} onClick={()=>post({action:'rules',all:true},'Alle Berichte neu verarbeiten? Das dauert etwa eine Stunde.',()=>'Angestoßen: alle Berichte neu.')}>Alle Berichte neu verarbeiten →</button>
