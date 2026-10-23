@@ -598,6 +598,11 @@ export function isNonPublicHeading(line){const h=headingCore(line);return !!h&&(
 const STARTS_NONPUBLIC=/^[-–*•_.:\s]*(?:(?:Im\s+Anschluss(?:\s+(?:daran|hieran))?|Anschlie(?:ß|ss)end|Danach|(?:Hieran|Daran)\s+anschlie(?:ß|ss)end)\s*[-–:,]?\s*)?(?:(?:Teil|Abschnitt)\s+(?:[A-H]|[IVX]{1,4}|\d)\s*[:.)–-]?\s*|(?:[A-H]|[IVX]{1,4})[.)]\s*)?(?:Tagesordnung\s*[-–:,]?\s*)?(?:nichtöffentlich(?:e[rnms]?)?|vertrauliche[rnms]?|geschlossene[rnms]?|interne[rnms]?|n\.?\s?ö\.?|nö)[\s-]*(?:Teil|Sitzung|Sitzungsteil|Tagesordnung|Beratung|Abschnitt|Sitzungsabschnitt|Tagesordnungspunkte|Punkte|Angelegenheiten)(?!\p{L})|^[-–*•_.:\s]*unter\s+Ausschlu(?:ss|ß)\s+der\s+Öffentlichkeit(?!\p{L})/iu;
 // The closing note of an agenda: what follows the published items is a non-public session.
 const TRAILING_NP=/^(?:(?:Anschlie(?:ß|ss)end|Im\s+Anschluss(?:\s+(?:daran|hieran|an\s+(?:die|den|diese[nr]?)\s+(?:öffentliche[rn]?\s+)?(?:Sitzung|Teil)))?|Danach|(?:Hieran|Daran)\s+anschlie(?:ß|ss)end)\s*[-–:,]?\s*(?:findet\s+)?(?:(?:eine|ein)\s+)?nichtöffentliche[rn]?\s+(?:Sitzung|Beratung|Teil|Sitzungsteil)(?:\s+statt)?|(?:Eine|Ein|Die|Der)\s+nichtöffentliche[rn]?\s+(?:Sitzung|Beratung|Teil|Sitzungsteil)\s+(?:schlie(?:ß|ss)t\s+sich\s+(?:daran\s+)?an|folgt(?:\s+(?:im\s+Anschluss|anschlie(?:ß|ss)end))?|findet\s+(?:im\s+Anschluss|anschlie(?:ß|ss)end)\s+statt))\s*[.!]?$/iu;
+// A line that breaks off in the middle of a sentence: long, without a closing mark, its last word in small letters or a comma or hyphen.
+const brokenOff=l=>{const t=String(l||'').trim();return t.length>=40&&/(?:\p{Ll}|[,\-–])$/u.test(t);};
+// A sentence in the line that recalls an earlier session: it breaks off, says what was done (a verb) and introduces no list;
+// every day it names lies before the meeting's day.
+const recalled=(l,day)=>{const t=String(l||'');const days=germanDates(t).map(d=>d.iso).filter(Boolean);return brokenOff(t)&&/(?<!\p{L})(?:wurden?|wird|werden|hat|hatte|haben|hatten|ist|sind|war|waren|beschloss|beschlossen|stimmte|beauftragte|nahm)(?!\p{L})/u.test(t)&&!/folgende|nachstehend|wie\s+folgt|Tagesordnung|beraten\s*$/iu.test(t)&&days.length>0&&Boolean(day)&&days.every(d=>d<day);};
 const lastItemIndex=(items,start,end)=>{for(let k=end-1;k>=start;k--)if(items[k])return k;return start;};
 const startsNonPublic=line=>{const l=canonNP(normalizeLine(line));return l.length<=90&&!itemOf(l)&&(STARTS_NONPUBLIC.test(l)||TRAILING_NP.test(l));};
 // A sentence of the head that names the public session ("findet eine öffentliche Sitzung statt", "in öffentlicher Sitzung").
@@ -611,7 +616,11 @@ const INVITES_PUBLIC=/(?<!\p{L})(?:B(?:ü|ue)rger(?:innen)?|Einwohner(?:innen)?|
 // A report on a meeting that the town publishes for its citizens ("Bericht aus dem Gemeinderat vom 20.07.2026", "Aus dem Gemeinderat"):
 // minutes with that title give the public part (what the town reports of the non-public part is a note, see PUBLIC_REPORT).
 const REPORT_TITLE=/^(?:Bericht(?:e)?\s+(?:aus|von|über|zur)\s+(?:der\s+|dem\s+|den\s+)?(?:\p{L}+\s+)?|Aus\s+(?:dem|der)\s+)(?:\p{L}*(?:rat|sitzung|vertretung|versammlung|tag)|Ausschuss)(?!\p{L})/iu;
-const NOTICE_HEAD=/(?<!\p{L})öffentliche\s+Bekanntmachung(?:\s+(?:der|zur|über)\s+(?:\p{L}+\s+){0,2}(?:Tagesordnung|\p{L}*sitzung|Tagung)|\s*$|\s+(?:Tagesordnung|Gemeinderat|Stadtrat))/iu;
+// Also with the day it was posted behind it ("72/2026e Öffentliche Bekanntmachung / veröffentlicht am 09.10.2026", Klipphausen).
+const NOTICE_HEAD=/(?<!\p{L})öffentliche\s+Bekanntmachung(?:\s+(?:der|zur|über)\s+(?:\p{L}+\s+){0,2}(?:Tagesordnung|\p{L}*sitzung|Tagung)|\s*$|\s*[/–,-]?\s*(?:veröffentlicht|ausgehängt|bekannt\s*gemacht|eingestellt)\s+am\s+\d{1,2}\.\s*\d{1,2}\.\s*\d{4}\s*$|\s+(?:Tagesordnung|Gemeinderat|Stadtrat))/iu;
+// The notice below the agenda that the invitation is made public ("Vorstehende Einladung des Ortsvorstehers … wird hiermit
+// öffentlich bekannt gemacht.", Waldkappel): the same as a public notice of the meeting above it.
+const NOTICE_TAIL=/(?:Einladung|Tagesordnung)(?!\p{L})[^.]{0,160}?(?:wird|werden)\s+(?:hiermit\s+|hierdurch\s+)?öffentlich\s+bekannt\s*gemacht/iu;
 // Whether lines speak of a non-public part, a closed session, the public being excluded or secrecy in any way.
 const hasClosedMention=ls=>ls.some(l=>mentionsNonPublic(l)||isNonPublicHeading(l)||closedLine(l)||startsNonPublic(l)||BARE_N.test(l)||suspect(l));
 const publicClause=c=>PUBLIC_SENTENCE.test(c)&&!mentionsNonPublic(c)&&!/^(?:Herstellung|Wiederherstellung)\s+der\s+Öffentlichkeit/i.test(c);
@@ -1192,6 +1201,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   // A public notice of the meeting ("Öffentliche Bekanntmachung der Sitzung des Gemeinderates … mit folgender Tagesordnung") whose text
   // nowhere speaks of a non-public part, closed session or secrecy: the town publishes by law only the agenda of the public meeting.
   else if(segments.length===1&&kind==='invitation'&&seg.start<first&&all.slice(Math.max(0,seg.start-3),first).some(l=>l.length<=140&&NOTICE_HEAD.test(l))&&!hasClosedMention(all.slice(Math.max(0,seg.start-3),end))){state='public';evidence='Bekanntmachung der Sitzung ohne Hinweis auf einen nichtöffentlichen Teil';}
+  else if(segments.length===1&&kind==='invitation'&&seg.start<first&&NOTICE_TAIL.test(all.slice(Math.max(first,lastItemIndex(items,seg.start,end)+1),end).join(' '))&&!hasClosedMention(all.slice(Math.max(0,seg.start-3),end))){state='public';evidence='Bekanntmachung der Einladung unter der Tagesordnung ohne Hinweis auf einen nichtöffentlichen Teil';}
   else if(segments.length===1&&kind==='minutes'&&[title,...all.slice(0,4)].some(l=>REPORT_TITLE.test(String(l||'').trim()))&&!all.slice(seg.start,first).some(l=>publicSentence(l))){state='public';evidence=`Titel „Bericht aus dem Gemeinderat“ (Bericht für die Bürger)`;}
   // An invitation whose agenda ends with the note that a non-public session follows ("Anschließend findet eine nichtöffentliche
   // Sitzung statt."): the agenda before it is the public part (the non-public items are not published).
@@ -1326,7 +1336,13 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
     // After the items a line that names another day of a session and introduces a list or stands as a heading ("Öffentliche
     // Sitzung vom 16.09.2026", "Die nächste Sitzung … am 11.11.2026 … Auf der Tagesordnung stehen:", "Bereits in der Sitzung am
     // 16.09.2026 hatte der Gemeinderat beschlossen:"): what follows is not known to belong to this meeting.
-    if(state==='public'&&seenItem&&i>=first&&line.length<=240&&(SESSION_WORD.test(line)||MEETING_WORD.test(line)||DATE_ONLY.test(line))&&(/:\s*$/.test(line)||!/[.!?]$/.test(line)&&line.length<=100)&&meetingDates(all,i,ctx).some(d=>d.iso!==date)){issues.push(`Anderer Sitzungstag nach den Punkten (${where(committee,date,title)}): „${line.length>80?line.slice(0,79)+'…':line}“; folgende Punkte nicht übernommen.`);endBlock();itemOpen=false;i++;continue;}
+    // Nor is a sentence that starts in the line and recalls an earlier session ("In der GR-Sitzung am 23.03.2026 wurde die
+    // Entwurfsplanung …", Immendingen; "In der öffentlichen Sitzung vom 20.02.2025 hat der Gemeinderat …", Rehling), unless it
+    // introduces items ("… wurden folgende Punkte beraten").
+    // A line that only goes on with a sentence the line before broke off ("… Einwendungen gegen die" / "Niederschrift über den
+    // öffentlichen Teil der Sitzung vom 27.08.2026", Beetzsee; "… dem Stadtrat in seiner Sitzung am 06.04.2022 vorgestellt und
+    // ein", Freising) is no heading: the day it names is that of an earlier session the text speaks of.
+    if(state==='public'&&seenItem&&i>=first&&line.length<=240&&(SESSION_WORD.test(line)||MEETING_WORD.test(line)||DATE_ONLY.test(line))&&(/:\s*$/.test(line)||!/[.!?]$/.test(line)&&line.length<=100)&&!(!/:\s*$/.test(line)&&(brokenOff(all[i-1])||recalled(line,date)))&&meetingDates(all,i,ctx).some(d=>d.iso!==date)){issues.push(`Anderer Sitzungstag nach den Punkten (${where(committee,date,title)}): „${line.length>80?line.slice(0,79)+'…':line}“; folgende Punkte nicht übernommen.`);endBlock();itemOpen=false;i++;continue;}
     if(isPublicHeading(line)){if(state==='public'&&taken.length)latePublic=true;if(state==='none'){state='public';evidence=`Überschrift „${line}“`;}const p=line.match(PART_HEADING);if(p)parts.set(partKey(p),state==='public'?'public':'none');partSeen=true;cur=null;absent=false;itemOpen=false;i++;continue;}
     // Another heading of a part after the public block ends it ("Teil B", "II.", "B.", "Zweiter Teil", "N-Teil", "B Sitzung").
     const p=line.length<=80&&line.match(PART_HEADING);

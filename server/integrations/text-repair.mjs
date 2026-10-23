@@ -24,3 +24,15 @@ export function repairMojibake(s){
 }
 /** Umlauts as one character: pdf.js and some editors write "ö" as "o" with a combining (U+0308) or spacing (U+00A8) diaeresis. */
 export const composeUmlauts=s=>String(s??'').replace(/¨\s?([AOUaou])/g,'$1̈').replace(/([AOUaou])¨/g,'$1̈').normalize('NFC');
+/**
+ * Umlauts of a PDF whose font maps them to other characters ("÷ffentliche Sitzungsvorlage", "‰ndern", "zuk¸nftig", "Fˆrderung",
+ * "‹bersicht"; Kirchberg an der Murr, 2026). Repaired for the whole text, and only where such characters stand inside words at
+ * least three times: a real per mille sign or diacritic stays. "ß" comes out as "fl" in those files and is left as it is,
+ * since "fl" is also an ordinary pair of letters ("Pflicht").
+ */
+const FONT_UMLAUTS={'÷':'Ö','‰':'ä','ˆ':'ö','¸':'ü','‹':'Ü'};
+export function repairFontUmlauts(text){
+ const t=String(text??'');
+ if((t.match(/\p{L}[‰ˆ¸]|[‰ˆ¸]\p{L}/gu)||[]).length<3)return t;
+ return t.replace(/(?<=\p{L})[‰ˆ¸]|[‰ˆ¸](?=\p{L})|(?<![\p{L}\d])[÷‹](?=\p{Ll})/gu,c=>FONT_UMLAUTS[c]);
+}

@@ -239,6 +239,37 @@ test('parseSessionText reads a report page: items as headings, outcomes, an offi
  assert.deepEqual(by('8').votes,{yes:12,no:0,abstentions:null});
 });
 
+test('a public notice with the day it was posted, or a notice below the agenda that the invitation is made public, is evidence',()=>{
+ // Klipphausen, electronic gazette 2026: the head carries the notice number and the day it was posted.
+ const head=['72/2026e Öffentliche Bekanntmachung / veröffentlicht am 09.10.2026','Einladung zur Technischen Ausschusssitzung','zur Sitzung des Technischen Ausschusses lade ich Sie hiermit recht herzlich ein für','Dienstag, den 20.10.2026 um 19.00 Uhr','TAGESORDNUNG:','1. Protokollkontrolle','2. Bürgerfragestunde','3. Bauangelegenheiten','Mit freundlichen Grüßen','Bürgermeister'];
+ const a=parseSessionText(head).meetings[0];
+ assert.deepEqual([a.date,a.items.map(i=>i.title),a.publicEvidence],['2026-10-20',['Protokollkontrolle','Bürgerfragestunde','Bauangelegenheiten'],'Bekanntmachung der Sitzung ohne Hinweis auf einen nichtöffentlichen Teil']);
+ // Waldkappel, 2026: the magistrate makes the invitation public below it.
+ const tail=['Ortsbeiratssitzung in Waldkappel-Mitte','Am Mittwoch, den 9. September 2026, 19:00 Uhr, findet beim Ortsvorsteher in Waldkappel eine Sitzung des Ortsbeirates Waldkappel-','Mitte statt.','Tagesordnung:','1. Begrüßung und Eröffnung der Sitzung','2. Finale Planung Freiwilligentag 2026','3. Verschiedenes','Waldkappel, den 27. August 2026','Vorstehende Einladung des Ortsvorstehers von Waldkappel-Mitte wird hiermit','öffentlich bekannt gemacht.','DER MAGISTRAT:'];
+ const b=parseSessionText(tail).meetings[0];
+ assert.deepEqual([b.date,b.items.length,b.publicEvidence],['2026-09-09',3,'Bekanntmachung der Einladung unter der Tagesordnung ohne Hinweis auf einen nichtöffentlichen Teil']);
+ // Either notice with an item of the non-public part: that item never comes out, nor does anything the notice alone would open.
+ for(const lines of [[...head.slice(0,8),'4. Grundstücksangelegenheit (nichtöffentlich)',...head.slice(8)],[...tail.slice(0,6),'3. Grundstücksangelegenheit (nichtöffentlich)',...tail.slice(7)]]){
+  const r=parseSessionText(lines);assert.ok(!r.meetings.some(m=>m.items.some(i=>/Grundstück/.test(i.title))));
+  assert.ok(!r.meetings.some(m=>/ohne Hinweis auf einen nichtöffentlichen Teil/.test(m.publicEvidence||'')));
+ }
+ // A plain invitation without any word of the public stays unclear (Ortsbeirat Hembach, 2026).
+ assert.equal(parseSessionText(['Einladung des Ortsbeirates Hembach zur konstituierenden Sitzung','am 23. April 2026 um 19.30 Uhr im Dorfgemeinschaftshaus in Hembach','Tagesordnungspunkte:','1. Begrüßung','2. Wahl Ortsvorsteher','3. Sonstiges']).meetings[0].items.length,0);
+});
+
+test('an earlier session named in a wrapped item or in a recalling sentence does not end the agenda; a list of another session does',()=>{
+ // Beetzsee, Ortsbeirat Pritzerbe 05.11.2026: item 03 wraps onto the day of the last session; the non-public part follows.
+ const lines=['Einladung','hiermit laden wir Sie zur 3.Sitzung des Ortsbeirates Pritzerbe','am 05.11.2026','um 18.00 Uhr','Tagesordnung','Öffentlicher Teil:','01 Eröffnung der Sitzung, Feststellung der ordnungsgemäßen Ladung','02 Anträge zur Änderung der Tagesordnung','03 Entscheidung über eventuelle Einwendungen gegen die','Niederschrift über den öffentlichen Teil der Sitzung vom 27.08.2026','04 Einwohnerfragestunde','05 Zuwendungen an Vereine','Nicht öffentlicher Teil:','06 Grundstücksangelegenheit'];
+ const m=parseSessionText(lines).meetings[0];
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3','4','5']);assert.ok(!m.items.some(i=>/Grundstück/.test(i.title)));
+ // A sentence that recalls an earlier session inside the text of an item (Immendingen, Rehling 2026).
+ const recall=['Niederschrift über die öffentliche Sitzung des Gemeinderates am 29.06.2026','1. Sanierung der Grundschule','In der GR-Sitzung am 23.03.2026 wurde die Entwurfsplanung mit Kostenberechnung','vorgestellt. Der Gemeinderat beschließt die Ausführung.','2. Bauantrag Scheune','Der Gemeinderat erteilt das Einvernehmen.'];
+ assert.deepEqual(parseSessionText(recall).meetings.find(x=>x.date==='2026-06-29').items.map(i=>i.number),['1','2']);
+ // A sentence that introduces the items of another session still ends the agenda.
+ const other=[...recall.slice(0,2),'In der Sitzung am 23.03.2026 wurden folgende Punkte beraten','2. Bauantrag Scheune'];
+ assert.ok(!parseSessionText(other).meetings.find(x=>x.date==='2026-06-29').items.some(i=>/Scheune/.test(i.title)));
+});
+
 test('parseSessionText takes nothing without evidence of the public part and says so',()=>{
  const lines=['Einladung','zur Sitzung des Gemeinderates am 14.10.2026 um 19:00 Uhr','Tagesordnung:','1. Bauantrag Neubau Scheune','2. Grundstücksangelegenheit','3. Verschiedenes'];
  const {meetings,issues}=parseSessionText(lines,{title:'Einladung Gemeinderat'});
@@ -653,4 +684,12 @@ test('htmlToLines puts the label of a tab at the start of its panel and keeps a 
  const tabs=htmlToLines('<main><div id="t1"><p>1. Bauantrag Kita</p></div><div id="t2"><p>3. Grundstück</p></div><ul class="nav-tabs"><li><a href="#t1">Öffentlich</a></li><li><a href="#t2">Nichtöffentlich</a></li></ul></main>');
  assert.deepEqual(tabs.slice(0,4),['Öffentlich','1. Bauantrag Kita','Nichtöffentlich','3. Grundstück']);
  assert.ok(htmlToLines('<html><body><main><p>1. Bauantrag Kita</p></main><footer><p>Grau dargestellte Punkte werden nichtöffentlich beraten.</p><p>Impressum</p></footer></body></html>').includes('Grau dargestellte Punkte werden nichtöffentlich beraten.'));
+});
+
+test('umlauts a PDF font maps to other characters are repaired for the whole text, only where they stand in words',async()=>{
+ const {repairFontUmlauts}=await import('../server/integrations/text-repair.mjs');
+ // Kirchberg an der Murr, Sitzungsvorlage GR 1/2026.
+ assert.equal(repairFontUmlauts('÷ffentliche\nSitzungsvorlage\nwird sich einiges ‰ndern. zuk¸nftig eine ‹bersicht der Fˆrderung'),'Öffentliche\nSitzungsvorlage\nwird sich einiges ändern. zukünftig eine Übersicht der Förderung');
+ // A single per mille sign or a lone character stays.
+ assert.equal(repairFontUmlauts('Steigung 3 ‰ bei 2,5 ÷ 1'),'Steigung 3 ‰ bei 2,5 ÷ 1');
 });

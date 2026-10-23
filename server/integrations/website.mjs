@@ -8,6 +8,7 @@ import {bodyBytes} from './body-bytes.mjs';
 import {parseRobots,robotsAllow} from './robots.mjs';
 import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {repairFontUmlauts} from './text-repair.mjs';
 import {SMALL_WORDS,htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
 import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST} from './website-feeds.mjs';
 import {fnv,safeDecode} from './source-common.mjs';
@@ -460,7 +461,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   const pdf=String.fromCharCode(...bytes.slice(0,1024)).includes('%PDF-')||/pdf/i.test(type)||/\.pdf$/i.test(new URL(c.url).pathname);
   if(pdf){
    if(bytes.byteLength>LIMITS.pdfBytes){issues.push(`Dokument ${c.url}: Quelldokument zu groß`);return;}
-   let text;try{text=await pdfText(bytes);}catch(e){fail('Dokument '+c.url,e);return;}
+   let text;try{text=repairFontUmlauts(await pdfText(bytes));}catch(e){fail('Dokument '+c.url,e);return;}
    if(String(text||'').replace(/\s+/g,' ').trim().length<80){issues.push('PDF ohne lesbaren Text (vermutlich eingescannt): '+c.url);if(unreadable.length<LIMITS.unreadable)unreadable.push(c.url);return;}
    texts.push({url:c.url,title:c.label,lines:pdfLines(text).map(repair),kind:'application/pdf',wrapped:true,order,fetched:true});return;
   }
