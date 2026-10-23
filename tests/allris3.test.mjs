@@ -278,3 +278,11 @@ test('ALLRIS 3: patienceMs of the entry is the time one answer may take (Geestla
  assert.deepEqual(await run({...lkos,patienceMs:60000}),[60000]);
  assert.deepEqual(await run({...lkos,patienceMs:900000}),[150000]);
 });
+
+test('ALLRIS 3: calendarQueries reads one calendar per client (VG Betzdorf-Gebhardshain: PALFDNR of each municipality)',async()=>{
+ const asked=[];const web=lkosWeb();
+ await collectAllris3({...lkos,calendarQueries:['PALFDNR=2','?PALFDNR=21']},{now,window:'1m',get:async url=>{asked.push(url);const plain=url.replace(/PALFDNR=\d+&/,'');return web.get(plain);}});
+ const months=asked.filter(u=>/MM=\d+&YY=/.test(u));
+ assert.ok(months.some(u=>u.includes('?PALFDNR=2&MM='))&&months.some(u=>u.includes('?PALFDNR=21&MM=')),'both calendars, the query without a leading mark');
+ assert.ok(months.every(u=>/PALFDNR=(2|21)&MM=/.test(u)),'no calendar without a client');
+});

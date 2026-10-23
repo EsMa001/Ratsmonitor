@@ -222,7 +222,7 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
  let calendar=source.calendar||null,probed=false;
  // Calendar pages read while looking for the program, so that the month is not asked twice.
  const pages=new Map();
- const monthAddress=(program,offset)=>{const date=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+offset,1));return {url:source.base+`${program}?MM=${date.getUTCMonth()+1}&YY=${date.getUTCFullYear()}`,year:date.getUTCFullYear(),number:date.getUTCMonth()+1};};
+ const monthAddress=(program,offset,query='')=>{const date=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+offset,1));return {url:source.base+`${program}?${query?query+'&':''}MM=${date.getUTCMonth()+1}&YY=${date.getUTCFullYear()}`,year:date.getUTCFullYear(),number:date.getUTCMonth()+1};};
  // The start page may also forward to the calendar itself; its links then name the program as well.
  if(!calendar&&!halt){try{calendar=calendarProgram(await read(source.base+'allris.net.asp'),source.base);}catch(e){if(e.message!==halt)issues.push('Startseite allris.net.asp: '+e.message);}
   // No program named: the usual variants are asked once each for the current month; the first with a calendar is kept.
@@ -235,19 +235,22 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
    if(!calendar)issues.push('Startseite allris.net.asp nennt keinen Sitzungskalender'+(tried.length?'; '+tried.join(', '):'')+'.');
   }
  }
- const month=async offset=>{
-  if(denied||halt||!calendar)return;
-  const {url,year,number}=monthAddress(calendar,offset);
+ // calendarQueries (catalog, optional): one calendar per client of an installation that keeps one for each member municipality
+ // and one for the association ("PALFDNR=21", VG Betzdorf-Gebhardshain); without it the one calendar of the installation.
+ const queries=(Array.isArray(source.calendarQueries)&&source.calendarQueries.length?source.calendarQueries:['']).map(q=>String(q).replace(/^[?&]/,'')),closedQueries=new Set();
+ const month=async(offset,query='')=>{
+  if(denied||halt||!calendar||closedQueries.has(query))return;
+  const {url,year,number}=monthAddress(calendar,offset,query);
   try{
    const found=parseAllris3Calendar(pages.get(url)??await read(url),source,{year,month:number});
    if(!found)throw Error('Unbekanntes Kalenderformat');
    for(const m of found)if(m.date>=fromDay&&part.keep(m.name,m.url))meetings.set(m.url,m);
   // A refusal, an unknown page or a missing program is not going to differ for the other months.
-  }catch(e){if(e.message!==halt)issues.push(`Kalender ${number}/${year}: ${e.message}`);if(/HTTP 4\d\d|Kalenderformat|nicht freigegeben/.test(e.message))denied=true;}
+  }catch(e){if(e.message!==halt)issues.push(`Kalender ${query?query+' ':''}${number}/${year}: ${e.message}`);if(/HTTP 4\d\d|Kalenderformat|nicht freigegeben/.test(e.message)){if(queries.length>1)closedQueries.add(query);else denied=true;}}
  };
  // Calendar months cover the selected look-back window and already published meetings of the next month, one after
  // the other: the first opens the session.
- for(const offset of Array.from({length:calendarMonthsBack(now,from)+2},(_,i)=>1-i))await month(offset);
+ for(const query of queries)for(const offset of Array.from({length:calendarMonthsBack(now,from)+2},(_,i)=>1-i))await month(offset,query);
  const grouped=new Map(),papers=new Map(),held={};let count=0,unchanged=0,done=0,unread=0,upcoming=0;
  const paper=url=>{if(!papers.has(url))papers.set(url,read(url).then(html=>parseAllris3Paper(html,source)));return papers.get(url);};
  // At most MAX_MEETINGS meetings are read per import. Meetings that were read a moment ago do not count, so an
