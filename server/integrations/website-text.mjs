@@ -1083,6 +1083,13 @@ const PUBLIC_MARK=/^(?:ja|j|x|✓|✔|öffentlich|Ö)$/iu,NONPUBLIC_MARK=/^(?:ne
 // The status of one item on the line below it ("öffentlich", "Status: öffentlich", "(Ö)").
 const PUBLIC_STATUS=/^[\s([–-]*(?:(?:Status|Art|Sitzungsteil)\s*:\s*)?(?:öffentlich|Ö|ö)[\s)\]–.-]*$/u;
 
+// A line that names an earlier meeting of an item: the day first, then the body ("22.09.2026 Sitzung des …", "21.07.2026 Ortschaftsrat …").
+const CONSULTED=/^\s*\d{1,2}\.\d{1,2}\.(?:\d{4}|\d{2})\s+(?:(?:öffentliche\s+)?Sitzung\s+(?:des|der)\s+)?\p{Lu}/u;
+/** Such a line with a day before the meeting's (ISO), without time, "findet … statt" or a heading word */
+const consultedLine=(line,meetingDay)=>{
+ const m=String(line).match(/^\s*(\d{1,2})\.(\d{1,2})\.(\d{4}|\d{2})\s/);if(!m||!meetingDay||!CONSULTED.test(line)||/Uhr|statt|findet|Einladung|Tagesordnung/i.test(line))return false;
+ const iso=`${m[3].length===2?'20'+m[3]:m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;return iso<meetingDay;
+};
 /**
  * Meetings in the lines of a page or document, with the items of their public part. title: the link text or document
  * title (date, committee and public session as a fallback). wrapped: the lines are wrapped (PDF), so a title may go on
@@ -1132,6 +1139,10 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   const seg=segments.at(-1),hasItems=items.slice(seg.start,i).some(Boolean);
   const issuer=issuerAt(i);
   if(!seg.header&&!hasItems){seg.header={...h,line:i,issuer};continue;}
+  // A line of an item's consultation history among the items ("22.09.2026 Sitzung des Haupt-, Finanz- und Klimaausschusses"
+  // under item 7 of a Konstanz invitation): an earlier day, no time, no "findet … statt". It is no new meeting; before
+  // 23.10.2026 every item after it went to a meeting of that line and was dropped as unclear.
+  if(seg.header&&hasItems&&seg.header.date&&consultedLine(all[i],seg.header.date))continue;
   // The same day and body again is the same meeting (a running head), unless another municipality gives notice of it (a
   // Verwaltungsgemeinschaft's notice of the councils of two members meeting the same evening).
   if(seg.header&&seg.header.date===h.date&&sameBody(seg.header.committee,h.committee)&&!(hasItems&&issuer&&seg.header.issuer&&issuer!==seg.header.issuer))continue;
@@ -1342,7 +1353,8 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
     // A line that only goes on with a sentence the line before broke off ("… Einwendungen gegen die" / "Niederschrift über den
     // öffentlichen Teil der Sitzung vom 27.08.2026", Beetzsee; "… dem Stadtrat in seiner Sitzung am 06.04.2022 vorgestellt und
     // ein", Freising) is no heading: the day it names is that of an earlier session the text speaks of.
-    if(state==='public'&&seenItem&&i>=first&&line.length<=240&&(SESSION_WORD.test(line)||MEETING_WORD.test(line)||DATE_ONLY.test(line))&&(/:\s*$/.test(line)||!/[.!?]$/.test(line)&&line.length<=100)&&!(!/:\s*$/.test(line)&&(brokenOff(all[i-1])||recalled(line,date)))&&meetingDates(all,i,ctx).some(d=>d.iso!==date)){issues.push(`Anderer Sitzungstag nach den Punkten (${where(committee,date,title)}): „${line.length>80?line.slice(0,79)+'…':line}“; folgende Punkte nicht übernommen.`);endBlock();itemOpen=false;i++;continue;}
+    // Not a line of an item's consultation history with an earlier day (CONSULTED): the items go on after it.
+    if(state==='public'&&seenItem&&i>=first&&line.length<=240&&!consultedLine(line,date)&&(SESSION_WORD.test(line)||MEETING_WORD.test(line)||DATE_ONLY.test(line))&&(/:\s*$/.test(line)||!/[.!?]$/.test(line)&&line.length<=100)&&!(!/:\s*$/.test(line)&&(brokenOff(all[i-1])||recalled(line,date)))&&meetingDates(all,i,ctx).some(d=>d.iso!==date)){issues.push(`Anderer Sitzungstag nach den Punkten (${where(committee,date,title)}): „${line.length>80?line.slice(0,79)+'…':line}“; folgende Punkte nicht übernommen.`);endBlock();itemOpen=false;i++;continue;}
     if(isPublicHeading(line)){if(state==='public'&&taken.length)latePublic=true;if(state==='none'){state='public';evidence=`Überschrift „${line}“`;}const p=line.match(PART_HEADING);if(p)parts.set(partKey(p),state==='public'?'public':'none');partSeen=true;cur=null;absent=false;itemOpen=false;i++;continue;}
     // Another heading of a part after the public block ends it ("Teil B", "II.", "B.", "Zweiter Teil", "N-Teil", "B Sitzung").
     const p=line.length<=80&&line.match(PART_HEADING);

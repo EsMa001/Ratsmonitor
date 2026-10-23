@@ -692,4 +692,17 @@ test('umlauts a PDF font maps to other characters are repaired for the whole tex
  assert.equal(repairFontUmlauts('÷ffentliche\nSitzungsvorlage\nwird sich einiges ‰ndern. zuk¸nftig eine ‹bersicht der Fˆrderung'),'Öffentliche\nSitzungsvorlage\nwird sich einiges ändern. zukünftig eine Übersicht der Förderung');
  // A single per mille sign or a lone character stays.
  assert.equal(repairFontUmlauts('Steigung 3 ‰ bei 2,5 ÷ 1'),'Steigung 3 ‰ bei 2,5 ÷ 1');
+
+test('Vorberatung unter einem Punkt („22.09.2026 Sitzung des …“) ist keine neue Sitzung und kein anderer Sitzungstag (Konstanz)',()=>{
+ const lines=['Einladung','Sitzung des Gemeinderates','Am Dienstag, 29.09.2026, 16:00 Uhr findet im Ratssaal eine öffentliche Sitzung des Gemeinderates mit folgender','Tagesordnung statt:','Öffentlicher Teil',
+  '1 Eröffnung der Sitzung','2 Stadtwerke GmbH','- Anpassung der Vergütung','2026-1996','22.09.2026 Sitzung des Haupt-, Finanz- und Klimaausschusses',
+  '3 Zukunft der Philharmonie 2026-2052','22.09.2026 Sitzung des Haupt-, Finanz- und Klimaausschusses','21.07.2026 Sitzung des Ortschaftsrates Litzelstetten',
+  '4 Kläranlage, Erneuerung Blockheizkraftwerke','15.09.2026 Sitzung des Technischen Betriebsausschusses','5 Verschiedenes'];
+ const r=parseSessionText(lines,{title:'Einladung zur Sitzung des Gemeinderates am 29.09.2026',wrapped:true});
+ assert.equal(r.meetings.length,1);assert.ok(!r.meetings[0].unclear);
+ assert.deepEqual(r.meetings[0].items.map(i=>i.number),['1','2','3','4','5']);
+ assert.ok(!r.meetings[0].items.some(i=>/Sitzung des/.test(i.title)),'Vorberatung nicht im Titel');
+ // Ein späterer Tag mit Uhrzeit bleibt eine andere Sitzung
+ const two=parseSessionText(['Sitzung des Gemeinderates am 29.09.2026, 16:00 Uhr','Öffentlicher Teil','1 Haushalt','Sitzung des Bauausschusses am 06.10.2026, 18:00 Uhr','Öffentlicher Teil','1 Bauantrag Hauptstraße 3'],{title:'Bekanntmachungen'});
+ assert.equal(two.meetings.length,2);
 });
