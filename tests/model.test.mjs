@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import {inputOf,encoderTexts,reportSparse,flags,DOCTYPES,KIND,STATUS,THEMES,PROCESS,STEPS,SERVICE,APPLICANTS,MODEL_THEME_VERSION} from '../shared/model/features.mjs';
 import {classify,loadHeads} from '../shared/model/heads.mjs';
 import {readReport} from '../server/integrations/report-rules.mjs';
-import {modelSummary,tidy} from '../shared/model/summary.mjs';
+import {modelSummary,tidy,usable} from '../shared/model/summary.mjs';
 import {candidates} from '../server/model/sentences.mjs';
 
 const payload={title:'Bebauungsplan Nr. 12  „Am Bach“',committee:'Rat',eventDate:'2026-11-03',
@@ -99,13 +99,15 @@ test('Fakten an das Modell gebunden: passendes Unterthema, Schritte aus dem Mode
 
 test('Überblick: Vorgang, Sitzungen und Unterlagen aus dem Modell, nur sichere Antworten, Formalien kurz',async()=>{
  const {overviewOf}=await import('../shared/model/overview.mjs');
- const report={events:[{date:'2026-09-03',committee:'Bauausschuss',status:'recommended'},{date:'2026-10-01',committee:'Rat',status:'approved'},{date:'2026-12-01',committee:'Rat',status:'unknown'},{date:'2026-10-01',committee:'Gremium laut Originalquelle'}]};
+ const report={events:[{date:'2026-09-03',committee:'Bauausschuss',status:'recommended',result:'einstimmig empfohlen'},{date:'2026-10-01',committee:'Rat',status:'recommended',result:'ungeändert beschlossen'},{date:'2026-12-01',committee:'Rat',status:'unknown'},{date:'2026-10-01',committee:'Gremium laut Originalquelle'}]};
  const m={kind:'subject',kindP:.99,themes:['mobilitaet'],themeP:.9,subs:['mobilitaet.strasse'],subsubs:[],process:'political',processP:.9,applicants:['fraction'],doctypes:['paper','attachment','attachment','minutes']};
  const o=overviewOf(report,m,{parties:['SPD'],today:'2026-10-21'});
- assert.equal(o.text,'Antrag einer Fraktion (SPD) zum Thema Straßen, Brücken und Beleuchtung (Mobilität & Verkehr). Am 03.09.26 im Gremium „Bauausschuss“ empfohlen, am 01.10.26 im Gremium „Rat“ beschlossen und am 01.12.26 im Gremium „Rat“ angesetzt. Unterlagen: Vorlage, zwei Anlagen und Niederschrift.');
+ assert.equal(o.text,'Antrag einer Fraktion (SPD) zum Thema Straßen, Brücken und Beleuchtung (Mobilität & Verkehr). Am 03.09.26 im Gremium „Bauausschuss“ einstimmig empfohlen, am 01.10.26 im Gremium „Rat“ beschlossen und am 01.12.26 im Gremium „Rat“ angesetzt. Unterlagen: Vorlage, zwei Anlagen und Niederschrift.');
  assert.match(overviewOf(report,{...m,processP:.4,themeP:.3},{today:'2026-10-21'}).text,/^Am 03\.09\.26/,'unsicher: kein Vorgang, kein Thema');
  assert.match(overviewOf({events:[]},{kind:'procedure',kindP:.95},{}).text,/^Punkt des Sitzungsablaufs/);
  assert.equal(overviewOf({events:[]},null),null);
+ /* Ausgang nur aus dem Ergebnistext: Stand des Imports ohne Ergebnis zählt nicht */
+ assert.match(overviewOf({events:[{date:'2026-04-13',committee:'Gemeinderat',status:'info',result:''}]},{kind:'procedure',kindP:.95},{today:'2026-10-21'}).text,/„Gemeinderat“ auf der Tagesordnung\./);
 });
 
 test('Zusammenfassung aus dem Modell: wörtliche Sätze ohne Vorspann, Format der Regel, keine ohne Kernsatz, neu lesen bei neuem Satzkopf',()=>{
@@ -127,4 +129,21 @@ test('Zusammenfassung aus dem Modell: wörtliche Sätze ohne Vorspann, Format de
  assert.equal(r.ruleSummary?.generatedBy,'Zusammenfassung aus dem Modell');
  assert.notEqual(r.key,readReport(report,{model,pages:pg,summaryModel:{...sm,version:'summary-neu'}}).key);
  assert.equal(readReport(report,{model:{...model,kind:'procedure'},pages:pg,summaryModel:sm}).ruleSummary,null,'Formalien ohne Zusammenfassung');
+});
+
+test('Zusammenfassung: Kopf vor dem Beschlussvorschlag fällt weg, Doppelpunkt am Ende, Tabellen, Formfelder und Bruchstücke taugen nicht (Stichprobe 23.10.2026)',()=>{
+ assert.equal(tidy('Für den Sozial-, Schul- und Kulturausschuss -öffentlich- Generalsanierung der Schule - Vergabe des Gewerks Lüftung Beschlussvorschlag: Die Vergabe für das Gewerk Lüftung erfolgt an die Firma X.'),'Die Vergabe für das Gewerk Lüftung erfolgt an die Firma X.');
+ assert.equal(tidy('Finanzielle Auswirkungen: --- Beschlussempfehlung: Der Ausschuss empfiehlt, einen Bewegungsraum einzuplanen.'),'Der Ausschuss empfiehlt, einen Bewegungsraum einzuplanen.');
+ assert.equal(tidy('Kindertagesbetreuung: Änderung der Gebührenordnung Referent: Beschlussantrag: 1. Der Gemeinderat beschließt die Neufassung der Satzung.'),'Der Gemeinderat beschließt die Neufassung der Satzung.');
+ assert.equal(tidy('Beratung im Gremium: Beschlussvorschlag: „Der Ortsgemeinderat beschließt den Entwurf der Satzung als Satzung.'),'Der Ortsgemeinderat beschließt den Entwurf der Satzung als Satzung.');
+ assert.equal(tidy('______________ Die SPD-Fraktion bittet darum, den folgenden Antrag aufzunehmen.'),'Die SPD-Fraktion bittet darum, den folgenden Antrag aufzunehmen.');
+ assert.equal(tidy('Der Rat beschließt: die Satzung.'),'Der Rat beschließt: die Satzung.','zu kurzer Rest: Satz bleibt');
+ const c=(text)=>({i:0,text,sec:'other'});
+ assert.equal(usable(c('Die Anfrage des Stadtverordneten vom 09.09.2026 wird wie folgt beantwortet:')),false);
+ assert.equal(usable(c('Jahresfest 25.000,00 € Förderung Jugendforum 15.000,00 € Graffiti-Beseitigung 5.000,00 € Instandsetzung 100.000,00 €')),false);
+ assert.equal(usable(c('Satzungsbeschluss - Vertrag zur Ausgleichsmaßnahme Sachdarstellung: s. Beschlussvorschlag Finanzielle Auswirkung: Alle anfallenden Kosten werden übernommen.')),false);
+ assert.equal(usable(c('6.1 der Richtlinien erhalten die anerkannten Jugendverbände einen pauschalen Zuschuss.'),c('Nach Pos.')),false);
+ assert.equal(usable(c('Die Vergabe erfolgt an die Firma Forster GmbH & Co.')),false);
+ assert.equal(usable(c('Der Gemeinderat beschließt die Neufassung der Satzung über die Benutzung der Kindertageseinrichtungen.')),true);
+ assert.equal(usable(c('Beschlussvorschlag: Der Rat beschließt die Satzung über die Erhebung von Gebühren in Höhe von 12 €.')),true);
 });

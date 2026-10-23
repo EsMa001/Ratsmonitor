@@ -4,15 +4,15 @@
 // dem Text übernommen und nichts dazu erfunden. Reine Funktion; readReport legt das Ergebnis in payload.overview ab.
 import {SUBTOPICS,THEMES} from '../themes.mjs';
 import {SERVICE_NAMES} from './names.mjs';
+import {outcomeOf} from '../vote-result.mjs';
 
-export const OVERVIEW_VERSION='overview-v1';
+export const OVERVIEW_VERSION='overview-v2';
 const SURE=0.7,TOPIC_SURE=0.5;
 const subName=id=>SUBTOPICS.find(s=>s.id===id)?.name||'';
 const themeName=id=>THEMES.find(t=>t.id===id)?.name||'';
 // Ein Gremium „laut Originalquelle“ ohne Namen ist kein Gremium
 const NO_BODY=/^\s*gremium(?: laut originalquelle)?(?:\s*,\s*gremium(?: laut originalquelle)?)*\s*$/i;
 const STEP_TEXT={start:'Beginn des Verfahrens',frueh:'frühe Phase',entwurf:'Entwurf und Beteiligung',abwaegung:'Abwägung',beschluss:'Beschluss',umsetzung:'Umsetzung',aufhebung:'Aufhebung'};
-const EVENT_TEXT={approved:'beschlossen',rejected:'abgelehnt',recommended:'empfohlen',postponed:'vertagt',info:'zur Kenntnis genommen',consulting:'beraten'};
 const DOC_TEXT={paper:['Vorlage','Vorlagen'],bundle:['Sammeldokument','Sammeldokumente'],attachment:['Anlage','Anlagen'],result:['Beschlussauszug','Beschlussauszüge'],
  minutes:['Niederschrift','Niederschriften'],session:['Sitzungsunterlage','Sitzungsunterlagen'],other:['weiteres Dokument','weitere Dokumente']};
 const NUM=['','ein','zwei','drei','vier','fünf','sechs','sieben','acht','neun','zehn','elf','zwölf'];
@@ -40,12 +40,14 @@ function topic(m){
  const sub=subName(m.subs?.[0]),th=themeName(m.themes[0]);
  return sub?`${sub} (${th})`:th;
 }
-/** Sitzungen: höchstens die letzten drei mit Datum und Gremium; künftige als angesetzt */
+/** Sitzungen: höchstens die letzten drei mit Datum und Gremium; künftige als angesetzt. Der Ausgang nur aus dem Ergebnistext der Sitzung
+    (outcomeOf, shared/vote-result.mjs), nie aus dem Stand des Imports: der setzte „empfohlen“ auch bei „ungeändert beschlossen“
+    und „zur Kenntnis genommen“ ohne Ergebnis (Stichprobe 23.10.2026: 15 von 50 Überblicken falsch) */
 function sessions(events,today){
  const ev=(events||[]).filter(e=>e?.date&&e.committee&&!NO_BODY.test(e.committee)).sort((a,b)=>a.date.localeCompare(b.date));
  const seen=new Set(),uniq=ev.filter(e=>{const k=e.date.slice(0,10)+'|'+e.committee;if(seen.has(k))return false;seen.add(k);return true;}).slice(-3);
  if(!uniq.length)return null;
- const parts=uniq.map(e=>{const d=e.date.slice(0,10),future=d>today,how=future?'angesetzt':EVENT_TEXT[e.status]||'auf der Tagesordnung';return `am ${dd(d)} im Gremium „${e.committee.trim()}“ ${how}`;});
+ const parts=uniq.map(e=>{const d=e.date.slice(0,10),future=d>today,how=future?'angesetzt':outcomeOf(e.result)||'auf der Tagesordnung';return `am ${dd(d)} im Gremium „${e.committee.trim()}“ ${how}`;});
  const s=list(parts);return s[0].toUpperCase()+s.slice(1)+'.';
 }
 /** Unterlagen nach Dokumentart des Modells */

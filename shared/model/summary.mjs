@@ -1,6 +1,8 @@
 // Zusammenfassung aus dem Modell (Kernsätze, Begriffsbuch Abschnitt 12): Merkmale je Satzkandidat und Auswahl der Kurz- und
 // Langfassung aus den Wahrscheinlichkeiten des Satzkopfs (scripts/model/train-summary.mjs). Nur wörtliche Sätze des Dokuments.
 export const SUMMARY_FEATURES_VERSION='sumfeat-v1';
+/** Fassung der Auswahl (Filter usable, Säuberung tidy); geht in die Lesefassung ein (READ_VERSION) */
+export const SUMMARY_PICK_VERSION='pick-v2';
 const words=s=>String(s).toLowerCase().match(/[\p{L}\d]+/gu)||[];
 const parts=(s,p)=>{const out=[];for(const w of words(s)){if(w.length<3)continue;out.push(p+'w:'+w);const b='<'+w+'>';for(let i=0;i+4<=b.length;i++)out.push(p+b.slice(i,i+4));}return out;};
 const bucket=(x,steps)=>steps.findIndex(s=>x<=s);
@@ -34,8 +36,36 @@ export function pickSummary(cands,p,{tNone,tLong}){
 }
 
 /* Vorspann vor dem eigentlichen Satz („Beschlussvorschlag: 1.“, „Der Kreistag möge Folgendes beschließen:“) gehört nicht in den Auszug */
-const LEAD=[/^(?:Beschlussvorschlag|Beschlussvorlage|Beschlussempfehlung|Beschlusstext|Beschluss)\b[^:.]{0,80}:\s*/i,/^.{0,140}?\bmögen? (?:folgendes|Folgendes|wie folgt) beschließen:\s*/,/^(?:\d{1,2}|[IVX]{1,5}|[A-Za-z])[.)]\s+(?=\p{Lu})/u,/^[–-]\s*/];
-export const tidy=s=>{let t=String(s).trim(),prev;do{prev=t;for(const re of LEAD)t=t.replace(re,'');}while(t!==prev);return t?t[0].toUpperCase()+t.slice(1):t;};
+const LEAD=[/^(?:Beschlussvorschlag|Beschlussvorlage|Beschlussempfehlung|Beschlusstext|Beschluss)\b[^:.]{0,80}:\s*/i,/^.{0,140}?\bmögen? (?:folgendes|Folgendes|wie folgt) beschließen:\s*/,/^(?:\d{1,2}|[IVX]{1,5}|[A-Za-z])[.)]\s+(?=\p{Lu})/u,/^[–-]\s*/,/^[„"]\s*/];
+/* Kopf vor dem Beschlussvorschlag im selben Kandidaten (Titel, „Für den Ausschuss -öffentlich-“, „Referent:“, „Finanzielle Auswirkungen: ---“,
+   „Lauf der Vorlage …“): alles bis zur letzten Marke in den ersten 400 Zeichen fällt weg, wenn danach ein Satz bleibt (Stichprobe 23.10.2026) */
+const MARK=/(?:\b(?:Beschlussvorschlag|Beschlussantrag|Beschlussempfehlung|Beschlusstext|Beschluss)\s*:|\bmögen? (?:folgendes |Folgendes |wie folgt )?beschließen:)\s*/g;
+const HAS_MARK=new RegExp(MARK.source);
+/* Für den Kopf zählen auch Abschnittsmarken („18.11.2025 Ausschuss … Sachverhalt: Im Zuge …“), für den Filter der Formfelder nicht */
+const HEAD=new RegExp(MARK.source.replace('Beschluss)\\s*:','Beschluss|Sachverhalt|Sachdarstellung|Begründung)\\s*:'),'g');
+function dropHead(t){
+ let cut=-1;for(const m of t.slice(0,400).matchAll(HEAD))cut=m.index+m[0].length;
+ const rest=cut>0?t.slice(cut):t;return rest.replace(/^[\d.)\s]*/,'').length>=30?rest:t;
+}
+export const tidy=s=>{let t=dropHead(String(s).replace(/[_=*]{3,}|-{3,}/g,' ').replace(/\s+/g,' ').trim()),prev;do{prev=t;for(const re of LEAD)t=t.replace(re,'');}while(t!==prev);return t?t[0].toUpperCase()+t.slice(1):t;};
+/* Abkürzungen, an denen die Satztrennung schneidet (die Trennung selbst bleibt, die Lerndaten zeigen auf ihre Kandidaten) */
+const CUT_ABBR=/\b(?:Pos|Co|Ziff|Kap|Anl|Tz)\.$/;
+const LABEL=/(?:^|\s)\p{Lu}[\p{L}-]+(?: [\p{L}-]+){0,2}\s*:\s/gu;
+/**
+ * Taugt der Kandidat als Satz der Zusammenfassung? Nein bei: Satz endet mit Doppelpunkt (eine Tabelle oder Antwort folgt),
+ * Tabellenrest (drei und mehr Beträge oder überwiegend Zahlen), Formularfeldern ohne Beschlussvorschlag („Sachdarstellung: s.
+ * Beschlussvorschlag Finanzielle Auswirkung: …“), Bruchstück einer an einer Abkürzung zerschnittenen Stelle („6.1 der Richtlinien …“
+ * nach „Pos.“, „KG aus …“ nach „GmbH & Co.“). Gilt nur für die Auswahl; die Kandidaten und ihre Nummern bleiben.
+ */
+export function usable(c,prev){
+ const t=tidy(c.text);
+ if(t.length<30||/:\s*$/.test(t))return false;
+ if((t.match(/\d[\d.,]*\s*(?:€|EUR\b|Euro\b)/g)||[]).length>=3)return false;
+ if((t.match(/\d/g)||[]).length>t.length*0.25)return false;
+ if(!HAS_MARK.test(c.text)&&(c.text.match(LABEL)||[]).length>=2)return false;
+ if(CUT_ABBR.test(c.text.trim())||(prev&&CUT_ABBR.test(prev.text.trim())))return false;
+ return true;
+}
 /** Wahrscheinlichkeiten je Satz aus den gespeicherten Gewichten (summary.json) */
 export function sentenceProbs(model,cands,title){
  return cands.map(c=>{let z0=model.bias[0],z1=model.bias[1];for(const f of new Set(sentenceFeatures(c,cands,title))){const w=model.weights[f];if(w){z0+=w[0];z1+=w[1];}}return {i:c.i,short:1/(1+Math.exp(-z0)),long:1/(1+Math.exp(-z1))};});
@@ -46,7 +76,7 @@ export function sentenceProbs(model,cands,title){
  * @param {{i:number,text:string,sec:string}[]} cands Satzkandidaten (sentences.mjs) @param {any} model summary.json
  */
 export function modelSummary(cands,title,model,{at=new Date().toISOString(),source=null}={}){
- const p=sentenceProbs(model,cands,title),o=pickSummary(cands,p,model.thresholds);if(!o)return null;
+ const p=sentenceProbs(model,cands,title).map((x,k)=>usable(cands[k],cands[k-1])?x:{...x,short:0,long:0}),o=pickSummary(cands,p,model.thresholds);if(!o)return null;
  const part=(ids,key)=>{const s=ids.map(i=>tidy(cands[i].text)).filter(Boolean);return {sentences:s,gaps:ids.map((i,k)=>k>0&&i-ids[k-1]>1),words:s.join(' ').split(/\s+/).length,
   score:Math.round(100*ids.reduce((a,i)=>a+p[i][key],0)/Math.max(1,ids.length))};};
  const short=part(o.short,'short'),long=part(o.long,'long');
