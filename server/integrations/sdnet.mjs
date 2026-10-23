@@ -85,12 +85,14 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
  const issues=[],meetings=new Map();const keep=m=>{if(m.date>=fromDay&&m.date<=until&&!meetings.has(m.url))meetings.set(m.url,m);};
  // 1. Paper list, newest papers first. Its order follows the paper number, not the meeting date,
  //    so reading ends only after two consecutive pages without any meeting inside the window.
- let next=source.base+'vorlagen',pages=0,stale=0;const seen=new Set();
+ let next=source.base+'vorlagen',pages=0,stale=0,emptyList=false;const seen=new Set();
  while(next&&!seen.has(next)){
   if(++pages>maxListPages){issues.push('Seitenlimit der Vorlagenliste erreicht; ältere Sitzungen im Zeitraum können fehlen.');break;}
   seen.add(next);
   try{const html=await get(next,source);const list=paperListMeetings(html,source);
-   if(pages===1&&!list.rows)throw Error('Unbekanntes Format der Vorlagenliste');
+   // An empty list says so ("Zu Ihren Suchkriterien wurden keine Ergebnisse gefunden!", Passau 2026: the list shows papers only
+   // after a search sent with a form token, which the reader does not send). Then only the calendar names meetings.
+   if(pages===1&&!list.rows){if(/keine\s+Ergebnisse\s+gefunden/i.test(text(html))){emptyList=true;break;}throw Error('Unbekanntes Format der Vorlagenliste');}
    list.meetings.forEach(keep);stale=list.meetings.some(m=>m.date>=fromDay)?0:stale+1;if(stale>=2)break;next=list.next;
   }catch(e){issues.push('Vorlagenliste: '+e.message);break;}
  }
@@ -151,5 +153,5 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SD.NET-Seite; Tagesordnungspunkte aus dem Abschnitt „Öffentliche Sitzung“.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  // Unchanged meetings are a successful reading: their reports are in the database already.
- return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size-upcoming-cancelled,upcomingWithoutAgenda:upcoming,...(cancelled?{cancelledMeetings:cancelled}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',...(emptyList?{warnings:['Vorlagenliste ohne Einträge; Sitzungen nur aus dem Kalender (künftige), vergangene Sitzungen nicht erreichbar.']}:{}),from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size-upcoming-cancelled,upcomingWithoutAgenda:upcoming,...(cancelled?{cancelledMeetings:cancelled}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }

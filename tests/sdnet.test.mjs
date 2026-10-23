@@ -88,3 +88,17 @@ test('SD.NET agenda is not confused with the table of late papers on the same pa
  assert.deepEqual(items.map(i=>i.title),['Haushalt']);
  assert.equal(parseSdnetAgenda('<html>'+late+'</html>',{url:meetingUrl(4),date:'2026-09-17',committee:'Rat'},source,now),null);
 });
+
+test('SD.NET: an empty paper list is no unknown format; the calendar still names the coming meetings',async()=>{
+ // Passau, 2026: the paper list shows nothing without a search sent with a form token.
+ const empty='<html><div class="hinweis">Zu Ihren Suchkriterien wurden keine Ergebnisse gefunden!</div></html>';
+ const pages={[base+'vorlagen']:empty,[base+'termine']:`<html><button data-export-url="${base}termine/ics/?__=EXPORT"></button></html>`,
+  [base+'termine/ics/?__=EXPORT']:['BEGIN:VEVENT','DTSTART:20261020T180000','SUMMARY:Rat','DESCRIPTION:Link zur Tagesordnung: '+meetingUrl(8),'END:VEVENT'].join('\r\n'),
+  [meetingUrl(8)]:agenda('Rat','Di, 20.10.2026',[agendaRow('top-oeff-data','1.','Haushalt 2027','','100_1')])};
+ const d=await collectSdnet(source,{now,window:'1m',get:async url=>{if(!(url in pages))throw Error('Quelle antwortet mit HTTP 404');return pages[url];}});
+ assert.deepEqual(d.topics.map(t=>t.title),['Haushalt 2027']);assert.deepEqual(d.coverage.issues,[]);
+ assert.match(d.coverage.warnings[0],/Vorlagenliste ohne Einträge/);
+ // A page without rows and without that note is still an unknown format.
+ const odd=await collectSdnet(source,{now,window:'1m',get:async url=>url===base+'vorlagen'?'<html><p>Wartung</p></html>':pages[url]});
+ assert.ok(odd.coverage.issues.some(i=>/Unbekanntes Format der Vorlagenliste/.test(i)));
+});
