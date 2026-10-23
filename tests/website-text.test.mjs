@@ -706,3 +706,17 @@ test('Vorberatung unter einem Punkt („22.09.2026 Sitzung des …“) ist keine
  const two=parseSessionText(['Sitzung des Gemeinderates am 29.09.2026, 16:00 Uhr','Öffentlicher Teil','1 Haushalt','Sitzung des Bauausschusses am 06.10.2026, 18:00 Uhr','Öffentlicher Teil','1 Bauantrag Hauptstraße 3'],{title:'Bekanntmachungen'});
  assert.equal(two.meetings.length,2);
 });
+
+test('Ohne jeden Hinweis auf öffentlich oder nichtöffentlich werden die Punkte übernommen; Vorsicht bei mehreren Sitzungen und typisch nichtöffentlichen Punkten (Entscheidung 23.10.2026)',()=>{
+ const take=(lines,title='Einladung Gemeinderat 27.10.2026')=>parseSessionText(lines,{title}).meetings.flatMap(m=>m.items.map(i=>i.title));
+ const head=['Einladung zur Sitzung des Gemeinderates am 27.10.2026, 19:00 Uhr','Tagesordnung'];
+ assert.deepEqual(take([...head,'1. Bebauungsplan Sonnenhang','2. Kindergartengebühren']),['Bebauungsplan Sonnenhang','Kindergartengebühren']);
+ // typisch nichtöffentlicher Punkt ohne Kennzeichnung: das Dokument bleibt unklar
+ assert.deepEqual(take([...head,'1. Bebauungsplan Sonnenhang','2. Personalangelegenheit']),[]);
+ // eine Erwähnung des nichtöffentlichen Teils irgendwo: alte strenge Regel
+ assert.deepEqual(take([...head,'Die Punkte 2 und 3 sind nichtöffentlich.','1. Bebauungsplan Sonnenhang','2. Kita','3. Haushalt']),[]);
+ // Überschrift des nichtöffentlichen Teils nach den Punkten: der Teil davor ist öffentlich
+ assert.deepEqual(take([...head,'1. Bebauungsplan Sonnenhang','2. Kindergartengebühren','Nichtöffentlicher Teil','3. Grundstücksangelegenheit','4. Personalangelegenheit']),['Bebauungsplan Sonnenhang','Kindergartengebühren']);
+ // vor der ersten Zeile: nichts
+ assert.deepEqual(take([...head,'Nichtöffentlicher Teil','1. Grundstücksangelegenheit','2. Personalangelegenheit']),[]);
+});

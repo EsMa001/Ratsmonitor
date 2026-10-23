@@ -124,7 +124,7 @@ test('collectWebsite asks robots.txt first and never asks foreign, non-public, o
 
 test('collectWebsite yields topics with ids, statuses and events from notices, minutes, feed, calendar and WordPress',async()=>{
  const {d}=await run();
- assert.equal(d.topics.length,16);
+ assert.equal(d.topics.length,18,'mit den Punkten des Werkausschusses (Einladung ohne jeden Hinweis, Entscheidung 23.10.2026)');
  const by=(day,title)=>d.topics.find(t=>t.eventDate===day&&t.title.startsWith(title));
  const statuses=[['2026-10-14','Erweiterung des Kindergartens','announced'],['2026-10-21','Bauantrag: Neubau eines Wohnhauses','announced'],['2026-11-11','Haushaltsplan 2027','announced'],
   ['2026-09-16','Bauantrag: Neubau einer Maschinenhalle','approved'],['2026-09-16','Antrag auf Tempo 30','rejected'],['2026-09-16','Bericht zur Haushaltslage','info'],['2026-09-16','Satzung über die Friedhofsgebühren','postponed'],
@@ -178,10 +178,10 @@ test('collectWebsite takes nothing of the non-public part, also behind letter-sp
  assert.ok(!/Flurstück 512/.test(JSON.stringify(other)));
 });
 
-test('collectWebsite reports an agenda without evidence of the public part and takes none of its items',async()=>{
+test('collectWebsite takes an agenda without any hint at the public or a closed part (decision 23.10.2026)',async()=>{
  const {d}=await run();
- assert.ok(!d.topics.some(t=>/Wasserpreise|Kläranlage/.test(t.title)));
- assert.deepEqual(d.coverage.issues,['PDF ohne lesbaren Text (vermutlich eingescannt): '+U.scan,'Tagesordnung nicht eindeutig als öffentlich erkennbar, nicht übernommen: '+U.unclear]);
+ assert.ok(d.topics.some(t=>/Wasserpreise/.test(t.title))&&d.topics.some(t=>/Kläranlage/.test(t.title)));
+ assert.deepEqual(d.coverage.issues,['PDF ohne lesbaren Text (vermutlich eingescannt): '+U.scan]);
  assert.equal(d.coverage.complete,false);
 });
 
@@ -249,11 +249,11 @@ test('collectWebsite tells whether a document names the area, without case and u
 
 test('collectWebsite marks meetings; a second import with the same pages yields no topics',async()=>{
  const {d}=await run();
- assert.deepEqual(Object.keys(d.marks).sort(),[U.invitation+'#sitzung-2026-10-14-gemeinderat',U.pastInvitation+'#sitzung-2026-09-16-gemeinderat',U.report+'#sitzung-2026-09-16-gemeinderat',U.committee+'#sitzung-2026-09-23-bauausschuss',U.feedArticle+'#sitzung-2026-10-21-bauausschuss',base+'veranstaltungen/kalender.ics#sitzung-2026-11-11-gemeinderat',base+'2026/10/02/aus-dem-gemeinderat-30-09-2026/#sitzung-2026-09-30-gemeinderat',U.sitemapMinutes+'#sitzung-2026-07-22-gemeinderat'].sort());
- assert.equal(d.readMeetings,8);
+ assert.deepEqual(Object.keys(d.marks).sort(),[U.unclear+'#sitzung-2026-11-05-werkausschuss',U.invitation+'#sitzung-2026-10-14-gemeinderat',U.pastInvitation+'#sitzung-2026-09-16-gemeinderat',U.report+'#sitzung-2026-09-16-gemeinderat',U.committee+'#sitzung-2026-09-23-bauausschuss',U.feedArticle+'#sitzung-2026-10-21-bauausschuss',base+'veranstaltungen/kalender.ics#sitzung-2026-11-11-gemeinderat',base+'2026/10/02/aus-dem-gemeinderat-30-09-2026/#sitzung-2026-09-30-gemeinderat',U.sitemapMinutes+'#sitzung-2026-07-22-gemeinderat'].sort());
+ assert.equal(d.readMeetings,9);
  const marks={known:d.marks,stock:new Set(Object.keys(d.marks))};
  const {d:again}=await run({marks});
- assert.equal(again.topics.length,0);assert.equal(again.coverage.unchangedMeetings,8);assert.deepEqual(Object.keys(again.marks).sort(),Object.keys(d.marks).sort());
+ assert.equal(again.topics.length,0);assert.equal(again.coverage.unchangedMeetings,9);assert.deepEqual(Object.keys(again.marks).sort(),Object.keys(d.marks).sort());
  // Two days later the marks are no longer trusted blindly, but an unchanged meeting still yields nothing; a changed one does.
  const later=new Date(now.getTime()+2*86400000);
  const changed=site({},{[U.report]:{bytes:enc(fixture('sitzungsbericht-gemeinderat-2026-09-16.html').replace('Es lagen keine Anfragen vor.','Der Gemeinderat nimmt die Anfragen zur Kenntnis.')),type:'text/html'}});

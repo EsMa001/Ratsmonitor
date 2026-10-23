@@ -63,10 +63,10 @@ test('a notice that ends with "Anschließend nichtöffentliche Sitzung" gives th
  assert.match(m.publicEvidence,/Anschließend nichtöffentliche Sitzung/);
  assert.equal(m.items.length,6);
  assert.match(m.items[0].title,/Dorfhalle/);
- // Without the closing note nothing marks the part as public: nothing is taken.
+ // Without the closing note nothing speaks of a closed part at all: the items are taken (decision 23.10.2026).
  const without=lines.filter(l=>!/nichtöffentliche/.test(l));
  const bare=parseSessionText(without,{title:'',wrapped:true}).meetings[0];
- assert.equal(bare.items.length,0);
+ assert.equal(bare.items.length,6);assert.match(bare.publicEvidence,/kein Hinweis auf einen nichtöffentlichen Teil/);
  // The note must come after the items: before them it proves nothing about them.
  const before=[...lines.slice(0,6),'Anschließend findet eine nichtöffentliche Sitzung statt.',...lines.slice(6,12),...lines.slice(13)];
  assert.equal(parseSessionText(before,{title:'',wrapped:true}).meetings[0]?.items.length??0,0);
@@ -176,9 +176,9 @@ test('a public notice of the meeting without any hint at a closed part gives its
   const risky=[...lines.slice(0,8),hint,...lines.slice(8)];
   assert.equal(parseSessionText(risky,{title:'',wrapped:true}).meetings[0]?.items.length??0,0,hint);
  }
- // An invitation that does not call itself a notice is not covered.
+ // An invitation that does not call itself a notice: without any hint at a closed part it is taken as well (decision 23.10.2026).
  const invitation=lines.map(l=>/BEKANNTMACHUNG/i.test(l)?'Einladung zur Sitzung':l);
- assert.equal(parseSessionText(invitation,{title:'',wrapped:true}).meetings[0]?.items.length??0,0);
+ assert.equal(parseSessionText(invitation,{title:'',wrapped:true}).meetings[0]?.items.length??0,5);
 });
 
 test('a "Bericht aus dem Gemeinderat" gives the items it reports; a text of another title does not',()=>{

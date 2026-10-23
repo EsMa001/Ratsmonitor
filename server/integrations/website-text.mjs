@@ -1085,6 +1085,8 @@ const PUBLIC_STATUS=/^[\s([–-]*(?:(?:Status|Art|Sitzungsteil)\s*:\s*)?(?:öffe
 
 // A line that names an earlier meeting of an item: the day first, then the body ("22.09.2026 Sitzung des …", "21.07.2026 Ortschaftsrat …").
 const CONSULTED=/^\s*\d{1,2}\.\d{1,2}\.(?:\d{4}|\d{2})\s+(?:(?:öffentliche\s+)?Sitzung\s+(?:des|der)\s+)?\p{Lu}/u;
+/** Matters usually dealt with in closed session; an item of such a title keeps a document without any mark "unclear" */
+const USUALLY_CLOSED=/(?:Personal|Grundstücks?|Liegenschafts|Vertrags|Rechts|Steuer|Darlehens|Kredit|Stundungs|Erlass)(?:-|\s+)?(?:angelegenheit|sache|frage)|Vergabe|Auftragsvergabe|Stundung|Niederschlagung|Erlass\s+von|Bauleistungen|Personalie|Einstellung\s+(?:eine[rs]?|von)|Kaufvertrag|Grundstücks(?:kauf|verkauf|erwerb|tausch)|Rechtsstreit|Klageverfahren/iu;
 /** Such a line with a day before the meeting's (ISO), without time, "findet … statt" or a heading word */
 const consultedLine=(line,meetingDay)=>{
  const m=String(line).match(/^\s*(\d{1,2})\.(\d{1,2})\.(\d{4}|\d{2})\s/);if(!m||!meetingDay||!CONSULTED.test(line)||/Uhr|statt|findet|Einladung|Tagesordnung/i.test(line))return false;
@@ -1217,6 +1219,16 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   // An invitation whose agenda ends with the note that a non-public session follows ("Anschließend findet eine nichtöffentliche
   // Sitzung statt."): the agenda before it is the public part (the non-public items are not published).
   else if(segments.length===1&&kind==='invitation'&&seg.start<first&&all.slice(Math.max(first,lastItemIndex(items,seg.start,end)),end).some(l=>TRAILING_NP.test(canonNP(normalizeLine(l))))){state='public';evidence='Hinweis „Anschließend nichtöffentliche Sitzung“ nach der Tagesordnung';}
+  // Nothing in the document speaks of a non-public part: no heading, no sentence, no mark N/NÖ at an item, nothing in the title.
+  // The town published it on its own website, so its items are taken (decision of the project owner, 23.10.2026; before, such a
+  // meeting was "unclear" and dropped whole, in up to 170 areas). Any such mention keeps the strict rules above and below.
+  // A heading of the non-public part after items and nothing about the public before it ("1. Bebauungsplan … 2. Kita …
+  // Nichtöffentlicher Teil 3. Grundstücksangelegenheit"): the items before the heading are the public part (decision of the project
+  // owner, 23.10.2026). Nothing else before it may speak of a closed part; the heading then ends the public part as always.
+  else if(segments.length===1&&(()=>{const np=all.findIndex((l,k)=>k>first&&k<end&&(isNonPublicHeading(l)||closedLine(l)||startsNonPublic(l)));
+   return np>first&&items.slice(first,np).some(Boolean)&&!items.slice(seg.start,np).some(i=>i&&i.prefix&&/^N/i.test(i.prefix))&&!all.slice(Math.max(0,seg.start-3),np).some(l=>mentionsNonPublic(l)&&!isPublicReport(l)||isPublicHeading(l)||publicSentence(l))&&!titleClosed&&!mentionsNonPublic(title);})()){state='public';evidence='Teil vor der Überschrift des nichtöffentlichen Teils';}
+  // Only a document of one meeting, and none whose items name a matter that is usually dealt with in closed session.
+  else if(segments.length===1&&!items.slice(first,end).some(i=>i&&(USUALLY_CLOSED.test(i.title||'')||i.prefix&&/^(?:Ö|N)/i.test(i.prefix)))&&!all.slice(Math.max(0,seg.start-3),end).some(l=>publicSentence(l)||isPublicHeading(l)||/(?:ö|oe)ffentlich/i.test(l))&&!/(?:ö|oe)ffentlich/i.test(title)&&!titleClosed&&!mentionsNonPublic(title)&&seg.start<=first&&items.slice(first,end).some(Boolean)&&!items.slice(seg.start,end).some(i=>i&&i.prefix&&/^N/i.test(i.prefix))&&!hasClosedMention(all.slice(Math.max(0,seg.start-3),end))&&!all.slice(Math.max(0,seg.start-3),end).some(l=>mentionsNonPublic(l)||isNonPublicHeading(l))){state='public';evidence='kein Hinweis auf einen nichtöffentlichen Teil (von der Gemeinde veröffentlicht)';}
   // The items of a meeting are numbered one way: with keyword ("TOP 1") if any, else with mark ("Ö 1"), else plain.
   // A mark N/NÖ alone does not make the style: such an item ends the public part in any form.
   const dashParts=all.slice(seg.start,end).some(l=>DASH_FRAMED.test(l.trim())&&isPublicHeading(l));
