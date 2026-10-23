@@ -3778,7 +3778,8 @@
     "verifiedSource": "https://sitzungsdienst.geestland.eu/bi/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
-    "foundBy": "Neuprüfung 2026-10-10 (Atlas-Adresse)"
+    "foundBy": "Neuprüfung 2026-10-10 (Atlas-Adresse)",
+    "patienceMs": 60000
   },
   {
     "id": "nds-03254028",

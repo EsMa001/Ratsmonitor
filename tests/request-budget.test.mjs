@@ -39,3 +39,9 @@ test('pacedFetch: Mindestabstand je Anbieter, andere Anbieter und lokale Adresse
  assert.ok(at('www.stadt-muenster.de')<40,'anderer Anbieter sofort');
  const t1=Date.now();await f('http://localhost:3000/api');await f('http://localhost:3000/api');assert.ok(Date.now()-t1<40,'lokal nie');
 });
+
+test('budgeted: a wait the caller names is kept, capped by what is left of the budget; without one 20 s', async () => {
+ const seen = [];const get = budgeted(async (url, source, timeout) => { seen.push(timeout); return 'ok'; }, 60000, 2);
+ await get('u', {}, 90000);await get('u', {});await get('u', {}, 5000);
+ assert.ok(seen[0] <= 60000 && seen[0] > 55000, 'capped by the budget');assert.equal(seen[1], 20000);assert.equal(seen[2], 5000);
+});

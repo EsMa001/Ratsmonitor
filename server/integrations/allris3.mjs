@@ -209,7 +209,9 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
   if(halt)throw Error(halt);
   const program=new URL(url).pathname.split('/').pop().toLowerCase();if(refused.has(program))throw Error(closed(program));
   // A request cut off by the end of the time budget is the budget, not a fault of the page.
-  const html=await get(allowed(url,source),source,undefined,send).catch(e=>{throw Date.now()>=deadline&&/aborted|timeout/i.test(e.message)?Error('Zeitbudget der Quelle erreicht'):e;});
+  // patienceMs (catalog, optional): how long one answer may take on a slow server (Geestland 2026: about 3 s a page, paper
+  // pages beyond 20 s); otherwise the default of fetchText.
+  const html=await get(allowed(url,source),source,Number(source.patienceMs)>0?Math.min(Number(source.patienceMs),150000):undefined,send).catch(e=>{throw Date.now()>=deadline&&/aborted|timeout/i.test(e.message)?Error('Zeitbudget der Quelle erreicht'):e;});
   if(/\/_gate\/|<altcha-widget/i.test(html))halt=GATE;
   else if(html.length<20000&&/zu viele zugriffe/i.test(text(html)))halt=REFUSAL;
   if(halt)throw Error(halt);

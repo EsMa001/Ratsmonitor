@@ -77,11 +77,13 @@ export function budgeted(get, maxDurationMs, timeoutArgument = 1, { retries = 1,
  const deadline = Date.now() + maxDurationMs;
  const limit = timeoutArgument === 2 ? 20000 : 55000;
  const run = async (args) => {
+  /* Eine vom Aufrufer genannte Wartezeit gilt (Katalogfeld patienceMs, hhdocuments 90 s); vorher setzte die Hülle sie still auf 20 s */
+  const asked = Number(args[timeoutArgument]), wait = asked > 0 ? asked : limit;
   for (let attempt = 0; ; attempt++) {
    const remaining = deadline - Date.now();
    if (remaining <= 0) throw Error(BUDGET_REACHED);
-   const cut = remaining < limit;
-   args[timeoutArgument] = Math.min(limit, remaining);
+   const cut = remaining < wait;
+   args[timeoutArgument] = Math.min(wait, remaining);
    try {
     return await get(...args);
    } catch (e) {
@@ -89,7 +91,7 @@ export function budgeted(get, maxDurationMs, timeoutArgument = 1, { retries = 1,
     if (cut && /aborted|timeout/i.test(message) && Date.now() >= deadline - 250) throw Error(BUDGET_REACHED);
     const pause = pauseMs * (attempt + 1) * (0.75 + Math.random() * 0.5);
     /* Wiederholen nur, wenn danach noch ein voller Abruf ins Budget passt */
-    if (attempt < retries && TRANSIENT.test(message) && deadline - Date.now() - pause > Math.min(limit, 10000)) {
+    if (attempt < retries && TRANSIENT.test(message) && deadline - Date.now() - pause > Math.min(wait, 10000)) {
      await sleep(pause);
      continue;
     }

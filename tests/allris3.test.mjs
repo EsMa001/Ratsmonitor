@@ -271,3 +271,10 @@ test('ALLRIS 3 collector without a calendar on the start page tries the usual va
  const gone=[];const none=await collectAllris3(source,{now,window:'1m',get:async url=>{gone.push(url);throw Error('Quelle antwortet mit HTTP 404');}});
  assert.deepEqual(gone,[rgb.base+'allris.net.asp']);assert.match(none.coverage.issues[0],/^Startseite allris\.net\.asp: Quelle antwortet mit HTTP 404/);
 });
+
+test('ALLRIS 3: patienceMs of the entry is the time one answer may take (Geestland, slow server), at most 150 s',async()=>{
+ const seen=new Set();const run=async source=>{const web=lkosWeb();seen.clear();await collectAllris3(source,{now,window:'1m',get:async(url,s,timeout)=>{seen.add(timeout);return web.get(url);}});return [...seen];};
+ assert.deepEqual(await run(lkos),[20000],'without the field the default of 20 s');
+ assert.deepEqual(await run({...lkos,patienceMs:60000}),[60000]);
+ assert.deepEqual(await run({...lkos,patienceMs:900000}),[150000]);
+});
