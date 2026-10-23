@@ -42,7 +42,7 @@ function view(parts:(s:Stand)=>unknown[],build:(db:D1Database,s:Stand)=>Promise<
 }
 type Stand=Awaited<ReturnType<typeof adminStand>>&Record<string,unknown>;
 export const timelineView=(basis:string)=>view(s=>['t1',VERSIONS,basis,s.stockSum,s.seriesStamp,day()],async(db,s)=>({...await adminTimeline(db,{basis}),stand:derivedStand(s)}),()=>{if(!Object.hasOwn(TIMELINE_BASES,basis))throw new AdminError(400,'Ungültiger Zeitbezug.');});
-export const coverageView=()=>view(s=>['c1',VERSIONS,s.stockSum,s.seriesStamp,s.statsStamp,STATIC_VER,day()],async(db,s)=>({...await adminCoverage(db),stand:derivedStand(s)}));
+export const coverageView=()=>view(s=>['c2',VERSIONS,s.stockSum,s.seriesStamp,s.statsStamp,STATIC_VER,day()],async(db,s)=>({...await adminCoverage(db),stand:derivedStand(s)}));
 export const atlasView=()=>view(s=>['at1',VERSIONS,s.stockSum,s.statsStamp,s.content,STATIC_VER,hour()],async(db,s)=>({...await adminAtlas(db),stand:derivedStand(s,'stats')}));
 // The estimate is stored (admin-stored.mjs); its tag reads the head of the stored row only, the answer passes the stored
 // text on unparsed.

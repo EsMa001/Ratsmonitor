@@ -1,6 +1,6 @@
 'use client';
 import {useCallback,useEffect,useMemo,useState} from 'react';
-import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
+import {AdminPageHead,Befund,Zahlen,How,Fehler,Laden} from '@/components/admin-ui';
 type Draft={text:string;question:string;hashtags:string[];party:string|null};
 type Fit={percent:number;parts:{key:string;label:string;points:number;max:number}[];evidence:string[]};
 type Summary={count:number;avgFit:number|null;strong:number;daysWithTopic:number;days:number;minFit:number};
@@ -44,7 +44,8 @@ function TopicCard({t,showDate}:{t:Topic;showDate:boolean}){
  </li>;
 }
 
-/** Social Media: Themenvorschläge je Tag aus den letzten 30 Tagen (server/integrations/social-model.mjs, Hilfen aus social-topics.mjs). */
+/** Social Media: Themenvorschläge je Tag aus den letzten 30 Tagen (server/integrations/social-model.mjs, Hilfen aus social-topics.mjs).
+    Aufbau wie alle Adminseiten (requirements/admin-konzept.md): Kennzahl im Band, Befund, Zahlen, Berechnung zum Aufklappen. */
 export function AdminSocial(){
  const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const [onlyFilled,setOnlyFilled]=useState(true),[sort,setSort]=useState<Sort>('datum'),[minFit,setMinFit]=useState(0),[group,setGroup]=useState('');
@@ -76,26 +77,19 @@ export function AdminSocial(){
  const avgShown=shown.length?Math.round(shown.reduce((n,t)=>n+t.fit.percent,0)/shown.length):null;
  const filtered=minFit>0||group!=='';
  const btn=(on:boolean)=>'h-8 rounded-lg px-3 text-[14px] '+(on?'bg-teal-600 text-white':'bg-slate-100 text-slate-700 hover:bg-slate-200');
+ const sm=data?.summary;
  return <>
-  <AdminPageHead page="social">
-   <p className="text-[14px] text-slate-500">
-    {busy?'Wird berechnet (kann einige Sekunden dauern) …':data?`${all.length} Vorschläge in den letzten 30 Tagen (${dmy(data.from)} bis ${dmy(data.to)}); ${data.matched.toLocaleString('de-DE')} von ${data.scanned.toLocaleString('de-DE')} Sachpunkten haben ein Unterthema des Modells.`:''}
-    {' '}<button type="button" className="text-teal-600" disabled={busy} onClick={()=>load(true)}>Neu berechnen →</button>
-   </p>
-  </AdminPageHead>
-  {error&&<Alert>{error}</Alert>}
-  <div className="mt-6"><Kpis label="Kennzahlen der Vorschläge" items={[
-   {label:'Ø Eignung',value:data?(data.summary.avgFit===null?'–':data.summary.avgFit+' %'):undefined,note:'Mittel über alle Vorschläge; 100 % wäre ein Thema mit allem, was gut teilbar ist'},
-   {label:'Vorschläge',value:data?data.summary.count:undefined,note:'ab '+(data?.summary.minFit??40)+' % Eignung, höchstens 3 je Tag'},
-   {label:'Davon stark (ab 70 %)',value:data?data.summary.strong:undefined,note:'am ehesten sofort verwendbar'},
-   {label:'Tage mit Vorschlag',value:data?data.summary.daysWithTopic:undefined,of:data?.summary.days,note:'schwache Tage bleiben leer'},
-  ]}/></div>
-  <p className="mt-4 max-w-[760px] text-[12px] leading-[1.5] text-slate-500">
-   Eignung = Themenwert (30, gelernte Streitquote des Unterthemas) + Streit im Vorgang (15) + Reichweite des Ortes (10) + Aktualität (10) + Konkretheit (10) + Verständlichkeit (10), auf 100 gestreckt, − Abzüge für Einzelstraßen, Ortsteil-Gremien, Planungsverfahren und Routinesatzungen. Punkte über 62 werden gespreizt (Faktor 1,6).
-   Seit 22.10.2026 wählt das Modell aus (Unterthema, Vorgangsart, Antragsteller) statt fester Streitwörter. Die Eignung ist noch nicht gemessen: Urteil der Bewerter und Alltagsnähe hingen an den Streitwörtern und fallen weg. Rangordnung, keine Vorhersage von Klicks.
-  </p>
+  <AdminPageHead page="social" figure={sm?{value:String(sm.count),label:'Vorschläge',note:`davon ${sm.strong} stark`}:undefined}/>
+  {error&&<Fehler onRetry={()=>void load()}>{error}</Fehler>}
+  {!data&&!error&&<Laden/>}
+  {sm&&<>
+   <Befund stand={<>{busy?'Wird berechnet (kann einige Sekunden dauern) …':`${dmy(data!.from)} bis ${dmy(data!.to)} · ${data!.matched.toLocaleString('de-DE')} von ${data!.scanned.toLocaleString('de-DE')} Sachpunkten mit Unterthema des Modells`} · <button type="button" className="font-medium text-teal-700 disabled:opacity-40" disabled={busy} onClick={()=>load(true)}>neu berechnen</button></>}>
+    {sm.strong?`${sm.strong} starke Vorschläge (ab 70 % Eignung) in den letzten 30 Tagen, an ${sm.daysWithTopic} von ${sm.days} Tagen mindestens einer.`:`Kein starker Vorschlag in den letzten 30 Tagen; ${sm.count} Vorschläge ab ${sm.minFit??40} % Eignung.`}</Befund>
+   <Zahlen items={[{value:sm.avgFit===null?'–':sm.avgFit+' %',label:'Ø Eignung'},{value:`${sm.daysWithTopic} von ${sm.days}`,label:'Tagen mit Vorschlag'}]}/>
+   <How label="Wie wird die Eignung berechnet?"><p>Eignung = Themenwert (30, gelernte Streitquote des Unterthemas) + Streit im Vorgang (15) + Reichweite des Ortes (10) + Aktualität (10) + Konkretheit (10) + Verständlichkeit (10), auf 100 gestreckt, − Abzüge für Einzelstraßen, Ortsteil-Gremien, Planungsverfahren und Routinesatzungen. Punkte über 62 werden gespreizt (Faktor 1,6).</p><p>Das Modell wählt aus (Unterthema, Vorgangsart, Antragsteller). Die Eignung ist noch nicht gemessen: eine Rangordnung, keine Vorhersage von Klicks. Vor einem Beitrag Zahl und Fundstellen prüfen.</p></How>
+  </>}
 
-  <section aria-label="Sortieren und filtern" className="mt-6 flex flex-wrap items-end gap-x-6 gap-y-3 rounded-xl border border-slate-200 bg-white p-4">
+  {data&&<section aria-label="Sortieren und filtern" className="mt-8 flex flex-wrap items-end gap-x-6 gap-y-3 border-y border-slate-200 py-4">
    <div>
     <p className="text-[12px] text-slate-500" id="social-sort">Sortieren nach</p>
     <div role="group" aria-labelledby="social-sort" className="mt-1 flex gap-1.5">
@@ -120,7 +114,7 @@ export function AdminSocial(){
    <p role="status" className="ml-auto text-[14px] text-slate-600">
     {data?<>{shown.length} von {all.length} Vorschlägen{avgShown!==null&&<> · Ø {avgShown} %</>}{filtered&&<> · <button type="button" className="text-teal-600" onClick={()=>{pick<number>('social.min',setMinFit)(0);pick<string>('social.group',setGroup)('');}}>Filter zurücksetzen</button></>}</>:''}
    </p>
-  </section>
+  </section>}
 
   {data&&shown.length===0&&<p className="mt-6 text-[14px] text-slate-500">Kein Vorschlag erfüllt diese Auswahl. Eignung oder Thema lockern.</p>}
   {sort==='eignung'

@@ -7,7 +7,7 @@ import {useDarkMode} from '@/components/ratsmonitor/lib/useDarkMode';
 import {ConfirmDialog} from '@/components/ratsmonitor/components/ConfirmDialog';
 import {IconChevronDown} from '@/components/ratsmonitor/components/icons';
 import {BRAND_NAME,DEFAULT_BRAND} from '@/components/ratsmonitor/lib/brands';
-import {FOOT} from '@/components/admin-texts';
+import {FOOT,PAGE_HEAD} from '@/components/admin-texts';
 import {Icon} from '@/components/admin-icons';
 import {RegionCatchUp} from '@/components/admin-catch-up';
 import {AdminSignOut} from './admin-signout';
@@ -20,25 +20,25 @@ export type AdminPage='start'|'abdeckung'|'atlas'|'nacht'|'abruf'|'pdf'|'verarbe
 export type AdminEntry={id:AdminPage;label:string;icon:string;hint:string};
 /** Gruppen des Menüs in der Reihenfolge der Arbeit: was erreichen wir, wie kommen die Daten herein, stimmt der Bestand,
     läuft der Server, was ist geplant. */
-export const ADMIN_GROUPS:{id:string;label:string;pages:AdminEntry[]}[]=[
- {id:'abdeckung',label:'Abdeckung',pages:[
+export const ADMIN_GROUPS:{id:string;label:string;icon:string;pages:AdminEntry[]}[]=[
+ {id:'abdeckung',label:'Abdeckung',icon:'map',pages:[
   {id:'abdeckung',label:'Abdeckung',icon:'chart',hint:'Wie viel erreichen wir?'},
   {id:'atlas',label:'Lückenatlas',icon:'map',hint:'Wo fehlt was?'}]},
- {id:'pipeline',label:'Pipeline',pages:[
+ {id:'pipeline',label:'Pipeline',icon:'download',pages:[
   {id:'nacht',label:'Letzte Nacht',icon:'moon',hint:'Lief alles?'},
   {id:'abruf',label:'Abruf',icon:'download',hint:'Was holen wir?'},
   {id:'pdf',label:'PDF-Import',icon:'file',hint:'Welche Unterlagen liegen vor?'},
-  {id:'verarbeitung',label:'Verarbeitung',icon:'tags',hint:'Was wird eingeordnet?'},
+  {id:'verarbeitung',label:'KI-Aufbereitung',icon:'tags',hint:'Was hat die KI bearbeitet?'},
   {id:'altbestand',label:'Altbestand',icon:'archive',hint:'Was holen wir nach?'}]},
- {id:'qualitaet',label:'Qualität',pages:[
-  {id:'regeltexte',label:'Einordnungsmodell',icon:'text',hint:'Wie gut ordnet das Modell ein?'},
+ {id:'qualitaet',label:'Qualität',icon:'checklist',pages:[
+  {id:'regeltexte',label:'Einordnungsmodell',icon:'text',hint:'Wie gut ist das Modell?'},
   {id:'pruefliste',label:'Prüfliste',icon:'checklist',hint:'Was braucht einen Blick?'},
   {id:'bestand',label:'Bestandsprüfung',icon:'database',hint:'Ist der Bestand stimmig?'}]},
- {id:'betrieb',label:'Betrieb',pages:[
-  {id:'zeitplaene',label:'Jobs & Zeitpläne',icon:'clock',hint:'Was läuft wann?'},
+ {id:'betrieb',label:'Betrieb',icon:'server',pages:[
+  {id:'zeitplaene',label:'Steuerung',icon:'clock',hint:'Was läuft, was starte ich?'},
   {id:'fehler',label:'Fehler & Server',icon:'alert',hint:'Was scheitert?'},
   {id:'speicher',label:'Speicher & Sicherungen',icon:'drive',hint:'Reicht der Platz?'}]},
- {id:'planung',label:'Planung',pages:[
+ {id:'planung',label:'Planung',icon:'calculator',pages:[
   {id:'todo',label:'To-do-Liste',icon:'check',hint:'Was steht an?'},
   {id:'hochrechnung',label:'Hochrechnung',icon:'calculator',hint:'Wie viel fällt an?'},
   {id:'social',label:'Social Media',icon:'megaphone',hint:'Was posten wir?'}]},
@@ -82,7 +82,7 @@ function AdminMenu({page}:{page?:AdminPage}){
  };
  const show=(g:string)=>open==='all'?openGroup===g:open===g;
  const item=(p:AdminEntry)=><li key={p.id}><Link href={adminHref(p.id)} prefetch={false} className="ri-menu__sub" aria-current={page===p.id?'page':undefined} onClick={close}>
-  <Icon name={p.icon} size={15}/><span className="shrink-0">{p.label}</span><span className="ml-auto whitespace-nowrap pl-5 text-[12px] font-normal text-slate-400 max-sm:hidden">{p.hint}</span></Link></li>;
+  <Icon name={p.icon} size={15}/><span className="shrink-0">{p.label}</span><span className="ml-auto min-w-0 truncate pl-5 text-[12px] font-normal text-slate-400 max-sm:hidden" title={p.hint}>{p.hint}</span></Link></li>;
  return <>
   <button ref={btnRef} type="button" data-admin-menu className="ri-burger" aria-label={open==='all'?'Menü schließen':'Menü öffnen'} aria-expanded={open==='all'} aria-controls="adminmenue" onClick={e=>toggle('all',e.currentTarget)}>
    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" aria-hidden="true"><path d="M4 6.5h16M4 12h12M4 17.5h8"/></svg>
@@ -99,8 +99,8 @@ function AdminMenu({page}:{page?:AdminPage}){
      {open==='all'&&<ul className="ri-menu__subs">{item(START)}</ul>}
      {ADMIN_GROUPS.map(g=><div key={g.id}>
       {open==='all'&&<button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup===g.id} onClick={()=>setOpenGroup(openGroup===g.id?'':g.id)}>
-       {g.label}<IconChevronDown size={16} className={'ri-menu__chev '+(openGroup===g.id?'rotate-180':'')}/></button>}
-      {show(g.id)&&<ul className="ri-menu__subs">{g.pages.map(item)}</ul>}
+       <span className="flex items-center gap-2.5"><Icon name={g.icon} size={18} className="text-teal-700"/>{g.label}</span><IconChevronDown size={16} className={'ri-menu__chev '+(openGroup===g.id?'rotate-180':'')}/></button>}
+      {show(g.id)&&<ul className={'ri-menu__subs'+(open==='all'?' pl-7':'')}>{g.pages.map(item)}</ul>}
      </div>)}
     </nav>
    </div>
@@ -132,7 +132,8 @@ export function AdminFrame({page,displayName,signOutPath,accountSignOut,tabs=tru
   {tabs&&<RegionCatchUp/>}
   <main id="inhalt" className="w-full px-[max(1vw,16px)] text-slate-900">{children}
    <footer className="mt-16 flex flex-wrap justify-between gap-x-6 gap-y-2 border-t border-slate-100 py-4 text-[12px] text-slate-500">
-    <span className="max-w-[820px]">{page?FOOT[page]:null}</span>
+    {/* Über diese Seite: Einleitung und Grundlage (früher unter der Überschrift), wie die Methodik auf plenara.X */}
+    {page?<div className="max-w-[820px]"><p className="m-0 text-[14px] font-semibold text-slate-700">Über diese Seite</p><p className="m-0 mt-1">{PAGE_HEAD[page].intro} {FOOT[page]}</p></div>:<span/>}
     {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- raus aus der Administration mit vollem Laden (eigenes Layout und eigene Stile) */}
     <span className="flex gap-5">{page&&<Link href={adminHref('abdeckung')+'#begriffe'} className="text-teal-600">Begriffe →</Link>}<a href="/" className="text-teal-600">Zur öffentlichen Website →</a></span>
    </footer>

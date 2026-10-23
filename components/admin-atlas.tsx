@@ -1,8 +1,8 @@
 'use client';
 import {memo,useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {X} from 'lucide-react';
-import {AdminPageHead,AdminChoice,Kpis,SectionHelp,SectionTodo,PageSkeleton,Skeleton,Legend,Alert,short,standText,StandLine} from '@/components/admin-ui';
-import {AC,HATCH_CSS,COVERAGE,bucketColor,ACCESS_COLOR} from '@/components/admin-colors';
+import {AdminPageHead,AdminChoice,Befund,Zahlen,Abschnitt,Fehler,SectionHelp,SectionTodo,PageSkeleton,Skeleton,Legend,short,standText,StandLine} from '@/components/admin-ui';
+import {AC,HATCH_CSS,COVERAGE,bucketColor,ACCESS_COLOR,CATEGORY_COLOR} from '@/components/admin-colors';
 import {ATLAS_TODO,COL_HELP,HELP} from '@/components/admin-texts';
 import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import type {Stand} from '@/shared/admin-types';
@@ -64,7 +64,9 @@ export function AdminAtlas(){
  // Every area with its reach and freshness bucket, judged at the time of the data.
  const atlasAreas=useMemo(()=>{const today=(data?.asOf||'').slice(0,10);return (data?.areas||[]).map(a=>({...a,rk:reachBucket(a.fe,today),fk:freshBucket(a.le,today)}));},[data]);
  const byId=useMemo(()=>new Map(atlasAreas.map(a=>[a.id,a])),[atlasAreas]);
- const catById=useMemo(()=>new Map((data?.categories||[]).map(c=>[c.id,c])),[data]),{accessList,accById}=useMemo(()=>{const l=(data?.access||[]).map(a=>({...a,color:ACCESS_COLOR[a.id]??a.color}));return {accessList:l,accById:new Map(l.map(a=>[a.id,a]))};},[data]);
+ // Gründe in den Farben des Farbschemas (CATEGORY_COLOR), nicht in denen des eigenständigen Atlas
+ const categories=useMemo(()=>(data?.categories||[]).map(c=>({...c,color:CATEGORY_COLOR[c.id]??c.color})),[data]);
+ const catById=useMemo(()=>new Map(categories.map(c=>[c.id,c])),[categories]),{accessList,accById}=useMemo(()=>{const l=(data?.access||[]).map(a=>({...a,color:ACCESS_COLOR[a.id]??a.color}));return {accessList:l,accById:new Map(l.map(a=>[a.id,a]))};},[data]);
  const present=useMemo(()=>(data?.categories||[]).filter(c=>atlasAreas.some(a=>a.c===c.id)).map(c=>c.id),[data,atlasAreas]);
  const activeCats=cats||new Set(present),activeAccess=access||new Set(accessList.map(a=>a.id)),activeReach=reach||new Set(REACH_IDS),activeFresh=fresh||new Set(FRESH_IDS);
  const operators=useMemo(()=>{const count=new Map<string,number>();for(const a of atlasAreas)if(a.o&&catById.get(a.c)?.open)count.set(a.o,(count.get(a.o)||0)+1);return [...count].filter(([,k])=>k>=3).sort((x,y)=>y[1]-x[1]);},[atlasAreas,catById]);
@@ -116,19 +118,18 @@ export function AdminAtlas(){
   for(const a of atlasAreas){if(catById.get(a.c)?.open)continue;const k=a.v||'Unbekannt';const m=by.get(k)||{areas:0,withReports:0,reports:0,partial:0,failed:0,deep:0,counts:[]};m.areas++;if(a.cnt){m.withReports++;m.reports+=a.cnt;m.counts.push(a.cnt);}if(a.st==='partial')m.partial++;if(a.st==='failed')m.failed++;if(a.rk==='y1'||a.rk==='y2')m.deep++;by.set(k,m);}
   return [...by].map(([name,m])=>({name,...m,median:m.counts.length?m.counts.sort((x,y)=>x-y)[Math.floor(m.counts.length/2)]:0})).sort((x,y)=>y.areas-x.areas);
  },[atlasAreas,catById]);
- const apiError=error&&!data?<Alert onRetry={()=>setAttempt(a=>a+1)}>Die Zahlen konnten nicht geladen werden. Es werden keine geschätzten Werte angezeigt.</Alert>:null;
+ const apiError=error&&!data?<Fehler onRetry={()=>setAttempt(a=>a+1)}>Die Zahlen konnten nicht geladen werden. Es werden keine geschätzten Werte angezeigt.</Fehler>:null;
  const openPop=data?mio(open.filter(isCityLevel).reduce((s,a)=>s+a.p,0)):'';
  return <>
-  <AdminPageHead page="atlas"><StandLine stand={data?data.stand??null:undefined} action="Aktualisieren" onAction={()=>setAttempt(a=>a+1)} extra={data?<> · Gründe aus der Quellensuche vom {short(data.reportDate)}</>:null}/></AdminPageHead>
-  <div className="mt-8"><Kpis label="Anbindung der Gebiete" items={[
-   {label:'Gebiete angebunden',value:data?n(connected.length):undefined,of:data?n(atlasAreas.length):undefined,note:data?pct(connected.length,data.areas.length)+' · einschließlich eingeschalteter Quellen, deren erste Prüfung aussteht':undefined},
-   {label:'Einwohner erreicht',value:data?pct(popOk,popAll):undefined,note:data?mio(popOk)+' von '+mio(popAll)+' auf Gemeindeebene':undefined},
-   {label:'Einwohner erreicht (inkl. VG)',value:data?pct(popOkV,popAll):undefined,note:data?mio(popOkV)+' von '+mio(popAll)+' · zusätzlich Orte, deren Samtgemeinde/VG/Amt über ein anderes Mitglied angebunden ist':undefined},
-   {label:'Einwohner erreicht (inkl. Kreise)',value:data?pct(popOkK,popAll):undefined,note:data?mio(popOkK)+' von '+mio(popAll)+' · zusätzlich, wenn der Landkreis angebunden ist':undefined},
-   {label:'Gebiete offen',value:data?n(open.length):undefined,note:data?openPop+' Einwohner auf Gemeindeebene · ohne lesbare Quelle':undefined},
-   {label:'Mit gespeicherten Berichten',value:data?n(withReports):undefined,note:data?n(data.reports)+' Berichte in der Datenbank':undefined}]}/></div>
+  <AdminPageHead page="atlas" figure={data?{value:n(open.length),label:'Gebiete offen',note:openPop+' Einwohner ohne lesbare Quelle'}:undefined}/>
+  {data&&<>
+   <Befund stand={<StandLine stand={data.stand??null} action="Aktualisieren" onAction={()=>setAttempt(a=>a+1)} extra={<> · Gründe aus der Quellensuche vom {short(data.reportDate)}</>}/>}>{n(open.length)} Gebiete haben noch keine lesbare Quelle; {pct(connected.length,data.areas.length)} sind angebunden. Warum die übrigen fehlen, zeigen die Balken darunter.</Befund>
+   <Zahlen items={[{value:<>{n(connected.length)}<span className="font-normal text-slate-500"> / {n(atlasAreas.length)}</span></>,label:'Gebiete angebunden'},
+    {value:pct(popOk,popAll),label:'der Einwohner erreicht'},{value:pct(popOkV,popAll),label:'mit VG'},{value:pct(popOkK,popAll),label:'mit Kreisen'},
+    {value:n(withReports),label:'mit Berichten',href:adminHref('abdeckung')}]}/>
+  </>}
   {apiError}
-  {error&&data&&<Alert>Aktualisieren ist fehlgeschlagen: {error}. Angezeigt bleibt der Stand vom {standText(data.stand?.computedAt??data.builtAt)}.</Alert>}
+  {error&&data&&<Fehler>Aktualisieren ist fehlgeschlagen: {error}. Angezeigt bleibt der Stand vom {standText(data.stand?.computedAt??data.builtAt)}.</Fehler>}
   {!data&&<div role="status" aria-label="Alle Gebiete werden mit Anbindung, Grund und Berichtsstand geladen …">
    <PageSkeleton sections={[['atlas.anbindung',120],['atlas.zugang',120],['atlas.reichweite',120],['atlas.aktualitaet',120]]}/>
    <div className="admin-atlas-main"><Skeleton h={520}/></div>
@@ -136,7 +137,7 @@ export function AdminAtlas(){
   {data&&<>
    {data.statsPending>0&&<p role="status" className="admin-notice">Berichtszahlen von {n(data.statsPending)} Gebieten werden noch berechnet; die nächste Aktualisierung zeigt sie.</p>}
    <div className="admin-atlas-why">
-    <section className="admin-section"><SectionHead id="atlas.anbindung"/>{stack(data.categories.filter(c=>present.includes(c.id)).map(c=>({id:c.id,label:c.label,color:c.color,title:c.why})),a=>a.c,activeCats,s=>{setCats(s);setColorBy('cat');},present)}</section>
+    <section className="admin-section"><SectionHead id="atlas.anbindung"/>{stack(categories.filter(c=>present.includes(c.id)).map(c=>({id:c.id,label:c.label,color:c.color,title:c.why})),a=>a.c,activeCats,s=>{setCats(s);setColorBy('cat');},present)}</section>
     <section className="admin-section"><SectionHead id="atlas.zugang"/>{stack(accessList.map(a=>({id:a.id,label:a.label,color:a.color,title:a.explain})),a=>a.z,activeAccess,s=>{setAccess(s);setColorBy('access');},accessList.map(a=>a.id))}</section>
    </div>
    <div className="admin-atlas-why">
@@ -159,7 +160,7 @@ export function AdminAtlas(){
        <Regions shapes={shapes} fills={fills} selected={selected} fine={shapes.length>1500} onPick={pick} onHover={setHover}/>
       </svg>}</div>
      <p className="admin-map-hover" aria-live="polite">{hovered?<><strong>{hovered.n}</strong> · {typeLabel(hovered)} · {catById.get(hovered.c)?.label}{hovered.cnt?` · ${n(hovered.cnt)} Berichte${hovered.fe?' · Sitzungen '+mm(hovered.fe)+' bis '+mm(hovered.le):''}`:''}{hovered.r!==undefined?<span className="admin-atlas-reason"> · {data.texts[hovered.r]}</span>:''}</>:freeHover?<><strong>{freeHover.name}</strong> · Gemeindefreies Gebiet · kein Rat, keine Einwohner; die Fläche gehört zum Kreis</>:<>{n(shapes.length)} {layer==='city'?'Städte, Gemeinden und Gemeindeverbände':'Kreise'} auf der Karte, {n(shapes.filter(r=>matches.has(r.id)).length)} passen zu den Filtern. Mausrad oder Plus/Minus zoomt, Ziehen verschiebt, Klick zeigt das Gebiet.</>}</p>
-     <Legend items={((colorBy==='cat'?data.categories.filter(c=>present.includes(c.id)).map(c=>[c.color,c.label]):colorBy==='access'?accessList.map(a=>[a.color,a.label]):colorBy==='reach'?[...REACH_ITEMS.filter(b=>b.id!=='none').map(b=>[b.color,b.label]),[HATCH_CSS,'Angebunden, ohne Berichte'],[DIM,'Nicht angebunden']]:colorBy==='fresh'?[...FRESH_ITEMS.filter(b=>b.id!=='none').map(b=>[b.color,b.label]),[HATCH_CSS,'Angebunden, ohne Berichte'],[DIM,'Nicht angebunden']]:[[COVERAGE.data,'Berichte gespeichert'],[COVERAGE.partial,'Teilstand'],[COVERAGE.failed,'Letzter Abruf fehlgeschlagen'],[HATCH_CSS,'Angebunden, ohne Berichte (Schraffur)'],[DIM,'Nicht angebunden']]) as [string,string][]).concat(geo?.free.length?[[FREE_CSS,'Gemeindefreies Gebiet, kein Rat'] as [string,string]]:[])}/>
+     <Legend items={((colorBy==='cat'?categories.filter(c=>present.includes(c.id)).map(c=>[c.color,c.label]):colorBy==='access'?accessList.map(a=>[a.color,a.label]):colorBy==='reach'?[...REACH_ITEMS.filter(b=>b.id!=='none').map(b=>[b.color,b.label]),[HATCH_CSS,'Angebunden, ohne Berichte'],[DIM,'Nicht angebunden']]:colorBy==='fresh'?[...FRESH_ITEMS.filter(b=>b.id!=='none').map(b=>[b.color,b.label]),[HATCH_CSS,'Angebunden, ohne Berichte'],[DIM,'Nicht angebunden']]:[[COVERAGE.data,'Berichte gespeichert'],[COVERAGE.partial,'Teilstand'],[COVERAGE.failed,'Letzter Abruf fehlgeschlagen'],[HATCH_CSS,'Angebunden, ohne Berichte (Schraffur)'],[DIM,'Nicht angebunden']]) as [string,string][]).concat(geo?.free.length?[[FREE_CSS,'Gemeindefreies Gebiet, kein Rat'] as [string,string]]:[])}/>
     </section>
     <section className="admin-section admin-atlas-list" aria-label="Liste">
      <div className="admin-source-controls">
@@ -191,11 +192,11 @@ export function AdminAtlas(){
      </div>}
     </section>
    </div>
-   <section className="admin-section" aria-labelledby="verfahren">
-    <SectionHead id="atlas.verfahren" htmlId="verfahren"/>
+   <Abschnitt id="verfahren" open={false} title={HELP['atlas.verfahren']?.title}>
+    <SectionHelp id="atlas.verfahren"/>
     <div className="admin-lands" role="region" aria-label="Berichte je Verfahren" tabIndex={0}><table><thead><tr><th>Verfahren</th>{['Gebiete','Mit Berichten','Berichte','Median je Gebiet','Ab 1 Jahr zurück','Teilstand','Abruf fehlgeschlagen'].map(c=><th key={c} title={COL_HELP[c]}>{c}</th>)}</tr></thead><tbody>{methods.map(m=><tr key={m.name}><th>{m.name}</th><td>{n(m.areas)}</td><td>{n(m.withReports)} <small>{pct(m.withReports,m.areas)}</small></td><td>{n(m.reports)}</td><td>{n(m.median)}</td><td>{n(m.deep)} <small>{pct(m.deep,m.areas)}</small></td><td>{n(m.partial)}</td><td>{n(m.failed)}</td></tr>)}</tbody></table></div>
     <SectionTodo id="atlas.verfahren"/>
-   </section>
+   </Abschnitt>
   </>}
  </>;
 }

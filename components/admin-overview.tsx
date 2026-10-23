@@ -4,7 +4,8 @@ import {useEffect,useMemo,useState} from 'react';
 import {StandLine,standText} from '@/components/admin-stand';
 import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import type {Stand} from '@/shared/admin-types';
-import {AdminPageHead,Alert,Kpis,Legend,PageSkeleton,SectionHelp,SectionTodo} from '@/components/admin-ui';
+import {AdminPageHead,Befund,Zahlen,Abschnitt,Fehler,Legend,PageSkeleton,SectionHelp,SectionTodo} from '@/components/admin-ui';
+import {Segmented} from '@/components/ratsmonitor/components/Segmented';
 import {AC,bucketColor} from '@/components/admin-colors';
 import {COL_HELP,HELP,TERMS} from '@/components/admin-texts';
 import {n,pct,mio,day} from '@/components/admin-format';
@@ -12,7 +13,8 @@ type Share={areas:number;population:number;lands:Record<string,[number,number]>}
 type Bucket={id:string;label:string;color:string;areas:number;population:number};
 type SizeRow={id:string;label:string;total:[number,number];connected:[number,number];data:[number,number]};
 type Month={month:string;reports:number;areas:number};
-type Coverage={stand?:Stand;asOf:string;lands:Record<string,{name:string;short:string}>;total:Share;connected:Share;data:Share&{series:{day:string;areas:number;population:number}[];reports:number;undatedAreas:number};history:{builtAt:string;points:{at:string;commit:string|null;areas:number;population:number}[]};analysis:{statsPending:number;reach:{buckets:Bucket[]};fresh:{buckets:Bucket[]};sizes:SizeRow[];months:Month[];undated:number}};
+type Active={days:number;areas:number;population:number;since:string|null;series:{day:string;areas:number;population:number}[]};
+type Coverage={stand?:Stand;asOf:string;active?:Active;lands:Record<string,{name:string;short:string}>;total:Share;connected:Share;data:Share&{series:{day:string;areas:number;population:number}[];reports:number;undatedAreas:number};history:{builtAt:string;points:{at:string;commit:string|null;areas:number;population:number}[]};analysis:{statsPending:number;reach:{buckets:Bucket[]};fresh:{buckets:Bucket[]};sizes:SizeRow[];months:Month[];undated:number}};
 type Point={t:number;v:number};
 type Series={id:string;label:string;color:string;points:Point[]};
 const dateTime=(s:string)=>new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'});
@@ -22,10 +24,6 @@ const monthLabel=(m:string)=>m.slice(5,7)+'.'+m.slice(2,4);
 const SKELETON:[string,number][]=[['uebersicht.verlauf',300],['uebersicht.reichweite',120],['uebersicht.monate',240],['uebersicht.laender',320],['uebersicht.groesse',240]];
 /** Value of a step series at a moment: the last point at or before it, 0 before the first. */
 const valueAt=(points:Point[],t:number)=>{let v=0;for(const p of points){if(p.t>t)break;v=p.v;}return v;};
-/** Heading of a section: h2 from HELP, then the one-line explanation and the folded "how is it counted". */
-function SectionHead({help,id}:{help:string;id:string}){
- return <><div className="admin-section-heading"><h2 id={id}>{HELP[help]?.title}</h2></div><SectionHelp id={help}/></>;
-}
 /** Footnote under the tables per land and per size. */
 const COLS_NOTE=<p className="mt-2 text-[12px] text-slate-500">Balken: Petrol = angebunden, Schwarz = mit Berichten.</p>;
 /**
@@ -87,7 +85,10 @@ export function AdminOverview(){
   for(const key of ['areas','population'] as const){const last=connected[key].at(-1);if(!last||last.v!==data.connected[key])connected[key].push({t:now,v:data.connected[key]});}
   const dayEnd=(day:string)=>Math.min(now,Date.parse(day+'T22:00:00Z'));
   const stored={areas:data.data.series.map(p=>({t:dayEnd(p.day),v:p.areas})),population:data.data.series.map(p=>({t:dayEnd(p.day),v:p.population}))};
-  const series=(key:'areas'|'population'):Series[]=>[{id:'connected',label:'Quelle angebunden',color:AC.accent,points:connected[key]},{id:'stored',label:'Mit gespeicherten Berichten',color:AC.ink,points:stored[key]}];
+  // Reale Abdeckung: Abruf in den letzten 7 Tagen gelungen (activeCoverage); je Tag das Fenster bis zu seinem Ende
+  const active={areas:(data.active?.series||[]).map(p=>({t:dayEnd(p.day),v:p.areas})),population:(data.active?.series||[]).map(p=>({t:dayEnd(p.day),v:p.population}))};
+  const series=(key:'areas'|'population'):Series[]=>[{id:'connected',label:'Quelle angebunden',color:AC.accent,points:connected[key]},{id:'stored',label:'Mit gespeicherten Berichten',color:AC.ink,points:stored[key]},
+   ...(active[key].length?[{id:'active',label:`Abruf gelungen in ${data.active?.days??7} Tagen`,color:AC.active,points:active[key]}]:[])];
   const lands=Object.entries(data.lands).map(([id,l])=>({id,...l,total:data.total.lands[id]||[0,0],connected:data.connected.lands[id]||[0,0],data:data.data.lands[id]||[0,0]})).sort((a,b)=>b.total[1]-a.total[1]);
   // The last 24 meeting months; a bucket is shown only when it holds something.
   const months=data.analysis.months.slice(-24),reach=data.analysis.reach.buckets.filter(b=>b.areas),fresh=data.analysis.fresh.buckets.filter(b=>b.areas);
@@ -103,20 +104,21 @@ export function AdminOverview(){
   {label:'Einwohner mit Berichten',value:pct(data.data.population,data.total.population),note:`${mio(data.data.population)} Einwohner in Gebieten mit gespeicherten Berichten`},
  ]:['Gebiete angebunden','Einwohner erreicht','Gebiete mit Berichten','Einwohner mit Berichten'].map(label=>({label,value:undefined}));
  return <>
-  <AdminPageHead page="abdeckung"><StandLine stand={data?data.stand??null:undefined} action="Aktualisieren" onAction={reload} busy={refreshing}/></AdminPageHead>
-  {error&&(data
-   ?<Alert onRetry={()=>setAttempt(a=>a+1)}>Aktualisieren ist fehlgeschlagen: {error} Angezeigt bleibt der Stand vom {data.stand?.computedAt?standText(data.stand.computedAt):dateTime(data.asOf)}.</Alert>
-   :<Alert onRetry={()=>setAttempt(a=>a+1)}>Die Zahlen konnten nicht geladen werden. Es werden keine geschätzten Werte angezeigt. ({error})</Alert>)}
-  {!data&&!error&&<p role="status" className="admin-note">Abdeckung wird aus Katalog und Datenbank gelesen. Beim ersten Aufruf nach einer Änderung des Bestands dauert das bis zu einer Minute.</p>}
-  {building&&data?.stand&&<p role="status" className="admin-note">Vorberechnung läuft: {n(data.stand.total-data.stand.unbuilt)} von {n(data.stand.total)} Gebieten. Die Zahlen erscheinen, sobald alle Gebiete berechnet sind.</p>}
-  <div className={'mt-8'+(refreshing&&ready?' opacity-60 transition-opacity':'')}>
-   <Kpis label="Abdeckung heute" items={kpis}/>
-   <p className="mt-4 max-w-[820px] text-[14px] text-slate-500">Einwohner zählen nur bei Städten, Gemeinden und Gemeindeverbänden; ein Kreis umfasst seine Gemeinden. Ist nur der Kreis angebunden, zählen seine Einwohner hier nicht mit.</p>
-  </div>
+   <AdminPageHead page="abdeckung" figure={ready&&data?{value:pct(data.connected.population,data.total.population),label:'der Einwohner erreicht',note:`${mio(data.connected.population)} von ${mio(data.total.population)}`}:undefined}/>
+   {error&&(data
+    ?<Fehler onRetry={()=>setAttempt(a=>a+1)}>Aktualisieren ist fehlgeschlagen: {error} Angezeigt bleibt der Stand vom {data.stand?.computedAt?standText(data.stand.computedAt):dateTime(data.asOf)}.</Fehler>
+    :<Fehler onRetry={()=>setAttempt(a=>a+1)}>Die Zahlen konnten nicht geladen werden. Es werden keine geschätzten Werte angezeigt. ({error})</Fehler>)}
+   {!data&&!error&&<p role="status" className="admin-note">Abdeckung wird aus Katalog und Datenbank gelesen. Beim ersten Aufruf nach einer Änderung des Bestands dauert das bis zu einer Minute.</p>}
+   {building&&data?.stand&&<p role="status" className="admin-note">Vorberechnung läuft: {n(data.stand.total-data.stand.unbuilt)} von {n(data.stand.total)} Gebieten. Die Zahlen erscheinen, sobald alle Gebiete berechnet sind.</p>}
+   {ready&&data&&<div className={refreshing?'opacity-60 transition-opacity':''}>
+    <Befund stand={<StandLine stand={data.stand??null} action="Aktualisieren" onAction={reload} busy={refreshing}/>}>{pct(data.connected.areas,data.total.areas)} der Gebiete haben eine Quelle, die Plenara lesen kann; aus {n(data.data.areas)} Gebieten sind {n(data.data.reports)} Berichte gespeichert.{data.active?<> In den letzten {data.active.days} Tagen hat der Abruf bei {n(data.active.areas)} Gebieten geklappt ({pct(data.active.population,data.total.population)} der Einwohner).</>:null}</Befund>
+    <Zahlen items={[...(data.active?[{value:<>{n(data.active.areas)}<span className="font-normal text-slate-500"> / {n(data.connected.areas)}</span></>,label:`angebunden mit Abruf in ${data.active.days} Tagen`}]:[]),...kpis.map(k=>({value:<>{k.value}{"of" in k&&k.of?<span className="font-normal text-slate-500"> / {k.of}</span>:null}</>,label:k.label}))]}/>
+    <p className="m-0 mt-2 max-w-[820px] text-[12px] text-slate-500">Einwohner zählen nur bei Städten, Gemeinden und Gemeindeverbänden; ein Kreis umfasst seine Gemeinden. Ist nur der Kreis angebunden, zählen seine Einwohner hier nicht mit.</p>
+   </div>}
   {!ready&&<PageSkeleton sections={SKELETON}/>}
   {data&&view&&ready&&<div className={refreshing?'opacity-60 transition-opacity':''}>
-   <section className="admin-section admin-overview-trend" aria-labelledby="verlauf">
-    <SectionHead help="uebersicht.verlauf" id="verlauf"/>
+    <Abschnitt id="verlauf" title={HELP['uebersicht.verlauf']?.title}>
+     <SectionHelp id="uebersicht.verlauf"/>
     <Legend items={view.areas.map(s=>[s.color,s.label])}/>
     <div className="admin-overview-charts mt-5">
      <figure><figcaption>Gebiete · Anteil an {n(data.total.areas)} Gebieten</figcaption><TrendChart series={view.areas} max={data.total.areas} now={view.now} fmt={v=>n(v)} unit="Gebiete" hover={hover} onHover={setHover}/></figure>
@@ -126,9 +128,8 @@ export function AdminOverview(){
     {data.data.undatedAreas>0&&<p className="admin-note">{n(data.data.undatedAreas)} Gebiete wurden vor Oktober 2026 gespeichert und zählen ab dem ersten Tag der Reihe.</p>}
     <details><summary>Werte als Tabelle</summary><div className="admin-timeline-table"><table><thead><tr><th scope="col">Stand</th><th scope="col">Gebiete angebunden</th><th scope="col">Einwohner angebunden</th></tr></thead><tbody>{[...data.history.points].reverse().map(p=><tr key={p.at+(p.commit||'')}><td>{dateTime(p.at)}{p.commit?'':' (Arbeitsstand)'}</td><td>{n(p.areas)} ({pct(p.areas,data.total.areas)})</td><td>{mio(p.population)} ({pct(p.population,data.total.population)})</td></tr>)}</tbody></table></div><div className="admin-timeline-table"><table><thead><tr><th scope="col">Tag</th><th scope="col">Gebiete mit Berichten</th><th scope="col">Einwohner mit Berichten</th></tr></thead><tbody>{[...data.data.series].reverse().map(p=><tr key={p.day}><td>{day(p.day)}</td><td>{n(p.areas)} ({pct(p.areas,data.total.areas)})</td><td>{mio(p.population)} ({pct(p.population,data.total.population)})</td></tr>)}</tbody></table></div></details>
     <SectionTodo id="uebersicht.verlauf"/>
-   </section>
-   <section className="admin-section" aria-labelledby="tiefe">
-    <div className="admin-section-heading"><h2 id="tiefe">{HELP['uebersicht.reichweite']?.title}</h2><div className="admin-seg" role="group" aria-label="Zählung"><button type="button" aria-pressed={of==='areas'} onClick={()=>setOf('areas')}>Gebiete</button><button type="button" aria-pressed={of==='population'} onClick={()=>setOf('population')}>Einwohner</button></div></div>
+   </Abschnitt>
+    <Abschnitt id="tiefe" open={false} title={HELP['uebersicht.reichweite']?.title} aside={<Segmented label="Zählung" value={of} onPick={setOf} options={[['areas','Gebiete'],['population','Einwohner']]}/>}>
     <SectionHelp id="uebersicht.reichweite"/>
     {data.analysis.statsPending>0&&<p role="status" className="admin-notice">Sitzungstage von {n(data.analysis.statsPending)} Gebieten werden noch berechnet; „Aktualisieren“ zeigt sie, sobald sie vorliegen.</p>}
     <div className="admin-overview-charts mt-5">
@@ -136,31 +137,30 @@ export function AdminOverview(){
      <figure><figcaption>Aktualität · jüngster Sitzungstag je angebundenem Gebiet</figcaption><BucketBar buckets={view.fresh} kind="fresh" of={of}/><div className="admin-atlas-chips">{view.fresh.map(b=><span key={b.id} className="admin-chip is-static"><i style={{background:bucketColor('fresh',b)}}/>{b.label} <span>{of==='areas'?n(b.areas):mio(b.population)}</span></span>)}</div><p className="admin-note">{n(view.current)} Gebiete hatten in den letzten 30 Tagen eine Sitzung oder haben eine angekündigt, {n(view.quiet)} seit über 90 Tagen keine.</p></figure>
     </div>
     <SectionTodo id="uebersicht.reichweite"/>
-   </section>
-   <section className="admin-section" aria-labelledby="monate">
-    <SectionHead help="uebersicht.monate" id="monate"/>
+   </Abschnitt>
+    <Abschnitt id="monate" open={false} title={HELP['uebersicht.monate']?.title}>
+     <SectionHelp id="uebersicht.monate"/>
     {view.months.length?<><Legend items={[[AC.accent,'Berichte'],[AC.ink,'Gebiete mit Berichten im Monat']]}/><figure className="m-0 mt-5"><MonthChart months={view.months}/></figure></>:<p className="admin-empty">Noch keine Berichte mit Sitzungstag.</p>}
     {(data.analysis.undated>0||data.analysis.months.length>24)&&<p className="admin-note">{data.analysis.undated>0&&`${n(data.analysis.undated)} Berichte ohne gültigen Sitzungstag (fehlend oder fehlerhaft) sind nicht enthalten. `}{data.analysis.months.length>24&&`Gezeigt werden die letzten 24 von ${n(data.analysis.months.length)} Monaten.`}</p>}
     <details><summary>Werte als Tabelle</summary><div className="admin-timeline-table"><table><thead><tr><th scope="col">Monat</th><th scope="col">Berichte</th><th scope="col">Gebiete mit Sitzungen</th></tr></thead><tbody>{[...data.analysis.months].reverse().map(m=><tr key={m.month}><td>{monthLabel(m.month)}</td><td>{n(m.reports)}</td><td>{n(m.areas)}</td></tr>)}</tbody></table></div></details>
     <SectionTodo id="uebersicht.monate"/>
-   </section>
-   <section className="admin-section" aria-labelledby="laender">
-    <SectionHead help="uebersicht.laender" id="laender"/>
+   </Abschnitt>
+    <Abschnitt id="laender" open={false} title={HELP['uebersicht.laender']?.title}>
+     <SectionHelp id="uebersicht.laender"/>
     <div className="admin-lands mt-5" role="region" aria-label="Abdeckung je Land" tabIndex={0}><table><thead><tr><th>Land</th><th title={COL_HELP['Gebiete']}>Gebiete</th><th title={COL_HELP['Angebunden']}>Angebunden</th><th title={COL_HELP['Mit Berichten']}>Mit Berichten</th><th title={COL_HELP['Einwohner angebunden']}>Einwohner angebunden</th><th title={COL_HELP['Einwohner mit Berichten']}>Einwohner mit Berichten</th></tr></thead><tbody>{view.lands.map(l=><tr key={l.id}><th>{l.name}</th><td>{n(l.total[0])}</td><td><span className="admin-share"><i style={{width:pct(l.connected[0],l.total[0])}}/></span>{n(l.connected[0])} <small>{pct(l.connected[0],l.total[0],{digits:0})}</small></td><td><span className="admin-share is-data"><i style={{width:pct(l.data[0],l.total[0])}}/></span>{n(l.data[0])} <small>{pct(l.data[0],l.total[0],{digits:0})}</small></td><td>{pct(l.connected[1],l.total[1],{digits:0})} <small>{mio(l.connected[1])}</small></td><td>{pct(l.data[1],l.total[1],{digits:0})} <small>{mio(l.data[1])}</small></td></tr>)}</tbody><tfoot><tr><th>Deutschland</th><td>{n(data.total.areas)}</td><td>{n(data.connected.areas)} <small>{pct(data.connected.areas,data.total.areas,{digits:0})}</small></td><td>{n(data.data.areas)} <small>{pct(data.data.areas,data.total.areas,{digits:0})}</small></td><td>{pct(data.connected.population,data.total.population,{digits:0})}</td><td>{pct(data.data.population,data.total.population,{digits:0})}</td></tr></tfoot></table></div>
     {COLS_NOTE}
     <SectionTodo id="uebersicht.laender"/>
-   </section>
-   <section className="admin-section" aria-labelledby="groesse">
-    <SectionHead help="uebersicht.groesse" id="groesse"/>
+   </Abschnitt>
+    <Abschnitt id="groesse" open={false} title={HELP['uebersicht.groesse']?.title}>
+     <SectionHelp id="uebersicht.groesse"/>
     <div className="admin-lands mt-5" role="region" aria-label="Abdeckung je Größenklasse" tabIndex={0}><table><thead><tr><th>Einwohner je Gebiet</th><th title={COL_HELP['Gebiete']}>Gebiete</th><th title={COL_HELP['Angebunden']}>Angebunden</th><th title={COL_HELP['Mit Berichten']}>Mit Berichten</th><th title={COL_HELP['Einwohner angebunden']}>Einwohner angebunden</th><th title={COL_HELP['Einwohner mit Berichten']}>Einwohner mit Berichten</th></tr></thead><tbody>{data.analysis.sizes.filter(s=>s.total[0]).map(s=><tr key={s.id}><th>{s.label}</th><td>{n(s.total[0])}</td><td><span className="admin-share"><i style={{width:pct(s.connected[0],s.total[0])}}/></span>{n(s.connected[0])} <small>{pct(s.connected[0],s.total[0],{digits:0})}</small></td><td><span className="admin-share is-data"><i style={{width:pct(s.data[0],s.total[0])}}/></span>{n(s.data[0])} <small>{pct(s.data[0],s.total[0],{digits:0})}</small></td><td>{s.total[1]?<>{pct(s.connected[1],s.total[1],{digits:0})} <small>{mio(s.connected[1])}</small></>:'–'}</td><td>{s.total[1]?<>{pct(s.data[1],s.total[1],{digits:0})} <small>{mio(s.data[1])}</small></>:'–'}</td></tr>)}</tbody></table></div>
     {COLS_NOTE}
     <SectionTodo id="uebersicht.groesse"/>
-   </section>
+   </Abschnitt>
   </div>}
-  <section id="begriffe" className="admin-section" aria-labelledby="begriffe-h">
-   <div className="admin-section-heading"><h2 id="begriffe-h">{HELP['uebersicht.begriffe']?.title??'Begriffe'}</h2></div>
+   <Abschnitt id="begriffe" open={false} title={HELP['uebersicht.begriffe']?.title??'Begriffe'}>
    <SectionHelp id="uebersicht.begriffe"/>
    <dl className="m-0 mt-5 grid max-w-[820px] gap-y-4">{TERMS.map(t=><div key={t.term}><dt className="text-[14px] font-medium text-slate-900">{t.term}</dt><dd className="m-0 mt-0.5 text-[14px] text-slate-500">{t.text}</dd></div>)}</dl>
-  </section>
+   </Abschnitt>
  </>;
 }

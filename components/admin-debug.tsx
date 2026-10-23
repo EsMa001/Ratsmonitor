@@ -1,15 +1,17 @@
 'use client';
 import {useCallback,useEffect,useState} from 'react';
 import Link from 'next/link';
-import {AdminPageHead,Alert} from '@/components/admin-ui';
-import {Icon} from '@/components/admin-icons';
+import {AdminPageHead,Befund,Zahlen,Abschnitt,Aufklapp,Hinweis,Fehler,Laden,Leer,SteuernLink} from '@/components/admin-ui';
+import {ListRow} from '@/components/ratsmonitor/pages/analytics/ListRow';
+import {Segmented} from '@/components/ratsmonitor/components/Segmented';
 import {adminHref} from '@/components/admin-chrome';
 import {Glossary,StepList,Timeline,result,type Step,type FailRow,type Counter} from '@/components/admin-pipeline-parts';
 import {PHASES,stepName,CLASS_TERMS} from '@/shared/pipeline-terms.mjs';
 import {n,when,clock,dur} from '@/components/admin-format';
 
-/* Seite „Letzte Nacht“ (früher „Pipeline-Debug“; Route /api/admin/debug, server/integrations/pipeline-debug.mjs).
-   Liest nur gespeicherte Stände: wann lief was, was haben die Läufe getan, welchen Weg nahmen die Berichte. Den
+/* Seite „Letzte Nacht“ (früher „Pipeline-Debug“; Route /api/admin/debug, server/integrations/pipeline-debug.mjs), Muster des
+   einheitlichen Aufbaus (requirements/admin-konzept.md): Kopfband mit Kennzahl, Befund, Zahlen, Abschnitte, unten Begriffe und
+   Laufbuch. Liest nur gespeicherte Stände: wann lief was, was haben die Läufe getan, welchen Weg nahmen die Berichte. Den
    Fehlerspeicher zeigt die Seite „Fehler & Server“, den Altbestand die Seite „Altbestand“. Begriffe: shared/pipeline-terms.mjs. */
 type PdfRun={kind:string;startedAt:string;finishedAt:string;result:string;steps:Step[]};
 type RuleRun={startedAt:string;finishedAt:string;result:string;steps:Step[]};
@@ -26,118 +28,112 @@ type Data={at:string;boundary:string;since:string;units:{at:string;inactive:stri
 const IMPORT_STATE:Record<string,string>={completed:'gespeichert',partial:'teilweise gespeichert',failed:'gescheitert',deferred:'zurückgestellt',queued:'wartet',running:'läuft',unknown:'Ausgang unklar',unavailable:'ohne Quelle'};
 const AI_STATE:Record<string,string>={completed:'fertig',failed:'gescheitert',insufficient_source:'Quelle reicht nicht',processing:'in Arbeit',pending:'bereit',stale:'veraltet',waiting_text:'wartet auf Text',legacy:'frühere Fassung'};
 const words=(c:Counter,names:Record<string,string>)=>Object.entries(c).map(([k,v])=>`${n(v)} ${names[k]||k}`).join(', ');
-const H2=({icon,children}:{icon:string;children:React.ReactNode})=><h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name={icon} className="text-teal-600"/>{children}</h2>;
-const Lead=({children}:{children:React.ReactNode})=><p className="mt-1 max-w-[820px] text-[14px] text-slate-500">{children}</p>;
+const Sub=({children}:{children:React.ReactNode})=><p className="m-0 mt-1 text-[14px] text-slate-500">{children}</p>;
+/** Ein Lauf: Name, Zeit und Ausgang immer; die Schritte klappen auf. Rechts der Weg zur Steuerung */
+const Run=({title,job,note,children}:{title:string;job:string;note?:React.ReactNode;children?:React.ReactNode})=><Aufklapp title={title} note={note} aside={<SteuernLink job={job}/>}>{children}</Aufklapp>;
+const span=(r:{startedAt:string;finishedAt:string;result?:string})=>`${when(r.startedAt)} bis ${clock(r.finishedAt)}${r.result?', '+result(r.result):''}`;
 
 /** Weg der Berichte, nach Stufen: je Zeile Anzahl, Balken (Anteil an den geschriebenen) und was abzweigt */
 function Paths({w}:{w:Win}){
  const base=Math.max(1,w.written),inStore=(w.pdf.ok||0)+(w.pdf['text-only']||0),pdfFail=(w.pdf.error||0)+(w.pdf.unsupported||0);
+ // „Titel eingeordnet“ (Titelregel) entfällt seit dem Modell; read-reports liest nur Berichte mit Modellantwort
  const rows:[string,string,number,string][]=[
   ['abruf','Berichte geschrieben',w.written,`${n(w.noPdf)} davon ohne PDF`],
   ['abruf','mit PDF',w.withPdf,`${n(w.session)} nur mit Unterlage der ganzen Sitzung, ${n(w.noMain)} ohne erkennbares Hauptdokument`],
-  ['extraktion','Hauptdokument geladen',inStore,`${n(w.pdf['text-only'])} davon nur noch als Text (Grenze der Ablage); ${n(pdfFail)} gescheitert, ${n(w.pdf.none)} noch nicht versucht`],
+  ['extraktion','Hauptdokument geladen',inStore,`${n(w.pdf['text-only'])} nur noch als Text, ${n(pdfFail)} gescheitert, ${n(w.pdf.none)} noch nicht versucht`],
   ['extraktion','Text gelesen',w.text.ok||0,`${n(w.text.missing)} noch ohne Text, ${n(w.text.error)} nicht lesbar`],
-  ['extraktion','Text vollständig',(w.ocr.none||0)+(w.ocr.done||0),`${n(w.ocr.done)} per OCR ergänzt, ${n(w.ocr.waiting)} warten noch auf OCR`],
-  ['verarbeitung','Titel eingeordnet',w.label.yes||0,`${n(w.label.no)} ohne aktuelle Einordnung`],
-  ['verarbeitung','Regeln angewendet',w.rules.read||0,`${n(w.rules.stale)} mit älterem Stand, ${n(w.rules.never)} noch nie`],
-  ['verarbeitung','Regel-Zusammenfassung',w.summary.yes||0,''],
+  ['extraktion','Text vollständig',(w.ocr.none||0)+(w.ocr.done||0),`${n(w.ocr.done)} per OCR ergänzt, ${n(w.ocr.waiting)} warten auf OCR`],
+  ['verarbeitung','Modell und Regeln angewendet',w.rules.read||0,`${n(w.rules.stale)} mit älterem Stand, ${n(w.rules.never)} noch nie`],
+  ['verarbeitung','Zusammenfassung',w.summary.yes||0,''],
   ['verarbeitung','KI-Fassung',w.ai.completed||0,`${n(w.ai.other)} in Arbeit oder gescheitert, ${n(w.ai.none)} noch nicht bearbeitet`],
  ];
  const fails=Object.entries(w.failures||{});
- return <div className="mt-3 max-w-[1100px]">
-  {Object.entries(PHASES).map(([k,p])=><div key={k} className="mt-4"><p className="text-[12px] font-medium uppercase tracking-wide text-slate-500">{p.name}</p>
-   <ul className="m-0 mt-1 list-none space-y-2 p-0">{rows.filter(r=>r[0]===k).map(([,label,v,note])=><li key={label} className="grid grid-cols-1 gap-x-4 text-[14px] md:grid-cols-[220px_90px_minmax(0,1fr)]">
-    <span>{label}</span><span className="tabular-nums md:text-right">{n(v)}</span>
-    <span className="min-w-0"><span className="block h-3 rounded bg-slate-100"><i className="block h-3 rounded bg-teal-600" style={{width:`${Math.min(100,v/base*100)}%`}}/></span>{note&&<span className="mt-0.5 block text-[12px] text-slate-500">{note}</span>}</span>
-   </li>)}</ul></div>)}
-  {fails.length>0&&<p className="mt-4 text-[14px] text-slate-700">Davon im Fehlerspeicher (Hauptdokument): {fails.map(([k,v])=>`${n(v)} ${CLASS_TERMS[k as keyof typeof CLASS_TERMS]?.name||k}`).join(', ')}.</p>}
-  <p className="mt-1 text-[14px] text-slate-700">Abrufe in dieser Zeit (je Gebiet und Teil): {words(w.imports||{},IMPORT_STATE)||'keine'}.</p>
+ return <div className="max-w-[900px]">
+  {Object.entries(PHASES).map(([k,p])=><div key={k} className="mt-6"><p className="m-0 text-[12px] font-medium uppercase tracking-wide text-slate-500">{p.name}</p>
+   <ul className="m-0 list-none p-0">{rows.filter(r=>r[0]===k).map(([,label,v,note])=><ListRow key={label} title={label} sub={note||undefined} value={n(v)} valueSub={`${Math.round(v/base*100)} %`} bar={v/base*100} arrow={false}/>)}</ul></div>)}
+  <p className="mt-4 text-[14px] text-slate-500">{fails.length>0&&<>Im Fehlerspeicher (Hauptdokument): {fails.map(([k,v])=>`${n(v)} ${CLASS_TERMS[k as keyof typeof CLASS_TERMS]?.name||k}`).join(', ')}. </>}Abrufe je Gebiet und Teil: {words(w.imports||{},IMPORT_STATE)||'keine'}.</p>
  </div>;
 }
 
 export function AdminDebug(){
- const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[win,setWin]=useState('7d');
+ const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[win,setWin]=useState<'24h'|'7d'>('24h');
  const load=useCallback(async()=>{
   try{const r=await fetch('/api/admin/debug',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Die Seite konnte nicht geladen werden.');setData(d);setError('');}
   catch(e){setError(e instanceof Error?e.message:'Die Seite konnte nicht geladen werden.');}
  },[]);
  // Erster Abruf gleich nach dem Einhängen, danach jede Minute (nicht synchron im Effekt, react-hooks/set-state-in-effect)
  useEffect(()=>{const first=setTimeout(load,0),t=setInterval(load,60000);return ()=>{clearTimeout(first);clearInterval(t);};},[load]);
- const rows=data?.failures.rows||[],w=data?.trace?.windows?.[win];
+ const rows=data?.failures.rows||[],w=data?.trace?.windows?.[win],w24=data?.trace?.windows?.['24h'];
  const daily=rows.filter(r=>r.range==='daily').reduce((a,r)=>a+r.n,0),backlog=rows.filter(r=>r.range==='backlog').reduce((a,r)=>a+r.n,0);
  const nightRun=data?.pdfRuns.find(r=>r.kind==='nightly'),ocrRun=data?.pdfRuns.find(r=>r.kind==='ocr');
  const imp=data?.importJob;
+ // Läufe der letzten 24 Stunden aus dem Laufbuch: Kennzahl und Befund
+ const since=data?Date.parse(data.at)-864e5:0,runs=data?data.log.filter(r=>Date.parse(r.end||r.start)>=since):[];
+ const failed=runs.filter(r=>r.result==='failed').length,done=runs.filter(r=>r.result==='ok'||r.result==='done').length;
+ const unitsBad=!!data?.units&&(data.units.inactive.length>0||data.units.stale);
+ const befund=!data?null:!runs.length?'In den letzten 24 Stunden lief kein Job.'
+  :`${failed?`${n(failed)} von ${n(runs.length)} Läufen der letzten 24 Stunden hatten Fehler`:`Alle ${n(runs.length)} Läufe der letzten 24 Stunden sind ohne Fehler durchgelaufen`}${w24?.written?`; der Abruf hat ${n(w24.written)} Berichte geschrieben.`:'.'}${unitsBad?' Auf dem Server sind Auslöser ausgefallen.':''}`;
 
  return <>
-  <AdminPageHead page="nacht"/>
-  {error&&<Alert onRetry={load}>{error}</Alert>}
-  {data?.units&&(data.units.inactive.length>0||data.units.stale)&&<div role="alert" className="mt-4 max-w-[900px] rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-[14px] text-amber-900">
-   <strong>Auslöser auf dem Server:</strong>{' '}
-   {data.units.stale?<>der Zeitplaner hat sich seit {when(data.units.at)} nicht gemeldet; kein Job startet mehr.</>:<>inaktiv: {data.units.inactive.join(', ')}. Diese Jobs starten nie, bis jemand sie auf dem Server wieder einschaltet (<code>systemctl start {data.units.inactive.join(' ')}</code>). Jobs nur über „Anhalten“ stoppen, nie über <code>systemctl stop …timer</code>.</>}
-  </div>}
+  <AdminPageHead page="nacht" figure={data?{value:<>{n(done)}<span className="text-[22px] font-normal opacity-70"> / {n(runs.length)}</span></>,label:'Läufe fertig',note:'letzte 24 Stunden'}:undefined}/>
+  {error&&<Fehler onRetry={load}>{error}</Fehler>}
+  {!data&&!error&&<Laden/>}
+  {data&&<>
+   <Befund stand={<>Stand {when(data.at)} · aktualisiert sich jede Minute</>}>{befund}</Befund>
+   <Zahlen items={data.failures.missing?[{value:'–',label:'Fehlerspeicher fehlt (Migration 0040)'}]:[
+    {value:n(daily),label:'Fehler im Tagesbereich',href:adminHref('fehler')},
+    {value:n(backlog),label:'im Altbestand',href:adminHref('fehler')},
+    {value:n(data.hosts.length),label:'Server warten',href:adminHref('fehler')},
+    {value:n(data.internal.length),label:'Fehler im eigenen Code',href:adminHref('fehler')}]}/>
+   {unitsBad&&data.units&&<Hinweis><strong>Auslöser auf dem Server:</strong>{' '}
+    {data.units.stale?<>der Zeitplaner hat sich seit {when(data.units.at)} nicht gemeldet; kein Job startet mehr.</>:<>inaktiv: {data.units.inactive.join(', ')}. Diese Jobs starten nie, bis jemand sie auf dem Server wieder einschaltet (<code>systemctl start {data.units.inactive.join(' ')}</code>). Jobs nur über „Anhalten“ stoppen, nie über <code>systemctl stop …timer</code>.</>}</Hinweis>}
 
-  {data&&<section className="mt-6" aria-label="Fehlerspeicher">
-   <p className="max-w-[900px] text-[14px] text-slate-700"><Icon name="alert" size={16} className="mr-1 inline align-[-3px] text-teal-600"/>Fehlerspeicher: {data.failures.missing?'Migration 0040 fehlt.':<>{n(daily)} Einträge im Tagesbereich, {n(backlog)} im Altbestand{data.hosts.length?`, ${n(data.hosts.length)} Server warten`:''}{data.internal.length?`, ${n(data.internal.length)} Fehler im eigenen Code`:''}.</>} <Link href={adminHref('fehler')} className="text-teal-700">Fehler & Server →</Link></p>
-  </section>}
+   <Abschnitt title="Wann lief was" sub="Letzte 24 Stunden, je Job eine Zeile.">
+    {data.log.length?<Timeline at={data.at} jobs={data.jobs} log={data.log}/>:<Leer>Noch kein Lauf im Laufbuch. Es füllt sich, sobald die Jobs über den Zeitplaner laufen.</Leer>}
+   </Abschnitt>
 
-  <section className="mt-6" aria-label="Begriffe">
-   <H2 icon="report">So liest man diese Seite</H2>
-   <Lead>Jeder Bericht durchläuft drei Stufen. Was nachts nicht klappt, kommt mit seinem Grund in den Fehlerspeicher; die Nacharbeit versucht es tagsüber erneut, sobald der Grund es erlaubt. Ältere Dinge bearbeitet nur die Seite <Link href={adminHref('altbestand')} className="text-teal-700">Altbestand</Link>.</Lead>
-   {data&&<Glossary boundary={data.boundary} since={data.since}/>}
-  </section>
-
-  <section className="mt-10" aria-label="Zeitachse">
-   <H2 icon="clock">Wann lief was (letzte 24 Stunden)</H2>
-   {data&&(data.log.length?<Timeline at={data.at} jobs={data.jobs} log={data.log}/>:<Lead>Noch kein Lauf im Laufbuch. Es füllt sich, sobald die Jobs auf dem Server über den Zeitplaner laufen.</Lead>)}
-  </section>
-
-  <section className="mt-10" aria-label="Läufe">
-   <H2 icon="play">Was die letzten Läufe getan haben</H2>
-   <div className="mt-3 grid max-w-[1100px] gap-x-10 gap-y-8 md:grid-cols-2">
-    <div className="min-w-0">
-     <h3 className="text-[18px] font-semibold">Tagespipeline</h3>
-     <p className="mt-3 text-[14px] font-medium">Abruf</p>
-     {imp?<p className="text-[14px] text-slate-700">{when(imp.createdAt)}, {imp.window==='1d'?'1 Tag':imp.window} zurück: {words(imp.counts,IMPORT_STATE)}.{imp.status==='completed'?'':' Läuft oder wartet noch.'}</p>:<p className="text-[14px] text-slate-500">Kein Abruf vermerkt.</p>}
-     {imp?.deferred.length?<details className="mt-1 text-[14px]"><summary className="cursor-pointer text-teal-700">{n(imp.deferred.length)} Gebiete zurückgestellt (Quelle oder Server wartet)</summary><ul className="m-0 mt-1 list-none p-0 text-slate-700">{imp.deferred.map(d=><li key={d.region}>{d.region}: <span className="text-slate-500">{d.message}</span></li>)}</ul></details>:null}
-     <p className="mt-3 text-[14px] font-medium">Extraktion {nightRun&&<span className="font-normal text-slate-500">· {when(nightRun.startedAt)} bis {clock(nightRun.finishedAt)}, {result(nightRun.result)}</span>}</p>
-     {nightRun?<StepList steps={nightRun.steps}/>:<p className="text-[14px] text-slate-500">Noch kein Lauf von „Extraktion, nachts“ vermerkt.</p>}
-     <p className="mt-3 text-[14px] font-medium">Verarbeitung {data?.ruleTexts&&<span className="font-normal text-slate-500">· {when(data.ruleTexts.startedAt)} bis {clock(data.ruleTexts.finishedAt)}, {result(data.ruleTexts.result)}</span>}</p>
-     {data?.ruleTexts?<StepList steps={data.ruleTexts.steps}/>:<p className="text-[14px] text-slate-500">Noch kein Lauf vermerkt.</p>}
-     {data?.aiCounts&&<p className="mt-2 text-[14px] text-slate-700">KI (von Hand über den Agenten): {words(data.aiCounts.states,AI_STATE)||'noch nichts bearbeitet'}. {n(data.aiCounts.newText)} KI-Fassungen haben seitdem neuen Text bekommen, {n(data.aiCounts.withoutAi)} Berichte mit Regel-Zusammenfassung haben noch keine.</p>}
+   <Abschnitt title="Was die letzten Läufe getan haben" sub="Je Lauf Zeit und Ergebnis; ein Klick zeigt die Schritte. Starten und anhalten über die Steuerung.">
+    <div className="mt-2 grid max-w-[1100px] gap-x-12 gap-y-8 md:grid-cols-2">
+     <div className="min-w-0">
+      <p className="m-0 mt-4 text-[12px] font-medium uppercase tracking-wide text-slate-500">Tagespipeline, nachts</p>
+      <Run title="Abruf" job="import-nightly" note={imp?`${when(imp.createdAt)}, ${imp.window==='1d'?'1 Tag':imp.window} zurück${imp.status==='completed'?'':', läuft oder wartet'}`:'kein Abruf vermerkt'}>
+       {imp&&<><Sub>{words(imp.counts,IMPORT_STATE)}.</Sub>
+       {imp.deferred.length?<><Sub>{n(imp.deferred.length)} Gebiete zurückgestellt (Quelle oder Server wartet):</Sub><ul className="m-0 mt-1 list-none p-0 text-[14px] text-slate-700">{imp.deferred.map(d=><li key={d.region}>{d.region}: <span className="text-slate-500">{d.message}</span></li>)}</ul></>:null}</>}
+      </Run>
+      <Run title="Extraktion" job="pdf-nightly" note={nightRun?span(nightRun):'noch kein Lauf'}>{nightRun&&<StepList steps={nightRun.steps}/>}</Run>
+      <Run title="Verarbeitung" job="rule-texts" note={data.ruleTexts?span(data.ruleTexts):'noch kein Lauf'}>{data.ruleTexts&&<StepList steps={data.ruleTexts.steps}/>}</Run>
+      {data.aiCounts&&<Sub>KI (von Hand über den Agenten): {words(data.aiCounts.states,AI_STATE)||'noch nichts bearbeitet'}. {n(data.aiCounts.newText)} KI-Fassungen haben seitdem neuen Text bekommen, {n(data.aiCounts.withoutAi)} Berichte mit Zusammenfassung haben noch keine.</Sub>}
+     </div>
+     <div className="min-w-0">
+      <p className="m-0 mt-4 text-[12px] font-medium uppercase tracking-wide text-slate-500">Tagsüber</p>
+      <Run title="Nacharbeit" job="nacharbeit" note={data.nacharbeit?`${span(data.nacharbeit)}: ${n(data.nacharbeit.totals?.ok)} von ${n(data.nacharbeit.due)} gelungen`:'noch kein Lauf'}>
+       {data.nacharbeit&&<>
+        <Sub>{n(data.nacharbeit.due)} Einträge fällig, {n(data.nacharbeit.totals?.ok)} gelungen, {n(data.nacharbeit.totals?.again)} wieder gescheitert (neuer Termin), {n(data.nacharbeit.totals?.final)} ohne weiteren Versuch.</Sub>
+        <ul className="m-0 mt-2 list-none space-y-1 p-0 text-[14px]">{data.nacharbeit.steps.map(s=><li key={s.step} className="grid grid-cols-[150px_minmax(0,1fr)] gap-x-3"><span>{s.name||stepName(s.step)}</span>
+         <span className="text-slate-700">{s.skipped?`ausgelassen (${s.skipped})`:`${n(s.entries)} versucht: ${n(s.ok)} gelungen, ${n(s.again)} neuer Termin, ${n(s.final)} kein Versuch mehr${s.untouched?`, ${n(s.untouched)} nicht drangekommen`:''} · ${dur(s.seconds)}`}</span></li>)}</ul>
+        {data.nacharbeit.followUp?.length?<Sub>Danach gleich weiter: {data.nacharbeit.followUp.map(f=>`${f.step} (nach ${f.after})`).join(', ')}.{data.nacharbeit.readyForAi?` ${n(data.nacharbeit.readyForAi)} Berichte stehen damit für die KI bereit.`:''}</Sub>:null}
+       </>}
+      </Run>
+      <Run title="OCR" job="ocr" note={ocrRun?span(ocrRun):'noch kein Lauf mit gelesenen Dateien'}>{ocrRun&&<StepList steps={ocrRun.steps}/>}</Run>
+      <Run title="Altbestand" job="altbestand" note={[data.altbestand.last?span(data.altbestand.last):'noch kein Lauf',data.altbestand.importOpen&&'Abruf angefordert',data.altbestand.reworkOpen&&'alte Fehler werden erneut versucht',data.altbestand.ocrOpen&&'OCR angefordert'].filter(Boolean).join(' · ')}/>
+     </div>
     </div>
-    <div className="min-w-0">
-     <h3 className="text-[18px] font-semibold">Nacharbeit</h3>
-     {data?.nacharbeit?<>
-      <p className="mt-2 text-[14px] text-slate-700">{when(data.nacharbeit.startedAt)} bis {clock(data.nacharbeit.finishedAt)}: {n(data.nacharbeit.due)} Einträge fällig, {n(data.nacharbeit.totals?.ok)} gelungen, {n(data.nacharbeit.totals?.again)} wieder gescheitert (neuer Termin), {n(data.nacharbeit.totals?.final)} ohne weiteren Versuch.</p>
-      <ul className="m-0 mt-2 list-none space-y-1 p-0 text-[14px]">{data.nacharbeit.steps.map(s=><li key={s.step} className="grid grid-cols-[150px_minmax(0,1fr)] gap-x-3"><span>{s.name||stepName(s.step)}</span>
-       <span className="text-slate-700">{s.skipped?`ausgelassen (${s.skipped})`:`${n(s.entries)} versucht: ${n(s.ok)} gelungen, ${n(s.again)} neuer Termin, ${n(s.final)} kein Versuch mehr${s.untouched?`, ${n(s.untouched)} nicht drangekommen`:''} · ${dur(s.seconds)}`}</span></li>)}</ul>
-      {data.nacharbeit.followUp?.length?<p className="mt-2 text-[14px] text-slate-700">Danach gleich weiter: {data.nacharbeit.followUp.map(f=>`${f.step} (nach ${f.after})`).join(', ')}.{data.nacharbeit.readyForAi?` ${n(data.nacharbeit.readyForAi)} Berichte stehen damit für die KI bereit.`:''}</p>:null}
-     </>:<p className="mt-2 text-[14px] text-slate-500">Noch kein Lauf.</p>}
-     <p className="mt-4 text-[14px] font-medium">OCR, tagsüber {ocrRun&&<span className="font-normal text-slate-500">· {when(ocrRun.startedAt)} bis {clock(ocrRun.finishedAt)}, {result(ocrRun.result)}</span>}</p>
-     {ocrRun?<StepList steps={ocrRun.steps}/>:<p className="text-[14px] text-slate-500">Noch kein Lauf mit gelesenen Dateien (Läufe ohne Arbeit stehen nicht im Protokoll).</p>}
-     <h3 className="mt-8 text-[18px] font-semibold">Altbestand</h3>
-     <p className="mt-2 text-[14px] text-slate-700">{data?.altbestand.importOpen?'Rückwirkender Abruf angefordert. ':''}{data?.altbestand.reworkOpen?'Alte Fehler werden erneut versucht. ':''}{data?.altbestand.ocrOpen?'OCR des Altbestands angefordert. ':''}
-      {data?.altbestand.last?`Letzter Lauf ${when(data.altbestand.last.startedAt)} bis ${clock(data.altbestand.last.finishedAt)}.`:'Noch kein Lauf.'} <Link href={adminHref('altbestand')} className="text-teal-700">Zur Seite Altbestand →</Link></p>
-    </div>
-   </div>
-  </section>
+   </Abschnitt>
 
-  <section className="mt-10" aria-label="Wege der Berichte">
-   <H2 icon="report">Welchen Weg die Berichte genommen haben</H2>
-   <Lead>Alle Berichte, die der Abruf im gewählten Zeitraum geschrieben hat, und wie weit jeder gekommen ist. Je Bericht zählt sein Hauptdokument; die Anlagen liest die KI zusätzlich.</Lead>
-   <div className="mt-2 flex flex-wrap items-center gap-4 text-[14px]" role="radiogroup" aria-label="Zeitraum">
-    {[['24h','letzte 24 Stunden'],['7d','letzte 7 Tage']].map(([k,l])=><label key={k} className="flex cursor-pointer items-center gap-2"><input type="radio" name="debug-win" id={'debug-win-'+k} checked={win===k} onChange={()=>setWin(k)}/>{l}</label>)}
-   </div>
-   {data?.trace?<p className="mt-1 text-[12px] text-slate-500">Gezählt {when(data.trace.at)} in {dur(data.trace.seconds)}, am Ende von „Verarbeitung, nachts“.</p>
-    :<Lead>Noch keine Zählung. Sie entsteht am Ende von „Verarbeitung, nachts“.</Lead>}
-   {w&&(w.written?<Paths w={w}/>:<p className="mt-3 text-[14px] text-slate-500">In diesem Zeitraum hat der Abruf keine Berichte geschrieben.</p>)}
-  </section>
+   <Abschnitt id="nacht-wege" open={false} title="Welchen Weg die Berichte genommen haben" sub={data.trace?<>Alle Berichte, die der Abruf im Zeitraum geschrieben hat, und wie weit jeder gekommen ist. Je Bericht zählt sein Hauptdokument. Gezählt {when(data.trace.at)} am Ende von „Verarbeitung, nachts“.</>:'Noch keine Zählung. Sie entsteht am Ende von „Verarbeitung, nachts“.'}
+    aside={<Segmented label="Zeitraum" value={win} onPick={setWin} options={[['24h','24 Stunden'],['7d','7 Tage']]}/>}>
+    {w&&(w.written?<Paths w={w}/>:<Leer>In diesem Zeitraum hat der Abruf keine Berichte geschrieben.</Leer>)}
+   </Abschnitt>
 
-  {data&&<section className="mt-10" aria-label="Laufbuch">
-   <details className="max-w-[1100px]"><summary className="cursor-pointer text-[22px] font-semibold">Laufbuch des Zeitplaners</summary>
+   <section className="mt-12 max-w-[1100px] space-y-4 border-t border-slate-200 pt-6" aria-label="Begriffe und Laufbuch">
+    <details><summary className="cursor-pointer text-[16px] font-semibold">So liest man diese Seite</summary>
+     <Sub>Jeder Bericht durchläuft drei Stufen. Was nachts nicht klappt, kommt mit seinem Grund in den Fehlerspeicher; die Nacharbeit versucht es tagsüber erneut, sobald der Grund es erlaubt. Ältere Dinge bearbeitet nur die Seite <Link href={adminHref('altbestand')} className="text-teal-700">Altbestand</Link>.</Sub>
+     <Glossary boundary={data.boundary} since={data.since}/></details>
+    <details><summary className="cursor-pointer text-[16px] font-semibold">Laufbuch des Zeitplaners</summary>
     <table className="mt-2 w-full border-collapse text-[14px]"><thead><tr className="border-b border-slate-200 text-left text-slate-500"><th className="py-1 pr-3 font-normal">Job</th><th className="pr-3 font-normal">Start</th><th className="pr-3 font-normal">Ende</th><th className="pr-3 text-right font-normal">Dauer</th><th className="pr-3 font-normal">Ergebnis</th><th className="font-normal">Anlass</th></tr></thead>
      <tbody>{data.log.slice(0,120).map(r=><tr key={r.job+r.start} className="border-b border-slate-100"><td className="py-1 pr-3">{data.jobs.find(j=>j.id===r.job)?.label||r.job}</td><td className="pr-3 tabular-nums">{when(r.start)}</td><td className="pr-3 tabular-nums">{clock(r.end)}</td><td className="pr-3 text-right tabular-nums">{dur(r.seconds)}</td><td className="pr-3">{result(r.result)}</td><td>{r.trigger==='plan'?'Zeitplan':r.trigger==='jetzt'?'Knopf':'von Hand'}</td></tr>)}</tbody></table>
-   </details>
-  </section>}
+    </details>
+   </section>
+  </>}
  </>;
 }

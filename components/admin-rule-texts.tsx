@@ -7,7 +7,7 @@
 import {isStep} from '@/shared/pipeline-terms.mjs';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {StandLine} from '@/components/admin-stand';
-import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
+import {AdminPageHead,Befund,Zahlen,Abschnitt,Fehler,Kpis,SteuernLink} from '@/components/admin-ui';
 import type {Stand} from '@/shared/admin-types';
 import {THEMES,SUBTOPICS} from '@/shared/themes.mjs';
 import QUALITY from '@/shared/rule-quality.json';
@@ -135,20 +135,13 @@ export function AdminRuleTexts(){
   finally{setBusy(false);}
  },[]);
  useEffect(()=>{const t=setTimeout(load,0);return ()=>clearTimeout(t);},[load]);
- /* Job „Themen & Texte“ (scripts/rule-texts.mjs) über die Zeitpläne: Stand, letzter Lauf, sofort starten */
- const [job,setJob]=useState<JobState|null>(null),[jobError,setJobError]=useState(''),[asking,setAsking]=useState(false);
+ /* Job „Verarbeitung, nachts“ (scripts/rule-texts.mjs) über die Zeitpläne: Stand und letzter Lauf; gestartet wird in der Steuerung */
+ const [job,setJob]=useState<JobState|null>(null),[jobError,setJobError]=useState('');
  const loadJob=useCallback(async()=>{
   try{const r=await fetch('/api/admin/zeitplaene',{cache:'no-store'});const d=await r.json() as {jobs?:(JobState&{id:string})[];error?:string};if(!r.ok)throw Error(d.error||'Der Job konnte nicht geladen werden.');setJob(d.jobs?.find(j=>j.id==='rule-texts')||null);setJobError('');}
   catch(e){setJobError(e instanceof Error?e.message:'Der Job konnte nicht geladen werden.');}
  },[]);
  useEffect(()=>{const t=setTimeout(loadJob,0);return ()=>clearTimeout(t);},[loadJob]);
- const start=async(all=false)=>{
-  if(!window.confirm(all?'Alle Berichte neu einordnen und Zusammenfassungen, Fakten und Wortliste neu erstellen? Das dauert deutlich länger als ein normaler Lauf; gespeicherte Einbettungen werden wiederverwendet.':'Modell anwenden, Zusammenfassungen, Fakten und Wortliste jetzt erstellen? Der Job startet sofort.'))return;
-  setAsking(true);
-  try{const r=await fetch('/api/admin/zeitplaene',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:all?'all':'now',id:'rule-texts'})});const d=await r.json() as {error?:string};if(!r.ok)throw Error(d.error||'Das ging nicht.');await loadJob();}
-  catch(e){setJobError(e instanceof Error?e.message:'Das ging nicht.');}
-  finally{setAsking(false);}
- };
  const running=!!job?.run?.running,requested=!!job?.now&&(!job.run?.lastStart||job.now>job.run.lastStart);
  useEffect(()=>{const t=setInterval(loadJob,running||requested?5000:60000);return ()=>clearInterval(t);},[loadJob,running,requested]);
  const c=data?.counts,ai=c?.aiSummaries??0,rule=c?.ruleSummaries??0,docs=c?.pdfArticles??0;
@@ -173,22 +166,16 @@ export function AdminRuleTexts(){
  const factRows=FACT_ROWS.filter(r=>VALUE_FACTS.has(r.id));
  /* Fenster mit allen Antworten der angeklickten Frage */
  const [shown,setShown]=useState<typeof QUESTIONS[number]|null>(null);
- return <>
-  <AdminPageHead page="regeltexte"><StandLine stand={data?.stand} busy={busy} action="Aktualisieren" onAction={load}/></AdminPageHead>
-  {error&&<Alert onRetry={load}>{error}</Alert>}
-  <section id="regeltexte-modell" className="admin-section">
-   <div className="admin-section-heading"><h2>Modell</h2></div>
-   <p className="admin-note">Das Modell ordnet jeden Bericht ein: worum es geht, was für ein Vorgang es ist und wie er ausgegangen ist. Es läuft auf unserem Server, ohne fremden Dienst, und hat die früheren Regeln für Art, Thema, „Was geschieht“, Dokumente, Signale und die Auswahl der Sätze für die Zusammenfassung abgelöst. Fakten bleiben Regeln.</p>
-   <h3 className="mt-6">So arbeitet es</h3>
-   <ol className="m-0 mt-2 list-none space-y-3 p-0 text-[14px] text-slate-700">
-    <li><span className="font-medium text-slate-900">1. Lesen.</span> Je Bericht der Titel mit Gremium, die Ergebnisse der Sitzungen und von jedem PDF der Name, die erste Seite und der Beschlussvorschlag. Den übrigen Text liest es nicht.</li>
-    <li><span className="font-medium text-slate-900">2. Verstehen.</span> Ein Sprachmodell (multilingual-e5-small, mit unseren Beispielen nachtrainiert) macht aus jedem Text eine Reihe von 384 Zahlen, die seine Bedeutung beschreiben: „Kläranlage sanieren“ und „Erneuerung des Klärwerks“ liegen nah beieinander, auch ohne gemeinsames Wort.</li>
-    <li><span className="font-medium text-slate-900">3. Entscheiden.</span> Für jede Frage ein kleiner Entscheider („Kopf“), gelernt an rund 5.000 Berichten, die nach dem Begriffsbuch eingeordnet sind. Er nutzt die Zahlen und die Wörter selbst und gibt zu jeder Antwort an, wie sicher er ist. Ab 0,7 gilt die Antwort als sicher; ein unsicheres Thema bleibt offen („Sonstiges“), statt geraten zu werden.</li>
-   </ol>
-   <p className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-[14px] leading-snug text-slate-700"><span className="font-medium text-slate-900">Beispiel:</span> „Bebauungsplan Nr. 12 ‚Am Bach‘ – Satzungsbeschluss“ im Rat → Sachpunkt · Bauen &amp; Wohnen, Bauleitplanung, Wohnen · Planung und Regelung · Schritt Beschluss · konkretes Vorhaben · Hauptdokument die Vorlage. Daraus folgen Suche, Kartenthema, Signal „Neue Wohnbaugebiete“ und der Stand im Atlas.</p>
-   <p className="admin-note mt-3">Ohne Auszug aus der Vorlage zeigen Artikel und Trefferliste einen Überblick, der aus den Antworten des Modells, den Sitzungen und der Dokumentliste entsteht (shared/model/overview.mjs), etwa: „Antrag einer Fraktion (SPD) zum Thema Straßen, Brücken und Beleuchtung (Mobilität &amp; Verkehr). Am 03.09.26 im Gremium „Bauausschuss“ empfohlen, am 01.10.26 im Gremium „Rat“ beschlossen. Unterlagen: Vorlage und zwei Anlagen.“ Er nennt nur sichere Antworten und übernimmt nichts aus dem Text.</p>
-   <p className="admin-note mt-3">Was jede Antwort genau bedeutet, steht im Begriffsbuch (requirements/begriffsbuch-kern.md), Aufbau und Messung im Konzept (requirements/modell-konzept.md). Neue Kategorien entstehen dort und mit neuen Beispielen, nicht durch Einzelregeln.</p>
-   <h3 className="mt-6">Wie gut es ist</h3>
+  const okCount=QUESTIONS.filter(qn=>(MQ[qn.key]?.acc??0)>=GOAL).length;
+  const befund=`${okCount} von ${QUESTIONS.length} Fragen des Modells erreichen ${GOAL} % Genauigkeit.`+(job?.run?.lastStart?` Letzter Lauf ${when(job.run.lastStart)}: ${ms?.done!==undefined?n(ms.done)+' Berichte eingeordnet, ':''}${RESULT[job.run.result||'']||'–'}.`:'');
+  return <>
+   <AdminPageHead page="regeltexte" figure={{value:<>{okCount}<span className="text-[22px] font-normal opacity-70"> / {QUESTIONS.length}</span></>,label:`Fragen über ${GOAL} %`}}/>
+   {error&&<Fehler onRetry={load}>{error}</Fehler>}
+   {jobError&&<Fehler onRetry={loadJob}>{jobError}</Fehler>}
+   <Befund stand={<><StandLine stand={data?.stand} busy={busy} action="Aktualisieren" onAction={load}/>{' '}<SteuernLink job="rule-texts"/></>}>{befund}</Befund>
+   <Zahlen items={[...run.filter(k=>k.value!==undefined&&k.value!=='–').map(k=>({value:k.value as React.ReactNode,label:k.label})),...(facts?[{value:n(facts.reports),label:'Berichte mit Fakten'}]:[])]}/>
+
+   <Abschnitt id="regeltexte-modell" title="Wie gut das Modell ist" sub="Je Frage Genauigkeit und Abdeckung aus der Prüfmenge; ein Klick auf den Namen zeigt alle möglichen Antworten.">
    <p className="mt-3 text-[14px] text-slate-700">Encoder <span className="font-medium text-slate-900">{MANIFEST.encoder.version}</span> · Köpfe <span className="font-medium text-slate-900">{MANIFEST.heads.version}</span> · gelernt {day(MANIFEST.heads.trainedAt)} · gemessen {day(MODEL_QUALITY.measuredAt)}</p>
    <p className="admin-note mt-1">Ein Klick auf den Namen einer Frage zeigt alle möglichen Antworten. Genauigkeit: so oft stimmt die Antwort. Abdeckung (bei Listen wie Thema): so oft findet es das Richtige überhaupt. Sicher: Anteil der Antworten ab 0,7 und wie oft diese stimmen. Gemessen an {MODEL_QUALITY.sample}, die das Modell beim Lernen nicht gesehen hat. {MODEL_QUALITY.note} Ziel {GOAL} %.</p>
    <ul className="m-0 mt-4 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{QUESTIONS.map(qn=>{const q=MQ[qn.key];return <li key={qn.key} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
@@ -199,33 +186,39 @@ export function AdminRuleTexts(){
     <Meter label="Genauigkeit" v={q?.acc} min={GOAL}/>
     {qn.list?<Meter label="Abdeckung" v={q?.cov} min={QUALITY.target.coverage}/>:qn.sure?<Meter label="Sicher richtig" v={q?.sureAcc} min={GOAL}/>:<div/>}
    </li>;})}</ul>
-  </section>
-  <ValuesDialog q={shown} onClose={()=>setShown(null)}/>
-  <section id="regeltexte-job" className="admin-section">
-   <div className="admin-section-heading"><h2>Lauf</h2></div>
-   <p className="admin-note">Nachts nach der PDF-Kette: Modell anwenden, Zusammenfassung und Fakten, Wortliste der Suche, Zahlen für plenara.X.</p>
-   {jobError&&<Alert onRetry={loadJob}>{jobError}</Alert>}
+   </Abschnitt>
+   <ValuesDialog q={shown} onClose={()=>setShown(null)}/>
+
+   <Abschnitt id="regeltexte-so" open={false} title="So arbeitet das Modell" sub="Lesen, verstehen, entscheiden; mit Beispiel und Verweis auf Begriffsbuch und Konzept.">
+   <p className="admin-note">Das Modell ordnet jeden Bericht ein: worum es geht, was für ein Vorgang es ist und wie er ausgegangen ist. Es läuft auf unserem Server, ohne fremden Dienst, und hat die früheren Regeln für Art, Thema, „Was geschieht“, Dokumente, Signale und die Auswahl der Sätze für die Zusammenfassung abgelöst. Fakten bleiben Regeln.</p>
+   <ol className="m-0 mt-2 list-none space-y-3 p-0 text-[14px] text-slate-700">
+    <li><span className="font-medium text-slate-900">1. Lesen.</span> Je Bericht der Titel mit Gremium, die Ergebnisse der Sitzungen und von jedem PDF der Name, die erste Seite und der Beschlussvorschlag. Den übrigen Text liest es nicht.</li>
+    <li><span className="font-medium text-slate-900">2. Verstehen.</span> Ein Sprachmodell (multilingual-e5-small, mit unseren Beispielen nachtrainiert) macht aus jedem Text eine Reihe von 384 Zahlen, die seine Bedeutung beschreiben: „Kläranlage sanieren“ und „Erneuerung des Klärwerks“ liegen nah beieinander, auch ohne gemeinsames Wort.</li>
+    <li><span className="font-medium text-slate-900">3. Entscheiden.</span> Für jede Frage ein kleiner Entscheider („Kopf“), gelernt an rund 5.000 Berichten, die nach dem Begriffsbuch eingeordnet sind. Er nutzt die Zahlen und die Wörter selbst und gibt zu jeder Antwort an, wie sicher er ist. Ab 0,7 gilt die Antwort als sicher; ein unsicheres Thema bleibt offen („Sonstiges“), statt geraten zu werden.</li>
+   </ol>
+   <p className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-[14px] leading-snug text-slate-700"><span className="font-medium text-slate-900">Beispiel:</span> „Bebauungsplan Nr. 12 ‚Am Bach‘ – Satzungsbeschluss“ im Rat → Sachpunkt · Bauen &amp; Wohnen, Bauleitplanung, Wohnen · Planung und Regelung · Schritt Beschluss · konkretes Vorhaben · Hauptdokument die Vorlage. Daraus folgen Suche, Kartenthema, Signal „Neue Wohnbaugebiete“ und der Stand im Atlas.</p>
+   <p className="admin-note mt-3">Ohne Auszug aus der Vorlage zeigen Artikel und Trefferliste einen Überblick, der aus den Antworten des Modells, den Sitzungen und der Dokumentliste entsteht (shared/model/overview.mjs), etwa: „Antrag einer Fraktion (SPD) zum Thema Straßen, Brücken und Beleuchtung (Mobilität &amp; Verkehr). Am 03.09.26 im Gremium „Bauausschuss“ empfohlen, am 01.10.26 im Gremium „Rat“ beschlossen. Unterlagen: Vorlage und zwei Anlagen.“ Er nennt nur sichere Antworten und übernimmt nichts aus dem Text.</p>
+   <p className="admin-note mt-3">Was jede Antwort genau bedeutet, steht im Begriffsbuch (requirements/begriffsbuch-kern.md), Aufbau und Messung im Konzept (requirements/modell-konzept.md). Neue Kategorien entstehen dort und mit neuen Beispielen, nicht durch Einzelregeln.</p>
+   </Abschnitt>
+
+   <Abschnitt id="regeltexte-job" open={false} title="Letzter Lauf" sub="Nachts nach der PDF-Kette: Modell anwenden, Zusammenfassung und Fakten, Suche aktualisieren, Zahlen für plenara.X.">
    <ul className="m-0 mt-4 list-none space-y-1.5 p-0 text-[14px] text-slate-700">
     <li>{running?`Läuft seit ${when(job?.run?.running?.startedAt)}.`:requested?'Start angefordert …':job?.run?.lastStart?`Zuletzt ${when(job.run.lastStart)}${job.last?.all?' (alle neu)':''}, ${RESULT[job.run.result||'']||'–'}, ${dur(job.run.seconds)}.`:job?'Noch nicht gelaufen.':'–'}
-     {job&&(job.setting.enabled?` Nächster Start ${when(job.next)} (täglich ${job.setting.time} Uhr, einstellbar unter Jobs & Zeitpläne).`:' Zeitplan ausgeschaltet (Jobs & Zeitpläne).')}</li>
+     {job&&(job.setting.enabled?` Nächster Start ${when(job.next)} (täglich ${job.setting.time} Uhr, einstellbar in der Steuerung).`:' Zeitplan ausgeschaltet (Steuerung).')}</li>
     {job?.last?.steps.map(st=><li key={st.name}><span className="text-slate-500">{st.name}: </span>{stepNote(st)}, {dur(st.seconds)}</li>)}
    </ul>
-   <div className="mt-6"><Kpis label="Kennzahlen des letzten Laufs" items={run}/></div>
-   <button type="button" className="mt-4 inline-flex h-10 items-center rounded-full bg-teal-700 px-5 text-[14px] font-medium text-white hover:bg-teal-800 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start()}>Jetzt erstellen →</button>
-   <button type="button" className="ml-3 mt-4 inline-flex h-10 items-center rounded-full px-5 text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start(true)}>Alle neu erstellen →</button>
-   <p className="mt-2 text-[12px] text-slate-500">„Jetzt erstellen“: nur neue und geänderte Berichte. „Alle neu erstellen“: alle Berichte, etwa nach einem neuen Modell.{job?.all&&requested?' Neu erstellen angefordert.':''}</p>
-  </section>
-  <section id="regeltexte-themen" className="admin-section">
-   <div className="admin-section-heading"><h2>Themen</h2></div>
-   <p className="admin-note">Anteil der Sachvorgänge je Thema (Ablauf und Personalien zählen nicht), darunter die Unterthemen; ein Vorgang kann mehrere Unterthemen haben. Gezählt am Ende jedes Laufs{job?.last?.finishedAt?', zuletzt '+when(job.last.finishedAt):''}.</p>
+    <div className="mt-6"><Kpis label="Kennzahlen des letzten Laufs" items={run}/></div>
+   </Abschnitt>
+
+   <Abschnitt id="regeltexte-themen" open={false} title="Themen" sub="Anteil der Sachvorgänge je Thema und ihre Unterthemen, gezählt am Ende jedes Laufs.">
    {!themeRows.length?<p className="admin-empty">Nach dem nächsten Lauf von „Verarbeitung, nachts“.</p>:<div className="mt-4">{themeRows.map(([id,v])=><div key={id} className="admin-bar-row">
     <div><span>{THEME_NAME[id]||id}</span><span>{pct(v,themeTotal)} · {n(v)}</span></div>
     <div className="admin-bar"><span style={{width:(100*v/themeTotal)+'%'}}/></div>
     {id!=='unklar'&&<small className="mt-1 block text-[12px] text-slate-500">{subsOf(id).map((u:{name:string;n:number})=>u.name+' '+pct(u.n,v)).join(' · ')}</small>}
    </div>)}</div>}
-  </section>
-  <section id="regeltexte-regeln" className="admin-section">
-   <div className="admin-section-heading"><h2>Regeln, die bleiben</h2></div>
+   </Abschnitt>
+
+   <Abschnitt id="regeltexte-regeln" open={false} title="Regeln, die bleiben" sub="Regeln lesen Werte aus dem Text oder schlagen nach; was eingeordnet wird, macht das Modell.">
    <p className="admin-note">Regeln lesen Werte aus dem Text oder schlagen nach; was eingeordnet wird, macht das Modell. Qualität aus der letzten ungesehenen Stichprobe (shared/rule-quality.json). Die abgelösten Regeln für Art, Thema, „Was geschieht“, Hauptdokument und Signale stehen noch im Code, laufen aber nicht mehr.</p>
    <ul className="m-0 mt-4 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{KEPT_RULES.map(k=>{const r=ALL_RULE_ROWS.find(x=>x.id===k.id);return <li key={k.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
     <div className="min-w-0">
@@ -236,11 +229,11 @@ export function AdminRuleTexts(){
     <Meter label="Qualität" v={r?.quality} min={GOAL}/>
     <div/>
    </li>;})}</ul>
-  </section>
-  <section id="regeltexte-texte" className="admin-section">
-   <div className="admin-section-heading"><h2>Zusammenfassung und Fakten</h2></div>
+   </Abschnitt>
+
+   <Abschnitt id="regeltexte-texte" open={false} title="Zusammenfassung und Fakten" sub="Kernsätze des Hauptdokuments und Werte für plenara.X Fakten, mit Messung.">
    <p className="admin-note">Beides liest den Text des Hauptdokuments, das das Modell wählt. Die Zusammenfassung besteht aus wörtlichen Sätzen des Dokuments: das Modell wählt die Kernsätze (Kurzfassung ein bis zwei, Langfassung bis sechs Sätze), nur bei Sachpunkten. Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst diese. Fakten sind an das Modell gebunden: ein Wert zählt nur bei passendem Unterthema (Hebesatz bei Steuern und Haushalt, Gebühren bei Wasser und Abwasser, Bebauungsplan bei Bauleitplanung und Erschließung; shared/model/fact-gate.mjs). So fallen Vergleichs- und Hintergrundwerte weg, etwa ein Bebauungsplan in einem Bauantrag.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen und Fakten" items={sum}/></div>
+    <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen und Fakten" items={sum}/></div>
    <h3 className="mt-6">Kernsätze: Modell und frühere Regel</h3>
    <p className="admin-note mt-1">Gemessen an {SUMMARY_QUALITY.model.n} Prüfberichten ({SUMMARY_QUALITY.version}, {day(SUMMARY_QUALITY.measuredAt)}), die das Modell nicht gelernt hat; Vergleich ist die Auswahl von Hand nach Begriffsbuch Abschnitt 12. Die Zahlen sind eher zu günstig, weil Lern- und Prüfberichte aus derselben Stichprobe stammen.</p>
    <ul className="m-0 mt-2 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{SUMMARY_ROWS.map(r=><li key={r.key} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
@@ -259,6 +252,6 @@ export function AdminRuleTexts(){
     <Meter label="Qualität" v={r.quality} min={GOAL}/>
     {xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={10}/>:<div/>}
    </li>)}</ul>
-  </section>
- </>;
+   </Abschnitt>
+  </>;
 }

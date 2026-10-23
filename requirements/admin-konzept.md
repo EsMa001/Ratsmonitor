@@ -139,6 +139,15 @@ Kein Treffer gab es zu Stichwörtern, Themenradaren, Förderung, Kita-Plätzen, 
 
 ## Teil B: Konzept
 
+### B0. Ziel
+
+Der Admin-Bereich soll fast keine Arbeit machen. Alles läuft von selbst, und wir sehen nur nach, wenn etwas zu tun ist.
+
+- **Benachrichtigungen statt Nachsehen.** Was Handeln braucht, kommt per Mail: die Fehlermail je Einheit, die tägliche Betriebsprüfung (Job `betrieb`) und `/api/health` für einen Uptime-Dienst. Neue Warnungen gehören dorthin, nicht nur auf eine Seite.
+- **Erst die Antwort, dann die Tiefe.** Jede Seite sagt oben in einem Satz, ob alles in Ordnung ist oder was Aufmerksamkeit braucht. Dazu kommt eine Kennzahl im Kopfband und eine Zeile mit Zahlen. Alles Weitere ist aufklappbar: Abschnitte, die man nicht auf den ersten Blick braucht, Schritte eines Laufs, Listen, Protokolle, Begriffe und Methodik.
+- **Das Cockpit beantwortet „Muss ich etwas tun?“.** Bei Normalbetrieb ist es ruhig. Erscheint dort ein Hinweis, führt ein Link zur Seite, auf der man ihn versteht, und zur Steuerung, auf der man ihn behebt.
+- **Aufgeklappt bleibt, was man aufgeklappt hat.** Die Seite merkt sich je Betrachter, welche Abschnitte offen sind (nur im Browser).
+
 ### B1. Grundsätze
 1. **Jede Seite beantwortet eine Frage.** Das ist die Leitfrage im Menü. Die Seite beginnt mit der Antwort (Kennzahlen, Status) und endet mit den Details.
 2. **Jede Zahl hat eine Heimatseite.** Andere Seiten zeigen die Zahl höchstens als Kachel mit Link dorthin, nie als eigenen Abschnitt. Zum Beispiel gehört der freie Platz zu Speicher, Fehler und Server zu Fehler & Server, der Lauf und die Knöpfe der Verarbeitung zu Themen & Texte.
@@ -439,3 +448,25 @@ Die Mobilansicht `?seite=mobil` bleibt: Kopf mit Stand, drei Kacheln aus `withVg
   - Uhrzeiten stehen überall in Berliner Zeit.
   - Bei fehlendem Wert steht „–“ statt „—“.
 - **Eigene Formate behalten:** Das Prozentformat in `admin-rule-texts.tsx` passt seine Nachkommastellen an. Die Hochrechnung hat ein eigenes Format für Anteile (`pct`) und für Speichergrößen (`bytes`).
+- **Schritt 3, erster Teil (23.10.2026), noch nicht committet.**
+  - Neue Bausteine in `admin-ui.tsx`:
+    - `AdminPageHead` mit `figure` (schmales Band wie auf plenara.X),
+    - `Befund`, `Zahlen`, `Abschnitt` (mit `open`, merkt sich offen oder zu je Betrachter),
+    - `Aufklapp`, `Hinweis`, `Fehler`, `Leer`, `Laden`, `SteuernLink`.
+  - Die Einleitung jeder Seite steht unten unter „Über diese Seite“.
+  - Umgestellt sind:
+    - Letzte Nacht, Cockpit („Muss ich etwas tun?“), Fehler & Server, Speicher & Sicherungen,
+    - Steuerung (bisher Jobs & Zeitpläne; nach Ablauf gruppiert, darin die Aufträge von Altbestand und PDF-Ablage sowie „Alle neu erstellen“),
+    - Altbestand und PDF-Import (lesen nur), Einordnungsmodell, Social Media, Abdeckung, Lückenatlas (Gründe in den Farben des Farbschemas), Prüfliste, Bestandsprüfung,
+    - KI-Aufbereitung (bisher Verarbeitung, ohne Regel-Teil).
+- **Offen in Schritt 3:**
+  - Abruf: Kopf umstellen und Formular „Abrufen“ in die Steuerung verschieben.
+  - Hochrechnung, To-do-Liste, Mobil.
+  - Knöpfe, die noch auf Lese-Seiten stehen: „Erneut versuchen“ und „Freigeben“ (Fehler & Server), „Neu messen“ (Speicher).
+  - Die doppelte Gebietswahl der KI-Aufbereitung.
+  - Das Monatsdiagramm der Abdeckung zeigt noch Säulen; nach der UX-Leitlinie soll es eine Linie werden.
+- **Reale Abdeckung (23.10.2026), noch nicht committet:** `activeCoverage` in `server/integrations/admin-coverage.mjs`.
+  - Gezählt werden Gebiete mit mindestens einem gelungenen Abruf in den letzten 7 Tagen, aus `import_runs` (Lauf `metadata`, Status `completed` oder `partial`, mindestens eine Anfrage beantwortet).
+  - Läufe mit `partial`, deren Anfragen alle mit 403 abgelehnt wurden, zählen nicht; das waren auf dem Server rund 1.100 am Tag.
+  - Die Abdeckung zeigt dazu eine dritte Linie im Verlauf und eine Zahl, das Cockpit eine Zahl.
+  - Server, Stand 23.10.: 2.851 von 4.041 angebundenen Gebieten, 74,2 % der Einwohner (angebunden 87,9 %).

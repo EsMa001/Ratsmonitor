@@ -811,41 +811,42 @@ z- analytics.css:632
 ### components/
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (115, ⚠8): AdminAiLocal
-- admin-altbestand.tsx (138, ⚠8): AdminAltbestand
-- admin-atlas.tsx (202, ⚠29): AdminAtlas
+- admin-altbestand.tsx (149, ⚠7): AdminAltbestand, AltbestandSteuern
+- admin-atlas.tsx (203, ⚠30): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
-- admin-chrome.tsx (143, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
-- admin-cockpit.tsx (95, ⚠1): AdminCockpit
-- admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (113, ⚠7): AdminRuns, AdminReview, AdminStock
-- admin-debug.tsx (144, ⚠9): AdminDebug
+- admin-chrome.tsx (144, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
+- admin-cockpit.tsx (103): AdminCockpit
+- admin-colors.ts (22): AC, HATCH_CSS, COVERAGE, shareColor, bucketColor, ACCESS_COLOR, CATEGORY_COLOR
+- admin-dashboard.tsx (111, ⚠6): AdminRuns, AdminReview, AdminStock
+- admin-debug.tsx (140, ⚠8): AdminDebug
 - admin-estimate.tsx (355, ⚠55): AdminEstimate
-- admin-fehler.tsx (80, ⚠4): AdminFehler
+- admin-fehler.tsx (75, ⚠3): AdminFehler
+- admin-format.ts (25): n, nOr, pct, mio, gb, size, day, mm, when, clock, dur
 - admin-icons.tsx (41): IconName, Icon
 - admin-loader.tsx (47): DashboardPage, AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
-- admin-overview.tsx (167, ⚠13): AdminOverview
+- admin-overview.tsx (163, ⚠13): AdminOverview
 - admin-pdf-parts.tsx (161, ⚠10): month, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
-- admin-pdf.tsx (273, ⚠20): AdminPdf
+- admin-pdf.tsx (278, ⚠14): AdminPdf, PdfSteuern
 - admin-pipeline-parts.tsx (97, ⚠2): Step, FailRow, Glossary, StepList, result, Timeline, FailureTable, HostTable
 - admin-processing-map.tsx (51, ⚠4): AdminProcessingMap
 - admin-processing.tsx (191, ⚠20): AdminProcessing
 - admin-quality-check.tsx (73, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (265, ⚠15): AdminRuleTexts
+- admin-rule-texts.tsx (258, ⚠14): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): AdminRunDebug
-- admin-schedules.tsx (117, ⚠4): AdminSchedules
+- admin-schedules.tsx (163, ⚠4): AdminSchedules
 - admin-signout.tsx (13): AdminSignOut
-- admin-social.tsx (137, ⚠1): AdminSocial
+- admin-social.tsx (131, ⚠2): AdminSocial
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
 - admin-stand.tsx (28): standText, StandLine
-- admin-storage.tsx (127, ⚠9): AdminStorage
+- admin-storage.tsx (117, ⚠10): AdminStorage
 - admin-store.ts (98): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (384, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, ZUSTAND, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, STATE_HELP, ATLAS_TODO, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, PROTOKOLL, TITLES, HOCHRECHNUNG
+- admin-texts.ts (384, ⚠5): href, Todo, Help, PAGE_HEAD, FOOT, ZUSTAND, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, STATE_HELP, ATLAS_TODO, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, PROTOKOLL, TITLES, HOCHRECHNUNG
 - admin-timeline.tsx (87, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-totp.tsx (62): AdminTotp, AdminTotpSetup
-- admin-ui.tsx (83): short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
-- admin-verarbeitung.tsx (75, ⚠3): AdminVerarbeitung
+- admin-ui.tsx (166): short, AdminPageHead, Befund, Zahlen, Abschnitt, Aufklapp, Hinweis, Fehler, Leer, Laden, SteuernLink, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
+- admin-verarbeitung.tsx (37, ⚠1): AdminVerarbeitung
 - database-admin.tsx (34, ⚠3): DatabaseAdmin
 
 ### components/ratsmonitor/
@@ -853,7 +854,7 @@ z- analytics.css:632
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (90, ⚠4): AccountMenu
-- ActiveFilters.tsx (117, ⚠1): ActiveFilters
+- ActiveFilters.tsx (123, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
 - ArtIcon.tsx (141, ⚠1): artIconOf, ArtIcon
 - BandDots.tsx (50): BandDots
@@ -881,7 +882,7 @@ z- analytics.css:632
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
-- SearchBox.tsx (381, ⚠1): isSearchInput, focusSearch, SearchBox
+- SearchBox.tsx (385, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (69): SearchFilterPanel
 - SearchOverlay.tsx (91): SearchOverlay
 - SearchSplit.tsx (48): SearchSplit
@@ -950,7 +951,7 @@ z- analytics.css:632
 - format.ts (7): nf, num, pctText
 
 ### components/ratsmonitor/lib/geo/
-- geoModel.ts (360): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
+- geoModel.ts (361): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
 - mapEngine.ts (1118): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
@@ -1018,17 +1019,17 @@ z- analytics.css:632
 - AnalyticsLocked.tsx (54): AnalyticsLocked
 - AnalyticsPages.tsx (64): AnalyticsPages
 - AtlasMap.tsx (108, ⚠2): AtlasMap
-- AtlasPage.tsx (80): AtlasPage
+- AtlasPage.tsx (100): AtlasPage
 - AtlasParts.tsx (187, ⚠2): Row, Result, Fact, n, MIN_BASE, isRest, restLast, Bars, Hint, OrtImVergleich, Level, AtlasExtra, PartList, PlaceChip
-- Befund.tsx (70): Befund, zuThema, Leer, Fehler
+- Befund.tsx (84): Befund, zuThema, Leer, Fehler
 - BeschluessePage.tsx (239, ⚠13): BeschluessePage
 - CompareCharts.tsx (69, ⚠2): PLACE_COLORS, CompareLines, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (378, ⚠11): ComparePage
+- ComparePage.tsx (382, ⚠11): ComparePage
 - CompareParts.tsx (74, ⚠3): Share, Place, Result, ORT, asPlace, n, inhaltlich, datenlage, Hinweis, Duell
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
-- DiffusionSearch.tsx (92, ⚠3): PlayState, DiffusionSearch
-- FaktenPage.tsx (404, ⚠6): FaktenPage
+- DiffusionSearch.tsx (93, ⚠3): PlayState, DiffusionSearch
+- FaktenPage.tsx (416, ⚠6): FaktenPage
 - FraktionenPage.tsx (261, ⚠8): FraktionenPage
 - GraphView.tsx (389, ⚠2): GNode, GEdge, KIND, seeded, GraphView
 - GremiennetzPage.tsx (220, ⚠4): GremiennetzPage
@@ -1050,11 +1051,11 @@ z- analytics.css:632
 - RailToggle.tsx (34): RailToggle
 - RegionMap.tsx (184, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (431, ⚠17): SignalePage
+- SignalePage.tsx (433, ⚠17): SignalePage
 - SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
-- XAtlasView.tsx (301, ⚠9): XAtlasView
+- XAtlasView.tsx (293, ⚠9): XAtlasView
 - XBusy.tsx (14): busyProps, PendingVeil, HERO_MAIN, HERO_PANEL
 - XKopf.tsx (235, ⚠2): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (372, ⚠5): XTrendsPage

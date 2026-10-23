@@ -2,7 +2,7 @@
 import {isStep,RUN_KIND_TERMS} from '@/shared/pipeline-terms.mjs';
 import {useState} from 'react';
 import {Icon} from '@/components/admin-icons';
-import {n,pct,gb,size,when,clock,day,dur} from '@/components/admin-format';
+import {n,pct,gb,when,day,dur} from '@/components/admin-format';
 
 /* Bausteine des Reiters „PDF-Import“ (components/admin-pdf.tsx): Monatsformat, Monatsbalken, Platzbalken, Prozessablauf,
    Server-Liste, Protokoll der Läufe. */

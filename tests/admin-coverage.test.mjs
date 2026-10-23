@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {coverageOf,dataCoverageSeries,reachBucket,freshBucket,sizeClassOf,tally,monthlyReports} from '../shared/coverage.mjs';
-import {adminCoverage,connectedIds} from '../server/integrations/admin-coverage.mjs';
+import {adminCoverage,connectedIds,activeCoverage} from '../server/integrations/admin-coverage.mjs';
 import {adminAtlas} from '../server/integrations/admin-atlas.mjs';
 import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';
 import {CATALOG,POPULATION} from '../shared/catalog.mjs';
@@ -78,4 +78,26 @@ test('adminAtlas: every area of the catalog with category and access, reports an
  const muenster=a.areas.find(x=>x.id==='muenster');assert.equal(muenster.c,'ok');assert.equal(muenster.z,'oparl');assert.equal(muenster.st,'failed');assert.equal(muenster.cnt,undefined);
  const blocked=a.areas.find(x=>x.id===open);assert.equal(blocked.c,'blocked');assert.equal(typeof a.texts[blocked.r],'string');assert.equal(blocked.cnt,undefined);
  assert.ok(a.categories.some(c=>c.id==='ok')&&a.access.some(x=>x.id==='oparl')&&a.lands['02'].short);
+});
+
+test('activeCoverage: Gebiete mit gelungenem Abruf (completed, partial) in den letzten 7 Tagen, heute und als Tagesreihe',async()=>{
+ const {sql:s2,db:d2}=memoryDb();
+ const [x,y,z]=CATALOG.filter(r=>r.kind==='city'&&POPULATION[r.id]).slice(0,3).map(r=>r.id);
+ const run=(id,region,at,status,mode='metadata',debug={requests:3,failed:0})=>s2.prepare('INSERT INTO import_runs(id,started_at,finished_at,status,details) VALUES(?,?,?,?,?)').run(id,at,at,status,JSON.stringify({mode,region,trigger:'scheduled',debug}));
+ run('1',x,'2026-10-20T01:00:00Z','completed');      // im Fenster
+ run('2',y,'2026-10-10T01:00:00Z','partial');        // nur in älteren Fenstern
+ run('3',z,'2026-10-21T01:00:00Z','failed');         // gescheitert: zählt nie
+ run('4',z,'2026-10-22T01:00:00Z','completed','analysis'); // kein Abruf
+ run('5',z,'2026-10-22T02:00:00Z','partial','metadata',{requests:3,failed:3}); // alle Anfragen abgelehnt (403): zählt nicht
+ const a=await activeCoverage(d2,new Date('2026-10-23T12:00:00Z'));
+ assert.equal(a.days,7);
+ assert.equal(a.areas,1);
+ assert.equal(a.population,POPULATION[x]);
+ assert.equal(a.since,'2026-10-10');
+ // Reihe ab dem ersten vollen Fenster (10.10. + 6 Tage), bis heute
+ assert.equal(a.series[0].day,'2026-10-16');
+ assert.equal(a.series.at(-1).day,'2026-10-23');
+ assert.equal(a.series.find(p=>p.day==='2026-10-16').areas,1); // y am 10.10. liegt im Fenster 10.–16.
+ assert.equal(a.series.find(p=>p.day==='2026-10-17').areas,0);
+ assert.equal(a.series.find(p=>p.day==='2026-10-20').areas,1);
 });

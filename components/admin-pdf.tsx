@@ -2,14 +2,15 @@
 import {isStep,PDF_JOB_TERMS} from '@/shared/pipeline-terms.mjs';
 import {useCallback,useEffect,useState} from 'react';
 import Link from 'next/link';
-import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
+import {AdminPageHead,Befund,Zahlen,Abschnitt,Fehler,Laden,Hinweis,Kpis,SteuernLink} from '@/components/admin-ui';
+import {Segmented} from '@/components/ratsmonitor/components/Segmented';
 import {adminHref} from '@/components/admin-chrome';
-import {Icon} from '@/components/admin-icons';
 import {month,KIND,MonthBars,SpaceBar,ProcessFlow,HostList,RunList,QualityTable,scorePct,type MonthRow,type Host,type Run,type Quality} from '@/components/admin-pdf-parts';
 import {n,pct,gb,when,clock,day,dur} from '@/components/admin-format';
 
-/* Reiter „PDF-Import“ (requirements/admin-pdf-ablage-konzept.md): was gerade läuft, wie vollständig die Ablage ist, Texte und
-   Texte, Platz, wie der Import arbeitet, Fehler und Server, Protokoll. Daten: /api/admin/pdf-ablage
+/* PDF-Import (requirements/admin-pdf-ablage-konzept.md): was gerade läuft, wie vollständig die Ablage ist, Texte, Platz, wie der
+   Import arbeitet, Fehler und Server, Protokoll. Zwei Teile (requirements/admin-konzept.md, B1a): AdminPdf ist die Seite, sie liest
+   nur; PdfSteuern (Bahnen anhalten, Fehlgeschlagene erneut, OCR aller PDFs, Stand neu zählen) steht in der Steuerung. Daten: /api/admin/pdf-ablage
    (server/integrations/pdf-store-admin.mjs); die Seite rechnet nichts, sie liest, was die Skripte auf dem Server ablegen. */
 type Reason={reason:string;n:number};
 type Stats={at:string;seconds:number;linked:number;allPdfs:number;loaded:number;textOnly:number;failed:number;open:number;openBlocked?:number;reasons:Reason[];
@@ -60,77 +61,69 @@ function progressText(p:Progress){
  return '';
 }
 
-export function AdminPdf(){
- const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[note,setNote]=useState(''),[reasonsOf,setReasonsOf]=useState<'primary'|'others'>('primary');
+/** Stand der Ablage; solange etwas läuft oder wartet, alle 30 Sekunden neu */
+function usePdf(){
+ const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[lastLoad,setLastLoad]=useState(0);
  const load=useCallback(async()=>{
-  try{const r=await fetch('/api/admin/pdf-ablage',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Der Stand konnte nicht geladen werden.');setData(d);setError('');}
+  try{const r=await fetch('/api/admin/pdf-ablage',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Der Stand konnte nicht geladen werden.');setData(d);setError('');setLastLoad(Date.now());}
   catch(e){setError(e instanceof Error?e.message:'Der Stand konnte nicht geladen werden.');}
  },[]);
  // eslint-disable-next-line react-hooks/set-state-in-effect -- Abruf beim Öffnen; State wird erst nach dem await gesetzt
  useEffect(()=>{load();},[load]);
- // Solange etwas läuft oder wartet, alle 30 Sekunden neu laden
  const live=!!data&&(!!data.progress.chain||!!data.progress.ocr||data.jobs.queue.length>0||Object.values(data.jobs.running).some(j=>j?.state==='running')||!!data.count&&!data.count.finishedAt);
  useEffect(()=>{if(!live)return;const t=setInterval(load,30000);return ()=>clearInterval(t);},[live,load]);
- const post=async(body:Record<string,unknown>,confirmText?:string)=>{
-  if(confirmText&&!window.confirm(confirmText))return;
-  setBusy(true);setNote('');
-  try{const r=await fetch('/api/admin/pdf-ablage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json() as {error?:string;created?:boolean;reason?:string|null};if(!r.ok)throw Error(d.error||'Das ging nicht.');
-   if(d.created===false&&d.reason)setNote(`„${JOB[String(body.kind)]??'Dieser Auftrag'}“ ${d.reason==='running'?'läuft schon':'wartet schon'}; kein zweiter angelegt.`);
-   await load();}
-  catch(e){setError(e instanceof Error?e.message:'Das ging nicht.');}
-  finally{setBusy(false);}
- };
- const s=data?.stats,o=s?.others,jobs=data?.jobs,chain=data?.progress.chain,ocr=data?.progress.ocr;
+ return {data,error,setError,load,lastLoad};
+}
+const stopping=(data:Data,lane:Lane,p?:Progress|null)=>!!p?.startedAt&&!!data.stop[lane]&&Date.parse(data.stop[lane]!.requestedAt)>=Date.parse(p.startedAt);
+
+/** Die zwei Bahnen (Laden, OCR) mit Fortschritt, die Warteschlange und der letzte Auftrag; mit onStop ein Knopf je Bahn */
+function Lanes({data,onStop,disabled}:{data:Data;onStop?:(lane:Lane)=>void;disabled?:boolean}){
+ const jobs=data.jobs;
+ return <ul className="m-0 mt-3 max-w-[1100px] list-none space-y-3 p-0 text-[14px]">
+  {(['chain','ocr'] as Lane[]).map(lane=>{
+   const p=data.progress[lane],job=jobs.running[lane];
+   if(p)return <li key={lane} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4">
+    <div className="min-w-0"><span className="text-slate-500">Bahn {LANE[lane]}: </span><b className="font-semibold">{KIND[p.kind||'']||p.kind||'Lauf'}</b>{p.step&&<> · Schritt <b className="font-semibold">{p.step}</b></>}<span className="text-slate-500"> · seit {clock(p.startedAt)}{p.until&&`, endet spätestens ${clock(p.until)}`}</span>
+     <ProgressLine p={p}/>
+     <p className="m-0 mt-1 text-slate-700">{progressText(p)||'Fortschritt folgt (wird jede Minute geschrieben).'}</p></div>
+    <div>{onStop&&(stopping(data,lane,p)?<span className="text-slate-500">wird angehalten …</span>:<button type="button" className="font-medium text-slate-900 hover:text-teal-700 disabled:opacity-40" disabled={disabled} onClick={()=>onStop(lane)}>Anhalten</button>)}</div>
+   </li>;
+   if(job?.state==='running')return <li key={lane}><span className="text-slate-500">Bahn {LANE[lane]}: </span><b className="font-semibold">{KIND[job.kind]}</b> läuft seit {clock(job.startedAt)}; Fortschritt folgt.</li>;
+   return <li key={lane} className="text-slate-700"><span className="text-slate-500">Bahn {LANE[lane]}: </span>nichts aktiv.</li>;
+  })}
+  {jobs.queue.length>0&&<li><span className="text-slate-500">Warten (je Bahn einer zur Zeit, in dieser Reihenfolge):</span>
+   <ol className="m-0 mt-1 list-decimal space-y-1 pl-5">{jobs.queue.map(j=><li key={j.id}><b className="font-semibold">{KIND[j.kind]}</b><span className="text-slate-500"> (Bahn {LANE[laneOf(j.kind)]}), angefordert {when(j.requestedAt)}</span></li>)}</ol></li>}
+  {jobs.recent[0]&&<li className="text-slate-500">Zuletzt: {KIND[jobs.recent[0].kind]}, {when(jobs.recent[0].startedAt||jobs.recent[0].requestedAt)} bis {clock(jobs.recent[0].finishedAt)}: {jobs.recent[0].exit==='abgebrochen'?'abgebrochen':jobs.recent[0].state==='done'?'fertig':'mit Fehlern beendet'}</li>}
+ </ul>;
+}
+
+/** Seite „PDF-Import“: liest nur. Oben, was läuft und wie voll die Ablage ist; der Bestand per Umschalter; Einzelheiten zugeklappt. */
+export function AdminPdf(){
+ const {data,error,load,lastLoad}=usePdf();
+ const [reasonsOf,setReasonsOf]=useState<'primary'|'others'>('primary'),[part,setPart]=useState<'all'|'primary'|'others'>('primary');
+ const s=data?.stats,o=s?.others,ocr=data?.progress.ocr;
  const v=<T,>(f:(x:Stats)=>T):T|string|undefined=>s?f(s):data?'–':undefined;
- const stopping=(lane:'chain'|'ocr',p?:Progress|null)=>!!p?.startedAt&&!!data?.stop[lane]&&Date.parse(data.stop[lane]!.requestedAt)>=Date.parse(p.startedAt);
- const lastRun=data?.runs[0],ocrRate=ocr?.ocr?.perHour||(()=>{const st=data?.runs.find(r=>r.steps.some(x=>x.name==='OCR'&&x.seconds>600))?.steps.find(x=>x.name==='OCR');const f=Number(st?.summary?.files||0);return st&&f?Math.round(f/(st.seconds/3600)):null;})();
+ const lastRun=data?.runs[0],ocrRate=ocr?.ocr?.perHour||(()=>{const st=data?.runs.find(r=>r.steps.some(x=>x.name==='OCR'&&x.seconds>600))?.steps.find(x=>x.name==='OCR');const f=Number(st?.summary?.files||0);return st&&f?Math.round(f/(st.seconds/3600)):0;})();
  const loadStep=lastRun?.steps.find(x=>isStep(x.name,'pdf')),keep=(loadStep?.summary?.keeper||null) as Record<string,number>|null;
- const pill='inline-flex h-10 items-center gap-2 rounded-full px-5 text-[14px] font-medium disabled:opacity-40';
- const textBtn='text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40';
- const canAct=!!data?.worker&&!busy;
-
+ const lanes=data?(['chain','ocr'] as Lane[]).filter(l=>data.progress[l]||data.jobs.running[l]?.state==='running').map(l=>LANE[l]):[];
+ const befund=!data?null:!s?'Noch kein Stand: er entsteht beim ersten Zählen.'
+  :`${lanes.length?`Gerade läuft: Bahn ${lanes.join(' und ')}.`:'Gerade läuft nichts.'} ${pct(s.loaded+s.textOnly,s.linked)} der Hauptdokumente sind geladen, die Ablage belegt ${gb(s.bytes.used)} von ${s.budgetGb} GB.`;
  return <>
-  <AdminPageHead page="pdf">
-   <p className="text-[14px] text-slate-500">{s?`Stand ${when(s.at)}`:data?'Noch kein Stand: er entsteht beim ersten Zählen.':'Wird geladen …'}{s&&' · '}<a href="#ablauf" className="text-teal-600">So läuft der Import →</a></p>
-  </AdminPageHead>
-  {error&&<Alert onRetry={load}>{error}</Alert>}
+  <AdminPageHead page="pdf" figure={s?{value:pct(s.loaded+s.textOnly,s.linked),label:'Hauptdokumente geladen'}:undefined}/>
+  {error&&<Fehler onRetry={load}>{error}</Fehler>}
+  {!data&&!error&&<Laden/>}
+  {data&&<>
+   <Befund stand={<>{s?`Gezählt ${when(s.at)}`:`Stand ${when(new Date(lastLoad).toISOString())}`} · <SteuernLink job="pdf-job"/></>}>{befund}</Befund>
+   {s&&<Zahlen items={[{value:pct(s.texts.linked??0,s.linked),label:'mit Text'},{value:n(s.texts.ocrWaitingAll??s.texts.ocrWaiting),label:'warten auf OCR'},{value:pct(s.failed,s.linked),label:'fehlgeschlagen'},{value:scorePct(s.quality?.avg),label:'Ø Qualität'}]}/>}
+   {!data.worker&&<Hinweis>Auf diesem Rechner führt niemand Aufträge aus (kein Lebenszeichen des Server-Dienstes in den letzten 20 Minuten). Auf dem Server prüfen, ob der Job „PDF-Aufträge und Messungen“ eingeschaltet ist.</Hinweis>}
 
-  {/* A. Jetzt */}
-  <section className="mt-6 max-w-[1100px] border-y border-slate-200 py-5" aria-label="Was gerade läuft">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="server" className="text-teal-600"/>Jetzt</h2>
-   {data&&!data.worker&&<p className="mt-3 flex gap-2 text-[14px] text-slate-900"><Icon name="alert" size={18} className="mt-[1px] text-slate-900"/><span>Auf diesem Rechner führt niemand Aufträge aus (kein Lebenszeichen des Server-Dienstes in den letzten 20 Minuten). Knöpfe sind deshalb gesperrt; auf dem Server prüfen, ob der Job „PDF-Aufträge und Messungen“ eingeschaltet ist (<Link href={adminHref('zeitplaene')} className="text-teal-600">Jobs & Zeitpläne →</Link>).</span></p>}
-   <ul className="m-0 mt-3 list-none space-y-3 p-0 text-[14px]">
-    {(['chain','ocr'] as Lane[]).map(lane=>{
-     const p=lane==='chain'?chain:ocr,job=jobs?.running[lane];
-     if(p)return <li key={lane} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4">
-      <div className="min-w-0"><span className="text-slate-500">Bahn {LANE[lane]}: </span><b className="font-semibold">{KIND[p.kind||'']||p.kind||'Lauf'}</b>{p.step&&<> · Schritt <b className="font-semibold">{p.step}</b></>}<span className="text-slate-500"> · seit {clock(p.startedAt)}{p.until&&`, endet spätestens ${clock(p.until)}`}</span>
-       <ProgressLine p={p}/>
-       <p className="mt-1 text-slate-700">{progressText(p)||'Fortschritt folgt (wird jede Minute geschrieben).'}</p></div>
-      <div>{stopping(lane,p)?<span className="text-slate-500">wird angehalten …</span>:<button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'stop',lane},lane==='chain'?'Bahn Laden jetzt anhalten? Der Lauf endet nach wenigen Sekunden, ohne den Schritt abzuwarten. Was schon geladen oder gelesen ist, bleibt; laufende Abrufe bleiben offen, offene Schritte holt der nächste Lauf nach.':'Bahn OCR jetzt anhalten? Sie endet nach wenigen Sekunden; fertig gelesene Dateien bleiben, angefangene und der Rest kommen beim nächsten „OCR starten“ oder nachts dran.')}>Anhalten →</button>}</div>
-     </li>;
-     if(job?.state==='running')return <li key={lane}><span className="text-slate-500">Bahn {LANE[lane]}: </span><b className="font-semibold">{KIND[job.kind]}</b> läuft seit {clock(job.startedAt)}; Fortschritt folgt.</li>;
-     return <li key={lane} className="text-slate-700"><span className="text-slate-500">Bahn {LANE[lane]}: </span>{lane==='chain'?<>nichts aktiv. Die Nachtkette startet zur Zeit aus dem Reiter <Link href={adminHref('zeitplaene')} className="text-teal-600">Jobs & Zeitpläne</Link>; von Hand mit den Knöpfen unten.</>:'nichts aktiv. Nachts stellt die Kette nach dem Laden „OCR starten“ an; von Hand mit dem Knopf unten.'}</li>;
-    })}
-    {jobs&&jobs.queue.length>0&&<li><span className="text-slate-500">Warten (je Bahn in dieser Reihenfolge, einer zur Zeit; der nächste startet, sobald seine Bahn frei ist):</span>
-     <ol className="m-0 mt-1 list-decimal space-y-1 pl-5">{jobs.queue.map(j=><li key={j.id}><b className="font-semibold">{KIND[j.kind]}</b><span className="text-slate-500"> (Bahn {LANE[laneOf(j.kind)]}), angefordert {when(j.requestedAt)}</span> <button type="button" className={textBtn+' ml-2'} disabled={busy} onClick={()=>post({action:'remove',id:j.id})}>Entfernen</button></li>)}</ol></li>}
-    {jobs?.recent[0]&&<li className="text-slate-500">Zuletzt: {KIND[jobs.recent[0].kind]}, {when(jobs.recent[0].startedAt||jobs.recent[0].requestedAt)} bis {clock(jobs.recent[0].finishedAt)}: {jobs.recent[0].exit==='abgebrochen'?'abgebrochen':jobs.recent[0].state==='done'?'fertig':'mit Fehlern beendet'}</li>}
-   </ul>
-   <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
-    <button type="button" className={pill+' bg-teal-700 text-white hover:bg-teal-800'} disabled={!canAct} onClick={()=>post({action:'queue',kind:'run'})}><Icon name="play" size={16}/>{JOB.run} →</button>
-    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'retry'})}>{JOB.retry} →</button>
-    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'others'})}>{JOB.others} →</button>
-    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'texts'})}>{JOB.texts} →</button>
-    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'ocr'})}>{JOB.ocr} →</button>
-    <button type="button" className={textBtn} disabled={!canAct||!!data?.count&&!data.count.finishedAt} onClick={()=>post({action:'count'})}>{data?.count&&!data.count.finishedAt?(data.count.startedAt?'Wird gezählt …':'Zählen angefordert …'):'Stand neu zählen →'}</button>
-   </div>
-   {note&&<p role="status" className="mt-3 text-[14px] text-slate-900">{note}</p>}
-   <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Bestandsaufbau: Hauptdokumente Monat für Monat zurück, die noch nicht versucht wurden, Textebene, Stand.':k==='retry'?'macht alle wiederholbaren Abruffehler (Zeitüberschreitung, Server bremst, Zugriff verweigert) und wartenden Server sofort fällig; die Nacharbeit versucht sie in ihren Läufen, je Server erst mit einer Stichprobe. „Nicht gefunden“ und „kein PDF“ bleiben.':k==='texts'?'nichts laden; Textebene der abgelegten PDFs ohne Text, dann Stand.':k==='ocr'?'startet sofort den Job „OCR-Rückstand“ (eigene Einheit, 10 bis 22 Uhr): alle PDFs, Hauptdokumente vor Anlagen, abgelegte vor gelöschten, neueste Sitzung zuerst; Grenzen je Seite und Datei, was hängt, versucht die Nacharbeit später.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Bestandsaufträge laufen nur zwischen 10 und 22 Uhr (die Nacht gehört der Tagespipeline); außerhalb warten sie in der Reihe. Je Bahn einer zur Zeit, höchstens 3 Stunden. „Stand neu zählen“ geht jederzeit (etwa eine Minute).</p>
-  </section>
+   <Abschnitt title="Jetzt" sub="Zwei Bahnen laufen nebeneinander: Laden (PDFs, Anlagen, Text) und OCR. Anhalten und neue Aufträge in der Steuerung.">
+    <Lanes data={data}/>
+   </Abschnitt>
 
-  {/* Alle Dokumente: Hauptdokumente und übrige PDFs zusammen, je Adresse */}
-  <section className="mt-10" aria-label="Alle Dokumente">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="file" className="text-teal-600"/>Alle Dokumente</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Alle PDF-Dokumente der Berichte, Hauptdokumente und übrige zusammen. Text bleibt immer; das PDF nur, solange es in die Grenze passt.</p>
+   {s&&<Abschnitt title="Bestand" sub={part==='primary'?'Je Bericht das Dokument, aus dem Zusammenfassung und Fakten entstehen: die Vorlage, sonst Beschlussvorschlag oder Bericht, sonst das erste PDF.':part==='others'?'Anlagen, Pläne und weitere Unterlagen. Sie stehen in der Grenze immer unter allen Hauptdokumenten und bleiben deshalb meist nur als Text.':'Alle PDF-Dokumente der Berichte. Text bleibt immer; das PDF nur, solange es in die Grenze passt.'}
+    aside={<Segmented label="Dokumente" value={part} onPick={setPart} options={[['primary','Hauptdokumente'],['others','Übrige'],['all','Alle']]}/>}>
+    {part==='all'&&<>
    <div className="mt-5"><Kpis label="Stand aller Dokumente" items={[
     {label:'Verlinkt',value:v(s=>n(s.allPdfs)),note:s?`${n(s.linked)} Hauptdokumente, ${n(o?.linked)} übrige`:undefined},
     {label:'PDF gelesen',value:v(s=>pct(s.loaded+s.textOnly+(o?.loaded??0)+(o?.textOnly??0),s.allPdfs)),note:s?`${n(s.loaded+s.textOnly+(o?.loaded??0)+(o?.textOnly??0))} Dokumente einmal heruntergeladen`:undefined},
@@ -139,12 +132,8 @@ export function AdminPdf(){
     {label:'Größe der Ablage',value:v(s=>gb(s.bytes.used)),note:s?`von ${s.budgetGb} GB (PDFs ${gb(s.bytes.pdf)}, Texte ${gb(s.bytes.text)})`:undefined},
     {label:'Ø Qualität',value:v(s=>scorePct(s.quality?.avg)),note:s?.quality?`der ${n(s.quality.files)} als PDF abgelegten Dateien`:s?'nach dem nächsten Zählen':undefined},
    ]}/></div>
-  </section>
-
-  {/* B. Hauptdokumente */}
-  <section className="mt-10" aria-label="Hauptdokumente">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="report" className="text-teal-600"/>Hauptdokumente</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Je Bericht das Dokument, aus dem Zusammenfassung und Fakten entstehen: die Vorlage, sonst Beschlussvorschlag oder Bericht, sonst das erste PDF.</p>
+    </>}
+    {part==='primary'&&<>
    <div className="mt-5"><Kpis label="Stand der Hauptdokumente" items={[
     {label:'Verlinkt',value:v(s=>n(s.linked)),note:s?`von ${n(s.allPdfs)} PDF-Dokumenten`:undefined},
     {label:'PDF gelesen',value:v(s=>pct(s.loaded+s.textOnly,s.linked)),note:s?`${n(s.loaded+s.textOnly)} Dokumente einmal heruntergeladen`:undefined},
@@ -154,12 +143,8 @@ export function AdminPdf(){
     {label:'Ø Qualität',value:v(s=>scorePct(s.quality?.primary.avg)),note:s?.quality?`der ${n(s.quality.primary.files)} als PDF abgelegten Dateien`:s?'nach dem nächsten Zählen':undefined},
    ]}/></div>
    {s?.months&&<MonthBars rows={s.months.primary} label="Hauptdokumente je Sitzungsmonat"/>}
-  </section>
-
-  {/* E. Übrige PDFs */}
-  <section className="mt-12" aria-label="Übrige PDFs">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="archive" className="text-teal-600"/>Übrige PDFs der Berichte</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Anlagen, Pläne und weitere Unterlagen, die in keinem Bericht Hauptdokument sind. Laden über „Übrige PDFs laden“, Fehler erneut über „Fehlgeschlagene erneut versuchen“; Scans liest „OCR starten“. Sie stehen in der Grenze immer unter allen Hauptdokumenten und bleiben deshalb meist nur als Text.</p>
+    </>}
+    {part==='others'&&<>
    <div className="mt-5"><Kpis label="Stand der übrigen PDFs" items={[
     {label:'Verlinkt',value:o?n(o.linked):v(()=>'–'),note:s&&o?`von ${n(s.allPdfs)} PDF-Dokumenten`:undefined},
     {label:'PDF gelesen',value:o?pct(o.loaded+o.textOnly,o.linked):v(()=>'–'),note:o?`${n(o.loaded+o.textOnly)} Dokumente einmal heruntergeladen`:undefined},
@@ -169,35 +154,27 @@ export function AdminPdf(){
     {label:'Ø Qualität',value:v(s=>scorePct(s.quality?.others.avg)),note:s?.quality?`der ${n(s.quality.others.files)} als PDF abgelegten Dateien`:s?'nach dem nächsten Zählen':undefined},
    ]}/></div>
    {s?.months&&s.months.others.some(r=>r.ok+r.textOnly+r.failed>0)&&<MonthBars rows={s.months.others} label="Übrige PDFs je Sitzungsmonat"/>}
-  </section>
+    </>}
+   </Abschnitt>}
 
-  {/* C. Texte */}
-  <section className="mt-12" aria-label="Texte">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="text" className="text-teal-600"/>Texte</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Einordnung, Zusammenfassungen, Fakten und die Suche entstehen aus diesen Texten im Reiter <Link href={adminHref('regeltexte')} className="text-teal-600 hover:text-teal-700">Themen &amp; Texte</Link>, nicht hier.</p>
+   {s&&<Abschnitt id="pdf-texte" open={false} title="Texte" sub="Aus diesen Texten entstehen Einordnung, Zusammenfassungen, Fakten und Suche (Seite Einordnungsmodell).">
    <div className="mt-5"><Kpis label="Texte" items={[
     {label:'Textfassungen',value:v(s=>n(s.texts.files)),note:'Dateien mit gelesenem Text (Textebene oder OCR)'},
     {label:'PDFs ohne Text',value:v(s=>s.texts.missing===undefined?'–':n(s.texts.missing)),note:s?.texts.missing?'abgelegt, Textebene noch nicht gelesen; mit „Textebene lesen“ nachholen':s?.texts.missing===0?'alle abgelegten PDFs haben Text':'nach dem nächsten Zählen'},
     {label:'Warten auf OCR',value:v(s=>n(s.texts.ocrWaitingAll??s.texts.ocrWaiting)),note:s?(()=>{const all=s.texts.ocrWaitingAll??s.texts.ocrWaiting;return `${n(s.texts.ocrPagesAll??s.texts.ocrPages)} Seiten; davon ${n(s.texts.ocrWaiting)} Hauptdokumente${ocrRate&&all?`; bei ${n(ocrRate)} Dateien je Stunde etwa ${dur(Math.round(all/ocrRate*3600))} OCR`:''}`;})():undefined},
    ]}/></div>
-  </section>
+   </Abschnitt>}
 
-  {/* D. Platz und Grenze */}
-  <section className="mt-12" aria-label="Platz und Grenze">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="scale" className="text-teal-600"/>Platz und Grenze</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Feste Grenze {s?.budgetGb??80} GB für PDFs und Texte zusammen. Texte bleiben immer; ist die Grenze erreicht, verdrängt eine neue Datei die am schlechtesten bewertete, oder sie bleibt selbst nur als Text.</p>
+   {s&&<Abschnitt id="pdf-platz" open={false} title="Platz und Grenze" sub={`Feste Grenze ${s.budgetGb} GB für PDFs und Texte zusammen. Texte bleiben immer; ist die Grenze erreicht, verdrängt eine neue Datei die am schlechtesten bewertete, oder sie bleibt selbst nur als Text.`}>
    {s&&<SpaceBar limit={s.budgetGb*1073741824} parts={[['PDFs Hauptdokumente',s.bytes.pdfPrimary??s.bytes.pdf,'bg-teal-600'],['PDFs übrige',s.bytes.pdfOthers??0,'bg-teal-300'],['Texte',s.bytes.text,'bg-slate-500']]}/>}
    <ul className="m-0 mt-4 max-w-[820px] list-none space-y-1.5 p-0 text-[14px] text-slate-700">
     {s&&<li>{s.threshold?s.threshold.others?'Ablage voll: neue Hauptdokumente verdrängen zuerst übrige PDFs.':s.threshold.score!=null?`Ablage voll: die schlechteste behaltene Datei hat eine Qualität von ${scorePct(s.threshold.score)}; neue Dateien darunter bleiben nur als Text.`:'Ablage voll: neue Dateien verdrängen die am schlechtesten bewerteten.':`Noch ${gb(s.budgetGb*1073741824-s.bytes.used)} frei bis zur Grenze: jede neue Datei bleibt als PDF.`}</li>}
     {keep&&<li>Letzter Lauf ({when(lastRun?.startedAt)}): {n(keep.kept)} behalten, {n(keep.swapped)} schlechtere verdrängt, {n(keep.rejected)} nicht besser (nur Text), {n(keep.tooBig)} zu groß (nur Text).</li>}
-    {s?.disk&&<li className={s.disk.free<20*1073741824?'flex gap-2 font-medium text-slate-900':''}>{s.disk.free<20*1073741824&&<Icon name="alert" size={18}/>}Festplatte des Servers: {gb(s.disk.free)} frei von {gb(s.disk.total)} (Datenbank, Sicherungen und Ablage teilen sie sich; <Link href={adminHref('speicher')} className="text-teal-600">Speicher & Sicherungen →</Link>)</li>}
-   </ul>
-  </section>
+     {s.disk&&<li>Festplatte des Servers: {gb(s.disk.free)} frei von {gb(s.disk.total)} (<Link href={adminHref('speicher')} className="text-teal-700">Speicher & Sicherungen →</Link>)</li>}
+    </ul>
+   </Abschnitt>}
 
-  {/* Qualität der Ablage */}
-  <section className="mt-12" aria-label="Qualität der Ablage">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="check" className="text-teal-600"/>Qualität der Ablage</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Jede Datei hat eine Qualität von 0 bis 100 %: Dokumentart (Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1) × 0,5 bei Formalien × Inhalt (voll ab 4.000 Zeichen Text) × Größe (voll bis 100 KB, darüber langsam fallend). 100 % hat eine Vorlage mit viel Text in einer kleinen Datei. Die Grenze behält die Dateien mit der höchsten Qualität.</p>
+   {s&&<Abschnitt id="pdf-qualitaet" open={false} title="Qualität der Ablage" sub="Jede Datei hat eine Qualität von 0 bis 100 %: Dokumentart × Formalie × Inhalt × Größe. Die Grenze behält die Dateien mit der höchsten Qualität.">
    <div className="mt-5"><Kpis label="Qualität der Ablage" items={[
     {label:'Ø Qualität',value:v(s=>scorePct(s.quality?.avg)),note:s?.quality?`${n(s.quality.files)} Dateien als PDF`:s?'nach dem nächsten Zählen':undefined},
     {label:'Hauptdokumente',value:v(s=>scorePct(s.quality?.primary.avg)),note:s?.quality?`Ø Qualität von ${n(s.quality.primary.files)} Dateien`:undefined},
@@ -205,12 +182,32 @@ export function AdminPdf(){
     {label:'Nur als Text',value:v(s=>scorePct(s.quality?.textOnly.avg)),note:s?.quality?`Ø Qualität der ${n(s.quality.textOnly.files)} verdrängten oder zu großen Dateien (Text bleibt)`:undefined},
    ]}/></div>
    {s?.quality&&s.quality.files>0&&<QualityTable q={s.quality}/>}
-  </section>
+   </Abschnitt>}
 
-  {/* Ablauf */}
-  <section id="ablauf" className="mt-12 scroll-mt-24" aria-label="So läuft der Import">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="download" className="text-teal-600"/>So läuft der Import</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Jeder Schritt arbeitet nur mit dem, was der vorige abgelegt hat, und fasst nur Neues an. Haken: Regel; Uhr: Grenze. Rechts der aktuelle Stand.</p>
+   {s&&<Abschnitt id="pdf-fehler" open={false} title="Abrufe, Fehler und Server" sub="Was nicht geladen ist und warum; der Fehlerspeicher aller Stufen steht unter Fehler & Server.">
+   <div className="mt-5"><Kpis label="Stand der Abrufe" items={[
+    {label:'Fehlgeschlagen',value:v(s=>pct(s.failed,s.linked)),note:s?`${n(s.failed)} Hauptdokumente, nur über „Fehlgeschlagene erneut versuchen“ erneut`:undefined},
+    {label:'Noch nicht versucht',value:v(s=>pct(s.open,s.linked)),note:s?`${n(s.open)} Hauptdokumente${s.openBlocked?`, davon ${n(s.openBlocked)} bei ausgelassenen Servern`:''}`:undefined},
+    {label:'Vollständig bis',value:v(s=>s.completeThrough?month(s.completeThrough):'–'),note:s?`Sitzungsmonat, bis zu dem höchstens 5 % der Hauptdokumente offen sind (ohne ausgelassene Server). Ältestes geladenes Dokument ${day(s.oldest?.loaded)}, älteste verlinkte Sitzung ${day(s.oldest?.linked)}`:undefined},
+    {label:'Übrige fehlgeschlagen',value:o?pct(o.failed,o.linked):v(()=>'–'),note:o?`${n(o.failed)} Dokumente`:undefined},
+    {label:'Übrige noch nicht versucht',value:o?pct(o.open,o.linked):v(()=>'–'),note:o?`${n(o.open)} Dokumente`:undefined},
+   ]}/></div>
+   <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
+    <span className="inline-flex rounded-full bg-slate-100 p-0.5">{(['primary','others'] as const).map(k=><button key={k} type="button" aria-pressed={reasonsOf===k} onClick={()=>setReasonsOf(k)} className={'h-8 rounded-full px-3 '+(reasonsOf===k?'bg-white font-medium text-slate-900 shadow-sm':'text-slate-500')}>{k==='primary'?'Hauptdokumente':'Übrige PDFs'}</button>)}</span>
+    {s?.errorsCsv&&<a href="/api/admin/pdf-ablage/fehler" className="text-teal-600">Fehlerliste als CSV ({n(s.errorsCsv.rows)} Dokumente) →</a>}
+   </div>
+   {(()=>{const reasons=reasonsOf==='primary'?s?.reasons:o?.reasons,total=reasonsOf==='primary'?s?.failed:o?.failed;
+    if(!s)return null;if(!reasons?.length)return <p className="mt-3 text-[14px] text-slate-500">Keine Fehlschläge.</p>;
+    return <ol className="m-0 mt-3 max-w-[820px] list-none border-t border-slate-200 p-0">
+     {reasons.map(r=><li key={r.reason} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-slate-200 py-2.5 text-[14px]">
+      <span className="min-w-0">{r.reason}<span className="mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{width:`${Math.max(2,(r.n/Math.max(1,total||0))*100)}%`}}/></span></span>
+      <span className="text-right tabular-nums"><b className="font-semibold">{n(r.n)}</b><span className="ml-2 text-[12px] text-slate-500">{pct(r.n,total||0)}</span></span>
+     </li>)}
+    </ol>;})()}
+   {s?.hosts&&<><h3 className="mt-8 text-[18px] font-semibold">Server, die nicht liefern</h3><HostList hosts={s.hosts.top} total={s.hosts.total} blocked={s.hosts.blocked} stages={!!s.hosts.stages}/></>}
+   </Abschnitt>}
+
+   <Abschnitt id="ablauf" open={false} title="So läuft der Import" sub="Jeder Schritt arbeitet nur mit dem, was der vorige abgelegt hat, und fasst nur Neues an. Haken: Regel; Uhr: Grenze.">
    <ProcessFlow steps={[
     {icon:'report',title:'Abruf',what:'Der Abruf speichert je Bericht die Links auf seine Dokumente. Die PDFs selbst lädt erst die Extraktion.',
      rules:['Hauptdokument: die Vorlage, sonst Beschlussvorschlag oder Bericht, sonst das erste PDF','Alle anderen PDFs eines Berichts sind „übrige PDFs“ (Anlagen, Pläne …)','Dieselbe Adresse wird nur einmal geladen, auch wenn mehrere Berichte sie verlinken'],
@@ -233,40 +230,48 @@ export function AdminPdf(){
     {icon:'gauge',title:'Stand zählen',what:'Zählt alles auf dieser Seite neu: verlinkt, geladen, Text, Fehler, Server, Platz.',
      rules:['Am Ende jedes Laufs und mit „Stand neu zählen“'],value:s?`zuletzt ${when(s.at)}`:undefined},
     {icon:'summary',title:'Weiter: Verarbeitung',what:'Aus den abgelegten Texten entstehen Einordnung, Regel-Zusammenfassungen, Fakten, Suche und Zahlen für plenara.X (Job „Verarbeitung, nachts“, Reiter Einordnungsmodell); die KI liest dieselben Texte.',
-     rules:['Direkt nach „Extraktion, nachts“ (sie stößt ihn an), sonst zur Zeit aus Jobs & Zeitpläne','Oder dort per Knopf']},
-   ]} when={['Tagespipeline: „Extraktion, nachts“ zur Zeit aus dem Reiter Jobs & Zeitpläne (Standard 05:30 Uhr), höchstens 2 Stunden, nach „Abruf, nachts“ (Standard 01:00 Uhr).','Nacharbeit: tagsüber automatisch, für Sitzungen der letzten 7 Tage (frühestens 12.10.2026).','Altbestand: Aufträge hier und auf der Seite Altbestand, nur zwischen 10 und 22 Uhr; jeder Lauf macht dort weiter, wo der vorige aufgehört hat.']}/>
-  </section>
+     rules:['Direkt nach „Extraktion, nachts“ (sie stößt ihn an), sonst zur Zeit aus der Steuerung','Oder dort per Knopf']},
+   ]} when={['Tagespipeline: „Extraktion, nachts“ zur Zeit aus der Steuerung (Standard 05:30 Uhr), höchstens 2 Stunden, nach „Abruf, nachts“ (Standard 01:00 Uhr).','Nacharbeit: tagsüber automatisch, für Sitzungen der letzten 7 Tage (frühestens 12.10.2026).','Altbestand: Aufträge hier und auf der Seite Altbestand, nur zwischen 10 und 22 Uhr; jeder Lauf macht dort weiter, wo der vorige aufgehört hat.']}/>
+   </Abschnitt>
 
-  {/* F. Fehler und Server */}
-  <section className="mt-12" aria-label="Fehler und Server">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="alert" className="text-teal-600"/>Abrufe, Fehler und Server</h2>
-   <div className="mt-5"><Kpis label="Stand der Abrufe" items={[
-    {label:'Fehlgeschlagen',value:v(s=>pct(s.failed,s.linked)),note:s?`${n(s.failed)} Hauptdokumente, nur über „Fehlgeschlagene erneut versuchen“ erneut`:undefined},
-    {label:'Noch nicht versucht',value:v(s=>pct(s.open,s.linked)),note:s?`${n(s.open)} Hauptdokumente${s.openBlocked?`, davon ${n(s.openBlocked)} bei ausgelassenen Servern`:''}`:undefined},
-    {label:'Vollständig bis',value:v(s=>s.completeThrough?month(s.completeThrough):'–'),note:s?`Sitzungsmonat, bis zu dem höchstens 5 % der Hauptdokumente offen sind (ohne ausgelassene Server). Ältestes geladenes Dokument ${day(s.oldest?.loaded)}, älteste verlinkte Sitzung ${day(s.oldest?.linked)}`:undefined},
-    {label:'Übrige fehlgeschlagen',value:o?pct(o.failed,o.linked):v(()=>'–'),note:o?`${n(o.failed)} Dokumente`:undefined},
-    {label:'Übrige noch nicht versucht',value:o?pct(o.open,o.linked):v(()=>'–'),note:o?`${n(o.open)} Dokumente`:undefined},
-   ]}/></div>
-   <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
-    <span className="inline-flex rounded-full bg-slate-100 p-0.5">{(['primary','others'] as const).map(k=><button key={k} type="button" aria-pressed={reasonsOf===k} onClick={()=>setReasonsOf(k)} className={'h-8 rounded-full px-3 '+(reasonsOf===k?'bg-white font-medium text-slate-900 shadow-sm':'text-slate-500')}>{k==='primary'?'Hauptdokumente':'Übrige PDFs'}</button>)}</span>
-    {s?.errorsCsv&&<a href="/api/admin/pdf-ablage/fehler" className="text-teal-600">Fehlerliste als CSV ({n(s.errorsCsv.rows)} Dokumente) →</a>}
-   </div>
-   {(()=>{const reasons=reasonsOf==='primary'?s?.reasons:o?.reasons,total=reasonsOf==='primary'?s?.failed:o?.failed;
-    if(!s)return null;if(!reasons?.length)return <p className="mt-3 text-[14px] text-slate-500">Keine Fehlschläge.</p>;
-    return <ol className="m-0 mt-3 max-w-[820px] list-none border-t border-slate-200 p-0">
-     {reasons.map(r=><li key={r.reason} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-slate-200 py-2.5 text-[14px]">
-      <span className="min-w-0">{r.reason}<span className="mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{width:`${Math.max(2,(r.n/Math.max(1,total||0))*100)}%`}}/></span></span>
-      <span className="text-right tabular-nums"><b className="font-semibold">{n(r.n)}</b><span className="ml-2 text-[12px] text-slate-500">{pct(r.n,total||0)}</span></span>
-     </li>)}
-    </ol>;})()}
-   {s?.hosts&&<><h3 className="mt-8 text-[18px] font-semibold">Server, die nicht liefern</h3><HostList hosts={s.hosts.top} total={s.hosts.total} blocked={s.hosts.blocked} stages={!!s.hosts.stages}/></>}
-  </section>
-
-  {/* G. Läufe */}
-  <section className="mt-12" aria-label="Protokoll der Läufe">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="clock" className="text-teal-600"/>Läufe</h2>
-   <p className="mt-1 text-[14px] text-slate-500">Die letzten 20 Läufe (Nachtkette und von Hand); antippen für die Schritte.</p>
+   <Abschnitt id="pdf-laeufe" open={false} title="Läufe" sub="Die letzten 20 Läufe (Nachtkette und von Hand); antippen für die Schritte.">
    {data&&<RunList runs={data.runs}/>}
-  </section>
+   </Abschnitt>
+  </>}
  </>;
+}
+
+/** Aufträge der PDF-Ablage für die Steuerung: laufende Bahnen anhalten, Fehlgeschlagene erneut, OCR aller PDFs, Stand neu zählen.
+    Ältere Monate, Anlagen und Textebene fordert der Altbestand an (dieselben Aufträge). */
+export function PdfSteuern(){
+ const {data,error,setError,load}=usePdf();
+ const [busy,setBusy]=useState(false),[note,setNote]=useState('');
+ const post=async(body:Record<string,unknown>,confirmText?:string)=>{
+  if(confirmText&&!window.confirm(confirmText))return;
+  setBusy(true);setNote('');
+  try{const r=await fetch('/api/admin/pdf-ablage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json() as {error?:string;created?:boolean;reason?:string|null};if(!r.ok)throw Error(d.error||'Das ging nicht.');
+   setNote(d.created===false&&d.reason?`„${JOB[String(body.kind)]??'Dieser Auftrag'}“ ${d.reason==='running'?'läuft schon':'wartet schon'}; kein zweiter angelegt.`:'Angefordert.');
+   await load();}
+  catch(e){setError(e instanceof Error?e.message:'Das ging nicht.');}
+  finally{setBusy(false);}
+ };
+ const canAct=!!data?.worker&&!busy,counting=!!data?.count&&!data.count.finishedAt;
+ const row='grid gap-1 border-b border-slate-200 py-3 md:grid-cols-[220px_minmax(0,1fr)_auto] md:items-baseline md:gap-4';
+ const side='text-[14px] font-medium text-teal-700 hover:text-teal-600 disabled:opacity-40';
+ return <div className="mt-6 max-w-[1100px] text-[14px]">
+  <h3 className="m-0 text-[16px] font-semibold">PDF-Ablage</h3>
+  <p className="m-0 mt-1 text-slate-500">Je Bahn ein Auftrag zur Zeit, die übrigen warten. <Link href={adminHref('pdf')} className="text-teal-700">Stand ansehen →</Link></p>
+  {error&&<Fehler onRetry={load}>{error}</Fehler>}
+  {data&&!data.worker&&<Hinweis>Kein Lebenszeichen des Server-Dienstes in den letzten 20 Minuten; die Knöpfe sind gesperrt.</Hinweis>}
+  {note&&<p role="status" className="m-0 mt-2 text-slate-700">{note}</p>}
+  {data&&<Lanes data={data} disabled={!canAct} onStop={lane=>void post({action:'stop',lane},lane==='chain'?'Bahn Laden jetzt anhalten? Der Lauf endet nach wenigen Sekunden, ohne den Schritt abzuwarten. Was schon geladen oder gelesen ist, bleibt; offene Schritte holt der nächste Lauf nach.':'Bahn OCR jetzt anhalten? Fertig gelesene Dateien bleiben, angefangene und der Rest kommen beim nächsten „OCR starten“ oder nachts dran.')}/>}
+  <ul className="m-0 mt-3 list-none border-t border-slate-200 p-0">
+   <li className={row}><span className="font-semibold">{JOB.retry}</span><span className="text-slate-700">Macht alle wiederholbaren Abruffehler und wartenden Server sofort fällig; die Nacharbeit versucht sie, je Server erst mit einer Stichprobe. „Nicht gefunden“ und „kein PDF“ bleiben.</span>
+    <button type="button" className={side} disabled={!canAct} onClick={()=>void post({action:'queue',kind:'retry'})}>anfordern →</button></li>
+   <li className={row}><span className="font-semibold">{JOB.ocr}</span><span className="text-slate-700">Alle PDFs, Hauptdokumente vor Anlagen, neueste Sitzung zuerst (10 bis 22 Uhr); was hängt, versucht die Nacharbeit später.</span>
+    <button type="button" className={side} disabled={!canAct} onClick={()=>void post({action:'queue',kind:'ocr'})}>anfordern →</button></li>
+   <li className={row}><span className="font-semibold">Stand neu zählen</span><span className="text-slate-700">Zählt die Seite PDF-Import neu: verlinkt, geladen, Text, Fehler, Server, Platz.</span>
+    <button type="button" className={side} disabled={!canAct||counting} onClick={()=>void post({action:'count'})}>{counting?(data?.count?.startedAt?'wird gezählt …':'angefordert …'):'anfordern →'}</button></li>
+  </ul>
+ </div>;
 }
