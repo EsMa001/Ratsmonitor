@@ -460,7 +460,8 @@
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
     "state": "discovered",
-    "meetingScan": "end"
+    "meetingScan": "filter",
+    "patienceMs": 150000
   },
   {
     "id": "nrw-05758032",
