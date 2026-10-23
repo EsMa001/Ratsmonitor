@@ -103,3 +103,28 @@ export function budgeted(get, maxDurationMs, timeoutArgument = 1, { retries = 1,
   return run(args);
  };
 }
+
+/** Mindestabstand zweier Anfragen an dieselbe Servergruppe im Importprozess (23.10.2026): höchstens 2.400 Anfragen je Stunde und
+    Anbieter, wie viele Bahnen auch laufen. Anlass: Beim Erstabruf gingen bis zu 23.000 Anfragen am Tag an einen Anbieter, danach
+    sperrten ris-portal.de, digitalfabrix.de, allris.cloud, ekom21 und ratsinfomanagement.net die Server-Adresse. */
+export const SOURCE_SPACING_MS = 1500;
+/**
+ * fetch mit Mindestabstand je Gruppe (groupOf(url), z. B. serverOf aus source-servers.mjs): Anfragen derselben Gruppe starten
+ * frühestens spacingMs nach der vorigen, die übrigen laufen ungebremst. Adressen ohne Gruppe (null) und lokale Adressen nie.
+ */
+export function pacedFetch(request, groupOf, spacingMs = SOURCE_SPACING_MS, { sleep: wait = sleep, now = () => Date.now() } = {}) {
+ const nextAt = new Map();
+ return async (input, init) => {
+  let group = null;
+  try {
+   const url = new URL(typeof input === 'string' ? input : input?.url ?? String(input));
+   if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(url.hostname)) group = groupOf(url.href);
+  } catch { group = null; }
+  if (group && spacingMs > 0) {
+   const at = Math.max(now(), nextAt.get(group) || 0);
+   nextAt.set(group, at + spacingMs);
+   if (at > now()) await wait(at - now());
+  }
+  return request(input, init);
+ };
+}

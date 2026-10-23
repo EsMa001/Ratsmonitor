@@ -4,7 +4,7 @@ import {NRW_SOURCES} from './source-catalog.mjs';
 import {SOURCES} from './regions.mjs';
 import {serverOf,MUENSTER} from './source-servers.mjs';
 import {historyWindow,windowYears} from '../../shared/history-window.mjs';
-import {recordFailure,clearFailure,classify} from './work-failures.mjs';
+import {recordFailure,clearFailure,classify,HOST_FAILS} from './work-failures.mjs';
 const known=new Set(regions.map(r=>r.id)),legacy=new Map(SOURCES.map(s=>[s.id,s])),catalog=new Map(NRW_SOURCES.map(s=>[s.id,s]));
 export const canImport=id=>id==='muenster'||legacy.has(id)||(catalog.has(id)&&catalog.get(id).method!=='pending');
 /** 'all': every area of the catalog. 'sources': every area with a connected source, whatever its state. Otherwise a list of ids. */
@@ -46,6 +46,12 @@ export function provider(id){
  const source=id==='muenster'?MUENSTER:legacy.get(id)||catalog.get(id);
  return (source&&serverOf(source.system||source.base))||'area:'+id;
 }
+/** Alle angebundenen Gebiete je Servergruppe (für den Anlauf: wie viele ein Anbieter hat), einmal je Prozess */
+let areasByProvider=null;
+export const PROVIDER_AREAS=()=>{
+ if(!areasByProvider){areasByProvider=new Map();for(const id of selectedRegions('sources')){const s=provider(id);areasByProvider.set(s,[...(areasByProvider.get(s)||[]),id]);}}
+ return areasByProvider;
+};
 // A step that has not reported back for this long was interrupted: an import is limited to two minutes plus storing.
 const STALE_MS=300000;
 // One request of the page may run several steps side by side (action 'run'): a browser opens only six connections
@@ -184,6 +190,13 @@ async function step(db,id,run){
    else{item.status=result.status===200?'partial':'failed';item.message=`Der Server hat ${item.refusals}-mal um eine Pause gebeten (HTTP 429); Gebiet später erneut abrufen.`+(d.cause?' Ursache: '+String(d.cause).slice(0,200):'');}
   }
   else if(result.status!==200){item.status='failed';item.message=((d.error||'Abruf fehlgeschlagen.')+(d.cause?' Ursache: '+String(d.cause).slice(0,300):'')).slice(0,long);}
+  // Anbieter nicht erreicht (alle Anfragen gescheitert): nach HOST_FAILS solchen Gebieten ruhen seine übrigen in diesem Auftrag, statt
+  // jedes einzeln zu fragen; der Fehlerspeicher lässt ihn danach warten und prüft ihn mit einer Stichprobe (work-failures.mjs)
+  else if(job.stage==='metadata'&&unreached(d)){
+   const server=serverOfItem(item);item.status='partial';item.message=('Anbieter nicht erreicht: '+unreached(d)).slice(0,long);
+   job.unreached={...job.unreached,[server]:(job.unreached?.[server]||0)+1};
+   if(job.unreached[server]>=HOST_FAILS)for(const other of job.items)if(other.status==='queued'&&serverOfItem(other)===server){other.status='deferred';other.message=`Anbieter ${server} in diesem Lauf ${job.unreached[server]}-mal nicht erreicht; zurückgestellt, Stichprobe über die Nacharbeit.`;}
+  }
   else {item.processed+=Number(d.processed??d.topics??0);
    // The item reports this attempt; the stored period may still be partial from an earlier, wider import.
    const complete=d.attemptComplete??d.coverage?.complete;
@@ -224,12 +237,26 @@ export function partialCause(d){
  if(!d?.coverage||complete!==false)return null;
  return (d.coverage.issues||[]).map(String).find(i=>NETWORK.test(i))?.slice(0,200)||null;
 }
+/**
+ * Der Anbieter war nicht erreichbar: jede Anfrage scheiterte und nichts wurde gelesen (23.10.2026: so liefen gesperrte Anbieter als
+ * „teilweise“ weiter, bei HTTP 403 sogar als Erfolg, und bekamen jede Nacht alle ihre Gebiete). Rückgabe: Ursache (erster Hinweis) oder null.
+ */
+export function unreached(d){
+ const r=d?.requests;
+ if(!(r?.sent>0)||r.failed<r.sent||Number(d.topics||0)>0)return null;
+ return String((d.coverage?.issues||[]).find(i=>/HTTP \d{3}|fetch failed|timeout|aborted|ECONN|ENOTFOUND/i.test(String(i)))||d.coverage?.issues?.[0]||'keine Anfrage beantwortet').slice(0,200);
+}
+/** Klasse eines nicht erreichten Anbieters: 401/403/451 verweigert, sonst wie classify */
+const unreachedClass=cause=>{const http=Number(String(cause).match(/HTTP (\d{3})/)?.[1])||null;return classify({error:cause,http});};
 export async function noteImport(db,region,{result,failure='',server=provider(region),origin='daily'}={}){
  try{
   const d=result?.data||{};
   if(result?.status===409)return;
   const f={step:'import',key:region,host:server,origin:origin==='backlog'?'backlog':'daily'};
-  if(!result)await recordFailure(db,{...f,cls:classify({error:failure,internal:true}),error:failure});
+  const missed=result?.status===200&&!d.refused?unreached(d):null;
+  // Ganzer Anbieter nicht erreicht: zählt für die Servergruppe (nach HOST_FAILS Gebieten wartet sie, verweigert: PROVIDER_LOCK)
+  if(missed)await recordFailure(db,{...f,cls:unreachedClass(missed),error:missed,provider:true});
+  else if(!result)await recordFailure(db,{...f,cls:classify({error:failure,internal:true}),error:failure});
   else if(d.refused)await recordFailure(db,{...f,cls:'blocked',error:d.cause||'Quelle bittet um Pause',retryAfterMs:d.refused.retryAfterMs});
   else if(result.status!==200){const cause=String(d.cause||d.error||'');await recordFailure(db,{...f,cls:classify({error:cause,http:result.status>=500?null:result.status,internal:/TypeError|ReferenceError|SyntaxError|is not a function|Cannot read/.test(cause)}),error:cause});}
   else if(partialCause(d)){
@@ -238,7 +265,7 @@ export async function noteImport(db,region,{result,failure='',server=provider(re
    // Server (er hat ja geantwortet, keine Bremse) und mit Präfix „teilweise:“, damit der Nachtlauf das Gebiet nicht zurückstellt.
    await recordFailure(db,{...f,host:null,cls:'transient',error:PARTIAL_PREFIX+partialCause(d),minWaitMs:PARTIAL_MIN_WAIT_MS});
   }
-  else await clearFailure(db,{...f});
+  else await clearFailure(db,{...f,ramp:true});
  }catch(e){console.error('[pipeline] Fehlerspeicher:',e?.message||e);}
 }
 /**

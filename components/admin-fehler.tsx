@@ -5,7 +5,7 @@ import {useSearchParams} from 'next/navigation';
 import {AdminPageHead,Befund,Zahlen,Abschnitt,How,Fehler,Laden,Leer,SteuernLink} from '@/components/admin-ui';
 import {Segmented} from '@/components/ratsmonitor/components/Segmented';
 import {adminHref} from '@/components/admin-chrome';
-import {FailureTable,HostTable,type FailRow} from '@/components/admin-pipeline-parts';
+import {FailureTable,HostTable,ProviderTable,type FailRow,type Provider} from '@/components/admin-pipeline-parts';
 import {PHASES,stepName,CLASS_TERMS} from '@/shared/pipeline-terms.mjs';
 import {n,day,when} from '@/components/admin-format';
 
@@ -13,7 +13,7 @@ import {n,day,when} from '@/components/admin-format';
    Liest den Stand von /api/admin/debug. „Erneut versuchen“ im Tagesbereich macht Einträge fällig für die Nacharbeit
    (POST /api/admin/debug, reopen); im Altbestand übernimmt der Job „Altbestand“ (POST /api/admin/altbestand, rework). */
 type Entry={step:string;key:string;class?:string;reason:string|null;tries:number;last_at:string;next_try_at?:string|null;range?:string;release?:string|null};
-type Data={boundary:string;since:string;failures:{rows?:FailRow[];missing?:string};hosts:{host:string;state:string;level:number;next_try_at:string|null;reason:string|null;entries:number}[];internal:Entry[];recent:Entry[];error?:string};
+type Data={boundary:string;since:string;failures:{rows?:FailRow[];missing?:string};hosts:{host:string;state:string;level:number;next_try_at:string|null;reason:string|null;entries:number}[];providers?:Provider[];internal:Entry[];recent:Entry[];error?:string};
 
 /** Stand des Fehlerspeichers (/api/admin/debug), jede Minute neu; post/retry nur für die Steuerung */
 function useFehler(initial:'daily'|'backlog'){
@@ -60,6 +60,10 @@ export function AdminFehler(){
     <How label="Was bedeuten Bereich und Zustand?"><p>„Jetzt fällig“ kommt im nächsten Lauf dran, „wartet“ hat einen späteren Termin, „kein Versuch mehr“ bleibt liegen, bis jemand ihn wieder öffnet.</p><p>Tagesbereich: Sitzungen ab {day(data.boundary)}, bearbeitet von der Nacharbeit. Altbestand: alles Ältere und alles vor dem {day(data.since)} Gescheiterte, bearbeitet nur auf Knopfdruck.</p></How>
     {(range==='daily'?daily:backlog)?<FailureTable rows={rows} range={range}/>:<Leer>Hier ist nichts offen.</Leer>}
     <p className="mt-3 text-[14px]"><SteuernLink job={range==='daily'?'nacharbeit':'altbestand'} label="Erneut versuchen in der Steuerung"/></p>
+   </Abschnitt>}
+
+   {!!data.providers?.length&&<Abschnitt title="Anbieter, die nicht frei sind" sub="Ein Anbieter, der den Abruf verweigert oder nicht antwortet, ruht und wird mit einer Stichprobe geprüft (verweigert: nach 1, 3, dann alle 7 Tage). Gelingt sie, fährt er hoch: am ersten Tag 20 Gebiete, danach täglich doppelt so viele. An jeden Anbieter geht höchstens eine Anfrage alle 1,5 Sekunden.">
+    <ProviderTable providers={data.providers}/>
    </Abschnitt>}
 
    {data.hosts.length>0&&<Abschnitt title="Server, die gerade warten" sub="Ein Server, der bremst oder mehrfach scheitert, wird eine Zeit lang ausgelassen und danach mit drei Dokumenten geprüft. Freigeben (die Prüfung vorziehen) in der Steuerung.">

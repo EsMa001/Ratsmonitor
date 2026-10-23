@@ -231,3 +231,48 @@ test('catchUp ends without an error while another writer holds the database, oth
  const broken={prepare(){throw new Error('no such table: region_stats');}};
  await assert.rejects(()=>catchUp(broken,{maxSteps:5,budgetMs:50,sleep:async()=>{}}),/no such table/);
 });
+
+// Anbieter nicht erreicht (23.10.2026): alle Anfragen gescheitert zählt für die Servergruppe, der Nachtauftrag stellt den Rest zurück,
+// nach gelungener Stichprobe fährt der Anbieter hoch (Anlauf)
+import {PROVIDER_AREAS,unreached} from '../server/integrations/pipeline-jobs.mjs';
+import {dueEntries,providerRamps,rampAllowance,RAMP_START,PROVIDER_LOCK} from '../server/integrations/work-failures.mjs';
+test('Anbieter nicht erreicht: Rest des Auftrags zurückgestellt, Wartezeit 1 Tag, Stichprobe, dann Anlauf mit wachsender Zahl Gebiete',async()=>{
+ const {sql,db}=memoryDb();
+ const server='ris-portal.de',mine=PROVIDER_AREAS().get(server),six=mine.slice(0,6);
+ assert.ok(mine.length>RAMP_START*2,'genug Gebiete für den Anlauf');
+ const blocked={status:200,data:{topics:0,requests:{sent:3,failed:3},coverage:{complete:false,issues:['Sitzungsliste 12/2026: Quelle antwortet mit HTTP 403','Noch keine Artikel erfolgreich erfasst.']}}};
+ assert.match(unreached(blocked.data),/HTTP 403/);
+ assert.equal(unreached({...blocked.data,topics:1}),null,'etwas gelesen: erreicht');
+ assert.equal(unreached({topics:0,requests:{sent:3,failed:2}}),null);
+ const calls=[];
+ await pipelineAction(db,{action:'create',stage:'metadata',regions:six,window:'1d'},()=>{});
+ await workJob(db,async(stage,region)=>{calls.push(region);return blocked;},{lanes:1,sleep:()=>wait(5),tickMs:1e6});
+ assert.equal(calls.length,3,'nach drei nicht erreichten Gebieten keine weitere Anfrage');
+ const job=await currentJob(db);
+ assert.equal(job.items.filter(i=>i.status==='deferred').length,3);
+ const host=sql.prepare('SELECT state,next_try_at FROM source_hosts WHERE host=?').get(server);
+ assert.equal(host.state,'gesperrt');
+ assert.ok(Math.abs(Date.parse(host.next_try_at)-Date.now()-PROVIDER_LOCK[0])<60000,'Stichprobe nach einem Tag');
+ const rows=sql.prepare("SELECT key,class,host,next_try_at FROM work_failures WHERE step='import'").all();
+ assert.equal(rows.length,3);assert.ok(rows.every(r=>r.class==='denied'&&r.host===server&&r.next_try_at===host.next_try_at),'Gebiete folgen der Stichprobe des Anbieters');
+ // nächste Nacht: der Anbieter wartet, alle zurückgestellt
+ assert.equal(Object.keys(await deferredRegions(db,six)).length,6);
+ // Stichprobe fällig und gelungen: Anlauf beginnt
+ const later=Date.parse(host.next_try_at)+1000;
+ assert.equal((await dueEntries(db,{now:later})).length,3,'Stichprobe: drei Gebiete');
+ await runDirect(db,async()=>done,[six[0]],{lanes:1});
+ assert.equal(sql.prepare('SELECT state FROM source_hosts WHERE host=?').get(server).state,'ok');
+ const since=(await providerRamps(db))[server];assert.ok(since);
+ assert.deepEqual(await dueEntries(db,{now:later}),[],'im Anlauf teilt nur der Nachtauftrag zu');
+ const t=Date.parse(since);
+ const allowed=async ms=>mine.length-Object.keys(await deferredRegions(db,mine,t+ms)).length;
+ assert.equal(await allowed(0),RAMP_START);
+ assert.equal(await allowed(864e5+1),RAMP_START*2,'täglich doppelt so viele');
+ const day0=Object.keys(await deferredRegions(db,mine,t)),day1=new Set(Object.keys(await deferredRegions(db,mine,t+864e5+1)));
+ assert.ok([...day1].every(id=>day0.includes(id)),'wer gestern dran war, ist es heute auch');
+ assert.equal(rampAllowance(since,t+5*864e5),RAMP_START*32);
+ assert.equal(await allowed(10*864e5),mine.length,'alle dran: Anlauf endet');
+ assert.deepEqual(await providerRamps(db),{});
+ // eine neue Sperre im Anlauf beendet ihn ebenfalls (hostFailed)
+ sql.close();
+});

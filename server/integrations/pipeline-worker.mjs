@@ -1,5 +1,5 @@
-import {pipelineAction,selectedRegions,provider,noteImport,PER_PROVIDER,PARTIAL_PREFIX} from './pipeline-jobs.mjs';
-import {hasFailureStore,hostStates,hostWaiting} from './work-failures.mjs';
+import {pipelineAction,selectedRegions,provider,noteImport,PER_PROVIDER,PARTIAL_PREFIX,PROVIDER_AREAS} from './pipeline-jobs.mjs';
+import {hasFailureStore,hostStates,hostWaiting,providerRamps,setRamp,rampAllowance,rampRank} from './work-failures.mjs';
 import {refreshStep} from './admin-refresh.mjs';
 /**
  * Drives the stored import job of the administration from a process of its own (server/node/import-worker.mjs, A14 of
@@ -42,7 +42,8 @@ export const NIGHTLY_FRESH_MS=10*60000;
 export const nightlyBusy=(job,now=Date.now())=>!!job&&job.owner==='nightly'&&openJob(job)&&now-Date.parse(job.updatedAt||'')<NIGHTLY_FRESH_MS;
 /**
  * Gebiete, die der Nachtauftrag auslässt (Fehlerspeicher, Migration 0040): eigener Eintrag mit Termin in der Zukunft (die Nacharbeit
- * versucht es dann) oder ihr Server wartet. Ein Eintrag ohne Termin (internal) hält den Nachtlauf nicht auf: der nächtliche Abruf ist
+ * versucht es dann) oder ihr Server wartet, oder ihr Anbieter fährt nach einer Sperre erst hoch und sie sind heute noch nicht dran
+ * (Anlauf, rampAllowance; sind alle dran, endet der Anlauf). Ein Eintrag ohne Termin (internal) hält den Nachtlauf nicht auf: der nächtliche Abruf ist
  * dann selbst der Versuch, und kein Gebiet bleibt dauerhaft ausgelassen. {Gebiet: Hinweis}
  */
 export async function deferredRegions(db,ids,now=Date.now()){
@@ -54,6 +55,13 @@ export async function deferredRegions(db,ids,now=Date.now()){
   const e=own.get(id),h=hosts.get(provider(id));
   if(e?.next_try_at&&Date.parse(e.next_try_at)>now)out[id]=`Zurückgestellt (${e.class}); nächster Versuch ${e.next_try_at.slice(0,16).replace('T',' ')} über die Nacharbeit.`;
   else if(hostWaiting(h,now))out[id]=`Server ${h.host} wartet (${h.state}) bis ${h.next_try_at?h.next_try_at.slice(0,16).replace('T',' '):'zur Prüfung'}; Abruf über die Nacharbeit.`;
+ }
+ const ramps=await providerRamps(db);
+ for(const [server,since] of Object.entries(ramps)){
+  const allowed=rampAllowance(since,now),mine=PROVIDER_AREAS().get(server)||[];
+  if(allowed>=mine.length){await setRamp(db,server,null);continue;}
+  const today=new Set([...mine].sort((a,b)=>rampRank(a)-rampRank(b)||a.localeCompare(b)).slice(0,allowed));
+  for(const id of ids)if(!out[id]&&provider(id)===server&&!today.has(id))out[id]=`Anbieter ${server} fährt nach einer Sperre hoch: heute ${allowed} von ${mine.length} Gebieten; dieses folgt in den nächsten Tagen.`;
  }
  return out;
 }

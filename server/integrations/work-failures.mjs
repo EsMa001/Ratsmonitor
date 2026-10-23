@@ -17,6 +17,12 @@ export const CLASSES=Object.freeze(['blocked','denied','transient','gone','slow'
 const ENTRY_WAIT={transient:[H,6*H,D,3*D],denied:[7*D,30*D]},REPEAT={transient:7*D,denied:30*D};
 /** Wartezeiten des Servers: bremsen (vorübergehend) und gesperrt (Zugriff verweigert); nach dem Ende von LOCK: pruefen */
 export const HOST_WAIT=Object.freeze([H,4*H,12*H,D,3*D,7*D]),HOST_LOCK=Object.freeze([7*D,30*D]);
+/** Wartezeiten eines Anbieters, der den Abruf ganz verweigert (alle Anfragen 401/403, unreached in pipeline-jobs.mjs): nach 1, 3, dann
+    alle 7 Tage eine Stichprobe, nie „prüfen“; eine Sperre kann jederzeit aufgehoben werden, und gelingt die Stichprobe, fährt der
+    Anbieter langsam wieder hoch (Anlauf, rampAllowance) */
+export const PROVIDER_LOCK=Object.freeze([D,3*D,7*D]);
+/** Anlauf nach einer Sperre: am ersten Tag RAMP_START Gebiete des Anbieters, danach täglich doppelt so viele, bis alle dabei sind */
+export const RAMP_START=20,RAMP_KEY='provider-ramp';
 /** Fehler in Folge, ab denen ein Server wartet (429 sofort) */
 export const HOST_FAILS=3;
 /** Einträge eines fälligen Servers, bevor die ganze Reihe läuft */
@@ -116,8 +122,11 @@ export const hostWaiting=(row,now=Date.now())=>!!row&&row.state!=='ok'&&(!row.ne
 export const hostDue=(row,now=Date.now())=>!!row&&row.state!=='ok'&&!!row.next_try_at&&Date.parse(row.next_try_at)<=now;
 
 /** Erfolg an einem Server: ok, Zähler zurück */
-export async function hostOk(db,host,now=Date.now()){
+export async function hostOk(db,host,now=Date.now(),{ramp=false}={}){
  if(!host||!await hasFailureStore(db))return;
+ // Abruf (ramp): nach einer Sperre oder langen Pause (ab einem Tag) nicht gleich alles, der Anbieter fährt hoch (Anlauf)
+ const row=ramp?await hostRow(db,host):null;
+ if(row&&(row.state==='gesperrt'||row.state==='pruefen'||row.state==='bremsen'&&row.level>=4))await setRamp(db,host,iso(now));
  await db.prepare("UPDATE source_hosts SET state='ok',fails=0,level=0,next_try_at=NULL,last_ok_at=?,updated_at=? WHERE host=? AND (state<>'ok' OR fails>0)").bind(iso(now),iso(now),host).run();
 }
 
@@ -126,7 +135,7 @@ export async function hostOk(db,host,now=Date.now()){
  * Fehler 429 war oder HOST_FAILS in Folge erreicht sind, oder wenn er gerade fällig war (Stichprobe gescheitert, Stufe +1).
  * Weitere Fehler in derselben Wartezeit zählen nur. retryAfterMs: Wunsch der Quelle, geht vor. Rückgabe: neue Zeile oder null.
  */
-export async function hostFailed(db,host,cls,{now=Date.now(),retryAfterMs=null,reason=''}={}){
+export async function hostFailed(db,host,cls,{now=Date.now(),retryAfterMs=null,reason='',lock=HOST_LOCK,repeat=false}={}){
  if(!host||!COUNTS.has(cls)||!await hasFailureStore(db))return null;
  const row=await hostRow(db,host)||{host,state:'ok',fails:0,level:0,next_try_at:null};
  // Während der Wartezeit zählen Fehler nicht (sie stammen aus Läufen, die vor der Stufe begonnen haben)
@@ -138,14 +147,17 @@ export async function hostFailed(db,host,cls,{now=Date.now(),retryAfterMs=null,r
   if(cls==='denied'||row.state==='gesperrt'&&cls!=='blocked'){
    const at=row.state==='gesperrt'?level:0;
    // prüfen: ein Mensch soll hinsehen (Anzeige), eine Stichprobe gibt es trotzdem alle 30 Tage, damit nichts dauerhaft vergessen wird
-   if(at>=HOST_LOCK.length){state='pruefen';next=iso(now+30*D);level=at;}
-   else{state='gesperrt';next=iso(now+HOST_LOCK[at]);level=at+1;}
+   // repeat (Anbieter, PROVIDER_LOCK): der letzte Abstand wiederholt sich, statt auf „prüfen“ zu gehen
+   if(at>=lock.length&&repeat){state='gesperrt';next=iso(now+lock.at(-1));level=at;}
+   else if(at>=lock.length){state='pruefen';next=iso(now+30*D);level=at;}
+   else{state='gesperrt';next=iso(now+lock[at]);level=at+1;}
   }else{
    const at=row.state==='bremsen'?Math.min(level,HOST_WAIT.length-1):0;
    const wanted=Number.isFinite(retryAfterMs)&&retryAfterMs>0?Math.min(HOST_WAIT.at(-1),Math.max(60000,retryAfterMs)):0;
    state='bremsen';next=iso(now+Math.max(wanted,HOST_WAIT[at]));level=at+1;
   }
   fails=0;
+  await setRamp(db,host,null);
  }
  await db.prepare(`INSERT INTO source_hosts(host,state,fails,level,next_try_at,last_fail_at,reason,updated_at) VALUES(?,?,?,?,?,?,?,?)
   ON CONFLICT(host) DO UPDATE SET state=excluded.state,fails=excluded.fails,level=excluded.level,next_try_at=excluded.next_try_at,
@@ -163,11 +175,15 @@ export async function recordFailure(db,f,now=Date.now()){
  if(!f?.step||!f.key||!await hasFailureStore(db))return null;
  const cls=f.cls||classify(f);
  const host=f.host||null;
- const h=await hostFailed(db,host,cls,{now,retryAfterMs:f.retryAfterMs,reason:f.error||cls});
+ const h=await hostFailed(db,host,cls,{now,retryAfterMs:f.retryAfterMs,reason:f.error||cls,...(f.provider?{lock:PROVIDER_LOCK,repeat:true}:{})});
  const old=await db.prepare('SELECT tries,first_at FROM work_failures WHERE step=? AND key=?').bind(f.step,String(f.key)).first();
  const tries=cls==='busy'?old?.tries||1:(old?.tries||0)+1;
  const hostNext=h?.next_try_at||(await hostRow(db,host))?.next_try_at||null;
  let next=nextTry(cls,tries,{now,hostNext:cls==='blocked'?hostNext:null});
+ // provider: der ganze Anbieter war nicht erreichbar; das Gebiet kommt mit der Stichprobe des Anbieters wieder dran, nicht nach eigener Leiter
+ if(f.provider&&hostNext)next=hostNext;
+ // Geht der Anbieter gerade in die Wartezeit, folgen die schon vermerkten Gebiete seiner Stichprobe
+ if(f.provider&&h&&h.state!=='ok'&&h.next_try_at)await db.prepare('UPDATE work_failures SET next_try_at=? WHERE step=? AND host=? AND next_try_at IS NOT NULL').bind(h.next_try_at,f.step,host).run();
  // minWaitMs: frühester neuer Versuch (teilweise Abrufe: der Nachtlauf versucht sie ohnehin jede Nacht, die Nacharbeit nur noch
  // höchstens einmal am Tag; 18.10.2026: 1.203 Versuche, 15 gelungen)
  if(next&&f.minWaitMs>0&&Date.parse(next)<now+f.minWaitMs)next=iso(now+f.minWaitMs);
@@ -183,10 +199,10 @@ export async function recordFailure(db,f,now=Date.now()){
 }
 
 /** Erfolg eines Schritts: Eintrag weg, Server ok (wenn angegeben) */
-export async function clearFailure(db,{step,key,host=null},now=Date.now()){
+export async function clearFailure(db,{step,key,host=null,ramp=false},now=Date.now()){
  if(!await hasFailureStore(db))return;
  if(step&&key)await db.prepare('DELETE FROM work_failures WHERE step=? AND key=?').bind(step,String(key)).run();
- if(host)await hostOk(db,host,now);
+ if(host)await hostOk(db,host,now,{ramp});
 }
 
 /**
@@ -204,11 +220,13 @@ export async function dueEntries(db,{now=Date.now(),limit=500,perHost=20,steps=n
  // Reihenfolge: Stufe, neueste Sitzung zuerst, darin die mit den wenigsten Versuchen (chronische Fehler blockieren keine frischen), dann älteste zuletzt versucht
  const phaseRank=`CASE step WHEN 'import' THEN 0 WHEN 'rules' THEN 2 ELSE 1 END`;
  const {results}=await db.prepare(`SELECT * FROM work_failures WHERE ${where.join(' AND ')} ORDER BY ${phaseRank},coalesce(event_date,'') DESC,tries,last_at LIMIT ?`).bind(...args,limit*4).all();
- const hosts=await hostStates(db),taken=new Map(),out=[];
+ const hosts=await hostStates(db),ramps=await providerRamps(db),taken=new Map(),out=[];
  for(const r of results||[]){
   if(out.length>=limit)break;
   const row=r.host?hosts.get(r.host):null;
   if(hostWaiting(row,now))continue;
+  // Anbieter im Anlauf: die Gebiete teilt nur der Nachtauftrag zu (rampAllowance), die Nacharbeit lässt ihn aus
+  if(r.host&&ramps[r.host])continue;
   const cap=hostDue(row,now)?SAMPLE:perHost,n=taken.get(r.host)||0;
   if(r.host&&n>=cap)continue;
   taken.set(r.host,n+1);out.push(r);
@@ -246,3 +264,23 @@ export async function releaseHost(db,host,now=Date.now()){
  if(!host||!await hasFailureStore(db))return;
  await db.prepare("UPDATE source_hosts SET next_try_at=?,state=CASE WHEN state='pruefen' THEN 'gesperrt' ELSE state END,updated_at=? WHERE host=?").bind(iso(now),iso(now),host).run();
 }
+
+/**
+ * Anlauf nach einer Sperre (23.10.2026): system_state RAMP_KEY = {Servergruppe: Beginn (ISO)}. Am Tag k nach dem Beginn darf der Abruf
+ * rampAllowance Gebiete des Anbieters nehmen (rampRank legt fest, welche: jeden Tag dieselben plus neue), die übrigen stellt der Nachtauftrag
+ * zurück (deferredRegions in pipeline-worker.mjs). Scheitert der Anbieter wieder, endet der Anlauf (hostFailed), er wartet erneut.
+ */
+export async function providerRamps(db){
+ if(!await hasFailureStore(db))return {};
+ const r=await db.prepare('SELECT value FROM system_state WHERE key=?').bind(RAMP_KEY).first();
+ try{return r?JSON.parse(r.value)||{}:{};}catch{return {};}
+}
+export async function setRamp(db,host,since){
+ const ramps=await providerRamps(db);
+ if(since)ramps[host]=since;else if(host in ramps)delete ramps[host];else return;
+ await db.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(RAMP_KEY,JSON.stringify(ramps)).run();
+}
+/** Gebiete, die ein Anbieter im Anlauf heute bekommt */
+export const rampAllowance=(since,now=Date.now())=>RAMP_START*2**Math.min(20,Math.max(0,Math.floor((now-Date.parse(since))/D)));
+/** Feste Reihenfolge der Gebiete im Anlauf (FNV-1a über die Kennung): wer heute dran ist, ist es morgen auch */
+export function rampRank(id){let h=0x811c9dc5;for(const c of String(id)){h^=c.charCodeAt(0);h=Math.imul(h,0x01000193)>>>0;}return h;}

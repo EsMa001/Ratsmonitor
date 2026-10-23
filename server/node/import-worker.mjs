@@ -25,6 +25,8 @@ import {env} from 'cloudflare:workers';
 import {runSync} from '@/server/services/sync';
 import {analysePending} from '@/server/integrations/manual-analysis.mjs';
 import {useDocumentStore} from '@/server/integrations/documents.mjs';
+import {pacedFetch} from '@/server/integrations/request-budget.mjs';
+import {serverOf} from '@/server/integrations/source-servers.mjs';
 import {workJob,ensureJob,currentJob,openJob,nightlyBusy,catchUp,parseArgs,importRunner,runDirect,windowForTonight} from '@/server/integrations/pipeline-worker.mjs';
 
 const log=(...parts)=>console.log(new Date().toISOString(),'[import-worker]',...parts);
@@ -36,6 +38,8 @@ const db=env.DB;
 if(!db){warn('keine Datenbank (DATABASE_FILE)');process.exit(1);}
 // Lokale PDF-Ablage (server/node/pdf-store.mjs): Dokumente zuerst von der Platte lesen, neu geladene dort ablegen.
 if(process.env.RM_PDF_STORE){const {openPdfStore}=await import('@/server/node/pdf-store.mjs');useDocumentStore(openPdfStore(process.env.RM_PDF_STORE));log('PDF-Ablage',process.env.RM_PDF_STORE);}
+// Mindestabstand je Anbieter für alle Anfragen dieses Prozesses (request-budget.mjs, SOURCE_SPACING_MS)
+globalThis.fetch=pacedFetch(globalThis.fetch.bind(globalThis),serverOf);
 const run=importRunner(db,{runSync,analysePending});
 const started=Date.now();
 const stop=()=>options.maxMinutes>0&&Date.now()-started>options.maxMinutes*60000;

@@ -93,4 +93,16 @@ export function HostTable({hosts,onRelease,busy}:{hosts:Host[];onRelease?:(h:str
    <td className="text-right">{onRelease&&<button type="button" className="text-[14px] font-medium text-teal-700 hover:text-teal-600 disabled:opacity-40" disabled={busy} onClick={()=>onRelease(h.host)}>freigeben →</button>}</td>
   </tr>)}</tbody></table>;
 }
-export type {Counter};
+type Provider={server:string;state:string;level:number;areas:number;today:number;next_try_at:string|null;since:string|null;reason:string|null};
+/** Anbieter des Abrufs, die nicht frei sind (pipeline-debug.mjs providerStates): gesperrt, gebremst oder im Anlauf nach einer Sperre */
+export function ProviderTable({providers}:{providers:Provider[]}){
+ return <table className="mt-2 w-full max-w-[1100px] border-collapse text-[14px]"><thead><tr className="border-b border-slate-200 text-left text-slate-500"><th className="py-1 pr-3 font-normal">Anbieter</th><th className="pr-3 font-normal">Zustand</th><th className="pr-3 text-right font-normal">Gebiete</th><th className="pr-3 font-normal">nächste Stichprobe</th><th className="font-normal">Grund</th></tr></thead>
+  <tbody>{providers.map(p=><tr key={p.server} className="border-b border-slate-100 align-top">
+   <td className="max-w-[260px] break-all py-1 pr-3">{p.server.replace(/^ip:/,'Adresse ')}</td>
+   <td className="pr-3">{HOST_TERMS[p.state as keyof typeof HOST_TERMS]||p.state}{p.state==='anlauf'&&<span className="text-slate-500"> seit {when(p.since||'')}</span>}</td>
+   <td className="pr-3 text-right tabular-nums">{p.state==='anlauf'?`${n(p.today)} von ${n(p.areas)}`:n(p.areas)}</td>
+   <td className="pr-3 tabular-nums">{p.state==='anlauf'?'–':p.next_try_at?when(p.next_try_at):'nur von Hand'}</td>
+   <td className="max-w-[300px] break-words text-slate-500">{p.reason}</td>
+  </tr>)}</tbody></table>;
+}
+export type {Counter,Provider};

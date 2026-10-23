@@ -165,6 +165,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     // attemptComplete describes this attempt; coverage.complete describes the stored period.
     // resume: the time limit ended this attempt after it had read further meetings; the next attempt continues behind them.
     // stored: reports written (new, changed, or with changed metadata). refused: the source refused a request; the job
-    // pauses its server and continues the area later (pipeline-jobs.mjs).
-    return { topics: fresh.topics.length, decisions: decisions.length, coverage, window: lookback, quiet, attemptComplete: Boolean(fresh.coverage.complete) || quiet, unchanged, warnings, resume: Boolean(fresh.coverage.resumable) && (Number(fresh.readMeetings || 0) > 0 || listAdvanced), stored: written.created + written.changed + touch.length, ...(fresh.refused ? { refused: fresh.refused } : {}) };
+    // pauses its server and continues the area later (pipeline-jobs.mjs). requests: requests sent to the source and failed
+    // (all failed and nothing read: the provider was not reached, unreached() in pipeline-jobs.mjs).
+    return { topics: fresh.topics.length, decisions: decisions.length, coverage, window: lookback, quiet, attemptComplete: Boolean(fresh.coverage.complete) || quiet, unchanged, warnings, resume: Boolean(fresh.coverage.resumable) && (Number(fresh.readMeetings || 0) > 0 || listAdvanced), stored: written.created + written.changed + touch.length, requests: { sent: record.summary.requests, failed: record.summary.failed }, ...(fresh.refused ? { refused: fresh.refused } : {}) };
 }

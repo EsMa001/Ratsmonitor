@@ -60,7 +60,7 @@ export const CLASS_TERMS=Object.freeze({
  internal:{name:'Fehler im eigenen Code',then:'neuer Versuch nach dem nächsten Deploy'},
 });
 /** Stufen eines Servers (source_hosts) */
-export const HOST_TERMS=Object.freeze({ok:'liefert',bremsen:'bremst',gesperrt:'gesperrt',pruefen:'prüfen'});
+export const HOST_TERMS=Object.freeze({ok:'liefert',bremsen:'bremst',gesperrt:'gesperrt',pruefen:'prüfen',anlauf:'fährt hoch'});
 
 /** Aufträge der PDF-Ablage (Reiter PDF-Import und Seite Altbestand; pdf-store-admin.mjs JOB_KINDS) als Knopf */
 export const PDF_JOB_TERMS=Object.freeze({run:'Ältere Monate laden',retry:'Alte Fehler erneut versuchen',others:'Anlagen laden',texts:'Text lesen',ocr:'OCR des Altbestands'});

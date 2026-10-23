@@ -477,6 +477,12 @@ Schritte: `shared/pipeline-terms.mjs`.
   aktualisieren, Zahlen rechnen, KI-Stand `ai-counts`, Wege zählen `pipeline-trace`).
 - **Tagesbereich und Altbestand:** Tagesbereich sind Sitzungen der letzten 7 Tage, frühestens 12.10.2026, deren Fehler nicht vor dem
   12.10. entstanden. Nur ihn bearbeitet die Nacharbeit; alles Ältere ist Altbestand.
+- **Anbieter nicht erreicht, Anlauf, Mindestabstand** (seit 23.10.2026): Ein Abruf, bei dem jede Anfrage scheitert und nichts gelesen wird
+  (`unreached` in `pipeline-jobs.mjs`), zählt für die Servergruppe (`provider()`, z. B. `ris-portal.de`): nach 3 solchen Gebieten ruhen die
+  übrigen des Anbieters im laufenden Auftrag, verweigert (401/403) wartet er 1, 3, dann alle 7 Tage (`PROVIDER_LOCK`), stumm (Zeitüberschreitung)
+  nach der Leiter „bremst“. Gelingt die Stichprobe der Nacharbeit, fährt er hoch: 20 Gebiete am ersten Tag, täglich doppelt so viele
+  (`rampAllowance`, Stand `system_state` `provider-ramp`, nur der Nachtauftrag teilt zu). Der Importprozess schickt jedem Anbieter
+  höchstens eine Anfrage alle 1,5 s (`pacedFetch`, `SOURCE_SPACING_MS`). Anzeige: `/admin?seite=fehler`, „Anbieter, die nicht frei sind“.
 - **Fehlerspeicher** (Migration `0040`, `server/integrations/work-failures.mjs`): Grund je Eintrag (Quelle bremst, Zugriff verweigert,
   vorübergehend, fehlt dauerhaft, zu langsam, Sperre im Haus, Fehler im eigenen Code), Stufe, nächster Termin; `source_hosts` je Server
   (liefert, bremst 1 h → 7 d, gesperrt 7 d → 30 d → prüfen mit Stichprobe alle 30 Tage). Nichts wird endgültig außer 404, „kein PDF“,

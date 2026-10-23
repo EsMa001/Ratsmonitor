@@ -5,7 +5,8 @@
  * gezählt von scripts/pipeline-trace.mjs) und was im Fehlerspeicher steht, getrennt nach Tagesbereich und Altbestand.
  * Aktionen (POST): Server freigeben, Einträge des Tagesbereichs wieder öffnen (den Altbestand bearbeitet seine eigene Seite).
  */
-import {failureCounts,hasFailureStore,releaseHost,reopen,CLASSES,rangeWhere,dailyBoundary,DAILY_SINCE,PHASE_ORDER} from './work-failures.mjs';
+import {failureCounts,hasFailureStore,releaseHost,reopen,CLASSES,rangeWhere,dailyBoundary,DAILY_SINCE,PHASE_ORDER,providerRamps,rampAllowance} from './work-failures.mjs';
+import {PROVIDER_AREAS} from './pipeline-jobs.mjs';
 import {JOBS,UNITS_KEY,unitsWarning} from './schedules.mjs';
 
 export const SCHEDULE_LOG_KEY='schedule-log';
@@ -21,6 +22,19 @@ function jobBrief(job){
   failed:(job.items||[]).filter(i=>i.status==='failed'||i.status==='unknown').slice(0,30).map(i=>({region:i.region,message:i.message}))};
 }
 
+/**
+ * Anbieter des Abrufs, die nicht frei sind: gesperrt oder gebremst (Fehlerspeicher) oder im Anlauf nach einer Sperre (work-failures.mjs,
+ * rampAllowance), mit der Zahl ihrer Gebiete und wie viele davon heute abgerufen werden. Nur Servergruppen mit angebundenen Gebieten.
+ */
+export async function providerStates(db,now=Date.now()){
+ if(!await hasFailureStore(db))return [];
+ const areas=PROVIDER_AREAS(),ramps=await providerRamps(db),out=[];
+ const {results}=await db.prepare("SELECT host,state,level,next_try_at,last_ok_at,last_fail_at,reason FROM source_hosts WHERE state<>'ok'").all();
+ for(const h of results||[]){const n=areas.get(h.host)?.length;if(n)out.push({server:h.host,state:h.state,level:h.level,areas:n,today:0,next_try_at:h.next_try_at,since:h.last_fail_at,reason:h.reason});}
+ for(const [server,since] of Object.entries(ramps)){const n=areas.get(server)?.length;if(n&&!out.some(p=>p.server===server))out.push({server,state:'anlauf',level:0,areas:n,today:Math.min(n,rampAllowance(since,now)),next_try_at:null,since,reason:null});}
+ return out.sort((a,b)=>b.areas-a.areas||a.server.localeCompare(b.server));
+}
+
 /** Alles für die Seite, nur lesend */
 export async function pipelineDebug(db,now=Date.now()){
  const {results}=await db.prepare(`SELECT key,value FROM system_state WHERE key IN (${KEYS.map(()=>'?').join(',')})`).bind(...KEYS).all();
@@ -31,7 +45,7 @@ export async function pipelineDebug(db,now=Date.now()){
  const hosts=store?(await db.prepare(`SELECT host,state,fails,level,next_try_at,last_ok_at,last_fail_at,reason,(SELECT count(*) FROM work_failures w WHERE w.host=h.host) AS entries FROM source_hosts h WHERE state<>'ok' ORDER BY entries DESC,host LIMIT 60`).all()).results:[];
  const internal=store?(await db.prepare("SELECT step,key,reason,release,last_at,tries FROM work_failures WHERE class='internal' ORDER BY last_at DESC LIMIT 40").all()).results:[];
  const recent=store?(await db.prepare(`SELECT step,key,host,class,reason,http,tries,last_at,next_try_at,origin,event_date,CASE WHEN ${d.sql} THEN 'daily' ELSE 'backlog' END AS range FROM work_failures ORDER BY last_at DESC LIMIT 60`).bind(...d.args).all()).results:[];
- const req=by.get('altbestand-requests')||{};
+ const req=by.get('altbestand-requests')||{},providers=await providerStates(db,now);
  return {at:new Date(now).toISOString(),boundary:dailyBoundary(now),since:DAILY_SINCE,phases:PHASE_ORDER,
   units:unitsWarning(by.get(UNITS_KEY),now),
   jobs:JOBS.map(j=>({id:j.id,label:j.label,flow:j.flow,time:j.time||null,every:j.every||null,window:j.window||null})),
@@ -39,7 +53,7 @@ export async function pipelineDebug(db,now=Date.now()){
   pdfRuns:(by.get('pdf-store-runs')||[]).slice(0,12),ruleTexts:by.get('rule-texts-last'),nacharbeit:by.get('nacharbeit-last'),
   altbestand:{last:by.get('altbestand-last'),importOpen:!!req.import&&!req.import.finishedAt&&!req.import.stoppedAt,reworkOpen:!!req.rework&&!req.rework.finishedAt,ocrOpen:!!req.ocr&&!req.ocr.stoppedAt},
   aiCounts:by.get('ai-counts'),trace:by.get('pipeline-trace'),pdfDaily:by.get('pdf-daily-last'),
-  importJob:jobBrief(by.get('admin-pipeline-job')),failures,hosts,internal,recent,classes:CLASSES};
+  importJob:jobBrief(by.get('admin-pipeline-job')),failures,hosts,providers,internal,recent,classes:CLASSES};
 }
 
 /** Aktion: {action:'release',host} | {action:'reopen',cls?,step?,host?,key?,phase?} (nur Tagesbereich) */
