@@ -2,7 +2,7 @@
 import {useCallback,useEffect,useState} from 'react';
 import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
-import {AdminPageHead,Befund,Zahlen,Abschnitt,How,Fehler,Laden,Leer} from '@/components/admin-ui';
+import {AdminPageHead,Befund,Zahlen,Abschnitt,How,Fehler,Laden,Leer,SteuernLink} from '@/components/admin-ui';
 import {Segmented} from '@/components/ratsmonitor/components/Segmented';
 import {adminHref} from '@/components/admin-chrome';
 import {FailureTable,HostTable,type FailRow} from '@/components/admin-pipeline-parts';
@@ -15,11 +15,10 @@ import {n,day,when} from '@/components/admin-format';
 type Entry={step:string;key:string;class?:string;reason:string|null;tries:number;last_at:string;next_try_at?:string|null;range?:string;release?:string|null};
 type Data={boundary:string;since:string;failures:{rows?:FailRow[];missing?:string};hosts:{host:string;state:string;level:number;next_try_at:string|null;reason:string|null;entries:number}[];internal:Entry[];recent:Entry[];error?:string};
 
-export function AdminFehler(){
+/** Stand des Fehlerspeichers (/api/admin/debug), jede Minute neu; post/retry nur für die Steuerung */
+function useFehler(initial:'daily'|'backlog'){
  const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[note,setNote]=useState(''),[lastLoad,setLastLoad]=useState(0);
- // ?bereich=altbestand (Link der Seite Altbestand) öffnet den Altbestand
- const params=useSearchParams();
- const [range,setRange]=useState<'daily'|'backlog'>(params.get('bereich')==='altbestand'?'backlog':'daily');
+ const [range,setRange]=useState<'daily'|'backlog'>(initial);
  const load=useCallback(async()=>{
   try{const r=await fetch('/api/admin/debug',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Die Seite konnte nicht geladen werden.');setData(d);setError('');setLastLoad(Date.now());}
   catch(e){setError(e instanceof Error?e.message:'Die Seite konnte nicht geladen werden.');}
@@ -38,6 +37,13 @@ export function AdminFehler(){
   ?post('debug',{action:'reopen',phase,...(cls?{cls}:{})},'Diese Einträge des Tagesbereichs jetzt fällig machen? Die Nacharbeit versucht sie im nächsten Lauf; wartende Server bleiben bis zu ihrer Stichprobe ausgelassen.',d=>`${n(Number(d.reopened)||0)} Einträge sind jetzt fällig; die Nacharbeit versucht sie in ihrem nächsten Lauf (alle 30 Minuten, 9 bis 23 Uhr).`)
   :post('altbestand',{action:'rework',phase,reopen:true,...(cls?{cls}:{})},`Alte Fehler der Stufe ${PHASES[phase as keyof typeof PHASES]?.name} erneut versuchen? Der Job „Altbestand“ arbeitet sie zwischen 10 und 22 Uhr ab.`,()=>'Angefordert; der Job „Altbestand“ arbeitet die Einträge ab.');
 
+ return {data,error,setError,load,lastLoad,busy,note,post,retry,rows,daily,backlog,range,setRange};
+}
+
+export function AdminFehler(){
+ // ?bereich=altbestand (Link der Seite Altbestand) öffnet den Altbestand
+ const params=useSearchParams();
+ const {data,error,load,lastLoad,rows,daily,backlog,range,setRange}=useFehler(params.get('bereich')==='altbestand'?'backlog':'daily');
  const befund=!data?null:data.failures.missing?'Ohne Migration 0040 gibt es keinen Fehlerspeicher.'
   :`${daily?`${n(daily)} Einträge im Tagesbereich sind offen; die Nacharbeit versucht sie von selbst erneut.`:'Im Tagesbereich ist nichts offen.'}${data.internal.length?` ${n(data.internal.length)} Fehler im eigenen Code brauchen die Entwicklung.`:''}`;
 
@@ -48,17 +54,16 @@ export function AdminFehler(){
   {data&&<>
    <Befund stand={<>Stand {when(new Date(lastLoad).toISOString())} · aktualisiert sich jede Minute</>}>{befund}</Befund>
    {!data.failures.missing&&<Zahlen items={[{value:n(backlog),label:'im Altbestand'},{value:n(data.hosts.length),label:'Server warten'},{value:n(data.internal.length),label:'Fehler im eigenen Code'}]}/>}
-   {note&&<p role="status" className="mt-4 text-[14px] text-slate-700">{note}</p>}
 
    {!data.failures.missing&&<Abschnitt title="Fehlerspeicher" sub="Was gescheitert ist, nach Stufe und Grund."
     aside={<Segmented label="Bereich" value={range} onPick={setRange} options={[['daily',`Tagesbereich (${n(daily)})`],['backlog',`Altbestand (${n(backlog)})`]]}/>}>
     <How label="Was bedeuten Bereich und Zustand?"><p>„Jetzt fällig“ kommt im nächsten Lauf dran, „wartet“ hat einen späteren Termin, „kein Versuch mehr“ bleibt liegen, bis jemand ihn wieder öffnet.</p><p>Tagesbereich: Sitzungen ab {day(data.boundary)}, bearbeitet von der Nacharbeit. Altbestand: alles Ältere und alles vor dem {day(data.since)} Gescheiterte, bearbeitet nur auf Knopfdruck.</p></How>
-    {(range==='daily'?daily:backlog)?<FailureTable rows={rows} range={range} busy={busy} onRetry={(phase,cls)=>void retry(phase,cls)}/>:<Leer>Hier ist nichts offen.</Leer>}
-    {range==='backlog'&&<p className="mt-3 text-[14px] text-slate-700">Alle alten Fehler auf einmal erneut versuchen: <Link href={adminHref('altbestand')} className="text-teal-700">Altbestand →</Link></p>}
+    {(range==='daily'?daily:backlog)?<FailureTable rows={rows} range={range}/>:<Leer>Hier ist nichts offen.</Leer>}
+    <p className="mt-3 text-[14px]"><SteuernLink job={range==='daily'?'nacharbeit':'altbestand'} label="Erneut versuchen in der Steuerung"/></p>
    </Abschnitt>}
 
-   {data.hosts.length>0&&<Abschnitt title="Server, die gerade warten" sub="Ein Server, der bremst oder mehrfach scheitert, wird eine Zeit lang ausgelassen und danach mit drei Dokumenten geprüft. „Freigeben“ zieht die Prüfung vor.">
-    <HostTable hosts={data.hosts} busy={busy} onRelease={h=>void post('debug',{action:'release',host:h},`${h} jetzt freigeben? Die Nacharbeit prüft ihn im nächsten Lauf mit drei Dokumenten.`,()=>'Server freigegeben; die Nacharbeit prüft ihn im nächsten Lauf mit drei Dokumenten.')}/>
+   {data.hosts.length>0&&<Abschnitt title="Server, die gerade warten" sub="Ein Server, der bremst oder mehrfach scheitert, wird eine Zeit lang ausgelassen und danach mit drei Dokumenten geprüft. Freigeben (die Prüfung vorziehen) in der Steuerung.">
+    <HostTable hosts={data.hosts}/>
     <p className="mt-3 text-[14px] text-slate-700">Server, die beim PDF-Laden scheitern: <Link href={adminHref('pdf')} className="text-teal-700">PDF-Import →</Link></p>
    </Abschnitt>}
 
@@ -71,4 +76,20 @@ export function AdminFehler(){
    </Abschnitt>}
   </>}
  </>;
+}
+
+/** Fehlerspeicher für die Steuerung, nur Tagesbereich (Gruppe Nacharbeit): Einträge erneut fällig machen und wartende Server
+    freigeben. Alte Fehler versucht der Altbestand erneut (dort „Alte Fehler erneut versuchen“). Die Seite „Fehler & Server“ liest nur. */
+export function FehlerSteuern(){
+ const {data,error,load,busy,note,post,retry,rows,daily}=useFehler('daily');
+ if(!data||data.failures.missing)return error?<Fehler onRetry={load}>{error}</Fehler>:null;
+ return <div className="mt-6 max-w-[1100px] text-[14px]">
+  <div><h3 className="m-0 text-[16px] font-semibold">Fehlerspeicher, Tagesbereich ({n(daily)})</h3>
+   <p className="m-0 mt-1 text-slate-500">„Erneut versuchen“ macht Einträge sofort fällig; die Nacharbeit versucht sie im nächsten Lauf. Alte Fehler: beim Altbestand. <Link href={adminHref('fehler')} className="text-teal-700">Stand ansehen →</Link></p></div>
+  {error&&<Fehler onRetry={load}>{error}</Fehler>}
+  {note&&<p role="status" className="m-0 mt-2 text-slate-700">{note}</p>}
+  {daily?<FailureTable rows={rows} range="daily" busy={busy} onRetry={(phase,cls)=>void retry(phase,cls)}/>:<Leer>Im Tagesbereich ist nichts offen.</Leer>}
+  {data.hosts.length>0&&<><h3 className="m-0 mt-6 text-[16px] font-semibold">Server, die gerade warten</h3>
+   <HostTable hosts={data.hosts} busy={busy} onRelease={h=>void post('debug',{action:'release',host:h},`${h} jetzt freigeben? Die Nacharbeit prüft ihn im nächsten Lauf mit drei Dokumenten.`,()=>'Server freigegeben; die Nacharbeit prüft ihn im nächsten Lauf mit drei Dokumenten.')}/></>}
+ </div>;
 }

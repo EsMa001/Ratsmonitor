@@ -31,14 +31,14 @@ export const metadata={title:'Administration · '+BRAND_NAME[DEFAULT_BRAND],robo
 // "Abdeckung", qualitaet the "Prüfliste", debug "Letzte Nacht"). "auswahl" (areas handed over by the estimate) and
 // "filter" (a list filter) open the import page. Without a page: the cockpit. 'start' stands here as text: values from
 // admin-chrome.tsx ('use client') arrive in a server component only as client references, not as strings.
-const PAGES:Record<string,AdminPage>={start:'start',cockpit:'start',abdeckung:'abdeckung',uebersicht:'abdeckung',atlas:'atlas',nacht:'nacht',debug:'nacht',abruf:'abruf',pdf:'pdf','pdf-import':'pdf',verarbeitung:'verarbeitung',altbestand:'altbestand',regeltexte:'regeltexte',pruefliste:'pruefliste',qualitaet:'pruefliste',bestand:'bestand',zeitplaene:'zeitplaene',steuerung:'zeitplaene',jobs:'zeitplaene',fehler:'fehler',speicher:'speicher',todo:'todo',hochrechnung:'hochrechnung',social:'social','1':'abruf','2':'pruefliste','3':'hochrechnung'};
+const PAGES:Record<string,AdminPage>={start:'start',cockpit:'start',abdeckung:'abdeckung',uebersicht:'abdeckung',atlas:'atlas',nacht:'nacht',debug:'nacht',abruf:'abruf',pdf:'pdf','pdf-import':'pdf',verarbeitung:'verarbeitung',altbestand:'altbestand',regeltexte:'regeltexte',pruefliste:'pruefliste',qualitaet:'pruefliste',bestand:'bestand',zeitplaene:'steuerung',steuerung:'steuerung',jobs:'steuerung',fehler:'fehler',speicher:'speicher',todo:'todo',hochrechnung:'hochrechnung',social:'social','1':'abruf','2':'pruefliste','3':'hochrechnung'};
 const FILTERS=['all','connected','data','empty','issues','partial','stale','failed','shallow','quiet','selected'];
-export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string;filter?:string}>}){const {seite,auswahl,filter}=await searchParams;
+export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string;filter?:string;auftrag?:string}>}){const {seite,auswahl,filter,auftrag}=await searchParams;
  // "auswahl" preselects areas on the import page; only known area ids are accepted.
  const selection=[...new Set(String(auswahl||'').split(',').filter(id=>id&&validRegion(id)))].slice(0,REGIONS.length);
  const page:AdminPage=PAGES[String(seite||'')]||(selection.length||filter?'abruf':'start');
- return <AdminContent page={page} mobile={String(seite||'')==='mobil'} selection={selection} filter={FILTERS.includes(String(filter))?String(filter):undefined}/>;}
-async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobile:boolean;selection:string[];filter?:string}){
+ return <AdminContent page={page} mobile={String(seite||'')==='mobil'} selection={selection} filter={FILTERS.includes(String(filter))?String(filter):undefined} control={auftrag==='1'||selection.length>0}/>;}
+async function AdminContent({page,mobile,selection,filter,control}:{page:AdminPage;mobile:boolean;selection:string[];filter?:string;control:boolean}){
  // Melde-, Einrichtungs- und Fehlerzustände im Rahmen ohne Reiter.
  const gate=(children:React.ReactNode)=><AdminFrame tabs={false}><div className="mx-auto max-w-[640px] py-16">{children}</div></AdminFrame>;
  const title=(text:string)=><h1 className="text-[28px] font-semibold leading-tight">{text}</h1>;
@@ -75,7 +75,7 @@ async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobil
  if(page==='social')return frame(<AdminSocial/>);
  if(page==='pdf')return frame(<AdminPdf/>);
  if(page==='speicher')return frame(<AdminStorage/>);
- if(page==='zeitplaene')return frame(<AdminSchedules/>);
+ if(page==='steuerung')return frame(<AdminSchedules/>);
  if(page==='nacht')return frame(<AdminDebug/>);
  if(page==='fehler')return frame(<AdminFehler/>);
  if(page==='altbestand')return frame(<AdminAltbestand/>);
@@ -86,5 +86,5 @@ async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobil
  if(page==='start')return frame(<AdminCockpit/>);
  // Pages on the dashboard (Abruf, Verarbeitung, Prüfliste, Bestandsprüfung): the browser puts it together
  // from three parts, see components/admin-loader.tsx.
- return frame(<AdminLoader page={page} staticVersion={version} initialSelection={selection} initialFilter={filter}/>);
+ return frame(<AdminLoader page={page} staticVersion={version} initialSelection={selection} initialFilter={filter} control={control}/>);
 }

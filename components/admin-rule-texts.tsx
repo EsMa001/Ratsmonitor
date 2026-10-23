@@ -135,7 +135,7 @@ export function AdminRuleTexts(){
   finally{setBusy(false);}
  },[]);
  useEffect(()=>{const t=setTimeout(load,0);return ()=>clearTimeout(t);},[load]);
- /* Job „Verarbeitung, nachts“ (scripts/rule-texts.mjs) über die Zeitpläne: Stand und letzter Lauf; gestartet wird in der Steuerung */
+ /* Job „Einordnung, nachts“ (scripts/rule-texts.mjs) über die Zeitpläne: Stand und letzter Lauf; gestartet wird in der Steuerung */
  const [job,setJob]=useState<JobState|null>(null),[jobError,setJobError]=useState('');
  const loadJob=useCallback(async()=>{
   try{const r=await fetch('/api/admin/zeitplaene',{cache:'no-store'});const d=await r.json() as {jobs?:(JobState&{id:string})[];error?:string};if(!r.ok)throw Error(d.error||'Der Job konnte nicht geladen werden.');setJob(d.jobs?.find(j=>j.id==='rule-texts')||null);setJobError('');}
@@ -211,7 +211,7 @@ export function AdminRuleTexts(){
    </Abschnitt>
 
    <Abschnitt id="regeltexte-themen" open={false} title="Themen" sub="Anteil der Sachvorgänge je Thema und ihre Unterthemen, gezählt am Ende jedes Laufs.">
-   {!themeRows.length?<p className="admin-empty">Nach dem nächsten Lauf von „Verarbeitung, nachts“.</p>:<div className="mt-4">{themeRows.map(([id,v])=><div key={id} className="admin-bar-row">
+   {!themeRows.length?<p className="admin-empty">Nach dem nächsten Lauf von „Einordnung, nachts“.</p>:<div className="mt-4">{themeRows.map(([id,v])=><div key={id} className="admin-bar-row">
     <div><span>{THEME_NAME[id]||id}</span><span>{pct(v,themeTotal)} · {n(v)}</span></div>
     <div className="admin-bar"><span style={{width:(100*v/themeTotal)+'%'}}/></div>
     {id!=='unklar'&&<small className="mt-1 block text-[12px] text-slate-500">{subsOf(id).map((u:{name:string;n:number})=>u.name+' '+pct(u.n,v)).join(' · ')}</small>}

@@ -28,8 +28,8 @@ export function AdminVerarbeitung({initial}:{initial:AdminDashboard}){
   <div className={refreshing?'opacity-60 transition-opacity':'transition-opacity'} aria-busy={refreshing}>
    <Abschnitt id="verarbeitung-ki" title={HELP['verarbeitung.ki']?.title}>
     <SectionHelp id="verarbeitung.ki"/>
-    <div className="mt-4 max-w-[420px]"><AdminAreaPick id="verarbeitung-gebiet" label="Gebiet für „Ihre Auswahl“" value={area} onChange={setArea} options={areaOptions} allLabel="Kein Gebiet gewählt"/></div>
-    <div className="admin-stage-grid admin-stage-grid-local mt-4"><AdminAiLocal sources={data.sources} selected={selected} revision={data.processing.revision} legacyJob={data.processing.aiJob}/></div>
+    <div className="admin-stage-grid admin-stage-grid-local mt-4"><AdminAiLocal sources={data.sources} selected={selected} revision={data.processing.revision} legacyJob={data.processing.aiJob}
+     picker={<AdminAreaPick id="verarbeitung-gebiet" label="Welche Gebiete" value={area} onChange={setArea} options={areaOptions} allLabel="Ganz Deutschland"/>}/></div>
    </Abschnitt>
   </div>
  </>;

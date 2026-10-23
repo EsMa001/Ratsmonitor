@@ -85,12 +85,12 @@ export function FailureTable({rows,range,onRetry,busy}:{rows:FailRow[];range:'da
 
 type Host={host:string;state:string;level:number;next_try_at:string|null;reason:string|null;entries:number};
 /** Server, die warten, mit Knopf „freigeben“ */
-export function HostTable({hosts,onRelease,busy}:{hosts:Host[];onRelease:(h:string)=>void;busy?:boolean}){
+export function HostTable({hosts,onRelease,busy}:{hosts:Host[];onRelease?:(h:string)=>void;busy?:boolean}){
  return <table className="mt-2 w-full max-w-[1100px] border-collapse text-[14px]"><thead><tr className="border-b border-slate-200 text-left text-slate-500"><th className="py-1 pr-3 font-normal">Server</th><th className="pr-3 font-normal">Stufe</th><th className="pr-3 font-normal">nächste Stichprobe</th><th className="pr-3 text-right font-normal">Einträge</th><th className="pr-3 font-normal">zuletzt</th><th/></tr></thead>
   <tbody>{hosts.map(h=><tr key={h.host} className="border-b border-slate-100 align-top">
    <td className="max-w-[260px] break-all py-1 pr-3">{h.host}</td><td className="pr-3">{HOST_TERMS[h.state as keyof typeof HOST_TERMS]||h.state}{h.level>1&&<span className="text-slate-500"> ({h.level}. Mal)</span>}</td>
    <td className="pr-3 tabular-nums">{h.next_try_at?when(h.next_try_at):'nur von Hand'}</td><td className="pr-3 text-right tabular-nums">{n(h.entries)}</td><td className="max-w-[300px] break-words pr-3 text-slate-500">{h.reason}</td>
-   <td className="text-right"><button type="button" className="text-[14px] font-medium text-teal-700 hover:text-teal-600 disabled:opacity-40" disabled={busy} onClick={()=>onRelease(h.host)}>freigeben →</button></td>
+   <td className="text-right">{onRelease&&<button type="button" className="text-[14px] font-medium text-teal-700 hover:text-teal-600 disabled:opacity-40" disabled={busy} onClick={()=>onRelease(h.host)}>freigeben →</button>}</td>
   </tr>)}</tbody></table>;
 }
 export type {Counter};

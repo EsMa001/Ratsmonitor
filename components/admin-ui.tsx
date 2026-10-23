@@ -102,7 +102,7 @@ export function Laden(){
 }
 /** Lese-Seiten lösen nichts aus: Starten, Anhalten und Zeitpläne liegen auf der Steuerung (Konzept B1a) */
 export function SteuernLink({job,label='Steuern'}:{job:string;label?:string}){
- return <Link href={adminHref('zeitplaene','job='+job)+'#job-'+job} className="whitespace-nowrap text-[14px] text-teal-700">{label} →</Link>;
+ return <Link href={adminHref('steuerung','job='+job)+'#job-'+job} className="whitespace-nowrap text-[14px] text-teal-700">{label} →</Link>;
 }
 
 export type Kpi={label:string;value?:ReactNode;of?:ReactNode;note?:ReactNode;title?:string};

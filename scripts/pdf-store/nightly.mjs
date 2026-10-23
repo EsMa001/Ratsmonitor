@@ -164,12 +164,12 @@ if(ocrOnly){
  if(!dry&&!stopped&&!steps.some(s=>s.summary?.files>0)){progress(lane,null);release();say('nichts zu lesen');process.exit(0);}
  await step(N.doctype,'scripts/pdf-store/budget.mjs',['--backfill']);
  /* Folgekette (Betriebsplan): Berichte, deren Text die OCR gerade ergänzt hat, gleich verarbeiten (Regeln anwenden, Suche
-    aktualisieren), statt bis zur nächsten Nacht zu warten. Nicht, solange „Verarbeitung, nachts“ läuft (dieselben Berichte). */
+    aktualisieren), statt bis zur nächsten Nacht zu warten. Nicht, solange „Einordnung, nachts“ läuft (dieselben Berichte). */
  if(!dry&&!stopped){
   const rt=(readState('schedule-runs')||{})['rule-texts']?.running,busy=!!rt?.pid&&(()=>{try{process.kill(rt.pid,0);return true;}catch(e){return e.code==='EPERM';}})();
   const s=openPdfStore(dir);let ids=[];
   try{ids=s.db.prepare("SELECT DISTINCT p.topic_id AS id FROM texts t JOIN pdfs p ON p.sha256=t.sha256 WHERE t.made_at>=? AND t.method IN ('ocr','mixed') AND p.topic_id IS NOT NULL").all(base.startedAt).map(r=>r.id);}finally{s.close();}
-  if(busy)skip(stepName('rules'),'„Verarbeitung, nachts“ läuft gerade; der neue Text kommt dort an');
+  if(busy)skip(stepName('rules'),'„Einordnung, nachts“ läuft gerade; der neue Text kommt dort an');
   else if(ids.length){
    const idFile=path.join(dir,`ocr-ids-${process.pid}.txt`);fs.writeFileSync(idFile,ids.join('\n'));
    await step(stepName('model'),'scripts/model/apply.mjs',['--ids',idFile]);

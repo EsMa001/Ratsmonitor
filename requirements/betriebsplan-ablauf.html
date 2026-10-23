@@ -178,7 +178,7 @@ const NODES=[
   schreibt:['files/*.pdf, *.txt','pdfs, texts, head_type',"'pdf-store-runs', 'pdf-store-stats', 'pdf-daily-last'",'work_failures (Stufe Extraktion)'],
   grenzen:['2 h; Laden 48 min (Hauptdokumente 29, Anlagen 19), OCR 45 min','feste Grenze der Ablage 80 GB; Anlagen stehen unter allen Hauptdokumenten','OCR: je Seite 90 s, je Datei 5 min, Wächter 3 min'],
   rek:['Was die OCR in 45 min nicht schafft, liest „OCR, tagsüber“.','Fehler → Fehlerspeicher → Nacharbeit lädt nach, danach Text lesen, OCR und Regeln für die betroffenen Berichte.']}},
- {id:'rules',g:'night',x:260,y:514,w:210,h:110,t:'Verarbeitung, nachts',s:['Titel einordnen · Regeln anwenden','Suche aktualisieren · Zahlen rechnen','KI-Stand · Wege zählen'],time:[7.5,8.5],d:{
+ {id:'rules',g:'night',x:260,y:514,w:210,h:110,t:'Einordnung, nachts',s:['Titel einordnen · Regeln anwenden','Suche aktualisieren · Zahlen rechnen','KI-Stand · Wege zählen'],time:[7.5,8.5],d:{
   was:'Stufe Verarbeitung der Tagespipeline, direkt nach der Extraktion: Sachgebiet nach der Titelregel, Regeln je Bericht (nur neue Eingaben), Suche, Zahlen für plenara.X; dann KI-Stand und Wege für Pipeline-Debug zählen.',
   liest:['topics (Titel, documents)','report_rules (Schlüssel je Bericht)','Ablage: Text des Hauptdokuments','search_cards, ai_work_items'],
   schreibt:['topics.payload: Einordnung, Art, Thema, Regel-Zusammenfassung','report_rules, topic_facts','Suche, x_cases',"'rule-texts-last', 'ai-counts', 'pipeline-trace'",'work_failures (Stufe Verarbeitung)'],
@@ -239,7 +239,7 @@ const EDGES=[
  {id:'c1',k:'chain',f:'backup',t:'import',l:'Kette: nach „Sichern“ der Abruf',p:'M365 206 L365 228'},
  {id:'c2',k:'chain',f:'import',t:'trends',l:'Kette: nach dem Abruf die Startseite',p:'M365 310 L365 328'},
  {id:'c3',k:'chain',f:'trends',t:'pdf',l:'Kette: dann die Extraktion',p:'M365 374 L365 392'},
- {id:'t3',k:'trigger',f:'pdf',t:'rules',l:'„Extraktion, nachts“ stößt „Verarbeitung, nachts“ an',p:'M365 490 L365 512'},
+ {id:'t3',k:'trigger',f:'pdf',t:'rules',l:'„Extraktion, nachts“ stößt „Einordnung, nachts“ an',p:'M365 490 L365 512'},
  {id:'t1',k:'trigger',f:'zeitplaner',t:'backup',l:'Zeitplaner startet die Tagespipeline zu ihren Zeiten',p:'M210 62 L365 62 L365 148'},
  {id:'t2',k:'trigger',f:'zeitplaner',t:'nacharbeit',l:'Zeitplaner startet die Nacharbeit alle 30 min zwischen 9 und 23 Uhr',p:'M210 50 L228 50 L228 8 L1050 8 L1050 34'},
  {id:'t4',k:'trigger',f:'zeitplaner',t:'ocrday',l:'Zeitplaner startet „OCR, tagsüber“ alle 10 min zwischen 7 und 23 Uhr',p:'M210 50 L228 50 L228 8 L1214 8 L1214 182 L1202 182'},

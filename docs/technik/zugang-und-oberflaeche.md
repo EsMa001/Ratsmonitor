@@ -182,7 +182,7 @@ Bausteine: `admin-chrome.tsx` (Rahmen und Menü), `admin-ui.tsx`, `admin-stand.t
 | Pipeline | `nacht` | `admin-debug.tsx`, `admin-pipeline-parts.tsx` | Letzte Nacht: Läufe, Zeitachse, Wege der Berichte, Laufbuch |
 | Pipeline | `abruf` | `admin-loader.tsx` → `admin-processing.tsx`, `AdminRuns` | Abruf (Gebiete, Abrufauftrag, letzte Abrufe, Zulauf) |
 | Pipeline | `pdf` | `admin-pdf.tsx`, `admin-pdf-parts.tsx` | PDF-Import (Stand, Aufträge, Server, Läufe) |
-| Pipeline | `verarbeitung` | `admin-loader.tsx` → `admin-verarbeitung.tsx`, `admin-ai-local.tsx` | Verarbeitung (Stand der Regeln, Job „Verarbeitung, nachts“ starten, KI-Arbeitsliste) |
+| Pipeline | `verarbeitung` | `admin-loader.tsx` → `admin-verarbeitung.tsx`, `admin-ai-local.tsx` | Verarbeitung (Stand der Regeln, Job „Einordnung, nachts“ starten, KI-Arbeitsliste) |
 | Pipeline | `altbestand` | `admin-altbestand.tsx` | Altbestand |
 | Qualität | `regeltexte` | `admin-rule-texts.tsx` | Themen & Texte (Ergebnis je Schritt, Qualität der Regeln, Freigaben) |
 | Qualität | `pruefliste` | `admin-loader.tsx` → `AdminReview` (`admin-dashboard.tsx`) | Prüfliste (Themen, Verfahrensstand, Berichte je Prüfgrund) |

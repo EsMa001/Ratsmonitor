@@ -1,7 +1,7 @@
 'use client';
 import {useCallback,useEffect,useState} from 'react';
 import Link from 'next/link';
-import {AdminPageHead,Befund,Zahlen,Abschnitt,Hinweis,Fehler,Laden,Leer} from '@/components/admin-ui';
+import {AdminPageHead,Befund,Zahlen,Abschnitt,Hinweis,Fehler,Laden,Leer,SteuernLink} from '@/components/admin-ui';
 import {adminHref} from '@/components/admin-chrome';
 import {Icon} from '@/components/admin-icons';
 import {n,gb,size,when,dur} from '@/components/admin-format';
@@ -32,7 +32,7 @@ function Bars({rows,max}:{rows:{key:string;label:React.ReactNode;bytes:number;no
 }
 
 export function AdminStorage(){
- const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ const [data,setData]=useState<Data|null>(null),[error,setError]=useState('');
  // Zeitpunkt, zu dem die Seite geöffnet wurde (beim Rendern kein Date.now())
  const [openedAt]=useState(()=>Date.now());
  const load=useCallback(async()=>{
@@ -43,17 +43,10 @@ export function AdminStorage(){
  useEffect(()=>{load();},[load]);
  const pending=!!data?.count&&!data.count.finishedAt;
  useEffect(()=>{if(!pending)return;const t=setInterval(load,30000);return ()=>clearInterval(t);},[pending,load]);
- const measure=async(tables:boolean)=>{
-  setBusy(true);
-  try{const r=await fetch('/api/admin/speicher',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'count',tables})});const d=await r.json() as {error?:string};if(!r.ok)throw Error(d.error||'Das ging nicht.');await load();}
-  catch(e){setError(e instanceof Error?e.message:'Das ging nicht.');}
-  finally{setBusy(false);}
- };
  const d=data?.disk,disk=d?.disk;
  const dbMain=d?.database.files.find(f=>f.kind==='Datenbank')?.bytes||0,dbBackups=d?.backups.list.filter(b=>!!b.kind?.startsWith('Datenbank'))||[];
  // In der Liste nur Datenbankkopien (auch ungepackte und unfertige); Protokolle und Skripte im Ordner nur als Summe
  const copies=d?.backups.list.filter(b=>b.kind!=='Sonstiges')||[],rest=d?.backups.list.filter(b=>b.kind==='Sonstiges')||[];
- const textBtn='text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40';
  const usedPct=disk?disk.used/disk.total*100:0,newest=dbBackups[0]?.at,backupOld=!newest||openedAt-Date.parse(newest)>BACKUP_HOURS*3600000;
  const warn=[disk&&usedPct>=DISK_PERCENT&&`Die Platte ist zu ${Math.round(usedPct)} % belegt`,disk&&disk.free<LOW&&'unter 20 GB frei',disk&&dbMain&&disk.free<=dbMain*1.5&&'der Platz für die nächste Sicherung ist knapp',d&&backupOld&&(newest?`die letzte Sicherung ist älter als ${BACKUP_HOURS} Stunden`:'es gibt keine Sicherung')].filter(Boolean) as string[];
  const befund=!d?null:warn.length?warn.join(', ').replace(/^./,c=>c.toUpperCase())+'.':`Der Platz reicht: ${gb(disk?.free)} frei, die letzte Sicherung ist vom ${when(newest)}.`;
@@ -63,7 +56,7 @@ export function AdminStorage(){
   {!data&&!error&&<Laden/>}
   {data&&!d&&<Leer>Noch keine Messung: sie entsteht beim nächsten Aufruf des Jobs „PDF-Aufträge und Messungen“.</Leer>}
   {d&&<>
-   <Befund stand={<>Gemessen {when(d.at)} ({dur(d.seconds)}) · <button type="button" className={textBtn} disabled={busy||pending||!data?.worker} onClick={()=>measure(false)}>{pending?(data?.count?.startedAt?'wird gemessen …':'Messung angefordert …'):'neu messen'}</button> · <button type="button" className={textBtn} disabled={busy||pending||!data?.worker} onClick={()=>measure(true)}>mit Tabellen (einige Minuten)</button></>}>{befund}</Befund>
+   <Befund stand={<>Gemessen {when(d.at)} ({dur(d.seconds)}){pending?' · Messung angefordert':''} · <SteuernLink job="pdf-job" label="Neu messen in der Steuerung"/></>}>{befund}</Befund>
    {data&&!data.worker&&<Hinweis>Auf diesem Rechner misst niemand (kein Lebenszeichen des Server-Dienstes in den letzten 20 Minuten). Die Zahlen sind die der letzten Messung.</Hinweis>}
    <Zahlen items={[{value:disk?`${Math.round(usedPct)} %`:'–',label:'belegt'},{value:gb(dbMain),label:'Datenbank'},{value:n(dbBackups.length),label:dbBackups.length===1?'Sicherung':'Sicherungen'},{value:gb(d.parts.pdfStore),label:'PDF-Ablage',href:adminHref('pdf')}]}/>
 
@@ -90,7 +83,7 @@ export function AdminStorage(){
    </>:<p className="mt-1 text-[14px] text-slate-500">Noch nicht gemessen (einmal am Tag oder mit „Mit Tabellen neu messen“).</p>}
    </Abschnitt>
 
-   <Abschnitt title="Sicherungen" sub={<>Nächtliche Kopie der Datenbank, geprüft und mit zstd gepackt (Job „Sichern“, <Link href={adminHref('zeitplaene')} className="text-teal-600">Jobs & Zeitpläne →</Link>). Es liegen nie mehr als 2 Kopien auf der Platte: vor einer neuen wird die älteste gelöscht. Während einer neuen braucht die ungepackte Kopie vorübergehend so viel Platz wie die Datenbank. Programmstände sind keine Sicherung der Daten; sie kommen aus Git.</>}>
+   <Abschnitt title="Sicherungen" sub={<>Nächtliche Kopie der Datenbank, geprüft und mit zstd gepackt (Job „Sichern“, <Link href={adminHref('steuerung')} className="text-teal-600">Jobs & Zeitpläne →</Link>). Es liegen nie mehr als 2 Kopien auf der Platte: vor einer neuen wird die älteste gelöscht. Während einer neuen braucht die ungepackte Kopie vorübergehend so viel Platz wie die Datenbank. Programmstände sind keine Sicherung der Daten; sie kommen aus Git.</>}>
    {d&&(copies.length?<ol className="m-0 mt-3 max-w-[820px] list-none border-t border-slate-200 p-0">
     {copies.map(b=><li key={b.name} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5 text-[14px] sm:grid-cols-[minmax(0,1fr)_140px_90px]">
      <span className="min-w-0 break-all">{b.name}{b.kind!=='Datenbank'&&<span className="ml-2 text-[12px] text-slate-500">{b.kind}</span>}</span>
@@ -113,4 +106,37 @@ export function AdminStorage(){
    </Abschnitt>
   </>}
  </>;
+}
+
+/** Messung für die Steuerung: Platz neu messen, auf Wunsch mit den Tabellen der Datenbank (einige Minuten). Ausgeführt vom Job
+    „PDF-Aufträge und Messungen“; die Seite „Speicher & Sicherungen“ liest nur. */
+export function SpeicherSteuern(){
+ const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ const load=useCallback(async()=>{
+  try{const r=await fetch('/api/admin/speicher',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Die Messung konnte nicht geladen werden.');setData(d);setError('');}
+  catch(e){setError(e instanceof Error?e.message:'Die Messung konnte nicht geladen werden.');}
+ },[]);
+ // eslint-disable-next-line react-hooks/set-state-in-effect -- Abruf beim Öffnen; State wird erst nach dem await gesetzt
+ useEffect(()=>{load();},[load]);
+ const pending=!!data?.count&&!data.count.finishedAt;
+ useEffect(()=>{if(!pending)return;const t=setInterval(load,30000);return ()=>clearInterval(t);},[pending,load]);
+ const measure=async(tables:boolean)=>{
+  setBusy(true);
+  try{const r=await fetch('/api/admin/speicher',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'count',tables})});const d=await r.json() as {error?:string};if(!r.ok)throw Error(d.error||'Das ging nicht.');await load();}
+  catch(e){setError(e instanceof Error?e.message:'Das ging nicht.');}
+  finally{setBusy(false);}
+ };
+ const side='text-[14px] font-medium text-teal-700 hover:text-teal-600 disabled:opacity-40',row='grid gap-1 border-b border-slate-200 py-3 md:grid-cols-[220px_minmax(0,1fr)_auto] md:items-baseline md:gap-4';
+ return <div className="mt-6 max-w-[1100px] text-[14px]">
+  <h3 className="m-0 text-[16px] font-semibold">Speicher messen</h3>
+  <p className="m-0 mt-1 text-slate-500">{data?.disk?`Zuletzt gemessen ${when(data.disk.at)}.`:'Noch keine Messung.'} <Link href={adminHref('speicher')} className="text-teal-700">Stand ansehen →</Link></p>
+  {error&&<Fehler onRetry={load}>{error}</Fehler>}
+  {data&&!data.worker&&<Hinweis>Kein Lebenszeichen des Server-Dienstes in den letzten 20 Minuten; Messen ist gesperrt.</Hinweis>}
+  <ul className="m-0 mt-2 list-none border-t border-slate-200 p-0">
+   <li className={row}><span className="font-semibold">Neu messen</span><span className="text-slate-700">Platte, Datenbank, Sicherungen, PDF-Ablage und Programmstände.</span>
+    <button type="button" className={side} disabled={busy||pending||!data?.worker} onClick={()=>void measure(false)}>{pending?(data?.count?.startedAt?'wird gemessen …':'angefordert …'):'anfordern →'}</button></li>
+   <li className={row}><span className="font-semibold">Mit Tabellen messen</span><span className="text-slate-700">Dazu die Größe jeder Tabelle der Datenbank; dauert einige Minuten.</span>
+    <button type="button" className={side} disabled={busy||pending||!data?.worker} onClick={()=>void measure(true)}>anfordern →</button></li>
+  </ul>
+ </div>;
 }

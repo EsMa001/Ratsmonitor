@@ -1,5 +1,5 @@
 'use client';
-import {AdminPageHead,Alert,Kpis,PageSkeleton,SectionHelp,StandLine,standText} from '@/components/admin-ui';
+import {AdminPageHead,Befund,Zahlen,Abschnitt,Fehler,Laden,Kpis,SectionHelp,StandLine,standText} from '@/components/admin-ui';
 import {HELP,HOCHRECHNUNG,TERMS,TITLES,ZUSTAND} from '@/components/admin-texts';
 import type {Stand} from '@/shared/admin-types';
 import {useEffect,useState,type ReactNode} from 'react';
@@ -114,14 +114,12 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
  };
  const resetError=()=>setFailed(prev=>{const next={...prev};delete next[revision];return next;});
  if(!data)return <>
-  <AdminPageHead page="hochrechnung"><StandLine stand={undefined}/></AdminPageHead>
-  {error&&<Alert onRetry={resetError}>{ZUSTAND.fehler} ({error})</Alert>}
-  <div className="mt-8"><Kpis label="Berichte pro Tag und Jahr" items={['Neue Berichte pro Tag','Pro Arbeitstag · an einem starken Tag','Davon heute lesbar','Pro Jahr'].map(label=>({label,value:undefined}))}/></div>
-  <PageSkeleton sections={[['hochrechnung.ergebnis',480]]}/>
+  <AdminPageHead page="hochrechnung"/>
+  {error?<Fehler onRetry={resetError}>{ZUSTAND.fehler} ({error})</Fehler>:<Laden/>}
  </>;
  if(data.computed===false){const waiting=!!data.stand&&data.stand.unbuilt>0;return <>
   <AdminPageHead page="hochrechnung"><StandLine stand={data.stand??null} busy={busy}/></AdminPageHead>
-  {error&&<Alert>{error}</Alert>}
+  {error&&<Fehler>{error}</Fehler>}
   <section className="admin-estimate"><div className="admin-section-heading"><h2>{HELP['hochrechnung.leer'].title}</h2></div><SectionHelp id="hochrechnung.leer"/>
    {waiting&&data.stand&&<p role="status" className="admin-note">{HOCHRECHNUNG.vorVorberechnung(nOr(data.stand.total-data.stand.unbuilt),nOr(data.stand.total))}</p>}
    <p className="mt-5"><button type="button" className="btn-primary" disabled={busy||waiting} onClick={compute}>{busy?'Wird berechnet …':HOCHRECHNUNG.leerKnopf}</button></p></section>
@@ -135,25 +133,22 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
  const counted=d.examples.reduce((sum,e)=>sum+e.reports,0),countedShare=Math.min(1,counted/d.total.perYear),assumedShare=(d.basis.typical+d.basis.borrowed)/d.total.perYear,modelShare=Math.max(0,1-countedShare-assumedShare);
  const withExamples=d.states.filter(s=>s.samples>0).map(s=>s.name),without=d.states.filter(s=>!s.samples).map(s=>s.name),borrowed=d.levels.filter(l=>l.assumed).map(l=>l.name),units=Object.values(d.frame.units).reduce((a,b)=>a+b,0);
  return <>
-  <AdminPageHead page="hochrechnung"><StandLine stand={d.stand??null} busy={busy} action="Neu berechnen" onAction={compute} hint="Rechnet die Hochrechnung aus den Werten je Gebiet neu; dauert einige Sekunden." extra={HOCHRECHNUNG.standExtra(nOr(d.sampleCount),day(d.from),day(d.to))}/></AdminPageHead>
-  {error&&<Alert>{ZUSTAND.fehlerNeu(error.replace(/[.]$/,''),standText(d.stand?.computedAt??d.computedAt))}</Alert>}
-  <div className={'mt-8'+(busy?' opacity-60 transition-opacity':'')}>
-   <Kpis label="Berichte pro Tag und Jahr" items={[
-    {label:'Neue Berichte pro Tag',value:round(d.total.perDay),note:`Spanne ${round(d.total.lowPerDay)} bis ${round(d.total.highPerDay)} · Durchschnitt über alle Kalendertage`},
-    {label:'Pro Arbeitstag · an einem starken Tag',value:<>{round(d.total.perWorkday)} <span className="text-[14px] font-normal text-slate-500">· {round(d.season.peakDay)}</span></>,note:`${nOr(d.rules.workdaysPerYear)} Arbeitstage im Jahr · stärkster Wochentag einer starken Sitzungswoche`},
-    {label:'Davon heute lesbar',value:pct(d.capture.total.connectedShare),note:HOCHRECHNUNG.lesbar(round(d.capture.total.connected/365))},
-    {label:'Pro Jahr',value:big(d.total.perYear),note:`Spanne ${big(d.total.lowPerYear)} bis ${big(d.total.highPerYear)}`},
-   ]}/>
+  <AdminPageHead page="hochrechnung" figure={{value:round(d.total.perDay),label:'neue Berichte pro Tag',note:`Spanne ${round(d.total.lowPerDay)} bis ${round(d.total.highPerDay)}`}}/>
+  {error&&<Fehler>{ZUSTAND.fehlerNeu(error.replace(/[.]$/,''),standText(d.stand?.computedAt??d.computedAt))}</Fehler>}
+  <div className={busy?'opacity-60 transition-opacity':''}>
+   <Befund stand={<StandLine stand={d.stand??null} busy={busy} action="Neu berechnen" onAction={compute} hint="Rechnet die Hochrechnung aus den Werten je Gebiet neu; dauert einige Sekunden." extra={HOCHRECHNUNG.standExtra(nOr(d.sampleCount),day(d.from),day(d.to))}/>}>{HOCHRECHNUNG.kurz(round(d.total.perDay),round(d.total.lowPerDay),round(d.total.highPerDay),pct(d.capture.total.connectedShare))}</Befund>
+   <Zahlen items={[{value:<>{round(d.total.perWorkday)}<span className="font-normal text-slate-500"> · {round(d.season.peakDay)}</span></>,label:'pro Arbeitstag · an einem starken Tag'},{value:pct(d.capture.total.connectedShare),label:'davon heute lesbar'},{value:big(d.total.perYear),label:'pro Jahr'}]}/>
+  </div>
+  <Abschnitt id="hochrechnung-menge" open={false} title="Tokens und Datenmenge pro Tag" sub="Was die Berichte an Text und Dateien bedeuten, wie heute verarbeitet und wenn alles gelesen würde.">
    {v&&today&&once&&<div className="mt-6"><Kpis label="Tokens und Datenmenge pro Tag" items={[
     {label:'Tokens pro Tag, wie heute verarbeitet',title:TITLES.token,value:big(today.perDay),note:`Spanne ${big(today.lowPerDay)} bis ${big(today.highPerDay)} · eine Unterlage je Bericht`},
     {label:'Tokens pro Tag, alles gelesen',title:TITLES.token,value:big(once.perDay),note:`Spanne ${big(once.lowPerDay)} bis ${big(once.highPerDay)} · jedes Dokument einmal`},
     {label:'Dokumente und Seiten pro Tag',value:<>{round(v.total.documentsOnce.perDay)} <span className="text-[14px] font-normal text-slate-500">· {round(v.total.pagesOnce.perDay)}</span></>,note:'verschiedene PDF-Dateien · Seiten darin'},
     {label:'Datenmenge pro Tag · pro Jahr',value:<>{bytes(v.total.bytesOnce.perDay)} <span className="text-[14px] font-normal text-slate-500">· {bytes(v.total.bytesOnce.perYear)}</span></>,note:'Abruf und Speicherung, wenn jedes Dokument einmal geladen wird'},
    ]}/></div>}
-   <p className="mt-4 max-w-[820px] text-[16px] text-slate-500">{HOCHRECHNUNG.kurz(round(d.total.perDay),round(d.total.lowPerDay),round(d.total.highPerDay),pct(d.capture.total.connectedShare))}</p>
-  </div>
-  <section className={'admin-estimate'+(busy?' opacity-60 transition-opacity':'')} id="admin-hochrechnung">
-   <div className="admin-section-heading"><h2>{HELP['hochrechnung.ergebnis'].title}</h2></div>
+  </Abschnitt>
+  <Abschnitt id="admin-hochrechnung" open={false} title={HELP['hochrechnung.ergebnis'].title}>
+  <div className={'admin-estimate'+(busy?' opacity-60 transition-opacity':'')}>
    <SectionHelp id="hochrechnung.ergebnis"/>
   <h3 className="admin-estimate-subheading">Was davon ist echt, was gerechnet, was angenommen?</h3>
   <div className="admin-estimate-facts">
@@ -350,5 +345,5 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
    <li>Stand der Zählung: gespeicherter Bestand vom {new Date(d.asOf).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'})}, Stichprobe vom {day(d.sample.builtAt)}. Die Beispiele aus dem Bestand ändern sich mit jedem Abruf; die Stichprobe und die Dokumentenmessung werden mit den Skripten unter <code>scripts/estimate/</code> erneuert.</li>
   </ul>
   <p className="admin-note">Erkannte Systeme der lesbaren Stichprobe: {Object.entries(d.examples.filter(e=>e.origin==='sample'&&e.method).reduce<Record<string,number>>((sum,e)=>({...sum,[SYSTEMS[e.method!]||e.method!]:(sum[SYSTEMS[e.method!]||e.method!]||0)+1}),{})).map(([name,count])=>`${name} ${nOr(count)}`).join(' · ')}.</p>
- </section></>;
+ </div></Abschnitt></>;
 }

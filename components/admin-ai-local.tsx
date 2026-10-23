@@ -36,12 +36,14 @@ async function copyText(text:string){
  try{if(!document.execCommand('copy'))throw Error('Die IDs konnten nicht kopiert werden.');}finally{input.remove();}
 }
 
-export function AdminAiLocal({sources,selected,revision,legacyJob}:{sources:AdminSource[];selected:Set<string>;revision:number;legacyJob:AdminDashboard['processing']['aiJob']}){
+// picker: eigene Gebietswahl der Seite statt „Welche Gebiete“; ohne gewähltes Gebiet gilt dann ganz Deutschland
+export function AdminAiLocal({sources,selected,revision,legacyJob,picker}:{sources:AdminSource[];selected:Set<string>;revision:number;legacyJob:AdminDashboard['processing']['aiJob'];picker?:React.ReactNode}){
  const [filters,setFilters]=useState<Filters>({scope:'selection',window:'all',limit:'25',state:'open'});
  const [history,setHistory]=useState<{key:string;cursors:(string|null)[];index:number}>({key:'',cursors:[null],index:0});
  const [refresh,setRefresh]=useState(0),[response,setResponse]=useState<ResponseState>({key:'',value:null,error:'',unsupported:false,loading:false});
  const [selection,setSelection]=useState<{key:string;ids:Set<string>}>({key:'',ids:new Set()}),[copyState,setCopyState]=useState<{key:string;text:string;error:boolean}>({key:'',text:'',error:false});
- const regionIds=[...selected].sort(),regions=filters.scope==='all'?'all':regionIds.join(','),hasScope=filters.scope==='all'||regionIds.length>0;
+ const scope=picker?(selected.size?'selection':'all'):filters.scope;
+ const regionIds=[...selected].sort(),regions=scope==='all'?'all':regionIds.join(','),hasScope=scope==='all'||regionIds.length>0;
  const filterKey=JSON.stringify([regions,filters.window,filters.limit,filters.state]),page=history.key===filterKey?history.index:0,cursor=history.key===filterKey?history.cursors[page]:null;
  const requestKey=JSON.stringify([filterKey,cursor]),current=response.key===requestKey?response:null,loading=hasScope&&(!current||current.loading);
  const data=hasScope?current?.value:null,items=data?.items||[],selectedIds=selection.key===requestKey?selection.ids:new Set<string>();
@@ -81,7 +83,7 @@ export function AdminAiLocal({sources,selected,revision,legacyJob}:{sources:Admi
   <h3>KI-Inhalte erarbeiten</h3>
   <ul className="admin-ai-local-outputs" aria-label="Ergebnisse je KI-Bearbeitung">{['Kurzfassung','Inhaltszusammenfassung','KI-Thema'].map(name=><li key={name}><Check size={16} aria-hidden="true"/>{name}</li>)}</ul>
   <div className="admin-ai-local-filters">
-   <AdminChoice id="abruf-ki-gebiete" label="Welche Gebiete" value={filters.scope} onChange={value=>change('scope',value)} items={[["selection",`Ihre Auswahl (${number(chosen.length)} Gebiete, ${number(total)} Berichte)`],["all","Ganz Deutschland"]]}/>
+   {picker??<AdminChoice id="abruf-ki-gebiete" label="Welche Gebiete" value={filters.scope} onChange={value=>change('scope',value)} items={[["selection",`Ihre Auswahl (${number(chosen.length)} Gebiete, ${number(total)} Berichte)`],["all","Ganz Deutschland"]]}/>}
    <AdminChoice id="abruf-ki-zeitraum" label="Zeitraum rückwirkend" value={filters.window} onChange={value=>change('window',value)} items={[["all","Alle gespeicherten Berichte"],...windows]}/>
    <AdminChoice id="abruf-ki-status" label="Bearbeitungsstand" value={filters.state} onChange={value=>change('state',value)} items={states}/>
    <AdminChoice id="abruf-ki-menge" label="Einträge je Seite" value={filters.limit} onChange={value=>change('limit',value)} items={['10','25','50','100'].map(value=>[value,value+' Einträge'])}/>

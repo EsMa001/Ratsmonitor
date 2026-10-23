@@ -47,7 +47,7 @@ function TrendChart({series,max,now,fmt,unit,hover,onHover}:{series:Series[];max
   <title>{unit}: {series.map(s=>s.label+' '+fmt(valueAt(s.points,now))).join(', ')}</title>
  </svg>;
 }
-/** Bars of the reports per meeting month (the month a report first stood on an agenda), the areas with meetings as a line. */
+/** Reports per meeting month (the month a report first stood on an agenda) and the areas with meetings, both as lines. */
 function MonthChart({months}:{months:Month[]}){
  const W=880,H=240,L=62,R=56,T=16,B=34,w=W-L-R,h=H-T-B;
  const max=Math.max(1,...months.map(m=>m.reports)),maxAreas=Math.max(1,...months.map(m=>m.areas));
@@ -56,7 +56,9 @@ function MonthChart({months}:{months:Month[]}){
  return <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={'Berichte je Sitzungsmonat: '+months.map(m=>monthLabel(m.month)+' '+n(m.reports)).join(', ')}>
   {ticks.map(f=><g key={f}><line x1={L} x2={W-R} y1={y(f*max)} y2={y(f*max)} stroke={f?AC.grid:AC.base} strokeWidth="1"/><text x={L-8} y={y(f*max)+4} textAnchor="end" fontSize="12" fill={AC.axis}>{n(f*max)}</text></g>)}
   {[0,1].map(f=><text key={f} x={W-R+8} y={ya(f*maxAreas)+4} fontSize="12" fill={AC.ink}>{n(f*maxAreas)}</text>)}
-  {months.map((m,i)=><rect key={m.month} x={x(i)} y={y(m.reports)} width={bar} height={T+h-y(m.reports)} fill={AC.accent} rx="2"><title>{monthLabel(m.month)}: {n(m.reports)} Berichte, {n(m.areas)} Gebiete mit Sitzungen</title></rect>)}
+  {/* Zeitverlauf als Linie, keine Säulen (UX-Leitlinie) */}
+  {months.length>1&&<path d={months.map((m,i)=>`${i?'L':'M'}${(x(i)+bar/2).toFixed(1)} ${y(m.reports).toFixed(1)}`).join(' ')} fill="none" stroke={AC.accent} strokeWidth="2.4" strokeLinejoin="round"/>}
+  {months.map((m,i)=><circle key={m.month} cx={x(i)+bar/2} cy={y(m.reports)} r="3.5" fill={AC.accent}><title>{monthLabel(m.month)}: {n(m.reports)} Berichte, {n(m.areas)} Gebiete mit Sitzungen</title></circle>)}
   {months.length>1&&<path d={months.map((m,i)=>`${i?'L':'M'}${(x(i)+bar/2).toFixed(1)} ${ya(m.areas).toFixed(1)}`).join(' ')} fill="none" stroke={AC.ink} strokeWidth="2" strokeLinejoin="round"/>}
   {months.map((m,i)=>i%every===0||i===months.length-1?<text key={'l'+m.month} x={x(i)+bar/2} y={H-8} textAnchor="middle" fontSize="12" fill={AC.axis}>{monthLabel(m.month)}</text>:null)}
  </svg>;

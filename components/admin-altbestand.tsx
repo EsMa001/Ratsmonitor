@@ -72,7 +72,7 @@ export function AdminAltbestand(){
     <Sub>{jobsLine(data)||'Kein Auftrag läuft oder wartet.'}{ocrOpen?' Die OCR des Altbestands läuft Tag für Tag weiter, bis jemand sie anhält.':''} Fortschritt im <Link href={adminHref('pdf')} className="text-teal-700">PDF-Import →</Link>{!data.worker?' Auf diesem Rechner führt niemand Aufträge aus (kein Lebenszeichen vom Server).':''}</Sub>
    </Abschnitt>
 
-   <Abschnitt title="3. Verarbeitung" sub={`${stepName('model')} und ${stepName('rules')} laufen nach jedem rückwirkenden Abruf gleich für die geschriebenen Berichte, sonst mit dem Job „Verarbeitung, nachts“.`}>
+   <Abschnitt title="3. Verarbeitung" sub={`${stepName('model')} und ${stepName('rules')} laufen nach jedem rückwirkenden Abruf gleich für die geschriebenen Berichte, sonst mit dem Job „Einordnung, nachts“.`}>
     <Sub>{data.ruleTexts?<>Zuletzt {when(data.ruleTexts.startedAt)} bis {clock(data.ruleTexts.finishedAt)}, {result(data.ruleTexts.result)}. </>:null}
      KI: startet nicht von selbst. {data.aiCounts?`${n(data.aiCounts.withoutAi)} Berichte mit Zusammenfassung haben noch keine KI-Fassung, ${n(data.aiCounts.newText)} KI-Fassungen haben seitdem neuen Text bekommen. `:''}{data.last?.readyForAi?`Der letzte Lauf hat ${n(data.last.readyForAi)} Berichte neu bereitgestellt. `:''}Bearbeitet werden sie vom Agenten über die <Link href={adminHref('verarbeitung')} className="text-teal-700">KI-Liste →</Link></Sub>
    </Abschnitt>
@@ -137,7 +137,7 @@ export function AltbestandSteuern(){
     <span className="font-semibold">{PDF_JOB_TERMS[k]}</span><span className="text-slate-700">{what}</span>
     <button type="button" className={side} disabled={busy||waitingKinds.has(k)} onClick={()=>void post({action:'pdf',kind:k},`„${PDF_JOB_TERMS[k]}“ anfordern?`,d=>d.created?'Auftrag angelegt.':'Dieser Auftrag läuft oder wartet schon.')}>{waitingKinds.has(k)?'angefordert':'anfordern →'}</button></li>)}
    <li className={row}>
-    <span className="font-semibold">{PDF_JOB_TERMS.ocr}</span><span className="text-slate-700">Seiten ohne Text älterer Berichte, nachdem der Tagesbereich gelesen ist. Läuft Tag für Tag weiter, bis jemand anhält.</span>
+    <span className="font-semibold">{PDF_JOB_TERMS.ocr}</span><span className="text-slate-700">Nur Seiten ohne Text älterer Berichte, nachdem der Tagesbereich gelesen ist; läuft Tag für Tag weiter, bis jemand anhält. Einmal alle PDFs: „OCR aller PDFs“ darunter.</span>
     {ocrOpen?<button type="button" className={side} disabled={busy} onClick={()=>void post({action:'ocr-stop'},'OCR des Altbestands anhalten? Die OCR des Tagesbereichs läuft weiter.',()=>'Angehalten.')}>anhalten</button>
      :<button type="button" className={side} disabled={busy} onClick={()=>void post({action:'ocr'},'OCR des Altbestands anfordern? Sie läuft zwischen 10 und 22 Uhr, bis Sie anhalten.',()=>'Angefordert; der Job „OCR, tagsüber“ übernimmt binnen 10 Minuten.')}>anfordern →</button>}</li>
    <li className={row}>

@@ -461,7 +461,7 @@ Einrichten (einmal):
 3. Modelldateien nach `/srv/ratsmonitor/models` kopieren (lokal `tmp/model/encoder`, `tmp/model/heads` und `tmp/model/summary`, etwa 450 MB); `apply.mjs` prüft sie gegen `shared/model-manifest.json` und bricht sonst ab.
 4. Umgebung aus `deploy/node/ratsmonitor.env.example` (`RM_MODEL_DIR`, `MODEL_TOOLS`, `RM_MODEL_STORE`, `MODEL_THREADS`).
 5. Messen: `node scripts/model/apply.mjs --measure 200` (bettet 200 Berichte ein, schreibt nichts, meldet ms je Text). Daraus die Dauer des ersten Durchlaufs (1,5 Mio. Berichte, etwa 3 Mio. Texte).
-6. Erster Durchlauf am Stück, ohne die Grenze von 3 Stunden des Jobs (Entscheidung 22.10.2026: die nächtlichen Jobs dürfen dafür aussetzen): `systemd-run --unit=ratsmonitor-model-first --uid=ratsmonitor --gid=ratsmonitor --working-directory=/srv/ratsmonitor/app/current -p EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env /usr/bin/node --no-warnings --max-old-space-size=6144 scripts/model/apply.mjs`, danach einmal „Alle neu erstellen“ im Admin. Läuft er noch, wenn der Job „Verarbeitung, nachts“ startet, endet dessen Schritt „Modell anwenden“ nach 3 Stunden; anhalten und neu starten ist jederzeit möglich (gespeicherte Einbettungen bleiben). Bis dahin behalten noch nicht eingeordnete Berichte ihre bisherigen Werte; `read-reports.mjs` liest sie nicht (Zahl „noch ohne Modell“).
+6. Erster Durchlauf am Stück, ohne die Grenze von 3 Stunden des Jobs (Entscheidung 22.10.2026: die nächtlichen Jobs dürfen dafür aussetzen): `systemd-run --unit=ratsmonitor-model-first --uid=ratsmonitor --gid=ratsmonitor --working-directory=/srv/ratsmonitor/app/current -p EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env /usr/bin/node --no-warnings --max-old-space-size=6144 scripts/model/apply.mjs`, danach einmal „Alle neu erstellen“ im Admin. Läuft er noch, wenn der Job „Einordnung, nachts“ startet, endet dessen Schritt „Modell anwenden“ nach 3 Stunden; anhalten und neu starten ist jederzeit möglich (gespeicherte Einbettungen bleiben). Bis dahin behalten noch nicht eingeordnete Berichte ihre bisherigen Werte; `read-reports.mjs` liest sie nicht (Zahl „noch ohne Modell“).
 
 Neues Modell: lokal nachtrainieren bzw. Köpfe neu lernen (`scripts/model/finetune.py`, `export.py`, `train.mjs`), `node scripts/model/manifest.mjs`, Manifest committen, Dateien kopieren. Neue Köpfe brauchen kein neues Einbetten; ein neuer Encoder schon (alle Texte).
 
@@ -473,7 +473,7 @@ Schritte: `shared/pipeline-terms.mjs`.
 - **Tagespipeline** (jede Nacht, Stufen Abruf → Extraktion → Verarbeitung): `backup` „Sichern“ 00:30 → `import-nightly` „Abruf, nachts“
   01:00 (alle Quellen, **1 Tag** zurück, sonntags 1 Monat für Nachträge; Gebiete und Server, die im Fehlerspeicher warten, „Zurückgestellt“) → `startseite-trends` 05:10 →
   `pdf-nightly` „Extraktion, nachts“ 05:30 (`nightly.mjs --daily`: PDF laden und Anlagen laden für die Berichte seit `pdf-daily-last` und alle mit Sitzung im Tagesbereich,
-  Text lesen, OCR bis 45 min, Dokumentart, Stand zählen) → `rule-texts` „Verarbeitung, nachts“ (Titel einordnen, Regeln anwenden, Suche
+  Text lesen, OCR bis 45 min, Dokumentart, Stand zählen) → `rule-texts` „Einordnung, nachts“ (Titel einordnen, Regeln anwenden, Suche
   aktualisieren, Zahlen rechnen, KI-Stand `ai-counts`, Wege zählen `pipeline-trace`).
 - **Tagesbereich und Altbestand:** Tagesbereich sind Sitzungen der letzten 7 Tage, frühestens 12.10.2026, deren Fehler nicht vor dem
   12.10. entstanden. Nur ihn bearbeitet die Nacharbeit; alles Ältere ist Altbestand.
@@ -486,7 +486,7 @@ Schritte: `shared/pipeline-terms.mjs`.
   für Stufe; gelingt ein Abruf, laufen für die geschriebenen Berichte gleich Extraktion und Regeln (Folgekette).
 - **OCR, tagsüber** (Job `ocr`, eigene Einheit, 07:00 bis 23:00): Reste der Nacht im Tagesbereich; ist auf der Seite Altbestand die OCR
   angefordert, danach (10 bis 22 Uhr) der Altbestand. Nach einem Lauf mit gelesenen Dateien gleich Regeln anwenden und Suche
-  aktualisieren für die Berichte mit neuem Text (nicht, solange „Verarbeitung, nachts“ läuft).
+  aktualisieren für die Berichte mit neuem Text (nicht, solange „Einordnung, nachts“ läuft).
 - **Altbestand** (Seite `/admin?seite=altbestand`, Job `altbestand`, `scripts/altbestand.mjs`, 10:00 bis 22:00, nur mit Anforderung
   in `altbestand-requests`): rückwirkender Abruf (1 bis 24 Monate, je 8 Gebiete, mit Folgekette), alte Fehler erneut versuchen; dazu die
   Aufträge der PDF-Ablage (`pdf-job`: ältere Monate laden, Anlagen laden, Text lesen) im selben Fenster. Hat die Nacharbeit fällige

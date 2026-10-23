@@ -8,6 +8,8 @@ import {IconChevronDown} from '@/components/ratsmonitor/components/icons';
 import {FLOWS} from '@/shared/pipeline-terms.mjs';
 import {AltbestandSteuern} from '@/components/admin-altbestand';
 import {PdfSteuern} from '@/components/admin-pdf';
+import {FehlerSteuern} from '@/components/admin-fehler';
+import {SpeicherSteuern} from '@/components/admin-storage';
 import {Icon} from '@/components/admin-icons';
 import {n,when,clock,dur} from '@/components/admin-format';
 
@@ -58,12 +60,13 @@ function Status({job}:{job:Job}){
 }
 
 /** Gruppen der Steuerung: die drei Abläufe (FLOWS), dazu der Betrieb (Sichern, Konten, Mails, Prüfung, Startseite) */
-const BETRIEB=['backup','accounts','notify','betrieb','startseite-trends'];
+// Betrieb: Sichern, Konten, Mails, Prüfung, Startseite und der Job der PDF-Aufträge und Messungen (Bahnen, Stand, Speicher)
+const BETRIEB=['backup','accounts','notify','betrieb','startseite-trends','pdf-job'];
 const GROUPS:{id:string;title:string;sub:string;open:boolean;has:(j:Job)=>boolean}[]=[
  {id:'tages',title:FLOWS.tages.name,sub:'Jede Nacht: holt und verarbeitet, was neu ist.',open:true,has:j=>j.flow==='tages'&&!BETRIEB.includes(j.id)},
  {id:'nacharbeit',title:FLOWS.nacharbeit.name,sub:'Tagsüber von selbst: versucht erneut, was nachts gescheitert ist.',open:true,has:j=>j.flow==='nacharbeit'},
- {id:'altbestand',title:FLOWS.altbestand.name,sub:'Nur auf Knopfdruck: Älteres abrufen und aufarbeiten, Aufträge abarbeiten.',open:false,has:j=>j.flow==='altbestand'},
- {id:'betrieb',title:'Betrieb',sub:'Sichern, Konten, Benachrichtigungen, Betriebsprüfung und Startseite.',open:false,has:j=>BETRIEB.includes(j.id)},
+ {id:'altbestand',title:FLOWS.altbestand.name,sub:'Nur auf Knopfdruck: Älteres abrufen und aufarbeiten, Aufträge abarbeiten.',open:false,has:j=>j.flow==='altbestand'&&!BETRIEB.includes(j.id)},
+ {id:'betrieb',title:'Betrieb',sub:'Sichern, Konten, Benachrichtigungen, Betriebsprüfung, Startseite, PDF-Bahnen und Messungen.',open:false,has:j=>BETRIEB.includes(j.id)},
 ];
 /** Wo man das Ergebnis eines Jobs ansieht */
 const RESULT_PAGE:Record<string,AdminPage>={'import-nightly':'nacht','pdf-nightly':'pdf','rule-texts':'regeltexte',nacharbeit:'fehler',ocr:'pdf',altbestand:'altbestand',import:'abruf','pdf-job':'pdf',backup:'speicher',betrieb:'start'};
@@ -140,7 +143,7 @@ export function AdminSchedules(){
  const card=(j:Job)=><JobCard key={j.id} j={j} busy={busy} post={(b,c)=>void post(b,c)} toggle={j=>void toggle(j)} onBadTime={()=>setError('Uhrzeit bitte in 10-Minuten-Schritten (etwa 01:00 oder 05:30).')}/>;
 
  return <>
-  <AdminPageHead page="zeitplaene" figure={data?{value:n(running.length),label:running.length===1?'Job läuft':'Jobs laufen',note:next?`nächster ${clock(next.next)}`:undefined}:undefined}/>
+  <AdminPageHead page="steuerung" figure={data?{value:n(running.length),label:running.length===1?'Job läuft':'Jobs laufen',note:next?`nächster ${clock(next.next)}`:undefined}:undefined}/>
   {error&&<Fehler onRetry={load}>{error}</Fehler>}
   {!data&&!error&&<Laden/>}
   {data&&<>
@@ -152,7 +155,11 @@ export function AdminSchedules(){
    {GROUPS.map(g=>{const list=jobs.filter(g.has).filter(j=>!j.run?.running);if(!list.length)return null;
     return <Abschnitt key={g.id} id={'steuerung-'+g.id} open={g.open} force={list.some(j=>j.id===hash)} title={g.title} sub={g.sub}>
      <ul className="m-0 mt-2 max-w-[1100px] list-none border-t border-slate-200 p-0">{list.map(card)}</ul>
-     {g.id==='altbestand'&&<><AltbestandSteuern/><PdfSteuern/></>}</Abschnitt>;})}
+     {g.id==='nacharbeit'&&<FehlerSteuern/>}
+     {g.id==='betrieb'&&<><PdfSteuern teil="bahnen"/><SpeicherSteuern/></>}
+     {g.id==='altbestand'&&<><div className="mt-6 max-w-[1100px] text-[14px]"><h3 className="m-0 text-[16px] font-semibold">Abrufauftrag</h3>
+      <p className="m-0 mt-1 text-slate-500">Gebiete in Karte oder Liste wählen und mit Zeitraum abrufen; der Job „Abrufaufträge“ arbeitet ihn auf dem Server ab. <Link href={adminHref('abruf','auftrag=1')} className="font-medium text-teal-700">Abrufauftrag anlegen →</Link></p></div>
+      <AltbestandSteuern/><PdfSteuern teil="auftraege"/></>}</Abschnitt>;})}
 
    <Abschnitt id="steuerung-nacht" open={false} title="Ablauf der Nacht" sub="Die nächtlichen Jobs bauen aufeinander auf: erst sichern, dann abrufen, dann PDFs, Texte und OCR, dann Einordnung, Suche und Zahlen. Sie sollten sich nicht überschneiden.">
     <DayPlan jobs={jobs.filter(j=>j.id!=='accounts'&&j.id!=='betrieb')}/>

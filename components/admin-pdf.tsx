@@ -229,7 +229,7 @@ export function AdminPdf(){
      value:s?`${n(s.texts.ocrWaitingAll??s.texts.ocrWaiting)} Dateien warten`:undefined},
     {icon:'gauge',title:'Stand zählen',what:'Zählt alles auf dieser Seite neu: verlinkt, geladen, Text, Fehler, Server, Platz.',
      rules:['Am Ende jedes Laufs und mit „Stand neu zählen“'],value:s?`zuletzt ${when(s.at)}`:undefined},
-    {icon:'summary',title:'Weiter: Verarbeitung',what:'Aus den abgelegten Texten entstehen Einordnung, Regel-Zusammenfassungen, Fakten, Suche und Zahlen für plenara.X (Job „Verarbeitung, nachts“, Reiter Einordnungsmodell); die KI liest dieselben Texte.',
+    {icon:'summary',title:'Weiter: Verarbeitung',what:'Aus den abgelegten Texten entstehen Einordnung, Regel-Zusammenfassungen, Fakten, Suche und Zahlen für plenara.X (Job „Einordnung, nachts“, Reiter Einordnungsmodell); die KI liest dieselben Texte.',
      rules:['Direkt nach „Extraktion, nachts“ (sie stößt ihn an), sonst zur Zeit aus der Steuerung','Oder dort per Knopf']},
    ]} when={['Tagespipeline: „Extraktion, nachts“ zur Zeit aus der Steuerung (Standard 05:30 Uhr), höchstens 2 Stunden, nach „Abruf, nachts“ (Standard 01:00 Uhr).','Nacharbeit: tagsüber automatisch, für Sitzungen der letzten 7 Tage (frühestens 12.10.2026).','Altbestand: Aufträge hier und auf der Seite Altbestand, nur zwischen 10 und 22 Uhr; jeder Lauf macht dort weiter, wo der vorige aufgehört hat.']}/>
    </Abschnitt>
@@ -241,9 +241,10 @@ export function AdminPdf(){
  </>;
 }
 
-/** Aufträge der PDF-Ablage für die Steuerung: laufende Bahnen anhalten, Fehlgeschlagene erneut, OCR aller PDFs, Stand neu zählen.
-    Ältere Monate, Anlagen und Textebene fordert der Altbestand an (dieselben Aufträge). */
-export function PdfSteuern(){
+/** Aufträge der PDF-Ablage für die Steuerung, in zwei Teilen: „bahnen“ (Gruppe Betrieb, beim Job „PDF-Aufträge und Messungen“):
+    laufende Bahnen anhalten, Stand neu zählen; „auftraege“ (Gruppe Altbestand, gleich unter dessen Aufträgen): Fehlgeschlagene erneut,
+    OCR aller PDFs. Ältere Monate, Anlagen und Textebene fordert der Altbestand an (dieselben Aufträge). */
+export function PdfSteuern({teil}:{teil:'bahnen'|'auftraege'}){
  const {data,error,setError,load}=usePdf();
  const [busy,setBusy]=useState(false),[note,setNote]=useState('');
  const post=async(body:Record<string,unknown>,confirmText?:string)=>{
@@ -259,19 +260,20 @@ export function PdfSteuern(){
  const row='grid gap-1 border-b border-slate-200 py-3 md:grid-cols-[220px_minmax(0,1fr)_auto] md:items-baseline md:gap-4';
  const side='text-[14px] font-medium text-teal-700 hover:text-teal-600 disabled:opacity-40';
  return <div className="mt-6 max-w-[1100px] text-[14px]">
-  <h3 className="m-0 text-[16px] font-semibold">PDF-Ablage</h3>
-  <p className="m-0 mt-1 text-slate-500">Je Bahn ein Auftrag zur Zeit, die übrigen warten. <Link href={adminHref('pdf')} className="text-teal-700">Stand ansehen →</Link></p>
+  <h3 className="m-0 text-[16px] font-semibold">{teil==='bahnen'?'PDF-Ablage: Bahnen und Stand':'Weitere PDF-Aufträge'}</h3>
+  <p className="m-0 mt-1 text-slate-500">{teil==='bahnen'?'Zwei Bahnen (Laden, OCR), je Bahn ein Auftrag zur Zeit; die übrigen warten.':'Für alle Berichte, egal wie alt; ausgeführt vom Job „PDF-Aufträge und Messungen“.'} <Link href={adminHref('pdf')} className="text-teal-700">Stand ansehen →</Link></p>
   {error&&<Fehler onRetry={load}>{error}</Fehler>}
   {data&&!data.worker&&<Hinweis>Kein Lebenszeichen des Server-Dienstes in den letzten 20 Minuten; die Knöpfe sind gesperrt.</Hinweis>}
   {note&&<p role="status" className="m-0 mt-2 text-slate-700">{note}</p>}
-  {data&&<Lanes data={data} disabled={!canAct} onStop={lane=>void post({action:'stop',lane},lane==='chain'?'Bahn Laden jetzt anhalten? Der Lauf endet nach wenigen Sekunden, ohne den Schritt abzuwarten. Was schon geladen oder gelesen ist, bleibt; offene Schritte holt der nächste Lauf nach.':'Bahn OCR jetzt anhalten? Fertig gelesene Dateien bleiben, angefangene und der Rest kommen beim nächsten „OCR starten“ oder nachts dran.')}/>}
+  {teil==='bahnen'&&data&&<Lanes data={data} disabled={!canAct} onStop={lane=>void post({action:'stop',lane},lane==='chain'?'Bahn Laden jetzt anhalten? Der Lauf endet nach wenigen Sekunden, ohne den Schritt abzuwarten. Was schon geladen oder gelesen ist, bleibt; offene Schritte holt der nächste Lauf nach.':'Bahn OCR jetzt anhalten? Fertig gelesene Dateien bleiben, angefangene und der Rest kommen beim nächsten „OCR starten“ oder nachts dran.')}/>}
   <ul className="m-0 mt-3 list-none border-t border-slate-200 p-0">
-   <li className={row}><span className="font-semibold">{JOB.retry}</span><span className="text-slate-700">Macht alle wiederholbaren Abruffehler und wartenden Server sofort fällig; die Nacharbeit versucht sie, je Server erst mit einer Stichprobe. „Nicht gefunden“ und „kein PDF“ bleiben.</span>
+   {teil==='auftraege'&&<><li className={row}><span className="font-semibold">Fehlgeschlagene PDFs erneut versuchen</span><span className="text-slate-700">Macht alle wiederholbaren Abruffehler und wartenden Server sofort fällig; die Nacharbeit versucht sie, je Server erst mit einer Stichprobe. „Nicht gefunden“ und „kein PDF“ bleiben.</span>
     <button type="button" className={side} disabled={!canAct} onClick={()=>void post({action:'queue',kind:'retry'})}>anfordern →</button></li>
-   <li className={row}><span className="font-semibold">{JOB.ocr}</span><span className="text-slate-700">Alle PDFs, Hauptdokumente vor Anlagen, neueste Sitzung zuerst (10 bis 22 Uhr); was hängt, versucht die Nacharbeit später.</span>
+   <li className={row}><span className="font-semibold">OCR aller PDFs</span><span className="text-slate-700">Einmal alle PDFs mit Seiten ohne Text, egal wie alt: Hauptdokumente vor Anlagen, neueste Sitzung zuerst (10 bis 22 Uhr); endet, wenn alles gelesen ist. Anders als „OCR des Altbestands“ oben, die nur ältere Berichte liest und Tag für Tag weiterläuft, bis jemand sie anhält.</span>
     <button type="button" className={side} disabled={!canAct} onClick={()=>void post({action:'queue',kind:'ocr'})}>anfordern →</button></li>
-   <li className={row}><span className="font-semibold">Stand neu zählen</span><span className="text-slate-700">Zählt die Seite PDF-Import neu: verlinkt, geladen, Text, Fehler, Server, Platz.</span>
-    <button type="button" className={side} disabled={!canAct||counting} onClick={()=>void post({action:'count'})}>{counting?(data?.count?.startedAt?'wird gezählt …':'angefordert …'):'anfordern →'}</button></li>
+   </>}
+   {teil==='bahnen'&&<li className={row}><span className="font-semibold">Stand neu zählen</span><span className="text-slate-700">Zählt die Seite PDF-Import neu: verlinkt, geladen, Text, Fehler, Server, Platz.</span>
+    <button type="button" className={side} disabled={!canAct||counting} onClick={()=>void post({action:'count'})}>{counting?(data?.count?.startedAt?'wird gezählt …':'angefordert …'):'anfordern →'}</button></li>}
   </ul>
  </div>;
 }

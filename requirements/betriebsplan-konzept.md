@@ -61,7 +61,7 @@ dort steht im Ergebnis (`warnings`), beendet den Job aber mit Exit 0, damit der 
 | `import-nightly` | Abruf, nachts | Tagespipeline | 01:00 | 4 h |
 | `startseite-trends` | Startseite: Karte und Trends | Tagespipeline | 05:10 | 10 min |
 | `pdf-nightly` | Extraktion, nachts | Tagespipeline | 05:30 | 2 h |
-| `rule-texts` | Verarbeitung, nachts | Tagespipeline | direkt danach (Rückfall 08:50 nur, wenn heute noch kein Lauf war; `fallback`) | meist unter 1 h |
+| `rule-texts` | Einordnung, nachts | Tagespipeline | direkt danach (Rückfall 08:50 nur, wenn heute noch kein Lauf war; `fallback`) | meist unter 1 h |
 | `nacharbeit` | Nacharbeit | Nacharbeit | alle 30 min, 09:00 bis 23:00 | 20 min, 500 Einträge je Lauf |
 | `ocr` | OCR, tagsüber | Nacharbeit | alle 10 min, 07:00 bis 23:00 | 3 h je Lauf |
 | `altbestand` | Altbestand | Altbestand | alle 10 min, 10:00 bis 22:00, nur mit Anforderung | 2 h je Lauf |
@@ -101,7 +101,7 @@ stehen, übernimmt der Job.
 
 Fehlgeschlagene Adressen lädt die Extraktion nicht erneut (das macht die Nacharbeit); wartende Server lässt sie aus.
 
-**Verarbeitung, nachts** (`rule-texts.mjs`): Titel einordnen (nur fehlende oder veraltete Einordnungen), Regeln anwenden (nur Berichte
+**Einordnung, nachts** (`rule-texts.mjs`): Titel einordnen (nur fehlende oder veraltete Einordnungen), Regeln anwenden (nur Berichte
 mit neuen Eingaben; der Schlüssel in `report_rules` enthält den Textstand des Hauptdokuments), Suche aktualisieren, Zahlen rechnen,
 dann KI-Stand zählen (`ai-counts`) und Wege zählen (`pipeline-trace`). Stürzt eine Regel bei einem Bericht ab, wird er als „Fehler im
 eigenen Code“ vermerkt und der Lauf geht weiter.
@@ -206,7 +206,7 @@ Job `nacharbeit` (`scripts/nacharbeit.mjs --range daily`), alle 30 Minuten zwisc
    als zu langsam. Verdrängte Dateien, deren Server alle warten, nimmt ein Paket gar nicht erst auf; ein Paket ohne Fortschritt
    (nichts gelesen, gescheitert oder zu langsam) beendet den Lauf (17.10.2026: 6.316 Pakete in 3 Stunden für 3 wartende Dateien).
 5. **Folgekette:** Nach einem Lauf mit gelesenen Dateien folgen gleich Regeln anwenden für die Berichte mit neuem Text und Suche
-   aktualisieren (nicht, solange „Verarbeitung, nachts“ läuft; dann kommt der Text dort an).
+   aktualisieren (nicht, solange „Einordnung, nachts“ läuft; dann kommt der Text dort an).
 6. **Eigene Einheit** `ratsmonitor-ocr.service`: „Anhalten“ trifft nur die OCR; eine halb gelesene Datei bleibt in der Reihe.
 
 ## 7. Altbestand
@@ -230,7 +230,7 @@ fordert dasselbe an.
 
 **Regeln und KI sind zwei getrennte Ergebnisse.** Keines ersetzt oder überschreibt das andere:
 
-| | Regelbasiert (automatisch, „Verarbeitung, nachts“, Nacharbeit) | KI (von Hand über den Agenten) |
+| | Regelbasiert (automatisch, „Einordnung, nachts“, Nacharbeit) | KI (von Hand über den Agenten) |
 |---|---|---|
 | Label | Titelregel (`classification`, Titel einordnen) und Thema mit Art des Punkts aus `readReport` (`payload.theme`, `itemKind`) | KI-Label |
 | Zusammenfassung | Regel-Zusammenfassung (`payload.ruleSummary`), dazu Fakten (`topic_facts`) | Kurzfassung (ein Satz) und Langfassung, immer zusammen mit dem KI-Label |
@@ -243,7 +243,7 @@ Berichte für die KI bereitstehen, startet sie aber nie.
 Die KI startet nicht von selbst (keine automatische Modell-API, `CLAUDE.md`). Ein Agent arbeitet über den internen MCP-Dienst
 (`ai_list` → `claim` → `read` → `submit`) und liest alle PDFs eines Berichts aus der Ablage, Hauptdokument und Anlagen. Der Eingabehash
 enthält die Textfassungen: kommt Text dazu (OCR, Nacharbeit, Altbestand), wird der Bericht „veraltet“ und erscheint wieder in der Liste.
-„Verarbeitung, nachts“ zählt den Stand (`ai-counts`: Arbeitsstand je Zustand, KI-Fassungen mit neuem Text, Berichte mit
+„Einordnung, nachts“ zählt den Stand (`ai-counts`: Arbeitsstand je Zustand, KI-Fassungen mit neuem Text, Berichte mit
 Regel-Zusammenfassung ohne KI-Fassung); Pipeline-Debug und Altbestand zeigen ihn.
 
 ## 9. Sicherung
@@ -258,7 +258,7 @@ installiertem rclone zusätzlich eine Kopie außer Haus. Die PDFs selbst werden 
 |---|---|
 | Jobs & Zeitpläne | alle Jobs mit Name, Ablauf, Zeit oder Fenster, an/aus, letzter und nächster Lauf |
 | PDF-Import | Stand der Ablage, Aufträge mit den Namen der Schritte, „Server, die nicht liefern“ nach Serverstufe |
-| Themen & Texte | Ergebnis von „Verarbeitung, nachts“ je Schritt |
+| Themen & Texte | Ergebnis von „Einordnung, nachts“ je Schritt |
 | **Pipeline-Debug** (vorübergehend) | Begriffe; wann lief was (24 h, nach Ablauf); was die Läufe getan haben (Abruf, Extraktion, Verarbeitung, Nacharbeit, OCR tagsüber, KI); Wege der Berichte (24 h, 7 Tage, nach Stufen); Fehlerspeicher des Tagesbereichs mit „erneut“ und „freigeben“; Fehler im eigenen Code; Laufbuch |
 | **Altbestand** (Debug-Bereich) | Abschnitt 7 |
 
@@ -273,7 +273,7 @@ flowchart TD
   B["00:30 Sichern"] --> I["01:00 Abruf, nachts<br/>1 Tag zurück, sonntags 1 Monat<br/>wartende Gebiete und Server zurückgestellt"]
   I --> T["05:10 Startseite"]
   T --> P["05:30 Extraktion, nachts<br/>PDF laden, Anlagen laden, Text lesen, OCR bis 45 min"]
-  P -->|stößt an| R["Verarbeitung, nachts<br/>Titel einordnen, Regeln anwenden,<br/>Suche aktualisieren, Zahlen rechnen"]
+  P -->|stößt an| R["Einordnung, nachts<br/>Titel einordnen, Regeln anwenden,<br/>Suche aktualisieren, Zahlen rechnen"]
   P -.->|Rest der OCR| O["07–23 Uhr OCR, tagsüber<br/>danach Regeln anwenden"]
   R -.->|bereit, veraltet| K["KI, von Hand<br/>Agent über MCP"]
   O -.-> K

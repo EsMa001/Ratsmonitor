@@ -427,7 +427,7 @@ Die Mobilansicht `?seite=mobil` bleibt: Kopf mit Stand, drei Kacheln aus `withVg
   - „Sachgebiet“ zu „Thema“,
   - der Satz zu Push gestrichen,
   - die Reihenfolge im Text der Jobs,
-  - der Jobtext und die Schritte von „Verarbeitung, nachts“ (`schedules.mjs`),
+  - der Jobtext und die Schritte von „Einordnung, nachts“ (`schedules.mjs`),
   - der Schritt „Titel einordnen“, jetzt ohne Stufe und nur noch als Alias (`pipeline-terms.mjs`),
   - Altbestand mit „Modell anwenden“,
   - Jobname „Sichern“.
@@ -459,14 +459,21 @@ Die Mobilansicht `?seite=mobil` bleibt: Kopf mit Stand, drei Kacheln aus `withVg
     - Steuerung (bisher Jobs & Zeitpläne; nach Ablauf gruppiert, darin die Aufträge von Altbestand und PDF-Ablage sowie „Alle neu erstellen“),
     - Altbestand und PDF-Import (lesen nur), Einordnungsmodell, Social Media, Abdeckung, Lückenatlas (Gründe in den Farben des Farbschemas), Prüfliste, Bestandsprüfung,
     - KI-Aufbereitung (bisher Verarbeitung, ohne Regel-Teil).
-- **Offen in Schritt 3:**
-  - Abruf: Kopf umstellen und Formular „Abrufen“ in die Steuerung verschieben.
-  - Hochrechnung, To-do-Liste, Mobil.
-  - Knöpfe, die noch auf Lese-Seiten stehen: „Erneut versuchen“ und „Freigeben“ (Fehler & Server), „Neu messen“ (Speicher).
-  - Die doppelte Gebietswahl der KI-Aufbereitung.
-  - Das Monatsdiagramm der Abdeckung zeigt noch Säulen; nach der UX-Leitlinie soll es eine Linie werden.
+- **Schritt 3, zweiter Teil (23.10.2026):** erledigt ist auch der Rest.
+  - **Abruf:** Die Seite liest nur. Gebiete wählen, abrufen, pausieren und beenden geht im Auftragsmodus `?seite=abruf&auftrag=1`, den die Steuerung öffnet; die Übergabe aus der Hochrechnung (`auswahl=…`) öffnet ihn ebenfalls. Die Kartenfarben zur Verarbeitung sind entfernt.
+  - **Steuerung:** „Erneut versuchen“ und „Freigeben“ stehen unter Nacharbeit (`FehlerSteuern`), „Neu messen“ unter Betrieb (`SpeicherSteuern`). Fehler & Server und Speicher lesen nur.
+  - **Hochrechnung und Mobilansicht** haben den neuen Aufbau. Die Mobilansicht zeigt dazu die Abdeckung der letzten 7 Tage und das Menü mit Symbolen.
+  - **KI-Aufbereitung:** eine Gebietswahl („Welche Gebiete“, ohne Wahl ganz Deutschland).
+  - **Abdeckung:** Das Monatsdiagramm ist eine Linie.
+  - **Adresse:** Die Steuerung heißt `?seite=steuerung`; `zeitplaene` und `jobs` leiten weiter.
+  - **Ausnahme von B1a:** „Neu berechnen“ der Hochrechnung und der Social-Media-Vorschläge bleibt auf der Seite. Beides rechnet nur die eigene Ansicht in Sekunden neu und startet keinen Job.
 - **Reale Abdeckung (23.10.2026), noch nicht committet:** `activeCoverage` in `server/integrations/admin-coverage.mjs`.
   - Gezählt werden Gebiete mit mindestens einem gelungenen Abruf in den letzten 7 Tagen, aus `import_runs` (Lauf `metadata`, Status `completed` oder `partial`, mindestens eine Anfrage beantwortet).
   - Läufe mit `partial`, deren Anfragen alle mit 403 abgelehnt wurden, zählen nicht; das waren auf dem Server rund 1.100 am Tag.
   - Die Abdeckung zeigt dazu eine dritte Linie im Verlauf und eine Zahl, das Cockpit eine Zahl.
   - Server, Stand 23.10.: 2.851 von 4.041 angebundenen Gebieten, 74,2 % der Einwohner (angebunden 87,9 %).
+- **Aufgeräumt (23.10.2026):**
+  - Der Job „PDF-Aufträge und Messungen“ steht in der Steuerung unter Betrieb, dort auch die PDF-Bahnen, „Stand neu zählen“ und „Speicher messen“. Damit führen die Links von PDF-Import und Speicher an die richtige Stelle.
+  - Unter Altbestand stehen „OCR des Altbestands“ (nur ältere Berichte, läuft bis Anhalten) und gleich darunter „OCR aller PDFs“ (einmal alle, egal wie alt), jeweils mit dem Unterschied im Text. Dort steht auch „Fehlgeschlagene PDFs erneut versuchen“.
+  - Der Fehlerspeicher in der Steuerung zeigt nur den Tagesbereich; alte Fehler gibt es nur beim Altbestand.
+  - Der Job „Verarbeitung, nachts“ heißt „Einordnung, nachts“ (Job-ID `rule-texts` unverändert), passend zur Seite „Einordnungsmodell“.

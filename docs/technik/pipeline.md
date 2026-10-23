@@ -30,7 +30,7 @@ flowchart TD
   B["00:30 Sichern (backup)<br/>VACUUM INTO, Index und Texte der Ablage"] --> I["01:00 Abruf, nachts (import-nightly)<br/>alle Quellen, 1 Tag zurück, sonntags 1 Monat<br/>24 Bahnen, höchstens 4 h"]
   I --> ST["05:10 Startseite: Karte und Trends"]
   ST --> P["05:30 Extraktion, nachts (pdf-nightly), höchstens 2 h<br/>PDF laden 28 min → Anlagen laden 19 min → Text lesen<br/>→ OCR bis 45 min → Dokumentart → Stand zählen"]
-  P -->|schedule-now + trigger/rule-texts| R["Verarbeitung, nachts (rule-texts)<br/>Titel einordnen → Regeln anwenden → Suche aktualisieren<br/>→ Zahlen rechnen → KI-Stand → Wege zählen<br/>Rückfall 08:50, nur wenn heute noch kein Lauf"]
+  P -->|schedule-now + trigger/rule-texts| R["Einordnung, nachts (rule-texts)<br/>Titel einordnen → Regeln anwenden → Suche aktualisieren<br/>→ Zahlen rechnen → KI-Stand → Wege zählen<br/>Rückfall 08:50, nur wenn heute noch kein Lauf"]
   P -.->|Rest der OCR| O["07–23 Uhr OCR, tagsüber (ocr), alle 10 min<br/>danach Regeln und Suche für neue Texte"]
   I -. Fehlschläge .-> F[("Fehlerspeicher<br/>work_failures, source_hosts")]
   P -. Fehlschläge .-> F
@@ -66,7 +66,7 @@ Zahlen (Zusammenfassungen ändern den Suchtext).
 | `import-nightly` | Abruf, nachts | Tagespipeline | 01:00 | 4 h | `import-worker.mjs --create sources --window 1d --weekly-window 1m --weekly-day 0 --max-minutes 240` |
 | `startseite-trends` | Startseite: Karte und Trends | Tagespipeline | 05:10 | Minuten | `scripts/startseite-trends.mjs` |
 | `pdf-nightly` | Extraktion, nachts | Tagespipeline | 05:30 | 2 h | `scripts/pdf-store/nightly.mjs --kind nightly --daily --minutes 120 --budget-gb 80 --ocr-workers 2` |
-| `rule-texts` | Verarbeitung, nachts | Tagespipeline | direkt nach `pdf-nightly`; 08:50 nur als Rückfall (`fallback`: nicht, wenn heute schon gelaufen) | meist unter 1 h | `scripts/rule-texts.mjs` |
+| `rule-texts` | Einordnung, nachts | Tagespipeline | direkt nach `pdf-nightly`; 08:50 nur als Rückfall (`fallback`: nicht, wenn heute schon gelaufen) | meist unter 1 h | `scripts/rule-texts.mjs` |
 | `nacharbeit` | Nacharbeit | Nacharbeit | alle 30 min, 09:00 bis 23:00 | 20 min, 500 Einträge | `scripts/nacharbeit.mjs --range daily --minutes 20` |
 | `ocr` | OCR, tagsüber | Nacharbeit | alle 10 min, 07:00 bis 23:00 | 3 h | `nightly.mjs --kind ocr --ocr-only --range daily --minutes 180 --ocr-workers 2 --until 23:00` |
 | `altbestand` | Altbestand | Altbestand | alle 10 min, 10:00 bis 22:00, nur mit Anforderung | 2 h | `scripts/altbestand.mjs --minutes 120 --until 22:00` |
@@ -165,7 +165,7 @@ Fortschritt: `pdf-store-progress-chain` vor jedem Schritt und minütlich aus den
 (höchstens 50). Anhalten: `pdf-store-stop.chain` (alle 2 s geprüft) oder SIGTERM → SIGTERM an den Schritt, nach 60 s SIGKILL,
 Lauf „angehalten“, Exit 3.
 
-### 3.5 Verarbeitung, nachts (`rule-texts`, direkt danach, `scripts/rule-texts.mjs`)
+### 3.5 Einordnung, nachts (`rule-texts`, direkt danach, `scripts/rule-texts.mjs`)
 
 Jeder Schritt läuft als Kindprozess; Schritte mit `fatal:false` beenden den Lauf bei Fehler nicht. Ergebnis je Schritt in
 `system_state` `rule-texts-last` (`{startedAt, finishedAt, result, all, steps[{name, seconds, ok, fatal, summary}], facts, warnings}`),
@@ -453,7 +453,7 @@ Sperre `ocr-lane.lock` (Bahn OCR), `text.mjs` zusätzlich `ocr.lock`.
    mindestens 5 Minuten Rest: OCR des Altbestands mit `--range backlog --file-minutes 15 --include-slow --origin backlog`.
 3. Hat kein Schritt Dateien gelesen: Exit 0 ohne Protokolleintrag.
 4. Dokumentart nachtragen; dann **Regeln anwenden** für die Berichte, deren Text seit Laufbeginn per OCR entstand (`read-reports.mjs
-   --ids`), und Suche aktualisieren. Entfällt, solange „Verarbeitung, nachts“ läuft (dann kommt der Text dort an).
+   --ids`), und Suche aktualisieren. Entfällt, solange „Einordnung, nachts“ läuft (dann kommt der Text dort an).
 
 ## 9. Altbestand (`scripts/altbestand.mjs`, Seite `/admin?seite=altbestand`)
 

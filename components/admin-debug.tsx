@@ -120,7 +120,7 @@ export function AdminDebug(){
     </div>
    </Abschnitt>
 
-   <Abschnitt id="nacht-wege" open={false} title="Welchen Weg die Berichte genommen haben" sub={data.trace?<>Alle Berichte, die der Abruf im Zeitraum geschrieben hat, und wie weit jeder gekommen ist. Je Bericht zählt sein Hauptdokument. Gezählt {when(data.trace.at)} am Ende von „Verarbeitung, nachts“.</>:'Noch keine Zählung. Sie entsteht am Ende von „Verarbeitung, nachts“.'}
+   <Abschnitt id="nacht-wege" open={false} title="Welchen Weg die Berichte genommen haben" sub={data.trace?<>Alle Berichte, die der Abruf im Zeitraum geschrieben hat, und wie weit jeder gekommen ist. Je Bericht zählt sein Hauptdokument. Gezählt {when(data.trace.at)} am Ende von „Einordnung, nachts“.</>:'Noch keine Zählung. Sie entsteht am Ende von „Einordnung, nachts“.'}
     aside={<Segmented label="Zeitraum" value={win} onPick={setWin} options={[['24h','24 Stunden'],['7d','7 Tage']]}/>}>
     {w&&(w.written?<Paths w={w}/>:<Leer>In diesem Zeitraum hat der Abruf keine Berichte geschrieben.</Leer>)}
    </Abschnitt>
