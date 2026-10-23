@@ -312,7 +312,8 @@
 }
 
 @media (max-width:639px),(max-height:500px) and (pointer:coarse) and (max-width:1000px) {
-  html:not(.rm-dark) header {
+  /* nur die Kopfzeile der App (header.sticky), nicht der Kopf eines Artikels (<header> in DetailPage) */
+  html:not(.rm-dark) header.sticky {
     background: var(--rm-ac);
     border-bottom-color: transparent;
   }

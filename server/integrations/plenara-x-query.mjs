@@ -54,7 +54,7 @@ export const X_SUM_GATE={housing:false};
 // Art des Plangebiets (plan_use) seit 22.10.2026 nicht mehr im Atlas: eine Einordnung, die die Signale aus dem Modell zeigen
 const ATLAS_FACTS={bauen:[['plan','housing'],['plan_area'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['waste_fee'],['ee_power'],['wind_count']],mobilitaet:[['project'],['road']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee']]};
-import {MAP_FACTS,MAP_FACT_NAMES} from '../../shared/map-facts.mjs';
+import {MAP_FACTS,MAP_FACT_NAMES,ANNUAL_OWNER_NAMES} from '../../shared/map-facts.mjs';
 import {atRevisionStale,paramsKey} from './revision-cache.mjs';
 import {X_REVISION_SQL} from './x-cases.mjs';
 import {xOffload} from './x-offload.mjs';
@@ -86,22 +86,27 @@ export function parseX(params){
  if(!X_BY.includes(by)&&!X_FACTS.includes(fact))throw new AnalyticsError('Unbekannte Gliederung.');
  const sum=params.get('sum')||'';if(sum&&!X_SUMS[sum])throw new AnalyticsError('Unbekannte Summe.');
  const offset=Math.max(0,Number(params.get('offset'))||0);
+ /* Träger eines Jahresabschlusses (annual_result: zweites Feld von detail): Kommune, Eigenbetrieb oder Gesellschaft, Sparkasse */
+ const owner=params.get('owner')||'';if(owner&&!ANNUAL_OWNER_NAMES[owner])throw new AnalyticsError('Unbekannter Träger.');
  if(sub)f.sub=sub;
- return {f,theme:sub?SUB_BY_ID.get(sub).theme:theme,sub,stage,by,fact,sum,region:params.get('region')||'',list:params.get('list')==='1',value:params.get('value')??'',offset};
+ return {f,theme:sub?SUB_BY_ID.get(sub).theme:theme,sub,stage,by,fact,sum,owner:fact&&fact!=='annual_result'?'':owner,region:params.get('region')||'',list:params.get('list')==='1',value:params.get('value')??'',offset};
 }
 
 /* Gezählt wird in x_cases (eine Zeile je Sachvorgang, Migration 0036, gebaut von x-cases.mjs); stage '' = noch nicht gelesen */
 const KEY={region:'x.region_id',month:'x.month',theme:'x.label',sub:'s.value',stage:'x.stage',status:'x.status'};
 const SUB_JOIN=`JOIN json_each('["'||replace(x.subs,',','","')||'"]') s ON s.value<>''`;
 /* Werte aus den Unterlagen hängen an Berichten: je Vorgang und Wert eine Zeile über alle Berichte des Vorgangs */
-const FACT_JOIN=`JOIN (SELECT DISTINCT rr.case_key ck,f.value v FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=?) f ON f.ck=x.case_key`;
+/* Nur Jahresabschlüsse eines Trägers (owner); leer: alle. Ältere Werte ohne Träger zählen nur ohne Filter */
+const OWNER_SQL=` AND (?='' OR f.detail LIKE '%|'||?)`,ownerArgs=x=>[x.owner||'',x.owner||''];
+const ownerOf=d=>String(d??'').split('|')[1]||'';
+const FACT_JOIN=`JOIN (SELECT DISTINCT rr.case_key ck,f.value v FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=?${OWNER_SQL}) f ON f.ck=x.case_key`;
 const SUM_JOIN=`JOIN (SELECT rr.case_key ck,max(CAST(sv.detail AS REAL)) v FROM topic_facts sv JOIN report_rules rr ON rr.topic_id=sv.topic_id WHERE sv.kind=? GROUP BY rr.case_key) sv ON sv.ck=x.case_key`;
 /* Gruppenschlüssel, nötige Verknüpfung und ihre Parameter; perPart: ein Vorgang kann in mehreren Gruppen stehen */
 /* Hat ein Vorgang in mehreren Berichten verschiedene Werte, gilt der aus der jüngsten Sitzung (zuletzt beratener Stand);
    bei gleichem Tag entscheidet der Bericht, damit es immer derselbe ist. Für Karte, Median und Listen gleich. */
 const NEWEST_JOIN='LEFT JOIN search_cards nc ON nc.id=f.topic_id',NEWEST_ORDER='ORDER BY nc.date DESC,f.topic_id,f.value,f.detail';
 const SEL_COLS='x.case_key,x.subs,x.region_id,x.month,x.label,x.stage,x.status';
-const grouping=x=>x.fact?{key:'f.v',join:FACT_JOIN,jargs:[x.fact],perPart:true}
+const grouping=x=>x.fact?{key:'f.v',join:FACT_JOIN,jargs:[x.fact,...ownerArgs(x)],perPart:true}
  :{key:KEY[x.by],join:x.by==='sub'?SUB_JOIN:'',jargs:[],perPart:x.by==='sub'};
 
 /** Stand der Zahlen (null: noch nie gebaut) */
@@ -175,14 +180,14 @@ export async function xQuery(db,catalog,params,opts={}){
   /* Nur die Spalten, die Gliederung, Werte und Summen lesen (nicht x.*) */
   const cte=`WITH sel AS MATERIALIZED (SELECT ${SEL_COLS} FROM ${from} WHERE ${cond})`;
   hits=(await (x.fact
-   ?db.prepare(`${cte} SELECT f.value k,count(DISTINCT rr.case_key) n FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=? AND rr.case_key IN (SELECT case_key FROM sel) GROUP BY k`).bind(...args,...sel.args,x.fact)
+   ?db.prepare(`${cte} SELECT f.value k,count(DISTINCT rr.case_key) n FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=?${OWNER_SQL} AND rr.case_key IN (SELECT case_key FROM sel) GROUP BY k`).bind(...args,...sel.args,x.fact,...ownerArgs(x))
    :db.prepare(`${cte} SELECT ${key} k,count(*) n FROM sel x ${join} GROUP BY k`).bind(...args,...sel.args,...jargs)).all()).results;
  }
  // Summe eines Zahlenwerts: je Vorgang der größte Wert, je Gruppe summiert
  // Zahlenwerte: je Vorgang und Wert die erste Zahl, je Gruppe der Median (nur Fakten mit Zahl)
  let medians=null;
  if(x.fact&&X_FACT_NUM[x.fact]){
-  const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT ${SEL_COLS} FROM ${from} WHERE ${cond}) SELECT f.value k,rr.case_key ck,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id ${NEWEST_JOIN} WHERE f.kind=? AND f.detail<>'' AND rr.case_key IN (SELECT case_key FROM sel) ${NEWEST_ORDER}`).bind(...args,...sel.args,x.fact).all();
+  const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT ${SEL_COLS} FROM ${from} WHERE ${cond}) SELECT f.value k,rr.case_key ck,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id ${NEWEST_JOIN} WHERE f.kind=?${OWNER_SQL} AND f.detail<>'' AND rr.case_key IN (SELECT case_key FROM sel) ${NEWEST_ORDER}`).bind(...args,...sel.args,x.fact,...ownerArgs(x)).all();
   const per=new Map();for(const r of results){const num=factNum(x.fact,r.d);if(!num)continue;const g=per.get(r.k)||new Map();if(!g.has(r.ck))g.set(r.ck,num);per.set(r.k,g);}
   medians=new Map([...per].map(([k,g])=>{const nums=[...g.values()],units=new Map();for(const u of nums)units.set(u.unit,(units.get(u.unit)||0)+1);
    const unit=[...units].sort((a,b)=>b[1]-a[1])[0][0],vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [k,{median:median(vs),unit,n:vs.length}];}));
@@ -210,8 +215,8 @@ async function xList(db,catalog,x,{count:counted=true,src=null}={}){
  // Wert des Vorgangs zum gewählten Fakt (bei mehreren, etwa Grundsteuer A und B, alle verschiedenen)
  const values=new Map();
  if(x.fact&&X_FACT_NUM[x.fact]&&results.length){
-  const {results:fs}=await db.prepare(`SELECT rr.case_key ck,f.value v,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id ${NEWEST_JOIN} WHERE f.kind=? AND rr.case_key IN (SELECT value FROM json_each(?))${x.value!==''?' AND f.value=?':''} ${NEWEST_ORDER}`).bind(x.fact,JSON.stringify(results.map(r=>r.ck)),...(x.value!==''?[x.value]:[])).all();
-  for(const f of fs){const num=factNum(x.fact,f.d);if(!num)continue;const t=fmtNum(num.v,num.unit),l=values.get(f.ck)||[];if(!l.includes(t))l.push(t);values.set(f.ck,l);}
+  const {results:fs}=await db.prepare(`SELECT rr.case_key ck,f.value v,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id ${NEWEST_JOIN} WHERE f.kind=?${OWNER_SQL} AND rr.case_key IN (SELECT value FROM json_each(?))${x.value!==''?' AND f.value=?':''} ${NEWEST_ORDER}`).bind(x.fact,...ownerArgs(x),JSON.stringify(results.map(r=>r.ck)),...(x.value!==''?[x.value]:[])).all();
+  for(const f of fs){const num=factNum(x.fact,f.d);if(!num)continue;const o=x.fact==='annual_result'&&ownerOf(f.d),t=fmtNum(num.v,num.unit)+(o?` (${ANNUAL_OWNER_NAMES[o]})`:''),l=values.get(f.ck)||[];if(!l.includes(t))l.push(t);values.set(f.ck,l);}
  }
  return {offset:x.offset,size:X_LIST_SIZE,total:Number(count?.n||0),
   items:results.map(r=>({id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,gremium:r.gremium||undefined,
@@ -266,6 +271,11 @@ async function housingMap(db,src,x){
 
 /* Jüngster Wert (Median der Vorgänge am letzten Sitzungstag) und der davor (letzter Tag mit anderem Wert): für „steht heute“
    und „steigt oder fällt“ in plenara.X Fakten */
+/* Jüngster und voriger Wert vom selben Träger wie der jüngste (Jahresergebnis ohne Filter: nicht Stadt gegen Sparkasse vergleichen) */
+function sameOwner(nums){
+ if(!nums.some(u=>u.own))return nums;
+ const top=[...nums].sort((a,b)=>String(b.dt).localeCompare(String(a.dt)))[0].own;return nums.filter(u=>u.own===top);
+}
 function latest(nums){
  const days=[...new Set(nums.map(u=>u.dt))].sort().reverse(),at=d=>median(nums.filter(u=>u.dt===d).map(u=>u.v));
  const last=at(days[0]),prevDay=days.slice(1).find(d=>at(d)!==last);
@@ -290,12 +300,15 @@ async function factMaps(db,catalog,src,x,kinds){
  const by=new Map();
  for(const r of results){
   const ags=member.get(r.card)||'',key=r.g+'|'+ags;
-  const k=by.get(r.kind)||new Map();by.set(r.kind,k);const g=k.get(key)||{g:r.g,ags,cases:new Set(),v:new Map()};k.set(key,g);g.cases.add(r.ck);
+  /* Jahresabschluss: nur der gewählte Träger; je Gebiet die Träger mit Wert (ohne Filter sichtbar, wenn es mehrere sind) */
+  const own=r.kind==='annual_result'?ownerOf(r.d):'';if(x.owner&&r.kind==='annual_result'&&own!==x.owner)continue;
+  const k=by.get(r.kind)||new Map();by.set(r.kind,k);const g=k.get(key)||{g:r.g,ags,cases:new Set(),v:new Map(),owners:new Map()};k.set(key,g);g.cases.add(r.ck);
   let num=factNum(r.kind,r.d);if(!num)continue;
   // Haushalt je Einwohner: nur mit Einwohnerzahl des Gebiets, nicht für genannte Mitgliedsgemeinden
-  if(r.kind==='budget'){if(ags||!POPULATION[r.g])continue;num={v:Math.round(num.v/POPULATION[r.g]),unit:'€ je Einwohner'};}const vv=g.v.get(r.v)||new Map();g.v.set(r.v,vv);if(!vv.has(r.ck))vv.set(r.ck,{...num,dt:String(r.dt||'').slice(0,10)});
+  if(r.kind==='budget'){if(ags||!POPULATION[r.g])continue;num={v:Math.round(num.v/POPULATION[r.g]),unit:'€ je Einwohner'};}const vv=g.v.get(r.v)||new Map();g.v.set(r.v,vv);if(!vv.has(r.ck))vv.set(r.ck,{...num,dt:String(r.dt||'').slice(0,10),own});
+  if(own&&!g.owners.has(own))g.owners.set(own,{value:r.v,v:num.v,unit:num.unit,dt:String(r.dt||'').slice(0,10)});
  }
- for(const [kind,k] of by)out.set(kind,[...k.values()].map(({g,ags,cases,v})=>({key:g,...(ags?{ags}:{}),n:cases.size,v:Object.fromEntries([...v].map(([val,m])=>{const nums=[...m.values()],unit=nums[0].unit,vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [val,{n:vs.length,median:median(vs),unit,...latest(nums.filter(u=>u.unit===unit))}];}))})));
+ for(const [kind,k] of by)out.set(kind,[...k.values()].map(({g,ags,cases,v,owners})=>({key:g,...(ags?{ags}:{}),n:cases.size,...(owners.size?{owners:Object.fromEntries(owners)}:{}),v:Object.fromEntries([...v].map(([val,m])=>{const nums=[...m.values()],unit=nums[0].unit,vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [val,{n:vs.length,median:median(vs),unit,...latest(sameOwner(nums.filter(u=>u.unit===unit)))}];}))})));
  return out;
 }
 

@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v28';
+export const FACTS_VERSION='facts-v29';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -440,6 +440,22 @@ export const secondHomeTaxOf=(title,text)=>rateOf(title,text,{titleRe:/Zweitwohn
 export const amusementTaxOf=(title,text)=>rateOf(title,text,{titleRe:/Vergnügungssteuer/i,lo:2,hi:40,
  base:(near,v)=>/Einspielergebnis|Bruttokasse/i.test(near)?'vom Einspielergebnis':/Spieleinsatz|Einsatz/i.test(near)?'vom Spieleinsatz':v<=10?'vom Spieleinsatz':'vom Einspielergebnis'});
 
+/* Wessen Abschluss (Träger): Sparkasse, eigener Betrieb oder Gesellschaft (Eigenbetrieb, eigenbetriebsähnliche Einrichtung, Stadtwerke,
+   GmbH, AöR, Zweckverband) oder die Kommune selbst. Zuerst der Titel, dann der Anfang des Textes; ohne Hinweis die Kommune. Die
+   Sparkasse steht im Rat, weil die Kommune ihr Träger ist (Verwendung des Überschusses, Entlastung des Verwaltungsrats). */
+const OWNER_SPK=/sparkasse/i;
+const OWNER_BETRIEB=/eigenbetrieb|eigengesellschaft|(?:stadt|gemeinde|kreis|verbandsgemeinde|wasser|abwasser|klär|gas|e)werk(?:e|es|s)?\b|\bwerke\b|betrieb(?:e|es|s)?\b|gmbh|\bmbh\b|\bag\b|aör|anstalt des öffentlichen rechts|kommunalunternehmen|zweckverband|\w*verband\b|gesellschaft|bäder|gebäudemanagement|\bzgm\b|wasserversorgung|abwasserbeseitigung|abfallwirtschaft|wohnungsbau|stiftung|krankenhaus|klinik|holding|volkshochschule|musikschule|datenzentrale|rechenzentrum/i;
+const OWNER_KOMMUNE=/(?:der|des)\s+(?:stadt|gemeinde|ortsgemeinde|verbandsgemeinde|samtgemeinde|marktgemeinde|kreises|landkreises|amtes|kreisstadt|hansestadt)\b|kernhaushalt|haushaltsjahr/i;
+export function annualOwnerOf(title,text){
+ const t=String(title||''),head=String(text||'').replace(/\s+/g,' ').slice(0,800);
+ if(OWNER_SPK.test(t))return 'sparkasse';
+ if(OWNER_BETRIEB.test(t))return 'betrieb';
+ if(OWNER_KOMMUNE.test(t))return 'kommune';
+ if(OWNER_SPK.test(head))return 'sparkasse';
+ if(OWNER_BETRIEB.test(head)&&!OWNER_KOMMUNE.test(head))return 'betrieb';
+ return 'kommune';
+}
+
 export function annualResultOf(title,text){
  const t=String(title||'');if(!RESULT_TITLE.test(t)||NOT_RESULT_TITLE.test(t))return null;
  // „i.H.v.“ würde den Satz an der Abkürzung trennen
@@ -447,6 +463,8 @@ export function annualResultOf(title,text){
   for(const m of s.matchAll(RESULT_RE)){const unit=m[4]||'',cur=m[5]||'';if(!unit&&!cur)continue;
    // Tabellen über mehrere Jahre („2019 2020 2021 … Jahresergebnis 298.923,20 €“) und lose „ein Fehlbetrag“ ohne Abschluss
    if(/(?:(?:19|20)\d\d\s+){3}/.test(s.slice(Math.max(0,m.index-120),m.index)))continue;
+   // Rücklage statt Ergebnis („Die Sicherheitsrücklage wurde durch einen Teil des Bilanzgewinns 2024 auf 187,8 Mio. Euro aufgestockt“)
+   if(/\sauf\s|rücklage|zugeführt|eingestellt/i.test(m[0].replace(/(?:vor|nach) (?:der )?Veränderung (?:der|von) Rücklagen/gi,''))||/teil des\s*$/i.test(s.slice(Math.max(0,m.index-20),m.index)))continue;
    if(/^(?:mit einem|einen|ein)\b/i.test(m[1])&&!/schließt|abgeschlossen|abschließt|Ergebnisrechnung|Wirtschaftsjahr|Geschäftsjahr|Haushaltsjahr/i.test(s.slice(Math.max(0,m.index-120),m.index+m[0].length+30)))continue;
    // Vorjahr, Plan, Prognose nur im Umfeld des Treffers prüfen (lange Sätze aus Tabellen)
    if(NOT_RESULT_SENT.test(s.slice(Math.max(0,m.index-80),m.index+m[0].length))||/^\s*(?:Vorjahr|im Vorjahr|gegenüber|im Vergleich)/i.test(s.slice(m.index+m[0].length,m.index+m[0].length+30)))continue;let v=Number(m[3].replace(/\./g,'').replace(',','.'));
@@ -853,7 +871,7 @@ export function factsOf(title,text){
  const heat=heatPlanOf(title,text);if(heat)rows.push({kind:'heat_plan',value:heat,detail:''});
  for(const [kind,fn] of [['second_home_tax',secondHomeTaxOf],['amusement_tax',amusementTaxOf]]){const r=fn(title,text);if(r)rows.push({kind,value:r.value,detail:r.rate});}
  for(const b of budgetOf(title,text)||[])rows.push({kind:'budget',value:b.value,detail:String(b.euro)});
- const result=annualResultOf(title,text);if(result)rows.push({kind:'annual_result',value:result.value,detail:String(result.euro)});
+ const result=annualResultOf(title,text);if(result)rows.push({kind:'annual_result',value:result.value,detail:`${result.euro}|${annualOwnerOf(title,text)}`});
  const ee=eePowerOf(title,text);if(ee)rows.push({kind:'ee_power',value:ee.value,detail:String(ee.mw)});
  const dog=dogTaxOf(title,text);if(dog)rows.push({kind:'dog_tax',value:dog.value,detail:dog.euro});
  const land=landPriceOf(title,text);if(land)rows.push({kind:'land_price',value:land.value,detail:land.euro});
