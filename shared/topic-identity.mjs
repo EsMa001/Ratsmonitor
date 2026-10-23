@@ -23,9 +23,16 @@ const links=t=>{if(!linkCache.has(t))linkCache.set(t,[...new Set([...([t.sourceU
 /** @template {{identity?:{mergedInto?:string}}} T @param {T[]} topics @returns {T[]} */
 export const activeTopics=topics=>topics.filter(t=>!t.identity?.mergedInto);
 export function identityState(t){return t.identity?.conflict?'conflict':paperKey(t)?'paper':'unlinked';}
+/* Platzhalter statt Gremium: nur „Gremium“ oder „Gremium laut Originalquelle“, auch mehrfach mit Komma; echte Namen wie
+ * „Gremium für Verkehrsfragen“ bleiben. */
+export const PLACEHOLDER_COMMITTEE=/^\s*gremium(?: laut originalquelle)?(?:\s*,\s*gremium(?: laut originalquelle)?)*\s*$/i;
 export function mergeHistory(old,fresh){
  const events=new Map((old.events||[]).map(e=>[JSON.stringify([e.url,e.date,e.committee]),e]));
- for(const e of fresh.events||[]){const key=JSON.stringify([e.url,e.date,e.committee]),prior=events.get(key);const next={...prior,...e};
+ for(const e of fresh.events||[]){const key=JSON.stringify([e.url,e.date,e.committee]);let prior=events.get(key);
+  // The same meeting read once with a placeholder committee (organization not readable at the time, Goch 06.10.2026)
+  // and later with its name is one event: the placeholder gives way instead of standing beside it.
+  if(!prior&&e.url&&!PLACEHOLDER_COMMITTEE.test(e.committee||''))for(const [k,x] of events)if(x.url===e.url&&x.date===e.date&&PLACEHOLDER_COMMITTEE.test(x.committee||'')){events.delete(k);prior=x;break;}
+  const next={...prior,...e};
   if(prior?.attendance?.status==='available'&&e.attendance?.status!=='available')next.attendance=prior.attendance;
   if(prior?.decision&&prior.decision.kind!=='unknown'&&e.decision?.kind==='unknown')next.decision=prior.decision;
   // A metadata-only adapter reporting "unknown" is not contrary evidence to a

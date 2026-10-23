@@ -30,6 +30,7 @@
  */
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {THEMES,SUBTOPICS,subtopicName} from '../../shared/themes.mjs';
+import {PLACEHOLDER_COMMITTEE} from '../../shared/topic-identity.mjs';
 import {STAGES,RULE_STAGES,SONST,RULE_SONST,stageName} from '../../shared/stage.mjs';
 import {labelName} from '../../shared/labels.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
@@ -358,6 +359,5 @@ export function xCached(db,kind,params,compute){
  return atRevisionStale(db,paramsKey(kind,params),async()=>(await xOffload(kind,params))??compute(),{revisionSql:X_REVISION_SQL});
 }
 
-/* Platzhalter statt Gremium: nur „Gremium“ oder „Gremium laut Originalquelle“, auch mehrfach mit Komma; echte Namen wie
- * „Gremium für Verkehrsfragen“ bleiben. Eine Regel für Themennetz, Ortsvergleich, Gremiennetz und Newsradar. */
-export const PLACEHOLDER=/^\s*gremium(?: laut originalquelle)?(?:\s*,\s*gremium(?: laut originalquelle)?)*\s*$/i;
+// Platzhalter statt Gremium (eine Regel mit dem Zusammenführen der Ereignisse) für Themennetz, Ortsvergleich, Gremiennetz und Newsradar.
+export const PLACEHOLDER=PLACEHOLDER_COMMITTEE;

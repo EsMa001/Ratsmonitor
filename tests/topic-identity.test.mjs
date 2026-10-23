@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {reconcileTopics,activeTopics,resolveTopic,identityState,recordUrl} from '../shared/topic-identity.mjs';
+import {reconcileTopics,activeTopics,resolveTopic,identityState,recordUrl,mergeHistory} from '../shared/topic-identity.mjs';
 import {mergeImport} from '../server/integrations/merge-import.mjs';
 import {buildAnalytics} from '../shared/analytics.mjs';
 import {relatedTopics,comparisonDistrict} from '../shared/similarity.mjs';
@@ -61,4 +61,16 @@ test('More-Rubin numeric official IDs link an old agenda entry to its paper with
  const result=reconcileTopics([a],[b]);assert.equal(activeTopics(result).length,1);assert.equal(identityState(resolveTopic(result,a.id)),'paper');
  assert.equal(resolveTopic(result,b.id).events.length,1);
  assert.equal(activeTopics(reconcileTopics([],result)).length,1);
+});
+
+test('a placeholder committee gives way to the name of the same meeting; other events stay',()=>{
+ // Goch, 06.10.2026: meeting 2696 read once while its organization could not be loaded, then with its name.
+ const url='https://ris.goch.de/webservice/oparl/v1.1/body/1/meeting/2696',other='https://ris.goch.de/webservice/oparl/v1.1/body/1/meeting/2700';
+ const old={id:'a',events:[{url,date:'2026-10-06',committee:'Gremium laut Originalquelle',status:'unknown',attendance:{status:'available',people:['X']}},{url:other,date:'2026-10-07',committee:'Gremium',status:'unknown'}],documents:[]};
+ const merged=mergeHistory(old,{id:'a',events:[{url,date:'2026-10-06',committee:'Ausschuss für Schule und Sport',status:'unknown',attendance:{status:'not_collected'}}],documents:[]});
+ assert.deepEqual(merged.events.map(e=>[e.url.slice(-4),e.committee]),[['2696','Ausschuss für Schule und Sport'],['2700','Gremium']]);
+ assert.equal(merged.events[0].attendance.status,'available','what the placeholder event held is kept');
+ // A real name never gives way to another real name: two committees at one address stay two events.
+ const joint=mergeHistory({id:'b',events:[{url,date:'2026-10-06',committee:'Rat'}],documents:[]},{id:'b',events:[{url,date:'2026-10-06',committee:'Hauptausschuss'}],documents:[]});
+ assert.equal(joint.events.length,2);
 });
