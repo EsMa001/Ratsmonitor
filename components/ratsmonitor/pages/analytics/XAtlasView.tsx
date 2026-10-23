@@ -206,10 +206,11 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
             </div>
           </div> : (
             <>
-              {/* Mit Ort: der Ort als Chip mit ✕ am Satzanfang (dort sieht man ihn und kann ihn entfernen); sonst große Kennzahlen */}
-              {place && cmp ? <Befund tight><PlaceChip name={place} onClear={() => search.clearArea()} />{placeRest}</Befund>
+              {/* Mit Ort: der Ort als Chip mit ✕ am Satzanfang (dort sieht man ihn und kann ihn entfernen; Handy: nur der Name, der Chip steht an der Suchleiste); sonst große Kennzahlen */}
+              {place && cmp ? <Befund tight><span className="max-sm:hidden"><PlaceChip name={place} onClear={() => search.clearArea()} /></span><span className="sm:hidden">{place}</span>{placeRest}</Befund>
                 : <Kennzahlen week={week} scope={[what || "Alle Themen", res.selection.q ? `„${prettyTerm(res.selection.q)}“` : "", place || ""].filter(Boolean).join(" · ")} period={zeitText(zeit)} items={[{ value: n(total), label: plural(total, "Vorgang", "Vorgänge") }]}>
-                  {place && <PlaceChip name={place} onClear={() => search.clearArea()} />}
+                  {/* Handy: der Ort steht schon als Chip an der Suchleiste */}
+                  {place && <span className="max-sm:hidden"><PlaceChip name={place} onClear={() => search.clearArea()} /></span>}
                   <span className="rm-zeit-std max-sm:hidden"><ZeitPills value={zeit} onPick={onZeit} /></span>
                 </Kennzahlen>}
 
