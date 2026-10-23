@@ -64,7 +64,8 @@
     "verifiedSource": "https://www.bonn.sitzung-online.de/oparl/system",
     "verifiedAt": "2026-10-01",
     "note": "Die im OParl-Verzeichnis genannte Adresse /public/oparl/system liefert eine Zugriffsprüfung statt Daten.",
-    "meetingScan": "filter"
+    "meetingScan": "filter",
+    "maxResponseChars": 7000000
   },
   {
     "id": "nrw-05362012",

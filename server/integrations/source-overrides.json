@@ -14,7 +14,8 @@
     "verifiedAt": "2026-10-01",
     "state": "system-verified",
     "note": "Die im OParl-Verzeichnis genannte Adresse /public/oparl/system liefert eine Zugriffsprüfung statt Daten.",
-    "meetingScan": "filter"
+    "meetingScan": "filter",
+    "maxResponseChars": 7000000
   },
   "nrw-05111000": {
     "upgradeHttpLinks": true,
