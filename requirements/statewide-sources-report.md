@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 353 angebunden, 74 nicht. Diese Datei beschreibt die 260 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 354 angebunden, 73 nicht. Diese Datei beschreibt die 260 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 

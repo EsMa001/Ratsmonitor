@@ -173,7 +173,8 @@ export function sessionScore({url,label}={}){
  if(/amtsblatt|mitteilungsblatt|gemeindeblatt|amtsbote|gemeindebote|nachrichtenblatt|amtliche nachrichten/.test(t)){
   n+=kindOf(url)==='pdf'?2:1;
   // An issue of the gazette as PDF with its date ("Mitteilungsblatt vom 07. Oktober 2026"): what is in it is decided by the text.
-  if(kindOf(url)==='pdf'&&(firstDate(decode(label??''),LABEL_DATES)||urlDate(url)))n+=1;
+  // Also with its number in the year ("Amtsblatt 36/2026", "00_Amtsblatt_24_2026.pdf", Emsland and Hochsauerlandkreis 2026).
+  if(kindOf(url)==='pdf'&&(firstDate(decode(label??''),LABEL_DATES)||urlDate(url)||/(?:^|\D)\d{1,3}\s*[\/_-]\s*(?:19|20)\d{2}(?!\d)/.test(decode(label??'')+' '+decode(String(url).split('/').pop()))))n+=1;
  }
  if(!sitting&&/haushaltssatzung|haushaltsplan|nachtragshaushalt/.test(t))n-=4;
  if(!sitting&&/bebauungsplan|flaechennutzungsplan|bauleitplan|planfeststellung|\bb plan\b/.test(t))n-=4;

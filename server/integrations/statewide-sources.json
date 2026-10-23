@@ -2933,5 +2933,19 @@
     "verifiedSource": "https://sprockhoevel.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-10",
     "foundBy": "manuell 2026-10-10"
+  },
+  {
+    "id": "nrw-05958",
+    "name": "Kreis Hochsauerlandkreis",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hochsauerlandkreis.de/",
+    "pages": [
+      "https://www.hochsauerlandkreis.de/hochsauerlandkreis/politik-und-verwaltung/amtsblatt-fuer-den-hsk"
+    ],
+    "verifiedSource": "https://www.hochsauerlandkreis.de/hochsauerlandkreis/politik-und-verwaltung/amtsblatt-fuer-den-hsk",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kreistagsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); das Amtsblatt (PDF) macht Kreistagssitzungen bekannt. Probeabruf 3 Monate: 8 Berichte."
   }
 ]

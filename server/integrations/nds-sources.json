@@ -4085,5 +4085,19 @@
       "identity": "Adresse"
     },
     "foundBy": "Recherche 10.10.2026: Website verlinkt Protokolle www.twistringen.de/allris/si018.asp; Sitzungskalender si010_e.asp daneben (Atlas kannte nur /bi/allris.net.asp ohne Kalender)"
+  },
+  {
+    "id": "nds-03454",
+    "name": "Landkreis Emsland",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://emsland.de/",
+    "pages": [
+      "https://emsland.de/de/buerger-und-behoerde/oeffentliche_bekanntmachungen/amtsblatt.php"
+    ],
+    "verifiedSource": "https://emsland.de/de/buerger-und-behoerde/oeffentliche_bekanntmachungen/amtsblatt.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); das Amtsblatt (PDF) macht Kreistag und Ausschüsse mit Tagesordnung bekannt. Probeabruf 3 Monate: 57 Berichte aus 6 Sitzungen."
   }
 ]
