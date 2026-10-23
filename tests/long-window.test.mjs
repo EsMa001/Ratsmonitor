@@ -109,6 +109,16 @@ test('OParl follows a roughly newest-first list beyond the page limit until a pa
    return {data:page(n).map((start,i)=>({id:root+'meeting/'+n+'-'+i,start,agendaItem:[]})),links:n<40?{next:root+'meetings?page='+(n+1)}:{}};}});return {pages:pages.length,issues:d.coverage.issues};};
  const rough=await run({...source,meetingScan:'end'});
  assert.equal(rough.pages,31,'bis zur ersten Seite ganz vor dem Zeitraum');assert.ok(!rough.issues.some(i=>/Listenlimit/.test(i)),'Zeitraum gedeckt, kein Listenlimit');
+ // Newest first by number (Düsseldorf): two pages before the window in a row end it, within the page limit and without a note;
+ // one old page between pages that reach into the window does not.
+ const custom=async kinds=>{const pages=[];const d=await collectRegionalOparl({...source,meetingScan:'end'},{now,window:'1m',getJson:async url=>{
+   if(url===root+'body')return {id:root+'body',type:'https://schema.oparl.org/1.1/Body',name:'Teststadt',meeting:root+'meetings?page=1'};
+   const n=Number(new URL(url).searchParams.get('page'));pages.push(n);const k=kinds[n-1]||'old';
+   return {data:(k==='new'?[at(-400),at(10)]:[at(-600),at(-500)]).map((start,i)=>({id:root+'meeting/'+n+'-'+i,start,agendaItem:[]})),links:n<kinds.length+5?{next:root+'meetings?page='+(n+1)}:{}};}});return {pages:pages.length,issues:d.coverage.issues};};
+ const two=await custom(['new','new','old','old']);
+ assert.equal(two.pages,4);assert.ok(!two.issues.some(i=>/Listenlimit/.test(i)));
+ const gap=await custom(['new','old','new','old','old']);
+ assert.equal(gap.pages,5,'eine alte Seite dazwischen beendet nichts');
  const fixed=await run({...source,meetingScan:'end',maxPages:3});
  assert.equal(fixed.pages,3,'eigene Grenze des Katalogs bleibt');
 });

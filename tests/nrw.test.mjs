@@ -74,10 +74,15 @@ test('a date-sorted list read from its end is followed until the window is cover
  const covered={1:[meeting(1,'2001-01-01'),meeting(2,'2001-02-01')],2:[meeting(3,'2026-03-01'),meeting(4,'2026-04-01')],3:[meeting(5,'2026-09-05'),meeting(6,'2026-09-20')],4:[meeting(7,'2026-10-01'),meeting(8,'2027-01-01')]};
  ({result,pages}=await run(covered,{maxPages:2}));
  assert.deepEqual(pages,[1,4,3,2]);assert.equal(result.coverage.meetings,3);assert.deepEqual(result.coverage.issues,[]);assert.equal(result.coverage.complete,true);
- // Not sorted by date: no early stop, the fixed page limit and both notes stay.
+ // Not sorted by date: no early stop at the first old page, but pages that still reach into the window are read beyond the page
+ // limit (23.10.2026, Krefeld, Bamberg); here page 2 holds a meeting of the window, and walking back reaches the first page.
  const unsorted={1:[meeting(1,'2001-01-01'),meeting(2,'2001-02-01')],2:[meeting(3,'2026-09-05'),meeting(4,'2026-03-01')],3:[meeting(5,'2026-09-20'),meeting(6,'2026-01-01')],4:[meeting(7,'2026-02-01'),meeting(8,'2026-09-10')]};
  ({result,pages}=await run(unsorted,{maxPages:3}));
- assert.deepEqual(pages,[1,4,3]);assert.ok(result.coverage.issues.some(i=>/Ende der Sitzungsliste/.test(i)));assert.ok(result.coverage.issues.some(i=>/Listenlimit/.test(i)));
+ assert.deepEqual(pages,[1,4,3,2]);assert.equal(result.coverage.meetings,3);assert.ok(!result.coverage.issues.some(i=>/Listenlimit/.test(i)));
+ // A list that does not reach into the window keeps the fixed page limit and both notes.
+ const old={1:[meeting(1,'2001-01-01')],2:[meeting(2,'2002-01-01')],3:[meeting(3,'2003-01-01'),meeting(4,'2001-06-01')],4:[meeting(5,'2004-01-01'),meeting(6,'2002-06-01')],5:[meeting(7,'2005-01-01'),meeting(8,'2003-06-01')]};
+ ({result,pages}=await run(old,{maxPages:3}));
+ assert.deepEqual(pages,[1,5,4]);assert.ok(result.coverage.issues.some(i=>/Ende der Sitzungsliste/.test(i)));assert.ok(result.coverage.issues.some(i=>/Listenlimit/.test(i)));
 });
 test('a server that honours the OParl filter modified_since is asked only for recently changed meetings',async()=>{
  // SD.NET orders its list by record number and fills the last pages with next year's planned meetings.
