@@ -11,16 +11,21 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {SUBTOPICS} from '../../shared/themes.mjs';
 import {KIND,THEMES,STATUS,PROCESS,STEPS,SERVICE,APPLICANTS,DOCTYPES,INPUT_VERSION,applicantKind,pdfSparse,reportSparse,flags,parts,cat} from '../../shared/model/features.mjs';
-import {DENSE_SCALE,SURE,classify,loadHeads} from '../../shared/model/heads.mjs';
+import {DENSE_SCALE,loadHeads} from '../../shared/model/heads.mjs';
+import {measure,listEval,stepOf} from './measure-lib.mjs';
 
 const arg=(k,d)=>process.argv.find(a=>a.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const EMB=arg('emb-dir','tmp/ml'),SUF=arg('suffix','-ft'),OUT=arg('out','models/heads'),QUICK=process.argv.includes('--quick');
+/* Zweite Nachlieferung (kern-extra2.json, 23.10.2026): Lernberichte zum Lernen, ihre Prüfberichte (check → check2) nie;
+   --test=check2 misst auf ihnen statt auf den Prüfberichten von kern-big. --no-quality: shared/model-quality.json nicht schreiben */
+const EXTRA2=arg('extra2',''),TEST=arg('test','check'),NO_QUALITY=process.argv.includes('--no-quality');
 const EPOCHS=QUICK?2:40,L2=0.001,LR=0.01,BS=128,STICHTAG='2026-10-21',FX='tests/fixtures/';
 const loadEmb=name=>{const k=JSON.parse(fs.readFileSync(path.join(EMB,`${name}${SUF}.json`),'utf8')),b=new Float32Array(fs.readFileSync(path.join(EMB,`${name}${SUF}.bin`)).buffer.slice(0));
  const D=b.length/k.length;return {D,map:new Map(k.map((x,i)=>[x,b.subarray(i*D,(i+1)*D)]))};};
 const big=loadEmb('big-emb'),D=big.D,emb=big.map,ZERO=new Float32Array(D);
 const ext=loadEmb('extra-emb');for(const [k,v] of ext.map)emb.set(k.replace(/^([trp])(\d+)/,(m,a,n)=>a+(100000+ +n)),v);
 const titles=loadEmb('emb').map;
+if(EXTRA2){const e2=loadEmb('extra2-emb');for(const [k,v] of e2.map)emb.set(k.replace(/^([trp])(\d+)/,(m,a,n)=>a+(200000+ +n)),v);}
 
 // Ein Kopf beim Lernen (Float64): Wortteile W, dicht U, Versatz B; Adam in Paketen, Lernrate fällt (Kosinus), Bremse L2
 class Head{
@@ -62,13 +67,12 @@ const argmax=p=>Object.entries(p).sort((a,b)=>b[1]-a[1])[0];
 // Berichte: kern-big (Lernen, Abstimmung, Prüfung) und kern-extra (nur Lernen, Schlüssel um 100000 versetzt)
 const rows=JSON.parse(fs.readFileSync(FX+'kern-big.json','utf8')).rows.map((r,i)=>({...r,i})).filter(r=>r.gold);
 JSON.parse(fs.readFileSync(FX+'kern-extra.json','utf8')).rows.forEach((r,i)=>{if(r.gold)rows.push({...r,i:100000+i,set:'extra'});});
-const test=rows.filter(r=>r.set==='check'),trainAll=rows.filter(r=>r.set!=='check');
+if(EXTRA2)JSON.parse(fs.readFileSync(EXTRA2,'utf8')).rows.forEach((r,i)=>{if(r.gold)rows.push({...r,i:200000+i,set:r.set==='check'?'check2':'extra2'});});
+const test=rows.filter(r=>r.set===TEST),trainAll=rows.filter(r=>r.set!=='check'&&r.set!=='check2');
 const tune=trainAll.filter(r=>r.i<100000&&r.i%7===0),train=trainAll.filter(r=>!(r.i<100000&&r.i%7===0));
 console.log('lernen',train.length,'Schwellen',tune.length,'prüfen',test.length,'Einbettung',D);
 const isS=r=>r.gold.kind==='subject';
 // Schritt (Begriffsbuch 4b): Planschritt und Schritt der Wärmeplanung übersetzt
-const PLANMAP={aufstellung:'start',fruehzeitig:'frueh',entwurf:'entwurf',abwaegung:'abwaegung',satzung:'beschluss',aufhebung:'aufhebung',sonst:'sonst'},HEATMAP={start:'start',analyse:'frueh',entwurf:'entwurf',beschluss:'beschluss',umsetzung:'umsetzung'};
-const stepOf=r=>PLANMAP[r.gold.planstep]||HEATMAP[r.gold.heatstep]||null;
 const E=k=>emb.get(k)||ZERO,EK=(r,k)=>E(k==='t'?'t'+r.i:k==='r'?'r'+r.i:'p'+r.i+'.'+k.slice(2));
 
 // Zusatztitel der Themenversuche (nur Thema und Unterthema, ohne Titel, die wortgleich unter den Prüfberichten stehen)
@@ -127,9 +131,6 @@ const best=fn=>{let b=null;for(const t of [0.15,0.2,0.25,0.3,0.35,0.4,0.5]){cons
 const themeEval=(rs,t)=>{let given=0,right=0,want=0,hit=0;for(const r of rs.filter(isS)){const [th,p]=argmax(prob(M.themes,r)),g=r.gold.themes||[];
  if(p>=t){given++;if(g.includes(th))right++;}if(!g.includes('offen')&&g.length){want++;if(p>=t&&g.includes(th))hit++;}}
  const a=given?right/given:0,c=want?hit/want:0;return {acc:a,cov:c,score:a+c?2*a*c/(a+c):0};};
-const listEval=(rs,predict,goldOf)=>{let given=0,right=0,want=0,hit=0;for(const r of rs){const g=goldOf(r)||[],got=predict(r);
- given+=got.length;right+=got.filter(x=>g.includes(x)).length;if(g.length){want++;if(got.some(x=>g.includes(x)))hit++;}}
- const a=given?right/given:0,c=want?hit/want:0;return {acc:a,cov:c,score:a+c?2*a*c/(a+c):0};};
 const TH=best(t=>themeEval(tune,t)).t;
 const TS=best(t=>listEval(tune.filter(isS),r=>subsOf(r,themesOf(r,TH),t),r=>r.gold.subs)).t;
 const TSS=best(t=>listEval(tune.filter(r=>isS(r)&&(r.gold.subs||[]).length),r=>subsubsOf(r,r.gold.subs||[],t),r=>r.gold.subsubs)).t;
@@ -162,28 +163,8 @@ console.log('gespeichert',version,(bin.length/1e6).toFixed(1),'MB Gewichte,',(fs
 
 // Messen auf den Prüfberichten, mit dem gespeicherten Modell (so wie im Betrieb)
 const model=loadHeads(json,bin);
-const out=new Map(test.map(r=>[r.i,classify(r,k=>EK(r,k),model,STICHTAG)]));
-const pc=(a,b)=>b?Math.round(100*a/b):null,Q={};
-const acc=(name,rs,pred,gold,n0)=>{let n=0,ok=0;for(const r of rs){n++;if(pred(out.get(r.i))===gold(r))ok++;}Q[name]={acc:pc(ok,n),n:n0??n};};
-acc('kind',test,o=>o.kind,r=>r.gold.kind);
-acc('status',test,o=>o.status,r=>r.gold.status);
-acc('process',test.filter(isS),o=>o.process,r=>r.gold.process);
-acc('project',test.filter(isS),o=>o.project,r=>!!r.gold.project);
-acc('step',test.filter(r=>isS(r)&&stepOf(r)),o=>o.step,stepOf);
-acc('service',test.filter(r=>isS(r)&&r.gold.process==='build'),o=>o.service||'none',r=>r.gold.service||'none');
-acc('main',test.filter(r=>r.pdfs.length),o=>o.main,r=>r.gold.main??null);
-acc('result',test.filter(r=>r.pdfs.length),o=>o.result,r=>r.gold.result_doc??null);
-{let n=0,ok=0;for(const r of test)r.pdfs.forEach((p,j)=>{n++;if(out.get(r.i).doctypes[j]===r.gold.doctypes?.[p.i])ok++;});Q.doctype={acc:pc(ok,n),n};}
-const lst=(name,rs,got,gold)=>{const v=listEval(rs,r=>got(out.get(r.i)),gold);Q[name]={acc:Math.round(v.acc*100),cov:Math.round(v.cov*100),n:rs.length};};
-{let given=0,right=0,want=0,hit=0;for(const r of test.filter(isS)){const o=out.get(r.i),g=r.gold.themes||[],th=o.themes[0];if(th){given++;if(g.includes(th))right++;}if(!g.includes('offen')&&g.length){want++;if(th&&g.includes(th))hit++;}}
- Q.theme={acc:pc(right,given),cov:pc(hit,want),n:test.filter(isS).length};}
-lst('sub',test.filter(isS),o=>o.subs,r=>r.gold.subs);
-lst('subsub',test.filter(r=>isS(r)&&(r.gold.subs||[]).length),o=>o.subsubs,r=>r.gold.subsubs);
-acc('applicants',test.filter(r=>isS(r)&&r.gold.process==='political'&&!!applicantKind(r.gold.applicants)),o=>o.applicants[0]||null,r=>applicantKind(r.gold.applicants));
-
-for(const [name,key,rs,gold] of [['kind','kindP',test,r=>r.gold.kind],['status','statusP',test,r=>r.gold.status],['process','processP',test.filter(isS),r=>r.gold.process]]){
- let n=0,ok=0;for(const r of rs){const o=out.get(r.i);if(o[key]>=SURE){n++;if(o[name]===gold(r))ok++;}}Q[name].sureAcc=pc(ok,n);Q[name].sureShare=pc(n,rs.length);}
+const {Q,out}=measure(test,model,EK,STICHTAG);
 for(const [k,v] of Object.entries(Q))console.log(k.padEnd(11),JSON.stringify(v));
 fs.writeFileSync(path.join(OUT,'check.json'),JSON.stringify({version,today:STICHTAG,rows:test.map(r=>({i:r.i,out:out.get(r.i)}))}));
-if(!QUICK)fs.writeFileSync('shared/model-quality.json',JSON.stringify({version,measuredAt:new Date().toISOString().slice(0,10),sample:'kern-big Prüfberichte (770, zufällig vom Server 21.10.2026)',
+if(!QUICK&&!NO_QUALITY&&TEST==='check')fs.writeFileSync('shared/model-quality.json',JSON.stringify({version,measuredAt:new Date().toISOString().slice(0,10),sample:'kern-big Prüfberichte (770, zufällig vom Server 21.10.2026)',
  note:'Prüfberichte wurden für die Wahl der Modellvariante mehrfach genutzt; die Werte sind deshalb etwas zu gut (keine frische Stichprobe, Entscheidung 22.10.2026).',quality:Q},null,1)+'\n');
