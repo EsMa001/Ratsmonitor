@@ -18531,9 +18531,10 @@
     "method": "scraper",
     "adapter": "muenchen-risi",
     "base": "https://risi.muenchen.de/risi/",
+    "districts": true,
     "verifiedSource": "https://stadt.muenchen.de/",
     "verifiedAt": "2026-10-04",
-    "apiCheck": "Keine offizielle OParl-Schnittstelle gefunden; RIS München (öffentliche Seiten) erreichbar."
+    "apiCheck": "Keine offizielle OParl-Schnittstelle gefunden; RIS München (öffentliche Seiten) erreichbar. Bezirksausschüsse (Kalender sitzung/kalender/ba) seit 23.10.2026 mitgelesen: im Probeabruf eines Monats 1.005 Berichte zusätzlich zu 141 des Stadtrats."
   },
   {
     "id": "de-09163000",
