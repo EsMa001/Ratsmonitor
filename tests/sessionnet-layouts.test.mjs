@@ -111,6 +111,21 @@ test('Halle: calendar and agenda pages of the older layout give public items, re
  assert.deepEqual(Object.keys(result.marks).sort(),[halle.base+'to0040.asp?__ksinr=21804',halle.base+'to0040.asp?__ksinr=21850']);
 });
 
+test('a meeting called off and an upcoming one without agenda are counted, not reported as gaps; a past one without agenda is',async()=>{
+ // Herdecke, 23.10.2026: si0057 leads to the meeting page, whose room field says "die Sitzung f&#228;llt aus".
+ const info=(name,room)=>`<html><body><h1>${name}</h1><table><tr><td>Gremium</td><td>${name}</td></tr><tr><td>Raum</td><td>${room}</td></tr></table></body></html>`;
+ const extra={9001:['Verkehrskommission 15.09.2026','die Sitzung f&#228;llt aus'],9002:['Rat 30.09.2026','Ratssaal'],9003:['Personalausschuss 16.09.2026','Sitzungssaal']};
+ const calendar=page('halle-si0040.html').replace('</tbody>',Object.entries(extra).map(([n,[t]])=>`<tr><td><a href="si0057.asp?__ksinr=${n}" title="Details anzeigen: ${t} ">${t.split(' ')[0]}</a></td></tr>`).join('')+'</tbody>');
+ const get=async url=>{const u=new URL(url),f=file(url),n=u.searchParams.get('__ksinr');
+  if(f==='si0040.asp')return u.searchParams.get('__cmonat')==='9'?calendar:page('halle-si0040.html').replace(/<tr valign[\s\S]*?<\/tr>\n/g,'');
+  if(extra[n])return info(extra[n][0],extra[n][1]);
+  if(f==='to0040.asp')return page('halle-to0040.html');
+  if(f==='vo0050.asp')return '<table><tr><td>Vorlage</td><td>VIII/2026/02530</td></tr></table>';
+  throw Error('Quelle antwortet mit HTTP 404');};
+ const result=await collectSessionNet(halle,{now:new Date('2026-09-20T12:00:00Z'),window:'1m',get});
+ assert.equal(result.coverage.cancelledMeetings,1);assert.equal(result.coverage.upcomingWithoutAgenda,1);assert.equal(result.coverage.meetings,3);
+ assert.deepEqual(result.coverage.issues,['Keine lesbare öffentliche Tagesordnung: '+halle.base+'si0057.asp?__ksinr=9003']);
+});
 test('Schiffweiler: si0057 and si0056 lead to the error page without a session; the agenda comes from to0040, later meetings go there directly',async()=>{
  const log=[];const calendar=page('schiffweiler-si0040.html').replace('</tbody>',[1193,1194,1195].map(n=>`<tr><td><a href="si0057.php?__ksinr=${n}" title="Details anzeigen: Ortsrat ${n} 22.09.2026 ">Ortsrat</a></td></tr>`).join('')+'</tbody>');
  const request=async url=>{const u=new URL(url),f=file(url);log.push(f);

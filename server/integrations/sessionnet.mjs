@@ -72,6 +72,8 @@ export async function fetchText(url,source,timeoutMs=20000,request=fetch){
 }
 /** Meetings read in one import; a longer list is continued by the next import. */
 export const MAX_MEETINGS=400;
+// A meeting called off keeps its page without an agenda: "die Sitzung fällt aus", "findet nicht statt", "entfällt".
+export const CANCELLED_MEETING=/f(?:ä|ae)llt aus|findet nicht statt|entf(?:ä|ae)llt|abgesagt|ausgefallen/i;
 export function missingAgendaIssue(html,url){return /Zu dieser Sitzung wurden noch keine Detailinformationen freigegeben/i.test(text(html))?'Sitzungsdetails noch nicht öffentlich freigegeben: '+url:'Keine lesbare öffentliche Tagesordnung: '+url;}
 // Some installations link the calendar to the meeting overview (si0056); the agenda of the same meeting is si0057.
 // Older layouts (SessionNet 4.9, 5.3) link their agenda page to0040 instead.
@@ -206,7 +208,7 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
  const agendaPage=url=>get(url,source).then(html=>sessionNetPageIssue(html)===SESSIONNET_ERROR?'':html,e=>{if(e.message===SESSIONNET_ERROR)return '';throw e;});
  // At most MAX_MEETINGS meetings are read per import. Meetings that were read a moment ago do not count, so an
  // import that is continued gets past them and a long period is read in several parts.
- let fetched=0,beyond=0,layout=null,refused=0;
+ let fetched=0,beyond=0,layout=null,refused=0,cancelled=0,upcoming=0;const today=now.toISOString().slice(0,10);
  await parallel([...meetings.values()].sort((a,b)=>oldestFirst?a.date.localeCompare(b.date):b.date.localeCompare(a.date)),async m=>{
   const known=usableMark(marks,m,now);
   // Read completely a moment ago: an import that ran out of time continues behind it without asking again.
@@ -225,7 +227,8 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
     parse=/tofnum/.test(h)?parseAgenda:/smc-card-text-title/.test(h)?parseAgendaCards:/smc_tophn/.test(h)?parseAgendaTopTable:null;
     if(parse)break;
    }
-   if(!parse){issues.push(missingAgendaIssue(shown,m.url));return;}
+   // Called off, or upcoming with no agenda published yet: nothing public to read, counted and not reported as a gap.
+   if(!parse){if(CANCELLED_MEETING.test(text(shown)))cancelled++;else if(m.date>today)upcoming++;else issues.push(missingAgendaIssue(shown,m.url));return;}
    if(!linked)layout=step==='si0057'?null:step==='si0056'?'cards':'top';
    const meeting=url===m.url?m:{...m,url};
    let attendance=parseAttendance(h,meeting.url,now.toISOString());
@@ -262,5 +265,5 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
  }
  // Unchanged meetings are a successful reading: their reports are in the database already.
  const warnings=[...(otherClients.size?[`${otherClients.size} Sitzungen anderer Mandanten des gemeinsamen Systems ausgelassen.`]:[]),...part.warnings()];
- return {topics,marks:held,readMeetings:read,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size,...(warnings.length?{warnings}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||beyond||refused?{resumable:true}:{}),sourceCount:1,quiet:meetings.size===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ return {topics,marks:held,readMeetings:read,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size-upcoming-cancelled,...(upcoming?{upcomingWithoutAgenda:upcoming}:{}),...(cancelled?{cancelledMeetings:cancelled}:{}),...(warnings.length?{warnings}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||beyond||refused?{resumable:true}:{}),sourceCount:1,quiet:meetings.size===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }

@@ -2,7 +2,7 @@ import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
 import {windowStart,historyWindow,windowYears} from './history-window.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
-import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
+import {fetchText,allowed,text,decode,MAX_MEETINGS,CANCELLED_MEETING} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {fnv,germanDayStrict as day} from './source-common.mjs';
 // Public pages of SD.NET RIM (Sternberg). Only plain links of the public site are followed:
@@ -10,7 +10,6 @@ import {fnv,germanDayStrict as day} from './source-common.mjs';
 // because it answers only with a session cookie and a form token (HTTP 403 otherwise).
 const cell=(row,name)=>row.match(new RegExp(`<td[^>]*class=["'][^"']*column-${name}[^"']*["'][^>]*>([\\s\\S]*?)<\\/td>`,'i'))?.[1]||'';
 const anchors=html=>[...html.matchAll(/<a\b([^>]*?)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi)].map(m=>({url:decode(m[2]),attributes:m[1]+m[3],label:text(m[4])}));
-const CANCELLED=/findet nicht statt|entf(?:ä|ae)llt|abgesagt|ausgefallen/i;
 const title=a=>decode(a.attributes.match(/title=["']([^"']*)/)?.[1]||'');
 /** Meetings named in the paper list: every scheduled paper links its meeting. */
 export function paperListMeetings(html,source){
@@ -117,7 +116,7 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
     // The calendar export lists every scheduled meeting. An upcoming meeting without an agenda has nothing public
     // to read yet; that is counted, not reported as a gap. A past meeting without a readable agenda is a gap.
     // A meeting called off keeps its page without an agenda ("Der Jugendhilfeausschuss findet nicht statt!"): no gap.
-    if(!items){if(m.date>today)upcoming++;else if(CANCELLED.test(header))cancelled++;else issues.push('Keine lesbare öffentliche Tagesordnung: '+m.url);return;}
+    if(!items){if(m.date>today)upcoming++;else if(CANCELLED_MEETING.test(header))cancelled++;else issues.push('Keine lesbare öffentliche Tagesordnung: '+m.url);return;}
     // What the agenda page says. If that is what it said when the papers were last read, they are not fetched again.
     const print=period+(await hash(JSON.stringify(items.map(r=>[r.id,r.title,r.reference,r.agenda.number,r.event.description,r.documents.map(d=>d.url)])))).slice(0,16);
     if(known?.print===print){held[m.url]=marks.known[m.url];unchanged++;return;}
