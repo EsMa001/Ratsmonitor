@@ -178,8 +178,11 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
  // that embed the agenda in the meeting object are not affected.
  let agendaOf=null;
  if(typeof body.agendaItem==='string'&&meetings.some(m=>m.id)){
-  let probe=meetings.find(m=>m.id&&!m.listed)||null;
-  if(!probe){try{probe=await get(meetings.find(m=>m.id).id);}catch(e){issues.push(e.message);}}
+  // A server that embeds the agenda leaves the field out only where there is no agenda yet (SD.NET RIM: upcoming
+  // meetings). So a meeting that carries the field decides, else one that has taken place, else any.
+  const today=now.toISOString().slice(0,10),tookPlace=m=>String(m.start||'').slice(0,10)<=today,full=meetings.filter(m=>m.id&&!m.listed);
+  let probe=full.find(m=>'agendaItem' in m)||full.find(tookPlace)||full[0]||null;
+  if(!probe){try{probe=await get((meetings.find(m=>m.id&&tookPlace(m))||meetings.find(m=>m.id)).id);}catch(e){issues.push(e.message);}}
   if(probe&&!('agendaItem' in probe)){
    const wanted=new Set(meetings.filter(m=>m.id).map(m=>allowed(m.id))),own=u=>{try{return allowed(u);}catch{return null;}};
    agendaOf=new Map();let matched=0,miss=0;
@@ -194,7 +197,9 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
      for(let p=pageOf(last);p>=1&&read<60;p--,read++){const u=new URL(last);u.searchParams.set('page',String(p));const page=p===1?first:await get(u.href);if(take(page)){complete=true;break;}if(p===1)complete=true;}
      if(!complete)issues.push('Tagesordnungsliste der Körperschaft nur teilweise gelesen (60 Seiten).');
     }
-   }catch(e){issues.push('Tagesordnungsliste: '+e.message);}
+   // SD.NET RIM refuses the page size (HTTP 400). If no meeting of the period has taken place yet, there is no
+   // agenda to miss: the meetings are upcoming ones whose agenda is not published.
+   }catch(e){if(!(/HTTP 400/.test(e.message)&&!meetings.some(m=>m.id&&tookPlace(m))))issues.push('Tagesordnungsliste: '+e.message);}
    for(const [,list] of agendaOf)list.sort((a,b)=>Number(a.order??0)-Number(b.order??0));
   }
  }

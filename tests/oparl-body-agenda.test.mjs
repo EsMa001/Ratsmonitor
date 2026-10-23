@@ -30,3 +30,24 @@ test('agenda from the body list when meetings carry none; no modified_since on p
  assert.ok(seen.some(u=>u.includes('agendaItems')&&u.includes('size=100')),'100 records a page');
  assert.ok(d.topics.every(t=>!/nichtöffentlich/.test(t.title)));
 });
+
+// SD.NET RIM: meetings embed their agenda; an upcoming meeting without agenda has no agendaItem field, and the body
+// list refuses the page size ("Ein angegebener Parameter ist nicht erlaubt", HTTP 400). Nachgebildet nach ris.goch.de.
+test('SD.NET RIM: an upcoming meeting without agenda does not send the import to the body list',async()=>{
+ const sd='https://ris.example.test/webservice/oparl/v1.1/';
+ const upcoming={id:sd+'body/1/meeting/2',type:'https://schema.oparl.org/1.1/Meeting',name:'Rat',start:'2026-11-18T18:00:00+01:00',modified:'2026-10-01T10:00:00+02:00'};
+ const past={id:sd+'body/1/meeting/1',type:'https://schema.oparl.org/1.1/Meeting',name:'Rat',start:'2026-10-01T18:00:00+02:00',modified:'2026-10-02T10:00:00+02:00',agendaItem:[{id:sd+'body/1/agendaitem/7',type:'https://schema.oparl.org/1.1/AgendaItem',meeting:sd+'body/1/meeting/1',number:'1',order:1,name:'Haushalt',public:true}]};
+ const run=async list=>{const seen=[];const getJson=async url=>{seen.push(url);const u=new URL(url);
+  if(url===sd+'system')return {id:url,type:'https://schema.oparl.org/1.1/System',body:sd+'body'};
+  if(u.pathname.endsWith('/v1.1/body'))return {data:[{id:sd+'body/1',type:'https://schema.oparl.org/1.1/Body',name:'Stadt',meeting:sd+'body/1/meeting',agendaItem:sd+'body/1/agendaitem'}],links:{}};
+  if(u.pathname.endsWith('/body/1/meeting'))return {data:list,links:{}};
+  if(u.pathname.endsWith('/body/1/agendaitem'))throw Error('OParl HTTP 400');
+  const m=list.find(x=>x.id===url);if(m)return m;
+  throw Error('unexpected URL '+url);};
+  return {seen,d:await collectRegionalOparl({id:'nrw-1',name:'Stadt',kind:'city',system:sd+'system'},{now,window:'3m',getJson})};};
+ const both=await run([upcoming,past]);
+ assert.ok(!both.seen.some(u=>u.includes('agendaitem?')),'the agenda comes from the meetings');assert.ok(!both.d.coverage.issues.some(i=>/Tagesordnungsliste/.test(i)));
+ assert.deepEqual(both.d.topics.map(t=>t.title),['Haushalt']);
+ // Only upcoming meetings, none with an agenda yet: the refused list is no gap.
+ const ahead=await run([upcoming]);assert.ok(!ahead.d.coverage.issues.some(i=>/Tagesordnungsliste/.test(i)));
+});

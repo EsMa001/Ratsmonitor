@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {publicAgenda} from '../server/integrations/public-agenda.mjs';
 test('public sections establish evidence, private sections and explicit false stop inheritance',()=>{
  const r=publicAgenda([{id:'unknown',name:'Bauprojekt'},{id:'pub',number:'I.',name:'Öffentliche Sitzung'},{id:'a',name:'Schulbau'},{id:'private',public:false,name:'Personal'},{id:'b',name:'Vergabe'},{id:'yes',public:true,name:'Ausdrücklich öffentlich'},{id:'non',name:'Nichtöffentliche Sitzung'},{id:'c',name:'Vertraulich'}]);
- assert.deepEqual(r.items.map(a=>a.id),['a','yes']);assert.equal(r.items[0].publicEvidence.source,'pub');assert.equal(r.unclear,3);
+ assert.deepEqual(r.items.map(a=>a.id),['a','yes']);assert.equal(r.items[0].publicEvidence.source,'pub');assert.equal(r.unclear,2);assert.equal(r.nonPublic,1);
 });
 test('unrecognized section boundaries and deleted points do not leak into the feed',()=>{
  const r=publicAgenda([{id:'h',name:'Öffentlicher Teil'},{id:'gone',deleted:true,name:'Gelöscht'},{id:'x',number:'II.',name:'Weitere Angelegenheiten'},{id:'n',name:'Unklar'}]);assert.equal(r.items.length,0);
@@ -30,7 +30,7 @@ test('provider wordings of the public heading are recognised; a private or unkno
  }
  for(const closing of ['nichtöffentlich','Nicht öffentlich','- Nichtöffentlicher Teil -','Nicht-öffentliche Sitzung']){
   const r=publicAgenda([{id:'h',number:'A',name:'- Öffentlicher Teil -'},{id:'a',number:'1',name:'Schulbau'},{id:'n',number:'B',name:closing},{id:'c',number:'9',name:'Grundstück'}]);
-  assert.deepEqual(r.items.map(i=>i.id),['a'],closing);assert.equal(r.unclear,1);
+  assert.deepEqual(r.items.map(i=>i.id),['a'],closing);assert.equal(r.unclear,0);assert.equal(r.nonPublic,1);
  }
  // A lettered or Roman heading with any other name ends the public part as well.
  assert.deepEqual(publicAgenda([{id:'h',number:'A',name:'Öffentlich'},{id:'a',number:'1',name:'Schulbau'},{id:'x',number:'B',name:'Vertrauliches'},{id:'c',number:'9',name:'Grundstück'}]).items.map(i=>i.id),['a']);
@@ -40,7 +40,11 @@ test('provider wordings of the public heading are recognised; a private or unkno
 
 test('SD.NET RIM headings: "Sitzungsteil öffentlich" opens the public section, "Sitzungsteil nicht öffentlich" closes it',()=>{
  const r=publicAgenda([{id:'h',number:'I.',name:'Sitzungsteil öffentlich'},{id:'a',number:'1',name:'Mitteilungen der Vorsitzenden'},{id:'b',number:'2',name:'Straßenbeleuchtung'},{id:'n',number:'II.',name:'Sitzungsteil nicht öffentlich'},{id:'c',number:'3',name:'Grundstücksangelegenheit'}]);
- assert.deepEqual(r.items.map(i=>i.id),['a','b']);assert.equal(r.unclear,1);
+ assert.deepEqual(r.items.map(i=>i.id),['a','b']);assert.equal(r.unclear,0);assert.equal(r.nonPublic,1);
+ // Simmerath, Kall (SD.NET RIM OParl): items below "B) Nichtöffentliche Sitzung" are non-public, not unclear; a later
+ // lettered heading of another name ends that part, and what follows it is unclear again.
+ const sd=publicAgenda([{id:'h',number:'A)',name:'Öffentliche Sitzung'},{id:'a',number:'1.',name:'Eingänge'},{id:'n',number:'B)',name:'Nichtöffentliche Sitzung'},{id:'c',number:'1.',name:'Personalangelegenheit'},{id:'d',number:'2.',name:'Mitteilungen'},{id:'x',number:'C',name:'Sonstiges'},{id:'e',number:'1',name:'Unklar'}]);
+ assert.deepEqual(sd.items.map(i=>i.id),['a']);assert.equal(sd.nonPublic,2);assert.equal(sd.unclear,2);
  assert.deepEqual(publicAgenda([{id:'h',name:'Öffentlicher Sitzungsteil'},{id:'a',name:'Schulbau'}]).items.map(i=>i.id),['a']);
  for(const closing of ['Nichtöffentlicher Sitzungsteil','Sitzungsteil nichtöffentlich','Nicht öffentlicher Sitzungsteil'])assert.deepEqual(publicAgenda([{id:'n',name:closing},{id:'c',name:'Personalsache'}]).items,[],closing);
 });
