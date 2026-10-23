@@ -35,9 +35,9 @@ export function ProfilePage() {
   if (!me.user)
     return (
       <>
-        <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Sie sind nicht angemeldet.</>} lead="Ohne Anmeldung: 10 Treffer je Suche. Mit Konto: Suchen und Artikel speichern." />
+        <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Sie sind nicht angemeldet.</>} lead="Ohne Anmeldung: 10 Treffer je Suche. Mit dem kostenlosen Konto: 20 Treffer, Suchen und Artikel speichern." />
         <section className="ri-sec ri-sec--tight">
-          <LoginRequired title="Anmelden" text="Mit einer Stufe: alle Treffer, Filter, gespeicherte Suchen und Artikel." />
+          <LoginRequired title="Anmelden" text="Mit dem kostenlosen Konto: 20 Treffer je Suche, gespeicherte Suchen und Artikel, Benachrichtigungen per E-Mail." />
           <PlanSummary />
           <BrowserData signedIn={false} />
         </section>

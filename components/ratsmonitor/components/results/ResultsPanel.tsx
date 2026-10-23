@@ -8,6 +8,7 @@ import type { Article } from "../../types";
 import { IconArrowUp, IconEmptySearch, IconChevronLeft, IconChevronRight } from "../icons";
 import { ArticleCard } from "./ArticleCard";
 import { useEntitlements } from "../../lib/entitlements";
+import { LIMITS } from "../../lib/tier";
 import { CountDots } from "../CountDots";
 import { isPhone } from "../../lib/usePhone";
 
@@ -186,12 +187,19 @@ export function ResultsPanel() {
             <IconChevronRight size={20} />
           </button>
         )}
-        {/* Gäste: sagen, warum nach der ersten Seite Schluss ist (der Server liefert ohne Konto keine zweite Seite) */}
+        {/* Gast und Konto: sagen, warum nach der ersten Seite Schluss ist (der Server liefert ihnen keine zweite Seite) */}
         {ready && Number.isFinite(limits.maxResults) && res.hasMore && (
-          <span className="w-full text-center text-[14px] text-slate-500">
-            Weitere Treffer sehen Sie mit einem Konto.{" "}
-            <button type="button" className="font-medium text-teal-700 hover:underline" onClick={() => push("/anmelden")}>Anmelden →</button>
-          </span>
+          limits.maxResults <= LIMITS.guest.maxResults ? (
+            <span className="w-full text-center text-[14px] text-slate-500">
+              Mit einem kostenlosen Konto sehen Sie {LIMITS.basic.maxResults} Treffer, mit Plus alle.{" "}
+              <button type="button" className="font-medium text-teal-700 hover:underline" onClick={() => push("/anmelden")}>Anmelden →</button>
+            </span>
+          ) : (
+            <span className="w-full text-center text-[14px] text-slate-500">
+              Alle Treffer sehen Sie mit Plus.{" "}
+              <button type="button" className="font-medium text-teal-700 hover:underline" onClick={() => push("/preise")}>Preise →</button>
+            </span>
+          )
         )}
         {res.page >= MAX_PAGE && pages > MAX_PAGE && <span className="w-full text-center text-[14px] text-slate-500">Für weitere Treffer bitte die Suche eingrenzen.</span>}
       </nav>

@@ -900,7 +900,7 @@ z- analytics.css:632
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (174, ⚠2): ArticleCard, StepTimeline
-- ResultsPanel.tsx (225): ResultsPanel
+- ResultsPanel.tsx (233): ResultsPanel
 
 ### components/ratsmonitor/components/
 - suggestRows.ts (214): Row, takePickedText, RowContext, buildRows

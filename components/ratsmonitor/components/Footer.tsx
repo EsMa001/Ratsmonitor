@@ -36,7 +36,7 @@ export function Footer() {
     {!OWN_CTA(path) && !x && <div className="ri rm-footcta pt-16 max-sm:hidden print:hidden">{
       /* Ohne Anmeldung: Hinweis auf das Konto (nicht auf Konto- und Anmeldeseiten, nicht in der geschlossenen Testphase) */
       me.ready && me.accounts && !me.user && me.access !== "invite" && !(path.startsWith("/konto/") || path.startsWith("/anmelden") || path === "/registrieren") ? (
-        <DarkCta title="Mit Konto speichern" sub="Suchen und Artikel im Konto speichern. Anmeldung mit einem Link per E-Mail, ohne Passwort." action={<Link href="/anmelden" className="ri-btn ri-btn--inv">Anmelden</Link>} />
+        <DarkCta title="Kostenloses Konto" sub="20 Treffer je Suche, Suchen und Artikel speichern, neue Treffer per E-Mail. Anmeldung mit einem Link per E-Mail, ohne Passwort." action={<Link href="/anmelden" className="ri-btn ri-btn--inv">Anmelden</Link>} />
       ) : (
         <DarkCta title="Fragen oder Anregungen?" sub={`Wir freuen uns über Ihr Feedback zu ${name}.`} action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />
       )}</div>}

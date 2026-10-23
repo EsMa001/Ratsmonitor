@@ -462,7 +462,7 @@ function spreadAuto(list:Article[]|undefined,leer:boolean):Article[]{
 }
 function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveResults {
  const {geo,place}=useData();
- /* Gäste (und Konten ohne freigeschaltete Stufe) sehen nur die erste Seite mit 10 Treffern; der Server kürzt selbst.
+ /* Gast und Konto sehen nur die erste Seite mit 10 bzw. 20 Treffern (LIMITS.maxResults); der Server kürzt selbst.
     Eine für Gäste gekürzte Antwort im Zwischenspeicher gilt nach dem Anmelden nicht mehr (siehe unten). */
  const limited=Number.isFinite(useMe().limits.maxResults);
  const limitedNow=useRef(limited);
@@ -573,7 +573,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
     }catch(e){
      if(abort.signal.aborted)return;
      finished=true;
-     /* Weitere Seiten ohne freigeschaltete Stufe: der Server antwortet 403 {limit:'results'}; Hinweis statt Fehler, zurück auf Seite 1 */
+     /* Weitere Seiten ohne Plus: der Server antwortet 403 {limit:'results'}; Hinweis statt Fehler, zurück auf Seite 1 */
      if(e instanceof ApiError&&e.status===403&&page>1){openLimitGate('results');setNavigation({key:local.key,page:1});return;}
      setRemote({key:requestKey,data:null,error:errorText(e,SEARCH_FAILED),final:true});
     }
@@ -644,7 +644,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  const hasMore=exact?page<Math.ceil(exact.total/pageSize):!!data?.hasMore;
  /* Nächste Seite still im Hintergrund holen, damit „Weiter“ sofort geht (die Anfrage nutzt dieselbe laufende Abfrage wie der Klick) */
  useEffect(()=>{
-  /* Ohne freigeschaltete Stufe gibt es keine zweite Seite (403): nicht vorausladen */
+  /* Ohne Plus gibt es keine zweite Seite (403): nicht vorausladen */
   if(!active||!pageReady||!hasMore||loading||limited)return;
   const next=searchKey(local.key,page+1,attempt);
   if(freshSearch(next)||INFLIGHT.has(next))return;

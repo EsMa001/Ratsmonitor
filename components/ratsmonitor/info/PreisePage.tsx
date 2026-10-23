@@ -75,7 +75,7 @@ export function PreisePage() {
       </section>
       <DarkCta
         title="Plenara in der Testphase"
-        sub="Stufen schalten wir derzeit auf Anfrage frei. Die Preise folgen."
+        sub="Das Konto ist kostenlos. Plus schalten wir in der Testphase auf Anfrage frei, bis die Bezahlung angebunden ist."
         action={
           <Link href="/kontakt" className="ri-btn ri-btn--inv">
             {UPGRADE_TEXT}

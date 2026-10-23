@@ -136,7 +136,7 @@ export function PlanSummary() {
       {until && tier !== "guest" && (
         <p className={`m-0 mt-1 text-[14px] ${soon ? "text-amber-800" : "text-slate-500"}`} role={soon ? "status" : undefined}>
           {tierSource === "beta" ? `Testzugang ${TIER_LABEL[tier]} bis ${until}` : `${TIER_LABEL[tier]} bis ${until}`}
-          {soon && ". Danach gelten die Rechte ohne freigeschaltete Stufe; Verlängerung auf Anfrage über den Kontakt."}
+          {soon && ". Danach gelten die Rechte des kostenlosen Kontos; Verlängerung auf Anfrage über den Kontakt."}
         </p>
       )}
       <ul className="m-0 mt-3 list-none space-y-1.5 p-0 text-[14px]">
