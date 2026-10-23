@@ -17,10 +17,15 @@ ap.add_argument('--batch', type=int, default=16)
 ap.add_argument('--maxlen', type=int, default=384)
 ap.add_argument('--no-embed', action='store_true')
 ap.add_argument('--out', default='tmp/ml')
+# Nur einbetten (ohne Nachtrainieren): Texte einer weiteren Nachlieferung mit dem schon nachtrainierten Encoder (<out>/ft-model)
+#   … finetune.py --embed-only=tests/fixtures/kern-extra2.json --name=extra2-emb
+ap.add_argument('--embed-only', default='')
+ap.add_argument('--name', default='')
+ap.add_argument('--cpu', action='store_true')   # ohne Grafikeinheit (wenn deren Speicher belegt ist)
 a = ap.parse_args()
 os.makedirs(a.out, exist_ok=True)
 FX = 'tests/fixtures/'
-dev = 'mps' if torch.backends.mps.is_available() else 'cpu'
+dev = 'mps' if torch.backends.mps.is_available() and not a.cpu else 'cpu'
 torch.manual_seed(1); random.seed(1)
 PLACEHOLDER = re.compile(r'^Öffentlich(?:er Tagesordnungspunkt| auf der Tagesordnung);|^In der Tagesordnung geführt|^Sitzung steht noch aus')
 
@@ -31,6 +36,22 @@ def texts_of(r):
     for p in r.get('pdfs', []):
         out.append((f"p.{p['i']}", f"{p['name']} | {(p.get('first') or '')[:900]} | {(p.get('decision') or '')[:300]}"))
     return out
+
+if a.embed_only:
+    MD = os.path.join(a.out, 'ft-model' if a.suffix == '-ft' else 'ft-model' + a.suffix)
+    tok = AutoTokenizer.from_pretrained(MD); enc = AutoModel.from_pretrained(MD).to(dev).eval()
+    rows = json.load(open(a.embed_only))['rows']
+    items = [(k[0] + str(i) if k in ('t', 'r') else f"p{i}.{k[2:]}", t) for i, r in enumerate(rows) for k, t in texts_of(r)]
+    X = np.zeros((len(items), 384), np.float32); t1 = time.time()
+    with torch.no_grad():
+        for k in range(0, len(items), 8):
+            T = tok(['query: ' + t for _, t in items[k:k + 8]], padding=True, truncation=True, max_length=512, return_tensors='pt').to(dev)
+            h = enc(**T).last_hidden_state * T['attention_mask'].unsqueeze(-1)
+            X[k:k + 8] = torch.nn.functional.normalize(h.sum(1) / T['attention_mask'].sum(1, keepdim=True), dim=-1).cpu().numpy()
+            if dev == 'mps' and k % 400 == 0: torch.mps.empty_cache()
+    name = (a.name or 'extra2-emb') + a.suffix
+    X.tofile(os.path.join(a.out, name + '.bin')); json.dump([k for k, _ in items], open(os.path.join(a.out, name + '.json'), 'w'))
+    print('eingebettet', name, len(items), round(time.time() - t1), 's', flush=True); sys.exit()
 
 big = json.load(open(FX + 'kern-big.json'))['rows']
 ext = json.load(open(FX + 'kern-extra.json'))['rows']

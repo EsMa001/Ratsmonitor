@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,housingOf,kitaFeeOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,eePowerOf,landPriceOf,plotPriceOf,annualResultOf,dogTaxOf,wasteFeeOf,planAreaOf,windCountOf,projectsOf,roadWorkOf,houseTypesOf} from '../shared/topic-facts.mjs';
+import {factionsOf,annualOwnerOf,housingOf,kitaFeeOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,eePowerOf,landPriceOf,plotPriceOf,annualResultOf,dogTaxOf,wasteFeeOf,planAreaOf,windCountOf,projectsOf,roadWorkOf,houseTypesOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -399,4 +399,20 @@ test('Signale Pflege und Einzelhandel: Randfälle aus Stichprobe p5', async () =
   assert.ok(m.careOf('Neubau Wohnpflegeheim für 18 Plätze'));
   assert.equal(m.retailOf('Ausfahrtsituation beim Netto-Markt'), null);
   assert.ok(m.retailOf('Projekt Dorfladen in Ramsin'));
+});
+
+test('Jahresergebnis: Rücklage ist kein Ergebnis, Träger aus Titel und Textanfang (facts-v29, Stichprobe 23.10.2026)',()=>{
+ assert.equal(annualResultOf('Bericht zum Jahresabschluss der Sparkasse am Niederrhein','Die Sicherheitsrücklage wurde durch einen Teil des Bilanzgewinns 2024 auf 187,8 Mio. Euro (Vorjahr: 186,0 Mio. Euro) aufgestockt. Vom festgestellten Jahresüberschuss in Höhe von 3,7 Mio. Euro wurde ein Betrag ausgeschüttet.').euro,3700000);
+ assert.equal(annualResultOf('Jahresabschluss der Sparkasse Muldental','Der nicht verwendete Teil des Bilanzgewinns in Höhe von 38.352,58 EUR soll der Sicherheitsrücklage zugeführt werden.'),null);
+ assert.equal(annualResultOf('Feststellung des Jahresabschlusses der Stadt Wolgast','Das Jahresergebnis in 2024 vor Veränderung der Rücklagen beträgt -3.661.727,81 EUR.').euro,3661728);
+ assert.equal(annualOwnerOf('Bericht zum Jahresabschluss der Sparkasse am Niederrhein zum 31.12.2025',''),'sparkasse');
+ assert.equal(annualOwnerOf('Jahresabschluss 2025 der Eigenbetriebsähnlichen Einrichtung Bildung',''),'betrieb');
+ assert.equal(annualOwnerOf('Jahresabschluss zgm 2025',''),'betrieb');
+ assert.equal(annualOwnerOf('Feststellung des Jahresabschlusses 2024 des Abwasserwerkes der Stadt Delbrück',''),'betrieb');
+ assert.equal(annualOwnerOf('Jahresabschluss per 31.12.2025 der SWG Pulsnitz mbH',''),'betrieb');
+ assert.equal(annualOwnerOf('Prüfung des Jahresabschlusses der Stadt Moers zum 31.12.2025',''),'kommune');
+ assert.equal(annualOwnerOf('Jahresabschluss des Landkreises Helmstedt für das Haushaltsjahr 2023',''),'kommune');
+ assert.equal(annualOwnerOf('Feststellung des Jahresabschlusses 2024','Der Gemeinderat stellt den Jahresabschluss fest.'),'kommune');
+ assert.equal(annualOwnerOf('Jahresabschluss 2024','Wirtschaftsplan und Jahresabschluss des Eigenbetriebs Wasserversorgung'),'betrieb');
+ assert.equal(factsOf('Jahresabschluss 2025 der Stadtwerke X GmbH','Der Jahresüberschuss beträgt 120.000 €.').find(f=>f.kind==='annual_result')?.detail,'120000|betrieb');
 });

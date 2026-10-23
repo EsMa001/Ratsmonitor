@@ -132,3 +132,21 @@ test('Atlas zeigt Werte aus den Unterlagen nur über dem Qualitätstor',async()=
   assert.deepEqual((await xQuery(db,catalog,q('view=atlas&theme=bildung&facts=1'))).facts,[],'Kita-Beiträge unter dem Tor');
  }finally{sql.close();}
 });
+test('Jahresabschluss nach Träger: Filter owner, ohne Filter je Gebiet alle Träger mit Wert (facts-v29)',async()=>{
+ const {sql,db}=fixture();try{
+  const f=sql.prepare('INSERT INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)');
+  f.run('c','annual_result','Fehlbetrag','30549980|kommune','facts-v29:text');
+  f.run('a1','annual_result','Überschuss','3700000|sparkasse','facts-v29:text');
+  f.run('b','annual_result','Fehlbetrag','1177462|betrieb','facts-v29:text');
+  assert.deepEqual(rows(await xQuery(db,catalog,q('by=fact:annual_result'))),{Fehlbetrag:2,'Überschuss':1});
+  assert.deepEqual(rows(await xQuery(db,catalog,q('by=fact:annual_result&owner=kommune'))),{Fehlbetrag:1});
+  const l=await xQuery(db,catalog,q('list=1&by=fact:annual_result&value=Überschuss'));
+  assert.match(l.items[0].value,/Sparkasse/);
+  const map=r=>r.facts.find(x=>x.kind==='annual_result')?.map??[];
+  const all=map(await xQuery(db,catalog,q('view=fakten'))).find(m=>m.key==='billerbeck');
+  assert.deepEqual(Object.keys(all.owners).sort(),['kommune','sparkasse'],'ohne Filter: beide Träger');
+  const spk=map(await xQuery(db,catalog,q('view=fakten&owner=sparkasse')));
+  assert.deepEqual(spk.map(m=>[m.key,Object.keys(m.v)]),[['billerbeck',['Überschuss']]]);
+  await assert.rejects(xQuery(db,catalog,q('by=fact:annual_result&owner=erfunden')),AnalyticsError);
+ }finally{sql.close();}
+});

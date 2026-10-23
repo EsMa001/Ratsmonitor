@@ -26,12 +26,14 @@ import { MethodikNote } from "./Methodik";
    auf der Karte, rot bis grün. Nur Werte ab 90 % gemessener Qualität (MAP_FACTS). Filter: Fakt, Wert (z. B. Grundsteuer B),
    Ort über die Suche. */
 interface Row { key: string; name: string; count: number; ags?: string; members?: string[] }
-interface FactMap { key: string; ags?: string; n: number; v: Record<string, { n: number; median: number; unit: string; sum?: number; last?: number; lastDate?: string; prev?: number; prevDate?: string }> }
+/* owners (nur Jahresergebnis): je Träger der jüngste Abschluss mit Wert, damit ohne Filter sichtbar ist, wenn ein Gebiet mehrere hat */
+interface Owner { value: string; v: number; unit: string; dt?: string }
+interface FactMap { key: string; ags?: string; n: number; owners?: Record<string, Owner>; v: Record<string, { n: number; median: number; unit: string; sum?: number; last?: number; lastDate?: string; prev?: number; prevDate?: string }> }
 /* dir: hoch ist schlecht (rot), gut (grün) oder nur eine Menge (Wohneinheiten, ohne Wertung) */
 interface Fact { kind: string; dir: "bad" | "good" | "amount"; name: string; map: FactMap[] }
 interface Result { regions: Row[]; facts: Fact[] }
 /* v: gezeigter Wert (jüngster Wert oder Veränderung in %), last/prev: jüngster und voriger Wert mit Datum */
-interface Area { /* Übersicht („Alle“): die Werte als Text */ items?: string[]; v: number; name: string; key: string; n: number; sum?: number; last: number; date?: string; prev?: number; prevDate?: string; ags: string }
+interface Area { /* Übersicht („Alle“): die Werte als Text */ items?: string[]; owners?: Record<string, Owner>; v: number; name: string; key: string; n: number; sum?: number; last: number; date?: string; prev?: number; prevDate?: string; ags: string }
 
 /* Niedrig grün, hoch rot (Gebühren, Steuern, Preise); beim Jahresergebnis umgekehrt */
 const GREEN_RED = ["var(--rm-ac)", "var(--color-teal-400)", "var(--color-amber-300)", "var(--rm-no)"];
@@ -43,13 +45,19 @@ const day = (iso?: string) => (iso && /^\d{4}-\d{2}-\d{2}/.test(iso) ? `${iso.sl
 const pctText = (v: number) => `${v > 0 ? "+" : ""}${v.toLocaleString("de-DE", { maximumFractionDigits: 1 })} %`;
 /* Veränderung in Stufen: gesunken, gestiegen bis 5 %, bis 15 %, über 15 % */
 const CHANGE_CUT = [0, 5, 15];
+/* Träger eines Jahresabschlusses (shared/map-facts.mjs ANNUAL_OWNER_NAMES); Umschalter mit kurzen Namen */
+const OWNERS: [string, string, string][] = [["kommune", "Kommune", "Abschluss der Stadt, Gemeinde oder des Kreises selbst"], ["betrieb", "Betriebe", "Eigenbetriebe, Stadtwerke, kommunale Gesellschaften und Zweckverbände"], ["sparkasse", "Sparkasse", "Sparkassen, deren Träger die Kommune ist"]];
+const ownerName = (k: string) => OWNERS.find((o) => o[0] === k)?.[1] ?? k;
+const ownersText = (o: Record<string, Owner>) => OWNERS.filter(([k]) => o[k]).map(([k, l]) => `${l}: ${o[k].value} ${num(o[k].v)} ${o[k].unit}`).join(" · ");
 const metricsOf = (f?: Fact) => f ? [...new Set(f.map.flatMap((m) => Object.keys(m.v)))].sort((a, b) => f.map.filter((m) => m.v[b]).length - f.map.filter((m) => m.v[a]).length) : [];
 
 export function FaktenPage() {
   const params = useSearchParams(), router = useRouter(), path = usePathname();
   const { query, search } = useAnalyticsQuery();
   /* Werte für ganz Deutschland: ein gewählter Ort wird auf der Karte markiert und auf der Skala eingeordnet, nicht herausgefiltert */
-  const url = `/api/x?view=fakten&${(() => { const p = new URLSearchParams(query); for (const k of ["area", "scope", "more", "within", "without"]) p.delete(k); return p; })()}`;
+  /* Träger (nur Jahresergebnis): leer = alle Träger */
+  const traeger = params.get("fakt") === "annual_result" && OWNERS.some((o) => o[0] === params.get("traeger")) ? params.get("traeger")! : "";
+  const url = `/api/x?view=fakten&${(() => { const p = new URLSearchParams(query); for (const k of ["area", "scope", "more", "within", "without"]) p.delete(k); if (traeger) p.set("owner", traeger); return p; })()}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
   /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
   const pending = loading && !!res && ranKey !== url;
@@ -70,7 +78,7 @@ export function FaktenPage() {
   const allMetrics = !allFacts && params.get("wert") === "alle";
   const metric = allMetrics ? "" : metrics.includes(params.get("wert") ?? "") ? params.get("wert")! : metrics[0] ?? "";
   const overview = allFacts || allMetrics;
-  const pick = (next: { fakt?: string; wert?: string; ansicht?: string; sortierung?: string }) => {
+  const pick = (next: { fakt?: string; wert?: string; ansicht?: string; sortierung?: string; traeger?: string }) => {
     const p = new URLSearchParams(params);
     for (const [k, v] of Object.entries(next)) { if (v) p.set(k, v); else p.delete(k); }
     setPicked("");
@@ -105,7 +113,7 @@ export function FaktenPage() {
         acc.set(id, a);
       }
       for (const a of acc.values()) { const x: Val = { v: a.n, n: a.n, last: a.n, items: a.items }; if (a.ags) memberVal.push([a.key, a.ags, x]); else val.set(a.key, x); }
-    } else for (const m of fact?.map ?? []) { const x = m.v[metric] && valOf(m.v[metric]); if (!x) continue; if (m.ags) memberVal.push([m.key, m.ags, x]); else val.set(m.key, x); }
+    } else for (const m of fact?.map ?? []) { const v0 = m.v[metric] && valOf(m.v[metric]); if (!v0) continue; const x: Val = m.owners ? { ...v0, owners: m.owners } : v0; if (m.ags) memberVal.push([m.key, m.ags, x]); else val.set(m.key, x); }
     const area = new Map<string, Area>();
     if (level === "district") {
       /* Nur Werte der Kreise selbst (Kreistag), sonst färbte ein einzelner Ort den ganzen Kreis */
@@ -143,7 +151,9 @@ export function FaktenPage() {
   const chip = (on: boolean) => `h-7 max-sm:h-11 whitespace-nowrap rounded-full px-3 text-[12px] font-medium ${on ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`;
   const amount = fact?.dir === "amount";
   const factName = allFacts ? "Alle Fakten" : fact?.name ?? "";
-  const valueText = (x: Area) => overview ? (x.items ?? []).join(" · ") : amount ? `${num(x.sum ?? 0)} Wohneinheiten in ${x.n} ${x.n === 1 ? "Vorgang" : "Vorgängen"}, ${num(x.v)} ${unit}`
+  /* Ohne Filter nach Träger: ein Gebiet mit Abschlüssen mehrerer Träger nennt sie alle */
+  const several = (x: Area) => !traeger && Object.keys(x.owners ?? {}).length > 1;
+  const valueText = (x: Area) => several(x) ? `${Object.keys(x.owners!).length} Träger: ${ownersText(x.owners!)}` : overview ? (x.items ?? []).join(" · ") : amount ? `${num(x.sum ?? 0)} Wohneinheiten in ${x.n} ${x.n === 1 ? "Vorgang" : "Vorgängen"}, ${num(x.v)} ${unit}`
     : `${num(x.last)} ${unit}${x.date ? ` (${day(x.date)})` : ""}${x.prev !== undefined ? `, vorher ${num(x.prev)} ${unit}${x.prevDate ? ` (${day(x.prevDate)})` : ""}` : ""}`;
   const peerText = (x: Area) => { const p = peers(x); return [p.kreis !== undefined && `Kreis ${num(p.kreis)} ${unit}`, p.land !== undefined && `Land ${num(p.land)} ${unit}`].filter(Boolean).join(" · "); };
   /* Vorgänge hinter dem Wert eines Gebiets (Liste wie im Atlas, eingegrenzt auf das Gebiet) */
@@ -276,6 +286,12 @@ export function FaktenPage() {
                     options={[["hoch", "Höchste"], ["niedrig", "Niedrigste"], ["veraenderung", "Stärkster Anstieg", "Jüngster Wert gegen den vorigen; die Karte zeigt dann die Veränderung"]]}
                     onPick={(k) => pick(k === "veraenderung" ? { ansicht: "veraenderung", sortierung: "" } : { ansicht: "", sortierung: k })} />}
                 </div>
+                {fact?.kind === "annual_result" && <div className="mt-2 flex flex-wrap items-center gap-2 print:hidden">
+                  <Segmented label="Träger" value={traeger || "alle"} options={[["alle", "Alle Träger", "Alle Abschlüsse; je Gebiet der jüngste"], ...OWNERS] as [string, string, string][]}
+                    onPick={(k) => pick({ fakt: fact.kind, traeger: k === "alle" ? "" : k })} />
+                </div>}
+                {fact?.kind === "annual_result" && !traeger && ranked.some(several) && <p className="mt-1 text-[14px] text-slate-500">Ohne Auswahl des Trägers zählt je Gebiet der jüngste Abschluss, ob Kommune, Betrieb oder Sparkasse. Gebiete mit mehreren Trägern sind markiert.</p>}
+                {traeger && <p className="mt-1 text-[14px] text-slate-500">Nur Abschlüsse: {ownerName(traeger)}</p>}
                 {plain && <p className="mt-1 text-[14px] text-slate-500">↑ ↓ gegenüber dem vorigen Wert</p>}
                 <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0" onMouseLeave={() => setHover("")}>
                   {shown.map((x) => <li key={x.name} className="border-b border-slate-200">
@@ -288,6 +304,7 @@ export function FaktenPage() {
                       </span>
                     </button>
                     {overview && <p className="m-0 -mt-1 px-2 pb-2 text-[12px] text-slate-500">{(x.items ?? []).join(" · ")}</p>}
+                    {!overview && several(x) && <p className="m-0 -mt-1 px-2 pb-2 text-[12px] text-slate-500"><span className="mr-1.5 rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-700">{Object.keys(x.owners!).length} Träger</span>{ownersText(x.owners!)}</p>}
                     {listed === x.key && listedIn === "list" && <div className="px-2 pb-3"><RadarDrill base="/api/x?list=1" query={listQuery} by={fact ? `fact:${fact.kind}` : "region"} value={fact ? metric : x.key} label={`${x.name}: ${factName}`} limit={5} /></div>}
                   </li>)}
                 </ol>
