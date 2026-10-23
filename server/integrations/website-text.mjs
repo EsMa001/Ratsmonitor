@@ -1094,9 +1094,11 @@ const consultedLine=(line,meetingDay)=>{
 };
 /** Items besides the public ones: those of the non-public part (publicity „nonpublic“) and those not shown to be public
     („unclear“), each once and none that is taken as public. */
+// Only a short label and a day ("TA 24.09.2026", "GR 05.10."): a link of a list, no item
+const BARE_LABEL=/^[\p{L}.-]{1,8}\s*\d{1,2}\.\d{1,2}\.(?:\d{2,4})?$/u;
 function otherItems(taken,closed,unclear){
  const key=i=>`${i.number||''}|${String(i.title||'').toLowerCase().replace(/\s+/g,' ').trim()}`,seen=new Set(taken.map(key)),out=[];
- for(const [list,publicity] of [[closed,'nonpublic'],[unclear,'unclear']])for(const i of list){const k=key(i);if(!i.title||seen.has(k))continue;seen.add(k);out.push({number:i.number,title:i.title,publicity});}
+ for(const [list,publicity] of [[closed,'nonpublic'],[unclear,'unclear']])for(const i of list){const k=key(i);if(!i.title||seen.has(k)||BARE_LABEL.test(i.title.trim()))continue;seen.add(k);out.push({number:i.number,title:i.title,publicity});}
  return out;
 }
 /**

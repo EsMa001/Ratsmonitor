@@ -572,3 +572,14 @@ test('collectWebsite gives out the items of the non-public part, marked, without
  const np=all.topics.find(t=>t.publicity==='nonpublic');
  assert.match(np.events[0].description,/Nichtöffentlicher Punkt/);assert.equal(np.events[0].result,'');
 });
+
+test('a page with only an unclear entry does not push aside the notice of the same meeting (Großschirma 05.10.2026)',async()=>{
+ const s={id:'de-09999006',name:'Stadt Mittelstadt',kind:'city',base,pages:[base+'news/']};
+ const notice='<main><h1>Bekanntmachung</h1><p>Die nächste öffentliche Sitzung des Technischen Ausschusses der Stadt Mittelstadt findet am Montag, dem 05. Oktober 2026, 19.00 Uhr im Bürgerhaus statt.</p><p>Tagesordnung</p><p>1. Eröffnung<br>2. Bauantrag Werbeanlage<br>3. Maßnahmenliste Straßen</p></main>';
+ const list='<main><h2>Technischer Ausschuss am 05.10.2026</h2><p>1. TA 24.09.2026</p><p><a href="/news/to-ta-05-10-2026.html">Tagesordnung Technischer Ausschuss 05.10.2026</a></p></main>';
+ const web=site({[base+'news/']:list},{[base+'news/to-ta-05-10-2026.html']:{bytes:enc(notice),type:'text/html'}});
+ const all=await collectAll(s,{now:new Date('2026-10-04T10:00:00Z'),get:web.get,getBytes:web.getBytes,pdfText:async()=>'',window:'12m'});
+ const pub=all.topics.filter(t=>!t.publicity).map(t=>t.title).sort();
+ assert.ok(pub.includes('Bauantrag Werbeanlage')&&pub.includes('Maßnahmenliste Straßen'),JSON.stringify(all.topics.map(t=>[t.title,t.publicity])));
+ assert.ok(!all.topics.some(t=>/^TA 24\.09\.2026$/.test(t.title)),'a bare label is no item');
+});

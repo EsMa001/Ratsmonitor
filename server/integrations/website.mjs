@@ -610,6 +610,10 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   if(seenUrl.has(s.url))continue;seenUrl.add(s.url);
   const k=`${s.key}|${s.kind}`,lead=leads.get(k);
   if(!lead){leads.set(k,s);also.set(s,[]);continue;}
+  // The document with the most public items leads (since 24.10.2026 a page may carry only items marked „unclear“, such as a list
+  // entry „TA 24.09.2026“; it must not push aside the notice with the agenda, Großschirma 05.10.2026).
+  const shown=x=>x.items.filter(i=>!i.publicity||i.publicity==='public').length;
+  if(shown(s)>shown(lead)){leads.set(k,s);also.set(s,[...also.get(lead),lead.doc]);also.delete(lead);continue;}
   also.get(lead).push(s.doc);
  }
  const meetingsOut=[...leads.values()].sort((a,b)=>b.date.localeCompare(a.date)||(a.kind==='minutes')-(b.kind==='minutes'));
