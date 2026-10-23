@@ -27,6 +27,7 @@ import {collectHhDocuments,detectHhDocuments} from './hhdocuments.mjs';
 import {collectRioSys,detectRioSys} from './rio-sys.mjs';
 import {collectHitcomRis,detectHitcomRis} from './hitcom-ris.mjs';
 import {collectWebcontactRatsinfo,detectWebcontactRatsinfo} from './webcontact-ratsinfo.mjs';
+import {collectFabasoft} from './fabasoft.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 import {collectCkan,detectCkan} from './ckan.mjs';
@@ -97,6 +98,9 @@ export const READERS={
  // the query profile of its entry (ckan: {queries, committee}). Without a profile it reads nothing, and the check names
  // the area "API verfügbar, Leser/Connector fehlt" (shared/source-access.mjs).
  ckan:{name:'CKAN-Portal (offene Schnittstelle)',collect:collectCkan,detect:async(url,html)=>detectCkan(url,html)},
+ // Public folders of the Fabasoft Cloud (fabasoft.mjs, Bad Homburg 2026): one share per body, read as the web app's JSON. Not
+ // recognised from a page; the entry names the shares (folders).
+ fabasoft:{name:'Öffentliche Ordner (Fabasoft Cloud)',collect:collectFabasoft,detect:async()=>null},
  // Website of a municipality without council system (notices, minutes, feeds of its CMS). No page of a council system
  // is one, so verify.mjs never recognises it; only the website search (scripts/source-discovery/website.mjs) assigns it.
  website:{name:WEBSITE_READER_NAME,collect:collectSite,detect:async()=>null},

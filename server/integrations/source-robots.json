@@ -1,5 +1,5 @@
 {
- "builtAt": "2026-10-10",
+ "builtAt": "2026-10-23",
  "agent": "VorOrt-PoliticalTopics/0.5 (public council information)",
  "sources": {
   "billerbeck": "keine",
@@ -233,6 +233,7 @@
   "de-06433013": "erlaubt",
   "de-06433014": "erlaubt",
   "de-06434": "keine",
+  "de-06434001": "keine",
   "de-06434003": "keine",
   "de-06434004": "keine",
   "de-06434005": "keine",
@@ -1024,6 +1025,7 @@
   "de-08136089": "verboten",
   "de-08211000": "erlaubt",
   "de-08212000": "keine",
+  "de-08215": "erlaubt",
   "de-08215007": "erlaubt",
   "de-08215009": "verboten",
   "de-08215017": "erlaubt",
@@ -2423,7 +2425,6 @@
   "de-09677157": "keine",
   "de-09677177": "keine",
   "de-096775620": "keine",
-  "de-096775624": "verboten",
   "de-096775625": "verboten",
   "de-09678": "keine",
   "de-09678115": "keine",
@@ -3333,6 +3334,7 @@
   "de-160755013": "erlaubt",
   "de-160755050": "keine",
   "de-16076": "keine",
+  "de-16076022": "erlaubt",
   "de-16076093": "keine",
   "de-16076094": "verboten",
   "de-160765006": "erlaubt",

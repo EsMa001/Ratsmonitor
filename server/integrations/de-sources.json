@@ -40647,5 +40647,66 @@
       "body": "https://ratsinfo-vg-asbach.gremien.info/oparl/body/VG"
     },
     "foundBy": "Recherche 10.10.2026: Seite Ratsinformationssystem verlinkt „neues Ratsinformationssystem (ab Juli 2024)“ ratsinfo-vg-asbach.gremien.info (More! Rubin mit OParl); Atlas kannte nur ratsinfo.vg-asbach.de (HTTP 403)"
+  },
+  {
+    "id": "de-08215",
+    "name": "Landkreis Karlsruhe",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.landkreis-karlsruhe.de/",
+    "pages": [
+      "https://www.landkreis-karlsruhe.de/Aktuelles-Landkreis/Politik/Kreistag/Sitzungsarchiv/",
+      "https://www.landkreis-karlsruhe.de/Aktuelles-Landkreis/Politik/Kreistag/Sitzungen/"
+    ],
+    "verifiedSource": "https://www.landkreis-karlsruhe.de/Aktuelles-Landkreis/Politik/Kreistag/Sitzungsarchiv/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem bei ris-portal.de nur mit Anmeldung bzw. für unseren Server gesperrt; die Website des Landratsamts führt jede Sitzung als Termin mit Tagesordnung, Vorlagen und Beschlüssen (Probeabruf 3 Monate: 30 Berichte aus 3 Sitzungen)."
+  },
+  {
+    "id": "de-16076022",
+    "name": "Stadt Greiz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.greiz.de/",
+    "pages": [
+      "https://www.greiz.de/",
+      "https://www.greiz.de/verwaltung/stadtrat"
+    ],
+    "verifiedSource": "https://www.greiz.de/verwaltung/stadtrat",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem; Einladungen mit „Öffentlicher Teil“ als Meldungen unter Aktuelles (Startseite), Unterlagen je Punkt als eingescannte PDFs."
+  },
+  {
+    "id": "de-06434001",
+    "name": "Stadt Bad Homburg v.d.Höhe",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "fabasoft",
+    "base": "https://de.cloud.fabasoft.com/folio/public/",
+    "folders": [
+      "0m8xf4raixfz10i9qzgdxdt5ar",
+      "0ti1puuo58w202nzqoeqoj91kp",
+      "0tjlmgugvhpvx0dm2lwomi7ogj",
+      "1aixphj2pkp5p0joz58bq3ommx",
+      "1lgpu09bp42rw2o9ehaxju8nnd",
+      "2w0bwe818ru4s1prdvuzdts3rv",
+      "3k2cob2fdamfs07ngoeevvq7jv",
+      "3saum0opsy4wc18t88ry6q0bej",
+      "3ty1qietnqp7122zgylzqstm37",
+      "3ubu0ez9vepl51ebzysj4evvvd",
+      "1sfn405rrsx0c2chtmhzbwt7w3",
+      "2paotadc0bgns26ghj1c1ey5qz",
+      "0k2earbroriu02ovmfqnsgodqx",
+      "2pz8vf82ode1p24tinm9lttoop",
+      "2h326qsfevz300ksd1gqdubd4r",
+      "3hcr9rh5kaqdl03sqqcb4c3oop",
+      "1xc5gmk2a8ah804kzn8mndz4pl"
+    ],
+    "page": "https://www.bad-homburg.de/de/stadt/politik/gremien/stadtverordnetenversammlung",
+    "verifiedSource": "https://www.bad-homburg.de/de/stadt/politik/gremien",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem mit OParl; die Stadt verlinkt je Gremium einen öffentlichen Ordner in der Fabasoft Cloud „… 2026 (öffentlich)“ (Stadtverordnetenversammlung, 8 Ausschüsse, Ausländerbeirat, 7 Ortsbeiräte). Probeabruf 1 Monat: 80 Berichte aus 12 Sitzungen. Der Archivordner der Vorjahre (0bwa7ak5qzckd3jcyup4t0k4s3) ist anders gegliedert und noch nicht angebunden."
   }
 ]
