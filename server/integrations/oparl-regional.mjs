@@ -224,7 +224,8 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
   if(known?.print===print){held[meeting.url]=marks.known[meeting.url];unchanged++;return;}
   // What went wrong while reading this meeting; a meeting with a failure is read again next time.
   let failed=0,cut=false,events=0;const fail=text=>{failed++;if(exhausted(text))cut=spent=true;issues.push(text);};
-  if(!org){org=[];for(const o of m.organization||[]){try{org.push(clean((await object(o))?.name||'Gremium'));}catch{org.push('Gremium laut Originalquelle');}}}
+  // An organization that could not be read is a failure: the meeting is read again, so the placeholder does not stay.
+  if(!org){org=[];for(const o of m.organization||[]){try{org.push(clean((await object(o))?.name||'Gremium'));}catch(e){fail('Gremium: '+e.message);org.push('Gremium laut Originalquelle');}}}
   const attendance=await publicParticipants(m,object,now.toISOString());
   const committee=org.join(', ')||clean(m.name)||'Öffentliche Sitzung';
   const resolved=await parallel(m.agendaItem||[],async a=>{try{return await object(a)}catch(e){fail('Tagesordnungspunkt: '+e.message);return {public:false};}},3);

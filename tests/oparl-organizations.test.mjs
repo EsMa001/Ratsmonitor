@@ -50,6 +50,8 @@ test('without the field the behaviour is unchanged: every meeting is read',async
  assert.ok(!('filteredMeetings' in result.coverage)&&!('unassignedMeetings' in result.coverage));
  const committee=n=>result.topics.find(t=>t.title==='Thema '+n).committee;
  assert.equal(committee(2),'Landtag');assert.equal(committee(7),'Sitzung 7');assert.equal(committee(8),'Gremium laut Originalquelle');
+ // Goch, 06.10.2026: the placeholder stood until the mark ran out. An unreadable organization now leaves the meeting unmarked.
+ assert.ok(!(root+'meeting/8' in result.marks));assert.ok(root+'meeting/2' in result.marks);assert.ok(result.coverage.issues.includes('Gremium: OParl HTTP 500'));
 });
 test('exclude alone keeps every named committee that is not excluded',async()=>{
  const {result}=await run({exclude:['Landtag','(Land)','Staatliche Deputation']});
