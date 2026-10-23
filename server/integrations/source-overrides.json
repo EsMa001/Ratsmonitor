@@ -94,7 +94,8 @@
     "meetingScan": "filter"
   },
   "nrw-05362012": {
-    "meetingScan": "end"
+    "meetingScan": "filter",
+    "patienceMs": 150000
   },
   "nrw-05562004": {
     "meetingScan": "forward"
@@ -142,7 +143,8 @@
     "meetingScan": "filter"
   },
   "nrw-05114000": {
-    "meetingScan": "end"
+    "meetingScan": "filter",
+    "patienceMs": 150000
   },
   "nrw-05358028": {
     "meetingScan": "filter"
