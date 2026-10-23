@@ -71,6 +71,9 @@ test('SD.NET collector follows a paper to the earlier committee meeting the pape
  // A past meeting without a readable agenda is a gap.
  const gap=await collectSdnet(source,{now,window:'1m',get:async url=>url===meetingUrl(2)?'<html><p>Seite ohne Tagesordnung</p></html>':get(url)});
  assert.deepEqual(gap.coverage.issues,['Keine lesbare öffentliche Tagesordnung: '+meetingUrl(2),'Noch keine Artikel erfolgreich erfasst.']);assert.equal(gap.coverage.quiet,false);assert.equal(gap.coverage.complete,false);
+ // A meeting called off keeps its page without an agenda: counted as cancelled, not as a gap.
+ const off=await collectSdnet(source,{now,window:'1m',get:async url=>url===meetingUrl(1)?'<html><table><tr><th>Sitzung:</th><td>Haupt- und Finanzausschuss , 4. Sitzung, Der Haupt- und Finanzausschuss findet nicht statt!</td></tr></table><p>Zum gewählten Termin liegt keine Tagesordnung vor.</p></html>':get(url)});
+ assert.deepEqual(off.coverage.issues,[]);assert.equal(off.coverage.cancelledMeetings,1);assert.equal(off.coverage.meetings,1);assert.equal(off.coverage.complete,true);
  // Nothing published in a short window and no error: a quiet period, even when an upcoming meeting is already scheduled.
  const quiet=await collectSdnet(source,{now,window:'1w',get:async url=>url===base+'vorlagen'?paperList([paperRow('10/2026','Alt','Do, 05.02.2026','Rat',90)]):url in pages&&url!==base+'vorlagen'?pages[url]:(()=>{throw Error('unexpected '+url);})()});
  assert.equal(quiet.coverage.quiet,true);assert.equal(quiet.topics.length,0);assert.equal(quiet.coverage.upcomingWithoutAgenda,1);assert.deepEqual(quiet.coverage.issues,['Noch keine Artikel erfolgreich erfasst.']);

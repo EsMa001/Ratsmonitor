@@ -10,6 +10,7 @@ import {fnv,germanDayStrict as day} from './source-common.mjs';
 // because it answers only with a session cookie and a form token (HTTP 403 otherwise).
 const cell=(row,name)=>row.match(new RegExp(`<td[^>]*class=["'][^"']*column-${name}[^"']*["'][^>]*>([\\s\\S]*?)<\\/td>`,'i'))?.[1]||'';
 const anchors=html=>[...html.matchAll(/<a\b([^>]*?)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi)].map(m=>({url:decode(m[2]),attributes:m[1]+m[3],label:text(m[4])}));
+const CANCELLED=/findet nicht statt|entf(?:ä|ae)llt|abgesagt|ausgefallen/i;
 const title=a=>decode(a.attributes.match(/title=["']([^"']*)/)?.[1]||'');
 /** Meetings named in the paper list: every scheduled paper links its meeting. */
 export function paperListMeetings(html,source){
@@ -98,7 +99,7 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
  try{const page=await get(source.base+'termine',source);const exportUrl=decode(page.match(/data-export-url=["']([^"']+)["']/)?.[1]||'');
   if(exportUrl)for(const m of calendarMeetings(await get(allowed(exportUrl,source),source),source))if(!m.cancelled)keep(m);
  }catch(e){issues.push('Kalenderexport: '+e.message);}
- const grouped=new Map(),today=now.toISOString().slice(0,10),held={};let count=0,limited=false,upcoming=0,unchanged=0,done=0,unread=0;
+ const grouped=new Map(),today=now.toISOString().slice(0,10),held={};let count=0,limited=false,upcoming=0,cancelled=0,unchanged=0,done=0,unread=0;
  const matters=new Map();const matter=url=>{if(!matters.has(url))matters.set(url,get(url,source).then(html=>parseSdnetMatter(html,source)));return matters.get(url);};
  // 3. Meeting pages. A paper page names every meeting that discussed the paper; the paper list shows only the
  //    latest one. Meetings found that way are read in the next round, until no new meeting turns up.
@@ -115,7 +116,8 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
     const items=parseSdnetAgenda(html,meeting,source,now);
     // The calendar export lists every scheduled meeting. An upcoming meeting without an agenda has nothing public
     // to read yet; that is counted, not reported as a gap. A past meeting without a readable agenda is a gap.
-    if(!items){if(m.date>today)upcoming++;else issues.push('Keine lesbare öffentliche Tagesordnung: '+m.url);return;}
+    // A meeting called off keeps its page without an agenda ("Der Jugendhilfeausschuss findet nicht statt!"): no gap.
+    if(!items){if(m.date>today)upcoming++;else if(CANCELLED.test(header))cancelled++;else issues.push('Keine lesbare öffentliche Tagesordnung: '+m.url);return;}
     // What the agenda page says. If that is what it said when the papers were last read, they are not fetched again.
     const print=period+(await hash(JSON.stringify(items.map(r=>[r.id,r.title,r.reference,r.agenda.number,r.event.description,r.documents.map(d=>d.url)])))).slice(0,16);
     if(known?.print===print){held[m.url]=marks.known[m.url];unchanged++;return;}
@@ -150,5 +152,5 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SD.NET-Seite; Tagesordnungspunkte aus dem Abschnitt „Öffentliche Sitzung“.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  // Unchanged meetings are a successful reading: their reports are in the database already.
- return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size-upcoming,upcomingWithoutAgenda:upcoming,...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size-upcoming-cancelled,upcomingWithoutAgenda:upcoming,...(cancelled?{cancelledMeetings:cancelled}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }
