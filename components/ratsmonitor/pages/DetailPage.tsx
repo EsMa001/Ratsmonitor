@@ -72,9 +72,10 @@ export function DetailPage(){
   const host=(u:string)=>{try{return new URL(u).host;}catch{return '';}},events=t.events.filter(e=>!t.sourceUrl||!e.url||!host(e.url)||host(e.url)===host(t.sourceUrl)),status=STATUS[t.status]||STATUS.unknown;
   /* KI-Texte (Zusammenfassung, Zitate, Thema) zeigt das Frontend nicht; ohne Auszug aus der Vorlage bleibt der Abschnitt knapp */
   const ki=/^KI-Zusammenfassung/.test(t.generatedBy||'')||t.contentAnalysis?.status==='completed',rule=t.ruleSummary;
-  /* Ohne Auszug der Überblick aus dem Modell (Vorgang, Sitzungen, Unterlagen), sonst der Text des Imports */
-  const overview=!ki&&!rule?t.overview?.text:'';
-  const shortText=ki?'':overview||t.shortSummary;
+  /* Ohne Auszug der Überblick aus dem Modell (Vorgang, Sitzungen, Unterlagen), auch wenn eine KI-Fassung vorliegt (die zeigt die
+     Seite nicht, sonst stünde unter dem Titel nichts); ohne Überblick der Text des Imports, nie der KI-Text */
+  const overview=!rule?t.overview?.text:'';
+  const shortText=overview||(ki?'':t.shortSummary);
   const source=rule?{icon:<IconRules size={16} aria-hidden="true"/>,label:'Auszug aus der Vorlage (Originalsätze)'}:overview?{icon:<IconDoc size={16} aria-hidden="true"/>,label:'Automatischer Überblick aus Sitzungen und Unterlagen'}:{icon:<IconDoc size={16} aria-hidden="true"/>,label:'Automatischer Quellenüberblick'};
   const excerptSource=rule?.source;
   const article={id:t.id,title:t.title,date:(t.eventDate||'').slice(0,10),gemeinde:regionName,teaser:shortText||''};

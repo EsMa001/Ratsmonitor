@@ -147,3 +147,12 @@ test('Zusammenfassung: Kopf vor dem Beschlussvorschlag fällt weg, Doppelpunkt a
  assert.equal(usable(c('Der Gemeinderat beschließt die Neufassung der Satzung über die Benutzung der Kindertageseinrichtungen.')),true);
  assert.equal(usable(c('Beschlussvorschlag: Der Rat beschließt die Satzung über die Erhebung von Gebühren in Höhe von 12 €.')),true);
 });
+
+test('Satzkandidaten: Beschlussvorschlag hinter Kopfzeilen ohne Punkt wird hinten angehängt, Nummern der übrigen bleiben (sentences-v2)',()=>{
+ const head='Stadt Billerbeck Billerbeck, 28. August 2026 Sitzungsvorlage für den Umweltausschuss Datum: 10.09.2026 für den Rat der Stadt Datum: 13.10.2026 TOP: 1 öffentlich Betr.: Starkregenschutz Weihgarten Bezug: Umweltausschuss vom 20.05.2025 Höhe der voraussichtlichen Kosten: rd. 2 Mio € Finanzierung durch Mittel bei der HHSt.: Über-/außerplanmäßige Ausgabe in Höhe von Euro: Finanzierungs-/Deckungsvorschlag:';
+ const text=`${head} Beschlussvorschlag: Beschlussvorschlag für den Rat: Der Förderantrag bei der Bezirksregierung Münster zur Durchführung der Maßnahmen zum Starkregenschutz Weihgarten wird gestellt, die notwendigen Mittel im Haushalt eingestellt und die erforderlichen Planungen beauftragt. Es erfolgt eine regelmäßige Mitteilung an den Ausschuss und Rat.\n\nSachverhalt: Der Umweltausschuss hatte die Ausführungen zur Kenntnis genommen und weitere Planungen beauftragt.`;
+ const c=candidates(text),r=c.filter(x=>x.rescued);
+ assert.equal(r.length,1);assert.match(r[0].text,/^Der Förderantrag bei der Bezirksregierung Münster/);assert.equal(r[0].sec,'decision');
+ assert.equal(c.at(-1),r[0],'hinten angehängt');assert.deepEqual(c.map(x=>x.i),c.map((_,k)=>k));
+ assert.ok(candidates('Der Rat beschließt die Satzung über die Erhebung von Gebühren.').every(x=>!x.rescued));
+});

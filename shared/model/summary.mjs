@@ -2,7 +2,7 @@
 // Langfassung aus den Wahrscheinlichkeiten des Satzkopfs (scripts/model/train-summary.mjs). Nur wörtliche Sätze des Dokuments.
 export const SUMMARY_FEATURES_VERSION='sumfeat-v1';
 /** Fassung der Auswahl (Filter usable, Säuberung tidy); geht in die Lesefassung ein (READ_VERSION) */
-export const SUMMARY_PICK_VERSION='pick-v2';
+export const SUMMARY_PICK_VERSION='pick-v3';
 const words=s=>String(s).toLowerCase().match(/[\p{L}\d]+/gu)||[];
 const parts=(s,p)=>{const out=[];for(const w of words(s)){if(w.length<3)continue;out.push(p+'w:'+w);const b='<'+w+'>';for(let i=0;i+4<=b.length;i++)out.push(p+b.slice(i,i+4));}return out;};
 const bucket=(x,steps)=>steps.findIndex(s=>x<=s);

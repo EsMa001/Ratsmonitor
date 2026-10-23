@@ -11,6 +11,7 @@ import { onlyText, readableQuery, searchFromUrl, searchToUrl } from "../lib/sear
 import { terms as toTerms, todayLocal } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
+import { rememberSearchHref } from "./nav";
 import { useFiltersOpen } from "../lib/filtersOpen";
 import { ApiError, errorText, fetchJson, fetchOrFail, readJson } from "../lib/fetchJson";
 import { usePhone } from "../lib/usePhone";
@@ -262,7 +263,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     if(urlNow===null||regionWait||params.has('suche'))return;
     const url=urlNow,enc=searchToUrl(state),region=params.has('region');
     const mark=(history.state as {rmSearch?:unknown}|null)?.rmSearch,marked=typeof mark==='string';
-    if(url===enc){written.current=url;fromUrl.current=false;return;}
+    if(url===enc){written.current=url;fromUrl.current=false;rememberSearchHref(enc?`/suche?${enc}`:'/suche');return;}
     if(!region&&url!==written.current&&(url||marked)){
       const p=new URLSearchParams(url);
       if(onlyText(p))actions.applySearch(p.get('q')!,{...INITIAL_SEARCH});
@@ -274,6 +275,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     const now=Date.now(),push=!fromUrl.current&&!region&&(url!==''||marked)&&now-wroteAt.current>1000;
     fromUrl.current=false;wroteAt.current=now;written.current=enc;
     const href=enc?`/suche?${enc}`:'/suche';
+    rememberSearchHref(href);
     if(push){
       if(!marked)history.replaceState({...history.state,rmSearch:url},'',location.href);
       history.pushState({rmSearch:enc},'',href);

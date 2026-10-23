@@ -15,7 +15,8 @@ import {buildRuleSummary} from '../../server/integrations/rule-summary.mjs';
 const arg=(k,d)=>process.argv.find(a=>a.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const OUT=arg('out','tmp/model/summary'),EPOCHS=+arg('epochs',30),L2=+arg('l2',3e-3),LR=+arg('lr',0.02);
 const data=JSON.parse(fs.readFileSync('tests/fixtures/kern-saetze.json','utf8'));
-const rows=data.rows.map((r,i)=>({...r,i,cands:candidates(r.text)})).filter(r=>r.gold);
+// Gerettete Beschlussvorschläge (rescued) haben keine Einordnung in den Lerndaten: beim Lernen weglassen
+const rows=data.rows.map((r,i)=>({...r,i,cands:candidates(r.text).filter(c=>!c.rescued)})).filter(r=>r.gold);
 const test=rows.filter(r=>r.set==='check'),all=rows.filter(r=>r.set!=='check'),tune=all.filter(r=>r.i%7===0),train=all.filter(r=>r.i%7!==0);
 console.log('lernen',train.length,'Schwellen',tune.length,'prüfen',test.length);
 
