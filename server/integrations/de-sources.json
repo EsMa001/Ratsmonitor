@@ -5096,7 +5096,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.gvv-ulstertal.de/",
-    "api": "https://risapi3.kic-software.de/",
+    "api": "https://risapi1.kic-software.de/",
     "client": 132009432,
     "verifiedSource": "https://www.ehrenberg-rhoen.de/",
     "verifiedAt": "2026-10-10",
@@ -5191,7 +5191,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.gvv-ulstertal.de/",
-    "api": "https://risapi3.kic-software.de/",
+    "api": "https://risapi1.kic-software.de/",
     "client": 132081101,
     "verifiedSource": "https://www.hilders.de/",
     "verifiedAt": "2026-10-10",
@@ -5303,7 +5303,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.gvv-ulstertal.de/",
-    "api": "https://risapi3.kic-software.de/",
+    "api": "https://risapi1.kic-software.de/",
     "client": 32,
     "verifiedSource": "https://www.tann.de/",
     "verifiedAt": "2026-10-10",
@@ -15634,7 +15634,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.binzen.de/",
-    "api": "https://risapi51a.kic-software.de/",
+    "api": "https://risapi1.kic-software.de/",
     "verifiedSource": "https://binzen.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -18806,7 +18806,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/dietramszell/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://www.dietramszell.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -20086,7 +20086,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/eglingadpaar/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://egling.com/Termine/biergarten-im-bad/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -20291,7 +20291,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/kreuth/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://gemeinde.kreuth.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -20812,7 +20812,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/strasslach/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://www.strasslach-dingharting.de/termin/Gemeinderatssitzung-event-appointment2437",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -21379,7 +21379,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/oberaudorf/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://ris.komuna.net/oberaudorf/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
@@ -22809,7 +22809,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/hohenthann/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://ris.komuna.net/hohenthann/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
@@ -23328,7 +23328,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/hebertsfelden/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://ris.komuna.net/hebertsfelden/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
@@ -23666,7 +23666,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/landau/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://www.landau-isar.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -24136,7 +24136,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/hohenfels/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://www.markt-hohenfels.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -24148,7 +24148,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/lauterhofen/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://www.lauterhofen.de/index.php",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -25585,7 +25585,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.goessweinstein.de/",
-    "api": "https://risapi3.kic-software.de/",
+    "api": "https://risapi1.kic-software.de/",
     "verifiedSource": "https://goessweinstein.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -25682,7 +25682,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.kirchehrenbach.de/",
-    "api": "https://risapi3.kic-software.de/",
+    "api": "https://risapi1.kic-software.de/",
     "verifiedSource": "https://kirchehrenbach.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -26900,7 +26900,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/schnaittach/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://www.schnaittach.de/startseite-markt",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -27844,7 +27844,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/hassfurt/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://hassfurt.de/startseite.html",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -27924,7 +27924,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/zeil/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://www.zeil-am-main.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -28661,7 +28661,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.hoechberg.de/",
-    "api": "https://risapi3.kic-software.de/",
+    "api": "https://risapi1.kic-software.de/",
     "verifiedSource": "https://hoechberg.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -28898,11 +28898,11 @@
     "adapter": "website",
     "base": "https://www.altertheim.de/",
     "pages": [
-      "https://www.altertheim.de/gemeinde-altertheim/unsere-gemeinde/aktuelles-aus-altertheim/110/gemeinderat-altertheim"
+      "https://www.altertheim.de/gemeinde-altertheim/unsere-gemeinde/aktuelles-aus-altertheim"
     ],
-    "verifiedSource": "https://www.altertheim.de/",
-    "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "verifiedSource": "https://www.altertheim.de/gemeinde-altertheim/unsere-gemeinde/aktuelles-aus-altertheim",
+    "verifiedAt": "2026-10-23",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; Einladungen des Gemeinderats Altertheim erscheinen als Meldung unter „Aktuelles aus Altertheim“ (jede Sitzung eine neue Meldung, deshalb die Liste statt einer einzelnen Meldung; die frühere Meldung …/110/gemeinderat-altertheim ist seit Oktober 2026 entfernt)."
   },
   {
     "id": "de-096795652",
@@ -29293,7 +29293,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/zusmarshausen/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "verifiedSource": "https://ris.komuna.net/zusmarshausen/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
@@ -30053,7 +30053,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/vgtuerkheim/",
-    "api": "https://risapi1.komuna.net/",
+    "api": "https://risapi3.komuna.net/",
     "client": 32,
     "verifiedSource": "https://ris.komuna.net/vgtuerkheim/",
     "verifiedAt": "2026-10-10",
@@ -30155,7 +30155,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.komuna.net/moettingen/",
-    "api": "https://risapi2.komuna.net/",
+    "api": "https://risapi1.komuna.net/",
     "verifiedSource": "https://www.moettingen.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."

@@ -120,6 +120,11 @@ export function parseKicItem(json,source){
  }
  return {role:plain(a.conordertype),consultations,result:kicResult(a.votings),documents};
 }
+/** Another interface host of the same operator (same registrable domain, https, root path): kic-software.de moves systems between
+    risapi1, risapi3 and risapi51a, komuna.net between risapi1, risapi2 and risapi3. Any other address stays refused. */
+export function kicMoved(from,to){
+ try{const a=new URL(from),b=new URL(to),domain=h=>h.split('.').slice(-2).join('.');return b.protocol==='https:'&&b.pathname==='/'&&!b.search&&!b.username&&!b.password&&domain(a.hostname)===domain(b.hostname)&&/^risapi\w*\./.test(b.hostname);}catch{return false;}
+}
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs.
 // request: fetch for the requests to the interface; the headers of the app are added to it.
 export async function collectKic(source,{now=new Date(),get=fetchText,request=fetch,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks}={}){
@@ -127,12 +132,14 @@ export async function collectKic(source,{now=new Date(),get=fetchText,request=fe
  const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10),issues=[],warnings=[],meetings=new Map();
  const until=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+2,0));
  if(!source.api)throw Error('Katalogeintrag ohne Schnittstellenadresse (api)');
- const root=String(source.api).replace(/\/*$/,'/'),api={...source,base:root},site={...source,base:new URL(source.base).origin+'/'};
- // 1. The app and its configuration. The interface it names has to be the one of the catalog entry.
+ let root=String(source.api).replace(/\/*$/,'/'),api={...source,base:root};const site={...source,base:new URL(source.base).origin+'/'};
+ // 1. The app and its configuration. The interface it names has to be the one of the catalog entry, or one of the same
+ // operator (kicMoved: the operator moved the system to another of its interface hosts); then that one is asked and named.
  let headers;
  try{
   const shell=kicShell(source.base,await get(source.base,source));if(!shell)throw Error('Seite ist keine KIC-Anwendung (mehr)');
   const config=kicConfig(await get(allowed(site.base+shell.version+'/webconfig.json',site),site));
+  if(config.api!==root&&kicMoved(root,config.api)){warnings.push(`Schnittstelle umgezogen: ${root} → ${config.api}; Katalogeintrag nachziehen`);root=config.api;api={...source,base:root};}
   if(config.api!==root)throw Error(`Anwendung nennt eine andere Schnittstelle (${config.api}); Katalogeintrag prüfen`);
   headers=kicHeaders({...config,uniqueId:shell.uniqueId,customName:shell.customName});
  }catch(e){issues.push('Anwendung: '+e.message);}

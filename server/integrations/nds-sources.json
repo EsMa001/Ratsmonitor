@@ -2137,7 +2137,7 @@
     "method": "scraper",
     "adapter": "kic",
     "base": "https://ris.drochtersen.de/",
-    "api": "https://risapi3.kic-software.de/",
+    "api": "https://risapi1.kic-software.de/",
     "verifiedSource": "https://drochtersen.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."

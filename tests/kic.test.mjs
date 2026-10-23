@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {kicShell,kicConfig,kicHeaders,kicMeetings,parseKicMeeting,parseKicItem,kicResult,collectKic,detectKic} from '../server/integrations/kic.mjs';
+import {kicShell,kicConfig,kicHeaders,kicMeetings,parseKicMeeting,parseKicItem,kicResult,collectKic,detectKic,kicMoved} from '../server/integrations/kic.mjs';
 // Excerpts of the live guest interface (October 2026), shortened: Aschaffenburg (risapi.aschaffenburg.de),
 // Amt Eidertal and Buttenheim (risapi3.kic-software.de), Waldkraiburg (risapi1.kic-software.de).
 const fixture=name=>readFileSync(new URL('./fixtures/kic/'+name,import.meta.url),'utf8');
@@ -187,6 +187,17 @@ test('KIC collector: the council decides; a shared system is asked for one munic
  const moved=system({[base+'51b/webconfig.json']:JSON.stringify({serviceUrl:'https://risapi9.kic-software.de',org_key:'K'})});
  const other=await collectKic(source,{now,window:'1m',get:moved.get,request:moved.request});
  assert.match(other.coverage.issues[0],/andere Schnittstelle \(https:\/\/risapi9\.kic-software\.de\/\)/);assert.ok(!moved.calls.some(u=>u.includes('risapi')));assert.equal(other.coverage.quiet,false);
+ // The operator moved the system to another of its interface hosts (23.10.2026: 23 areas, e.g. risapi1 → risapi3.komuna.net):
+ // the app's interface is asked and the move is named, so the catalog can follow.
+ const shifted=system();const followed=await collectKic({...source,api:'https://risapi7.aschaffenburg.de/'},{now,window:'1m',get:shifted.get,request:shifted.request});
+ assert.ok(followed.topics.length>0);assert.match(followed.coverage.warnings?.join(' ')||JSON.stringify(followed),/Schnittstelle umgezogen: https:\/\/risapi7\.aschaffenburg\.de\/ → https:\/\/risapi\.aschaffenburg\.de\//);
+ assert.ok(!shifted.calls.some(u=>u.includes('risapi7')));
+ assert.equal(kicMoved('https://risapi1.komuna.net/','https://risapi3.komuna.net/'),true);
+ assert.equal(kicMoved('https://risapi3.kic-software.de/','https://risapi1.kic-software.de/'),true);
+ assert.equal(kicMoved('https://risapi1.komuna.net/','https://risapi1.kic-software.de/'),false,'anderer Anbieter');
+ assert.equal(kicMoved('https://risapi1.komuna.net/','http://risapi3.komuna.net/'),false,'nur https');
+ assert.equal(kicMoved('https://risapi1.komuna.net/','https://www.komuna.net/'),false,'nur Schnittstellen-Hosts');
+ assert.equal(kicMoved('https://risapi1.komuna.net/','https://risapi3.komuna.net/x/'),false,'nur der Wurzelpfad');
  // The interface does not know the system (wrong host name): an error, never a quiet period.
  const unknown=system();const failing=async(url,...rest)=>url.includes('/web/guestmeetings?')?(()=>{throw Error('Quelle antwortet mit HTTP 404');})():unknown.get(url,...rest);
  const tenant=await collectKic(source,{now,window:'1m',get:failing,request:unknown.request});
