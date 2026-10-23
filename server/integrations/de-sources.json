@@ -40737,5 +40737,19 @@
     "verifiedSource": "https://www.kreis-hz.de/de/harzer-kreisblatt.html",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Ratsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); das Harzer Kreisblatt (PDF) macht Kreistag und Ausschüsse mit Tagesordnung bekannt. Probeabruf 3 Monate: 67 Berichte aus 5 Sitzungen."
+  },
+  {
+    "id": "de-06534",
+    "name": "Landkreis Marburg-Biedenkopf",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.marburg-biedenkopf.de/",
+    "pages": [
+      "https://www.marburg-biedenkopf.de/politik_und_gremien/bekanntmachungen.php"
+    ],
+    "verifiedSource": "https://www.marburg-biedenkopf.de/politik_und_gremien/bekanntmachungen.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); die öffentlichen Bekanntmachungen des Kreises (PDF) nennen Sitzungen von Kreistag und Ausschüssen mit Tagesordnung. Probeabruf 3 Monate: 101 Berichte."
   }
 ]
