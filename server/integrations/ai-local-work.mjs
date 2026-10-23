@@ -103,6 +103,8 @@ export function createAiLocalWork(db,{loadSources,now=() => Date.now()}={}) {
     const items = [];
     for (const row of rows.results) {
       const current = await input(row),work = row.work_state ? {state:row.work_state,input_hash:row.input_hash,lease_expires_at:row.lease_expires_at} : null;
+      // Nichtöffentliche Punkte (seit 24.10.2026) bekommen keine KI-Aufbereitung: es gibt nur Titel, Sitzung und Gremium.
+      if (current.topic?.publicity === 'nonpublic') continue;
       const visible = visibleState(work,current,current.topic);
       const matches = state === 'all' || state === visible || state === 'open' && (['pending','legacy','stale'].includes(visible) || visible === 'failed' && Number(row.attempts || 0) < 2);
       if (!matches) continue;
