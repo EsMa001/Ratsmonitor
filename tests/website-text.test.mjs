@@ -253,8 +253,8 @@ test('a public notice with the day it was posted, or a notice below the agenda t
   const r=parseSessionText(lines);assert.ok(!r.meetings.some(m=>m.items.some(i=>/Grundstück/.test(i.title))));
   assert.ok(!r.meetings.some(m=>/ohne Hinweis auf einen nichtöffentlichen Teil/.test(m.publicEvidence||'')));
  }
- // A plain invitation without any word of the public stays unclear (Ortsbeirat Hembach, 2026).
- assert.equal(parseSessionText(['Einladung des Ortsbeirates Hembach zur konstituierenden Sitzung','am 23. April 2026 um 19.30 Uhr im Dorfgemeinschaftshaus in Hembach','Tagesordnungspunkte:','1. Begrüßung','2. Wahl Ortsvorsteher','3. Sonstiges']).meetings[0].items.length,0);
+ // A plain invitation without any word of the public or a closed part is taken (decision of the project owner, 23.10.2026; Ortsbeirat Hembach, 2026).
+ assert.equal(parseSessionText(['Einladung des Ortsbeirates Hembach zur konstituierenden Sitzung','am 23. April 2026 um 19.30 Uhr im Dorfgemeinschaftshaus in Hembach','Tagesordnungspunkte:','1. Begrüßung','2. Wahl Ortsvorsteher','3. Sonstiges']).meetings[0].items.length,3);
 });
 
 test('an earlier session named in a wrapped item or in a recalling sentence does not end the agenda; a list of another session does',()=>{
@@ -692,6 +692,7 @@ test('umlauts a PDF font maps to other characters are repaired for the whole tex
  assert.equal(repairFontUmlauts('÷ffentliche\nSitzungsvorlage\nwird sich einiges ‰ndern. zuk¸nftig eine ‹bersicht der Fˆrderung'),'Öffentliche\nSitzungsvorlage\nwird sich einiges ändern. zukünftig eine Übersicht der Förderung');
  // A single per mille sign or a lone character stays.
  assert.equal(repairFontUmlauts('Steigung 3 ‰ bei 2,5 ÷ 1'),'Steigung 3 ‰ bei 2,5 ÷ 1');
+});
 
 test('Vorberatung unter einem Punkt („22.09.2026 Sitzung des …“) ist keine neue Sitzung und kein anderer Sitzungstag (Konstanz)',()=>{
  const lines=['Einladung','Sitzung des Gemeinderates','Am Dienstag, 29.09.2026, 16:00 Uhr findet im Ratssaal eine öffentliche Sitzung des Gemeinderates mit folgender','Tagesordnung statt:','Öffentlicher Teil',
