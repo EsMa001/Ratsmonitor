@@ -114,8 +114,22 @@ const release=pdf=>pdf.destroy?pdf.destroy():pdf.loadingTask?.destroy?.();
  */
 export async function readPdfText(bytes){
  const pdf=await getDocumentProxy(bytes,{isEvalSupported:false,verbosity:0});
- try{if(pdf.numPages>LIMITS.pdfPages)throw Error('Dokument zu umfangreich');const {text}=await extractText(pdf,{mergePages:true});return text;}
+ try{if(pdf.numPages>LIMITS.pdfPages)throw Error('Dokument zu umfangreich');const {text}=await extractText(pdf,{mergePages:true});return scattered(text)?await linesByHeight(pdf):text;}
  finally{await release(pdf);}
+}
+// A text that falls apart into single words, one a line (pages turned by 270°, Freising 2026: pdf.js gives every word its
+// own end of line): at least 40 lines, three in five of them a single word.
+export const scattered=text=>{const lines=String(text).split('\n').map(l=>l.trim()).filter(Boolean);return lines.length>=40&&lines.filter(l=>!/\s/.test(l)).length>=lines.length*0.6;};
+// Lines again from the words of each page: in the order pdf.js reads them, a word on about the same height (3 points) goes on
+// the line before it.
+async function linesByHeight(pdf){
+ const pages=[];
+ for(let n=1;n<=pdf.numPages;n++){
+  const {items}=await (await pdf.getPage(n)).getTextContent(),lines=[];let line='',height=null;
+  for(const item of items){if(!item.str)continue;const y=item.transform[5];if(height!==null&&Math.abs(y-height)>3){lines.push(line.trim());line='';}line+=(line&&!/\s$/.test(line)?' ':'')+item.str;height=y;}
+  if(line.trim())lines.push(line.trim());pages.push(lines.join('\n'));
+ }
+ return pages.join('\n');
 }
 /**
  * robots.txt of each origin of the site, read once through get (status in the error message: "Quelle antwortet mit
