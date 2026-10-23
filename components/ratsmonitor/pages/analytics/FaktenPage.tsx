@@ -4,7 +4,7 @@ import { useDwell } from "../../lib/useDwell";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Befund, Fehler } from "./Befund";
+import { Befund, Fehler, Leer } from "./Befund";
 import { XKopf, XWeiter } from "./XKopf";
 import { useRailFold } from "../../lib/useRailFold";
 import { ListSkeleton } from "./ListSkeleton";
@@ -239,7 +239,7 @@ export function FaktenPage() {
 
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden text="Fakten werden geladen …" />}
-      {res && !fact && !allFacts && <p className="mt-6 text-[14px] text-slate-500">Für diese Auswahl liegen keine geprüften Werte vor.</p>}
+      {res && !fact && !allFacts && <Leer ohne={["q", "thema"]} beispiele={false}>Für diese Auswahl liegen keine geprüften Werte vor.</Leer>}
       {res && (fact || allFacts) && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst */}
@@ -290,7 +290,7 @@ export function FaktenPage() {
               {plain && focus && ranked.length >= 8 && <Skala x={focus} values={lasts} kreis={ranked.filter((a) => a.ags && focus.ags && a.ags.slice(0, 5) === focus.ags.slice(0, 5)).map((a) => a.last)} unit={unit} peer={peerText(focus)} good={fact!.dir === "good"} onList={() => show(focus.key, "map")} />}
               {plain && focus && listedArea && listedIn === "map" && <div className="mt-3"><RadarDrill base="/api/x?list=1" query={listQuery} by={`fact:${fact!.kind}`} value={metric} label={`${listedArea.name}: ${factName}`} limit={5} /></div>}
 
-              {areaAgs && !mine.length && <p className="text-[16px] text-slate-500">Für {placeName || "diesen Ort"} liegt {overview ? "kein Wert" : `kein Wert zu ${factName}`} vor.</p>}
+              {areaAgs && !mine.length && <Leer ohne={["q", "thema"]} beispiele={false} tipp="Die Karte zeigt, wo es Werte gibt; ein Klick auf ein Gebiet wählt es.">Für {placeName || "diesen Ort"} liegt {overview ? "kein Wert" : `kein Wert zu ${factName}`} vor.</Leer>}
               {/* Eine Gemeinde mit Wert: die Skala oben zeigt ihn schon */}
               {mine.length > 0 && !(plain && focus && mine.length === 1 && ranked.length >= 8) && <section className={plain && focus ? "mt-8" : ""}>
                 <div className="flex flex-wrap items-center justify-between gap-2">

@@ -262,7 +262,7 @@ export function XTrendsPage() {
                   {overview ? (
                     <div className="mt-4"><TrendMap items={[...lists.up, ...lists.down, ...lists.more]} selected="" onSelect={(t) => pick({ begriff: t })} /></div>
                   ) : rows.length === 0 ? (
-                    sort === "aus" && !sp ? <p className="mt-6 text-[16px] text-slate-500">Ausbreitung wird berechnet …</p> : <Leer tipp="Einen längeren Zeitraum oder „Alle Themen“ wählen.">Keine Begriffe in dieser Auswahl.</Leer>
+                    sort === "aus" && !sp ? <p className="mt-6 text-[16px] text-slate-500">Ausbreitung wird berechnet …</p> : <Leer tipp="Einen längeren Zeitraum wählen.">Keine Begriffe in dieser Auswahl.</Leer>
                   ) : (
                     <ol className="rm-focusrows m-0 mt-3 list-none border-t border-slate-200 p-0" onMouseLeave={() => setHover("")}>
                       {rows.slice(0, shown).map((t) => {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
-import { Befund, Fehler } from "./Befund";
+import { Befund, Fehler, Leer } from "./Befund";
 import { Folgen, Kennzahlen, ZeitPills, useOrtInAdresse, weekAgo, zeitText } from "./Kennzahlen";
 import { usePhone } from "../../lib/usePhone";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
@@ -196,16 +196,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
       {loading && !res && <Laden karte text="Auswertung wird berechnet …" />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
-          {res.total === 0 ? <div role="status" className="mt-6 max-w-[760px] border-l-2 border-slate-300 py-1 pl-4">
-            {/* Wie Leer (Befund.tsx), aber mit Knöpfen statt Tipp */}
-            <p className="m-0 text-[18px] font-semibold leading-snug text-slate-900">Keine Vorgänge für diese Auswahl.</p>
-            <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[14px] font-medium text-teal-700">
-              {sub && <button type="button" onClick={() => onSub("")}>Unterthema entfernen →</button>}
-              {!sub && theme && <button type="button" onClick={() => onTheme("")}>Alle Themen zeigen →</button>}
-              {new URLSearchParams(ranKey.split("?")[1] ?? "").get("area") && <button type="button" onClick={() => search.clearArea()}>Ganz Deutschland zeigen →</button>}
-              {res.selection.q && <button type="button" onClick={() => search.applySearch("")}>Suchbegriff entfernen →</button>}
-            </div>
-          </div> : (
+          {res.total === 0 ? <Leer extra={sub ? [["Unterthema entfernen", () => onSub("")]] : []}>Keine Vorgänge für diese Auswahl.</Leer> : (
             <>
               {/* Mit Ort: der Ort als Chip mit ✕ am Satzanfang (dort sieht man ihn und kann ihn entfernen; Handy: nur der Name, der Chip steht an der Suchleiste); sonst große Kennzahlen */}
               {place && cmp ? <Befund tight><span className="max-sm:hidden"><PlaceChip name={place} onClear={() => search.clearArea()} /></span><span className="sm:hidden">{place}</span>{placeRest}</Befund>

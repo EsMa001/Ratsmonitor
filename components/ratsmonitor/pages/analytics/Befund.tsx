@@ -31,18 +31,33 @@ export function Befund({ children, tight = false, noPhone = false }: { children:
 /** Suchbegriff in Anführungszeichen, ohne Begriff „im ganzen Bestand“ */
 export const zuThema = (q: string) => (q.trim() ? `bei „${prettyTerm(q.trim())}“` : "im ganzen Bestand");
 
-/** Keine Ergebnisse für die ganze Auswertung: ein Satz, was fehlt, und darunter, was man tun kann (überall gleich) */
-export function Leer({ children, tipp = "Suchbegriff kürzen, „Alle Themen“ wählen oder den Ort entfernen." }: { children: ReactNode; tipp?: ReactNode }) {
+/** Keine Ergebnisse für die ganze Auswertung (überall gleich): ein Satz, was fehlt, ein Tipp der Seite und darunter Knöpfe, die genau
+    die gesetzten Filter lösen (Ort, Umkreis, Begriff, Thema, Zeitraum, Stand); ohne gesetzte Filter Beispiele mit Treffern.
+    ohne: Filterarten, die die Seite nicht nutzt (Werte: Begriff und Thema); extra: eigene Knöpfe zuerst (Atlas: Unterthema) */
+export function Leer({ children, tipp, ohne = [], extra = [], beispiele = true }: { children: ReactNode; tipp?: ReactNode; ohne?: ("q" | "thema")[]; extra?: [string, () => void][]; beispiele?: boolean }) {
+  const search = useSearch();
+  const { state } = search;
+  const aktionen: [string, () => void][] = [
+    ...extra,
+    ...(state.area ? [["Ganz Deutschland zeigen", () => search.clearArea()] as [string, () => void]] : []),
+    ...(state.radius ? [["Umkreis entfernen", () => search.clearRadius()] as [string, () => void]] : []),
+    ...(state.q.trim() && !ohne.includes("q") ? [["Suchbegriff entfernen", () => search.applySearch("")] as [string, () => void]] : []),
+    ...(state.thema && !ohne.includes("thema") ? [["Alle Themen zeigen", () => search.setThema("")] as [string, () => void]] : []),
+    ...(state.von || state.bis || state.monat ? [["Zeitraum entfernen", () => search.setZeitraum("", "")] as [string, () => void]] : []),
+    ...(state.status ? [["Alle Stände zeigen", () => search.setStatus("")] as [string, () => void]] : []),
+  ];
   return (
     <div role="status" className="mt-6 max-w-[760px] border-l-2 border-slate-300 py-1 pl-4">
       <p className="m-0 text-[18px] font-semibold leading-snug text-slate-900">{children}</p>
       {tipp && <p className="m-0 mt-1 text-[14px] text-slate-500">{tipp}</p>}
-      <LeerBeispiele />
+      {aktionen.length > 0 ? <p className="m-0 mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[14px] font-medium text-teal-700 print:hidden">
+        {aktionen.map(([text, run]) => <button key={text} type="button" onClick={run} className="hover:underline">{text} →</button>)}
+      </p> : beispiele && <LeerBeispiele />}
     </div>
   );
 }
 
-/** Weiter statt Sackgasse: Auswahl zurücksetzen oder ein Beispiel mit Treffern anklicken (alle gegen die Daten geprüft) */
+/** Weiter statt Sackgasse ohne gesetzte Filter: ein Beispiel mit Treffern anklicken (alle gegen die Daten geprüft) */
 const BEISPIELE = ["Solarpark", "Wärmeplanung", "Hebesatz"];
 function LeerBeispiele() {
   const search = useSearch();
@@ -50,7 +65,6 @@ function LeerBeispiele() {
     <p className="m-0 mt-3 flex flex-wrap items-center gap-2 text-[14px] text-slate-500 print:hidden">
       <span>Zum Beispiel:</span>
       {BEISPIELE.map((b) => <button key={b} type="button" onClick={() => { search.resetAll(); search.applySearch(b); }} className="inline-flex h-8 items-center rounded-full border border-slate-200 bg-white px-3 text-slate-700 hover:border-slate-400">{b}</button>)}
-      <button type="button" onClick={() => search.resetAll()} className="inline-flex h-8 items-center px-1 font-medium text-teal-700 hover:underline">Auswahl zurücksetzen</button>
     </p>
   );
 }
