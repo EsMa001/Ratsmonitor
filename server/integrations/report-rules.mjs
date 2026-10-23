@@ -20,11 +20,11 @@ import {buildRuleSummary,RULE_SUMMARY_VERSION} from './rule-summary.mjs';
 import {mergePages} from './documents.mjs';
 import {MODEL_THEME_VERSION} from '../../shared/model/features.mjs';
 import {factFits,stepFacts,MODEL_COVERED} from '../../shared/model/fact-gate.mjs';
-import {overviewOf} from '../../shared/model/overview.mjs';
+import {overviewOf,OVERVIEW_VERSION} from '../../shared/model/overview.mjs';
 import {candidates} from '../model/sentences.mjs';
-import {modelSummary} from '../../shared/model/summary.mjs';
+import {modelSummary,SUMMARY_PICK_VERSION} from '../../shared/model/summary.mjs';
 
-export const READ_VERSION=`read-v4:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:${STAGE_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}`;
+export const READ_VERSION=`read-v4:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:${STAGE_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}:${OVERVIEW_VERSION}:${SUMMARY_PICK_VERSION}`;
 // Wie readDocument im Import: sehr lange Dokumente werden nicht zusammengefasst, der Text ist für die Zusammenfassung gekürzt
 const MAX_PAGES=150,MAX_SUMMARY_CHARS=65000,MIN_CHARS=100;
 // Fakten, die auch Punkte ohne Sachthema tragen (Fraktion im Titel eines Antrags)
