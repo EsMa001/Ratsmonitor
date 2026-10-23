@@ -1445,18 +1445,13 @@
     "name": "Samtgemeinde Lindhorst",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.sg-lindhorst.de/",
-    "pages": [
-      "https://www.sg-lindhorst.de/bekanntmachungen/index.php",
-      "https://www.sg-lindhorst.de/seite/324784/bekanntmachung.html"
-    ],
-    "alsoFrom": [
-      "https://daten.verwaltungsportal.de"
-    ],
-    "verifiedSource": "https://www.sg-lindhorst.de/",
-    "verifiedAt": "2026-10-06",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "adapter": "councilservice",
+    "base": "https://sg-lindhorst.mein-intra.net/",
+    "token": "f0416d7e-30aef61f-88a06746-497b23ea",
+    "page": "https://www.sg-lindhorst.de/seite/677852/ris.html",
+    "verifiedSource": "https://www.sg-lindhorst.de/seite/677852/ris.html",
+    "apiCheck": "Sitzungsdienst mein-intra (councilservice), eingebettet in sg-lindhorst.de; Probeabruf 23.10.2026 (1 Monat): 1 Sitzung, 18 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "nds-032575403",

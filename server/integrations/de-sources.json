@@ -1640,7 +1640,12 @@
     "pages": [
       "https://www.amt-kisdorf.de/aktuelles/oeffentliche-bekanntmachungen/news/seite/2",
       "https://www.amt-kisdorf.de/aktuelles/oeffentliche-bekanntmachungen/archiv-der-bekanntmachungen",
-      "https://www.amt-kisdorf.de/aktuelles/oeffentliche-bekanntmachungen"
+      "https://www.amt-kisdorf.de/aktuelles/oeffentliche-bekanntmachungen",
+      "https://www.amt-kisdorf.de/amt-verwaltung/politische-gremien/amtsausschuss",
+      "https://www.amt-kisdorf.de/amt-verwaltung/politische-gremien/hauptausschuss",
+      "https://www.amt-kisdorf.de/amt-verwaltung/politische-gremien/jugend-sportausschuss",
+      "https://www.amt-kisdorf.de/amt-verwaltung/politische-gremien/kindergartenausschuss",
+      "https://www.amt-kisdorf.de/amt-verwaltung/politische-gremien/werkausschuss"
     ],
     "sitemap": "https://www.amt-kisdorf.de/startseite/sitemap.xml?sitemap=news&cHash=0443a084701fce90690b29c65d3c7adb",
     "verifiedSource": "https://www.amt-kisdorf.de/",
@@ -29951,21 +29956,12 @@
     "name": "Verwaltungsgemeinschaft Seeg",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.seeg.de/",
-    "pages": [
-      "https://rathaus.seeg.de/neuigkeiten",
-      "https://rathaus.seeg.de/index.php/neuigkeiten"
-    ],
-    "feeds": [
-      "https://rathaus.seeg.de/neuigkeiten/rss.xml"
-    ],
-    "alsoFrom": [
-      "https://rathaus.seeg.de"
-    ],
-    "verifiedSource": "https://www.seeg.de/",
-    "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/vgseeg/",
+    "api": "https://risapi1.komuna.net/",
+    "verifiedSource": "https://www.gemeinde-hopferau.de/ratsundshyinformationsundshysystem.html",
+    "apiCheck": "KIC-RIS (komuna), verlinkt von gemeinde-hopferau.de; Probeabruf 23.10.2026 (1 Monat): 7 Sitzungen, 62 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "de-09778",
@@ -37758,15 +37754,12 @@
     "name": "Erfüllende Gemeinde Bad Salzungen",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.badsalzungen.de/",
-    "pages": [
-      "https://www.badsalzungen.de/bekanntmachungen",
-      "https://www.badsalzungen.de/news/3558/1260989/kategorie/einladung-zur-%C3%B6ffentlichen-sitzung-des-stadtrates-am-15.-juli-2026.html"
-    ],
-    "verifiedSource": "https://www.badsalzungen.de/",
-    "verifiedAt": "2026-10-06",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "adapter": "sessionnet",
+    "base": "https://bi.badsalzungen.de/",
+    "extension": "asp",
+    "verifiedSource": "https://bi.badsalzungen.de/info.asp",
+    "apiCheck": "SessionNet; Probeabruf 23.10.2026 (1 Monat): 5 Sitzungen, 27 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "de-160635057",
