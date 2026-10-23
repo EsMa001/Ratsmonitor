@@ -57,10 +57,10 @@ export function FaktenPage() {
   const params = useSearchParams(), router = useRouter(), path = usePathname();
   const { query, search } = useAnalyticsQuery();
   const { geo } = useData();
-  /* Werte für ganz Deutschland rechnen (Karte, Skala); mit gewähltem Ort zeigen Kennzahlen und Liste nur dessen Zahlen. Suchbegriffe gibt es hier nicht, nur Orte */
+  /* Werte für ganz Deutschland rechnen (Karte, Skala); mit gewähltem Ort zeigen Kennzahlen und Liste nur dessen Zahlen. Suchbegriffe und Themen gibt es hier nicht (ein Thema aus Trends oder Atlas bliebe sonst unsichtbar stehen), nur Orte */
   /* Träger (nur Jahresergebnis): leer = alle Träger */
   const traeger = params.get("fakt") === "annual_result" && OWNERS.some((o) => o[0] === params.get("traeger")) ? params.get("traeger")! : "";
-  const url = `/api/x?view=fakten&${(() => { const p = new URLSearchParams(query); for (const k of ["q", "area", "scope", "more", "within", "without"]) p.delete(k); if (traeger) p.set("owner", traeger); return p; })()}`;
+  const url = `/api/x?view=fakten&${(() => { const p = new URLSearchParams(query); for (const k of ["q", "label", "sub", "area", "scope", "more", "within", "without"]) p.delete(k); if (traeger) p.set("owner", traeger); return p; })()}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
   /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
   const pending = loading && !!res && ranKey !== url;
@@ -170,7 +170,7 @@ export function FaktenPage() {
   const [listed, setListed] = useState(""), [listedIn, setListedIn] = useState<"map" | "list">("map");
   const listedArea = listed ? [...byAgs.values()].find((x) => x.key === listed) : undefined;
   const show = (key: string, where: "map" | "list") => { setListedIn(where); setListed(listed === key && listedIn === where ? "" : key); };
-  const listQuery = (() => { const p = new URLSearchParams(query); p.delete("q"); p.set("region", listed); return p.toString(); })();
+  const listQuery = (() => { const p = new URLSearchParams(query); for (const k of ["q", "label", "sub"]) p.delete(k); p.set("region", listed); return p.toString(); })();
   const [all, setAll] = useState(false);
   const shown = all ? mine : mine.slice(0, 10);
   /* Überfahren einer Zeile: auf der Karte hervorgehoben */

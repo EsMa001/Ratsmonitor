@@ -26,7 +26,8 @@ const STATUS_ICON = (
 );
 
 /** Aktive Suche und Filter unter der Suchleiste, als Milchglas-Chips mit Symbol; × entfernt den Filter */
-export function ActiveFilters() {
+/** hide: Filterarten, die die Seite nicht nutzt (z. B. Thema auf plenara.X Werte und Projekte), ohne Chip */
+export function ActiveFilters({ hide = [] }: { hide?: string[] } = {}) {
   const { geo } = useData();
   const search = useSearch();
   const { state } = search;
@@ -36,7 +37,7 @@ export function ActiveFilters() {
   const placeAgs = [state.area, ...(res.snapshot.more ?? []).map((m) => m.ags)].filter(Boolean);
   const regions = regionsIn(placeAgs);
   const inRegion = new Set(regions.flatMap((r) => r.ags));
-  const chips = all.filter((c) => !((c.key === "area" && inRegion.has(state.area)) || (c.key === "more" && c.term && inRegion.has(c.term))));
+  const chips = all.filter((c) => !hide.includes(c.key) && !((c.key === "area" && inRegion.has(state.area)) || (c.key === "more" && c.term && inRegion.has(c.term))));
   /* Vom Standard abweichende Schalter als Chips wie die übrigen Filter; × stellt den Standard wieder her (Formalien: ausgeblendet) */
   const toggles: { key: string; label: string; off: () => void }[] = [
     ...(state.future ? [{ key: "future", label: "mit künftigen Sitzungen", off: () => search.setFuture(false) }] : []),

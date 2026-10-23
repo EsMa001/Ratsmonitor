@@ -187,6 +187,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const ofThema = <T extends { key: string }>(list: T[]) => (thema ? list.filter((b) => b.key.startsWith(thema + ".")) : list);
   /* Zeitraum der Seite ersetzt den der Suche nur, wenn die Suche selbst keinen hat */
   const q = new URLSearchParams(query);
+  /* Projekte haben keine Themenwahl (die Kategorie ist das Thema): ein Thema aus Trends oder Atlas filterte sonst unsichtbar */
+  if (!fest) { q.delete("label"); q.delete("sub"); }
   if (fromOf(zeit) && !q.get("from")) q.set("from", fromOf(zeit));
   const url = `/api/x/signale?signal=${signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}${fest ? "&subs=1" : ""}${gruppe ? `&group=${gruppe}` : ""}&${q}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
@@ -297,7 +299,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
         </ul>
       <RailToggle /></nav>}
 
-      <div className="mt-4 print:hidden"><DiffusionSearch filterUp follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden"><DiffusionSearch noThema={!fest} filterUp follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {/* Desktop: eine Filterzeile unter der Suche: Zeitraum, Schritt, Art als Auswahllisten, aktive Filter als Chips (Handy: Blätter und Räder) */}
       <div className="rm-xfilter mt-3 flex min-h-9 flex-wrap items-center gap-2 max-sm:hidden print:hidden">
         <span className="rm-zeit-std contents"><ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} /></span>
@@ -352,7 +354,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                     title={(() => {
                       /* Wo man sich befindet: Kategorie, dann Thema, Unterthema, Art und Schritt der Auswahl, dahinter der Ort */
                       const subName = SUBTOPICS.find((x: { id: string }) => x.id === subId)?.short;
-                      const pfad = [res.signal.name, search.state.thema, (!search.state.thema || subTheme === search.state.thema) ? subName : "", art ? artShort(art) : "", phase ? res.phases.find((p) => p.key === phase)?.name ?? "" : ""].filter(Boolean) as string[];
+                      const pfad = [res.signal.name, fest ? search.state.thema : "", fest && (!search.state.thema || subTheme === search.state.thema) ? subName : "", art ? artShort(art) : "", phase ? res.phases.find((p) => p.key === phase)?.name ?? "" : ""].filter(Boolean) as string[];
                       return <span title={pfad.join(" › ")}>{pfad.map((t, i) => <span key={t + i} className={i === pfad.length - 1 ? "" : "font-normal text-slate-500"}>{i > 0 && <span aria-hidden="true" className="mx-1 font-normal text-slate-300">›</span>}{t}</span>)}{areaAgs && res.places.length === 1 ? <span className="font-normal text-slate-500"> in {res.places[0].name}</span> : null}</span>;
                     })()} />
                   {/* Schritt als Filter direkt über der Liste, mit denselben Farben wie in den Zeilen; bei „Alle Projekte“ nicht (die Kategorien haben verschiedene Schritte), bei Ausschreibungen nicht (dort ist er der Status, den das Filterfenster schon hat) */}
