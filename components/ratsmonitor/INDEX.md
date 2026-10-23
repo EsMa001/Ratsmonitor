@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (24 Zeilen, ⚠2)
-- app/styles/analytics.css (1581 Zeilen, ⚠2)
+- app/styles/analytics.css (1585 Zeilen, ⚠2)
 - app/styles/base-layer.css (95 Zeilen, ⚠1)
 - app/styles/base.css (622 Zeilen)
 - app/styles/dark.css (436 Zeilen, ⚠3)
@@ -274,7 +274,7 @@ field-input base-layer.css:57
 field-label base-layer.css:60
 figure design-styles.css:197
 fixed base.css:374
-flex-col analytics.css:1420
+flex-col analytics.css:1424
 font-bold base.css:11
 font-medium base.css:19
 font-semibold base.css:15
@@ -536,13 +536,13 @@ rm-dark tokens.css:170
 rm-deskbar analytics.css:373
 rm-dialog base.css:305
 rm-dialog dark.css:424
-rm-dotfield analytics.css:1368
+rm-dotfield analytics.css:1372
 rm-dotfield base.css:528
 rm-dotfield search.css:308
 rm-dotfield-on base.css:542
 rm-dots search.css:55
 rm-draw base.css:204
-rm-flat analytics.css:1404
+rm-flat analytics.css:1408
 rm-flat dark.css:197
 rm-flat search.css:11
 rm-focusrows base.css:230
@@ -591,17 +591,17 @@ rm-pagein base.css:294
 rm-pmark base.css:568
 rm-pmark header.css:366
 rm-rail-folded analytics.css:549
-rm-rail-mini analytics.css:1515
+rm-rail-mini analytics.css:1519
 rm-rail-open analytics.css:545
 rm-rail-peek analytics.css:545
 rm-rail-sub analytics.css:76
 rm-rail-sub dark.css:366
-rm-rail-toggle analytics.css:1554
+rm-rail-toggle analytics.css:1558
 rm-sbar search.css:148
 rm-schritt-std analytics.css:107
-rm-search analytics.css:1484
+rm-search analytics.css:1488
 rm-search search.css:89
-rm-searchsplit analytics.css:1484
+rm-searchsplit analytics.css:1488
 rm-searchsplit search.css:198
 rm-sec base.css:351
 rm-sec-m base.css:355
@@ -623,6 +623,7 @@ rm-topline dark.css:197
 rm-wheel-list analytics.css:846
 rm-wheel-list dark.css:406
 rm-wheel-list glass.css:144
+rm-wheels-lower analytics.css:1329
 rm-xbtn analytics.css:935
 rm-xcta info.css:1220
 rm-xebene analytics.css:92
@@ -683,7 +684,7 @@ space-y-8 analytics.css:1093
 steps design-styles.css:114
 steps__bar design-styles.css:115
 steps__bar--done design-styles.css:116
-sticky analytics.css:1354
+sticky analytics.css:1358
 sticky dark.css:51
 sticky header.css:316
 switch design-styles.css:217
@@ -701,7 +702,7 @@ text-white dark.css:184
 timeline design-styles.css:204
 top-3 analytics.css:632
 topic design-styles.css:140
-touch-none analytics.css:1329
+touch-none analytics.css:1333
 touch-pan-y analytics.css:113
 touch-pan-y dark.css:330
 truncate base.css:559
@@ -1017,7 +1018,7 @@ z- analytics.css:632
 - AnalyticsAbout.tsx (232, ⚠18): ANALYSE_THUMBS, MethodikText
 - AnalyticsLocked.tsx (54): AnalyticsLocked
 - AnalyticsPages.tsx (64): AnalyticsPages
-- AtlasMap.tsx (107, ⚠2): AtlasMap
+- AtlasMap.tsx (108, ⚠2): AtlasMap
 - AtlasPage.tsx (80): AtlasPage
 - AtlasParts.tsx (187, ⚠2): Row, Result, Fact, n, MIN_BASE, isRest, restLast, Bars, Hint, OrtImVergleich, Level, AtlasExtra, PartList, PlaceChip
 - Befund.tsx (70): Befund, zuThema, Leer, Fehler
@@ -1028,7 +1029,7 @@ z- analytics.css:632
 - CompareParts.tsx (74, ⚠3): Share, Place, Result, ORT, asPlace, n, inhaltlich, datenlage, Hinweis, Duell
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (92, ⚠3): PlayState, DiffusionSearch
-- FaktenPage.tsx (403, ⚠6): FaktenPage
+- FaktenPage.tsx (404, ⚠6): FaktenPage
 - FraktionenPage.tsx (261, ⚠8): FraktionenPage
 - GraphView.tsx (389, ⚠2): GNode, GEdge, KIND, seeded, GraphView
 - GremiennetzPage.tsx (220, ⚠4): GremiennetzPage
@@ -1050,7 +1051,7 @@ z- analytics.css:632
 - RailToggle.tsx (34): RailToggle
 - RegionMap.tsx (184, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (418, ⚠16): SignalePage
+- SignalePage.tsx (446, ⚠17): SignalePage
 - SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap

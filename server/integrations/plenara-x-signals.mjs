@@ -7,6 +7,7 @@
  * Stand: bei Bauleitplänen der Verfahrensschritt (Fakt plan), bei Vergaben Ausschreibung/Vergabe/Nachtrag, bei Wind Planung/Genehmigung/Betrieb, bei Wärme der Schritt der Wärmeplanung, sonst „Was geschieht“.
  * Antwort: {signals:[{id,name,count}], signal, phases:[{key,name,count}], arts:[{key,name,count}], placeCount, places:[{region,name,ags,count,members?}] (alle), total, items, builtAt}
  */
+import {restLast} from '../../shared/rest-last.mjs';
 import {parseX,source,xState} from './plenara-x-query.mjs';
 import {stageName} from '../../shared/stage.mjs';
 import {AnalyticsError,dataStarts} from './analytics-diffusion.mjs';
@@ -134,7 +135,7 @@ async function subCounts(db,catalog,f,sig,fast){
  // Dieselben Vorgänge wie die Liste: über x_signals, solange gebaut, sonst über die Antworten des Modells
  const cases=fast?'SELECT case_key FROM x_signals WHERE signal IN (SELECT value FROM json_each(?))':sig.cases,cargs=fast?[idsOf(sig)]:[];
  const {results}=await db.prepare(`SELECT s.value k,count(DISTINCT x.case_key) n FROM ${from} JOIN json_each('["'||replace(x.subs,',','","')||'"]') s ON s.value<>'' WHERE x.case_key IN (${cases}) GROUP BY k ORDER BY n DESC,k`).bind(...args,...cargs).all();
- return results.map(r=>({key:r.k,name:subtopicName(r.k),count:Number(r.n)}));
+ return restLast(results.map(r=>({key:r.k,name:subtopicName(r.k),count:Number(r.n)})));
 }
 /* Antwort aus den gezählten Werten: Karten nur für die Vorgänge der Seite */
 async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,total,page,firstCount}){
@@ -146,8 +147,8 @@ async function finish(db,catalog,{sig,state,offset,counts,phases,arts,places,tot
  return {
   signals:SIGNALS.map((s,i)=>({id:s.id,name:s.name,who:s.who,count:Number(counts[i]?.n||0)})),
   signal:{id:sig.id,name:sig.name,who:sig.who,phaseText:sig.phaseText,art:sig.artName},
-  phases:phases.map(r=>({key:r.k||' ',name:phaseName(r.k),count:r.n})),
-  arts:arts.map(r=>({key:r.k,name:r.k,count:r.n})),
+  phases:restLast(phases.map(r=>({key:r.k||' ',name:phaseName(r.k),count:r.n}))),
+  arts:restLast(arts.map(r=>({key:r.k,name:r.k,count:r.n}))),
   placeCount:places.length,
   // Alle Gebiete (für die ausklappbare Karte), Verbände mit den Schlüsseln ihrer Mitgliedsgemeinden
   places:places.map(r=>({region:r.k,name:name(r.k),ags:byId.get(r.k)?.ags||'',count:r.n,...(byId.get(r.k)?.members?.length?{members:byId.get(r.k).members.map(m=>m.ags).filter(Boolean)}:{})})),

@@ -32,7 +32,8 @@ const artFrom=(parents,{subs=true}={})=>{
  return `${a} UNION ALL ${b}`;
 };
 /** Stand: Schritt, sonst Vorgangsart, des jüngsten eingeordneten Berichts des Vorgangs */
-const STEP_OR_PROCESS=`(SELECT coalesce(${caseMap('ml.step',Object.entries(STEP_NAMES))},${caseMap('ml.process',Object.entries(PROCESS_NAMES))}) FROM ${ML} WHERE rr.case_key=x.case_key AND ml.project=1 ORDER BY ml.at DESC LIMIT 1)`;
+/* Stand eines Projekts: Schritt, sonst Vorgangsart. Schritt „sonst“ und Vorgangsart „other“ heißen beide „Sonstiges“ (ein Eintrag) */
+const STEP_OR_PROCESS=`(SELECT coalesce(${caseMap('ml.step',Object.entries({...STEP_NAMES,sonst:PROCESS_NAMES.other}))},${caseMap('ml.process',Object.entries(PROCESS_NAMES))}) FROM ${ML} WHERE rr.case_key=x.case_key AND ml.project=1 ORDER BY ml.at DESC LIMIT 1)`;
 const PHASE_TEXT='Schritt des Verfahrens, sonst die Vorgangsart, aus dem Modell.';
 const USES=['gewerbe','industrie','logistik','rechenzentrum','handel','freizeit'];
 

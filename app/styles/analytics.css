@@ -1325,6 +1325,10 @@ html.rm-dark .rm-banddots {
   .rm-stage {
     touch-action: pan-y;
   }
+  /* Zwei Walzen übereinander auf der Karte (Ausschreibungen: Thema, darunter Bereich und Leistung): Legende unter die zweite */
+  section:has(.rm-wheels-lower) .rm-xlegend.rm-xlegend {
+    top: 124px;
+  }
   /* Themen- und Gremiennetz: senkrecht wischen scrollt die Seite (wie bei der Karte); Tippen, seitlich Ziehen und zwei Finger bleiben beim Netz */
   .rm-netstage.touch-none {
     touch-action: pan-y;

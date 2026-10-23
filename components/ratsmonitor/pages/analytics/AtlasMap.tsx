@@ -1,3 +1,4 @@
+import { restLast } from "@/shared/rest-last.mjs";
 import { useMemo, useState } from "react";
 import { ZeitPills, countScale } from "./Kennzahlen";
 import { RegionMap } from "./RegionMap";
@@ -23,7 +24,7 @@ export function AtlasMap({ regions, facts, onList, listed, drill, onPlace, onLev
   const [more, setMore] = useState(false);
   const [metric, setMetric] = useState("");
   const fact = facts.find((f) => f.kind === kind);
-  const metrics = fact ? [...new Set(fact.map.flatMap((m) => Object.keys(m.v)))].sort((a, b) => fact.map.filter((m) => m.v[b]).length - fact.map.filter((m) => m.v[a]).length) : [];
+  const metrics = fact ? restLast([...new Set(fact.map.flatMap((m) => Object.keys(m.v)))].sort((a, b) => fact.map.filter((m) => m.v[b]).length - fact.map.filter((m) => m.v[a]).length), (x) => x) : [];
   const metricOn = metrics.includes(metric) ? metric : "";
   const { levels, byAgs, legend, unit, colors } = useMemo(() => {
     const fact = facts.find((f) => f.kind === kind);

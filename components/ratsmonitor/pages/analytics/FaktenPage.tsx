@@ -1,3 +1,4 @@
+import { restLast } from "@/shared/rest-last.mjs";
 import { RailToggle } from "./RailToggle";
 import { useDwell } from "../../lib/useDwell";
 import Link from "next/link";
@@ -49,7 +50,7 @@ const CHANGE_CUT = [0, 5, 15];
 const OWNERS: [string, string, string][] = [["kommune", "Kommune", "Abschluss der Stadt, Gemeinde oder des Kreises selbst"], ["betrieb", "Betriebe", "Eigenbetriebe, Stadtwerke, kommunale Gesellschaften und Zweckverbände"], ["sparkasse", "Sparkasse", "Sparkassen, deren Träger die Kommune ist"]];
 const ownerName = (k: string) => OWNERS.find((o) => o[0] === k)?.[1] ?? k;
 const ownersText = (o: Record<string, Owner>) => OWNERS.filter(([k]) => o[k]).map(([k, l]) => `${l}: ${o[k].value} ${num(o[k].v)} ${o[k].unit}`).join(" · ");
-const metricsOf = (f?: Fact) => f ? [...new Set(f.map.flatMap((m) => Object.keys(m.v)))].sort((a, b) => f.map.filter((m) => m.v[b]).length - f.map.filter((m) => m.v[a]).length) : [];
+const metricsOf = (f?: Fact) => f ? restLast([...new Set(f.map.flatMap((m) => Object.keys(m.v)))].sort((a, b) => f.map.filter((m) => m.v[b]).length - f.map.filter((m) => m.v[a]).length), (x) => x) : [];
 
 export function FaktenPage() {
   const params = useSearchParams(), router = useRouter(), path = usePathname();

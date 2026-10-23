@@ -55,6 +55,7 @@ export const X_SUM_GATE={housing:false};
 const ATLAS_FACTS={bauen:[['plan','housing'],['plan_area'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['waste_fee'],['ee_power'],['wind_count']],mobilitaet:[['project'],['road']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee']]};
 import {MAP_FACTS,MAP_FACT_NAMES,ANNUAL_OWNER_NAMES} from '../../shared/map-facts.mjs';
+import {restLast} from '../../shared/rest-last.mjs';
 import {atRevisionStale,paramsKey} from './revision-cache.mjs';
 import {X_REVISION_SQL} from './x-cases.mjs';
 import {xOffload} from './x-offload.mjs';
@@ -197,7 +198,8 @@ export async function xQuery(db,catalog,params,opts={}){
  const rows=hits.map(h=>{const b=perPart?Number(all?.n||0):h.b||0;
   return {key:h.k??'',name:nameOf(x.by,h.k,byId),...(x.by==='region'?{ags:byId.get(h.k)?.ags||'',...(byId.get(h.k)?.members?.length?{members:byId.get(h.k).members.map(m=>m.ags).filter(Boolean)}:{})}:{}),count:h.n,base:b,share:b?Math.round(1000*h.n/b)/10:null,...(sums?{sum:sums.get(h.k)??0}:{}),...(medians?.has(h.k)?{median:medians.get(h.k)}:{})};})
   .sort((a,b)=>x.by==='month'?String(a.key).localeCompare(String(b.key)):b.count-a.count||String(a.key).localeCompare(String(b.key)));
- return {selection:{theme:x.theme,sub:x.sub,stage:x.stage,q:x.f.q},by:x.by,...(x.sum?{sum:{kind:x.sum,name:X_SUMS[x.sum]}}:{}),total:Number(total?.n||0),unread:Number(total?.u||0),builtAt:state.builtAt,rows};
+ const ordered=x.by==='month'?rows:restLast(rows);
+ return {selection:{theme:x.theme,sub:x.sub,stage:x.stage,q:x.f.q},by:x.by,...(x.sum?{sum:{kind:x.sum,name:X_SUMS[x.sum]}}:{}),total:Number(total?.n||0),unread:Number(total?.u||0),builtAt:state.builtAt,rows:ordered};
 }
 
 /** Die Vorgänge hinter einer Zahl: je Vorgang einmal mit seiner jüngsten Sitzung, die jüngsten zuerst */

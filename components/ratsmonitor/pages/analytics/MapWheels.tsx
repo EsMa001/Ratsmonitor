@@ -47,7 +47,7 @@ function RowWheel({ label, items, value, onPick, onOpen }: { label: string; item
  * blättert durch die Themen, ein Tipp öffnet die ganze Liste (links Themen, rechts Unterthemen); rechts daneben steht von Anfang an „Alle Unterthemen“ (blass, solange kein Thema gewählt ist) und wird mit einem Thema zur
  * Walze seiner Unterthemen („Alle Unterthemen“ hebt die Eingrenzung auf).
  */
-export function MapWheels({ label, items, value, onPick, subs, subValue = "", onSub, single = false, inline = false, subAll = "Alle Unterthemen", subLabel = "Unterthema" }: { label: string; items: RailItem[]; value: string; onPick: (id: string) => void; subs?: RailItem[]; subValue?: string; onSub?: (id: string) => void; /** nur eine Walze (Seiten ohne Unterauswahl) */ single?: boolean; /** im Fluss der Seite statt auf der Karte */ inline?: boolean; /** Text des ersten Eintrags der zweiten Walze und ihr Name */ subAll?: string; subLabel?: string }) {
+export function MapWheels({ label, items, value, onPick, subs, subValue = "", onSub, single = false, inline = false, lower = false, subAll = "Alle Unterthemen", subLabel = "Unterthema" }: { label: string; /** zweite Reihe auf der Karte (unter einer weiteren Walze) */ lower?: boolean; items: RailItem[]; value: string; onPick: (id: string) => void; subs?: RailItem[]; subValue?: string; onSub?: (id: string) => void; /** nur eine Walze (Seiten ohne Unterauswahl) */ single?: boolean; /** im Fluss der Seite statt auf der Karte */ inline?: boolean; /** Text des ersten Eintrags der zweiten Walze und ihr Name */ subAll?: string; subLabel?: string }) {
   const hasSub = !!subs && subs.length > 0;
   /* Welche Liste gerade offen ist: die der Themen (links) oder die der Unterthemen (rechts) */
   const [list, setList] = useState<"theme" | "sub" | null>(null);
@@ -55,7 +55,7 @@ export function MapWheels({ label, items, value, onPick, subs, subValue = "", on
   const shown = list === "sub" ? subItems : items;
   const cur = list === "sub" ? subValue : value;
   return (
-    <div className={`pointer-events-none sm:hidden print:hidden ${inline ? "relative z-30 mb-3" : "absolute left-[calc(8px-max(1vw,16px))] right-[calc(8px-max(1vw,16px))] top-2 z-30"}`}>
+    <div className={`pointer-events-none sm:hidden print:hidden ${inline ? "relative z-30 mb-3" : `absolute left-[calc(8px-max(1vw,16px))] right-[calc(8px-max(1vw,16px))] ${lower ? "rm-wheels-lower top-[64px] z-[29]" : "top-2 z-30"}`}`}>
       {list && <div aria-hidden="true" className="pointer-events-auto fixed inset-0 z-[-1]" onClick={() => setList(null)} />}
       {/* Sehr schmal (unter 360 px, auch bei 200 % Schrift): zwei Walzen untereinander, sonst bliebe für den Text kaum Platz */}
       <div className="rm-legend pointer-events-auto flex items-center overflow-hidden rounded-full max-[359px]:flex-col max-[359px]:items-stretch max-[359px]:rounded-[24px]">
