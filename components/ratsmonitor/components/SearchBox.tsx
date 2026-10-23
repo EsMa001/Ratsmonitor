@@ -32,7 +32,7 @@ export function focusSearch() {
 }
 
 
-export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false, keepFocus = false }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean; /** Enter übernimmt Orte, der Cursor bleibt im Feld (z. B. für den zweiten Ort im Ortsvergleich) */ keepFocus?: boolean } = {}) {
+export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false, keepFocus = false, placesOnly = false }: { /** Nur Orte und Regionen (plenara.X Werte): keine Suchbegriffe, kein Verlauf */ placesOnly?: boolean; glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean; /** Enter übernimmt Orte, der Cursor bleibt im Feld (z. B. für den zweiten Ort im Ortsvergleich) */ keepFocus?: boolean } = {}) {
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;
@@ -103,7 +103,9 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
 
   /* Feld verlassen aus den Zeilen der Liste (über die ID statt über den Ref: die Zeilen entstehen beim Rendern) */
   const blurField = () => document.getElementById(ids.q)?.blur();
-  const rows = buildRows({ open, focused, state, recent, saved, search, view, stay, goOverview, setOpen, setRecent, apply, blurField, place, geo, pq, placeActive, liveHits, draft });
+  const rows0 = buildRows({ open, focused, state, recent, saved, search, view, stay, goOverview, setOpen, setRecent, apply, blurField, place, geo, pq, placeActive, liveHits, draft });
+  /* Nur Orte: ohne „Nach … suchen“, Verlauf und gespeicherte Suchen (deren Überschriften fallen mit weg) */
+  const rows = !placesOnly ? rows0 : rows0.filter((r, i) => r.kind === "head" ? rows0[i + 1] && !["query", "recent"].includes(rows0[i + 1].kind) : !["query", "recent"].includes(r.kind));
 
   const picks = rows.filter((r): r is Exclude<Row, { kind: "head" }> => r.kind !== "head");
   const showList = open && rows.length > 0;
@@ -150,6 +152,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
       if (showList && n && active >= 0 && picks[active]) picks[active].pick();
       else {
         search.commitPlaces();
+        /* Nur Orte: übrig gebliebener Text ist kein Suchbegriff */
+        if (placesOnly) search.applySearch("");
         setOpen(false);
         if (!keepFocus) inputRef.current?.blur();
       }
@@ -201,7 +205,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
         autoCapitalize="none"
         enterKeyHint="search"
         spellCheck={false}
-        placeholder={tiny ? "Thema, Ort" : narrow ? "Thema oder Ort" : "Thema, Ort oder Region suchen"}
+        placeholder={placesOnly ? (narrow ? "Ort suchen" : "Ort oder Region suchen") : tiny ? "Thema, Ort" : narrow ? "Thema oder Ort" : "Thema, Ort oder Region suchen"}
         role="combobox"
         aria-expanded={showList}
         aria-controls={ids.list}

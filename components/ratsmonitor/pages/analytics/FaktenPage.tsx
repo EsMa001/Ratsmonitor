@@ -13,6 +13,7 @@ import { Laden } from "./Laden";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { useSearch } from "../../state/search";
+import { useData } from "../../state/data";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RegionMap } from "./RegionMap";
 import { MapWheels } from "./MapWheels";
@@ -55,10 +56,11 @@ const metricsOf = (f?: Fact) => f ? restLast([...new Set(f.map.flatMap((m) => Ob
 export function FaktenPage() {
   const params = useSearchParams(), router = useRouter(), path = usePathname();
   const { query, search } = useAnalyticsQuery();
-  /* Werte für ganz Deutschland: ein gewählter Ort wird auf der Karte markiert und auf der Skala eingeordnet, nicht herausgefiltert */
+  const { geo } = useData();
+  /* Werte für ganz Deutschland rechnen (Karte, Skala); mit gewähltem Ort zeigen Kennzahlen und Liste nur dessen Zahlen. Suchbegriffe gibt es hier nicht, nur Orte */
   /* Träger (nur Jahresergebnis): leer = alle Träger */
   const traeger = params.get("fakt") === "annual_result" && OWNERS.some((o) => o[0] === params.get("traeger")) ? params.get("traeger")! : "";
-  const url = `/api/x?view=fakten&${(() => { const p = new URLSearchParams(query); for (const k of ["area", "scope", "more", "within", "without"]) p.delete(k); if (traeger) p.set("owner", traeger); return p; })()}`;
+  const url = `/api/x?view=fakten&${(() => { const p = new URLSearchParams(query); for (const k of ["q", "area", "scope", "more", "within", "without"]) p.delete(k); if (traeger) p.set("owner", traeger); return p; })()}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
   /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
   const pending = loading && !!res && ranKey !== url;
@@ -139,6 +141,12 @@ export function FaktenPage() {
     const ranked = [...seen.values()].sort((a, b) => (low && !change && !overview ? a.v - b.v : b.v - a.v));
     return { levels, byAgs: area, legend, unit, ranked };
   })();
+  /* Gewählter Ort der Suche (Land, Kreis, Gemeinde oder Verband): Kennzahlen und Liste nur mit seinen Gebieten */
+  const areaAgs = new URLSearchParams(query).get("area") ?? "";
+  const placeName = areaAgs ? geo?.info(areaAgs).name ?? "" : "";
+  const placeKeys = new Set((res?.regions ?? []).filter((r) => r.ags === areaAgs).map((r) => r.key));
+  const inPlace = (x: Area) => (areaAgs.length <= 8 && x.ags.startsWith(areaAgs)) || placeKeys.has(x.key);
+  const mine = areaAgs ? ranked.filter(inPlace) : ranked;
   /* Abdeckung: Gebiete mit Wert von allen Gebieten mit Sachvorgängen in der Auswahl */
   const regionCount = res?.regions.length ?? 0;
 
@@ -162,11 +170,10 @@ export function FaktenPage() {
   const [listed, setListed] = useState(""), [listedIn, setListedIn] = useState<"map" | "list">("map");
   const listedArea = listed ? [...byAgs.values()].find((x) => x.key === listed) : undefined;
   const show = (key: string, where: "map" | "list") => { setListedIn(where); setListed(listed === key && listedIn === where ? "" : key); };
-  const listQuery = (() => { const p = new URLSearchParams(query); p.set("region", listed); return p.toString(); })();
+  const listQuery = (() => { const p = new URLSearchParams(query); p.delete("q"); p.set("region", listed); return p.toString(); })();
   const [all, setAll] = useState(false);
-  const shown = all ? ranked : ranked.slice(0, 10);
-  /* Gewählter Ort der Suche (Gemeinde, 8 Stellen) und Überfahren einer Zeile: auf der Karte hervorgehoben */
-  const areaAgs = new URLSearchParams(query).get("area") ?? "";
+  const shown = all ? mine : mine.slice(0, 10);
+  /* Überfahren einer Zeile: auf der Karte hervorgehoben */
   useOrtInAdresse(areaAgs, (a) => search.setArea(a, "ui"));
   const [hover, setHover] = useState("");
   /* Liste → Karte erst nach kurzem Verweilen */
@@ -174,10 +181,11 @@ export function FaktenPage() {
   const focus = sel ?? (areaAgs ? byAgs.get(areaAgs) : undefined);
   /* Antwort: Median, Spanne, Richtung seit dem vorigen Wert */
   const plain = !!fact && !overview && !amount && !change;
-  const lasts = ranked.map((x) => x.last);
-  const withPrev = ranked.filter((x) => x.prev !== undefined && x.prev !== x.last);
+  /* Skala: alle Gebiete; Befund und Kennzahlen: nur die des Orts */
+  const lasts = ranked.map((x) => x.last), myLasts = mine.map((x) => x.last);
+  const withPrev = mine.filter((x) => x.prev !== undefined && x.prev !== x.last);
   const up = withPrev.filter((x) => x.last > x.prev!).length;
-  const titleName = `${factName}${metric && metrics.length > 1 ? ` · ${metric}` : ""}`;
+  const titleName = `${factName}${metric && metrics.length > 1 ? ` · ${metric}` : ""}${placeName ? ` in ${placeName}` : ""}`;
 
   return (
     <main id="inhalt" className="rm-xwide rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
@@ -226,7 +234,7 @@ export function FaktenPage() {
         </ul>
       </nav>}
 
-      <div className="mt-4 print:hidden"><DiffusionSearch filterUp follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden"><DiffusionSearch placesOnly filterUp follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden text="Fakten werden geladen …" />}
@@ -234,14 +242,15 @@ export function FaktenPage() {
       {res && (fact || allFacts) && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {/* Antwort zuerst */}
-          {plain && ranked.length > 0 && <Befund>
-            {titleName}: üblich {num(quart(lasts, 0.25))} bis {num(quart(lasts, 0.75))} {unit}, Median {num(mid(lasts))} {unit}
+          {plain && mine.length > 1 && <Befund>
+            {titleName}: üblich {num(quart(myLasts, 0.25))} bis {num(quart(myLasts, 0.75))} {unit}, Median {num(mid(myLasts))} {unit}
             .
           </Befund>}
-          <Kennzahlen scope={titleName} items={overview ? [{ value: n(ranked.length), label: "Gebiete mit Werten" }]
-            : amount ? [{ value: num(ranked.reduce((a, x) => a + (x.sum ?? x.v), 0)), label: `${unit || "insgesamt"}` }, { value: n(ranked.length), label: "Gebiete" }]
-            : change ? [{ value: n(ranked.filter((x) => x.v > 0).length), label: "Gebiete gestiegen" }, { value: n(ranked.filter((x) => x.v < 0).length), label: "gesunken" }]
-            : [{ value: ranked.length ? `${num(mid(lasts))}` : "–", label: `Median${unit ? ` (${unit})` : ""}` }, { value: n(ranked.length), label: ranked.length === 1 ? "Gebiet mit Wert" : "Gebiete mit Wert" }, { value: n(up), label: "seit dem vorigen Wert höher" }]}>
+          <Kennzahlen scope={titleName} items={overview ? [{ value: n(mine.length), label: "Gebiete mit Werten" }]
+            : amount ? [{ value: num(mine.reduce((a, x) => a + (x.sum ?? x.v), 0)), label: `${unit || "insgesamt"}` }, { value: n(mine.length), label: "Gebiete" }]
+            : change ? [{ value: n(mine.filter((x) => x.v > 0).length), label: "Gebiete gestiegen" }, { value: n(mine.filter((x) => x.v < 0).length), label: "gesunken" }]
+            : mine.length === 1 ? [{ value: num(mine[0].last), label: unit || "Wert" }, { value: mine[0].prev !== undefined ? num(mine[0].prev) : "–", label: `vorher${unit ? ` (${unit})` : ""}` }]
+            : [{ value: mine.length ? `${num(mid(myLasts))}` : "–", label: `Median${unit ? ` (${unit})` : ""}` }, { value: n(mine.length), label: mine.length === 1 ? "Gebiet mit Wert" : "Gebiete mit Wert" }, { value: n(up), label: "seit dem vorigen Wert höher" }]}>
           </Kennzahlen>
           <Zeitregler />
           {LINKS[fact?.kind ?? ""] && <p className="mt-1 text-[14px] text-slate-500">{[...LINKS[fact!.kind], ["/analytics/beschluesse", "Beschlüsse dazu"] as [string, string]].map(([h, text], i) => { const ort = /^\d{5,9}$/.test(areaAgs) ? areaAgs : "", href = h.includes("beschluesse") ? `${h}?q=${encodeURIComponent(fact!.name)}${ort ? `&ort=${ort}` : ""}` : ort ? `${h}${h.includes("?") ? "&" : "?"}ort=${ort}` : h; return <span key={h}>{i > 0 && " · "}<Link href={href} className="font-medium text-teal-700 hover:underline">{text}{ort && h.includes("beschluesse") && focus ? ` in ${focus.name}` : ""} →</Link></span>; })}</p>}
@@ -270,7 +279,7 @@ export function FaktenPage() {
                 {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
               </div>
               </div>
-              {regionCount > 0 && <p className="mt-2 text-[14px] text-slate-500">Abdeckung: {n(ranked.length)} von {n(regionCount)} Gebieten mit Sachvorgängen haben einen Wert ({(Math.round((1000 * ranked.length) / regionCount) / 10).toLocaleString("de-DE")} %).</p>}
+              {regionCount > 0 && !areaAgs && <p className="mt-2 text-[14px] text-slate-500">Abdeckung: {n(ranked.length)} von {n(regionCount)} Gebieten mit Sachvorgängen haben einen Wert ({(Math.round((1000 * ranked.length) / regionCount) / 10).toLocaleString("de-DE")} %).</p>}
             </div>
 
             <div className="min-w-0 min-[640px]:col-span-6">
@@ -280,7 +289,9 @@ export function FaktenPage() {
               {plain && focus && ranked.length >= 8 && <Skala x={focus} values={lasts} kreis={ranked.filter((a) => a.ags && focus.ags && a.ags.slice(0, 5) === focus.ags.slice(0, 5)).map((a) => a.last)} unit={unit} peer={peerText(focus)} good={fact!.dir === "good"} onList={() => show(focus.key, "map")} />}
               {plain && focus && listedArea && listedIn === "map" && <div className="mt-3"><RadarDrill base="/api/x?list=1" query={listQuery} by={`fact:${fact!.kind}`} value={metric} label={`${listedArea.name}: ${factName}`} limit={5} /></div>}
 
-              {ranked.length > 0 && <section className={plain && focus ? "mt-8" : ""}>
+              {areaAgs && !mine.length && <p className="text-[16px] text-slate-500">Für {placeName || "diesen Ort"} liegt {overview ? "kein Wert" : `kein Wert zu ${factName}`} vor.</p>}
+              {/* Eine Gemeinde mit Wert: die Skala oben zeigt ihn schon */}
+              {mine.length > 0 && !(plain && focus && mine.length === 1 && ranked.length >= 8) && <section className={plain && focus ? "mt-8" : ""}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h2 className="text-[22px] font-semibold">{overview ? `Meiste ${allFacts ? "Fakten" : "Werte"} zuerst` : amount ? "Größte zuerst" : "Gebiete"}</h2>
                   {fact && !overview && !amount && <Segmented label="Sortierung" value={change ? "veraenderung" : low ? "niedrig" : "hoch"}
@@ -309,7 +320,7 @@ export function FaktenPage() {
                     {listed === x.key && listedIn === "list" && <div className="px-2 pb-3"><RadarDrill base="/api/x?list=1" query={listQuery} by={fact ? `fact:${fact.kind}` : "region"} value={fact ? metric : x.key} label={`${x.name}: ${factName}`} limit={5} /></div>}
                   </li>)}
                 </ol>
-                {ranked.length > 10 && <button type="button" onClick={() => setAll(!all)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{all ? "Weniger zeigen" : `Alle ${n(ranked.length)} zeigen`}</button>}
+                {mine.length > 10 && <button type="button" onClick={() => setAll(!all)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{all ? "Weniger zeigen" : `Alle ${n(mine.length)} zeigen`}</button>}
               </section>}
               <MethodikNote>Je Gebiet der jüngste genannte Wert (beschlossen oder vorgeschlagen, keine Vergleichswerte), dazu die Veränderung zum vorigen. Nur Werte mit mindestens 90 % Trefferquote in Stichproben.</MethodikNote>
               </div>
