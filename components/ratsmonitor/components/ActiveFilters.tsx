@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { filterChips, splitTerms } from "../lib/savedSearch";
 import { regionsIn, removePhrase } from "../lib/place";
 import { useData } from "../state/data";
+import { useCatalog } from "../lib/catalog";
 import { useSearch, useSearchResults } from "../state/search";
 import { IconCalendar, IconPin, IconSearch, IconX } from "./icons";
 
@@ -37,7 +38,11 @@ export function ActiveFilters({ hide = [] }: { hide?: string[] } = {}) {
   const placeAgs = [state.area, ...(res.snapshot.more ?? []).map((m) => m.ags)].filter(Boolean);
   const regions = regionsIn(placeAgs);
   const inRegion = new Set(regions.flatMap((r) => r.ags));
-  const chips = all.filter((c) => !hide.includes(c.key) && !((c.key === "area" && inRegion.has(state.area)) || (c.key === "more" && c.term && inRegion.has(c.term))));
+  /* Gemeindeverbände (9 Stellen, z. B. aus dem Link eines Artikels) kennt die Karte nicht: Namen aus dem Gebietskatalog */
+  const verband = (ags?: string) => !!ags && /^\d{9}$/.test(ags);
+  const catalog = useCatalog(verband(state.area) || (res.snapshot.more ?? []).some((m) => verband(m.ags)));
+  const named = (v: string) => (verband(v) && catalog?.find((r) => r.ags === v)?.name) || v;
+  const chips = all.map((c) => (c.key === "area" || c.key === "more" ? { ...c, value: named(c.value) } : c)).filter((c) => !hide.includes(c.key) && !((c.key === "area" && inRegion.has(state.area)) || (c.key === "more" && c.term && inRegion.has(c.term))));
   /* Vom Standard abweichende Schalter als Chips wie die übrigen Filter; × stellt den Standard wieder her (Formalien: ausgeblendet) */
   const toggles: { key: string; label: string; off: () => void }[] = [
     ...(state.future ? [{ key: "future", label: "mit künftigen Sitzungen", off: () => search.setFuture(false) }] : []),

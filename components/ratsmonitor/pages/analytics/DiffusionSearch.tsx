@@ -17,7 +17,7 @@ import { ActiveFilters } from "../../components/ActiveFilters";
 export type PlayState = "idle" | "loading" | "playing" | "paused";
 
 /** Suchleiste wie auf der Startseite (gleiche Suche, gleiche Filter), rechts der Start-Knopf der Analyse */
-export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false, noPlay = false, extra, follow, filterUp = false, placesOnly = false, noThema = false }: { /** Suchleiste nur für Orte (plenara.X Werte) */ placesOnly?: boolean; /** Seite ohne Themenfilter der Suche: kein Themen-Chip */ noThema?: boolean; /** Handy: das Filterfenster klappt nach oben auf (Suchleiste unten auf der Karte) */ filterUp?: boolean; /** Handy: Reihe Suchfeld, Filter, Herz (Suche speichern) */ follow?: ReactNode; /** Handy: Zusatzfelder im Filterblatt (Zeitraum, Folgen …) */ extra?: ReactNode; /** ohne Start-Knopf: der Filter steht links an seiner Stelle (plenara.X Signale rechnen von selbst) */ noPlay?: boolean; play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
+export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false, noPlay = false, extra, follow, filterUp = false, placesOnly = false }: { /** Suchleiste nur für Orte (plenara.X Werte) */ placesOnly?: boolean; /** Handy: das Filterfenster klappt nach oben auf (Suchleiste unten auf der Karte) */ filterUp?: boolean; /** Handy: Reihe Suchfeld, Filter, Herz (Suche speichern) */ follow?: ReactNode; /** Handy: Zusatzfelder im Filterblatt (Zeitraum, Folgen …) */ extra?: ReactNode; /** ohne Start-Knopf: der Filter steht links an seiner Stelle (plenara.X Signale rechnen von selbst) */ noPlay?: boolean; play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
   const { geo } = useData();
   const search = useSearch();
   const res = useSearchResults();
@@ -53,7 +53,8 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
     <div className="rm-solid relative z-10">
       {/* Chips ohne Scrollbalken: die Zeile bricht um; flach (weiß, feine Linie) über .rm-solid in glass.css */}
       <div className={`mt-2 flex pl-[52px] ${phone && slot ? "max-sm:mt-0 max-sm:pl-0 max-sm:[&:has(.rm-chip)]:mt-2" : "max-sm:pl-[56px]"} [&>div]:my-0 [&>div]:max-h-none [&>div]:flex-wrap [&>div]:overflow-visible [&>div]:px-0 [&>div]:py-0`}>
-        <ActiveFilters hide={placesOnly ? ["thema", "q"] : noThema ? ["thema"] : []} />
+        {/* Kein Themen-Chip: das Thema zeigt die Themenleiste der Seite, oder die Seite nutzt es nicht (Werte, Projekte) */}
+        <ActiveFilters hide={placesOnly ? ["thema", "q"] : ["thema"]} />
       </div>
     </div>
   );

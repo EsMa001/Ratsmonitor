@@ -143,7 +143,7 @@ export function ComparePage() {
 
       {/* Handy: nach dem Vergleich nur eine Zeile; „Ändern“ öffnet das Formular */}
       {res && !editOpen && !stale && (
-        <button type="button" onClick={() => setEditOpen(true)} aria-label="Orte und Thema ändern" className="mt-3 flex min-h-[48px] w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 text-left text-[14px] text-slate-800 sm:hidden print:hidden">
+        <button type="button" onClick={() => setEditOpen(true)} aria-label="Orte und Begriff ändern" className="mt-3 flex min-h-[48px] w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 text-left text-[14px] text-slate-800 sm:hidden print:hidden">
           <span className="min-w-0 truncate"><b className="font-semibold">{names[0]}</b> <span className="text-slate-500">gegen</span> <b className="font-semibold">{names[1]}</b>{thema.trim() ? <span className="text-slate-500"> · {thema.trim()}</span> : null}</span>
           <span className="flex-none font-medium text-teal-700">Ändern</span>
         </button>

@@ -46,7 +46,7 @@ export function countScale(values: number[]): { level: (v: number) => number; le
   const range = (lo: number, hi: number) => (lo >= hi ? `${n(hi)}` : `${n(lo)} bis ${n(hi)}`);
   return {
     level: (v) => (v <= 0 ? 0 : v <= c[0] ? 1 : v <= c[1] ? 2 : v <= c[2] ? 3 : 4),
-    legend: [range(1, c[0]), range(c[0] + 1, c[1]), range(c[1] + 1, c[2]), `über ${n(c[2])}`].map((l) => `${l} Vorgänge`),
+    legend: [range(1, c[0]), range(c[0] + 1, c[1]), range(c[1] + 1, c[2]), `über ${n(c[2])}`].map((l) => `${l} ${l === "1" ? "Vorgang" : "Vorgänge"}`),
   };
 }
 

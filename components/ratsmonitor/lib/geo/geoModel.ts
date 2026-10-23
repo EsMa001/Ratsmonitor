@@ -183,7 +183,8 @@ export class GeoModel {
       const b = D.krs.b?.[i] ?? 0;
       const e: HierEntry = {
         ags: a,
-        name: (b === 0 ? "Landkreis " : b === 1 ? "Kreis " : "") + D.krs.n[i],
+        /* Ohne doppeltes „Kreis“: Rhein-Kreis Neuss, Hochsauerlandkreis, Kreis Ostholstein tragen es schon im Namen */
+        name: (/kreis/i.test(D.krs.n[i]) ? "" : b === 0 ? "Landkreis " : b === 1 ? "Kreis " : "") + D.krs.n[i],
         short: D.krs.n[i],
         sort: D.krs.n[i],
         bez: b,

@@ -143,7 +143,8 @@ export function FaktenPage() {
   })();
   /* Gewählter Ort der Suche (Land, Kreis, Gemeinde oder Verband): Kennzahlen und Liste nur mit seinen Gebieten */
   const areaAgs = new URLSearchParams(query).get("area") ?? "";
-  const placeName = areaAgs ? geo?.info(areaAgs).name ?? "" : "";
+  /* Verbände (9 Stellen) kennt die Karte nicht: Name aus den Gebieten der Antwort */
+  const placeName = !areaAgs ? "" : /^\d{9}$/.test(areaAgs) ? res?.regions.find((r) => r.ags === areaAgs)?.name ?? "" : geo?.info(areaAgs).name ?? "";
   const placeKeys = new Set((res?.regions ?? []).filter((r) => r.ags === areaAgs).map((r) => r.key));
   const inPlace = (x: Area) => (areaAgs.length <= 8 && x.ags.startsWith(areaAgs)) || placeKeys.has(x.key);
   const mine = areaAgs ? ranked.filter(inPlace) : ranked;
@@ -185,7 +186,7 @@ export function FaktenPage() {
   const lasts = ranked.map((x) => x.last), myLasts = mine.map((x) => x.last);
   const withPrev = mine.filter((x) => x.prev !== undefined && x.prev !== x.last);
   const up = withPrev.filter((x) => x.last > x.prev!).length;
-  const titleName = `${factName}${metric && metrics.length > 1 ? ` · ${metric}` : ""}${placeName ? ` in ${placeName}` : ""}`;
+  const titleName = `${factName}${metric && metrics.length > 1 ? ` · ${metric}` : ""}${placeName ? ` ${/^(Land)?[Kk]reis |-?[Kk]reis\b/.test(placeName) ? "im" : "in"} ${placeName}` : ""}`;
 
   return (
     <main id="inhalt" className="rm-xwide rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
