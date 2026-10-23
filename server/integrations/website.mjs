@@ -35,6 +35,9 @@ export const LIMITS=Object.freeze({listPages:12,followPages:3,feeds:5,ics:3,wpPa
 export const ROBOTS=Symbol('robots');
 export const ROBOTS_BLOCKED='Adresse laut robots.txt ausgeschlossen, nicht abgerufen';
 const DENIED='Nicht freigegebene Quelladresse';
+/** Evidence that is a heading of the public part ("Öffentlicher Teil:", "B) Öffentlicher Sitzungsteil", "Tagesordnung – öffentlich"),
+    not a title over all items ("Öffentliche Sitzung des Gemeinderates am …"). */
+const partHeading=evidence=>/^Überschrift „\s*(?:[A-Z]\)\s*|[IVX]+\.\s*|\d+\.\s*)?(?:Öffentlicher\s+(?:Teil|Sitzungsteil)|Tagesordnung\s*[–-]\s*öffentlich(?:er\s+Teil)?|Öffentlich)\s*:?\s*“$/i.test(String(evidence||''));
 const NOT_READ='Adresse eines Ratsinformationssystems, der Suche oder des nichtöffentlichen Teils, nicht abgerufen';
 // The host without "www.": alsoFrom must be this host, a subdomain of it, or a host it is a subdomain of.
 const siteHost=host=>host.toLowerCase().replace(/^www\./,'');
@@ -513,7 +516,11 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  const heldBack=rest.filter(c=>c.marked);let left=rest.length-heldBack.length+limitedNotices;
  // A page with items whose linked notice was not read gives nothing.
  const readUrls=new Set([...texts.filter(t=>t.fetched).map(t=>t.url),...listRead]);
- for(const t of texts)if(t.requires?.some(u=>!readUrls.has(u))){t.missingNotice=t.requires.find(u=>!readUrls.has(u));}
+ // A scanned PDF (no text layer) does not hold back a page that names its public part itself ("Öffentlicher Teil:", Greiz 2026: one
+ // scanned PDF per item under the invitation): a heading of the public part on the page carries its items (24.10.2026). A title
+ // alone ("Öffentliche Sitzung des Gemeinderates" over all items) does not: which items are closed would stand in the PDF.
+ const ownEvidence=t=>parseSessionText(t.lines,{title:t.title}).meetings.some(m=>m.items.length&&partHeading(m.publicEvidence));
+ for(const t of texts){const missing=(t.requires||[]).filter(u=>!readUrls.has(u)&&!(unreadable.includes(u)&&ownEvidence(t)));if(missing.length)t.missingNotice=missing[0];}
  // A copy gives nothing where a document it stands for was not read, or gave nothing itself for want of its notice.
  for(const t of texts)if(!t.fetched&&t.needs?.length){const miss=t.needs.find(u=>!readUrls.has(u)||texts.some(x=>x.fetched&&x.url===u&&x.missingNotice));if(miss)t.missingNotice=miss;}
  if(left)issues.push(`Dokumentlimit erreicht; ${left} ${left===1?'Dokument':'Dokumente'} noch nicht gelesen, weiterer Import erforderlich.`);
@@ -569,7 +576,9 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    const committee=body(m.committee),foreign=foreignBody(m,committee,source,ownNames,t.title);
    if(foreign){if(foreign==='andere Gemeinde'&&m.items.length)issues.push(`Sitzung eines Gremiums einer anderen Gemeinde (${committee}), nicht übernommen: ${t.url}`);continue;}
    const key=`${m.date}|${slug(committee)}`;keys.add(key);
-   if(m.unclear){issues.push('Tagesordnung nicht eindeutig als öffentlich erkennbar, nicht übernommen: '+t.url);continue;}
+   // Unclear lines before a heading of the public part (Greiz: „zur 26. Beratung …“ read as an item) do not hold back the items
+   // under that heading; they were not taken anyway.
+   if(m.unclear&&!(m.items.length&&partHeading(m.publicEvidence))){issues.push('Tagesordnung nicht eindeutig als öffentlich erkennbar, nicht übernommen: '+t.url);continue;}
    // A meeting on a day a notice moved or cancelled.
    if(movedFrom.some(mv=>mv.from===m.date&&(!mv.committee||sameBodies(body(mv.committee),committee))&&!(mv.to===m.date))){if(m.items.length)issues.push(`Sitzung ${committee} ${ddmmyyyy(m.date)} laut Bekanntmachung verlegt oder abgesagt, nicht übernommen: ${t.url}`);continue;}
    // An item another document of the same meeting puts in the non-public part goes, with all items after it.
