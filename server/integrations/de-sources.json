@@ -40708,5 +40708,20 @@
     "verifiedSource": "https://www.bad-homburg.de/de/stadt/politik/gremien",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein Ratsinformationssystem mit OParl; die Stadt verlinkt je Gremium einen öffentlichen Ordner in der Fabasoft Cloud „… 2026 (öffentlich)“ (Stadtverordnetenversammlung, 8 Ausschüsse, Ausländerbeirat, 7 Ortsbeiräte). Probeabruf 1 Monat: 80 Berichte aus 12 Sitzungen. Der Archivordner der Vorjahre (0bwa7ak5qzckd3jcyup4t0k4s3) ist anders gegliedert und noch nicht angebunden."
+  },
+  {
+    "id": "de-09279",
+    "name": "Landkreis Dingolfing-Landau",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://dingolfing-landau.de/",
+    "pages": [
+      "https://dingolfing-landau.de/landkreis-und-politik/politik/kreistag/sitzungstermine/",
+      "https://dingolfing-landau.de/veranstaltungskalender/"
+    ],
+    "verifiedSource": "https://dingolfing-landau.de/landkreis-und-politik/politik/kreistag/sitzungstermine/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem (ratsinfo.landkreis-dingolfing-landau.de) nur mit Anmeldung; die Website führt jede Sitzung etwa eine Woche vorher im Veranstaltungskalender mit Tagesordnung („Öffentliche Sitzung“). Vergangene Sitzungen verschwinden dort; der tägliche Abruf sammelt sie, solange sie angekündigt sind. Amtsblätter ohne Sitzungen."
   }
 ]
