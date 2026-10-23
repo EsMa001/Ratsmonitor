@@ -189,7 +189,9 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   const q = new URLSearchParams(query);
   /* Projekte haben keine Themenwahl (die Kategorie ist das Thema): ein Thema aus Trends oder Atlas filterte sonst unsichtbar */
   if (!fest) { q.delete("label"); q.delete("sub"); }
-  if (fromOf(zeit) && !q.get("from")) q.set("from", fromOf(zeit));
+  /* Den Stand wählt die Seite selbst (Noch offen, Entschieden, Schritt); der Stand der Suche gälte sonst zusätzlich und unsichtbar */
+  q.delete("status");
+  if (fromOf(zeit) && !q.get("from") && !q.get("month")) q.set("from", fromOf(zeit));
   const url = `/api/x/signale?signal=${signal}${phase ? `&phase=${encodeURIComponent(phase)}` : ""}${art ? `&art=${encodeURIComponent(art)}` : ""}${erstmals ? "&first=1" : ""}${fest ? "&subs=1" : ""}${gruppe ? `&group=${gruppe}` : ""}&${q}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: true });
   /* Neue Auswahl rechnet noch: statt des alten Ergebnisses sofort pulsierende Kacheln */
@@ -299,7 +301,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
         </ul>
       <RailToggle /></nav>}
 
-      <div className="mt-4 print:hidden"><DiffusionSearch filterUp follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden"><DiffusionSearch ohne={["status"]} filterUp follow={<Folgen heart hint="Auswahl unter Meine Suchen speichern" />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
       {/* Desktop: eine Filterzeile unter der Suche: Zeitraum, Schritt, Art als Auswahllisten, aktive Filter als Chips (Handy: Blätter und Räder) */}
       <div className="rm-xfilter mt-3 flex min-h-9 flex-wrap items-center gap-2 max-sm:hidden print:hidden">
         <span className="rm-zeit-std contents"><ZeitPills value={zeit} all="alle" onPick={(k) => pick({ zeit: k === "6" ? "" : k })} /></span>

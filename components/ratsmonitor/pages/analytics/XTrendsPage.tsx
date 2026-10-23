@@ -202,7 +202,7 @@ export function XTrendsPage() {
       <SplitHandle />
 
       <ThemenLeiste phone={false} />
-      <div className="mt-4 print:hidden max-sm:hidden"><DiffusionSearch follow={<Folgen heart />} extra={<ZeitExtra options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
+      <div className="mt-4 print:hidden max-sm:hidden"><DiffusionSearch ohne={["zeitraum"]} follow={<Folgen heart />} extra={<ZeitExtra options={WINDOWS} value={zeit} onPick={(k) => pick({ zeit: k })} />} noPlay play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} /></div>
 
       {error && <Fehler onNochmal={() => run()}>{error}</Fehler>}
       {loading && !res && <Laden karte text="Trends werden berechnet …" />}

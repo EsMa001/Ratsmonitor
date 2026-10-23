@@ -4,6 +4,7 @@ import { Bell, Heart } from "lucide-react";
 import { useUi } from "../../state/ui";
 import { publishBandFigure, useCountUp } from "../../lib/bandFigure";
 import { Segmented } from "../../components/Segmented";
+import { useSearch, useSearchResults } from "../../state/search";
 
 /** Zahl, die kurz hochzählt, wenn sie sich ändert */
 function Zahl({ v }: { v: string }) { return <>{useCountUp(v)}</>; }
@@ -70,6 +71,15 @@ export function ZeitExtra({ value, all = "", onPick, options }: { value: string;
 
 export function ZeitPills({ value, all = "", onPick }: { value: string; all?: string; onPick: (v: string) => void }) {
   const opts: [string, string][] = [["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], [all, "Alles"]];
+  /* Zeitraum im Filter der Suche geht vor (die Seite rechnet dann mit ihm): statt wirkungsloser Pillen steht er hier, wie in den Nachrichten */
+  const { state } = useSearch();
+  const key = new URLSearchParams(useSearchResults().key);
+  if (state.von || state.monat) {
+    const d = (x: string) => new Date(x + "T12:00:00").toLocaleDateString("de-DE");
+    const m = key.get("month") ?? "", from = key.get("from") ?? "", to = key.get("to") ?? "";
+    const text = m ? new Date(m + "-15").toLocaleDateString("de-DE", { month: "long", year: "numeric" }) : `${d(from)} bis ${to ? d(to) : "heute"}`;
+    return <span className="inline-flex max-sm:hidden print:hidden text-[14px] text-slate-700">Zeitraum aus dem Filter: {text}</span>;
+  }
   /* Wie überall: Umschalter mit gleitendem weißem Streifen (Segmented), nicht einzelne Pillen */
   return <span className="inline-flex max-sm:hidden print:hidden"><Segmented label="Zeitraum" options={opts} value={value} onPick={onPick} /></span>;
 }

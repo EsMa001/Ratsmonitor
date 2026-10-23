@@ -33,7 +33,7 @@ const n = (v: number) => v.toLocaleString("de-DE");
 const datum = (d: string) => new Date(d + "T12:00:00").toLocaleDateString("de-DE");
 const HINWEIS = "Automatisch aus Ratsunterlagen erstellt, nicht redaktionell geprüft.";
 /* Schnellwahl des Zeitraums (Tage zurück); ein Zeitraum im Filter geht vor */
-const SPANS: [number, string][] = [[30, "Letzte 30 Tage"], [90, "90 Tage"], [365, "12 Monate"]];
+const SPANS: [number, string][] = [[30, "1 Monat"], [90, "3 Monate"], [365, "12 Monate"]];
 
 /** Meldung als Text zum Kopieren: Überschrift, Ortsmarke, Text, Quelle */
 function asText(i: Item) {
@@ -138,7 +138,8 @@ export function NewsradarPage() {
                     </ol>
                   </div>;
                 })()}
-                {!own && <div className="rm-xtop"><div className="rm-xzeit"><Segmented label="Zeitraum" options={SPANS.map(([dd, l]) => [String(dd), l] as [string, string])} value={String(days)} onPick={(k) => setDays(+k)} /></div></div>}
+                <div className="rm-xtop"><div className="rm-xzeit">{own ? <span className="text-[14px] text-slate-700">Zeitraum aus dem Filter{res?.own ? `: ${datum(res.from)} bis ${datum(res.to)}` : ""}</span>
+                  : <Segmented label="Zeitraum" options={SPANS.map(([dd, l]) => [String(dd), l] as [string, string])} value={String(days)} onPick={(k) => setDays(+k)} />}</div></div>
               </div>
               {pending && <ListSkeleton />}
               <div className={pending ? "hidden" : undefined}>

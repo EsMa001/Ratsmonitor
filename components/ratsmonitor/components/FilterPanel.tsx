@@ -36,7 +36,7 @@ function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boo
 /** Milchglas-Filterfenster, oben links mit dem Filter-Knopf (toggle) verankert:
  *  Umkreis um den gesuchten Ort (dezent), Zeitraum, Thema, Status */
 /** up: Suchleiste steht unten (Kartenmodus) – das Fenster klappt nach oben auf, der Filter-Knopf bleibt an seiner Stelle */
-export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, x: xProp = false }: { /** plenara.X: ohne Thema (die Seiten haben dafür die Themenkacheln), ohne Künftige und Formalien (plenara.X zählt nur Sachpunkte bis heute) */ x?: boolean; /** Handy: Breite der Knöpfe rechts vom Filter-Knopf (Herz): das Fenster reicht bis dorthin, der Filter-Knopf bleibt beim Aufklappen an seiner Stelle */ trail?: number; toggle: ReactNode; /** Handy: Zusatzfelder der Seite (z. B. Zeitraum, Folgen) oben im Blatt */ extra?: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
+export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, x: xProp = false, ohne = [] }: { /** Felder, die die Seite nicht nutzt (Trends: Zeitraum; Projekte: Stand) */ ohne?: ("zeitraum" | "status")[]; /** plenara.X: ohne Thema (die Seiten haben dafür die Themenkacheln), ohne Künftige und Formalien (plenara.X zählt nur Sachpunkte bis heute) */ x?: boolean; /** Handy: Breite der Knöpfe rechts vom Filter-Knopf (Herz): das Fenster reicht bis dorthin, der Filter-Knopf bleibt beim Aufklappen an seiner Stelle */ trail?: number; toggle: ReactNode; /** Handy: Zusatzfelder der Seite (z. B. Zeitraum, Folgen) oben im Blatt */ extra?: ReactNode; up?: boolean; /** höchstens so hoch (px), sonst scrollt das Fenster */ maxH?: number }) {
   const { geo } = useData();
   const search = useSearch();
   const { state } = search;
@@ -46,7 +46,9 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, x: xPr
   const x = xProp || path.startsWith("/analytics/");
   /* auch aus dem Live-Zustand: auf dem Handy bleibt res.snapshot bis zum Schließen auf dem Stand beim Öffnen */
   const liveActive = !!(state.status || state.von || state.bis || state.monat || state.allterms || state.exact || state.radius || (!x && (state.thema || !state.noformal || state.future)));
-  const chipList = filterChips(res.snapshot, geo);
+  /* Felder, die die Seite nicht nutzt, auch nicht in der Kurzzeile oben */
+  const hiddenKeys = ohne.flatMap((o) => (o === "zeitraum" ? ["zeitraum", "monat"] : [o]));
+  const chipList = filterChips(res.snapshot, geo).filter((c) => !hiddenKeys.includes(c.key));
   const active = chipList.length > 0 || liveActive;
   /* Reicht der Platz rechts nicht (schmale Karte), öffnet das Fenster nach links; der Knopf sitzt dann oben rechts */
   const ref = useRef<HTMLDivElement>(null);
@@ -108,7 +110,7 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, x: xPr
         <Toggle label="Exakter Begriff" hint="Nur ganze Wörter, keine Wortteile (Groß-/Kleinschreibung egal)" on={!!state.exact} set={search.setExact} />
         <Toggle label="Begriffe kombinieren" hint="Alle Suchbegriffe müssen vorkommen; sonst genügt einer" on={!!state.allterms} set={search.setAllterms} />
         {/* plenara.X: Zeitraum unter den Schaltern */}
-        {x && (phone ? <DateRangeFields /> : <DateRangeFilter />)}
+        {x && !ohne.includes("zeitraum") && (phone ? <DateRangeFields /> : <DateRangeFilter />)}
         {/* Bundesland: setzt das Gebiet (2-stelliger Schlüssel), wie die Eingabe des Namens in der Suche; bei gewähltem Ort entfällt es */}
         {geo && state.area.length < 5 && geo.lands.length > 0 && (
           <div className="flex items-center gap-2">{x && <MapIcon size={18} strokeWidth={1.5} aria-hidden="true" className="flex-none text-slate-500" />}
@@ -118,9 +120,9 @@ export function FilterPanel({ toggle, up = false, maxH, extra, trail = 0, x: xPr
         )}
         <div className={x ? "" : "grid grid-cols-2 gap-2"}>
           {!x && <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />}
-          <div className="flex items-center gap-2">{x && <ListChecks size={18} strokeWidth={1.5} aria-hidden="true" className="flex-none text-slate-500" />}
+          {!ohne.includes("status") && <div className="flex items-center gap-2">{x && <ListChecks size={18} strokeWidth={1.5} aria-hidden="true" className="flex-none text-slate-500" />}
           <FilterSelect id="f-status" label="Status" allLabel="Alle Stände" value={state.status} options={STATUS.map((s) => ({ value: s.id, label: s.label }))} counts={active ? res.statusCounts : undefined} onChange={(v) => search.setStatus(v as typeof state.status)} className={`${full} flex-1`} />
-          </div>
+          </div>}
         </div>
         {/* Handy: „Zurücksetzen“ nicht in der Kopfzeile (dort sitzt die Zeitraum-Auswahl), sondern unten */}
         {phone && active && (

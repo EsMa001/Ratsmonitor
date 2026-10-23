@@ -17,7 +17,7 @@ import { ActiveFilters } from "../../components/ActiveFilters";
 export type PlayState = "idle" | "loading" | "playing" | "paused";
 
 /** Suchleiste wie auf der Startseite (gleiche Suche, gleiche Filter), rechts der Start-Knopf der Analyse */
-export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false, noPlay = false, extra, follow, filterUp = false, placesOnly = false }: { /** Suchleiste nur für Orte (plenara.X Werte) */ placesOnly?: boolean; /** Handy: das Filterfenster klappt nach oben auf (Suchleiste unten auf der Karte) */ filterUp?: boolean; /** Handy: Reihe Suchfeld, Filter, Herz (Suche speichern) */ follow?: ReactNode; /** Handy: Zusatzfelder im Filterblatt (Zeitraum, Folgen …) */ extra?: ReactNode; /** ohne Start-Knopf: der Filter steht links an seiner Stelle (plenara.X Signale rechnen von selbst) */ noPlay?: boolean; play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
+export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten", keepFocus = false, noPlay = false, extra, follow, filterUp = false, placesOnly = false, ohne = [] }: { /** Suchleiste nur für Orte (plenara.X Werte) */ placesOnly?: boolean; /** Filter, die die Seite nicht nutzt: im Filterfenster und als Chip ausgeblendet */ ohne?: ("zeitraum" | "status")[]; /** Handy: das Filterfenster klappt nach oben auf (Suchleiste unten auf der Karte) */ filterUp?: boolean; /** Handy: Reihe Suchfeld, Filter, Herz (Suche speichern) */ follow?: ReactNode; /** Handy: Zusatzfelder im Filterblatt (Zeitraum, Folgen …) */ extra?: ReactNode; /** ohne Start-Knopf: der Filter steht links an seiner Stelle (plenara.X Signale rechnen von selbst) */ noPlay?: boolean; play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void; /** Cursor bleibt nach Enter im Feld */ keepFocus?: boolean }) {
   const { geo } = useData();
   const search = useSearch();
   const res = useSearchResults();
@@ -28,7 +28,8 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
   /* Handy: beim Tippen verschwindet der Filterknopf und „Abbrechen“ erscheint rechts (wie bei Apple) */
   const [typing, setTyping] = useState(false);
   const chips = filterChips(res.snapshot, geo);
-  const filterCount = chips.filter((c) => !["q", "area", "more", "thema"].includes(c.key)).length + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
+  const hidden = [...ohne.flatMap((o) => (o === "zeitraum" ? ["zeitraum", "monat"] : [o])), ...(placesOnly ? ["q"] : [])];
+  const filterCount = chips.filter((c) => !["q", "area", "more", "thema", ...hidden].includes(c.key)).length + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
   /* Form und Fläche der Knöpfe und des Felds: Klassen rm-xbtn und rm-xfield in app/styles/analytics.css (dort auch die Glas-Pille von plenara.X) */
   const round = "rm-xbtn relative grid h-11 w-11 flex-none place-items-center max-sm:h-12 max-sm:w-12 transition-colors";
   const filterBtn = (
@@ -54,7 +55,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
       {/* Chips ohne Scrollbalken: die Zeile bricht um; flach (weiß, feine Linie) über .rm-solid in glass.css */}
       <div className={`mt-2 flex pl-[52px] ${phone && slot ? "max-sm:mt-0 max-sm:pl-0 max-sm:[&:has(.rm-chip)]:mt-2" : "max-sm:pl-[56px]"} [&>div]:my-0 [&>div]:max-h-none [&>div]:flex-wrap [&>div]:overflow-visible [&>div]:px-0 [&>div]:py-0`}>
         {/* Kein Themen-Chip: das Thema zeigt die Themenleiste der Seite, oder die Seite nutzt es nicht (Werte, Projekte) */}
-        <ActiveFilters hide={placesOnly ? ["thema", "q"] : ["thema"]} />
+        <ActiveFilters hide={["thema", ...hidden]} />
       </div>
     </div>
   );
@@ -65,7 +66,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
         const bar = (
           <div className="rm-solid rm-xsearch relative z-20">
       <div role="search" className="flex w-full items-center gap-2">
-          {noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${follow ? "max-sm:order-1" : ""}`}>{open ? <FilterPanel x toggle={filterBtn} extra={extra} trail={phone && follow ? 56 : 0} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
+          {noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 ${follow ? "max-sm:order-1" : ""}`}>{open ? <FilterPanel x ohne={ohne} toggle={filterBtn} extra={extra} trail={phone && follow ? 56 : 0} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
           {!noPlay && <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default max-sm:hidden`}>
             {play === "loading" ? (
               <span role="status" aria-label="Wird berechnet" className="rm-spinner" />
@@ -75,7 +76,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z" /></svg>
             )}
           </button>}
-          {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 max-sm:order-1 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel x toggle={filterBtn} extra={extra} trail={phone && follow ? 56 : 0} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
+          {!noPlay && <div className={`relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12 max-sm:order-1 ${typing ? "max-sm:hidden" : ""}`}>{open ? <FilterPanel x ohne={ohne} toggle={filterBtn} extra={extra} trail={phone && follow ? 56 : 0} up={filterUp && phone} maxH={filterUp && phone ? 420 : undefined} /> : filterBtn}</div>}
           <div className="rm-xfield min-w-0 flex-1" onFocusCapture={() => setTyping(true)} onBlurCapture={() => window.setTimeout(() => { if (!document.activeElement?.closest('[role="search"]')) setTyping(false); }, 150)}>
             <SearchBox stay placesOnly={placesOnly} keepFocus={keepFocus} onSubmit={onSubmit} listUp={filterUp && phone} listMax={filterUp && phone ? 300 : undefined} />
           </div>

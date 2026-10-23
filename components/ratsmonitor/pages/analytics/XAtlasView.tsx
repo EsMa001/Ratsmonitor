@@ -40,7 +40,7 @@ export function XAtlasView({ theme, sub, zeit = "", term, onTheme, onSub, onZeit
   const { query: baseQuery, search } = useAnalyticsQuery();
   /* Zeitraum der Seite (Monate zurück ab heute) ersetzt den der Suche nur, wenn die Suche selbst keinen hat (wie in den Signalen) */
   const query = (() => { const q = new URLSearchParams(baseQuery); /* Das Thema wählt der Atlas selbst (theme=, AtlasPage hält es gleich mit der Suche); der Themenfilter der Suche bliebe nur
-     „Sonstiges“. Eine Kennung statt des Namens (früher beim Speichern gesetzt) wäre ohnehin ungültig. */ if (q.get("label") !== "Sonstiges") q.delete("label"); if (zeit && !q.get("from")) { const d = new Date(); d.setMonth(d.getMonth() - Number(zeit)); q.set("from", d.toISOString().slice(0, 10)); } return q.toString(); })();
+     „Sonstiges“. Eine Kennung statt des Namens (früher beim Speichern gesetzt) wäre ohnehin ungültig. */ if (q.get("label") !== "Sonstiges") q.delete("label"); if (zeit && !q.get("from") && !q.get("month")) { const d = new Date(); d.setMonth(d.getMonth() - Number(zeit)); q.set("from", d.toISOString().slice(0, 10)); } return q.toString(); })();
   const sel = [theme && `theme=${theme}`, sub && `sub=${sub}`].filter(Boolean).join("&");
   const url = `/api/x?view=atlas${sel ? "&" + sel : ""}&${query}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: !term, onDone: () => { setOpen(""); setPart(null); setAll(null); } });
