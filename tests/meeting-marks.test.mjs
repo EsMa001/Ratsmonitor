@@ -106,10 +106,16 @@ test('an exhausted time budget is reported once; the next attempt continues behi
  web.fail=(file,id)=>file==='vo0050.asp'&&id===11?'Quelle antwortet mit HTTP 500':null;
  const broken=await collectSessionNet(source,{now,get:web.get,window:'12m'});
  assert.deepEqual(broken.coverage.issues,['Vorlagendetails: Quelle antwortet mit HTTP 500']);assert.equal(broken.marks[address(1)],undefined);assert.equal(broken.readMeetings,2);
- // An attendance page that fails does not keep the meeting from being marked; it is reported.
+ // An attendance page that fails does not keep the meeting from being marked and leaves the import complete: a warning only,
+ // so the area is not sent to the follow-up work (23.10.2026: 23 areas were imported again and again for it).
  web.fail=(file,id)=>file==='to0045.asp'&&id===2?'Quelle antwortet mit HTTP 500':null;
  const attendance=await collectSessionNet(source,{now,get:web.get,window:'12m'});
- assert.deepEqual(attendance.coverage.issues,['Teilnahmeangaben: Quelle antwortet mit HTTP 500']);assert.equal(Object.keys(attendance.marks).length,3);
+ assert.deepEqual(attendance.coverage.issues,[]);assert.equal(attendance.coverage.complete,true);assert.equal(Object.keys(attendance.marks).length,3);
+ assert.deepEqual(attendance.coverage.warnings,['Teilnahmeangaben in 1 Sitzung nicht lesbar (nur Hinweis).']);
+ assert.equal(attendance.topics.find(t=>t.id==='teststadt-vo-11').events[0].attendance.status,'available','the other meetings keep their attendance');
+ // When the time runs out on the papers, the attendance page is not asked at all.
+ web.count();web.fail=(file,id)=>file==='vo0050.asp'?'Zeitbudget der Quelle erreicht':null;
+ await collectSessionNet(source,{now,get:web.get,window:'12m'});assert.equal(web.count()['to0045.asp'],undefined);
 });
 test('an import of unchanged meetings keeps the stock and counts as a successful attempt',()=>{
  const topic={id:'teststadt-vo-11',regionId:'teststadt',sourceUrl:source.base+'vo0050.asp?__kvonr=11',title:'Thema',status:'approved',eventDate:'2026-06-10',updatedAt:'2026-10-01T10:00:00.000Z',events:[{url:address(1),date:'2026-06-10',committee:'Rat'}],documents:[]};

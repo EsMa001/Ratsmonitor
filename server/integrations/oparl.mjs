@@ -50,7 +50,8 @@ export async function collectOparl({now=new Date(),getJson=requestJson,maxDurati
  const missing=[...new Set(items.map(x=>x.a.consultation).filter(id=>id&&!consultations.has(id)))];onProgress(`OParl: ${meetings.length} Sitzungen, ${items.length} öffentliche Tagesordnungspunkte, ${missing.length} zusätzliche Beratungsverknüpfungen.`);
  await parallel(missing,async id=>{try{const c=await getJson(id);if(!c.deleted)consultations.set(id,c)}catch(e){if(notPublic(e))warnings.push(`Beratungsverknüpfung nicht öffentlich (HTTP ${notPublic(e)}): ${id}`);else issues.push('Beratungsverknüpfung nicht erreichbar: '+id)}});
  const missingPapers=[...new Set([...consultations.values()].map(c=>c.paper).filter(id=>id&&!papers.has(id)))];await parallel(missingPapers,async id=>{try{const p=await getJson(id);if(!p.deleted)papers.set(id,p)}catch(e){if(notPublic(e))warnings.push(`Vorlage nicht öffentlich (HTTP ${notPublic(e)}): ${id}`);else issues.push('Vorlage nicht erreichbar: '+id)}});
- const attendances=new Map();await parallel(meetings,async m=>attendances.set(m.id,await publicParticipants(m,getJson,now.toISOString())));
+ // Attendance is only nice to have (23.10.2026): embedded participants only, persons named by address are not fetched.
+ const attendances=new Map();await parallel(meetings,async m=>attendances.set(m.id,await publicParticipants(m,async p=>{throw Error('Person nicht geladen: '+p);},now.toISOString())));
  const grouped=new Map();for(const {a,m} of items){const c=consultations.get(a.consultation),p=c&&papers.get(c.paper);const key=p?.id||a.id;if(!grouped.has(key))grouped.set(key,{paper:p,items:[]});grouped.get(key).items.push({a,m,c})}
  // Publish new public papers even before they have a meeting in the current period.
  for(const p of papers.values())if(!grouped.has(p.id)&&(p.created||p.date||'').slice(0,10)>=fromDay)grouped.set(p.id,{paper:p,items:[]});

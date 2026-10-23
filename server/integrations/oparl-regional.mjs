@@ -226,7 +226,9 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
   let failed=0,cut=false,events=0;const fail=text=>{failed++;if(exhausted(text))cut=spent=true;issues.push(text);};
   // An organization that could not be read is a failure: the meeting is read again, so the placeholder does not stay.
   if(!org){org=[];for(const o of m.organization||[]){try{org.push(clean((await object(o))?.name||'Gremium'));}catch(e){fail('Gremium: '+e.message);org.push('Gremium laut Originalquelle');}}}
-  const attendance=await publicParticipants(m,object,now.toISOString());
+  // Attendance is only nice to have (23.10.2026): participants are taken as the meeting embeds them; persons named by
+  // address are not fetched, so attendance costs no request and no time of the import.
+  const attendance=await publicParticipants(m,async p=>{throw Error('Person nicht geladen: '+p);},now.toISOString());
   const committee=org.join(', ')||clean(m.name)||'Öffentliche Sitzung';
   const resolved=await parallel(m.agendaItem||[],async a=>{try{return await object(a)}catch(e){fail('Tagesordnungspunkt: '+e.message);return {public:false};}},3);
   const visible=publicAgenda(resolved,{assumePublic:source.assumePublicAgenda===true||Boolean(source.assumePublicAgenda?.decided)});if(visible.unclear)issues.push(visible.unclear+' Tagesordnungspunkte ohne eindeutigen Öffentlichkeitsnachweis ausgelassen.');
