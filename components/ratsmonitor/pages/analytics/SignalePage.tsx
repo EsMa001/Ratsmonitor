@@ -230,8 +230,6 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
   };
   const zeitText = ZEITRAUM.find(([k]) => k === zeit)?.[1];
   const [hoverPlace, setHoverPlace] = useState("");
-  /* Ausschreibungen, Desktop: zuerst die zehn Bereiche mit den meisten Treffern, „Weitere“ klappt alle auf */
-  const [alleBereiche, setAlleBereiche] = useState(false);
   /* Liste → Karte erst nach kurzem Verweilen (sonst zoomt die Karte bei jedem Überfahren) */
   const hoverPlaceD = useDwell(setHoverPlace, "");
   /* Karte standardmäßig eingeklappt (Signale und Ausschreibungen); aufklappen auf Wunsch */
@@ -255,39 +253,26 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
       {/* Ausschreibungen: eine Kategorie, deshalb die Themen als Kacheln wie auf den übrigen Seiten */}
       {/* Ausschreibungen: statt der Themen die Bereiche (Unterthemen) mit Treffern, die meisten zuerst; Handy: als Walze mit allen Bereichen */}
       {fest && res && (res.subs ?? []).length > 0 && (() => {
-        const subs = ofThema(res.subs ?? []), top = subs.slice(0, 10), mehr = subs.length - top.length;
-        /* Ein gewählter Bereich bleibt sichtbar, auch wenn er nicht unter den ersten zehn ist */
-        const shown = alleBereiche ? subs : [...top, ...subs.filter((b) => b.key === subId && !top.includes(b))];
-        const bereiche = [{ key: "", name: "Alle Bereiche", count: 0 }, ...shown];
         const short = (k: string, name: string) => SUBTOPICS.find((x: { id: string }) => x.id === k)?.short ?? name;
-        return <>
-          <nav aria-label="Thema" className="rm-xrail mb-1 hidden sm:block print:hidden">
-            <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 min-[640px]:grid-cols-11">
-              {[{ id: "", name: "Alle Themen" }, ...THEMES].map((t: { id: string; name: string }) => { const on = t.id === thema; return <li key={t.id || "alle"}>
-                <button type="button" aria-pressed={on} title={t.name} onClick={() => pickThema(on ? "" : t.id)}
+        /* Wie im Themenatlas: zuerst die Themen; beim gewählten Thema klappen seine Bereiche (Unterthemen mit Treffern) mit der Zahl auf */
+        return <nav ref={railRef} aria-label="Thema" className={`rm-xrail mb-4 hidden sm:block print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
+          <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 min-[640px]:grid-cols-11">
+            {[{ id: "", name: "Alle Themen" }, ...THEMES].map((t: { id: string; name: string }) => {
+              const on = t.id === thema, bereiche = t.id ? (res.subs ?? []).filter((b) => b.key.startsWith(t.id + ".")) : [];
+              return <li key={t.id || "alle"} className={on && t.id ? "rm-rail-open" : undefined}>
+                <button type="button" aria-pressed={on} title={t.name} onClick={() => { railUnfold(); pickThema(on ? "" : t.id); }}
                   className={`flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
                   <ThemeIcon theme={t.id || "alle"} size={20} className={on ? "text-teal-700" : "text-slate-500"} />
                   <span className="line-clamp-2 min-w-0">{t.name}</span>
-                </button></li>; })}
-            </ul>
-          </nav>
-          <nav aria-label="Bereich" className="rm-xrail mb-4 hidden border-t border-slate-200 pt-1 sm:block print:hidden">
-            <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 min-[640px]:grid-cols-11">
-              {bereiche.map((b) => { const on = b.key === subId; return <li key={b.key || "alle"}>
-                <button type="button" aria-pressed={on} title={b.key ? `${b.name}: ${n(b.count)}` : b.name} onClick={() => setSub(on ? "" : b.key)}
-                  className={`flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
-                  {b.key ? <SubtopicIcon id={b.key} size={20} /> : <LayoutGrid size={20} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
-                  <span className="line-clamp-2 min-w-0 flex-1">{b.key ? short(b.key, b.name) : b.name}</span>
-                  {b.key ? <span className="tabular-nums text-slate-500">{n(b.count)}</span> : null}
-                </button></li>; })}
-              {mehr > 0 && <li><button type="button" aria-expanded={alleBereiche} onClick={() => setAlleBereiche(!alleBereiche)}
-                className="flex h-full min-h-[60px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-center text-[12px] leading-tight text-teal-700 hover:bg-slate-50">
-                {alleBereiche ? <ChevronUp size={20} strokeWidth={1.2} aria-hidden="true" /> : <ChevronDown size={20} strokeWidth={1.2} aria-hidden="true" />}
-                <span>{alleBereiche ? "Weniger" : `Weitere (${mehr})`}</span>
-              </button></li>}
-            </ul>
-          <RailToggle /></nav>
-        </>;
+                </button>
+                {on && bereiche.length > 0 && <ul className="rm-rail-sub m-0 list-none p-0">
+                  {bereiche.map((b) => <li key={b.key}><button type="button" aria-pressed={b.key === subId} title={`${b.name}: ${n(b.count)}`} onClick={() => { railUnfold(); setSub(b.key === subId ? "" : b.key); }}>
+                    <SubtopicIcon id={b.key} size={16} /><span>{short(b.key, b.name)}</span><span className="ml-auto pl-2 tabular-nums text-slate-500">{n(b.count)}</span></button></li>)}
+                </ul>}
+              </li>;
+            })}
+          </ul>
+          <RailToggle /></nav>;
       })()}
       {!fest && <nav ref={railRef} aria-label="Signal" className={`rm-xrail hidden sm:block print:hidden${railFolded ? " rm-rail-folded" : ""}`}>
         <ul className="m-0 grid list-none grid-cols-6 gap-1 p-0 min-[640px]:grid-cols-11">

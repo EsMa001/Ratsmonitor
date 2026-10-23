@@ -1051,7 +1051,7 @@ z- analytics.css:632
 - RailToggle.tsx (34): RailToggle
 - RegionMap.tsx (184, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (446, ⚠17): SignalePage
+- SignalePage.tsx (431, ⚠17): SignalePage
 - SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
