@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {WEBSITE_READER_NAME,siteAllowed,fetchSiteText,fetchSiteBytes,robotsGate,collectWebsite,ROBOTS,ROBOTS_BLOCKED,decodeText,readPdfText,similarTitles} from '../server/integrations/website.mjs';
+import {WEBSITE_READER_NAME,siteAllowed,fetchSiteText,fetchSiteBytes,robotsGate,collectWebsite as collectAll,ROBOTS,ROBOTS_BLOCKED,decodeText,readPdfText,similarTitles} from '../server/integrations/website.mjs';
+// Since 24.10.2026 the reader also gives out the items it does not show to be public, marked (publicity „nonpublic“/„unclear“).
+// These tests check the topics given out as public; the marked ones are in d.marked (own test below).
+const collectWebsite=async(...a)=>{const d=await collectAll(...a);return {...d,topics:d.topics.filter(t=>!t.publicity),marked:d.topics.filter(t=>t.publicity)};};
 import {mergeImport} from '../server/integrations/merge-import.mjs';
 import {fetchText} from '../server/integrations/sessionnet.mjs';
 import {wpEndpoints} from '../server/integrations/website-feeds.mjs';
@@ -165,7 +168,8 @@ test('collectWebsite joins invitation and minutes of one meeting and item into o
 
 test('collectWebsite takes nothing of the non-public part, also behind letter-spaced or framed headings',async()=>{
  const {d}=await run();
- assert.ok(!SECRET.test(JSON.stringify(d)),'no item, title or text of a non-public part');
+ assert.ok(!SECRET.test(JSON.stringify(d.topics)),'no item, title or text of a non-public part among the public topics');
+ assert.ok(d.marked.length>0&&d.marked.every(t=>['nonpublic','unclear'].includes(t.publicity)),'items of the non-public part come marked');
  // The invitation of 16 September prints "N i c h t ö f f e n t l i c h e r T e i l" with single spaces (as unpdf
  // returns it): items 6 and 7 behind it are not taken.
  assert.deepEqual(d.topics.filter(t=>t.eventDate==='2026-09-16').map(t=>t.sourceData.records[0].fields.number).sort(),['1','2','3','4','5']);
@@ -175,7 +179,7 @@ test('collectWebsite takes nothing of the non-public part, also behind letter-sp
  const web=site({},{[U.invitation]:pdf('framed')});
  const other=await collectWebsite(source,{now,window:'12m',get:web.get,getBytes:web.getBytes,pdfText:async b=>new TextDecoder().decode(b).endsWith('framed')?framed:pdfText(b)});
  assert.deepEqual(other.topics.filter(t=>t.eventDate==='2026-10-14').map(t=>t.sourceData.records[0].fields.number).sort(),['1','2','3']);
- assert.ok(!/Flurstück 512/.test(JSON.stringify(other)));
+ assert.ok(!/Flurstück 512/.test(JSON.stringify(other.topics)));
 });
 
 test('collectWebsite takes an agenda without any hint at the public or a closed part (decision 23.10.2026)',async()=>{
@@ -277,7 +281,7 @@ test('collectWebsite builds topics like the other readers: source data, quality,
  assert.deepEqual(t.events[0].attendance,{status:'not_collected',sourceUrl:U.invitation+'#sitzung-2026-10-14-gemeinderat',fetchedAt:now.toISOString(),people:[]});
  assert.equal(t.events[0].decision.kind,'unknown');assert.equal(t.events[0].committee,'Gemeinderat');
  assert.match(t.events[0].publicEvidence,/öffentlichen Sitzung des Gemeinderates/);
- assert.deepEqual(t.quality.checks.map(c=>[c.name,c.passed,c.detail]),[['Originalquelle',true,'Offizielle Website der Kommune; nur Punkte des öffentlichen Teils einer Bekanntmachung oder Niederschrift.'],['Inhaltliche Prüfung',false,'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.']]);
+ assert.deepEqual(t.quality.checks.map(c=>[c.name,c.passed,c.detail]),[['Originalquelle',true,'Offizielle Website der Kommune; Punkte einer veröffentlichten Bekanntmachung oder Niederschrift, nichtöffentliche als solche gekennzeichnet.'],['Inhaltliche Prüfung',false,'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.']]);
  assert.match(t.longSummary[0],/in Gemeinde Musterbach/);assert.equal(t.relevanceReason,'Öffentlicher Vorgang: Gemeinde Musterbach');
  assert.deepEqual(t.documents.map(x=>[x.url,x.kind]),[[U.invitation,'application/pdf']]);assert.match(t.documents[0].title,/^Einladung zur öffentlichen Sitzung des Gemeinderates am 14\.10\.2026/);
 });
@@ -304,7 +308,8 @@ test('collectWebsite reads the PDF behind a detail page without agenda, and reco
  assert.deepEqual(d.topics.map(t=>[t.title,t.status,t.events[0].url]),[['Neubau Feuerwehrhaus','announced',base+'files/einladung-gemeinderat-2026-11-18.pdf#sitzung-2026-11-18-gemeinderat']]);
  assert.deepEqual(d.coverage.unparsed,[base+'aktuelles/protokoll-gemeinderat.html']);
  assert.ok(d.coverage.issues.includes('Keine Sitzung erkannt, nicht übernommen: '+base+'aktuelles/protokoll-gemeinderat.html'));
- assert.ok(!/Flurstück 412/.test(JSON.stringify(d)));
+ assert.ok(!/Flurstück 412/.test(JSON.stringify(d.topics)));
+ assert.deepEqual(d.marked.map(t=>[t.title,t.publicity]),[['Grundstücksangelegenheit Flurstück 412','nonpublic']],'the non-public item comes marked');
 });
 
 test('the website reader is registered for catalog entries but never detected from a page',async()=>{
@@ -555,4 +560,15 @@ test('fetchSiteText gives the waiting time of a refusal (429, 503 with Retry-Aft
  const busy=await error(base+'busy');assert.equal(busy.message,'Quelle antwortet mit HTTP 429');assert.equal(busy.retryAfterMs,120000);
  assert.equal((await error(base+'down')).retryAfterMs,30000);
  const gone=await error(base+'gone');assert.equal(gone.message,'Quelle antwortet mit HTTP 404');assert.equal(gone.retryAfterMs,undefined);
+});
+
+test('collectWebsite gives out the items of the non-public part, marked, without names of private persons (decision 24.10.2026)',async()=>{
+ const s={id:'de-09999005',name:'Gemeinde Unterdorf',kind:'city',base,pages:[base+'bek/']};
+ const page='<main><h1>Einladung zur Sitzung des Gemeinderates am 14.10.2026, 19:00 Uhr</h1><h2>Öffentlicher Teil</h2><p>1. Bauantrag Kita</p><h2>Nichtöffentlicher Teil</h2><p>2. Personalangelegenheit Herr Müller<br>3. Grundstücksverkauf an Familie Meier</p></main>';
+ const web=site({[base+'bek/']:'<main><a href="/bek/gr-2026-10-14.html">Einladung zur Sitzung des Gemeinderates am 14.10.2026</a></main>'},{[base+'bek/gr-2026-10-14.html']:{bytes:enc(page),type:'text/html'}});
+ const all=await collectAll(s,{now:new Date('2026-10-04T10:00:00Z'),get:web.get,getBytes:web.getBytes,pdfText:async()=>'',window:'12m'});
+ const by=Object.fromEntries(all.topics.map(t=>[t.title,t.publicity||'public']));
+ assert.deepEqual(by,{'Bauantrag Kita':'public','Personalangelegenheit Herr …':'nonpublic','Grundstücksverkauf an Familie …':'nonpublic'});
+ const np=all.topics.find(t=>t.publicity==='nonpublic');
+ assert.match(np.events[0].description,/Nichtöffentlicher Punkt/);assert.equal(np.events[0].result,'');
 });

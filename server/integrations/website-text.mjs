@@ -1092,6 +1092,13 @@ const consultedLine=(line,meetingDay)=>{
  const m=String(line).match(/^\s*(\d{1,2})\.(\d{1,2})\.(\d{4}|\d{2})\s/);if(!m||!meetingDay||!CONSULTED.test(line)||/Uhr|statt|findet|Einladung|Tagesordnung/i.test(line))return false;
  const iso=`${m[3].length===2?'20'+m[3]:m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;return iso<meetingDay;
 };
+/** Items besides the public ones: those of the non-public part (publicity „nonpublic“) and those not shown to be public
+    („unclear“), each once and none that is taken as public. */
+function otherItems(taken,closed,unclear){
+ const key=i=>`${i.number||''}|${String(i.title||'').toLowerCase().replace(/\s+/g,' ').trim()}`,seen=new Set(taken.map(key)),out=[];
+ for(const [list,publicity] of [[closed,'nonpublic'],[unclear,'unclear']])for(const i of list){const k=key(i);if(!i.title||seen.has(k))continue;seen.add(k);out.push({number:i.number,title:i.title,publicity});}
+ return out;
+}
 /**
  * Meetings in the lines of a page or document, with the items of their public part. title: the link text or document
  * title (date, committee and public session as a fallback). wrapped: the lines are wrapped (PDF), so a title may go on
@@ -1254,6 +1261,9 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   // An item read again in the non-public part (an agenda repeated as a list of the parts) goes, with all after it.
   // Items this text puts in the non-public part: another document of the same meeting must not give them out.
   const closedItems=[];const shut=it=>{if(it?.title)closedItems.push({number:it.number,title:withMark(it.prefix,it.title).title});};
+  // Items not shown to be public (no evidence, or a meeting whose public part could not be told apart): kept with publicity
+  // „unclear“ (decision of the project owner, 24.10.2026: everything the town publishes is taken, the non-public part marked).
+  const unclearItems=[];
   const again=it=>{const k=taken.findIndex(x=>x.number===it.number&&(sameTitle(x.title,it.title||'')||!!it.title&&similarTitles(x.title,it.title)));if(k>=0)cuts.push(k);};
   const applyRefs=r=>{if(r.vague||!r.nums.length||r.nums.some(n=>!numbers.has(n)))discard('Nichtöffentliche Punkte erst nach der Tagesordnung benannt','welche Punkte öffentlich sind, ist nicht eindeutig');else{const min=Math.min(...r.nums),k=taken.findIndex(x=>mainNumber(x.number)>=min);if(k>=0)cuts.push(k);}};
   // Which items read so far a line names by their title (quoted text that is no title counts as naming another).
@@ -1414,7 +1424,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    }
    seenItem=true;lastItem=i;lastPrefix=it.prefix;itemOpen=true;
    if(it.prefix==='Ö'&&state==='none'){state='public';evidence='Kennzeichnung „Ö“ der Tagesordnungspunkte';}
-   if(state!=='public'){if(state==='none')unclear++;else restricted=true;cur=null;i++;lastItemEnd=i;continue;}
+   if(state!=='public'){if(state==='none'){unclear++;if(it.title)unclearItems.push({number:it.number,title:withMark(it.prefix,it.title).title});}else restricted=true;cur=null;i++;lastItemEnd=i;continue;}
    const itemLine=i;let t=it.title,j=i+1;const pieces=[t];read.add(mainNumber(it.number));
    if(!t&&j<end&&continues(j))t=all[j++];
    if(kind==='minutes'){if(/(?:[,:-]|(?<!\p{L})und)$/u.test(t)&&j<end&&continues(j))t=join(t,all[j++]);}
@@ -1471,7 +1481,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   // Items named by a note or marked after they were read go, with all items after them.
   if(cuts.length){for(const x of taken.slice(Math.min(...cuts)))shut(x);taken.length=Math.min(...cuts);}
   const say=n=>`${n} ${n===1?'Punkt':'Punkte'} nicht übernommen.`;
-  const drop=(text,detail='')=>{const at=`${text} (${where(committee,date,title)})${detail?': '+detail:''}`;if(taken.length)issues.push(`${at}; ${say(taken.length)}`);else issues.push(`${at}; nichts übernommen.`);taken.length=0;unclear=unclear||1;};
+  const drop=(text,detail='')=>{const at=`${text} (${where(committee,date,title)})${detail?': '+detail:''}`;if(taken.length)issues.push(`${at}; ${say(taken.length)}`);else issues.push(`${at}; nichts übernommen.`);for(const x of taken)unclearItems.push({number:x.number,title:x.title});taken.length=0;unclear=unclear||1;};
   if(whole)drop(...whole);
   else if(footnote)drop('Punkte mit Fußnoten-, Stern- oder anderer Markierung','deren Bedeutung ist nicht eindeutig öffentlich');
   else if(statusStyle&&taken.some(x=>x.status!=='Ö'&&x.prefix!=='Ö'))drop('Kennzeichnung der Punkte uneinheitlich','nicht jeder Punkt trägt die Angabe „öffentlich“');
@@ -1498,7 +1508,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   // itself only above its first meeting).
   const docTop=Math.min(top,segments.find(x=>x.header)?.header.line??top);
   const docIssuers=[];for(let k=0;k<docTop;k++){const l=capsFix(all[k]);if(!items[k]&&l.length<=100&&ISSUER.test(l)&&!GAZETTE.test(l))docIssuers.push(l);}
-  meetings.push({date,time,committee,kind,trailer,docIssuers,lastPublic:Math.max(0,...[...seen.keys()].map(mainNumber)),items:taken.map(x=>{const o=kind==='minutes'?outcomeOf(x.block.join('\n')):{status:null,result:'',votes:null};return {prefix:x.prefix,number:x.number,title:x.title,status:o.status,result:o.result,votes:o.votes};}),restricted,unclear:unclear>0,publicEvidence:evidence,heading,context,issuer,lead,headText,headLines:all.slice(at>=0?at:seg.start,first).filter(l=>!GAZETTE_TITLE.test(l)&&!GAZETTE.test(l)&&!ISSUE_HEAD.test(l)).slice(0,20),gazette,closedItems});
+  meetings.push({date,time,committee,kind,trailer,docIssuers,lastPublic:Math.max(0,...[...seen.keys()].map(mainNumber)),items:taken.map(x=>{const o=kind==='minutes'?outcomeOf(x.block.join('\n')):{status:null,result:'',votes:null};return {prefix:x.prefix,number:x.number,title:x.title,status:o.status,result:o.result,votes:o.votes};}),restricted,unclear:unclear>0,publicEvidence:evidence,heading,context,issuer,lead,headText,headLines:all.slice(at>=0?at:seg.start,first).filter(l=>!GAZETTE_TITLE.test(l)&&!GAZETTE.test(l)&&!ISSUE_HEAD.test(l)).slice(0,20),gazette,closedItems,otherItems:otherItems(taken,closedItems,unclearItems)});
  });
  return {meetings,issues};
 }

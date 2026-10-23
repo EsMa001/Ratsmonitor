@@ -97,7 +97,10 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  const stage=kind==='subject'?(model?model.process:stageOf({title})):null;
  // 4. Zusammenfassung
  let ruleSummary=null,summaryIssue=null;
- if(!doc)summaryIssue='no-document';
+ // Nichtöffentlicher Punkt (seit 24.10.2026): keine Zusammenfassung und keine Fakten, nur der Vermerk im Überblick
+ const closed=report.publicity==='nonpublic';
+ if(closed)summaryIssue='nonpublic';
+ else if(!doc)summaryIssue='no-document';
  else if(session)summaryIssue='session-document';
  else if(!pages)summaryIssue='no-text';
  else if(pages.length>MAX_PAGES)summaryIssue='too-long';
@@ -111,8 +114,8 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  const factionOk=!model||(model.process==='political'&&(model.applicants||[]).includes('fraction'));
  // Fakten an das Modell gebunden (shared/model/fact-gate.mjs): ein Wert zählt nur bei passendem Unterthema bzw. Vorgangsart
  const fits=f=>!model||!MODEL_COVERED.has(f.kind)&&factFits(f.kind,{kind:model.kind,subs:model.subs||[],process:model.process});
- const facts=factsOf(title,text).filter(f=>ALWAYS_FACTS.has(f.kind)?factionOk&&fits(f):kind==='subject'&&fits(f));
- if(kind==='subject'){
+ const facts=closed?[]:factsOf(title,text).filter(f=>ALWAYS_FACTS.has(f.kind)?factionOk&&fits(f):kind==='subject'&&fits(f));
+ if(kind==='subject'&&!closed){
   const have=new Set(facts.map(f=>f.kind));
   for(const a of attachments||[]){
    if(!a?.pages||![...a.kinds].some(k=>!have.has(k)))continue;
@@ -122,11 +125,11 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  }
  const attSha=(attachments||[]).map(a=>a.textSha||'').join(',');
  // Verfahrensschritte (Bebauungsplan, Wärmeplanung) aus dem Modell
- if(model&&kind==='subject'){const next=stepFacts(facts,model);facts.length=0;facts.push(...next);}
+ if(model&&kind==='subject'&&!closed){const next=stepFacts(facts,model);facts.length=0;facts.push(...next);}
  // Überblick (Vorgang, Sitzungen, Unterlagen) aus dem Modell, statt des Standardsatzes des Imports
  const overview=model?overviewOf(report,model,{parties:facts.filter(f=>f.kind==='faction').map(f=>f.value),today:at.slice(0,10)}):null;
  return {
-  version:READ_VERSION,overview,key:readKey({title,mainUrl:doc?.url,session,textSha,attSha,modelKey:(model?.key||'')+(summaryModel?'|'+summaryModel.version:'')}),
+  version:READ_VERSION,overview,key:readKey({title,mainUrl:doc?.url,session,textSha,attSha,modelKey:(model?.key||'')+(summaryModel?'|'+summaryModel.version:'')+(report.publicity?'|'+report.publicity:'')}),
   mainUrl:doc?.url||null,session,itemKind:kind,stage,
   theme:{id:theme.theme,subs:theme.subs,source:theme.source,version:model?MODEL_THEME_VERSION:THEMES_VERSION,evidence:title},
   ruleSummary,summaryIssue,facts,

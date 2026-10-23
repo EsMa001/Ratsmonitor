@@ -1,7 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {htmlToLines,pdfLines,parseSessionText} from '../server/integrations/website-text.mjs';
-import {collectWebsite} from '../server/integrations/website.mjs';
+import {collectWebsite as collectAll} from '../server/integrations/website.mjs';
+// Since 24.10.2026 the reader takes everything the town publishes and marks what is not shown to be public (publicity
+// „nonpublic“ or „unclear“). The corpus checks the topics given out as public: no item of the non-public part may be among
+// them. Marked topics never carry the name of a private person (Herr/Frau/Familie … with a name).
+const PRIVATE=/(?<!\p{L})(?:Herrn?|Frau|Familie|Eheleute)\s+(?:Dr\.\s*)?\p{Lu}\p{Ll}+/u;
+const collectWebsite=async(...a)=>{const d=await collectAll(...a);
+ for(const t of d.topics.filter(t=>t.publicity))assert.ok(!PRIVATE.test(t.title),`marked topic „${t.title}“ names a person`);
+ return {...d,topics:d.topics.filter(t=>!t.publicity),marked:d.topics.filter(t=>t.publicity)};};
 import {cases,feedCases,closedLabels,closedPaths,multiCases,closedRedirects} from './fixtures/website/leaks/corpus.mjs';
 import {fetchSiteText,fetchSiteBytes} from '../server/integrations/website.mjs';
 // Every leak found so far (texts NACHGEBILDET, see the corpus) is read by the text parser and by the whole reader; no

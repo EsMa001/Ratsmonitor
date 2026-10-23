@@ -6,7 +6,7 @@ import {SUBTOPICS,THEMES} from '../themes.mjs';
 import {SERVICE_NAMES} from './names.mjs';
 import {outcomeOf} from '../vote-result.mjs';
 
-export const OVERVIEW_VERSION='overview-v2';
+export const OVERVIEW_VERSION='overview-v3';
 const SURE=0.7,TOPIC_SURE=0.5;
 const subName=id=>SUBTOPICS.find(s=>s.id===id)?.name||'';
 const themeName=id=>THEMES.find(t=>t.id===id)?.name||'';
@@ -71,6 +71,9 @@ export function overviewOf(report,model,{parties=[],today=new Date().toISOString
  else if(model.kindP>=SURE&&model.kind==='personal')out.push('Personalie.');
  else{const w=what(model,parties),t=topic(model);if(w&&t)out.push(`${w} zum Thema ${t}.`);else if(w)out.push(`${w}.`);else if(t)out.push(`Thema: ${t}.`);}
  const s=sessions(report.events,today);if(s)out.push(s);
+ // Nichtöffentlicher Punkt einer veröffentlichten Tagesordnung (seit 24.10.2026): öffentlich bekannt sind nur Titel, Sitzung, Gremium
+ if(report.publicity==='nonpublic')out.push('Der Punkt wurde in nichtöffentlicher Sitzung beraten; öffentlich bekannt sind Titel, Sitzung und Gremium.');
+ else if(report.publicity==='unclear')out.push('Ob der Punkt öffentlich beraten wurde, gibt die Quelle nicht an.');
  const d=documents(model.doctypes);if(d)out.push(d);
  return out.length?{version:OVERVIEW_VERSION,text:out.join(' ')}:null;
 }

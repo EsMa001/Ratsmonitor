@@ -1,3 +1,4 @@
+import {withoutPrivateNames} from '../../shared/private-names.mjs';
 import {extractText,getDocumentProxy} from 'unpdf';
 import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
 import {windowStart} from './history-window.mjs';
@@ -568,7 +569,9 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   const known=parsed.meetings.filter(m=>m.date&&m.committee);
   if(!known.length){if(!t.event){issues.push('Keine Sitzung erkannt, nicht übernommen: '+t.url);if(unparsed.length<LIMITS.unparsed)unparsed.push(t.url);}continue;}
   if(parsed.meetings.some(m=>(!m.date||!m.committee)&&(m.items.length||m.unclear)))issues.push('Sitzung ohne erkennbares Datum oder Gremium, nicht übernommen: '+t.url);
-  if(t.missingNotice&&parsed.meetings.some(m=>m.items.length)){issues.push(`Verlinkte Bekanntmachung ${t.missingNotice} nicht gelesen; Punkte der Seite nicht übernommen: ${t.url}`);continue;}
+  // Everything the town publishes is taken (24.10.2026); a linked notice that was not read only leaves its items unconfirmed.
+  const unconfirmed=Boolean(t.missingNotice&&parsed.meetings.some(m=>m.items.length));
+  if(unconfirmed)warnings.push(`Verlinkte Bekanntmachung ${t.missingNotice} nicht gelesen; öffentlicher Teil der Seite nicht bestätigt: ${t.url}`);
   for(let m of known){
    if(!inWindow(m.date))continue;
    // A calendar entry names its day in DTSTART/startDate; a meeting the text gives another day is not taken.
@@ -576,9 +579,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    const committee=body(m.committee),foreign=foreignBody(m,committee,source,ownNames,t.title);
    if(foreign){if(foreign==='andere Gemeinde'&&m.items.length)issues.push(`Sitzung eines Gremiums einer anderen Gemeinde (${committee}), nicht übernommen: ${t.url}`);continue;}
    const key=`${m.date}|${slug(committee)}`;keys.add(key);
-   // Unclear lines before a heading of the public part (Greiz: „zur 26. Beratung …“ read as an item) do not hold back the items
-   // under that heading; they were not taken anyway.
-   if(m.unclear&&!(m.items.length&&partHeading(m.publicEvidence))){issues.push('Tagesordnung nicht eindeutig als öffentlich erkennbar, nicht übernommen: '+t.url);continue;}
+   // Items not shown to be public come with publicity „unclear“ (m.otherItems); the meeting is no longer dropped for them.
+   if(m.unclear&&!(m.items.length&&partHeading(m.publicEvidence)))warnings.push('Tagesordnung nicht eindeutig als öffentlich erkennbar, Punkte als „unklar“ übernommen: '+t.url);
    // A meeting on a day a notice moved or cancelled.
    if(movedFrom.some(mv=>mv.from===m.date&&(!mv.committee||sameBodies(body(mv.committee),committee))&&!(mv.to===m.date))){if(m.items.length)issues.push(`Sitzung ${committee} ${ddmmyyyy(m.date)} laut Bekanntmachung verlegt oder abgesagt, nicht übernommen: ${t.url}`);continue;}
    // An item another document of the same meeting puts in the non-public part goes, with all items after it.
@@ -590,7 +592,12 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
     const k=m.items.findIndex(it=>!other.items.some(o=>slug(o.title)===slug(it.title)||closeTitles(o.title,it.title)));
     if(k>=0&&(cut<0||k<cut))cut=k;
    }
-   if(cut>=0){warnings.push(`Punkt ${m.items[cut].number} (${committee} ${ddmmyyyy(m.date)}) steht in einem anderen Dokument dieser Sitzung im nichtöffentlichen Teil; ${m.items.length-cut} ${m.items.length-cut===1?'Punkt':'Punkte'} nicht übernommen (${t.url}).`);m={...m,items:m.items.slice(0,cut)};}
+   if(cut>=0)warnings.push(`Punkt ${m.items[cut].number} (${committee} ${ddmmyyyy(m.date)}) steht in einem anderen Dokument dieser Sitzung im nichtöffentlichen Teil; ${m.items.length-cut} ${m.items.length-cut===1?'Punkt':'Punkte'} als nichtöffentlich übernommen (${t.url}).`);
+   // Public items, then those of the non-public part and those not shown to be public, each with its publicity. Titles of
+   // non-public items lose the names of private persons (shared/private-names.mjs).
+   const own=unconfirmed||m.unclear&&!partHeading(m.publicEvidence)?'unclear':'public';
+   m={...m,items:[...m.items.map((it,k)=>({...it,publicity:cut>=0&&k>=cut?'nonpublic':own})),...(m.otherItems||[]).map(it=>({...it,status:null,result:'',votes:null}))]
+    .map(it=>it.publicity==='nonpublic'?{...it,title:withoutPrivateNames(it.title)}:it)};
    if(!m.items.length){if(m.date>today)upcoming.add(key);continue;}
    withItems.add(key);
    sessions.push({...m,committee,key,url:`${t.url}#sitzung-${m.date}-${slug(committee)}`,doc:t});
@@ -631,9 +638,10 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   const known=usableMark(marks,s,now),minutes=s.kind==='minutes',idList=ids.get(s);
   const rows=s.items.map((item,n)=>{
    const status=itemStatus(item,s,today),ahead=s.date>today,result=minutes&&!ahead?item.result:'';
-   const description=ahead?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?`Laut veröffentlichter Niederschrift: ${result}`:'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
-   const event={date:s.date,committee:s.committee,status,description,result,url:s.url,publicEvidence:s.publicEvidence};
-   return {id:idList[n],title:item.title,number:item.number,votes:minutes?item.votes:null,minutes,event};
+   const closed=item.publicity==='nonpublic',unknown=item.publicity==='unclear';
+   const description=closed?'Nichtöffentlicher Punkt laut veröffentlichter Tagesordnung; öffentlich bekannt sind Titel, Sitzung und Gremium.':ahead?(unknown?'Auf der veröffentlichten Tagesordnung; ob öffentlich beraten wird, ist nicht angegeben. Die Sitzung steht noch aus.':'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.'):result?`Laut veröffentlichter Niederschrift: ${result}`:unknown?'Auf der veröffentlichten Tagesordnung; ob öffentlich beraten wurde, ist nicht angegeben.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
+   const event={date:s.date,committee:s.committee,status,description,result:closed?'':result,url:s.url,publicEvidence:closed?'nichtöffentlicher Teil der veröffentlichten Tagesordnung':s.publicEvidence,...(item.publicity&&item.publicity!=='public'?{publicity:item.publicity}:{})};
+   return {id:idList[n],title:item.title,number:item.number,votes:minutes&&!closed?item.votes:null,minutes,event};
   });
   const print=(await hash(JSON.stringify(rows.map(r=>[r.id,r.title,r.number,r.event.status,r.event.result,s.doc.url])))).slice(0,16);
   prepared.push({s,known,rows,print,same:known?.trusted||known?.print===print});
@@ -648,7 +656,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   for(const row of rows){
    const {event}=row;
    event.attendance={status:'not_collected',sourceUrl:s.url,fetchedAt,people:[]};event.decision=sourceDecision(event);
-   const record={kind:minutes?'minutes':'agenda',url:s.url,fields:{title:row.title,number:row.number,...(minutes?{status:event.status,result:event.result,...(row.votes||{})}:{})}};
+   const record={kind:minutes?'minutes':'agenda',url:s.url,fields:{title:row.title,number:row.number,...(event.publicity?{publicity:event.publicity}:{}),...(minutes?{status:event.status,result:event.result,...(row.votes||{})}:{})}};
    const previous=grouped.get(row.id);
    if(!previous){grouped.set(row.id,{id:row.id,title:row.title,fromInvitation:!minutes,reference:'',sourceUrl:s.url,identityLinks:[],documents:[...docs],events:[event],sourceData:{version:'public-source-fields-v1',method:'website',fetchedAt,records:[record],detailStatus:'completed',issues:[]}});continue;}
    if(!previous.events.some(e=>e.url===event.url)){previous.events.push(event);previous.sourceData.records.push(record);}
@@ -666,9 +674,12 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   row.events.sort((a,b)=>a.date.localeCompare(b.date)||(a.result?1:0)-(b.result?1:0));
   row.sourceData.records.sort((a,b)=>(a.kind==='minutes')-(b.kind==='minutes'));
   const last=row.events.at(-1);delete row.fromInvitation;
+  // Publicity of the topic: public as soon as one source shows it public; otherwise non-public or unclear.
+  const publicity=row.events.some(e=>!e.publicity)?null:row.events.some(e=>e.publicity==='nonpublic')?'nonpublic':'unclear';
+  if(publicity)row.publicity=publicity;
   const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map(row.documents.map(d=>[d.url,d])).values()]};
   Object.assign(t,sourceSummary(t,{place:source.name}));
-  t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Offizielle Website der Kommune; nur Punkte des öffentlichen Teils einer Bekanntmachung oder Niederschrift.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};
+  t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Offizielle Website der Kommune; Punkte einer veröffentlichten Bekanntmachung oder Niederschrift, nichtöffentliche als solche gekennzeichnet.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};
   topics.push(t);
  }
  issues.unshift(...allows.issues);
