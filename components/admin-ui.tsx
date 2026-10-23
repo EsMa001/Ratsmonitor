@@ -9,10 +9,6 @@ export {StandLine,standText} from '@/components/admin-stand';
 
 // Bausteine der Adminseiten im Design der Startseite und der Plenara.X-Seiten (requirements/admin-performance-konzept.md, 5.2).
 
-/** „2026-10-08“ → „08.10.26“ */
-export const dd=(d?:string|null)=>d?d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4):'–';
-/** „2026-10…“ → „10.26“ */
-export const mm=(d?:string|null)=>d?d.slice(5,7)+'.'+d.slice(2,4):'–';
 /** „06.10.2026“ → „06.10.26“ (reportDate des Atlas) */
 export const short=(s:string)=>s.replace(/\.(\d{2})(\d{2})$/,'.$2');
 

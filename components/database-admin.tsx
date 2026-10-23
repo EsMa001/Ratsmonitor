@@ -4,8 +4,8 @@ import {Table,TableHeader,TableBody,TableRow,TableHead,TableCell} from '@/compon
 import {AdminAreaPick,Alert,How,SectionHelp} from '@/components/admin-ui';
 import {FIELD_FOOT,FIELD_HELP,HELP,QUALITY_TEXT} from '@/components/admin-texts';
 import {downloadDatabase} from '@/shared/download-database.mjs';
+import {n} from '@/components/admin-format';
 type Audit={region:string;total:number;complete:number;incomplete:number;fields:{id:string;name:string;complete:number;missing:number}[];note:string};
-const n=(v:number)=>v.toLocaleString('de-DE');
 export function DatabaseAdmin({sources=[],disabled=false}:{sources?:{id:string;name:string}[];disabled?:boolean}){
  const [audit,setAudit]=useState<Audit|null>(null),[region,setRegion]=useState('all'),[busy,setBusy]=useState(''),[message,setMessage]=useState(''),[error,setError]=useState('');
  async function request<T=Audit>(params:Record<string,string>):Promise<T>{const r=await fetch('/api/admin/database?'+new URLSearchParams(params),{cache:'no-store'});const d=await r.json() as T & {error?:string};if(!r.ok)throw Error(d.error||'Datenbank nicht erreichbar');return d;}

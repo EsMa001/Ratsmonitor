@@ -4,9 +4,9 @@ import Link from 'next/link';
 import {AdminPageHead,Alert} from '@/components/admin-ui';
 import {Icon} from '@/components/admin-icons';
 import {adminHref} from '@/components/admin-chrome';
-import {when,clock} from '@/components/admin-pdf-parts';
-import {n,day,Glossary,result,type FailRow,type Counter} from '@/components/admin-pipeline-parts';
+import {Glossary,result,type FailRow,type Counter} from '@/components/admin-pipeline-parts';
 import {PDF_JOB_TERMS,PHASES,stepName} from '@/shared/pipeline-terms.mjs';
+import {n,day,when,clock} from '@/components/admin-format';
 
 /* Seite „Altbestand“ (Gruppe Pipeline; Route /api/admin/altbestand, server/integrations/altbestand-admin.mjs): alles, was älter ist als
    der Tagesbereich oder vor dem 12.10.2026 gescheitert ist, auf Knopfdruck abrufen, extrahieren, verarbeiten und alte Fehler

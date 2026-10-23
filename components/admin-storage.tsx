@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
 import {adminHref} from '@/components/admin-chrome';
 import {Icon} from '@/components/admin-icons';
-import {n,gb,size,when,dur} from '@/components/admin-pdf-parts';
+import {n,gb,size,when,dur} from '@/components/admin-format';
 
 /* Reiter „Speicher & Sicherungen“ (server/integrations/server-storage.mjs, Route /api/admin/speicher): was auf der Festplatte
    des Servers wie viel Platz belegt und welche Sicherungen es gibt. Gemessen von scripts/server-disk.mjs auf dem Server. */

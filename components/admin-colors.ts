@@ -11,6 +11,6 @@ export const HATCH_CSS=`repeating-linear-gradient(135deg,#fff 0 2px,${AC.hatch} 
 export const COVERAGE={data:AC.scale[3],partial:AC.scale[1],failed:AC.warn,none:AC.zero} as const;
 /** Anteile: bis 20 %, bis 50 %, bis 80 %, darüber (Schwellen wie admin-processing-map.tsx). */
 export const shareColor=(a:number)=>a>.8?AC.scale[3]:a>.5?AC.scale[2]:a>.2?AC.scale[1]:AC.scale[0];
-export const BUCKET_COLOR:Record<string,string>={'fresh:d180':AC.muted,'fresh:old':AC.warn,'reach:none':HATCH_CSS,'fresh:none':HATCH_CSS};
+const BUCKET_COLOR:Record<string,string>={'fresh:d180':AC.muted,'fresh:old':AC.warn,'reach:none':HATCH_CSS,'fresh:none':HATCH_CSS};
 export const bucketColor=(kind:'reach'|'fresh',b:{id:string;color:string})=>BUCKET_COLOR[kind+':'+b.id]??b.color;
 export const ACCESS_COLOR:Record<string,string>={oparl:AC.scale[3],api:AC.accent,scraping:AC.scale[2],'api-noreader':'var(--rm-c500)',noreader:AC.muted,blocked:AC.warn,none:AC.zero};

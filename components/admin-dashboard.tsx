@@ -11,9 +11,8 @@ import {REVIEW_FILTERS} from '@/shared/admin.mjs';
 import {STATUS} from '@/shared/types';
 import type {AdminDashboard} from '@/shared/admin-types';
 import type {AdminPage} from '@/components/admin-chrome';
-const n=(v:number)=>v.toLocaleString('de-DE');
+import {n,pct} from '@/components/admin-format';
 const date=(s:string|null)=>s?new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'}):'Noch kein Abruf';
-const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:1})+' %':'—';
 const RUN_MODE:Record<string,string>={'ai-agent-analysis':'KI-Agent-Ergebnisse','claude-analysis':'Claude-Code-Ergebnisse','prepared-analysis':'Vorbereiteter KI-Test','summaries':'Textverarbeitung','analysis':'Labels & Themenmerkmale'};
 const RUN_STATE:Record<string,string>={completed:'Abgeschlossen',partial:'Teilweise übernommen',failed:'Fehlgeschlagen',running:'Läuft'};
 /** Überschrift eines Abschnitts aus HELP; darunter folgt SectionHelp. */

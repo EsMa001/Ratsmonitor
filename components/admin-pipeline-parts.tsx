@@ -1,12 +1,10 @@
 'use client';
 import {Fragment} from 'react';
-import {when,clock,dur} from '@/components/admin-pdf-parts';
 import {FLOWS,PHASES,STEPS,isStep,CLASS_TERMS,HOST_TERMS,RESULT_TERMS,stepName,displayStep} from '@/shared/pipeline-terms.mjs';
+import {n,day,when,clock,dur} from '@/components/admin-format';
 
 /* Bausteine der Seiten „Pipeline-Debug“ und „Altbestand“ (vorübergehend): Begriffe, lesbare Zusammenfassungen der Schritte,
    Zeitachse, Fehlertabelle nach Stufen. Alle Namen aus shared/pipeline-terms.mjs. */
-export const n=(v?:number|null)=>(v??0).toLocaleString('de-DE');
-const day=(d?:string|null)=>d?new Date(d+'T12:00:00Z').toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'}):'–';
 export {day};
 export type Step={name:string;seconds:number;ok:boolean;summary?:Record<string,unknown>|null};
 export type FailRow={range:string;step:string;phase:string;class:string;n:number;final:number;due:number};
@@ -26,7 +24,7 @@ export function Glossary({boundary,since}:{boundary:string;since:string}){
 }
 
 /** Ein Satz zu dem, was ein Schritt getan hat (aus seiner Zusammenfassung im Protokoll); leer, wenn es nichts zu sagen gibt */
-export function stepSentence(s:Step):string{
+function stepSentence(s:Step):string{
  const x=(s.summary||{}) as Record<string,unknown>,num=(k:string)=>Number(x[k]||0);
  if(x.skipped&&typeof x.skipped==='string')return 'ausgelassen: '+x.skipped;
  if(isStep(s.name,'pdf')||isStep(s.name,'others'))return `${n(num('ok'))} geladen, ${n(num('error'))} gescheitert, ${n(num('unsupported'))} kein PDF${num('skipped')?`, ${n(num('skipped'))} von wartenden Servern ausgelassen`:''}`;

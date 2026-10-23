@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import {useEffect,useRef,useState,useMemo} from 'react';
 import {adminHref} from '@/components/admin-chrome';
-import {AdminPageHead,AdminChoice,Alert,Kpis,SectionHelp,StandLine,mm} from '@/components/admin-ui';
+import {AdminPageHead,AdminChoice,Alert,Kpis,SectionHelp,StandLine} from '@/components/admin-ui';
 import {FILTER_HELP,HELP,JOB_STATE_HELP,MAP_HELP,STATE_HELP,TERMS} from '@/components/admin-texts';
 import {confirmDialog} from '@/components/ratsmonitor/components/ConfirmDialog';
 import {AdminProcessingMap} from '@/components/admin-processing-map';
@@ -16,7 +16,7 @@ import {fetchDashboard} from '@/components/admin-store';
 import {SourceNotes} from '@/components/admin-source-notes';
 import {AdminRunDebug} from '@/components/admin-run-debug';
 import type {AdminDashboard,AdminSource,PipelineJob} from '@/shared/admin-types';
-const n=(v:number)=>v.toLocaleString('de-DE');
+import {n,mm} from '@/components/admin-format';
 const termHelp=(t:string)=>TERMS.find(x=>x.term===t)?.text;
 const date=(s:string|null|undefined)=>s?new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'}):'Noch nicht erfasst';
 const stateNames:Record<string,string>={queued:'Ausstehend',running:'Läuft',completed:'Gespeichert',partial:'Teilstand gespeichert',failed:'Fehlgeschlagen',unavailable:'Keine Quelle',unknown:'Ausgang prüfen',cancelled:'Beendet',deferred:'Zurückgestellt'};

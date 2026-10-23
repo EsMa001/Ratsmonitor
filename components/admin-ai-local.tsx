@@ -1,9 +1,10 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {Check,ChevronLeft,ChevronRight,Copy,LoaderCircle,RefreshCw} from 'lucide-react';
-import {AdminChoice,dd} from '@/components/admin-ui';
+import {AdminChoice} from '@/components/admin-ui';
 import {HISTORY_WINDOWS} from '@/shared/history-window.mjs';
 import type {AdminDashboard,AdminSource} from '@/shared/admin-types';
+import {day} from '@/components/admin-format';
 
 type Coverage={total:number;available:number;missing:number;partial:number;complete:boolean};
 type LocalArticle={id:string;title:string;regionId:string;eventDate:string;state:string;ready:boolean;coverage:Coverage;inputHash:string;legacy:boolean;agent?:string;expiresAt?:string;attempts?:unknown;lastError?:string};
@@ -24,7 +25,7 @@ function AttemptDetails({article}:{article:LocalArticle}){
  if(!article.lastError&&!attempts.length&&!article.agent)return null;
  return <details className="admin-ai-local-details"><summary>Details</summary>
   {article.lastError&&<p>{article.lastError}{typeof article.attempts==='number'&&article.attempts>0&&<small>{number(article.attempts)} {article.attempts===1?'Versuch':'Versuche'}</small>}</p>}
-  {attempts.map(attempt=><p key={attempt.kind}>{attempt.reason}{attempt.count!==null&&<small>{number(attempt.count)} {attempt.count===1?'Versuch':'Versuche'}{attempt.at?' · '+dd(attempt.at):''}</small>}</p>)}
+  {attempts.map(attempt=><p key={attempt.kind}>{attempt.reason}{attempt.count!==null&&<small>{number(attempt.count)} {attempt.count===1?'Versuch':'Versuche'}{attempt.at?' · '+day(attempt.at):''}</small>}</p>)}
   {article.agent&&<p>{article.agent}{article.expiresAt&&<small>Reserviert bis {new Date(article.expiresAt).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'})}</small>}</p>}
  </details>;
 }
@@ -101,13 +102,13 @@ export function AdminAiLocal({sources,selected,revision,legacyJob}:{sources:Admi
     <tbody>{items.map(article=><tr key={article.id} className={selectedIds.has(article.id)?'is-selected':''}>
      <td className="admin-ai-local-select"><input type="checkbox" aria-label={article.title+' auswählen'} checked={selectedIds.has(article.id)} disabled={loading} onChange={event=>toggle(article.id,event.target.checked)}/></td>
      <td className="admin-ai-local-article"><a href={'/beschluss/'+encodeURIComponent(article.id)} target="_blank" rel="noopener noreferrer">{article.title}</a><small>{regionNames.get(article.regionId)||article.regionId}</small><code>{article.id}</code></td>
-     <td data-label="Sitzung">{dd(article.eventDate)}</td>
+     <td data-label="Sitzung">{day(article.eventDate)}</td>
      <td data-label="Gespeicherte Texte"><span>{number(article.coverage.available)} / {number(article.coverage.total)}</span><small>{article.coverage.missing>0?number(article.coverage.missing)+' fehlen':article.coverage.partial?'Teilweise lesbar':article.coverage.complete?'Vollständig':'Kein Sachtext'}</small></td>
      <td data-label="Bearbeitungsstand"><span className={article.state==='completed'?'admin-ai-local-completed':''}>{stateNames[article.state]||article.state}</span><AttemptDetails article={article}/></td>
     </tr>)}</tbody>
    </table>}
   </div>
   {data&&<div className="admin-ai-local-pagination"><small>{number(data.checked)} Einträge geprüft</small><div><button type="button" className="admin-ai-local-icon" title="Vorherige Seite" aria-label="Vorherige Seite" disabled={loading||page===0} onClick={previousPage}><ChevronLeft size={20}/></button><span>Seite {number(page+1)}</span><button type="button" className="admin-ai-local-icon" title="Weitere Berichte" aria-label="Weitere Berichte" disabled={loading||!data.nextCursor} onClick={nextPage}><ChevronRight size={20}/></button></div></div>}
-  {legacyJob&&<details className="admin-ai-local-legacy" id="abruf-kiauftrag"><summary>Früherer KI-Auftrag · {number(legacyJob.applied)} / {number(legacyJob.count)} gespeichert</summary><p>{legacyJob.status==='prepared'?'Reserviert':legacyJob.status==='cancelled'?'Verworfen':'Abgeschlossen'} · {dd(legacyJob.createdAt)}</p><code>{legacyJob.id}</code><progress value={legacyJob.applied} max={legacyJob.count||1} aria-label="Gespeicherte Berichte des früheren KI-Auftrags"/></details>}
+  {legacyJob&&<details className="admin-ai-local-legacy" id="abruf-kiauftrag"><summary>Früherer KI-Auftrag · {number(legacyJob.applied)} / {number(legacyJob.count)} gespeichert</summary><p>{legacyJob.status==='prepared'?'Reserviert':legacyJob.status==='cancelled'?'Verworfen':'Abgeschlossen'} · {day(legacyJob.createdAt)}</p><code>{legacyJob.id}</code><progress value={legacyJob.applied} max={legacyJob.count||1} aria-label="Gespeicherte Berichte des früheren KI-Auftrags"/></details>}
  </section>;
 }

@@ -4,8 +4,8 @@ import {useCallback,useEffect,useState,type ReactNode} from 'react';
 import {AdminPageHead,Kpis} from '@/components/admin-ui';
 import {Icon} from '@/components/admin-icons';
 import {adminHref,type AdminPage} from '@/components/admin-chrome';
-import {when,clock} from '@/components/admin-pdf-parts';
 import {result} from '@/components/admin-pipeline-parts';
+import {n,pct,gb,when,clock} from '@/components/admin-format';
 
 /* Startseite der Administration: der Stand auf einen Blick. Liest nur, was die Seiten selbst lesen (Abdeckung
    /api/admin/coverage, Bestand /api/admin/summary, Nacht und Fehler /api/admin/debug, Platz /api/admin/speicher, Jobs
@@ -20,9 +20,6 @@ type Debug={units:{at:string;inactive:string[];stale:boolean}|null;importJob:{st
 type Disk={disk:{at:string;disk:{total:number;free:number}|null;backups:{list:{name:string;at?:string|null}[]}}|null};
 type Jobs={jobs:{id:string;label:string;next:string|null;run:{running?:{startedAt:string}|null}|null}[]};
 const REFRESH_MS=5*60*1000;
-const n=(v:number,d=0)=>v.toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:d});
-const pct=(a:number,b:number)=>b?n(100*a/b,1)+' %':'–';
-const gb=(b:number)=>n(b/1e9,b<1e10?1:0)+' GB';
 const IMPORT_STATE:Record<string,string>={completed:'gespeichert',partial:'teilweise',failed:'gescheitert',deferred:'zurückgestellt',queued:'wartet',running:'läuft',unknown:'unklar',unavailable:'ohne Quelle',cancelled:'beendet'};
 
 /** Liest eine Quelle; null = fehlgeschlagen, undefined = lädt noch. */

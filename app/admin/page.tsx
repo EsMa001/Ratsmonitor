@@ -13,7 +13,7 @@ import {staticVersion} from '@/server/repositories/admin';
 import {AdminOverview} from '@/components/admin-overview';
 import {AdminAtlas} from '@/components/admin-atlas';
 import {AdminMobile} from '@/components/admin-mobile';
-import {AdminForecast} from '@/components/admin-forecast';
+import {AdminEstimate} from '@/components/admin-estimate';
 import {AdminRuleTexts} from '@/components/admin-rule-texts';
 import {AdminTodo} from '@/components/admin-todo';
 import {AdminSocial} from '@/components/admin-social';
@@ -79,7 +79,8 @@ async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobil
  if(page==='nacht')return frame(<AdminDebug/>);
  if(page==='fehler')return frame(<AdminFehler/>);
  if(page==='altbestand')return frame(<AdminAltbestand/>);
- if(page==='hochrechnung')return frame(<AdminForecast/>);
+ // Hochrechnung: liest nur; Kopfband, Laden, Fehler und „Neu berechnen“ zeichnet AdminEstimate.
+ if(page==='hochrechnung')return frame(<AdminEstimate revision={0}/>);
  if(page==='atlas')return frame(<AdminAtlas/>);
  if(page==='abdeckung')return frame(<AdminOverview/>);
  if(page==='start')return frame(<AdminCockpit/>);

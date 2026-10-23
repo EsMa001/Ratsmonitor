@@ -1,15 +1,14 @@
 'use client';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
-import {AdminChoice,Alert,Kpis,SectionHelp,SectionTodo,Skeleton,dd} from '@/components/admin-ui';
+import {AdminChoice,Alert,Kpis,SectionHelp,SectionTodo,Skeleton} from '@/components/admin-ui';
 import {AC} from '@/components/admin-colors';
 import {HELP} from '@/components/admin-texts';
 import {mergeAreas,rangeStart,timelineSeries,timelineStats,TIMELINE_BUCKETS,TIMELINE_RANGES,TIMELINE_BASES} from '@/shared/timeline.mjs';
 import type {Stand} from '@/shared/admin-types';
+import {n,day} from '@/components/admin-format';
 type Dataset={basis:string;asOf:string;today:string;total:number;days:string[];areas:Record<string,[number,number][]>;undated:Record<string,number>;stand?:Stand};
 type Point={start:string;count:number;total:number};
-const n=(v:number,digits=0)=>v.toLocaleString('de-DE',{maximumFractionDigits:digits,minimumFractionDigits:digits});
-const day=(s:string)=>new Date(s+'T12:00:00Z').toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',timeZone:'UTC'});
 const bucketLabel=(start:string,bucket:string)=>bucket==='month'?new Date(start+'T12:00:00Z').toLocaleDateString('de-DE',{month:'long',year:'2-digit',timeZone:'UTC'}):bucket==='week'?'Woche ab '+day(start):day(start);
 // Upper axis bound: the next "round" number (1, 2, 2.5 or 5 times a power of ten).
 const niceMax=(v:number)=>{if(v<=4)return 4;const p=10**Math.floor(Math.log10(v));return [1,2,2.5,5,10].map(m=>m*p).find(m=>m>=v)!;};
@@ -72,8 +71,8 @@ export function AdminTimeline({selected,version,initial}:{selected:Set<string>;v
    <div className="mt-6"><Kpis label="Kennzahlen zum Verlauf" items={[
     {label:'Bestand',value:n(sr.total),note:'Berichte bis heute'+(sr.after?`; dazu ${n(sr.after)} für schon angekündigte Sitzungen`:'')},
     {label:'Neu pro Tag',value:n(st.perDay,1),note:`Durchschnitt über ${n(st.days)} Kalendertage · ${n(st.perActiveDay,1)} an den ${n(st.activeDays)} Tagen mit Zulauf`},
-    {label:'Neu pro Woche',value:n(st.perWeek,1),note:'pro Tag × 7 · '+(st.peakWeek?`Spitzenwoche ab ${dd(st.peakWeek.start)}: ${n(st.peakWeek.count)}`:'Kein Zulauf im Zeitraum')},
-    {label:'Hochgerechnet pro Jahr',value:n(Math.round(st.perYear)),note:'pro Tag × 365 · '+(st.peakDay?`Spitzentag ${dd(st.peakDay.day)}: ${n(st.peakDay.count)}`:'Kein Zulauf im Zeitraum')}]}/></div>
+    {label:'Neu pro Woche',value:n(st.perWeek,1),note:'pro Tag × 7 · '+(st.peakWeek?`Spitzenwoche ab ${day(st.peakWeek.start)}: ${n(st.peakWeek.count)}`:'Kein Zulauf im Zeitraum')},
+    {label:'Hochgerechnet pro Jahr',value:n(Math.round(st.perYear)),note:'pro Tag × 365 · '+(st.peakDay?`Spitzentag ${day(st.peakDay.day)}: ${n(st.peakDay.count)}`:'Kein Zulauf im Zeitraum')}]}/></div>
    <p className="admin-note">{n(st.total)} neue Berichte vom {day(view.from)} bis {day(view.to)}. {basis==='event'?'Ein Bericht zählt an dem Tag, an dem er erstmals auf einer Tagesordnung stand. So fällt der Zulauf auch im laufenden Betrieb an.':`Ein Bericht zählt am Tag seiner ersten Speicherung. Dieses Datum wird erst seit Oktober 2026 erfasst: ${n(view.merged.undated)} Berichte der Auswahl haben keines und stehen nur im Bestand, nicht im Zulauf.`} Der Durchschnitt unterschätzt den künftigen Zulauf, wenn Gebiete der Auswahl nicht für den ganzen Zeitraum eingelesen sind.</p>
    <div className="admin-timeline-charts">
     <figure><figcaption>Neue Berichte je {TIMELINE_BUCKETS[bucket as keyof typeof TIMELINE_BUCKETS]}</figcaption><Chart points={sr.points} value={p=>p.count} kind="bars" bucket={bucket} color={AC.accent} unit="neue Berichte" hover={hover} onHover={setHover}/></figure>

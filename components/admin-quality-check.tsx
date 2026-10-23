@@ -4,11 +4,10 @@ import {ArrowUpRight} from 'lucide-react';
 import {Alert,SectionHelp} from '@/components/admin-ui';
 import {HELP,QUALITY_EXPLAIN,ZUSTAND} from '@/components/admin-texts';
 import {QUALITY_CHECKS,QUALITY_GROUPS,qualitySummary} from '@/shared/quality-checks.mjs';
+import {n,when} from '@/components/admin-format';
 type Sample={id?:string;regionId?:string;title?:string;date?:string;count?:number;ids?:string[];topicId?:string;committee?:string;regions?:string[];url?:string};
 type Result={id:string;count:number;groups?:number;samples:Sample[];checkedAt:string;ms:number;revision:number;stale?:boolean};
 type Stored={checks:Record<string,Result>;currentRevision:number};
-const n=(v:number)=>v.toLocaleString('de-DE');
-const when=(iso:string)=>new Date(iso).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'});
 // A failed connection (the server restarts, the computer sleeps) is tried again for two minutes; the state of the build is kept
 // on the server, so counting continues where it stopped.
 async function withRetry<T>(call:()=>Promise<T>,onWait?:(waiting:boolean)=>void):Promise<T>{

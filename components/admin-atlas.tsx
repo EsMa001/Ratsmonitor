@@ -1,7 +1,7 @@
 'use client';
 import {memo,useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {X} from 'lucide-react';
-import {AdminPageHead,AdminChoice,Kpis,SectionHelp,SectionTodo,PageSkeleton,Skeleton,Legend,Alert,dd,mm,short,standText,StandLine} from '@/components/admin-ui';
+import {AdminPageHead,AdminChoice,Kpis,SectionHelp,SectionTodo,PageSkeleton,Skeleton,Legend,Alert,short,standText,StandLine} from '@/components/admin-ui';
 import {AC,HATCH_CSS,COVERAGE,bucketColor,ACCESS_COLOR} from '@/components/admin-colors';
 import {ATLAS_TODO,COL_HELP,HELP} from '@/components/admin-texts';
 import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
@@ -9,6 +9,7 @@ import type {Stand} from '@/shared/admin-types';
 import {adminHref} from '@/components/admin-chrome';
 import {REACH_BUCKETS,FRESH_BUCKETS,reachBucket,freshBucket} from '@/shared/coverage.mjs';
 import {VG_GROUPS} from '@/shared/vg-groups.mjs';
+import {n,pct,mio,day,mm} from '@/components/admin-format';
 // Same data as the standalone gap atlas (scripts/dashboard/page.html), read live: the catalog and the atlas file of
 // the deployed code, reports and imports from the database. Refreshed every five minutes while the page is open.
 type Area={id:string;n:string;l:string;g:string;t:string;k:'c'|'i'|'d';p:number;m?:number;c:string;z:string;r?:number;u?:string;o?:string;v?:string;zc?:string;rb?:string;rn?:string;at?:string;cs?:string;nc?:number[];rs?:{url:string;hint?:string;proof?:string}[];cnt?:number;last?:string;st?:'failed'|'partial';fe?:string;le?:string;rk?:string;fk?:string};
@@ -22,9 +23,6 @@ type View={x:number;y:number;w:number;h:number};
 const FILES=['/geo/germany.json','/geo/de-areas.json'],FREE_FILE='/geo/de-free.json',FREE_FILL='var(--rm-c200)',FREE_LINE='var(--rm-c400)',FREE_CSS=`repeating-linear-gradient(135deg,${'var(--rm-c200)'} 0 2px,${'var(--rm-c400)'} 2px 3px)`,REFRESH_MS=5*60*1000,PAGE=80,DIM=AC.zero;
 // Reach (first agenda day) and freshness (latest meeting day) of the reports per area: shared/coverage.mjs.
 const REACH_IDS=REACH_BUCKETS.map(b=>b.id),FRESH_IDS=FRESH_BUCKETS.map(b=>b.id),REACH_ITEMS=REACH_BUCKETS.map(b=>({...b,color:bucketColor('reach',b)})),FRESH_ITEMS=FRESH_BUCKETS.map(b=>({...b,color:bucketColor('fresh',b)})),REACH_COLOR=new Map<string,string>(REACH_ITEMS.map(b=>[b.id,b.color])),FRESH_COLOR=new Map<string,string>(FRESH_ITEMS.map(b=>[b.id,b.color])),COLOR_MODES=['cat','access','reports','reach','fresh'];
-const n=(v:number)=>v.toLocaleString('de-DE');
-const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:1,minimumFractionDigits:1})+' %':'–';
-const mio=(v:number)=>v>=1e6?(v/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})+' Mio.':n(v);
 const time=(s:string)=>new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'});
 const isCityLevel=(a:Area)=>a.k!=='d';
 const typeLabel=(a:Area)=>a.k==='d'?'Kreis':a.k==='i'?a.t+' (kreisfrei)':a.t;
@@ -38,7 +36,7 @@ const Regions=memo(function Regions({shapes,fills,selected,fine,onPick,onHover}:
  return <>{shapes.map(r=><path key={r.id} d={r.path} fill={fills.get(r.id)||DIM} stroke="var(--rm-white)" strokeWidth={fine?.3:.5} vectorEffect="non-scaling-stroke" className="admin-map-region" onClick={()=>onPick(r.id)} onMouseEnter={()=>onHover(r.id)} onMouseLeave={()=>onHover(null)}/>)}{selected&&shapes.filter(r=>r.id===selected).map(r=><path key={'sel-'+r.id} d={r.path} fill="none" stroke={AC.selection} strokeWidth="2.2" vectorEffect="non-scaling-stroke" pointerEvents="none"/>)}</>;
 });
 /** Admin page "Lückenatlas". Reads only. */
-export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
+export function AdminAtlas(){
  const [data,setData]=useState<Atlas|null>(null),[failed,setFailed]=useState({at:-1,text:''}),[attempt,setAttempt]=useState(0),[geo,setGeo]=useState<{shapes:Shape[];states:string[];free:Free[]}|null>(null),[freeHover,setFreeHover]=useState<Free|null>(null),[geoError,setGeoError]=useState(false);
  const [cats,setCats]=useState<Set<string>|null>(null),[access,setAccess]=useState<Set<string>|null>(null),[reach,setReach]=useState<Set<string>|null>(null),[fresh,setFresh]=useState<Set<string>|null>(null),[colorBy,setColorBy]=useState('cat'),[layer,setLayer]=useState('city'),[land,setLand]=useState('all'),[type,setType]=useState('all'),[operator,setOperator]=useState('all'),[query,setQuery]=useState(''),[sort,setSort]=useState('pop'),[selected,setSelected]=useState<string|null>(null),[hover,setHover]=useState<string|null>(null),[shown,setShown]=useState(PAGE);
  const [view,setView]=useState<View|null>(null);const svgRef=useRef<SVGSVGElement>(null),drag=useRef<{x:number;y:number;view:View;moved:boolean}|null>(null),lastDrag=useRef(0);
@@ -177,8 +175,8 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
       <div className="admin-atlas-detail-head"><div><p className="text-[12px] text-slate-500">{typeLabel(detail)} · {data.lands[detail.l]?.name}</p><h2>{detail.n}</h2><p className="admin-pill">Grund: <Swatch color={catById.get(detail.c)?.color}/>{catById.get(detail.c)?.label} · Zugang: <Swatch color={accById.get(detail.z)?.color}/>{accById.get(detail.z)?.label}</p></div><button type="button" className="admin-atlas-close" aria-label="Schließen" onClick={()=>setSelected(null)}><X size={18}/></button></div>
       <dl className="admin-atlas-facts">
        <div><dt title="Amtlicher Gemeindeschlüssel (AGS)">Gemeindeschlüssel</dt><dd className="admin-mono">{detail.g}</dd></div><div><dt>Einwohner</dt><dd>{detail.p?n(detail.p)+(detail.k==='d'?' (Kreis, umfasst seine Gemeinden)':''):'–'}</dd></div>{detail.m&&<div><dt>Mitgliedsgemeinden</dt><dd>{n(detail.m)}</dd></div>}
-       {detail.v&&<div><dt title="Leseverfahren, dahinter der Zugangsweg, wenn er abweicht">Verfahren</dt><dd>{detail.v}{detail.zc&&detail.zc!==detail.v?' · '+detail.zc:''}</dd></div>}{detail.rn&&<div><dt>robots.txt</dt><dd>{detail.rn}</dd></div>}{detail.cs&&<div><dt title="Datum der schriftlichen Zustimmung von Gemeinde oder Betreiber">Freigabe</dt><dd>vom {dd(detail.cs)}</dd></div>}{detail.at&&<div><dt title="Tag der letzten Prüfung der Quelle">Geprüft</dt><dd>{dd(detail.at)}</dd></div>}
-       <div><dt>Berichte</dt><dd>{detail.cnt?n(detail.cnt)+(detail.st==='partial'?' · Teilstand':''):'noch keine'}{detail.st==='failed'?' · letzter Abruf fehlgeschlagen':''}</dd></div>{detail.fe&&<div><dt>Sitzungen</dt><dd>{dd(detail.fe)} bis {dd(detail.le)}</dd></div>}{detail.last&&<div><dt>Letzter Abruf</dt><dd>{time(detail.last)}</dd></div>}
+       {detail.v&&<div><dt title="Leseverfahren, dahinter der Zugangsweg, wenn er abweicht">Verfahren</dt><dd>{detail.v}{detail.zc&&detail.zc!==detail.v?' · '+detail.zc:''}</dd></div>}{detail.rn&&<div><dt>robots.txt</dt><dd>{detail.rn}</dd></div>}{detail.cs&&<div><dt title="Datum der schriftlichen Zustimmung von Gemeinde oder Betreiber">Freigabe</dt><dd>vom {day(detail.cs)}</dd></div>}{detail.at&&<div><dt title="Tag der letzten Prüfung der Quelle">Geprüft</dt><dd>{day(detail.at)}</dd></div>}
+       <div><dt>Berichte</dt><dd>{detail.cnt?n(detail.cnt)+(detail.st==='partial'?' · Teilstand':''):'noch keine'}{detail.st==='failed'?' · letzter Abruf fehlgeschlagen':''}</dd></div>{detail.fe&&<div><dt>Sitzungen</dt><dd>{day(detail.fe)} bis {day(detail.le)}</dd></div>}{detail.last&&<div><dt>Letzter Abruf</dt><dd>{time(detail.last)}</dd></div>}
        {detail.u&&<div><dt>{catById.get(detail.c)?.open?'Gefundene Adresse':'Adresse'}</dt><dd><a className="admin-mono" href={detail.u} target="_blank" rel="noreferrer noopener">{detail.u}</a></dd></div>}
       </dl>
       {detail.r!==undefined&&<div className="admin-atlas-block"><BlockTitle>Grund laut Quellensuche</BlockTitle><blockquote style={{['--c' as string]:catById.get(detail.c)?.color}}>{data.texts[detail.r]}</blockquote></div>}

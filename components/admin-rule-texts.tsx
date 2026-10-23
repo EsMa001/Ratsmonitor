@@ -1,5 +1,5 @@
 'use client';
-/* Admin „Themen & Texte“ (seit 22.10.2026): Kernstück ist das Modell (requirements/modell-konzept.md). Es beantwortet je Bericht
+/* Admin „Einordnungsmodell“ (bis 23.10.2026 „Themen & Texte“, seit 22.10.2026): Kernstück ist das Modell (requirements/modell-konzept.md). Es beantwortet je Bericht
    neun Fragen (Begriffsbuch requirements/begriffsbuch-kern.md); die früheren Regeln für Art, Thema, „Was geschieht“, Dokumente
    und die Signal-Regeln werden nicht mehr angewendet und hier nicht mehr gezeigt. Darunter Lauf, Themen, Zusammenfassung (Kernsätze aus dem
    Modell, shared/model-summary-quality.json) und Fakten (die bleiben Regeln). Messwerte des Modells: shared/model-quality.json (schreibt scripts/model/train.mjs), Fassung:
@@ -8,7 +8,6 @@ import {isStep} from '@/shared/pipeline-terms.mjs';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {StandLine} from '@/components/admin-stand';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
-import {when,dur} from '@/components/admin-pdf-parts';
 import type {Stand} from '@/shared/admin-types';
 import {THEMES,SUBTOPICS} from '@/shared/themes.mjs';
 import QUALITY from '@/shared/rule-quality.json';
@@ -19,6 +18,7 @@ import {MAP_FACTS} from '@/shared/map-facts.mjs';
 import {MODEL_COVERED} from '@/shared/model/fact-gate.mjs';
 import {SUBSUBS} from '@/shared/model/subsubs.mjs';
 import {KIND_NAMES,STATUS_NAMES,PROCESS_NAMES,STEP_NAMES,SERVICE_NAMES,APPLICANT_NAMES,DOCTYPE_NAMES} from '@/shared/model/names.mjs';
+import {n,day,when,dur} from '@/components/admin-format';
 type Counts={online:number;aiSummaries:number;ruleSummaries:number;ruleScoreSum:number;pdfArticles:number;aiLabels:number;unlabelled:number};
 type Summary={counts:Counts;stand?:Stand;statsPending?:number};
 type Step={name:string;seconds:number;ok:boolean;summary:Record<string,unknown>|null};
@@ -27,9 +27,7 @@ type JobState={setting:{enabled:boolean;time?:string};run:{lastStart?:string;las
 type Q={acc:number|null;cov?:number|null;n:number;sureAcc?:number|null;sureShare?:number|null};
 type FactRow={id:string;name:string;version:string;quality:number|null;coverage:number|null;sample:string;date:string;note?:string;what?:string;lock?:string};
 const RESULT:Record<string,string>={ok:'fertig',done:'fertig',failed:'mit Fehler',stopped:'angehalten'};
-const n=(v:number)=>v.toLocaleString('de-DE');
 const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:a/b<.01?2:a/b<.1?1:0})+' %':'–';
-const shortDate=(d:string)=>d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4);
 /* Ziel für Genauigkeit und Abdeckung, wie bei den früheren Regeln */
 const GOAL=QUALITY.target.quality;
 /* Die neun Fragen (Begriffsbuch Abschnitt 0) mit den Messwerten aus shared/model-quality.json; list: Liste mit Abdeckung,
@@ -191,7 +189,7 @@ export function AdminRuleTexts(){
    <p className="admin-note mt-3">Ohne Auszug aus der Vorlage zeigen Artikel und Trefferliste einen Überblick, der aus den Antworten des Modells, den Sitzungen und der Dokumentliste entsteht (shared/model/overview.mjs), etwa: „Antrag einer Fraktion (SPD) zum Thema Straßen, Brücken und Beleuchtung (Mobilität &amp; Verkehr). Am 03.09.26 im Gremium „Bauausschuss“ empfohlen, am 01.10.26 im Gremium „Rat“ beschlossen. Unterlagen: Vorlage und zwei Anlagen.“ Er nennt nur sichere Antworten und übernimmt nichts aus dem Text.</p>
    <p className="admin-note mt-3">Was jede Antwort genau bedeutet, steht im Begriffsbuch (requirements/begriffsbuch-kern.md), Aufbau und Messung im Konzept (requirements/modell-konzept.md). Neue Kategorien entstehen dort und mit neuen Beispielen, nicht durch Einzelregeln.</p>
    <h3 className="mt-6">Wie gut es ist</h3>
-   <p className="mt-3 text-[14px] text-slate-700">Encoder <span className="font-medium text-slate-900">{MANIFEST.encoder.version}</span> · Köpfe <span className="font-medium text-slate-900">{MANIFEST.heads.version}</span> · gelernt {shortDate(MANIFEST.heads.trainedAt)} · gemessen {shortDate(MODEL_QUALITY.measuredAt)}</p>
+   <p className="mt-3 text-[14px] text-slate-700">Encoder <span className="font-medium text-slate-900">{MANIFEST.encoder.version}</span> · Köpfe <span className="font-medium text-slate-900">{MANIFEST.heads.version}</span> · gelernt {day(MANIFEST.heads.trainedAt)} · gemessen {day(MODEL_QUALITY.measuredAt)}</p>
    <p className="admin-note mt-1">Ein Klick auf den Namen einer Frage zeigt alle möglichen Antworten. Genauigkeit: so oft stimmt die Antwort. Abdeckung (bei Listen wie Thema): so oft findet es das Richtige überhaupt. Sicher: Anteil der Antworten ab 0,7 und wie oft diese stimmen. Gemessen an {MODEL_QUALITY.sample}, die das Modell beim Lernen nicht gesehen hat. {MODEL_QUALITY.note} Ziel {GOAL} %.</p>
    <ul className="m-0 mt-4 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{QUESTIONS.map(qn=>{const q=MQ[qn.key];return <li key={qn.key} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
     <div className="min-w-0">
@@ -220,7 +218,7 @@ export function AdminRuleTexts(){
   <section id="regeltexte-themen" className="admin-section">
    <div className="admin-section-heading"><h2>Themen</h2></div>
    <p className="admin-note">Anteil der Sachvorgänge je Thema (Ablauf und Personalien zählen nicht), darunter die Unterthemen; ein Vorgang kann mehrere Unterthemen haben. Gezählt am Ende jedes Laufs{job?.last?.finishedAt?', zuletzt '+when(job.last.finishedAt):''}.</p>
-   {!themeRows.length?<p className="admin-empty">Nach dem nächsten Lauf von „Themen & Texte“.</p>:<div className="mt-4">{themeRows.map(([id,v])=><div key={id} className="admin-bar-row">
+   {!themeRows.length?<p className="admin-empty">Nach dem nächsten Lauf von „Verarbeitung, nachts“.</p>:<div className="mt-4">{themeRows.map(([id,v])=><div key={id} className="admin-bar-row">
     <div><span>{THEME_NAME[id]||id}</span><span>{pct(v,themeTotal)} · {n(v)}</span></div>
     <div className="admin-bar"><span style={{width:(100*v/themeTotal)+'%'}}/></div>
     {id!=='unklar'&&<small className="mt-1 block text-[12px] text-slate-500">{subsOf(id).map((u:{name:string;n:number})=>u.name+' '+pct(u.n,v)).join(' · ')}</small>}
@@ -233,7 +231,7 @@ export function AdminRuleTexts(){
     <div className="min-w-0">
      <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{k.name}</span>{r?.what&&<Info text={r.what}/>}</div>
      <p className="m-0 mt-1 text-[14px] leading-snug text-slate-600">{k.why}</p>
-     {r&&<small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date)].filter(Boolean).join(' · ')}</small>}
+     {r&&<small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,day(r.date)].filter(Boolean).join(' · ')}</small>}
     </div>
     <Meter label="Qualität" v={r?.quality} min={GOAL}/>
     <div/>
@@ -244,7 +242,7 @@ export function AdminRuleTexts(){
    <p className="admin-note">Beides liest den Text des Hauptdokuments, das das Modell wählt. Die Zusammenfassung besteht aus wörtlichen Sätzen des Dokuments: das Modell wählt die Kernsätze (Kurzfassung ein bis zwei, Langfassung bis sechs Sätze), nur bei Sachpunkten. Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst diese. Fakten sind an das Modell gebunden: ein Wert zählt nur bei passendem Unterthema (Hebesatz bei Steuern und Haushalt, Gebühren bei Wasser und Abwasser, Bebauungsplan bei Bauleitplanung und Erschließung; shared/model/fact-gate.mjs). So fallen Vergleichs- und Hintergrundwerte weg, etwa ein Bebauungsplan in einem Bauantrag.</p>
    <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen und Fakten" items={sum}/></div>
    <h3 className="mt-6">Kernsätze: Modell und frühere Regel</h3>
-   <p className="admin-note mt-1">Gemessen an {SUMMARY_QUALITY.model.n} Prüfberichten ({SUMMARY_QUALITY.version}, {shortDate(SUMMARY_QUALITY.measuredAt)}), die das Modell nicht gelernt hat; Vergleich ist die Auswahl von Hand nach Begriffsbuch Abschnitt 12. Die Zahlen sind eher zu günstig, weil Lern- und Prüfberichte aus derselben Stichprobe stammen.</p>
+   <p className="admin-note mt-1">Gemessen an {SUMMARY_QUALITY.model.n} Prüfberichten ({SUMMARY_QUALITY.version}, {day(SUMMARY_QUALITY.measuredAt)}), die das Modell nicht gelernt hat; Vergleich ist die Auswahl von Hand nach Begriffsbuch Abschnitt 12. Die Zahlen sind eher zu günstig, weil Lern- und Prüfberichte aus derselben Stichprobe stammen.</p>
    <ul className="m-0 mt-2 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{SUMMARY_ROWS.map(r=><li key={r.key} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
     <div className="min-w-0"><span className="font-medium text-slate-900">{r.name}</span><small className="mt-1 block text-[12px] leading-snug text-slate-500">{r.what}</small></div>
     <Meter label="Modell" v={SUMMARY_QUALITY.model[r.key]} min={r.min}/>
@@ -256,7 +254,7 @@ export function AdminRuleTexts(){
     <div className="min-w-0">
      <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
       <span className={'rounded-full px-2 py-0.5 text-[12px] '+(ON_MAP.has(r.id)?'bg-teal-50 text-teal-700':'bg-slate-100 text-slate-500')}>{ON_MAP.has(r.id)?'auf der Karte':r.quality==null?'nicht gemessen':r.quality<GOAL?'unter '+GOAL+' %':r.lock||'noch gesperrt'}</span></div>
-     <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
+     <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,day(r.date),xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
     </div>
     <Meter label="Qualität" v={r.quality} min={GOAL}/>
     {xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={10}/>:<div/>}

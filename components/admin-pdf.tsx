@@ -5,7 +5,8 @@ import Link from 'next/link';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
 import {adminHref} from '@/components/admin-chrome';
 import {Icon} from '@/components/admin-icons';
-import {n,pct,gb,when,clock,day,month,dur,KIND,MonthBars,SpaceBar,ProcessFlow,HostList,RunList,QualityTable,scorePct,type MonthRow,type Host,type Run,type Quality} from '@/components/admin-pdf-parts';
+import {month,KIND,MonthBars,SpaceBar,ProcessFlow,HostList,RunList,QualityTable,scorePct,type MonthRow,type Host,type Run,type Quality} from '@/components/admin-pdf-parts';
+import {n,pct,gb,when,clock,day,dur} from '@/components/admin-format';
 
 /* Reiter „PDF-Import“ (requirements/admin-pdf-ablage-konzept.md): was gerade läuft, wie vollständig die Ablage ist, Texte und
    Texte, Platz, wie der Import arbeitet, Fehler und Server, Protokoll. Daten: /api/admin/pdf-ablage
@@ -231,7 +232,7 @@ export function AdminPdf(){
      value:s?`${n(s.texts.ocrWaitingAll??s.texts.ocrWaiting)} Dateien warten`:undefined},
     {icon:'gauge',title:'Stand zählen',what:'Zählt alles auf dieser Seite neu: verlinkt, geladen, Text, Fehler, Server, Platz.',
      rules:['Am Ende jedes Laufs und mit „Stand neu zählen“'],value:s?`zuletzt ${when(s.at)}`:undefined},
-    {icon:'summary',title:'Weiter: Verarbeitung',what:'Aus den abgelegten Texten entstehen Einordnung, Regel-Zusammenfassungen, Fakten, Suche und Zahlen für plenara.X (Job „Verarbeitung, nachts“, Reiter Themen & Texte); die KI liest dieselben Texte.',
+    {icon:'summary',title:'Weiter: Verarbeitung',what:'Aus den abgelegten Texten entstehen Einordnung, Regel-Zusammenfassungen, Fakten, Suche und Zahlen für plenara.X (Job „Verarbeitung, nachts“, Reiter Einordnungsmodell); die KI liest dieselben Texte.',
      rules:['Direkt nach „Extraktion, nachts“ (sie stößt ihn an), sonst zur Zeit aus Jobs & Zeitpläne','Oder dort per Knopf']},
    ]} when={['Tagespipeline: „Extraktion, nachts“ zur Zeit aus dem Reiter Jobs & Zeitpläne (Standard 05:30 Uhr), höchstens 2 Stunden, nach „Abruf, nachts“ (Standard 01:00 Uhr).','Nacharbeit: tagsüber automatisch, für Sitzungen der letzten 7 Tage (frühestens 12.10.2026).','Altbestand: Aufträge hier und auf der Seite Altbestand, nur zwischen 10 und 22 Uhr; jeder Lauf macht dort weiter, wo der vorige aufgehört hat.']}/>
   </section>

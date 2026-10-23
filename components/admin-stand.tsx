@@ -1,9 +1,9 @@
 'use client';
 import type {ReactNode} from 'react';
 import type {Stand} from '@/shared/admin-types';
+import {n} from '@/components/admin-format';
 // One line under the heading of every admin view: when its data was computed, how much changed since, and the action
 // that brings it up to date (requirements/admin-performance-konzept.md, 3.5).
-const n=(x:number)=>x.toLocaleString('de-DE');
 /** „08.10.26, 14:05“ (Europe/Berlin) */
 export const standText=(iso?:string|null)=>iso?new Date(iso).toLocaleString('de-DE',{timeZone:'Europe/Berlin',day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'–';
 const STALE_TITLE='Seit der Berechnung wurden Berichte gespeichert oder geändert. Die Zahlen stimmen für den genannten Stand; „Neu berechnen“ holt den Rest nach.';

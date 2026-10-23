@@ -191,7 +191,7 @@ Bausteine: `admin-chrome.tsx` (Rahmen und Menü), `admin-ui.tsx`, `admin-stand.t
 | Betrieb | `fehler` | `admin-fehler.tsx` | Fehler & Server (Fehlerspeicher Tagesbereich und Altbestand, wartende Server, Fehler im eigenen Code) |
 | Betrieb | `speicher` | `admin-storage.tsx` | Speicher & Sicherungen |
 | Planung | `todo` | `admin-todo.tsx` | To-do-Board (`docs/todo/todos.json`, auf dem Server `admin-todos-v1`) |
-| Planung | `hochrechnung` | `admin-forecast.tsx`, `admin-estimate.tsx` | Hochrechnung für Deutschland |
+| Planung | `hochrechnung` | `admin-estimate.tsx` | Hochrechnung für Deutschland |
 | Planung | `social` | `admin-social.tsx` | Social-Media-Vorschläge |
 
 Alle Admin-Seiten lesen nur gespeicherte Stände (`system_state`, kleine Tabellen), nie alle Berichte; GETs schreiben nie.

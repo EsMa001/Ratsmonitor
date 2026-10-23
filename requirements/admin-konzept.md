@@ -427,3 +427,15 @@ Die Mobilansicht `?seite=mobil` bleibt: Kopf mit Stand, drei Kacheln aus `withVg
   - Die Prüfung `ruleLabel` in `server/integrations/data-completeness.mjs` prüft noch `classification` (Titelregel). Sie muss im Backend auf das Modell umgestellt werden.
   - Die Texte zum „Titeltest“ bleiben, solange die Zahlen ihn noch enthalten.
 
+- **Schritt 2 (23.10.2026), noch nicht committet.** Erledigt ist:
+  - Die ungenutzten Texte aus `ZUSTAND`, `STATE_HELP` und `FILTER_HELP` sind entfernt.
+  - Unnötige Exporte sind entfernt (`stepSentence`, `RunDebugView`, `BUCKET_COLOR`).
+  - Die Hülle `admin-forecast.tsx` und die ungenutzten Props sind entfernt.
+  - Die Formathelfer stehen in `components/admin-format.ts` (`n`, `nOr`, `pct`, `mio`, `gb`, `size`, `day`, `mm`, `when`, `clock`, `dur`).
+  - „Themen & Texte“ heißt im Menü und auf der Seite „Einordnungsmodell“, Adresse unverändert `?seite=regeltexte`.
+- **Kleine Änderungen in der Anzeige durch Schritt 2:**
+  - Prozente werden mit höchstens einer Nachkommastelle angezeigt, nicht mehr fest („12 %“ statt „12,0 %“).
+  - Das Cockpit rechnet Gigabyte wie die Seite Speicher mit Basis 1024.
+  - Uhrzeiten stehen überall in Berliner Zeit.
+  - Bei fehlendem Wert steht „–“ statt „—“.
+- **Eigene Formate behalten:** Das Prozentformat in `admin-rule-texts.tsx` passt seine Nachkommastellen an. Die Hochrechnung hat ein eigenes Format für Anteile (`pct`) und für Speichergrößen (`bytes`).

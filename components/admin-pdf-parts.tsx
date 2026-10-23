@@ -2,19 +2,11 @@
 import {isStep,RUN_KIND_TERMS} from '@/shared/pipeline-terms.mjs';
 import {useState} from 'react';
 import {Icon} from '@/components/admin-icons';
+import {n,pct,gb,size,when,clock,day,dur} from '@/components/admin-format';
 
-/* Bausteine des Reiters „PDF-Import“ (components/admin-pdf.tsx): Zahlenformate, Monatsbalken, Platzbalken, Prozessablauf,
+/* Bausteine des Reiters „PDF-Import“ (components/admin-pdf.tsx): Monatsformat, Monatsbalken, Platzbalken, Prozessablauf,
    Server-Liste, Protokoll der Läufe. */
-export const n=(v?:number|null)=>(v??0).toLocaleString('de-DE');
-export const pct=(a:number,b:number)=>b?(Math.round((a/b)*1000)/10).toLocaleString('de-DE')+' %':'–';
-export const gb=(b?:number|null)=>b==null?'–':(b/1073741824).toLocaleString('de-DE',{maximumFractionDigits:1})+' GB';
-/** Größe mit passender Einheit (KB, MB, GB), für kleine Dateien neben großen */
-export const size=(b?:number|null)=>b==null?'–':b<1048576?`${Math.max(1,Math.round(b/1024)).toLocaleString('de-DE')} KB`:b<1073741824?`${(b/1048576).toLocaleString('de-DE',{maximumFractionDigits:1})} MB`:gb(b);
-export const when=(d?:string|null)=>d?new Date(d).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'–';
-export const clock=(d?:string|null)=>d?new Date(d).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'–';
-export const day=(d?:string|null)=>d?d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4):'–';
 export const month=(m?:string|null)=>m&&/^\d{4}-\d{2}$/.test(m)?m.slice(5,7)+'.'+m.slice(2,4):m||'–';
-export const dur=(s?:number|null)=>s==null?'–':s<90?`${s} s`:s<5400?`${Math.round(s/60)} min`:`${(s/3600).toLocaleString('de-DE',{maximumFractionDigits:1})} h`;
 /** Arten der Läufe und Aufträge */
 export const KIND:Record<string,string>=RUN_KIND_TERMS;
 

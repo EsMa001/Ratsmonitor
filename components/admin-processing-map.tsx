@@ -4,7 +4,8 @@ import type {AdminSource} from '@/shared/admin-types';
 import {ACCESS_STATUSES} from '@/shared/source-access.mjs';
 import {REACH_BUCKETS,FRESH_BUCKETS,reachBucket,freshBucket} from '@/shared/coverage.mjs';
 import {AC,ACCESS_COLOR,COVERAGE,HATCH_CSS,bucketColor,shareColor} from '@/components/admin-colors';
-import {Legend,mm} from '@/components/admin-ui';
+import {Legend} from '@/components/admin-ui';
+import {mm} from '@/components/admin-format';
 const REACH=new Map(REACH_BUCKETS.map(b=>[b.id,bucketColor('reach',b)])),FRESH=new Map(FRESH_BUCKETS.map(b=>[b.id,bucketColor('fresh',b)]));
 type Shape={id:string;ags:string;kind:string;path:string;bounds:number[]};
 // NRW und Niedersachsen liegen in germany.json (auch Grundlage der öffentlichen Analysekarte),

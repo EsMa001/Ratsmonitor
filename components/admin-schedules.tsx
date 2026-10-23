@@ -2,7 +2,7 @@
 import {useCallback,useEffect,useState} from 'react';
 import {AdminPageHead,Alert} from '@/components/admin-ui';
 import {Icon} from '@/components/admin-icons';
-import {when,clock,dur} from '@/components/admin-pdf-parts';
+import {when,clock,dur} from '@/components/admin-format';
 
 /* Reiter „Jobs & Zeitpläne“ (server/integrations/schedules.mjs, Route /api/admin/zeitplaene): alle Jobs, die auf dem Server von
    selbst laufen, mit Schalter, Zeit, letztem und nächstem Lauf; oben der Tagesablauf der nächtlichen Jobs. */

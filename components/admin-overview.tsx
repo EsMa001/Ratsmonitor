@@ -4,9 +4,10 @@ import {useEffect,useMemo,useState} from 'react';
 import {StandLine,standText} from '@/components/admin-stand';
 import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import type {Stand} from '@/shared/admin-types';
-import {AdminPageHead,Alert,Kpis,Legend,PageSkeleton,SectionHelp,SectionTodo,dd} from '@/components/admin-ui';
+import {AdminPageHead,Alert,Kpis,Legend,PageSkeleton,SectionHelp,SectionTodo} from '@/components/admin-ui';
 import {AC,bucketColor} from '@/components/admin-colors';
 import {COL_HELP,HELP,TERMS} from '@/components/admin-texts';
+import {n,pct,mio,day} from '@/components/admin-format';
 type Share={areas:number;population:number;lands:Record<string,[number,number]>};
 type Bucket={id:string;label:string;color:string;areas:number;population:number};
 type SizeRow={id:string;label:string;total:[number,number];connected:[number,number];data:[number,number]};
@@ -14,9 +15,6 @@ type Month={month:string;reports:number;areas:number};
 type Coverage={stand?:Stand;asOf:string;lands:Record<string,{name:string;short:string}>;total:Share;connected:Share;data:Share&{series:{day:string;areas:number;population:number}[];reports:number;undatedAreas:number};history:{builtAt:string;points:{at:string;commit:string|null;areas:number;population:number}[]};analysis:{statsPending:number;reach:{buckets:Bucket[]};fresh:{buckets:Bucket[]};sizes:SizeRow[];months:Month[];undated:number}};
 type Point={t:number;v:number};
 type Series={id:string;label:string;color:string;points:Point[]};
-const n=(v:number,digits=0)=>v.toLocaleString('de-DE',{maximumFractionDigits:digits,minimumFractionDigits:digits});
-const pct=(a:number,b:number,digits=1)=>b?n(100*a/b,digits)+' %':'–';
-const mio=(v:number)=>v>=1e6?n(v/1e6,v>=1e8?0:1)+' Mio.':n(v);
 const dateTime=(s:string)=>new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'});
 const dayLabel=(t:number)=>new Date(t).toLocaleDateString('de-DE',{timeZone:'Europe/Berlin',day:'2-digit',month:'2-digit',year:'2-digit'});
 const monthLabel=(m:string)=>m.slice(5,7)+'.'+m.slice(2,4);
@@ -71,8 +69,7 @@ function BucketBar({buckets,of,kind}:{buckets:Bucket[];of:'areas'|'population';k
  return <div className="admin-atlas-stack is-static" role="img" aria-label={buckets.map(b=>b.label+': '+n(b[of])).join(', ')}>{buckets.map(b=>b[of]?<i key={b.id} style={{width:(100*b[of]/total)+'%',background:bucketColor(kind,b)}} title={b.label+': '+(of==='areas'?n(b[of])+' Gebiete':mio(b[of])+' Einwohner')}/>:null)}</div>;
 }
 /** Admin page "Übersicht": coverage by areas and population, today and over time, and analyses of the stock. Reads only. */
-/** displayName and signOutPath are still passed by the callers; the frame (admin-chrome.tsx) shows them now. */
-export const AdminOverview:(props:{displayName?:string;signOutPath?:string})=>React.JSX.Element=function AdminOverview(){
+export function AdminOverview(){
  const [data,setData]=useState<Coverage|null>(null),[failed,setFailed]=useState({at:-1,text:''}),[attempt,setAttempt]=useState(0),[refreshing,setRefreshing]=useState(false),[hover,setHover]=useState<number|null>(null),[of,setOf]=useState<'areas'|'population'>('areas');
  // Fehler gelten nur für den Abruf, der sie gemeldet hat
  const error=failed.at===attempt?failed.text:'';
@@ -127,7 +124,7 @@ export const AdminOverview:(props:{displayName?:string;signOutPath?:string})=>Re
     </div>
     <p className="admin-map-hover" aria-live="polite">{hover!==null?<><strong>{dateTime(new Date(hover).toISOString())}</strong>{view.areas.map(s=><span key={s.id}> · {s.label}: {n(valueAt(s.points,hover))} Gebiete ({pct(valueAt(s.points,hover),data.total.areas)}), {mio(valueAt(view.population.find(p=>p.id===s.id)!.points,hover))} Einwohner ({pct(valueAt(view.population.find(p=>p.id===s.id)!.points,hover),data.total.population)})</span>)}</>:<>Fahren Sie mit der Maus über ein Diagramm, um die Werte eines Zeitpunkts zu lesen.</>}</p>
     {data.data.undatedAreas>0&&<p className="admin-note">{n(data.data.undatedAreas)} Gebiete wurden vor Oktober 2026 gespeichert und zählen ab dem ersten Tag der Reihe.</p>}
-    <details><summary>Werte als Tabelle</summary><div className="admin-timeline-table"><table><thead><tr><th scope="col">Stand</th><th scope="col">Gebiete angebunden</th><th scope="col">Einwohner angebunden</th></tr></thead><tbody>{[...data.history.points].reverse().map(p=><tr key={p.at+(p.commit||'')}><td>{dateTime(p.at)}{p.commit?'':' (Arbeitsstand)'}</td><td>{n(p.areas)} ({pct(p.areas,data.total.areas)})</td><td>{mio(p.population)} ({pct(p.population,data.total.population)})</td></tr>)}</tbody></table></div><div className="admin-timeline-table"><table><thead><tr><th scope="col">Tag</th><th scope="col">Gebiete mit Berichten</th><th scope="col">Einwohner mit Berichten</th></tr></thead><tbody>{[...data.data.series].reverse().map(p=><tr key={p.day}><td>{dd(p.day)}</td><td>{n(p.areas)} ({pct(p.areas,data.total.areas)})</td><td>{mio(p.population)} ({pct(p.population,data.total.population)})</td></tr>)}</tbody></table></div></details>
+    <details><summary>Werte als Tabelle</summary><div className="admin-timeline-table"><table><thead><tr><th scope="col">Stand</th><th scope="col">Gebiete angebunden</th><th scope="col">Einwohner angebunden</th></tr></thead><tbody>{[...data.history.points].reverse().map(p=><tr key={p.at+(p.commit||'')}><td>{dateTime(p.at)}{p.commit?'':' (Arbeitsstand)'}</td><td>{n(p.areas)} ({pct(p.areas,data.total.areas)})</td><td>{mio(p.population)} ({pct(p.population,data.total.population)})</td></tr>)}</tbody></table></div><div className="admin-timeline-table"><table><thead><tr><th scope="col">Tag</th><th scope="col">Gebiete mit Berichten</th><th scope="col">Einwohner mit Berichten</th></tr></thead><tbody>{[...data.data.series].reverse().map(p=><tr key={p.day}><td>{day(p.day)}</td><td>{n(p.areas)} ({pct(p.areas,data.total.areas)})</td><td>{mio(p.population)} ({pct(p.population,data.total.population)})</td></tr>)}</tbody></table></div></details>
     <SectionTodo id="uebersicht.verlauf"/>
    </section>
    <section className="admin-section" aria-labelledby="tiefe">
@@ -149,13 +146,13 @@ export const AdminOverview:(props:{displayName?:string;signOutPath?:string})=>Re
    </section>
    <section className="admin-section" aria-labelledby="laender">
     <SectionHead help="uebersicht.laender" id="laender"/>
-    <div className="admin-lands mt-5" role="region" aria-label="Abdeckung je Land" tabIndex={0}><table><thead><tr><th>Land</th><th title={COL_HELP['Gebiete']}>Gebiete</th><th title={COL_HELP['Angebunden']}>Angebunden</th><th title={COL_HELP['Mit Berichten']}>Mit Berichten</th><th title={COL_HELP['Einwohner angebunden']}>Einwohner angebunden</th><th title={COL_HELP['Einwohner mit Berichten']}>Einwohner mit Berichten</th></tr></thead><tbody>{view.lands.map(l=><tr key={l.id}><th>{l.name}</th><td>{n(l.total[0])}</td><td><span className="admin-share"><i style={{width:pct(l.connected[0],l.total[0])}}/></span>{n(l.connected[0])} <small>{pct(l.connected[0],l.total[0],0)}</small></td><td><span className="admin-share is-data"><i style={{width:pct(l.data[0],l.total[0])}}/></span>{n(l.data[0])} <small>{pct(l.data[0],l.total[0],0)}</small></td><td>{pct(l.connected[1],l.total[1],0)} <small>{mio(l.connected[1])}</small></td><td>{pct(l.data[1],l.total[1],0)} <small>{mio(l.data[1])}</small></td></tr>)}</tbody><tfoot><tr><th>Deutschland</th><td>{n(data.total.areas)}</td><td>{n(data.connected.areas)} <small>{pct(data.connected.areas,data.total.areas,0)}</small></td><td>{n(data.data.areas)} <small>{pct(data.data.areas,data.total.areas,0)}</small></td><td>{pct(data.connected.population,data.total.population,0)}</td><td>{pct(data.data.population,data.total.population,0)}</td></tr></tfoot></table></div>
+    <div className="admin-lands mt-5" role="region" aria-label="Abdeckung je Land" tabIndex={0}><table><thead><tr><th>Land</th><th title={COL_HELP['Gebiete']}>Gebiete</th><th title={COL_HELP['Angebunden']}>Angebunden</th><th title={COL_HELP['Mit Berichten']}>Mit Berichten</th><th title={COL_HELP['Einwohner angebunden']}>Einwohner angebunden</th><th title={COL_HELP['Einwohner mit Berichten']}>Einwohner mit Berichten</th></tr></thead><tbody>{view.lands.map(l=><tr key={l.id}><th>{l.name}</th><td>{n(l.total[0])}</td><td><span className="admin-share"><i style={{width:pct(l.connected[0],l.total[0])}}/></span>{n(l.connected[0])} <small>{pct(l.connected[0],l.total[0],{digits:0})}</small></td><td><span className="admin-share is-data"><i style={{width:pct(l.data[0],l.total[0])}}/></span>{n(l.data[0])} <small>{pct(l.data[0],l.total[0],{digits:0})}</small></td><td>{pct(l.connected[1],l.total[1],{digits:0})} <small>{mio(l.connected[1])}</small></td><td>{pct(l.data[1],l.total[1],{digits:0})} <small>{mio(l.data[1])}</small></td></tr>)}</tbody><tfoot><tr><th>Deutschland</th><td>{n(data.total.areas)}</td><td>{n(data.connected.areas)} <small>{pct(data.connected.areas,data.total.areas,{digits:0})}</small></td><td>{n(data.data.areas)} <small>{pct(data.data.areas,data.total.areas,{digits:0})}</small></td><td>{pct(data.connected.population,data.total.population,{digits:0})}</td><td>{pct(data.data.population,data.total.population,{digits:0})}</td></tr></tfoot></table></div>
     {COLS_NOTE}
     <SectionTodo id="uebersicht.laender"/>
    </section>
    <section className="admin-section" aria-labelledby="groesse">
     <SectionHead help="uebersicht.groesse" id="groesse"/>
-    <div className="admin-lands mt-5" role="region" aria-label="Abdeckung je Größenklasse" tabIndex={0}><table><thead><tr><th>Einwohner je Gebiet</th><th title={COL_HELP['Gebiete']}>Gebiete</th><th title={COL_HELP['Angebunden']}>Angebunden</th><th title={COL_HELP['Mit Berichten']}>Mit Berichten</th><th title={COL_HELP['Einwohner angebunden']}>Einwohner angebunden</th><th title={COL_HELP['Einwohner mit Berichten']}>Einwohner mit Berichten</th></tr></thead><tbody>{data.analysis.sizes.filter(s=>s.total[0]).map(s=><tr key={s.id}><th>{s.label}</th><td>{n(s.total[0])}</td><td><span className="admin-share"><i style={{width:pct(s.connected[0],s.total[0])}}/></span>{n(s.connected[0])} <small>{pct(s.connected[0],s.total[0],0)}</small></td><td><span className="admin-share is-data"><i style={{width:pct(s.data[0],s.total[0])}}/></span>{n(s.data[0])} <small>{pct(s.data[0],s.total[0],0)}</small></td><td>{s.total[1]?<>{pct(s.connected[1],s.total[1],0)} <small>{mio(s.connected[1])}</small></>:'–'}</td><td>{s.total[1]?<>{pct(s.data[1],s.total[1],0)} <small>{mio(s.data[1])}</small></>:'–'}</td></tr>)}</tbody></table></div>
+    <div className="admin-lands mt-5" role="region" aria-label="Abdeckung je Größenklasse" tabIndex={0}><table><thead><tr><th>Einwohner je Gebiet</th><th title={COL_HELP['Gebiete']}>Gebiete</th><th title={COL_HELP['Angebunden']}>Angebunden</th><th title={COL_HELP['Mit Berichten']}>Mit Berichten</th><th title={COL_HELP['Einwohner angebunden']}>Einwohner angebunden</th><th title={COL_HELP['Einwohner mit Berichten']}>Einwohner mit Berichten</th></tr></thead><tbody>{data.analysis.sizes.filter(s=>s.total[0]).map(s=><tr key={s.id}><th>{s.label}</th><td>{n(s.total[0])}</td><td><span className="admin-share"><i style={{width:pct(s.connected[0],s.total[0])}}/></span>{n(s.connected[0])} <small>{pct(s.connected[0],s.total[0],{digits:0})}</small></td><td><span className="admin-share is-data"><i style={{width:pct(s.data[0],s.total[0])}}/></span>{n(s.data[0])} <small>{pct(s.data[0],s.total[0],{digits:0})}</small></td><td>{s.total[1]?<>{pct(s.connected[1],s.total[1],{digits:0})} <small>{mio(s.connected[1])}</small></>:'–'}</td><td>{s.total[1]?<>{pct(s.data[1],s.total[1],{digits:0})} <small>{mio(s.data[1])}</small></>:'–'}</td></tr>)}</tbody></table></div>
     {COLS_NOTE}
     <SectionTodo id="uebersicht.groesse"/>
    </section>
@@ -166,4 +163,4 @@ export const AdminOverview:(props:{displayName?:string;signOutPath?:string})=>Re
    <dl className="m-0 mt-5 grid max-w-[820px] gap-y-4">{TERMS.map(t=><div key={t.term}><dt className="text-[14px] font-medium text-slate-900">{t.term}</dt><dd className="m-0 mt-0.5 text-[14px] text-slate-500">{t.text}</dd></div>)}</dl>
   </section>
  </>;
-};
+}

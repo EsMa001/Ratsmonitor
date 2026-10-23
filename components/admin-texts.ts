@@ -15,7 +15,7 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  pdf:{title:'PDF-Import',intro:'Lädt die PDF-Dokumente der Berichte in die eigene Ablage, liest ihren Text und hält die feste Grenze von 80 GB ein. Zeigt, was gerade läuft, wie vollständig die Ablage ist, was fehlschlägt und warum, und startet Läufe von Hand.'},
  verarbeitung:{title:'Verarbeitung',intro:'Zeigt, wie weit die Berichte eingeordnet und aufbereitet sind: mit dem Modell (Thema, Art, Vorgangsart), nach Regeln (Zusammenfassung, Fakten) und mit KI. Modell und Regeln laufen nachts von selbst; die KI arbeitet nur über den Agentenablauf.'},
  altbestand:{title:'Altbestand',intro:'Holt nach, was älter ist als der Tagesbereich oder vor dem 12.10.2026 gescheitert ist: Berichte rückwirkend abrufen, PDFs und Text extrahieren, alte Fehler erneut versuchen, Regeln neu anwenden. Nur auf Knopfdruck.'},
- regeltexte:{title:'Themen & Texte',intro:'Wie das Modell jeden Bericht einordnet (Art, Thema, Vorgangsart, Status und weitere Fragen), wie gut es gemessen ist und was der letzte Lauf getan hat. Dazu Zusammenfassung und Fakten, die Regeln bleiben. Die Seite zählt nur, was schon gespeichert ist.'},
+ regeltexte:{title:'Einordnungsmodell',intro:'Wie das Modell jeden Bericht einordnet (Art, Thema, Vorgangsart, Status und weitere Fragen), wie gut es gemessen ist und was der letzte Lauf getan hat. Dazu Zusammenfassung und Fakten, die Regeln bleiben. Die Seite zählt nur, was schon gespeichert ist.'},
  pruefliste:{title:'Prüfliste',intro:'Zeigt, wo der Bestand einen zweiten Blick braucht: Berichte ohne Thema, unklare Verfahrensstände und weitere Prüfgründe, je Gebiet. Dazu, wie viel als KI-Text gekennzeichnet und geprüft ist.'},
  bestand:{title:'Bestandsprüfung',intro:'Prüft, ob der gespeicherte Bestand vollständig und in sich stimmig ist: Pflichtangaben je Bericht, technische Prüfungen auf Doppelungen und Defekte. Dazu der Stand der Datenbank, die letzte Übernahme eines Exports und der vollständige Datenexport.'},
  zeitplaene:{title:'Jobs & Zeitpläne',intro:'Zeigt alle Jobs, die auf dem Server von selbst laufen: was sie tun, wann sie zuletzt liefen, wie lange und mit welchem Ergebnis, wann sie das nächste Mal starten. Jobs lassen sich hier ein- und ausschalten, ihre Zeit ändern und einmal sofort starten.'},
@@ -47,16 +47,8 @@ export const FOOT:Record<AdminPage,string>={
 
 // ---- 6.2 Allgemeine Zustandstexte ---------------------------------------------------------------------------------
 export const ZUSTAND={
- nie:'Für diese Seite ist noch kein Stand gespeichert. Die Berechnung liest alle gespeicherten Berichte einmal; danach öffnet sich die Seite sofort.',
- nieAktion:'Jetzt berechnen',
- erstes:(done:number|string,total:number|string)=>`Vorberechnung läuft: ${done} von ${total} Gebieten. Die Zahlen erscheinen, sobald alle Gebiete berechnet sind.`,
  fehler:'Die Zahlen konnten nicht geladen werden. Es werden keine geschätzten Werte angezeigt.',
- fehlerAktion:'Erneut laden',
  fehlerNeu:(fehler:string,stand:string)=>`Neu berechnen ist fehlgeschlagen: ${fehler}. Angezeigt bleibt der Stand vom ${stand}.`,
- /** title an „≈ N geänderte Datensätze seither“ */
- veraltet:'Seit der Berechnung wurden Berichte gespeichert oder geändert. Die Zahlen stimmen für den genannten Stand; „Neu berechnen“ holt den Rest nach.',
- nachrechnen:(n:number|string)=>`Kennzahlen für ${n} Gebiete werden nachgerechnet …`,
- ohne0016:'Vorberechnung noch nicht eingerichtet (Migration 0016 fehlt).',
  /** title an „veraltet“ bei einer Prüfung der Qualitätsseite */
  pruefungVeraltet:'Der Bestand hat sich seit dieser Prüfung geändert.',
 };
@@ -122,7 +114,7 @@ export const HELP:Record<string,Help>={
  'verarbeitung.regeln':{title:'Nach Regeln',
   sub:'Das Modell ordnet jeden Bericht ein (Art, Thema, Vorgangsart, Hauptdokument), danach schreiben feste Regeln Zusammenfassung und Fakten. Lokal, ohne fremden Dienst. Nachts von selbst, für Berichte mit neuen Eingaben.',
   how:['Der Job „Verarbeitung, nachts“ wendet zuerst das Modell auf geänderte Berichte an, schreibt dann Zusammenfassung und Fakten je Bericht und führt danach Suche und Zahlen für plenara.X nach.',
-   '„Alle neu erstellen“ (nach geänderten Regeln) steht auf „Themen & Texte“ und im Altbestand.']},
+   '„Alle neu erstellen“ (nach geänderten Regeln) steht auf „Einordnungsmodell“ und im Altbestand.']},
  'verarbeitung.ki':{title:'Mit KI',
   sub:'Die KI startet nie von selbst. Ein Agent liest die gespeicherten Originaltexte über die interne MCP-Verbindung; diese Liste zeigt je Bericht, was schon vorliegt, und liefert die IDs für den Auftrag.',
   how:['Ablauf des Agenten: list, claim, read, submit (requirements/ai-processing.md). Kurzfassung, Langfassung und KI-Thema werden immer gemeinsam gespeichert.']},
@@ -197,7 +189,7 @@ export const TERMS:{term:string;text:string}[]=[
  {term:'Letzter Versuch',text:'Der letzte Abruf überhaupt, auch wenn er scheiterte.'},
  {term:'Teilstand',text:'Berichte sind gespeichert, aber der letzte Abruf hat nicht alles gelesen, etwa wegen eines Zeitlimits.'},
  {term:'Revision',text:'Laufende Nummer des Datenbestands. Sie steigt mit jeder Änderung an Berichten, früheren Fassungen und Analysen und mit jedem gespeicherten Abruf, auch wenn er nichts Neues brachte. Gleiche Nummer heißt: seitdem nichts gespeichert.'},
- {term:'Thema',text:'Eines der 10 Themen eines Berichts, etwa Bildung & Betreuung oder Mobilität & Verkehr. Das Modell vergibt es (Seite „Themen & Texte“), die KI aus dem Inhalt (Seite „Verarbeitung“). Formalien, Sammelpunkte und Routine haben keins. Im Code heißt es „Label“.'},
+ {term:'Thema',text:'Eines der 10 Themen eines Berichts, etwa Bildung & Betreuung oder Mobilität & Verkehr. Das Modell vergibt es (Seite „Einordnungsmodell“), die KI aus dem Inhalt (Seite „Verarbeitung“). Formalien, Sammelpunkte und Routine haben keins. Im Code heißt es „Label“.'},
  {term:'Titeltest',text:'Früherer Versuch, bei dem die KI nur den Titel sah (Billerbeck). Seine Ergebnisse werden getrennt gespeichert und zählen bei „aus dem Inhalt“ nicht.'},
  {term:'Erster Tagesordnungstag',text:'Der Tag, an dem ein Bericht zum ersten Mal auf einer Tagesordnung stand.'},
  {term:'Rückreichweite',text:'Wie weit die gespeicherten Berichte eines Gebiets zurückreichen, gemessen an der ältesten Sitzung.'},
@@ -228,10 +220,6 @@ export const FILTER_HELP:Record<string,string>={
  shallow:'Angebunden, mit Berichten, deren älteste Sitzung weniger als 80 Tage zurückliegt.',
  quiet:'Angebunden, mit Berichten, aber seit über 90 Tagen keine gespeicherte Sitzung.',
  selected:'Nur die ausgewählten Gebiete.',
- // Filter von shared/admin.mjs (CSV-Export der Quellen); Wortlaut aus sourceHealth() und filterAdminSources() abgeleitet.
- attention:'Angebunden und noch ohne Berichte, nur teilweise gelesen, seit über 7 Tagen ohne neue Übernahme oder mit fehlgeschlagenem letztem Abruf.',
- html:'Gebiete, deren Daten Plenara aus öffentlichen HTML-Seiten liest. robots.txt wird nur festgehalten.',
- closed:'Keine Daten: Das System sperrt Programme aus (Zugriffsschutz), oder es ist kein Zugang bekannt.',
 };
 export const MAP_HELP:Record<string,string>={
  coverage:'Farbe = Ergebnis des letzten Abrufs. Teilstand: Berichte gespeichert, aber der letzte Abruf hat nicht alles gelesen; bei 12 und 24 Monaten setzt ein neuer Abruf mit demselben Zeitraum dort fort.',
@@ -251,9 +239,6 @@ export const STATE_HELP:Record<string,string>={
  'Teilstand':'Berichte gespeichert, aber der letzte Abruf hat nicht alles gelesen.',
  'Älter als 7 Tage':'Die letzte erfolgreiche Übernahme ist mehr als 7 Tage her.',
  'Ohne gemeldete Lücke':'Der letzte Abruf meldete weder Fehler noch Lücke. Das beweist nicht, dass die Quelle vollständig ist.',
- // Bis shared/admin.mjs umbenannt ist (6.13), liefert sourceHealth() noch die alten Texte.
- 'Ohne Artikel':'Quelle bekannt, aber noch kein Bericht gespeichert.',
- 'Datenstand älter':'Die letzte erfolgreiche Übernahme ist mehr als 7 Tage her.',
 };
 
 // ---- 6.5 Lückenatlas ----------------------------------------------------------------------------------------------

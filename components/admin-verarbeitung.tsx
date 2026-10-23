@@ -7,17 +7,15 @@ import {HELP,ZUSTAND} from '@/components/admin-texts';
 import {AdminAiLocal} from '@/components/admin-ai-local';
 import {fetchDashboard} from '@/components/admin-store';
 import type {AdminDashboard} from '@/shared/admin-types';
+import {n,pct,when} from '@/components/admin-format';
 
 /* Seite „Verarbeitung“ (dritte Stufe je Bericht, shared/pipeline-terms.mjs): wie weit der Bestand nach Regeln eingeordnet und
    mit KI aufbereitet ist. Die Regeln laufen nachts im Job „Verarbeitung, nachts“ (scripts/rule-texts.mjs: Modell anwenden,
    Zusammenfassung und Fakten, Suche, Zahlen); „Jetzt verarbeiten“ startet ihn sofort (POST /api/admin/zeitplaene). Die KI arbeitet nur
    über den Agentenablauf; die Liste zeigt, was je Bericht bereitsteht. Was die Regeln erzeugen und wie gut, steht auf
-   „Themen & Texte“. */
+   „Einordnungsmodell“. */
 type RunInfo={lastStart?:string;lastEnd?:string;result?:'ok'|'failed'|'stopped';running?:{startedAt:string}|null};
 type Job={id:string;label:string;run:RunInfo|null;next:string|null;setting:{enabled:boolean}};
-const n=(v:number)=>v.toLocaleString('de-DE');
-const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:1})+' %':'—';
-const when=(s?:string|null)=>s?new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'}):'–';
 const RESULT:Record<string,string>={ok:'erfolgreich',failed:'mit Fehler beendet',stopped:'angehalten'};
 const Head=({id}:{id:string})=><div className="admin-section-heading"><h2>{HELP[id]?.title}</h2></div>;
 
@@ -61,7 +59,7 @@ export function AdminVerarbeitung({initial}:{initial:AdminDashboard}){
      <p className="mt-3 text-[14px] text-slate-700">{job?<>Job „{job.label}“: {run?.running?`läuft seit ${when(run.running.startedAt)}`:run?.lastStart?`zuletzt ${when(run.lastStart)} bis ${when(run.lastEnd)}, ${RESULT[run.result||'']||'Ergebnis offen'}`:'noch kein Lauf vermerkt'}{job.next?` · nächster Start ${when(job.next)}`:job.setting.enabled?'':' · ausgeschaltet'}.</>:'Der Zeitplaner meldet keinen Stand (lokal ohne Jobs).'}</p>
      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
       <button type="button" className="btn-secondary btn-sm" disabled={busy||!!run?.running} onClick={()=>void runNow()}>Jetzt verarbeiten</button>
-      <Link href={adminHref('regeltexte')} className="text-teal-600">Was die Regeln erzeugen: Themen & Texte →</Link>
+      <Link href={adminHref('regeltexte')} className="text-teal-600">Einordnung und Regeln: Einordnungsmodell →</Link>
       <Link href={adminHref('zeitplaene')} className="text-teal-600">Zeitplan →</Link>
      </div>
     </div>

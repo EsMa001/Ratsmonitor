@@ -4,9 +4,9 @@ import Link from 'next/link';
 import {AdminPageHead,Alert} from '@/components/admin-ui';
 import {Icon} from '@/components/admin-icons';
 import {adminHref} from '@/components/admin-chrome';
-import {when,clock,dur} from '@/components/admin-pdf-parts';
-import {n,Glossary,StepList,Timeline,result,type Step,type FailRow,type Counter} from '@/components/admin-pipeline-parts';
+import {Glossary,StepList,Timeline,result,type Step,type FailRow,type Counter} from '@/components/admin-pipeline-parts';
 import {PHASES,stepName,CLASS_TERMS} from '@/shared/pipeline-terms.mjs';
+import {n,when,clock,dur} from '@/components/admin-format';
 
 /* Seite „Letzte Nacht“ (früher „Pipeline-Debug“; Route /api/admin/debug, server/integrations/pipeline-debug.mjs).
    Liest nur gespeicherte Stände: wann lief was, was haben die Läufe getan, welchen Weg nahmen die Berichte. Den

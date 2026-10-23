@@ -5,9 +5,9 @@ import {useSearchParams} from 'next/navigation';
 import {AdminPageHead,Alert} from '@/components/admin-ui';
 import {Icon} from '@/components/admin-icons';
 import {adminHref} from '@/components/admin-chrome';
-import {when} from '@/components/admin-pdf-parts';
-import {n,day,FailureTable,HostTable,type FailRow} from '@/components/admin-pipeline-parts';
+import {FailureTable,HostTable,type FailRow} from '@/components/admin-pipeline-parts';
 import {PHASES,stepName,CLASS_TERMS} from '@/shared/pipeline-terms.mjs';
+import {n,day,when} from '@/components/admin-format';
 
 /* Seite „Fehler & Server“: der Fehlerspeicher aller Stufen an einem Ort (Migration 0040, server/integrations/work-failures.mjs).
    Liest den Stand von /api/admin/debug. „Erneut versuchen“ im Tagesbereich macht Einträge fällig für die Nacharbeit
