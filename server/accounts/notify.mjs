@@ -39,8 +39,8 @@ export function dueAt(freq,at,weekday=1){
 /** Wochentag für „wöchentlich“: der des Wochenberichts; ist der täglich (oder nicht gesetzt), Montag */
 const weekdayOf=settings=>Number.isInteger(settings?.weekly_day)&&settings.weekly_day<DAILY_REPORT?settings.weekly_day:1;
 const freqOf=f=>FREQ.includes(f)?f:'daily';
-/** Rhythmus einer Suche: eigene Glocke, sonst der Wochenbericht */
-const searchDue=(s,settings,at)=>s.notify_mail?dueAt(freqOf(s.notify_freq),at,weekdayOf(settings))
+/** Rhythmus einer Suche: eigene Glocke, sonst der Wochenbericht; „sofort“ nur mit Stufe ab Plus (LIMITS.instant), sonst täglich */
+const searchDue=(s,settings,at,instant=true)=>s.notify_mail?dueAt(instant||freqOf(s.notify_freq)!=='instant'?freqOf(s.notify_freq):'daily',at,weekdayOf(settings))
  :dueAt(settings?.weekly_day===DAILY_REPORT?'daily':'weekly',at,weekdayOf(settings));
 
 /* ---------------------------------------------------------------- Abfrage einer gespeicherten Suche */
@@ -100,9 +100,9 @@ export async function collectNotifications(db,content,catalog,{now=Date.now(),de
    try{hits=await matchSearch(content,catalog,s,candidates.map(e=>e.topic_id));}
    catch(error){report.searchesSkipped++;console.warn(`[benachrichtigungen] Suche ${s.id} übersprungen: ${error instanceof Error?error.message:error}`);continue;}
    const seq=new Map(candidates.map(e=>[e.topic_id,e]));
-   for(const row of hits){const e=seq.get(row.id);rows.push([uid,'s:'+s.id,row.id,e.seq,iso(now),iso(searchDue(s,settings,Date.parse(e.at))),JSON.stringify(cardOf(row))]);}
+   for(const row of hits){const e=seq.get(row.id);rows.push([uid,'s:'+s.id,row.id,e.seq,iso(now),iso(searchDue(s,settings,Date.parse(e.at),LIMITS[tier].instant)),JSON.stringify(cardOf(row))]);}
   }
-  // Gefolgte Vorgänge: neuer Status oder neue Sitzung, sofort
+  // Gefolgte Vorgänge: neuer Status oder neue Sitzung, sofort (ab Plus), sonst mit dem nächsten täglichen Termin
   const {results:articles=[]}=await db.prepare('SELECT topic_id,follow_since FROM saved_articles WHERE user_id=? AND active=1 AND follow=1 AND follow_since IS NOT NULL').bind(uid).all();
   const followed=new Map(articles.map(a=>[a.topic_id,a.follow_since]));
   const mine=changes.filter(e=>followed.has(e.topic_id)&&e.at>=followed.get(e.topic_id));
@@ -110,10 +110,10 @@ export async function collectNotifications(db,content,catalog,{now=Date.now(),de
    const cards=await cardsOf(content,mine.map(e=>e.topic_id));
    for(const e of mine){
     const row=cards.get(e.topic_id);if(!row)continue;
-    rows.push([uid,'a:'+e.topic_id,'e'+e.seq,e.seq,iso(now),iso(Date.parse(e.at)),JSON.stringify(cardOf(row,{note:changeNote(e)}))]);
+    rows.push([uid,'a:'+e.topic_id,'e'+e.seq,e.seq,iso(now),iso(dueAt(LIMITS[tier].instant?'instant':'daily',Date.parse(e.at))),JSON.stringify(cardOf(row,{note:changeNote(e)}))]);
    }
   }
-  // Kalender (Enterprise): neue künftige Sitzungen in den Kalendergebieten, je Gebiet, Tag und Gremium ein Eintrag
+  // Kalender (Plus): neue künftige Sitzungen in den Kalendergebieten, je Gebiet, Tag und Gremium ein Eintrag
   if(settings?.calendar_mail&&settings.calendar_since&&FEATURES[tier]?.calendar){
    const ags=new Set(parse(settings.calendar_ags,[]));
    const regions=new Set(catalog.filter(r=>ags.has(r.ags)).map(r=>r.id));

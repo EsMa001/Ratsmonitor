@@ -128,11 +128,7 @@ test('Vor dem Einschalten Gemeldetes zählt nicht; Glocke aus und Stufe ohne Ben
  const r=await run(h);
  assert.equal(r.deliver.mails,0);assert.equal(r.deliver.dropped,1);
  assert.equal(items(h)[0].dropped,1);
- // Konto ohne Stufe (Gast): wird gar nicht gesammelt
- const g=setup();g.addUser('gast@example.org');
- g.accounts.sql.prepare("INSERT INTO saved_searches(user_id,id,signature,name,ui_state,query,position,active,notify_mail,notify_freq,notify_since,created_at,updated_at) VALUES('u_gastexampleorg','s','x','S','{}','q=schule',0,1,1,'instant',?,?,?)").run(iso(g.now()),iso(g.now()),iso(g.now()));
- g.tick(60000);event(g,null,topic(g,'t1'));
- assert.equal((await run(g)).collect.users,0);
+ // Ein Konto ohne Freischaltung hat seit 23.10.2026 die Stufe Konto mit 5 Benachrichtigungen; eine Stufe ohne gibt es nicht mehr
 });
 
 test('Gefolgter Vorgang: neuer Stand sofort, mit Satz zur Änderung',async()=>{
@@ -148,6 +144,22 @@ test('Gefolgter Vorgang: neuer Stand sofort, mit Satz zur Änderung',async()=>{
  assert.equal(mail.subject,'Plenara: 1 Neuigkeit zu Ihren Vorgängen');
  assert.match(mail.text,/Neuer Stand: Beschlossen \(vorher In Beratung\)/);
  assert.equal(changeNote({prev_status:'consulting',status:'consulting',at:'2026-10-14T10:00:00Z',detail:JSON.stringify({sessions:[{d:'2026-11-03',c:'Bauausschuss'}]})}),'Angesetzt am 03.11.2026 im Gremium Bauausschuss');
+});
+
+test('Konto (kostenlos): Glocke „sofort“ und gefolgte Vorgänge kommen erst mit dem täglichen Termin, Plus sofort',async()=>{
+ const h=setup();await signedIn(h,'konto@example.org',{tier:'basic'});
+ const t=topic(h,'t9',{title:'Neubau Feuerwehrhaus',date:'2026-10-10'});
+ assert.equal((await h.call(articlesWrite,{body:{id:'t9',follow:true}})).status,201);
+ await search(h,'s1');
+ h.tick(60000);
+ event(h,null,topic(h,'t1'));
+ const next={...t,status:'approved'};topic(h,'t9',{title:'Neubau Feuerwehrhaus',date:'2026-10-10',status:'approved'});
+ event(h,t,next);
+ const r=await run(h);
+ assert.equal(r.collect.items,2);assert.equal(r.deliver.mails,0,'nicht sofort');
+ assert.ok(items(h).every(i=>Date.parse(i.due_at)>h.now()),'fällig erst am nächsten Morgen');
+ h.tick(DAY);
+ assert.equal((await run(h)).deliver.mails,1,'eine Sammelmail');
 });
 
 test('Wochenbericht: Suchen ohne Glocke täglich um 7; mit Glocke nicht doppelt',async()=>{
@@ -166,8 +178,8 @@ test('Wochenbericht: Suchen ohne Glocke täglich um 7; mit Glocke nicht doppelt'
  assert.match(h.lastMail('pro@example.org').text,/Grundschule/);
 });
 
-test('Kalender: neue Sitzungen in den Gebieten nur mit Enterprise',async()=>{
- const p=setup();await signedIn(p,'pro@example.org');
+test('Kalender: neue Sitzungen in den Gebieten nur mit Plus',async()=>{
+ const p=setup();await signedIn(p,'konto@example.org',{tier:'basic'});
  assert.equal((await p.call(settingsWrite,{method:'PUT',body:{calendarMail:true}})).status,409);
  const h=setup();await signedIn(h,'ent@example.org',{tier:'enterprise'});
  assert.equal((await h.call(settingsWrite,{method:'PUT',body:{calendarMail:true,calendarFreq:'instant',calendarAgs:['05558008']}})).status,200);

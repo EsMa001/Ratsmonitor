@@ -856,7 +856,7 @@ z- analytics.css:632
 - AccountMenu.tsx (90, ⚠4): AccountMenu
 - ActiveFilters.tsx (124): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
-- ArtIcon.tsx (141, ⚠1): artIconOf, ArtIcon
+- ArtIcon.tsx (156, ⚠1): artIconOf, ArtIcon
 - BandDots.tsx (50): BandDots
 - BottomNav.tsx (55, ⚠1): BottomNav
 - Brand.tsx (275): AnalyticsX, AnalyticsLogo, Brand
@@ -878,7 +878,7 @@ z- analytics.css:632
 - GateDialog.tsx (148): GateFeature, openGate, openLimitGate, GateDialog
 - Header.tsx (128, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
-- PlanCards.tsx (154, ⚠1): PlanCards, PlanSummary
+- PlanCards.tsx (158, ⚠1): PlanCards, PlanSummary
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
@@ -888,7 +888,7 @@ z- analytics.css:632
 - SearchSplit.tsx (48): SearchSplit
 - Segmented.tsx (66, ⚠1): Segmented
 - ShareButton.tsx (49): shareLink, ShareButton
-- StepIcon.tsx (28): StepIcon
+- StepIcon.tsx (28): STEP_ICONS, StepIcon
 - SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
 - TierNotice.tsx (67): AccountLoading, LoginRequired, UsagePill
 - TopicSeed.tsx (11): TopicSeed
@@ -907,17 +907,17 @@ z- analytics.css:632
 
 ### components/ratsmonitor/info/
 - AccountPages.tsx (742): LoginPage, ConfirmLoginPage, UnsubscribePage, RegisterPage, KontaktPage
-- AgbPage.tsx (182, ⚠15): AgbPage
+- AgbPage.tsx (181, ⚠15): AgbPage
 - AnwenderLive.tsx (173, ⚠2): AnwenderLivePage
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
 - BranchenLive.tsx (244): LiveThumb
 - BranchenPages.tsx (121): BranchePage
-- ConnectPage.tsx (146): ConnectPage
+- ConnectPage.tsx (142): ConnectPage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (49): InfoPages
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (30): NotFoundPage
-- PreisePage.tsx (86): PreisePage
+- PreisePage.tsx (88): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
 - StartseitePage.tsx (508, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
@@ -928,7 +928,7 @@ z- analytics.css:632
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
 - blocks.tsx (258, ⚠1): useOpenSearch, PageHead, SearchTermButton, HitPreview, DarkCta, QaItem, Ladefehler, InfoHints
 - branchen-enterprise.ts (111, ⚠1): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
-- content.ts (207, ⚠28): Status, Example, Branche, Qa, FAQ, PRICE_FAQ, BRANCHEN, brancheBySlug
+- content.ts (207, ⚠29): Status, Example, Branche, Qa, FAQ, PRICE_FAQ, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
@@ -978,7 +978,7 @@ z- analytics.css:632
 - subParam.ts (17): useSubParam
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem
 - text.ts (96): norm, terms, Segment, highlightSegments, plural, fmtDate, isoDay, todayLocal, MONTH_SHORT, monthLabel
-- tier.ts (68): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, priceLabel, UPGRADE_TEXT, IS_DEV, getTier, setTier, useTier, usage
+- tier.ts (70): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, priceLabel, UPGRADE_TEXT, IS_DEV, getTier, setTier, useTier, usage
 - todos.ts (118): TodoStatus, TodoPersonId, TodoResolution, TodoPriority, TodoSubtask, TODO_STATUSES, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_PEOPLE, TodoItem, TodoCategory, TodoData, taskStatus, todoPriority, taskResolution, normalizeTodoItem, TodoKind, TodoState, localToday, fmtShort, todoState
 - topicCache.ts (43): TopicError, seedTopic, peekTopic, loadTopic, prefetchDetail
 - useClient.ts (12): useClient, useHydrated
@@ -1002,7 +1002,7 @@ z- analytics.css:632
 - XSwitcher.tsx (34): XSheet
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (218, ⚠17): DetailPage
+- DetailPage.tsx (222, ⚠17): DetailPage
 - KalenderPage.tsx (427, ⚠3): KalenderPage
 - LegalPage.tsx (287): useInhalt, LegalPage
 - NotificationsPage.tsx (93, ⚠1): NotificationsPage
@@ -1011,7 +1011,7 @@ z- analytics.css:632
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
 - SavedArticlesPage.tsx (156, ⚠3): SavedArticlesPage
-- SavedSearchesPage.tsx (295, ⚠2): SavedSearchesPage, WeeklyReport
+- SavedSearchesPage.tsx (299, ⚠2): SavedSearchesPage, WeeklyReport
 - WillkommenPage.tsx (60): WillkommenPage
 
 ### components/ratsmonitor/pages/analytics/

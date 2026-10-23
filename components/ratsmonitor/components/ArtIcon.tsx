@@ -1,5 +1,6 @@
 import { createElement } from "react";
 import { Accessibility, Armchair, Atom, Baby, Backpack, BatteryCharging, BatteryFull, BedDouble, Bike, Building, Building2, Bus, Cable, Car, ClipboardList, CloudRain, Construction, Droplets, Dumbbell, Ellipsis, Expand, Factory, FerrisWheel, FileCheck, FileSignature, Flame, Footprints, GlassWater, GraduationCap, Hammer, Handshake, Heater, Hospital, House, HousePlus, Lamp, LandPlot, Laptop, Leaf, Lightbulb, Map, MapPinned, Mountain, PenLine, PencilRuler, Pill, PlugZap, RadioTower, Recycle, RefreshCw, Route, School, Server, ShieldCheck, ShoppingBag, ShoppingCart, Shovel, Signpost, Siren, Snowflake, SolarPanel, Sprout, Stethoscope, Store, Sun, SunDim, Tent, Thermometer, ThermometerSun, Tractor, TrainFront, TreePine, Trees, Trophy, Truck, Users, Volume2, Waves, Wifi, Wind, type LucideIcon } from "lucide-react";
+import { STEP_ICONS } from "./StepIcon";
 
 /* Icons der Filterwerte der Signale (Leistung, Vorhaben, Einrichtung …; Werte aus server/integrations/plenara-x-signals.mjs) */
 const ART_ICONS: Record<string, LucideIcon> = {
@@ -127,13 +128,27 @@ const ART_ICONS: Record<string, LucideIcon> = {
   "Lärm (Lärmaktionsplan, Umgebungslärm, Lärmschutz)": Volume2,
   "Ordnungsamt, Ordnungsdienst, Polizei, Videoüberwachung": ShieldCheck,
   "Gefahrenabwehrverordnung, Verbote, Hunde, Tierseuchen": Siren,
+  // Unterthemen (shared/themes.mjs): Art eines Vorhabens ohne genaueres Unter-Unterthema
+  "Breitband und Mobilfunk": Wifi,
+  "Gehwege und Barrierefreiheit": Footprints,
+  "Kita-Ausbau und Plätze": Baby,
+  "Klimaanpassung, Hochwasser und Starkregen": CloudRain,
+  "Klimaschutz und Energieeffizienz": Leaf,
+  "Radverkehr": Bike,
+  "Schulbau und Sanierung": School,
+  "Spiel- und Freizeitanlagen": FerrisWheel,
+  "Sportstätten und Bäder": Dumbbell,
+  "Straßen, Brücken und Beleuchtung": Route,
+  "Verkehrsplanung und neue Mobilität": Bus,
+  "Wärme und Energieversorgung": Flame,
 };
 
 /* Namen der Arten aus dem Modell (shared/model/subsubs.mjs) weichen von den früheren ab („neues Baugebiet“, „Erschließung, Umlegung“):
    gesucht wird ohne Groß- und Kleinschreibung, sonst mit dem Teil vor dem Komma */
 const norm = (v: string) => v.trim().toLowerCase();
 const BY_NAME = new globalThis.Map<string, LucideIcon>(Object.entries(ART_ICONS).map(([k, v]) => [norm(k), v]));
-export const artIconOf = (value: string): LucideIcon | undefined => ART_ICONS[value] ?? BY_NAME.get(norm(value)) ?? BY_NAME.get(norm(value.split(",")[0]));
+/* Bei der Windenergie ist die Art die Vorgangsart („Planung und Regelung“ …): dann das Icon der Vorgangsart */
+export const artIconOf = (value: string): LucideIcon | undefined => ART_ICONS[value] ?? BY_NAME.get(norm(value)) ?? BY_NAME.get(norm(value.split(",")[0])) ?? STEP_ICONS[value];
 
 export function ArtIcon({ value, size = 20, className }: { value: string; size?: number; className?: string }) {
   return createElement(artIconOf(value) ?? Ellipsis, { size, strokeWidth: 1.2, "aria-hidden": "true", className });

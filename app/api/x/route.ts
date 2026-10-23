@@ -9,7 +9,7 @@ import {cachedJson} from '@/server/services/cached-json.mjs';
 import {dataFailure,X_CACHE} from '@/server/services/data-response.mjs';
 // Öffentlich und für alle gleich; die Zahlen (x_cases) ändern sich nur mit dem täglichen Bau im Job rule-texts.
 export const GET=gated(xGet,{feature:'analytics'});
-// Auswertungen gehören zu Enterprise (shared/plans.mjs); interne Aufrufe (Vorwärmen) kommen durch.
+// Auswertungen gehören zu Plus (shared/plans.mjs); interne Aufrufe (Vorwärmen) kommen durch.
 async function xGet(request:Request){
  try {const params=new URL(request.url).searchParams;
   return cachedJson(request,await xCached(env.DB,'x-v7',params,()=>xQuery(env.DB,REGIONS,params)),{'Cache-Control':X_CACHE});}

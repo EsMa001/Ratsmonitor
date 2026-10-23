@@ -8,7 +8,7 @@ import {cachedJson} from '@/server/services/cached-json.mjs';
 // Öffentlich und für alle gleich; der Datenbestand ändert sich höchstens täglich.
 import {dataFailure,X_CACHE} from '@/server/services/data-response.mjs';
 export const GET=gated(analyticsGet,{feature:'analytics'});
-// Auswertungen gehören zu Enterprise (shared/plans.mjs); interne Aufrufe (Vorwärmen) kommen durch.
+// Auswertungen gehören zu Plus (shared/plans.mjs); interne Aufrufe (Vorwärmen) kommen durch.
 async function analyticsGet(request:Request){
  try {const params=new URL(request.url).searchParams;
   // Mit by=…: die Vorgänge hinter einem Knoten

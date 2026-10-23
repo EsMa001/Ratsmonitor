@@ -11,7 +11,7 @@ import { FaktenPage } from "./FaktenPage";
 import { XTrendsPage } from "./XTrendsPage";
 import { GRUPPEN } from "../../info/branchen-enterprise";
 import { AnalyticsLocked } from "./AnalyticsLocked";
-import { useTier } from "../../lib/tier";
+import { useMe } from "../../lib/account";
 import { useSignedInHint } from "../../lib/signedInHint";
 import { MethodikUnten } from "./Methodik";
 
@@ -38,11 +38,11 @@ const PAGES: Record<string, ComponentType> = {
 // Die Adressen stehen in lib/routes.ts (App.tsx braucht sie, ohne diese Seiten zu laden); PAGES muss sie alle bedienen.
 export { isAnalyticsPath } from "../../lib/routes";
 
-/** Nur die Übersichten (Start, Tools) sind frei; die Analysen gehören zu Enterprise */
+/** Nur die Übersichten (Start, Tools) sind frei; die Analysen gehören zu Plus (Merkmal analytics) */
 const FREE = new Set<string>();
 
 export function AnalyticsPages({ path }: { path: string }) {
-  const { tier, ready } = useTier();
+  const { features, ready } = useMe();
   const signedIn = useSignedInHint();
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -55,7 +55,7 @@ export function AnalyticsPages({ path }: { path: string }) {
   const Page = PAGES[path];
   if (!Page) return null;
   /* Ruhiger Übergang zwischen den Seiten: der Inhalt blendet kurz ein (nur Deckkraft), die Auswahl der Suche bleibt */
-  if (FREE.has(path) || tier === "enterprise") return <div key={path} className="rm-pagein"><Page /><MethodikUnten seite={path.split("/").pop() ?? ""} /></div>;
+  if (FREE.has(path) || features.analytics) return <div key={path} className="rm-pagein"><Page /><MethodikUnten seite={path.split("/").pop() ?? ""} /></div>;
   /* Bis /api/me antwortet: Gäste ohne Sitzung sehen gleich die Vorschau (steht so auch im Server-HTML), Angemeldete laden neutral */
   if (!ready && signedIn === false) return <AnalyticsLocked path={path} />;
   if (!ready) return <main id="inhalt" aria-busy="true" className="min-h-[60vh] w-full px-[max(1vw,16px)] pb-12" />;

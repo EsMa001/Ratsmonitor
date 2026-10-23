@@ -20,15 +20,15 @@ const state={q:'schule',text:'schule',area:'',areaSrc:'',radius:null,thema:'',mo
 test('Suchen: Grenze der Stufe, keine Doppelten, nur Positivliste im gespeicherten Zustand',async()=>{
  const h=setup();await signedIn(h,'a@example.org',{tier:'basic'});
  const add=(id,signature)=>h.call(searchesWrite,{body:{id,name:'Schule',signature,state,query:'q=schule'}});
- assert.equal((await add('s1','sig1')).status,201);
- const second=await add('s2','sig2');
- assert.equal(second.status,409);assert.equal(second.body.limit,'savedSearches');
+ for(let i=1;i<=5;i++)assert.equal((await add('s'+i,'sig'+i)).status,201);
+ const sixth=await add('s6','sig6');
+ assert.equal(sixth.status,409);assert.equal(sixth.body.limit,'savedSearches');
  const list=await h.call(searchesList,{method:'GET'});
- assert.equal(list.body.searches.length,1);
+ assert.equal(list.body.searches.length,5);
  assert.equal(list.body.searches[0].state.secret,undefined);assert.equal(JSON.stringify(list.body.searches[0].state).includes('@'),false);
  assert.equal((await h.call(searchesWrite,{method:'PATCH',body:{id:'s1',name:'Neu'}})).status,200);
  assert.equal((await h.call(searchesWrite,{method:'DELETE',body:{id:'s1'}})).status,200);
- assert.equal((await h.call(searchesList,{method:'GET'})).body.searches.length,0);
+ assert.equal((await h.call(searchesList,{method:'GET'})).body.searches.length,4);
 });
 
 test('Ohne Sitzung 401, ohne Herkunft 403',async()=>{
@@ -51,15 +51,17 @@ test('Artikel: Titel und Status vom Server, zusammengeführte Vorgänge aufgelö
 test('Übernahme: idempotent, zweites Gerät ohne Doppelte, über der Grenze gespeichert aber nicht aktiv',async()=>{
  const h=setup();await signedIn(h,'a@example.org',{tier:'basic'});
  topic(h,'t1');topic(h,'t2','Haushalt');
- const body={searches:[{id:'s1',name:'A',signature:'sig1',state,query:'q=a'},{id:'s2',name:'B',signature:'sig2',state},{id:'bad id!',name:'C',signature:'x',state}],
+ // Konto: 5 Suchen aktiv, die sechste wird gespeichert, aber nicht aktiv
+ const six=Array.from({length:6},(_,i)=>({id:'s'+(i+1),name:'S'+(i+1),signature:'sig'+(i+1),state,...(i?{}:{query:'q=a'})}));
+ const body={searches:[...six,{id:'bad id!',name:'C',signature:'x',state}],
   articles:[{id:'t1',follow:true},{id:'t2'},{id:'weg'}],settings:{weekly:true,weeklyDay:1,calendar:[{ags:'05558008',name:'Billerbeck',km:0}],calendarAgs:['05558008']}};
  const first=await h.call(importData,{body});
- assert.deepEqual(first.body.searches.added,['s1','s2']);assert.deepEqual(first.body.searches.invalid,['bad id!']);
+ assert.deepEqual(first.body.searches.added,['s1','s2','s3','s4','s5','s6']);assert.deepEqual(first.body.searches.invalid,['bad id!']);
  assert.deepEqual(first.body.articles.added.sort(),['t1','t2']);assert.deepEqual(first.body.articles.missing,['weg']);
  const again=await h.call(importData,{body:{...body,searches:[{...body.searches[0],id:'other'}]}});
  assert.deepEqual(again.body.searches.existing,['other'],'gleiche Signatur von einem zweiten Gerät');
  const rows=h.accounts.sql.prepare('SELECT id,active FROM saved_searches ORDER BY position').all();
- assert.deepEqual(rows.map(r=>[r.id,r.active]),[['s1',1],['s2',0]]);
+ assert.deepEqual(rows.map(r=>[r.id,r.active]),[['s1',1],['s2',1],['s3',1],['s4',1],['s5',1],['s6',0]]);
  const settings=await h.call(settingsRead,{method:'GET'});
  assert.equal(settings.body.weekly,true);assert.deepEqual(settings.body.calendarAgs,['05558008']);
 });
@@ -128,9 +130,9 @@ test('cleanState lehnt zu große oder kaputte Suchen ab',()=>{
 
 test('Übernahme: Benachrichtigungen nur im Rahmen der Stufe, Obergrenze je Konto (Prüfbefund 8)',async()=>{
  const h=setup();await signedIn(h,'a@example.org',{tier:'basic'});
- const searches=Array.from({length:5},(_,i)=>({id:'s'+i,name:'S'+i,signature:'sig'+i,state,notify:{mail:true}}));
+ const searches=Array.from({length:8},(_,i)=>({id:'s'+i,name:'S'+i,signature:'sig'+i,state,notify:{mail:true}}));
  await h.call(importData,{body:{searches}});
- assert.equal(h.accounts.sql.prepare('SELECT sum(notify_mail) n FROM saved_searches').get().n,1);
+ assert.equal(h.accounts.sql.prepare('SELECT sum(notify_mail) n FROM saved_searches').get().n,5);
  const many=Array.from({length:200},(_,i)=>({id:'m'+i,name:'M',signature:'msig'+i,state}));
  await h.call(importData,{body:{searches:many}});await h.call(importData,{body:{searches:many.map(s=>({...s,id:s.id+'b',signature:s.signature+'b'}))}});
  const r=await h.call(importData,{body:{searches:many.map(s=>({...s,id:s.id+'c',signature:s.signature+'c'}))}});

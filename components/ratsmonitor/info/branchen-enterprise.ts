@@ -1,4 +1,4 @@
-/* Enterprise-Block der Branchenseiten: plenara.X-Analysen (Teil von Enterprise) und Team-Funktionen.
+/* Enterprise-Block der Branchenseiten: plenara.X-Analysen (Teil von Plus) und Team-Funktionen.
    Gleiches Gerüst für alle Branchen, Auswahl, Sätze und Anordnung je Branche. */
 import type { IconName } from "./icons";
 

@@ -78,7 +78,7 @@ export function NotificationsPage() {
         <div className={card}>
         <h2 className={head}>{ico("clock")}Kalender</h2>
         <p className={empty}>
-          {limits.calendar ? "Neue Sitzungen in Ihren Kalendergebieten per E-Mail: der Schalter steht im Kalender." : "Der Kalender gehört zu Enterprise."}{" "}
+          {limits.calendar ? "Neue Sitzungen in Ihren Kalendergebieten per E-Mail: der Schalter steht im Kalender." : "Der Kalender gehört zu Plus."}{" "}
           <Link href="/konto/kalender" className="font-medium text-teal-700 hover:underline">Zum Kalender</Link>
         </p>
         </div>

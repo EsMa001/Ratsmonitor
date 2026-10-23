@@ -158,11 +158,11 @@ export function AnwenderLivePage({ b }: { b: Branche }) {
         <p className="m-0 text-[14px] text-slate-500" style={{ marginTop: 12 }}>Kostenlos und ohne Anmeldung. <Link href="/preise" className="inline-block px-1 max-sm:py-3 text-teal-700 hover:underline">Preise</Link></p>
       </section>
 
-      {/* plenara.X: schmale Zeile am Ende (Stufe Enterprise) */}
+      {/* plenara.X: schmale Zeile am Ende (Plus) */}
       {b.plenarax && (
         <section className="ri-sec ri-sec--tight">
           <p className="m-0 text-[14px] text-slate-500">
-            <span className="font-semibold text-slate-900">Mehr mit plenara.X</span> (Stufe Enterprise):{" "}
+            <span className="font-semibold text-slate-900">Mehr mit plenara.X</span> (mit Plus):{" "}
             {b.plenarax.map(([titel, , link], i) => <span key={link}>{i ? " · " : ""}<Link href={link} className="inline-block max-sm:py-3 text-teal-700 hover:underline">{titel} →</Link></span>)}
           </p>
         </section>

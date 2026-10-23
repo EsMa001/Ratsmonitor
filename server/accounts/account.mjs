@@ -191,7 +191,7 @@ export async function settingsWrite(ctx){
  // Wochenbericht und Kalender-Mails nur mit Benachrichtigungen in der Stufe, Kalender nur mit dem Merkmal (shared/plans.mjs)
  if(weekly&&!s?.weekly&&!limits.notifications)throw new AccountError(409,'Der Wochenbericht gehört nicht zu Ihrer Stufe.',{limit:'notifications'});
  const calendarMail=body.calendarMail!==undefined?(body.calendarMail===true?1:0):(s?.calendar_mail??0);
- if(calendarMail&&!s?.calendar_mail&&!features.calendar)throw new AccountError(409,'Kalender-Mails gehören zu Enterprise.',{limit:'calendar'});
+ if(calendarMail&&!s?.calendar_mail&&!features.calendar)throw new AccountError(409,'Kalender-Mails gehören zu Plus.',{limit:'calendar'});
  const calendarFreq=body.calendarFreq!==undefined?(FREQ.includes(body.calendarFreq)?body.calendarFreq:null):(s?.calendar_freq??null);
  const since=(on,old,col)=>on?(old?s?.[col]??at:at):null;
  const calendar=body.calendar!==undefined?JSON.stringify(cleanCalendar(body.calendar)):(s?.calendar??'[]');

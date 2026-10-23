@@ -7,22 +7,25 @@ import { useClient } from "../lib/useClient";
 
 /* Leistungen je Tarif: Text, wenn enthalten (je Stufe auch abweichend), sonst null = nicht aufgeführt (steht in der Vergleichstabelle) */
 const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
-  { label: "Suche in allen Gebieten", tiers: { guest: "Suche in allen Gebieten", basic: "Suche in allen Gebieten", pro: "Suche in allen Gebieten", enterprise: "Suche in allen Gebieten" } },
-  { label: "Alle Treffer", tiers: { guest: "10 Treffer je Suche", basic: "Alle Treffer", pro: "Alle Treffer", enterprise: "Alle Treffer" } },
-  { label: "Filter und Umkreis", tiers: { guest: null, basic: "Filter und Umkreis", pro: "Filter und Umkreis", enterprise: "Filter und Umkreis" } },
-  { label: "Meine Suchen", tiers: { guest: null, basic: "1 gespeicherte Suche", pro: `Bis zu ${PLAN_MAX} gespeicherte Suchen`, enterprise: `Bis zu ${PLAN_MAX} gespeicherte Suchen` } },
-  { label: "Gespeicherte Artikel", tiers: { guest: null, basic: "1 gespeicherter Artikel", pro: `Bis zu ${PLAN_MAX} gespeicherte Artikel`, enterprise: `Bis zu ${PLAN_MAX} gespeicherte Artikel` } },
-  { label: "E-Mail-Benachrichtigungen", tiers: { guest: null, basic: "1 aktive Benachrichtigung", pro: `Bis zu ${PLAN_MAX} Benachrichtigungen`, enterprise: `Bis zu ${PLAN_MAX} Benachrichtigungen` } },
-  { label: "Sitzungskalender mit Kalender-Abo", tiers: { guest: null, basic: null, pro: null, enterprise: "Sitzungskalender mit Kalender-Abo" } },
-  { label: "plenara.X", tiers: { guest: null, basic: null, pro: null, enterprise: "plenara.X: Analysen zu Ausbreitung, Beschlüssen und Trends" } },
+  { label: "Ganz Deutschland", tiers: { guest: "Ganz Deutschland: alle Gebiete mit Daten", basic: "Ganz Deutschland: alle Gebiete mit Daten", pro: "Ganz Deutschland: alle Gebiete mit Daten", enterprise: "Ganz Deutschland: alle Gebiete mit Daten" } },
+  { label: "Suche mit allen Filtern", tiers: { guest: "Suche mit allen Filtern", basic: "Suche mit allen Filtern", pro: "Suche mit allen Filtern", enterprise: "Suche mit allen Filtern" } },
+  { label: "Treffer", tiers: { guest: "10 Treffer je Suche", basic: "20 Treffer je Suche", pro: "Alle Treffer", enterprise: "Alle Treffer" } },
+  { label: "Artikel lesen und teilen", tiers: { guest: "Alle Artikel lesen und teilen", basic: "Alle Artikel lesen und teilen", pro: "Alle Artikel lesen und teilen", enterprise: "Alle Artikel lesen und teilen" } },
+  { label: "Meine Suchen", tiers: { guest: null, basic: "5 gespeicherte Suchen", pro: `Bis zu ${PLAN_MAX} gespeicherte Suchen`, enterprise: `Bis zu ${PLAN_MAX} gespeicherte Suchen` } },
+  { label: "Gespeicherte Artikel", tiers: { guest: null, basic: "5 gespeicherte Artikel", pro: `Bis zu ${PLAN_MAX} gespeicherte Artikel`, enterprise: `Bis zu ${PLAN_MAX} gespeicherte Artikel` } },
+  { label: "E-Mail-Benachrichtigungen", tiers: { guest: null, basic: "5 Benachrichtigungen, täglich oder wöchentlich", pro: `Bis zu ${PLAN_MAX} Benachrichtigungen, auch sofort`, enterprise: `Bis zu ${PLAN_MAX} Benachrichtigungen, auch sofort` } },
+  { label: "plenara.X", tiers: { guest: null, basic: null, pro: "plenara.X: alle Analysen, bundesweit", enterprise: "plenara.X: alle Analysen, bundesweit" } },
+  { label: "Sitzungskalender mit Kalender-Abo", tiers: { guest: null, basic: null, pro: "Sitzungskalender mit Kalender-Abo", enterprise: "Sitzungskalender mit Kalender-Abo" } },
   { label: "Bis zu 5 E-Mail-Empfänger", tiers: { guest: null, basic: null, pro: null, enterprise: "Bis zu 5 E-Mail-Empfänger je Benachrichtigung" } },
 ];
 const PLANS: { tier: Tier; note: string; nutzen: string }[] = [
-  { tier: "guest", note: "Ohne Anmeldung", nutzen: "Reinschauen: ein Begriff, ganz Deutschland." },
-  { tier: "basic", note: "Mit Konto", nutzen: "Ein Thema per E-Mail im Blick behalten." },
-  { tier: "pro", note: "auf Anfrage", nutzen: "Viele Themen per E-Mail verfolgen, statt täglich zu suchen." },
-  { tier: "enterprise", note: "für Teams · auf Anfrage", nutzen: "Im Team informiert bleiben, mit Analysen und Kalender." },
+  { tier: "guest", note: "Ohne Anmeldung", nutzen: "Suchen, filtern, lesen und teilen." },
+  { tier: "basic", note: "Kostenlos, mit Anmeldung", nutzen: "Themen speichern und per E-Mail im Blick behalten." },
+  { tier: "pro", note: "Monatlich kündbar", nutzen: "Alles: alle Treffer, plenara.X und der Sitzungskalender." },
+  { tier: "enterprise", note: "Noch nicht im Angebot", nutzen: "Später mit KI, Team und Schnittstelle." },
 ];
+/** Angebotene Stufen als Karten; ohne Anmeldung steht als Satz darüber, Enterprise gibt es noch nicht */
+const SHOWN = PLANS.filter((p) => p.tier === "basic" || p.tier === "pro");
 
 /* Wie im übrigen Design: schwarze Pille mit Pfeil für die Hauptaktion, sonst Petrol-Text mit Pfeil */
 const PRIMARY = "mt-5 inline-flex h-11 items-center justify-center gap-2 self-start rounded-full bg-teal-700 px-5 text-[14px] font-medium text-white no-underline transition-opacity after:content-['→'] hover:opacity-85";
@@ -33,16 +36,16 @@ const SECONDARY = "mt-5 inline-flex h-11 items-center gap-1.5 self-start text-[1
 export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
   const { tier } = useTier();
   /* Handy: ein Tarif auf einmal; seitlich wischen oder die Reiter antippen (beides bleibt abgeglichen) */
-  const [pick, setPick] = useState<Tier>(publicPage ? "pro" : tier);
+  const [pick, setPick] = useState<Tier>(publicPage || !SHOWN.some((p) => p.tier === tier) ? "pro" : tier);
   const track = useRef<HTMLDivElement>(null);
   const lockUntil = useRef(0);
   const goTo = (t: Tier, smooth: boolean) => {
     const el = track.current;
-    const card = el?.children[PLANS.findIndex((p) => p.tier === t)] as HTMLElement | undefined;
+    const card = el?.children[SHOWN.findIndex((p) => p.tier === t)] as HTMLElement | undefined;
     if (el && card && el.scrollWidth > el.clientWidth) lockUntil.current = Date.now() + (smooth ? 700 : 100);
     if (el && card && el.scrollWidth > el.clientWidth) el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: smooth ? "smooth" : "auto" });
   };
-  /* Startkarte (Pro bzw. der eigene Tarif) ohne Animation in Sicht */
+  /* Startkarte (Plus bzw. der eigene Tarif) ohne Animation in Sicht */
   useEffect(() => { goTo(pick, false); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const onScroll = () => {
     const el = track.current;
@@ -50,15 +53,16 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
     const kids = [...el.children] as HTMLElement[];
     let best = 0;
     kids.forEach((k, i) => { if (Math.abs(k.offsetLeft - el.offsetLeft - el.scrollLeft) < Math.abs(kids[best].offsetLeft - el.offsetLeft - el.scrollLeft)) best = i; });
-    const t = PLANS[best].tier;
+    const t = SHOWN[best].tier;
     if (t !== pick) setPick(t);
   };
   return (
     <section id="tarif" aria-labelledby="tarif-title" className={publicPage ? "" : "mt-6 scroll-mt-20"}>
       {!publicPage && <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Stufe</h2>}
-      <div className="mt-3 sm:hidden"><Segmented label="Stufe wählen" fill options={PLANS.map((p) => [p.tier, p.tier === "guest" ? "Gast" : TIER_LABEL[p.tier]] as [typeof p.tier, string])} value={pick} onPick={(t) => { setPick(t); goTo(t, true); }} /></div>
-      <div ref={track} onScroll={onScroll} className="mt-3 grid grid-cols-1 gap-x-8 gap-y-6 max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:gap-4 max-sm:overflow-x-auto max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden sm:grid-cols-2 lg:grid-cols-4">
-        {PLANS.map((plan) => {
+      <p className="m-0 mt-3 text-[14px] text-slate-600">In ganz Deutschland suchen, filtern, lesen und teilen geht sofort, ohne Anmeldung (10 Treffer je Suche). Gesucht wird in allen Gebieten, für die wir Daten haben.</p>
+      <div className="mt-3 sm:hidden"><Segmented label="Stufe wählen" fill options={SHOWN.map((p) => [p.tier, TIER_LABEL[p.tier]] as [typeof p.tier, string])} value={pick} onPick={(t) => { setPick(t); goTo(t, true); }} /></div>
+      <div ref={track} onScroll={onScroll} className="mt-3 grid grid-cols-1 gap-x-8 gap-y-6 max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:gap-4 max-sm:overflow-x-auto max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden sm:grid-cols-2 lg:max-w-[760px]">
+        {SHOWN.map((plan) => {
           const current = !publicPage && plan.tier === tier;
           return (
             <div key={plan.tier} className={`flex flex-col max-sm:w-full max-sm:flex-none max-sm:snap-start border-t-2 pb-2 pt-5 lg:pr-2 max-sm:rounded-2xl max-sm:border max-sm:border-t max-sm:p-4 max-sm:shadow-sm ${current ? "border-teal-600 max-sm:bg-teal-50/60" : plan.tier === "pro" && publicPage ? "border-slate-900 bg-slate-50 px-4 sm:-mt-2 sm:pt-7 max-sm:border-teal-600 max-sm:bg-white max-sm:shadow-md max-sm:ring-1 max-sm:ring-teal-600/30" : "border-slate-200 max-sm:bg-white"}`}>
@@ -82,9 +86,9 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                 })}
               </ul>
               {publicPage ? (
-                plan.tier === "guest" ? (
-                  <Link href="/suche" className={SECONDARY}>
-                    Direkt suchen
+                plan.tier === "basic" ? (
+                  <Link href="/anmelden" className={SECONDARY}>
+                    Kostenlos anmelden
                   </Link>
                 ) : (
                   <Link href="/kontakt" className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
@@ -96,7 +100,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                   <button type="button" onClick={() => setTier(plan.tier)} className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
                     {plan.tier === "guest" ? "Abmelden" : `Als ${TIER_LABEL[plan.tier]} anmelden`} (Dev)
                   </button>
-                ) : plan.tier === "guest" ? null : (
+                ) : plan.tier === "basic" ? null : (
                   <Link href="/kontakt" className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
                     {UPGRADE_TEXT}
                   </Link>

@@ -3,7 +3,7 @@
  * Signal (letzte 6 Monate: Zahl, Orte, Stände, Punkte für die Karte, die 3 neuesten Vorhaben, wie xSignals) oder Wert aus den Unterlagen
  * (übliche Spanne, Median, höher/niedriger seit dem vorigen Wert, wie die Fakten-Seite) oder die 3 berichtenswertesten Meldungen der
  * letzten 30 Tage zu einem Begriff (wie Aktuelles, für die Kopfkarte je Chip), die stärksten aufsteigenden Begriffe (wie Trends), die
- * häufigsten Übergänge zwischen Gremien mit Tagen (wie Gremien) oder Anteile beschlossen/vertagt/abgelehnt mit Dauer (wie Ausgang). Listen, Filter und Blättern bleiben Enterprise.
+ * häufigsten Übergänge zwischen Gremien mit Tagen (wie Gremien) oder Anteile beschlossen/vertagt/abgelehnt mit Dauer (wie Ausgang). Listen, Filter und Blättern bleiben Plus.
  * Kein eigenes Datenmodell.
  */
 import {xSignals} from './plenara-x-signals.mjs';

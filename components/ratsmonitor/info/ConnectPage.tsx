@@ -7,7 +7,7 @@ import { api } from "../lib/account";
 /* Zustimmung für den Kunden-MCP (OAuth, server/accounts/oauth.mjs): eine Anwendung wie Claude oder ChatGPT möchte im
    Namen dieses Kontos Berichte lesen. Gebiete und Grenzen legt der Betreiber fest (Kundendatei), hier wird nur zugestimmt. */
 type Customer = { identity: string; name: string; regionCount: number; regions: string[] };
-type Info = { signedIn: false; app: { name: string; host: string } } | { signedIn: true; app: { name: string; host: string }; tierOk: boolean; customers: Customer[] };
+type Info = { signedIn: false; app: { name: string; host: string } } | { signedIn: true; app: { name: string; host: string }; customers: Customer[] };
 
 export function ConnectPage() {
   const anfrage = useSearchParams().get("anfrage") ?? "";
@@ -30,8 +30,8 @@ export function ConnectPage() {
   }, [info]);
 
   const data = info?.key === anfrage ? info.data : undefined;
-  /* Ohne Enterprise oder ohne Freischaltung durch uns: nur Ablehnen (der Server prüft beides ebenso) */
-  const customers = data?.signedIn && data.tierOk ? data.customers : [];
+  /* Ohne Freischaltung durch uns: nur Ablehnen (der Server prüft das ebenso) */
+  const customers = data?.signedIn ? data.customers : [];
   const selected = choice || (customers.length === 1 ? customers[0].identity : "");
   const decide = async (allow: boolean) => {
     if (allow && !selected) return setError("Bitte wählen Sie einen Zugang.");
@@ -109,10 +109,6 @@ export function ConnectPage() {
                     Danach geht es zurück zu {data.app.host}. Die Verbindung gilt, bis Sie sie in der Anwendung trennen oder Ihr Zugang endet.
                   </p>
                 </>
-              ) : !data.tierOk ? (
-                <p role="alert" style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
-                  Der Zugang für KI-Assistenten gehört zur Stufe Enterprise. Mehr dazu unter <Link href="/preise">Preise</Link>.
-                </p>
               ) : (
                 <p role="alert" style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
                   Für Ihr Konto ist der Zugang für KI-Assistenten nicht freigeschaltet. Bitte wenden Sie sich an uns über <Link href="/kontakt">Kontakt</Link>.

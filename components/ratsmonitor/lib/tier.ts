@@ -9,7 +9,7 @@ import { devLogin, getMe, useMe } from "./account";
 export type Tier = "guest" | "basic" | "pro" | "enterprise";
 
 export interface TierLimits {
-  /** Höchstzahl erreichbarer Treffer (Gäste: nur die erste Seite) */
+  /** Höchstzahl erreichbarer Treffer (Gast und Konto: nur die erste Seite) */
   maxResults: number;
   filters: boolean;
   bookmarks: number;
@@ -18,24 +18,26 @@ export interface TierLimits {
   notifications: number;
   /** E-Mail-Empfänger für Benachrichtigungen */
   emails: number;
-  /** Sitzungskalender (nur Enterprise) */
+  /** Sitzungskalender (ab Plus) */
   calendar: boolean;
+  /** Mails sofort; sonst kommen sie einmal am Tag (ab Plus) */
+  instant: boolean;
 }
 
 const INF = Number.POSITIVE_INFINITY;
-/** Pro und Enterprise: gespeicherte Suchen, Artikel und aktive Benachrichtigungen je bis zu 100 */
+/** Plus und Enterprise: gespeicherte Suchen, Artikel und aktive Benachrichtigungen je bis zu 100 */
 export const PLAN_MAX = 100;
 export const LIMITS: Record<Tier, TierLimits> = {
-  guest: { maxResults: 10, filters: false, bookmarks: 0, savedSearches: 0, notifications: 0, emails: 0, calendar: false },
-  basic: { maxResults: INF, filters: true, bookmarks: 1, savedSearches: 1, notifications: 1, emails: 1, calendar: false },
-  pro: { maxResults: INF, filters: true, bookmarks: PLAN_MAX, savedSearches: PLAN_MAX, notifications: PLAN_MAX, emails: 1, calendar: false },
-  enterprise: { maxResults: INF, filters: true, bookmarks: PLAN_MAX, savedSearches: PLAN_MAX, notifications: PLAN_MAX, emails: 5, calendar: true },
+  guest: { maxResults: 10, filters: true, bookmarks: 0, savedSearches: 0, notifications: 0, emails: 0, calendar: false, instant: false },
+  basic: { maxResults: 20, filters: true, bookmarks: 5, savedSearches: 5, notifications: 5, emails: 1, calendar: false, instant: false },
+  pro: { maxResults: INF, filters: true, bookmarks: PLAN_MAX, savedSearches: PLAN_MAX, notifications: PLAN_MAX, emails: 1, calendar: true, instant: true },
+  enterprise: { maxResults: INF, filters: true, bookmarks: PLAN_MAX, savedSearches: PLAN_MAX, notifications: PLAN_MAX, emails: 5, calendar: true, instant: true },
 };
 
-export const TIER_LABEL: Record<Tier, string> = { guest: "Gast", basic: "Basic", pro: "Pro", enterprise: "Enterprise" };
+export const TIER_LABEL: Record<Tier, string> = { guest: "Gast", basic: "Konto", pro: "Plus", enterprise: "Enterprise" };
 /** Preis je Stufe für die Anzeige; ohne festgelegten Preis (shared/plans.mjs PRICES = null) „Preis folgt“ */
 export function priceLabel(t: Tier): string {
-  if (t === "guest") return "0 €";
+  if (t === "guest" || t === "basic") return "0 €";
   const p = (PRICES as Record<string, string | number | null>)[t];
   return p === null || p === undefined ? "Preis folgt" : typeof p === "number" ? `${p.toLocaleString("de-DE", { minimumFractionDigits: 2 })} € / Monat` : p;
 }

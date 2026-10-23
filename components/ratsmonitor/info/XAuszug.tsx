@@ -4,7 +4,7 @@ import { RegionMap } from "../pages/analytics/RegionMap";
 import { pctText } from "../lib/format";
 
 /* plenara.X auf den Anwenderseiten: fest gewählte Auszüge aus /api/x/teaser (server/integrations/plenara-x-teaser.mjs), nur die
-   Zusammenfassung; Listen, Filter und Blättern bleiben im Werkzeug (Tarif Enterprise). Erster Auszug groß mit Karte, weitere klein. */
+   Zusammenfassung; Listen, Filter und Blättern bleiben im Werkzeug (Plus). Erster Auszug groß mit Karte, weitere klein. */
 
 interface Phase { key: string; name: string; count: number }
 interface SignalAuszug { id: string; signal: string; name: string; months: number; builtAt: string | null; total: number; placeCount: number; firstCount: number; phases: Phase[];

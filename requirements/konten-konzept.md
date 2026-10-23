@@ -1,5 +1,7 @@
 # Konzept Thema 1: Konten und Anmeldung
 
+> **Stand 23.10.2026:** Die Stufen heißen für Kunden jetzt Konto (basic, kostenlos, jedes angemeldete Konto), Plus (pro, 2,99 € im Monat, mit plenara.X und Kalender) und Enterprise (noch nicht im Angebot). Grenzen und Preise: `docs/produkt/stufen.md`. Ältere Abschnitte unten nennen noch Basic, Pro und Enterprise mit den damaligen Rechten.
+
 Stand: 13.10.2026. Ablage: `requirements/konten-konzept.md`. Pfade sind relativ zu `C:\Git\vor-ort-quellcode`.
 
 Grundlage sind fünf Bestandsaufnahmen, drei Entwürfe mit Gutachten, eine Nachprüfung im Repo und eine Prüfung durch fünf Gutachter (Sicherheit, Datenschutz, Code, Betrieb, Nutzer). Die Leitlinie: Die geschlossene Testphase soll mit wenig Neuem erreicht werden, ohne Abstriche bei der Sicherheit. Vorhandene Muster werden weiterverwendet. Nico muss lokal nichts Neues lernen.

@@ -65,6 +65,9 @@ function SavedCard({ s }: { s: SavedSearch }) {
   const preview = usePreview(s);
   const { allow } = useEntitlements();
   const n = s.notify;
+  /* „Sofort“ erst mit Plus; ohne kommt eine gespeicherte Sofort-Glocke einmal am Tag (der Server rechnet ebenso) */
+  const instant = useMe().limits.instant;
+  const freq = !instant && n.freq === "instant" ? "daily" : n.freq;
   /* Glocke: per E-Mail bei neuen Treffern (server/accounts/notify.mjs); einschalten nur innerhalb der Grenze der Stufe */
   const setNotify = (patch: Partial<SavedSearch["notify"]>) => void updateSaved(s.id, { notify: { ...n, ...patch } }).then((err) => err && toast(err));
   const bell = () => {
@@ -158,9 +161,9 @@ function SavedCard({ s }: { s: SavedSearch }) {
             id={`freq-${s.id}`}
             label="Häufigkeit"
             allLabel=""
-            value={n.freq}
+            value={freq}
             options={[
-              { value: "instant", label: "Sofort" },
+              ...(instant ? [{ value: "instant", label: "Sofort" }] : []),
               { value: "daily", label: "Täglich" },
               { value: "weekly", label: "Wöchentlich" },
             ]}
@@ -168,6 +171,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
             size="sm"
             highlight={false}
           />
+          {!instant && <span>Sofort mit <Link href="/preise" className="text-teal-700 hover:underline">Plus</Link></span>}
           {s.active === false && <span className="text-amber-800">Ruht, solange die Suche nicht aktiv ist.</span>}
         </div>
       )}

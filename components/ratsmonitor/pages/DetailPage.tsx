@@ -55,6 +55,9 @@ function Stimmen({v}:{v:{yes:number|null;no:number|null;abstentions:number|null;
     <ul className="m-0 mt-2 flex list-none flex-wrap gap-x-4 p-0 text-[12px] text-slate-600">{parts.map(([l,n,c])=><li key={l} className="flex items-center gap-1.5"><i className={`inline-block h-2.5 w-2.5 rounded-sm ${c}`}/><b className="font-semibold tabular-nums text-slate-900">{n}</b> {l}</li>)}</ul>
   </div>;
 }
+/** Aktionsknopf im Kopf des Artikels: Pille mit Rand, am Handy rund */
+const ACTION='rounded-full border sm:pl-3 sm:pr-4 max-sm:!w-11 max-sm:justify-center';
+
 export function DetailPage(){
  const router=useRouter(),params=useParams(),id=String(params.id||''),{goBack}=useAppNav();
  const [alleSitzungen,setAlleSitzungen]=useState(false);
@@ -112,10 +115,11 @@ export function DetailPage(){
       <article className="py-2">
         <div className="flex items-center gap-2">
           <button type="button" className="back-btn -ml-1.5" onClick={()=>cameFromApp()?router.back():goBack()}><IconChevronLeft/>Zurück</button>
-          <span className="ml-auto flex items-center gap-1">
-            <ShareButton title={t.title} url={typeof window!=='undefined'?window.location.origin+'/beschluss/'+t.id:''}/>
-            <FollowButton article={article} size={20}/>
-            <SaveArticleButton article={article} size={20}/>
+          {/* Teilen, Folgen, Merken als Knöpfe mit Rand und Beschriftung (am Handy nur Symbol); Teilen gefüllt, weil Weitergeben am meisten bringt */}
+          <span className="ml-auto flex items-center gap-2">
+            <ShareButton title={t.title} url={typeof window!=='undefined'?window.location.origin+'/beschluss/'+t.id:''} label className={`${ACTION} border-teal-700 bg-teal-700 !text-white hover:bg-teal-800`}/>
+            <FollowButton article={article} size={20} label className={`${ACTION} border-slate-300 hover:border-teal-700`}/>
+            <SaveArticleButton article={article} size={20} label className={`${ACTION} border-slate-300 hover:border-teal-700`}/>
           </span>
         </div>
 

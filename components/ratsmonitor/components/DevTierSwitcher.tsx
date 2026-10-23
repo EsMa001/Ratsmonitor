@@ -15,7 +15,7 @@ export function DevTierSwitcher() {
       >
         {(Object.keys(TIER_LABEL) as Tier[]).map((t) => (
           <option key={t} value={t}>
-            {t === "guest" ? "Gast (nicht eingeloggt)" : t === "basic" ? "Basic (kostenlos)" : t === "pro" ? "Pro (bezahlt)" : "Enterprise"}
+            {t === "guest" ? "Gast (nicht eingeloggt)" : t === "basic" ? "Konto (kostenlos)" : t === "pro" ? "Plus (2,99 €)" : "Enterprise (später)"}
           </option>
         ))}
       </select>

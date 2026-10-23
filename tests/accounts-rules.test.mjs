@@ -68,7 +68,7 @@ test('Gastgrenze: Strom über alle Etappen höchstens 10 Treffer, dann eigenes E
  assert.equal(guestPageBlocked(new URLSearchParams('q=x')),false);
 });
 
-test('Stufen: eine Quelle, gleich dem Frontend und stufen.md; Konto ohne Freischaltung wie Gast',()=>{
+test('Stufen: eine Quelle, gleich dem Frontend und stufen.md; Konto ohne Freischaltung ist „Konto“ (basic)',()=>{
  const doc=fs.readFileSync(new URL('docs/produkt/stufen.md',root),'utf8');
  const row=label=>doc.split('\n').find(l=>l.startsWith('| '+label))?.split('|').slice(2,6).map(s=>s.trim());
  const val=v=>v===Number.POSITIVE_INFINITY?'unbegrenzt':typeof v==='boolean'?(v?'ja':'nein'):String(v);
@@ -77,16 +77,20 @@ test('Stufen: eine Quelle, gleich dem Frontend und stufen.md; Konto ohne Freisch
  assert.deepEqual(row('Gemerkte Artikel'),tiers.map(t=>val(LIMITS[t].bookmarks)));
  assert.deepEqual(row('Gespeicherte Suchen'),tiers.map(t=>val(LIMITS[t].savedSearches)));
  assert.deepEqual(row('Kalender'),tiers.map(t=>val(FEATURES[t].calendar)));
- assert.deepEqual(row('KI-Assistenten (MCP)'),tiers.map(t=>val(FEATURES[t].mcp)));
+ assert.deepEqual(row('plenara.X'),tiers.map(t=>val(FEATURES[t].analytics)));
+ assert.deepEqual(row('Filter'),tiers.map(t=>val(LIMITS[t].filters)));
+ assert.deepEqual(row('Benachrichtigungen (aktiv)'),tiers.map(t=>val(LIMITS[t].notifications)));
+ assert.deepEqual(row('E-Mails sofort'),tiers.map(t=>val(LIMITS[t].instant)));
+ assert.ok(tiers.every(t=>!('mcp' in FEATURES[t])),'KI-Assistenten gehören zu keiner Stufe');
  const front=fs.readFileSync(new URL('components/ratsmonitor/lib/tier.ts',root),'utf8');
  for(const t of tiers)assert.ok(front.includes(`${t}: { maxResults: ${LIMITS[t].maxResults===Number.POSITIVE_INFINITY?'INF':LIMITS[t].maxResults}`),t);
- assert.equal(ACCOUNT_DEFAULT_TIER,'guest');
+ assert.equal(ACCOUNT_DEFAULT_TIER,'basic');
 });
 
 test('Kalender-Abo: nur mit Kalender-Stufe, Token widerrufbar, Gebiete aus den Einstellungen',async()=>{
- const h=setup();await signedIn(h,'pro@example.org',{tier:'pro'});
+ const h=setup();await signedIn(h,'konto@example.org',{tier:'basic'});
  assert.equal((await h.call(calendarFeed,{body:{}})).status,403);
- h.jar.clear();await signedIn(h,'ent@example.org',{tier:'enterprise'});
+ h.jar.clear();await signedIn(h,'plus@example.org',{tier:'pro'});
  await h.call(settingsWrite,{method:'PUT',body:{calendarAgs:['05558008','evil']}});
  const r=await h.call(calendarFeed,{body:{}});
  assert.equal(r.status,200);assert.ok(r.body.url.startsWith(SITE+'/api/calendar/feed/'));

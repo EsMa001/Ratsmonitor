@@ -1,4 +1,4 @@
-/** Höchstens `max` Abrufe gleichzeitig (Kontoseiten: je gespeicherter Suche oder gespeichertem Artikel einer, bei Pro bis zu
+/** Höchstens `max` Abrufe gleichzeitig (Kontoseiten: je gespeicherter Suche oder gespeichertem Artikel einer, bei Plus bis zu
  *  100). Weitere warten in der Reihe; ein abgebrochener Auftrag, der noch wartet, startet gar nicht erst. */
 export function queue(max: number) {
   let active = 0;

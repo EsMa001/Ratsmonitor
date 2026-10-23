@@ -40,33 +40,33 @@ function closeGate() {
 const FEATURE: Record<GateFeature, { title: string; login: string; upgrade: string }> = {
   results: {
     title: "Alle Treffer sehen",
-    login: "Ohne Anmeldung sehen Sie die ersten 10 Treffer je Suche. Mit einer freigeschalteten Stufe durchsuchen Sie alle Treffer.",
-    upgrade: "",
+    login: "Ohne Anmeldung sehen Sie die ersten 10 Treffer je Suche, mit einem kostenlosen Konto 20. Mit Plus sehen Sie alle Treffer.",
+    upgrade: "Mit dem kostenlosen Konto sehen Sie 20 Treffer je Suche. Mit Plus sehen Sie alle Treffer.",
   },
   filters: {
     title: "Filter nutzen",
-    login: "Filter nach Gebiet, Thema, Zeitraum und Status stehen nach der Anmeldung mit einer freigeschalteten Stufe zur Verfügung.",
+    login: "Filter nach Gebiet, Thema, Zeitraum und Status stehen allen zur Verfügung.",
     upgrade: "",
   },
   bookmarks: {
     title: "Artikel speichern",
     login: "Melden Sie sich an, um Artikel zu speichern und später wiederzufinden.",
-    upgrade: "Mit Basic können Sie 1 Artikel speichern. Mit Pro speichern Sie bis zu 100 Artikel.",
+    upgrade: "Mit dem kostenlosen Konto können Sie 5 Artikel speichern. Mit Plus speichern Sie bis zu 100 Artikel.",
   },
   searches: {
     title: "Suchen speichern",
     login: "Melden Sie sich an, um Suchen zu speichern und neue Treffer im Blick zu behalten.",
-    upgrade: "Mit Basic können Sie 1 Suche speichern. Mit Pro speichern Sie bis zu 100 Suchen.",
+    upgrade: "Mit dem kostenlosen Konto können Sie 5 Suchen speichern. Mit Plus speichern Sie bis zu 100 Suchen.",
   },
   notifications: {
     title: "Benachrichtigungen",
     login: "Melden Sie sich an, um per E-Mail von neuen Treffern und Neuigkeiten zu Vorgängen zu erfahren.",
-    upgrade: "Mit Basic ist 1 Benachrichtigung gleichzeitig aktiv. Mit Pro sind es bis zu 100.",
+    upgrade: "Mit dem kostenlosen Konto sind 5 Benachrichtigungen gleichzeitig aktiv. Mit Plus sind es bis zu 100.",
   },
   emails: {
     title: "Mehrere Empfänger",
     login: "Melden Sie sich an, um Benachrichtigungen per E-Mail zu erhalten.",
-    upgrade: "Mit Enterprise gehen Benachrichtigungen an bis zu 5 E-Mail-Adressen.",
+    upgrade: "Weitere Empfänger für Benachrichtigungen gibt es noch nicht.",
   },
 };
 const NO_TIER = "Ihr Konto ist noch für keine Stufe freigeschaltet.";
@@ -131,12 +131,12 @@ export function GateDialog() {
               <button
                 type="button"
                 onClick={() => {
-                  setTier("enterprise");
+                  setTier("pro");
                   closeGate();
                 }}
                 className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700"
               >
-                Dev: als Enterprise fortfahren
+                Dev: als Plus fortfahren
               </button>
             )}
           </div>

@@ -4,18 +4,20 @@ import { PRICE_FAQ } from "./content";
 import { LIMITS, priceLabel, TIER_LABEL, UPGRADE_TEXT, type Tier } from "../lib/tier";
 import { PlanCards } from "../components/PlanCards";
 
-const TIERS: Tier[] = ["guest", "basic", "pro", "enterprise"];
+/* Angebotene Stufen; Enterprise gibt es noch nicht (später KI, Team, Schnittstelle) */
+const TIERS: Tier[] = ["guest", "basic", "pro"];
 const count = (n: number) => (n === 0 ? "–" : n > 1 ? `bis zu ${n}` : String(n));
 const COMPARE_ROWS: [string, (t: Tier) => string][] = [
   ["Preis", priceLabel],
+  ["Ganz Deutschland: alle Gebiete mit Daten", () => "✓"],
   ["Treffer je Suche", (t) => (Number.isFinite(LIMITS[t].maxResults) ? String(LIMITS[t].maxResults) : "alle")],
   ["Filter (Gebiet, Zeitraum, Thema, Status)", (t) => (LIMITS[t].filters ? "✓" : "–")],
   ["Meine Suchen", (t) => count(LIMITS[t].savedSearches)],
   ["Gespeicherte Artikel", (t) => count(LIMITS[t].bookmarks)],
   ["Aktive Benachrichtigungen", (t) => count(LIMITS[t].notifications)],
+  ["E-Mails sofort (sonst täglich oder wöchentlich)", (t) => (LIMITS[t].instant ? "✓" : "–")],
   ["Sitzungskalender mit Kalender-Abo", (t) => (LIMITS[t].calendar ? "✓" : "–")],
-  ["plenara.X (Analysen)", (t) => (t === "enterprise" ? "✓" : "–")],
-  ["E-Mail-Empfänger je Benachrichtigung", (t) => (LIMITS[t].emails > 1 ? `bis zu ${LIMITS[t].emails}` : count(LIMITS[t].emails))],
+  ["plenara.X (Analysen)", (t) => (t === "pro" || t === "enterprise" ? "✓" : "–")],
 ];
 
 export function PreisePage() {
@@ -26,7 +28,7 @@ export function PreisePage() {
         label="Informationen"
         name="Preise"
         title="Die Stufen im Überblick."
-        lead="In der Testphase schalten wir Stufen auf Anfrage frei. Die Preise folgen."
+        lead="Kostenlos suchen und lesen, für ganz Deutschland. Plus für 2,99 € im Monat. In der Testphase schalten wir Plus auf Anfrage frei."
       />
       <section className="ri-sec ri-sec--prices">
         {/* Gleiche Tarifkarten wie im Konto */}

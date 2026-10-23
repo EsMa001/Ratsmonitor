@@ -83,10 +83,10 @@ test('Ansehen als Stufe: Admin sieht und bekommt die Rechte der gewählten Stufe
  await login(h,'max@example.org');
  assert.equal((await h.call(viewTier,{body:{tier:'basic'}})).status,200);
  const state=(await h.call(me,{method:'GET'})).body;
- assert.equal(state.tier,'basic');assert.equal(state.realTier,'enterprise');assert.equal(state.viewTier,'basic');assert.equal(state.limits.savedSearches,1);
+ assert.equal(state.tier,'basic');assert.equal(state.realTier,'enterprise');assert.equal(state.viewTier,'basic');assert.equal(state.limits.savedSearches,5);
  const s={q:'',text:'',area:'',areaSrc:'',radius:null,thema:'',monat:'',status:''};
- assert.equal((await h.call(searchesWrite,{body:{id:'a',name:'A',signature:'a',state:s}})).status,201);
- assert.equal((await h.call(searchesWrite,{body:{id:'b',name:'B',signature:'b',state:s}})).status,409,'Grenze von Basic gilt auch serverseitig');
+ for(const id of ['a','b','c','d','e'])assert.equal((await h.call(searchesWrite,{body:{id,name:id,signature:id,state:s}})).status,201);
+ assert.equal((await h.call(searchesWrite,{body:{id:'f',name:'F',signature:'f',state:s}})).status,409,'Grenze von Konto gilt auch serverseitig');
  await h.call(viewTier,{body:{tier:'guest'}});
  assert.equal((await h.call(me,{method:'GET'})).body.limits.maxResults,10);
  await h.call(viewTier,{body:{tier:null}});

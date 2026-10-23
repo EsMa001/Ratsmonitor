@@ -2,7 +2,7 @@ import { Ban, CircleCheck, CircleHelp, CirclePause, CircleX, ClipboardList, Coin
 import type { LucideIcon } from "lucide-react";
 
 /* Icons des Stands der Signale (Schritt, Vorgangsart oder Status; Namen aus shared/model/names.mjs und den früheren Schritten der Bauleitplanung) */
-const STEP_ICONS: Record<string, LucideIcon> = {
+export const STEP_ICONS: Record<string, LucideIcon> = {
   // Schritt des Verfahrens
   Start: Flag, Aufstellung: Flag, "Start und Beauftragung": Flag,
   "Frühe Phase": Users, "Frühzeitige Beteiligung": Users, "Analyse und Zwischenstand": Users,

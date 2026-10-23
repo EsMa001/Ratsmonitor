@@ -172,30 +172,20 @@ test('Ablehnen führt mit access_denied zurück; Betreiber nimmt das Konto herau
  assert.equal((await h.call(requestInfo,{path:'/api/oauth/request?anfrage='+encodeURIComponent(a2),method:'GET'})).status,400);
 });
 
-test('nur mit Stufe Enterprise: Zustimmung abgelehnt ohne sie, Erneuerung endet mit ihr',async t=>{
+test('Zugang hängt an keiner Stufe, nur an der Kundendatei: Erneuerung endet mit dem Eintrag',async t=>{
  const e=env(t);const {h}=e;
- const pro=await signIn(h,'pro@example.org',{tier:'pro'});e.write([pro]);
+ const basic=await signIn(h,'basic@example.org',{tier:'basic'});e.write([basic]);
  const c=await client(h),{verifier,challenge}=pkce();
  const anfrage=await consent(h,c.client_id,challenge);
  const info=await h.call(requestInfo,{path:'/api/oauth/request?anfrage='+encodeURIComponent(anfrage),method:'GET'});
- assert.equal(info.body.tierOk,false);assert.equal(info.body.customers.length,1,'Freischaltung allein genügt nicht');
- const denied=await h.call(decide,{path:'/api/oauth/decide',body:{anfrage,allow:true}});
- assert.equal(denied.status,403);assert.match(denied.body.error,/Enterprise/);
- assert.equal(h.accounts.sql.prepare('SELECT count(*) n FROM oauth_codes').get().n,0);
- // Ablehnen geht auch ohne Enterprise
- assert.equal(new URL((await h.call(decide,{path:'/api/oauth/decide',body:{anfrage,allow:false}})).body.redirect).searchParams.get('error'),'access_denied');
-
- // Enterprise bis morgen: Zugang und Erneuerung gehen, danach nicht mehr
- const until=new Date(h.now()+86400000).toISOString();
- h.accounts.sql.prepare("UPDATE plan_grants SET tier='enterprise',ends_at=? WHERE user_id=?").run(until,pro);
- const a2=await consent(h,c.client_id,challenge);
- assert.equal((await h.call(requestInfo,{path:'/api/oauth/request?anfrage='+encodeURIComponent(a2),method:'GET'})).body.tierOk,true);
- const code=new URL((await h.call(decide,{path:'/api/oauth/decide',body:{anfrage:a2,allow:true}})).body.redirect).searchParams.get('code');
+ assert.equal(info.body.customers.length,1);assert.equal('tierOk' in info.body,false);
+ const code=new URL((await h.call(decide,{path:'/api/oauth/decide',body:{anfrage,allow:true}})).body.redirect).searchParams.get('code');
  const first=await h.call(wrap(token),{path:'/oauth/token',body:{grant_type:'authorization_code',code,redirect_uri:REDIRECT,client_id:c.client_id,code_verifier:verifier}});
  assert.equal(first.status,200);
- h.tick(2*86400000);
+ // Aus der Kundendatei genommen: keine Erneuerung mehr
+ e.write([]);
  const later=await h.call(wrap(token),{path:'/oauth/token',body:{grant_type:'refresh_token',refresh_token:first.body.refresh_token,client_id:c.client_id}});
- assert.equal(later.body.error,'invalid_grant');assert.match(later.body.error_description,/Enterprise/);
+ assert.equal(later.body.error,'invalid_grant');
 });
 
 test('Zugangssperre und Rücksprung: OAuth-Endpunkte frei, Zustimmung nur angemeldet; /verbinden als Ziel nach der Anmeldung',async t=>{

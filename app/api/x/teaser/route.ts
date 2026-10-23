@@ -8,7 +8,7 @@ import {AnalyticsError} from '@/server/integrations/analytics-diffusion.mjs';
 import {cachedJson} from '@/server/services/cached-json.mjs';
 // plenara.X Auszug für die Anwenderseiten (server/integrations/plenara-x-teaser.mjs): nur fest gewählte Signale, nur die Zusammenfassung,
 import {dataFailure,X_CACHE} from '@/server/services/data-response.mjs';
-// deshalb ohne Stufe Enterprise (wie die Suche). Zwischenspeicher je Auszug und Tag, neu mit dem täglichen Bau von x_cases.
+// deshalb ohne Stufe Plus (wie die Suche). Zwischenspeicher je Auszug und Tag, neu mit dem täglichen Bau von x_cases.
 export const GET=gated(teaserGet);
 async function teaserGet(request:Request){
  try {const id=new URL(request.url).searchParams.get('id')||'';const p=teaserParams(id);p.set('id',id);

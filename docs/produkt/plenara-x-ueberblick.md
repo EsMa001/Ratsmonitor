@@ -4,7 +4,7 @@ Stand 15.10.2026. Wie plenara.X aufgebaut ist, woher die Zahlen kommen, wer was 
 
 ## Wofür und für wen
 
-plenara.X ist der Analyse-Teil von Plenara (Tarif Enterprise; frei sind nur die Übersichten `/analytics/ueber` und `/analytics/tools`). Grundlage sind dieselben Ratsunterlagen wie in der Suche. plenara.X liest aus ihnen nach festen Regeln Themen, Ereignisse und Werte und zählt sie über alle Kommunen. Es gibt kein KI-Modell im Ablauf, und jede Zahl führt zurück zu den Vorgängen und Originalquellen.
+plenara.X ist der Analyse-Teil von Plenara (Stufe Plus, seit 23.10.2026; frei sind nur die Übersichten `/analytics/ueber` und `/analytics/tools`). Grundlage sind dieselben Ratsunterlagen wie in der Suche. plenara.X liest aus ihnen nach festen Regeln Themen, Ereignisse und Werte und zählt sie über alle Kommunen. Es gibt kein KI-Modell im Ablauf, und jede Zahl führt zurück zu den Vorgängen und Originalquellen.
 
 | Zielgruppe | Frage | Seite |
 |---|---|---|

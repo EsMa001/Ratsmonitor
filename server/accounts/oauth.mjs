@@ -1,16 +1,15 @@
 // OAuth 2.1 für den Kunden-MCP: die Web-App ist der Anmeldedienst (docs/betrieb/claude-mcp-einbindung.md).
 // Ablauf: Client registriert sich (RFC 7591) → /oauth/authorize prüft und leitet auf /verbinden → angemeldetes Konto
 // stimmt zu (POST /api/oauth/decide) → Code (5 Minuten, einmal, PKCE S256) → /oauth/token gibt Zugangstoken (30 Minuten,
-// signiert, server/mcp/tokens.mjs) und Erneuerungstoken (30 Tage, rotierend). Zustimmen darf nur ein Konto mit der
-// Stufe Enterprise (Merkmal mcp in shared/plans.mjs), das der Betreiber in der Kundendatei einem Kunden zugeordnet hat;
-// beides wird bei jeder Erneuerung erneut geprüft. Gebiete und Grenzen stehen nur in der Kundendatei.
+// signiert, server/mcp/tokens.mjs) und Erneuerungstoken (30 Tage, rotierend). Zustimmen darf nur ein Konto, das der
+// Betreiber in der Kundendatei einem Kunden zugeordnet hat (unabhängig von der Stufe, Entscheidung 23.10.2026);
+// das wird bei jeder Erneuerung erneut geprüft. Gebiete und Grenzen stehen nur in der Kundendatei.
 import {randomToken,sha256hex,sealText,openText,b64url} from './crypto.mjs';
 import {AccountError,respond,requireSameOrigin,readJson} from './http.mjs';
 import {siteBase} from './config.mjs';
 import {limitedAll} from './rate-limit.mjs';
 import {currentSession} from './login.mjs';
-import {eventStatement,effectiveTier} from './sessions.mjs';
-import {FEATURES} from '../../shared/plans.mjs';
+import {eventStatement} from './sessions.mjs';
 import {customerStore} from '../mcp/customers.mjs';
 import {signAccessToken,SCOPE} from '../mcp/tokens.mjs';
 import {CATALOG} from '../../shared/catalog.mjs';
@@ -118,12 +117,6 @@ async function openRequest(ctx,value){
  if(!client||!client.redirectUris.includes(r.r))throw new AccountError(400,'Unbekannte Anwendung.');
  return {r,client};
 }
-/** OAuth-Zugang gehört zu einer Stufe mit dem Merkmal mcp (Enterprise); geprüft bei Zustimmung und jeder Erneuerung */
-export const TIER_TEXT='Der Zugang für KI-Assistenten gehört zur Stufe Enterprise.';
-async function tierAllows(db,userId,now){
- const {tier}=await effectiveTier(db,userId,{now});
- return FEATURES[tier]?.mcp===true;
-}
 const describe=c=>({identity:c.identity,name:c.name,regionCount:c.allowedRegionIds.length,
  regions:c.allowedRegionIds.slice(0,12).map(id=>REGION_NAMES.get(id)||id)});
 
@@ -134,7 +127,7 @@ export async function requestInfo(ctx){
  const app={name:client.name,host:new URL(r.r).host||new URL(r.r).protocol};
  const session=await currentSession(ctx);
  if(!session)return {response:respond({signedIn:false,app})};
- return {response:respond({signedIn:true,app,scope:SCOPE,tierOk:await tierAllows(ctx.db,session.user_id,ctx.now),customers:customers.forAccount(session.user_id).map(describe)})};
+ return {response:respond({signedIn:true,app,scope:SCOPE,customers:customers.forAccount(session.user_id).map(describe)})};
 }
 
 /** POST /api/oauth/decide {anfrage, allow, customer}: Zustimmung oder Ablehnung; Antwort ist die Rücksprungadresse */
@@ -150,7 +143,6 @@ export async function decide(ctx){
  const allowed=customers.forAccount(session.user_id);
  const chosen=allowed.find(c=>c.identity===body.customer)||(allowed.length===1&&!body.customer?allowed[0]:null);
  if(!chosen)throw new AccountError(403,'Für dieses Konto ist dieser Zugang nicht freigeschaltet.');
- if(!await tierAllows(ctx.db,session.user_id,ctx.now))throw new AccountError(403,TIER_TEXT);
  const code=randomToken(32);
  await ctx.db.batch([
   ctx.db.prepare('INSERT INTO oauth_codes(id,client_id,user_id,customer,redirect_uri,code_challenge,resource,created_at,expires_at) VALUES(?,?,?,?,?,?,?,?,?)')
@@ -191,8 +183,6 @@ async function issue(ctx,setup,{clientId,userId,customer,family}){
  const user=await ctx.db.prepare("SELECT status FROM users WHERE id=?").bind(userId).first();
  if(user?.status!=='active')throw new OAuthError('invalid_grant','Das Konto ist gesperrt oder gelöscht.');
  if(!setup.customers.forAccount(userId).some(c=>c.identity===customer))throw new OAuthError('invalid_grant','Der Zugang ist für dieses Konto nicht mehr freigeschaltet.');
- // Stufe bei jeder Ausgabe: endet Enterprise, gibt es kein neues Zugangstoken (das alte läuft nach 30 Minuten ab)
- if(!await tierAllows(ctx.db,userId,ctx.now))throw new OAuthError('invalid_grant',TIER_TEXT);
  const access=await signAccessToken({secret:setup.secret,userId,customer,clientId,audience:setup.resource,now:ctx.now});
  const refresh='prt_'+randomToken(32);
  await ctx.db.batch([

@@ -19,24 +19,24 @@ const VORSCHAU: Record<string, { id: AnalyseId; term: string; text: string; thum
   "/analytics/gremien": { id: "gremien", term: "Photovoltaik", text: "Zeigt, welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
 };
 
-/** Hinweis statt Analyse für alle ohne Enterprise (der Server antwortet ihnen mit 403) */
+/** Hinweis statt Analyse für alle ohne Plus (der Server antwortet ihnen mit 403) */
 export function AnalyticsLocked({ path = "" }: { path?: string }) {
   const v = VORSCHAU[path];
   /* Neue Seite plenara.X Trends unter der früheren Adresse der Trends: ihr Name, nicht „Alt: …“ */
   const title = v ? NEU_NAME[v.id] || ANALYSEN[v.id].name : "";
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-12 text-slate-900">
-      {/* Gleicher Kopf wie die Seite selbst (Titel und Frage); darunter, was Enterprise freischaltet */}
+      {/* Gleicher Kopf wie die Seite selbst (Titel und Frage); darunter, was Plus freischaltet */}
       <XKopf seite={(path.split("/").pop() || "atlas") as Parameters<typeof XKopf>[0]["seite"]} />
       <section aria-label="Freischalten" className="mt-2 max-w-[760px]">
         {v && <p className="m-0 text-[18px] leading-relaxed text-slate-700">{v.text}</p>}
-        <p className="mt-3 text-[16px] text-slate-500">Die Analysen von plenara.X gehören zur Stufe Enterprise, für Organisationen, in denen mehrere Personen informiert werden sollen.</p>
+        <p className="mt-3 text-[16px] text-slate-500">Die Analysen von plenara.X gehören zu Plus: alle Analysen für ganz Deutschland, 2,99 € im Monat.</p>
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Link href="/kontakt" className="btn-primary max-w-full whitespace-normal">Enterprise: {UPGRADE_TEXT}</Link>
+          <Link href="/kontakt" className="btn-primary max-w-full whitespace-normal">Plus: {UPGRADE_TEXT}</Link>
           <Link href="/preise" className="btn-secondary">Was kann plenara.X?</Link>
           {IS_DEV && (
-            <button type="button" onClick={() => setTier("enterprise")} className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
-              Dev: als Enterprise fortfahren
+            <button type="button" onClick={() => setTier("pro")} className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
+              Dev: als Plus fortfahren
             </button>
           )}
         </div>

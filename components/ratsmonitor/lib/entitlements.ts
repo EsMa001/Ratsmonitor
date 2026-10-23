@@ -41,7 +41,7 @@ export function useEntitlements() {
     const ok = feature === "filters" ? limits.filters : !Number.isFinite(limits.maxResults);
     if (ok) return true;
     if (!ready) return false;
-    openGate({ feature, needs: "basic", total });
+    openGate({ feature, needs: tier === "guest" ? "basic" : "pro", total });
     return false;
   };
 

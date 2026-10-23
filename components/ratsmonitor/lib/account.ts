@@ -16,7 +16,7 @@ export interface Me {
   accounts: boolean;
   tier: Tier;
   limits: TierLimits;
-  features: { analytics: boolean; calendar: boolean; mcp: boolean; lenaPerMin: number };
+  features: { analytics: boolean; calendar: boolean; lenaPerMin: number };
   user: { id: string; email: string; name: string | null } | null;
   tierUntil: string | null;
   tierSource: "beta" | "manual" | "stripe" | null;
@@ -274,7 +274,7 @@ export function onMe(l: () => void): () => void {
   return subscribe(l);
 }
 
-/** „Testzugang Pro bis 31.01.27“: Datum der Stufe (zweistelliges Jahr) */
+/** „Testzugang Plus bis 31.01.27“: Datum der Stufe (zweistelliges Jahr) */
 export const shortDate = (iso: string | null | undefined) => {
   if (!iso) return "";
   const d = new Date(iso);

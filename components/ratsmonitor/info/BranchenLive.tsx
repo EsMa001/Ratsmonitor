@@ -9,7 +9,7 @@ import { nf } from "../lib/format";
 
 /* Mini-Ausschnitte der plenara.X-Analysen zum Suchbegriff der Branche. Sie kommen aus einem Schnappschuss
    (public/data/branchen-ausschnitte.json, erzeugt mit scripts/build-branchen-ausschnitte.mjs), nicht aus der API:
-   plenara.X ist Teil von Enterprise, die Branchenseiten zeigen nur diese feste Auswahl. Fehlt ein Eintrag
+   plenara.X ist Teil von Plus, die Branchenseiten zeigen nur diese feste Auswahl. Fehlt ein Eintrag
    (leer, Ortsvergleich), bleibt das schematische Vorschaubild. */
 
 /* Schnappschuss: je Analyse eine andere Form; mini() prüft beim Zeichnen, was da ist */

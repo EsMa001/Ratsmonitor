@@ -24,8 +24,8 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
           <path d="M8 11V8a4 4 0 0 1 8 0v3" />
         </svg>
       </span>
-      <h2 className="mb-1 mt-4 text-[18px] font-semibold">{signedIn ? "Konto ohne freigeschaltete Stufe" : title}</h2>
-      <p className="m-0 max-w-[48ch] text-slate-500">{signedIn ? "Ihr Konto ist noch für keine Stufe freigeschaltet. In der Testphase schalten wir Stufen auf Anfrage frei." : text}</p>
+      <h2 className="mb-1 mt-4 text-[18px] font-semibold">{signedIn ? "Teil von Plus" : title}</h2>
+      <p className="m-0 max-w-[48ch] text-slate-500">{signedIn ? "Diese Funktion gehört zu Plus. In der Testphase schalten wir Plus auf Anfrage frei." : text}</p>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
         {signedIn ? (
           <Link className="btn-primary" href="/kontakt">
@@ -39,8 +39,8 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
           )
         )}
         {IS_DEV && (
-          <button type="button" onClick={() => setTier("enterprise")} className="text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
-            Dev: als Enterprise anmelden
+          <button type="button" onClick={() => setTier("pro")} className="text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
+            Dev: als Plus anmelden
           </button>
         )}
       </div>
@@ -48,7 +48,7 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
   );
 }
 
-/** Verbrauch eines Limits, z. B. „1 von 1 · Basic“, mit Verweis auf eine Anfrage am Limit */
+/** Verbrauch eines Limits, z. B. „5 von 5 · Konto“, mit Verweis auf eine Anfrage am Limit */
 export function UsagePill({ label, used, max }: { label: string; used: number; max: number }) {
   const { tier } = useTier();
   const full = Number.isFinite(max) && used >= max;

@@ -3,7 +3,7 @@ import {env} from 'cloudflare:workers';
 import {parseAgs} from '@/server/integrations/calendar-events.mjs';
 import {buildIcs} from '@/server/services/calendar-ics';
 
-/** Sitzungstermine als Kalender-Datei (?ags=…, höchstens 200 Gebiete), für angemeldete Konten mit Kalender (Enterprise).
+/** Sitzungstermine als Kalender-Datei (?ags=…, höchstens 200 Gebiete), für angemeldete Konten mit Kalender (Plus).
  *  Für Kalender-Apps gibt es den Abo-Link mit Token (/api/calendar/feed/<token>, Kontoseite), denn Apps schicken kein Cookie.
  *  Jede Sitzung hat eine feste UID (Gebiet, Tag, Gremium): ein erneuter Import legt Termine nicht doppelt an. */
 export const GET=gated(icsGet,{feature:'calendar'});

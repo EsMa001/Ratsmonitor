@@ -68,11 +68,11 @@ Für Clients, die OAuth für MCP unterstützen, z. B. Claude (eigener Connector)
 
 1. Der Client liest `/.well-known/oauth-protected-resource/mcp` (RFC 9728) und `/.well-known/oauth-authorization-server` (RFC 8414) und registriert sich selbst (`/oauth/register`, RFC 7591).
 2. Der Browser öffnet `/oauth/authorize`. Plenara prüft die Anfrage (bekannte Anwendung, passende Rücksprungadresse, PKCE mit S256) und zeigt die Zustimmung `/verbinden`.
-3. Wer nicht angemeldet ist, meldet sich mit Mail-Link oder Code an und kommt zurück. Zustimmen kann nur ein Konto mit der Stufe Enterprise (Merkmal `mcp` in `shared/plans.mjs`), das zusätzlich in der Kundendatei steht. Die Seite zeigt Anwendung, Gebiete und Rücksprungziel; ohne Enterprise verweist sie auf die Preise.
+3. Wer nicht angemeldet ist, meldet sich mit Mail-Link oder Code an und kommt zurück. Zustimmen kann nur ein Konto, das in der Kundendatei steht; die Stufe spielt keine Rolle (der Zugang gehört seit 23.10.2026 zu keinem Tarif). Die Seite zeigt Anwendung, Gebiete und Rücksprungziel.
 4. `/oauth/token` tauscht den Code gegen ein Zugangstoken (30 Minuten, an `https://plenara.de/mcp` gebunden) und ein Erneuerungstoken (30 Tage, bei jeder Erneuerung neu).
    - Wird ein Erneuerungstoken ein zweites Mal benutzt, ist die ganze Kette ungültig.
    - Sperre, Löschen, Rollenwechsel und „alle Geräte abmelden“ löschen die Erneuerungstoken des Kontos.
-   - Stufe und Kundendatei werden bei jeder Erneuerung neu geprüft: Endet Enterprise, endet der Zugang spätestens mit dem Zugangstoken nach 30 Minuten.
+   - Die Kundendatei wird bei jeder Erneuerung neu geprüft: Fehlt das Konto dort, endet der Zugang spätestens mit dem Zugangstoken nach 30 Minuten.
 
 Codes, Erneuerungstoken und Client-Geheimnisse stehen nur als SHA-256 in der Kontendatei (`drizzle-accounts/0004_oauth.sql`). Das Zugangstoken ist mit `MCP_TOKEN_SECRET` signiert. Der MCP-Dienst prüft es ohne Kontendatei.
 
@@ -141,7 +141,7 @@ Die Migration `0004_oauth.sql` spielt `deploy.sh` mit den übrigen Kontomigratio
 | Intern: `INVALID_INPUT` beim Speichern | `error.detail` nennt die Regel; sonst alle Quellen und Abschnitte lesen und das Schema prüfen |
 | Kunde: 401 `invalid_token` | Schlüssel zurückgezogen, Kunde gesperrt, Konto nicht mehr in der Kundendatei oder Token abgelaufen (Client erneuert selbst) |
 | Kunde: Zustimmung sagt „nicht freigeschaltet“ | Konto-ID mit `account-add` eintragen |
-| Kunde: Zustimmung verweist auf Enterprise, Erneuerung scheitert mit `invalid_grant` | Stufe des Kontos prüfen (`ratsmonitor-accounts list`), Enterprise vergeben (`ratsmonitor-accounts tier enterprise --email-stdin`) |
+| Kunde: Zustimmung meldet „nicht freigeschaltet“, Erneuerung scheitert mit `invalid_grant` | Konto in der Kundendatei eintragen (`scripts/mcp-customers.mjs`) |
 | Kunde: 503 | `journalctl -u ratsmonitor-mcp`; `curl localhost:3002/health` meldet eine kaputte Kundendatei |
 | OAuth antwortet 503 `temporarily_unavailable` | `mcp.env` fehlt in `ratsmonitor.service` oder `SITE_URL` ist nicht gesetzt |
 | `RATE_LIMITED` | eine Minute warten; Grenze je Kunde mit `set --rpm` |

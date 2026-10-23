@@ -1,9 +1,9 @@
-// Gastgrenze der Suche (requirements/konten-konzept.md, Abschnitt 7): ohne freigeschaltete Stufe nur die erste Seite und
-// höchstens 10 Treffer. Gekürzt wird erst nach cachedSearch, der Zwischenspeicher bleibt für alle gleich.
+// Treffergrenze der Suche (requirements/konten-konzept.md, Abschnitt 7): Gast und Konto nur die erste Seite und höchstens
+// LIMITS[tier].maxResults Treffer (10 bzw. 20). Gekürzt wird erst nach cachedSearch, der Zwischenspeicher bleibt für alle gleich.
 import {LIMITS} from '../../shared/plans.mjs';
 export const GUEST_RESULTS=LIMITS.guest.maxResults;
 
-/** Seite 2 und folgende sind für Gäste gesperrt */
+/** Seite 2 und folgende sind für Stufen mit Treffergrenze gesperrt */
 export const guestPageBlocked=params=>Number(params.get('page')||'1')>1;
 
 /** Ergebnis ohne Strom: Artikel kürzen, „weitere“ melden */

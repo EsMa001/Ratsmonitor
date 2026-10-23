@@ -121,12 +121,12 @@ test('Registrieren nur mit Einladung (Einladungsmodus), mit Zustimmung; Einladun
  assert.ok(h.mails('new@example.org').some(m=>/Willkommen/.test(m.subject)));
 });
 
-test('Konto ohne freigeschaltete Stufe hat die Rechte eines Gasts',async()=>{
+test('Konto ohne freigeschaltete Stufe hat die Rechte von „Konto“ (kostenlos)',async()=>{
  const h=setup({access:'open',openSignup:true});
  await link(h,'free@example.org');const {token}=h.lastMail('free@example.org');
  await h.call(verify,{body:{token,agb:AGB_VERSION,adult:true}});
  const state=await h.call(me,{method:'GET'});
- assert.equal(state.body.tier,'guest');assert.equal(state.body.limits.savedSearches,0);assert.equal(state.body.user.email,'free@example.org');
+ assert.equal(state.body.tier,'basic');assert.equal(state.body.limits.savedSearches,5);assert.equal(state.body.limits.maxResults,20);assert.equal(state.body.user.email,'free@example.org');
 });
 
 test('Code mit fehlender Zustimmung wird nicht angerechnet und nicht verbraucht',async()=>{

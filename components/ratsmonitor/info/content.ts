@@ -90,7 +90,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
   {
     group: "Für Unternehmen und Organisationen",
     items: [
-      { q: "Kann ich plenara im Team nutzen?", a: "Ja. In der Stufe Enterprise gehen Benachrichtigungen an bis zu fünf E-Mail-Adressen oder Verteiler je gespeicherter Suche, etwa an Kolleginnen und Kollegen oder ein Team-Postfach." },
+      { q: "Kann ich plenara im Team nutzen?", a: "Eine eigene Stufe für Teams ist geplant. Bis dahin nutzt jede Person ein eigenes Konto, mit Plus für 2,99 € im Monat." },
       { q: "Erhalte ich eine Rechnung für mein Unternehmen?", a: "Für Unternehmen und Organisationen stimmen wir Abrechnung und Rechnungsstellung gern individuell ab. Sprechen Sie uns dazu über die Kontaktseite an." },
       { q: "Kann ich mehrere Regionen oder Themen beobachten?", a: "Ja. Legen Sie für jede Region oder jedes Thema eine eigene gespeicherte Suche an. In einer Suche können Sie außerdem mehrere Orte und mehrere Begriffe kombinieren. Wie viele Suchen Sie speichern können, hängt von der Stufe ab." },
       { q: "Was unterscheidet plenara von Vergabeportalen?", a: "Vergabeportale zeigen Ausschreibungen, also das Ende eines Prozesses. plenara zeigt, was davor in Räten und Ausschüssen beraten und beschlossen wird. So sehen Sie Projekte, bevor sie ausgeschrieben werden." },
@@ -99,12 +99,12 @@ export const FAQ: { group: string; items: Qa[] }[] = [
 ];
 
 export const PRICE_FAQ: Qa[] = [
-  { q: "Was kosten die Stufen?", a: "Die Preise stehen noch nicht fest. In der Testphase schalten wir Stufen auf Anfrage frei. Preise nennen wir hier, bevor eine Stufe kostenpflichtig wird." },
-  { q: "Brauche ich für Basic Zahlungsdaten?", a: "Nein. Basic ist kostenlos und ohne Zahlungsdaten nutzbar." },
-  { q: "Kann ich später upgraden?", a: "Ja, ein Wechsel auf eine höhere Stufe ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
-  { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit Basic eine Suche, einen Artikel und eine Benachrichtigung. Mit Pro und Enterprise jeweils bis zu 100 gespeicherte Suchen, bis zu 100 gespeicherte Artikel und bis zu 100 aktive Benachrichtigungen." },
-  { q: "Welche Stufe enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo ist nur in der Stufe Enterprise enthalten. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
-  { q: "Was ist plenara.X und welche Stufe enthält es?", a: "plenara.X sind die Analysen, Einblicke und Hintergründe zu plenara: Analysen (Atlas, Ortsvergleich, Trends mit Ausbreitung, Beschlusslage der Vorgänge), Einblicke (Signale, Ausschreibungen, Aktuelles, Fakten aus den Unterlagen) und Hintergründe (Fraktionen, Gremien, Themennetz). Sie sind nur in der Stufe Enterprise enthalten. In Basic und Pro bleibt die Suche mit allen Treffern und Benachrichtigungen." },
+  { q: "Was kosten die Stufen?", a: "Suchen und Lesen ohne Anmeldung und das Konto sind kostenlos. Plus kostet 2,99 € im Monat und ist monatlich kündbar. In der Testphase schalten wir Plus auf Anfrage frei." },
+  { q: "Brauche ich für das Konto Zahlungsdaten?", a: "Nein. Das Konto ist kostenlos und ohne Zahlungsdaten nutzbar." },
+  { q: "Kann ich später zu Plus wechseln?", a: "Ja, der Wechsel zu Plus ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
+  { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit dem kostenlosen Konto je 5 Suchen, 5 Artikel und 5 Benachrichtigungen, per E-Mail täglich oder wöchentlich. Mit Plus kommen E-Mails auch sofort, und Sie haben jeweils bis zu 100 gespeicherte Suchen, bis zu 100 gespeicherte Artikel und bis zu 100 aktive Benachrichtigungen." },
+  { q: "Welche Stufe enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo ist in Plus enthalten. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
+  { q: "Was ist plenara.X und welche Stufe enthält es?", a: "plenara.X sind die Analysen, Einblicke und Hintergründe zu plenara: Analysen (Atlas, Ortsvergleich, Trends mit Ausbreitung, Beschlusslage der Vorgänge), Einblicke (Signale, Ausschreibungen, Aktuelles, Fakten aus den Unterlagen) und Hintergründe (Fraktionen, Gremien, Themennetz). Sie sind in Plus enthalten, für ganz Deutschland. Ohne Plus bleiben Suche, Artikel und Benachrichtigungen." },
 ];
 
 

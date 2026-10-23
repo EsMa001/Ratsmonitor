@@ -60,8 +60,8 @@ const dragNode = async (rank, dx, dy) => { const o = (await nodes())[rank]; if (
 const hidden = async (fn) => { paused = true; await sleep(250); try { await fn(); } finally { await sleep(150); paused = false; } };
 const H = { hidden, sleep, loaded, calc, go, home, move, click, role, clickRole, clickText, type, search, scrollTo, openFirstArticle, tapNode, dragNode, page, BASE };
 
-/* Dev-Server: Stufen liegen auf dem Server (Konten); der Dev-Knopf meldet die Aufnahme als Enterprise an, damit plenara.X offen ist */
-if (!STATE) { await go("/analytics/atlas"); await page.getByRole("button", { name: /als Enterprise fortfahren/ }).click({ timeout: 3000 }).then(() => sleep(1500)).catch(() => {}); } else await go("/suche");  /* mit gespeicherter Anmeldung erst eine Seite öffnen, damit das Zurücksetzen das Konto erreicht */
+/* Dev-Server: Stufen liegen auf dem Server (Konten); der Dev-Knopf meldet die Aufnahme als Plus an, damit plenara.X offen ist */
+if (!STATE) { await go("/analytics/atlas"); await page.getByRole("button", { name: /als (Plus|Enterprise) fortfahren/ }).click({ timeout: 3000 }).then(() => sleep(1500)).catch(() => {}); } else await go("/suche");  /* mit gespeicherter Anmeldung erst eine Seite öffnen, damit das Zurücksetzen das Konto erreicht */
 /* Das Testkonto speichert auf dem Server: gespeicherte Suchen und Artikel früherer Aufnahmen entfernen, jede Szene beginnt leer */
 await page.evaluate(async () => { const h = { "content-type": "application/json" };
   for (const [path, key] of [["/api/me/searches", "searches"], ["/api/me/articles", "articles"]]) { const r = await fetch(path).then((x) => (x.ok ? x.json() : {})).catch(() => ({})); for (const it of r[key] || []) await fetch(path, { method: "DELETE", headers: h, body: JSON.stringify({ id: it.id }) }); } }).catch(() => {});

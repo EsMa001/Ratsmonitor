@@ -14,7 +14,7 @@ keinen Versand; alle Schalter waren mit „Folgt mit den E-Mail-Benachrichtigung
 | Gespeicherte Suche mit Glocke | neuer Bericht, der die Suche trifft | sofort, täglich oder wöchentlich (je Suche) | zählt zu `notifications` der Stufe |
 | Gemerkter Artikel mit Glocke | der Vorgang bekommt eine neue Sitzung oder einen neuen Status (vertagt, beschlossen …) | sofort | zählt zu `notifications` |
 | Wochenbericht | neue Treffer aller aktiven gespeicherten Suchen ohne eigene Glocke | täglich oder an einem Wochentag | eine Mail, zählt nicht |
-| Kalender (Enterprise) | in einem Kalendergebiet wird eine neue Sitzung angesetzt | sofort, täglich oder wöchentlich | Merkmal `calendar` |
+| Kalender (Plus) | in einem Kalendergebiet wird eine neue Sitzung angesetzt | sofort, täglich oder wöchentlich | Merkmal `calendar` |
 
 - „Neu“ heißt **neu aufgenommen** (Zeitpunkt des Imports), nicht „neues Sitzungsdatum“ (konten-konzept.md 9).
 - Eine Mail je Versandzeitpunkt und Konto, gegliedert nach Suche, Artikel und Kalender; je Abschnitt höchstens 10 Einträge,

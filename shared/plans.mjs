@@ -2,33 +2,33 @@
 // docs/produkt/stufen.md wird von Hand mitgezogen; tests/accounts-tiers.test.mjs vergleicht beide.
 
 export const TIERS=['guest','basic','pro','enterprise'];
-/** Pro und Enterprise: gespeicherte Suchen, Artikel und aktive Benachrichtigungen je bis zu 100 */
+/** Plus (pro) und Enterprise: gespeicherte Suchen, Artikel und aktive Benachrichtigungen je bis zu 100 */
 export const PLAN_MAX=100;
 /**
- * Stufe eines angemeldeten Kontos ohne gültige Zeile in plan_grants. Freigeschaltet wird erst über eine Zeile:
- * in der Testphase vom Admin (source beta/manual), später nach bestätigter Zahlung (source stripe, Abschnitt 9).
- * Bis dahin hat ein Konto die Rechte eines Gasts, dazu Kontoverwaltung, Datenauskunft und Löschen.
+ * Stufe eines angemeldeten Kontos ohne gültige Zeile in plan_grants: „Konto“ (basic, kostenlos; Entscheidung 23.10.2026).
+ * Plus (pro) wird über eine Zeile freigeschaltet: in der Testphase vom Admin (source beta/manual), später nach bestätigter
+ * Zahlung (source stripe, Abschnitt 9). Enterprise gibt es noch nicht im Angebot (später KI, Team, Schnittstelle).
  */
-export const ACCOUNT_DEFAULT_TIER='guest';
+export const ACCOUNT_DEFAULT_TIER='basic';
 const INF=Number.POSITIVE_INFINITY;
 export const LIMITS={
- guest:{maxResults:10,filters:false,bookmarks:0,savedSearches:0,notifications:0,emails:0,calendar:false},
- basic:{maxResults:INF,filters:true,bookmarks:1,savedSearches:1,notifications:1,emails:1,calendar:false},
- pro:{maxResults:INF,filters:true,bookmarks:PLAN_MAX,savedSearches:PLAN_MAX,notifications:PLAN_MAX,emails:1,calendar:false},
- enterprise:{maxResults:INF,filters:true,bookmarks:PLAN_MAX,savedSearches:PLAN_MAX,notifications:PLAN_MAX,emails:5,calendar:true},
+ // instant: Mails sofort (Suchen mit Rhythmus „sofort“, gefolgte Vorgänge); ohne kommen sie einmal am Tag (server/accounts/notify.mjs)
+ guest:{maxResults:10,filters:true,bookmarks:0,savedSearches:0,notifications:0,emails:0,calendar:false,instant:false},
+ basic:{maxResults:20,filters:true,bookmarks:5,savedSearches:5,notifications:5,emails:1,calendar:false,instant:false},
+ pro:{maxResults:INF,filters:true,bookmarks:PLAN_MAX,savedSearches:PLAN_MAX,notifications:PLAN_MAX,emails:1,calendar:true,instant:true},
+ enterprise:{maxResults:INF,filters:true,bookmarks:PLAN_MAX,savedSearches:PLAN_MAX,notifications:PLAN_MAX,emails:5,calendar:true,instant:true},
 };
 /** Funktionen je Stufe, die der Server prüft (requireFeature) */
 export const FEATURES={
- // mcp: KI-Assistenten über den Kunden-MCP per OAuth verbinden (server/accounts/oauth.mjs); dazu braucht es weiter einen
- // Eintrag in der Kundendatei des Betreibers. Schlüssel des Betreibers hängen an keiner Stufe.
- guest:{analytics:false,calendar:false,mcp:false,lenaPerMin:10},
- basic:{analytics:false,calendar:false,mcp:false,lenaPerMin:30},
- pro:{analytics:false,calendar:false,mcp:false,lenaPerMin:30},
- enterprise:{analytics:true,calendar:true,mcp:true,lenaPerMin:60},
+ // KI-Assistenten (Kunden-MCP) gehören zu keiner Stufe: Zugang nur über die Kundendatei des Betreibers (server/accounts/oauth.mjs)
+ guest:{analytics:false,calendar:false,lenaPerMin:10},
+ basic:{analytics:false,calendar:false,lenaPerMin:30},
+ pro:{analytics:true,calendar:true,lenaPerMin:60},
+ enterprise:{analytics:true,calendar:true,lenaPerMin:60},
 };
-export const TIER_LABEL={guest:'Gast',basic:'Basic',pro:'Pro',enterprise:'Enterprise'};
+export const TIER_LABEL={guest:'Gast',basic:'Konto',pro:'Plus',enterprise:'Enterprise'};
 /** Preise: Platzhalter bis zur Entscheidung (konten-konzept.md, Abschnitt 15). null heißt „Preis folgt“. */
-export const PRICES={basic:null,pro:null,enterprise:null};
+export const PRICES={basic:0,pro:2.99,enterprise:null};
 export const rank=tier=>TIERS.indexOf(tier);
 export const validTier=tier=>TIERS.includes(tier);
 /** Grenzen als JSON (Infinity → null) */
