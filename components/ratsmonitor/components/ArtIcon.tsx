@@ -1,4 +1,5 @@
-import { Armchair, Baby, Backpack, BatteryCharging, BatteryFull, Bike, Building2, Bus, Cable, Car, CloudRain, Construction, Droplets, Dumbbell, Ellipsis, Expand, Factory, FerrisWheel, FileCheck, FileSignature, Flame, Footprints, GlassWater, GraduationCap, Handshake, Heater, House, LandPlot, Laptop, Lightbulb, Map, MapPinned, PenLine, PencilRuler, PlugZap, RadioTower, Recycle, RefreshCw, Route, Server, ShoppingBag, ShoppingCart, Shovel, Sprout, Store, Sun, SunDim, Tent, Thermometer, Truck, Users, Waves, type LucideIcon } from "lucide-react";
+import { createElement } from "react";
+import { Accessibility, Armchair, Atom, Baby, Backpack, BatteryCharging, BatteryFull, BedDouble, Bike, Building, Building2, Bus, Cable, Car, ClipboardList, CloudRain, Construction, Droplets, Dumbbell, Ellipsis, Expand, Factory, FerrisWheel, FileCheck, FileSignature, Flame, Footprints, GlassWater, GraduationCap, Hammer, Handshake, Heater, Hospital, House, HousePlus, Lamp, LandPlot, Laptop, Leaf, Lightbulb, Map, MapPinned, Mountain, PenLine, PencilRuler, Pill, PlugZap, RadioTower, Recycle, RefreshCw, Route, School, Server, ShieldCheck, ShoppingBag, ShoppingCart, Shovel, Signpost, Siren, Snowflake, SolarPanel, Sprout, Stethoscope, Store, Sun, SunDim, Tent, Thermometer, ThermometerSun, Tractor, TrainFront, TreePine, Trees, Trophy, Truck, Users, Volume2, Waves, Wifi, Wind, type LucideIcon } from "lucide-react";
 
 /* Icons der Filterwerte der Signale (Leistung, Vorhaben, Einrichtung …; Werte aus server/integrations/plenara-x-signals.mjs) */
 const ART_ICONS: Record<string, LucideIcon> = {
@@ -68,9 +69,72 @@ const ART_ICONS: Record<string, LucideIcon> = {
   "Erweiterung": Expand,
   "Neues Baugebiet": House,
   "Änderung": PenLine,
+  // Arten aus dem Modell (Unter-Unterthemen, shared/model/subsubs.mjs, seit 22.10.2026)
+  "Wohnen": House,
+  "Mischgebiet, Dorfgebiet": Building,
+  "Wind, Solar, Speicher, Wasserstoff": Wind,
+  "Hotel, Camping, Ferienhäuser, Freizeit": Tent,
+  "Schule, Kita, Feuerwehr, Pflege, Sport": School,
+  "Grün, Landwirtschaft, Ausgleich": Trees,
+  "Wohnbauplätze": LandPlot,
+  "Gewerbeflächen": Factory,
+  "andere Flächen": MapPinned,
+  "Windenergie": Wind,
+  "PV auf Gebäuden": SolarPanel,
+  "Wasserstoff, Elektrolyse": Atom,
+  "Biogas, Biomasse": Leaf,
+  "Geothermie, Wasserkraft": Mountain,
+  "kommunale Wärmeplanung": Map,
+  "Wärme- und Fernwärmenetz": Flame,
+  "Heizungstausch in Gebäuden der Gemeinde": Heater,
+  "LED-Umrüstung": Lightbulb,
+  "Klimaschutzkonzept, Management, Bilanz": ClipboardList,
+  "Niederschlagswasser": Droplets,
+  "Hochwasser, Deiche": Waves,
+  "Starkregen, Rückhaltung": CloudRain,
+  "Hitze, Entsiegelung, Dürre": ThermometerSun,
+  "Ausbau und Sanierung": Route,
+  "Ortsdurchfahrt, Kreisverkehr, Kreuzung": RefreshCw,
+  "Wirtschafts- und Feldweg": Tractor,
+  "Straßenbeleuchtung": Lamp,
+  "Winterdienst, Reinigung, Unterhalt": Snowflake,
+  "Bürger- und Rufbus, Bedarfsverkehr": Bus,
+  "Linien, Takt, Tarif": Signpost,
+  "Haltestellen": Bus,
+  "Bahn, Bahnhof": TrainFront,
+  "Verkehrs- und Mobilitätskonzept": ClipboardList,
+  "Rad- und Lastenradverleih": Bike,
+  "Förderschule": Accessibility,
+  "Berufsschule": Hammer,
+  "Neubau": HousePlus,
+  "Sanierung, Außenanlagen": Construction,
+  "Sporthalle": Dumbbell,
+  "Sportplatz, Kunstrasen": Trophy,
+  "Frei- und Hallenbad, Badestelle": Waves,
+  "Bolzplatz, Skate, Pumptrack": Footprints,
+  "Freizeitanlagen, Grillplätze, Tierparks": TreePine,
+  "Glasfaser": Cable,
+  "öffentliches WLAN": Wifi,
+  "Pflegeheim, Tages- und Kurzzeitpflege": BedDouble,
+  "Seniorenwohnen, betreutes Wohnen": House,
+  "Angebote, Seniorentag": Users,
+  "Ärzte, Ärztehaus, MVZ": Stethoscope,
+  "Krankenhaus": Hospital,
+  "Apotheke, Hebammen, Prävention, Sucht": Pill,
+  "Supermarkt, Discounter, Dorfladen": ShoppingCart,
+  "Fachmarkt, Drogerie": ShoppingBag,
+  "Innenstadt, Leerstand, Citymanagement": Store,
+  "Lärm (Lärmaktionsplan, Umgebungslärm, Lärmschutz)": Volume2,
+  "Ordnungsamt, Ordnungsdienst, Polizei, Videoüberwachung": ShieldCheck,
+  "Gefahrenabwehrverordnung, Verbote, Hunde, Tierseuchen": Siren,
 };
 
+/* Namen der Arten aus dem Modell (shared/model/subsubs.mjs) weichen von den früheren ab („neues Baugebiet“, „Erschließung, Umlegung“):
+   gesucht wird ohne Groß- und Kleinschreibung, sonst mit dem Teil vor dem Komma */
+const norm = (v: string) => v.trim().toLowerCase();
+const BY_NAME = new globalThis.Map<string, LucideIcon>(Object.entries(ART_ICONS).map(([k, v]) => [norm(k), v]));
+export const artIconOf = (value: string): LucideIcon | undefined => ART_ICONS[value] ?? BY_NAME.get(norm(value)) ?? BY_NAME.get(norm(value.split(",")[0]));
+
 export function ArtIcon({ value, size = 20, className }: { value: string; size?: number; className?: string }) {
-  const Icon = ART_ICONS[value] ?? Ellipsis;
-  return <Icon size={size} strokeWidth={1.2} aria-hidden="true" className={className} />;
+  return createElement(artIconOf(value) ?? Ellipsis, { size, strokeWidth: 1.2, "aria-hidden": "true", className });
 }

@@ -10,12 +10,12 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (24 Zeilen, ⚠2)
-- app/styles/analytics.css (1576 Zeilen, ⚠2)
+- app/styles/analytics.css (1581 Zeilen, ⚠2)
 - app/styles/base-layer.css (95 Zeilen, ⚠1)
 - app/styles/base.css (622 Zeilen)
 - app/styles/dark.css (436 Zeilen, ⚠3)
 - app/styles/glass.css (180 Zeilen)
-- app/styles/header.css (410 Zeilen)
+- app/styles/header.css (411 Zeilen)
 - app/styles/info.css (1241 Zeilen)
 - app/styles/print.css (61 Zeilen)
 - app/styles/search.css (317 Zeilen)
@@ -274,7 +274,7 @@ field-input base-layer.css:57
 field-label base-layer.css:60
 figure design-styles.css:197
 fixed base.css:374
-flex-col analytics.css:1415
+flex-col analytics.css:1420
 font-bold base.css:11
 font-medium base.css:19
 font-semibold base.css:15
@@ -530,19 +530,19 @@ rm-dark admin.css:461
 rm-dark analytics.css:1106
 rm-dark dark.css:2
 rm-dark glass.css:144
-rm-dark header.css:315
+rm-dark header.css:316
 rm-dark info.css:834
 rm-dark tokens.css:170
 rm-deskbar analytics.css:373
 rm-dialog base.css:305
 rm-dialog dark.css:424
-rm-dotfield analytics.css:1363
+rm-dotfield analytics.css:1368
 rm-dotfield base.css:528
 rm-dotfield search.css:308
 rm-dotfield-on base.css:542
 rm-dots search.css:55
 rm-draw base.css:204
-rm-flat analytics.css:1399
+rm-flat analytics.css:1404
 rm-flat dark.css:197
 rm-flat search.css:11
 rm-focusrows base.css:230
@@ -562,7 +562,7 @@ rm-gpulse base.css:174
 rm-gpulse2 base.css:180
 rm-gtext analytics.css:981
 rm-gtext dark.css:215
-rm-headtitle header.css:361
+rm-headtitle header.css:362
 rm-karte-toggle analytics.css:70
 rm-legalbar search.css:185
 rm-legend analytics.css:218
@@ -589,19 +589,19 @@ rm-netzoom analytics.css:684
 rm-noplay analytics.css:60
 rm-pagein base.css:294
 rm-pmark base.css:568
-rm-pmark header.css:365
+rm-pmark header.css:366
 rm-rail-folded analytics.css:549
-rm-rail-mini analytics.css:1510
+rm-rail-mini analytics.css:1515
 rm-rail-open analytics.css:545
 rm-rail-peek analytics.css:545
 rm-rail-sub analytics.css:76
 rm-rail-sub dark.css:366
-rm-rail-toggle analytics.css:1549
+rm-rail-toggle analytics.css:1554
 rm-sbar search.css:148
 rm-schritt-std analytics.css:107
-rm-search analytics.css:1479
+rm-search analytics.css:1484
 rm-search search.css:89
-rm-searchsplit analytics.css:1479
+rm-searchsplit analytics.css:1484
 rm-searchsplit search.css:198
 rm-sec base.css:351
 rm-sec-m base.css:355
@@ -683,8 +683,9 @@ space-y-8 analytics.css:1093
 steps design-styles.css:114
 steps__bar design-styles.css:115
 steps__bar--done design-styles.css:116
-sticky analytics.css:1350
+sticky analytics.css:1354
 sticky dark.css:51
+sticky header.css:316
 switch design-styles.css:217
 tabs analyse-admin.css:7
 tabs design-styles.css:135
@@ -700,6 +701,7 @@ text-white dark.css:184
 timeline design-styles.css:204
 top-3 analytics.css:632
 topic design-styles.css:140
+touch-none analytics.css:1329
 touch-pan-y analytics.css:113
 touch-pan-y dark.css:330
 truncate base.css:559
@@ -850,7 +852,7 @@ z- analytics.css:632
 - AccountMenu.tsx (90, ⚠4): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
-- ArtIcon.tsx (77, ⚠1): ArtIcon
+- ArtIcon.tsx (141, ⚠1): artIconOf, ArtIcon
 - BandDots.tsx (50): BandDots
 - BottomNav.tsx (55, ⚠1): BottomNav
 - Brand.tsx (275): AnalyticsX, AnalyticsLogo, Brand
@@ -996,7 +998,7 @@ z- analytics.css:632
 - XSwitcher.tsx (34): XSheet
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (217, ⚠17): DetailPage
+- DetailPage.tsx (218, ⚠17): DetailPage
 - KalenderPage.tsx (401, ⚠2): KalenderPage
 - LegalPage.tsx (281): useInhalt, LegalPage
 - NotificationsPage.tsx (92): NotificationsPage
@@ -1023,9 +1025,9 @@ z- analytics.css:632
 - CompareParts.tsx (74, ⚠3): Share, Place, Result, ORT, asPlace, n, inhaltlich, datenlage, Hinweis, Duell
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionSearch.tsx (92, ⚠3): PlayState, DiffusionSearch
-- FaktenPage.tsx (386, ⚠6): FaktenPage
+- FaktenPage.tsx (403, ⚠6): FaktenPage
 - FraktionenPage.tsx (261, ⚠8): FraktionenPage
-- GraphView.tsx (388, ⚠2): GNode, GEdge, KIND, seeded, GraphView
+- GraphView.tsx (389, ⚠2): GNode, GEdge, KIND, seeded, GraphView
 - GremiennetzPage.tsx (220, ⚠4): GremiennetzPage
 - Kennzahlen.tsx (115): weekAgo, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, Folgen
 - KnowledgeGraphPage.tsx (304, ⚠9): KnowledgeGraphPage
@@ -1037,19 +1039,19 @@ z- analytics.css:632
 - MapWheels.tsx (122, ⚠3): MapWheels, MapPill
 - Methodik.tsx (43): MethodikUnten, MethodikNote
 - NetControls.tsx (50): Level, netLevel, LevelSegmented, LevelPill, NetLegend, NetZoom
-- NetView.tsx (320): NNode, NEdge, ROLE, NetKind, NET_KIND, NetView
+- NetView.tsx (321): NNode, NEdge, ROLE, NetKind, NET_KIND, NetView
 - NewsradarPage.tsx (163, ⚠1): NewsradarPage
 - PageBand.tsx (23): PageBand
 - RadarDrill.tsx (131, ⚠3): DrillItem, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RailToggle.tsx (34): RailToggle
-- RegionMap.tsx (182, ⚠5): RegionMap
+- RegionMap.tsx (184, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
 - SignalePage.tsx (418, ⚠16): SignalePage
 - SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
-- XAtlasView.tsx (300, ⚠9): XAtlasView
+- XAtlasView.tsx (301, ⚠9): XAtlasView
 - XBusy.tsx (14): busyProps, PendingVeil, HERO_MAIN, HERO_PANEL
 - XKopf.tsx (235, ⚠2): XKopf, XWeiter, ThemenLeiste
 - XTrendsPage.tsx (372, ⚠5): XTrendsPage
@@ -1063,8 +1065,8 @@ z- analytics.css:632
 ### components/ratsmonitor/state/
 - account.tsx (108): AccountProvider, useAccount, useSavedStats
 - data.tsx (40, ⚠1): DataProvider, useData
-- nav.ts (17, ⚠1): View, noteRoute, cameFromApp, overviewScroll, useAppNav
-- search.tsx (665, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchQuery, useSearchResults
+- nav.ts (24, ⚠1): View, noteRoute, cameFromApp, rememberSearchHref, lastSearchHref, overviewScroll, useAppNav
+- search.tsx (667, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 
