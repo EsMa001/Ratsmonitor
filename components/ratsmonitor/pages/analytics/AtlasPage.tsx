@@ -1,5 +1,5 @@
 import { RailToggle } from "./RailToggle";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { XKopf, XWeiter } from "./XKopf";
 import { SplitHandle } from "./SplitHandle";
@@ -8,10 +8,13 @@ import { XAtlasView } from "./XAtlasView";
 import { ThemeIcon } from "../../components/icons";
 import { SubtopicIcon } from "../../components/SubtopicIcon";
 import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
+import { useSearch } from "../../state/search";
 
 /** Themen des Atlas: „Alle Themen“ und die 10 Themen aus shared/themes.mjs (dieselben wie im Themenfilter der Suche) */
 const ATLAS_THEMEN: [string, string][] = [["", "Alle Themen"], ...THEMES.map((t: { id: string; name: string }) => [t.id, t.name] as [string, string])];
 const THEME_IDS = new Set(THEMES.map((t: { id: string }) => t.id));
+const themeName = (id: string): string => THEMES.find((t: { id: string; name: string }) => t.id === id)?.name ?? "";
+const themeId = (name: string): string => THEMES.find((t: { id: string; name: string }) => t.name === name)?.id ?? "";
 const SUB_IDS = new Map(SUBTOPICS.map((s: { id: string; theme: string }) => [s.id, s.theme]));
 
 /* Ort aus der Adresse (useOrtInAdresse hält ?ort aktuell, auch ohne den Router) */
@@ -45,6 +48,23 @@ export function AtlasPage() {
   useEffect(() => { if (current !== target) router.replace(target, { scroll: false }); }, [current, target, router]);
   /* Eine Wahl ist ein Schritt im Verlauf: Zurück führt zur vorigen Auswahl */
   const pick = (next: { thema?: string; sub?: string; zeit?: string }) => router.push(atlasHref({ zeit, ort: ortNow(), ...next }), { scroll: false });
+  /* Thema wie auf den übrigen plenara.X-Seiten in der gemeinsamen Suche; die Adresse (?thema=) zeigt es nur an. Beim Öffnen gilt
+     ein Thema der Adresse (Link von außen), sonst das der Suche; danach folgt die Suche der Wahl hier und die Adresse der Suche
+     (Chip entfernt, Thema auf einer anderen Seite gewählt). Vorher zählte der Atlas mit dem Thema der Suche, zeigte aber „Alle Themen“. */
+  const search = useSearch();
+  const stateId = themeId(search.state.thema);
+  const lastUrl = useRef<string | null>(null);
+  useEffect(() => {
+    if (lastUrl.current === null) {
+      lastUrl.current = thema;
+      if (thema) { if (thema !== stateId) search.setThema(themeName(thema)); }
+      else if (stateId) router.replace(atlasHref({ thema: stateId, zeit, ort: ortNow() }), { scroll: false });
+      return;
+    }
+    if (thema !== lastUrl.current) { lastUrl.current = thema; if (thema !== stateId) search.setThema(themeName(thema)); return; }
+    if (stateId !== thema) router.replace(atlasHref({ thema: stateId, zeit, ort: ortNow() }), { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [thema, stateId]);
   const [railRef, railFolded, railUnfold] = useRailFold(thema);
   const peek = useRailPeek();
   return (

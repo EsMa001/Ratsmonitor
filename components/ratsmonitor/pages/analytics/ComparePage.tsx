@@ -14,6 +14,7 @@ import { TabPane } from "./Tabs";
 import { useEffect, useMemo, useState } from "react";
 import { STATUS_COLOR, STATUS } from "../../lib/constants";
 import { useData } from "../../state/data";
+import { useSearch } from "../../state/search";
 import { LABELS } from "@/shared/labels.mjs";
 import { THEMES } from "@/shared/themes.mjs";
 import { FIELD, PlaceField } from "./CompareFields";
@@ -104,7 +105,10 @@ export function ComparePage() {
     </div>
   ) : null;
   const linkCls = (on: boolean) => `text-left hover:text-teal-800 hover:underline ${on ? "text-teal-700 underline" : ""}`;
-  const vThema = vSel.key === ranKey ? vSel.thema : "";
+  /* Ohne eigene Wahl gilt das Thema der gemeinsamen Suche (wie auf den übrigen plenara.X-Seiten); eine Wahl hier setzt es dort */
+  const search = useSearch();
+  const searchThema = THEMES.some((t: { name: string }) => t.name === search.state.thema) ? search.state.thema : "";
+  const vThema = vSel.key === ranKey ? vSel.thema : searchThema;
   const vKey = ranKey + "|" + vThema;
   useEffect(() => {
     if (!vThema || !ranKey) return;
@@ -149,8 +153,8 @@ export function ComparePage() {
           <PlaceField label="Ort 1" color={PLACE_COLORS[0]} value={ort1} onChange={setOrt1} onEnter={() => run()} />
           <PlaceField label="Ort 2" color={PLACE_COLORS[1]} value={ort2} onChange={setOrt2} onEnter={() => run()} />
           <div className="min-w-0 max-sm:col-span-2">
-            <label htmlFor="vergleich-thema" className="mb-1.5 max-sm:sr-only block text-[14px] font-medium text-slate-700">Thema <span className="font-normal text-slate-500">(optional)</span></label>
-            <input autoComplete="off" id="vergleich-thema" type="search" value={thema} onChange={(e) => setThema(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder={phone ? "Thema (optional)" : "beliebiger Begriff"} className={FIELD} />
+            <label htmlFor="vergleich-thema" className="mb-1.5 max-sm:sr-only block text-[14px] font-medium text-slate-700">Begriff <span className="font-normal text-slate-500">(optional)</span></label>
+            <input autoComplete="off" id="vergleich-thema" type="search" value={thema} onChange={(e) => setThema(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder={phone ? "Begriff (optional)" : "beliebiger Begriff"} className={FIELD} />
           </div>
           <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center sm:hidden justify-self-end rounded-xl max-sm:bg-teal-700 max-sm:text-white sm:border sm:border-slate-200 sm:bg-white sm:text-teal-700 sm:hover:bg-slate-50 max-sm:col-span-2 max-sm:h-11 max-sm:w-full max-sm:justify-self-stretch max-sm:gap-2 transition-opacity max-sm:hover:opacity-85 disabled:opacity-60 md:justify-self-auto">
             {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -261,7 +265,7 @@ export function ComparePage() {
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
               <label className="flex items-center gap-2 text-[14px] text-slate-700">Thema
-                <select value={vThema} onChange={(e) => setVSel({ key: ranKey, thema: e.target.value })} className="h-9 rounded-xl border border-slate-200 bg-white px-2 text-[14px] text-slate-900 max-sm:h-11 max-sm:text-[16px]">
+                <select value={vThema} onChange={(e) => { setVSel({ key: ranKey, thema: e.target.value }); search.setThema(e.target.value); }} className="h-9 rounded-xl border border-slate-200 bg-white px-2 text-[14px] text-slate-900 max-sm:h-11 max-sm:text-[16px]">
                   <option value="">Alle Themen</option>
                   {THEMES.map((t: { id: string; name: string }) => <option key={t.id} value={t.name}>{t.name}</option>)}
                 </select>
