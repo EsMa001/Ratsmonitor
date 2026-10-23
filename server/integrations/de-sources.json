@@ -28361,24 +28361,11 @@
     "name": "Stadt Lohr a.Main",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.lohr.de/",
-    "pages": [
-      "https://www.lohr.de/amtsblatt",
-      "https://www.lohr.de/stadtrat",
-      "https://www.sd.lohr.de/termine"
-    ],
-    "ics": [
-      "https://www.lohr.de/api/veranstaltung/1-elferratssitzung-kfg-lohrer-mopper/kalender.ics",
-      "https://www.lohr.de/api/veranstaltung/2-elferratssitzung-kfg-lohrer-mopper/kalender.ics"
-    ],
-    "sitemap": "https://www.lohr.de/sitemap.xml",
-    "alsoFrom": [
-      "https://www.sd.lohr.de"
-    ],
-    "verifiedSource": "https://www.lohr.de",
-    "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "adapter": "sdnet",
+    "base": "https://www.sd.lohr.de/",
+    "verifiedSource": "https://www.sd.lohr.de/",
+    "verifiedAt": "2026-10-23",
+    "apiCheck": "SD.NET RIM der Stadt Lohr (Stadtrat und Ausschüsse); Probeabruf 23.10.2026 (1 Monat): 4 Sitzungen, 16 Punkte."
   },
   {
     "id": "de-09677157",
@@ -34085,6 +34072,7 @@
     "adapter": "website",
     "base": "https://www.auerbach-erzgebirge.de/",
     "pages": [
+      "https://www.burkhardtsdorf.de/de/sitzungsunterlagen.html",
       "https://www.auerbach-erzgebirge.de/buergerservice/gemeinderat/sitzungsunterlagen/jahr-2026.html",
       "https://www.auerbach-erzgebirge.de/aktuell/elektronisches-amtsblatt/jahr-2020.html",
       "https://www.auerbach-erzgebirge.de/aktuell/elektronisches-amtsblatt/jahr-2021.html",
@@ -34096,8 +34084,11 @@
       "https://www.auerbach-erzgebirge.de/index.php?option=com_jevents&task=modlatest.rss&format=feed&type=atom&Itemid=152&modid=0"
     ],
     "verifiedSource": "https://www.auerbach-erzgebirge.de/",
-    "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "verifiedAt": "2026-10-23",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website.",
+    "memberSites": [
+      "https://www.burkhardtsdorf.de/"
+    ]
   },
   {
     "id": "de-145215110",
@@ -39629,18 +39620,6 @@
     "verifiedSource": "https://www.buergerinfo-altdorf.de/",
     "verifiedAt": "2026-10-09",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
-    "foundBy": "Recherche2 2026-10-09"
-  },
-  {
-    "id": "de-096775624",
-    "name": "Verwaltungsgemeinschaft Lohr a.Main",
-    "kind": "city",
-    "method": "scraper",
-    "adapter": "sdnet",
-    "base": "https://www.sd.lohr.de/",
-    "verifiedSource": "https://www.sd.lohr.de/",
-    "verifiedAt": "2026-10-09",
-    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 09.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar.",
     "foundBy": "Recherche2 2026-10-09"
   },
   {

@@ -44,6 +44,10 @@ function origins(source){
  const out=base.protocol==='https:'?[base.origin]:[];
  // The file storage of the website's CMS (CMS_FILE_HOST) counts as well, but only where the entry names it.
  for(const extra of source.alsoFrom||[]){try{const u=new URL(extra);if(u.protocol==='https:'&&(related(siteHost(u.hostname),siteHost(base.hostname))||CMS_FILE_HOST.test(u.hostname))&&!out.includes(u.origin))out.push(u.origin);}catch{/* not an address */}}
+ // memberSites: the websites of member municipalities of an association, each named in the entry (VG Burkhardtsdorf 2026:
+ // the papers of Burkhardtsdorf stand on burkhardtsdorf.de, those of Auerbach on auerbach-erzgebirge.de). Only addresses named
+ // there count, never a host a page links to.
+ for(const site of source.memberSites||[]){try{const u=new URL(site);if(u.protocol==='https:'&&!u.username&&!u.password&&!out.includes(u.origin))out.push(u.origin);}catch{/* not an address */}}
  return out;
 }
 /** The address without fragment if it is https on the origin of base or of alsoFrom and carries no credentials. */
