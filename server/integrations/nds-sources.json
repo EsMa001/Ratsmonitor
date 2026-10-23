@@ -1213,18 +1213,12 @@
     "name": "Gemeinde Giesen",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.giesen.de/",
-    "pages": [
-      "https://www.giesen.de/B%C3%BCrgerinformation/Mitteilungen/Bekanntmachungen-zur-Wahl.php?ModID=255&FID=3817.49510.1"
-    ],
-    "feeds": [
-      "https://www.giesen.de/media/rss/veranstaltungen.xml"
-    ],
-    "sitemap": "https://www.giesen.de/sitemap.xml",
+    "adapter": "allris3",
+    "base": "https://www.giesen.de/buergerinformationssystem/",
+    "calendar": "si010_r.asp",
     "verifiedSource": "https://www.giesen.de/",
-    "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "apiCheck": "ALLRIS 3 (cc-egov), verlinkt von giesen.de; Probeabruf 23.10.2026 (1 Monat): 4 Sitzungen, 50 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "nds-03254020",
@@ -1406,14 +1400,11 @@
     "name": "Stadt Bückeburg",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.bueckeburg.de/",
-    "pages": [
-      "https://www.bueckeburg.de/willkommen"
-    ],
+    "adapter": "allris3",
+    "base": "https://www.bueckeburg.sitzung-online.de/pi/",
     "verifiedSource": "https://www.bueckeburg.de/",
-    "verifiedAt": "2026-10-06",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "apiCheck": "ALLRIS 3, verlinkt von bueckeburg.de; Probeabruf 23.10.2026 (1 Monat): 6 Sitzungen, 77 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "nds-03257028",

@@ -1482,21 +1482,11 @@
     "name": "Amt Mittelangeln",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.amt-mittelangeln.de/",
-    "pages": [
-      "https://www.amt-mittelangeln.de/bekanntmachungen",
-      "https://www.amt-mittelangeln.de/bekanntmachungen/index.php?id=97667",
-      "https://www.amt-mittelangeln.de/bekanntmachungen/index.php?id=98357",
-      "https://www.amt-mittelangeln.de/seite/467530/auftragsbekanntmachung.html",
-      "https://www.amt-mittelangeln.de/contact/index/link/?referrer=https://www.amt-mittelangeln.de/bekanntmachungen/index.php"
-    ],
-    "alsoFrom": [
-      "https://daten.verwaltungsportal.de"
-    ],
-    "verifiedSource": "http://www.amt-mittelangeln.de",
-    "verifiedAt": "2026-10-06",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "adapter": "allris",
+    "base": "https://www.amt-mittelangeln.sitzung-online.de/public/",
+    "verifiedSource": "https://www.amt-mittelangeln.de/",
+    "apiCheck": "ALLRIS 4, verlinkt von amt-mittelangeln.de; Probeabruf 23.10.2026 (1 Monat): 10 Sitzungen, 87 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "de-010595974",
@@ -1887,17 +1877,11 @@
     "name": "Gemeinde Ammersbek",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.ammersbek.de/",
-    "pages": [
-      "https://www.ammersbek.de/politik/wahlen/",
-      "https://www.ammersbek.de/aktuelles/bekanntmachungen/",
-      "https://www.ammersbek.de/politik/sitzungskalender/"
-    ],
-    "wp": "https://www.ammersbek.de/wp-json/",
+    "adapter": "allris3",
+    "base": "https://www.ammersbek.sitzung-online.de/bi/",
     "verifiedSource": "https://www.ammersbek.de/",
-    "verifiedAt": "2026-10-06",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "apiCheck": "ALLRIS 3, verlinkt von ammersbek.de; Probeabruf 23.10.2026 (1 Monat): 4 Sitzungen, 52 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "de-010625207",
@@ -8594,16 +8578,12 @@
     "id": "de-073385007",
     "name": "Verbandsgemeinde Römerberg-Dudenhofen",
     "kind": "city",
-    "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.vgrd.de/",
-    "pages": [
-      "https://www.vgrd.de/generationen-bildung/senioren/seniorenbeirat-roemerberg/sitzungstermine-und-niederschriften/"
-    ],
-    "sitemap": "https://www.vgrd.de/sitemap.xml",
-    "verifiedSource": "http://www.vgrd.de/",
-    "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://vgrd.gremien.info/",
+    "verifiedSource": "https://www.vgrd.de/ratsinfosystem/",
+    "apiCheck": "More! Rubin (gremien.info), verlinkt von vgrd.de; Probeabruf 23.10.2026 (1 Monat): 23 Sitzungen, 87 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "de-073385008",
@@ -14002,14 +13982,11 @@
     "name": "Stadt Müllheim im Markgräflerland",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.muellheim.de/",
-    "pages": [
-      "https://www.muellheim.de/rathaus/oeffentliche-bekanntmachungen/"
-    ],
+    "adapter": "meeting-mobile",
+    "base": "https://meeting-mobile.de/mm/muellheim/ris_web.nsf/",
     "verifiedSource": "https://www.muellheim.de/",
-    "verifiedAt": "2026-10-06",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "apiCheck": "Meeting Mobile, verlinkt von muellheim.de; Probeabruf 23.10.2026 (1 Monat): 7 Sitzungen, 23 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "de-08315076",
@@ -28667,19 +28644,12 @@
     "name": "Verwaltungsgemeinschaft Gerolzhofen",
     "kind": "city",
     "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.gerolzhofen.de/",
-    "pages": [
-      "https://www.gerolzhofen.de/",
-      "https://www.gerolzhofen.de/grusswort.html",
-      "https://www.gerolzhofen.de/Stadtrat___Termine.html",
-      "https://www.gerolzhofen.de/protokolle_stadtratssitzungen.html",
-      "https://www.gerolzhofen.de/stadt_amtsblatt.html",
-      "https://www.gerolzhofen.de/b-rgermeister-stadtrat_Grusswort_253_kkmenue.html"
-    ],
-    "verifiedSource": "https://www.gerolzhofen.de",
-    "verifiedAt": "2026-10-10",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+    "adapter": "sessionnet",
+    "base": "https://stadtrat.gerolzhofen.de/bi/",
+    "extension": "php",
+    "verifiedSource": "https://www.gerolzhofen.de/",
+    "apiCheck": "SessionNet, verlinkt von gerolzhofen.de; Probeabruf 23.10.2026 (3 Monate): 3 Sitzungen, 18 Punkte.",
+    "verifiedAt": "2026-10-23"
   },
   {
     "id": "de-09679",
