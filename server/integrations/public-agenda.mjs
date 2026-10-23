@@ -9,8 +9,12 @@ import {isNonPublicText} from './website-text.mjs';
  * nonPublic: items below a heading of the non-public part ("B) Nichtöffentliche Sitzung"). They are left out as
  * plainly non-public, not counted as unclear.
  */
+// Platzhalter statt eines Titels („Nichtöffentlicher Tagesordnungspunkt“, „N.N.“): kein eigener Bericht
+const PLACEHOLDER=/^[\s([{]*(?:(?:nicht\s*-?\s*öffentliche?r?\s+)?(?:tagesordnungs)?punkt|n\.?\s*n\.?|-+|–+|nichtöffentlich|nicht öffentlich)[\s)\]}.]*$/i;
 export function publicAgenda(items,{assumePublic=false}={}){
- let section=null,closed=false,below=false;const accepted=[];let unclear=0,nonPublic=0;
+ let section=null,closed=false,below=false;const accepted=[],others=[];let unclear=0,nonPublic=0;
+ // others (seit 24.10.2026): die nicht als öffentlich belegten Punkte mit Kennzeichen, damit ein Leser sie als Bericht übernehmen kann
+ const keep=(item,publicity)=>{if(!item.deleted&&clean(item.name)&&!PLACEHOLDER.test(clean(item.name)))others.push({...item,publicity});};
  for(const item of items){
   // Providers word the heading differently: "Öffentliche Sitzung", "Öffentlicher Teil", "- Öffentlicher Teil -", "Öffentlich";
   // SD.NET RIM (OParl without public flag) "Sitzungsteil öffentlich" / "Sitzungsteil nicht öffentlich", also "Öffentlicher
@@ -21,12 +25,12 @@ export function publicAgenda(items,{assumePublic=false}={}){
   if(heading){const open=!/nicht/.test(name)&&item.public!==false;section=open?item.id:null;closed=!open;below=!open;continue;}
   // Unknown top-level headings (Roman numerals or a single capital letter) terminate the previous section.
   if(/^(?:[IVXLCDM]+|[A-Z])\.?$/.test(String(item.number||''))){section=null;below=false;}
-  if(item.public===false){section=null;closed=true;continue;}
+  if(item.public===false){section=null;closed=true;keep(item,'nonpublic');continue;}
   if(item.public===true)accepted.push({...item,publicEvidence:{method:'explicit-flag',source:item.id}});
   else if(section)accepted.push({...item,publicEvidence:{method:'public-section',source:section}});
   else if(assumePublic&&!closed&&!isNonPublicText(item.name))accepted.push({...item,publicEvidence:{method:'interface-public-only',source:item.id}});
-  else if(below)nonPublic++;
-  else unclear++;
+  else if(below){nonPublic++;keep(item,'nonpublic');}
+  else {unclear++;keep(item,'unclear');}
  }
- return {items:accepted,unclear,nonPublic};
+ return {items:accepted,unclear,nonPublic,others};
 }

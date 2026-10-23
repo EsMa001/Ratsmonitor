@@ -1,4 +1,5 @@
 import {compactOparl,sourceDecision,publicParticipants} from './source-fields.mjs';
+import {withoutPrivateNames} from '../../shared/private-names.mjs';
 import {windowStart,windowYears,historyWindow} from './history-window.mjs';
 import {usableMark,newMark,usableList} from './meeting-marks.mjs';
 import {chooseBody} from './body-identity.mjs';
@@ -256,6 +257,15 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
    const topicId=source.id+'-oparl-'+(await hash(key)).slice(0,20);events++;
    if(grouped.has(key)){const prev=grouped.get(key);prev.events.push(event);prev.documents.push(...documents);prev.identityLinks.push(allowed(a.id));}else grouped.set(key,{id:topicId,regionId:source.id,source:source.kind,public:true,title:officialTitle,officialTitle,sourceData:{version:'public-source-fields-v1',method:'oparl',fetchedAt:now.toISOString(),records:[compactOparl(p,'paper'),compactOparl(a,'agenda'),compactOparl(c,'consultation'),compactOparl(m,'meeting')].filter(Boolean)},metadata:{sourceModifiedAt:p?.modified||a.modified||null},reference:clean(p?.reference),category:category(officialTitle),updatedAt:now.toISOString(),sourceUrl:key,identityLinks:[key,allowed(a.id)],events:[event],documents,relevanceReason:'Öffentlicher Vorgang: '+source.name});
   }catch(e){fail('Tagesordnungspunkt: '+e.message);}}
+  // Punkte, die die Quelle nichtöffentlich führt oder nicht als öffentlich belegt (seit 24.10.2026): nur Titel und Sitzung, mit
+  // Kennzeichen; Vorlage, Beratung und Dateien solcher Punkte werden nicht abgefragt. Namen von Privatpersonen fallen aus dem Titel.
+  for(const a of visible.others||[]){
+   if(!a.id)continue;const key=allowed(a.id),closed=a.publicity==='nonpublic',raw=clean(a.name),title=closed?withoutPrivateNames(raw):raw;if(!title)continue;
+   const event={date:m.start.slice(0,10),committee,status:m.start.slice(0,10)>now.toISOString().slice(0,10)?'consulting':'unknown',description:closed?'Nichtöffentlicher Punkt laut veröffentlichter Tagesordnung; öffentlich bekannt sind Titel, Sitzung und Gremium.':'Auf der veröffentlichten Tagesordnung; ob öffentlich beraten wird, gibt die Quelle nicht an.',result:'',url:allowed(m.id),publicEvidence:closed?'nichtöffentlicher Teil laut Quelle':'',publicity:a.publicity,attendance};event.decision=sourceDecision(event);
+   const topicId=source.id+'-oparl-'+(await hash(key)).slice(0,20);events++;
+   if(grouped.has(key)){const prev=grouped.get(key);prev.events.push(event);}
+   else grouped.set(key,{id:topicId,regionId:source.id,source:source.kind,public:true,publicity:a.publicity,title,officialTitle:title,sourceData:{version:'public-source-fields-v1',method:'oparl',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:key,fields:{title,number:clean(a.number),publicity:a.publicity}}],detailStatus:'completed',issues:[]},identityLinks:[key],documents:[{title:'Amtlicher OParl-Datensatz',url:key,kind:'oparl'}],events:[event]});
+  }
   if(!cut&&meeting&&!failed){held[meeting.url]=newMark(meeting,print,now,events);done++;}
  },3);
  const topics=[];for(const t of grouped.values()){t.events.sort((a,b)=>a.date.localeCompare(b.date));const last=t.events.at(-1);Object.assign(t,{status:last.status,eventDate:last.date,committee:last.committee});t.documents=[...new Map(t.documents.map(d=>[d.url,d])).values()];t.sourceText=t.title+'\n'+t.events.map(e=>e.description).join('\n');Object.assign(t,sourceSummary(t,{place:source.name.replace(/^(Stadt|Gemeinde) /,'')}));t.quality={passed:false,checks:[{name:'Öffentliche Quelle',passed:true,detail:'Öffentlichkeit durch Kennzeichen oder ausdrücklich bezeichneten öffentlichen Sitzungsabschnitt belegt.'},{name:'Inhaltsprüfung',passed:false,detail:'Automatischer Quellenüberblick; keine redaktionelle Freigabe.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);}

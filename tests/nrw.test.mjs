@@ -18,7 +18,9 @@ test('generic OParl follows public agenda, groups papers and rejects private ite
  const origin='https://fixture.example',body={name:'Teststadt',id:origin+'/body',type:'https://schema.oparl.org/1.1/Body',meeting:origin+'/meetings'};
  const agenda=[{id:origin+'/a',public:true,name:'Schulbau',consultation:{paper:{id:origin+'/paper',name:'Schulbau'}}},{id:origin+'/private',public:false,name:'Privat'}];
  const getJson=async url=>{if(url===body.id)return body;if(url===body.meeting)return {data:[{id:origin+'/m',start:'2026-09-20T10:00:00Z',agendaItem:agenda}],links:{}};throw Error('unexpected URL '+url)};
- const r=await collectRegionalOparl({system:body.id,id:'test',name:'Teststadt',kind:'city'},{getJson,now:new Date('2026-09-26')});assert.equal(r.topics.length,1);assert.equal(r.topics[0].status,'unknown');assert.equal(r.topics[0].regionId,'test');
+ const r=await collectRegionalOparl({system:body.id,id:'test',name:'Teststadt',kind:'city'},{getJson,now:new Date('2026-09-26')});const pub=r.topics.filter(t=>!t.publicity);assert.equal(pub.length,1);assert.equal(pub[0].status,'unknown');assert.equal(pub[0].regionId,'test');
+ // The private item comes marked, with its title only (since 24.10.2026): no paper, no files.
+ assert.deepEqual(r.topics.filter(t=>t.publicity).map(t=>[t.title,t.publicity,t.documents.length]),[['Privat','nonpublic',1]]);
  const blocked=await collectRegionalOparl({system:body.id,id:'test',name:'Teststadt'}, {getJson:async()=>({...body,meeting:'https://other.example/list'})});assert.equal(blocked.topics.length,0);assert.equal(blocked.coverage.complete,false);assert.match(blocked.coverage.issues.join(' '),/außerhalb/);
 });
 test('explicit HTTP-to-HTTPS compatibility remains restricted to the verified source host',async()=>{

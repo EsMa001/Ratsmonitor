@@ -25,7 +25,8 @@ function server(){
 test('agenda from the body list when meetings carry none; no modified_since on placeholder dates; public flag decides',async()=>{
  const {seen,getJson}=server();
  const d=await collectRegionalOparl({id:'de-1',name:'Stadt Beispielstadt',kind:'city',system:root+'system'},{now,window:'3m',getJson});
- assert.deepEqual(d.topics.map(t=>t.title).sort(),['Neubau Kita','Radweg Hauptstraße'],'items of the meetings of the period, public only');
+ assert.deepEqual(d.topics.filter(t=>!t.publicity).map(t=>t.title).sort(),['Neubau Kita','Radweg Hauptstraße'],'items of the meetings of the period, public ones');
+ assert.ok(d.topics.filter(t=>t.publicity).every(t=>!/^\(?nicht/i.test(t.title)),'a placeholder title gives no topic');
  assert.ok(!seen.some(u=>u.includes('modified_since')),'the filter is not asked on placeholder dates');
  assert.ok(seen.some(u=>u.includes('agendaItems')&&u.includes('size=100')),'100 records a page');
  assert.ok(d.topics.every(t=>!/nichtöffentlich/.test(t.title)));
