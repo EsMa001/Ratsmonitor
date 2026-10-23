@@ -56,7 +56,7 @@ export function committeePart(spec){
 /** A provider-configured, portable collector. No Cloudflare or app dependencies. */
 export async function collectRegionalOparl(source,{now=new Date(),getJson=null,maxRequests=350,maxPages=Math.min(24,source.maxPages||6),maxDurationMs=300000,onProgress=()=>{},window:lookback,trace=null,marks}={}){
  // The page limits were set for a year of meetings; a longer period gets as many for each of its years.
- const years=windowYears(lookback),pageLimit=maxPages*years,sortedLimit=Math.max(maxPages,24)*years;
+ const years=windowYears(lookback),pageLimit=maxPages*years,sortedLimit=Math.max(maxPages,24)*years,roughLimit=48*years;
  const filter=source.organizations?organizationFilter(source.organizations):null,skipped={filtered:0,mixed:0,unassigned:0};
  const since=windowStart(now,lookback);const from=since.toISOString().slice(0,10),issues=[];let requests=0;const cache=new Map();const base=new URL(source.system);const deadline=Date.now()+maxDurationMs;let strategy='plain';
  const allowed=value=>{const u=new URL(value);if(source.upgradeHttpLinks&&u.protocol==='http:'&&u.hostname===base.hostname&&!u.port&&!base.port)u.protocol='https:';if(u.protocol!=='https:'||u.origin!==base.origin||u.username||u.password)throw Error('Quelle außerhalb der freigegebenen OParl-Adresse');return u.href;};
@@ -69,7 +69,9 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  const slot=()=>active<5?(active++,Promise.resolve()):new Promise(resolve=>waiting.push(resolve));
  const free=()=>{const next=waiting.shift();if(next)next();else active--;};
  const request=async(url,patience)=>{await slot();try{return await traced(url,patience);}finally{free();}};
- const get=async(url,patience=55000)=>{url=allowed(url);if(Date.now()>=deadline)throw Error('Zeitbudget der Quelle erreicht');if(cache.has(url))return cache.get(url);if(++requests>maxRequests)throw Error('Abrufbudget erreicht');const promise=request(url,patience);cache.set(url,promise);return promise;};
+ // patienceMs (catalog): wait this long for one answer of a known slow server (Bremen, Solingen: up to a minute a page); default 55 s
+ const slowest=Math.min(180000,Math.max(55000,Number(source.patienceMs)||55000));
+ const get=async(url,patience=slowest)=>{url=allowed(url);if(Date.now()>=deadline)throw Error('Zeitbudget der Quelle erreicht');if(cache.has(url))return cache.get(url);if(++requests>maxRequests)throw Error('Abrufbudget erreicht');const promise=request(url,patience);cache.set(url,promise);return promise;};
  const object=async x=>typeof x==='string'?get(x):x;
  const fromEnd='Begrenzter Abruf vom Ende der Sitzungsliste; Vollständigkeit des Zeitraums nicht bestätigt.';
  // What ends a step: the time limit (also as an aborted request) or the request budget.
@@ -84,7 +86,7 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  // Such a server (unreliableModified) pages its lists by 10 records by default; 100 a page keep the reading from the end
  // within the page limit.
  if(unreliableModified&&!resumeAt){const u=new URL(allowed(url));if(!u.searchParams.has('size')){u.searchParams.set('size','100');url=u.href;}}
-const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false,chronological=false,laterPageFirst='';
+const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false,chronological=false,laterPageFirst='',reaching=false;
  const wholeListRead=()=>{const at=issues.indexOf(fromEnd);if(at>=0)issues.splice(at,1);};
  // OParl filter "modified_since". Servers that honour it (e.g. SD.NET) return only the meetings changed lately.
  // Their lists follow the record number, not the date, and a year of planned meetings fills the last pages, so
@@ -117,13 +119,21 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
   if(read)return out;
  }
  strategy=source.meetingScan==='forward'?'forward':'end';
- while(next){if(seen.has(next)){if(reverse&&next===url)wholeListRead();else issues.push('Wiederholte Listenseite');break;}if(++pages>(newestFirst||chronological?sortedLimit:pageLimit)){issues.push('Listenlimit erreicht; Quelle noch nicht vollständig eingelesen.');break;}seen.add(next);try{const p=await get(next);if(!Array.isArray(p.data))throw Error('Keine OParl-Liste');out.push(...p.data);
+ while(next){if(seen.has(next)){if(reverse&&next===url)wholeListRead();else issues.push('Wiederholte Listenseite');break;}if(++pages>(newestFirst||chronological?sortedLimit:reaching?roughLimit:pageLimit)){issues.push('Listenlimit erreicht; Quelle noch nicht vollständig eingelesen.');break;}seen.add(next);try{const p=await get(next);if(!Array.isArray(p.data))throw Error('Keine OParl-Liste');out.push(...p.data);
  // Newest-first meeting lists (e.g. ALLRIS) are read from the start. Their last page holds the oldest meetings,
  // so jumping there finds nothing. Reading ends at the first sorted page that lies entirely before the window.
  const starts=recent?p.data.map(m=>m&&typeof m==='object'&&m.start?String(m.start).slice(0,10):''):[];
  const sorted=starts.length>1&&starts.every(Boolean)&&starts.every((s,i)=>i===0||starts[i-1]>=s);
  if(recent&&pages===1&&sorted&&starts[0]>starts.at(-1)){newestFirst=true;strategy='forward';}
  if(newestFirst&&sorted&&starts[0]<from)break;
+ // A list that is only roughly newest first (Magdeburg, Rastatt: ordered by record, a year of planned meetings on the first
+ // pages, the current ones on pages 14 to 30) is followed beyond the page limit while its pages still reach into the window,
+ // up to roughLimit; a page that lies entirely before the window ends it. A catalog entry with its own maxPages keeps it.
+ if(recent&&!newestFirst&&!reverse&&!source.maxPages){
+  const was=reaching;reaching=starts.length>0&&starts.every(Boolean)&&starts.some(s=>s>=from);
+  // Read beyond the page limit and now a page before the window: the window is covered, nothing was cut off.
+  if(was&&!reaching&&pages>pageLimit)break;
+ }
  // Some providers expose chronological pages. Follow the supplied last link,
  // then previous links; never infer URLs or claim complete historical coverage.
  if(recent&&!newestFirst&&source.meetingScan!=='forward'&&pages===1&&p.links?.last&&p.links.last!==p.links.self){next=p.links.last;reverse=true;chronological=true;issues.push(fromEnd);}

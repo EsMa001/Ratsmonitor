@@ -20,6 +20,7 @@ type Nach={startedAt:string;finishedAt:string;due:number;steps:NachStep[];follow
 type Win={since:string;written:number;withPdf:number;noPdf:number;main:number;session:number;noMain:number;pdf:Counter;failures:Counter;text:Counter;ocr:Counter;rules:Counter;summary:Counter;label:Counter;ai:Counter;imports:Counter};
 type Entry={step:string;key:string;class?:string;reason:string|null;tries:number;last_at:string;next_try_at?:string|null;range?:string;release?:string|null};
 type Data={at:string;boundary:string;since:string;units:{at:string;inactive:string[];stale:boolean}|null;jobs:{id:string;label:string;flow:string}[];log:{job:string;start:string;end:string;seconds:number;result:string;trigger:string}[];
+ backfill?:{round:number;startedAt:string;total:number;remaining:number;last:{at:string;round:number;picked:number;done:number;kept:number;failed:number;minutes:number}|null}|null;
  pdfRuns:PdfRun[];ruleTexts:RuleRun|null;nacharbeit:Nach|null;altbestand:{last:{startedAt:string;finishedAt:string;readyForAi?:number}|null;importOpen:boolean;reworkOpen:boolean;ocrOpen:boolean};
  aiCounts:{at:string;states:Counter;newText:number;withoutAi:number}|null;trace:{at:string;seconds:number;windows:Record<string,Win>}|null;pdfDaily:{startedAt:string}|null;
  importJob:{status:string;createdAt:string;updatedAt:string;window:string|null;counts:Counter;deferred:{region:string;message:string}[];failed:{region:string;message:string}[]}|null;
@@ -99,6 +100,9 @@ export function AdminDebug(){
       <Run title="Abruf" job="import-nightly" note={imp?`${when(imp.createdAt)}, ${imp.window==='1d'?'1 Tag':imp.window} zurück${imp.status==='completed'?'':', läuft oder wartet'}`:'kein Abruf vermerkt'}>
        {imp&&<><Sub>{words(imp.counts,IMPORT_STATE)}.</Sub>
        {imp.deferred.length?<><Sub>{n(imp.deferred.length)} Gebiete zurückgestellt (Quelle oder Server wartet):</Sub><ul className="m-0 mt-1 list-none p-0 text-[14px] text-slate-700">{imp.deferred.map(d=><li key={d.region}>{d.region}: <span className="text-slate-500">{d.message}</span></li>)}</ul></>:null}</>}
+      </Run>
+      <Run title="Lückenabruf" job="import-nightly" note={data.backfill?`Runde ${data.backfill.round}: ${n(data.backfill.total-data.backfill.remaining)} von ${n(data.backfill.total)} Gebieten`:'noch keine Runde'}>
+       {data.backfill?.last&&<Sub>Zuletzt {when(data.backfill.last.at)}: {n(data.backfill.last.picked)} Gebiete über 12 Monate, {n(data.backfill.last.done)} erledigt, {n(data.backfill.last.kept)} bleiben in der Runde{data.backfill.last.failed?`, ${n(data.backfill.last.failed)} gescheitert (Fehlerspeicher)`:''}, {String(data.backfill.last.minutes).replace('.',',')} min. Runde begonnen {when(data.backfill.startedAt)}; Gebiete mit wenigen Berichten zuerst.</Sub>}
       </Run>
       <Run title="Extraktion" job="pdf-nightly" note={nightRun?span(nightRun):'noch kein Lauf'}>{nightRun&&<StepList steps={nightRun.steps}/>}</Run>
       <Run title="Verarbeitung" job="rule-texts" note={data.ruleTexts?span(data.ruleTexts):'noch kein Lauf'}>{data.ruleTexts&&<StepList steps={data.ruleTexts.steps}/>}</Run>

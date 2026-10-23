@@ -113,18 +113,20 @@ export const SOURCE_SPACING_MS = 1500;
  * frühestens spacingMs nach der vorigen, die übrigen laufen ungebremst. Adressen ohne Gruppe (null) und lokale Adressen nie.
  */
 export function pacedFetch(request, groupOf, spacingMs = SOURCE_SPACING_MS, { sleep: wait = sleep, now = () => Date.now() } = {}) {
- const nextAt = new Map();
- return async (input, init) => {
+ const nextAt = new Map(), counts = new Map();
+ // counts: Anfragen je Gruppe in diesem Prozess (Grenze je Anbieter des Lückenabrufs, backfill.mjs)
+ return Object.assign(async (input, init) => {
   let group = null;
   try {
    const url = new URL(typeof input === 'string' ? input : input?.url ?? String(input));
    if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(url.hostname)) group = groupOf(url.href);
   } catch { group = null; }
+  if (group) counts.set(group, (counts.get(group) || 0) + 1);
   if (group && spacingMs > 0) {
    const at = Math.max(now(), nextAt.get(group) || 0);
    nextAt.set(group, at + spacingMs);
    if (at > now()) await wait(at - now());
   }
   return request(input, init);
- };
+ }, { counts });
 }

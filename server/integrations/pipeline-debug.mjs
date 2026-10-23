@@ -7,6 +7,7 @@
  */
 import {failureCounts,hasFailureStore,releaseHost,reopen,CLASSES,rangeWhere,dailyBoundary,DAILY_SINCE,PHASE_ORDER,providerRamps,rampAllowance} from './work-failures.mjs';
 import {PROVIDER_AREAS} from './pipeline-jobs.mjs';
+import {backfillView} from './backfill.mjs';
 import {JOBS,UNITS_KEY,unitsWarning} from './schedules.mjs';
 
 export const SCHEDULE_LOG_KEY='schedule-log';
@@ -45,7 +46,7 @@ export async function pipelineDebug(db,now=Date.now()){
  const hosts=store?(await db.prepare(`SELECT host,state,fails,level,next_try_at,last_ok_at,last_fail_at,reason,(SELECT count(*) FROM work_failures w WHERE w.host=h.host) AS entries FROM source_hosts h WHERE state<>'ok' ORDER BY entries DESC,host LIMIT 60`).all()).results:[];
  const internal=store?(await db.prepare("SELECT step,key,reason,release,last_at,tries FROM work_failures WHERE class='internal' ORDER BY last_at DESC LIMIT 40").all()).results:[];
  const recent=store?(await db.prepare(`SELECT step,key,host,class,reason,http,tries,last_at,next_try_at,origin,event_date,CASE WHEN ${d.sql} THEN 'daily' ELSE 'backlog' END AS range FROM work_failures ORDER BY last_at DESC LIMIT 60`).bind(...d.args).all()).results:[];
- const req=by.get('altbestand-requests')||{},providers=await providerStates(db,now);
+ const req=by.get('altbestand-requests')||{},providers=await providerStates(db,now),backfill=await backfillView(db);
  return {at:new Date(now).toISOString(),boundary:dailyBoundary(now),since:DAILY_SINCE,phases:PHASE_ORDER,
   units:unitsWarning(by.get(UNITS_KEY),now),
   jobs:JOBS.map(j=>({id:j.id,label:j.label,flow:j.flow,time:j.time||null,every:j.every||null,window:j.window||null})),
@@ -53,7 +54,7 @@ export async function pipelineDebug(db,now=Date.now()){
   pdfRuns:(by.get('pdf-store-runs')||[]).slice(0,12),ruleTexts:by.get('rule-texts-last'),nacharbeit:by.get('nacharbeit-last'),
   altbestand:{last:by.get('altbestand-last'),importOpen:!!req.import&&!req.import.finishedAt&&!req.import.stoppedAt,reworkOpen:!!req.rework&&!req.rework.finishedAt,ocrOpen:!!req.ocr&&!req.ocr.stoppedAt},
   aiCounts:by.get('ai-counts'),trace:by.get('pipeline-trace'),pdfDaily:by.get('pdf-daily-last'),
-  importJob:jobBrief(by.get('admin-pipeline-job')),failures,hosts,providers,internal,recent,classes:CLASSES};
+  importJob:jobBrief(by.get('admin-pipeline-job')),failures,hosts,providers,backfill,internal,recent,classes:CLASSES};
 }
 
 /** Aktion: {action:'release',host} | {action:'reopen',cls?,step?,host?,key?,phase?} (nur Tagesbereich) */

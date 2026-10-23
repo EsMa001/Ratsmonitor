@@ -115,8 +115,8 @@ test('ensureJob continues a fresh open job, but ends a paused or forgotten one f
 
 test('the command line is read strictly',async()=>{
  const {parseArgs}=await import('../server/integrations/pipeline-worker.mjs');
- assert.deepEqual(parseArgs([]),{create:null,direct:false,origin:'daily',regions:null,window:'1w',weeklyWindow:null,weeklyDay:0,lanes:24,maxMinutes:0,catchUp:true});
- assert.deepEqual(parseArgs(['--run','--max-minutes','240','--lanes','12','--no-catch-up']),{create:null,direct:false,origin:'daily',regions:null,window:'1w',weeklyWindow:null,weeklyDay:0,lanes:12,maxMinutes:240,catchUp:false});
+ assert.deepEqual(parseArgs([]),{create:null,direct:false,origin:'daily',regions:null,window:'1w',weeklyWindow:null,weeklyDay:0,lanes:24,maxMinutes:0,catchUp:true,backfill:0,backfillMinutes:90,backfillPerProvider:25,backfillCap:3000});
+ assert.deepEqual(parseArgs(['--run','--max-minutes','240','--lanes','12','--no-catch-up']),{create:null,direct:false,origin:'daily',regions:null,window:'1w',weeklyWindow:null,weeklyDay:0,lanes:12,maxMinutes:240,catchUp:false,backfill:0,backfillMinutes:90,backfillPerProvider:25,backfillCap:3000});
  assert.equal(parseArgs(['--create']).create,'sources');assert.equal(parseArgs(['--create','all','--window','1d']).window,'1d');
  assert.deepEqual(parseArgs(['--create','--regions','a, b']).regions,['a','b']);
  for(const bad of [['--lanes','abc'],['--lanes','0'],['--window','x'],['--create','foo'],['--regions','a'],['--nope'],['--window']])assert.throws(()=>parseArgs(bad),bad.join(' '));

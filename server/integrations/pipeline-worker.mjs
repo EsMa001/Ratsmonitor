@@ -70,18 +70,21 @@ export async function deferredRegions(db,ids,now=Date.now()){
  * gleichzeitig, je Server höchstens PER_PROVIDER; jeder Ausgang geht in den Fehlerspeicher (noteImport). Rückgabe je Gebiet
  * {region, status, refused, error}.
  */
-export async function runDirect(db,run,regions,{window='1w',lanes=4,origin='daily',stop=()=>false}={}){
+export async function runDirect(db,run,regions,{window='1w',lanes=4,origin='daily',stop=()=>false,allow=()=>true}={}){
  const queue=[...regions],busy=new Map(),out=[];
  const lane=async()=>{
   while(queue.length&&!stop()){
    const i=queue.findIndex(r=>(busy.get(provider(r))||0)<PER_PROVIDER);
    if(i<0){await pause(500);continue;}
-   const region=queue.splice(i,1)[0],server=provider(region);busy.set(server,(busy.get(server)||0)+1);
+   const region=queue.splice(i,1)[0],server=provider(region);
+   // allow (Lückenabruf): Grenze je Anbieter erreicht, das Gebiet wird nicht abgerufen und bleibt für später
+   if(!allow(region)){out.push({region,status:null,skipped:true});continue;}
+   busy.set(server,(busy.get(server)||0)+1);
    let result=null,failure='';
    try{result=await run('metadata',region,window);}catch(e){failure=String(e?.message||e).slice(0,300);}
    finally{busy.set(server,busy.get(server)-1);}
    await noteImport(db,region,{result,failure,server,origin});
-   out.push({region,status:result?.status??null,refused:!!result?.data?.refused,error:failure||result?.data?.cause||result?.data?.error||null});
+   out.push({region,status:result?.status??null,refused:!!result?.data?.refused,resume:!!result?.data?.resume,error:failure||result?.data?.cause||result?.data?.error||null});
   }
  };
  await Promise.all(Array.from({length:Math.max(1,lanes)},lane));
@@ -162,7 +165,7 @@ export function windowForTonight({window,weeklyWindow,weeklyDay=0},now=new Date(
  * [--lanes 24] [--max-minutes 240] [--no-catch-up]. Throws on unusable values.
  */
 export function parseArgs(argv){
- const args=[...argv],out={create:null,direct:false,origin:'daily',regions:null,window:'1w',weeklyWindow:null,weeklyDay:0,lanes:24,maxMinutes:0,catchUp:true};
+ const args=[...argv],out={create:null,direct:false,origin:'daily',regions:null,window:'1w',weeklyWindow:null,weeklyDay:0,lanes:24,maxMinutes:0,catchUp:true,backfill:0,backfillMinutes:90,backfillPerProvider:25,backfillCap:3000};
  const take=()=>{const v=args.shift();if(v===undefined||v.startsWith('--'))throw Error('Wert fehlt');return v;};
  while(args.length){
   const a=args.shift();
@@ -178,6 +181,11 @@ export function parseArgs(argv){
   else if(a==='--weekly-window')out.weeklyWindow=take();
   else if(a==='--weekly-day'){out.weeklyDay=Number(take());if(!Number.isInteger(out.weeklyDay)||out.weeklyDay<0||out.weeklyDay>6)throw Error('--weekly-day: 0 (Sonntag) bis 6');}
   else if(a==='--origin'){out.origin=take();if(!['daily','backlog'].includes(out.origin))throw Error('--origin: daily oder backlog');}
+  // Lückenabruf nach dem Auftrag (backfill.mjs): Gebiete je Nacht, Minuten, Gebiete und Anfragen je Anbieter
+  else if(a==='--backfill'){out.backfill=Number(take());if(!Number.isInteger(out.backfill)||out.backfill<0||out.backfill>2000)throw Error('--backfill: 0 bis 2000 Gebiete');}
+  else if(a==='--backfill-minutes'){out.backfillMinutes=Number(take());if(!Number.isFinite(out.backfillMinutes)||out.backfillMinutes<=0)throw Error('--backfill-minutes: Zahl');}
+  else if(a==='--backfill-per-provider'){out.backfillPerProvider=Number(take());if(!Number.isInteger(out.backfillPerProvider)||out.backfillPerProvider<1)throw Error('--backfill-per-provider: ganze Zahl ab 1');}
+  else if(a==='--backfill-cap'){out.backfillCap=Number(take());if(!Number.isInteger(out.backfillCap)||out.backfillCap<1)throw Error('--backfill-cap: ganze Zahl ab 1');}
   else throw Error('Unbekannter Schalter: '+a);
  }
  if(out.create&&!['sources','all'].includes(out.create))throw Error('--create: sources oder all');

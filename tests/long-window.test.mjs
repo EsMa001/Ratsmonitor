@@ -98,6 +98,20 @@ test('OParl list limits grow with the years of the period',async()=>{
  const year=await run('12m'),two=await run('24m');
  assert.equal(year.pages,6);assert.equal(two.pages,12);assert.ok(two.issues.some(i=>/Listenlimit/.test(i)));
 });
+test('OParl follows a roughly newest-first list beyond the page limit until a page lies before the window (Magdeburg)',async()=>{
+ const root='https://fixture.example/',source={system:root+'body',id:'test',name:'Teststadt',kind:'city'};
+ // Forty pages ordered by record: first a year of planned meetings, then pages that still reach into the window, then old ones.
+ const at=k=>new Date(now.getTime()+k*864e5).toISOString().slice(0,19)+'Z';
+ const page=n=>n<=12?[at(200),at(300)]:n<=30?[at(-300),at(60)]:[at(-500),at(-400)];
+ const run=async src=>{const pages=[];const d=await collectRegionalOparl(src,{now,window:'1m',getJson:async url=>{
+   if(url===root+'body')return {id:root+'body',type:'https://schema.oparl.org/1.1/Body',name:'Teststadt',meeting:root+'meetings?page=1'};
+   const n=Number(new URL(url).searchParams.get('page'));if(!n||url.includes('modified_since'))throw Error('unexpected '+url);pages.push(n);
+   return {data:page(n).map((start,i)=>({id:root+'meeting/'+n+'-'+i,start,agendaItem:[]})),links:n<40?{next:root+'meetings?page='+(n+1)}:{}};}});return {pages:pages.length,issues:d.coverage.issues};};
+ const rough=await run({...source,meetingScan:'end'});
+ assert.equal(rough.pages,31,'bis zur ersten Seite ganz vor dem Zeitraum');assert.ok(!rough.issues.some(i=>/Listenlimit/.test(i)),'Zeitraum gedeckt, kein Listenlimit');
+ const fixed=await run({...source,meetingScan:'end',maxPages:3});
+ assert.equal(fixed.pages,3,'eigene Grenze des Katalogs bleibt');
+});
 test('OParl keeps the meeting list for the step that continues an import, and leaves untouched meetings alone once time is up',async()=>{
  const root='https://fixture.example/',source={system:root+'body',id:'test',name:'Teststadt',kind:'city'};
  const meetings=Array.from({length:5},(_,i)=>({id:root+'meeting/'+(i+1),start:`2026-0${i+2}-10T18:00:00+02:00`,modified:'2026-08-01T10:00:00+02:00',name:'Rat',agendaItem:[{id:root+'item/'+(i+1),name:'Thema '+(i+1),public:true,number:'Ö 1',consultation:root+'consultation/'+(i+1)}]}));

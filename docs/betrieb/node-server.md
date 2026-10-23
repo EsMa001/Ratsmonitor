@@ -477,6 +477,15 @@ Schritte: `shared/pipeline-terms.mjs`.
   aktualisieren, Zahlen rechnen, KI-Stand `ai-counts`, Wege zählen `pipeline-trace`).
 - **Tagesbereich und Altbestand:** Tagesbereich sind Sitzungen der letzten 7 Tage, frühestens 12.10.2026, deren Fehler nicht vor dem
   12.10. entstanden. Nur ihn bearbeitet die Nacharbeit; alles Ältere ist Altbestand.
+- **Lückenabruf** (seit 23.10.2026, `server/integrations/backfill.mjs`, Schalter `--backfill` des Importprozesses im Job `import-nightly`):
+  nach dem Abruf des letzten Tages 300 Gebiete über 12 Monate, reihum, bis alle einmal dran waren (Runde etwa 16 Nächte), dann die
+  nächste Runde. Gebiete mit wenigen Berichten je Einwohner zuerst. Je Anbieter höchstens 25 Gebiete und 3.000 Anfragen des Prozesses
+  in der Nacht, höchstens 90 Minuten; wartende oder hochfahrende Anbieter und Gebiete mit eigenem Termin im Fehlerspeicher bleiben in
+  der Runde (sind nur noch sie übrig, kommen sie in der nächsten Runde vorn). Fehlschläge gehen als Altbestand in den Fehlerspeicher.
+  Stand `system_state` `backfill-round`, Anzeige `/admin?seite=nacht`, Zeile „Lückenabruf“.
+- **OParl-Listen „ungefähr neueste zuerst“** (Magdeburg, Rastatt, seit 23.10.2026): über das Listenlimit hinaus weiterlesen, solange
+  Seiten in den Zeitraum reichen (höchstens 48 je Jahr), Ende an der ersten Seite ganz davor; `maxPages` im Katalog bleibt fest.
+  Langsame Server: `patienceMs` im Katalog (Wartezeit je Antwort, 55 bis 180 s).
 - **Anbieter nicht erreicht, Anlauf, Mindestabstand** (seit 23.10.2026): Ein Abruf, bei dem jede Anfrage scheitert und nichts gelesen wird
   (`unreached` in `pipeline-jobs.mjs`), zählt für die Servergruppe (`provider()`, z. B. `ris-portal.de`): nach 3 solchen Gebieten ruhen die
   übrigen des Anbieters im laufenden Auftrag, verweigert (401/403) wartet er 1, 3, dann alle 7 Tage (`PROVIDER_LOCK`), stumm (Zeitüberschreitung)
