@@ -3044,6 +3044,17 @@
     "foundBy": "sessionnet.owl-it.de/waechtersbach/bi"
   },
   {
+    "id": "de-06436",
+    "name": "Main-Taunus-Kreis",
+    "kind": "district",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/mtk/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://sessionnet.owl-it.de/mtk/bi/info.asp",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "SessionNet (Bürgerinfoportal des Kreises bei owl-it), Link von Nico (24.10.2026); vom Server erreichbar."
+  },
+  {
     "id": "de-06436001",
     "name": "Stadt Bad Soden am Taunus",
     "kind": "city",
