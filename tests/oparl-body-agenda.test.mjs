@@ -10,7 +10,7 @@ const meeting=(n,day)=>({id:root+'meetings/'+n,type:'https://schema.oparl.org/1.
 const MEETINGS=[meeting(10,'01-20'),meeting(20,'08-18'),meeting(21,'09-15')];
 const item=(id,m,name,pub)=>({id:root+'agendaItems/'+id,type:'https://schema.oparl.org/1.1/AgendaItem',meeting:root+'meetings/'+m,number:String(id%10),order:id,name,public:pub,...placeholder});
 // Pages of the body's agenda list, oldest record first; the newest page also holds a late item of an old meeting.
-const PAGES={1:[item(101,10,'Haushalt 2026',true),item(102,10,'(nichtöffentlich)',false)],2:[item(201,20,'Radweg Hauptstraße',true),item(202,20,'(nichtöffentlich)',false),item(203,21,'Neubau Kita',true)],3:[item(301,10,'Genehmigung des Protokolls',true)]};
+const PAGES={1:[item(101,10,'Haushalt 2026',true),item(102,10,'(nichtöffentlich)',false)],2:[item(201,20,'Radweg Hauptstraße',true),item(202,20,'(nichtöffentlich)',false),item(204,20,'Grundstücksangelegenheit Herr Müller',false),item(203,21,'Neubau Kita',true)],3:[item(301,10,'Genehmigung des Protokolls',true)]};
 function server(){
  const seen=[];
  const getJson=async url=>{seen.push(url);const u=new URL(url);
@@ -27,6 +27,9 @@ test('agenda from the body list when meetings carry none; no modified_since on p
  const d=await collectRegionalOparl({id:'de-1',name:'Stadt Beispielstadt',kind:'city',system:root+'system'},{now,window:'3m',getJson});
  assert.deepEqual(d.topics.filter(t=>!t.publicity).map(t=>t.title).sort(),['Neubau Kita','Radweg Hauptstraße'],'items of the meetings of the period, public ones');
  assert.ok(d.topics.filter(t=>t.publicity).every(t=>!/^\(?nicht/i.test(t.title)),'a placeholder title gives no topic');
+ // Every topic is stored with the same columns (topics.updated_at, D1 takes no undefined): marked items too (24.10.2026).
+ assert.deepEqual(d.topics.filter(t=>t.publicity).map(t=>[t.title,t.publicity]),[['Grundstücksangelegenheit Herr …','nonpublic']],'a named non-public item: title only, without the name');
+ for(const t of d.topics)for(const k of ['id','eventDate','updatedAt','status','source'])assert.notEqual(t[k],undefined,`${k} fehlt: ${t.title}`);
  assert.ok(!seen.some(u=>u.includes('modified_since')),'the filter is not asked on placeholder dates');
  assert.ok(seen.some(u=>u.includes('agendaItems')&&u.includes('size=100')),'100 records a page');
  assert.ok(d.topics.every(t=>!/nichtöffentlich/.test(t.title)));
