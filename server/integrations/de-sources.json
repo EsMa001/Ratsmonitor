@@ -43270,5 +43270,20 @@
     "verifiedSource": "https://www.schorndorf.de/de/stadt-buerger/aktuelles/oeffentliche-bekanntmachungen",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Ratsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); die öffentlichen Bekanntmachungen der Stadt nennen Sitzungen des Gemeinderats mit Tagesordnung."
+  },
+  {
+    "id": "de-09184136",
+    "name": "Gemeinde Ottobrunn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ottobrunn.de/",
+    "pages": [
+      "https://www.ottobrunn.de/online-rathaus/bekanntmachungen/amtliche-bekanntmachungen"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.ottobrunn.de/online-rathaus/bekanntmachungen/amtliche-bekanntmachungen",
+    "note": "ris.ottobrunn.de gesperrt. Bekanntmachungen der Gemeinde nennen Sitzungen des Gemeinderats mit Tagesordnungspunkten (Probeabruf 12 Monate: 8 Berichte, Sitzung 28.10.2026)."
   }
 ]
