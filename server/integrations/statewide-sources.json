@@ -1613,16 +1613,11 @@
     "adapter": "website",
     "base": "https://www.ibbenbueren.de/",
     "pages": [
-      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=A",
-      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=B",
-      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=D",
-      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=E",
-      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=F"
+      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Bekanntmachungen/"
     ],
-    "sitemap": "https://www.ibbenbueren.de/sitemap.xml",
     "verifiedSource": "https://www.ibbenbueren.de/",
-    "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "RIS (ibbenbueren.ratsinfomanagement.net) sperrt Programme; Bekanntmachungen der Stadt mit Tagesordnung je Sitzung (PDF). Probeabruf 3 Monate: 7 Sitzungen, 91 öffentliche Punkte (vorher Seiten des Dienstleistungskatalogs, 0 Punkte)."
   },
   {
     "id": "nrw-05566088",

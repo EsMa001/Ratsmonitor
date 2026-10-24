@@ -137,8 +137,9 @@ const wrapsOn=(it,title,next)=>{
  if(/(?:Abs\.|§|Nr\.|Satz|Art\.|Ziff\.)\s*$/u.test(title)&&/^\d+[a-z]?\s+(?:\p{Lu}[\p{L}]*G\b|BauGB|BbgKVerf|GemO|GO|KV|KommVerf|BauNVO|ROG|UVPG|BNatSchG|Satz|S\.|Nr\.)/u.test(next))return true;
  if(it?.form!=='plain'||!/(?:\s(?:und|sowie|oder|mit|der|des|zur|zum)|[,–-])$/u.test(title))return false;const n=itemOf(next);return !!n&&n.form==='plain'&&n.mark!==it.mark;};
 const PAGE_LINE=/^Seite:?\s*\d+\s*(?:\/|von)\s*\d+$/i,DATE_ALONE=/^\d{1,2}\.\d{1,2}\.\d{4}$/;
-// An ordinal inside a title („8. 9. Änderung des Bebauungsplanes“, „2. Nachtrag“, Meinerzhagen) is no second item in the line.
-const ORDINAL_TITLE=/(?:^|\s)\d{1,2}\.\s+(?=(?:Änderung|Änderungssatzung|Nachtrag|Nachtragshaushalt|Fortschreibung|Ergänzung|Satzung|Bauabschnitt|Quartal|Halbjahr|Sitzung|Lesung|Deckblatt)(?!\p{L}))/gu;
+// An ordinal inside a title („8. 9. Änderung des Bebauungsplanes“, „2. Nachtrag“, Meinerzhagen) or a day („am 2. Juli 2026“,
+// Ibbenbüren) is no second item in the line.
+const ORDINAL_TITLE=/(?:^|\s)\d{1,2}\.\s+(?=(?:Änderung|Änderungssatzung|Nachtrag|Nachtragshaushalt|Fortschreibung|Ergänzung|Satzung|Bauabschnitt|Quartal|Halbjahr|Sitzung|Lesung|Deckblatt|Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)(?!\p{L}))/gu;
 const SUB_POINT=/^\(?[a-zA-Z]\)\s/;
 export function mentionsNonPublic(s){
  const n=normalizeLine(s).replace(SECRECY_GONE,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
@@ -568,7 +569,7 @@ const personRow=t=>{const parts=t.split(/(?<=\))\s+|\s+(?=(?:GR|GRin|GRÄ|StR|St
 const person=t=>onePerson(t)||namedWithTail(t)||personRow(t);
 function itemOf(raw){
  const line=normalizeLine(raw);let m;
- const titleOk=t=>!t||/^[\p{Lu}„"'(§]/u.test(t)||/^\d{1,2}\.\s+\p{Lu}/u.test(t);
+ const titleOk=t=>!t||/^[\p{Lu}„"'(§]/u.test(t)||/^\d{1,2}\.\s+\p{Lu}/u.test(t)||/^\d{3,4}\.\s+(?:Änderung|Änderungssatzung|Nachtrag|Ergänzung|Fortschreibung|Satzung)(?!\p{L})/u.test(t);
  if((m=line.match(KEYWORD))){const n=key(m[2]),w=withMark(markOf(m[1]),m[3].trim());if(Number(n.split('.')[0])<1||Number(n.split('.')[0])>60||!titleOk(w.title))return null;return {prefix:w.prefix,number:n,title:w.title,form:'keyword'};}
  if((m=line.match(PREFIXED))){const n=key(m[2]),w=withMark(markOf(m[1]),m[3].trim());if(Number(n.split('.')[0])<1||Number(n.split('.')[0])>60||!titleOk(w.title))return null;return {prefix:w.prefix,number:n,title:w.title,form:'prefix'};}
  if((m=line.match(GLUED))){const n=key(m[1]),first=Number(n.split('.')[0]),title=m[3].trim();if(first<1||first>60||!titleOk(title)||!/\p{L}/u.test(title))return null;return {prefix:markOf(m[2]),number:n,title,form:'plain'};}
@@ -1084,7 +1085,9 @@ const ITEM_LIKE=/^(?:(?:TOP|Top|TO|Tagesordnungspunkt|Punkt)\s*(?:Nr\.?\s*)?[\p{
 const LEGEND=/^\s*(?:(?:[^\p{L}\p{N}\s]{1,3}|[¹²³⁴⁵⁶⁷⁸⁹]|\([^)\s]{1,3}\)|\d{1,2}\)?|\p{Ll}\))\s*(?:[=:–…-]\s*)?|[A-ZÄÖÜ]{1,2}\s*[=:]\s*)(?:[Nn]icht\s*-?\s*[öÖ]|[Nn]ichtö|[Vv]ertraul|[Uu]nter\s+[Aa]usschl|[Gg]eschlossen|[Nn]\.?\s?[öÖ]\.?(?!\p{L}))/u;
 // A head that names a non-public part generally ("Im Anschluss findet eine nichtöffentliche Sitzung statt", "öffentliche
 // und nichtöffentliche Sitzung"); any other mention in the head names something in particular.
-const GENERIC_HEAD=line=>{const l=canonNP(normalizeLine(line));return /(?<!\p{L})(?:im\s+Anschluss|anschließend|anschl\.|danach|daran|es\s+folgt|nachfolgend|schließt\s+sich|sich\s+anschließend|nach\s+(?:dem|der)\s+öffentlichen|vor\s+(?:dem|der)\s+öffentlichen|zuvor|vorher|ab\s+\d{1,2}(?:[:.]\d{2})?\s*Uhr)(?!\p{L})/iu.test(l)&&/nichtöffentlich\p{L}*\s+(?:Sitzung|Teil|Sitzungsteil|Beratung)|Ausschlu(?:ss|ß)\s+der\s+Öffentlichkeit/iu.test(l)||/(?<!\p{L})öffentliche[rn]?\s+(?:Sitzung\s+|Teil\s+)?und\s+(?:anschließend\s+)?(?:eine[rn]?\s+)?nichtöffentliche[rn]?\s+(?:Sitzung|Teil|Sitzungsteil)/iu.test(l);};
+// Also „Die nächste öffentliche / nichtöffentliche Sitzung …“ (Templin) and a line broken in that phrase („… eine öffent-“ /
+// „liche und eine nichtöffentliche Sitzung“, Bernkastel-Wittlich).
+const GENERIC_HEAD=line=>{const l=canonNP(normalizeLine(line));return /(?<!\p{L})(?:im\s+Anschluss|anschließend|anschl\.|danach|daran|es\s+folgt|nachfolgend|schließt\s+sich|sich\s+anschließend|nach\s+(?:dem|der)\s+öffentlichen|vor\s+(?:dem|der)\s+öffentlichen|zuvor|vorher|ab\s+\d{1,2}(?:[:.]\d{2})?\s*Uhr)(?!\p{L})/iu.test(l)&&/nichtöffentlich\p{L}*\s+(?:Sitzung|Teil|Sitzungsteil|Beratung)|Ausschlu(?:ss|ß)\s+der\s+Öffentlichkeit/iu.test(l)||/(?:(?<!\p{L})öffent|^)liche[rn]?\s*(?:(?:Sitzung|Teil)\s+)?(?:und|\/|bzw\.?|sowie)\s*(?:anschließend\s+)?(?:eine[rn]?\s+)?nichtöffentliche[rn]?(?:\s+(?:Sitzung|Teil|Sitzungsteil)|\s*$)/iu.test(l);};
 // A mark before an item ("(nichtöffentlich) TOP 3 …" of an icon): the item is marked N.
 const LEAD_MARK=/^(?:\((?:nichtöffentlich|vertraulich)\)\s*)+(?=\S)/iu;
 const itemOfLine=line=>{const m=line.match(LEAD_MARK);if(m){const it=itemOf(line.slice(m[0].length));return it?{...it,prefix:'N'}:null;}return itemOf(line);};
@@ -1499,6 +1502,14 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    // A mark whose meaning the text does not tell (rule 4).
    else if(!columnKind&&oddMark(t))footnote=true;
    if(it.prefix!=='Ö'&&tail.prefix==='Ö'&&state==='public'&&!it.number.includes('.'))oeSeen=true;
+   // A list numbered anew inside an item („5.3 170. Änderung des Flächennutzungsplans“ / „1. Beschluss über die Stellungnahmen“ /
+   // „2. Beschluss der 170. Änderung“, then „5.4 …“, Ibbenbüren): sub-points of that item when the agenda goes on in its own count.
+   if(seen.has(it.number)&&kind!=='minutes'&&it.number==='1'&&cur){
+    let k=itemLine,n=1;
+    while(k<end&&k-itemLine<20){const x=itemAt(k);if(x&&x.number===String(n)){n++;k++;continue;}if(!x){k++;continue;}break;}
+    const next=k<end?itemAt(k):null;
+    if(next&&!seen.has(next.number)&&mainNumber(next.number)>=mainNumber(cur.number)){i=k;lastItemEnd=k;continue;}
+   }
    if(seen.has(it.number)){
     // A number again just after the name of a body or a day: another meeting whose head was not recognised. Otherwise
     // a list numbered anew: what follows is not known to belong to this meeting.

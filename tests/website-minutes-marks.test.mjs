@@ -91,3 +91,22 @@ test('notice (Landkreis Harz, Meinerzhagen): a mention inside the non-public par
  assert.deepEqual(m.items.map(i=>i.number),['1','2','3','4']);
  assert.match(m.items[2].title,/^9\. Änderung des Bebauungsplanes/);
 });
+
+test('notice (Ibbenbüren): a day in a title is no item, a list numbered anew inside an item holds its sub-points',()=>{
+ const lines=['Bekanntmachung','Sitzung des Planungs- und Umweltausschusses am 22.09.2026','Tagesordnung','Öffentlicher Teil',
+  '1. Niederschrift über den öffentlichen Teil der Sitzung des Planungs- und Umweltausschusses','am 2. Juli 2026',
+  '2. Bauleitplanung','2.1 170. Änderung des Flächennutzungsplans für den Bereich der Aufstellung des Bebauungsplans','Nr. 55 a "I-NOVA Park - Ost"',
+  '1. Beschluss über die Stellungnahmen','2. Beschluss der 170. Änderung des Flächennutzungsplans',
+  '2.2 Bebauungsplan Nr. 55 a "I-NOVA Park - Ost", Aufstellung','3. Anträge, Anfragen, Mitteilungen','Nichtöffentlicher Teil','4. Grundstücksangelegenheit'];
+ const m=parseSessionText(lines,{title:'Bekanntmachung Planungs- und Umweltausschuss',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','2.1','2.2','3']);
+ assert.deepEqual(m.closedItems.map(i=>i.number),['4']);
+});
+
+test('head „Die nächste öffentliche / nichtöffentliche Sitzung …“ (Templin) is a general announcement, the parts then by their headings',()=>{
+ const lines=['Öffentliche Bekanntmachung','Die nächste öffentliche / nichtöffentliche Sitzung des Hauptausschusses findet am','30.09.2026 um 17:00 Uhr','im Sitzungssaal statt.','TAGESORDNUNG:',
+  'I. ÖFFENTLICHE SITZUNG','1. Eröffnung der Sitzung','2. Beratung über die Änderung der Betriebssatzung','3. Anfragen','II. NICHTÖFFENTLICHE SITZUNG','4. Grundstücksangelegenheit'];
+ const m=parseSessionText(lines,{title:'Öffentliche Bekanntmachung Hauptausschuss',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3']);
+ assert.deepEqual(m.closedItems.map(i=>i.number),['4']);
+});
