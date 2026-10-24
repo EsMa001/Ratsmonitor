@@ -102,13 +102,14 @@ test('PARLIS status: approval and rejection before acknowledgement; own decision
  assert.equal(parlisStatus('Der Magistrat wird aufgefordert, den Bericht vorzulegen.','Ortsbeirat 1'),null);
 });
 
-test('PARLIS public part: the link to the non-public part and any short heading that names it end the document',()=>{
+test('PARLIS public part: the link to the non-public part ends the document; a short heading that names it marks what follows',()=>{
  const minutes=fixture('niederschrift-ausschuss.html');
  const item=(n,ref)=>`<p class=MsoNormal style='text-indent:-28.45pt'>${n}.&nbsp; Punkt ${n}</p><p class=MsoNormal>Antrag vom 01.09.2026, <a href="/PARLISLINK/DDW?W=DOK_NAME=%27${ref}'">${ref.replace(/_\d{4}$/,'').replace('_',' ')}</a></p>`;
- const papers=html=>parseParlisDocument(html).items.map(i=>i.paper);
+ const papers=html=>parseParlisDocument(html).items.filter(i=>!i.closed).map(i=>i.paper),closed=html=>parseParlisDocument(html).items.filter(i=>i.closed).map(i=>i.paper);
  for(const heading of ['<h2>Nicht öffentlicher Teil</h2>','<p class=MsoNormal>Tagesordnung II - nicht öffentlich</p>','<td><b>Vertrauliche Punkte</b></td>']){
   const html=minutes.replace(/<p class=MsoNormal\s+style='text-indent:-28.45pt'>9\./,heading+item(8.5,'NR_98_2026')+"<p class=MsoNormal style='text-indent:-28.45pt'>9.");
   assert.deepEqual(papers(html),['A_7_2026','OA_584_2025',undefined],heading);
+  assert.deepEqual(closed(html),['NR_98_2026','NR_29_2026'],heading+': taken marked non-public (24.10.2026)');
  }
  // A long sentence that mentions the non-public part ends nothing.
  assert.deepEqual(papers(minutes),['A_7_2026','OA_584_2025',undefined,'NR_29_2026']);

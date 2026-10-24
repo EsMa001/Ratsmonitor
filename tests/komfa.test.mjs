@@ -45,29 +45,32 @@ test('KOMFA agenda: the items under "Öffentlicher Teil", papers by their number
  assert.equal(ahead.items.find(i=>i.reference==='63-26').status,'consulting');assert.equal(ahead.items[0].status,'announced');
 });
 
-test('KOMFA agenda: the non-public part ends the agenda; its titles are never taken, nor a title that names it',()=>{
- const agenda=parseKomfaAgenda(fixture('woldegk-stadtvertretung-2026-09-08.html'),{url:meetingUrl(woldegk,'S'),date:'2026-09-08',title:'Windmühlenstadt Woldegk, Stadtvertretung'},woldegk,now);
+test('KOMFA agenda: the non-public part ends the public agenda; its titles, and a title that names it, come marked',()=>{
+ const whole=parseKomfaAgenda(fixture('woldegk-stadtvertretung-2026-09-08.html'),{url:meetingUrl(woldegk,'S'),date:'2026-09-08',title:'Windmühlenstadt Woldegk, Stadtvertretung'},woldegk,now),agenda={...whole,items:whole.items.filter(i=>!i.publicity)};
  assert.equal(agenda.committee,'Windmühlenstadt Woldegk, Stadtvertretung');
+ const marked=whole.items.filter(i=>i.publicity).map(i=>i.title).join('\n');
+ for(const t of ['Veräußerung eines Grundstückes','Verlängerung eines sachgrundbefristeten Arbeitsvertrages'])assert.ok(marked.includes(t),t);
+ assert.ok(whole.items.filter(i=>i.publicity).every(i=>i.publicity==='nonpublic'));
  const titles=agenda.items.map(i=>i.title).join('\n');
  for(const hidden of ['Veräußerung eines Grundstückes','Verlängerung eines sachgrundbefristeten Arbeitsvertrages','Billigung der Niederschrift des nichtöffentlichen Teils','Schließen der nichtöffentlichen Sitzung'])assert.ok(!titles.includes(hidden),hidden);
- assert.ok(!titles.includes('in letzter nichtöffentlicher Sitzung'),'an item that names the non-public part is left out');
+ assert.ok(!titles.includes('in letzter nichtöffentlicher Sitzung'),'an item that names the non-public part is not public');
  assert.ok(agenda.left>=1);
  assert.equal(agenda.items.at(-1).title,'Anfragen der Stadtvertreter und Mitteilungen');
  assert.ok(agenda.items.some(i=>i.reference==='47/2026-239'&&i.id==='de-130715755-kf-vo-47-2026-239'));
 });
 
-test('KOMFA agenda without a part heading: public with the meeting\'s public notice, otherwise nothing (fail closed)',()=>{
+test('KOMFA agenda without a part heading: public with the meeting\'s public notice, otherwise unclear',()=>{
  const page=fixture('woldegk-neetzka-hauptausschuss-2026-09-24.html'),m={url:meetingUrl(woldegk,'N'),date:'2026-09-24',title:'Gemeinde Neetzka, Hauptausschuss'};
  const agenda=parseKomfaAgenda(page,m,woldegk,now);
  assert.equal(agenda.committee,'Gemeinde Neetzka, Hauptausschuss');assert.equal(agenda.items.length,7);
  assert.match(agenda.items[0].event.publicEvidence,/ohne Teilüberschrift; öffentliche Bekanntmachung/);
- assert.equal(parseKomfaAgenda(page.replaceAll('Bekanntmachung-oeffentlich','Einladung'),m,woldegk,now).items,null);
- // A heading of the non-public part before any public one: nothing, also with a public notice.
+ assert.ok(parseKomfaAgenda(page.replaceAll('Bekanntmachung-oeffentlich','Einladung'),m,woldegk,now).items.every(i=>i.publicity==='unclear'));
+ // A heading of the non-public part before any public one: all non-public, also with a public notice.
  const closedFirst=page.replace(/(<table class="table table-hover">)/,'$1<tr><td class="w05 right"><b>I.</b></td><td class="left"><b>nichtöffentliche Sitzung</b></td><td class="w20 right"></td><td class="w10 left"></td></tr>');
- assert.equal(parseKomfaAgenda(closedFirst,m,woldegk,now).items,null);
- // The agenda closes its public part itself: what stands before is public, what follows is not read.
+ assert.ok(parseKomfaAgenda(closedFirst,m,woldegk,now).items.every(i=>i.publicity==='nonpublic'));
+ // The agenda closes its public part itself: what stands before is public, what follows non-public.
  const closing=page.replace('Anfragen, Verschiedenes','Schließen der öffentlichen Sitzung').replaceAll('Bekanntmachung-oeffentlich','Einladung');
- assert.deepEqual(parseKomfaAgenda(closing,m,woldegk,now).items.map(i=>i.agenda.number),['1.','2.','3.','4.','5.']);
+ assert.deepEqual(parseKomfaAgenda(closing,m,woldegk,now).items.filter(i=>!i.publicity).map(i=>i.agenda.number),['1.','2.','3.','4.','5.']);
  // "Die Tagesordnung ist nicht verfügbar."
  const missing=parseKomfaAgenda(fixture('delitzsch-ausschuss-2026-09-07.html'),{url:meetingUrl(delitzsch,'A'),date:'2026-09-07',title:'Stadt Delitzsch, Ausschuss für Schule, Kultur und Soziales'},delitzsch,now);
  assert.equal(missing.available,false);assert.equal(missing.items,null);

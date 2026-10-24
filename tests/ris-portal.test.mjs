@@ -15,6 +15,7 @@ const hexental={id:'de-08315074',name:'Gemeinde Merzhausen',kind:'city',method:'
 const grossefehn={id:'nds-03452006',name:'Gemeinde Großefehn',kind:'city',method:'scraper',adapter:'ris-portal',base:'https://grossefehn.ris-portal.de/web/ratsinformation/'};
 const meetingOf=(source,id,date,committee)=>({id,url:source.base.replace(/\/web\/ratsinformation\/$/,'/web/ratsinformation/')+'sitzungen?sitzungId='+id,date,committee});
 
+const publicOnly=a=>a&&{...a,items:a.items.filter(i=>!i.publicity)};
 test('RIS-Portal is recognised from the theme and its meeting portlet; the site comes from the page',async()=>{
  assert.deepEqual(detectRisPortal('https://welver.ris-portal.de/web/ratsinformation/sitzungen',fixture('welver-sitzungen.html')),{adapter:'ris-portal',base:welver.base});
  // A host mapped to its site: the root, although the meeting links run below /web/guest/.
@@ -45,14 +46,13 @@ test('RIS-Portal month list: meetings with day, full body name and their own pag
  assert.throws(()=>risPortalMeetings('{"error":"x"}',welver),/Unbekanntes Format/);
 });
 
-test('RIS-Portal meeting: only the items under the heading of the public part; the non-public part is cut off',()=>{
+test('RIS-Portal meeting: the items under the heading of the public part are public; the non-public part is marked',()=>{
  const html=fixture('welver-sitzung-216451.html');
- const agenda=parseRisPortalMeeting(html,meetingOf(welver,'216451','2026-09-03','Rat'),welver,now);
+ const every=parseRisPortalMeeting(html,meetingOf(welver,'216451','2026-09-03','Rat'),welver,now);
+ assert.deepEqual(every.items.filter(i=>i.publicity).map(i=>[i.title.slice(0,20),i.publicity]),[['Fortschreibung Wirts','nonpublic'],['Ankauf Wohnhaus im Z','nonpublic'],['Europaweite Ausschre','nonpublic']]);
+ const agenda=publicOnly(parseRisPortalMeeting(html,meetingOf(welver,'216451','2026-09-03','Rat'),welver,now));
  assert.equal(agenda.date,'2026-09-03');assert.equal(agenda.committee,'Rat');
  assert.deepEqual(agenda.items.map(i=>i.title.slice(0,40)),['Einwohnerfragestunde','Wirtschaftliche Beteiligung der Gemeinde','Errichtung eines Radweges entlang der K7','Anfragen / Mitteilungen']);
- // The titles of the non-public part stand on the same page; none of them is taken.
- const all=JSON.stringify(agenda);
- for(const secret of ['Ankauf Wohnhaus','Fortschreibung Wirtschaftswege','Reinigungsleistung'])assert.ok(!all.includes(secret),secret);
  assert.ok(html.includes('Ankauf Wohnhaus im Zentralort'),'the fixture holds the non-public part');
  // The paper is named by the id of its document; documents link the portlet resource on the same host.
  const paper=agenda.items[1];
@@ -60,38 +60,39 @@ test('RIS-Portal meeting: only the items under the heading of the public part; t
  assert.ok(paper.documents.length>1&&paper.documents.every(d=>d.url.startsWith('https://welver.ris-portal.de/web/ratsinformation/sitzungen?')&&/_RisSitzung_resource=singleDocument/.test(d.url)));
  assert.match(agenda.items[0].id,/^nrw-05974048-rp-top-20260903-[0-9a-f]{8}$/);
  // A future meeting: announced, or consulting with a paper.
- const ahead=parseRisPortalMeeting(html,{...meetingOf(welver,'216451','2026-11-03','Rat')},welver,now);
+ const ahead=publicOnly(parseRisPortalMeeting(html,{...meetingOf(welver,'216451','2026-11-03','Rat')},welver,now));
  assert.equal(ahead.items[0].status,'announced');assert.equal(ahead.items[1].status,'consulting');
 });
 
-test('RIS-Portal meeting: published votes, items naming the non-public part left out, the members\' voting form no end',()=>{
- const shared=parseRisPortalMeeting(fixture('vghexental-sitzung-192529.html'),{id:'192529',url:'https://vghexental.ris-portal.de/web/guest/sitzungen?sitzungId=192529',date:'2026-09-24',committee:'Gemeinderat Merzhausen'},hexental,now);
- assert.equal(shared.items.length,7);assert.equal(shared.left,1);
- assert.ok(!shared.items.some(i=>/nichtöffentlich/i.test(i.title)),'"Bekanntgabe der Beschlüsse aus nichtöffentlichen Sitzungen" is not taken');
+test('RIS-Portal meeting: published votes, items naming the non-public part marked, the members\' voting form no end',()=>{
+ const whole=parseRisPortalMeeting(fixture('vghexental-sitzung-192529.html'),{id:'192529',url:'https://vghexental.ris-portal.de/web/guest/sitzungen?sitzungId=192529',date:'2026-09-24',committee:'Gemeinderat Merzhausen'},hexental,now),shared=publicOnly(whole);
+ assert.equal(shared.items.length,7);assert.equal(whole.left,1);
+ assert.ok(whole.items.some(i=>i.publicity==='nonpublic'&&/nichtöffentlich/i.test(i.title)),'"Bekanntgabe der Beschlüsse aus nichtöffentlichen Sitzungen" is taken marked');
  const forest=shared.items.find(i=>/Beförsterung/.test(i.title));
  assert.equal(forest.status,'approved');assert.equal(forest.event.result,'Dem Beschlussvorschlag wird zugestimmt. (Ja 9, Nein 2, Enthalten 2)');
  assert.equal(shared.items.find(i=>/Tätigkeitsberichte/.test(i.title)).event.result,'Dem Beschlussvorschlag wird zugestimmt. (Ja 8, Nein 3, Enthalten 1, Befangen 1)');
  assert.equal(parseRisPortalVote('<div id="offcanvas-abstimmung1"></div>','2'),null);
- const council=parseRisPortalMeeting(fixture('grossefehn-sitzung-221624.html'),{id:'221624',url:'https://grossefehn.ris-portal.de/web/ratsinformation/sitzungen?sitzungId=221624',date:'2026-09-23',committee:'Rat der Gemeinde Großefehn'},grossefehn,now);
+ const council=publicOnly(parseRisPortalMeeting(fixture('grossefehn-sitzung-221624.html'),{id:'221624',url:'https://grossefehn.ris-portal.de/web/ratsinformation/sitzungen?sitzungId=221624',date:'2026-09-23',committee:'Rat der Gemeinde Großefehn'},grossefehn,now));
  assert.equal(council.items.length,14);assert.equal(council.items.at(-1).title,'Einwohnerfragestunde');
  assert.equal(council.items[0].event.publicEvidence,'Öffentliche Tagesordnung, Abschnitt „Öffentlich“');
 });
 
-test('RIS-Portal meeting fails closed: no public heading, a non-public or unknown heading first, nothing',()=>{
+test('RIS-Portal meeting: without a public heading the items are marked, a page without agenda gives nothing',()=>{
  const m={id:'1',url:welver.base+'sitzungen?sitzungId=1',date:'2026-09-03',committee:'Rat'};
  const list=(heading,title)=>`<h3 class="h4 accordion-list-header">${heading}</h3><ul><li class="rp-lis-item" data-top-number="1."><div class="top-item"><div class="top-item-content"><p><span>1.</span><span>${title}</span></p></div></div></li></ul>`;
  assert.equal(parseRisPortalMeeting('<h2 class="h1">Sitzung Rat am 03.09.2026</h2><p>Die Tagesordnung ist noch nicht veröffentlicht.</p>',m,welver,now),null);
- assert.equal(parseRisPortalMeeting(list('Nichtöffentlicher Teil','Grundstücksangelegenheit'),m,welver,now),null);
+ const marks=html=>parseRisPortalMeeting(html,m,welver,now).items.map(i=>[i.title,i.publicity||'public']);
+ assert.deepEqual(marks(list('Nichtöffentlicher Teil','Grundstücksangelegenheit')),[['Grundstücksangelegenheit','nonpublic']]);
  // "Tagesordnung" alone names no part: the public agenda only when it is the page's only part.
  assert.deepEqual(parseRisPortalMeeting(list('Tagesordnung','Bebauungsplan Nord'),m,welver,now).items.map(i=>i.title),['Bebauungsplan Nord']);
- assert.equal(parseRisPortalMeeting(list('Tagesordnung','Bebauungsplan Nord')+list('Teil B','Personalsache Müller'),m,welver,now),null);
- for(const heading of ['Nicht öffentlicher Teil','- nichtöffentlich -','II. Nichtöffentlicher Teil','Tagesordnung: nichtöffentlich','Tagesordnung - Nichtöffentlich','Öffentlichkeitsarbeit','Teil A'])
-  assert.equal(parseRisPortalMeeting(list(heading,'Bebauungsplan Nord'),m,welver,now),null,heading);
- // After the public part every further part ends the agenda, whatever it is called.
- const two=parseRisPortalMeeting(list('Öffentlicher Teil','Bebauungsplan Nord')+list('Teil B','Personalsache Müller'),m,welver,now);
- assert.deepEqual(two.items.map(i=>i.title),['Bebauungsplan Nord']);
+ assert.deepEqual(marks(list('Tagesordnung','Bebauungsplan Nord')+list('Teil B','Personalsache Müller')),[['Bebauungsplan Nord','unclear'],['Personalsache Müller','unclear']]);
+ for(const heading of ['Nicht öffentlicher Teil','- nichtöffentlich -','II. Nichtöffentlicher Teil','Tagesordnung: nichtöffentlich','Tagesordnung - Nichtöffentlich'])
+  assert.deepEqual(marks(list(heading,'Bebauungsplan Nord')),[['Bebauungsplan Nord','nonpublic']],heading);
+ for(const heading of ['Öffentlichkeitsarbeit','Teil A'])assert.deepEqual(marks(list(heading,'Bebauungsplan Nord')),[['Bebauungsplan Nord','unclear']],heading);
+ // After the public part every further part is non-public, whatever it is called.
+ assert.deepEqual(marks(list('Öffentlicher Teil','Bebauungsplan Nord')+list('Teil B','Personalsache Müller')),[['Bebauungsplan Nord','public'],['Personalsache Müller','nonpublic']]);
  const named=parseRisPortalMeeting(list('Öffentlich','Grundstücksangelegenheit (nö)'),m,welver,now);
- assert.equal(named.items.length,0);assert.equal(named.left,1);
+ assert.deepEqual(named.items.map(i=>i.publicity),['nonpublic']);assert.equal(named.left,1);
 });
 
 // A fake portal: month lists and meeting pages from the fixtures, every address asked recorded.
@@ -109,7 +110,7 @@ test('RIS-Portal meeting: the public heading in the wordings of the tenants',()=
  // Gechingen, Harztor, Haßmersheim (05.10.2026).
  for(const heading of ['- öffentlich -','Tagesordnung öffentlich','Öffentliche Tagesordnungspunkte','Tagesordnung - öffentlicher Teil','Tagesordnung - Öffentlich','A.) Öffentlicher Teil','ÖFFENTLICHER TEIL:','Tagesordnung: öffentlich','I. Öffentlicher Teil','I. öffentlich']){
   const agenda=parseRisPortalMeeting(list(heading,'Bebauungsplan Nord')+list('Nichtöffentlicher Teil','Grundstücksangelegenheit'),m,welver,now);
-  assert.deepEqual(agenda?.items.map(i=>i.title),['Bebauungsplan Nord'],heading);
+  assert.deepEqual(agenda?.items.map(i=>[i.title,i.publicity||'public']),[['Bebauungsplan Nord','public'],['Grundstücksangelegenheit','nonpublic']],heading);
  }
 });
 
@@ -128,7 +129,7 @@ test('collectRisPortal reads the months of the period and the public part of eac
  const paper=year.topics.find(t=>t.id==='nrw-05974048-rp-vo-2828454');
  assert.ok(paper);assert.equal(paper.committee,'Rat');assert.equal(paper.eventDate,'2026-09-03');assert.equal(paper.public,true);
  assert.equal(paper.sourceData.method,'ris-portal');assert.ok(paper.documents.some(d=>d.url.endsWith('sitzungId=216451')));
- assert.ok(!JSON.stringify(year.topics).includes('Ankauf Wohnhaus'));
+ assert.equal(year.topics.find(t=>/Ankauf Wohnhaus/.test(t.title))?.publicity,'nonpublic');
 });
 
 test('collectRisPortal separates a shared system by its bodies and joins the consultations of a paper',async()=>{
@@ -175,21 +176,22 @@ test('RIS-Portal redesigned theme: public items with number, title and documents
  const meeting={id:'2762',url:'https://ris.dachau.de/web/guest/sitzungen?sitzungId=2762',date:'2026-10-14',committee:'Stadtrat'};
  const page=fixture('dachau-sitzung-2762.html');
  const parsed=parseRisPortalMeeting(page,meeting,dachau,new Date('2026-10-09T12:00:00Z'));
- assert.equal(parsed.items.length,3);
+ assert.equal(parsed.items.filter(i=>!i.publicity).length,3);
  const first=parsed.items[0];
  assert.match(first.title,/^1\. Änderung der Mobilitätssatzung/);assert.equal(first.status,'consulting');assert.equal(first.number,'1.');
  assert.ok(first.documents.some(d=>/Sitzungsvorlage/.test(d.title)||d.url.includes('schriftgutId=30116')));
  assert.ok(first.id.startsWith('de-09174115-rp-vo-'));
- // Everything after a heading that is not the public part is cut off.
+ // Everything after a heading that is not the public part is marked non-public.
  const withNonPublic=page.replace('</div></div></div></body>','</div><h3 class="accordion-list-header">Nichtöffentliche Tagesordnungspunkte</h3><div class="list-group-item rp-result rp-session-top-result " data-top-number="9."><h3><a href="#">Personalangelegenheit geheim</a></h3></div></div></div></body>');
  const cut=parseRisPortalMeeting(withNonPublic,meeting,dachau,new Date('2026-10-09T12:00:00Z'));
- assert.equal(cut.items.length,3);assert.ok(!cut.items.some(i=>/geheim/.test(i.title)));
+ assert.equal(cut.items.filter(i=>!i.publicity).length,3);assert.ok(cut.items.some(i=>i.publicity==='nonpublic'&&/geheim/.test(i.title)));
 });
 
-test('RIS-Portal: the part "Teil A - Öffentlicher Teil" (Langen) is the public agenda, "Teil B" is not read',()=>{
+test('RIS-Portal: the part "Teil A - Öffentlicher Teil" (Langen) is the public agenda, "Teil B" is marked non-public',()=>{
  const src={id:'de-06438006',name:'Stadt Langen (Hessen)',kind:'city',method:'scraper',adapter:'ris-portal',base:'https://langen.ris-portal.de/'};
  const item=(n,t)=>`<li class="rp-lis-item" data-top-number="${n}"><div class="top-item-content"><p><span>${n}</span><span>${t}</span></p></div></li>`;
  const html=`<h2 class="h1">Sitzung Stadtverordnetenversammlung am 24.09.2026</h2><h3 class="h4 accordion-list-header">Teil A - Öffentlicher Teil</h3><ul>${item('1','Haushalt 2027')}</ul><h3 class="h4 accordion-list-header">Teil B - Nichtöffentlicher Teil</h3><ul>${item('2','Personalangelegenheit')}</ul>`;
  const m=parseRisPortalMeeting(html,{date:'2026-09-24',committee:'Stadtverordnetenversammlung',url:'https://langen.ris-portal.de/web/guest/sitzungen?sitzungId=1'},src,new Date('2026-10-09T00:00:00Z'));
- assert.deepEqual(m.items.map(i=>i.title),['Haushalt 2027']);
+ assert.deepEqual(m.items.filter(i=>!i.publicity).map(i=>i.title),['Haushalt 2027']);
+ assert.ok(m.items.slice(1).every(i=>i.publicity==='nonpublic'));
 });

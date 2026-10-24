@@ -5,14 +5,15 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
-import {MONTHS,asciiSlug as slug,clip} from './source-common.mjs';
+import {MONTHS,asciiSlug as slug,clip,markPublicity,topicPublicity,PLACEHOLDER} from './source-common.mjs';
 // Provox IIP ("Bürger- und Ratsinformationssystem" of Provox, ASP.NET, <host>/ris/<client>/…), as hosted by a
 // municipality itself (ris.hameln.de/ris/hameln/). Read are plain addresses of the public site only:
 // - meeting/ShowEvents?start=<day>&end=<day>: the JSON feed of the month calendar: id, body, start and, for a meeting
 //   with a page, its address (a coming meeting without agenda has none),
 // - meeting/details/<id>: body, day, place and the agenda. A block "Öffentlich" holds the items; the block
 //   "Abstimmungsergebnisse" of a past meeting repeats them with the vote (thumb up/down, "Dafür/Dagegen/Enthalten"
-//   in the title of its link). Only blocks marked "Öffentlich" are read (a guest never gets another),
+//   in the title of its link). Blocks marked "Öffentlich" are read; a block of the non-public part, should a guest get one,
+//   gives its items marked non-public with their title only (24.10.2026),
 // - agendaitem/details/<id>: the paper (Vorlage) of an item: title, department, resolution text, the file and the
 //   "Beratungsfolge" with the votes of each body. Items without such a link (opening, minutes, announcements) carry no
 //   matter of their own and are left out.
@@ -69,12 +70,14 @@ export function parseIipMeeting(html){
  const byNumber=new Map();
  for(const block of page.split(/<div class="topic">/i).slice(1)){
   const header=block.match(/<div class="header">([\s\S]*?)<\/div>/i)?.[1]||'';
-  // Only the public block; anything else is skipped.
-  if(!/^\s*Öffentlich\s*$/i.test(plain(header.split('<div')[0])))continue;
+  // The public block; a block of the non-public part gives its items marked, anything else is skipped.
+  const label=plain(header.split('<div')[0]),closed=/^\s*nicht\s*-?\s*öffentlich\s*$/i.test(label);
+  if(!/^\s*Öffentlich\s*$/i.test(label)&&!closed)continue;
   for(const chunk of block.split(/<div class="meetingitem"/i).slice(1)){
    const number=plain(chunk.match(/class="agendanumber">([\s\S]*?)<\/div>/)?.[1]||'').replace(/\.$/,'');
    const title=plain(chunk.match(/class="TOText"[^>]*>([\s\S]*?)<\/div>/)?.[1]||'');
-   if(!/^\d+(?:\.\d+)*$/.test(number)||!title)continue;
+   if(!/^\d+(?:\.\d+)*$/.test(number)||!title||PLACEHOLDER.test(title))continue;
+   if(closed){byNumber.set('n'+number,{number,title,paper:'',reference:'',voting:null,publicity:'nonpublic'});continue;}
    const paper=chunk.match(/agendaitem\/details\/(\d+)/)?.[1]||'';
    const reference=plain(chunk.match(/id="agendaitemnumber"[^>]*>([\s\S]*?)<\/span>/)?.[1]||'');
    const vote=chunk.match(/<a\b[^>]*title="Abstimmungsdetails:([^"]*)"[^>]*>\s*<span[^>]*fa-thumbs-(up|down)/);
@@ -115,7 +118,8 @@ const voteText=v=>v?`Dafür: ${v.yes}, Dagegen: ${v.no}, Enthalten: ${v.abstain}
 export function iipItems(parsed,meeting,source,papers=new Map(),now=new Date()){
  const date=parsed.date||meeting.date,committee=parsed.committee||meeting.body,today=now.toISOString().slice(0,10),past=date<=today;
  const decides=DECIDING_BODY.test(committee);
- return parsed.items.filter(i=>i.paper).map(i=>{
+ return parsed.items.filter(i=>i.paper||i.publicity).map(i=>{
+  if(i.publicity)return markPublicity({id:`${source.id}-iip-${slug(meeting.id||meeting.url)}-n${slug(i.number)}`,title:i.title,reference:'',sourceUrl:meeting.url,identityLinks:[],documents:[],status:past?'unknown':'consulting',text:'',record:{number:i.number,reference:'',paper:'',department:'',vote:'',outcome:''},event:{date,committee,status:past?'unknown':'consulting',description:'',result:'',url:meeting.url}},i.publicity);
   const paper=papers.get(i.paper)||null;
   const turn=paper?.deliberations.find(d=>d.meeting===meeting.id)||null;
   let voting=i.voting;
@@ -181,7 +185,8 @@ export async function collectProvoxIip(source,{now=new Date(),get=fetchText,requ
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n')+(row.text?'\n'+row.text:''),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Sitzung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;delete t.text;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n')+(row.text?'\n'+row.text:''),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Sitzung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;delete t.text;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Bürger- und Ratsinformationssystems (Provox IIP); nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

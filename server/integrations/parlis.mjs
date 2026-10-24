@@ -5,7 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {RESTRICTED,asciiSlug as slug,clip,fnv,germanDay as day} from './source-common.mjs';
+import {RESTRICTED,asciiSlug as slug,clip,fnv,germanDay as day,markPublicity,topicPublicity} from './source-common.mjs';
 // PARLIS, the "PARLamentsInformationsSystem" of Frankfurt am Main (www.stvv.frankfurt.de, own development of the city).
 // Read are plain addresses of the public site only:
 // - the lists of minutes (Niederschriften, DOKUMENTTYP=NIED) and of current agendas (Tagesordnungen, TAGO), newest
@@ -61,6 +61,13 @@ const LABEL=/^(Beschluss|Bericht|Abstimmung|Sonstige Voten|Vorg\.)\s*:\s*/i;
 const STATEMENT=/^(?:[a-z]\)\s|\d{1,2}\.\s|Es dient|Die |Der |Das |Dem |Den |Gemäß )/;
 // A short heading or line that names the non-public part ("Nichtöffentlicher Teil", "Tagesordnung II - nicht
 // öffentlich", "Vertrauliche Punkte") ends the public part, wherever it stands and whatever tag carries it.
+/** Where the non-public part of a document starts (such a heading), or -1; html: the document up to PARLIS2S. */
+export function parlisClosedAt(html){
+ for(const m of String(html).matchAll(/<(p|h[1-6]|td|th|div)\b[^>]*>([^<]{0,200}(?:<(?!\/?(?:p|h[1-6]|td|th|div)\b)[^>]*>[^<]{0,200}){0,6})<\/\1>/gi)){
+  const t=plain(m[2]);if(t&&t.length<80&&RESTRICTED.test(t))return m.index;
+ }
+ return -1;
+}
 /** The public part of a document: everything before the link to its non-public part and before such a heading. */
 export function parlisPublicPart(html){
  let end=html.search(/PARLIS2S/i);if(end<0)end=html.length;
@@ -76,25 +83,26 @@ export function parlisPublicPart(html){
  * (PAR_…), the part ("Tagesordnung I") and, in minutes, decision and vote. Header fields: body and day.
  */
 export function parseParlisDocument(html){
- const page=String(html),head=plain(page.slice(0,Math.max(0,page.search(/<div\s+class=["']?WordSection1/i))||8000)),all=parlisPublicPart(page);
+ const page=String(html),head=plain(page.slice(0,Math.max(0,page.search(/<div\s+class=["']?WordSection1/i))||8000)),all=page.slice(0,page.search(/PARLIS2S/i)<0?page.length:page.search(/PARLIS2S/i)),closedAt=parlisClosedAt(all);
  const committee=head.match(/Gremium:\s*(.*?)\s*Datum:/)?.[1]?.trim()||'',date=day(head.match(/Datum:\s*([\d.]+)/)?.[1]||'')||null;
  // The council's minutes open each item with a line that holds nothing but its paragraph ("§ 352", linked to
  // PAR_352_2026). A paragraph named elsewhere ("Vorg.: Beschl. d. Stv.-V. vom …, § 222") opens nothing.
  const paragraphLine=(inner,t)=>DECISION.test(inner)&&/^§\s*\d+$/.test(t);
  const council=[...all.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)].some(p=>paragraphLine(p[1],plain(p[1])));
- const items=[];let item=null,section='',mode='';
+ // Items after a heading of the non-public part are taken marked non-public (24.10.2026, markPublicity).
+ const items=[];let item=null,section='',mode='',shut=false;
  const close=()=>{if(item)items.push(item);item=null;mode='';};
  const numbered=t=>t.match(/^(\d{1,3}(?:\.\d{1,3})*)\.?(?:\s+(.*))?$/);
  for(const p of all.matchAll(/<p\b([^>]*)>([\s\S]*?)<\/p>/gi)){
-  const attributes=p[1],inner=p[2];let t=plain(inner);
+  const attributes=p[1],inner=p[2];let t=plain(inner);if(closedAt>=0&&p.index>=closedAt)shut=true;
   if(!t)continue;
   if(/^Tagesordnung\s+I{1,3}$/.test(t)){close();section=t;continue;}
-  if(council&&paragraphLine(inner,t)){close();item={number:'',title:'',decisionName:inner.match(DECISION)[1],section,result:[],vote:[]};mode='number';continue;}
+  if(council&&paragraphLine(inner,t)){close();item={closed:shut,number:'',title:'',decisionName:inner.match(DECISION)[1],section,result:[],vote:[]};mode='number';continue;}
   const n=numbered(t);
   // A numbered paragraph with hanging indent opens an item of committee and district minutes and of agendas. In the
   // council's minutes the item is opened by its paragraph, and the numbered line gives its number. Body text (class
   // Sammeltext) never opens an item, even when it is numbered ("1. Die Vorlage … wurde zurückgezogen").
-  if(!council&&n&&/text-indent:\s*-/i.test(attributes)&&!/class=["']?Sammeltext/i.test(attributes)&&!/^\d{1,2}\.\s+[A-ZÄÖÜ][a-zäöü]+\s+\d{4}$/.test(t)){close();item={number:n[1],title:n[2]||'',section,result:[],vote:[]};mode=n[2]?'head':'title';continue;}
+  if(!council&&n&&/text-indent:\s*-/i.test(attributes)&&!/class=["']?Sammeltext/i.test(attributes)&&!/^\d{1,2}\.\s+[A-ZÄÖÜ][a-zäöü]+\s+\d{4}$/.test(t)){close();item={closed:shut,number:n[1],title:n[2]||'',section,result:[],vote:[]};mode=n[2]?'head':'title';continue;}
   if(!item)continue;
   if(mode==='number'){if(n){item.number=n[1];item.title=n[2]||'';mode=n[2]?'head':'title';}else if(/^\d{1,4}$/.test(t)){/* the paragraph number on a line of its own */}else{item=null;mode='';}continue;}
   if(mode==='title'){item.title=t;mode='head';continue;}
@@ -149,10 +157,11 @@ export function parlisItems(parsed,meeting,source,now=new Date()){
   const result=clip((i.result.length?i.result:minutes?i.after||[]:[]).join(' '),900),vote=clip(i.vote.join(' '),400);
   const status=date>today?(paperUrl?'consulting':'announced'):result?parlisStatus(result,committee,{report:i.report,reference:i.reference})||'unknown':'unknown';
   const description=date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?(i.report?'Empfehlung: ':'Beschluss: ')+result+(vote?' Abstimmung: '+vote:''):minutes?'In der Niederschrift ohne Beschluss geführt.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Dokument nicht belegt.';
-  const documents=[...(paperUrl?[{title:'Vorlage '+(i.reference||i.paper),url:paperUrl,kind:'html'}]:[]),...(decisionUrl?[{title:'Beschluss § '+i.decisionName.split('_')[1],url:decisionUrl,kind:'html'}]:[])];
-  return {id,title:i.title,reference:i.reference||'',sourceUrl:paperUrl||decisionUrl||meeting.url,identityLinks:[paperUrl,decisionUrl].filter(Boolean),documents,status,
+  // Papers of a non-public item are shut to guests: not linked, so no later step asks them.
+  const documents=i.closed?[]:[...(paperUrl?[{title:'Vorlage '+(i.reference||i.paper),url:paperUrl,kind:'html'}]:[]),...(decisionUrl?[{title:'Beschluss § '+i.decisionName.split('_')[1],url:decisionUrl,kind:'html'}]:[])];
+  return markPublicity({id,title:i.title,reference:i.reference||'',sourceUrl:paperUrl||decisionUrl||meeting.url,identityLinks:[paperUrl,decisionUrl].filter(Boolean),documents,status,
    record:{number:i.number,section:i.section,origin:i.origin||'',reference:i.reference||'',result,vote},
-   event:{date,committee,status,description,result,url:meeting.url,publicEvidence:(minutes?'Öffentliche Niederschrift':'Öffentliche Tagesordnung')+(i.section?`, ${i.section}`:'')}};
+   event:{date,committee,status,description,result,url:meeting.url,publicEvidence:(minutes?'Öffentliche Niederschrift':'Öffentliche Tagesordnung')+(i.section?`, ${i.section}`:'')}},i.closed?'nonpublic':null);
  });
 }
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs.
@@ -207,7 +216,8 @@ export async function collectParlis(source,{now=new Date(),get=fetchText,request
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Niederschrift / Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Niederschrift / Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche PARLIS-Dokumente; nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

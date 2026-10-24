@@ -5,7 +5,10 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
-// Public interface of More! Rubin (more! software), read anonymously; only agenda items with the public status are taken.
+import {markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
+// Public interface of More! Rubin (more! software), read anonymously. Items with the public status (1) are public, items
+// with another status are taken marked non-public, without a status unclear (24.10.2026, markPublicity); only documents with
+// the public status are linked.
 // - api.php (gremien.info, KISA and the other installations of the single-page interface "Ratsinfosystem"): calendar
 //   and meetings with their agenda as JSON.
 // - Older installations answer api.php with HTTP 404. Their calendar comes in the same format from the mobile web
@@ -153,11 +156,14 @@ export function detectRubin(url,html=''){
  if(markup)return result('markup','webservice',/\.php$/i.test(u.pathname)?'./':'/');
  return null;
 }
+// A topic of one item with its publicity: title (without names of private persons), event and documents as markPublicity gives them.
+const publish=(t,publicity)=>{if(!publicity)return t;const {event,...rest}=markPublicity({...t,event:t.events[0]},publicity);return {...rest,officialTitle:rest.title,category:category(rest.title),sourceText:rest.title+'\n'+event.result,events:[event]};};
 export function mapRubinMeeting(m,source,now=new Date(),url=rubinMeetingUrl(m,source)){
  if(yes(m.is_draft)||yes(m.fraktionssitzung))return [];
  const committee=(m.committees||[]).map(c=>c.name).filter(Boolean).join(', ')||m.titel,today=now.toISOString().slice(0,10),authority=new URL(source.base).origin;
- return (m.agenda_items||[]).filter(a=>Number(a.status)===1&&!yes(a.is_draft)&&a.title).map(a=>{
-  const documents=(a.documents||[]).filter(d=>Number(d.documentPublicStatusId)===1&&!yes(d.is_draft)&&d.documentUrl).map(d=>({title:d.documentName||d.name||'Originalunterlage',url:documentUrl(d.documentUrl,source),kind:d.documentExtension==='pdf'?'application/pdf':'document'})).filter(d=>d.url);
+ return (m.agenda_items||[]).filter(a=>!yes(a.is_draft)&&a.title&&!PLACEHOLDER.test(text(a.title))).map(a=>{
+  const publicity=Number(a.status)===1?null:a.status==null||a.status===''?'unclear':'nonpublic';
+  const documents=openDocuments((a.documents||[]).filter(d=>Number(d.documentPublicStatusId)===1&&!yes(d.is_draft)&&d.documentUrl).map(d=>({title:d.documentName||d.name||'Originalunterlage',url:documentUrl(d.documentUrl,source),kind:d.documentExtension==='pdf'?'application/pdf':'document'})).filter(d=>d.url));
   const result=text(a.abstimmungstext||''),ahead=m.datum>today;let status=ahead?'consulting':'unknown';
   if(/kenntnis|information/i.test(a.counselling_status?.name||''))status=ahead?'announced':'info';
   if(ahead){/* no result before the meeting */}
@@ -168,7 +174,7 @@ export function mapRubinMeeting(m,source,now=new Date(),url=rubinMeetingUrl(m,so
   // A paper is an item of the kind "vl". Standard items carry short numbers too ("1" for the opening in every meeting).
   const paper=/^\d+$/.test(a.vorlagennummer)&&(a.topart?a.topart==='vl':String(a.vorlagennummer).length>=6),id=paper?source.id+'-vo-'+a.vorlagennummer:source.id+'-top-'+item;
   const event={date:m.datum,committee,status,description:result||'Öffentlicher Tagesordnungspunkt; ein Beschlussergebnis ist im erfassten Text nicht belegt.',result,url,attendance:{status:'not_collected',sourceUrl:url,fetchedAt:now.toISOString(),people:[]}};event.decision=sourceDecision(event);
-  return {id,regionId:source.id,source:source.kind,public:true,title:text(a.title),officialTitle:text(a.title),status,category:category(a.title),committee,eventDate:m.datum,updatedAt:now.toISOString(),reference:(a.documents||[]).find(d=>d.alias)?.alias||a.submission?.alias||'',documents:[...documents,{title:'Öffentliche Sitzung',url,kind:'html'}],events:[event],sourceData:{version:'public-source-fields-v1',method:'official-api',fetchedAt:now.toISOString(),records:[{kind:'agenda',url,fields:{id:item,reference:a.vorlagennummer,title:text(a.title),result,consultationStatus:a.counselling_status?.name||'',committees:(m.committees||[]).map(c=>({id:c.id,name:c.name}))}}]},sourceUrl:url,identityRecords:[{authority,kind:'agenda',id:item},...(paper?[{authority,kind:'paper',id:String(a.vorlagennummer)}]:[])],relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:text(a.title)+'\n'+result};
+  return publish({id,regionId:source.id,source:source.kind,public:true,title:text(a.title),officialTitle:text(a.title),status,category:category(a.title),committee,eventDate:m.datum,updatedAt:now.toISOString(),reference:(a.documents||[]).find(d=>d.alias)?.alias||a.submission?.alias||'',documents:[...documents,{title:'Öffentliche Sitzung',url,kind:'html'}],events:[event],sourceData:{version:'public-source-fields-v1',method:'official-api',fetchedAt:now.toISOString(),records:[{kind:'agenda',url,fields:{id:item,reference:a.vorlagennummer,title:text(a.title),result,consultationStatus:a.counselling_status?.name||'',committees:(m.committees||[]).map(c=>({id:c.id,name:c.name}))}}]},sourceUrl:url,identityRecords:[{authority,kind:'agenda',id:item},...(paper?[{authority,kind:'paper',id:String(a.vorlagennummer)}]:[])],relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:text(a.title)+'\n'+result},publicity);
  });
 }
 // source.bodies: ids of the area's bodies (see rubinBodyMatch). source.endpoint 'webservice': ask the mobile web service
@@ -229,7 +235,7 @@ export async function collectRubin(source,{now=new Date(),get=fetchText,maxDurat
  else if(other&&!ours&&!unchanged&&!bodies.some(b=>seen.has(b)))issues.push(`Körperschaft der Quelle (${bodies.join(', ')}) in keiner Sitzung genannt; gelesene Sitzungen gehören zu ${[...seen].sort().join(', ')}. Körperschaftsnummern prüfen.`);
  const topics=[];
  for(const t of grouped.values()){
-  t.events.sort((a,b)=>a.date.localeCompare(b.date));const last=t.events.at(-1);Object.assign(t,{status:last.status,eventDate:last.date,committee:last.committee});t.documents=[...new Map(t.documents.map(d=>[d.url,d])).values()];
+  t.events.sort((a,b)=>a.date.localeCompare(b.date));const last=t.events.at(-1);Object.assign(t,{publicity:topicPublicity(t.events)||undefined,status:last.status,eventDate:last.date,committee:last.committee});t.documents=[...new Map(t.documents.map(d=>[d.url,d])).values()];
   Object.assign(t,sourceSummary(t,{place:source.name.replace(/^(Stadt|Gemeinde) /,'')}));
   t.quality={passed:false,checks:[{name:'Öffentliche Schnittstelle',passed:true,detail:'Anonymer Lesezugriff; öffentliche Tagesordnungspunkte.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Quellenüberblick ohne abgeschlossene Qualitätsevaluation.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText+JSON.stringify(t.events))};topics.push(t);
  }

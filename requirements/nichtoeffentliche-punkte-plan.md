@@ -61,5 +61,5 @@ Kennzeichen Ö), markiert nur: `publicity` `nonpublic` oder `unclear` an Bericht
 öffentlich angezeigt. Umgesetzt in SessionNet (alle drei Seitenarten und Bekanntmachung), SessionNet 6, ALLRIS 4, ALLRIS net, SD.NET,
 SD.NET RIM 4, OParl (regional und Münster) und im Webseiten-Leser (dort schon zuvor). Vorlagenseiten und Dateien nichtöffentlicher
 Punkte werden nicht abgefragt (sie sind für Gäste gesperrt und würden jede Sitzung unvollständig machen); unklare Punkte werden wie
-öffentliche gelesen. `assumePublicAgenda` ändert nur noch das Kennzeichen (öffentlich statt unklar). Noch nicht umgestellt: die übrigen
-Leser (ris-portal, councilservice, komfa, citystates, piwi, ti-generator u. a.).
+öffentliche gelesen. `assumePublicAgenda` ändert nur noch das Kennzeichen (öffentlich statt unklar). Umgestellt sind auch die übrigen
+Leser: seit 24.10.2026 auch ris-portal, councilservice, komfa, cron-ratsinfo, citystates, piwi, parlis, pio, muenchen-risi, fabasoft, KIC, more-rubin, ti-generator, meeting-mobile, rio-sys, hw-typo3, provox-iip und die kleinen Leser (small-common).

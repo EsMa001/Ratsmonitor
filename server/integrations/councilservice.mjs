@@ -4,6 +4,7 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {markPublicity,topicPublicity,PLACEHOLDER} from './source-common.mjs';
 import {decodeEntities,repairMojibake,composeUmlauts,isNonPublicText,isNonPublicHeading,closedLine} from './website-text.mjs';
 // Sitzungsdienst "councilservice" of mein-intra.net, embedded in the municipality's own website (Sonnewalde, Mulda/Sa.,
 // Werra-Suhl-Tal …). The website page loads <mandant>.mein-intra.net/export/js/initialize.js and calls
@@ -14,15 +15,15 @@ import {decodeEntities,repairMojibake,composeUmlauts,isNonPublicText,isNonPublic
 // - POST councilservice/session/fetch-overview/mine/0/by-docs/0?range=individual&schedule_start&schedule_end with
 //   {usePager:0}: the meetings of a period,
 // - GET councilservice/entry/fetch/id/<id>: one meeting with its agenda (topics, nested as children) and documents.
-// Public and non-public items (in doubt nothing is taken):
-// - A meeting counts only if it says visibility 1 and display_contents 1; an item only with visibility 1. Most systems
-//   set visibility 0 on a non-public item, and the interface then shows "Nicht-öffentlicher Tagesordnungspunkt".
+// Public and non-public items (24.10.2026: everything is taken, marked; markPublicity in source-common.mjs):
+// - A meeting counts only if it says visibility 1 and display_contents 1 (otherwise its contents are not released). An item
+//   with visibility 1 is public; one with visibility 0 is non-public (the interface then mostly shows the placeholder
+//   "Nicht-öffentlicher Tagesordnungspunkt", which is no report).
 // - Some set every item visible and mark the title instead ("Ö: …", "NÖ: …", Sonnewalde). Where an agenda marks items
-//   as public, an item without that mark is neither public nor non-public: it is left out and named.
-// - An item whose title names the non-public part in any spelling (isNonPublicText of the website reader: "NÖ", "N.Ö.",
-//   "nichtöff.", "Ausschluss der Öffentlichkeit" …) is left out with its sub-items. If it is a heading of the
-//   non-public part ("Nichtöffentlicher Teil", "Teil B – nicht öffentlich"), or a heading closes the public part
-//   ("Schließung des öffentlichen Teils", "Geschlossene Sitzung"), nothing after it is taken.
+//   as public, an item without that mark is unclear.
+// - An item whose title names the non-public part in any spelling (isNonPublicText of the website reader) is non-public
+//   with its sub-items. After a heading of the non-public part or one that closes the public part ("Schließung des
+//   öffentlichen Teils") every item is non-public.
 // - Documents whose name or address names the non-public part are not linked.
 // Links point to the page of the municipality's website that embeds the system (…href=/councilservice/entry/view/<id>)
 // and to the files of the system as that page links them. The catalog entry names the system (base), the token and
@@ -133,8 +134,6 @@ const publicMark=label=>PUBLIC_MARK.test(core(label))||PUBLIC_MARK_END.test(labe
 const RESTRICTED_MARK=/^(?:N\.?\s?Ö\.?|NOE)\s*[:.)\-–]?\s*/iu;
 // The end of the public part, named without naming the non-public part ("Schluss der öffentlichen Sitzung") or naming it.
 const CLOSING=/^(?:(?:schluss|schließ(?:ung|en)|schliess(?:ung|en)|ende|beendigung|abschluss)\s+(?:des|der)?\s*öffentliche[nr]?\s+(?:teils?|sitzung|tagesordnung)|beginn\s+(?:des|der)\s+nicht\s*[-–_]?\s*(?:ö|oe)ffentlichen|geschlossene[rn]?\s+(?:teil|sitzung)|in\s+geschlossener\s+sitzung|interne[rn]?\s+(?:teil|sitzung)|(?:ausschlu(?:ss|ß)|ausschließung)\s+der\s+(?:ö|oe)ffentlichkeit|herstellung\s+der\s+nicht\s*[-–_]?\s*(?:ö|oe)ffentlichkeit|nicht\s*[-–_]?\s*(?:ö|oe)ffentliche[rn]?\s+(?:teil|sitzung|tagesordnung(?:steil)?)(?!\p{L})|vertrauliche[rn]?\s+(?:teil|sitzung))/iu;
-// A title that names the non-public part and is a heading of it: short, or beginning with it ("Teil B – nicht öffentlich").
-const opensRestricted=(label,c)=>{const t=c.replace(RESTRICTED_MARK,'');return t.length<=40||isNonPublicHeading(label)||closedLine(label)||/^(?:teil\s*[a-z0-9]\s*[-–:]?\s*)?(?:nicht\s*[-–_]?\s*(?:ö|oe)ffentl|nichtöffentl|nichtoeffentl|vertraulich|geschlossen|intern)/iu.test(t);};
 // Vorlage numbers in titles ("(BV 27/2026)", "BV-Nr. 53/26", "Drucksache 8/2026"): one matter consulted in several
 // meetings. The last number of a title counts ("Aufhebung des Beschlusses BV 12/2024 … (BV 40/2026)"); kind, number and
 // year are normalised, so "BV 036/26" and "BV 36/2026" are the same matter and a Drucksache 8/2026 is another one.
@@ -166,10 +165,10 @@ export function councilserviceDocument(document,source){
  return {title,url,kind:/\.pdf$/i.test(String(document.filename||''))?'application/pdf':'document'};
 }
 /**
- * Public agenda items of one meeting (entry/fetch/id/<id>); null if the meeting has no agenda at all; restricted:true if
+ * Agenda items of one meeting (entry/fetch/id/<id>), each with its publicity; null if the meeting has no agenda at all; restricted:true if
  * the meeting itself is not released (visibility or display_contents 0).
- * left: items left out as non-public (flag, mark, words, after the end of the public part); unmarked: items without the
- * public mark on an agenda that uses it; unclear: items of an unknown format.
+ * left: items marked non-public (flag, mark, words, after the end of the public part); unmarked: items marked unclear (without the
+ * public mark on an agenda that uses it); unclear: items of an unknown format.
  */
 export function parseCouncilserviceMeeting(json,meeting={},source){
  const j=typeof json==='string'?JSON.parse(json):json,e=j?.data?.entry;
@@ -186,26 +185,30 @@ export function parseCouncilserviceMeeting(json,meeting={},source){
  const all=[];const flat=list=>{for(const t of list){all.push(t);if(t&&typeof t==='object')flat(children(t));}};flat(e.topics);
  const marks=all.some(t=>typeof t?.label==='string'&&publicMark(plain(t.label)));
  const items=[];let left=0,unmarked=0,unclear=0,closed=false;
- const walk=(list,parent)=>{
+ const walk=(list,parent,inherited=null)=>{
   for(const t of list){
-   if(closed){left++;if(t&&typeof t==='object')left+=count(children(t));continue;}
    if(!t||typeof t!=='object'||typeof t.label!=='string'){unclear++;if(t&&typeof t==='object')unclear+=count(children(t));continue;}
-   const label=plain(t.label),c=core(label),below=count(children(t));
-   // A heading that ends the public part ends it whatever its flag says.
-   if(CLOSING.test(c)){closed=true;left+=1+below;continue;}
-   // visibility 1 only; 0 (the system hides the item) and anything else are left out with all items below.
-   if(!yes(t.visibility)){left+=1+below;continue;}
-   if(isNonPublicText(label)){if(opensRestricted(label,c))closed=true;left+=1+below;continue;}
-   if(marks&&!publicMark(label)){unmarked+=1+below;continue;}
+   const label=plain(t.label),c=core(label);
+   // A placeholder of a hidden item („Nicht-öffentlicher Tagesordnungspunkt“) is no report and no heading.
+   // „Nicht öffentlich“ alone is a heading of the non-public part.
+   if(PLACEHOLDER.test(c)){if(!/punkt/i.test(c)&&/nicht/i.test(c))closed=true;walk(children(t),parent,'nonpublic');continue;}
+   // A heading that ends the public part: every item after it is non-public; the heading is no item.
+   if(CLOSING.test(c)){closed=true;continue;}
+   // A report of decisions taken in the non-public part („Bekanntgabe der in nicht öffentlicher Sitzung gefassten Beschlüsse“) is public.
+   const named=isNonPublicText(label)&&!/gefasst|bekanntgabe|bekanntgegeben|weggefallen|entfallen/i.test(label);
+   // A heading of the non-public part („Nichtöffentlicher Teil“): every item after it is non-public; the heading is no item.
+   if(named&&(isNonPublicHeading(label)||closedLine(label))){closed=true;walk(children(t),parent,'nonpublic');continue;}
+   const publicity=closed||inherited==='nonpublic'||!yes(t.visibility)||named?'nonpublic':marks&&!publicMark(label)||inherited==='unclear'?'unclear':null;
+   if(publicity==='nonpublic')left++;else if(publicity==='unclear')unmarked++;
    // The mark is not part of the title; numbering before "Ö:" goes with it ("12. Ö: Haushalt" → "Haushalt").
-   const title=(marks&&PUBLIC_MARK.test(c)?c.replace(PUBLIC_MARK,''):label.replace(ADDED,'').replace(marks?PUBLIC_MARK_END:/$^/,'')).trim();
+   const title=(marks&&PUBLIC_MARK.test(c)?c.replace(PUBLIC_MARK,''):publicity==='nonpublic'&&RESTRICTED_MARK.test(c)?c.replace(RESTRICTED_MARK,''):publicity==='nonpublic'?label.replace(ADDED,'').replace(/\s*(?:\(\s*(?:N\.?\s?Ö\.?|NOE)\s*\)|[-–]\s*N\.?\s?Ö\.?\s*[-–]?)\s*$/iu,''):label.replace(ADDED,'').replace(marks?PUBLIC_MARK_END:/$^/,'')).trim();
    const own=plain(t.numeration)||plain(t.custom_numeration)||String(t.position??''),number=parent&&!own.includes('.')?parent+'.'+own:own;
-   // A heading of the public part groups items; an invitation is no item. Their sub-items are read.
-   if(!title||/^(?:[IVX]+\.?|[A-Z][.)]|\d+\.?)?\s*öffentliche[rn]?\s+(?:teil|sitzung|tagesordnung)\s*:?$/iu.test(title)||/^einladung\b/iu.test(title)){walk(children(t),parent);continue;}
+   // A heading of a part groups items; an invitation or a placeholder is no item. Their sub-items are read.
+   if(!title||PLACEHOLDER.test(title)||/^nicht\s*-?\s*öffentliche[rn]?\s+tagesordnungspunkt$/iu.test(title)||/^(?:[IVX]+\.?|[A-Z][.)]|\d+\.?)?\s*(?:nicht\s*-?\s*)?öffentliche[rn]?\s+(?:teil|sitzung|tagesordnung)\s*:?$/iu.test(title)||/^einladung\b/iu.test(title)){if(/nicht/i.test(title))closed=true;walk(children(t),parent,publicity);continue;}
    const reference=councilserviceReference(title);
    const documents=(Array.isArray(t['documents-topic'])?t['documents-topic']:[]).map(d=>councilserviceDocument(d,source)).filter(Boolean);
-   if(/^\d+$/.test(String(t.id)))items.push({key:String(t.id),number,title,reference:reference?.label||'',referenceKey:reference?.key||'',documents});else unclear++;
-   walk(children(t),number);
+   if(/^\d+$/.test(String(t.id)))items.push({key:String(t.id),number,title,reference:reference?.label||'',referenceKey:reference?.key||'',documents,publicity});else unclear++;
+   walk(children(t),number,publicity);
   }
  };
  walk(e.topics,'');
@@ -246,11 +249,10 @@ export async function collectCouncilservice(source,{now=new Date(),get=fetchText
    if(agenda.restricted){restricted++;count++;return;}
    // Items without the public mark on an agenda that marks the others are neither public nor non-public: named, and the
    // meeting is read again next time.
-   if(agenda.unmarked)issues.push(`${m.url}: ${agenda.unmarked} ${agenda.unmarked===1?'Tagesordnungspunkt':'Tagesordnungspunkte'} ohne Kennzeichnung als öffentlich ausgelassen`);
    if(agenda.unclear)issues.push(`${m.url}: ${agenda.unclear} ${agenda.unclear===1?'Tagesordnungspunkt':'Tagesordnungspunkte'} in unbekanntem Format ausgelassen`);
-   if(!agenda.items.length){if(!agenda.unmarked&&!agenda.unclear){if(m.date>today)upcoming++;else withoutAgenda++;}count++;return;}
+   if(!agenda.items.length){if(!agenda.unclear){if(m.date>today)upcoming++;else withoutAgenda++;}count++;return;}
    const print=(await hash(JSON.stringify([agenda.changed,agenda.items.map(i=>[i.key,i.title,i.number,i.documents.map(d=>d.url)]),agenda.documents.map(d=>d.url)]))).slice(0,16);
-   if(known?.print===print&&!agenda.unmarked&&!agenda.unclear){held[m.url]=marks.known[m.url];unchanged++;count++;return;}
+   if(known?.print===print&&!agenda.unclear){held[m.url]=marks.known[m.url];unchanged++;count++;return;}
    const future=agenda.date>today;
    for(const item of agenda.items){
     const status=future?(item.reference?'consulting':'announced'):'unknown';
@@ -258,12 +260,12 @@ export async function collectCouncilservice(source,{now=new Date(),get=fetchText
     const event={date:agenda.date,committee:agenda.committee,status,description,result:'',url:m.url,publicEvidence:'Öffentlicher Teil der Tagesordnung im Sitzungsdienst der Website',attendance:{status:'not_collected',sourceUrl:m.url,fetchedAt:now.toISOString(),people:[]}};event.decision=sourceDecision(event);
     // One matter in several meetings shares its Vorlage number; an item without one is a matter of its own.
     const id=item.referenceKey?`${source.id}-vo-${item.referenceKey}`:`${source.id}-cs-${m.id}-${item.key}`;
-    const row={id,title:item.title,reference:item.reference,sourceUrl:m.url,identityLinks:[m.url],status,documents:[...item.documents,...agenda.documents],
-     sourceData:{version:'public-source-fields-v1',method:'councilservice',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{number:item.number,title:item.title,...(item.reference?{reference:item.reference}:{})}}],detailStatus:'completed',issues:[]}};
-    const previous=grouped.get(row.id);if(previous){previous.events.push(event);previous.documents.push(...row.documents);previous.identityLinks.push(...row.identityLinks);}else grouped.set(row.id,{...row,events:[event]});
+    const row=markPublicity({id,title:item.title,reference:item.reference,sourceUrl:m.url,identityLinks:[m.url],status,documents:[...item.documents,...agenda.documents],
+     sourceData:{version:'public-source-fields-v1',method:'councilservice',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{number:item.number,title:item.title,...(item.reference?{reference:item.reference}:{}),...(item.publicity?{publicity:item.publicity}:{})}}],detailStatus:'completed',issues:[]},event},item.publicity);
+    const previous=grouped.get(row.id);if(previous){previous.events.push(row.event);previous.documents.push(...row.documents);previous.identityLinks.push(...row.identityLinks);}else{const {event:first,...rest}=row;grouped.set(row.id,{...rest,events:[first]});}
    }
-   // A meeting counts as read only if every item could be told public or not.
-   if(!agenda.unmarked&&!agenda.unclear){held[m.url]=newMark({...m,date:agenda.date},print,now,agenda.items.length);done++;}
+   // A meeting counts as read only if every item could be read.
+   if(!agenda.unclear){held[m.url]=newMark({...m,date:agenda.date},print,now,agenda.items.length);done++;}
   }catch(e){if(/Zeitbudget/.test(e.message))unread++;else issues.push(m.url+': '+e.message);}
   count++;onProgress(source.id+': '+count+'/'+meetings.size+' Sitzungen');
  },2);
@@ -274,9 +276,10 @@ export async function collectCouncilservice(source,{now=new Date(),get=fetchText
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};
   Object.assign(t,sourceSummary(t,{place:source.name}));
-  t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Sitzungsdienst (councilservice) auf der Website der Kommune; nur Tagesordnungspunkte des öffentlichen Teils.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
+  t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Sitzungsdienst (councilservice) auf der Website der Kommune; Punkte außerhalb des öffentlichen Teils gekennzeichnet.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  const listed=meetings.size-upcoming;
  // Unchanged meetings are a successful reading: their reports are in the database already.

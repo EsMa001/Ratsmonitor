@@ -4,7 +4,8 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted,paced,REFUSED,BUDGET_REACHED} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {fnv} from './source-common.mjs';
+import {fnv,markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
+import {isNonPublicText} from './website-text.mjs';
 // Public pages of the TYPO3 extension "cronmmratsinfo" (cron IT), e.g. ris.helmstedt.de. Read are the list "Alle Sitzungen"
 // with its agenda option, which names every meeting and the numbered items of its public agenda on one page, and the page
 // of each meeting in the period, which links the papers of those items (PDF).
@@ -13,7 +14,7 @@ import {fnv} from './source-common.mjs';
 //   search form is not used.
 // - Public is what the list prints: it names the items of the public part only, and a meeting without such items as
 //   "nichtöffentlich oder ... noch nicht freigegeben" (without a link to its page). A row of a meeting page that the list
-//   does not name is not taken. A list that shows no agenda items, or a linked meeting without items, is reported, never
+//   does not name is taken marked unclear, or non-public where its title names that part (24.10.2026, markPublicity). A list that shows no agenda items, or a linked meeting without items, is reported, never
 //   counted as non-public.
 // - The pages publish no results, so the outcome of a past item stays open.
 // - Paper links carry a new no_cache value at every page view. They are kept as shown, as documents only; an item is
@@ -93,21 +94,26 @@ export function parseCronMeeting(html,pageUrl,source){
 /**
  * Agenda items of one meeting: the items of the list, each with the papers its row on the meeting page links. A row
  * counts only with the same number and a like title; a row of another item under the same number lends nothing.
- * agenda.onPage tells whether the item's row was found.
+ * agenda.onPage tells whether the item's row was found. Rows of the page the list does not name follow, marked.
  */
 export function cronAgenda(meeting,page,source,now=new Date()){
- const today=now.toISOString().slice(0,10),rows=new Map();
+ const today=now.toISOString().slice(0,10),rows=new Map(),used=new Set();
  for(const r of page?.rows||[])rows.set(key(r.number),[...(rows.get(key(r.number))||[]),r]);
- return meeting.items.map(item=>{
-  const same=rows.get(key(item.number))||[],near=same.filter(r=>alike(r.title,item.title));
-  const row=same.find(r=>key(r.title)===key(item.title))||(near.length===1?near[0]:null);
+ const make=(item,row,publicity)=>{
+  if(row)used.add(row);
   const papers=row?.papers||[],paper=papers[0];
   const status=meeting.date>today?(paper?'consulting':'announced'):'unknown';
   const description=meeting.date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
-  return {id:`${source.id}-${paper?'vo-'+paper.record:'top-'+meeting.record+'-'+fnv([item.number,item.title].join('|'))}`,title:item.title,reference:paper?.reference||'',sourceUrl:meeting.url,identityLinks:[],status,
+  return markPublicity({id:`${source.id}-${paper?'vo-'+paper.record:'top-'+meeting.record+'-'+fnv([item.number,item.title].join('|'))}`,title:item.title,reference:paper?.reference||'',sourceUrl:meeting.url,identityLinks:[],status,
    documents:papers.filter(p=>p.url).map(p=>({title:p.reference?'Vorlage '+p.reference:'Vorlage',url:p.url,kind:'application/pdf'})),
-   event:{date:meeting.date,committee:meeting.committee,status,description,result:'',url:meeting.url,publicEvidence:'Öffentliche Tagesordnung in der Sitzungsliste „Alle Sitzungen“'},agenda:{number:item.number,papers:papers.map(p=>p.reference||p.record),onPage:Boolean(row)}};
+   event:{date:meeting.date,committee:meeting.committee,status,description,result:'',url:meeting.url,publicEvidence:'Öffentliche Tagesordnung in der Sitzungsliste „Alle Sitzungen“'},agenda:{number:item.number,papers:papers.map(p=>p.reference||p.record),onPage:Boolean(row)}},publicity);
+ };
+ const listed=meeting.items.map(item=>{
+  const same=rows.get(key(item.number))||[],near=same.filter(r=>alike(r.title,item.title));
+  return make(item,same.find(r=>key(r.title)===key(item.title))||(near.length===1?near[0]:null),null);
  });
+ const rest=(page?.rows||[]).filter(r=>!used.has(r)&&!PLACEHOLDER.test(r.title)).map(r=>make(r,r,isNonPublicText(r.title)?'nonpublic':'unclear')).map(x=>({...x,agenda:{...x.agenda,onPage:false}}));
+ return [...listed,...rest];
 }
 // source: {id, name, kind, base, start?}; start is the page that shows the meeting list (default: base).
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs. The list names the items of every
@@ -173,7 +179,8 @@ export async function collectCronRatsinfo(source,{now=new Date(),get=fetchText,m
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[paperKey(d),d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[paperKey(d),d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seite der TYPO3-Erweiterung cronmmratsinfo; nur Tagesordnungspunkte, die die Sitzungsliste öffentlich ausweist.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

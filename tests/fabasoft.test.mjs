@@ -42,9 +42,9 @@ test('Fabasoft: Sitzungen im Zeitraum, Punkte mit Vorlage als Vorgang über mehr
  assert.equal(again.topics.length,0,JSON.stringify([again.coverage,again.topics.map(x=>x.events.map(e=>e.date))]));assert.equal(again.coverage.unchangedMeetings,2);
 });
 
-test('Fabasoft: ein Ordner, der sich nicht als öffentlich bezeichnet, wird nicht gelesen; Leser eingetragen',async()=>{
+test('Fabasoft: ein Ordner, der sich selbst nichtöffentlich nennt, wird nicht gelesen; Leser eingetragen',async()=>{
  const closed={...answers,[fabasoftUrl(share)]:folder('Stadtverordnetenversammlung 2026 (nichtöffentlich)',[row(M1,'Stadtverordnetenversammlung  2026-09-10 18:30:00','Ordner')])};
  const d=await collectFabasoft(source,{now:new Date('2026-10-24T10:00:00Z'),get:async u=>closed[u],window:'12m'});
- assert.equal(d.topics.length,0);assert.match(d.coverage.warnings[0],/nicht als öffentlich/);
+ assert.equal(d.topics.length,0);assert.match(d.coverage.warnings[0],/als nichtöffentlich bezeichnet/);
  assert.equal(READERS.fabasoft.collect,collectFabasoft);
 });

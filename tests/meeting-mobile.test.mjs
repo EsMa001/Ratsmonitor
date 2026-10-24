@@ -53,13 +53,13 @@ test('Meeting Mobile meeting page: body, day, place and the items of the public 
  assert.equal(parseMmMeeting('<html>Fehler</html>').items.length,0);
 });
 
-test('Meeting Mobile: a block "nichtöffentlich" is never read',()=>{
+test('Meeting Mobile: the items of a block "nichtöffentlich" come marked non-public',()=>{
  const html=fixture('unterreichenbach-sitzung.html');
  const hidden=html.replace(/(role="meetingAgendaHeader"[\s\S]*?<span[^>]*>)&ouml;ffentlich/,'$1nicht&ouml;ffentlich');
  assert.notEqual(hidden,html);
  const m=parseMmMeeting(hidden,base);
- assert.equal(m.items.length,0);assert.equal(m.publicBlock,false);
- assert.equal(mmItems(m,{date:'2026-09-22',url:'x'},source,now).length,0);
+ assert.ok(m.items.length&&m.items.every(i=>i.publicity==='nonpublic'));assert.equal(m.publicBlock,false);
+ const rows=mmItems(m,{date:'2026-09-22',url:'x'},source,now);assert.ok(rows.length&&rows.every(r=>r.publicity==='nonpublic'&&r.event.publicity==='nonpublic'));
 });
 
 test('Meeting Mobile reports: routine items are left out, a past item is "unknown", a coming one "consulting"',()=>{

@@ -22,8 +22,9 @@ test('PIO agenda overview names each body with its archive list; the list names 
  // A link that leaves the approved source is not taken.
  assert.deepEqual(pioInvitations('<a href="https://elsewhere.example/index.php?aktiv=doc&docid=1">Einladung STV Sitzung am 24.09.2026</a>','Rat',source),[]);
 });
-test('PIO invitation yields the public agenda items with their papers; a non-public part is never read',()=>{
- const items=parsePioAgenda(fixture('pio-einladung-stv.html'),stv,source,now);
+test('PIO invitation yields the public agenda items with their papers; the non-public part is taken marked',()=>{
+ const every=parsePioAgenda(fixture('pio-einladung-stv.html'),stv,source,now),items=every.filter(i=>!i.publicity);
+ assert.ok(every.filter(i=>i.publicity).every(i=>i.publicity==='nonpublic'&&!i.documents.length));
  assert.deepEqual(items.map(i=>[i.agenda.number,i.title,i.reference]),[['1','Mitteilungen des Stadtverordnetenvorstehers',''],['2','Mitteilungen des Magistrats',''],['3','Fragestunde',''],['4','Wahl der XVIII. Verbandsversammlung des Landeswohlfahrtsverbandes Hessen 2026 in Wahlkreis I',''],['5','Bebauungsplan für Flurstück 223/12 im Mathildenviertel','2026-31/DS-I(A)0004'],['6','Grünanlage Tempelseeweiher – Neubau Überlaufleitung hier: Grundsatzbeschluss','2026-31/DS-I(A)0027'],['23','Einführung eines ‚First Responder‘ Systems in der Stadt Offenbach','2026-31/DS-I(A)0097']]);
  const paper=items[5];
  assert.equal(paper.id,'de-06413000-vo-2026-31-ds-i-a-0027');assert.equal(paper.sourceUrl,paperUrl('0027',21970));assert.equal(paper.agenda.note,'Antrag Magistratsvorlage Nr. 2026-131 (Dez. IV, Amt 60) vom 13.05.2026, 2026-31/DS-I(A)0027');
@@ -32,14 +33,16 @@ test('PIO invitation yields the public agenda items with their papers; a non-pub
  assert.deepEqual([...new Set(items.map(i=>i.status))],['unknown']);
  // The same invitation for a meeting still ahead: announced, a paper is under consultation.
  assert.deepEqual(parsePioAgenda(fixture('pio-einladung-stv.html'),{...stv,date:'2026-11-05'},source,now).slice(4,5).map(i=>[i.status,i.event.description]),[['consulting','Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.']]);
- // Everything below a heading of the non-public part is left out, however the converted Word file writes it.
+ // Everything below a heading of the non-public part is marked non-public (24.10.2026), however the converted Word file writes it.
  for(const heading of ['Nichtöffentlicher Teil','II. Nichtöffentlicher Teil','B) Nicht öffentliche Sitzung','Nicht öffentlich:','Nichtöffentliche Beratung','Vertraulicher Teil','Teil B – nicht öffentlich','NICHT-ÖFFENTLICHE TAGESORDNUNG']){
   const closed=fixture('pio-einladung-stv.html').replace('<b><u>TOP 23</u></b>',heading+'<br><b><u>TOP 23</u></b>');
-  assert.deepEqual(parsePioAgenda(closed,stv,source,now).map(i=>i.agenda.number),['1','2','3','4','5','6'],heading);
+  const read=parsePioAgenda(closed,stv,source,now);
+  assert.deepEqual(read.filter(i=>!i.publicity).map(i=>i.agenda.number),['1','2','3','4','5','6'],heading);
+  assert.equal(read.find(i=>i.agenda.number==='23')?.publicity,'nonpublic',heading);
  }
  // … also when the heading and the next item stand on one long line.
  const merged=parsePioAgenda(fixture('pio-einladung-stv.html').replace('<b><u>TOP 23</u></b><br>','II. Nicht öffentlicher Teil <b><u>TOP 23</u></b> '),stv,source,now);
- assert.deepEqual(merged.map(i=>i.agenda.number),['1','2','3','4','5','6']);assert.ok(!JSON.stringify(merged).includes('0097'),'no paper of the non-public part, not even as a document');
+ assert.deepEqual(merged.filter(i=>!i.publicity).map(i=>i.agenda.number),['1','2','3','4','5','6']);assert.ok(!JSON.stringify(merged).includes('0097'),'no paper of the non-public part, not even as a document');
  assert.match(parsePioAgenda(fixture('pio-einladung-stv.html').replace('Öffentlicher Teil','I. Öffentlicher Teil'),stv,source,now)[0].event.publicEvidence,/Öffentlicher Teil/);
  // A document without agenda items is no agenda.
  assert.equal(parsePioAgenda(page('<p>Die Sitzung entfällt.</p>'),stv,source,now),null);assert.equal(parsePioAgenda('<html>Fehler</html>',stv,source,now),null);

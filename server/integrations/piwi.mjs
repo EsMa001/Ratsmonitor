@@ -6,7 +6,7 @@ import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {createSession} from './allris.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {RESTRICTED,asciiSlug as slug,fnv,germanDay as day,germanLongDay as longDay} from './source-common.mjs';
+import {RESTRICTED,asciiSlug as slug,fnv,germanDay as day,germanLongDay as longDay,markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
 // PIWi, the "Politisches Informationssystem Wiesbaden" (own development of the city, Apache Wicket). Read are plain
 // addresses of the public site only:
 // - the calendar export of all bodies (gremium/ical/gremium/0); it reaches back to January of the current year only,
@@ -58,12 +58,13 @@ export function parsePiwiAgenda(html,meeting,source,now=new Date()){
  const at=html.search(/<h2>\s*Öffentliche Tagesordnung\s*<\/h2>/i);if(at<0)return null;
  const heading=text(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1]||'');
  const date=longDay(heading)||meeting.date,committee=heading.split(/\s+-\s+/).slice(1).join(' - ').trim()||meeting.committee||'Öffentliche Sitzung';
- const end=html.indexOf('docview-visibility',at),table=html.slice(at,end<0?undefined:end),today=now.toISOString().slice(0,10),items=new Map();let section='';
+ const end=html.indexOf('docview-visibility',at),table=html.slice(at,end<0?undefined:end),today=now.toISOString().slice(0,10),items=new Map();let section='',closed=false;
  for(const row of table.split(/<div class=["']d-table-row\b[^"']*["'][^>]*>/i).slice(1)){
   const kind=row.match(/images\/(TO_\w+)\.svg/)?.[1],headline=text(row.match(/<span class=["']text-keepwhitespace[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]||'');
-  // Any row that is no item and names the non-public part ends the public agenda, whatever its icon.
-  if(kind!=='TO_TOP'){if(RESTRICTED.test(headline))break;if(kind==='TO_Ueberschrift')section=headline;continue;}
-  if(!headline)continue;
+  // Any row that is no item and names the non-public part ends the public agenda, whatever its icon: the items after it are
+  // taken marked non-public (24.10.2026, markPublicity).
+  if(kind!=='TO_TOP'){if(RESTRICTED.test(headline))closed=true;else if(kind==='TO_Ueberschrift')section=headline;continue;}
+  if(!headline||PLACEHOLDER.test(headline))continue;
   const number=text(row.match(/text-center["'][^>]*>\s*<span[^>]*>([\s\S]*?)<\/span>/i)?.[1]||''),all=anchors(row);
   const link=all.find(a=>/\/\w+\/detail\/\d+(?:[?#]|$)/.test(a.url)&&/Vorgang/.test(title(a))),vote=all.find(a=>/\/top\/\d+\/abstimmungsergebnis(?:[?#]|$)/.test(a.url));
   const paperUrl=link?address(link.url,meeting.url,source):null,voteUrl=vote?address(vote.url,meeting.url,source):null;
@@ -72,26 +73,27 @@ export function parsePiwiAgenda(html,meeting,source,now=new Date()){
   const previous=items.get(id);
   // The row that carries the vote (the part where the item was decided) describes the item.
   if(previous){previous.documents.push(...documents);if(voteUrl&&!previous.agenda.voteUrl)Object.assign(previous.agenda,{number,section,voteUrl,note});continue;}
-  items.set(id,{id,title:headline,reference,sourceUrl:paperUrl||meeting.url,identityLinks:[paperUrl].filter(Boolean),documents,agenda:{number,section,paperUrl,voteUrl,note}});
+  items.set(id,{id,title:headline,reference,sourceUrl:paperUrl||meeting.url,identityLinks:[paperUrl].filter(Boolean),documents,agenda:{number,section,paperUrl,voteUrl,note},...(closed?{closed}:{})});
  }
  return {date,committee,items:[...items.values()].map(item=>{
   const {section,paperUrl,note}=item.agenda,status=date>today?(paperUrl?'consulting':'announced'):'unknown';
   const description=date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':/noch nicht vor/i.test(note)?'Öffentlich auf der Tagesordnung; ein Beschluss liegt laut Quelle noch nicht vor.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
-  return {...item,status,event:{date,committee,status,description,result:'',url:meeting.url,publicEvidence:'Öffentliche Tagesordnung'+(section?`, Abschnitt „${section}“`:'')}};
+  const {closed:shut,...rest}=item;
+  return markPublicity({...rest,status,event:{date,committee,status,description,result:'',url:meeting.url,publicEvidence:'Öffentliche Tagesordnung'+(section?`, Abschnitt „${section}“`:'')}},shut?'nonpublic':null);
  })};
 }
 /**
  * Paper page: descriptive fields, the documents and the consultation sequence ("Ergebnisse") with the meetings that
  * discussed the paper; null if the page is not recognisable (no heading). The text of the paper shown on the page
- * ("Ziel der Vorlage") is not kept. Only a paper marked "Öffentlicher Vorgang" keeps its subject and documents: a paper
- * marked otherwise, or not marked at all, counts as not public.
+ * ("Ziel der Vorlage") is not kept. A paper that calls itself non-public ("Art: nichtöffentlich", "vertraulich") keeps
+ * neither subject nor documents (24.10.2026: only what calls itself so; an unmarked paper is read).
  */
 export function parsePiwiPaper(html,source,page){
  const main=html.slice(Math.max(0,html.indexOf('<main')),html.includes('</main>')?html.indexOf('</main>'):undefined),fields=[];
  const heading=text(main.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1]||'');if(!heading)return null;fields.push({field:'Vorgang',value:heading});
  const subject=text(main.match(/<h2>\s*Betreff\s*<\/h2>[\s\S]*?<span class=["']text-keepwhitespace["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]||'');if(subject&&subject.length<1200)fields.push({field:'Betreff',value:subject});
  for(const m of main.matchAll(/<div class=["']keyvalue-key["'][^>]*>([\s\S]*?)<\/div>\s*<div class=["']keyvalue-value["'][^>]*>([\s\S]*?)<\/div>/gi)){const field=text(m[1]).replace(/:$/,''),value=text(m[2]);if(field&&field.length<60&&value&&value.length<300)fields.push({field,value});}
- const art=fields.find(f=>f.field==='Art')?.value||'',restricted=RESTRICTED.test(art)||!/^öffentlich/i.test(art);
+ const art=fields.find(f=>f.field==='Art')?.value||'',restricted=RESTRICTED.test(art);
  const docsAt=main.search(/<h2[^>]*>\s*Dokumente\s*<\/h2>/i),resultsAt=main.search(/<h2[^>]*>\s*Ergebnisse\s*<\/h2>/i);
  const documents=restricted||docsAt<0?[]:pdfs(main.slice(docsAt,resultsAt>docsAt?resultsAt:undefined),page,source),consultations=[];
  for(const entry of (resultsAt<0?'':main.slice(resultsAt)).split(/<div class=["']list-group-item\b/i).slice(1)){
@@ -159,9 +161,10 @@ export async function collectPiwi(source,{now=new Date(),get=fetchText,request=f
        if(result){row.event.result=result;row.event.description='Abstimmungsergebnis: '+result+(row.documents.some(d=>/beschluss/i.test(d.title))?'. Der Beschlusstext liegt als PDF vor.':'');row.event.status=row.status=resultStatus(result,agenda.committee)||row.status;row.sourceData.records.push({kind:'vote',url:voteUrl,fields:{result}});}
       }catch(e){fail(row,e,'Abstimmungsergebnis');}
      }
-     if(paperUrl){
+     // The paper page of a non-public item is not asked (shut to guests); its title is what is public.
+     if(paperUrl&&row.publicity!=='nonpublic'){
       try{const detail=await cached(papers,paperUrl,html=>parsePiwiPaper(html,source,paperUrl),'Vorlagenseite');
-       row.documents.push(...detail.documents);row.sourceData.records.push({kind:'paper',url:paperUrl,fields:detail.fields});
+       row.documents.push(...openDocuments(detail.documents));row.sourceData.records.push({kind:'paper',url:paperUrl,fields:detail.fields});
        for(const c of detail.consultations)if(keep(c))found.push(c);
       }catch(e){fail(row,e,'Vorlagendetails');}
      }
@@ -180,7 +183,8 @@ export async function collectPiwi(source,{now=new Date(),get=fetchText,request=f
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Vorgang / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Vorgang / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche PIWi-Seite; nur Punkte der öffentlichen Tagesordnung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

@@ -6,14 +6,15 @@ import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
-import {asciiSlug as slug} from './source-common.mjs';
+import {asciiSlug as slug,markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
 // Ratsinformationsmodul "hwratssystem" of Hirsch & Wölfl (TYPO3 extension in the websites of small municipalities,
 // Baden-Württemberg). Read are plain addresses of the public site only, all below the page of the meeting calendar
 // (source.base = address of that page, e.g. …/ratsinformationssystem/sitzungskalender):
 // - the calendar page itself: it names the plugin (pUid) whose month data the page loads by script,
 // - the month data of the calendar (the page's own script asks for it, ?tx_hwratssystem_sitzungstermincalendar[…]&pUid=…
 //   &type=20230522): JSON with every meeting of the month, its public items (tagesOrdnungsPunkte) with description,
-//   resolution text and files. The non-public items (tagesOrdnungsPunkteNoe) are never read.
+//   resolution text and files. The non-public items (tagesOrdnungsPunkteNoe) are taken with their title only, marked
+//   non-public (24.10.2026, markPublicity).
 // Documents (index.php?eID=dumpFile…) are only linked, not read here. A site without items in the data of its meetings
 // (Leimen: one collected PDF per meeting) yields no reports.
 export const HW_TYPO3='hw-typo3';
@@ -56,11 +57,13 @@ export function parseHwMonth(json,source={base:'https://example.invalid/'}){
   const x=e.extendedProps||{},title=plain(e.title||''),gremium=plain(e.gremium||x.basicTerminInfos?.gremium||'');
   // Some sites file every meeting under one generic body ("Ratssystem"); the title then names the body.
   const committee=!gremium||/^ratssystem$/i.test(gremium)?title.replace(/\s*\d{1,2}\.\d{1,2}\.(?:\d{2}){1,2}\s*/g,' ').replace(/s?sitzung.*$/i,'').trim()||title:gremium;
-  const tops=x.tagesOrdnungsPunkte,list=Array.isArray(tops)?tops.map((t,i)=>[String(i+1),t]):Object.entries(tops||{});
-  const items=list.map(([key,t])=>{
+  const entries=tops=>Array.isArray(tops)?tops.map((t,i)=>[String(i+1),t]):Object.entries(tops||{});
+  const list=[...entries(x.tagesOrdnungsPunkte),...entries(x.tagesOrdnungsPunkteNoe).map(([key,t])=>['n'+key,t,'nonpublic'])];
+  const items=list.map(([key,t,publicity])=>{
    if(!t||typeof t!=='object')return null;
    const raw=plain(t.bezeichnung||''),m=raw.match(/^(?:TOP\s*)?(\d+(?:\.\d+)*)\s*[.):-]?\s+(.*)$/i);
-   const name=(m?m[2]:raw).trim(),number=m?m[1]:key;
+   const name=(m?m[2]:raw).trim(),number=m?m[1]:key.replace(/^n/,'');
+   if(publicity)return PLACEHOLDER.test(name)?null:{number,key,title:name,description:'',resolution:'',documents:[],publicity};
    return {number,key,title:name,description:plain(t.beschreibung||''),resolution:plain([t.beschlussText,t.text1,t.text2,t.text3].filter(Boolean).join(' ')).slice(0,1500),
     documents:[...files(t.dateien),...files(t.beschlussvorlageDateien),...files(t.beschlussDateien)]};
   }).filter(i=>i&&i.title);
@@ -86,9 +89,9 @@ export function hwItems(meeting,source,now=new Date()){
   const resolution=i.resolution,status=!past?'consulting':resolution?statusOf(resolution,meeting.committee):'unknown';
   const description=!past?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':resolution?`Beschluss: ${resolution}`:'In der Tagesordnung geführt; veröffentlicht ist kein Beschluss.';
   const url=meeting.url||source.base;
-  return {id:`${source.id}-hw-${slug(meeting.id)}-${slug(i.key)}`,title:i.title,reference:`${meeting.committee} ${date} TOP ${i.number}`,sourceUrl:url,identityLinks:[],documents:i.documents.map(d=>({title:d.title,url:d.url,kind:'pdf'})),status,
+  return markPublicity({id:`${source.id}-hw-${slug(meeting.id)}-${slug(i.key)}`,title:i.title,reference:`${meeting.committee} ${date} TOP ${i.number}`,sourceUrl:url,identityLinks:[],documents:openDocuments(i.documents.map(d=>({title:d.title,url:d.url,kind:'pdf'}))),status,
    record:{number:i.number,description:i.description,resolution,committee:meeting.committee,place:meeting.place},
-   event:{date,committee:meeting.committee,status,description,result:resolution,url,publicEvidence:`Öffentliche Tagesordnung, TOP ${i.number}`}};
+   event:{date,committee:meeting.committee,status,description,result:resolution,url,publicEvidence:`Öffentliche Tagesordnung, TOP ${i.number}`}},i.publicity);
  });
 }
 const monthsBetween=(from,until)=>{
@@ -144,7 +147,8 @@ export async function collectHwTypo3(source,{now=new Date(),get=fetchText,reques
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Tagesordnungspunkt: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Tagesordnungspunkt: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Ratsinformationsmoduls der Gemeinde (Hirsch & Wölfl); nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

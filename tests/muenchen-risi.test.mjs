@@ -119,16 +119,16 @@ test('München RISI paper and decision pages',()=>{
  assert.deepEqual(parseRisiPaper(paper.replaceAll('title="Öffentliches Dokument"','title="Nichtöffentliches Dokument"'),source).documents,[]);
  // Another kind than public: no documents either.
  assert.deepEqual(parseRisiPaper(paper.replace('<span>Öffentlicher Vorgang</span>','<span>Vertraulicher Vorgang</span>'),source).documents,[]);
- // Each document needs the mark in its own entry: a document whose icon has none, or a link outside an entry of its
- // own, does not borrow the mark of the document before it.
+ // A mark counts only in the document's own entry: a document whose icon has none is taken; one marked confidential is not.
  const second=/(id="idbc"[\s\S]*?<img class="svg-icon mr-1" src="..\/..\/images\/Oeffentlich.svg") title="Öffentliches Dokument" alt="Öffentliches Dokument">/;
- assert.deepEqual(parseRisiPaper(paper.replace(second,'$1 alt="">'),source).documents.map(d=>d.url),[doc(10016429)]);
+ assert.deepEqual(parseRisiPaper(paper.replace(second,'$1 alt="">'),source).documents.map(d=>d.url),[doc(10016429),doc(9997720)]);
  assert.deepEqual(parseRisiPaper(paper.replace(second,'$1 title="Vertrauliches Dokument" alt="">'),source).documents.map(d=>d.url),[doc(10016429)]);
  const unwrapped=paper.replace(/<div class="form-check">(\s*<input[^>]*id="idbc")/,'<div class="d-block">$1');assert.notEqual(unwrapped,paper);
- assert.deepEqual(parseRisiPaper(unwrapped,source).documents.map(d=>d.url),[doc(10016429)]);
+ // Without an entry of its own, or without a mark, a document is taken (24.10.2026: only what calls itself non-public is left out).
+ assert.deepEqual(parseRisiPaper(unwrapped,source).documents.map(d=>d.url),[doc(10016429),doc(9997720)]);
  // A short entry without preview and without a mark, close behind a public document.
  const compact=paper.replace(/(<li class="list-group-item odd">)[\s\S]*?(<\/li>)/,'$1<div class="form-check"><div class="align-top d-flex"><div><img class="svg-icon mr-1" src="../../images/Dokument.svg" alt=""></div><div><a class="downloadlink text-nohyphens" href="../../dokument/v/9997720">Anlage BE.pdf</a></div></div></div>$2');
- assert.notEqual(compact,paper);assert.deepEqual(parseRisiPaper(compact,source).documents.map(d=>d.url),[doc(10016429)]);
+ assert.notEqual(compact,paper);assert.deepEqual(parseRisiPaper(compact,source).documents.map(d=>d.url),[doc(10016429),doc(9997720)]);
  assert.deepEqual(parseRisiDecision(decision),{decision:'nach Antrag',vote:'einstimmig',result:'nach Antrag, einstimmig'});assert.equal(parseRisiDecision(decision.replace('TOP 6. (Öffentlich)','TOP 6. (Nichtöffentlich)')),null);
  // Seen live: the decision field only points to the decision document, the vote then names the outcome.
  assert.deepEqual(parseRisiDecision(decision.replace('<span>nach Antrag</span>','<span>siehe Beschlussseite</span>').replace('<span>einstimmig</span>','<span>nach Antrag gegen die Stimme der AfD</span>')),{decision:'siehe Beschlussseite',vote:'nach Antrag gegen die Stimme der AfD',result:'nach Antrag gegen die Stimme der AfD'});

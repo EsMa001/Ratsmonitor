@@ -72,7 +72,8 @@ test('a meeting of the portal (real answers): the public items of its agenda, th
  /* Nichtöffentlicher Teil: die Platzhalter und jeder Titel, der ihn nennt, werden ausgelassen */
  const old=hamburgMeeting(bau2014,'Hamburg-Mitte',hh);
  assert.deepEqual([old.items.length,old.left],[3,18]);assert.ok(old.items.every(i=>!/nicht\s*-?\s*öffentlich|vertraulich/i.test(i)));
- assert.deepEqual(hamburgMeeting(bau2020,'Hamburg-Mitte',hh).items,['Begrüßung'],'"Beschluss über Vertraulichkeit und Nicht-Öffentlichkeit …" is left out');
+ assert.deepEqual(hamburgMeeting(bau2020,'Hamburg-Mitte',hh).items,['Begrüßung'],'"Beschluss über Vertraulichkeit und Nicht-Öffentlichkeit …" is no public item');
+ assert.ok(hamburgMeeting(bau2020,'Hamburg-Mitte',hh).closed.some(i=>/Vertraulichkeit/.test(i)),'it is taken marked non-public (24.10.2026)');
  assert.deepEqual(hamburgMeeting(geschlossen,'Hamburg-Nord',hh).items,[]);
  /* Ohne Zeitraum im Datensatz: das Datum aus dem Titel */
  assert.equal(hamburgMeeting({...hauptausschuss,extras:hauptausschuss.extras.filter(e=>e.key!=='temporal_coverage_from')},'Hamburg-Nord',hh).date,'2026-08-25');

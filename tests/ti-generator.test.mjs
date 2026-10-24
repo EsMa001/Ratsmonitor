@@ -75,7 +75,7 @@ test('TI-Generator invitation list yields each meeting with the items of its pub
  const session=parseTiList(svv.replace('AN120_g.pdf#pagemode=bookmarks','AN120_g.pdf;jsessionid=0A1B2C3D4E#pagemode=bookmarks').replace(/<div data-role="collapsible" data-theme="c"/g,'<div data-theme="c" data-role="collapsible"'),svvPage,source);
  assert.equal(session.meetings.length,3);assert.deepEqual(session.meetings[1].agenda[2].documents,read.meetings[1].agenda[2].documents);
 });
-test('TI-Generator invitation list never takes an item of the non-public part, whatever its panel is called',()=>{
+test('TI-Generator invitation list never gives an item of the non-public part as public, whatever its panel is called',()=>{
  const secret=/Einstellung eines Mitarbeiters|Vergleichsabschluss|0248\/26|0249\/26|Einwendungen/;
  const publicItems=parseTiList(svv,svvPage,source).meetings[1].agenda;
  // The non-public panel of 16 September changed in one respect or several.
@@ -84,21 +84,23 @@ test('TI-Generator invitation list never takes an item of the non-public part, w
  const unknown=['<div class="panel panel-default"><div class="panel-heading list-group">','<div class="card"><div class="card-header">'];
  const label=to=>[/nicht&ouml;ffentl(?:\.Tagesordng\.|iche Tagesordnung)/g,to],unlocked=[/fa-expeditedssl/g,'fa-info-circle'];
  const read=html=>parseTiList(html,svvPage,source).meetings[1];
- // Another class of the panel: it is still cut off, its items are not taken, the public ones are.
+ // Items not shown public come marked (24.10.2026): none of the secret ones may be among the public items.
+ const shown=m=>(m.agenda||[]).filter(i=>!i.publicity),hiddenOk=m=>!secret.test(JSON.stringify(shown(m)))&&(m.agenda||[]).filter(i=>secret.test(JSON.stringify(i))).every(i=>i.publicity);
+ // Another class of the panel: it is still cut off; its items come marked, the public ones stay public.
  for(const html of [panel(outer),panel(['<div class="panel panel-default"><div class="panel-heading list-group">','<div class="panel-danger panel" data-x="1"><div class="list-group panel-heading">'])]){
-  const m=read(html);assert.equal(m.restricted,true);assert.equal(m.unclear,false);assert.deepEqual(m.agenda,publicItems);assert.ok(!secret.test(JSON.stringify(m)));
+  const m=read(html);assert.equal(m.restricted,true);assert.deepEqual(shown(m),publicItems);assert.ok(hiddenOk(m));
  }
  // Another label of the non-public part, or a label that says nothing but the lock.
  for(const html of [panel(label('Tagesordnung (&Ouml;ffentlichkeit ausgeschlossen)'),unlocked),panel(label('vertrauliche Tagesordnung'),unlocked),panel(label('Tagesordnung Teil B'))]){
-  const m=read(html);assert.equal(m.restricted,true);assert.deepEqual(m.agenda,publicItems);assert.ok(!secret.test(JSON.stringify(m)));
+  const m=read(html);assert.equal(m.restricted,true);assert.deepEqual(shown(m),publicItems);assert.ok(hiddenOk(m));
  }
- // Not told apart: a panel no class cuts off runs on inside the public one, or an agenda labelled neither way. No item of
- // the meeting is taken.
+  // Not told apart: a panel no class cuts off runs on inside the public one, or an agenda labelled neither way. Its items
+ // come marked unclear, none as public.
  for(const html of [panel(unknown),panel(unknown,label('Tagesordnung Teil B'),unlocked),panel(label('Tagesordnung Teil B'),unlocked)]){
-  const m=read(html);assert.equal(m.unclear,true);assert.equal(m.agenda,null);assert.ok(!secret.test(JSON.stringify(m)));
+  const m=read(html);assert.equal(m.unclear,true);assert.ok(hiddenOk(m));
  }
  // The other meetings of the list are not concerned.
- assert.deepEqual(parseTiList(panel(unknown),svvPage,source).meetings.map(m=>m.agenda&&m.agenda.length),[3,null,3]);
+ assert.deepEqual(parseTiList(panel(unknown),svvPage,source).meetings.map(m=>(m.agenda||[]).filter(i=>!i.publicity).length),[3,0,3]);
 });
 test('TI-Generator decision list yields decisions of the public part with votes and document',()=>{
  const read=parseTiDecisions(decisions,source);
@@ -202,12 +204,12 @@ test('TI-Generator collector reports pages it cannot read and never mistakes the
  const odd=await collectTiGenerator(source,{now,window:'12m',get:web({[list('ti_234__301_el_.php')]:'<html><p>Akte nicht gefunden</p></html>',[list('ti_231__30_bv_.php')]:'<html><title>Wartungsarbeiten</title></html>'}).get});
  assert.deepEqual(odd.coverage.issues.sort(),['Hauptausschuss, Einladungen / Vorlagen: Unbekanntes Format der Liste','Stadtverordnetenversammlung, Beschlüsse: Unbekanntes Format der Liste']);
  assert.deepEqual(Object.keys(odd.marks),[]);assert.equal(odd.coverage.complete,false);
- // A meeting whose public panel runs on into the non-public one is not taken, and that is an issue, not a quiet meeting.
+ // A meeting whose public panel runs on into the non-public one is taken with all its items marked unclear (24.10.2026).
  const merged=svv.replace(/^.*href="#tgo_collapse_6".*$/m,line=>line.replace('<div class="panel panel-default"><div class="panel-heading list-group">','<div class="card"><div class="card-header">'));
  const mixed=await collectTiGenerator(source,{now,window:'12m',get:web({[list('ti_229__30_el_.php')]:merged}).get});
- assert.deepEqual(mixed.coverage.issues,['Tagesordnung nicht eindeutig als öffentlich erkennbar, nicht übernommen: '+svvPage.url+'#sitzung-2026-09-16']);
- assert.equal(mixed.coverage.complete,false);assert.equal(mixed.coverage.quiet,false);assert.equal(mixed.topics.length,9);assert.ok(!(svvPage.url+'#sitzung-2026-09-16' in mixed.marks));
- assert.ok(!/Einstellung eines Mitarbeiters|Vergleichsabschluss|0248\/26|0249\/26|Abberufung des Rechnungspr/.test(JSON.stringify(mixed)));
+ assert.deepEqual(mixed.coverage.issues,[]);assert.equal(mixed.coverage.quiet,false);assert.equal(mixed.topics.filter(t=>!t.publicity).length,9);
+ assert.ok(!/Einstellung eines Mitarbeiters|Vergleichsabschluss|0248\/26|0249\/26|Abberufung des Rechnungspr/.test(JSON.stringify(mixed.topics.filter(t=>!t.publicity))));
+ assert.ok(mixed.topics.filter(t=>/Einstellung eines Mitarbeiters|Vergleichsabschluss/.test(t.title)).every(t=>t.publicity==='unclear'));
  // A past meeting that the list shows without any agenda is a remark, not a gap.
  const bare=await collectTiGenerator(source,{now,window:'12m',get:web({[list('ti_234__301_el_.php')]:kolkwitz.replace(/24\.11\.2026/g,'24.08.2026')}).get});
  assert.deepEqual(bare.coverage.warnings,['Sitzung ohne veröffentlichte Tagesordnung: '+list('ti_234__301_el_.php')+'#sitzung-2026-08-24']);assert.deepEqual(bare.coverage.issues,[]);

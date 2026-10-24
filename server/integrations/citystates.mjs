@@ -28,7 +28,7 @@ import {sourceDecision} from './source-fields.mjs';
 import {category,hash,sourceSummary} from './oparl.mjs';
 import {collectRegionalOparl} from './oparl-regional.mjs';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
-import {RESTRICTED,fnv,httpsUrl as https,isoDay} from './source-common.mjs';
+import {RESTRICTED,fnv,httpsUrl as https,isoDay,markPublicity} from './source-common.mjs';
 
 export const HAMBURG_DISTRICTS=['Altona','Bergedorf','Eimsbüttel','Hamburg-Mitte','Hamburg-Nord','Harburg','Wandsbek'];
 export const HAMBURG_NOTE='Drucksachen und Sitzungen mit öffentlicher Tagesordnung der Bezirksversammlungen sowie Mitteilungen des Senats an die Bürgerschaft aus dem Transparenzportal; Sitzungen erst mit der Niederschrift, ohne Ergebnis.';
@@ -86,7 +86,7 @@ const bodyName=(phrase,district)=>{
  return /^Bezirksversammlung\b/i.test(b)?'Bezirksversammlung '+district:`${b} (Bezirk ${district})`;
 };
 // The list of agenda items names an item of the non-public part only as "(nichtöffentlich)" or "(vertraulich)"; such an
-// entry, and any title that names the non-public part, is left out (website-text.mjs isNonPublicText).
+// entry is no item. A title that names the non-public part is taken marked non-public (closed, 24.10.2026, markPublicity).
 const PLACEHOLDER=/^\(?\s*(?:nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich)\s*\)?\.?$/i;
 /**
  * One dataset of the portal as a meeting of a district body with the public items of its agenda, or null if it is none:
@@ -102,15 +102,15 @@ export function hamburgMeeting(pkg,district,source){
  const published=isoDay(extra(pkg,['publishing_date','date_published']))||isoDay(pkg.metadata_created);
  if(!meetingDay||!published)return null;
  const number=extra(pkg,['number']).trim()||m[2];
- let left=0;const items=[],seen=new Set();
+ let left=0;const items=[],closed=[],seen=new Set();
  for(const raw of text(String(pkg.notes||'').replace(/^\s*Tagesordnungspunkte\s*:\s*/i,'')).split(/\s*;\s*/)){
   const item=raw.replace(/\s+/g,' ').trim();if(!item)continue;
-  if(PLACEHOLDER.test(item)||isNonPublicText(item)){left++;continue;}
-  if(!seen.has(item)){seen.add(item);items.push(item);}
+  if(PLACEHOLDER.test(item)){left++;continue;}
+  if(!seen.has(item)){seen.add(item);(isNonPublicText(item)?closed:items).push(item);}
  }
  const {page,documents}=links(pkg,source,'Sitzungsprotokoll');
  if(!documents.length)return null;
- return {district,number,committee:bodyName(m[3],district),date:meetingDay,published,items,left,url:page||documents[0].url,documents,modified:isoDay(pkg.metadata_modified)};
+ return {district,number,committee:bodyName(m[3],district),date:meetingDay,published,items,closed,left,url:page||documents[0].url,documents,modified:isoDay(pkg.metadata_modified)};
 }
 
 /**
@@ -147,7 +147,7 @@ export async function collectHamburgTransparenz(source,{now=new Date(),get=fetch
   await query(`Bezirk ${district}`,start=>hamburgQuery(source,district,fromDay,start),pkg=>{const p=hamburgPaper(pkg,district,source);if(!p)return false;if(p.date>=fromDay&&p.date<=today){found++;papers.set(slug(p.district)+'-'+p.reference,p);}return true;});
   if(!state.shut&&!found&&!issues.some(i=>i.startsWith(`Bezirk ${district}:`)))warnings.push(`Keine Drucksache der Bezirksversammlung ${district} im Zeitraum gefunden.`);
   // Meetings published in the period (after their minutes were approved); the event is the day of the meeting.
-  if(!state.shut)await query(`Sitzungen Bezirk ${district}`,start=>hamburgQuery(source,district,fromDay,start,'Sitzung'),pkg=>{const s=hamburgMeeting(pkg,district,source);if(!s)return false;if(s.published>=fromDay&&s.published<=today&&s.date<=today&&s.items.length){held++;meetings.set(slug(district)+'-'+slug(s.number),s);}return true;});
+  if(!state.shut)await query(`Sitzungen Bezirk ${district}`,start=>hamburgQuery(source,district,fromDay,start,'Sitzung'),pkg=>{const s=hamburgMeeting(pkg,district,source);if(!s)return false;if(s.published>=fromDay&&s.published<=today&&s.date<=today&&(s.items.length||s.closed.length)){held++;meetings.set(slug(district)+'-'+slug(s.number),s);}return true;});
   if(!state.shut&&!held&&!issues.some(i=>i.startsWith(`Sitzungen Bezirk ${district}:`)))quietDistricts.push(district);
   onProgress(`${source.id}: Bezirk ${district}, ${found} Drucksachen, ${held} Sitzungen`);
  }
@@ -173,16 +173,17 @@ export async function collectHamburgTransparenz(source,{now=new Date(),get=fetch
  let left=0;
  for(const [key,s] of meetings){
   left+=s.left;
-  for(const item of s.items){
+  for(const [item,shut] of [...s.items.map(i=>[i,false]),...(s.closed||[]).map(i=>[i,true])]){
    const status='unknown',event={date:s.date,committee:s.committee,status,description:`Öffentlicher Tagesordnungspunkt; das Ergebnis steht im Protokoll der Sitzung (${s.number}), verlinkt, nicht eingelesen.`,result:'',url:s.url,publicEvidence:'Öffentliche Tagesordnung im Transparenzportal Hamburg (HmbTG, dl-de/by-2.0); Punkte des nichtöffentlichen Teils fehlen dort oder stehen nur als „(nichtöffentlich)“'};
-   await topic({id:`${source.id}-hh-${key}-${fnv(item)}`,regionId:source.id,source:source.kind,public:true,title:item,officialTitle:item,reference:'',category:category(item),status,committee:s.committee,eventDate:s.date,updatedAt:fetchedAt,
-    relevanceReason:'Öffentlicher Tagesordnungspunkt: '+s.committee,sourceText:[item,`Sitzung ${s.number}: ${s.committee}, ${s.date}`].join('\n'),
-    identityLinks:[s.url],events:[event],documents:s.documents,sourceUrl:s.url,
-    sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt,records:[{kind:'agenda',url:s.url,fields:{meeting:s.number,district:s.district,date:s.date,committee:s.committee,title:item,published:s.published}}],detailStatus:'completed',issues:[]}},
+   const row=shut?markPublicity({title:item,event},'nonpublic'):{title:item,event};
+   await topic({id:`${source.id}-hh-${key}-${fnv(item)}`,...(shut?{publicity:'nonpublic'}:{}),regionId:source.id,source:source.kind,public:true,title:row.title,officialTitle:row.title,reference:'',category:category(item),status,committee:s.committee,eventDate:s.date,updatedAt:fetchedAt,
+    relevanceReason:'Öffentlicher Tagesordnungspunkt: '+s.committee,sourceText:[row.title,`Sitzung ${s.number}: ${s.committee}, ${s.date}`].join('\n'),
+    identityLinks:[s.url],events:[row.event],documents:s.documents,sourceUrl:s.url,
+    sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt,records:[{kind:'agenda',url:s.url,fields:{meeting:s.number,district:s.district,date:s.date,committee:s.committee,title:row.title,...(shut?{publicity:'nonpublic'}:{}),published:s.published}}],detailStatus:'completed',issues:[]}},
     'Hamburg-'+s.district.replace(/^Hamburg-/,''),'Transparenzportal Hamburg; öffentliche Tagesordnung einer Sitzung der Bezirksversammlung oder ihrer Ausschüsse.');
   }
  }
- if(left)warnings.push(`${left} Tagesordnungspunkte des nichtöffentlichen Teils (oder mit Titeln, die ihn nennen) ausgelassen.`);
+ if(left)warnings.push(`${left} Platzhalter des nichtöffentlichen Teils („(nichtöffentlich)“) ohne Titel ausgelassen.`);
  for(const [key,p] of senate){
   const committee='Bürgerschaft (Mitteilung des Senats)',status='unknown';
   const event={date:p.date,committee,status,description:`Mitteilung des Senats an die Bürgerschaft (Drucksache ${p.reference}) im Transparenzportal veröffentlicht; Beratung und Beschluss der Bürgerschaft sind dort nicht angegeben.`,result:'',url:p.url,publicEvidence:'Veröffentlicht im Transparenzportal Hamburg (HmbTG, dl-de/by-2.0)'};

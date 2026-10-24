@@ -52,31 +52,32 @@ test('KIC meeting list leaves out cancelled meetings and meetings with a non-pub
  assert.throws(()=>kicMeetings({items:[{meetingId:9,date:'2026-09-30'}]},source),/Unbekanntes Format/);
  assert.deepEqual(kicMeetings({items:[]},source),[]);
 });
-test('KIC agenda keeps only public items; the role appended to a title is removed',()=>{
+test('KIC agenda marks items not released to guests; the role appended to a title is removed',()=>{
  // Amt Eidertal shows the titles of its non-public part to guests, marked as protected part and restricted items.
  const agenda=parseKicMeeting(json('eidertal-meeting-52376529.json'),{id:'52376529',date:'2026-10-05'});
  assert.equal(agenda.committee,'Gemeindevertretung Rumohr');assert.equal(agenda.date,'2026-10-05');
- assert.deepEqual(agenda.items.map(i=>i.number),['1','2','3','4','5','6','7','8']);
- assert.ok(!JSON.stringify(agenda).includes('Verkauf der DHH'));assert.ok(!JSON.stringify(agenda).includes('nichtöffentlichen Sitzung'));
+ const open=agenda.items.filter(i=>!i.publicity);
+ assert.deepEqual(open.map(i=>i.number),['1','2','3','4','5','6','7','8']);
+ assert.ok(!JSON.stringify(open).includes('Verkauf der DHH'));
+ // The titles of the protected part are taken with their mark (24.10.2026).
+ assert.deepEqual(agenda.items.filter(i=>i.publicity).map(i=>[i.number,i.publicity]),[['9','nonpublic'],['10','nonpublic']]);
  assert.deepEqual(agenda.items[6],{key:'52376529-63134834',number:'7',title:'Jahresabschluss 2025 (SV)',documents:2,downloads:true,globalId:''});
- // An item marked restricted inside a public part is skipped as well.
+ // An item marked restricted inside a public part is marked as well.
  const mixed=json('eidertal-meeting-52376529.json');mixed.parts[0].agendaitems[1].restricted=true;
- assert.equal(parseKicMeeting(mixed,{date:'2026-10-05'}).items.length,7);
+ assert.equal(parseKicMeeting(mixed,{date:'2026-10-05'}).items.filter(i=>!i.publicity).length,7);
  const senat=parseKicMeeting(json('aschaffenburg-meeting-100898894.json'),{date:'2026-09-22'});
  assert.match(senat.items[0].title,/^Klärwerk: 4\. Reinigungsstufe - Aktualisierung .* Weyarn$/);assert.match(senat.items[1].title,/\(Nr\. 3\/28\)$/);
  // Buttenheim publishes date and documents of a meeting, but no agenda items to guests.
  assert.equal(parseKicMeeting(json('buttenheim-meeting-11973843.json'),{date:'2026-09-14'}),null);
- // Fail closed: a part or an item without a flag, or with a value the reader does not know (a non-public part labelled
- // otherwise), is not taken but counted, so that the collector names it.
+ // A part or an item without a flag, or with a value the reader does not know, is taken marked unclear; a protected part
+ // or a restricted item non-public.
  const flags=(protectedpart,restricted)=>({parts:[{...(protectedpart===undefined?{}:{protectedpart}),agendaitems:[{id:'1-2',name:'Grundstücksverkauf (nichtöffentlich)',...(restricted===undefined?{}:{restricted})}]}]});
- for(const [part,item] of [[undefined,undefined],[false,undefined],[undefined,false],[0,false],['nein',false],[false,'nö'],[false,1]])assert.deepEqual(parseKicMeeting(flags(part,item)).items,[],JSON.stringify([part,item]));
- assert.equal(parseKicMeeting(flags(undefined,undefined)).unclear,1);
- assert.equal(parseKicMeeting(flags(true,undefined)).unclear,0);assert.equal(parseKicMeeting(flags(false,true)).unclear,0);
- assert.equal(parseKicMeeting(flags('false','false')).items.length,1);assert.equal(parseKicMeeting(flags(false,'ö')).items.length,1);
- assert.equal(parseKicMeeting(json('eidertal-meeting-52376529.json')).unclear,0);
+ for(const [part,item] of [[undefined,undefined],[false,undefined],[undefined,false],[0,false],['nein',false],[false,'nö'],[false,1]])assert.deepEqual(parseKicMeeting(flags(part,item)).items.map(i=>i.publicity),['unclear'],JSON.stringify([part,item]));
+ assert.deepEqual(parseKicMeeting(flags(true,undefined)).items.map(i=>i.publicity),['nonpublic']);assert.deepEqual(parseKicMeeting(flags(false,true)).items.map(i=>i.publicity),['nonpublic']);
+ assert.equal(parseKicMeeting(flags('false','false')).items[0].publicity,undefined);assert.equal(parseKicMeeting(flags(false,'ö')).items[0].publicity,undefined);
  // A broken part is skipped, not the meeting; a title is plain text, not HTML.
  const broken=json('eidertal-meeting-52376529.json');broken.parts.unshift(null,{protectedpart:false,agendaitems:[null,{id:'52376529-1',numbering:'0',name:'Lärm <55 dB und >45 dB\r\n(Beschließend)',restricted:false,downloadallowed:true}]});
- const noisy=parseKicMeeting(broken);assert.equal(noisy.items.length,9);assert.deepEqual([noisy.items[0].title,noisy.items[0].number],['Lärm <55 dB und >45 dB','0']);
+ const noisy=parseKicMeeting(broken);assert.equal(noisy.items.filter(i=>!i.publicity).length,9);assert.deepEqual([noisy.items[0].title,noisy.items[0].number],['Lärm <55 dB und >45 dB','0']);
  // Some systems send every umlaut, ß and § as U+FFFD (Großostheim): restored in titles and committees, before the role is cut off.
  const lost=json('eidertal-meeting-52376529.json');lost.committeename='Werkausschuss der Gemeindewerke Gro�ostheim';
  lost.parts.unshift({protectedpart:false,agendaitems:[{id:'52376529-2',numbering:'9',name:'Aufnahme von Kosten f�r Hitzeschutzplanung gem. � 27 (Beschlie�end)',restricted:false}]});
@@ -209,7 +210,7 @@ test('KIC collector: the council decides; a shared system is asked for one munic
  // An interface address written without the closing slash is the same interface.
  const plain=system();assert.equal((await collectKic({...source,api:'https://risapi.aschaffenburg.de'},{now,window:'1m',get:plain.get,request:plain.request})).coverage.complete,true);
 });
-test('KIC collector fails closed: items without a clear release and unknown pages are named, never imported',async()=>{
+test('KIC collector: items without a clear release come marked without their page; unknown pages are named',async()=>{
  // Senat meeting: the third item has no restricted flag, the detail of the first calls itself restricted.
  const senat=json('aschaffenburg-meeting-100898894.json');delete senat.parts[0].agendaitems[2].restricted;
  // A past meeting whose items carry no flags at all, and a meeting page in another format.
@@ -223,17 +224,17 @@ test('KIC collector fails closed: items without a clear release and unknown page
  const d=await collectKic(source,{now,window:'3m',get:s.get,request:s.request});
  assert.deepEqual(d.coverage.issues.toSorted(),[
   `Tagesordnungspunkt ${base}app/sitzungen/100898894/100898894-101579760: Tagesordnungspunkt im Gastzugang nicht als öffentlich gekennzeichnet`,
-  `${base}app/sitzungen/100898171: 1 Tagesordnungspunkt ohne erkennbare Freigabe für Gäste ausgelassen`,
   `${base}app/sitzungen/100898178: Unbekanntes Format der Sitzung`,
-  `${base}app/sitzungen/100898894: 1 Tagesordnungspunkt ohne erkennbare Freigabe für Gäste ausgelassen`,
  ]);
  assert.equal(d.coverage.complete,false);assert.equal(d.coverage.warnings,undefined);
- // The unclear item is not even asked; neither it nor the restricted one becomes a topic, the rest of the meeting does.
+ // The unclear item is not asked and comes marked; the one whose page calls itself restricted gives no topic.
  assert.ok(!s.calls.some(u=>u.includes('100898894-105769028')));
- assert.ok(!d.topics.some(t=>t.identityLinks.some(l=>/105769028|101579760/.test(l))));assert.ok(!JSON.stringify(d.topics).includes('Vertrag'));
+ assert.equal(d.topics.find(t=>t.identityLinks.some(l=>/105769028/.test(l)))?.publicity,'unclear');
+ assert.ok(!d.topics.some(t=>t.identityLinks.some(l=>/101579760/.test(l))));assert.ok(!JSON.stringify(d.topics).includes('Vertrag'));
  assert.ok(d.topics.some(t=>t.id==='de-09661000-vo-100898894-105768989'));
- // None of these meetings counts as read, so the next import asks them again.
- assert.deepEqual(Object.keys(d.marks),[base+'app/sitzungen/100898916']);
+ // The meeting with an unknown page and the one with an unreadable item count as unread, so the next import asks them again;
+ // the one whose only item comes marked is read.
+ assert.deepEqual(Object.keys(d.marks).sort(),[base+'app/sitzungen/100898171',base+'app/sitzungen/100898916']);
 });
 test('KIC topic id does not depend on whether guests see the consultation sequence; list numbers may be strings',async()=>{
  const hidden={...json('aschaffenburg-item-100898178-104869054.json'),conorderitems:[]};

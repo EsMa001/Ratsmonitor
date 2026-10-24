@@ -7,15 +7,14 @@ import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {organizationFilter} from './oparl-regional.mjs';
 import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
-import {fnv,germanDay as day} from './source-common.mjs';
+import {fnv,germanDay as day,markPublicity,topicPublicity,selfClosed,PLACEHOLDER} from './source-common.mjs';
 // RIS-Portal of comundus regisafe (<name>.ris-portal.de): a Liferay portal "Ratsinformation" with the portlet RisSitzung.
 // Read are the addresses the public site asks for every visitor, nothing that needs a login:
 // - the meetings of one month (portlet resource loadSessions, JSON: sitzungId, start, sessionLink and the body),
 // - the page of each meeting (sitzungen?sitzungId=<id>) with its agenda in parts and the documents of each item.
-// Only items listed under the heading of the public part ("Öffentlich", "Öffentlicher Teil") are taken. The page lists
-// the non-public part below its own heading: the agenda is cut off there, and so at any heading that is not the
-// public part (fail closed). Items whose title names the non-public part ("Bekanntgabe der Beschlüsse aus
-// nichtöffentlicher Sitzung") are left out as well. The detail page of an item (top-detail) is never requested.
+// Items listed under the heading of the public part ("Öffentlich", "Öffentlicher Teil") are public. Items of the
+// non-public part (below its own heading) and items whose title names it are taken marked non-public, items under an
+// unknown heading unclear (24.10.2026, markPublicity). The detail page of an item (top-detail) is never requested.
 // RIS-Portal has no pages of its own for papers. The document of a paper (Sitzungsvorlage) keeps its id in every meeting
 // that discusses it; the consultations of a paper are joined by that id. Documents are linked, not read. Where the
 // municipality publishes votes, the meeting page holds them in a side panel per item (offcanvas-abstimmung<id>).
@@ -95,35 +94,34 @@ export function parseRisPortalMeeting(html,meeting,source,now=new Date()){
  // <h3 class="accordion-list-header">; the classic theme as li.rp-lis-item under <h3 class="h4 accordion-list-header">.
  const redesign=/\brp-session-top-result\b/.test(page);
  const parts=page.split(redesign?/<h3 class=["']accordion-list-header["'][^>]*>/i:/<h3 class=["']h4 accordion-list-header["'][^>]*>/i).slice(1);
- let publicPart=null;
- for(const part of parts){
-  const title=partTitle(plain(part.slice(0,part.search(/<\/h3>/i))));
-  if((PUBLIC_PART.test(title)||title==='tagesordnung'&&parts.length===1)&&!publicPart){publicPart=part;continue;}
-  // The non-public part, or any heading the reader does not know, ends the public agenda.
-  break;
- }
- if(!publicPart)return null;
+ // Every part is read (24.10.2026): the first public part is public, a part after it or under another heading non-public
+ // (a heading of the non-public part) or unclear; items come with that mark (markPublicity in source-common.mjs).
+ if(!parts.length)return null;
+ const today=now.toISOString().slice(0,10),items=new Map();let left=0,seenPublic=false;
+ for(const publicPart of parts){
+ const partName=partTitle(plain(publicPart.slice(0,publicPart.search(/<\/h3>/i))));
+ const isPublic=(PUBLIC_PART.test(partName)||partName==='tagesordnung'&&parts.length===1)&&!seenPublic;if(isPublic)seenPublic=true;
+ const partPublicity=isPublic?null:isNonPublicHeading(partName)||isNonPublicText(partName)||seenPublic?'nonpublic':'unclear';
  // The list ends before the side panels (votes, documents, participants) and the meeting data that follow the agenda;
  // the next part (if any) was cut off above. The members' voting form inside an item (offcanvas-top-votes_<id>) is
  // part of the item and no end.
  const end=publicPart.search(/<\/h3>/i),after=publicPart.slice(end);
  const stop=after.search(/<div class=["']offcanvas\b[^>]*\bid=["']offcanvas-(?!top-votes_)|<div class=["']rp-meta-data\b/i),list=stop<0?after:after.slice(0,stop);
- const today=now.toISOString().slice(0,10),items=new Map();let left=0;
  for(const chunk of list.split(redesign?/<div\s+class=["']list-group-item rp-result rp-session-top-result[^"']*["']/i:/<li class=["']rp-lis-item["']/i).slice(1)){
   const number=attribute(chunk.slice(0,chunk.indexOf('>')),'data-top-number').trim();
   const content=redesign?chunk.match(/<h3>\s*<a\b[^>]*>([\s\S]*?)<\/a>\s*<\/h3>/i)?.[1]||'':chunk.match(/<div class=["']top-item-content["'][^>]*>\s*<p>([\s\S]*?)<\/p>/i)?.[1]||'';
   const spans=redesign?[]:[...content.matchAll(/<span[^>]*>([\s\S]*?)<\/span>/gi)].map(m=>plain(m[1]));
   const title=redesign?plain(content).trim():(spans.length>1&&spans[0].replace(/\s+/g,'')===number.replace(/\s+/g,'')?spans.slice(1).join(' '):plain(content).replace(new RegExp('^'+number.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*'),'')).trim();
-  if(!title)continue;
-  // A title that names the non-public part (or is a heading of it) is not taken, whatever part it stands in.
-  if(isNonPublicText(title)||isNonPublicHeading(title)){left++;continue;}
+  if(!title||PLACEHOLDER.test(title))continue;
+  // A title that names the non-public part (or is a heading of it) is taken marked non-public, whatever part it stands in.
+  const publicity=isNonPublicText(title)||isNonPublicHeading(title)?'nonpublic':partPublicity;if(publicity==='nonpublic')left++;
   const documents=[];
   const buttons=redesign?[...chunk.matchAll(/<a class=["']document-link["']([^>]*)>([\s\S]*?)<\/a>/gi)]:[...chunk.matchAll(/<button class=["']document-button["']([^>]*)>([\s\S]*?)<\/button>/gi)];
   for(const button of buttons){
    const href=attribute(button[1],'data-href'),docid=attribute(button[1],'data-docid'),type=attribute(button[1],'data-type');
    if(!docid||!href)continue;
    const label=redesign?plain(attribute(button[1],'data-title')||button[2])||type||'Dokument':plain(button[2].match(/<span class=["']d-none doc-title["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]||'')||type||'Dokument';
-   if(isNonPublicText(label))continue;
+   if(isNonPublicText(label)||selfClosed(label,href))continue;
    let url;try{url=allowed(new URL(href,meeting.url).href,source);}catch{continue;}
    documents.push({title:label,url,kind:'application/pdf',type,docid});
   }
@@ -134,8 +132,9 @@ export function parseRisPortalMeeting(html,meeting,source,now=new Date()){
   const voteId=chunk.match(/data-target=["']offcanvas-abstimmung(\d+)["']/i)?.[1],result=date<=today&&voteId?parseRisPortalVote(page,voteId)||'':'';
   const status=date>today?(paper?'consulting':'announced'):result&&resultStatus(result,committee)||'unknown';
   const description=date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?'Abstimmungsergebnis: '+result:decided?'Öffentlich auf der Tagesordnung; der Beschluss liegt als Dokument vor.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist auf der Sitzungsseite nicht angegeben.';
-  items.set(id,{id,title,reference:'',number,sourceUrl:meeting.url,identityLinks:[meeting.url],documents:documents.map(({title,url,kind})=>({title,url,kind})),status,
-   event:{date,committee,status,description,result,url:meeting.url,publicEvidence:'Öffentliche Tagesordnung, Abschnitt „'+plain(publicPart.slice(0,end))+'“'}});
+  items.set(id,markPublicity({id,title,reference:'',number,sourceUrl:meeting.url,identityLinks:[meeting.url],documents:documents.map(({title,url,kind})=>({title,url,kind})),status,
+   event:{date,committee,status,description,result,url:meeting.url,publicEvidence:'Öffentliche Tagesordnung, Abschnitt „'+plain(publicPart.slice(0,end))+'“'}},publicity));
+ }
  }
  return {date,committee,items:[...items.values()],left};
 }
@@ -191,13 +190,14 @@ export async function collectRisPortal(source,{now=new Date(),get=fetchText,olde
   }catch(e){if(/Zeitbudget/.test(e.message))unread++;else issues.push(m.url+': '+e.message);}
   onProgress(source.id+': '+count+'/'+meetings.size+' Sitzungen');
  },2);
- if(left)warnings.push(`${left} Punkte, deren Titel den nichtöffentlichen Teil nennt, nicht übernommen.`);
+ if(left)warnings.push(`${left} Punkte des nichtöffentlichen Teils als nichtöffentlich übernommen.`);
  if(unread)issues.push(`Zeitbudget der Quelle erreicht; ${unread} ${unread===1?'Sitzung':'Sitzungen'} noch nicht gelesen.`);
  if(limited)issues.push('Sitzungslimit erreicht; weiterer Import erforderlich.');
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Tagesordnungspunkt: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.committee+': '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Tagesordnungspunkt: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.committee+': '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seite des RIS-Portals; nur Punkte des öffentlichen Teils.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

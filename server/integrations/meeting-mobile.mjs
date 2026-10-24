@@ -5,11 +5,13 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
 // Meeting Mobile / "RIS Web" (Lotus Domino with XPages; meeting-mobile.de/mm/<ort>/ris_web.nsf, also hosted by a
 // municipality itself, e.g. ris.reutlingen.de/programme/RIS/ris_web.nsf). Read are plain GET addresses of the public site:
 // - meeting_period_doc.xsp: every meeting with day, time, body and the address of its page (meeting_doc.xsp?documentId=…),
 // - meeting_doc.xsp: body, day, place and the agenda; the block headed "öffentlich" lists the items with a paper number
-//   and the link of the paper ("xsp/download?…", only linked, not read here). A block "nichtöffentlich" is never read.
+//   and the link of the paper ("xsp/download?…", only linked, not read here). Items of a block "nichtöffentlich" are taken
+//   marked non-public, of another block unclear (24.10.2026, markPublicity).
 // A few installations (Reutlingen) render the meeting list with JavaScript links only; their meetings are taken from
 // documents_month.xsp, which links the meetings of the current month (the month tabs are page state and are not used).
 // No form, login, session or postback is needed: the pages are complete without cookies.
@@ -50,7 +52,7 @@ export function mmMeetings(html,base){
 const span=(page,name)=>plain(page.match(new RegExp(`${name}"[^>]*>([\\s\\S]*?)</span>`))?.[1]||'');
 /**
  * A meeting page: body, day, time, place and the items of the block "öffentlich": number, title, paper number, documents
- * ({title,url}). Other blocks (nichtöffentlich) are skipped.
+ * ({title,url}); items of other blocks with publicity 'nonpublic' ("nichtöffentlich") or 'unclear'.
  */
 export function parseMmMeeting(html,base='https://example.invalid/'){
  const page=String(html),body=page.slice(page.indexOf('<body')>=0?page.indexOf('<body'):0);
@@ -60,7 +62,7 @@ export function parseMmMeeting(html,base='https://example.invalid/'){
  const heads=[...body.matchAll(/role="meetingAgendaHeader"[\s\S]*?<span[^>]*>([\s\S]*?)<\/span>/g)].map(m=>({at:m.index,label:plain(m[1]).toLowerCase()}));
  const items=[];
  heads.forEach((h,i)=>{
-  if(h.label!=='öffentlich')return;
+  const publicity=h.label==='öffentlich'?null:/nicht/.test(h.label)?'nonpublic':'unclear';
   const block=body.slice(h.at,heads[i+1]?.at??body.length);
   for(const [,row] of block.matchAll(/<td class="meetingSubNoC">([\s\S]*?)(?=<td class="meetingSubNoC">|<\/tbody>)/g)){
    const number=plain(row.match(/noColumn:number"[^>]*>([\s\S]*?)<\/span>/)?.[1]||'').replace(/\.$/,''),title=plain(row.match(/subjectColumn:subject"[^>]*>([\s\S]*?)<\/span>/)?.[1]||'');
@@ -69,7 +71,7 @@ export function parseMmMeeting(html,base='https://example.invalid/'){
     const href=a[1].replace(/&amp;/g,'&'),u=new URL(href,base),file=decodeURIComponent((u.searchParams.get('file')||'').replace(/\+/g,' '));
     return {title:file.replace(/\.[A-Za-z0-9]{2,4}$/,'')||'Vorlage',url:u.href};
    });
-   if(title)items.push({number,title,paper,documents});
+   if(title&&!PLACEHOLDER.test(title))items.push({number,title,paper,documents,...(publicity?{publicity}:{})});
   }
  });
  return {committee,subject,kind,date,time,place,items,publicBlock:heads.some(h=>h.label==='öffentlich')};
@@ -80,12 +82,13 @@ const routine=title=>ROUTINE.test(title)&&title.length<70;
 /** The reports of one meeting: a row per public item with a paper number or a paper; routine items are left out. */
 export function mmItems(parsed,meeting,source,now=new Date()){
  const date=parsed.date||meeting.date,committee=parsed.committee||meeting.body,today=now.toISOString().slice(0,10),past=date<=today;
- return parsed.items.filter(i=>(i.paper||i.documents.length)&&!routine(i.title)).map(i=>{
+ // A non-public item shows no paper to guests: its title is what is public.
+ return parsed.items.filter(i=>(i.paper||i.documents.length||i.publicity==='nonpublic')&&!routine(i.title)).map(i=>{
   const key=i.paper?slug(i.paper):slug(i.title).slice(0,70),id=`${source.id}-mm-${key}`;
   const status=past?'unknown':'consulting',description=past?'In der öffentlichen Tagesordnung geführt; ein Beschluss ist auf dieser Seite nicht veröffentlicht.':'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.';
-  return {id,title:i.title,reference:i.paper||'',sourceUrl:meeting.url,identityLinks:[],documents:i.documents.map(d=>({title:d.title,url:d.url,kind:'pdf'})),status,
+  return markPublicity({id,title:i.title,reference:i.paper||'',sourceUrl:meeting.url,identityLinks:[],documents:openDocuments(i.documents.map(d=>({title:d.title,url:d.url,kind:'pdf'}))),status,
    record:{number:i.number,paper:i.paper},
-   event:{date,committee,status,description,result:'',url:meeting.url,publicEvidence:`Öffentliche Tagesordnung, TOP ${i.number||'-'}`}};
+   event:{date,committee,status,description,result:'',url:meeting.url,publicEvidence:`Öffentliche Tagesordnung, TOP ${i.number||'-'}`}},i.publicity);
  });
 }
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs.
@@ -136,7 +139,8 @@ export async function collectMeetingMobile(source,{now=new Date(),get=fetchText,
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Ratsinformationssystems (Meeting Mobile, RIS Web); nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

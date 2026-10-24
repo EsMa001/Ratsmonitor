@@ -38,9 +38,9 @@ test('Provox IIP meeting: body, day, place and the public items with a paper and
  assert.equal(committee.items.find(i=>i.reference==='23/2026').voting,null);
  const coming=parseIipMeeting(fixture('sitzung-kommend.html'));
  assert.equal(coming.date,'2026-09-23');assert.equal(coming.time,'16:30');assert.equal(coming.items.filter(i=>i.voting).length,0);
- // Only a block marked "Öffentlich" is read.
+ // A block marked "Nichtöffentlich" gives its items marked, with the title only (24.10.2026).
  const hidden=fixture('sitzung-kommend.html').replace(/<strong class=Gruen> &#xD6;ffentlich<\/strong>/g,'<strong class=Rot> Nichtöffentlich</strong>');
- assert.equal(parseIipMeeting(hidden).items.length,0);
+ const closed=parseIipMeeting(hidden).items;assert.ok(closed.length&&closed.every(i=>i.publicity==='nonpublic'&&!i.paper));
  assert.equal(parseIipMeeting('<html>Fehler</html>').items.length,0);
 });
 

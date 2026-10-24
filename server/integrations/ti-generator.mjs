@@ -7,7 +7,7 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {extractText,getDocumentProxy} from 'unpdf';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {bodyBytes} from './body-bytes.mjs';
-import {fnv,germanDayStrict as day} from './source-common.mjs';
+import {fnv,germanDayStrict as day,markPublicity,topicPublicity,PLACEHOLDER} from './source-common.mjs';
 // Public pages of the "TI-Generator" (Town Hall Information WEB-Generator, Bartel Software Engineering): static sites
 // that the Rats-Manager writes to a web host. The start page holds a menu with one entry per committee and list; the
 // page's script loads each list from listen/<file> (the address of the menu entry itself answers 404). Read are the
@@ -90,23 +90,24 @@ export function parseTiList(html,page,source){
   let agenda=null,restricted=false,unclear=false;
   for(const panel of panels(block)){
    if(!/Tagesord/i.test(panel.heading))continue;
-   if(panel.locked||NONPUBLIC.test(panel.heading)){restricted=true;continue;}
-   if(!/(?<!\p{L})öffentl/iu.test(panel.heading)){unclear=true;continue;}
-   // Besides its items the panel holds the column head "TOP - Betreff" only.
+   // A locked panel is never read. A panel of the non-public part that shows its titles, one not named public, or a public
+   // one that runs on into another agenda gives its items marked (24.10.2026, markPublicity).
    const rest=panel.body.replace(ITEM,' ');
-   if(/Tagesord/i.test(clean(rest))||NONPUBLIC.test(clean(rest))||LOCK.test(rest)){unclear=true;continue;}
+   if(panel.locked){restricted=true;continue;}
+   const publicity=NONPUBLIC.test(panel.heading)?'nonpublic':!/(?<!\p{L})öffentl/iu.test(panel.heading)||/Tagesord/i.test(clean(rest))||NONPUBLIC.test(clean(rest))||LOCK.test(rest)?'unclear':null;
+   if(publicity==='nonpublic')restricted=true;else if(publicity)unclear=true;
    agenda??=[];
    for(const m of panel.body.matchAll(ITEM)){
     const spans=[...m[4].matchAll(/<span\b[^>]*>([\s\S]*?)<\/span>/gi)].map(s=>clean(s[1]));
     const [number,title]=spans.length>1?[spans[0].replace(/^\?$/,''),spans[1]]:['',spans[0]||''];
-    if(!/\p{L}{2}/u.test(title))continue;
+    if(!/\p{L}{2}/u.test(title)||PLACEHOLDER.test(title))continue;
     const reference=spans.slice(2).join(' ').match(/Vorlage-Nr\.?:?\s*(.+?)\s*(?:\bmit\s+\d+\s+Anlagen?\b|\[|\(|$)/i)?.[1]||'';
     const document=m[1].toLowerCase()==='a'&&pdf(m[2]+m[3],reference?'Vorlage '+reference:`Unterlage zu TOP ${number}`.trim(),source);
-    agenda.push({number,title,reference,documents:document?[document]:[]});
+    agenda.push({number,title,reference,documents:document?[document]:[],...(publicity?{publicity}:{})});
    }
   }
   const committee=page.committee||heading.replace(/^\d+\.\s*/,'').replace(/^(?:öffentliche\s+)?(?:Sitzung|Beratung)\s+(?:der|des)\s+/i,'').replace(/\s*(?:am\s+)?\d{2}\.\d{2}\.\d{4}.*$/,'')||'Öffentliche Sitzung';
-  meetings.push({url:`${page.url}#sitzung-${date}${n>1?'-'+n:''}`,date,committee,group:page.group??'',heading,agenda:unclear?null:agenda,restricted,unclear});
+  meetings.push({url:`${page.url}#sitzung-${date}${n>1?'-'+n:''}`,date,committee,group:page.group??'',heading,agenda:agenda?.length?agenda:null,restricted,unclear});
  }
  return {stand:standOf(html),meetings};
 }
@@ -144,7 +145,7 @@ export function extraPages(html,source){
 /**
  * Public agenda items from the list of papers: every paper names the meeting it is dealt with in the body of the list
  * ("Angaben zur Beratung im aktuellen Gremium": meeting, day, item number and "öffentlicher Teil"). Papers of the
- * non-public part are skipped. Meetings are made of these items; a meeting holds only the papers published so far.
+ * non-public part, or without a named part, are taken marked. Meetings are made of these items; a meeting holds only the papers published so far.
  */
 export function parseTiPapers(html,page,source){
  const found=new Map();
@@ -152,7 +153,9 @@ export function parseTiPapers(html,page,source){
   const panel=panels(block).find(p=>/Angaben zur Beratung/i.test(p.heading))?.body;if(!panel)continue;
   const field=name=>clean(panel.match(new RegExp(`>\\s*${name}:([\\s\\S]*?)</div>`,'i'))?.[1]);
   const top=field('TOP'),date=day(field('Sitzungsdatum'));
-  if(!date||!/\(\s*öffentlicher\s+Teil\s*\)/i.test(top)||/nicht\s*-?\s*öffentl/i.test(top))continue;
+  if(!date)continue;
+  // A paper of the non-public part, or one whose part is not named, is taken marked (24.10.2026).
+  const publicity=/nicht\s*-?\s*öffentl/i.test(top)?'nonpublic':/\(\s*öffentlicher\s+Teil\s*\)/i.test(top)?null:'unclear';
   const head=block.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i)?.[1]||'';
   const title=clean(head.replace(/<div\b[^>]*>[\s\S]*?<\/div>/gi,' '));if(!/\p{L}{2}/u.test(title))continue;
   const reference=clean(block.match(/>\s*Vorlage Nr\.:?([^<]*)</i)?.[1]).trim();
@@ -163,7 +166,7 @@ export function parseTiPapers(html,page,source){
   }
   const number=top.replace(/\(.*$/,'').trim(),beratung=field('Beratung'),key=date;
   if(!found.has(key))found.set(key,{url:`${page.url}#sitzung-${date}`,date,committee:page.committee||beratung,group:page.group??'',heading:beratung||page.committee,agenda:[],restricted:false,unclear:false});
-  found.get(key).agenda.push({number,title,reference,documents});
+  found.get(key).agenda.push({number,title,reference,documents,...(publicity?{publicity}:{})});
  }
  for(const m of found.values())m.agenda.sort((a,b)=>topKey(a.number).localeCompare(topKey(b.number),'de',{numeric:true}));
  return {stand:standOf(html),meetings:[...found.values()]};
@@ -187,20 +190,22 @@ export function parseTiNotices(html,page,source){
 export function parseTiNoticeText(raw){
  const body=String(raw).replace(/H\s?i\s?n\s?w\s?e\s?i\s?s\s?:[\s\S]*?bekanntmachungen\.html/gi,'\n').replace(/\r/g,'');
  const date=day(body.match(/\bAm\s+(\d{1,2}\.\d{1,2}\.\d{4})/i)?.[1]||'');
- const start=body.search(/(?<!\p{L})Öffentlicher\s+Teil\s*:?/iu);if(start<0)return {date,items:[]};
- let part=body.slice(start).replace(/^Öffentlicher\s+Teil\s*:?[^\n]*\n/i,'');
- const end=part.search(/Nicht\s*-?\s*öffentlicher\s+Teil/i);if(end>=0)part=part.slice(0,end);
- const items=[];let current=null;
+ // Items of the public part; those after „Nichtöffentlicher Teil“ marked non-public, all of a notice without a heading of
+ // the public part marked unclear (24.10.2026).
+ const start=body.search(/(?<!\p{L})Öffentlicher\s+Teil\s*:?/iu);
+ let part=start<0?body:body.slice(start).replace(/^Öffentlicher\s+Teil\s*:?[^\n]*\n/i,'');
+ const items=[];let current=null,publicity=start<0?'unclear':null;
  for(const line of part.split('\n').map(l=>l.trim()).filter(Boolean)){
+  if(/^Nicht\s*-?\s*öffentlicher\s+Teil/i.test(line)){publicity='nonpublic';current=null;continue;}
   const m=line.match(/^(\d{1,2})\.\s+(\S.*)$/);
-  if(m&&(!current||Number(m[1])===Number(current.number)+1||items.length===0)){current={number:m[1].padStart(2,'0'),text:m[2]};items.push(current);}
+  if(m&&(!current||Number(m[1])===Number(current.number)+1||items.length===0||!items.some(x=>x.publicity===publicity))){current={number:m[1].padStart(2,'0'),text:m[2],publicity};items.push(current);}
   else if(current)current.text+=' '+line;
  }
  return {date,items:items.map(i=>{
   const ref=i.text.match(/\s+((?:[A-ZÄÖÜ]{1,4}\s+[IVX]+\s+\d{2}-\d{2,4}|\d{3,4}\/\d{2}))\s*$/);
   const title=clean((ref?i.text.slice(0,ref.index):i.text).replace(/\s+/g,' '));
-  return {number:i.number,title,reference:ref?.[1]||'',documents:[]};
- }).filter(i=>/\p{L}{2}/u.test(i.title))};
+  return {number:i.number,title,reference:ref?.[1]||'',documents:[],...(i.publicity?{publicity:i.publicity}:{})};
+ }).filter(i=>/\p{L}{2}/u.test(i.title)&&!PLACEHOLDER.test(i.title))};
 }
 /**
  * Recognises a page of the generator (start page): {adapter, method, base, invitationLists, stand} or null.
@@ -241,8 +246,8 @@ function agendaRows(m,source,now,decided){
   const status=ahead?(item.reference?'consulting':'announced'):'unknown';
   const description=ahead?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':d?`In der Beschlussliste verzeichnet: ${result}. Das Ergebnis nennt das Beschlussdokument.`:'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
   const id=item.reference&&slug(item.reference)?`${source.id}-vo-nr-${slug(item.reference)}`:`${source.id}-top-${m.date.replace(/-/g,'')}-${fnv([m.committee,item.number,item.title].join('|'))}`;
-  return {id,title:item.title,reference:item.reference,sourceUrl:m.url,identityLinks:[],status,documents:[...item.documents,...(d?.document?[d.document]:[])],
-   event:{date:m.date,committee:m.committee,status,description,result,url:m.url,publicEvidence:'Abschnitt „öffentliche Tagesordnung“ der Einladung'},agenda:{number:item.number,decision:d}};
+  return markPublicity({id,title:item.title,reference:item.reference,sourceUrl:m.url,identityLinks:[],status,documents:[...item.documents,...(d?.document?[d.document]:[])],
+   event:{date:m.date,committee:m.committee,status,description,result,url:m.url,publicEvidence:'Abschnitt „öffentliche Tagesordnung“ der Einladung'},agenda:{number:item.number,decision:d}},item.publicity);
  });
 }
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs. Every list is read in each import (a
@@ -301,7 +306,6 @@ async function collectOneTi(source,{now=new Date(),get=fetchText,getPdf=readNoti
  for(const m of [...meetings.values()].sort((a,b)=>b.date.localeCompare(a.date))){
   // An announced meeting without agenda has nothing public yet; a past one is a remark. A meeting with an agenda of the
   // non-public part only has no public item. An agenda not told apart as public is not taken, and that is an issue.
-  if(m.unclear){issues.push('Tagesordnung nicht eindeutig als öffentlich erkennbar, nicht übernommen: '+m.url);continue;}
   if(!m.agenda){if(m.date>today)upcoming++;else if(!m.restricted)warnings.push('Sitzung ohne veröffentlichte Tagesordnung: '+m.url);continue;}
   const known=usableMark(marks,m,now);
   if(known?.trusted){held[m.url]=marks.known[m.url];unchanged++;continue;}
@@ -328,7 +332,8 @@ async function collectOneTi(source,{now=new Date(),get=fetchText,getPdf=readNoti
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seite des TI-Generators; nur Tagesordnungspunkte der öffentlichen Tagesordnung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

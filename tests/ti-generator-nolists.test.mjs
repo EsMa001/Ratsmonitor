@@ -22,16 +22,18 @@ test('TI-Generator papers list yields the public items of each meeting',()=>{
  assert.deepEqual(m.agenda.map(i=>[i.number,i.title,i.reference]),[['11.','Beratung und Beschlussfassung zur Entgeltordnung für die Überlassung des Sitzungssaals des Rathauses','G/61/26']]);
  assert.deepEqual(m.agenda[0].documents.map(d=>[d.title,d.url.startsWith(gb+'listen/')]),[['Vorlage G/61/26',true],['ENTWURF Entgeltordnung Rathaus',true]]);
  const hidden=fixture('papers-gartz.html').replace(/\(&nbsp;&ouml;ffentlicher&nbsp;Teil&nbsp;\)/g,'(&nbsp;nicht&nbsp;&ouml;ffentlicher&nbsp;Teil&nbsp;)');
- assert.equal(parseTiPapers(hidden,{url:gb,committee:'X',group:'1'},gs).meetings.length,0,'a paper of the non-public part gives no item');
+ assert.ok(parseTiPapers(hidden,{url:gb,committee:'X',group:'1'},gs).meetings.flatMap(x=>x.agenda).every(i=>i.publicity==='nonpublic'),'a paper of the non-public part is taken marked');
 });
 test('TI-Generator notice text yields the items of the public part with references',()=>{
  const read=parseTiNoticeText(fixture('notice-vorharz.txt'));
  assert.equal(read.date,'2026-09-28');
- assert.equal(read.items.length,20);
+ const open=read.items.filter(i=>!i.publicity);
+ assert.equal(open.length,20);
  assert.deepEqual(read.items[6],{number:'07',title:'Änderung der Kostenbeitragsatzung für den Besuch von Kindertageseinrichtungen und Tagespflegestellen in der Verbandsgemeinde Vorharz ab 01.01.2027',reference:'LP VIII 26-163',documents:[]});
  assert.ok(read.items[14].title.startsWith('3. Änderung der Zusammensetzung des Gemeindewahlausschusses'),'the page footer inside the list is dropped');
- assert.ok(!read.items.some(i=>/Grundstücksangelegenheit|Personalangelegenheit/.test(i.title)),'the non-public part is not taken');
- assert.deepEqual(parseTiNoticeText('Am 01.02.2026 findet eine Sitzung statt.\nNichtöffentlicher Teil:\n01. Personal'),{date:'2026-02-01',items:[]});
+ assert.ok(!open.some(i=>/Grundstücksangelegenheit|Personalangelegenheit/.test(i.title)),'the non-public part is not public');
+ assert.ok(read.items.filter(i=>i.publicity).every(i=>i.publicity==='nonpublic'),'it is taken marked (24.10.2026)');
+ assert.deepEqual(parseTiNoticeText('Am 01.02.2026 findet eine Sitzung statt.\nNichtöffentlicher Teil:\n01. Personal'),{date:'2026-02-01',items:[{number:'01',title:'Personal',reference:'',documents:[],publicity:'nonpublic'}]});
 });
 test('TI-Generator collector reads papers (Amt Gartz) and notices (VG Vorharz) when no invitation lists exist',async()=>{
  const pages={[gb]:fixture('start-gartz.html'),[gb+'listen/ti_13__60_bv_.php']:fixture('papers-gartz.html'),[gb+'listen/ti_31__60_bk_.php']:nothing};

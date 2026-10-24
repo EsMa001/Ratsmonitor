@@ -6,14 +6,15 @@ import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
 import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
-import {fnv,germanDay as day} from './source-common.mjs';
+import {fnv,germanDay as day,markPublicity,topicPublicity,selfClosed,PLACEHOLDER} from './source-common.mjs';
 // Public pages of KOMFA-RIS (kommunalfabrik, ris-<name>.komfa.de). Read are the month view of the calendar, through the
 // link the calendar itself offers for the previous and the next month (action=cal&SetFilter=calstartdate&FilterValue=
 // <first day>), and the agenda page of each meeting (action=to&id=<id>).
 // - The agenda page prints the agenda as one table. A heading row opens the public part ("Öffentlicher Teil",
 //   "I. öffentliche Sitzung"); a heading of the non-public part ("II. nichtöffentliche Sitzung …", whose item titles some
-//   tenants print, Woldegk) or any other part ends it. Only items after a public heading are taken; a page without one
-//   gives nothing (fail closed). A title that names the non-public part is not taken either.
+//   tenants print, Woldegk) or any other part ends it. Items after a public heading are public; items after its end and
+//   items whose title names the non-public part are taken marked non-public, items of a page without any heading
+//   unclear (24.10.2026, markPublicity in source-common.mjs).
 // - Papers carry numbers ("63-26", "47/2026-224") and documents (action=dla&id=<n>, PDF), which are linked, not read.
 //   The consultations of one paper in several meetings are joined by its number. The pages publish no results.
 // - One system may serve an Amt and its member municipalities: the calendar names each meeting "<municipality>, <body>".
@@ -94,42 +95,41 @@ export function parseKomfaAgenda(html,meeting,source,now=new Date()){
  agenda=agenda.replace(/<div class=["']collapse["'] id=["'](komfaris[0-9A-Za-z]+)["'][^>]*>([\s\S]*?)<\/table>\s*<\/div>/gi,(all,id,inner)=>{
   const documents=[];
   for(const a of inner.matchAll(/<a\b([^>]*\baction=dla[^>]*)>/gi)){
-   const href=attribute(a[1],'href'),title=attribute(a[1],'title')||'Dokument';if(isNonPublicText(title))continue;
+   const href=attribute(a[1],'href'),title=attribute(a[1],'title')||'Dokument';if(isNonPublicText(title)||selfClosed(title,href))continue;
    try{documents.push({title,url:allowed(new URL(href,meeting.url).href,source),kind:'application/pdf'});}catch{/* another host */}
   }
   boxes.set(id,documents);return '';
  });
- // Rows after the public heading are public; rows before any heading (loose) wait for the decision after the table.
- const today=now.toISOString().slice(0,10),items=[],loose=[];let open=null,ended=false,closedPublic=false,left=0,leftLoose=0;
+ // Rows after the public heading are public, rows after its end non-public; rows before any heading (loose) wait for the
+ // decision after the table.
+ const today=now.toISOString().slice(0,10),items=[];let state='loose',closedPublic=false,ended=false,left=0;
  for(const row of agenda.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)){
   const cells=[...row[1].matchAll(/<td\b([^>]*)>([\s\S]*?)<\/td>/gi)].map(c=>({cls:attribute(c[1],'class'),html:c[2]}));
   if(cells.length<3)continue;
   const numberCell=cells.filter(c=>/\bw05\b/.test(c.cls)).at(-1),titleCell=cells.find(c=>/(?:^|\s)left(?:\s|$)/.test(c.cls)&&!/\bw\d\d\b/.test(c.cls)),refCell=cells.find(c=>/\bw20\b/.test(c.cls));
   if(!titleCell)continue;
-  const number=plain(numberCell?.html||''),title=plain(titleCell.html);if(!title)continue;
+  const number=plain(numberCell?.html||''),title=plain(titleCell.html);if(!title||PLACEHOLDER.test(title))continue;
   const heading=partTitle(title),bold=/<b\b/i.test(titleCell.html);
-  // A part heading: the public one opens the agenda, any other one ends it (fail closed).
-  if(PUBLIC_PART.test(heading)&&(bold||!number)&&!NAMES_PART.test(heading.replace(PUBLIC_PART,''))){if(open===null){open=true;continue;}ended=true;break;}
-  if(isNonPublicHeading(title)||/^(?:nicht|non)[\s-]*öffentlich|^nichtoeffentlich/.test(heading)||bold&&NAMES_PART.test(heading)&&!CLOSES_PUBLIC.test(heading)){ended=true;break;}
+  // A part heading: the first public one opens the public part, any other one ends it.
+  if(PUBLIC_PART.test(heading)&&(bold||!number)&&!NAMES_PART.test(heading.replace(PUBLIC_PART,''))){if(state==='loose'){state='public';continue;}ended=true;state='nonpublic';continue;}
+  if(isNonPublicHeading(title)||/^(?:nicht|non)[\s-]*öffentlich|^nichtoeffentlich/.test(heading)||bold&&NAMES_PART.test(heading)&&!CLOSES_PUBLIC.test(heading)){ended=true;state='nonpublic';continue;}
   // "Schließen der öffentlichen Sitzung" ends the public part (a procedural item, not taken).
-  if(CLOSES_PUBLIC.test(heading)){ended=true;closedPublic=open===null;break;}
-  const list=open?items:loose;
-  // A title that names the non-public part is not taken, wherever it stands.
-  if(isNonPublicText(title)){if(open)left++;else leftLoose++;continue;}
+  if(CLOSES_PUBLIC.test(heading)){if(state==='loose')closedPublic=true;ended=true;state='nonpublic';continue;}
+  // A title that names the non-public part is non-public, wherever it stands.
+  const publicity=isNonPublicText(title)?'nonpublic':state==='public'?null:state;if(publicity==='nonpublic')left++;
   const reference=plain(refCell?.html||''),box=refCell?.html.match(/href=["']#(komfaris[0-9A-Za-z]+)["']/i)?.[1];
   const documents=box?boxes.get(box)||[]:[];
   const key=reference?reference.replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,''):'';
   const status=date>today?(reference?'consulting':'announced'):'unknown';
-  list.push({id:`${source.id}-kf-${key?'vo-'+key:'top-'+date.replace(/-/g,'')+'-'+fnv([committee,number,title].join('|'))}`,title,reference,sourceUrl:meeting.url,identityLinks:[],status,documents,
-   event:{date,committee,status,description:date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.',result:'',url:meeting.url,publicEvidence:open?'Öffentlicher Teil der Tagesordnung im Ratsinformationssystem (KOMFA)':'Tagesordnung ohne Teilüberschrift; öffentliche Bekanntmachung der Sitzung im Ratsinformationssystem (KOMFA)'},
+  items.push({publicity,id:`${source.id}-kf-${key?'vo-'+key:'top-'+date.replace(/-/g,'')+'-'+fnv([committee,number,title].join('|'))}`,title,reference,sourceUrl:meeting.url,identityLinks:[],status,documents,
+   event:{date,committee,status,description:date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.',result:'',url:meeting.url,publicEvidence:state==='public'?'Öffentlicher Teil der Tagesordnung im Ratsinformationssystem (KOMFA)':'Tagesordnung ohne Teilüberschrift; öffentliche Bekanntmachung der Sitzung im Ratsinformationssystem (KOMFA)'},
    agenda:{number}});
  }
- if(open)return {date,committee,available:true,items,left};
- // An agenda without a part heading: public where the agenda closes its public part itself ("Schließen der öffentlichen
- // Sitzung") or where the meeting's own documents name its public notice ("Bekanntmachung-oeffentlich", Woldegk), and
- // no other part follows. Tenants that print the non-public part do so under a heading of its own.
- if(open===null&&(closedPublic||!ended&&PUBLIC_NOTICE.test(text(head))))return {date,committee,available:true,items:loose,left:leftLoose};
- return {date,committee,available:true,items:null,left};
+ // Rows before any heading: public where the agenda closes its public part itself ("Schließen der öffentlichen Sitzung") or
+ // where the meeting's own documents name its public notice ("Bekanntmachung-oeffentlich", Woldegk) and no other part
+ // follows; otherwise unclear.
+ const loosePublic=closedPublic||!ended&&PUBLIC_NOTICE.test(text(head));
+ return {date,committee,available:true,items:items.map(({publicity,...i})=>markPublicity(i,publicity==='loose'?(loosePublic?null:'unclear'):publicity)),left};
 }
 // source: {id, name, kind, base, organizations?}. marks (optional): what earlier imports read completely (meeting-marks.mjs).
 export async function collectKomfa(source,{now=new Date(),get=fetchText,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks}={}){
@@ -165,7 +165,6 @@ export async function collectKomfa(source,{now=new Date(),get=fetchText,oldestFi
   try{
    const agenda=parseKomfaAgenda(await read(m.url),m,source,now);
    if(!agenda.available){if(agenda.date>today)upcoming++;else warnings.push('Sitzung ohne veröffentlichte Tagesordnung: '+m.url);return;}
-   if(!agenda.items){warnings.push(NOT_PUBLIC+': '+m.url);return;}
    left+=agenda.left;
    const print=(await hash(JSON.stringify(agenda.items.map(i=>[i.id,i.title,i.reference,i.documents.map(d=>d.url)])))).slice(0,16);
    if(known?.print===print){held[m.url]=marks.known[m.url];unchanged++;return;}
@@ -179,14 +178,15 @@ export async function collectKomfa(source,{now=new Date(),get=fetchText,oldestFi
   }catch(e){if(/Zeitbudget/.test(e.message))unread++;else if(e.message.includes(REFUSED))refused++;else issues.push(m.url+': '+e.message);}
   finally{count++;onProgress(source.id+': '+count+'/'+meetings.size+' Sitzungen');}
  },2);
- if(left)warnings.push(`${left} Punkte, deren Titel den nichtöffentlichen Teil nennt, ausgelassen.`);
+ if(left)warnings.push(`${left} Punkte des nichtöffentlichen Teils als nichtöffentlich übernommen.`);
  if(refused)issues.push(`Server wies ${refused} ${refused===1?'Sitzung':'Sitzungen'} vorübergehend ab; der nächste Schritt setzt dort fort.`);
  if(unread)issues.push(`Zeitbudget der Quelle erreicht; ${unread} ${unread===1?'Sitzung':'Sitzungen'} noch nicht vollständig gelesen.`);
  if(beyond)issues.push('Sitzungslimit erreicht; weiterer Import erforderlich.');
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.committee+': '+e.description).join('\n'),
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.committee+': '+e.description).join('\n'),
    documents:[...new Map([...row.documents,{title:'Sitzung / öffentliche Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten von KOMFA-RIS; nur Punkte unter der Überschrift des öffentlichen Teils.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);

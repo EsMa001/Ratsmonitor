@@ -5,7 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
-import {clip} from './source-common.mjs';
+import {clip,markPublicity,topicPublicity,PLACEHOLDER} from './source-common.mjs';
 // Shared frame of the small readers (ris, hhdocuments, rio-sys, hitcom Rats-Info-System): each reader lists the meetings
 // of the period and reads one page per meeting; this frame turns the items into reports (topics), keeps marks and builds
 // the coverage in the same way as sdnet-rim4.mjs. Only public pages are read.
@@ -25,17 +25,18 @@ export function resolutionStatus(result,committee){
  return 'unknown';
 }
 /**
- * Reports of one meeting. item: {key, number, title, reference?, documents:[{title,url}], result?, record?}.
+ * Reports of one meeting. item: {key, number, title, reference?, documents:[{title,url}], result?, record?, publicity?}; an item
+ * with publicity 'nonpublic' or 'unclear' is taken marked (24.10.2026, markPublicity), a placeholder title not at all.
  * A past item with a resolution text takes its status from it, a coming one is "consulting".
  */
 export function smallItems(meeting,items,source,prefix,label,now=new Date()){
  const date=meeting.date,committee=meeting.body,today=now.toISOString().slice(0,10),past=date<=today;
- return items.map(i=>{
+ return items.filter(i=>!PLACEHOLDER.test(i.title||'')).map(i=>{
   const result=i.result||'',status=!past?'consulting':result?resolutionStatus(result,committee):'unknown';
   const description=!past?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?`Beschluss/Protokoll: ${clip(result,600)}`:'In der Tagesordnung geführt; ein Beschluss ist öffentlich nicht veröffentlicht.';
-  return {id:`${source.id}-${prefix}-${i.key}`,title:i.title,reference:i.reference||i.number||i.key,sourceUrl:i.url||meeting.url,identityLinks:[],documents:(i.documents||[]).map(d=>({title:d.title,url:d.url,kind:/\.pdf\b|ceasy\/resource|file\.php|\/ris\//i.test(d.url)?'pdf':'html'})),status,
+  return markPublicity({id:`${source.id}-${prefix}-${i.key}`,title:i.title,reference:i.reference||i.number||i.key,sourceUrl:i.url||meeting.url,identityLinks:[],documents:(i.documents||[]).map(d=>({title:d.title,url:d.url,kind:/\.pdf\b|ceasy\/resource|file\.php|\/ris\//i.test(d.url)?'pdf':'html'})),status,
    record:{number:i.number||'',paper:i.reference||'',resolution:result?clip(result,600):'',...(i.record||{})},
-   event:{date,committee,status,description,result:result?clip(result,600):'',url:meeting.url,publicEvidence:`Öffentliche Tagesordnung ${label}${i.number?', TOP '+i.number:''}`}};
+   event:{date,committee,status,description,result:result?clip(result,600):'',url:meeting.url,publicEvidence:`Öffentliche Tagesordnung ${label}${i.number?', TOP '+i.number:''}`}},i.publicity);
  });
 }
 /**
@@ -85,7 +86,8 @@ export async function collectSmall(source,spec,{now=new Date(),get=fetchText,req
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Sitzung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...row.documents,{title:'Sitzung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:`Öffentliche Seiten (${spec.label}); nur der öffentliche Teil.`},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

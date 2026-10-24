@@ -48,14 +48,16 @@ test('PIWi public agenda: parts, papers, votes and decision documents; a paper i
  // A meeting still ahead: announced, a paper under consultation.
  const ahead=parsePiwiAgenda(fixture('piwi-to-stv.html'),stv,source,new Date('2026-09-01T12:00:00Z'));
  assert.deepEqual(ahead.items.slice(0,2).map(i=>i.status),['announced','consulting']);
- // Rows below a heading of the non-public part are never taken; a page without a public agenda is none.
+ // Rows below a heading of the non-public part are taken marked non-public (24.10.2026); a paper that also stands in a public
+ // part stays public. A page without a public agenda is none.
  for(const heading of ['Nichtöffentliche Tagesordnung','III. Nicht öffentlicher Teil','Vertrauliche Angelegenheiten']){
   const closed=fixture('piwi-to-stv.html').replace('font-weight-medium">Tagesordnung III','font-weight-medium">'+heading);
-  assert.ok(!parsePiwiAgenda(closed,stv,source,now).items.some(i=>i.reference==='26-V-61-0014'),heading);
+  const read=parsePiwiAgenda(closed,stv,source,now).items;
+  assert.ok(read.some(i=>i.publicity==='nonpublic'),heading);assert.ok(read.every(i=>i.publicity!=='nonpublic'||i.event.publicity==='nonpublic'));
  }
  // … also when the heading row carries another icon.
  const other=fixture('piwi-to-stv.html').replace(/TO_Ueberschrift(\.svg(?:(?!TO_)[\s\S])*?Tagesordnung) III/,'TO_Abschnitt$1 III – nicht öffentlich');
- assert.equal(other.match(/TO_Ueberschrift/g).length,3);assert.ok(!parsePiwiAgenda(other,stv,source,now).items.some(i=>i.reference==='26-V-61-0014'));
+ assert.equal(other.match(/TO_Ueberschrift/g).length,3);assert.ok(parsePiwiAgenda(other,stv,source,now).items.some(i=>i.publicity==='nonpublic'));
  assert.equal(parsePiwiAgenda('<main><h1>Anmeldung</h1></main>',stv,source,now),null);
  // Links that Wicket rewrote with the session (";jsessionid=…") keep the papers, votes, documents and ids.
  const rewritten=fixture('piwi-to-stv.html').replace(/href="([^"]*(?:detail\/\d+|abstimmungsergebnis|dokument\/v\/\d+))"/g,'href="$1;jsessionid=0123ABCD.node1?2"');
@@ -74,13 +76,14 @@ test('PIWi paper page yields fields, documents and the consultation sequence; th
  assert.equal(restricted.restricted,true);assert.deepEqual(restricted.documents,[]);assert.ok(restricted.consultations.every(c=>!c.documents.length));
  assert.ok(!restricted.fields.some(f=>f.field==='Betreff'),'the subject of a paper that is not public is not kept');
  assert.equal(restricted.consultations.length,3,'the meetings that discussed it are still named');
- // A paper whose mark is missing or says something else counts as not public as well.
- for(const mark of ['<span>Vertraulicher Vorgang</span>','<span>Sonstiges</span>']){
+ // A paper that calls itself confidential counts as not public as well; one whose mark is missing or says something else is read.
+ for(const mark of ['<span>Vertraulicher Vorgang</span>']){
   const p=parsePiwiPaper(fixture('piwi-vorlage.html').replace('<span>Öffentlicher Vorgang</span>',mark),source,base+'sitzungsvorlage/detail/3747762');
   assert.equal(p.restricted,true,mark);assert.deepEqual(p.documents,[]);
  }
  const unmarked=parsePiwiPaper(fixture('piwi-vorlage.html').replace(/<div class="keyvalue-key">Art:/,'<div class="keyvalue-key">Typ:'),source,base+'sitzungsvorlage/detail/3747762');
- assert.equal(unmarked.restricted,true);assert.deepEqual(unmarked.documents,[]);
+ assert.equal(unmarked.restricted,false);assert.ok(unmarked.documents.length>0);
+ assert.equal(parsePiwiPaper(fixture('piwi-vorlage.html').replace('<span>Öffentlicher Vorgang</span>','<span>Sonstiges</span>'),source,base+'sitzungsvorlage/detail/3747762').restricted,false);
  // A page that is not recognisable is none.
  assert.equal(parsePiwiPaper('<html><body>Internal error</body></html>',source,base+'antrag/detail/1'),null);
  assert.equal(parsePiwiVote(fixture('piwi-abstimmung.html')),'Einstimmig');assert.equal(parsePiwiVote(fixture('piwi-abstimmung-umsetzung.html')),'Umsetzung auf TO I');

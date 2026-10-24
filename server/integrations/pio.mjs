@@ -5,7 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {createSession} from './allris.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {RESTRICTED,asciiSlug as slug,fnv,germanDay as day,germanLongDay as longDay} from './source-common.mjs';
+import {RESTRICTED,asciiSlug as slug,fnv,germanDay as day,germanLongDay as longDay,markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
 // PIO, the "Politisches Informationssystem Offenbach" (own development of the city of Offenbach am Main). Every paper,
 // invitation and decision is one HTML document (a converted Word file) under index.php?aktiv=doc. Read are plain links
 // of the public site only: the agenda overview (one archive list per body), the invitation of each meeting, the page of
@@ -15,7 +15,8 @@ import {RESTRICTED,asciiSlug as slug,fnv,germanDay as day,germanLongDay as longD
 const address=(href,source)=>{if(!source)return null;try{return allowed(new URL(decode(href),source.base).href,source);}catch{return null;}};
 // The non-public part. The invitations are converted Word files that write its heading in many ways ("II.
 // Nichtöffentlicher Teil", "B) Nicht öffentliche Sitzung", "Nicht öffentlich:", "Vertraulicher Teil", "Teil B –
-// nicht öffentlich"). A line that begins with such a word, and any short line that names it, ends the public part.
+// nicht öffentlich"). A line that begins with such a word, and any short line that names it, ends the public part; the items
+// after it are taken marked non-public (24.10.2026, markPublicity).
 const closing=line=>RESTRICTED.test(line)&&(line.length<80||/^(?:[IVX]+|[A-Za-z]|\d+)?[.):]?\s*[-–]?\s*(?:nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich)/i.test(line));
 // Names of a body as the overview and an extract write them ("Ausschuss für Umwelt …", "des Ausschusses für Umwelt …").
 const nameWords=name=>new Set((String(name).toLowerCase().match(/[a-zäöüß]{3,}/g)||[]).filter(w=>!/^(?:für|und|der|des|die|dem|den|sowie)$/.test(w)).map(w=>w.replace(/(?:es|s)+$/,'')).filter(Boolean));
@@ -51,15 +52,15 @@ export function pioInvitations(html,committee,source){
  }
  return meetings;
 }
-/** Public agenda items of an invitation; null if the document holds no agenda item. */
+/** Agenda items of an invitation, those of the non-public part marked; null if the document holds no agenda item. */
 export function parsePioAgenda(html,meeting,source,now=new Date()){
  const fragment=documentBody(html);if(!fragment)return null;
  const tops=[];let open=null,current=null;
  for(const line of lines(fragment,source)){
-  if(closing(line.text)){open=false;break;}
+  if(closing(line.text)){open=false;current=null;continue;}
   if(/^(?:[IVX]+|[A-Za-z]|\d+)?[.):]?\s*öffentliche[rn]?\s+(?:Teil|Sitzung|Tagesordnung)\b/i.test(line.text)){open=true;continue;}
   const top=line.text.match(/^TOP\s*(\d+(?:\.\d+)*[a-z]?)\b\.?:?\s*(.*)$/i);
-  if(top){current={number:top[1],rows:top[2]?[{text:top[2],links:line.links}]:[]};tops.push(current);continue;}
+  if(top){current={closed:open===false,number:top[1],rows:top[2]?[{text:top[2],links:line.links}]:[]};tops.push(current);continue;}
   current?.rows.push(line);
  }
  if(!tops.length)return null;
@@ -67,18 +68,18 @@ export function parsePioAgenda(html,meeting,source,now=new Date()){
  const publicEvidence=open?'Abschnitt „Öffentlicher Teil“ der Einladung':'Öffentlich bereitgestellte Einladung';
  for(const t of tops){
   const all=t.rows.flatMap(r=>r.links),papers=all.filter(l=>/[?&]aktiv=doc\b/.test(l.url)&&new URL(l.url).searchParams.get('dsnummer')),paper=papers[0];
-  const title=(paper?.label||t.rows[0]?.text||'').replace(/[\s:]+$/,'');if(!title)continue;
+  const title=(paper?.label||t.rows[0]?.text||'').replace(/[\s:]+$/,'');if(!title||PLACEHOLDER.test(title))continue;
   const reference=paper?new URL(paper.url).searchParams.get('dsnummer').trim():'';
   // Submitter and date of the paper, as the invitation prints them below its title.
   const joined=t.rows.map(r=>r.text).join(' '),after=joined.slice(joined.indexOf(title)+title.length).trim(),cut=reference?after.indexOf(reference):-1;
   const note=(cut>=0?after.slice(0,cut+reference.length):paper?after:'').slice(0,300);
   const id=`${source.id}-${reference?'vo-'+slug(reference):'top-'+meeting.date.replace(/-/g,'')+'-'+fnv([meeting.committee,t.number,title].join('|'))}`;
-  const documents=papers.slice(1).map(l=>({title:l.label||'Drucksache',url:l.url,kind:'html'}));
+  const documents=t.closed?[]:papers.slice(1).map(l=>({title:l.label||'Drucksache',url:l.url,kind:'html'}));
   if(items.has(id)){items.get(id).documents.push(...documents);continue;}
   const status=future?(reference?'consulting':'announced'):'unknown';
   const description=future?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
-  items.set(id,{id,title,reference,sourceUrl:paper?.url||meeting.url,identityLinks:[paper?.url].filter(Boolean),status,documents,
-   event:{date:meeting.date,committee:meeting.committee,status,description,result:'',url:meeting.url,publicEvidence},agenda:{number:t.number,note,paperUrl:paper?.url||null}});
+  items.set(id,markPublicity({id,title,reference,sourceUrl:paper?.url||meeting.url,identityLinks:[paper?.url].filter(Boolean),status,documents,
+   event:{date:meeting.date,committee:meeting.committee,status,description,result:'',url:meeting.url,publicEvidence},agenda:{number:t.number,note,paperUrl:paper?.url||null}},t.closed?'nonpublic':null));
  }
  return [...items.values()];
 }
@@ -152,9 +153,10 @@ export async function collectPio(source,{now=new Date(),get=fetchText,request=fe
    for(const row of rows){
     const {number,note,paperUrl}=row.agenda;delete row.agenda;
     row.sourceData={version:'public-source-fields-v1',method:'pio',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{reference:row.reference,title:row.title,number,note}}],detailStatus:'completed',issues:[]};
-    if(paperUrl){
+    // The paper page of a non-public item is not asked (shut to guests); its title is what is public.
+    if(paperUrl&&row.publicity!=='nonpublic'){
      try{const detail=await cached(papers,paperUrl,paperOf(paperUrl));
-      row.documents.push(...detail.documents);row.sourceData.records.push({kind:'paper',url:paperUrl,fields:detail.fields});
+      row.documents.push(...openDocuments(detail.documents));row.sourceData.records.push({kind:'paper',url:paperUrl,fields:detail.fields});
       // The extract of this meeting: the same day and the same body (two bodies may decide the paper on one day).
       if(m.date<=today)for(const url of detail.decisions){
        const d=await cached(decisions,url,parsePioDecision),own=d?.date===m.date&&sameBody(d.body,m.committee)&&pioResult(d,row.reference);if(!own)continue;
@@ -178,7 +180,8 @@ export async function collectPio(source,{now=new Date(),get=fetchText,request=fe
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Drucksache / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Drucksache / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche PIO-Seite; nur Tagesordnungspunkte des öffentlichen Teils der Einladung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

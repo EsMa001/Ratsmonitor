@@ -6,6 +6,7 @@ import {fetchText,allowed,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {restoreLostLetters,LOST} from '../../shared/lost-letters.mjs';
+import {markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
 // Public guest access of the KIC council information system (kiC RIS, React app such as ris.aschaffenburg.de/app/).
 // The page is an empty shell; the app reads /<version>/webconfig.json (serviceUrl, org_key) and then asks the JSON
 // interface named there, sending the headers x-orgkey (org_key), x-uniqueid (host name of the app, plus "/<name>"
@@ -70,10 +71,10 @@ export function kicMeetings(json,source){
  return known.filter(m=>number(m.state)!==3&&number(m.visibility)!==2).map(m=>({id:String(m.id),url:kicLink(source,'app/sitzungen/'+m.id),date:day(m.meetingdate),name:plain(m.name),committee:plain(m.committeename),client:plain(m.clientname),visibility:number(m.visibility)}));
 }
 /**
- * Public agenda items of one meeting (web/guestmeetings/<id>); null if the guest view shows no agenda at all.
- * Fail closed: an item is taken only if its part says protectedpart false and the item says restricted false.
- * Parts and items marked as protected/restricted are skipped, whatever they are called; items whose flags are missing
- * or unknown are skipped as well and counted in unclear, so that the collector names them.
+ * Agenda items of one meeting (web/guestmeetings/<id>); null if the guest view shows no agenda at all.
+ * Public is an item whose part says protectedpart false and that says restricted false itself. Items of a protected part
+ * or flagged restricted that the guest view still lists are taken with publicity 'nonpublic', items with missing or
+ * unknown flags with 'unclear' (24.10.2026, markPublicity in source-common.mjs); placeholders are left out.
  */
 export function parseKicMeeting(json,meeting={}){
  const m=typeof json==='string'?JSON.parse(json):json;
@@ -82,11 +83,11 @@ export function parseKicMeeting(json,meeting={}){
  const date=day(m.meetingdate)||meeting.date,committee=[m.committeename,m.committeename2,m.committeename3].map(plain).filter(Boolean).join(', ')||meeting.committee||meeting.name||'Öffentliche Sitzung';
  const items=[];let unclear=0;
  for(const part of m.parts){
-  if(!part||yes(part.protectedpart))continue;
+  if(!part)continue;
   for(const a of Array.isArray(part.agendaitems)?part.agendaitems:[]){
-   const title=plainTitle(a?.name);if(!title||yes(a.restricted)||!/^\d+-\d+$/.test(String(a.id)))continue;
-   if(!no(part.protectedpart)||!unrestricted(a.restricted)){unclear++;continue;}
-   items.push({key:String(a.id),number:plain(a.numbering),title,documents:Number(a.documentcount)||0,downloads:yes(a.downloadallowed),globalId:plain(a.globalid)});
+   const title=plainTitle(a?.name);if(!title||PLACEHOLDER.test(title)||!/^\d+-\d+$/.test(String(a.id)))continue;
+   const publicity=yes(part.protectedpart)||yes(a.restricted)?'nonpublic':!no(part.protectedpart)||!unrestricted(a.restricted)?'unclear':null;
+   items.push({key:String(a.id),...(publicity?{publicity}:{}),number:plain(a.numbering),title,documents:Number(a.documentcount)||0,downloads:yes(a.downloadallowed),globalId:plain(a.globalid)});
   }
  }
  // A committee name with lost characters goes into the print of the meeting, so that meetings read before they were
@@ -165,15 +166,22 @@ export async function collectKic(source,{now=new Date(),get=fetchText,request=fe
   if(fetched>=MAX_MEETINGS){beyond++;return;}fetched++;
   try{
    const agenda=parseKicMeeting(await read(root+'web/guestmeetings/'+m.id),m);
-   // Items whose release to guests cannot be told are left out and named; their meeting is read again next time.
-   if(agenda?.unclear)issues.push(`${m.url}: ${agenda.unclear} ${agenda.unclear===1?'Tagesordnungspunkt':'Tagesordnungspunkte'} ohne erkennbare Freigabe für Gäste ausgelassen`);
    // A meeting without agenda items in the guest view: still ahead, or published without them (date and documents only).
-   if(!agenda?.items.length){if(!agenda?.unclear){if(m.date>today)upcoming++;else warnings.push('Sitzung ohne öffentlich einsehbare Tagesordnung: '+m.url);}return;}
+   if(!agenda?.items.length){if(m.date>today)upcoming++;else warnings.push('Sitzung ohne öffentlich einsehbare Tagesordnung: '+m.url);return;}
    const print=(await hash(JSON.stringify([agenda.changed,agenda.items.map(i=>[i.key,i.title,i.number,i.documents,i.globalId])]))).slice(0,16);
    if(known?.print===print){held[m.url]=marks.known[m.url];unchanged++;count++;return;}
-   let cut=false,complete=!agenda.unclear;
+   let cut=false,complete=true;
    for(const item of agenda.items){
     const own=kicLink(source,`app/sitzungen/${m.id}/${item.key}`);let detail;
+    // An item not released to guests is taken with its title and mark; its page is not asked (it would refuse a guest).
+    if(item.publicity){
+     const status=agenda.date>today?'announced':'unknown',event={date:agenda.date,committee:agenda.committee,status,description:'',result:'',url:m.url,attendance:{status:'not_collected',sourceUrl:m.url,fetchedAt:now.toISOString(),people:[]}};
+     const row=markPublicity({id:`${source.id}-vo-${item.key}`,title:item.title,reference:'',sourceUrl:own,identityLinks:[own],status,documents:[],event,
+      sourceData:{version:'public-source-fields-v1',method:'kic',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{number:item.number,title:item.title,publicity:item.publicity}}],detailStatus:'completed',issues:[]}},item.publicity);
+     row.event.decision=sourceDecision(row.event);const ev=row.event;delete row.event;
+     const previous=grouped.get(row.id);if(previous){previous.events.push(ev);previous.identityLinks.push(...row.identityLinks);}else grouped.set(row.id,{...row,events:[ev]});
+     continue;
+    }
     // The identity of an item comes from its consultation sequence, so an item whose page is unreadable is left for later.
     try{detail=parseKicItem(await read(root+'web/guestagendaitems/'+encodeURIComponent(item.key)),source);}
     catch(e){complete=false;if(/Zeitbudget/.test(e.message))cut=true;else issues.push('Tagesordnungspunkt '+own+': '+e.message);continue;}
@@ -186,7 +194,7 @@ export async function collectKic(source,{now=new Date(),get=fetchText,request=fe
     const status=agenda.date>today?(detail.consultations.length?'consulting':'announced'):resultStatus(result,agenda.committee)||'unknown';
     const description=agenda.date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?'Abstimmungsergebnis: '+result:'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
     const event={date:agenda.date,committee:agenda.committee,status,description,result,url:m.url,publicEvidence:'Öffentlicher Teil der Tagesordnung im Gastzugang',attendance:{status:'not_collected',sourceUrl:m.url,fetchedAt:now.toISOString(),people:[]}};event.decision=sourceDecision(event);
-    const row={id:`${source.id}-vo-${first.key}`,title:item.title,reference:'',sourceUrl,identityLinks:[...new Set([sourceUrl,own])],status,documents:item.downloads?detail.documents:[],
+    const row={id:`${source.id}-vo-${first.key}`,title:item.title,reference:'',sourceUrl,identityLinks:[...new Set([sourceUrl,own])],status,documents:item.downloads?openDocuments(detail.documents):[],
      sourceData:{version:'public-source-fields-v1',method:'kic',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{number:item.number,title:item.title,role:detail.role,result,...(item.globalId?{globalId:item.globalId}:{})}},{kind:'agenda-item',url:own,fields:{consultations:detail.consultations.map(c=>({date:c.date,committee:c.committee,number:c.number,role:c.role,public:c.public}))}}],detailStatus:'completed',issues:[]}};
     const previous=grouped.get(row.id);if(previous){previous.events.push(event);previous.documents.push(...row.documents);previous.identityLinks.push(...row.identityLinks);}else grouped.set(row.id,{...row,events:[event]});
    }
@@ -200,7 +208,8 @@ export async function collectKic(source,{now=new Date(),get=fetchText,request=fe
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Tagesordnungspunkt / öffentliche Sitzung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Tagesordnungspunkt / öffentliche Sitzung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentlicher Gastzugang des KIC-Ratsinformationssystems; nur Tagesordnungspunkte des öffentlichen Teils.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

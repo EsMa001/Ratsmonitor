@@ -199,21 +199,23 @@ test('older installation without api.php: calendar from the mobile web service, 
  await collectRubin({...s,endpoint:'webservice'},{now,get:direct.get,window:'1m'});assert.ok(!direct.calls.some(u=>/api\.php/.test(u)));
 });
 
-test('embedded meeting: strings with braces and quotes, string flags, and only public items',()=>{
+test('embedded meeting: strings with braces and quotes, string flags, and items without the public status marked',()=>{
  const meeting={nummer:'2026-X-1',datum:'2026-09-30',is_draft:'0',fraktionssitzung:'0',full_url:'https://ris.example.test/meeting.php?id=2026-X-1',committees:[{id:'KT',name:'Kreistag',Koerperschaftsnummer:'LK'}],agenda_items:[{id:'2026-X-1|7|1',vorlagennummer:'7',topart:'at',status:'1',is_draft:'0',title:'Bericht {Teil "A"}',abstimmungstext:'einstimmig beschlossen'},{id:'2026-X-1|8|1',vorlagennummer:'8',topart:'at',status:'2',title:'Vertragsangelegenheit'}]};
  const html=`<html><script>window.components["MeetingPage__abc"] = {\n props: ${JSON.stringify({'passed-meeting':meeting}).replace(/\//g,'\\/')},\n store: [],\n};</script></html>`;
  assert.deepEqual(embeddedMeeting(html),meeting);assert.equal(embeddedMeeting('<html></html>'),null);
  const s={id:'district',name:'Landkreis Beispiel',kind:'district',base:'https://ris.example.test/'};
- const items=mapRubinMeeting(embeddedMeeting(html),s,now);
+ const items=mapRubinMeeting(embeddedMeeting(html),s,now).filter(t=>!t.publicity);
  assert.equal(items.length,1);assert.equal(items[0].title,'Bericht {Teil "A"}');assert.equal(items[0].status,'approved');assert.equal(items[0].id,'district-top-2026-X-1-7-1');
  // The component written as JSON, with a quoted props key.
  assert.deepEqual(embeddedMeeting(`<script>window.components["MeetingPage__a"]={"props":${JSON.stringify({'passed-meeting':meeting})}}</script>`),meeting);
  // Only the MeetingPage component is read: props of a later component are not its meeting.
  assert.equal(embeddedMeeting(`<script>window.components["MeetingPage__a"]={store:[]};window.components["OtherPage__b"]={props:${JSON.stringify({'passed-meeting':meeting})}};</script>`),null);
- // Items and documents without the public status are left out, whatever else they say.
+ // Items without the public status are taken marked (24.10.2026): without a status unclear, with another non-public;
+ // documents without the public status are left out.
  const mixed={...meeting,agenda_items:[{...meeting.agenda_items[0],status:undefined},{...meeting.agenda_items[0],id:'2026-X-1|9|1',status:3,title:'Grundstücksangelegenheit (nichtöffentlich)'},
   {...meeting.agenda_items[0],id:'2026-X-1|10|1',documents:[{documentName:'Vorlage',documentUrl:'https://ris.example.test/documents.php?id=1',documentPublicStatusId:'1'},{documentName:'Anlage vertraulich',documentUrl:'https://ris.example.test/documents.php?id=2',documentPublicStatusId:2},{documentName:'Anlage',documentUrl:'https://ris.example.test/documents.php?id=3'}]}]};
- const [only,...rest]=mapRubinMeeting(mixed,s,now);
+ const all=mapRubinMeeting(mixed,s,now),[only,...rest]=all.filter(t=>!t.publicity);
+ assert.deepEqual(all.filter(t=>t.publicity).map(t=>t.publicity),['unclear','nonpublic']);
  assert.equal(rest.length,0);assert.equal(only.id,'district-top-2026-X-1-10-1');assert.deepEqual(only.documents.map(x=>x.title),['Vorlage','Öffentliche Sitzung']);
 });
 

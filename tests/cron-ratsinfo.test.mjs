@@ -55,18 +55,19 @@ test('cron-ratsinfo list names day, committee, meeting page and the numbered pub
  assert.equal(odd[0].date,'2026-03-03');assert.equal(odd[0].url,'https://ris.stadt-helmstedt.de/index.php?id=8&tx_cronmmratsinfo_pi%5Bview%5D=sitzung&tx_cronmmratsinfo_pi%5Bsitzung%5D=7&cHash=1');
  assert.equal(parseCronList('<html>Wartungsarbeiten</html>',lkTops,lk),null);
 });
-test('cron-ratsinfo meeting page links the papers of an item; only items the list names as public are taken',()=>{
+test('cron-ratsinfo meeting page links the papers of an item; items the list names are public, other rows come marked',()=>{
  const detail=parseCronMeeting(page('lk-660.html'),aws,lk);
  assert.equal(detail.committee,'Ausschuss für Wirtschaft und Strategie (AWS)');assert.equal(detail.date,'2026-09-17');
  assert.deepEqual(detail.rows.map(r=>[r.number,r.papers.map(p=>p.reference)]),[['1',[]],['5',[]],['13',['ANH033/2026','ANH034/2026']],['14',['V064/2026']],['16',[]]]);
  assert.deepEqual(detail.rows[3].papers,[{record:'2504',reference:'V064/2026',url:paper(2504,11325)}]);
- // A row that the list does not name (e.g. of a non-public part) is never taken, whatever the page shows.
+ // A row that the list does not name (e.g. of a non-public part) is taken marked unclear (24.10.2026).
  const extra=page('lk-660.html').replace('</table>','<tr class="listRow"><td><b>TOP 20</b></td><td>Grundstücksangelegenheit</td><td><a href="https://ris.helmstedt.de/index.php?id=30&type=547&tx_cronmmratsinfo_pi[view]=vorlage&tx_cronmmratsinfo_pi[vorlage]=9999" title="V999/2026">x</a></td></tr></table>');
- const m=parseCronList(page('lk-all-tops.html'),lkTops,lk)[3],items=cronAgenda(m,parseCronMeeting(extra,aws,lk),lk,now);
- assert.deepEqual(items.map(i=>[i.id.replace(/[0-9a-f]{8}$/,'#'),i.reference,i.status,i.documents.length]),[['nds-03154-top-660-#','','unknown',0],['nds-03154-top-660-#','','unknown',0],['nds-03154-vo-2536','ANH033/2026','unknown',2],['nds-03154-vo-2504','V064/2026','unknown',1],['nds-03154-top-660-#','','unknown',0]]);
- assert.ok(!JSON.stringify(items).includes('Grundstück'));
+ const m=parseCronList(page('lk-all-tops.html'),lkTops,lk)[3],items=cronAgenda(m,parseCronMeeting(extra,aws,lk),lk,now),every=items;
+ assert.deepEqual(every.filter(i=>i.publicity).map(i=>[i.title,i.publicity]),[['Grundstücksangelegenheit','unclear']]);
+ assert.deepEqual(items.filter(i=>!i.publicity).map(i=>[i.id.replace(/[0-9a-f]{8}$/,'#'),i.reference,i.status,i.documents.length]),[['nds-03154-top-660-#','','unknown',0],['nds-03154-top-660-#','','unknown',0],['nds-03154-vo-2536','ANH033/2026','unknown',2],['nds-03154-vo-2504','V064/2026','unknown',1],['nds-03154-top-660-#','','unknown',0]]);
+ assert.ok(!JSON.stringify(items.filter(i=>!i.publicity)).includes('Grundstück'));
  // A listed item under the same number as that row but with another title takes neither its paper nor its id.
- const named=cronAgenda({...m,items:[...m.items,{number:'20',title:'Bericht der Verwaltung'}]},parseCronMeeting(extra,aws,lk),lk,now).at(-1);
+ const named=cronAgenda({...m,items:[...m.items,{number:'20',title:'Bericht der Verwaltung'}]},parseCronMeeting(extra,aws,lk),lk,now).filter(i=>!i.publicity).at(-1);
  assert.match(named.id,/^nds-03154-top-660-[0-9a-f]{8}$/);assert.equal(named.reference,'');assert.deepEqual(named.documents,[]);assert.equal(named.agenda.onPage,false);
  assert.ok(!JSON.stringify(named).includes('V999')&&!JSON.stringify(named).includes('9999'));
  // Spacing, punctuation or a title cut short in the list still find the row of the item.

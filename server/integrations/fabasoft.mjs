@@ -4,7 +4,7 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
 import {fetchText,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {asciiSlug as slug,clip} from './source-common.mjs';
+import {asciiSlug as slug,clip,selfClosed} from './source-common.mjs';
 // Öffentliche Ordner der Fabasoft Cloud (de.cloud.fabasoft.com/folio/public/<Freigabe>), wie sie Bad Homburg v. d. Höhe (2026)
 // für jedes Gremium verlinkt: „Stadtverordnetenversammlung 2026 (öffentlich)“ mit einem Ordner je Sitzung („Stadtverordneten-
 // versammlung 2026-09-10 18:30:00“), darin die Einladung (PDF) und je Tagesordnungspunkt ein Ordner („TOP 04 - Tagesordnung I -
@@ -46,11 +46,12 @@ export async function collectFabasoft(source,{now=new Date(),get=fetchText,reque
  const read=async(share,path=[])=>fabasoftEntries(await get(fabasoftUrl(share,path),site,undefined,request));
  const period=historyWindow(lookback)+':',fromDay=windowStart(now,lookback).toISOString().slice(0,10),today=now.toISOString().slice(0,10);
  const issues=[],warnings=[],meetings=[];
- // 1. Je Gremienordner die Sitzungen im Zeitraum; nur Ordner, die sich als öffentlich bezeichnen
+ // 1. Je Gremienordner die Sitzungen im Zeitraum; ein Ordner, der sich selbst nichtöffentlich oder vertraulich nennt, wird
+ // nicht gelesen (24.10.2026: nur was sich selbst so nennt)
  for(const share of source.folders||[]){
   try{
    const {caption,entries}=await read(share);
-   if(!/öffentlich/i.test(caption)||/nicht\s*-?\s*öffentlich/i.test(caption)){warnings.push(`Ordner „${caption||share}“ nicht als öffentlich bezeichnet; nicht gelesen.`);continue;}
+   if(selfClosed(caption)){warnings.push(`Ordner „${caption||share}“ als nichtöffentlich bezeichnet; nicht gelesen.`);continue;}
    for(const e of entries.filter(e=>e.folder)){const m=fabasoftMeeting(e.name);if(m&&m.date>=fromDay)meetings.push({...m,share,key:e.key,url:fabasoftUrl(share,[e.key]).replace('/?xhr=1','/')});}
   }catch(e){issues.push(`Ordner ${share}: ${e.message}`);}
  }
@@ -71,7 +72,7 @@ export async function collectFabasoft(source,{now=new Date(),get=fetchText,reque
    const rows=[];
    for(const i of items){
     let files=[];
-    try{files=(await read(m.share,[m.key,i.key])).entries.filter(e=>e.pdf).map(e=>({title:clip(e.name,200),url:fabasoftUrl(m.share,[m.key,i.key,e.key],{download:true}),kind:'pdf'}));}
+    try{files=(await read(m.share,[m.key,i.key])).entries.filter(e=>e.pdf&&!selfClosed(e.name)).map(e=>({title:clip(e.name,200),url:fabasoftUrl(m.share,[m.key,i.key,e.key],{download:true}),kind:'pdf'}));}
     catch(e){if(/Zeitbudget/.test(e.message))throw e;warnings.push(`TOP ${i.number} (${m.body} ${m.date}): Dateien nicht gelesen (${e.message})`);}
     const status=statusOf(m.date,today);
     const event={date:m.date,committee:m.body,status,description:m.date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':'Öffentlich auf der Tagesordnung; ein Beschluss ist in den gelesenen Angaben nicht vermerkt (Beschlusspapiere in den Unterlagen).',result:'',url:m.url,publicEvidence:'Öffentlicher Ordner der Kommune („öffentlich“), Punktordner '+i.number};

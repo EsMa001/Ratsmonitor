@@ -6,7 +6,7 @@ import {createSession} from './allris.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {fnv} from './source-common.mjs';
+import {fnv,RESTRICTED,selfClosed} from './source-common.mjs';
 // RIS of the City of Munich (risi.muenchen.de/risi), an own development on Apache Wicket behind an F5 firewall.
 // - robots.txt disallows every address containing "jsessionid" for all programs. Wicket writes the session id into the
 //   redirect of a session's first request and into the links of its first page. It is removed from every address before
@@ -44,9 +44,9 @@ export function createRisiSession(request=fetch){
  return {plain:clean(session.plain),follow:base=>clean(session.follow(base))};
 }
 /**
- * Public documents of a part of a page: download links whose own entry (the div "form-check" that holds the link) is
- * marked "Öffentliches Dokument" and nothing else. A link without such an entry of its own is left out, so that the
- * mark of the document before it never counts for it.
+ * Documents of a part of a page: download links, except one whose own entry (the div "form-check" that holds the link)
+ * marks it as not public ("Nichtöffentliches Dokument", "Vertrauliches Dokument") or whose name says so (24.10.2026: only
+ * what calls itself non-public is left out). A mark is read from the link's own entry only, never from the one before it.
  */
 function publicDocuments(html,source,suffix=''){
  const out=[];
@@ -54,8 +54,8 @@ function publicDocuments(html,source,suffix=''){
   const before=html.slice(Math.max(0,m.index-3000),m.index),start=[...before.matchAll(/<div\b[^>]*\bclass=["'](?:[^"']*\s)?form-check["'\s]/gi)].at(-1)?.index;
   const entry=start===undefined?'':before.slice(start),marks=[...entry.matchAll(/title=["']([^"']*Dokument)["']/g)].map(t=>t[1]);
   const id=m[1].match(/href=["'][^"']*\/dokument\/v\/(\d+)/i)?.[1];
-  if(!id||/\bdownloadlink\b/.test(entry)||!marks.length||marks.some(t=>t!=='Öffentliches Dokument'))continue;
-  const name=text(m[2]);out.push({title:(name.replace(/\.pdf$/i,'')||'Dokument')+suffix,url:allowed(source.base+'dokument/v/'+id,source),kind:/\.pdf$/i.test(name)?'application/pdf':'document'});
+  const name=text(m[2]);
+  if(!id||!/\bdownloadlink\b/.test(entry)&&marks.some(t=>RESTRICTED.test(t))||selfClosed(name))continue;out.push({title:(name.replace(/\.pdf$/i,'')||'Dokument')+suffix,url:allowed(source.base+'dokument/v/'+id,source),kind:/\.pdf$/i.test(name)?'application/pdf':'document'});
  }
  return out;
 }
@@ -123,9 +123,9 @@ export function parseRisiPaper(html,source){
  const status=text(page.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1]||'').match(/\(([^()]+)\)/)?.[1];if(status)fields.push({field:'Status',value:status});
  const subject=text(page.match(/id=["']sectionheader-betreff["'][\s\S]*?<p\b[^>]*>([\s\S]*?)<\/p>/i)?.[1]||'');if(subject&&subject.length<1200)fields.push({field:'Betreff',value:subject});
  for(const m of page.matchAll(/<div class=["']keyvalue-key["']>([\s\S]*?)<\/div>\s*<div class=["']keyvalue-value[^"']*["']>([\s\S]*?)<\/div>/gi)){const field=text(m[1]).replace(/:$/,''),v=text(m[2]);if(v&&v.length<1200&&/^(Freigabe|Wahlperiode|Zuständiges Referat|Art|Typ|BA-Unterrichtung|Stadtbezirk\/e|Abgeschlossen am)$/.test(field))fields.push({field,value:v});}
- // A paper whose kind (Art) says anything but public ("Nichtöffentlicher Vorgang", "Vertraulicher Vorgang" …) keeps no
- // documents; without that field only the mark of each document decides.
- const art=fields.find(f=>f.field==='Art')?.value,restricted=art!==undefined&&(!/^Öffentlich/i.test(art)||/nicht\s*öffentlich/i.test(art));
+ // A paper whose kind (Art) calls it not public ("Nichtöffentlicher Vorgang", "Vertraulicher Vorgang") keeps no documents;
+ // otherwise only the mark of each document decides.
+ const art=fields.find(f=>f.field==='Art')?.value,restricted=art!==undefined&&RESTRICTED.test(art);
  const from=page.search(/<h2\b[^>]*>\s*Dokumente\b/i),to=page.search(/id=["']ergebnisse["']/i);
  return {fields,restricted,documents:restricted||from<0?[]:publicDocuments(page.slice(from,to>from?to:undefined),source)};
 }
