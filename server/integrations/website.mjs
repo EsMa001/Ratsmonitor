@@ -311,7 +311,8 @@ export function foreignBody(m,committee,source,names,title=''){
  // Sections of a collective notice set in capitals or named "Gemeinde X" ("NACHBARHAUSEN" above the second meeting): another member's.
  const sectionsOf=lines=>lines.filter(l=>/^\p{Lu}{3,}(?:[\s-]\p{Lu}{2,})*$/u.test(l)||/^(?:(?:(?:Amtliche\s+)?Bekanntmachung(?:en)?\s+|Aus\s+|Nachrichten\s+|Mitteilungen\s+)(?:der|dem|des)\s+)?(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Mitgliedsgemeinde)\s+\p{Lu}[\p{L}-]+(?:\s+\p{Lu}[\p{L}-]+)?$/u.test(l)).map(capsFix).map(l=>l.match(SECTION_PLACE)).filter(Boolean).map(x=>x[1]||x[2]).filter(p=>!words(p).trim().split(' ').some(w=>NOT_SECTION.test(w))&&!/(?:tag|rat|ausschuss|beirat|versammlung|vertretung|amt|ung|heit|keit|schaft|ordnung)$/iu.test(p));
  const sections=sectionsOf([].concat(m.lead||[]));
- if(!m.gazette&&source.kind!=='district'&&sections.some(p=>!own(p)))return 'andere Gemeinde';
+ // A collective gazette (catalog: collectiveGazette, the Kreisblatt of the Märkischer Kreis) names every member's notices by their heading.
+ if((!m.gazette||source.collectiveGazette)&&source.kind!=='district'&&sections.some(p=>!own(p)))return 'andere Gemeinde';
  // Who gives notice of the whole text (an Amt, a Verwaltungsgemeinschaft, a Zweckverband or a county above its first meeting) gives notice
  // of a later meeting that names no issuer and no section of the area's own.
  const inherited=!issuer&&!sections.some(own)?[].concat(m.docIssuers||[]).map(capsFix):[];
