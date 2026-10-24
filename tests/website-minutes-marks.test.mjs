@@ -76,3 +76,18 @@ test('notice (Am Mellensee): head row „Top Öffentlicher Teil“, a citation b
  assert.match(m.items[3].title,/§ 4 Abs\. 2 BauGB zum Umweltbericht$/);
  assert.deepEqual(m.closedItems.map(i=>i.number),['6','7']);
 });
+
+test('notice (Landkreis Harz, Meinerzhagen): a mention inside the non-public part after its heading, an ordinal in a title, „sowie der Öffentlichkeit vorgelegten Stellungnahmen“',()=>{
+ const harz=['Sitzung des Kreisausschusses am 07.10.2026','Tagesordnung','I. Öffentlicher Teil','1. Eröffnung der Sitzung','2. Satzung zur Finanzierung des Ausbildungsverkehrs',
+  'II. Nicht öffentlicher Teil','3. Eröffnung des nicht öffentlichen Teils der Sitzung, sowie Abstimmung über die Niederschrift','der vorangegangenen Sitzung (nicht öffentlicher Teil) vom 24.06.2026','4. Feststellung der Tagesordnung'];
+ const h=parseSessionText(harz,{title:'Sitzung des Kreisausschusses',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(h.items.map(i=>i.number),['1','2']);
+ assert.deepEqual(h.closedItems.map(i=>i.number),['3','4']);
+ const mz=['Bekanntmachung der Stadt Meinerzhagen','Am 02.11.2026, 17:00 Uhr, findet eine Sitzung des Rates statt, zu der jedermann Zutritt hat.','Tagesordnung','Öffentliche Sitzung',
+  '1. Sitzungsniederschrift Nr. 8 vom 14.09.2026','2. Brandschutzbedarfsplan (Fortschreibung)','3. 9. Änderung des Bebauungsplanes Nr. 15 "Schwenke"',
+  '4. Bebauungsplan Nr. 79 "Gartenstraße"','hier: Prüfung der im Rahmen der Beteiligung der Behörden und sonstigen Träger öffentlicher','Belange (TÖB) sowie der Öffentlichkeit vorgelegten Stellungnahmen',
+  'Nichtöffentliche Sitzung','5. Grundstücksangelegenheit'];
+ const m=parseSessionText(mz,{title:'Bekanntmachung Rat',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3','4']);
+ assert.match(m.items[2].title,/^9\. Änderung des Bebauungsplanes/);
+});

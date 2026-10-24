@@ -137,6 +137,8 @@ const wrapsOn=(it,title,next)=>{
  if(/(?:Abs\.|§|Nr\.|Satz|Art\.|Ziff\.)\s*$/u.test(title)&&/^\d+[a-z]?\s+(?:\p{Lu}[\p{L}]*G\b|BauGB|BbgKVerf|GemO|GO|KV|KommVerf|BauNVO|ROG|UVPG|BNatSchG|Satz|S\.|Nr\.)/u.test(next))return true;
  if(it?.form!=='plain'||!/(?:\s(?:und|sowie|oder|mit|der|des|zur|zum)|[,–-])$/u.test(title))return false;const n=itemOf(next);return !!n&&n.form==='plain'&&n.mark!==it.mark;};
 const PAGE_LINE=/^Seite:?\s*\d+\s*(?:\/|von)\s*\d+$/i,DATE_ALONE=/^\d{1,2}\.\d{1,2}\.\d{4}$/;
+// An ordinal inside a title („8. 9. Änderung des Bebauungsplanes“, „2. Nachtrag“, Meinerzhagen) is no second item in the line.
+const ORDINAL_TITLE=/(?:^|\s)\d{1,2}\.\s+(?=(?:Änderung|Änderungssatzung|Nachtrag|Nachtragshaushalt|Fortschreibung|Ergänzung|Satzung|Bauabschnitt|Quartal|Halbjahr|Sitzung|Lesung|Deckblatt)(?!\p{L}))/gu;
 const SUB_POINT=/^\(?[a-zA-Z]\)\s/;
 export function mentionsNonPublic(s){
  const n=normalizeLine(s).replace(SECRECY_GONE,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
@@ -1003,7 +1005,7 @@ const NP_TAIL=/^(?:l|li|lich|liche[rnms]?|ich|iche[rnms]?|ntlich\p{Ll}*|tlich\p{
 // Words of a line between the items of an invitation that speak of the public, listeners, the press or secrecy; such a line
 // that is not read as anything else is a mention of the non-public part (folded text). Invitations to the public are not.
 const SUSPECT=/oeffentlichkeit|publikum|zuhoerer|zuhoerenden|besucher|\bgaeste|\bpresse\b|geheim|\bintern\b|vertraul|\bgeschlossen|verschlossen|ausgeschlossen|ausschluss|ausschl\.|mandatstraeger|\bzutritt|\bklausur|\bprivat\b|draussen/;
-const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|oeffentlichkeit\b[^;]{0,40}baugb|wegfall\s+der\s+nichtoeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
+const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|(?:sowie|und)\s+der\s+oeffentlichkeit\s+(?:vorgelegten|eingegangenen|abgegebenen)|oeffentlichkeit\b[^;]{0,40}baugb|wegfall\s+der\s+nichtoeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
 // A short line without a sentence ("Geheime Sitzung", "Fortsetzung ohne Publikum"): a heading.
 const suspect=l=>{const f=foldText(normalizeLine(l));return SUSPECT.test(f)&&!SUSPECT_OK.test(f);};
 // A note that refers to items or to the rest of the agenda ("Die weiteren Punkte …", "ab hier", "Öffentlich sind die Tagesordnungspunkte 1 und 2").
@@ -1369,6 +1371,9 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
      else if(headingLike(line)&&!refsOf(line).any){if(itemOpen&&!after&&cardBlock(i))dropLast();endBlock();delimited=true;itemOpen=false;}
      // Right after an item a note that points to it ("Die Beratung erfolgt nichtöffentlich.") is that item's; one that names a
      // matter in other words ("Die Grundstücksangelegenheit wird nichtöffentlich beraten.") cannot be matched (rule 2).
+     // Inside a non-public part a heading opened, a mention belongs to its items („17. Eröffnung des nicht öffentlichen Teils …“ /
+     // „der vorangegangenen Sitzung (nicht öffentlicher Teil) vom 01.07.2026“, Landkreis Harz).
+     else if(state==='nonpublic'&&delimited){/* inside the non-public part already */}
      else if(after&&DEICTIC.test(line))dropLast();
      else if(after&&kind!=='minutes')discard('Hinweis auf nichtöffentliche Beratung nennt keinen Punkt eindeutig','welche Punkte öffentlich sind, ist nicht eindeutig');
      else if(after)dropLast();
@@ -1470,7 +1475,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    if(FOOTNOTE.test(t))footnote=true;
    // The next items run on in the title ("Genehmigung der Niederschrift 2. Bauantrag Kita 3. …", a description without line
    // breaks): where one item ends is not known.
-   if(!it.number.includes('.')&&new RegExp(`(?:^|\\s)${mainNumber(it.number)+1}[.)]\\s+\\p{Lu}`,'u').test(pieces.filter((x,k)=>!marked.has(k)).join(' ')))discard('Mehrere Punkte in einer Zeile','wo ein Punkt endet, ist nicht erkennbar');
+   if(!it.number.includes('.')&&new RegExp(`(?:^|\\s)${mainNumber(it.number)+1}[.)]\\s+\\p{Lu}`,'u').test(pieces.filter((x,k)=>!marked.has(k)).join(' ').replace(ORDINAL_TITLE,' ')))discard('Mehrere Punkte in einer Zeile','wo ein Punkt endet, ist nicht erkennbar');
    // A mark at the end of a wrapped title, or in the last column of a table.
    const tail=withMark(it.prefix,t);
    // A narrow column "nicht-/öffent-/lich" wrapped together with the title: the ends of its lines read as one word.
