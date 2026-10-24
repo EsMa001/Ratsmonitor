@@ -249,6 +249,10 @@ test('a client of a shared system: only meetings whose calendar row names that c
  // Without a client every meeting of the calendar is read, as before.
  agendas.length=0;await collectSessionNet({id:'x',name:'GVV',kind:'city',base:'https://sessionnet.owl-it.de/altshausen/bi/',extension:'asp'},{now,window:'1m',get});
  assert.deepEqual([...new Set(agendas)].sort(),['301','302','303']);
+ // A Verbandsgemeinde and its Ortsgemeinden as clients of one system (bi.vg-jockgrim.de): panrs names all of them and
+ // goes before a client name; the cell may even be empty.
+ agendas.length=0;await collectSessionNet({id:'de-073345003',name:'Verbandsgemeinde Jockgrim',kind:'city',base:'https://sessionnet.owl-it.de/altshausen/bi/',extension:'asp',calendarQuery:'__cpanr=7',panrs:['2','3','7'],clientName:'Jockgrim'},{now,window:'1m',get});
+ assert.deepEqual([...new Set(agendas)].sort(),['301','302']);
 });
 
 test('a member of a shared system without clients: only meetings of the bodies its patterns name are read (fail closed)',async()=>{

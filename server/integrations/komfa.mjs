@@ -50,7 +50,8 @@ export function parseKomfaCalendar(html,source,{year,month}){
  const page=String(html||'');
  if(!/class=["']cal_table["']/.test(page))throw Error('Unbekanntes Kalenderformat');
  // The view shows the month it was asked for in its header; another month means the filter was not taken.
- const shown=[...page.matchAll(/<b>\s*([^<>]{3,30}?\s\d{4})\s*<\/b>/g)].map(m=>text(m[1])).find(s=>MONTH_NAMES.some(n=>s.startsWith(n+' ')))||'';
+ // Some systems send the month name encoded twice ("MÃ¤rz 2026", Laußig): read as UTF-8 again.
+ const shown=[...page.matchAll(/<b>\s*([^<>]{3,30}?\s\d{4})\s*<\/b>/g)].map(m=>text(m[1]).replace(/Ã([\u0080-\u00bf])/g,(_,c)=>String.fromCharCode(0xc0+c.charCodeAt(0)-0x80))).find(s=>MONTH_NAMES.some(n=>s.startsWith(n+' ')))||'';
  if(shown!==`${MONTH_NAMES[month-1]} ${year}`)throw Error(`Kalender zeigt ${shown||'keinen Monat'} statt ${MONTH_NAMES[month-1]} ${year}`);
  const meetings=[];
  for(const cell of page.split(/<td class=["']cal_cellm\b/).slice(1)){

@@ -27,6 +27,8 @@ test('KOMFA month view: the meetings of the month asked for, with day and title;
  // The filter of the month was not taken: the view shows September for October.
  assert.throws(()=>parseKomfaCalendar(fixture('delitzsch-cal-2026-09.html'),delitzsch,{year:2026,month:10}),/September 2026 statt Oktober 2026/);
  assert.throws(()=>parseKomfaCalendar('<html><p>Wartung</p></html>',delitzsch,{year:2026,month:9}),/Unbekanntes Kalenderformat/);
+ // Monatsname doppelt kodiert (Laußig): „MÃ¤rz 2026“ ist März 2026
+ assert.deepEqual(parseKomfaCalendar('<table class="cal_table"><tr><td><b>MÃ¤rz 2026</b></td></tr></table>',delitzsch,{year:2026,month:3}),[]);
 });
 
 test('KOMFA agenda: the items under "Öffentlicher Teil", papers by their number with their documents',()=>{

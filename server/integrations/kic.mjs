@@ -145,12 +145,14 @@ export async function collectKic(source,{now=new Date(),get=fetchText,request=fe
  }catch(e){issues.push('Anwendung: '+e.message);}
  const send=(url,init={})=>request(url,{...init,headers:{...init.headers,...headers}});
  const read=async url=>JSON.parse(await get(allowed(url,api),api,undefined,send));
- // 2. Meeting list, in steps of three months up to the end of next month.
- if(headers)for(let start=new Date(Date.UTC(from.getUTCFullYear(),from.getUTCMonth(),from.getUTCDate()));start<=until;){
+ // 2. Meeting list, in steps of three months up to the end of next month. A shared system of a Verwaltungsgemeinschaft
+ // keeps each member municipality as its own client (web/clients): source.clients names all of the area's clients.
+ const clients=Array.isArray(source.clients)&&source.clients.length?source.clients:[source.client||null];
+ if(headers)for(const client of clients)for(let start=new Date(Date.UTC(from.getUTCFullYear(),from.getUTCMonth(),from.getUTCDate()));start<=until;){
   const end=new Date(Date.UTC(start.getUTCFullYear(),start.getUTCMonth()+3,start.getUTCDate()-1)),stop=end<until?end:until;
-  const query=new URLSearchParams({...(source.client?{client:String(source.client)}:{}),from:start.toISOString().slice(0,10),until:stop.toISOString().slice(0,10)});
+  const query=new URLSearchParams({...(client?{client:String(client)}:{}),from:start.toISOString().slice(0,10),until:stop.toISOString().slice(0,10)});
   try{for(const m of kicMeetings(await read(root+'web/guestmeetings?'+query),source))if(m.date>=fromDay)meetings.set(m.id,m);}
-  catch(e){issues.push(`Sitzungsliste ${query.get('from')} bis ${query.get('until')}: ${e.message}`);break;}
+  catch(e){issues.push(`Sitzungsliste ${client?'Mandant '+client+', ':''}${query.get('from')} bis ${query.get('until')}: ${e.message}`);break;}
   start=new Date(stop.getTime()+86400000);
  }
  const grouped=new Map(),held={};let count=0,unchanged=0,done=0,unread=0,upcoming=0,fetched=0,beyond=0;

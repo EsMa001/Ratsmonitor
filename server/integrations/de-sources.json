@@ -8246,6 +8246,7 @@
     "base": "https://bi.vg-jockgrim.de/",
     "extension": "php",
     "calendarQuery": "__cpanr=7",
+    "panrs": ["2", "3", "4", "5", "7"],
     "verifiedSource": "https://bi.vg-jockgrim.de/info.php",
     "verifiedAt": "2026-10-10",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
@@ -29615,7 +29616,7 @@
     "adapter": "kic",
     "base": "https://ris.komuna.net/vgthannhausen/",
     "api": "https://risapi1.komuna.net/",
-    "client": 32,
+    "clients": [32, 34, 36, 38],
     "verifiedSource": "https://ris.komuna.net/vgthannhausen/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -30073,7 +30074,7 @@
     "adapter": "kic",
     "base": "https://ris.komuna.net/vgtuerkheim/",
     "api": "https://risapi3.komuna.net/",
-    "client": 32,
+    "clients": [32, 76929, 77193, 77196, 77199],
     "verifiedSource": "https://ris.komuna.net/vgtuerkheim/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."

@@ -181,7 +181,9 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
  const from=windowStart(now,lookback);const fromDay=from.toISOString().slice(0,10),issues=[],meetings=new Map();
  // Calendar months cover the selected look-back window (default: rolling twelve months) and already published next-month meetings.
  let denied=false,readable=0,failing=0;
- const panr=new URLSearchParams(source.calendarQuery||'').get('__cpanr'),otherClients=new Set(),clientName=source.clientName?String(source.clientName).toLocaleLowerCase('de-DE'):'';
+ // panrs (optional): all clients of the area, when a Verbandsgemeinde and its Ortsgemeinden are clients of one system
+ // (bi.vg-jockgrim.de); the calendar of the selected client lists the meetings of all of them. They go before clientName.
+ const panr=new URLSearchParams(source.calendarQuery||'').get('__cpanr'),panrs=new Set((Array.isArray(source.panrs)?source.panrs:panr?[panr]:[]).map(String)),otherClients=new Set(),clientName=source.clientName?String(source.clientName).toLocaleLowerCase('de-DE'):'';
  // organizations (optional): the bodies of one member in a system that serves several without clients, by the name the
  // calendar gives each meeting (oparl-regional.mjs); a meeting the patterns do not assign is not read.
  const part=committeePart(source.organizations);
@@ -196,7 +198,7 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
    // With a client selected (__cpanr), only meetings whose row names that client are taken; a meeting without the cell
    // (a list of next meetings, another layout) is left out: the part of a shared system is read fail closed.
    const owners=panr||clientName?meetingClients(html):null;
-   for(const m of meetingRows(html,source.base)){if(m.date<fromDay)continue;if(owners){const o=owners.get(ksinr(m.url));if(clientName?!o||!o.name.toLocaleLowerCase('de-DE').includes(clientName):o?.panr!==panr){otherClients.add(m.url);continue;}}if(!part.keep(m.committee,m.url))continue;meetings.set(m.url,m);}}
+   for(const m of meetingRows(html,source.base)){if(m.date<fromDay)continue;if(owners){const o=owners.get(ksinr(m.url));if(clientName&&!Array.isArray(source.panrs)?!o||!o.name.toLocaleLowerCase('de-DE').includes(clientName):!panrs.has(String(o?.panr))){otherClients.add(m.url);continue;}}if(!part.keep(m.committee,m.url))continue;meetings.set(m.url,m);}}
   // Each named reason is said once. A login page or program code holds for every month; an error page or an unknown page
   // may concern one month only, so the other months are still read, unless the first three were all of that kind.
   catch(e){const named=[SESSIONNET_LOGIN,SESSIONNET_ERROR,SESSIONNET_SOURCE,UNKNOWN_CALENDAR].includes(e.message);if(!named||!issues.includes(e.message))issues.push(e.message);

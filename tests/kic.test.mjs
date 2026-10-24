@@ -177,6 +177,9 @@ test('KIC collector: the council decides; a shared system is asked for one munic
  const later=new Date('2026-10-06T12:00:00Z'),s=system({[api+'web/guestagendaitems/100898916-105768971']:JSON.stringify(decided)});
  const d=await collectKic({...source,client:32},{now:later,window:'1m',get:s.get,request:s.request});
  assert.ok(s.lists.every(q=>q.client==='32'));
+ // A Verwaltungsgemeinschaft keeps each member as a client of its own: every client of the area is asked.
+ const shared=system();await collectKic({...source,clients:[32,34]},{now:later,window:'1m',get:shared.get,request:shared.request});
+ assert.deepEqual([...new Set(shared.lists.map(q=>q.client))],['32','34']);
  const matter=d.topics.find(t=>t.id==='de-09661000-vo-100898894-105768989');assert.equal(matter.status,'approved');assert.equal(matter.events.at(-1).decision.kind,'decision');
  // An unreadable item is a gap, and its meeting is read again next time.
  const broken=system({[api+'web/guestagendaitems/100898894-105768989']:Error('Quelle antwortet mit HTTP 500')});
