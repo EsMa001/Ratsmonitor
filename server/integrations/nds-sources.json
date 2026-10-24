@@ -4368,5 +4368,21 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.oyten.de/portal/seiten/amtsblatt-fuer-die-gemeinde-oyten-2026-908000624-20690.html?rubrik=908000001",
     "note": "oyten.ratsinfomanagement.net gesperrt. Die Amtsblatt-Jahrgangsseite 2026 nennt Tagesordnungspunkte der Ausschüsse und des Rates (Probeabruf 12 Monate: 209 Berichte, Ausschuss 28.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nds-03456001",
+    "name": "Stadt Bad Bentheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.stadt-badbentheim.de/",
+    "pages": [
+      "https://www.stadt-badbentheim.de/RathausBürgerservice/Aktuelles/Elektronisches-Amtsblatt/"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.stadt-badbentheim.de/RathausBürgerservice/Aktuelles/Elektronisches-Amtsblatt/",
+    "note": "sitzung-online.de gesperrt. Das elektronische Amtsblatt nennt Tagesordnungspunkte und Satzungsbeschlüsse des Ausschusses für Bauen und Umwelt (Probeabruf 12 Monate: 127 Berichte, Sitzung 21.09.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
