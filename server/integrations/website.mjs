@@ -12,7 +12,7 @@ import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {repairFontUmlauts} from './text-repair.mjs';
 import {SMALL_WORDS,htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST,downloadListLinks,parseDownloadItems,gazetteForms,gazetteAsPdf} from './website-feeds.mjs';
+import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST,downloadListLinks,parseDownloadItems,gazetteForms,gazetteAsPdf,articleCandidates} from './website-feeds.mjs';
 import {fnv,safeDecode} from './source-common.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
 // its bodies — notices with agenda (every Land requires them), reports and minutes, its gazette as PDF, and the outputs
@@ -416,6 +416,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    for(const link of documentLinks(html,u)){const l=source.gazettePages?gazetteAsPdf(link):link;offer(source.gazettePages&&l.kind==='pdf'?{...l,gazette:true,label:/amtsblatt|mitteilungsblatt|bekanntmachung/i.test(l.label)?l.label:`Amtsblatt ${l.label}`.trim()}:l);}
    // Issues behind download forms only where the catalog asks for them: a whole gazette mixes much else into the items (24.10.2026).
    if(source.gazetteForms)for(const g of gazetteForms(html,u)){forms.set(g.url,g.form);offer(g);}
+   // followArticles (catalog): the PDFs of the notice pages a list links ("mehr erfahren") are the documents of the list.
+   if(source.followArticles)for(const a of articleCandidates(documentLinks(html,u),u).slice(0,25)){let ah;try{ah=await get(a,site);}catch(e){fail('Artikel '+a,e);continue;}for(const p of pdfLinksOf(ah,a))offer({...p,gazette:true,kind:'pdf'});}
    // A download area loaded by script lists its files in JSON (CMS of the Saarpfalz-Kreis).
    for(const list of downloadListLinks(html,u).slice(0,4)){const lu=await permitted(list);if(!lu)continue;let json;try{json=await get(lu,site);}catch(e){fail('Downloadliste '+lu,e);continue;}
     for(const f of parseDownloadItems(json)){const l=asLink(f.url,f.label);if(l)offer(l);}}

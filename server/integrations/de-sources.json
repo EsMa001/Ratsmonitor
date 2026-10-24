@@ -43300,5 +43300,37 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.schriesheim.de/bekanntmachungen",
     "note": "schriesheim.ratsinfomanagement.net gesperrt. Die Bekanntmachungen nennen Satzungsbeschlüsse des Gemeinderats (Probeabruf 12 Monate: 1 Bericht, 28.01.2026; wenige Treffer, Quelle trotzdem übernommen)."
+  },
+  {
+    "id": "de-08115045",
+    "name": "Stadt Sindelfingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.sindelfingen.de/",
+    "pages": [
+      "https://www.sindelfingen.de/rathaus-service/aktuelles-presse/amtsblatt"
+    ],
+    "followArticles": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.sindelfingen.de/rathaus-service/aktuelles-presse/amtsblatt",
+    "note": "sindelfingen.ratsinfomanagement.net gesperrt. Die Amtsblatt-Seiten (über „mehr erfahren“) nennen Tagesordnungspunkte der Ausschüsse und Beschlüsse des Gemeinderats (Probeabruf 12 Monate: 34 Berichte, Technik- und Umweltausschuss 15.10.2026)."
+  },
+  {
+    "id": "de-010585824",
+    "name": "Amt Dänischer Wohld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.amt-daenischer-wohld.de/",
+    "pages": [
+      "https://www.amt-daenischer-wohld.de/politik-amt-gemeinden/amtsblatt/"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.amt-daenischer-wohld.de/politik-amt-gemeinden/amtsblatt/",
+    "note": "ris des Amtes (sitzung-online) gesperrt. Das Amtsblatt nennt Tagesordnungspunkte des Hauptausschusses des Amtes (Probeabruf 12 Monate: 184 Berichte, Hauptausschuss 03.06.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]

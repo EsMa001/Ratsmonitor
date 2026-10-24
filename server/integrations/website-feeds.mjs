@@ -382,3 +382,11 @@ export function jsonLdEvents(html,base){
 export function generatorOf(html){
  for(const a of tags(html,'meta'))if(String(attr(a,'name')??'').toLowerCase()==='generator'){const c=String(attr(a,'content')??'').trim();if(c)return c;}return null;
 }
+
+// Article pages of a list (catalog option followArticles): „mehr erfahren“ leads to the page of a gazette issue or a notice, and its PDF is the
+// document. Only links of the same host, not the list itself, with a word or number of such a page in the address.
+const ARTICLE=/amtsblatt|bekanntmachung|tagesordnung|sitzung|beschl|neuigkeit|publish|artikel|id=\d+|\/\d{3,}(?:\/|$|-)/i;
+export function articleCandidates(links,listUrl){
+ let host;try{host=new URL(listUrl).host;}catch{return [];}
+ return [...new Set(links.filter(l=>{if(l.kind!=='html'||l.url===listUrl)return false;try{return new URL(l.url).host===host&&ARTICLE.test(l.url);}catch{return false;}}).map(l=>l.url))];
+}
