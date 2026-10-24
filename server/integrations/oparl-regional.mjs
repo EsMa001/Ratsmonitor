@@ -60,7 +60,7 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  // The page limits were set for a year of meetings; a longer period gets as many for each of its years.
  const years=windowYears(lookback),pageLimit=maxPages*years,sortedLimit=Math.max(maxPages,Math.min(120,source.listPages||24))*years,roughLimit=48*years;
  const filter=source.organizations?organizationFilter(source.organizations):null,skipped={filtered:0,mixed:0,unassigned:0};
- const since=windowStart(now,lookback);const from=since.toISOString().slice(0,10),issues=[];let requests=0;const cache=new Map();const base=new URL(source.system);const deadline=Date.now()+maxDurationMs;let strategy='plain';
+ const since=windowStart(now,lookback);const from=since.toISOString().slice(0,10),issues=[];let requests=0;const cache=new Map();const base=new URL(source.system);const deadline=Date.now()+Math.max(maxDurationMs,Math.min(900000,Number(source.budgetMs)||0));let strategy='plain';
  const allowed=value=>{const u=new URL(value);if(source.upgradeHttpLinks&&u.protocol==='http:'&&u.hostname===base.hostname&&!u.port&&!base.port)u.protocol='https:';if(u.protocol!=='https:'||u.origin!==base.origin||u.username||u.password)throw Error('Quelle außerhalb der freigegebenen OParl-Adresse');return u.href;};
  const load=async(url,patience)=>{if(getJson)return getJson(url);const r=await fetchNoRedirect(url,{signal:AbortSignal.timeout(Math.max(1,Math.min(patience,deadline-Date.now()))),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok){await r.body?.cancel();throw Error('OParl HTTP '+r.status);}return bodyJson(r,Math.min(7e6,Math.max(5e6,source.maxResponseChars||5e6)),{message:'Antwort überschreitet Größenlimit'});};
  // trace (optional) records every request of this import for the debug view.
@@ -71,6 +71,7 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  const slot=()=>active<5?(active++,Promise.resolve()):new Promise(resolve=>waiting.push(resolve));
  const free=()=>{const next=waiting.shift();if(next)next();else active--;};
  const request=async(url,patience)=>{await slot();try{return await traced(url,patience);}finally{free();}};
+ // budgetMs (catalog): more time per import for a slow server (Bremen, Magdeburg), at most 15 minutes.
  // patienceMs (catalog): wait this long for one answer of a known slow server (Bremen, Solingen: up to a minute a page); default 55 s
  const slowest=Math.min(180000,Math.max(55000,Number(source.patienceMs)||55000));
  const get=async(url,patience=slowest)=>{url=allowed(url);if(Date.now()>=deadline)throw Error('Zeitbudget der Quelle erreicht');if(cache.has(url))return cache.get(url);if(++requests>maxRequests)throw Error('Abrufbudget erreicht');const promise=request(url,patience);cache.set(url,promise);return promise;};
@@ -102,12 +103,14 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
  if(recent&&!unreliableModified&&(resumeAt||source.meetingScan!=='forward'&&source.meetingScan!=='end')){
   const forced=source.meetingScan==='filter'||Boolean(resumeAt);let read=false,asking=null;
   try{
-   const withFilter=value=>{const u=new URL(allowed(url));u.searchParams.set('modified_since',value);return u.href;};
+   // filterParam (catalog): Bremen refuses modified_since over months (HTTP 406) but answers created_since; a meeting is
+   // created weeks before it takes place, so filterMarginDays reaches back further there.
+   const withFilter=value=>{const u=new URL(allowed(url));u.searchParams.set(source.filterParam==='created_since'?'created_since':'modified_since',value);return u.href;};
    // SD.NET answers an empty result with a bare "[]" instead of a list object.
    const rows=answer=>Array.isArray(answer)?answer:answer?.data;
    const probe=forced?[]:await get(withFilter('2100-01-01T00:00:00+00:00'),FILTER_PATIENCE_MS);
    if(Array.isArray(rows(probe))&&!rows(probe).length){
-    const first=resumeAt?allowed(resumeAt):withFilter(new Date(since.getTime()-FILTER_MARGIN_DAYS*86400000).toISOString().slice(0,19)+'+00:00'),visited=new Set([first]);
+    const first=resumeAt?allowed(resumeAt):withFilter(new Date(since.getTime()-(Number(source.filterMarginDays)||FILTER_MARGIN_DAYS)*86400000).toISOString().slice(0,19)+'+00:00'),visited=new Set([first]);
     if(resumeAt){read=true;strategy='filter';asking=first;}
     let p=await get(first,forced?undefined:FILTER_PATIENCE_MS);read=true;strategy='filter';asking=null;
     for(let page=1;;){

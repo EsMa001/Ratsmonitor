@@ -1927,6 +1927,9 @@
     "kind": "city",
     "system": "https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/system",
     "method": "oparl",
+    "budgetMs": 600000,
+    "filterMarginDays": 120,
+    "filterParam": "created_since",
     "body": "https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/body/1",
     "organizations": {
       "include": [
@@ -36291,6 +36294,7 @@
     "kind": "city",
     "system": "https://ratsinfo.magdeburg.de/oparl/system",
     "method": "oparl",
+    "budgetMs": 300000,
     "meetingScan": "end",
     "state": "system-verified",
     "verifiedSource": "https://www.magdeburg.de/",
