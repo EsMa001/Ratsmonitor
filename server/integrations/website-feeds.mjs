@@ -247,7 +247,7 @@ export function listPageScore(html,url){
 }
 
 // --- pagination ------------------------------------------------------------------------------------------------------
-const PAGE_KEY=/^(?:page|seite|p|paged|pg|start|offset|tx_news_pi1\[@widget_0\]\[currentpage\]|.*\[currentpage\])$/i;
+const PAGE_KEY=/^(?:page|seite|p|p0|paged|pg|start|offset|tx_news_pi1\[@widget_0\]\[currentpage\]|.*\[currentpage\])$/i;
 const pageNumber=u=>{for(const [k,v] of u.searchParams)if(PAGE_KEY.test(k)&&/^\d+$/.test(v))return {key:k.toLowerCase(),value:Number(v)};const p=u.pathname.match(/\/(?:page|seite)\/(\d+)\/?$/i);return p?{key:'/page',value:Number(p[1])}:null;};
 // "/bekanntmachungen/page/2/" (WordPress) belongs to "/bekanntmachungen/", and "index.php" to its folder.
 const listRoot=path=>path.replace(/\/(?:page|seite)\/\d+\/?$/i,'').replace(/\/index\.(?:php|html?)$/i,'').replace(/\/+$/,'')||'/';
