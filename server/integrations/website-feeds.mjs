@@ -86,8 +86,15 @@ const kindOf=(url,type)=>{const t=String(type??'').toLowerCase();if(t.includes('
 // A link that holds only an image is named by the image's alt text.
 const labelOf=({attrs,inner})=>{const img=String(inner).match(/<img\b([^>]*)>/i)?.[1];const parts=[strip(inner)||(img?attr(img,'alt'):''),attr(attrs,'title'),attr(attrs,'aria-label')].map(p=>String(p??'').replace(/\s+/g,' ').trim()).filter(Boolean);
  return parts.filter((p,i)=>parts.findIndex(q=>q.toLowerCase()===p.toLowerCase())===i).join(' ');};
+/** The address relative links of a page resolve against: its <base href> (sonneberg.de: href="https://sonneberg.de/" on
+    /rathaus/verwaltung/amtsblatt.html), else the page's own address. */
+export function declaredBase(html,base){
+ const href=String(html??'').match(/<base\b[^>]*\bhref\s*=\s*["']([^"']+)["']/i)?.[1];if(!href)return base;
+ try{const u=new URL(href.replace(/&amp;/g,'&'),base);return /^https?:$/.test(u.protocol)?u.href:base;}catch{return base;}
+}
 /** Addresses of PDF files a text names (links of its markup, plain addresses in a calendar text): [{url,label,date,kind:'pdf'}]. */
 export function pdfLinksOf(text,base){
+ base=declaredBase(text,base);
  const out=new Map();
  for(const l of documentLinks(text,base))if(l.kind==='pdf')out.set(l.url,l);
  for(const m of String(text??'').replace(/<[^>]+>/g,' ').matchAll(/https?:\/\/[^\s"'<>()]+/gi)){const url=resolve(m[0].replace(/[.,;:]+$/,''),base);if(url&&kindOf(url)==='pdf'&&!out.has(url))out.set(url,{url,label:'',date:urlDate(url),kind:'pdf'});}
@@ -99,6 +106,7 @@ export function pdfLinksOf(text,base){
  * The frame's title names the document. [{url,label}]
  */
 export function embeddedPdfs(html,base){
+ base=declaredBase(html,base);
  const out=[];
  for(const m of markup(html).matchAll(/<(?:iframe|embed|object)\b([^>]*)>/gi)){
   const attrs=m[1],label=String(attr(attrs,'title')??'').replace(/\s+/g,' ').trim();
@@ -120,6 +128,7 @@ export function embeddedPdfs(html,base){
 /** Pages under /:translation/<language>/… repeat the website in another language (Saarpfalz-Kreis): never followed or read. */
 export const TRANSLATED=/\/:translation\//i;
 export function documentLinks(html,base){
+ base=declaredBase(html,base);
  const out=new Map();
  for(const e of embeddedPdfs(html,base)){if(!out.has(e.url))out.set(e.url,{url:e.url,label:e.label,type:'application/pdf'});}
  for(const a of anchors(html)){const url=resolve(attr(a.attrs,'href'),base);if(!url||TRANSLATED.test(url))continue;const label=labelOf(a);
@@ -134,6 +143,7 @@ export function documentLinks(html,base){
 export const GAZETTE_FORM=/#gazette_\d+$/;
 /** Download forms of gazette issues on a page: [{url,label,date,kind:'pdf',form}] (form: the fields to post). */
 export function gazetteForms(html,base){
+ base=declaredBase(html,base);
  const out=[],text=String(html??'');
  for(const m of text.matchAll(/<form\b([^>]*\baction="([^"]*#gazette_\d+)"[^>]*)>([\s\S]*?)<\/form>/gi)){
   if(!/method="post"/i.test(m[1]))continue;
@@ -149,6 +159,7 @@ export function gazetteForms(html,base){
 }
 /** Lists of a CMS download area that a page loads by script ("…/downloadItems.json?…", Saarpfalz-Kreis): their addresses. */
 export function downloadListLinks(html,base){
+ base=declaredBase(html,base);
  const out=new Set();
  for(const m of String(html??'').matchAll(/["'](https?:\/\/[^"'\s]+\/downloadItems\.json\?[^"'\s]+|\/[^"'\s]*\/downloadItems\.json\?[^"'\s]+)["']/g)){const url=resolve(m[1].replace(/&amp;/g,'&'),base);if(url)out.add(url);}
  return [...out];
@@ -234,7 +245,8 @@ const NEXT=/^(?:»|›|>{1,2}|weiter\b|vorwärts|nächste|ältere|seite 2\b|next
 export function paginationLinks(html,pageUrl){
  let page;try{page=new URL(pageUrl);page.hash='';}catch{return [];}
  const here=pageNumber(page),root=listRoot(page.pathname),found=new Map();
- const offer=(href,rel,label)=>{const url=resolve(href,page.href);if(!url||url===page.href||found.has(url)||TRANSLATED.test(url))return;const u=new URL(url);if(u.origin!==page.origin||listRoot(u.pathname)!==root)return;
+ const from=declaredBase(html,page.href);
+ const offer=(href,rel,label)=>{const url=resolve(href,from);if(!url||url===page.href||found.has(url)||TRANSLATED.test(url))return;const u=new URL(url);if(u.origin!==page.origin||listRoot(u.pathname)!==root)return;
   const n=pageNumber(u),next=/(?:^|\s)next(?:\s|$)/i.test(rel??''),textual=NEXT.test(label.toLowerCase().replace(/\s+/g,' ').trim());
   // A "weiter" that names no page leads into an article; only rel=next is taken without a page number.
   if(!n&&!next)return;

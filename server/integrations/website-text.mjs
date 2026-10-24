@@ -129,10 +129,14 @@ const typoNonPublic=folded=>{
 /** Whether a line names the non-public part in any spelling (reports on it from the public part excepted). */
 // The end of the standing item "Bekanntgabe der in nichtöffentlicher Sitzung gefassten Beschlüsse, nachdem die Gründe für die
 // Geheimhaltung weggefallen sind (Art. 52 Abs. 3 GO)": a public item about decisions already made known, no non-public part.
-const SECRECY_GONE=/(?:Gr(?:ü|ue)nde\s+)?(?:für|fuer)\s+(?:die\s+)?Geheimhaltung\s+(?:weggefallen|entfallen)\s+sind\s*(?:\((?:Art\.?|§)[^)]{0,30}\))?/giu;
+// Also „Wegfall der Nichtöffentlichkeit“ (Neutraubling, Art. 52 Abs. 3 GO): decisions of the non-public part made public now.
+const SECRECY_GONE=/(?:Gr(?:ü|ue)nde\s+)?(?:für|fuer)\s+(?:die\s+)?Geheimhaltung\s+(?:weggefallen|entfallen)\s+sind\s*(?:\((?:Art\.?|§)[^)]{0,30}\))?|(?:(?:Gemäß|Nach)\s+Art\.?\s*52\s+Abs\.?\s*3\s+GO\s+wird\s+(?:der\s+)?)?Wegfall\s+der\s+Nicht(?:ö|oe)ffentlichkeit/giu;
+const SUB_POINT=/^\(?[a-zA-Z]\)\s/;
 export function mentionsNonPublic(s){
  const n=normalizeLine(s).replace(SECRECY_GONE,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
- return NP_SPACED.some(re=>re.test(t))||NP_COMPACT.test(t.replace(/[^a-z#]/g,''))||LAW_NP.test(n)||RULES_NP.test(n)||typoNonPublic(t);
+ // A rule of the standing orders that only gives a competence („fällt nach § 12 … GeschO in die Zuständigkeit des ersten
+ // Bürgermeisters“, Neutraubling) says nothing about the public.
+ return NP_SPACED.some(re=>re.test(t))||NP_COMPACT.test(t.replace(/[^a-z#]/g,''))||LAW_NP.test(n)||RULES_NP.test(n)&&!/zuständig/iu.test(n)||typoNonPublic(t);
 }
 // Labels and addresses only: "Teil N", "(intern)", "interner Teil", a folder or name part "geschlossen".
 // Also "(geschl.)", "geheim" and a name part "np" (gr-2026-09-16-np.pdf).
@@ -990,7 +994,7 @@ const NP_TAIL=/^(?:l|li|lich|liche[rnms]?|ich|iche[rnms]?|ntlich\p{Ll}*|tlich\p{
 // Words of a line between the items of an invitation that speak of the public, listeners, the press or secrecy; such a line
 // that is not read as anything else is a mention of the non-public part (folded text). Invitations to the public are not.
 const SUSPECT=/oeffentlichkeit|publikum|zuhoerer|zuhoerenden|besucher|\bgaeste|\bpresse\b|geheim|\bintern\b|vertraul|\bgeschlossen|verschlossen|ausgeschlossen|ausschluss|ausschl\.|mandatstraeger|\bzutritt|\bklausur|\bprivat\b|draussen/;
-const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
+const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|wegfall\s+der\s+nichtoeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
 // A short line without a sentence ("Geheime Sitzung", "Fortsetzung ohne Publikum"): a heading.
 const suspect=l=>{const f=foldText(normalizeLine(l));return SUSPECT.test(f)&&!SUSPECT_OK.test(f);};
 // A note that refers to items or to the rest of the agenda ("Die weiteren Punkte …", "ab hier", "Öffentlich sind die Tagesordnungspunkte 1 und 2").
@@ -1381,10 +1385,15 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
     // öffentlichen Teil der Sitzung vom 27.08.2026", Beetzsee; "… dem Stadtrat in seiner Sitzung am 06.04.2022 vorgestellt und
     // ein", Freising) is no heading: the day it names is that of an earlier session the text speaks of.
     // Not a line of an item's consultation history with an earlier day (CONSULTED): the items go on after it.
-    if(state==='public'&&seenItem&&i>=first&&line.length<=240&&!consultedLine(line,date)&&(SESSION_WORD.test(line)||MEETING_WORD.test(line)||DATE_ONLY.test(line))&&(/:\s*$/.test(line)||!/[.!?]$/.test(line)&&line.length<=100)&&!(!/:\s*$/.test(line)&&(brokenOff(all[i-1])||recalled(line,date)))&&meetingDates(all,i,ctx).some(d=>d.iso!==date)){issues.push(`Anderer Sitzungstag nach den Punkten (${where(committee,date,title)}): „${line.length>80?line.slice(0,79)+'…':line}“; folgende Punkte nicht übernommen.`);endBlock();itemOpen=false;i++;continue;}
+    // Nor a lettered sub-point of an item („b) über die konstituierende Sitzung vom 12.05.2026“ under „Genehmigung der
+    // Niederschrift“, Neutraubling).
+    if(state==='public'&&seenItem&&i>=first&&line.length<=240&&!SUB_POINT.test(line)&&!consultedLine(line,date)&&(SESSION_WORD.test(line)||MEETING_WORD.test(line)||DATE_ONLY.test(line))&&(/:\s*$/.test(line)||!/[.!?]$/.test(line)&&line.length<=100)&&!(!/:\s*$/.test(line)&&(brokenOff(all[i-1])||recalled(line,date)))&&meetingDates(all,i,ctx).some(d=>d.iso!==date)){issues.push(`Anderer Sitzungstag nach den Punkten (${where(committee,date,title)}): „${line.length>80?line.slice(0,79)+'…':line}“; folgende Punkte nicht übernommen.`);endBlock();itemOpen=false;i++;continue;}
     if(isPublicHeading(line)){if(state==='public'&&taken.length)latePublic=true;if(state==='none'){state='public';evidence=`Überschrift „${line}“`;}const p=line.match(PART_HEADING);if(p)parts.set(partKey(p),state==='public'?'public':'none');partSeen=true;cur=null;absent=false;itemOpen=false;i++;continue;}
     // Another heading of a part after the public block ends it ("Teil B", "II.", "B.", "Zweiter Teil", "N-Teil", "B Sitzung").
-    const p=line.length<=80&&line.match(PART_HEADING);
+    // A lettered sub-point inside an item („A) Abwägungsbeschluss“ under a development plan, Neutraubling) is no part,
+    // unless it names one („B) Nichtöffentliche Sitzung“).
+    const subPoint=(itemOpen||cur)&&/^[A-H]\)\s+\p{L}/u.test(line)&&!/^[A-H]\)\s+(?:(?:Nicht\s*)?(?:ö|oe)ffentlich|Sitzung|Teil|Sitzungsteil)/iu.test(line);
+    const p=!subPoint&&line.length<=80&&line.match(PART_HEADING);
     if(p){if(state==='public'&&(partSeen||taken.length)){if(itemOpen&&!after&&cardBlock(i))dropLast();endBlock();delimited=true;parts.set(partKey(p),'closed');}else parts.set(partKey(p),state==='public'?'public':'none');partSeen=true;cur=null;itemOpen=false;i++;continue;}
     if(state==='public'&&taken.length&&(line.length<=40&&PART_WORD.test(line)||PART_KEY.test(line))&&!PUBLIC_STATUS.test(line)){if(itemOpen&&!after&&cardBlock(i))dropLast();endBlock();delimited=true;itemOpen=false;i++;continue;}
     // After the items another line that introduces a list ("Außerdem standen auf der Tagesordnung:", "Anschließend ging es
