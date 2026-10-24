@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 367 angebunden, 60 nicht. Diese Datei beschreibt die 264 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 368 angebunden, 59 nicht. Diese Datei beschreibt die 264 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -350,4 +350,3 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Werther (Westf.) | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://werther.ratsinfomanagement.net/ |
 | Gemeinde Westerkappeln | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.gemeinde-westerkappeln.de/Politik/Politik/Ratsinformationssystem/BuergerApp.htm? |
 | Stadt Wetter (Ruhr) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://wetter.ratsinfomanagement.net/ |
-| Stadt Winterberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |

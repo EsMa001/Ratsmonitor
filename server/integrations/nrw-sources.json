@@ -741,5 +741,22 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.altena-notbetrieb.de/bekanntmachungen/",
     "note": "altena.ratsinfomanagement.net gesperrt. Die Bekanntmachungen nennen Tagesordnungspunkte der Ausschüsse und des Rates (Probeabruf 12 Monate: 266 Berichte, Ausschuss für Brand- und Bevölkerungsschutz 05.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nrw-05958048",
+    "name": "Stadt Winterberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.rathaus-winterberg.de/",
+    "pages": [
+      "https://www.rathaus-winterberg.de/politik-rathaus/amtsblaetter/"
+    ],
+    "gazettePages": true,
+    "followArticles": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.rathaus-winterberg.de/politik-rathaus/amtsblaetter/",
+    "note": "winterberg.ratsinfomanagement.net gesperrt. Die Amtsblätter (über „mehr erfahren“) nennen Tagesordnungspunkte des Rates (Probeabruf 12 Monate: 173 Berichte, Rat 17.09.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers). Einzelne Titel enthalten Gesetzestext-Reste."
   }
 ]
