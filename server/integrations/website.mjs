@@ -11,7 +11,7 @@ import {parseRobots,robotsAllow} from './robots.mjs';
 import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {repairFontUmlauts} from './text-repair.mjs';
-import {SMALL_WORDS,htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
+import {inlineAgenda,SMALL_WORDS,htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
 import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST,downloadListLinks,parseDownloadItems,gazetteForms,gazetteAsPdf,articleCandidates} from './website-feeds.mjs';
 import {fnv,safeDecode} from './source-common.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
@@ -434,7 +434,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   const xml=await read(feed,'Feed');if(xml===null)return;
   for(const entry of parseFeed(xml,feed)){
    if(!relevant(entry.url,entry.title))continue;
-   const lines=htmlToLines(entry.html);
+   const lines=inlineAgenda(htmlToLines(entry.html));
    // A teaser cut short ("…", "Weiterlesen") is not the text: its article is read instead.
    // An entry with text of its own needs the PDF files it links, and its article where its text ends on an item of a public part
    // (a teaser may be cut after any word without a mark).
@@ -531,7 +531,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    texts.push({url:c.url,title:c.label,lines:pdfLines(text).map(repair),kind:'application/pdf',wrapped:true,order,fetched:true,...(forms.has(c.url)?{gazette:true}:{})});return;
   }
   if(bytes.byteLength>LIMITS.htmlBytes){issues.push(`Dokument ${c.url}: Quelldokument zu groß`);return;}
-  const html=decodeText(bytes,type),t={url:c.url,title:c.label,lines:htmlToLines(html).map(repair),kind:'html',wrapped:false,order,fetched:true};
+  const html=decodeText(bytes,type),t={url:c.url,title:c.label,lines:inlineAgenda(htmlToLines(html)).map(repair),kind:'html',wrapped:false,order,fetched:true};
   texts.push(t);
   if(!deeper)return;
   const days=new Set(parseSessionText(t.lines,{title:t.title}).meetings.filter(m=>m.items.length).map(m=>m.date));

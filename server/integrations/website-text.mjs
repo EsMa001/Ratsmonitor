@@ -400,6 +400,8 @@ const upper=s=>s.charAt(0).toUpperCase()+s.slice(1);
 /** Canonical name of the committee named in a text ("des Gemeinderates Oberdorf" → "Gemeinderat Oberdorf"), or null. */
 export function committeeOf(s){
  const text=normalizeLine(s),m=text.match(BODY),c=text.match(COUNCIL);
+ // A bare council in a sitting line ("Sitzung des Rates", Hessisch Oldendorf 2026): the council of the place.
+ if(/^(?:der|des|dem)?\s*rat(?:es)?$/i.test(text.trim()))return 'Rat der Gemeinde';
  if(c&&(!m||c.index<m.index))return `Rat der ${c[1]}`;
  if(!m)return null;
  const core=upper(m[2].replace(/ß/g,'ss')),after=text.slice(m.index+m[0].length);
@@ -1600,3 +1602,20 @@ const GAZETTE_TITLE=new RegExp(`(?:${PAPER})(?!\\p{L})`,'iu');
 const GAZETTE=new RegExp(`^(?:${PAPER}|Amtliche\\s+(?:Bekanntmachungen|Nachrichten|Mitteilungen)|Amtliches\\s+Mitteilungsblatt)(?!\\p{L})`,'iu');
 // The line of an issue ("Jahrgang 32 · Freitag, 9. Oktober 2026 · Nr. 41"): its head is a gazette's, whatever it is called.
 const ISSUE_HEAD=/(?<!\p{L})(?:Jahrgang|Ausgabe)(?!\p{L})|(?<!\p{L})Nr\.\s*\d{1,3}(?![\d.])/u;
+
+// A running agenda on one line („Tagesordnung: 1 Eröffnung der Sitzung 2 Feststellung der Beschlussfähigkeit 3 …“, Hessisch Oldendorf 2026):
+// the numbers 1, 2, 3 … that follow each other split the line, one item a line. Only where the numbers count up from 1.
+export function inlineAgenda(lines){
+ const out=[];
+ for(const line of lines){
+  const l=String(line);
+  const head=l.match(/^(.*?Tagesordnung[^:]{0,20}:)\s*(.*)$/i);
+  if(!head){out.push(l);continue;}
+  const parts=head[2].split(/\s(?=\d{1,2}\s+\p{Lu})/u);
+  let expect=1;const items=[];
+  for(const p of parts){const m=p.match(/^(\d{1,2})\s+(.*)$/u);if(m&&Number(m[1])===expect){items.push(p);expect++;}else if(items.length){items[items.length-1]+=' '+p;}}
+  if(items.length<3){out.push(l);continue;}
+  out.push(head[1]);out.push(...items);
+ }
+ return out;
+}
