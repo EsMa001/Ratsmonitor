@@ -106,7 +106,7 @@ const AGENDA_WORD=/eröffnung|begrüßung|beschlussfähigkeit|tagesordnung|niede
 // The chain 1, 2, 3 … by number, not by position (columns of a gazette come out of order), each next number taken after the one
 // before where it occurs twice; sub-items 2.1 … 2.9 with their item (".10" and above are days in lists of pharmacies on duty).
 // Statute text cut into items ("Satz 1 Nr. 2 des UmwRG …", "§ 1 Zuständigkeiten …", a line that goes on): not an agenda item.
-const STATUTE_FRAGMENT=/^(?:§|satz\s*\d|abs\.|nr\.|\(|\p{Ll})/u;
+const STATUTE_FRAGMENT=/^(?:§|[Ss]atz\s*\d|[Aa]bs\.|[Nn]r\.|\(|\p{Ll})/u;
 function agendaRun(items){
  const all=(items||[]).map((i,at)=>{const [a,b]=String(i.number??'').split('.').map(Number);return {i,at,a,b};}).filter(x=>Number.isFinite(x.a)&&!STATUTE_FRAGMENT.test(String(x.i.title??'').trim()));
  const run=[];let last=-1;
