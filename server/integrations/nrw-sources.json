@@ -464,7 +464,12 @@
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
     "state": "discovered",
     "meetingScan": "filter",
-    "patienceMs": 150000
+    "patienceMs": 150000,
+    "assumePublicAgenda": {
+      "decided": "2026-10-24",
+      "by": "Inhaber",
+      "note": "SD.NET RIM ohne Kennzeichnung öffentlich; Vorgabe 24.10.2026: öffentlich Einsehbares ist öffentlich (Probe 1 Monat: 22 Sitzungen, 203 Punkte, vorher 0)"
+    }
   },
   {
     "id": "nrw-05758032",

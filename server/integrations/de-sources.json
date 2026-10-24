@@ -1945,7 +1945,8 @@
       "by": "Inhaber",
       "note": "SD.NET RIM ohne Kennzeichnung öffentlich; Annahme: die Schnittstelle liefert nur den öffentlichen Teil (wie bei den neun Mandanten vom 06.10.2026)"
     },
-    "meetingScan": "filter",
+    "meetingScan": "end",
+    "meetingScanNote": "24.10.2026: modified_since läuft am Gateway nach 60 s in 502 (mit Accept JSON als 406); ungefilterte Liste vom Ende liefert (Probe 1 Monat: 70 Sitzungen, 125 Punkte)",
     "state": "system-verified",
     "verifiedSource": "https://sd.bremische-buergerschaft.de/",
     "verifiedAt": "2026-10-06",
