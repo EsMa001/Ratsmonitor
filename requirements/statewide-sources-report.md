@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 369 angebunden, 58 nicht. Diese Datei beschreibt die 264 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 370 angebunden, 57 nicht. Diese Datei beschreibt die 264 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -315,7 +315,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Horstmar | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://horstmar.ratsinfomanagement.net/ |
 | Stadt Hörstel | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.hoerstel.de/freizeit-leben/informationen/neubuergerinformationen/ |
 | Gemeinde Hüllhorst | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://huellhorst.ratsinfomanagement.net/ |
-| Stadt Isselburg | Kein unterstütztes Ratsinformationssystem erkannt | https://isselburg.ratsinfomanagement.net/ |
 | Gemeinde Kalletal | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | http://kalletal.ratsinfomanagement.net/ |
 | Gemeinde Laer | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.laer.de/de/rathaus-und-politik/ratsinformationssystem.php |
 | Gemeinde Legden | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://legden.ratsinfomanagement.net/ |

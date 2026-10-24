@@ -775,5 +775,22 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.stadt-werther.de/",
     "note": "werther.ratsinfomanagement.net gesperrt. Die Bekanntmachungen der Stadt nennen Beschlüsse des Rates (Grund- und Gewerbesteuer, Haushalt; Probeabruf 12 Monate: 3 Berichte, Rat 18.12.2025; wenige Treffer, Quelle trotzdem übernommen)."
+  },
+  {
+    "id": "nrw-05554032",
+    "name": "Stadt Isselburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.isselburg.de/",
+    "pages": [
+      "https://www.isselburg.de/de/bekanntmachungen/"
+    ],
+    "gazettePages": true,
+    "followArticles": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-25",
+    "verifiedSource": "https://www.isselburg.de/de/bekanntmachungen/",
+    "note": "isselburg.ratsinfomanagement.net gesperrt. Das Amtsblatt (PDF, Bekanntmachungen der Sitzungen) nennt Tagesordnungen der Ausschüsse und des Rates (Probeabruf 12 Monate: 425 Berichte; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
