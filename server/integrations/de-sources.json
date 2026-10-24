@@ -25099,6 +25099,7 @@
     "method": "scraper",
     "base": "https://www.markt-heiligenstadt.de/sessionnet/bi/",
     "extension": "php",
+    "agendaFromNotice": true,
     "verifiedSource": "https://www.markt-heiligenstadt.de/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad lieferte kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."

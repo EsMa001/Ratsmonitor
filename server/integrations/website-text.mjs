@@ -132,6 +132,8 @@ const typoNonPublic=folded=>{
 // Also „Wegfall der Nichtöffentlichkeit“ (Neutraubling, Art. 52 Abs. 3 GO): decisions of the non-public part made public now.
 const SECRECY_GONE=/(?:Gr(?:ü|ue)nde\s+)?(?:für|fuer)\s+(?:die\s+)?Geheimhaltung\s+(?:weggefallen|entfallen)\s+sind\s*(?:\((?:Art\.?|§)[^)]{0,30}\))?|(?:(?:Gemäß|Nach)\s+Art\.?\s*52\s+Abs\.?\s*3\s+GO\s+wird\s+(?:der\s+)?)?Wegfall\s+der\s+Nicht(?:ö|oe)ffentlichkeit/giu;
 const ATTENDANCE_NOTE=/(?:abwesend|anwesend|entschuldigt|verl(?:ä|ae)(?:ss|ß)t|erscheint)(?!\p{L})[^()]{0,40}\((?:ab|bis|nach|vor)\s+TOP\b[^)]*\)/iu;
+const wrapsOn=(it,title,next)=>{if(it?.form!=='plain'||!/(?:\s(?:und|sowie|oder|mit|der|des|zur|zum)|[,–-])$/u.test(title))return false;const n=itemOf(next);return !!n&&n.form==='plain'&&n.mark!==it.mark;};
+const PAGE_LINE=/^Seite:?\s*\d+\s*(?:\/|von)\s*\d+$/i,DATE_ALONE=/^\d{1,2}\.\d{1,2}\.\d{4}$/;
 const SUB_POINT=/^\(?[a-zA-Z]\)\s/;
 export function mentionsNonPublic(s){
  const n=normalizeLine(s).replace(SECRECY_GONE,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
@@ -493,7 +495,7 @@ const NAMED_PERSON=new RegExp(`^${NAME},\\s+${NAME}(?:\\s+(?:${PARTY}|${OFFICE_T
 const ELECTED=new RegExp(`^(?:Herr|Frau|Gemeinderat|Gemeinderätin|Stadtrat|Stadträtin|Marktgemeinderat|Marktgemeinderätin|Ratsmitglied|GR|StR|MGR)\\s+(?:${NAME}\\s+){0,2}${NAME}\\s+mit\\s+\\d{1,3}\\s+(?:Ja-)?Stimmen\\.?$`,'u');
 const ROLE_NAME=`(?:(?:Herr|Frau|Dr\\.|Prof\\.)\\s+)?(?:\\p{Lu}[\\p{Ll}.'-]+\\s+){0,3}${NAME}(?:\\s*\\([^)]{1,30}\\))?`;
 const ROLE_LIST=new RegExp(`^(?:Vorsitz|Vorsitzende[rn]?|Gemeinderäte|Gemeinderätinnen|Stadträte|Stadträtinnen|Ratsmitglieder|\\p{L}*[Mm]itglieder|Verwaltung|Schriftführer(?:in)?|Protokollführer(?:in)?|Protokoll|Gäste|Presse|Zuhörer|Entschuldigt|Abwesend|Anwesend|Sachverständige|Berichterstatter(?:in)?)\\s*:\\s*${ROLE_NAME}(?:\\s*,\\s*${ROLE_NAME})*$`,'u');
-const UNIT=/^(?:Anlagen?|Seiten?|Stimmen?|Ja|Nein|Enthaltung(?:en)?|Mitglieder|Gemeinderäte|Gemeinderätinnen|Stadträte|Stadträtinnen|Ratsmitglieder|Personen|Teilnehmer|Euro|EUR|Mio|Mrd|Tsd|Prozent|Jahre?n?|Monate?n?|Wochen?|Tage?n?|Stunden?|Minuten|Stück|Wohneinheiten|WE|Plätze|Kinder|Bauplätze|Exemplare|Fälle|Uhr|Gegenstimmen?)(?!\p{L})/u;
+const UNIT=/^(?:Anlagen?|Seiten?|Stimmen?|Ja|Nein|Enthaltung(?:en)?|Mitglieder|Gemeinderäte|Gemeinderätinnen|Stadträte|Stadträtinnen|Ratsmitglieder|Personen|Teilnehmer|Euro|EUR|Mio|Mrd|Tsd|Prozent|Jahre?n?|Monate?n?|Wochen?|Tage?n?|Stunden?|Minuten|Stück|Wohneinheiten|WE|Plätze|Kinder|Bauplätze|Exemplare|Fälle|Uhr|Gegenstimmen?)(?!\p{L}|-\s)/u;
 const key=n=>n.split('.').map(p=>String(Number(p))).join('.');
 const mainNumber=n=>Number(String(n).split('.')[0]);
 // An office of a club or brigade, an honorary or former office, followed by a name ("Kassierer Tim Test", "Altbürgermeister
@@ -569,7 +571,7 @@ function itemOf(raw){
   if(first<1||first>60||!titleOk(title)||!/\p{L}/u.test(title))return null;
   if(germanDates(line)[0]?.index===0||timeOf(line)&&/^Uhr\b/.test(title)||person(title))return null;
   if(!m[2]&&!m[1].includes('.')&&UNIT.test(title)||UNIT.test(title)&&/^(?:Uhr|Stimmen?|Ja|Nein|Gegenstimmen?|Enthaltung)/.test(title))return null;
-  return {prefix,number:n,title,form:'plain'};
+  return {prefix,number:n,title,form:'plain',mark:m[2]||''};
  }
  return null;
 }
@@ -1442,11 +1444,15 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    seenItem=true;lastItem=i;lastPrefix=it.prefix;itemOpen=true;
    if(it.prefix==='Ö'&&state==='none'){state='public';evidence='Kennzeichnung „Ö“ der Tagesordnungspunkte';}
    if(state!=='public'){if(state==='none'){unclear++;if(it.title)unclearItems.push({number:it.number,title:withMark(it.prefix,it.title).title});}else restricted=true;cur=null;i++;lastItemEnd=i;continue;}
-   const itemLine=i;let t=it.title,j=i+1;const pieces=[t];read.add(mainNumber(it.number));
+   // A page break inside a wrapped title („17.04.2026“ / „Seite: 2/2“ between two lines of item 22, Heiligenstadt i.OFr.) is passed over.
+   const pastPage=k=>{while(k<end&&(PAGE_LINE.test(all[k])||DATE_ALONE.test(all[k])&&PAGE_LINE.test(all[k+1]||'')))k++;return k;};
+   const itemLine=i;let t=it.title,j=i+1;const pieces=[t],marked=new Set();read.add(mainNumber(it.number));
    if(!t&&j<end&&continues(j))t=all[j++];
    if(kind==='minutes'){if(/(?:[,:-]|(?<!\p{L})und)$/u.test(t)&&j<end&&continues(j))t=join(t,all[j++]);}
    // A wrapped title that reports from the non-public part ("Bekanntgabe von Beschlüssen" / "aus nichtöffentlicher Sitzung").
-   else if(wrapped)for(let k=0;k<3&&j<end&&(continues(j)||!itemOf(all[j])&&isPublicReport(join(t,all[j]))&&!mentionsNonPublic(join(t,all[j])));k++){pieces.push(all[j]);t=join(t,all[j++]);}
+   // A wrapped title whose next line starts with a number written otherwise than the item's own („15 Bauleitplanverfahren: … und“ /
+   // „16. Änderung des Flächennutzungsplans“, Heiligenstadt i.OFr.) goes on in that line.
+   else if(wrapped)for(let k=0;k<3&&(j=pastPage(j))<end&&(continues(j)||wrapsOn(it,t,all[j])||!itemOf(all[j])&&isPublicReport(join(t,all[j]))&&!mentionsNonPublic(join(t,all[j])));k++){if(!continues(j)&&wrapsOn(it,t,all[j]))marked.add(pieces.length);pieces.push(all[j]);t=join(t,all[j++]);}
    t=t.replace(/\s+/g,' ').replace(/\s*[,;:–]$/,'').trim();
    i=j;lastItemEnd=j;
    if(!/\p{L}/u.test(t)||t.length<3||t.length>400){cur=null;continue;}
@@ -1455,7 +1461,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    if(FOOTNOTE.test(t))footnote=true;
    // The next items run on in the title ("Genehmigung der Niederschrift 2. Bauantrag Kita 3. …", a description without line
    // breaks): where one item ends is not known.
-   if(!it.number.includes('.')&&new RegExp(`(?:^|\\s)${mainNumber(it.number)+1}[.)]\\s+\\p{Lu}`,'u').test(t))discard('Mehrere Punkte in einer Zeile','wo ein Punkt endet, ist nicht erkennbar');
+   if(!it.number.includes('.')&&new RegExp(`(?:^|\\s)${mainNumber(it.number)+1}[.)]\\s+\\p{Lu}`,'u').test(pieces.filter((x,k)=>!marked.has(k)).join(' ')))discard('Mehrere Punkte in einer Zeile','wo ein Punkt endet, ist nicht erkennbar');
    // A mark at the end of a wrapped title, or in the last column of a table.
    const tail=withMark(it.prefix,t);
    // A narrow column "nicht-/öffent-/lich" wrapped together with the title: the ends of its lines read as one word.

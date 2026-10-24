@@ -39,3 +39,17 @@ test('minutes: a note on attendance and the running head of each page that names
  assert.deepEqual(m.items.map(i=>i.number),['1','2','3']);
  assert.deepEqual(m.otherItems||[],[]);
 });
+
+test('public notice (Heiligenstadt i.OFr.): compound word after the number, a title wrapped onto a number written otherwise, a page break inside a title',()=>{
+ const lines=['Öffentliche Bekanntmachung','Am Donnerstag, den 23.04.2026 um 18:00 Uhr findet im Sitzungssaal im Rathaus,','eine Sitzung des Marktgemeinderates statt.','Tagesordnung:',
+  '12 Bestellung zum Stellv. Kommandant der FFW Brunn','13 Kinder- und Jugendfeuerwehr Oberleinleiter','14 Anzeige der Höherauslastung von Stromkreisen',
+  '15 Bauleitplanverfahren: Bebauungsplan „Feuerwehr und Bauhof“ und','16. Änderung des Flächennutzungsplans Markt Buttenheim, Landkreis','Bamberg im Parallelverfahren',
+  '16 Geländeauffüllung zur Errichtung eines Parkplatzes','17 Anbau eines Nebengebäudes','18 Neubau einer Maschinenhalle','19 Errichtung eines Mobilfunkmastens','20 Errichtung eines Mobilfunkmastens Brunn','21 Errichtung eines Mobilfunkmastens Oberngrub','22 Ergebnisse aus Sitzung des Regionalen Planungsverband Oberfranken','17.04.2026','Seite: 2/2','West vom 20 April 2026 bzgl. Windvorranggebiet Brunn - Ost',
+  '23 Sonstiges','Anschließend findet eine nichtöffentliche Sitzung statt.'];
+ const m=parseSessionText(lines,{title:'Öffentliche Bekanntmachung',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>[i.number,i.title]),[
+  ['12','Bestellung zum Stellv. Kommandant der FFW Brunn'],['13','Kinder- und Jugendfeuerwehr Oberleinleiter'],['14','Anzeige der Höherauslastung von Stromkreisen'],
+  ['15','Bauleitplanverfahren: Bebauungsplan "Feuerwehr und Bauhof" und 16. Änderung des Flächennutzungsplans Markt Buttenheim, Landkreis Bamberg im Parallelverfahren'],
+  ['16','Geländeauffüllung zur Errichtung eines Parkplatzes'],['17','Anbau eines Nebengebäudes'],['18','Neubau einer Maschinenhalle'],['19','Errichtung eines Mobilfunkmastens'],['20','Errichtung eines Mobilfunkmastens Brunn'],['21','Errichtung eines Mobilfunkmastens Oberngrub'],
+  ['22','Ergebnisse aus Sitzung des Regionalen Planungsverband Oberfranken West vom 20 April 2026 bzgl. Windvorranggebiet Brunn - Ost'],['23','Sonstiges']]);
+});

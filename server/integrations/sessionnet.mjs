@@ -111,6 +111,15 @@ function agendaItem({number,title,paper,top,decision,all},meeting,source,now){
  const url=paper?.url||top?.url||meeting.url;const key=paper?new URL(paper.url).searchParams.get('__kvonr'):new URL(meeting.url).searchParams.get('__ksinr')+'-'+number.replace(/\D+/g,'-');
  return {id:`${source.id}-${paper?'vo':'top'}-${key}`,title,reference:paper?.label||'',sourceUrl:url,identityLinks:[paper?.url,top?.url].filter(Boolean),status,documents:[...new Map(all.filter(l=>/getfile\.|\/getfile|\.pdf/i.test(l.url)).flatMap(l=>{try{return [[l.url,{title:l.label||'Originalunterlage',url:allowed(l.url,source),kind:'application/pdf'}]];}catch{return [];/* outside the source */}})).values()],event:{date:meeting.date,committee:meeting.committee,status,description:decision||'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.',result:decision,url:meeting.url}};
 }
+/** Public items of a meeting from its public notice (PDF), read with the website reader's text parser; only items shown to be public. */
+async function noticeItems(notice,meeting,source,now){
+ const [{fetchSiteBytes,readPdfText},{parseSessionText,pdfLines}]=await Promise.all([import('./website.mjs'),import('./website-text.mjs')]);
+ const url=allowed(notice.url,source),{bytes}=await fetchSiteBytes(url,source);
+ const found=parseSessionText(pdfLines(String(await readPdfText(bytes))),{title:notice.label||notice.title||'Öffentliche Bekanntmachung',wrapped:true}).meetings.find(x=>x.date===meeting.date&&x.items.length);
+ if(!found)return [];
+ const all=[{url,label:notice.label||'Öffentliche Bekanntmachung'}];
+ return found.items.map(i=>({...agendaItem({number:i.number,title:i.title,paper:null,top:null,decision:'',all},meeting,source,now),reference:'TOP '+i.number}));
+}
 export function parseAgenda(h,meeting,source,now=new Date()){
  const result=[];
  for(const m of h.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)){
@@ -230,6 +239,11 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
     if(parse)break;
    }
    // Called off, or upcoming with no agenda published yet: nothing public to read, counted and not reported as a gap.
+   // agendaFromNotice (catalog, Heiligenstadt i.OFr.): guests see no agenda, only the meeting page with its public notice
+   // („Öffentliche Bekanntmachung“, a PDF): the items are read from that notice as the website reader reads one.
+   let noticed=null;
+   if(!parse&&source.agendaFromNotice){const notice=links(shown,source.base).find(l=>/getfile\.(?:asp|php)/i.test(l.url)&&/Bekanntmachung|Einladung/i.test(l.label||l.title||''));if(notice)noticed=await noticeItems(notice,m,source,now);}
+   if(noticed?.length){parse=()=>noticed;h=shown;url=m.url;}
    if(!parse){if(CANCELLED_MEETING.test(text(shown)))cancelled++;else if(m.date>today)upcoming++;else issues.push(missingAgendaIssue(shown,m.url));return;}
    if(!linked)layout=step==='si0057'?null:step==='si0056'?'cards':'top';
    const meeting=url===m.url?m:{...m,url};
