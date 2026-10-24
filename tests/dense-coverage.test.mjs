@@ -10,6 +10,6 @@ test('genug Berichte je Einwohner: Mittel über das Fenster nach Sitzungstag, Ei
  assert.deepEqual(denseCoverageSeries(events,catalog,population,{window:30,span:1,today:'2026-10-24'}),[{day:'2026-10-24',areas:2,population:10000}]);
  // 90 Tage: dieselben Berichte auf drei Monate verteilt: a 0,067 und b 0,044 je Monat → nein
  assert.deepEqual(denseCoverageSeries(events,catalog,population,{window:90,span:1,today:'2026-10-24'}),[{day:'2026-10-24',areas:0,population:0}]);
- // ein Tag vor der Sitzung vom 20.10. zählt sie noch nicht
- assert.equal(denseCoverageSeries(events,catalog,population,{window:30,span:6,today:'2026-10-24'})[0].areas,0);
+ // am 19.10. fehlt die Sitzung vom 20.10.: nur a (1 Bericht vom 01.10. = 0,1 je 1.000), der Kreis noch nicht
+ assert.deepEqual(denseCoverageSeries(events,catalog,population,{window:30,span:6,today:'2026-10-24'})[0],{day:'2026-10-19',areas:1,population:10000});
 });
