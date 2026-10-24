@@ -694,5 +694,21 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.wuelfrath.net/rat-verwaltung/aktuelles-und-bekanntmachungen/amtliche-bekanntmachungen/archiv",
     "note": "wuelfrath.ratsinfomanagement.net gesperrt. Das Archiv der amtlichen Bekanntmachungen nennt Satzungsbeschlüsse und Tagesordnungspunkte des Rates (Probeabruf 12 Monate: 168 Berichte, Sitzung 13.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nrw-05554056",
+    "name": "Stadt Stadtlohn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.stadtlohn.de/",
+    "pages": [
+      "https://www.stadtlohn.de/portal/dokumenteplus-900000338-28240.html?ordner=1&containerSort=0&schwelle_zuklappen=10&naviID=900000090&brotID=900000090"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.stadtlohn.de/rathaus-service/aktuelles/amtsblatt/",
+    "note": "ratsinfomanagement.net gesperrt. Das Amtsblatt (Ordner 2026, PDF-Downloads /downloads/datei/) nennt Tagesordnungspunkte des Rates (Probeabruf: Rat 07.10.2026 u. a.; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers). Titel teils mit Seitenkopf-Resten."
   }
 ]
