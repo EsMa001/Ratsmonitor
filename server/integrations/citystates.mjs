@@ -225,7 +225,7 @@ export async function collectOparlDistricts(source,options={}){
  for(const s of systems){
   try{
    // A 403 of the system ends its reading (collectRegionalOparl); robots.txt does not decide over OParl.
-   const d=await collectRegionalOparl({...source,name:'BVV '+s.district,system:s.system,...(s.body?{body:s.body}:{})},options);used++;
+   const d=await collectRegionalOparl({...source,name:'BVV '+s.district,system:s.system,ownSystem:true,...(s.body?{body:s.body}:{})},options);used++;
    for(const t of d.topics){t.committee=prefix(s.district,t.committee);for(const e of t.events||[])e.committee=prefix(s.district,e.committee);topics.push(t);}
    Object.assign(marks,d.marks||{});meetings+=d.coverage.meetings||0;read+=d.readMeetings||0;
    if(!d.coverage.complete)complete=false;if(d.coverage.resumable)resumable=true;

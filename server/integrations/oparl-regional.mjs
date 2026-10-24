@@ -166,7 +166,9 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
   if(!entry.type?.endsWith('/System'))throw Error('Kein OParl-System');
   const rawBodies=await list(entry.body);
   const bodies=await parallel(rawBodies,async b=>{try{return await object(b)}catch(e){issues.push('Körperschaft: '+e.message);return null;}},3);
-  body=chooseBody(bodies,source);
+  // A system of its own (Berlin district assembly) with one body: that body is the area's, whatever its name.
+  const only=source.ownSystem&&bodies.filter(Boolean);
+  body=only?.length===1&&only[0].meeting?only[0]:chooseBody(bodies,source);
  }
  const meetings=[],period=historyWindow(lookback);let kept=null;
  const until=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+2,0)).toISOString().slice(0,10);

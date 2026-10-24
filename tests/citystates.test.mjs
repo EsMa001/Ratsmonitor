@@ -255,8 +255,8 @@ test('standard rule: Berlin districts are read unless they refuse technically; t
   {district:'Spandau',system:'https://spandau.example.berlin.de/oparl/system',robots:'unbrauchbar',error:'Quelle antwortet mit HTTP 403',oparl:false},{district:'Neukölln',system:'https://neukoelln.example.berlin.de/oparl/system',oparl:false}];
  assert.deepEqual(eligibleSystems({systems}).map(s=>s.district),['Pankow','Mitte']);
  assert.equal(eligibleSystems({systems,consent:{by:'ITDZ Berlin',date:'2026-11-01',scope:'oparl'}}).length,4);
- // The live check of 05.10.2026: all ten district systems answered with HTTP 403; they stay out.
- assert.deepEqual(eligibleSystems(berlin),[]);
+ // The check of 05.10.2026 found HTTP 403 everywhere; since 25.10.2026 eleven districts answer (Spandau has no OParl).
+ assert.equal(eligibleSystems(berlin).length,11);
  // A district whose robots.txt refuses is asked without reading robots.txt; its 403 ends its reading.
  const asked=[],robots=[];
  const pankow=await collectOparlDistricts({...berlin,systems:systems.slice(0,1)},{now,window:'1m',get:async url=>{robots.push(url);return '';},getJson:async url=>{asked.push(url);throw Error('Quelle antwortet mit HTTP 403');}});
