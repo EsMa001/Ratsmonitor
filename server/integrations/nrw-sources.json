@@ -710,5 +710,21 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.stadtlohn.de/rathaus-service/aktuelles/amtsblatt/",
     "note": "ratsinfomanagement.net gesperrt. Das Amtsblatt (Ordner 2026, PDF-Downloads /downloads/datei/) nennt Tagesordnungspunkte des Rates (Probeabruf: Rat 07.10.2026 u. a.; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers). Titel teils mit Seitenkopf-Resten."
+  },
+  {
+    "id": "nrw-05554044",
+    "name": "Gemeinde Reken",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.reken.de/",
+    "pages": [
+      "https://www.reken.de/Rathaus-B%C3%BCrgerservice/Rathaus/Amtsblatt/"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.reken.de/Rathaus-B%C3%BCrgerservice/Rathaus/Amtsblatt/",
+    "note": "reken.ratsinfomanagement.net gesperrt. Das Amtsblatt nennt Tagesordnungspunkte des Gemeinderats (PDF-Ausgaben; Probeabruf 12 Monate: 86 Berichte, Sitzung 09.07.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
