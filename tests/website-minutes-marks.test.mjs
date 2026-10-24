@@ -110,3 +110,12 @@ test('head „Die nächste öffentliche / nichtöffentliche Sitzung …“ (Temp
  assert.deepEqual(m.items.map(i=>i.number),['1','2','3']);
  assert.deepEqual(m.closedItems.map(i=>i.number),['4']);
 });
+
+test('items after a head inside the non-public part are kept as non-public items of that meeting, not dropped',()=>{
+ const lines=['Einladung zur Sitzung des Gemeinderates am 15.10.2026','Öffentlicher Teil','1. Bebauungsplan Ortsmitte','2. Anfragen','Nichtöffentlicher Teil','3. Grundstücksangelegenheit',
+  'Sitzung des Gemeinderates am 15.10.2026','4. Personalangelegenheit','5. Vertragsangelegenheit'];
+ const r=parseSessionText(lines,{title:'Einladung Gemeinderat'});
+ const m=r.meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2']);
+ assert.deepEqual(m.otherItems.filter(i=>i.publicity==='nonpublic').map(i=>i.number).sort(),['3','4','5']);
+});

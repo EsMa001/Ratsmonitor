@@ -1187,7 +1187,13 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   // After a meeting that ended in its non-public part, what follows belongs to that part unless a head of its own
   // names another day and another body (a running head, a note on an earlier reading are no new meeting).
   if(carried&&!(seg.header?.own&&seg.header.date!==carried.date&&!sameBody(seg.header.committee,carried.committee||''))){
-   if(items.slice(seg.start,end).some(Boolean))issues.push(`Sitzungskopf im nichtöffentlichen Teil (${where(seg.header?.committee,seg.header?.date,title)}): keine neue Sitzung erkennbar, nichts übernommen.`);
+   // Everything the town publishes is taken (decision 24.10.2026, Nico: „nicht zu vorsichtig“): the items belong to the non-public
+   // part of the meeting before and are kept there, marked non-public.
+   const prev=meetings.at(-1),rest=items.slice(seg.start,end).filter(x=>x?.title);
+   if(rest.length&&prev&&prev.date===carried.date){const seen=new Set([...(prev.closedItems||[]),...(prev.otherItems||[])].map(x=>x.number+'|'+x.title));
+    for(const x of rest){const it={number:x.number,title:withMark(x.prefix,x.title).title};if(seen.has(it.number+'|'+it.title))continue;seen.add(it.number+'|'+it.title);(prev.closedItems??=[]).push(it);(prev.otherItems??=[]).push({...it,publicity:'nonpublic'});}
+    issues.push(`Sitzungskopf im nichtöffentlichen Teil (${where(seg.header?.committee,seg.header?.date,title)}): keine neue Sitzung erkennbar, ${rest.length} ${rest.length===1?'Punkt':'Punkte'} als nichtöffentlich zur vorigen Sitzung übernommen.`);}
+   else if(rest.length)issues.push(`Sitzungskopf im nichtöffentlichen Teil (${where(seg.header?.committee,seg.header?.date,title)}): keine neue Sitzung erkennbar, nichts übernommen.`);
    return;
   }
   carried=null;
