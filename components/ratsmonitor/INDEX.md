@@ -952,7 +952,7 @@ z- analytics.css:632
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (361): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (1144): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1145): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - haptic.ts (5): tick
