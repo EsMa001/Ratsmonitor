@@ -11,7 +11,7 @@ import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {repairFontUmlauts} from './text-repair.mjs';
 import {SMALL_WORDS,htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST,downloadListLinks,parseDownloadItems} from './website-feeds.mjs';
+import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST,downloadListLinks,parseDownloadItems,gazetteForms} from './website-feeds.mjs';
 import {fnv,safeDecode} from './source-common.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
 // its bodies — notices with agenda (every Land requires them), reports and minutes, its gazette as PDF, and the outputs
@@ -72,14 +72,16 @@ export function decodeText(bytes,type=''){
  const probe=utf8.slice(0,2000),latin=/(?:charset|encoding)\s*=\s*["']?(?:iso-8859-1|iso-8859-15|latin-?1|windows-1252)/i;
  return new TextDecoder(latin.test(type)||!/charset\s*=\s*["']?utf-?8/i.test(type)&&latin.test(probe)?'windows-1252':'utf-8').decode(bytes);
 }
-async function fetchSite(url,source,timeoutMs,request,accept,limit){
+async function fetchSite(url,source,timeoutMs,request,accept,limit,form=null){
  const deadline=Date.now()+timeoutMs,seen=new Set(),gate=source[ROBOTS];let next=siteAllowed(url,source);
  for(let hop=0;hop<=3;hop++){
   if(seen.has(next))throw Error('Wiederholte Weiterleitung der Quelle');seen.add(next);
   // Every hop, also a redirect target, must be a path robots.txt leaves open.
   if(gate&&!await gate(next))throw Error(ROBOTS_BLOCKED);
   const remaining=deadline-Date.now();if(remaining<=0)throw Error(BUDGET_REACHED);
-  const r=await request(next,{redirect:'manual',signal:AbortSignal.timeout(remaining),headers:{'User-Agent':SOURCE_USER_AGENT,Accept:accept}});
+  // A download form (gazetteForms) posts its fields to the page; a redirect after it is followed as an ordinary request.
+  const post=form&&hop===0?{method:'POST',body:new URLSearchParams(form).toString()}:{};
+  const r=await request(post.method?next.replace(/#.*$/,''):next,{redirect:'manual',signal:AbortSignal.timeout(remaining),...post,headers:{'User-Agent':SOURCE_USER_AGENT,Accept:accept,...(post.method?{'Content-Type':'application/x-www-form-urlencoded'}:{})}});
   if([301,302,303,307,308].includes(r.status)||r.type==='opaqueredirect'){
    const location=r.headers.get('location');await r.body?.cancel();
    if(!location)throw Error('Weiterleitung ohne Zieladresse');
@@ -104,8 +106,8 @@ export async function fetchSiteText(url,source,timeoutMs=20000,request=fetch){
  return text;
 }
 /** A document of the site as bytes with its content type (at most 12 MB): {bytes, type}. */
-export async function fetchSiteBytes(url,source,timeoutMs=30000,request=fetch){
- const got=await fetchSite(url,source,timeoutMs,request,'application/pdf,text/html;q=0.9,*/*;q=0.5',LIMITS.pdfBytes);
+export async function fetchSiteBytes(url,source,timeoutMs=30000,request=fetch,form=null){
+ const got=await fetchSite(url,source,timeoutMs,request,'application/pdf,text/html;q=0.9,*/*;q=0.5',LIMITS.pdfBytes,form);
  if(/html|text\/plain/i.test(got.type)&&got.bytes.byteLength<8000&&isRejectionPage(decodeText(got.bytes,got.type)))throw Error(REFUSED);
  return got;
 }
@@ -356,7 +358,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  const read=async(url,what)=>{const u=await permitted(url);if(!u)return null;try{return await get(u,site);}catch(e){fail(`${what} ${u}`,e);return null;}};
  // 2. Sources of candidates. texts: what is parsed (documents read, entries with text of their own); candidates:
  // addresses of documents that may be read; events: calendar entries (iCal, JSON-LD).
- const candidates=new Map(),texts=[],events=[],listed=new Set(),direct=new Set(),listRead=new Set(),cancels=[];let listReads=0,listLeft=0;
+ const forms=new Map(),candidates=new Map(),texts=[],events=[],listed=new Set(),direct=new Set(),listRead=new Set(),cancels=[];let listReads=0,listLeft=0;
  const offer=link=>{
   if(!link?.url)return;const seen=candidates.get(link.url);
   if(!seen){candidates.set(link.url,{...link,label:link.label||''});return;}
@@ -381,6 +383,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    listRead.add(u);
    onProgress(`${source.id}: ${listReads} Listenseiten`);
    for(const l of documentLinks(html,u))offer(l);
+   // Issues behind download forms only where the catalog asks for them: a whole gazette mixes much else into the items (24.10.2026).
+   if(source.gazetteForms)for(const g of gazetteForms(html,u)){forms.set(g.url,g.form);offer(g);}
    // A download area loaded by script lists its files in JSON (CMS of the Saarpfalz-Kreis).
    for(const list of downloadListLinks(html,u).slice(0,4)){const lu=await permitted(list);if(!lu)continue;let json;try{json=await get(lu,site);}catch(e){fail('Downloadliste '+lu,e);continue;}
     for(const f of parseDownloadItems(json)){const l=asLink(f.url,f.label);if(l)offer(l);}}
@@ -480,7 +484,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  const unreadable=[],unparsed=[];let documents=0,budget=LIMITS.documents;const reading=new Map();
  const readOnce=(c,order,deeper)=>{if(reading.has(c.url))return reading.get(c.url);if(budget<=0)return null;budget--;const p=readDocument(c,order,deeper);reading.set(c.url,p);return p;};
  const readDocument=async(c,order,deeper)=>{
-  let got;try{got=await getBytes(c.url,site);}catch(e){fail('Dokument '+c.url,e);return;}
+  let got;try{got=forms.has(c.url)?await getBytes(c.url,site,undefined,undefined,forms.get(c.url)):await getBytes(c.url,site);}catch(e){fail('Dokument '+c.url,e);return;}
   documents++;onProgress(`${source.id}: ${documents} Dokumente`);
   const bytes=got.bytes instanceof Uint8Array?got.bytes:new Uint8Array(got.bytes),type=got.type||'';
   const pdf=String.fromCharCode(...bytes.slice(0,1024)).includes('%PDF-')||/pdf/i.test(type)||/\.pdf$/i.test(new URL(c.url).pathname);

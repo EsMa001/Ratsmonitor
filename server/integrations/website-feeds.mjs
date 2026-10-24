@@ -76,7 +76,7 @@ export const isSearchLink=url=>SEARCH.test(String(url??''));
 
 // --- links -----------------------------------------------------------------------------------------------------------
 const PAGE_EXT=new Set(['html','htm','php','php3','php5','phtml','asp','aspx','jsp','jsf','shtml','cfm','do']);
-const kindOf=(url,type)=>{const t=String(type??'').toLowerCase();if(t.includes('pdf'))return 'pdf';if(t.includes('calendar'))return 'ics';if(/rss|atom/.test(t))return 'feed';if(t.includes('html'))return 'html';
+const kindOf=(url,type)=>{const t=String(type??'').toLowerCase();if(t.includes('pdf')||GAZETTE_FORM.test(String(url??'')))return 'pdf';if(t.includes('calendar'))return 'ics';if(/rss|atom/.test(t))return 'feed';if(t.includes('html'))return 'html';
  const {path,query}=pathOf(url),ext=path.match(/\.([a-z][a-z0-9]{1,4})$/i)?.[1]?.toLowerCase();
  // Download scripts name the file in the query (IKISS: download.php?fid=….PDF).
  if(ext==='pdf'||/\.pdf(?![a-z0-9])/i.test(query))return 'pdf';
@@ -129,6 +129,24 @@ export function documentLinks(html,base){
  return [...out.values()].map(({url,label,type})=>({url,label,date:firstDate(label,LABEL_DATES)??urlDate(url),kind:kindOf(url,type)}));
 }
 
+// An issue of the gazette behind a download button (CMS verwaltungsportal.de, Thüringen and Sachsen 2026): a form that posts a fixed
+// value per issue to the gazette page. Its address is the page with the issue as fragment ("…/amtsblatt/index.php#gazette_90839").
+export const GAZETTE_FORM=/#gazette_\d+$/;
+/** Download forms of gazette issues on a page: [{url,label,date,kind:'pdf',form}] (form: the fields to post). */
+export function gazetteForms(html,base){
+ const out=[],text=String(html??'');
+ for(const m of text.matchAll(/<form\b([^>]*\baction="([^"]*#gazette_\d+)"[^>]*)>([\s\S]*?)<\/form>/gi)){
+  if(!/method="post"/i.test(m[1]))continue;
+  let url;try{url=new URL(m[2].replace(/&amp;/g,'&'),base).href;}catch{continue;}
+  const form={};for(const f of m[3].matchAll(/<input\b[^>]*type="hidden"[^>]*>/gi)){const name=attr(f[0],'name'),value=attr(f[0],'value');if(name)form[name]=value??'';}
+  if(!form.hash||!form.form)continue;
+  // The row of the table names number and day of the issue ("Nr. 10/2026", "23.10.2026").
+  const row=text.slice(Math.max(0,text.lastIndexOf('<tr',m.index)),m.index);
+  const label=('Amtsblatt '+strip(row)).replace(/[\u200b\u00a0]/g,'').replace(/&#8203;/g,'').replace(/\s+/g,' ').trim();
+  out.push({url,label,date:firstDate(label,LABEL_DATES),kind:'pdf',form});
+ }
+ return out;
+}
 /** Lists of a CMS download area that a page loads by script ("…/downloadItems.json?…", Saarpfalz-Kreis): their addresses. */
 export function downloadListLinks(html,base){
  const out=new Set();

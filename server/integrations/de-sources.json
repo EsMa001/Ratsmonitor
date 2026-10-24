@@ -41438,5 +41438,198 @@
     "verifiedSource": "https://ettringen.de/home/oeffentliche-bekanntmachungen/",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 8 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-12069665",
+    "name": "Gemeinde Wiesenburg/Mark",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/wiesenburgmark/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://sessionnet.owl-it.de/wiesenburgmark/bi/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem SessionNet, Link auf der Website der Kommune. Probeabruf 3 Monate: 57 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-15089307",
+    "name": "Stadt Seeland",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinfo.kitu-genossenschaft.de/seeland_bi/",
+    "extension": "asp",
+    "verifiedSource": "https://ratsinfo.kitu-genossenschaft.de/seeland_bi/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem SessionNet, Link auf der Website der Kommune. Probeabruf 3 Monate: 187 Berichte aus 16 Sitzungen."
+  },
+  {
+    "id": "de-010595952",
+    "name": "Amt Schafflund",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://schafflund.mein-intra.net/",
+    "token": "c53ad81b-1d480cfa-7700880b-8ce09e4e",
+    "page": "https://amt-schafflund.ratsinformationsdienst.de/",
+    "verifiedSource": "https://amt-schafflund.ratsinformationsdienst.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem CouncilService (mein-intra.net), Link auf der Website der Kommune. Probeabruf 3 Monate: 626 Berichte aus 41 Sitzungen."
+  },
+  {
+    "id": "de-130735356",
+    "name": "Amt Miltzow",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://amt-miltzow.mein-intra.net/",
+    "token": "f55b9e88-198e8b21-40e35df7-6a763d41",
+    "page": "https://www.amt-miltzow.de/seite/441491/ratsinformationssystem.html",
+    "verifiedSource": "https://www.amt-miltzow.de/seite/441491/ratsinformationssystem.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem CouncilService (mein-intra.net), Link auf der Website der Kommune. Probeabruf 3 Monate: 114 Berichte aus 9 Sitzungen."
+  },
+  {
+    "id": "de-130725257",
+    "name": "Amt Laage",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://sitzungsdienst-laage.de/bi/",
+    "calendar": "si010_e.asp",
+    "verifiedSource": "https://sitzungsdienst-laage.de/bi/allris.net.asp",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem ALLRIS 3, Link auf der Website der Kommune. Probeabruf 3 Monate: 123 Berichte aus 18 Sitzungen."
+  },
+  {
+    "id": "de-14625280",
+    "name": "Gemeinde Königswartha",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://koenigswartha.mein-intra.net/",
+    "token": "29e156b9-cc09b7bf-e54ddcdf-8bb22d5b",
+    "page": "https://koenigswartha.ratsinformationsdienst.de/seite/652790/ris.html",
+    "verifiedSource": "https://koenigswartha.ratsinformationsdienst.de/seite/652790/ris.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem CouncilService (mein-intra.net), Link auf der Website der Kommune. Probeabruf 3 Monate: 31 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-14627130",
+    "name": "Stadt Lommatzsch",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://lommatzsch.mein-intra.net/",
+    "token": "0945adea-b9ca3a5a-a08750c6-977076f3",
+    "page": "https://lommatzsch.ratsinformationsdienst.de/",
+    "verifiedSource": "https://lommatzsch.ratsinformationsdienst.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem CouncilService (mein-intra.net), Link auf der Website der Kommune. Probeabruf 3 Monate: 8 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-08226049",
+    "name": "Gemeinde Meckesheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://meckesheim.mein-intra.net/",
+    "token": "b09ee396-b6c5d9d2-910e4f5f-62c40694",
+    "page": "https://ratsinformationsdienst.meckesheim.de/",
+    "verifiedSource": "https://ratsinformationsdienst.meckesheim.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem CouncilService (mein-intra.net), Link auf der Website der Kommune. Probeabruf 3 Monate: 27 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-14627170",
+    "name": "Gemeinde Niederau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://gemeinde-niederau.mein-intra.net/",
+    "token": "661b2a99-4ead2e27-c5b92209-07061923",
+    "page": "https://niederau.info/verwaltung/ratsinformationssystem/",
+    "verifiedSource": "https://niederau.info/verwaltung/ratsinformationssystem/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem CouncilService (mein-intra.net), Link auf der Website der Kommune. Probeabruf 3 Monate: 29 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-08337032",
+    "name": "Gemeinde Dogern",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://dogern.mein-intra.net/",
+    "token": "f6ddeddf-3035c987-e1370b33-54bbda62",
+    "page": "https://dogern.ratsinformationsdienst.de/",
+    "verifiedSource": "https://dogern.ratsinformationsdienst.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem CouncilService (mein-intra.net), Link auf der Website der Kommune. Probeabruf 3 Monate: 26 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-14524170",
+    "name": "Gemeinde Lichtentanne",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://gemeinde-lichtentanne.mein-intra.net/",
+    "token": "d35f5ddb-10dd31d3-13600115-2eaeb4df",
+    "page": "https://www.gemeinde-lichtentanne.de/seite/764726/ris.html",
+    "verifiedSource": "https://www.gemeinde-lichtentanne.de/seite/764726/ris.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem CouncilService (mein-intra.net), Link auf der Website der Kommune. Probeabruf 3 Monate: 127 Berichte aus 17 Sitzungen."
+  },
+  {
+    "id": "de-08226097",
+    "name": "Gemeinde Wiesenbach",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://wiesenbach.gremien.info/",
+    "verifiedSource": "https://wiesenbach.gremien.info/custom-page?id=1",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem more!rubin (gremien.info), Link auf der Website der Kommune. Probeabruf 3 Monate: 9 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08437031",
+    "name": "Stadt Gammertingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gammertingen.de/",
+    "pages": [
+      "https://www.gammertingen.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "verifiedSource": "https://www.gammertingen.de/amtsblatt/index.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt der Gemeinde (verwaltungsportal.de, Ausgaben über Download-Formular). Probeabruf 3 Monate: 10 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-16066093",
+    "name": "Gemeinde Rhönblick",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-rhoenblick.de/",
+    "pages": [
+      "https://www.gemeinde-rhoenblick.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "verifiedSource": "https://www.gemeinde-rhoenblick.de/amtsblatt/index.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt der Gemeinde (verwaltungsportal.de, Ausgaben über Download-Formular). Probeabruf 3 Monate: 5 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09377119",
+    "name": "Gemeinde Fuchsmühl",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.fuchsmuehl.de/",
+    "pages": [
+      "https://www.fuchsmuehl.de/rathaus/bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.fuchsmuehl.de/rathaus/bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Bekanntmachungen der Gemeinde mit Tagesordnungen. Probeabruf 3 Monate: 41 Berichte aus 5 Sitzungen."
   }
 ]

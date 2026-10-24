@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,listPageScore,paginationLinks,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,generatorOf,isRisLink,isSearchLink,TRANSLATED,downloadListLinks,parseDownloadItems} from '../server/integrations/website-feeds.mjs';
+import {documentLinks,sessionScore,SESSION_THRESHOLD,listPageScore,paginationLinks,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,generatorOf,isRisLink,isSearchLink,TRANSLATED,downloadListLinks,parseDownloadItems,gazetteForms} from '../server/integrations/website-feeds.mjs';
 // All pages, feeds and files below are reproduced (nachgebildet), not live: small excerpts in the markup of the usual
 // municipal CMS (TYPO3, WordPress, IKISS, Joomla), with invented hosts under *.example.test and without names of persons.
 const base='https://www.gemeinde-musterdorf.example.test/rathaus/bekanntmachungen/';
@@ -274,4 +274,13 @@ test('download area loaded by script: list address and its files (Saarpfalz-Krei
  const json=JSON.stringify({downloadItems:[{title:'Bekanntmachung Sitzung Kreistag am 24.09.2026',fileName:'x.pdf',downloadHref:'https://www.saarpfalz-kreis.de/bek/pdf/kt.pdf?cid=1'},{fileName:'Niederschrift.pdf'}]});
  assert.deepEqual(parseDownloadItems(json),[{url:'https://www.saarpfalz-kreis.de/bek/pdf/kt.pdf?cid=1',label:'Bekanntmachung Sitzung Kreistag am 24.09.2026'}]);
  assert.deepEqual(parseDownloadItems('kein json'),[]);
+});
+
+test('gazette issues behind a download form (verwaltungsportal.de): address with fragment, number and day, the fields to post',()=>{
+ const html=`<table><tbody><tr><td>Nr. 10/2026</td><td>23.&#8203;10.&#8203;2026</td><td><form target="_blank" action="/amtsblatt/index.php#gazette_90839" name="gazette_90839" method="post" accept-charset="utf-8"><input type="hidden" name="hash" value="6a45" /><input type="hidden" name="form" value="gazette_90839" /><a href="#gazette_90839_noScroll" onclick="document.gazette_90839.submit();return true;">Download (4158 kB)</a></form></td></tr>
+ <tr><td>Suche</td><td><form action="/suche/index.php" method="post"><input type="hidden" name="hash" value="x" /></form></td></tr></tbody></table>`;
+ const g=gazetteForms(html,'https://www.bad-lobenstein.de/amtsblatt/index.php');
+ assert.equal(g.length,1);
+ assert.deepEqual(g[0],{url:'https://www.bad-lobenstein.de/amtsblatt/index.php#gazette_90839',label:'Amtsblatt Nr. 10/2026 23.10.2026',date:'2026-10-23',kind:'pdf',form:{hash:'6a45',form:'gazette_90839'}});
+ assert.ok(sessionScore({url:g[0].url,label:g[0].label})>=SESSION_THRESHOLD);
 });

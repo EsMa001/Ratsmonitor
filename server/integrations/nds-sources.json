@@ -4127,5 +4127,16 @@
     "verifiedSource": "https://www.moormerland.de/rathaus/amtsblatt",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 28 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "nds-03241014",
+    "name": "Stadt Ronnenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ratsinfo.ronnenberg.de/public/",
+    "verifiedSource": "https://ratsinfo.ronnenberg.de/public/gr020?GRLFDNR=1",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem ALLRIS 4, Link auf der Website der Kommune. Probeabruf 3 Monate: 89 Berichte aus 6 Sitzungen."
   }
 ]
