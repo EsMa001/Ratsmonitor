@@ -721,3 +721,17 @@ test('Ohne jeden Hinweis auf öffentlich oder nichtöffentlich werden die Punkte
  // vor der ersten Zeile: nichts
  assert.deepEqual(take([...head,'Nichtöffentlicher Teil','1. Grundstücksangelegenheit','2. Personalangelegenheit']),[]);
 });
+
+test('parseSessionText: a committee field wrapped after a comma is one name (Marburg-Biedenkopf)',()=>{
+ const text=`Öffentliche Bekanntmachung vom 05.09.2026
+Öffentliche Sitzung des Ausschusses für Soziales, Familie, Jugend,
+Integration, Gesundheit und Sport
+Am Donnerstag, 10.09.2026, 16:00 Uhr, findet im Sitzungssaal eine öffentliche
+Sitzung des Ausschusses für Soziales, Familie, Jugend, Integration, Gesundheit und Sport
+statt.
+Tagesordnung:
+1. Eröffnung der Sitzung, Feststellung der Beschlussfähigkeit
+2. Jahresberichte 2025 der Patientenfürsprecherinnen und Patientenfürsprecher`;
+ const {meetings}=parseSessionText(pdfLines(text),{title:'OEB_2026_09_05_SFJGS',wrapped:true});
+ assert.deepEqual(meetings.map(m=>[m.date,m.committee]),[['2026-09-10','Ausschuss für Soziales, Familie, Jugend, Integration, Gesundheit und Sport']]);
+});

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,listPageScore,paginationLinks,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,generatorOf,isRisLink,isSearchLink,TRANSLATED} from '../server/integrations/website-feeds.mjs';
+import {documentLinks,sessionScore,SESSION_THRESHOLD,listPageScore,paginationLinks,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,generatorOf,isRisLink,isSearchLink,TRANSLATED,downloadListLinks,parseDownloadItems} from '../server/integrations/website-feeds.mjs';
 // All pages, feeds and files below are reproduced (nachgebildet), not live: small excerpts in the markup of the usual
 // municipal CMS (TYPO3, WordPress, IKISS, Joomla), with invented hosts under *.example.test and without names of persons.
 const base='https://www.gemeinde-musterdorf.example.test/rathaus/bekanntmachungen/';
@@ -266,4 +266,12 @@ test('website documentLinks and paginationLinks leave out translated copies of t
  assert.deepEqual(documentLinks(html,base).map(l=>l.url),[origin+'/rathaus/bekanntmachungen/einladung.pdf',origin+'/rathaus/bekanntmachungen/?page=2']);
  assert.deepEqual(paginationLinks(html,base),[origin+'/rathaus/bekanntmachungen/?page=2']);
  assert.match('https://www.saarpfalz-kreis.de/:translation/en/',TRANSLATED);
+});
+
+test('download area loaded by script: list address and its files (Saarpfalz-Kreis)',()=>{
+ const html=`<div data-x="1"><script>load("https://www.saarpfalz-kreis.de/bek/downloadItems.json?i4xpath=65&amp;h=1&amp;id=9b")</script></div>`;
+ assert.deepEqual(downloadListLinks(html,'https://www.saarpfalz-kreis.de/bek/'),['https://www.saarpfalz-kreis.de/bek/downloadItems.json?i4xpath=65&h=1&id=9b']);
+ const json=JSON.stringify({downloadItems:[{title:'Bekanntmachung Sitzung Kreistag am 24.09.2026',fileName:'x.pdf',downloadHref:'https://www.saarpfalz-kreis.de/bek/pdf/kt.pdf?cid=1'},{fileName:'Niederschrift.pdf'}]});
+ assert.deepEqual(parseDownloadItems(json),[{url:'https://www.saarpfalz-kreis.de/bek/pdf/kt.pdf?cid=1',label:'Bekanntmachung Sitzung Kreistag am 24.09.2026'}]);
+ assert.deepEqual(parseDownloadItems('kein json'),[]);
 });

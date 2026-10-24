@@ -40664,6 +40664,21 @@
     "apiCheck": "Ratsinformationssystem bei ris-portal.de nur mit Anmeldung bzw. für unseren Server gesperrt; die Website des Landratsamts führt jede Sitzung als Termin mit Tagesordnung, Vorlagen und Beschlüssen (Probeabruf 3 Monate: 30 Berichte aus 3 Sitzungen)."
   },
   {
+    "id": "de-10045",
+    "name": "Saarpfalz-Kreis",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.saarpfalz-kreis.de/",
+    "pages": [
+      "https://www.saarpfalz-kreis.de/oeffentliche-bekanntmachungen/amtliche-bekanntmachungen/",
+      "https://www.saarpfalz-kreis.de/politik-verwaltung/der-kreistag/sitzungen-des-kreistages/"
+    ],
+    "verifiedSource": "https://www.saarpfalz-kreis.de/oeffentliche-bekanntmachungen/amtliche-bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Gremieninfo (ratsinfo.saarpfalz-kreis.de) antwortet nicht; die Website führt Bekanntmachungen der Sitzungen mit Tagesordnung und die Niederschriften (öffentlicher Teil) als Download-Liste des CMS (downloadItems.json). Probeabruf 3 Monate: 44 Berichte aus 3 Sitzungen."
+  },
+  {
     "id": "de-16076022",
     "name": "Stadt Greiz",
     "kind": "city",

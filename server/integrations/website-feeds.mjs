@@ -129,6 +129,18 @@ export function documentLinks(html,base){
  return [...out.values()].map(({url,label,type})=>({url,label,date:firstDate(label,LABEL_DATES)??urlDate(url),kind:kindOf(url,type)}));
 }
 
+/** Lists of a CMS download area that a page loads by script ("…/downloadItems.json?…", Saarpfalz-Kreis): their addresses. */
+export function downloadListLinks(html,base){
+ const out=new Set();
+ for(const m of String(html??'').matchAll(/["'](https?:\/\/[^"'\s]+\/downloadItems\.json\?[^"'\s]+|\/[^"'\s]*\/downloadItems\.json\?[^"'\s]+)["']/g)){const url=resolve(m[1].replace(/&amp;/g,'&'),base);if(url)out.add(url);}
+ return [...out];
+}
+/** Files of such a list: [{url,label}] (label = title, else file name). */
+export function parseDownloadItems(json){
+ let data;try{data=typeof json==='string'?JSON.parse(json):json;}catch{return [];}
+ return (Array.isArray(data?.downloadItems)?data.downloadItems:[]).filter(d=>d?.downloadHref).map(d=>({url:String(d.downloadHref),label:String(d.title||d.fileName||'').replace(/\.pdf$/i,'').trim()}));
+}
+
 // --- scores ----------------------------------------------------------------------------------------------------------
 // Words are compared without umlauts and punctuation, so that a slug ("nicht-oeffentliche-sitzung") reads like a label.
 // NFC first: pdf.js and some editors write "ö" as "o" with a combining or spacing diaeresis.

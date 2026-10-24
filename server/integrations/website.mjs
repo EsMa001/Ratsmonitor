@@ -11,7 +11,7 @@ import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {repairFontUmlauts} from './text-repair.mjs';
 import {SMALL_WORDS,htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST} from './website-feeds.mjs';
+import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST,downloadListLinks,parseDownloadItems} from './website-feeds.mjs';
 import {fnv,safeDecode} from './source-common.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
 // its bodies — notices with agenda (every Land requires them), reports and minutes, its gazette as PDF, and the outputs
@@ -381,6 +381,9 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    listRead.add(u);
    onProgress(`${source.id}: ${listReads} Listenseiten`);
    for(const l of documentLinks(html,u))offer(l);
+   // A download area loaded by script lists its files in JSON (CMS of the Saarpfalz-Kreis).
+   for(const list of downloadListLinks(html,u).slice(0,4)){const lu=await permitted(list);if(!lu)continue;let json;try{json=await get(lu,site);}catch(e){fail('Downloadliste '+lu,e);continue;}
+    for(const f of parseDownloadItems(json)){const l=asLink(f.url,f.label);if(l)offer(l);}}
    for(const ev of jsonLdEvents(html,u))events.push({...ev,from:u});
    for(const next of paginationLinks(html,u))if(follow<LIMITS.followPages&&!listed.has(next)&&!queue.includes(next)){queue.push(next);follow++;}
   }
