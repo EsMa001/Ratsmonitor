@@ -248,9 +248,9 @@ export function listPageScore(html,url){
 
 // --- pagination ------------------------------------------------------------------------------------------------------
 const PAGE_KEY=/^(?:page|seite|p|p0|paged|pg|start|offset|tx_news_pi1\[@widget_0\]\[currentpage\]|.*\[currentpage\])$/i;
-const pageNumber=u=>{for(const [k,v] of u.searchParams)if(PAGE_KEY.test(k)&&/^\d+$/.test(v))return {key:k.toLowerCase(),value:Number(v)};const p=u.pathname.match(/\/(?:page|seite)\/(\d+)\/?$/i);return p?{key:'/page',value:Number(p[1])}:null;};
+const pageNumber=u=>{for(const [k,v] of u.searchParams)if(PAGE_KEY.test(k)&&/^\d+$/.test(v))return {key:k.toLowerCase(),value:Number(v)};const p=u.pathname.match(/\/(?:page|seite)[\/-](\d+)\/?$/i);return p?{key:'/page',value:Number(p[1])}:null;};
 // "/bekanntmachungen/page/2/" (WordPress) belongs to "/bekanntmachungen/", and "index.php" to its folder.
-const listRoot=path=>path.replace(/\/(?:page|seite)\/\d+\/?$/i,'').replace(/\/index\.(?:php|html?)$/i,'').replace(/\/+$/,'')||'/';
+const listRoot=path=>path.replace(/\/(?:page|seite)[\/-]\d+\/?$/i,'').replace(/\/index\.(?:php|html?)$/i,'').replace(/\/+$/,'')||'/';
 const NEXT=/^(?:»|›|>{1,2}|weiter\b|vorwärts|nächste|ältere|seite 2\b|next\b|older\b)/;
 /** Following pages of the same list (same origin and list path), at most three; the page itself and earlier pages are not. */
 export function paginationLinks(html,pageUrl){

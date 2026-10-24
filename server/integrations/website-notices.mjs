@@ -52,7 +52,10 @@ export function decisionNotice(label,lines){
  const date=ISO(germanDates(m[4])[0]);if(!date)return null;
  // The line the sentence starts in: what stands above it is the heading.
  const head=m[2].split(/\s+/)[0],at=Math.max(0,all.findIndex(l=>l.includes(head)&&/\b(?:hat|haben)\b|Sitzung/.test(l+' ')));
- const title=noticeMatter(label)||headingMatter(all,at);if(!title||title.length<6)return null;
+ // The label of a gazette issue names the issue ("Nr. 42 vom 21.10.2026 …"): then the heading of the notice gives the matter.
+ const issueLabel=/^(?:nr\.?\s*\d|amtliche[sr]?\s|amtsblatt|amtliches?\s|bekanntmachungsblatt|mitteilungsblatt)|\bPDF\s*\|/i.test(String(label||'').trim());
+ const sentenceTitle=flat.slice(m.index,m.index+400).replace(/^.*?(?:beschlossen|gefasst|gefasst\.)\s*/i,'').replace(/[.;:]\s*$/,'').slice(0,120).trim();
+ const title=(!issueLabel&&noticeMatter(label))||headingMatter(all,at)||(issueLabel?sentenceTitle:noticeMatter(label));if(!title||title.length<6)return null;
  const end=flat.indexOf('.',m.index+m[0].length);
  return {date,committee,title,publicity:m[3]?'nonpublic':'public',sentence:flat.slice(m.index,end>0?Math.min(end+1,m.index+400):m.index+400).trim()};
 }
