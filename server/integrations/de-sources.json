@@ -42067,5 +42067,416 @@
     "verifiedSource": "https://www.berghuelen.de/rathaus-service/gemeinderat/sitzungsberichte/seite-1/suche-none",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 3 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-07339009",
+    "name": "Gemeinde Budenheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.budenheim.de/",
+    "pages": [
+      "https://www.budenheim.de/verwaltung/rathaus/sitzungsunterlagen-ab-01-01-2023/gemeinderat/",
+      "https://www.budenheim.de/verwaltung/rathaus/sitzungsunterlagen-ab-01-01-2023/bau-und-umweltausschuss/",
+      "https://www.budenheim.de/verwaltung/rathaus/sitzungsunterlagen-ab-01-01-2023/verwaltungsrat/",
+      "https://www.budenheim.de/verwaltung/rathaus/sitzungsunterlagen-ab-01-01-2023/sks-ausschuss/",
+      "https://www.budenheim.de/verwaltung/rathaus/sitzungsunterlagen-ab-01-01-2023/seniorenbeirat/"
+    ],
+    "verifiedSource": "https://www.budenheim.de/verwaltung/rathaus/sitzungsunterlagen-ab-01-01-2023/gemeinderat/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 49 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-096745610",
+    "name": "Verwaltungsgemeinschaft Ebelsbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://vg-ebelsbach.de/",
+    "pages": [
+      "https://vg-ebelsbach.de/verwaltungsgemeinschaft-ebelsbach/verwaltungsgemeinschaft/mitteilungsblatt.html",
+      "https://vg-ebelsbach.de/ebelsbach/gemeinde-politik/amtliche-bekanntmachungen.html",
+      "https://vg-ebelsbach.de/stettfeld/gemeinde-politik/amtliche-bekanntmachungen.html",
+      "https://vg-ebelsbach.de/breitbrunn/gemeinde-politik/amtliche-bekanntmachungen.html",
+      "https://vg-ebelsbach.de/gemeinde-kirchlauter/gemeinde-politik/amtliche-bekanntmachungen.html"
+    ],
+    "verifiedSource": "https://vg-ebelsbach.de/verwaltungsgemeinschaft-ebelsbach/verwaltungsgemeinschaft/mitteilungsblatt.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 21 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-09772131",
+    "name": "Gemeinde Dinkelscherben",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.dinkelscherben.info/",
+    "pages": [
+      "https://www.dinkelscherben.info/index.php/rathausservice/gemeindeorgane-und-sitzungsplan",
+      "https://www.dinkelscherben.info/index.php/rathausservice/amtsblatt"
+    ],
+    "verifiedSource": "https://www.dinkelscherben.info/index.php/rathausservice/gemeindeorgane-und-sitzungsplan",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 5 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08226017",
+    "name": "Gemeinde Epfenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.epfenbach.de/",
+    "pages": [
+      "https://www.epfenbach.de/rathaus-buergerservice/gemeinderat",
+      "https://www.epfenbach.de/251134"
+    ],
+    "verifiedSource": "https://www.epfenbach.de/rathaus-buergerservice/gemeinderat",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 2 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-010545488",
+    "name": "Amt Föhr-Amrum",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.amtfa.de/",
+    "pages": [
+      "https://www.amtfa.de/bekanntmachungen",
+      "https://www.amtfa.de/bekanntmachungen?modus=drucken"
+    ],
+    "verifiedSource": "https://www.amtfa.de/bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 36 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-06431009",
+    "name": "Gemeinde Grasellenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-grasellenbach.de/",
+    "pages": [
+      "https://www.gemeinde-grasellenbach.de/rathaus/aktuelles/bekanntmachungen/",
+      "https://www.gemeinde-grasellenbach.de/bekanntmachungen/2026/08-2026/4-gemeindevertretersitzung/"
+    ],
+    "verifiedSource": "https://www.gemeinde-grasellenbach.de/rathaus/aktuelles/bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 16 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-06434002",
+    "name": "Stadt Friedrichsdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.friedrichsdorf.de/",
+    "pages": [
+      "https://www.friedrichsdorf.de/rathaus/aktuelles/oeffentliche-bekanntmanchungen",
+      "https://www.friedrichsdorf.de/rathaus/aktuelles",
+      "https://www.friedrichsdorf.de/rathaus/politik/gremien/stadtverordnetenversammlung"
+    ],
+    "verifiedSource": "https://www.friedrichsdorf.de/rathaus/aktuelles/oeffentliche-bekanntmanchungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 52 Berichte aus 8 Sitzungen."
+  },
+  {
+    "id": "de-06535004",
+    "name": "Gemeinde Freiensteinau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.freiensteinau.de/",
+    "pages": [
+      "https://www.freiensteinau.de/rathaus-politik/amtliche-bekanntmachungen.html",
+      "https://www.freiensteinau.de/rathaus-politik/sitzungen-der-gemeindevertretung.html",
+      "https://www.freiensteinau.de/rathaus-politik/satzungen.html",
+      "https://www.freiensteinau.de/rathaus-politik/sitzungskalender.html",
+      "https://www.freiensteinau.de/rathaus-politik/gemeindevertretung.html"
+    ],
+    "verifiedSource": "https://www.freiensteinau.de/rathaus-politik/amtliche-bekanntmachungen.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 29 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-08136018",
+    "name": "Gemeinde Ellenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ellenberg.de/",
+    "pages": [
+      "https://www.ellenberg.de/verzeichnis/visitenkarte.php?mandat=249837",
+      "https://www.ellenberg.de/verzeichnis/mandat.php?mandat=249837&kategorie=63",
+      "https://www.ellenberg.de/bekanntmachungen/index.php",
+      "https://www.ellenberg.de/news/1/941895/nachrichten/aus-der-gemeinderatssitzung-vom-14.-mai-2024.html",
+      "https://www.ellenberg.de/news/1/954512/nachrichten/aus-der-gemeinderatssitzung-vom-18.-juni-2024.html"
+    ],
+    "verifiedSource": "https://www.ellenberg.de/verzeichnis/visitenkarte.php?mandat=249837",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 9 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08415027",
+    "name": "Gemeinde Gomadingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://gomadingen.de/",
+    "pages": [
+      "https://gomadingen.de/rathaus-buerger/",
+      "https://gomadingen.de/veranstaltungen/kulturausschusssitzung-6/",
+      "https://gomadingen.de/veranstaltungen/kulturausschusssitzung-7/",
+      "https://gomadingen.de/rathaus-buerger/gemeinde-gomadingen/buergermeister-gemeinderat/"
+    ],
+    "verifiedSource": "https://gomadingen.de/rathaus-buerger/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 4 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08425052",
+    "name": "Gemeinde Grundsheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://grundsheim.de/",
+    "pages": [
+      "https://grundsheim.de/buergerservice/amtsblatt/"
+    ],
+    "verifiedSource": "https://grundsheim.de/buergerservice/amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 39 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-09187132",
+    "name": "Gemeinde Frasdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://frasdorf.de/",
+    "pages": [],
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 13 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09372126",
+    "name": "Stadt Furth im Wald",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://furth.de/",
+    "pages": [
+      "https://furth.de/",
+      "https://furth.de/aktuelles/"
+    ],
+    "verifiedSource": "https://furth.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 7 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-09677131",
+    "name": "Stadt Gemünden a.Main",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.stadt-gemuenden.de/",
+    "pages": [
+      "https://www.stadt-gemuenden.de/sitzungsprotokolle/",
+      "https://www.stadt-gemuenden.de/sitzungskalender/",
+      "https://www.stadt-gemuenden.de/mitteilungsblatt/",
+      "https://www.stadt-gemuenden.de/sonstige-bekanntmachungen/",
+      "https://www.stadt-gemuenden.de/veranstaltungen/stadtratssitzung/"
+    ],
+    "verifiedSource": "https://www.stadt-gemuenden.de/sitzungsprotokolle/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 43 Berichte aus 7 Sitzungen."
+  },
+  {
+    "id": "de-14625160",
+    "name": "Gemeinde Großdubrau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.grossdubrau.de/",
+    "pages": [
+      "https://www.grossdubrau.de/elektronisches-amtsblatt.html",
+      "https://www.grossdubrau.de/beschluesse-im-gemeinderat.html",
+      "https://www.grossdubrau.de/beschluesse-im-technischen-ausschuss.html",
+      "https://www.grossdubrau.de/beschluesse-im-verwaltungsausschuss.html",
+      "https://www.grossdubrau.de/gemeinderatssitzung.html?dateUID=693bcc744abe9"
+    ],
+    "verifiedSource": "https://www.grossdubrau.de/elektronisches-amtsblatt.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 54 Berichte aus 10 Sitzungen."
+  },
+  {
+    "id": "de-06634010",
+    "name": "Gemeinde Jesberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-jesberg.de/",
+    "pages": [
+      "https://www.gemeinde-jesberg.de/rathaus/politik/gemeindevertretung/",
+      "https://www.gemeinde-jesberg.de/rathaus/aktuelles/amtliche-bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.gemeinde-jesberg.de/rathaus/politik/gemeindevertretung/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 13 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08417029",
+    "name": "Gemeinde Hausen am Tann",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://hausen-am-tann.de/",
+    "pages": [
+      "https://hausen-am-tann.de/Rathaus-Buergerservice/Gemeinderat",
+      "https://hausen-am-tann.de/Aktuelles/Amtsblatt",
+      "https://hausen-am-tann.de/termin/oeffentliche-Gemeinderatssitzung-event-appointment1784",
+      "https://hausen-am-tann.de/termin/oeffentliche-Gemeinderatssitzung-event-appointment1785"
+    ],
+    "verifiedSource": "https://hausen-am-tann.de/Rathaus-Buergerservice/Gemeinderat",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 24 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-09182123",
+    "name": "Gemeinde Irschenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.irschenberg.de/",
+    "pages": [
+      "https://www.irschenberg.de/sitzungsprotokoll",
+      "https://www.irschenberg.de/",
+      "https://www.irschenberg.de/gemeinderat?gid=-1",
+      "https://www.irschenberg.de/index.php?id=0,32&fid=1"
+    ],
+    "verifiedSource": "https://www.irschenberg.de/sitzungsprotokoll",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 15 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-09186128",
+    "name": "Gemeinde Hohenwart",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://markt-hohenwart.de/",
+    "pages": [
+      "https://markt-hohenwart.de/gemeinde/sitzungskalender-presseberichte/",
+      "https://markt-hohenwart.de/news/amtliche-bekanntmachungen/",
+      "https://markt-hohenwart.de/category/bekanntmachungen/",
+      "https://markt-hohenwart.de/2026/09/gemeinderatssitzung/"
+    ],
+    "verifiedSource": "https://markt-hohenwart.de/gemeinde/sitzungskalender-presseberichte/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 28 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-09275128",
+    "name": "Gemeinde Hutthurm",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hutthurm.de/",
+    "pages": [
+      "https://www.hutthurm.de/bekanntmachungen/archiv",
+      "https://www.hutthurm.de/",
+      "https://www.hutthurm.de/bekanntmachungen",
+      "https://www.hutthurm.de/bekanntmachungen?modus=drucken",
+      "https://www.hutthurm.de/bekanntmachungen/archiv?modus=drucken"
+    ],
+    "verifiedSource": "https://www.hutthurm.de/bekanntmachungen/archiv",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 9 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09771140",
+    "name": "Gemeinde Hollenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-hollenbach.de/",
+    "pages": [
+      "https://www.gemeinde-hollenbach.de/sitzungen-und-sitzungskalender/",
+      "https://www.gemeinde-hollenbach.de/",
+      "https://www.gemeinde-hollenbach.de/amtliche-bekanntmachungen/",
+      "https://www.gemeinde-hollenbach.de/gemeinderatssitzungen/gemeinderatssitzung-8/",
+      "https://www.gemeinde-hollenbach.de/gemeinderatssitzungen/gemeinderatssitzung-9/"
+    ],
+    "verifiedSource": "https://www.gemeinde-hollenbach.de/sitzungen-und-sitzungskalender/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 3 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-09774144",
+    "name": "Gemeinde Jettingen-Scheppach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.jettingen-scheppach.de/",
+    "pages": [
+      "https://www.jettingen-scheppach.de/content/rathaus/buerger-und-ratsinformationssystem/sitzungen/",
+      "https://www.jettingen-scheppach.de/content/rathaus/aufgaben/?id=3437",
+      "https://www.jettingen-scheppach.de/content/rathaus/aufgaben/?id=25395",
+      "https://www.jettingen-scheppach.de/content/rathaus/aufgaben/?id=25551"
+    ],
+    "verifiedSource": "https://www.jettingen-scheppach.de/content/rathaus/buerger-und-ratsinformationssystem/sitzungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 22 Berichte aus 5 Sitzungen."
+  },
+  {
+    "id": "de-160745007",
+    "name": "Verwaltungsgemeinschaft Hügelland/Täler",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://hp.huegelland-taeler.de/",
+    "pages": [
+      "https://hp.huegelland-taeler.de/bekanntmachungen-der-vg-huegelland-taeler/",
+      "https://hp.huegelland-taeler.de/"
+    ],
+    "verifiedSource": "https://hp.huegelland-taeler.de/bekanntmachungen-der-vg-huegelland-taeler/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 18 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08426064",
+    "name": "Gemeinde Kanzach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-kanzach.de/",
+    "pages": [
+      "https://www.gemeinde-kanzach.de/rathaus-service/amtl-bekanntmachungen/seite-4/suche-none",
+      "https://www.gemeinde-kanzach.de/rathaus-service/amtl-bekanntmachungen/seite-1/suche-none",
+      "https://www.gemeinde-kanzach.de/rathaus-service/amtl-bekanntmachungen/seite-3/suche-none",
+      "https://www.gemeinde-kanzach.de/rathaus-service/amtl-bekanntmachungen/seite-5/suche-none",
+      "https://www.gemeinde-kanzach.de/rathaus-service/amtl-bekanntmachungen/205/einladung-zur-sitzung-des-gemeinderats"
+    ],
+    "verifiedSource": "https://www.gemeinde-kanzach.de/rathaus-service/amtl-bekanntmachungen/seite-4/suche-none",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 5 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-09471145",
+    "name": "Gemeinde Hirschaid",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hirschaid.de/",
+    "pages": [
+      "https://www.hirschaid.de/seite/de/cms241020261408237e4c0fe5/0444:2195/-/Sitzungsprotokolle.html",
+      "https://www.hirschaid.de/seite/de/cms241020261408237e4c0fe5/443/2/Sitzungen_-Oeffentliche_Tagesordnung.html",
+      "https://www.hirschaid.de/seite/de/cms241020261408237e4c0fe5/443/3/Sitzungen_-Oeffentliche_Tagesordnung.html",
+      "https://www.hirschaid.de/seite/de/cms241020261408237e4c0fe5/0444:443/-/Tagesordnung_-Sitzung.html",
+      "https://www.hirschaid.de/seite/de/cms241020261408237e4c0fe5/10923/-/57_Sitzung_des_Bau-und_Umweltausschusses_am_Dienstag_7_Oktober_2025.html"
+    ],
+    "verifiedSource": "https://www.hirschaid.de/seite/de/cms241020261408237e4c0fe5/0444:2195/-/Sitzungsprotokolle.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 34 Berichte aus 7 Sitzungen."
   }
 ]
