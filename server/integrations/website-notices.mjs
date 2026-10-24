@@ -11,6 +11,9 @@ const DECIDED=/((?:Der|Die|Das)\s+)?([\p{Lu}][\p{L}.-]*(?:\s+[\p{L}.-]+){0,6}?)\
 // The other order of the same sentence: „Der Gemeinderat der Stadt Walldorf hat am 24.02.2026 in öffentlicher Sitzung …“ (Walldorf,
 // Sindelfingen 2026). Groups as DECIDED, the day moved behind the verb: 1 article, 2 body, 3 day, 4 nonpublic part.
 const DECIDED_AM=/((?:Der|Die|Das)\s+)?([\p{Lu}][\p{L}.-]*(?:\s+[\p{L}.-]+){0,6}?)\s+(?:hat|haben)\s+am\s+(\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4})\s+in\s+(?:(nicht\s*-?\s*)?öffentlicher?\s+)?Sitzung/u;
+// The teaser form: „Der Rat hat sie laut Anreißer am 15.12.2021 als Satzung beschlossen“, „Der Infrastrukturausschuss hat am 19.09.2024 beschlossen“ (Hüllhorst).
+// Groups: 1 article, 2 body, 3 day; the nonpublic part is never named here. Short phrases only, never across a sentence.
+const DECIDED_BESCHL=/((?:Der|Die|Das)\s+)?([\p{Lu}][\p{L}.-]*(?:\s+[\p{L}.-]+){0,6}?)\s+(?:hat|haben)\s+[^.]{0,80}?\s+am\s+(\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4})\s+[^.]{0,60}?beschlossen/u;
 // Not a decision of a council for now: a dedication of a road, an ordinance, a general order.
 const NOT_TAKEN=/widmung|entwidmung|umstufung|rechtsverordnung|(?<!\p{L})verordnung|allgemeinverfügung|polizeiverordnung/iu;
 // Words of the notice itself, not of its matter.
@@ -42,9 +45,10 @@ function headingMatter(lines,at){
 export function decisionNotice(label,lines){
  const all=(lines||[]).map(l=>String(l)),flat=all.join(' ').replace(/\s+/g,' ');
  if(NOT_TAKEN.test(String(label||''))||NOT_TAKEN.test(all.slice(0,6).join(' ')))return null;
- const m0=flat.match(DECIDED),am=m0?null:flat.match(DECIDED_AM);if(!m0&&!am)return null;
- const m=m0||Object.assign([am[0],am[1],am[2],am[4],am[3]],{index:am.index});
- const committee=committeeOf(m[2]);if(!committee)return null;
+ const m0=flat.match(DECIDED),am=m0?null:flat.match(DECIDED_AM),bs=m0||am?null:flat.match(DECIDED_BESCHL);if(!m0&&!am&&!bs)return null;
+ const m=m0||(am?Object.assign([am[0],am[1],am[2],am[4],am[3]],{index:am.index}):Object.assign([bs[0],bs[1],bs[2],undefined,bs[3]],{index:bs.index}));
+ // A bare „Rat“ (teaser form: „Der Rat hat …“) is the council of the place, named as committeeOf names it.
+ const committee=committeeOf(m[2])||(/^(?:Der\s+)?Rat$/u.test(m[2])?'Rat der Gemeinde':null);if(!committee)return null;
  const date=ISO(germanDates(m[4])[0]);if(!date)return null;
  // The line the sentence starts in: what stands above it is the heading.
  const head=m[2].split(/\s+/)[0],at=Math.max(0,all.findIndex(l=>l.includes(head)&&/\b(?:hat|haben)\b|Sitzung/.test(l+' ')));

@@ -33,3 +33,10 @@ test('a decision with the day before the sentence of the session is a notice too
  assert.equal(n.publicity,'public');
  assert.match(n.committee,/Gemeinderat/);
 });
+
+test('a teaser that names the council and the day of its decision is a notice (Hüllhorst 2026)', () => {
+ const n=decisionNotice('Bebauungsplan Nr. 52 „Feuerwehrstandort Hüllhorst“ - Satzungsbeschluss',['Bebauungsplan Nr. 52 „Feuerwehrstandort Hüllhorst“','Der Rat hat ihn laut Anreißer am 15.12.2021 als Satzung beschlossen.']);
+ assert.ok(n);
+ assert.equal(n.date,'2021-12-15');
+ assert.equal(n.publicity,'public');
+});
