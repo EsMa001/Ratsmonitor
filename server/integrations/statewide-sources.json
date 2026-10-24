@@ -2947,5 +2947,16 @@
     "verifiedSource": "https://www.hochsauerlandkreis.de/hochsauerlandkreis/politik-und-verwaltung/amtsblatt-fuer-den-hsk",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kreistagsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); das Amtsblatt (PDF) macht Kreistagssitzungen bekannt. Probeabruf 3 Monate: 8 Berichte."
+  },
+  {
+    "id": "nrw-05374008",
+    "name": "Gemeinde Engelskirchen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.engelskirchen.ratsportal.net/public/",
+    "verifiedSource": "https://www.engelskirchen.ratsportal.net/public/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem ALLRIS 4, Link auf der Website der Kommune. Probeabruf 3 Monate: 48 Berichte aus 5 Sitzungen."
   }
 ]

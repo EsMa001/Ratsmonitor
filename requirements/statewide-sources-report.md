@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 354 angebunden, 73 nicht. Diese Datei beschreibt die 260 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 355 angebunden, 72 nicht. Diese Datei beschreibt die 262 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -303,7 +303,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Breckerfeld | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://breckerfeld.ratsinfomanagement.net/ |
 | Stadt Bünde | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://buende.ratsinfomanagement.net/startseite |
 | Gemeinde Dörentrup | Kein unterstütztes Ratsinformationssystem erkannt | https://doerentrup.ratsinfomanagement.net/ |
-| Gemeinde Engelskirchen | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.engelskirchen.de/portal/seiten/ratsinfo-900000119-23501.html?titel=Ratsinformation |
 | Gemeinde Eslohe (Sauerland) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.eslohe.de/ |
 | Stadt Espelkamp | Kein unterstütztes Ratsinformationssystem erkannt | https://www.espelkamp.de/Politik/Ratsinformation/ |
 | Gemeinde Extertal | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | http://extertal.ratsinfomanagement.net/ |

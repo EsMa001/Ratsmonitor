@@ -41643,5 +41643,31 @@
     "verifiedSource": "https://www.fuchsmuehl.de/rathaus/bekanntmachungen",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein Ratsinformationssystem bekannt; Bekanntmachungen der Gemeinde mit Tagesordnungen. Probeabruf 3 Monate: 41 Berichte aus 5 Sitzungen."
+  },
+  {
+    "id": "de-08226010",
+    "name": "Gemeinde Dielheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.dielheim.de/",
+    "pages": [
+      "https://www.dielheim.de/rathaus-service/amtliche-bekanntmachungen/uebersicht-amtliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.dielheim.de/rathaus-service/amtliche-bekanntmachungen/uebersicht-amtliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund der Amtsblatt-Suche, Titel geprüft). Probeabruf 3 Monate: 54 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-120615108",
+    "name": "Amt Schenkenländchen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://ratsinfo-online.de/amtschenkenlaendchen-bi/",
+    "calendar": "si010_e.asp",
+    "verifiedSource": "https://ratsinfo-online.de/amtschenkenlaendchen-bi/si010_e.asp",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem ALLRIS 3, Link auf der Website der Kommune. Probeabruf 3 Monate: 346 Berichte aus 24 Sitzungen."
   }
 ]
