@@ -616,7 +616,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   // A notice of a decision without an agenda („Der Ortsgemeinderat X hat in seiner Sitzung am 15.05.2025 … beschlossen“): a report
   // of that meeting with the matter of the notice as its title (website-notices.mjs, 24.10.2026).
   // Also where the parser read the paragraphs of a Satzung as items: a text that names no agenda and shows no public item.
-  if(!t.event&&known.every(m=>!m.items.length)&&!/tagesordnung/i.test(t.lines.slice(0,60).join(' '))){const n=decisionNotice(t.title,t.lines);if(n){known=[{date:n.date,committee:n.committee,kind:'minutes',notice:true,items:[{number:'',title:n.title,status:'approved',result:'Beschlossen laut öffentlicher Bekanntmachung: '+n.sentence,votes:null}],otherItems:[],restricted:false,unclear:false,publicEvidence:'Öffentliche Bekanntmachung des Beschlusses',context:t.lines.slice(0,8).join(' '),lead:t.lines.slice(0,8),headLines:[],trailer:[],docIssuers:[]}];if(n.publicity==='nonpublic')known[0].items[0].publicity='nonpublic';}}
+  if(!t.event&&known.every(m=>!m.items.length)&&!/tagesordnung/i.test(t.lines.slice(0,60).join(' '))){const n=decisionNotice(t.title,t.lines);if(n&&!(source.collectiveGazette&&!ownNames.some(o=>o.trim()&&words(n.sentence).includes(o.trim())))){known=[{date:n.date,committee:n.committee,kind:'minutes',notice:true,context:n.sentence,lead:t.lines.slice(0,12),items:[{number:'',title:n.title,status:'approved',result:'Beschlossen laut öffentlicher Bekanntmachung: '+n.sentence,votes:null}],otherItems:[],restricted:false,unclear:false,publicEvidence:'Öffentliche Bekanntmachung des Beschlusses',context:t.lines.slice(0,8).join(' '),lead:t.lines.slice(0,8),headLines:[],trailer:[],docIssuers:[]}];if(n.publicity==='nonpublic')known[0].items[0].publicity='nonpublic';}}
   if(!known.length){if(!t.event){issues.push('Keine Sitzung erkannt, nicht übernommen: '+t.url);if(unparsed.length<LIMITS.unparsed)unparsed.push(t.url);}continue;}
   // An empty unclear entry (a line of the table of contents) does not spoil a text with a meeting read in full.
   if(parsed.meetings.some(m=>(!m.date||!m.committee)&&(m.items.length||(m.unclear&&!known.length))))issues.push('Sitzung ohne erkennbares Datum oder Gremium, nicht übernommen: '+t.url);
@@ -628,6 +628,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    // A calendar entry names its day in DTSTART/startDate; a meeting the text gives another day is not taken.
    if(t.event&&m.date!==t.eventDate){if(m.items.length)issues.push(`Kalendereintrag nennt einen anderen Sitzungstag als sein Text (${ddmmyyyy(t.eventDate)}), nicht übernommen: ${t.url}`);continue;}
    const committee=body(m.committee),foreign=foreignBody(m,committee,source,ownNames,t.title);
+   // A collective gazette: a meeting is the area's own only where its own text names the area (its context or the lines above it).
+   if(source.collectiveGazette&&m.items.length&&!ownNames.some(o=>o.trim()&&words([String(m.context||''),...(m.lead||[]).map(String),String(m.heading||'')].join(' ')).includes(o.trim())))continue;
    if(foreign){if(foreign==='andere Gemeinde'&&m.items.length)issues.push(`Sitzung eines Gremiums einer anderen Gemeinde (${committee}), nicht übernommen: ${t.url}`);continue;}
    const key=`${m.date}|${slug(committee)}`;keys.add(key);
    // Items not shown to be public come with publicity „unclear“ (m.otherItems); the meeting is no longer dropped for them.
