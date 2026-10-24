@@ -4245,5 +4245,20 @@
     "verifiedSource": "https://www.berne.de/news/2303/1290170/kategorie/amtsblatt-nr.-66-27.-sitzung-des-gemeinderates.html",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 16 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "nds-03457018",
+    "name": "Gemeinde Rhauderfehn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.rhauderfehn.de/",
+    "pages": [
+      "https://www.rhauderfehn.de/rathaus/bekanntmachungen"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.rhauderfehn.de/rathaus/bekanntmachungen",
+    "note": "ratsinfomanagement.net gesperrt. Bekanntmachungen nennen Aufstellungs- und Auslegungsbeschlüsse zu Bebauungsplänen (Probeabruf 12 Monate: 1 Bericht, Verwaltungsausschuss 06.10.2026). Wenige Treffer, Quelle trotzdem übernommen."
   }
 ]
