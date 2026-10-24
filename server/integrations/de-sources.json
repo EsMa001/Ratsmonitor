@@ -43285,5 +43285,20 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.ottobrunn.de/online-rathaus/bekanntmachungen/amtliche-bekanntmachungen",
     "note": "ris.ottobrunn.de gesperrt. Bekanntmachungen der Gemeinde nennen Sitzungen des Gemeinderats mit Tagesordnungspunkten (Probeabruf 12 Monate: 8 Berichte, Sitzung 28.10.2026)."
+  },
+  {
+    "id": "de-08226082",
+    "name": "Stadt Schriesheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.schriesheim.de/",
+    "pages": [
+      "https://www.schriesheim.de/bekanntmachungen"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.schriesheim.de/bekanntmachungen",
+    "note": "schriesheim.ratsinfomanagement.net gesperrt. Die Bekanntmachungen nennen Satzungsbeschlüsse des Gemeinderats (Probeabruf 12 Monate: 1 Bericht, 28.01.2026; wenige Treffer, Quelle trotzdem übernommen)."
   }
 ]

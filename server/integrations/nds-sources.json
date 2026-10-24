@@ -4321,5 +4321,20 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.wardenburg.de/aktuelles/neuigkeiten/amtliche-nachrichten/",
     "note": "ratsinformation.wardenburg.de gesperrt. Die amtlichen Nachrichten nennen Bauleitplanungs-Beschlüsse des Rates (Probeabruf 12 Monate: 2 Berichte, 30.09.2026 und 26.03.2026; wenige Treffer, Quelle trotzdem übernommen)."
+  },
+  {
+    "id": "nds-03356008",
+    "name": "Gemeinde Ritterhude",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ritterhude.de/",
+    "pages": [
+      "https://www.ritterhude.de/verwaltung-und-politik/aktuelles/bekanntmachungen/"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.ritterhude.de/verwaltung-und-politik/aktuelles/bekanntmachungen/",
+    "note": "ritterhude.ratsinfomanagement.net gesperrt. Die Bekanntmachungen nennen Sitzungen und Aufstellungsbeschlüsse des Rates (Probeabruf 12 Monate: 220 Berichte, Ausschuss für Haushalt 05.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
