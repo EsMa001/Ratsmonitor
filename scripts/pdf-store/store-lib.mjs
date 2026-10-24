@@ -10,6 +10,9 @@ import {effectiveType} from '../../shared/document-type.mjs';
 import {fetchDocument} from '../../server/integrations/document-proxy.mjs';
 import {bodyBytes} from '../../server/integrations/body-bytes.mjs';
 import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
+import {addIntermediates} from '../../server/integrations/intermediate-cas.mjs';
+// Zwischenzertifikate, die manche Quellserver nicht mitliefern: für alle Abrufe der Ablage.
+addIntermediates();
 
 /** Abruf wie /api/dokument (nur öffentliche https-Adressen, jede Weiterleitung geprüft), aber mit der Projektkennung (fetch.mjs,
     text.mjs --ocr --others). Die Zeitgrenze gilt je Abruf für Kopf und Inhalt zusammen; signal bricht ab (Anhalten). */

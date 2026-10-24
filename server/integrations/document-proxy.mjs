@@ -9,6 +9,9 @@
  * such a target would still need a valid certificate for that very name (certificates are always checked).
  */
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
+import {addIntermediates} from './intermediate-cas.mjs';
+// Zwischenzertifikate, die manche Quellserver nicht mitliefern (Dokumentabruf im Webserver und in der PDF-Ablage).
+addIntermediates();
 export const MAX_HOPS=3,HEADERS_MS=20000,IDLE_MS=30000,MAX_BYTES=30*1024*1024;
 export const VIEWABLE=/^(application\/pdf|image\/(png|jpe?g|gif|webp))$/i;
 /** Wie der Abruf: das Projekt, keine Browser-Kennung (requirements/freischaltung-anfragen.md, robots-policy.mjs). */

@@ -26,6 +26,7 @@ import {runSync} from '@/server/services/sync';
 import {analysePending} from '@/server/integrations/manual-analysis.mjs';
 import {useDocumentStore} from '@/server/integrations/documents.mjs';
 import {pacedFetch} from '@/server/integrations/request-budget.mjs';
+import {addIntermediates} from '@/server/integrations/intermediate-cas.mjs';
 import {serverOf} from '@/server/integrations/source-servers.mjs';
 import {backfillNight} from '@/server/integrations/backfill.mjs';
 import {workJob,ensureJob,currentJob,openJob,nightlyBusy,catchUp,parseArgs,importRunner,runDirect,windowForTonight} from '@/server/integrations/pipeline-worker.mjs';
@@ -40,6 +41,8 @@ if(!db){warn('keine Datenbank (DATABASE_FILE)');process.exit(1);}
 // Lokale PDF-Ablage (server/node/pdf-store.mjs): Dokumente zuerst von der Platte lesen, neu geladene dort ablegen.
 if(process.env.RM_PDF_STORE){const {openPdfStore}=await import('@/server/node/pdf-store.mjs');useDocumentStore(openPdfStore(process.env.RM_PDF_STORE));log('PDF-Ablage',process.env.RM_PDF_STORE);}
 // Mindestabstand je Anbieter für alle Anfragen dieses Prozesses (request-budget.mjs, SOURCE_SPACING_MS)
+// Zwischenzertifikate, die manche Quellserver nicht mitliefern (intermediate-cas.mjs).
+addIntermediates();
 const paced=pacedFetch(globalThis.fetch.bind(globalThis),serverOf);
 globalThis.fetch=paced;
 const run=importRunner(db,{runSync,analysePending});
