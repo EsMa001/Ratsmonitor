@@ -41963,5 +41963,95 @@
     "verifiedSource": "https://am-ohmberg.de/index.php/beschluesse-2",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 33 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-12072017",
+    "name": "Gemeinde Blankenfelde-Mahlow",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.blankenfelde-mahlow.de/",
+    "pages": [
+      "https://www.blankenfelde-mahlow.de/rathaus/veroeffentlichungen/",
+      "https://www.blankenfelde-mahlow.de/rathaus/veroeffentlichungen/bekanntmachungen/",
+      "https://www.blankenfelde-mahlow.de/rathaus/ehrenamt/gremien/anfragen-aus-der-gemeindevertretung/",
+      "https://www.blankenfelde-mahlow.de/blankenfelde-mahlow/aktuelles/aktuelle-meldung-2023/informationen-zur-gemeindevertretung-am-30-maerz/",
+      "https://www.blankenfelde-mahlow.de/blankenfelde-mahlow/aktuelles/aktuelle-meldung-2022/gemeindevertretung-nicht-als-livestream-verfuegbar/"
+    ],
+    "verifiedSource": "https://www.blankenfelde-mahlow.de/rathaus/veroeffentlichungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 168 Berichte aus 12 Sitzungen."
+  },
+  {
+    "id": "de-08118010",
+    "name": "Stadt Bönnigheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.boennigheim.de/",
+    "pages": [
+      "https://www.boennigheim.de/website/de/stadtverwaltung/aktuelles/virtuelles_nachrichtenblatt/nachrichtenblatt_zum_herunterladen",
+      "https://www.boennigheim.de/news?action=view_everything&only_header=true",
+      "https://www.boennigheim.de/news?action=view_navigator&category_id=503",
+      "https://www.boennigheim.de/news?action=view_navigator&category_id=812",
+      "https://www.boennigheim.de/news?action=view_one_article&article_id=115404"
+    ],
+    "verifiedSource": "https://www.boennigheim.de/website/de/stadtverwaltung/aktuelles/virtuelles_nachrichtenblatt/nachrichtenblatt_zum_herunterladen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 19 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-08125013",
+    "name": "Stadt Brackenheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.brackenheim.de/",
+    "pages": [
+      "https://www.brackenheim.de/rathaus-info/aktuell/oeffentliche-bekanntmachungen/seite-1/suche-none",
+      "https://www.brackenheim.de/rathaus-info/aktuell/oeffentliche-bekanntmachungen/seite-2/suche-none",
+      "https://www.brackenheim.de/rathaus-info/aktuell/oeffentliche-bekanntmachungen/seite-3/suche-none",
+      "https://www.brackenheim.de/rathaus-info/aktuell/oeffentliche-bekanntmachungen/seite-4/suche-none",
+      "https://www.brackenheim.de/rathaus-info/aktuell/oeffentliche-bekanntmachungen/1868/sitzung-des-gemeinderates-am-15102026-um-1800-uhr"
+    ],
+    "verifiedSource": "https://www.brackenheim.de/rathaus-info/aktuell/oeffentliche-bekanntmachungen/seite-1/suche-none",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 29 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08425140",
+    "name": "Gemeinde Balzheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.balzheim.de/",
+    "pages": [
+      "https://www.balzheim.de/rathaus-service/mitteilungsblatt/allgemein",
+      "https://www.balzheim.de/rathaus-service/gemeinderat/aus-dem-gemeinderat",
+      "https://www.balzheim.de/rathaus-service/gemeinderat/sitzungstermine/seite-1/suche-none",
+      "https://www.balzheim.de/gemeinde-info/aktuelles",
+      "https://www.balzheim.de/rathaus-service/gemeinderat/sitzungstermine/669/gemeinderatssitzung/termin-3663"
+    ],
+    "verifiedSource": "https://www.balzheim.de/rathaus-service/mitteilungsblatt/allgemein",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 53 Berichte aus 5 Sitzungen."
+  },
+  {
+    "id": "de-08425017",
+    "name": "Gemeinde Berghülen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.berghuelen.de/",
+    "pages": [
+      "https://www.berghuelen.de/rathaus-service/gemeinderat/sitzungsberichte/seite-1/suche-none",
+      "https://www.berghuelen.de/rathaus-service/gemeinderat/sitzungsberichte/seite-2/suche-none",
+      "https://www.berghuelen.de/rathaus-service/gemeinderat/sitzungsberichte/seite-3/suche-none",
+      "https://www.berghuelen.de/rathaus-service/gemeinderat/sitzungsberichte/seite-5/suche-none",
+      "https://www.berghuelen.de/rathaus-service/gemeinderat/sitzungsberichte/seite-4/suche-none"
+    ],
+    "verifiedSource": "https://www.berghuelen.de/rathaus-service/gemeinderat/sitzungsberichte/seite-1/suche-none",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 3 Berichte aus 3 Sitzungen."
   }
 ]
