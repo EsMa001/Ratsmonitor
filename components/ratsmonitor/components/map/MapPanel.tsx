@@ -187,7 +187,9 @@ export function MapPanel({ active }: { active: boolean }) {
     const levels = Object.fromEntries(coverage.map((c) => [c.ags, !explore ? 3 : set.has(c.ags) ? hitLevel(areaCounts[c.ags] || 0, [t1, t2], filtered) : 0]));
     /* „inkl. Kreis“ bei einer Gemeinde: den ganzen Kreis einfärben (Kreisebene), sonst die gewählte Ebene */
     const level = state.area.length === 8 && state.scope === "with" && !state.radius ? "district" : state.level;
-    engine?.update(levels, state.area, state.radius, coverage.map((c) => c.ags), level);
+    /* Gemeindefreie Gebiete ohne Filter petrol: auf der Startseite voll wie alles, in der Suche in der hellsten Stufe */
+    const free = filtered ? 0 : !explore ? 3 : 1;
+    engine?.update(levels, state.area, state.radius, coverage.map((c) => c.ags), level, free);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope, explore]);
 
@@ -339,7 +341,7 @@ export function MapPanel({ active }: { active: boolean }) {
         </div>
       )}
 
-      <span className="rm-attr pointer-events-auto absolute bottom-1 right-2 z-[5] text-[12px] text-slate-500">© GeoBasis-DE / BKG 2019, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="relative underline max-sm:after:absolute max-sm:after:-inset-x-2 max-sm:after:-inset-y-4 max-sm:after:content-['']">dl-de/by-2-0</a></span>
+      <span className="rm-attr pointer-events-auto absolute bottom-1 right-2 z-[5] text-[12px] text-slate-500">© GeoBasis-DE / BKG 2025, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="relative underline max-sm:after:absolute max-sm:after:-inset-x-2 max-sm:after:-inset-y-4 max-sm:after:content-['']">dl-de/by-2-0</a></span>
     </section>
   );
 }

@@ -83,6 +83,7 @@ export class MapEngine {
   private updated = false;
   private level: "city" | "district" = "city";
   private coverage: string[] = [];
+  private free = 0;
   private area = "";
   private radius: Radius | null = null;
   private hoverAgs = "";
@@ -210,10 +211,12 @@ export class MapEngine {
     this.requestDraw();
   }
 
-  update(counts: Record<string, number>, area: string, radius: Radius | null, coverage:string[]=[], level:"city"|"district"="city") {
+  /** free: Stufe der gemeindefreien Gebiete ohne Filter (0 = schraffiert, sonst Petrol in dieser Stufe). */
+  update(counts: Record<string, number>, area: string, radius: Radius | null, coverage:string[]=[], level:"city"|"district"="city", free=0) {
     // Geändert? Erst die Referenzen, dann Feld für Feld; früher JSON.stringify über rund 11.000 Schlüssel bei jedem Aufruf.
-    const changed = !this.updated || level !== this.level || !sameList(coverage, this.coverage) || !sameCounts(counts, this.counts);
+    const changed = !this.updated || level !== this.level || free !== this.free || !sameList(coverage, this.coverage) || !sameCounts(counts, this.counts);
     this.updated = true;
+    this.free = free;
     this.level=level; this.coverage=coverage;
     if (changed) this.geo.coveredGem.splice(0,this.geo.coveredGem.length,...coverage.map(a=>this.geo.gem.idx.get(a)).filter((i):i is number=>i!==undefined));
     this.counts = counts;
@@ -514,6 +517,23 @@ export class MapEngine {
     });
   }
 
+  /** Feine Schraffur in Grenzfarbe, in Bildschirmpunkten (bleibt beim Zoomen gleich fein). */
+  private freeHatch(ctx: CanvasRenderingContext2D): CanvasPattern | null {
+    const c = document.createElement("canvas");
+    c.width = c.height = 6;
+    const h = c.getContext("2d");
+    if (!h) return null;
+    h.strokeStyle = this.pal.mesh;
+    h.lineWidth = 1;
+    h.beginPath();
+    h.moveTo(0, 6);
+    h.lineTo(6, 0);
+    h.stroke();
+    const p = ctx.createPattern(c, "repeat");
+    p?.setTransform(ctx.getTransform().inverse());
+    return p;
+  }
+
   private drawBase() {
     const ctx = this.bctx!;
     const G = this.geo;
@@ -541,6 +561,12 @@ export class MapEngine {
       const i=L.idx.get(ags);if(i===undefined||!this.counts[L.ags[i]])continue;
       ctx.fillStyle = this.cov(this.counts[L.ags[i]] || 0);
       ctx.fill(L.path[i]);
+    }
+    /* Gemeindefreie Gebiete (Forste, Seen, Truppenübungsplätze): kein Rat, also nie „ohne Treffer“. Ohne Filter petrol wie
+       ihre Umgebung, mit Filter schraffiert (dort kann es keine Treffer geben). */
+    if (L === G.gem && this.filled()) {
+      const fill = this.free > 0 ? this.cov(this.free) : this.freeHatch(ctx);
+      if (fill) { ctx.fillStyle = fill; for (let i = 0; i < L.n; i++) if (L.bez[i] === 2) ctx.fill(L.path[i]); }
     }
     /* Alle Grenzen weiß: Gemeinden fein, Kreise mittel, Länder am kräftigsten */
     ctx.save();
