@@ -132,7 +132,10 @@ const typoNonPublic=folded=>{
 // Also „Wegfall der Nichtöffentlichkeit“ (Neutraubling, Art. 52 Abs. 3 GO): decisions of the non-public part made public now.
 const SECRECY_GONE=/(?:Gr(?:ü|ue)nde\s+)?(?:für|fuer)\s+(?:die\s+)?Geheimhaltung\s+(?:weggefallen|entfallen)\s+sind\s*(?:\((?:Art\.?|§)[^)]{0,30}\))?|(?:(?:Gemäß|Nach)\s+Art\.?\s*52\s+Abs\.?\s*3\s+GO\s+wird\s+(?:der\s+)?)?Wegfall\s+der\s+Nicht(?:ö|oe)ffentlichkeit/giu;
 const ATTENDANCE_NOTE=/(?:abwesend|anwesend|entschuldigt|verl(?:ä|ae)(?:ss|ß)t|erscheint)(?!\p{L})[^()]{0,40}\((?:ab|bis|nach|vor)\s+TOP\b[^)]*\)/iu;
-const wrapsOn=(it,title,next)=>{if(it?.form!=='plain'||!/(?:\s(?:und|sowie|oder|mit|der|des|zur|zum)|[,–-])$/u.test(title))return false;const n=itemOf(next);return !!n&&n.form==='plain'&&n.mark!==it.mark;};
+const wrapsOn=(it,title,next)=>{
+ // A citation broken after „Abs.“, „§“, „Nr.“ („… gem. § 4 Abs.“ / „2 BauGB zum Umweltbericht“, Am Mellensee) goes on in the next line.
+ if(/(?:Abs\.|§|Nr\.|Satz|Art\.|Ziff\.)\s*$/u.test(title)&&/^\d+[a-z]?\s+(?:\p{Lu}[\p{L}]*G\b|BauGB|BbgKVerf|GemO|GO|KV|KommVerf|BauNVO|ROG|UVPG|BNatSchG|Satz|S\.|Nr\.)/u.test(next))return true;
+ if(it?.form!=='plain'||!/(?:\s(?:und|sowie|oder|mit|der|des|zur|zum)|[,–-])$/u.test(title))return false;const n=itemOf(next);return !!n&&n.form==='plain'&&n.mark!==it.mark;};
 const PAGE_LINE=/^Seite:?\s*\d+\s*(?:\/|von)\s*\d+$/i,DATE_ALONE=/^\d{1,2}\.\d{1,2}\.\d{4}$/;
 const SUB_POINT=/^\(?[a-zA-Z]\)\s/;
 export function mentionsNonPublic(s){
@@ -599,8 +602,10 @@ function headingCore(raw){
 }
 // The long form only as a heading of its own (capital Ö); "… eine\nöffentliche Sitzung des Gemeinderates statt." is a
 // wrapped sentence, which counts as a sentence of the head.
-export function isPublicHeading(line){const h=headingCore(line);return !!h&&(PUBLIC_CORE.test(h.core)||!h.numbered&&/^Ö/.test(h.core)&&PUBLIC_LONG.test(h.core));}
-export function isNonPublicHeading(line){const h=headingCore(line);return !!h&&(NONPUBLIC_CORE.test(h.core)||!h.numbered&&NONPUBLIC_LONG.test(h.core));}
+// The head row of an agenda table: the column „Top“/„Nr.“ before the name of the part („Top Öffentlicher Teil“, Am Mellensee).
+const PART_COLUMN=/^(?:TOP|Top|Nr\.?|lfd\.?\s*Nr\.?)\s+(?=(?:Nicht\s*-?\s*)?(?:ö|Ö|oe|Oe)ffentlich)/u;
+export function isPublicHeading(line){const h=headingCore(String(line??'').replace(PART_COLUMN,''));return !!h&&(PUBLIC_CORE.test(h.core)||!h.numbered&&/^Ö/.test(h.core)&&PUBLIC_LONG.test(h.core));}
+export function isNonPublicHeading(line){const h=headingCore(String(line??'').replace(PART_COLUMN,''));return !!h&&(NONPUBLIC_CORE.test(h.core)||!h.numbered&&NONPUBLIC_LONG.test(h.core));}
 // A heading of the non-public part followed by a note ("Nichtöffentlicher Teil (ab TOP 3)", "Nichtöffentliche Sitzung ab
 // 20:00 Uhr", "NÖ-Teil", "Nichtöffentlicher Teil der Gemeinderatssitzung").
 const STARTS_NONPUBLIC=/^[-–*•_.:\s]*(?:(?:Im\s+Anschluss(?:\s+(?:daran|hieran))?|Anschlie(?:ß|ss)end|Danach|(?:Hieran|Daran)\s+anschlie(?:ß|ss)end)\s*[-–:,]?\s*)?(?:(?:Teil|Abschnitt)\s+(?:[A-H]|[IVX]{1,4}|\d)\s*[:.)–-]?\s*|(?:[A-H]|[IVX]{1,4})[.)]\s*)?(?:Tagesordnung\s*[-–:,]?\s*)?(?:nichtöffentlich(?:e[rnms]?)?|vertrauliche[rnms]?|geschlossene[rnms]?|interne[rnms]?|n\.?\s?ö\.?|nö)[\s-]*(?:Teil|Sitzung|Sitzungsteil|Tagesordnung|Beratung|Abschnitt|Sitzungsabschnitt|Tagesordnungspunkte|Punkte|Angelegenheiten)(?!\p{L})|^[-–*•_.:\s]*unter\s+Ausschlu(?:ss|ß)\s+der\s+Öffentlichkeit(?!\p{L})/iu;
@@ -998,7 +1003,7 @@ const NP_TAIL=/^(?:l|li|lich|liche[rnms]?|ich|iche[rnms]?|ntlich\p{Ll}*|tlich\p{
 // Words of a line between the items of an invitation that speak of the public, listeners, the press or secrecy; such a line
 // that is not read as anything else is a mention of the non-public part (folded text). Invitations to the public are not.
 const SUSPECT=/oeffentlichkeit|publikum|zuhoerer|zuhoerenden|besucher|\bgaeste|\bpresse\b|geheim|\bintern\b|vertraul|\bgeschlossen|verschlossen|ausgeschlossen|ausschluss|ausschl\.|mandatstraeger|\bzutritt|\bklausur|\bprivat\b|draussen/;
-const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|wegfall\s+der\s+nichtoeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
+const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|oeffentlichkeit\b[^;]{0,40}baugb|wegfall\s+der\s+nichtoeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
 // A short line without a sentence ("Geheime Sitzung", "Fortsetzung ohne Publikum"): a heading.
 const suspect=l=>{const f=foldText(normalizeLine(l));return SUSPECT.test(f)&&!SUSPECT_OK.test(f);};
 // A note that refers to items or to the rest of the agenda ("Die weiteren Punkte …", "ab hier", "Öffentlich sind die Tagesordnungspunkte 1 und 2").

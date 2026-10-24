@@ -32641,6 +32641,23 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-12072002",
+    "name": "Gemeinde Am Mellensee",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-am-mellensee.de/",
+    "pages": [
+      "https://www.gemeinde-am-mellensee.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de/"
+    ],
+    "verifiedSource": "https://www.gemeinde-am-mellensee.de/bekanntmachungen/index.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "RIS (am-mellensee.ratsinfomanagement.net) sperrt Programme; Bekanntmachungen der Gemeinde mit Tagesordnung je Sitzung (PDF bei verwaltungsportal.de, Teile „Top Öffentlicher Teil“/„Top Nichtöffentlicher Teil“). Probeabruf 12 Monate: 60 Sitzungen, 628 öffentliche Punkte, nichtöffentliche als solche gekennzeichnet."
+  },
+  {
     "id": "de-12072014",
     "name": "Stadt Baruth/Mark",
     "kind": "city",

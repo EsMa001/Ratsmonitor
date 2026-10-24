@@ -64,3 +64,15 @@ test('notice with the non-public part first (Kirchen (Sieg)): the public part af
  assert.match(m.items[1].title,/^Einwohnerfragestunde gemäß § 16 a Gemeindeordnung \(GemO\)/);
  assert.deepEqual(m.closedItems.map(i=>i.title),['Feststellungen/Anträge zur Tagesordnung','Personalangelegenheit','Verschiedenes']);
 });
+
+test('notice (Am Mellensee): head row „Top Öffentlicher Teil“, a citation broken after „Abs.“, „Beteiligung der Öffentlichkeit gem. … BauGB“',()=>{
+ const lines=['BEKANNTMACHUNG','zur 18. Sitzung der Gemeindevertretung','am Dienstag, 22.09.2026, 19:00 Uhr','Tagesordnung','Top Öffentlicher Teil',
+  '1. Eröffnung der Sitzung','2. Feststellung der Ordnungsmäßigkeit der Ladung und der Beschlussfähigkeit','3. Behandlung der Tagesordnungspunkte des öffentlichen Teils der Sitzung',
+  '3.1 Beschluss zur Billigung des Entwurfs der 5. Änderung des Flächennutzungsplans und die Beteiligung','der Öffentlichkeit gem. §4a Abs3 BauGB sowie der Behörden gem. § 4 Abs.','2 BauGB zum Umweltbericht',
+  '4. Sonstiges','5. Schließung des öffentlichen Teils der Sitzung',
+  'Top Nichtöffentlicher Teil','6. Verleihung der Ehrenbürgerschaft der Gemeinde Am Mellensee','7. Schließung des nichtöffentlichen Teils der Sitzung'];
+ const m=parseSessionText(lines,{title:'18. Bekanntmachung Gemeindevertretung',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3','3.1','4','5']);
+ assert.match(m.items[3].title,/§ 4 Abs\. 2 BauGB zum Umweltbericht$/);
+ assert.deepEqual(m.closedItems.map(i=>i.number),['6','7']);
+});
