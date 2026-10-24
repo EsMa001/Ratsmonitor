@@ -142,8 +142,11 @@ const PAGE_LINE=/^Seite:?\s*\d+\s*(?:\/|von)\s*\d+$/i,DATE_ALONE=/^\d{1,2}\.\d{1
 const ORDINAL_TITLE=/(?:^|\s)\d{1,2}\.\s+(?=(?:Änderung|Änderungssatzung|Nachtrag|Nachtragshaushalt|Fortschreibung|Ergänzung|Satzung|Bauabschnitt|Quartal|Halbjahr|Sitzung|Lesung|Deckblatt|Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)(?!\p{L}))/gu;
 const BOTH_PARTS=/(?<!\p{L})öffentliche[rn]?\s*(?:\/|und|bzw\.?)\s*(?:eine[rn]?\s+)?nicht\s*-?\s*öffentliche[rn]?\s+Sitzung/iu;
 const SUB_POINT=/^\(?[a-zA-Z]\)\s/;
+// The standing public item that decides which items are discussed in private (Schleswig-Holstein: „… und Beschluss über die
+// Nichtöffentlichkeit von Tagesordnungspunkten nach § 35 GO“, also broken after „von“): a decision in public, no part of its own.
+const EXCLUSION_DECISION=/Beschluss(?:fassung)?\s+(?:über|zur)\s+(?:die\s+)?Nicht\s*-?\s*(?:ö|oe)ffentlichkeit(?:\s+(?:von|der|einzelner))?(?:\s+Tagesordnungspunkte\w*)?(?:\s+(?:nach|gem\.?|gemäß)\s+§+\s*\d+\s*(?:Abs\.?\s*\d+\s*)?\w*)?|(?<!\p{L})Tagesordnungspunkte\w*\s+(?:nach|gem\.?|gemäß)\s+§+\s*\d+\s*(?:Abs\.?\s*\d+\s*)?(?:GO|GemO|KV|KrO)\.?(?!\p{L})/giu;
 export function mentionsNonPublic(s){
- const n=normalizeLine(s).replace(SECRECY_GONE,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
+ const n=normalizeLine(s).replace(SECRECY_GONE,' ').replace(EXCLUSION_DECISION,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
  // A rule of the standing orders that only gives a competence („fällt nach § 12 … GeschO in die Zuständigkeit des ersten
  // Bürgermeisters“, Neutraubling) says nothing about the public, nor the end of a citation another line began („Einwohnerfragestunde
  // gemäß § 16 a GemO“ / „i. V. m. § 21 Geschäftsordnung (GeschO)“, Kirchen (Sieg)).
@@ -1007,7 +1010,7 @@ const NP_TAIL=/^(?:l|li|lich|liche[rnms]?|ich|iche[rnms]?|ntlich\p{Ll}*|tlich\p{
 // Words of a line between the items of an invitation that speak of the public, listeners, the press or secrecy; such a line
 // that is not read as anything else is a mention of the non-public part (folded text). Invitations to the public are not.
 const SUSPECT=/oeffentlichkeit|publikum|zuhoerer|zuhoerenden|besucher|\bgaeste|\bpresse\b|geheim|\bintern\b|vertraul|\bgeschlossen|verschlossen|ausgeschlossen|ausschluss|ausschl\.|mandatstraeger|\bzutritt|\bklausur|\bprivat\b|draussen/;
-const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|(?:sowie|und)\s+der\s+oeffentlichkeit\s+(?:vorgelegten|eingegangenen|abgegebenen)|oeffentlichkeit\b[^;]{0,40}baugb|wegfall\s+der\s+nichtoeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
+const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|beschluss(?:fassung)?\s+(?:ueber|zur)\s+(?:die\s+)?nicht\s*-?\s*oeffentlichkeit|tagesordnungspunkte\w*\s+(?:nach|gem\.?|gemaess)\s+§\s*\d+\s*(?:abs\.?\s*\d+\s*)?(?:go|gemo|kv|kro)\b|(?:sowie|und)\s+der\s+oeffentlichkeit\s+(?:vorgelegten|eingegangenen|abgegebenen)|oeffentlichkeit\b[^;]{0,40}baugb|wegfall\s+der\s+nichtoeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
 // A short line without a sentence ("Geheime Sitzung", "Fortsetzung ohne Publikum"): a heading.
 const suspect=l=>{const f=foldText(normalizeLine(l));return SUSPECT.test(f)&&!SUSPECT_OK.test(f);};
 // A note that refers to items or to the rest of the agenda ("Die weiteren Punkte …", "ab hier", "Öffentlich sind die Tagesordnungspunkte 1 und 2").
@@ -1336,7 +1339,10 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
     if(np&&BOTH_PARTS.test(normalizeLine(line))&&germanDates(line).length&&germanDates(line).every(d=>d.iso===date)){i++;continue;}
     if(np){
      const mark=markOnly(line)&&!(dashParts&&DASH_FRAMED.test(line.trim())),names=namesItems(line);
-     const heading=isNonPublicHeading(line)||closedLine(line)||startsNonPublic(line)||report&&line.length<=110&&!/[.!?]$/.test(line)||line.length<=120&&/:\s*$/.test(line)&&!names.named.length&&!/[„"“”»«]/.test(line);
+     const heading=isNonPublicHeading(line)||closedLine(line)||startsNonPublic(line)||report&&line.length<=110&&!/[.!?]$/.test(line)||line.length<=120&&/:\s*$/.test(line)&&!names.named.length&&!/[„"“”»«]/.test(line)
+      // „Die nachfolgenden Tagesordnungspunkte werden voraussichtlich nichtöffentlich“ / „beraten:“ (Büsum-Wesselburen): the colon in
+      // the next line; without numbers it ends the public part like a heading.
+      ||FORWARD.test(line)&&!refsOf(line).nums.length&&line.length<=140&&/^\s*(?:beraten|behandelt|verhandelt)?\s*:?\s*$/iu.test(all[i+1]??'')&&!/[.!?]$/.test(line);
      const part=canonNP(line).match(PART_HEADING);
      // A legend of a mark: what the marked items are is told only here (rule 4).
      const forward=FORWARD.test(line)&&!refsOf(line).nums.length&&!VAGUE.test(line.replace(new RegExp(FORWARD.source,'giu'),' '));

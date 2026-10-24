@@ -129,3 +129,13 @@ test('minutes (Neutraubling): the running head „öffentliche / nicht öffentli
  assert.deepEqual(m.items.map(i=>i.number),['1','2','3']);
  assert.deepEqual(m.otherItems||[],[]);
 });
+
+test('notice (Schleswig-Holstein, Büsum-Wesselburen): „Beschluss über die Nichtöffentlichkeit von Tagesordnungspunkten nach § 35 GO“ is a public item, „Die nachfolgenden Tagesordnungspunkte werden … nichtöffentlich“ / „beraten:“ ends the public part',()=>{
+ const lines=['Amtliche Bekanntmachung','Sitzung des Ausschusses für Bauen und Verkehr der Gemeinde Büsum','Sitzung: Montag, 26.10.2026, 18:30 Uhr','Tagesordnung','Öffentlicher Teil:',
+  '1. Eröffnung der Sitzung, Feststellung der Ordnungsmäßigkeit der','Einladung, der Anwesenheit und der Beschlussfähigkeit und Tagesordnungspunkten nach § 35 GO','Beschluss über die Nichtöffentlichkeit von',
+  '2. Einwohnerfragestunde','3. Umsetzung Mobilitätskonzept','4. Mitteilungen, Anfragen, Eingaben',
+  'Die nachfolgenden Tagesordnungspunkte werden voraussichtlich nichtöffentlich','beraten:','5. Kurzvorstellung aktueller Bauvorhaben','6. Grundstücksangelegenheiten'];
+ const m=parseSessionText(lines,{title:'Amtliche Bekanntmachung Sitzung des Ausschusses',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3','4']);
+ assert.deepEqual(m.closedItems.map(i=>i.number),['5','6']);
+});
