@@ -40766,5 +40766,677 @@
     "verifiedSource": "https://www.marburg-biedenkopf.de/politik_und_gremien/bekanntmachungen.php",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Ratsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); die öffentlichen Bekanntmachungen des Kreises (PDF) nennen Sitzungen von Kreistag und Ausschüssen mit Tagesordnung. Probeabruf 3 Monate: 101 Berichte."
+  },
+  {
+    "id": "de-097785758",
+    "name": "Verwaltungsgemeinschaft Babenhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.babenhausen-schwaben.de/",
+    "pages": [
+      "https://www.babenhausen-schwaben.de/buergerservice-und-politik/service-fuer-sie/amts-und-mitteilungsblatt"
+    ],
+    "verifiedSource": "https://www.babenhausen-schwaben.de/buergerservice-und-politik/service-fuer-sie/amts-und-mitteilungsblatt",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 10 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08119090",
+    "name": "Gemeinde Remshalden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.remshalden.de/",
+    "pages": [
+      "https://www.remshalden.de/rathaus-politik/oeffentliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.remshalden.de/rathaus-politik/oeffentliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 33 Berichte aus 6 Sitzungen."
+  },
+  {
+    "id": "de-08317026",
+    "name": "Stadt Ettenheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ettenheim.de/",
+    "pages": [
+      "https://www.ettenheim.de/amtsblatt"
+    ],
+    "verifiedSource": "https://www.ettenheim.de/amtsblatt",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 220 Berichte aus 12 Sitzungen."
+  },
+  {
+    "id": "de-146255207",
+    "name": "Verwaltungsgemeinschaft Bischofswerda",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bischofswerda.de/",
+    "pages": [
+      "https://www.bischofswerda.de/stadt-und-stadtentwicklung/neuigkeiten/amtsblatt"
+    ],
+    "verifiedSource": "https://www.bischofswerda.de/stadt-und-stadtentwicklung/neuigkeiten/amtsblatt",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 8 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-097795721",
+    "name": "Verwaltungsgemeinschaft Oettingen i.Bay.",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vg-oettingen.de/",
+    "pages": [
+      "https://www.vg-oettingen.de/amtsblatt"
+    ],
+    "verifiedSource": "https://www.vg-oettingen.de/amtsblatt",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 69 Berichte aus 6 Sitzungen."
+  },
+  {
+    "id": "de-06432019",
+    "name": "Stadt Reinheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.reinheim.de/",
+    "pages": [
+      "https://www.reinheim.de/verwaltung-buergerservice/oeffentlichkeitsarbeit/oeffentliche-bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.reinheim.de/verwaltung-buergerservice/oeffentlichkeitsarbeit/oeffentliche-bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 2 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-093775348",
+    "name": "Verwaltungsgemeinschaft Kemnath",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kemnath.de/",
+    "pages": [
+      "https://www.kemnath.de/bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.kemnath.de/bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 7 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-06633020",
+    "name": "Gemeinde Niestetal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.niestetal.de/",
+    "pages": [
+      "https://www.niestetal.de/gv_niestetal/Rathaus%20&%20Politik/B%C3%BCrgerservice/Amtliche%20Bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.niestetal.de/gv_niestetal/Rathaus%20&%20Politik/B%C3%BCrgerservice/Amtliche%20Bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 35 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-14730020",
+    "name": "Stadt Bad Düben",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bad-dueben.de/",
+    "pages": [
+      "https://www.bad-dueben.de/rathaus/amtsblatt/"
+    ],
+    "verifiedSource": "https://www.bad-dueben.de/rathaus/amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 2 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-15089042",
+    "name": "Gemeinde Bördeland",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gem-boerdeland.de/",
+    "pages": [
+      "https://www.gem-boerdeland.de/bekanntmachungen.htm"
+    ],
+    "verifiedSource": "https://www.gem-boerdeland.de/bekanntmachungen.htm",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 338 Berichte aus 19 Sitzungen."
+  },
+  {
+    "id": "de-09473158",
+    "name": "Stadt Bad Rodach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bad-rodach.de/",
+    "pages": [
+      "https://www.bad-rodach.de/verwaltung-politik/buergerservice/amtliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.bad-rodach.de/verwaltung-politik/buergerservice/amtliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 59 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-16065087",
+    "name": "Stadt Roßleben-Wiehe",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.rossleben-wiehe.de/",
+    "pages": [
+      "https://www.rossleben-wiehe.de/verwaltung/oeffentliche-bekanntmachung.html"
+    ],
+    "verifiedSource": "https://www.rossleben-wiehe.de/verwaltung/oeffentliche-bekanntmachung.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 20 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-06533002",
+    "name": "Gemeinde Brechen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-brechen.de/",
+    "pages": [
+      "https://www.gemeinde-brechen.de/gemeinde/oeffentliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.gemeinde-brechen.de/gemeinde/oeffentliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 20 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-16061115",
+    "name": "Stadt Leinefelde-Worbis",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.leinefelde-worbis.de/",
+    "pages": [
+      "https://www.leinefelde-worbis.de/de/rathaus/buergerservice/amtsblatt/"
+    ],
+    "verifiedSource": "https://www.leinefelde-worbis.de/de/rathaus/buergerservice/amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 35 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-14524090",
+    "name": "Stadt Hartenstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.stadt-hartenstein.de/",
+    "pages": [
+      "https://www.stadt-hartenstein.de/rathaus/amtliche_bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.stadt-hartenstein.de/rathaus/amtliche_bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 98 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-14628190",
+    "name": "Stadt Hohnstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hohnstein.de/",
+    "pages": [
+      "https://www.hohnstein.de/mitteilungsblatt/"
+    ],
+    "verifiedSource": "https://www.hohnstein.de/mitteilungsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 19 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08115044",
+    "name": "Gemeinde Schönaich",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.schoenaich.de/",
+    "pages": [
+      "https://www.schoenaich.de/rathaus-service/schoenaicher-mitteilungsblatt"
+    ],
+    "verifiedSource": "https://www.schoenaich.de/rathaus-service/schoenaicher-mitteilungsblatt",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 7 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08216059",
+    "name": "Gemeinde Weisenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.weisenbach.de/",
+    "pages": [
+      "https://www.weisenbach.de/,Lde/weisenbach_online/verwaltung/oeffentliche+bekanntmachungen.html"
+    ],
+    "verifiedSource": "https://www.weisenbach.de/,Lde/weisenbach_online/verwaltung/oeffentliche+bekanntmachungen.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 9 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08417015",
+    "name": "Gemeinde Dormettingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.dormettingen.de/",
+    "pages": [
+      "https://www.dormettingen.de/gemeinde/nachrichten/detailansicht/news/amtsblatt-kw-42-2026/"
+    ],
+    "verifiedSource": "https://www.dormettingen.de/gemeinde/nachrichten/detailansicht/news/amtsblatt-kw-42-2026/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 9 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-010535308",
+    "name": "Amt Berkenthin",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://berkenthin-amt.de/",
+    "pages": [
+      "https://berkenthin-amt.de/archiv/"
+    ],
+    "verifiedSource": "https://berkenthin-amt.de/archiv/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 29 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-06632009",
+    "name": "Stadt Heringen (Werra)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.heringen.de/",
+    "pages": [
+      "https://www.heringen.de/startseite/amtliche_bekanntmachungen/einladung_zur_sitzung_des_ortsbeirates_lengers_am.html"
+    ],
+    "verifiedSource": "https://www.heringen.de/startseite/amtliche_bekanntmachungen/einladung_zur_sitzung_des_ortsbeirates_lengers_am.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 7 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08317152",
+    "name": "Gemeinde Kappel-Grafenhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kappel-grafenhausen.de/",
+    "pages": [
+      "https://www.kappel-grafenhausen.de/aktuelles/oeffentliche-bekanntmachungenneu"
+    ],
+    "verifiedSource": "https://www.kappel-grafenhausen.de/aktuelles/oeffentliche-bekanntmachungenneu",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 16 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-091835150",
+    "name": "Verwaltungsgemeinschaft Oberbergkirchen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.oberbergkirchen.de/",
+    "pages": [
+      "https://www.oberbergkirchen.de/amtlichebekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.oberbergkirchen.de/amtlichebekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 38 Berichte aus 8 Sitzungen."
+  },
+  {
+    "id": "de-10045113",
+    "name": "Gemeinde Gersheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://gersheim.de/",
+    "pages": [
+      "https://gersheim.de/rathaus-und-service/gemeindeverwaltung/oeffentliche-bekanntmachungen/"
+    ],
+    "verifiedSource": "https://gersheim.de/rathaus-und-service/gemeindeverwaltung/oeffentliche-bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 97 Berichte aus 10 Sitzungen."
+  },
+  {
+    "id": "de-10046113",
+    "name": "Gemeinde Namborn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.namborn.de/",
+    "pages": [
+      "https://www.namborn.de/Verwaltung-Politik/Bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.namborn.de/Verwaltung-Politik/Bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 9 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09274172",
+    "name": "Gemeinde Pfeffenhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.pfeffenhausen.de/",
+    "pages": [
+      "https://www.pfeffenhausen.de/nachrichten-neuigkeiten/amtliche-bekanntmachungen.php"
+    ],
+    "verifiedSource": "https://www.pfeffenhausen.de/nachrichten-neuigkeiten/amtliche-bekanntmachungen.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 11 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09175111",
+    "name": "Gemeinde Anzing",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.anzing.de/",
+    "pages": [
+      "https://www.anzing.de/nachrichten/gemeindeblatt/"
+    ],
+    "verifiedSource": "https://www.anzing.de/nachrichten/gemeindeblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 5 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-096795645",
+    "name": "Verwaltungsgemeinschaft Bergtheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://vgem-bergtheim.de/",
+    "pages": [
+      "https://vgem-bergtheim.de/home/mitteilungsblatt/"
+    ],
+    "verifiedSource": "https://vgem-bergtheim.de/home/mitteilungsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 15 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09678176",
+    "name": "Gemeinde Schwebheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://schwebheim.de/",
+    "pages": [
+      "https://schwebheim.de/buergerservice/digitales-amtsblatt/"
+    ],
+    "verifiedSource": "https://schwebheim.de/buergerservice/digitales-amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 31 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-14625340",
+    "name": "Gemeinde Malschwitz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.malschwitz.de/",
+    "pages": [
+      "https://www.malschwitz.de/digitales-amtsblatt/uebersicht"
+    ],
+    "verifiedSource": "https://www.malschwitz.de/digitales-amtsblatt/uebersicht",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 43 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-08226027",
+    "name": "Gemeinde Heddesbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.heddesbach.de/",
+    "pages": [
+      "https://www.heddesbach.de/bekanntmachungen-bekanntgaben/"
+    ],
+    "verifiedSource": "https://www.heddesbach.de/bekanntmachungen-bekanntgaben/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 31 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-146265228",
+    "name": "Verwaltungsgemeinschaft Oppach-Beiersdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.oppach.de/",
+    "pages": [
+      "https://www.oppach.de/amtsblatt-online/"
+    ],
+    "verifiedSource": "https://www.oppach.de/amtsblatt-online/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 54 Berichte aus 5 Sitzungen."
+  },
+  {
+    "id": "de-14521250",
+    "name": "Gemeinde Großrückerswalde",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.grossrueckerswalde.de/",
+    "pages": [
+      "https://www.grossrueckerswalde.de/rathaus-online/bekanntmachungen/elektronisches-amtsblatt/"
+    ],
+    "verifiedSource": "https://www.grossrueckerswalde.de/rathaus-online/bekanntmachungen/elektronisches-amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 15 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-09274124",
+    "name": "Gemeinde Eching",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.eching-ndb.de/",
+    "pages": [
+      "https://www.eching-ndb.de/Aktuelles/amtliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.eching-ndb.de/Aktuelles/amtliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 5 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-14730230",
+    "name": "Stadt Oschatz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://oschatz.org/",
+    "pages": [
+      "https://oschatz.org/amtsblatt/"
+    ],
+    "verifiedSource": "https://oschatz.org/amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 14 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-08317100",
+    "name": "Gemeinde Ortenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://ortenberg.de/",
+    "pages": [
+      "https://ortenberg.de/de/amtsblatt/"
+    ],
+    "verifiedSource": "https://ortenberg.de/de/amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 22 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08316049",
+    "name": "Gemeinde Weisweil",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.weisweil.de/",
+    "pages": [
+      "https://www.weisweil.de/oeffentliche-bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.weisweil.de/oeffentliche-bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 33 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-09471111",
+    "name": "Gemeinde Altendorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.altendorf-gemeinde.de/",
+    "pages": [
+      "https://www.altendorf-gemeinde.de/rathaus-politik/bekanntmachungen-und-vergaben/amtliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.altendorf-gemeinde.de/rathaus-politik/bekanntmachungen-und-vergaben/amtliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 25 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-14625230",
+    "name": "Gemeinde Hochkirch",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hochkirch.de/",
+    "pages": [
+      "https://www.hochkirch.de/amtsblatt"
+    ],
+    "verifiedSource": "https://www.hochkirch.de/amtsblatt",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 20 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-08315016",
+    "name": "Gemeinde Breitnau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-breitnau.de/",
+    "pages": [
+      "https://www.gemeinde-breitnau.de/rathaus-service/neuigkeiten/oeffentliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.gemeinde-breitnau.de/rathaus-service/neuigkeiten/oeffentliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 3 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08426006",
+    "name": "Gemeinde Allmannsweiler",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.allmannsweiler-bc.de/",
+    "pages": [
+      "https://www.allmannsweiler-bc.de/rathaus/mitteilungsblatt/online-lesen-archiv/mitteilungsblaetter-2026"
+    ],
+    "verifiedSource": "https://www.allmannsweiler-bc.de/rathaus/mitteilungsblatt/online-lesen-archiv/mitteilungsblaetter-2026",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 10 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-14625060",
+    "name": "Gemeinde Burkau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-burkau.de/",
+    "pages": [
+      "https://www.gemeinde-burkau.de/amtsblatt.html"
+    ],
+    "verifiedSource": "https://www.gemeinde-burkau.de/amtsblatt.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 1 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09478145",
+    "name": "Gemeinde Michelau i.OFr.",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-michelau.de/",
+    "pages": [
+      "https://www.gemeinde-michelau.de/amtliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.gemeinde-michelau.de/amtliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 8 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09375180",
+    "name": "Gemeinde Pentling",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.pentling.de/",
+    "pages": [
+      "https://www.pentling.de/bekanntmachung-aenderung-des-flaechennutzungsplanes-durch-deckblatt-nr-11-und-aufstellung-eines-vorhabenbezogenen-bebauungsplanes-mit-gruenordnungsplan-sondergebiet-sonnenenergie-bei-p/"
+    ],
+    "verifiedSource": "https://www.pentling.de/bekanntmachung-aenderung-des-flaechennutzungsplanes-durch-deckblatt-nr-11-und-aufstellung-eines-vorhabenbezogenen-bebauungsplanes-mit-gruenordnungsplan-sondergebiet-sonnenenergie-bei-p/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 2 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-096775621",
+    "name": "Verwaltungsgemeinschaft Marktheidenfeld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vgem-marktheidenfeld.de/",
+    "pages": [
+      "https://www.vgem-marktheidenfeld.de/amtsblatt/"
+    ],
+    "verifiedSource": "https://www.vgem-marktheidenfeld.de/amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 5 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-14627080",
+    "name": "Gemeinde Käbschütztal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://gemeinde-kaebschuetztal.de/",
+    "pages": [
+      "https://gemeinde-kaebschuetztal.de/gemeinde/gemeindeblatt"
+    ],
+    "verifiedSource": "https://gemeinde-kaebschuetztal.de/gemeinde/gemeindeblatt",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 13 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-10046118",
+    "name": "Gemeinde Tholey",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.tholey.de/",
+    "pages": [
+      "https://www.tholey.de/2025/02/27/bekanntmachung/"
+    ],
+    "verifiedSource": "https://www.tholey.de/2025/02/27/bekanntmachung/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 46 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-09778137",
+    "name": "Gemeinde Ettringen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://ettringen.de/",
+    "pages": [
+      "https://ettringen.de/home/oeffentliche-bekanntmachungen/"
+    ],
+    "verifiedSource": "https://ettringen.de/home/oeffentliche-bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 8 Berichte aus 1 Sitzungen."
   }
 ]

@@ -4099,5 +4099,33 @@
     "verifiedSource": "https://emsland.de/de/buerger-und-behoerde/oeffentliche_bekanntmachungen/amtsblatt.php",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Ratsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); das Amtsblatt (PDF) macht Kreistag und Ausschüsse mit Tagesordnung bekannt. Probeabruf 3 Monate: 57 Berichte aus 6 Sitzungen."
+  },
+  {
+    "id": "nds-033565401",
+    "name": "Samtgemeinde Hambergen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hambergen.de/",
+    "pages": [
+      "https://www.hambergen.de/rathaus-politik/aktuelles/bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.hambergen.de/rathaus-politik/aktuelles/bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 7 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "nds-03457014",
+    "name": "Gemeinde Moormerland",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.moormerland.de/",
+    "pages": [
+      "https://www.moormerland.de/rathaus/amtsblatt"
+    ],
+    "verifiedSource": "https://www.moormerland.de/rathaus/amtsblatt",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt bzw. Bekanntmachungen der Gemeinde mit Tagesordnungen (Fund aus der Amtsblatt-Suche, Titel einzeln geprüft). Probeabruf 3 Monate: 28 Berichte aus 2 Sitzungen."
   }
 ]
