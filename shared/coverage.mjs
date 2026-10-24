@@ -29,6 +29,24 @@ export function coverageOf(catalog,population,ids,landOf){
  * @param {Record<string,number>} population
  * @returns {{day:string,areas:number,population:number}[]}
  */
+// --- Gebiete mit genügend Berichten (24.10.2026): je Tag die Gebiete, deren Berichte je 1.000 Einwohner im Mittel der letzten
+// `window` Tage (nach Sitzungstag) mindestens DENSE_PER_1000 je 30 Tage erreichen. Niedrige Schwelle: darüber ist ein Gebiet
+// vernünftig angebunden (eine Gemeinde mit 10.000 Einwohnern braucht 1 Bericht im Monat, ein Kreis mit 300.000 Einwohnern 30).
+// Einwohner zählen wie überall nur bei Gemeinden (Kreise enthalten ihre Gemeinden).
+export const DENSE_PER_1000=0.1;
+export function denseCoverageSeries(events,catalog,population,{window=30,span=60,today,perThousand=DENSE_PER_1000}={}){
+ const kind=new Map(catalog.map(r=>[r.id,r.kind])),DAY=864e5,end=Date.parse((today||new Date().toISOString().slice(0,10))+'T12:00:00Z');
+ const dayIndex=d=>Math.round((Date.parse(d+'T12:00:00Z')-end)/DAY);
+ const counts=new Map();// id → Map(offset → count), offset ≤ 0
+ for(const [id,pairs] of Object.entries(events?.areas||{})){if(!kind.has(id)||!(population[id]>0))continue;const m=new Map();for(const [i,n] of pairs){const d=events.days[i];if(!d)continue;const o=dayIndex(d);if(o>0||o<=-(span+window))continue;m.set(o,(m.get(o)||0)+n);}if(m.size)counts.set(id,m);}
+ const out=[];
+ for(let k=span-1;k>=0;k--){
+  let areas=0,people=0;
+  for(const [id,m] of counts){let sum=0;for(const [o,n] of m)if(o<=-k&&o>-k-window)sum+=n;if(sum/population[id]*1000/(window/30)>=perThousand){areas++;if(kind.get(id)==='city')people+=population[id];}}
+  out.push({day:new Date(end-k*DAY).toISOString().slice(0,10),areas,population:people});
+ }
+ return out;
+}
 export function dataCoverageSeries(dataset,catalog,population){
  const kind=new Map(catalog.map(r=>[r.id,r.kind]));
  const firstDay=new Map();

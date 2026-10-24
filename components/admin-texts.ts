@@ -78,6 +78,7 @@ export const HELP:Record<string,Help>={
   sub:'Petrol: Gebiete mit lesbarer Quelle. Schwarz: Gebiete, aus denen schon Berichte gespeichert sind. Der Abstand zwischen beiden Linien sind angebundene Gebiete ohne Berichte.',
   how:['„Quelle angebunden“ folgt dem Quellenkatalog: ein Punkt je Änderung des Katalogs, jeweils gezählt gegen den heutigen Katalog. „Arbeitsstand“ in der Tabelle sind Änderungen, die noch nicht in Git übernommen sind.',
    '„Mit gespeicherten Berichten“ zählt ein Gebiet ab dem Tag, an dem sein erster Bericht gespeichert wurde. Dieses Datum gibt es erst seit Oktober 2026; früher gespeicherte Gebiete zählen ab dem ersten Tag der Reihe.',
+   '„Genug Berichte“ (Orange-Braun) zählt je Tag die Gebiete, die im Mittel der letzten 30 bzw. 90 Tage mindestens 0,1 Berichte je 1.000 Einwohner und Monat haben, nach Sitzungstag: eine Gemeinde mit 10.000 Einwohnern braucht dafür einen Bericht im Monat, ein Kreis mit 300.000 Einwohnern 30. Die Schwelle ist bewusst niedrig; darüber ist ein Gebiet vernünftig angebunden.',
    'Einwohner zählen nur auf Gemeindeebene.'],
   todo:[{label:'Angebundene Gebiete ohne Berichte abrufen',href:href('abruf','filter=empty')}]},
  'uebersicht.reichweite':{title:'Wie weit zurück und wie aktuell sind die Berichte?',

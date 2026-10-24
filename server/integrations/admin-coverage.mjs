@@ -12,7 +12,7 @@ import {ALL_LANDS} from '../../shared/lands.mjs';
 import {VG_GROUPS} from '../../shared/vg-groups.mjs';
 import {NRW_SOURCES} from './source-catalog.mjs';
 import {SOURCES} from './regions.mjs';
-import {coverageOf,dataCoverageSeries,tally,reachBucket,freshBucket,sizeClassOf,monthlyReports,REACH_BUCKETS,FRESH_BUCKETS,SIZE_CLASSES} from '../../shared/coverage.mjs';
+import {coverageOf,dataCoverageSeries,denseCoverageSeries,DENSE_PER_1000,tally,reachBucket,freshBucket,sizeClassOf,monthlyReports,REACH_BUCKETS,FRESH_BUCKETS,SIZE_CLASSES} from '../../shared/coverage.mjs';
 import {adminTimeline} from './admin-timeline.mjs';
 import {areaFigures} from './area-figures.mjs';
 // The first seven sources stand in regions.mjs, every other one in the catalog files.
@@ -63,6 +63,8 @@ export async function adminCoverage(db,{now=new Date()}={}){
   asOf:now.toISOString(),
   lands:Object.fromEntries(ALL_LANDS.map(l=>[l.id,{name:l.name,short:l.short}])),
   total,connected,withVg,withDistricts,active,
+  // Gebiete mit genügend Berichten je Einwohner, Mittel über 30 und 90 Tage (shared/coverage.mjs denseCoverageSeries)
+  dense:{perThousand:DENSE_PER_1000,d30:denseCoverageSeries(events,CATALOG,POPULATION,{window:30,today}),d90:denseCoverageSeries(events,CATALOG,POPULATION,{window:90,today})},
   data:{...data,series:dataCoverageSeries(dataset,CATALOG,POPULATION),reports:dataset.total,undatedAreas:Object.keys(dataset.undated||{}).filter(id=>all.has(id)&&!dataset.areas?.[id]?.length).length},
   history:{builtAt:history.builtAt,points:history.points.map(p=>({at:p.at,commit:p.commit,areas:p.areas,population:p.population}))},
   analysis:{

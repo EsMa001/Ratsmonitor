@@ -6,7 +6,9 @@ import {MAP_COLORS} from '@/components/ratsmonitor/lib/constants';
 export const AC={accent:'var(--color-teal-500)',ink:'var(--rm-c900)',muted:'var(--rm-c400)',grid:'var(--rm-c200)',base:'var(--rm-c300)',axis:'var(--rm-c500)',track:'var(--rm-c100)',
  zero:MAP_COLORS.zero,hatch:MAP_COLORS.hatch,scale:MAP_COLORS.scale,warn:MAP_COLORS.ring,selection:'var(--rm-c900)',land:MAP_COLORS.national,
  /** dritte Linie im Verlauf der Abdeckung: Abruf in den letzten 7 Tagen gelungen (Dunkelblau des Farbschemas) */
- active:'var(--color-sky-700)'} as const;
+ active:'var(--color-sky-700)',
+ /** Linien „genug Berichte je Einwohner“, Mittel über 30 und 90 Tage (Orange-Braun des Farbschemas) */
+ dense30:'var(--color-amber-700)',dense90:'var(--color-amber-400)'} as const;
 /** Schraffur „angebunden, ohne Berichte“: CSS-Fläche (Legende, Listenpunkt, Balken). */
 export const HATCH_CSS=`repeating-linear-gradient(135deg,#fff 0 2px,${AC.hatch} 2px 3px)`;
 // SVG: <pattern id={id} width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><path d="M0 5L5 0" stroke={AC.hatch} strokeWidth="1"/></pattern>

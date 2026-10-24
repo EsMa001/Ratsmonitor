@@ -14,7 +14,8 @@ type Bucket={id:string;label:string;color:string;areas:number;population:number}
 type SizeRow={id:string;label:string;total:[number,number];connected:[number,number];data:[number,number]};
 type Month={month:string;reports:number;areas:number};
 type Active={days:number;areas:number;population:number;since:string|null;series:{day:string;areas:number;population:number}[]};
-type Coverage={stand?:Stand;asOf:string;active?:Active;lands:Record<string,{name:string;short:string}>;total:Share;connected:Share;data:Share&{series:{day:string;areas:number;population:number}[];reports:number;undatedAreas:number};history:{builtAt:string;points:{at:string;commit:string|null;areas:number;population:number}[]};analysis:{statsPending:number;reach:{buckets:Bucket[]};fresh:{buckets:Bucket[]};sizes:SizeRow[];months:Month[];undated:number}};
+type Dense={perThousand:number;d30:{day:string;areas:number;population:number}[];d90:{day:string;areas:number;population:number}[]};
+type Coverage={stand?:Stand;asOf:string;active?:Active;dense?:Dense;lands:Record<string,{name:string;short:string}>;total:Share;connected:Share;data:Share&{series:{day:string;areas:number;population:number}[];reports:number;undatedAreas:number};history:{builtAt:string;points:{at:string;commit:string|null;areas:number;population:number}[]};analysis:{statsPending:number;reach:{buckets:Bucket[]};fresh:{buckets:Bucket[]};sizes:SizeRow[];months:Month[];undated:number}};
 type Point={t:number;v:number};
 type Series={id:string;label:string;color:string;points:Point[]};
 const dateTime=(s:string)=>new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'});
@@ -89,7 +90,11 @@ export function AdminOverview(){
   const stored={areas:data.data.series.map(p=>({t:dayEnd(p.day),v:p.areas})),population:data.data.series.map(p=>({t:dayEnd(p.day),v:p.population}))};
   // Reale Abdeckung: Abruf in den letzten 7 Tagen gelungen (activeCoverage); je Tag das Fenster bis zu seinem Ende
   const active={areas:(data.active?.series||[]).map(p=>({t:dayEnd(p.day),v:p.areas})),population:(data.active?.series||[]).map(p=>({t:dayEnd(p.day),v:p.population}))};
+  // Genug Berichte je Einwohner (Mittel über 30 bzw. 90 Tage, Schwelle dense.perThousand je 1.000 Einwohner und 30 Tage)
+  const dense=(w:'d30'|'d90')=>({areas:(data.dense?.[w]||[]).map(p=>({t:dayEnd(p.day),v:p.areas})),population:(data.dense?.[w]||[]).map(p=>({t:dayEnd(p.day),v:p.population}))});
+  const d30=dense('d30'),d90=dense('d90');
   const series=(key:'areas'|'population'):Series[]=>[{id:'connected',label:'Quelle angebunden',color:AC.accent,points:connected[key]},{id:'stored',label:'Mit gespeicherten Berichten',color:AC.ink,points:stored[key]},
+   ...(d30[key].length?[{id:'dense30',label:'Genug Berichte (Ø 30 Tage)',color:AC.dense30,points:d30[key]},{id:'dense90',label:'Genug Berichte (Ø 90 Tage)',color:AC.dense90,points:d90[key]}]:[]),
    ...(active[key].length?[{id:'active',label:`Abruf gelungen in ${data.active?.days??7} Tagen`,color:AC.active,points:active[key]}]:[])];
   const lands=Object.entries(data.lands).map(([id,l])=>({id,...l,total:data.total.lands[id]||[0,0],connected:data.connected.lands[id]||[0,0],data:data.data.lands[id]||[0,0]})).sort((a,b)=>b.total[1]-a.total[1]);
   // The last 24 meeting months; a bucket is shown only when it holds something.
