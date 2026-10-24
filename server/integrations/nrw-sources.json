@@ -648,5 +648,21 @@
     ],
     "gazettePages": true,
     "verifiedSource": "https://www.arnsberg.de/rathaus-politik/amtliche-bekanntmachungen"
+  },
+  {
+    "id": "nrw-05554068",
+    "name": "Stadt Vreden",
+    "kind": "city",
+    "method": "scraper",
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "note": "ratsinfomanagement.net gesperrt. Amtsblatt nennt Satzungs- und Aufstellungsbeschlüsse des Rates und Sitzungstagesordnungen (Probeabruf 12 Monate: 64 Berichte, u. a. Rat 02.07.2026 und 24.09.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers).",
+    "adapter": "website",
+    "base": "https://www.vreden.de/",
+    "pages": [
+      "https://www.vreden.de/de/rat-und-verwaltung/amtsblatt/"
+    ],
+    "gazettePages": true,
+    "verifiedSource": "https://www.vreden.de/de/rat-und-verwaltung/amtsblatt/"
   }
 ]
