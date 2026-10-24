@@ -4306,5 +4306,20 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.nordhorn.de/portal/seiten/elektronisches-amtsblatt-900000654-26710.html?rubrik=900000002",
     "note": "ratsinfo.nordhorn.de gesperrt. Das elektronische Amtsblatt (Ordner 2026) nennt Satzungsbeschlüsse und Tagesordnungspunkte des Ausschusses (Probeabruf 12 Monate: 196 Berichte, Stadtentwicklungsausschuss 05.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers). Download-Links /downloads/datei/ gelten für Amtsblätter als PDF."
+  },
+  {
+    "id": "nds-03458013",
+    "name": "Gemeinde Wardenburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wardenburg.de/",
+    "pages": [
+      "https://www.wardenburg.de/aktuelles/neuigkeiten/amtliche-nachrichten/"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.wardenburg.de/aktuelles/neuigkeiten/amtliche-nachrichten/",
+    "note": "ratsinformation.wardenburg.de gesperrt. Die amtlichen Nachrichten nennen Bauleitplanungs-Beschlüsse des Rates (Probeabruf 12 Monate: 2 Berichte, 30.09.2026 und 26.03.2026; wenige Treffer, Quelle trotzdem übernommen)."
   }
 ]
