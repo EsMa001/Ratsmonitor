@@ -28,3 +28,14 @@ test('relative links resolve against the base the page declares',()=>{
  assert.equal(declaredBase('<a href="x.pdf">x</a>','https://a.example/b/'),'https://a.example/b/');
  assert.equal(declaredBase('<base href="javascript:void(0)">','https://a.example/b/'),'https://a.example/b/');
 });
+
+test('minutes: a note on attendance and the running head of each page that names this meeting change nothing',()=>{
+ const lines=['NIEDERSCHRIFT ÜBER DIE SITZUNG DES STADTRATES','Sitzungsdatum: Donnerstag,18.06.2026','ANWESENHEITSLISTE','Herr Thomas Jäger Abwesend ab 20:20 Uhr (ab TOP 7 / nö.)',
+  'Sitzung des Stadtrates am 18.06.2026','TAGESORDNUNG','Öffentliche Sitzung','1. Eröffnung, Beschlussfähigkeit, Tagesordnung','2. Antrag auf Baugenehmigung: Neubau einer Halle','3. Anfragen',
+  '-401-','Sitzung des Stadtrates am 18.06.2026','ÖFFENTLICHE SITZUNG','1 Eröffnung, Beschlussfähigkeit, Tagesordnung','Der Bürgermeister begrüßt alle Anwesenden.',
+  '-402-','Sitzung des Stadtrates am 18.06.2026','2 Antrag auf Baugenehmigung: Neubau einer Halle','Beschluss:','Das Einvernehmen wird erteilt.','Abstimmungsergebnis: Ja-Stimmen: 20 Nein-Stimmen: 0',
+  '-403-','Sitzung des Stadtrates am 18.06.2026','3 Anfragen','Keine.'];
+ const m=parseSessionText(lines,{title:'2026-06-18 Stadtratssitzung'}).meetings.find(x=>x.items.length||(x.otherItems||[]).length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3']);
+ assert.deepEqual(m.otherItems||[],[]);
+});

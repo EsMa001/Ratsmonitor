@@ -131,6 +131,7 @@ const typoNonPublic=folded=>{
 // Geheimhaltung weggefallen sind (Art. 52 Abs. 3 GO)": a public item about decisions already made known, no non-public part.
 // Also „Wegfall der Nichtöffentlichkeit“ (Neutraubling, Art. 52 Abs. 3 GO): decisions of the non-public part made public now.
 const SECRECY_GONE=/(?:Gr(?:ü|ue)nde\s+)?(?:für|fuer)\s+(?:die\s+)?Geheimhaltung\s+(?:weggefallen|entfallen)\s+sind\s*(?:\((?:Art\.?|§)[^)]{0,30}\))?|(?:(?:Gemäß|Nach)\s+Art\.?\s*52\s+Abs\.?\s*3\s+GO\s+wird\s+(?:der\s+)?)?Wegfall\s+der\s+Nicht(?:ö|oe)ffentlichkeit/giu;
+const ATTENDANCE_NOTE=/(?:abwesend|anwesend|entschuldigt|verl(?:ä|ae)(?:ss|ß)t|erscheint)(?!\p{L})[^()]{0,40}\((?:ab|bis|nach|vor)\s+TOP\b[^)]*\)/iu;
 const SUB_POINT=/^\(?[a-zA-Z]\)\s/;
 export function mentionsNonPublic(s){
  const n=normalizeLine(s).replace(SECRECY_GONE,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
@@ -1330,6 +1331,8 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
       if(latePublic&&!items.slice(i+1,end).some(Boolean))discard('Bezeichnungen der Sitzungsteile erst nach den Punkten','welche Punkte öffentlich sind, ist nicht eindeutig');
       endBlock();delimited=true;itemOpen=false;
      }
+     // A note in the attendance list of minutes („Abwesend ab 20:20 Uhr (ab TOP 7 / nö.)“, Neutraubling) tells when someone left.
+     else if(i<first&&kind==='minutes'&&ATTENDANCE_NOTE.test(line)){/* no mark of the agenda */}
      else if(i<first){
       headMention=true;const r=refsOf(line);
       if(r.any)applyRefs(r);
@@ -1479,7 +1482,10 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    if(seen.has(it.number)){
     // A number again just after the name of a body or a day: another meeting whose head was not recognised. Otherwise
     // a list numbered anew: what follows is not known to belong to this meeting.
-    if(all.slice(Math.max(first+1,itemLine-3),itemLine).some(l=>!itemOf(l)&&(committeeOf(l)&&/^\p{Lu}/u.test(l)||SESSION_WORD.test(l)&&germanDates(l).length)))mixed=true;
+    // Not the running head of each page that names this very meeting („Sitzung des Stadtrates am 18.06.2026“ above the
+    // report on each item, Neutraubling).
+    const sameMeeting=l=>{const d=germanDates(l);return d.length>0&&d.every(x=>x.iso===date)&&(!committeeOf(l)||!committee||sameBody(committeeOf(l),committee));};
+    if(all.slice(Math.max(first+1,itemLine-3),itemLine).some(l=>!itemOf(l)&&!sameMeeting(l)&&(committeeOf(l)&&/^\p{Lu}/u.test(l)||SESSION_WORD.test(l)&&germanDates(l).length)))mixed=true;
     issues.push(`Punkt ${it.number} doppelt (${where(committee,date,title)}); nur der erste übernommen.`);cur=null;
     if(kind!=='minutes')endBlock();
     continue;
