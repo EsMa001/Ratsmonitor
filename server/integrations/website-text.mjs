@@ -138,8 +138,9 @@ const SUB_POINT=/^\(?[a-zA-Z]\)\s/;
 export function mentionsNonPublic(s){
  const n=normalizeLine(s).replace(SECRECY_GONE,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
  // A rule of the standing orders that only gives a competence („fällt nach § 12 … GeschO in die Zuständigkeit des ersten
- // Bürgermeisters“, Neutraubling) says nothing about the public.
- return NP_SPACED.some(re=>re.test(t))||NP_COMPACT.test(t.replace(/[^a-z#]/g,''))||LAW_NP.test(n)||RULES_NP.test(n)&&!/zuständig/iu.test(n)||typoNonPublic(t);
+ // Bürgermeisters“, Neutraubling) says nothing about the public, nor the end of a citation another line began („Einwohnerfragestunde
+ // gemäß § 16 a GemO“ / „i. V. m. § 21 Geschäftsordnung (GeschO)“, Kirchen (Sieg)).
+ return NP_SPACED.some(re=>re.test(t))||NP_COMPACT.test(t.replace(/[^a-z#]/g,''))||LAW_NP.test(n)||RULES_NP.test(n.replace(/(?:^|\s)i\.\s?V\.\s?m\.\s*(?:§§?|Art\.?)[^,;]*/giu,' '))&&!/zuständig/iu.test(n)||typoNonPublic(t);
 }
 // Labels and addresses only: "Teil N", "(intern)", "interner Teil", a folder or name part "geschlossen".
 // Also "(geschl.)", "geheim" and a name part "np" (gr-2026-09-16-np.pdf).
@@ -1393,6 +1394,9 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
     // Nor a lettered sub-point of an item („b) über die konstituierende Sitzung vom 12.05.2026“ under „Genehmigung der
     // Niederschrift“, Neutraubling).
     if(state==='public'&&seenItem&&i>=first&&line.length<=240&&!SUB_POINT.test(line)&&!consultedLine(line,date)&&(SESSION_WORD.test(line)||MEETING_WORD.test(line)||DATE_ONLY.test(line))&&(/:\s*$/.test(line)||!/[.!?]$/.test(line)&&line.length<=100)&&!(!/:\s*$/.test(line)&&(brokenOff(all[i-1])||recalled(line,date)))&&meetingDates(all,i,ctx).some(d=>d.iso!==date)){issues.push(`Anderer Sitzungstag nach den Punkten (${where(committee,date,title)}): „${line.length>80?line.slice(0,79)+'…':line}“; folgende Punkte nicht übernommen.`);endBlock();itemOpen=false;i++;continue;}
+    // The non-public part first, then the public one under its own heading (Kirchen (Sieg): „Nichtöffentliche Sitzung“ TOP 1–7,
+    // „Öffentliche Sitzung“ TOP 1–…): before any public item a public heading opens the public part.
+    if(isPublicHeading(line)&&state==='nonpublic'&&!taken.length&&!cur&&closedItems.length&&!isNonPublicHeading(line)){state='public';evidence=`Überschrift „${line}“ nach dem nichtöffentlichen Teil`;partSeen=true;itemOpen=false;i++;continue;}
     if(isPublicHeading(line)){if(state==='public'&&taken.length)latePublic=true;if(state==='none'){state='public';evidence=`Überschrift „${line}“`;}const p=line.match(PART_HEADING);if(p)parts.set(partKey(p),state==='public'?'public':'none');partSeen=true;cur=null;absent=false;itemOpen=false;i++;continue;}
     // Another heading of a part after the public block ends it ("Teil B", "II.", "B.", "Zweiter Teil", "N-Teil", "B Sitzung").
     // A lettered sub-point inside an item („A) Abwägungsbeschluss“ under a development plan, Neutraubling) is no part,

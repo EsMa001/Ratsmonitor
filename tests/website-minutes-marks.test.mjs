@@ -53,3 +53,14 @@ test('public notice (Heiligenstadt i.OFr.): compound word after the number, a ti
   ['16','Geländeauffüllung zur Errichtung eines Parkplatzes'],['17','Anbau eines Nebengebäudes'],['18','Neubau einer Maschinenhalle'],['19','Errichtung eines Mobilfunkmastens'],['20','Errichtung eines Mobilfunkmastens Brunn'],['21','Errichtung eines Mobilfunkmastens Oberngrub'],
   ['22','Ergebnisse aus Sitzung des Regionalen Planungsverband Oberfranken West vom 20 April 2026 bzgl. Windvorranggebiet Brunn - Ost'],['23','Sonstiges']]);
 });
+
+test('notice with the non-public part first (Kirchen (Sieg)): the public part after its own heading is public, a citation „i. V. m. § … GeschO“ is no mark',()=>{
+ const lines=['Öffentliche Bekanntmachung','zur 15. Sitzung des Stadtrates der Stadt Kirchen (Sieg)','Sitzungstermin: Mittwoch, 16.09.2026, 17:00 Uhr','Tagesordnung',
+  'Nichtöffentliche Sitzung','TOP 1: Feststellungen/Anträge zur Tagesordnung','TOP 2: Personalangelegenheit','TOP 3: Verschiedenes',
+  'Öffentliche Sitzung','TOP 1: Begrüßung und Feststellungen/Anträge zur Tagesordnung','TOP 2: Einwohnerfragestunde gemäß § 16 a Gemeindeordnung (GemO)','Seite: 2/3','i. V. m. § 21 Geschäftsordnung (GeschO)',
+  'TOP 3: 2. Nachtragshaushaltssatzung und -plan 2026 der Stadt Kirchen','TOP 4: Verschiedenes'];
+ const m=parseSessionText(lines,{title:'Öffentliche Bekanntmachung zur 15. Sitzung des Stadtrates',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3','4']);
+ assert.match(m.items[1].title,/^Einwohnerfragestunde gemäß § 16 a Gemeindeordnung \(GemO\)/);
+ assert.deepEqual(m.closedItems.map(i=>i.title),['Feststellungen/Anträge zur Tagesordnung','Personalangelegenheit','Verschiedenes']);
+});

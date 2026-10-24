@@ -208,8 +208,11 @@ const repair=line=>{const l=normalizeLine(line);return l.length>90?l:l.replace(P
 const PLACE_KIND=/^(?:Gemeinde|Stadt|Markt|Marktgemeinde|Hansestadt|Große Kreisstadt|Kreisstadt|Ortsgemeinde|Samtgemeinde|Verbandsgemeinde|Amt|Landkreis|Kreis)\s+/i;
 // Titles every agenda has in both parts ("Genehmigung der Niederschrift", "Anfragen"): no sign of the same item. Only a title
 // of nothing but such words; "Information zum Rechtsstreit mit der Baufirma Huber GmbH" names a matter.
-const STANDARD_WORDS=/(?<![a-z])(?:genehmigung|feststellung|der|des|die|das|den|dem|niederschrift(?:en)?|protokoll[se]*|sitzung(?:en)?|letzten|vorherigen|oeffentlichen|oeffentlicher|mitteilung(?:en)?|bekanntgabe(?:n)?|bekanntgaben|anfrage(?:n)?|verschiedenes|sonstiges|wuensche|antraege|anregungen|information(?:en)?|eroeffnung|begruessung|ordnungsgemaessen|ladung|beschlussfaehigkeit|bericht(?:e)?|buergermeister(?:s|in)?|verwaltung|vorsitzenden|gemeinderat(?:e?s)?|stadtrat(?:e?s)?|ratsmitglieder|und|u|sowie|aus|von|vom|zur|zum|einwohnerfragestunde|buergerfragestunde|fragestunde|tagesordnung|einwaende|gegen|ueber|am|nr|top|[0-9.]+)(?![a-z])/g;
-const standardTitle=t=>!/[a-z]/.test(fold(t).replace(STANDARD_WORDS,' '));
+const STANDARD_WORDS=/(?<![a-z])(?:genehmigung|feststellung(?:en)?|nicht|nichtoeffentlichen|und|zur|zum|tagesordnung|schliessung|beschlussvorlagen|der|des|die|das|den|dem|niederschrift(?:en)?|protokoll[se]*|sitzung(?:en)?|letzten|vorherigen|oeffentlichen|oeffentlicher|mitteilung(?:en)?|bekanntgabe(?:n)?|bekanntgaben|anfrage(?:n)?|verschiedenes|sonstiges|wuensche|antraege|anregungen|information(?:en)?|eroeffnung|begruessung|ordnungsgemaessen|ladung|beschlussfaehigkeit|bericht(?:e)?|buergermeister(?:s|in)?|verwaltung|vorsitzenden|gemeinderat(?:e?s)?|stadtrat(?:e?s)?|ratsmitglieder|und|u|sowie|aus|von|vom|zur|zum|einwohnerfragestunde|buergerfragestunde|fragestunde|tagesordnung|einwaende|gegen|ueber|am|nr|top|[0-9.]+)(?![a-z])/g;
+// Kinds of matter every non-public part has („Personalangelegenheit“, „Grundstücksangelegenheiten“, „Vertragsangelegenheiten“,
+// „Auftragsvergaben“, Kirchen (Sieg)): no sign of the same item either.
+const MATTER_KINDS=/(?<![a-z])(?:[a-z]*angelegenheit(?:en)?|auftragsvergabe(?:n)?|vergabe(?:n)?|personalsache(?:n)?|miet|grundstuecks|und|nach|uvgo|vob|unterschwellenvergabeordnung)(?![a-z])/g;
+const standardTitle=t=>!/[a-z]/.test(fold(t).replace(STANDARD_WORDS,' '))||!/[a-z]/.test(fold(t).replace(/\([^)]*\)/g,' ').replace(/[-–]\s/g,' ').replace(MATTER_KINDS,' ').replace(STANDARD_WORDS,' '));
 // Two wordings of one item where one names a plot more precisely ("Fl.Nr. 412" and "Fl.Nr. 412/3").
 const closeTitles=(a,b)=>similarTitles(a,b)||similarTitles(String(a).replace(/(\d+)\/\d+/g,'$1'),String(b).replace(/(\d+)\/\d+/g,'$1'));
 // The same body under two names: a council (Marktgemeinderat, Marktrat), or committees that share a word ("Bau- und
@@ -593,7 +596,9 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  }
  // Items of the non-public part of the same body on other days (within six weeks), by title only: a meeting moved without a
  // notice the reader found.
- const closedNear=(date,committee)=>[...closedOf.entries()].filter(([d])=>d!==date&&Math.abs(dayDiff(d,date))<=45).flatMap(([,list])=>list).filter(c=>!c.standard&&sameBodies(c.committee,committee));
+ // Another day: only the very same body by name. Councils of different member municipalities of a Verbandsgemeinde
+ // („Ortsgemeinderat“ of Friesenhagen, „Stadtrat“ of Kirchen) count as alike for one meeting, not across meetings.
+ const closedNear=(date,committee)=>[...closedOf.entries()].filter(([d])=>d!==date&&Math.abs(dayDiff(d,date))<=45).flatMap(([,list])=>list).filter(c=>!c.standard&&sameBodies(c.committee,committee)&&slug(c.committee)===slug(committee));
  for(const t of texts){
   if(names.length&&!named){const all=words(t.title+' '+t.lines.join(' '));named=names.some(n=>all.includes(n));}
   const parsed=parsedOf.get(t);
@@ -618,7 +623,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    // An item another document of the same meeting puts in the non-public part goes, with all items after it.
    const elsewhere=(closedOf.get(m.date)||[]).filter(c=>c.text!==t);
    const near=closedNear(m.date,committee).filter(c=>c.text!==t);
-   let cut=m.items.findIndex(it=>elsewhere.some(c=>!c.standard&&closeTitles(c.title,it.title)||c.continues&&sameBodies(c.committee,committee)&&mainNumber(it.number)>=mainNumber(c.number))||near.some(c=>closeTitles(c.title,it.title)));
+   let cut=m.items.findIndex(it=>elsewhere.some(c=>!c.standard&&(!c.committee||!committee||sameBodies(c.committee,committee))&&closeTitles(c.title,it.title)||c.continues&&sameBodies(c.committee,committee)&&mainNumber(it.number)>=mainNumber(c.number))||near.some(c=>closeTitles(c.title,it.title)));
    // An item that is none of the public items of another document of the meeting that marks its non-public part.
    for(const other of (publicOf.get(m.date)||[]).filter(o=>o.text!==t&&sameBodies(o.committee,committee))){
     const k=m.items.findIndex(it=>!other.items.some(o=>slug(o.title)===slug(it.title)||closeTitles(o.title,it.title)));
