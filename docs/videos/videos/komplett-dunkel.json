@@ -1,28 +1,46 @@
 {
  "ausgabe": "plenara-komplett-dunkel",
- "theme": "dunkel",
  "karten": false,
  "vorteileMax": 5,
  "kapitel": [
   {
    "kapitel": "einleitung",
-   "text": "lang"
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung",
+    "ort": "Stuttgart"
+   }
   },
   {
    "kapitel": "suchen",
-   "text": "lang"
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung",
+    "ort": "Stuttgart",
+    "vorsuche": "ja"
+   }
   },
   {
    "kapitel": "liste-artikel",
-   "text": "lang"
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung",
+    "ort": "Stuttgart"
+   }
   },
   {
    "kapitel": "filter",
-   "text": "lang"
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
   },
   {
    "kapitel": "alarme",
-   "text": "lang"
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
   },
   {
    "kapitel": "kalender",
@@ -38,15 +56,25 @@
   },
   {
    "kapitel": "x-atlas",
-   "text": "lang"
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
   },
   {
    "kapitel": "x-signale",
    "text": "lang"
   },
   {
-   "kapitel": "x-trends",
+   "kapitel": "x-ausschreibungen",
    "text": "lang"
+  },
+  {
+   "kapitel": "x-trends",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
   },
   {
    "kapitel": "x-fakten",
@@ -60,5 +88,7 @@
    "kapitel": "abschluss",
    "text": "lang"
   }
- ]
+ ],
+ "musik": true,
+ "theme": "dunkel"
 }

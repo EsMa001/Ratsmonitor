@@ -26,6 +26,10 @@ def folie(n,wav=None,delay=0.0):
     if wav: run('-i',v,'-i',wav,'-map','0:v','-map','1:a','-af',f'adelay={int(delay*1000)}:all=1,apad','-shortest',*ENC,out)
     else: run('-i',v,'-f','lavfi','-i','anullsrc=r=22050:cl=mono','-map','0:v','-map','1:a','-shortest',*ENC,out)
     return out
+p=folie('auftakt',f'{O}/auftakt/audio.wav',0.5) if os.path.exists(f'{O}/f-auftakt.mp4') else None  # Auftakt (auftakt.mjs) mit dem ersten Satz der Einleitung
+if p:
+    for s_ in json.load(open(f'{O}/auftakt/audio.json'))['sentences']: vtt.append(f"{ts(t+0.5+s_['start'])} --> {ts(t+0.5+s_['end']+0.3)}\n{s_['text'].replace('Plenarra','Plenara')}\n")
+    TL['folien'].append({'name':'auftakt','start':round(t,1),'ende':round(t+dur(p),1)}); parts.append(p); t+=dur(p)
 p=folie('titel',f'{O}/titel/audio.wav',1.0) if os.path.exists(f'{O}/titel/audio.wav') else folie('titel')
 if p:
     if os.path.exists(f'{O}/titel/audio.wav'):
@@ -41,6 +45,10 @@ def tl_chapter(c,n,aj,t0,off):
     return S
 for c in chs:
     n=f"{c['nr']:02d}"
+    zw=folie(f'z{n}',f'{O}/z{n}/audio.wav',0.5) if os.path.exists(f'{O}/f-z{n}.mp4') else None  # Zwischenfolie (plenara.X) mit dem ersten Satz des Kapitels
+    if zw:
+        for s_ in json.load(open(f'{O}/z{n}/audio.json'))['sentences']: vtt.append(f"{ts(t+0.5+s_['start'])} --> {ts(t+0.5+s_['end']+0.3)}\n{s_['text'].replace('Plenarra','Plenara')}\n")
+        TL['folien'].append({'name':'zwischen','start':round(t,1),'ende':round(t+dur(zw),1)}); parts.append(zw); t+=dur(zw)
     ch=f'{O}/c{n}/c{n}.mp4'; aj=json.load(open(f'{O}/c{n}/audio.json'))
     ovf=f'{O}/c{n}/overlays.json'
     if os.path.exists(ovf) and json.load(open(ovf)):
@@ -56,7 +64,9 @@ for c in chs:
     if not KARTEN:
         body=f'{O}/body{n}.mp4'
         D_=dur(ch)
-        run('-i',ch,'-vf',f'fps=30,scale=1280:720,format=yuv420p,fade=t=in:st=0:d=0.3:color={FADE},fade=t=out:st={D_-0.3:.2f}:d=0.3:color={FADE}','-ar','22050','-ac','1','-c:v','libx264','-crf','24','-c:a','aac','-b:a','96k',body)
+        fin='' if (zw or (c is chs[0] and os.path.exists(f'{O}/f-auftakt.mp4'))) else f'fade=t=in:st=0:d=0.3:color={FADE},'  # nach dem Auftakt harter Schnitt (die Suchleiste liegt schon auf dem Suchfeld)
+        zm=f"scale=2560:1440,zoompan=z='1+0.04*on/{int(D_*30)}':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1280x720:fps=30," if os.environ.get('VIDEO_ZOOM') else ''  # langsamer Zoom um 4 %
+        run('-i',ch,'-vf',f'fps=30,{zm}scale=1280:720,format=yuv420p,{fin}fade=t=out:st={D_-0.3:.2f}:d=0.3:color={FADE}','-ar','22050','-ac','1','-c:v','libx264','-crf','24','-c:a','aac','-b:a','96k',body)
         for s in aj['sentences']:
             vtt.append(f"{ts(t+0.5+s['start'])} --> {ts(t+0.5+s['end']+0.3)}\n{s['text'].replace('Plenarra','Plenara')}\n")
         TL['kapitel'].append({'nr':c['nr'],'id':json.load(open(f"{O}/c{n}/meta.json"))['id'],'kapitel':c['name'],'start':round(t,1),'ende':round(t+dur(ch),1),'saetze':tl_chapter(c,n,aj,t,0.5)})

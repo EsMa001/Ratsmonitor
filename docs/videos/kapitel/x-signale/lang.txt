@@ -1,5 +1,5 @@
 # plenara.X Signale (seit 16.10.2026).
-*@x-signale.start Signale zeigen einzelne Vorhaben mit Ort, Schritt und Quelle.
-@x-signale.liste Jeder Vorgang steht mit Ort, Datum und Stand in der Liste.
-*@x-signale.erstmals Erstmals hier zeigt Orte, die ein Thema zum ersten Mal beraten.
+*@x-signale.start Projekte zeigt einzelne Vorhaben mit Ort, Schritt und Quelle.
+@x-signale.start Zum Beispiel neue Gewerbe- und Industriegebiete, mit Ort und Stand.
+*@x-signale.liste Jeder Vorgang steht mit Ort, Datum und Stand in der Liste.
 @x-signale.wechsel Zur Wahl stehen Branchen wie Windenergie, Wohnbaugebiete oder Ausschreibungen.

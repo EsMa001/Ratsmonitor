@@ -15,7 +15,7 @@ export default {
   setup: async (H, p) => { await H.search(p.thema); await H.sleep(500); },
   beats: [
     ["offen", async (H) => { await H.click("[aria-controls='filter-body']"); await H.sleep(800); await H.move(300, 260, 30); }, 2],
-    ["exakt", async (H) => { await H.click(sw(H, "Exakter Begriff")); await H.loaded(); await H.sleep(1800); await H.move(300, 330, 30); await H.sleep(1200); await H.click(sw(H, "Exakter Begriff")); await H.loaded(); }, 1.5],  /* vor den Filtern: exakter Begriff zusammen mit Filtern liefert derzeit 0 Treffer (Fehler im Backend, siehe Notiz) */
+    ["exakt", async (H) => { const b = await sw(H, "Exakter Begriff").first().boundingBox(); if (b) { await H.move(b.x + b.width / 2, b.y + b.height / 2, 30); await H.sleep(1500); } await H.move(300, 330, 30); }, 1.5],  /* nur auf den Schalter zeigen: lokal ist die exakte Suche nicht gefüllt (0 Treffer), ein Umschalten zeigte eine leere Liste */
     ["zeitraum", async (H) => { await pick(H, "Zeitraum", /12 Monate/); await H.loaded(); }, 1],
     ["thema", async (H) => { await pick(H, "Thema", /Klima/); await H.loaded(); }, 1],
     ["status", async (H) => { await pick(H, "Status", /beschlossen|genehmigt|zugestimmt/i); await H.loaded(); }, 1.5],

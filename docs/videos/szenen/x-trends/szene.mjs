@@ -15,7 +15,8 @@ export default {
   beats: (p) => [
     ["start", async (H) => { await H.move(640, 330, 30); }, 4],
     ["liste", async (H) => { await jump(H, 470); await H.move(900, 300, 40); await H.sleep(600); await H.move(900, 480, 40); }, 5],
-    ["begriff", async (H) => { await jump(H, 0); await tipp(H, p.thema); await jump(H, 420); await H.move(400, 400, 40); }, 6],
-    ["ausgang", async (H) => { await jump(H, 0); await klick(H, link(H, /^Ausgang$/)); await jump(H, 330); await H.move(640, 400, 40); }, 5],
+    ["begriff", async (H) => { await jump(H, 0); await fertig(H); await H.hidden(() => H.page.waitForFunction(() => !/wird berechnet|Wird berechnet/.test(document.body.innerText), null, { timeout: 120000 }).catch(() => {})); await H.hidden(async () => { await H.page.locator("input[data-search='q']:visible").first().focus(); await H.page.keyboard.type(p.thema); await H.page.keyboard.press("Enter"); await H.sleep(500); await H.calc(); await H.sleep(1200); });  /* beim Tippen blendet die App Karte und Kurven aus: unsichtbar tippen */
+      await jump(H, 0); const a = H.page.getByRole("button", { name: /Ausbreitung von/ }).first(); if (await a.isVisible().catch(() => false)) { await klick(H, a); await H.hidden(() => H.page.waitForFunction(() => !/wird berechnet|Wird berechnet/.test(document.body.innerText), null, { timeout: 120000 }).catch(() => {})); } await jump(H, 0);  /* Ausbreitung rechnet auf dem Server länger */ await H.move(420, 420, 40); await H.sleep(700); await H.move(900, 380, 40); }, 6],  /* Begriff tippen, dann seine Ausbreitung (die Seite ist mit Begriff kurz, Scrollen träfe den Fuß) */
+    ["ausgang", async (H) => { await jump(H, 0); await klick(H, link(H, /^(Ausgang|Beschlusslage)$/)); await jump(H, 330); await H.move(640, 400, 40); }, 5],
   ],
 };

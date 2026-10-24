@@ -11,7 +11,7 @@ export default {
   meta: { bereich: "plenarax", dauer: "15-20 s", zeigt: "Fakten: Hebesätze mit Spanne, Karte je Gemeinde, Wert mit Quelle", tags: ["anleitung", "werbung"] },
   parameter: {},
   start: "Fakten, Hebesätze", ende: "Fakten, Vorgänge eines Gebiets",
-  setup: async (H) => { await H.go("/analytics/fakten?fakt=hebesatz"); await H.calc(); await H.sleep(1200); },
+  setup: async (H) => { await H.go("/analytics/fakten?fakt=hebesatz"); await H.calc(); await H.sleep(1200); await H.page.getByRole("button", { name: /^OK$/ }).first().click({ timeout: 2000 }).then(() => H.sleep(500)).catch(() => {}); },  /* Hinweis „Hier steht nur …“ vorher schließen */
   beats: [
     ["start", async (H) => { await H.move(300, 420, 40); await H.sleep(500); await H.move(200, 530, 40); }, 4],
     ["karte", async (H) => { await zu(H, "Gebiete", 90); await H.move(320, 400, 40); await H.sleep(600); await H.move(900, 300, 40); }, 5],

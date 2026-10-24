@@ -2,7 +2,7 @@
 @alarm.herz Sie wollen nichts verpassen, aber nicht jeden Tag suchen?
 *@alarm.herz Speichern Sie Ihre Suche mit dem Herz.
 @alarm.konto Im Konto schalten Sie die Glocke ein.
-*@alarm.glocke Ab jetzt kommt eine E-Mail, sobald es zu Ihrer Suche neue Treffer gibt.
+*@alarm.glocke Eine E-Mail meldet, sobald es zu Ihrer Suche neue Treffer gibt.
 @alarm.glocke Wie oft Sie benachrichtigt werden, legen Sie bei jeder Suche fest.
 @kalender.abo Und am Tag einer Sitzung in Ihren Gebieten kommt eine E-Mail.
 @kalender.abo So behalten Sie den Überblick, ohne zu suchen. Plenarra meldet sich.

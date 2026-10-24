@@ -1,6 +1,5 @@
 {
  "ausgabe": "plenara-anwender-immobilien-dunkel",
- "theme": "dunkel",
  "vorlage": "eigen",
  "parameter": {
   "thema": "Bebauungsplan",
@@ -36,5 +35,7 @@
    "kapitel": "abschluss",
    "text": "kurz"
   }
- ]
+ ],
+ "musik": true,
+ "theme": "dunkel"
 }

@@ -1,6 +1,5 @@
 {
  "ausgabe": "plenara-anwender-verbaende-dunkel",
- "theme": "dunkel",
  "vorlage": "eigen",
  "parameter": {
   "thema": "Ausschreibung",
@@ -33,5 +32,7 @@
    "kapitel": "abschluss",
    "text": "kurz"
   }
- ]
+ ],
+ "musik": true,
+ "theme": "dunkel"
 }

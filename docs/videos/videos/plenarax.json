@@ -15,6 +15,10 @@
    "text": "lang"
   },
   {
+   "kapitel": "x-ausschreibungen",
+   "text": "lang"
+  },
+  {
    "kapitel": "x-trends",
    "text": "lang"
   },
@@ -31,5 +35,6 @@
    "text": "kurz"
   }
  ],
- "vorteileMax": 3
+ "vorteileMax": 3,
+ "musik": true
 }

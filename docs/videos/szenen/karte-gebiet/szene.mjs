@@ -1,17 +1,16 @@
-/* Karte: in ein Gebiet hineinzoomen und das Gebiet anklicken, die Liste zeigt dessen Beschlüsse (Ort aus dem Parameter) */
-/* Lage des Ortes in der Deutschlandansicht (1280x720). Münster ist aus Breite/Länge genähert und beim Aufnehmen zu prüfen; Stuttgart ist gemessen. */
-const POS = { Münster: { zoom: [569, 243], klick: [569, 243] }, Stuttgart: { zoom: [605, 387], klick: [563, 358] } };
+/* Karte: zum Thema den Ort hinzunehmen, die Karte fliegt in das Gebiet und zeigt seine Zahl, die Liste dessen Beschlüsse (Ort aus dem Parameter).
+   Früher zoomte die Szene auf fest eingetragene Kartenpunkte; seit der Umgestaltung der Karte (10.2026) trafen sie nicht mehr. Die Ortssuche ist unabhängig von der Lage. */
 export default {
-  meta: { bereich: "karte", dauer: "8-10 s", zeigt: "Zoom auf den Ort, Klick auf die Zahl, Liste des Gebiets", tags: ["anleitung", "webinar", "werbung"] },
+  meta: { bereich: "karte", dauer: "8-10 s", zeigt: "Ort zum Thema tippen, Karte fliegt ins Gebiet, Zahl und Liste des Gebiets", tags: ["anleitung", "webinar", "werbung"] },
   parameter: { thema: "Klimaschutz", ort: "Münster" },
-  start: "Karte mit Treffern (ganz Deutschland)", ende: "Gebiet angeklickt, Liste darunter gefiltert",
+  start: "Karte mit Treffern (ganz Deutschland)", ende: "Gebiet gewählt, Liste darunter gefiltert",
   setup: async (H, p) => { await H.search(p.thema); },
-  beats: (p) => {
-    const pos = POS[p.ort]; if (!pos) throw new Error(`Lage von ${p.ort} fehlt in POS (karte-gebiet)`);
-    return [
-      /* Zoom und Klick laufen ohne Aufnahme (die Kartenanimation ergäbe ruckelnde Zwischenbilder), davor und danach zeigt der Clip ruhige Bilder */
-      ["zoom", async (H) => { await H.move(...pos.zoom, 30); await H.sleep(900); await H.hidden(async () => { for (let k = 0; k < 3; k++) { await H.page.mouse.wheel(0, -400); await H.sleep(1200); } await H.sleep(600); }); await H.sleep(900); }, 1.5],
-      ["klick", async (H) => { await H.move(...pos.klick, 40); await H.sleep(500); await H.hidden(async () => { await H.page.mouse.down(); await H.sleep(60); await H.page.mouse.up(); await H.loaded(); await H.sleep(1500); }); await H.sleep(1200); }, 2.5],
-    ];
-  },
+  beats: (p) => [
+    ["zoom", async (H) => {
+      /* Fokus ohne Klick (der Klick scrollt die Seite zum Fuß), dann sichtbar „Begriff Ort“ tippen, egal was im Feld stand */
+      await H.hidden(async () => { await H.page.locator("input[data-search='q']:visible").first().focus(); await H.page.keyboard.press("ControlOrMeta+a"); await H.page.keyboard.press("Backspace"); await H.page.evaluate(() => window.scrollTo(0, 0)); await H.sleep(400); });
+      await H.page.keyboard.type(`${p.thema} ${p.ort}`, { delay: 90 }); await H.sleep(900); }, 1.2],
+    /* Flug der Karte ohne Aufnahme (ruckelnde Zwischenbilder), danach liegt das Gebiet mittig: die Maus zeigt auf seine Zahl */
+    ["klick", async (H) => { await H.hidden(async () => { await H.page.keyboard.press("Enter"); await H.loaded(); await H.page.evaluate(() => window.scrollTo(0, 0)); await H.sleep(2500); }); await H.move(370, 380, 40); await H.sleep(600); await H.move(900, 300, 40); }, 2.5],
+  ],
 };

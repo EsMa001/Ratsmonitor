@@ -1,6 +1,5 @@
 {
  "ausgabe": "plenara-x-dunkel",
- "theme": "dunkel",
  "karten": false,
  "kapitel": [
   {
@@ -13,6 +12,10 @@
   },
   {
    "kapitel": "x-signale",
+   "text": "lang"
+  },
+  {
+   "kapitel": "x-ausschreibungen",
    "text": "lang"
   },
   {
@@ -32,5 +35,7 @@
    "text": "kurz"
   }
  ],
- "vorteileMax": 3
+ "vorteileMax": 3,
+ "musik": true,
+ "theme": "dunkel"
 }

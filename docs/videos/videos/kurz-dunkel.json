@@ -1,0 +1,70 @@
+{
+ "ausgabe": "plenara-pitch-dunkel",
+ "titel": false,
+ "karten": false,
+ "vorteileMax": 0,
+ "musik": true,
+ "kapitel": [
+  {
+   "kapitel": "einleitung",
+   "saetze": [
+    2,
+    4
+   ]
+  },
+  {
+   "kapitel": "suchen",
+   "saetze": [
+    6
+   ]
+  },
+  {
+   "kapitel": "liste-artikel",
+   "saetze": [
+    3
+   ]
+  },
+  {
+   "kapitel": "filter",
+   "saetze": [
+    3
+   ]
+  },
+  {
+   "kapitel": "alarme",
+   "saetze": [
+    4
+   ]
+  },
+  {
+   "kapitel": "x-signale",
+   "saetze": [
+    1,
+    2
+   ],
+   "folie": "x"
+  },
+  {
+   "kapitel": "x-ausschreibungen",
+   "saetze": [
+    1
+   ]
+  },
+  {
+   "kapitel": "x-trends",
+   "saetze": [
+    1,
+    2
+   ]
+  },
+  {
+   "kapitel": "abschluss",
+   "saetze": [
+    2
+   ]
+  }
+ ],
+ "auftakt": true,
+ "bewegung": true,
+ "theme": "dunkel"
+}

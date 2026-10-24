@@ -1,0 +1,3 @@
+# plenara.X Ausschreibungen (seit 23.10.2026): Vergaben der Kommunen aus den Beratungen.
+*@x-ausschreibungen.start Ausschreibungen zeigt, was Kommunen vergeben, zum Beispiel Bauleistungen, Planung oder Lieferungen.
+*@x-ausschreibungen.liste Jede Vergabe steht mit Ort, Datum und Quelle in der Liste.

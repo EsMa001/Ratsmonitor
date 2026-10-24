@@ -34,7 +34,8 @@ ul{position:absolute;left:72px;top:262px;list-style:none;padding:0}
 li{display:flex;align-items:center;gap:24px;font-size:36px;margin-bottom:28px;opacity:0;animation:up .5s ease-out forwards}</style>
 <img class="logo s" src="${LOGO}"><h2>Das bringt Ihnen Plenara</h2>
 <ul>${v.items.map((t, i) => `<li style="animation-delay:${v.starts[i]}s">${check(v.starts[i])}${esc(t)}</li>`).join("")}</ul>`;
-const jobs = [["titel", spec.titel && schluss(), spec.titel?.dur], ["vorteile", spec.vorteile && vorteile(spec.vorteile), spec.vorteile?.dur], ["schluss", spec.schluss && schluss(), spec.schluss?.dur]].filter((j) => j[1] && j[2]);
+const { html: auftakt, xhtml } = await import("./auftakt.mjs");
+const jobs = [["auftakt", spec.auftakt && auftakt(spec.auftakt, { css, dark: DARK }), spec.auftakt?.dur], ...(spec.zwischen || []).map((z) => [`z${z.n}`, xhtml(z, { css, dark: DARK }), z.dur]), ["titel", spec.titel && schluss(), spec.titel?.dur], ["vorteile", spec.vorteile && vorteile(spec.vorteile), spec.vorteile?.dur], ["schluss", spec.schluss && schluss(), spec.schluss?.dur]].filter((j) => j[1] && j[2]);
 const cache = `${out}/../_folien`; mkdirSync(cache, { recursive: true });
 let browser, page;
 for (const [n, html, secs] of jobs) {
@@ -45,7 +46,7 @@ for (const [n, html, secs] of jobs) {
     await page.evaluate(() => document.getAnimations().forEach((a) => a.pause()));
     const dir = `${out}/_${n}`; rmSync(dir, { recursive: true, force: true }); mkdirSync(dir, { recursive: true });
     const N = Math.round(secs * FPS);
-    for (let k = 0; k < N; k++) { await page.evaluate((t) => document.getAnimations().forEach((a) => { a.currentTime = t; }), (k / FPS) * 1000); await page.screenshot({ path: `${dir}/f${String(k).padStart(4, "0")}.jpg`, type: "jpeg", quality: 92 }); }
+    for (let k = 0; k < N; k++) { await page.evaluate((t) => (window.frame ? window.frame(t / 1000) : document.getAnimations().forEach((a) => { a.currentTime = t; })), (k / FPS) * 1000);  /* Auftakt rechnet jedes Bild selbst (window.frame) */ await page.screenshot({ path: `${dir}/f${String(k).padStart(4, "0")}.jpg`, type: "jpeg", quality: 92 }); }
     spawnSync(FF, ["-y", "-loglevel", "error", "-framerate", String(FPS), "-i", `${dir}/f%04d.jpg`, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", key]);
     rmSync(dir, { recursive: true, force: true }); rmSync(file);
   }

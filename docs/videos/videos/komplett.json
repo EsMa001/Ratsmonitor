@@ -66,6 +66,10 @@
    "text": "lang"
   },
   {
+   "kapitel": "x-ausschreibungen",
+   "text": "lang"
+  },
+  {
    "kapitel": "x-trends",
    "text": "lang",
    "parameter": {
@@ -84,5 +88,6 @@
    "kapitel": "abschluss",
    "text": "lang"
   }
- ]
+ ],
+ "musik": true
 }

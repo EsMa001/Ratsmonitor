@@ -1,15 +1,37 @@
 {
  "ausgabe": "plenara-anwender-verbaende",
  "vorlage": "eigen",
- "parameter": { "thema": "Ausschreibung", "ort": "Stuttgart" },
+ "parameter": {
+  "thema": "Ausschreibung",
+  "ort": "Stuttgart"
+ },
  "karten": false,
  "vorteileMax": 3,
  "kapitel": [
-  { "kapitel": "einleitung", "text": "kurz" },
-  { "kapitel": "suchen", "text": "kurz" },
-  { "kapitel": "liste-artikel", "text": "kurz" },
-  { "kapitel": "alarme", "text": "kurz" },
-  { "kapitel": "x-atlas", "text": "kurz" },
-  { "kapitel": "abschluss", "text": "kurz" }
- ]
+  {
+   "kapitel": "einleitung",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "suchen",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "liste-artikel",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "alarme",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "x-atlas",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "abschluss",
+   "text": "kurz"
+  }
+ ],
+ "musik": true
 }

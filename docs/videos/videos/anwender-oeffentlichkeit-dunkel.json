@@ -1,6 +1,5 @@
 {
  "ausgabe": "plenara-anwender-oeffentlichkeit-dunkel",
- "theme": "dunkel",
  "vorlage": "eigen",
  "parameter": {
   "thema": "Haushalt",
@@ -36,5 +35,7 @@
    "kapitel": "abschluss",
    "text": "kurz"
   }
- ]
+ ],
+ "musik": true,
+ "theme": "dunkel"
 }

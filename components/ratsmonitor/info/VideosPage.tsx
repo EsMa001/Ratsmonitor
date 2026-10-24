@@ -14,24 +14,24 @@ const variant = (base: string, dark: boolean) => (dark ? `${base}-dunkel` : base
 type Chapter = { t: number; title: string; what: string };
 const PLENARA: Chapter[] = [
   { t: 7, title: "Startseite", what: "Was in Ihren Kommunen beraten wird, an einem Ort." },
-  { t: 38, title: "Suchen", what: "Ein Begriff, ganz Deutschland, sofort auf der Karte." },
-  { t: 71, title: "Liste und Artikel", what: "Den Stand jedes Vorgangs auf einen Blick." },
-  { t: 108, title: "Filter", what: "Eingrenzen, bis nur das Passende übrig bleibt." },
-  { t: 140, title: "Alarme", what: "Nichts verpassen, ohne zu suchen." },
-  { t: 168, title: "Export", what: "Aus der Suche wird Ihre Auswertung." },
-  { t: 196, title: "Kalender", what: "Keine Sitzung verpassen." },
-  { t: 218, title: "Konto", what: "Alles Gespeicherte an einem Ort." },
-  { t: 242, title: "Datenabdeckung", what: "Ist Ihre Gemeinde dabei? Das sehen Sie offen." },
+  { t: 36, title: "Suchen", what: "Ein Begriff, ganz Deutschland, sofort auf der Karte." },
+  { t: 69, title: "Liste und Artikel", what: "Den Stand jedes Vorgangs auf einen Blick." },
+  { t: 106, title: "Filter", what: "Eingrenzen, bis nur das Passende übrig bleibt." },
+  { t: 138, title: "Alarme", what: "Nichts verpassen, ohne zu suchen." },
+  { t: 165, title: "Kalender", what: "Keine Sitzung verpassen." },
+  { t: 187, title: "Konto", what: "Alles Gespeicherte an einem Ort." },
+  { t: 211, title: "Datenabdeckung", what: "Ist Ihre Gemeinde dabei? Das sehen Sie offen." },
 ];
 const ANALYSE: Chapter[] = [
-  { t: 269, title: "Themenatlas", what: "Wie viel wo beraten wird, nach zehn Themen." },
-  { t: 292, title: "Projekte", what: "Einzelne Projekte mit Ort, Schritt und Quelle." },
-  { t: 311, title: "Trends", what: "Begriffe, die gerade zunehmen." },
-  { t: 332, title: "Werte", what: "Werte aus den Vorlagen, je Gemeinde." },
-  { t: 345, title: "Einblicke", what: "Gremien, Themennetz und Aktuelles." },
+  { t: 238, title: "Themenatlas", what: "Wie viel wo beraten wird, nach zehn Themen." },
+  { t: 261, title: "Projekte", what: "Einzelne Vorhaben mit Ort, Schritt und Quelle." },
+  { t: 281, title: "Ausschreibungen", what: "Was Kommunen vergeben, mit Ort und Quelle." },
+  { t: 293, title: "Trends", what: "Begriffe, die gerade zunehmen." },
+  { t: 314, title: "Werte", what: "Werte aus den Vorlagen, je Gemeinde." },
+  { t: 327, title: "Einblicke", what: "Gremien, Themennetz und Aktuelles." },
 ];
-const ALL = [...PLENARA, ...ANALYSE, { t: 359, title: "Jetzt ausprobieren", what: "" }];
-const LENGTH = 395;
+const ALL = [...PLENARA, ...ANALYSE, { t: 341, title: "Jetzt ausprobieren", what: "" }];
+const LENGTH = 376;
 
 /* plenara.X allein und je Anwenderseite ein Video (videos/plenarax.json, videos/anwender-*.json, je mit dunkler Fassung) */
 const PLENARAX = "plenara-x";
