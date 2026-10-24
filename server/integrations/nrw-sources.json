@@ -679,5 +679,20 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.minden.de/aktuelles/bekanntmachungen/bekanntmachungen-archiv/",
     "note": "minden.ratsinfomanagement.net gesperrt. Das Bekanntmachungsarchiv nennt Satzungen und Tagesordnungspunkte der Stadtverordnetenversammlung (Probeabruf 12 Monate: 26 Berichte, Sitzung 15.12.2025; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nrw-05158036",
+    "name": "Stadt Wülfrath",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wuelfrath.net/",
+    "pages": [
+      "https://www.wuelfrath.net/rat-verwaltung/aktuelles-und-bekanntmachungen/amtliche-bekanntmachungen/archiv"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.wuelfrath.net/rat-verwaltung/aktuelles-und-bekanntmachungen/amtliche-bekanntmachungen/archiv",
+    "note": "wuelfrath.ratsinfomanagement.net gesperrt. Das Archiv der amtlichen Bekanntmachungen nennt Satzungsbeschlüsse und Tagesordnungspunkte des Rates (Probeabruf 12 Monate: 168 Berichte, Sitzung 13.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
