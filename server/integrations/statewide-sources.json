@@ -1620,6 +1620,20 @@
     "apiCheck": "RIS (ibbenbueren.ratsinfomanagement.net) sperrt Programme; Bekanntmachungen der Stadt mit Tagesordnung je Sitzung (PDF). Probeabruf 3 Monate: 7 Sitzungen, 91 öffentliche Punkte (vorher Seiten des Dienstleistungskatalogs, 0 Punkte)."
   },
   {
+    "id": "nrw-05566044",
+    "name": "Gemeinde Lienen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.lienen.de/",
+    "pages": [
+      "https://www.lienen.de/news-liste"
+    ],
+    "verifiedSource": "https://www.lienen.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem gefunden; Nachrichten der Gemeinde mit Bekanntmachungen (Bauleitplanung, Probe 12 Monate: 3 Punkte, unklar)."
+  },
+  {
     "id": "nrw-05566088",
     "name": "Stadt Tecklenburg",
     "kind": "city",
