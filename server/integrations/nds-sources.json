@@ -4384,5 +4384,21 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.stadt-badbentheim.de/RathausBürgerservice/Aktuelles/Elektronisches-Amtsblatt/",
     "note": "sitzung-online.de gesperrt. Das elektronische Amtsblatt nennt Tagesordnungspunkte und Satzungsbeschlüsse des Ausschusses für Bauen und Umwelt (Probeabruf 12 Monate: 127 Berichte, Sitzung 21.09.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nds-03361008",
+    "name": "Gemeinde Ottersberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.flecken-ottersberg.de/",
+    "pages": [
+      "https://www.flecken-ottersberg.de/verwaltung-politik/amtsblatt-flecken-ottersberg/"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.flecken-ottersberg.de/verwaltung-politik/amtsblatt-flecken-ottersberg/",
+    "note": "flecken-ottersberg.ratsinfomanagement.net gesperrt. Das Amtsblatt nennt Tagesordnungspunkte der Ausschüsse (Probeabruf 12 Monate: 108 Berichte, Ausschuss 28.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]

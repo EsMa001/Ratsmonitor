@@ -8,6 +8,9 @@ import {committeeOf,germanDates} from './website-text.mjs';
 
 // „<Gremium> hat in seiner / ihrer / der (öffentlichen) Sitzung am / vom TT.MM.JJJJ“; also „… in öffentlicher Sitzung am“.
 const DECIDED=/((?:Der|Die|Das)\s+)?([\p{Lu}][\p{L}.-]*(?:\s+[\p{L}.-]+){0,6}?)\s+(?:hat|haben)\s+(?:in\s+(?:seiner|ihrer|der|einer)\s+|in\s+)(?:(nicht\s*-?\s*)?öffentliche[rn]?\s+)?Sitzung\s+(?:am|vom)\s+(?:\p{L}+,?\s+(?:den\s+)?)?(\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}|\d{1,2}\.\s?\p{L}+\s+\d{4})/u;
+// The other order of the same sentence: „Der Gemeinderat der Stadt Walldorf hat am 24.02.2026 in öffentlicher Sitzung …“ (Walldorf,
+// Sindelfingen 2026). Groups as DECIDED, the day moved behind the verb: 1 article, 2 body, 3 day, 4 nonpublic part.
+const DECIDED_AM=/((?:Der|Die|Das)\s+)?([\p{Lu}][\p{L}.-]*(?:\s+[\p{L}.-]+){0,6}?)\s+(?:hat|haben)\s+am\s+(\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4})\s+in\s+(?:(nicht\s*-?\s*)?öffentlicher?\s+)?Sitzung/u;
 // Not a decision of a council for now: a dedication of a road, an ordinance, a general order.
 const NOT_TAKEN=/widmung|entwidmung|umstufung|rechtsverordnung|(?<!\p{L})verordnung|allgemeinverfügung|polizeiverordnung/iu;
 // Words of the notice itself, not of its matter.
@@ -39,7 +42,8 @@ function headingMatter(lines,at){
 export function decisionNotice(label,lines){
  const all=(lines||[]).map(l=>String(l)),flat=all.join(' ').replace(/\s+/g,' ');
  if(NOT_TAKEN.test(String(label||''))||NOT_TAKEN.test(all.slice(0,6).join(' ')))return null;
- const m=flat.match(DECIDED);if(!m)return null;
+ const m0=flat.match(DECIDED),am=m0?null:flat.match(DECIDED_AM);if(!m0&&!am)return null;
+ const m=m0||Object.assign([am[0],am[1],am[2],am[4],am[3]],{index:am.index});
  const committee=committeeOf(m[2]);if(!committee)return null;
  const date=ISO(germanDates(m[4])[0]);if(!date)return null;
  // The line the sentence starts in: what stands above it is the heading.
