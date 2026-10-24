@@ -4336,5 +4336,21 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.ritterhude.de/verwaltung-und-politik/aktuelles/bekanntmachungen/",
     "note": "ritterhude.ratsinfomanagement.net gesperrt. Die Bekanntmachungen nennen Sitzungen und Aufstellungsbeschlüsse des Rates (Probeabruf 12 Monate: 220 Berichte, Ausschuss für Haushalt 05.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nds-03361006",
+    "name": "Gemeinde Langwedel",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.langwedel.de/",
+    "pages": [
+      "https://www.langwedel.de/portal/seiten/amtsblatt-2026-900000504-20660.html?rubrik=900000003&vs=1"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.langwedel.de/portal/seiten/amtsblatt-2026-900000504-20660.html?rubrik=900000003&vs=1",
+    "note": "flecken-langwedel.ratsinfomanagement.net gesperrt. Die Amtsblatt-Seite (über den Link „Zur aufgerufenen Seite“) nennt Tagesordnungspunkte des Ortsrats und des Gemeindewahlausschusses (Probeabruf 12 Monate: 180 Berichte; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
