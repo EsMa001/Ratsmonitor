@@ -4352,5 +4352,21 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.langwedel.de/portal/seiten/amtsblatt-2026-900000504-20660.html?rubrik=900000003&vs=1",
     "note": "flecken-langwedel.ratsinfomanagement.net gesperrt. Die Amtsblatt-Seite (über den Link „Zur aufgerufenen Seite“) nennt Tagesordnungspunkte des Ortsrats und des Gemeindewahlausschusses (Probeabruf 12 Monate: 180 Berichte; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nds-03361009",
+    "name": "Gemeinde Oyten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.oyten.de/",
+    "pages": [
+      "https://www.oyten.de/portal/seiten/amtsblatt-fuer-die-gemeinde-oyten-2026-908000624-20690.html?rubrik=908000001"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.oyten.de/portal/seiten/amtsblatt-fuer-die-gemeinde-oyten-2026-908000624-20690.html?rubrik=908000001",
+    "note": "oyten.ratsinfomanagement.net gesperrt. Die Amtsblatt-Jahrgangsseite 2026 nennt Tagesordnungspunkte der Ausschüsse und des Rates (Probeabruf 12 Monate: 209 Berichte, Ausschuss 28.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
