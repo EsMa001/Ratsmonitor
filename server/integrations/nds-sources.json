@@ -4400,5 +4400,39 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.flecken-ottersberg.de/verwaltung-politik/amtsblatt-flecken-ottersberg/",
     "note": "flecken-ottersberg.ratsinfomanagement.net gesperrt. Das Amtsblatt nennt Tagesordnungspunkte der Ausschüsse (Probeabruf 12 Monate: 108 Berichte, Ausschuss 28.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nds-03356005",
+    "name": "Gemeinde Lilienthal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.lilienthal.de/",
+    "pages": [
+      "https://www.lilienthal.de/rathaus/aktuelles/bekanntmachungen-amtsblatt/"
+    ],
+    "gazettePages": true,
+    "followArticles": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.lilienthal.de/rathaus/aktuelles/bekanntmachungen-amtsblatt/",
+    "note": "ratsinfo.lilienthal.de gesperrt. Die Bekanntmachungen nennen Tagesordnungspunkte und Beschlüsse des Rates (Probeabruf 12 Monate: 369 Berichte, Rat 03.11.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nds-032555409",
+    "name": "Samtgemeinde Eschershausen-Stadtoldendorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://samtgemeindeverwaltung.de/",
+    "pages": [
+      "https://samtgemeindeverwaltung.de/dokumente/amtsblatt/"
+    ],
+    "gazettePages": true,
+    "followArticles": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://samtgemeindeverwaltung.de/dokumente/amtsblatt/",
+    "note": "Ratsinformationssystem gesperrt. Die Samtgemeinde-Bekanntmachungen nennen Tagesordnungspunkte der Wahlausschüsse (Probeabruf 12 Monate: 42 Berichte, 21.09.2026)."
   }
 ]
