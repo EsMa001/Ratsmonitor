@@ -6,11 +6,10 @@ import {REACH_BUCKETS,FRESH_BUCKETS,reachBucket,freshBucket} from '@/shared/cove
 import {AC,ACCESS_COLOR,COVERAGE,HATCH_CSS,bucketColor,shareColor} from '@/components/admin-colors';
 import {Legend} from '@/components/admin-ui';
 import {mm} from '@/components/admin-format';
+import {CATALOG} from '@/shared/catalog.mjs';
+import {MAP_URL,mapShapes} from '@/shared/map-shapes.mjs';
 const REACH=new Map(REACH_BUCKETS.map(b=>[b.id,bucketColor('reach',b)])),FRESH=new Map(FRESH_BUCKETS.map(b=>[b.id,bucketColor('fresh',b)]));
 type Shape={id:string;ags:string;kind:string;path:string;bounds:number[]};
-// NRW und Niedersachsen liegen in germany.json (auch Grundlage der öffentlichen Analysekarte),
-// die übrigen 14 Länder in de-areas.json (scripts/build-de.mjs).
-const FILES=['/geo/germany.json','/geo/de-areas.json'];
 // Ausschnitt: Umriss der gezeigten Gebiete mit Rand.
 function viewBox(shapes:Shape[]){if(!shapes.length)return '0 0 600 790';let [x0,y0,x1,y1]=[Infinity,Infinity,-Infinity,-Infinity];for(const {bounds:b} of shapes){if(b[0]<x0)x0=b[0];if(b[1]<y0)y0=b[1];if(b[2]>x1)x1=b[2];if(b[3]>y1)y1=b[3];}return (x0-6)+' '+(y0-6)+' '+(x1-x0+12)+' '+(y1-y0+12);}
 // Die Flächen werden nur neu gezeichnet, wenn sich Gebiete, Farben oder Auswahl ändern, nicht bei jeder Mausbewegung
@@ -21,8 +20,8 @@ const Regions=memo(function Regions({shapes,fills,titles,selected,fine,onToggle,
 export function AdminProcessingMap({sources,selected,onToggle,layer,mode,land='all'}:{sources:AdminSource[];selected:Set<string>;onToggle:(id:string)=>void;layer:string;mode:string;land?:string}){
  const [geo,setGeo]=useState<Shape[]|null>(null),[error,setError]=useState(false),[hover,setHover]=useState<string|null>(null);const pattern='admin-map-'+useId().replaceAll(':','');
  useEffect(()=>{const c=new AbortController();
-  // Fehlt die Datei der übrigen Länder, bleibt die Karte von NRW und Niedersachsen nutzbar.
-  Promise.all(FILES.map((file,i)=>fetch(file,{signal:c.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<{regions:Shape[]}>;}).then(g=>g.regions).catch(e=>{if(i===0||e.name==='AbortError')throw e;return [] as Shape[];}))).then(parts=>setGeo(parts.flat())).catch(e=>{if(e.name!=='AbortError')setError(true);});
+  // Dieselbe Gemeindekarte wie die Suche und der Lückenatlas (shared/map-shapes.mjs).
+  fetch(MAP_URL,{signal:c.signal}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(d=>{if(!c.signal.aborted)setGeo(mapShapes(d,CATALOG).shapes);}).catch(e=>{if(e.name!=='AbortError')setError(true);});
   return()=>c.abort();},[]);
  const byId=useMemo(()=>new Map(sources.map(s=>[s.id,s])),[sources]);
  const shapes=useMemo(()=>(geo||[]).filter(r=>r.kind===layer&&byId.has(r.id)&&(land==='all'||r.ags.startsWith(land))),[geo,byId,layer,land]);
@@ -46,5 +45,5 @@ export function AdminProcessingMap({sources,selected,onToggle,layer,mode,land='a
   return [[AC.scale[0],'bis 20 %'],[AC.scale[1],'über 20 bis 50 %'],[AC.scale[2],'über 50 bis 80 %'],[AC.scale[3],'über 80 %'],none0];
  },[mode,most]);
  const h=hover?byId.get(hover):null,connected=shapes.filter(r=>byId.get(r.id)!.canImport).length;
- return <div className="admin-map"><div className="admin-map-canvas">{error?<p role="alert">Karte nicht verfügbar. Alle Gebiete lassen sich in der Liste auswählen.</p>:!geo?<p role="status">Karte wird geladen …</p>:<svg viewBox={viewBox(shapes)} aria-label="Gebiete durch Klicken auswählen; dieselbe Auswahl ist in der Liste erreichbar." role="img"><defs><pattern id={pattern} width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><path d="M0 5L5 0" stroke={AC.hatch} strokeWidth="1"/></pattern></defs><Regions shapes={shapes} fills={fills} titles={titles} selected={selected} fine={shapes.length>1500} onToggle={toggle} onHover={setHover}/></svg>}</div><p className="admin-map-hover" aria-live="polite">{h?<><strong>{h.name}</strong> · {h.count.toLocaleString('de-DE')} Berichte · {h.state}{h.accessLabel?' · '+h.accessLabel:''}{h.count>0&&h.lastEventAt?' · Sitzungen '+mm(h.firstEventAt)+' bis '+mm(h.lastEventAt):''}</>:<>{shapes.length.toLocaleString('de-DE')} {layer==='city'?'Städte, Gemeinden und Gemeindeverbände':'Kreise'} auf der Karte, {connected.toLocaleString('de-DE')} mit angebundener Quelle · Dunkle Umrandung: ausgewählt</>}</p><Legend items={legend}/><small>© BKG (2026), <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noreferrer">dl-de/by-2-0</a>. Gemeinden und Kreise: VG250, Kreise in NRW: VG2500. Außerhalb von NRW auf Verwaltungsebene: ein Gemeindeverband (Samtgemeinde, Amt, Verbandsgemeinde, Verwaltungsgemeinschaft) ist ein Gebiet; Berlin und Hamburg stehen als je ein Gebiet.</small></div>;
+ return <div className="admin-map"><div className="admin-map-canvas">{error?<p role="alert">Karte nicht verfügbar. Alle Gebiete lassen sich in der Liste auswählen.</p>:!geo?<p role="status">Karte wird geladen …</p>:<svg viewBox={viewBox(shapes)} aria-label="Gebiete durch Klicken auswählen; dieselbe Auswahl ist in der Liste erreichbar." role="img"><defs><pattern id={pattern} width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><path d="M0 5L5 0" stroke={AC.hatch} strokeWidth="1"/></pattern></defs><Regions shapes={shapes} fills={fills} titles={titles} selected={selected} fine={shapes.length>1500} onToggle={toggle} onHover={setHover}/></svg>}</div><p className="admin-map-hover" aria-live="polite">{h?<><strong>{h.name}</strong> · {h.count.toLocaleString('de-DE')} Berichte · {h.state}{h.accessLabel?' · '+h.accessLabel:''}{h.count>0&&h.lastEventAt?' · Sitzungen '+mm(h.firstEventAt)+' bis '+mm(h.lastEventAt):''}</>:<>{shapes.length.toLocaleString('de-DE')} {layer==='city'?'Städte, Gemeinden und Gemeindeverbände':'Kreise'} auf der Karte, {connected.toLocaleString('de-DE')} mit angebundener Quelle · Dunkle Umrandung: ausgewählt</>}</p><Legend items={legend}/><small>© GeoBasis-DE / BKG 2025, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noreferrer">dl-de/by-2-0</a>. Gemeinden und Kreise: VG250, Kreise in NRW: VG2500. Außerhalb von NRW auf Verwaltungsebene: ein Gemeindeverband (Samtgemeinde, Amt, Verbandsgemeinde, Verwaltungsgemeinschaft) ist ein Gebiet; Berlin und Hamburg stehen als je ein Gebiet.</small></div>;
 }

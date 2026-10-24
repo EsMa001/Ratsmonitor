@@ -10,6 +10,8 @@ import {adminHref} from '@/components/admin-chrome';
 import {REACH_BUCKETS,FRESH_BUCKETS,reachBucket,freshBucket} from '@/shared/coverage.mjs';
 import {VG_GROUPS} from '@/shared/vg-groups.mjs';
 import {n,pct,mio,day,mm} from '@/components/admin-format';
+import {CATALOG} from '@/shared/catalog.mjs';
+import {MAP_URL,mapShapes} from '@/shared/map-shapes.mjs';
 // Same data as the standalone gap atlas (scripts/dashboard/page.html), read live: the catalog and the atlas file of
 // the deployed code, reports and imports from the database. Refreshed every five minutes while the page is open.
 type Area={id:string;n:string;l:string;g:string;t:string;k:'c'|'i'|'d';p:number;m?:number;c:string;z:string;r?:number;u?:string;o?:string;v?:string;zc?:string;rb?:string;rn?:string;at?:string;cs?:string;nc?:number[];rs?:{url:string;hint?:string;proof?:string}[];cnt?:number;last?:string;st?:'failed'|'partial';fe?:string;le?:string;rk?:string;fk?:string};
@@ -17,10 +19,10 @@ type Category={id:string;label:string;open:boolean;color:string;why:string;help:
 type Access={id:string;label:string;group:string;automated:boolean;color:string;explain:string};
 type Atlas={stand?:Stand;asOf:string;builtAt:string;reportDate:string;statsPending:number;reports:number;texts:string[];categories:Category[];access:Access[];lands:Record<string,{name:string;short:string}>;areas:Area[]};
 type Shape={id:string;ags:string;kind:string;path:string;bounds:number[]};
-// Gemeindefreie Gebiete (Forste, Seen, Truppenübungsplätze): keine Gemeinde, kein Rat; nur gezeichnet, nicht wählbar (public/geo/de-free.json).
+// Gemeindefreie Gebiete (Forste, Seen, Truppenübungsplätze): keine Gemeinde, kein Rat; nur gezeichnet, nicht wählbar.
 type Free={ags:string;name:string;land:string;path:string;bounds:number[]};
 type View={x:number;y:number;w:number;h:number};
-const FILES=['/geo/germany.json','/geo/de-areas.json'],FREE_FILE='/geo/de-free.json',FREE_FILL='var(--rm-c200)',FREE_LINE='var(--rm-c400)',FREE_CSS=`repeating-linear-gradient(135deg,${'var(--rm-c200)'} 0 2px,${'var(--rm-c400)'} 2px 3px)`,REFRESH_MS=5*60*1000,PAGE=80,DIM=AC.zero;
+const FREE_FILL='var(--rm-c200)',FREE_LINE='var(--rm-c400)',FREE_CSS=`repeating-linear-gradient(135deg,${'var(--rm-c200)'} 0 2px,${'var(--rm-c400)'} 2px 3px)`,REFRESH_MS=5*60*1000,PAGE=80,DIM=AC.zero;
 // Reach (first agenda day) and freshness (latest meeting day) of the reports per area: shared/coverage.mjs.
 const REACH_IDS=REACH_BUCKETS.map(b=>b.id),FRESH_IDS=FRESH_BUCKETS.map(b=>b.id),REACH_ITEMS=REACH_BUCKETS.map(b=>({...b,color:bucketColor('reach',b)})),FRESH_ITEMS=FRESH_BUCKETS.map(b=>({...b,color:bucketColor('fresh',b)})),REACH_COLOR=new Map<string,string>(REACH_ITEMS.map(b=>[b.id,b.color])),FRESH_COLOR=new Map<string,string>(FRESH_ITEMS.map(b=>[b.id,b.color])),COLOR_MODES=['cat','access','reports','reach','fresh'];
 const time=(s:string)=>new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'});
@@ -51,10 +53,9 @@ export function AdminAtlas(){
   const onVisible=()=>{if(document.visibilityState==='visible'&&Date.now()-loadedAt>=REFRESH_MS)void load();};
   document.addEventListener('visibilitychange',onVisible);
   void load();const timer=setInterval(()=>void load(),REFRESH_MS);return()=>{c.abort();clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);};},[attempt]);
+ // Dieselbe Gemeindekarte wie die Suche (shared/map-shapes.mjs): Gemeinden, Verbände aus ihren Mitgliedern, Kreise.
  useEffect(()=>{const c=new AbortController();
-  Promise.all([...FILES.map((file,i)=>fetch(file,{signal:c.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<{regions:Shape[];states?:{path:string}[]}>;}).catch(e=>{if(i===0||e.name==='AbortError')throw e;return {regions:[] as Shape[],states:[] as {path:string}[]};})),
-   // The unincorporated areas are an optional background: without the file the map only shows them as gaps.
-   fetch(FREE_FILE,{signal:c.signal}).then(r=>r.ok?r.json() as Promise<{areas:Free[]}>:{areas:[] as Free[]}).catch(e=>{if(e.name==='AbortError')throw e;return {areas:[] as Free[]};})]).then(all=>{const parts=all.slice(0,FILES.length) as {regions:Shape[];states?:{path:string}[]}[],free=(all[FILES.length] as {areas:Free[]}).areas||[];setGeo({shapes:parts.flatMap(p=>p.regions),states:(parts[0].states||[]).map(s=>s.path),free});}).catch(e=>{if(e.name!=='AbortError')setGeoError(true);});
+  fetch(MAP_URL,{signal:c.signal}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(d=>{if(!c.signal.aborted)setGeo(mapShapes(d,CATALOG));}).catch(e=>{if(e.name!=='AbortError')setGeoError(true);});
   return()=>c.abort();},[]);
  // Values per area just computed by the catch-up steps (admin-store.ts): read again.
  useEffect(()=>{const again=()=>setAttempt(a=>a+1);window.addEventListener(ADMIN_REGIONS_DONE,again);return()=>window.removeEventListener(ADMIN_REGIONS_DONE,again);},[]);

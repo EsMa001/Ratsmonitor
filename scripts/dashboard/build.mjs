@@ -20,6 +20,7 @@ import {loadAtlasInputs,atlasEvidence,applyConsentEvidence} from '../source-disc
 import {consentFor,consentsOf} from '../../server/integrations/consents.mjs';
 import {ACCESS_STATUSES,accessOfSource,channelOf,robotsNote,methodName} from '../../shared/source-access.mjs';
 import {ATLAS_CATEGORIES} from '../../shared/atlas-categories.mjs';
+import {mapShapes} from '../../shared/map-shapes.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
@@ -48,10 +49,11 @@ if(exists(cand+'neupruefung-2026-10-gruende.txt'))for(const line of fs.readFileS
  const [id,codes]=line.split(' | ')[0].split(' ');recheck.set(id,codes.split(',').map(c=>RECHECK[c]||c));
 }
 
-// Map shapes: NRW and Niedersachsen in germany.json, the other 14 Länder in de-areas.json (same projection).
-const germany=read('public/geo/germany.json'),rest=read('public/geo/de-areas.json');
-const shapes=new Map([...germany.regions,...rest.regions].map(r=>[r.id,r.path]));
-const bbox=d=>{const n=d.match(/-?[0-9.]+/g).map(Number);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(let i=0;i<n.length;i+=2){x0=Math.min(x0,n[i]);x1=Math.max(x1,n[i]);y0=Math.min(y0,n[i+1]);y1=Math.max(y1,n[i+1]);}return [x0,y0,x1,y1].map(v=>Math.round(v*10)/10);};
+// Kartenformen aus derselben Gemeindekarte wie Suche und Lückenatlas (shared/map-shapes.mjs); je Gebiet eine Form, eine
+// kreisfreie Stadt mit ihrer Fläche der Gemeindeebene.
+const map=mapShapes(read('public/data/de_map.json'),CATALOG);
+const shapeOf=new Map([...map.shapes.filter(r=>r.kind==='district'),...map.shapes.filter(r=>r.kind==='city')].map(r=>[r.id,r]));
+const shapes=new Map([...shapeOf].map(([id,r])=>[id,r.path]));
 
 const host=u=>{try{return new URL(u).hostname.replace(/^www\./,'');}catch{return '';}};
 const operator=u=>{const h=host(u);if(!h)return '';const p=h.split('.');return p.slice(-2).join('.').replace(/^more-rubin[0-9]*\.de$/,'more-rubin.de');};
@@ -73,7 +75,7 @@ const areas=CATALOG.map(r=>{
  // repeat old notes, such as the robots.txt of the Hamburg district systems that the CKAN interface does not need).
  if(research.has(r.id)&&!s)a.rs=research.get(r.id);
  if(recheck.has(r.id))a.nc=recheck.get(r.id);
- if(shapes.has(r.id))a.b=bbox(shapes.get(r.id));
+ if(shapeOf.has(r.id))a.b=shapeOf.get(r.id).bounds;
  return a;
 });
 
@@ -84,8 +86,8 @@ const data={
  access:ACCESS_STATUSES.map(({id,label,group,automated,explain})=>({id,label,group,automated,explain})),
  categories:ATLAS_CATEGORIES,
  shapes:Object.fromEntries(areas.filter(a=>shapes.has(a.id)).map(a=>[a.id,shapes.get(a.id)])),
- states:germany.states.map(s=>s.path),
- attribution:'© BKG (2026), dl-de/by-2-0',
+ states:map.states,
+ attribution:'© GeoBasis-DE / BKG 2025, dl-de/by-2-0',
 };
 const missing=areas.filter(a=>!a.b).length;
 const page=fs.readFileSync(path.join(root,'scripts/dashboard/page.html'),'utf8').replace('/*__DATA__*/null',()=>JSON.stringify(data).replace(/</g,'\\u003c'));

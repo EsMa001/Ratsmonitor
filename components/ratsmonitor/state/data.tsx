@@ -3,10 +3,11 @@ import {usePathname} from 'next/navigation';
 import {GeoModel} from '../lib/geo/geoModel';
 import {PlaceIndex} from '../lib/place';
 import type {MapData} from '../types';
+import {MAP_URL} from '@/shared/map-shapes.mjs';
 const DataContext=createContext<{geo:GeoModel|null;place:PlaceIndex|null;geoError:boolean}>({geo:null,place:null,geoError:false});
-// Der Browser hält die Karte einen Tag (public/_headers). Nach einer Änderung von de_map.json die Version erhöhen.
+// Der Browser hält die Karte einen Tag (public/_headers). Nach einer Änderung von de_map.json die Version in MAP_URL erhöhen.
 // Grenzen: BKG VG250, Stand 2025 (scripts/build-map.mjs).
-const MAP_URL='/data/de_map.json?v=2025-1';
+
 
 /* Seiten, die die Karte gleich zeichnen: Suche und plenara.X Atlas, Fakten, Trends (dort stand sonst bis zu 4 s „Karte wird
    aufgebaut …“, bevor der Abruf überhaupt begann). Signale und Ausschreibungen zeigen die Karte erst auf Knopfdruck. */

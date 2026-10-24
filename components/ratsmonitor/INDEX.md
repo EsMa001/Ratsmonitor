@@ -812,15 +812,15 @@ z- analytics.css:632
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (117, ⚠8): AdminAiLocal
 - admin-altbestand.tsx (149, ⚠7): AdminAltbestand, AltbestandSteuern
-- admin-atlas.tsx (203, ⚠30): AdminAtlas
+- admin-atlas.tsx (204, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
 - admin-chrome.tsx (144, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
 - admin-cockpit.tsx (104): AdminCockpit
 - admin-colors.ts (24): AC, HATCH_CSS, COVERAGE, shareColor, bucketColor, ACCESS_COLOR, CATEGORY_COLOR
 - admin-dashboard.tsx (111, ⚠6): AdminRuns, AdminReview, AdminStock
-- admin-debug.tsx (140, ⚠8): AdminDebug
+- admin-debug.tsx (144, ⚠9): AdminDebug
 - admin-estimate.tsx (350, ⚠56): AdminEstimate
-- admin-fehler.tsx (96, ⚠3): AdminFehler, FehlerSteuern
+- admin-fehler.tsx (100, ⚠4): AdminFehler, FehlerSteuern
 - admin-format.ts (25): n, nOr, pct, mio, gb, size, day, mm, when, clock, dur
 - admin-icons.tsx (41): IconName, Icon
 - admin-loader.tsx (39): DashboardPage, AdminLoader
@@ -828,8 +828,8 @@ z- analytics.css:632
 - admin-overview.tsx (169, ⚠14): AdminOverview
 - admin-pdf-parts.tsx (161, ⚠10): month, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
 - admin-pdf.tsx (280, ⚠17): AdminPdf, PdfSteuern
-- admin-pipeline-parts.tsx (97, ⚠2): Step, FailRow, Glossary, StepList, result, Timeline, FailureTable, HostTable
-- admin-processing-map.tsx (51, ⚠4): AdminProcessingMap
+- admin-pipeline-parts.tsx (109, ⚠3): Step, FailRow, Glossary, StepList, result, Timeline, FailureTable, HostTable, ProviderTable
+- admin-processing-map.tsx (50, ⚠3): AdminProcessingMap
 - admin-processing.tsx (191, ⚠21): AdminProcessing
 - admin-quality-check.tsx (73, ⚠4): AdminQualityCheck
 - admin-rule-texts.tsx (258, ⚠14): AdminRuleTexts
@@ -896,7 +896,7 @@ z- analytics.css:632
 - icons.tsx (193): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconRules, IconBell, IconFilter, IconStar, IconHeart, IconDownload, IconCalendarSync, ThemeIcon
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (346, ⚠2): MapPanel
+- MapPanel.tsx (348, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (174, ⚠2): ArticleCard, StepTimeline
@@ -952,7 +952,7 @@ z- analytics.css:632
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (361): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (1118): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1144): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - haptic.ts (5): tick
@@ -1068,7 +1068,7 @@ z- analytics.css:632
 
 ### components/ratsmonitor/state/
 - account.tsx (108): AccountProvider, useAccount, useSavedStats
-- data.tsx (40, ⚠1): DataProvider, useData
+- data.tsx (42, ⚠1): DataProvider, useData
 - nav.ts (24, ⚠1): View, noteRoute, cameFromApp, rememberSearchHref, lastSearchHref, overviewScroll, useAppNav
 - search.tsx (667, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast

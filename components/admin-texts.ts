@@ -28,7 +28,7 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
 export const FOOT:Record<AdminPage,string>={
  start:'Jede Kachel liest denselben Stand wie ihre Seite; das Cockpit rechnet nichts und startet nichts.',
  abdeckung:'Zahlen aus Quellenkatalog und Datenbank. Doppelt gelieferte Berichte, die zu einem Vorgang zusammengeführt wurden, zählen einmal.',
- atlas:'Anbindung und Gründe aus Quellenkatalog und Quellensuche, Berichte und Abrufe aus der Datenbank. Karten: © BKG (2026), dl-de/by-2-0.',
+ atlas:'Anbindung und Gründe aus Quellenkatalog und Quellensuche, Berichte und Abrufe aus der Datenbank. Karten: © GeoBasis-DE / BKG 2025, dl-de/by-2-0.',
  nacht:'Liest nur gespeicherte Stände: Laufbuch des Zeitplaners, Protokolle der Jobs und die Zählung der Wege (am Ende von „Einordnung, nachts“).',
  abruf:'Doppelt gelieferte Berichte zählen einmal. Seitenaufrufe starten keinen Abruf.',
  pdf:'Stand aus der letzten Zählung auf dem Server (scripts/pdf-store/stats.mjs), Fortschritt jede Minute. Die Knöpfe legen einen Auftrag an und stoßen den Server sofort an; ein weiterer Auftrag wartet, bis der laufende fertig ist.',

@@ -1,4 +1,4 @@
-// Gebietskatalog, Einwohnerzahlen und Admin-Kartengeometrie für die 14 Länder außer NRW und Niedersachsen.
+// Gebietskatalog und Einwohnerzahlen für die 14 Länder außer NRW und Niedersachsen.
 // Gebiete auf Verwaltungsebene wie in Niedersachsen (scripts/build-nds.mjs): Gemeinden außerhalb eines Verbands,
 // Gemeindeverbände (Amt, Verbandsgemeinde, Verwaltungsgemeinschaft …) mit ihren Mitgliedsgemeinden und die Landkreise.
 // - Ein Verband ist, was sich die ersten neun Stellen des Regionalschlüssels teilt und mindestens zwei Gemeinden hat
@@ -6,8 +6,8 @@
 // - Baden-Württemberg: Mitgliedsgemeinden bleiben eigene Gebiete (eigener Rat, eigenes Ratsinformationssystem).
 // - Berlin und Hamburg stehen als je ein Gebiet. Ihre Bezirke sind noch keine eigenen Gebiete.
 // Eingaben: BKG VG250 (gem, vwg, krs je Land) und Wikidata (Einwohner P1082 je Gemeindeschlüssel P439).
-// Ausgaben: shared/de-regions.json (kompakte Zeilen, gelesen von shared/catalog.mjs), shared/de-population.json,
-//           public/geo/de-areas.json (Geometrie für die Karte der Administration).
+// Ausgaben: shared/de-regions.json (kompakte Zeilen, gelesen von shared/catalog.mjs), shared/de-population.json.
+// Die Kartenflächen kommen für alle Karten aus public/data/de_map.json (scripts/build-map.mjs).
 // Aufruf: node scripts/build-de.mjs   (lädt fehlende Eingaben nach tmp/de/; vorhandene Dateien werden wiederverwendet)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -61,32 +61,9 @@ async function population(){
  return new Map([...latest].map(([key,r])=>[key,r.pop]));
 }
 
-/* Kartengeometrie wie scripts/build-nds.mjs: gleiche Projektion; gröbere Vereinfachung und eine Nachkommastelle,
-   weil die Datei rund 4.500 Gebiete enthält und nur die Übersichtskarte der Administration bedient. */
-function rdp(pts,eps){
- if(pts.length<3)return pts;
- const [a,b]=[pts[0],pts.at(-1)],dx=b[0]-a[0],dy=b[1]-a[1],den=dx*dx+dy*dy;
- let max=0,index=0;
- for(let i=1;i<pts.length-1;i++){const [x,y]=pts[i],t=den?Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/den)):0,d=Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy);if(d>max){max=d;index=i;}}
- if(max<=eps)return [a,b];
- return [...rdp(pts.slice(0,index+1),eps).slice(0,-1),...rdp(pts.slice(index),eps)];
-}
-function shape(features,eps=.3){
- const points=[],paths=[];
- for(const f of features){
-  const polygons=f.geometry.type==='MultiPolygon'?f.geometry.coordinates:[f.geometry.coordinates];
-  for(const poly of polygons)for(const ring of poly){
-   const xy=ring.map(([lon,lat])=>[(lon-5.6)*60,(55.2-lat)*96]);points.push(...xy);let simple=rdp(xy,eps);if(simple.length<4)simple=xy;
-   paths.push(simple.map((p,i)=>(i?'L':'M')+p.map(v=>v.toFixed(1)).join(',')).join('')+'Z');
-  }
- }
- const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),round=v=>Math.round(v*10)/10;
- return {path:paths.join(''),bounds:[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)].map(round)};
-}
-
 const pop=await population();
 const types=[],typeOf=name=>{let i=types.indexOf(name);if(i<0){i=types.length;types.push(name);}return i;};
-const districts=[],areas=[],shapes=[],people={},missing=[],report=[];
+const districts=[],areas=[],people={},missing=[],report=[];
 const count=ags=>{const n=pop.get(ags);if(!n)missing.push(ags);return n||0;};
 const byKey=(features,keyOf)=>{const groups=new Map();for(const f of features){const key=keyOf(f.properties);groups.set(key,[...(groups.get(key)||[]),f]);}return groups;};
 for(const land of LANDS){
@@ -98,10 +75,10 @@ for(const land of LANDS){
  for(const [ags,features] of byKey(krs,p=>p.ags)){
   const p=features[0].properties;if(/^(Kreisfreie Stadt|Stadtkreis)$/.test(p.bez))continue;
   /* Der Regionalverband Saarbrücken und Kreise wie der Burgenlandkreis tragen ihre Art schon im Namen. */
-  kreise.add(ags);districts.push([ags,typeOf(/^Regionalverband |kreis/i.test(p.gen)?'':p.bez),p.gen]);shapes.push({id:'de-'+ags,ags,kind:'district',...shape(features)});
+  kreise.add(ags);districts.push([ags,typeOf(/^Regionalverband |kreis/i.test(p.gen)?'':p.bez),p.gen]);
   people['de-'+ags]=municipalities.filter(g=>g.properties.ags.startsWith(ags)).reduce((n,g)=>n+(pop.get(g.properties.ags)||0),0);
  }
- const single=(m,features)=>{areas.push([m.ags,typeOf(m.bez),m.gen]);shapes.push({id:'de-'+m.ags,ags:m.ags,kind:'city',...shape(features)});people['de-'+m.ags]=count(m.ags);};
+ const single=(m,features)=>{areas.push([m.ags,typeOf(m.bez),m.gen]);people['de-'+m.ags]=count(m.ags);};
  if(INDEPENDENT_MEMBERS.has(land)){for(const [,features] of byKey(municipalities,p=>p.ags))single(features[0].properties,features);}
  else for(const [ars,features] of byKey(vwg,p=>p.ars)){
   const p=features[0].properties,members=[...byKey(municipalities.filter(g=>g.properties.ars.startsWith(ars)),g=>g.ags).values()].map(list=>list[0].properties);
@@ -109,7 +86,7 @@ for(const land of LANDS){
   if(members.length===1){single(members[0],features);continue;}
   if(members.some(m=>m.ags.slice(0,5)!==ars.slice(0,5)))throw Error('Verband über Kreisgrenzen: '+ars);
   areas.push([ars,typeOf(p.bez),p.gen,members.map(m=>[m.ags.slice(5),m.gen]).sort((a,b)=>a[1].localeCompare(b[1],'de'))]);
-  shapes.push({id:'de-'+ars,ags:ars,kind:'city',...shape(features)});people['de-'+ars]=members.reduce((n,m)=>n+count(m.ags),0);
+  people['de-'+ars]=members.reduce((n,m)=>n+count(m.ags),0);
  }
  report.push(`${land} ${FEDERAL_STATES[land].padEnd(24)} ${String(districts.length-before.districts).padStart(4)} Kreise ${String(areas.length-before.areas).padStart(5)} Gebiete der Gemeindeebene, davon ${String(areas.filter(a=>a[3]).length-before.associations).padStart(4)} Verbände`);
 }
@@ -121,8 +98,6 @@ if(districts.length<200||districts.length>240||areas.length<3800||areas.length>4
 const today=new Date().toISOString().slice(0,10);
 fs.writeFileSync(path.join(root,'shared','de-regions.json'),JSON.stringify({builtAt:today,source:'BKG VG250 (Gemeinden, Verwaltungsgemeinschaften, Kreise)',types,districts,areas})+'\n');
 fs.writeFileSync(path.join(root,'shared','de-population.json'),JSON.stringify(people)+'\n');
-const mapFile=path.join(root,'public','geo','de-areas.json');
-fs.writeFileSync(mapFile,JSON.stringify({attribution:'© BKG (2026), dl-de/by-2-0',source:'https://sgx.geodatenzentrum.de/web_public/gdz/datenquellen/datenquellen_vg_nuts.pdf',retrievedAt:today,regions:shapes}));
 console.log(report.join('\n'));
 console.log(`${districts.length} Kreise, ${areas.length} Gebiete der Gemeindeebene (${areas.filter(a=>a[3]).length} Verbände mit ${areas.reduce((n,a)=>n+(a[3]?.length||0),0)} Mitgliedsgemeinden). Ohne Einwohnerzahl in Wikidata: ${missing.length}${missing.length?' ('+missing.slice(0,12).join(', ')+(missing.length>12?' …':'')+')':''}. Katalog: ${fs.statSync(path.join(root,'shared','de-regions.json')).size} Bytes, Karte: ${fs.statSync(mapFile).size} Bytes.`);
 console.log('Arten:',types.join(', '));

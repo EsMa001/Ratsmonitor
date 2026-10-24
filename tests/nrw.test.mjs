@@ -1,13 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import catalog from '../shared/nrw-regions.json' with {type:'json'};
-import map from '../public/geo/germany.json' with {type:'json'};
 import {collectRegionalOparl} from '../server/integrations/oparl-regional.mjs';
 import {buildAnalytics} from '../shared/analytics.mjs';
 test('NRW contains all 396 municipalities and 31 districts, with unique official keys and valid parents',()=>{
  assert.equal(catalog.filter(r=>r.kind==='city').length,396);assert.equal(catalog.filter(r=>r.kind==='district').length,31);
  assert.equal(new Set(catalog.map(r=>r.ags)).size,427);assert.equal(new Set(catalog.map(r=>r.id)).size,427);
- for(const r of catalog){assert.ok(map.regions.some(g=>g.id===r.id&&g.kind===r.kind));if(r.district)assert.ok(catalog.some(d=>d.id===r.district&&d.kind==='district'))}
+ for(const r of catalog){if(r.district)assert.ok(catalog.some(d=>d.id===r.district&&d.kind==='district'))}
  assert.equal(catalog.find(r=>r.id==='billerbeck').district,'coesfeld');assert.equal(catalog.find(r=>r.id==='muenster').district,null);
 });
 test('unconnected NRW municipalities have null shares rather than zero activity',()=>{

@@ -8,7 +8,7 @@
 /data/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
-# Kartenformen der Administration (germany.json, de-areas.json): wie /data.
+# Kartenformen der Startseite (de-districts.json): wie /data.
 /geo/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 

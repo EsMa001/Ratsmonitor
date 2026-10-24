@@ -4,19 +4,18 @@ import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import catalog from '../shared/nds-regions.json' with {type:'json'};
 import population from '../shared/nds-population.json' with {type:'json'};
-import map from '../public/geo/germany.json' with {type:'json'};
 import {CATALOG,LANDS} from '../shared/catalog.mjs';
 import {matchesBody} from '../server/integrations/body-identity.mjs';
 import {sqliteAdapter} from '../scripts/sqlite-adapter.mjs';
 import {searchMonitor,searchCoverage} from '../server/integrations/monitor-search.mjs';
 import {sourceAddress} from '../scripts/source-discovery/reasons.mjs';
 
-test('Niedersachsen: 403 administrative units and 37 districts with unique keys, parents, geometry and population',()=>{
+test('Niedersachsen: 403 administrative units and 37 districts with unique keys, parents and population',()=>{
  const cities=catalog.filter(r=>r.kind==='city'),districts=catalog.filter(r=>r.kind==='district');
  assert.equal(cities.length,403);assert.equal(districts.length,37);assert.equal(cities.filter(r=>r.members).length,114);assert.equal(cities.filter(r=>r.independent).length,8);
  assert.equal(new Set(catalog.map(r=>r.ags)).size,440);assert.equal(new Set(catalog.map(r=>r.id)).size,440);
  for(const r of catalog){
-  assert.match(r.id,/^nds-03\d{3}(\d{3,4})?$/);assert.ok(map.regions.some(g=>g.id===r.id&&g.kind===r.kind),r.id);assert.ok(population[r.id]>0,r.id);
+  assert.match(r.id,/^nds-03\d{3}(\d{3,4})?$/);assert.ok(population[r.id]>0,r.id);
   if(r.district&&r.kind==='city')assert.ok(catalog.some(d=>d.id===r.district&&d.kind==='district'),r.id);
   if(r.members){assert.equal(r.ags.length,9);assert.ok(r.members.length>=2);assert.ok(r.members.every(m=>/^\d{8}$/.test(m.ags)&&m.ags.startsWith(r.ags.slice(0,5))));}else assert.equal(r.ags.length,r.kind==='city'?8:5);
  }

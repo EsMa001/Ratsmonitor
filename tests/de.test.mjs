@@ -4,7 +4,6 @@ import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import compact from '../shared/de-regions.json' with {type:'json'};
 import population from '../shared/de-population.json' with {type:'json'};
-import map from '../public/geo/de-areas.json' with {type:'json'};
 import recorded from '../server/integrations/source-servers.json' with {type:'json'};
 import {CATALOG,LANDS,ALL_LANDS,expandRegions,landOf} from '../shared/catalog.mjs';
 import {matchesBody} from '../server/integrations/body-identity.mjs';
@@ -18,15 +17,13 @@ import {radiusParam,areaKeys} from '../shared/radius-areas.mjs';
 import {sourceAddress} from '../scripts/source-discovery/reasons.mjs';
 
 const catalog=CATALOG.filter(r=>r.id.startsWith('de-'));
-test('the other 14 states: districts, municipalities and associations with unique keys, parents, geometry and population',()=>{
- const cities=catalog.filter(r=>r.kind==='city'),districts=catalog.filter(r=>r.kind==='district'),shapes=new Map(map.regions.map(g=>[g.id,g]));
+test('the other 14 states: districts, municipalities and associations with unique keys, parents and population (Kartenflächen: map-shapes.test.mjs)',()=>{
+ const cities=catalog.filter(r=>r.kind==='city'),districts=catalog.filter(r=>r.kind==='district');
  assert.equal(districts.length,226);assert.equal(cities.length,4231);assert.equal(cities.filter(r=>r.members).length,819);
  assert.equal(new Set(CATALOG.map(r=>r.id)).size,CATALOG.length);assert.equal(new Set(catalog.map(r=>r.ags)).size,catalog.length);
- assert.equal(map.regions.length,catalog.length);
  const districtIds=new Set(districts.map(r=>r.id));
  for(const r of catalog){
   assert.match(r.id,/^de-\d{5}(\d{3,4})?$/);assert.equal(r.id,'de-'+r.ags);assert.ok(r.name&&r.shortName,r.id);
-  const shape=shapes.get(r.id);assert.ok(shape&&shape.kind===r.kind&&shape.path.startsWith('M')&&shape.bounds.length===4,r.id);
   if(r.kind==='district'){assert.equal(r.ags.length,5);continue;}
   assert.equal(r.independent,r.district===null,r.id);if(r.district)assert.ok(districtIds.has(r.district),r.id);
   if(r.members){assert.equal(r.ags.length,9);assert.ok(r.members.length>=2,r.id);assert.ok(r.members.every(m=>/^\d{8}$/.test(m.ags)&&m.ags.startsWith(r.ags.slice(0,5))&&m.name),r.id);}else assert.equal(r.ags.length,8);
