@@ -25,6 +25,7 @@ import {collectProvoxIip,detectProvoxIip} from './provox-iip.mjs';
 import {collectRisNg,detectRisNg} from './ris-ng.mjs';
 import {collectHhDocuments,detectHhDocuments} from './hhdocuments.mjs';
 import {collectRioSys,detectRioSys} from './rio-sys.mjs';
+import {collectIkissUnterlagen} from './ikiss-unterlagen.mjs';
 import {collectHitcomRis,detectHitcomRis} from './hitcom-ris.mjs';
 import {collectWebcontactRatsinfo,detectWebcontactRatsinfo} from './webcontact-ratsinfo.mjs';
 import {collectFabasoft} from './fabasoft.mjs';
@@ -81,6 +82,9 @@ export const READERS={
  'ris-ng':{name:'ris (öffentliche Seiten)',collect:collectRisNg,detect:async(url,html)=>pick(detectRisNg(url,html),['base'])},
  'hhdocuments':{name:'Sitzungsplanung hhdocuments (öffentliche Seiten)',collect:collectHhDocuments,detect:async(url,html)=>pick(detectHhDocuments(url,html),['base'])},
  'rio-sys':{name:'rio-sys (öffentliche Seiten)',collect:collectRioSys,detect:async(url,html)=>pick(detectRioSys(url,html),['base'])},
+ // Öffentliche Sitzungsunterlagen eines IKISS-Webauftritts (Kreistag Hildburghausen): je Sitzung eine Seite mit den Vorlagen als
+ // PDF, deren Linktexte Tag, TOP und Titel nennen. Kein Erkennen: der Katalog nennt die Übersichtsseiten (pages).
+ 'ikiss-unterlagen':{name:'Sitzungsunterlagen der Website (IKISS)',collect:collectIkissUnterlagen,detect:async()=>null},
  'hitcom-ris':{name:'Rats-Info-System hitcom (öffentliche Seiten)',collect:collectHitcomRis,detect:async(url,html)=>pick(detectHitcomRis(url,html),['base'])},
  // Ratsinfo of the municipal website system of webcontact (Nuxt, Stadt Burgbernheim): the public JSON interface of the site
  // lists the meetings with the public agenda (Sitzungsbericht or öffentliche Einladung); the area for members is not requested.

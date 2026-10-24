@@ -38258,6 +38258,21 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-16069",
+    "name": "Landkreis Hildburghausen",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "ikiss-unterlagen",
+    "base": "https://kreistag.landkreis-hildburghausen.de/",
+    "pages": [
+      "https://kreistag.landkreis-hildburghausen.de/Aktuelles-Allgemeines/Sitzungsunterlagen",
+      "https://kreistag.landkreis-hildburghausen.de/Kurzmen%C3%BC/Archiv.php?object=tx,3130.235.1&kuo=2&sub=0"
+    ],
+    "verifiedSource": "https://kreistag.landkreis-hildburghausen.de/Aktuelles-Allgemeines/Sitzungsunterlagen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem; öffentliche Sitzungsunterlagen des Kreistags auf der Website (IKISS): je Sitzung eine Seite mit den Beschlussvorlagen als PDF, Tagesordnungspunkte aus deren Linktexten (Link von Nico, 24.10.2026)."
+  },
+  {
     "id": "de-16069012",
     "name": "Stadt Eisfeld",
     "kind": "city",
