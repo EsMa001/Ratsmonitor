@@ -918,7 +918,7 @@
  "de-07232":{"c":"blocked","z":"blocked","r":186,"u":"https://www.bitburg-pruem.sitzung-online.de/bi/allris.net.asp"},
  "de-12062":{"c":"ok","z":"scraping"},
  "de-08316":{"c":"ok","z":"scraping"},
- "de-08236":{"c":"website","z":"none","r":38,"u":"https://enzkreis.ratsinfomanagement.net/","nc":[4]},
+ "de-08236":{"c":"blocked","z":"blocked","r":2,"u":"https://enzkreis.ratsinfomanagement.net/"},
  "de-09177":{"c":"ok","z":"scraping"},
  "de-09572":{"c":"ok","z":"scraping"},
  "de-14521":{"c":"ok","z":"api"},
