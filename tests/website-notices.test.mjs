@@ -25,3 +25,11 @@ test('links of notices of decisions are read; dedications are not',()=>{
  assert.ok(sessionScore({url:'https://www.vgog.de/x/Langenbach/B.pdf',label:'Öffentliche Bekanntmachung der OG Langebach - Beteiligung der Öffentlichkeit - Bebauungsplan In den Wöllmeswiesen.pdf'})>=SESSION_THRESHOLD);
  assert.ok(sessionScore({url:'https://www.vgog.de/x/Langenbach/W.pdf',label:'Widmungsverfügung der OG Langenbach - Hauptstraße.pdf'})<SESSION_THRESHOLD);
 });
+
+test('a decision with the day before the sentence of the session is a notice too (Walldorf, Sindelfingen 2026)', () => {
+ const n=decisionNotice('Bebauungsplan Automobilwerk 1+2 - Aufstellung',['Automobilwerk 1+2','Der Gemeinderat der Stadt Sindelfingen hat am 24.03.2026 in öffentlicher Sitzung beschlossen.']);
+ assert.ok(n);
+ assert.equal(n.date,'2026-03-24');
+ assert.equal(n.publicity,'public');
+ assert.match(n.committee,/Gemeinderat/);
+});
