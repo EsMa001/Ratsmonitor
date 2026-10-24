@@ -616,5 +616,37 @@
       "checkedAt": "2026-10-02"
     },
     "apiCheck": "OParl-Adresse aus dem OParl-Verzeichnis antwortete am 02.10.2026 mit HTTP 400; deshalb öffentliche Seiten."
+  },
+  {
+    "id": "nrw-05978024",
+    "name": "Stadt Lünen",
+    "kind": "city",
+    "method": "scraper",
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "note": "Ratsinformationssystem luenen.ratsinfomanagement.net gesperrt (Zugriffsschutz). Amtsblatt-Archiv nennt Satzungsbeschlüsse; Tagesordnungen im Amtsblatt (Probeabruf 12 Monate: 59 Berichte, u. a. Rat 18.12.2025 und 20.11.2025, nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe der Betreiber).",
+    "adapter": "website",
+    "base": "https://www.luenen.de/",
+    "pages": [
+      "https://www.luenen.de/de/rathaus/amtsblatt/amtsblatt-archiv.php"
+    ],
+    "gazettePages": true,
+    "verifiedSource": "https://www.luenen.de/de/rathaus/amtsblatt/amtsblatt-archiv.php"
+  },
+  {
+    "id": "nrw-05958004",
+    "name": "Stadt Arnsberg",
+    "kind": "city",
+    "method": "scraper",
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "note": "ratsinfo.arnsberg.de gesperrt. Öffentliche Bekanntmachungen der Stadt nennen Sitzungen des Rats mit Tagesordnungspunkten (Probeabruf 12 Monate: 46 Berichte, Sitzungen 11./12.12.2025, nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe der Betreiber).",
+    "adapter": "website",
+    "base": "https://www.arnsberg.de/",
+    "pages": [
+      "https://www.arnsberg.de/rathaus-politik/amtliche-bekanntmachungen/2025"
+    ],
+    "gazettePages": true,
+    "verifiedSource": "https://www.arnsberg.de/rathaus-politik/amtliche-bekanntmachungen"
   }
 ]

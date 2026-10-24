@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 359 angebunden, 68 nicht. Diese Datei beschreibt die 264 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 361 angebunden, 66 nicht. Diese Datei beschreibt die 264 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -293,7 +293,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Alfter | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://alfter.ratsinfomanagement.net/startseite |
 | Stadt Altena | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://altena.ratsinfomanagement.net/ |
 | Gemeinde Altenberge | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.altenberge.de/de/rathaus/politik/ratsinformationssystem.php |
-| Stadt Arnsberg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.arnsberg.de/termine |
 | Stadt Bad Salzuflen | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://bad-salzuflen.ratsinfomanagement.net/ |
 | Stadt Balve | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.balve.de/leben-in-balve/buergerinformationen/notfallrettung-sicherstellung |
 | Stadt Barntrup | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.barntrup.de/Veranstaltungen/Buergerinformationsveranstaltung-Solarbatteriekraftwerk-Barntrup.html?extlink_img=0&target=2&extlink_txt=1 |
@@ -326,7 +325,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Lotte | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://lotte.ratsinfomanagement.net/ |
 | Stadt Löhne | Kein unterstütztes Ratsinformationssystem erkannt | https://loehne.ratsinfomanagement.net/ |
 | Stadt Lübbecke | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://luebbecke.ratsinfomanagement.net/ |
-| Stadt Lünen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://luenen.ratsinfomanagement.net/ |
 | Gemeinde Metelen | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://metelen.ratsinfomanagement.net/ |
 | Gemeinde Mettingen | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.mettingen.de/gemeinde/rathaus/ratsinformations-system/ |
 | Stadt Minden | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://minden.ratsinfomanagement.net/startseite |
