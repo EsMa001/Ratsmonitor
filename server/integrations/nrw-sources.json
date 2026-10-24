@@ -726,5 +726,20 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.reken.de/Rathaus-B%C3%BCrgerservice/Rathaus/Amtsblatt/",
     "note": "reken.ratsinfomanagement.net gesperrt. Das Amtsblatt nennt Tagesordnungspunkte des Gemeinderats (PDF-Ausgaben; Probeabruf 12 Monate: 86 Berichte, Sitzung 09.07.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nrw-05962004",
+    "name": "Stadt Altena",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.altena-notbetrieb.de/",
+    "pages": [
+      "https://www.altena-notbetrieb.de/bekanntmachungen/"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.altena-notbetrieb.de/bekanntmachungen/",
+    "note": "altena.ratsinfomanagement.net gesperrt. Die Bekanntmachungen nennen Tagesordnungspunkte der Ausschüsse und des Rates (Probeabruf 12 Monate: 266 Berichte, Ausschuss für Brand- und Bevölkerungsschutz 05.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
