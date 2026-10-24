@@ -43103,5 +43103,95 @@
     "verifiedSource": "https://treffurt.de/bekanntmachungen?page_n60=2",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 19 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-16067072",
+    "name": "Stadt Waltershausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.waltershausen.de/",
+    "pages": [
+      "https://www.waltershausen.de/oeffentliche-bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.waltershausen.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website.",
+    "evidence": {
+      "window": "3m",
+      "topics": 47,
+      "meetings": 3,
+      "documents": 3
+    }
+  },
+  {
+    "id": "de-09671157",
+    "name": "Gemeinde Weibersbrunn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.weibersbrunn.de/",
+    "pages": [
+      "https://www.weibersbrunn.de/rathaus-service/gemeinderat/niederschriften",
+      "https://www.weibersbrunn.de/startseite",
+      "https://www.weibersbrunn.de/gemeinde-weibersbrunn/aktuell/seite-1/suche-none",
+      "https://www.weibersbrunn.de/gemeinde-weibersbrunn/aktuell/413/gemeinderatsitzung-am-29102026",
+      "https://www.weibersbrunn.de/rathaus-service/gemeinderat/sitzungstermine/seite-1/suche-none"
+    ],
+    "verifiedSource": "https://www.weibersbrunn.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website.",
+    "evidence": {
+      "window": "3m",
+      "topics": 7,
+      "meetings": 1,
+      "documents": 4
+    }
+  },
+  {
+    "id": "de-08236068",
+    "name": "Gemeinde Wurmberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wurmberg.de/",
+    "pages": [
+      "https://www.wurmberg.de/bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.wurmberg.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website.",
+    "evidence": {
+      "window": "3m",
+      "topics": 26,
+      "meetings": 3,
+      "documents": 3
+    }
+  },
+  {
+    "id": "de-092745222",
+    "name": "Verwaltungsgemeinschaft Wörth a.d.Isar",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vg.woerth-isar.de/",
+    "pages": [
+      "https://www.vg.woerth-isar.de/sitzungen-weng/",
+      "https://www.vg.woerth-isar.de/sitzungen-postau/",
+      "https://www.vg.woerth-isar.de/sitzungen-woerth/",
+      "https://www.vg.woerth-isar.de/bebauungsplaene-und-bekanntmachungen-postau/",
+      "https://www.vg.woerth-isar.de/bebauungsplaene-und-bekanntmachungen-woerth/"
+    ],
+    "wp": "https://www.vg.woerth-isar.de/wp-json/",
+    "sitemap": "https://www.vg.woerth-isar.de/sitzungen-sitemap.xml",
+    "verifiedSource": "https://www.vg.woerth-isar.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website.",
+    "evidence": {
+      "window": "3m",
+      "topics": 67,
+      "meetings": 8,
+      "documents": 60
+    }
   }
 ]
