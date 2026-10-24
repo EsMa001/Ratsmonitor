@@ -140,6 +140,7 @@ const PAGE_LINE=/^Seite:?\s*\d+\s*(?:\/|von)\s*\d+$/i,DATE_ALONE=/^\d{1,2}\.\d{1
 // An ordinal inside a title („8. 9. Änderung des Bebauungsplanes“, „2. Nachtrag“, Meinerzhagen) or a day („am 2. Juli 2026“,
 // Ibbenbüren) is no second item in the line.
 const ORDINAL_TITLE=/(?:^|\s)\d{1,2}\.\s+(?=(?:Änderung|Änderungssatzung|Nachtrag|Nachtragshaushalt|Fortschreibung|Ergänzung|Satzung|Bauabschnitt|Quartal|Halbjahr|Sitzung|Lesung|Deckblatt|Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)(?!\p{L}))/gu;
+const BOTH_PARTS=/(?<!\p{L})öffentliche[rn]?\s*(?:\/|und|bzw\.?)\s*(?:eine[rn]?\s+)?nicht\s*-?\s*öffentliche[rn]?\s+Sitzung/iu;
 const SUB_POINT=/^\(?[a-zA-Z]\)\s/;
 export function mentionsNonPublic(s){
  const n=normalizeLine(s).replace(SECRECY_GONE,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
@@ -1330,6 +1331,9 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
     // ("liche Sitzung"); in an invitation any other line between the items that speaks of the public, listeners or secrecy.
     const np=mentionsNonPublic(line)||report||isNonPublicHeading(line)||closedLine(line)||BARE_N.test(line)||NP_BROKEN.test(fold(line))||NP_TAIL.test(line)||
      seenItem&&i>=first&&(kind!=='minutes'||headingLike(line))&&SUSPECT.test(foldText(line))&&!SUSPECT_OK.test(foldText(line));
+    // The general announcement of this very meeting as a running head („öffentliche / nicht öffentliche Sitzung des Stadtrates am
+    // 24.09.2026“ on each page, Neutraubling) names no item.
+    if(np&&BOTH_PARTS.test(normalizeLine(line))&&germanDates(line).length&&germanDates(line).every(d=>d.iso===date)){i++;continue;}
     if(np){
      const mark=markOnly(line)&&!(dashParts&&DASH_FRAMED.test(line.trim())),names=namesItems(line);
      const heading=isNonPublicHeading(line)||closedLine(line)||startsNonPublic(line)||report&&line.length<=110&&!/[.!?]$/.test(line)||line.length<=120&&/:\s*$/.test(line)&&!names.named.length&&!/[„"“”»«]/.test(line);
@@ -1522,7 +1526,9 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
     // Not the running head of each page that names this very meeting („Sitzung des Stadtrates am 18.06.2026“ above the
     // report on each item, Neutraubling).
     const sameMeeting=l=>{const d=germanDates(l);return d.length>0&&d.every(x=>x.iso===date)&&(!committeeOf(l)||!committee||sameBody(committeeOf(l),committee));};
-    if(all.slice(Math.max(first+1,itemLine-3),itemLine).some(l=>!itemOf(l)&&!sameMeeting(l)&&(committeeOf(l)&&/^\p{Lu}/u.test(l)||SESSION_WORD.test(l)&&germanDates(l).length)))mixed=true;
+    // Nor a sentence that names a member by office („Stadtrat Dr. Ramin ist bei der Abstimmung … nicht anwesend.“, Neutraubling).
+    const sentence=l=>/[.!?]\s*$/.test(l)&&l.split(/\s+/).length>6;
+    if(all.slice(Math.max(first+1,itemLine-3),itemLine).some(l=>!itemOf(l)&&!sameMeeting(l)&&!sentence(l)&&(committeeOf(l)&&/^\p{Lu}/u.test(l)||SESSION_WORD.test(l)&&germanDates(l).length)))mixed=true;
     issues.push(`Punkt ${it.number} doppelt (${where(committee,date,title)}); nur der erste übernommen.`);cur=null;
     if(kind!=='minutes')endBlock();
     continue;

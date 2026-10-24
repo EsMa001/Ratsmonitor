@@ -119,3 +119,13 @@ test('items after a head inside the non-public part are kept as non-public items
  assert.deepEqual(m.items.map(i=>i.number),['1','2']);
  assert.deepEqual(m.otherItems.filter(i=>i.publicity==='nonpublic').map(i=>i.number).sort(),['3','4','5']);
 });
+
+test('minutes (Neutraubling): the running head „öffentliche / nicht öffentliche Sitzung … am <day>“ and a sentence naming a member by office change nothing',()=>{
+ const lines=['Niederschrift über die Sitzung des Planungs- und Bauausschusses','Sitzungsdatum: Donnerstag, 30.07.2026','TAGESORDNUNG','Öffentliche Sitzung',
+  '1. Eröffnung, Beschlussfähigkeit, Tagesordnung','2. Antrag auf Baugenehmigung: Praxiserweiterung','3. Anfragen',
+  'öffentliche / nicht öffentliche Sitzung des Planungs- und Bauausschusses am 30.07.2026','ÖFFENTLICHE SITZUNG','1 Eröffnung, Beschlussfähigkeit, Tagesordnung',
+  'Stadtrat Dr. Ramin ist bei der Abstimmung zu diesem Tagesordnungspunkt nicht anwesend.','2 Antrag auf Baugenehmigung: Praxiserweiterung','Beschluss:','Das Einvernehmen wird erteilt.','3 Anfragen','Keine.'];
+ const m=parseSessionText(lines,{title:'2026-07-30 Bauausschusssitzung'}).meetings.find(x=>x.items.length||(x.otherItems||[]).length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3']);
+ assert.deepEqual(m.otherItems||[],[]);
+});

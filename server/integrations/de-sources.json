@@ -24532,6 +24532,20 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09375174",
+    "name": "Stadt Neutraubling",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.stadt-neutraubling.de/",
+    "pages": [
+      "https://www.stadt-neutraubling.de/rathaus/politik/sitzungsprotokolle-2026/"
+    ],
+    "verifiedSource": "https://www.stadt-neutraubling.de/rathaus/politik/sitzungsprotokolle-2026/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem; Niederschriften der Sitzungen als PDF je Jahr (Link von Nico). Probeabruf 3 Monate: 2 Sitzungen, 22 öffentliche Punkte. Achtung: Die Website hat eine Bot-Prüfung (Myra), die nach vielen Abrufen am 24.10.2026 kurz ansprang; nicht umgehen."
+  },
+  {
     "id": "de-09375175",
     "name": "Gemeinde Nittendorf",
     "kind": "city",
