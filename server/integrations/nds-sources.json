@@ -4290,5 +4290,21 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.langenhagen.de/aktuelles/bekanntmachungen/",
     "note": "langenhagen.sitzung-online.de gesperrt. Bekanntmachungen der Stadt nennen Beschlüsse des Rates zu Bebauungsplänen (Probeabruf 12 Monate: 1 Bericht, Rat 22.06.2026). Wenige Treffer, Quelle trotzdem übernommen."
+  },
+  {
+    "id": "nds-03456015",
+    "name": "Stadt Nordhorn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.nordhorn.de/",
+    "pages": [
+      "https://www.nordhorn.de/portal/dokumenteplus-900001387-26710.html?ordner=1&containerSort=3&schwelle_zuklappen=-1&naviID=0&brotID=0"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.nordhorn.de/portal/seiten/elektronisches-amtsblatt-900000654-26710.html?rubrik=900000002",
+    "note": "ratsinfo.nordhorn.de gesperrt. Das elektronische Amtsblatt (Ordner 2026) nennt Satzungsbeschlüsse und Tagesordnungspunkte des Ausschusses (Probeabruf 12 Monate: 196 Berichte, Stadtentwicklungsausschuss 05.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers). Download-Links /downloads/datei/ gelten für Amtsblätter als PDF."
   }
 ]

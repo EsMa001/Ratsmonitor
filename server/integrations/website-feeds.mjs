@@ -142,6 +142,10 @@ export function documentLinks(html,base){
 // An issue of the gazette behind a download button (CMS verwaltungsportal.de, Thüringen and Sachsen 2026): a form that posts a fixed
 // value per issue to the gazette page. Its address is the page with the issue as fragment ("…/amtsblatt/index.php#gazette_90839").
 export const GAZETTE_FORM=/#gazette_\d+$/;
+// Download links of a CMS ("/downloads/datei/<token>", Nordhorn and Stadtlohn 2026) carry no extension and no type, yet answer with the PDF itself.
+export const CMS_DOWNLOAD=/\/downloads\/datei\//;
+/** A link of a gazette list that the CMS serves as a file: kind 'pdf' (only for catalog sources with gazettePages). */
+export function gazetteAsPdf(link){return CMS_DOWNLOAD.test(String(link?.url??''))?{...link,kind:'pdf'}:link;}
 /** Download forms of gazette issues on a page: [{url,label,date,kind:'pdf',form}] (form: the fields to post). */
 export function gazetteForms(html,base){
  base=declaredBase(html,base);

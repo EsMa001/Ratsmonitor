@@ -12,7 +12,7 @@ import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {repairFontUmlauts} from './text-repair.mjs';
 import {SMALL_WORDS,htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST,downloadListLinks,parseDownloadItems,gazetteForms} from './website-feeds.mjs';
+import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST,downloadListLinks,parseDownloadItems,gazetteForms,gazetteAsPdf} from './website-feeds.mjs';
 import {fnv,safeDecode} from './source-common.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
 // its bodies — notices with agenda (every Land requires them), reports and minutes, its gazette as PDF, and the outputs
@@ -412,7 +412,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    listRead.add(u);
    onProgress(`${source.id}: ${listReads} Listenseiten`);
    // gazettePages (catalog): the listed pages are a gazette's list of issues whose links name only number and day ("Nr. 20 vom …").
-   for(const l of documentLinks(html,u))offer(source.gazettePages&&l.kind==='pdf'&&!/amtsblatt|mitteilungsblatt|bekanntmachung/i.test(l.label)?{...l,label:`Amtsblatt ${l.label}`.trim()}:l);
+   // gazette: an issue's PDF may name a Satzungsbeschluss rather than a session; such a link skips the session score, not the date window.
+   for(const link of documentLinks(html,u)){const l=source.gazettePages?gazetteAsPdf(link):link;offer(source.gazettePages&&l.kind==='pdf'?{...l,gazette:true,label:/amtsblatt|mitteilungsblatt|bekanntmachung/i.test(l.label)?l.label:`Amtsblatt ${l.label}`.trim()}:l);}
    // Issues behind download forms only where the catalog asks for them: a whole gazette mixes much else into the items (24.10.2026).
    if(source.gazetteForms)for(const g of gazetteForms(html,u)){forms.set(g.url,g.form);offer(g);}
    // A download area loaded by script lists its files in JSON (CMS of the Saarpfalz-Kreis).
@@ -500,7 +501,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  const chosen=[];
  for(const c of candidates.values()){
   if(listed.has(c.url)||direct.has(c.url)&&!c.force||!['html','pdf'].includes(c.kind)||closed(c.label,c.url))continue;
-  const score=sessionScore(c);if(!c.force&&(score<SESSION_THRESHOLD||c.date&&!inWindow(c.date)))continue;
+  const score=sessionScore(c);if(!c.force&&((score<SESSION_THRESHOLD&&!c.gazette)||c.date&&!inWindow(c.date)))continue;
   try{siteAllowed(c.url,source);}catch{continue;}
   chosen.push({...c,score});
  }

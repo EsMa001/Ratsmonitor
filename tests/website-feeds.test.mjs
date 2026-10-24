@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,listPageScore,paginationLinks,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,generatorOf,isRisLink,isSearchLink,TRANSLATED,downloadListLinks,parseDownloadItems,gazetteForms} from '../server/integrations/website-feeds.mjs';
+import {gazetteAsPdf,documentLinks,sessionScore,SESSION_THRESHOLD,listPageScore,paginationLinks,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,generatorOf,isRisLink,isSearchLink,TRANSLATED,downloadListLinks,parseDownloadItems,gazetteForms} from '../server/integrations/website-feeds.mjs';
 // All pages, feeds and files below are reproduced (nachgebildet), not live: small excerpts in the markup of the usual
 // municipal CMS (TYPO3, WordPress, IKISS, Joomla), with invented hosts under *.example.test and without names of persons.
 const base='https://www.gemeinde-musterdorf.example.test/rathaus/bekanntmachungen/';
@@ -303,4 +303,12 @@ test('gazette issue: only the numbered chain from item 1 with an agenda word; cl
 test('document script with the type as parameter is a PDF (loadDocument.phtml?…&Ext=PDF, Landkreis Ansbach)',()=>{
  const [l]=documentLinks('<a href="/loadDocument.phtml?FID=3797.2611.1&amp;Ext=PDF">Nr. 20 vom 14. Oktober 2026</a>','https://www.landkreis-ansbach.de/x/');
  assert.equal(l.kind,'pdf');assert.equal(l.url,'https://www.landkreis-ansbach.de/loadDocument.phtml?FID=3797.2611.1&Ext=PDF');
+});
+
+test('a CMS download link without extension is a PDF only for a gazette list (Nordhorn 2026)', () => {
+ const [l]=documentLinks('<a href="/downloads/datei/ZTkxNTg2YjlkZjE0MDI3ZWJiVU03NTBSZXpiNmxuU3FSMU8wZjNaeFFBb1BYQVJONnhjdzA1aDRHNlp6NDZwVHBpMDZxbnplcVlCYVVRZmY1NTJTNWdTK1FtMzNZWTI2Q1R0NjZsUkt5NFFiMHJqY2g2aEhHVzB4K3N6bjhPMHpzaWxYV0Qxd3RFRDBuUmlVanBXd3AzZkowSHJVSlhrVjloK25jN2RBbWt3QnZrd0ZFYXpuZnRDQXkzcz0">Nr. 2_2026</a>','https://www.gemeinde-musterdorf.example.test/amtsblatt/');
+ assert.equal(l.kind,'html');
+ assert.equal(gazetteAsPdf(l).kind,'pdf');
+ const other=documentLinks('<a href="/rathaus/index.html">Rathaus</a>','https://www.gemeinde-musterdorf.example.test/')[0];
+ assert.equal(gazetteAsPdf(other),other);
 });
