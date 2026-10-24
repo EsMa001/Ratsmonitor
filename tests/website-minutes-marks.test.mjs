@@ -139,3 +139,16 @@ test('notice (Schleswig-Holstein, Büsum-Wesselburen): „Beschluss über die Ni
  assert.deepEqual(m.items.map(i=>i.number),['1','2','3','4']);
  assert.deepEqual(m.closedItems.map(i=>i.number),['5','6']);
 });
+
+// Nachgebildet nach der Niederschrift der Gemeinde Tiefenbach und den Einladungen der Gemeinde Löwenberger Land (24.10.2026).
+test('the count of listeners in minutes is no mention of the non-public part',()=>{
+ const lines=['Niederschrift über die öffentliche Sitzung des Gemeinderates Tiefenbach am 30.07.2026','21 Alfred Gimpl, SPD anwesend','Anzahl der Zuhörer: - 1 - Vertreter der Presse: Herr Hans Schauer','1. Genehmigung der Niederschrift der öffentlichen Sitzung vom 25. Juni 2026','2. Bebauungsplan Nr. 12 Am Bach','3. Neubau des Feuerwehrhauses'];
+ const m=parseSessionText(lines,{title:'2026-07-30 Gemeinderat',kind:'minutes'}).meetings.find(x=>x.items.length);
+ assert.ok(m.items.some(i=>/Feuerwehrhauses/.test(i.title)));
+});
+test('a sub-item wrapped before the day of its minutes and the same sub-item in the non-public part',()=>{
+ const lines=['Einladung zur Sitzung des Werksausschusses am 20.10.2026','Tagesordnung','Öffentlicher Teil','TOP 1 Regularien','c) Entscheidung über eventuelle Einwendungen gegen die Niederschrift vom','17.06.2026 (öffentlicher Teil)','TOP 2 Einwohnerfragestunde','TOP 3 Bebauungsplan Nr. 5 Am Weg','nicht öffentlicher Teil','TOP 4 Regularien','a) Entscheidung über eventuelle Einwendungen gegen die Niederschrift vom','17.06.2026 (nicht öffentlicher Teil)','TOP 5 Grundstücksangelegenheiten'];
+ const m=parseSessionText(lines,{title:'2026-10-20 Werksausschuss'}).meetings.find(x=>x.items.length);
+ assert.ok(m.items.some(i=>/Am Weg/.test(i.title)));
+ assert.ok(!m.items.some(i=>/Grundstücks/.test(i.title)));
+});

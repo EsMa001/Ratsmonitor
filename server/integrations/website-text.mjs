@@ -973,6 +973,9 @@ function prepareLines(lines){
  for(let i=0;i<src.length;i++){
   // A day broken between day and month ("am Mittwoch, 14." / "Oktober 2026, um 19.00 Uhr") is one line.
   if(/(?<![\d.])\d{1,2}\.$/.test(src[i])&&DAY_REST.test(src[i+1]||'')){src.splice(i,2,src[i]+' '+src[i+1]);}
+  // A sub-item wrapped before its day ("c) Entscheidung über … gegen die Niederschrift vom" / "17.06.2026 (öffentlicher Teil)",
+  // Löwenberger Land) is one line: the day and its part name the minutes, not another meeting or a part of this one.
+  if(/\s(?:vom|am)$/u.test(src[i])&&/^\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}(?!\d)/.test(src[i+1]||'')&&(src[i+1]||'').length<=60){src.splice(i,2,src[i]+' '+src[i+1]);}
   // A body's name wrapped at its hyphen in a narrow column ("Öffentliche Sitzung des Bau-" / "und Umweltausschusses") is one line.
   if(/\p{L}-$/u.test(src[i])&&src[i+1]&&!itemOf(src[i])&&!itemOf(src[i+1])){const j=join(src[i],src[i+1]),c=committeeOf(j);if(c&&c!==committeeOf(src[i])&&c!==committeeOf(src[i+1]))src.splice(i,2,j);}
   // A committee's field wrapped after a comma ("… des Ausschusses für Soziales, Familie, Jugend," / "Integration, Gesundheit und Sport"):
@@ -1010,7 +1013,8 @@ const NP_TAIL=/^(?:l|li|lich|liche[rnms]?|ich|iche[rnms]?|ntlich\p{Ll}*|tlich\p{
 // Words of a line between the items of an invitation that speak of the public, listeners, the press or secrecy; such a line
 // that is not read as anything else is a mention of the non-public part (folded text). Invitations to the public are not.
 const SUSPECT=/oeffentlichkeit|publikum|zuhoerer|zuhoerenden|besucher|\bgaeste|\bpresse\b|geheim|\bintern\b|vertraul|\bgeschlossen|verschlossen|ausgeschlossen|ausschluss|ausschl\.|mandatstraeger|\bzutritt|\bklausur|\bprivat\b|draussen/;
-const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|beschluss(?:fassung)?\s+(?:ueber|zur)\s+(?:die\s+)?nicht\s*-?\s*oeffentlichkeit|tagesordnungspunkte\w*\s+(?:nach|gem\.?|gemaess)\s+§\s*\d+\s*(?:abs\.?\s*\d+\s*)?(?:go|gemo|kv|kro)\b|(?:sowie|und)\s+der\s+oeffentlichkeit\s+(?:vorgelegten|eingegangenen|abgegebenen)|oeffentlichkeit\b[^;]{0,40}baugb|wegfall\s+der\s+nichtoeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
+// A count of the listeners in the attendance part of minutes („Anzahl der Zuhörer: - 1 - Vertreter der Presse: Herr …“, Tiefenbach).
+const SUSPECT_OK=/^(?:anzahl\s+der\s+(?:zuhoerer\w*|besucher\w*|gaeste)|zuhoerer\w*\s*:|vertreter\s+der\s+presse\s*:)|(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|beschluss(?:fassung)?\s+(?:ueber|zur)\s+(?:die\s+)?nicht\s*-?\s*oeffentlichkeit|tagesordnungspunkte\w*\s+(?:nach|gem\.?|gemaess)\s+§\s*\d+\s*(?:abs\.?\s*\d+\s*)?(?:go|gemo|kv|kro)\b|(?:sowie|und)\s+der\s+oeffentlichkeit\s+(?:vorgelegten|eingegangenen|abgegebenen)|oeffentlichkeit\b[^;]{0,40}baugb|wegfall\s+der\s+nichtoeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
 // A short line without a sentence ("Geheime Sitzung", "Fortsetzung ohne Publikum"): a heading.
 const suspect=l=>{const f=foldText(normalizeLine(l));return SUSPECT.test(f)&&!SUSPECT_OK.test(f);};
 // A note that refers to items or to the rest of the agenda ("Die weiteren Punkte …", "ab hier", "Öffentlich sind die Tagesordnungspunkte 1 und 2").
@@ -1382,6 +1386,9 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
      else if(refsOf(line).any){applyRefs(refsOf(line));endBlock();}
      // A note that names an item by its title, not by its number (rule 3): the whole meeting; one that names the item just
      // read belongs to it.
+     // A sub-item of the non-public part („a) Einwendungen gegen die Niederschrift vom 17.06.2026 (nicht öffentlicher Teil)“,
+     // Löwenberger Land) after that part began: it belongs to it and names no item of the public part.
+     else if(state==='nonpublic'&&SUB_POINT.test(line)){}
      else if(names.other)discard('Hinweis auf nichtöffentliche Beratung nennt einen Punkt nur mit seinem Titel','welche Punkte öffentlich sind, ist nicht eindeutig');
      else if(names.named.length)dropLast();
      else if(separator(line)){endBlock();delimited=true;}
