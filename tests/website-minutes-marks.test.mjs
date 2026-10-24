@@ -152,3 +152,10 @@ test('a sub-item wrapped before the day of its minutes and the same sub-item in 
  assert.ok(m.items.some(i=>/Am Weg/.test(i.title)));
  assert.ok(!m.items.some(i=>/Grundstücks/.test(i.title)));
 });
+
+// Nachgebildet nach den Einladungen der VG Gosberg und der Stadt Bad Rodach (24.10.2026).
+test('a report of decisions from the „NÖ-Sitzung“ or of a named session is an item of the public part',()=>{
+ const lines=['Einladung zur Sitzung des Gemeinderates Pinzberg am 14.10.2026','A) ÖFFENTLICHE SITZUNG','1. Genehmigung des Protokolls der 4. öffentlichen Sitzung vom 15.09.2026','2. Bekanntgabe von Beschlüssen aus der letzten NÖ-Sitzung des Gemeinderates','3. Staatszuschuss Kindergarten - Beschluss über Verwendung der Mittel','4. Bekanntgabe von in nichtöffentlicher Sitzung der 6. Niederschrift des Stadtrates vom','22.06.2026 gefassten Beschlüsse','5. Bauanträge'];
+ const m=parseSessionText(lines,{title:'2026-10-14 Gemeinderat'}).meetings.find(x=>x.items.length);
+ assert.ok(m.items.some(i=>/Bauanträge/.test(i.title)));
+});

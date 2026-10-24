@@ -19,10 +19,10 @@ export const NONPUBLIC_WORDS=/nicht(?:[\s_.-]|%20|%2D)*(?:ö|oe|o|%C3%B6)ffentl|
 
 // --- mentions of the non-public part ---------------------------------------------------------------------------------
 // Lines that report on the non-public part from the public one: "Bekanntgabe von Beschlüssen aus nichtöffentlicher
-// Sitzung", "die in nichtöffentlicher Sitzung gefassten Beschlüsse". Only these past reports; "Bericht … in
+// Sitzung", "aus der letzten NÖ-Sitzung", "die in nichtöffentlicher Sitzung (der 6. Niederschrift …) gefassten Beschlüsse". Only these past reports; "Bericht … in
 // nichtöffentlicher Sitzung" or "Information zu TOP 3: Beratung in nichtöffentlicher Sitzung" name the part itself.
 const NP_ADJ='nicht\\s*-?\\s*öffentlich';
-const PUBLIC_REPORT=new RegExp(`(?:Bekanntgabe|Bekanntgaben|Mitteilung|Mitteilungen|Information|Informationen|Unterrichtung|Bericht|Berichte)\\s[^.:;]{0,100}?(?<!\\p{L})aus\\s+(?:der\\s+|einer\\s+|den\\s+|dem\\s+)?(?:\\p{L}+\\s+){0,2}${NP_ADJ}(?:e[rnms]?)?\\s+(?:Sitzung(?:en)?|Beratung(?:en)?|Teil|Sitzungsteil)(?!\\p{L})|(?:in|aus)\\s+(?:der\\s+|den\\s+)?(?:\\p{L}+\\s+)?${NP_ADJ}e[rnm]?\\s+Sitzung(?:en)?\\s+(?:\\p{L}+\\s+){0,3}gefasste[n]?\\s+Beschl\\p{L}*|${NP_ADJ}\\s+gefasste[rn]?\\s+Beschl\\p{L}*|Beschl\\p{L}*\\s+(?:des|der)\\s+(?:\\p{L}+\\s+)?${NP_ADJ}(?:e[rnms]?)?\\s+(?:Sitzung|Teil(?:es)?|Sitzungsteil(?:es)?)(?!\\p{L})`,'giu');
+const PUBLIC_REPORT=new RegExp(`(?:Bekanntgabe|Bekanntgaben|Mitteilung|Mitteilungen|Information|Informationen|Unterrichtung|Bericht|Berichte)\\s[^.:;]{0,100}?(?<!\\p{L})aus\\s+(?:der\\s+|einer\\s+|den\\s+|dem\\s+)?(?:\\p{L}+\\s+){0,2}(?:${NP_ADJ}(?:e[rnms]?)?\\s+|NÖ\\s*-\\s*)(?:Sitzung(?:en)?|Beratung(?:en)?|Teil|Sitzungsteil)(?!\\p{L})|(?:in|aus)\\s+(?:der\\s+|den\\s+)?(?:\\p{L}+\\s+)?${NP_ADJ}e[rnm]?\\s+Sitzung(?:en)?\\s+(?:[\\p{L}\\d.]+\\s+){0,8}gefasste[n]?\\s+Beschl\\p{L}*|${NP_ADJ}\\s+gefasste[rn]?\\s+Beschl\\p{L}*|Beschl\\p{L}*\\s+(?:des|der)\\s+(?:\\p{L}+\\s+)?${NP_ADJ}(?:e[rnms]?)?\\s+(?:Sitzung|Teil(?:es)?|Sitzungsteil(?:es)?)(?!\\p{L})`,'giu');
 const isPublicReport=s=>new RegExp(PUBLIC_REPORT.source,'iu').test(s);
 // The text compared without case and umlauts; a lost character (U+FFFD) stands for any letter.
 const foldText=s=>s.toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/�/g,'#');
@@ -975,7 +975,7 @@ function prepareLines(lines){
   if(/(?<![\d.])\d{1,2}\.$/.test(src[i])&&DAY_REST.test(src[i+1]||'')){src.splice(i,2,src[i]+' '+src[i+1]);}
   // A sub-item wrapped before its day ("c) Entscheidung über … gegen die Niederschrift vom" / "17.06.2026 (öffentlicher Teil)",
   // Löwenberger Land) is one line: the day and its part name the minutes, not another meeting or a part of this one.
-  if(/\s(?:vom|am)$/u.test(src[i])&&/^\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}(?!\d)/.test(src[i+1]||'')&&(src[i+1]||'').length<=60){src.splice(i,2,src[i]+' '+src[i+1]);}
+  if(/\s(?:vom|am)$/u.test(src[i])&&/^\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}(?!\d)/.test(src[i+1]||'')&&(src[i+1]||'').length<=100){src.splice(i,2,src[i]+' '+src[i+1]);}
   // A body's name wrapped at its hyphen in a narrow column ("Öffentliche Sitzung des Bau-" / "und Umweltausschusses") is one line.
   if(/\p{L}-$/u.test(src[i])&&src[i+1]&&!itemOf(src[i])&&!itemOf(src[i+1])){const j=join(src[i],src[i+1]),c=committeeOf(j);if(c&&c!==committeeOf(src[i])&&c!==committeeOf(src[i+1]))src.splice(i,2,j);}
   // A committee's field wrapped after a comma ("… des Ausschusses für Soziales, Familie, Jugend," / "Integration, Gesundheit und Sport"):
