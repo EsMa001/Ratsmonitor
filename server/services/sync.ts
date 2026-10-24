@@ -2,7 +2,7 @@ import {versionPayload} from '@/shared/article-version.mjs';
 import {invalidateReads} from './read-cache.mjs';
 import {importHealth} from '../integrations/import-health.mjs';
 import {mergeImport} from '../integrations/merge-import.mjs';
-import {historyWindow} from '@/shared/history-window.mjs';
+import {historyWindow,windowSpanDays} from '@/shared/history-window.mjs';
 import {acquireImport} from '../integrations/import-lock.mjs';
 import {readMarks,writeMarks,marksKey,readList,listKey} from '../integrations/meeting-marks.mjs';
 import {createTrace,saveDebug} from '../integrations/import-trace.mjs';
@@ -109,7 +109,9 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const listRow = await env.DB.prepare('SELECT value FROM system_state WHERE key=?').bind(listKey(region)).first<{value: string}>();
     const keptList = readList(listRow?.value);
     const collectStarted = Date.now();
-    const fresh = await collectRegion(region,{maxDurationMs:120000,window:lookback,marks:{known,stock,list:keptList},trace,oparlProbeAt:previousCoverage.oparlProbeAt}) as FeedData & {refused?:{retryAfterMs:number|null}};
+    // Time per area: 2 minutes; a long window (backfill over 12 months) 5 minutes, so that one step reads more of the period
+    // (at one request per 1.5 s per provider, 2 minutes are about 80 requests).
+    const fresh = await collectRegion(region,{maxDurationMs:windowSpanDays(lookback)>=180?300000:120000,window:lookback,marks:{known,stock,list:keptList},trace,oparlProbeAt:previousCoverage.oparlProbeAt}) as FeedData & {refused?:{retryAfterMs:number|null}};
     // Storing a large area takes a while; the lock is held for it anew (import-lock.mjs).
     await bestEffort('Sperre verlängern (gilt ohnehin noch einige Minuten)', renew);
     const collectMs = Date.now() - collectStarted, written = { created: 0, changed: 0, unchanged: 0 };

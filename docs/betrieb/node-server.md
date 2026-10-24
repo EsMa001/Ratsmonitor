@@ -479,7 +479,7 @@ Schritte: `shared/pipeline-terms.mjs`.
   12.10. entstanden. Nur ihn bearbeitet die Nacharbeit; alles Ältere ist Altbestand.
 - **Lückenabruf** (seit 23.10.2026, `server/integrations/backfill.mjs`, Schalter `--backfill` des Importprozesses im Job `import-nightly`):
   nach dem Abruf des letzten Tages 300 Gebiete über 12 Monate, reihum, bis alle einmal dran waren (Runde etwa 16 Nächte), dann die
-  nächste Runde. Gebiete im Teilstand zuerst (Zeitraum nie vollständig gelesen, seit 24.10.2026), darin wie im Rest Gebiete mit wenigen Berichten je Einwohner zuerst. Je Anbieter höchstens 25 Gebiete und 3.000 Anfragen des Prozesses
+  nächste Runde. Gebiete im Teilstand zuerst (Zeitraum nie vollständig gelesen, seit 24.10.2026), darin wie im Rest Gebiete mit wenigen Berichten je Einwohner zuerst. Je Gebiet bis zu 5 Minuten (Tagesabruf 2 Minuten). Je Anbieter höchstens 25 Gebiete und 3.000 Anfragen des Prozesses
   in der Nacht, höchstens 90 Minuten; wartende oder hochfahrende Anbieter und Gebiete mit eigenem Termin im Fehlerspeicher bleiben in
   der Runde (sind nur noch sie übrig, kommen sie in der nächsten Runde vorn). Fehlschläge gehen als Altbestand in den Fehlerspeicher.
   Stand `system_state` `backfill-round`, Anzeige `/admin?seite=nacht`, Zeile „Lückenabruf“.
