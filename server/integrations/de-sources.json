@@ -10751,6 +10751,17 @@
     "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
+    "id": "de-08125061",
+    "name": "Gemeinde Massenbachhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://ratsinformationssystem.massenbachhausen.de/",
+    "verifiedSource": "https://ratsinformationssystem.massenbachhausen.de/ris",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, vom Leser ecics-ris erkannt (24.10.2026)."
+  },
+  {
     "id": "de-08125063",
     "name": "Stadt Möckmühl",
     "kind": "city",
