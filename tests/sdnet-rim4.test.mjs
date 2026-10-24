@@ -25,7 +25,7 @@ test('RIM 4 calendar: meetings with the address of their agenda, newest first; a
  assert.deepEqual(rim4Meetings('<html>Fehler</html>'),[]);
 });
 
-test('RIM 4 agenda: body, day and the public items with a paper number; the non-public part is never read',()=>{
+test('RIM 4 agenda: body, day and the items with a paper number; the non-public part is taken marked',()=>{
  const a=parseRim4Agenda(fixture('tagesordnung-rat.html'));
  assert.equal(a.committee,'Rat');assert.equal(a.date,'2026-09-29');assert.equal(a.time,'16:30');assert.match(a.place,/Rathaus der Stadt Wesel/);
  const byPaper=Object.fromEntries(a.items.map(i=>[i.paper||'-'+i.number,i]));
@@ -36,11 +36,10 @@ test('RIM 4 agenda: body, day and the public items with a paper number; the non-
  assert.equal(item.kind,'Vorlage zur Kenntnis');assert.equal(item.process,'https://ris.wesel.de/vorgang/?__=UGhVM0hpd2NXNFdFcExjZZX_vMqiAbzwPeEl-j4Ermw');
  assert.deepEqual(item.documents.map(d=>d.title),['Vorlage zur Kenntnis T 02/325/26','Übersichten Besetzung der Ausschüsse']);
  assert.ok(item.documents.every(d=>d.url.startsWith('https://ris.wesel.de/sdnetrim/')));
- // The fixture holds eleven non-public items (class top-noeff-data); none of them is an item.
+ // The fixture holds eleven non-public items (class top-noeff-data); they are taken marked non-public (24.10.2026).
  const html=fixture('tagesordnung-rat.html'),hidden=[...html.matchAll(/<tr\b[^>]*top-noeff-data[^>]*>[\s\S]*?<\/tr>/g)].map(m=>m[0]);
  assert.equal(hidden.length,11);
- // Their paper numbers and process addresses appear in no item.
- for(const row of hidden){const process=row.match(/href="([^"]*\/vorgang\/[^"]*)"/)?.[1];if(process)assert.ok(!a.items.some(i=>i.process===process),process);}
+ for(const row of hidden){const process=row.match(/href="([^"]*\/vorgang\/[^"]*)"/)?.[1];if(process)assert.equal(a.items.find(i=>i.process===process)?.publicity,'nonpublic',process);}
  assert.equal(parseRim4Agenda('<html>Fehler</html>').items.length,0);
 });
 

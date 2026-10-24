@@ -7,6 +7,7 @@ import {bodyBytes} from './body-bytes.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {hash,category,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
+import {markPublicity,topicPublicity,selfClosed} from './source-common.mjs';
 const entities={amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',ouml:'ö',auml:'ä',uuml:'ü',Ouml:'Ö',Auml:'Ä',Uuml:'Ü',szlig:'ß',ndash:'-',mdash:'-'};
 export function decode(s){return String(s||'').replace(/&(#x[0-9a-f]+|#\d+|\w+);/gi,(m,k)=>k[0]==='#'?String.fromCodePoint(k[1].toLowerCase()==='x'?parseInt(k.slice(2),16):Number(k.slice(1))):entities[k]??m)}
 export function text(s){return decode(String(s||'').replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim()}
@@ -106,51 +107,55 @@ function itemStatus(decision,meeting,paper,now){
  if(/beschlossen|zugestimmt|angenommen|abgelehnt/i.test(decision))return DECIDING_BODY.test(meeting.committee)?(/abgelehnt/i.test(decision)?'rejected':'approved'):'recommended';
  return 'unknown';
 }
-function agendaItem({number,title,paper,top,decision,all},meeting,source,now){
+function agendaItem({number,title,paper,top,decision,all,publicity},meeting,source,now){
  const status=itemStatus(decision,meeting,paper,now);
  const url=paper?.url||top?.url||meeting.url;const key=paper?new URL(paper.url).searchParams.get('__kvonr'):new URL(meeting.url).searchParams.get('__ksinr')+'-'+number.replace(/\D+/g,'-');
- return {id:`${source.id}-${paper?'vo':'top'}-${key}`,title,reference:paper?.label||'',sourceUrl:url,identityLinks:[paper?.url,top?.url].filter(Boolean),status,documents:[...new Map(all.filter(l=>/getfile\.|\/getfile|\.pdf/i.test(l.url)).flatMap(l=>{try{return [[l.url,{title:l.label||'Originalunterlage',url:allowed(l.url,source),kind:'application/pdf'}]];}catch{return [];/* outside the source */}})).values()],event:{date:meeting.date,committee:meeting.committee,status,description:decision||'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.',result:decision,url:meeting.url}};
+ return markPublicity({id:`${source.id}-${paper?'vo':'top'}-${key}`,title,reference:paper?.label||'',sourceUrl:url,identityLinks:[paper?.url,top?.url].filter(Boolean),status,documents:[...new Map(all.filter(l=>/getfile\.|\/getfile|\.pdf/i.test(l.url)).flatMap(l=>{try{return [[l.url,{title:l.label||'Originalunterlage',url:allowed(l.url,source),kind:'application/pdf'}]];}catch{return [];/* outside the source */}})).values()],event:{date:meeting.date,committee:meeting.committee,status,description:decision||'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.',result:decision,url:meeting.url}},publicity);
 }
-/** Public items of a meeting from its public notice (PDF), read with the website reader's text parser; only items shown to be public. */
+/** Items of a meeting from its public notice (PDF), read with the website reader's text parser, each with its publicity. */
 async function noticeItems(notice,meeting,source,now){
  const [{fetchSiteBytes,readPdfText},{parseSessionText,pdfLines}]=await Promise.all([import('./website.mjs'),import('./website-text.mjs')]);
  const url=allowed(notice.url,source),{bytes}=await fetchSiteBytes(url,source);
- const found=parseSessionText(pdfLines(String(await readPdfText(bytes))),{title:notice.label||notice.title||'Öffentliche Bekanntmachung',wrapped:true}).meetings.find(x=>x.date===meeting.date&&x.items.length);
+ const found=parseSessionText(pdfLines(String(await readPdfText(bytes))),{title:notice.label||notice.title||'Öffentliche Bekanntmachung',wrapped:true}).meetings.find(x=>x.date===meeting.date&&(x.items.length||(x.otherItems||[]).length));
  if(!found)return [];
  const all=[{url,label:notice.label||'Öffentliche Bekanntmachung'}];
- return found.items.map(i=>({...agendaItem({number:i.number,title:i.title,paper:null,top:null,decision:'',all},meeting,source,now),reference:'TOP '+i.number}));
+ return [...found.items.map(i=>({...i,publicity:'public'})),...found.otherItems||[]].map(i=>({...agendaItem({number:i.number,title:i.title,paper:null,top:null,decision:'',all,publicity:i.publicity},meeting,source,now),reference:'TOP '+i.number}));
 }
+// The mark of an item number: „Ö 3“ public, „N 3“ / „NÖ 3“ non-public, a bare number not shown either way (24.10.2026: taken
+// with its mark, see markPublicity in source-common.mjs).
+const marked=number=>/^Ö\s*\d/.test(number)?'public':/^N/i.test(number)?'nonpublic':'unclear';
 export function parseAgenda(h,meeting,source,now=new Date()){
  const result=[];
  for(const m of h.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)){
   const row=m[1];if(!/class=["'][^"']*tofnum/.test(row))continue;
   const number=text(row.match(/<td[^>]*class=["'][^"']*tofnum[^"']*["'][^>]*>([\s\S]*?)<\/td>/)?.[1]);
-  if(!/^Ö\s+\d/.test(number))continue;
+  if(!/\d/.test(number))continue;
   const all=links(row,source.base),paper=all.find(l=>/vo0050\.(asp|php)/.test(l.url)),top=all.find(l=>/to0050\.(asp|php)/.test(l.url));
   const cell=row.match(/<td[^>]*class=["'][^"']*(?:tolink|tobetr)[^"']*["'][^>]*>([\s\S]*?)<\/td>/)?.[1]||'';
   const title=text(cell.match(/<div[^>]*smc-card-header-title[^>]*>([\s\S]*?)<\/div>/)?.[1]||cell.split(/Beschluss:|Abstimmung:/)[0]);
   if(!title)continue;
   const raw=text(cell),decision=raw.match(/Beschluss:\s*(.*?)(?:Abstimmung:|$)/)?.[1]?.trim()||'';
-  result.push(agendaItem({number,title,paper,top,decision,all},meeting,source,now));
+  result.push(agendaItem({number,title,paper,top,decision,all,publicity:marked(number)},meeting,source,now));
  }
  return result;
 }
 /**
  * Card layout of newer SessionNet installations: the agenda stands on the meeting page si0056 as one card per item;
- * the table page si0057 leads to an error page there. The same rules apply: only items numbered "Ö …" are taken.
+ * the table page si0057 leads to an error page there.
  * A card holds the number (badge), the title (first line of smc-card-text-title), the paper (vo0050), the documents
  * (getfile) and the decision (field smcdv0_box2_beschluss). The page footer after the last card is not part of it.
+ * Every numbered card is taken, marked by its number (marked).
  */
 export function parseAgendaCards(h,meeting,source,now=new Date()){
  const result=[];
  for(const card of String(h).split(/<footer\b/i)[0].split(/<div class=["']card card-light/i).slice(1)){
   const number=text(card.match(/<span class=["']badge["']>([\s\S]*?)<\/span>/i)?.[1]);
-  if(!/^Ö\s+\d/.test(number))continue;
+  if(!/\d/.test(number))continue;
   const title=text((card.match(/<div[^>]*smc-card-text-title[^>]*>([\s\S]*?)<\/div>/i)?.[1]||'').split(/<br\s*\/?>/i)[0]);
   if(!title)continue;
   const all=links(card,source.base),paper=all.find(l=>/vo0050\.(asp|php)/.test(l.url)),top=all.find(l=>/to0050\.(asp|php)/.test(l.url));
   const decision=text(card.match(/smcdv0_box2_beschluss[^>]*>([\s\S]*?)<\/p>/i)?.[1]||'').replace(/^Beschluss:\s*/i,'');
-  result.push(agendaItem({number,title,paper,top,decision,all},meeting,source,now));
+  result.push(agendaItem({number,title,paper,top,decision,all,publicity:marked(number)},meeting,source,now));
  }
  return result;
 }
@@ -164,7 +169,8 @@ const publicPart=part=>/(?:^|[^a-zäöüß])(?:ö|oe)ffentlich/i.test(part)&&!/(
 /**
  * Older layouts (SessionNet 4.9 and 5.3, Layout 4 and 5): the agenda page to0040 is a table with one row per item,
  * number (smc_tophn) and title (smc_topht), followed by result rows (smc_tophz, "Beschluss:"). Numbers usually carry no
- * "Ö"; the group rows decide: items below "Öffentlicher Teil" are taken, below any other group row none (publicPart).
+ * "Ö"; the group rows decide: items below "Öffentlicher Teil" are public, below any other group row non-public (publicPart),
+ * without a group row not shown either way; all are taken with that mark.
  * The number gets the "Ö " of the table page si0057, so an item keeps its id whichever page it was read from.
  * The page footer after the table is not part of it.
  */
@@ -175,10 +181,10 @@ export function parseAgendaTopTable(h,meeting,source,now=new Date()){
   if(/smc-table-group|\bsmcrowh\b/.test(head)){open=publicPart(text(row));last=null;continue;}
   if(/\bsmc_tophz\b/.test(head)){const decision=text(row).match(/^Beschluss:\s*(.+)$/i)?.[1];if(last&&decision&&!last.decision)last.decision=decision;continue;}
   last=null;
-  const number=text(cell(row,'smc_tophn')).match(/^(Ö\s*)?(\d+[a-z]?(?:\.\d+[a-z]?)*)/),title=text(cell(row,'smc_topht'));
-  if(open===false||!number||!(open||number[1])||!title)continue;
-  const all=links(row,source.base);
-  last={number:'Ö '+number[2],title,paper:all.find(l=>/vo0050\.(asp|php)/.test(l.url)),top:all.find(l=>/to0050\.(asp|php)/.test(l.url)),decision:'',all};result.push(last);
+  const number=text(cell(row,'smc_tophn')).match(/^(Ö\s*|N[ÖO]?\s*)?(\d+[a-z]?(?:\.\d+[a-z]?)*)/),title=text(cell(row,'smc_topht'));
+  if(!number||!title)continue;
+  const all=links(row,source.base),publicity=open===false||/^N/i.test(number[1]||'')?'nonpublic':open||number[1]?'public':'unclear';
+  last={number:(publicity==='public'?'Ö ':'')+number[2],publicity,title,paper:all.find(l=>/vo0050\.(asp|php)/.test(l.url)),top:all.find(l=>/to0050\.(asp|php)/.test(l.url)),decision:'',all};result.push(last);
  }
  return result.map(item=>agendaItem(item,meeting,source,now));
 }
@@ -259,7 +265,8 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
     row.event.attendance=attendance;row.event.decision=sourceDecision(row.event);
     row.sourceData={version:'public-source-fields-v1',method:'sessionnet',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:row.sourceUrl,fields:{reference:row.reference,title:row.title,result:row.event.result}}],detailStatus:'completed',issues:[]};
     const detailUrl=row.identityLinks.find(url=>/vo0050\.(asp|php)/.test(url));
-    if(detailUrl){try{const html=await detail(detailUrl);const all=links(html,source.base);for(const l of all.filter(l=>/getfile\.|\/getfile|\.pdf/i.test(l.url)))try{row.documents.push({title:l.label||l.title||'Originalunterlage',url:allowed(l.url,source),kind:'application/pdf'});}catch{/* outside the source, e.g. in the page footer */}
+    // The paper page of a non-public item is not asked: such papers are shut to guests (the title is what is public).
+    if(detailUrl&&row.publicity!=='nonpublic'){try{const html=await detail(detailUrl);const all=links(html,source.base);for(const l of all.filter(l=>/getfile\.|\/getfile|\.pdf/i.test(l.url)&&!selfClosed(l.label,l.title,l.url)))try{row.documents.push({title:l.label||l.title||'Originalunterlage',url:allowed(l.url,source),kind:'application/pdf'});}catch{/* outside the source, e.g. in the page footer */}
      // Preserve structured field/value rows. Never retain the entire page or a full text body.
      const pairs=[];for(const match of html.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)){const cells=[...match[1].matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(m=>text(m[1]));if(cells.length===2&&cells[0].length<100&&cells[1].length<1200&&/Vorlage|Aktenzeichen|Datum|Art|Betreff|Federführ|Zuständig|Status|Bereich/i.test(cells[0]))pairs.push({field:cells[0],value:cells[1]});}
      row.sourceData.records.push({kind:'paper',url:detailUrl,fields:pairs});
@@ -278,7 +285,7 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
  if(beyond)issues.push('Sitzungslimit erreicht; weiterer Import erforderlich.');
  const topics=[];
  for(const row of grouped.values()){
-  row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Vorlage / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);const publicity=topicPublicity(row.events);const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Vorlage / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SessionNet-Seite; konservative Statusauswertung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  // Unchanged meetings are a successful reading: their reports are in the database already.

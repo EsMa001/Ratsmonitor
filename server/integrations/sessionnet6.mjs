@@ -5,6 +5,7 @@ import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {markPublicity,topicPublicity,openDocuments} from './source-common.mjs';
 // Public JSON interface of SessionNet 6 (Somacos). The citizens' information system is an Angular app ("SessionNet |
 // Bürgerinformationssystem") that reads everything from <base>api/v1/. The reader asks the addresses the app asks for
 // its calendar and its meeting page, and nothing else: the meeting list of a period (sitzungen?von&bis), the agenda
@@ -12,7 +13,7 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 // names of the committees (gremien). No members, persons, attendance or search.
 // - The app opens a meeting only once it is released (freigabeDatum); other meetings are not asked.
 // - The interface returns the public part of an agenda only (the app shows "Öffentlicher Teil"); every item is still
-//   checked for oSt 1 (public), anything else is dropped.
+//   checked for oSt 1 (public); anything else is taken marked non-public (24.10.2026, markPublicity).
 // - HTTP 401, 403 or 429 (also a firewall's rejection page) ends the import at once and is not repeated.
 const day=date=>date.toISOString().slice(0,10),DAY=86400000,SPAN=91;
 const TOO_MANY='Quelle meldet zu viele Zugriffe; Abruf beendet.';
@@ -49,14 +50,14 @@ export function parseMeetings(list,source,now=new Date()){
 const whose=(committee,meeting)=>{if(/\s/.test(committee))return committee;const rest=meeting.match(new RegExp(`(?:^|\\s)${committee.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\s+([^(,;]+)`))?.[1]?.trim();return rest?committee+' '+rest:committee;};
 const votes=v=>v&&typeof v==='object'&&['ja','nein','enthaltung','befangen'].every(k=>Number.isInteger(v[k]??0))?`Ja ${v.ja??0}, Nein ${v.nein??0}, Enthaltung ${v.enthaltung??0}${v.befangen?', befangen '+v.befangen:''}`:'';
 /**
- * Public agenda items of one meeting; null if the answer is no agenda. committees: grNr → name (gremien).
+ * Agenda items of one meeting, those without oSt 1 marked non-public; null if the answer is no agenda. committees: grNr → name (gremien).
  * An item with a paper (voNr) is the paper's item: the same paper in committee and council is one topic.
  * A heading of a section (4 above 4.1, 4.2 …) without paper, decision or vote is no item of its own.
  */
 export function parseSessionNet6Agenda(list,meeting,source,committees=new Map(),now=new Date()){
  if(!Array.isArray(list))return null;
  const today=day(now),fallback=meeting.name.replace(/^\d+\.\s*/,'')||'Öffentliche Sitzung',items=[];
- const open=list.filter(t=>t&&Number(t.oSt)===1&&digits(t.toNr)).sort((a,b)=>(a.sort??0)-(b.sort??0));
+ const open=list.filter(t=>t&&digits(t.toNr)).sort((a,b)=>(a.sort??0)-(b.sort??0));
  const numbers=open.map(t=>text(t.nummer).replace(/\.$/,'')).filter(Boolean);
  for(const t of open){
   const title=text(t.text||t.textLang);if(!title)continue;
@@ -67,9 +68,9 @@ export function parseSessionNet6Agenda(list,meeting,source,committees=new Map(),
   const status=meeting.date>today?(paper?'consulting':'announced'):resultStatus(decision,committee)||'unknown';
   const description=meeting.date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?'Ergebnis laut Tagesordnung: '+result:'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
   const long=text(t.textLang);
-  items.push({id:`${source.id}-${paper?'vo-'+paper:'top-'+t.toNr}`,title,reference:'',sourceUrl:url,identityLinks:[],status,documents:[],
+  items.push(markPublicity({id:`${source.id}-${paper?'vo-'+paper:'top-'+t.toNr}`,title,reference:'',sourceUrl:url,identityLinks:[],status,documents:[],
    event:{date:meeting.date,committee,status,description,result,url:meeting.url,publicEvidence:'Öffentlicher Teil der Tagesordnung laut Schnittstelle des Bürgerinformationssystems'},
-   agenda:{number,top:String(t.toNr),paper,...(long&&long!==title&&long.length<1200?{longTitle:long}:{})}});
+   agenda:{number,top:String(t.toNr),paper,...(long&&long!==title&&long.length<1200?{longTitle:long}:{})}},Number(t.oSt)===1?null:'nonpublic'));
  }
  return items;
 }
@@ -129,7 +130,7 @@ export async function collectSessionNet6(source,{now=new Date(),get=fetchText,ol
    if(rows.length){try{documents=agendaDocuments(await json(source.base+`api/v1/sitzungen/${m.id}/tagesordnung/dokumente`),source);}catch(e){complete=false;problem=e.message;if(/Zeitbudget/.test(e.message)||e.message===halt)cut=true;else issues.push('Dokumente: '+m.url+': '+e.message);}}
    for(const row of rows){
     const {number,top,paper,longTitle}=row.agenda;delete row.agenda;
-    row.documents.push(...(documents.get(top)||[]));
+    row.documents.push(...openDocuments(documents.get(top)||[]));
     row.sourceData={version:'public-source-fields-v1',method:'sessionnet6',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:agendaUrl,fields:{number,title:row.title,...(longTitle?{longTitle}:{}),paper,result:row.event.result,meeting:m.name,meetingNumber:m.number}}],detailStatus:complete?'completed':'partial',issues:problem?[problem]:[]};
     row.event.attendance={status:'not_collected',sourceUrl:m.url,fetchedAt:now.toISOString(),people:[]};row.event.decision=sourceDecision(row.event);
     if(!grouped.has(row.id))grouped.set(row.id,[]);grouped.get(row.id).push(row);
@@ -148,7 +149,8 @@ export async function collectSessionNet6(source,{now=new Date(),get=fetchText,ol
  for(const rows of grouped.values()){
   rows.sort((a,b)=>(a.event.date+a.sourceUrl).localeCompare(b.event.date+b.sourceUrl));const row=rows.at(-1),last=row.event,events=rows.map(r=>r.event);
   const sourceData={...row.sourceData,records:rows.flatMap(r=>r.sourceData.records),detailStatus:rows.some(r=>r.sourceData.detailStatus==='partial')?'partial':'completed',issues:[...new Set(rows.flatMap(r=>r.sourceData.issues))]};
-  const t={...row,events,sourceData,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...rows.flatMap(r=>r.documents),{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(events);
+  const t={...row,events,sourceData,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[],documents:[...new Map([...rows.flatMap(r=>r.documents),{title:'Sitzung / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Schnittstelle des SessionNet-Bürgerinformationssystems; nur Tagesordnungspunkte des öffentlichen Teils.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

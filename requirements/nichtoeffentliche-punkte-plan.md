@@ -1,4 +1,4 @@
-# Nichtöffentliche Tagesordnungspunkte (Plan, 24.10.2026, noch nicht umgesetzt)
+# Nichtöffentliche Tagesordnungspunkte (Plan 24.10.2026; umgesetzt 24.10.2026, siehe „Zwei Regeln“ am Ende)
 
 ## Ziel
 
@@ -45,3 +45,21 @@ führt.
 - Ergebnis eines nichtöffentlichen Punkts, das später öffentlich bekannt gegeben wird („Bekanntgabe von Beschlüssen aus
   nichtöffentlicher Sitzung“): wird demselben Bericht zugeordnet, wenn Titel und Gremium passen (sonst eigener Hinweis an der
   Sitzung der Bekanntgabe).
+
+## Zwei Regeln (Entscheidung des Projektinhabers, 24.10.2026, umgesetzt)
+
+Die Öffentlichkeitsprüfung aller Leser ist auf zwei feste Regeln vereinfacht (`markPublicity`, `selfClosed`, `topicPublicity` in
+`server/integrations/source-common.mjs`):
+
+1. **Nicht abrufen, was sich selbst nichtöffentlich nennt:** Dokumente, deren Titel, Linktext oder Dateiname „nichtöffentlich“,
+   „vertraulich“ oder „nur für Ratsmitglieder“ sagt (`SELF_CLOSED`; Bekanntgaben dort gefasster Beschlüsse sind öffentlich), und
+   Seiten des Mitgliederbereichs oder der Anmeldung.
+2. **Namen von Privatpersonen** fallen aus Titeln nichtöffentlicher Punkte (`withoutPrivateNames`).
+
+Alles andere wird übernommen. Was ein Dokument über den nichtöffentlichen Teil sagt (Überschrift, „§ 35 GO“, Kennzeichen N, fehlendes
+Kennzeichen Ö), markiert nur: `publicity` `nonpublic` oder `unclear` an Bericht, Ereignis und Feld des Datensatzes; „unklar“ wird wie
+öffentlich angezeigt. Umgesetzt in SessionNet (alle drei Seitenarten und Bekanntmachung), SessionNet 6, ALLRIS 4, ALLRIS net, SD.NET,
+SD.NET RIM 4, OParl (regional und Münster) und im Webseiten-Leser (dort schon zuvor). Vorlagenseiten und Dateien nichtöffentlicher
+Punkte werden nicht abgefragt (sie sind für Gäste gesperrt und würden jede Sitzung unvollständig machen); unklare Punkte werden wie
+öffentliche gelesen. `assumePublicAgenda` ändert nur noch das Kennzeichen (öffentlich statt unklar). Noch nicht umgestellt: die übrigen
+Leser (ris-portal, councilservice, komfa, citystates, piwi, ti-generator u. a.).

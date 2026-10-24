@@ -1,6 +1,7 @@
 // Small helpers of the source readers (server/integrations/*), one copy instead of one per reader. Pure, without state;
 // the readers import them under their former local names (germanDay as day, asciiSlug as slug, httpsUrl as https).
 // website-feeds.mjs keeps its own copies: it imports nothing (website-plan.mjs, tests/website-discovery.test.mjs).
+import {withoutPrivateNames} from '../../shared/private-names.mjs';
 
 /** FNV-1a (32 bit) as 8 hex digits: stable ids of meetings, items and papers. */
 export const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
@@ -24,3 +25,28 @@ export const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\
 export const RESTRICTED=/nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich/i;
 /** decodeURIComponent that keeps a malformed value as it is. */
 export const safeDecode=s=>{try{return decodeURIComponent(s);}catch{return s;}};
+
+// --- publicity (decision of the project owner, 24.10.2026) -----------------------------------------------------------
+// Two rules only. 1. Nothing is fetched that calls itself non-public: a document whose title, link text or file name says
+// „nichtöffentlich“, „vertraulich“ or „nur für Ratsmitglieder“, and pages of the members' area. 2. Titles of non-public items
+// lose the names of private persons. Everything else a source shows is taken; what it says of the non-public part in its
+// text (a heading, „§ 35 GO“, no mark Ö/N) only marks the items: publicity 'nonpublic' or 'unclear', never left out.
+/** A document that calls itself non-public (rule 1). A report of decisions taken there („Bekanntgabe nichtöffentlich gefasster Beschlüsse“) is public. */
+export const SELF_CLOSED=/nicht\s*[-–_]?\s*(?:ö|oe|o)ffentl|vertraulich|nur\s+(?:für|fuer)\s+(?:die\s+)?(?:\p{L}*mitglieder|mandatstr(?:ä|ae)ger)|mitgliederbereich|ratsmitgliederbereich/iu;
+const REPORTED=/gefasst|bekanntgabe|bekanntgegeben|bekannt\s*zu\s*geben|weggefallen|entfallen/i;
+export const selfClosed=(...texts)=>texts.some(t=>{const s=safeDecode(String(t||'')).replace(/[_+]/g,' ');return SELF_CLOSED.test(s)&&!REPORTED.test(s);});
+/** Documents that may be linked and fetched: none that calls itself non-public. */
+export const openDocuments=docs=>(docs||[]).filter(d=>!selfClosed(d.title,d.url));
+export const CLOSED_DESCRIPTION='Nichtöffentlicher Punkt laut veröffentlichter Tagesordnung; öffentlich bekannt sind Titel, Sitzung und Gremium.';
+export const UNCLEAR_DESCRIPTION='Auf der veröffentlichten Tagesordnung; ob öffentlich beraten wird, gibt die Quelle nicht an.';
+/** A report row ({title, event, documents}) of an item with its publicity; public rows stay as they are (rule 2 for non-public titles). */
+export function markPublicity(row,publicity){
+ const docs=row.documents?{documents:openDocuments(row.documents)}:{};
+ if(!publicity||publicity==='public')return {...row,...docs};
+ const title=publicity==='nonpublic'?withoutPrivateNames(row.title):row.title;
+ return {...row,...docs,title,publicity,event:{...row.event,publicity,publicEvidence:publicity==='nonpublic'?'nichtöffentlicher Teil laut Quelle':'öffentliche Beratung nicht belegt',description:row.event?.result?row.event.description:publicity==='nonpublic'?CLOSED_DESCRIPTION:UNCLEAR_DESCRIPTION}};
+}
+/** Publicity of a report from its events: none while one event is public, otherwise 'nonpublic' if one is, else 'unclear'. */
+export const topicPublicity=events=>(events||[]).some(e=>!e.publicity||e.publicity==='public')?null:(events||[]).some(e=>e.publicity==='nonpublic')?'nonpublic':'unclear';
+/** A placeholder instead of a title („Nichtöffentlicher Tagesordnungspunkt“, „(nichtöffentlich)“, „N.N.“): no report of its own. */
+export const PLACEHOLDER=/^[\s([{]*(?:(?:nicht\s*-?\s*öffentliche?r?\s+)?(?:tagesordnungs)?punkt|n\.?\s*n\.?|-+|–+|nichtöffentlich|nicht öffentlich)[\s)\]}.]*$/i;

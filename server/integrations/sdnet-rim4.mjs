@@ -6,13 +6,13 @@ import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
-import {asciiSlug as slug,germanDay as day} from './source-common.mjs';
+import {asciiSlug as slug,germanDay as day,markPublicity,topicPublicity,PLACEHOLDER} from './source-common.mjs';
 // SD.NET RIM 4 (Somacos, the newer web interface of the SD.NET Ratsinformationssystem: /termine, /tops, /vorgang),
 // as hosted by a municipality itself (ris.wesel.de). Read are plain addresses of the public site only:
 // - the iCalendar of the meeting calendar (termine/ics/SD.NET_RIM.ics): every meeting with its day, body and the address
 //   of its agenda ("Link zur Tagesordnung"); a meeting without agenda has no address,
 // - the agenda tops/?__=<token>: body, day, place and the items; "top-oeff-*" rows are public, "top-noeff-*" rows (the
-//   non-public part) are never read; an item with a paper number carries the Vorlage (PDF) and a link to its process,
+//   non-public part) are taken marked non-public (24.10.2026) without asking their process; an item with a paper number carries the Vorlage (PDF) and a link to its process,
 // - the process vorgang/?__=<token>: subject, department and the "Beratungsfolge" with the resolution of each body.
 // The tokens in the addresses are stable. Documents (sdnetrim/…) are only linked, not read here. The classic SD.NET
 // (ratsinfomanagement.net, reader "sdnet") has other pages; the hosts of ratsinfomanagement.net are not served by this reader.
@@ -48,24 +48,24 @@ const kindOf=(title,number)=>title.replace(/\s*\(exportiert:.*$/,'').split(numbe
 /**
  * An agenda: body, session, day, time, place and the public items with a paper number: number, title, paper number,
  * kind of the paper, documents ({title,url}) and the address of the process. Items without a paper number carry no matter
- * of their own. The non-public part is not read.
+ * of their own. Items of the non-public part (top-noeff-data) come with publicity 'nonpublic'.
  */
 export function parseRim4Agenda(html){
  const page=String(html),head=cell=>{const m=page.match(new RegExp(`<th scope="row">${cell}:</th>\\s*<td[^>]*>([\\s\\S]*?)</td>`));return m?m[1]:'';};
  const session=head('Sitzung'),when=head('Termin'),time=plain(when).match(/(\d{1,2}:\d{2})\s*Uhr/)?.[1]||'';
  const items=[];
  for(const [,classes,inner] of page.matchAll(/<tr\b[^>]*class="([^"]*)"[^>]*>([\s\S]*?)<\/tr>/g)){
-  if(!/\btop-oeff-data\b/.test(classes))continue;
+  const part=classes.match(/\btop-(n?oeff)-data\b/)?.[1];if(!part)continue;
   const cells=Object.fromEntries([...inner.matchAll(/<td\b[^>]*class="column-([a-z]+)"[^>]*>([\s\S]*?)<\/td>/g)].map(c=>[c[1],c[2]]));
   const number=plain(cells.nummer||'').replace(/^ $/,''),title=plain(cells.bezeichnung||'');
   const process=(cells.dokumente||'').match(/href="([^"]*\/vorgang\/[^"]*)"/)?.[1]?.replace(/&amp;/g,'&')||null;
-  if(!title||!number&&!process)continue;
+  if(!title||PLACEHOLDER.test(title)||!number&&!process)continue;
   const documents=[...(cells.dokumente||'').matchAll(/<a\b[^>]*href="([^"]*\/sdnetrim\/[^"]+)"[^>]*>/g)].map(a=>{
    const tag=a[0],label=plain(tag.match(/\btitle="([^"]*)"/)?.[1]||tag.match(/aria-label="([^"]*)"/)?.[1]||'');
    return {title:label.replace(/ im PDF-Format öffnen$/,'').replace(/\s*\(exportiert:.*$/,''),url:a[1].replace(/&amp;/g,'&')};
   }).filter(d=>d.url);
   const first=documents[0]?.title||'';
-  items.push({number:plain(cells.topnrtext||'').replace(/\.$/,''),title,paper:number,kind:number?kindOf(first,number):'',documents,process});
+  items.push({number:plain(cells.topnrtext||'').replace(/\.$/,''),title,paper:number,kind:number?kindOf(first,number):'',documents,process,...(part==='noeff'?{publicity:'nonpublic'}:{})});
  }
  return {committee:plain(session.match(/<a\b[^>]*>([\s\S]*?)<\/a>/i)?.[1]||session.replace(/,\s*\d+\.\s*Sitzung.*$/,'')),session:plain(session),date:day(plain(when)),time,place:plain(head('Ort')),items};
 }
@@ -102,9 +102,9 @@ export function rim4Items(parsed,meeting,source,processes=new Map(),now=new Date
   const status=!past?'consulting':resolution?statusOf(resolution,committee):'unknown';
   const description=!past?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?`Beschluss: ${result}`:'In der Tagesordnung geführt; im Vorgang ist kein Beschluss veröffentlicht.';
   const url=i.process||meeting.agenda||meeting.url,id=`${source.id}-vo-${slug(i.paper)}`;
-  return {id,title:process?.subject||i.title,reference:i.paper,sourceUrl:url,identityLinks:[i.process].filter(Boolean),documents:i.documents.map(d=>({title:d.title,url:d.url,kind:'pdf'})),status,
+  return markPublicity({id,title:process?.subject||i.title,reference:i.paper,sourceUrl:url,identityLinks:[i.process].filter(Boolean),documents:i.documents.map(d=>({title:d.title,url:d.url,kind:'pdf'})),status,
    record:{number:i.number,paper:i.paper,kind:i.kind,department:process?.department||'',resolution,vote},
-   event:{date,committee,status,description,result,url:meeting.agenda||meeting.url,publicEvidence:(past?'Öffentliche Tagesordnung':'Öffentliche Tagesordnung')+`, TOP ${i.number}`}};
+   event:{date,committee,status,description,result,url:meeting.agenda||meeting.url,publicEvidence:(past?'Öffentliche Tagesordnung':'Öffentliche Tagesordnung')+`, TOP ${i.number}`}},i.publicity);
  });
 }
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs.
@@ -140,7 +140,7 @@ export async function collectRim4(source,{now=new Date(),get=fetchText,request=f
    if(!parsed.items.length&&!parsed.committee){issues.push('Unbekanntes Format der Tagesordnung: '+m.url);return;}
    const meetingDate=parsed.date||m.date,known2=new Map();
    // The resolution of a past meeting stands in the process; a meeting still to come needs none.
-   if(meetingDate<=today)await Promise.all(parsed.items.filter(i=>i.paper&&i.process).map(async i=>{const p=await processOf(i.process);if(p)known2.set(i.process,p);}));
+   if(meetingDate<=today)await Promise.all(parsed.items.filter(i=>i.paper&&i.process&&!i.publicity).map(async i=>{const p=await processOf(i.process);if(p)known2.set(i.process,p);}));
    const rows=rim4Items(parsed,m,source,known2,now),print=period+(await hash(JSON.stringify(rows.map(r=>[r.id,r.title,r.record,r.status])))).slice(0,16);
    if(known?.print===print){held[m.url]=marks.known[m.url];unchanged++;return;}
    for(const row of rows){
@@ -157,7 +157,8 @@ export async function collectRim4(source,{now=new Date(),get=fetchText,request=f
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Tagesordnung',url:last.url,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Ratsinformationssystems (SD.NET RIM 4); nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

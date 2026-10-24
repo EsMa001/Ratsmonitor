@@ -41,10 +41,10 @@ test('SessionNet 6 meeting list: the app page of each meeting, and whether the a
 });
 test('SessionNet 6 agenda keeps public items, joins a paper by its number and skips section headings',()=>{
  const list=json('sangerhausen-2217-tagesordnung.json');
- // An item that the interface marked otherwise than public is never taken, whatever it carries.
+ // An item that the interface marked otherwise than public is taken marked non-public (24.10.2026).
  list.push({toNr:41400,oSt:2,nummer:'9',text:'Grundstücksangelegenheit',voNr:9999,grNr:1,abstimmungTyp:1,beschluss:'einstimmig beschlossen',sort:95});
  const items=parseSessionNet6Agenda(list,meetingOf(2217),source,committees,now);
- assert.deepEqual(items.map(i=>[i.id,i.title.slice(0,30),i.status,i.event.committee,i.event.result]),[
+ assert.deepEqual(items.filter(i=>!i.publicity).map(i=>[i.id,i.title.slice(0,30),i.status,i.event.committee,i.event.result]),[
   ['de-15087370-top-41285','Eröffnung der Sitzung, Festste','unknown','Stadtrat','bestätigt'],
   ['de-15087370-top-41288','Bericht des Oberbürgermeisters','info','Stadtrat','zur Kenntnis genommen'],
   ['de-15087370-vo-4220','Neufassung der Vergabeordnung ','approved','Stadtrat','mehrheitlich beschlossen'],
@@ -52,7 +52,8 @@ test('SessionNet 6 agenda keeps public items, joins a paper by its number and sk
   ['de-15087370-vo-4230','Annahme der Angebote von Zuwen','unknown','Stadtrat','nicht abgestimmt'],
   ['de-15087370-vo-4206','Bericht der Stadt Sangerhausen','info','Stadtrat','zur Kenntnis genommen'],
   ['de-15087370-top-41299','Wiederherstellung der Öffentli','unknown','Stadtrat','']]);
- assert.ok(!/Grundstück|Beratungsgegenstände|Informationsvorlagen in/.test(JSON.stringify(items)));
+ assert.ok(!/Beratungsgegenstände|Informationsvorlagen in/.test(JSON.stringify(items)));
+ assert.deepEqual(items.filter(i=>i.publicity).map(i=>[i.id,i.title,i.publicity,i.event.publicity]),[['de-15087370-vo-9999','Grundstücksangelegenheit','nonpublic','nonpublic']]);
  const paper=items[2];
  assert.equal(paper.sourceUrl,page(2217)+'#top-41322');assert.equal(paper.event.url,page(2217));assert.equal(paper.event.date,'2026-09-10');assert.equal(paper.reference,'');
  assert.equal(paper.event.description,'Ergebnis laut Tagesordnung: mehrheitlich beschlossen');assert.deepEqual(paper.agenda,{number:'6.1',top:'41322',paper:'4220'});
@@ -125,7 +126,7 @@ test('SessionNet 6 collector reads the list, each released agenda with its docum
  assert.match(paper.longSummary[0],/Stadt Sangerhausen/);
  assert.equal(d.topics.find(t=>t.id==='de-15087370-top-41288').documents[0].title,'OB-Bericht');
  assert.equal(d.topics.find(t=>t.id==='de-15087370-vo-4300').status,'consulting');
- assert.ok(!/Grundstück|Kaufvertrag|99999/.test(JSON.stringify(d)),'nothing of the non-public part');
+ assert.equal(d.topics.find(t=>t.id==='de-15087370-vo-9999').publicity,'nonpublic','the non-public item is taken with its mark');
  // A meeting that took place but was never released is a remark, not a gap.
  const {get:get2,setList}=web();setList(JSON.stringify(json('sangerhausen-sitzungen.json').map(m=>m.siNr===2580?{...m,dat:'2026-09-20'}:m)));
  const bare=await collectSessionNet6(source,{now,get:get2,window:'1m'});

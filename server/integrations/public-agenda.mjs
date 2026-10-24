@@ -1,5 +1,6 @@
 import {clean} from './oparl.mjs';
 import {isNonPublicText} from './website-text.mjs';
+import {PLACEHOLDER} from './source-common.mjs';
 /**
  * Preserve source order: publicity may be established by an explicit section header.
  * assumePublic (catalog field assumePublicAgenda): the interface delivers only public items, so an item without flag
@@ -9,8 +10,6 @@ import {isNonPublicText} from './website-text.mjs';
  * nonPublic: items below a heading of the non-public part ("B) Nichtöffentliche Sitzung"). They are left out as
  * plainly non-public, not counted as unclear.
  */
-// Platzhalter statt eines Titels („Nichtöffentlicher Tagesordnungspunkt“, „N.N.“): kein eigener Bericht
-const PLACEHOLDER=/^[\s([{]*(?:(?:nicht\s*-?\s*öffentliche?r?\s+)?(?:tagesordnungs)?punkt|n\.?\s*n\.?|-+|–+|nichtöffentlich|nicht öffentlich)[\s)\]}.]*$/i;
 export function publicAgenda(items,{assumePublic=false}={}){
  let section=null,closed=false,below=false;const accepted=[],others=[];let unclear=0,nonPublic=0;
  // others (seit 24.10.2026): die nicht als öffentlich belegten Punkte mit Kennzeichen, damit ein Leser sie als Bericht übernehmen kann

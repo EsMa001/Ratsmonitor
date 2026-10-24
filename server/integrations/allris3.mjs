@@ -8,7 +8,7 @@ import {createSession} from './allris.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
-import {germanDayStrict as day} from './source-common.mjs';
+import {germanDayStrict as day,markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
 // Public pages of ALLRIS net, the older ALLRIS generation (ALLRIS 3): .asp programs in one folder. Read are the monthly
 // calendar (si010, si010_e, si010_j, si010_a or the responsive si010_r), the agenda of each meeting (to010) and the page
 // of each paper on a public agenda (vo020). Every program follows the scheme two letters, three digits, an optional
@@ -125,7 +125,10 @@ export function parseAllris3Calendar(html,source,{year,month}={}){
  }
  return meetings;
 }
-/** Public agenda items of one meeting page; null if the page shows no agenda. Public is an item numbered "Ö …". */
+/**
+ * Agenda items of one meeting page; null if the page shows no agenda. Public is an item numbered "Ö …", non-public one
+ * numbered "N …", any other unclear; all are taken with that mark (24.10.2026), except placeholders ("(nichtöffentlich)").
+ */
 export function parseAllris3Agenda(html,meeting,source,now=new Date()){
  const list=table(html,'toTable')||table(html,'tl1');if(!list)return null;
  const heading=text(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1]||'').replace(/^Tagesordnung\s*-\s*/i,'');
@@ -135,18 +138,19 @@ export function parseAllris3Agenda(html,meeting,source,now=new Date()){
  for(const row of rows(list)){
   const link=row.match(/<a\b[^>]*href=["']([^"']*to010(?:_[a-z])?\.asp\?[^"']*TOLFDNR=\d+[^"']*)["'][^>]*>([\s\S]*?)<\/a>/i);if(!link)continue;
   const number=text(link[2]),top=record(decode(link[1]),'TOLFDNR');
-  if(!/^Ö\s*\d/.test(number))continue;
+  if(!/\d/.test(number))continue;
+  const publicity=/^Ö\s*\d/.test(number)?'public':/^N/i.test(number)?'nonpublic':'unclear';
   // Classic rows end the subject cell with a comment naming the item; responsive rows have a cell of their own.
   const subject=(row.match(/<td[^>]*>((?:(?!<td)[\s\S])*?)<\/td>\s*<!--\s*\d+\s*-->/i)?.[1]||cell(row,'tobetreff')).replace(/<span[^>]*title=["']Zusatzinfo["'][^>]*>[\s\S]*?<\/span>/gi,'');
-  const title=text(subject);if(!title)continue;
+  const title=text(subject);if(!title||PLACEHOLDER.test(title))continue;
   const paper=row.match(/<a\b[^>]*href=["']([^"']*vo020(?:_[a-z])?\.asp\?[^"']*?VOLFDNR=(\d+)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/i),item=subject.match(/href=["']([^"']*to020(?:_[a-z])?\.asp\?[^"']*)["']/i);
   // Classic pages name the result in the hint of the item's button; "(offen)" means none yet.
   const named=attribute(row.match(/<input\b[^>]*class=["']il1_naz["'][^>]*>/i)?.[0]||'','title').trim(),result=/^\(?offen\)?$/i.test(named)?'':named;
   const paperUrl=paper?address(paper[1],'VOLFDNR',paper[2],source):null,topUrl=item?address(item[1],'TOLFDNR',top,source):null,reference=paper?text(paper[3]):'';
   const status=date>today?(paperUrl?'consulting':'announced'):resultStatus(result,committee)||'unknown';
   const description=date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?'Ergebnis laut Tagesordnung: '+result:'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
-  items.push({id:`${source.id}-${paper?'vo-'+paper[2]:'top-'+top}`,title,reference,sourceUrl:paperUrl||topUrl||url,identityLinks:[paperUrl,topUrl].filter(Boolean),status,documents:[],
-   event:{date,committee,status,description,result,url,publicEvidence:`Tagesordnungsnummer „${number}“ im öffentlichen Teil`},agenda:{number,top,paperUrl}});
+  items.push(markPublicity({id:`${source.id}-${paper?'vo-'+paper[2]:'top-'+top}`,title,reference,sourceUrl:paperUrl||topUrl||url,identityLinks:[paperUrl,topUrl].filter(Boolean),status,documents:[],
+   event:{date,committee,status,description,result,url,publicEvidence:`Tagesordnungsnummer „${number}“ im öffentlichen Teil`},agenda:{number,top,paperUrl}},publicity));
  }
  return {date,committee,items};
 }
@@ -274,9 +278,10 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
    for(const row of rows){
     const {number,top,paperUrl}=row.agenda;delete row.agenda;
     row.sourceData={version:'public-source-fields-v1',method:'allris3',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{reference:row.reference,title:row.title,number,result:row.event.result}}],detailStatus:'completed',issues:[]};
-    if(paperUrl){
+    // The paper page of a non-public item is not asked: such papers are shut to guests (the title is what is public).
+    if(paperUrl&&row.publicity!=='nonpublic'){
      try{const detail=await paper(paperUrl);
-      row.documents.push(...detail.documents);row.sourceData.records.push({kind:'paper',url:paperUrl,fields:detail.fields});
+      row.documents.push(...openDocuments(detail.documents));row.sourceData.records.push({kind:'paper',url:paperUrl,fields:detail.fields});
       // Responsive pages print no result on the agenda; the consultation sequence of the paper names it.
       const own=detail.consultations.find(c=>c.top?c.top===top:c.meeting===meeting);
       if(own?.result&&!row.event.result&&agenda.date<=today){row.event.result=own.result;row.event.description='Ergebnis laut Beratungsfolge: '+own.result;row.event.status=row.status=resultStatus(own.result,agenda.committee)||row.status;}
@@ -296,7 +301,8 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Vorlage / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Vorlage / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche ALLRIS-net-Seite (ALLRIS 3); nur Tagesordnungspunkte des öffentlichen Teils.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

@@ -46,23 +46,25 @@ test('older layout calendar: meetings linked to the agenda page to0040, a meetin
  assert.deepEqual(meetingRows(bare,halle.base).map(r=>file(r.url)+'?'+new URL(r.url).search.slice(1)),['si0057.asp?x=1','to0040.asp?x=2']);
 });
 
-test('older layout agenda (to0040): public part only, number, paper, documents and the decision row of each item',()=>{
+test('older layout agenda (to0040): items of both parts with their mark, number, paper, documents and the decision row of each item',()=>{
  const meeting={date:'2026-09-01',committee:'Bildungsausschuss',url:halle.base+'to0040.asp?__ksinr=21804'};
- const items=parseAgendaTopTable(page('halle-to0040.html'),meeting,halle,now);
- assert.deepEqual(items.map(i=>i.id),['de-15002000-top-21804--1','de-15002000-top-21804--3-1','de-15002000-top-21804--4-1','de-15002000-vo-32100'],'items 10 and 11 of the non-public part stay out');
+ const every=parseAgendaTopTable(page('halle-to0040.html'),meeting,halle,now),items=every.filter(i=>!i.publicity);
+ assert.deepEqual(items.map(i=>i.id),['de-15002000-top-21804--1','de-15002000-top-21804--3-1','de-15002000-top-21804--4-1','de-15002000-vo-32100']);
+ // Items 10 and 11 of the non-public part are taken with their mark (24.10.2026), not left out.
+ assert.deepEqual(every.filter(i=>i.publicity).map(i=>[i.id,i.publicity,i.event.publicity]),[['de-15002000-top-21804-10','nonpublic','nonpublic'],['de-15002000-vo-32200','nonpublic','nonpublic']]);
  assert.equal(items[0].title,'Eröffnung der Sitzung, Feststellung der Ordnungsmäßigkeit der Einladung und der Beschlussfähigkeit');
  assert.equal(items[1].title,'Fragestellerin 1 zur Schulplatzzuweisung und zum Kindeswohl','the addendum note is not part of the number');
  assert.deepEqual(items.map(i=>i.event.result),['','','einstimmig zugestimmt','einstimmig zugestimmt'],'"Abstimmung:" is not the decision');
  assert.deepEqual(items.map(i=>i.status),['unknown','unknown','recommended','recommended'],'a committee recommends');
  const paper=items[3];assert.equal(paper.reference,'VIII/2026/02530');assert.equal(paper.sourceUrl,halle.base+'vo0050.asp?__kvonr=32100&voselect=21804');assert.equal(paper.event.url,meeting.url);
  assert.deepEqual(paper.documents.map(d=>d.url),[halle.base+'getfile.asp?id=340369&type=do&',halle.base+'getfile.asp?id=340371&type=do&']);
- assert.equal(parseAgendaTopTable(page('halle-to0040.html'),{...meeting,committee:'Stadtrat'},halle,now)[3].status,'approved');
- assert.equal(parseAgendaTopTable(page('halle-to0040.html'),{...meeting,date:'2026-10-20'},halle,now)[3].status,'consulting');
- // Without a heading of the public part nothing is taken.
- assert.deepEqual(parseAgendaTopTable(page('halle-to0040.html').replace(/&Ouml;ffentlicher Teil/g,'Sitzung'),meeting,halle,now),[]);
- // Numbers marked "Ö" are public without a heading; "N" is not.
+ assert.equal(parseAgendaTopTable(page('halle-to0040.html'),{...meeting,committee:'Stadtrat'},halle,now).filter(i=>!i.publicity)[3].status,'approved');
+ assert.equal(parseAgendaTopTable(page('halle-to0040.html'),{...meeting,date:'2026-10-20'},halle,now).filter(i=>!i.publicity)[3].status,'consulting');
+ // Without a heading of the public part nothing is shown public: the items come marked.
+ assert.ok(parseAgendaTopTable(page('halle-to0040.html').replace(/&Ouml;ffentlicher Teil/g,'Sitzung'),meeting,halle,now).every(i=>i.publicity==='nonpublic'||i.publicity==='unclear'));
+ // Numbers marked "Ö" are public without a heading; "N" is non-public.
  const marked='<table><tr class="smcrow1 smc_toph"><td class="smc_tophn">&Ouml; 1</td><td class="smc_topht">Haushalt</td></tr><tr class="smcrow2 smc_toph"><td class="smc_tophn">N 2</td><td class="smc_topht">Personal</td></tr></table>';
- assert.deepEqual(parseAgendaTopTable(marked,meeting,halle,now).map(i=>i.id),['de-15002000-top-21804--1']);
+ assert.deepEqual(parseAgendaTopTable(marked,meeting,halle,now).map(i=>[i.id,i.publicity||'public',i.title]),[['de-15002000-top-21804--1','public','Haushalt'],['de-15002000-top-21804-2','nonpublic','Personal']]);
 });
 
 test('older layout agenda (to0040): only a group row that plainly says public opens the public part; the footer is no part of a row',()=>{
@@ -70,8 +72,8 @@ test('older layout agenda (to0040): only a group row that plainly says public op
  const group=label=>`<tr class="smcrowh smc-table-group"><td colspan="7" class="smcrowh smc-table-group">${label}</td></tr>`;
  const item=(n,title,extra='')=>`<tr class="smcrow1 smc_toph smc_toph1"><td class="smcrow1 smc_tophn smc_tophn1">${n}</td><td colspan="3" class="smcrow1 smc_topht smc_topht1">${title}</td><td class="smcrow1 smc_toph smc_toph1">${extra}</td></tr>`;
  const agenda=(...rows)=>'<table class="smccontenttable smc_page_to0040_contenttable"><tbody>'+rows.join('')+'</tbody></table>';
- const titles=html=>parseAgendaTopTable(html,meeting,halle,now).map(i=>i.title);
- // Any other label ends the public part, even for numbers marked "Ö".
+ const titles=html=>parseAgendaTopTable(html,meeting,halle,now).filter(i=>!i.publicity).map(i=>i.title);
+ // Any other label ends the public part, even for numbers marked "Ö": what follows is marked non-public.
  for(const closed of ['Vertraulicher Teil','Geschlossene Sitzung','Nichtöffentlicher Teil','Nicht-&ouml;ffentlicher Teil','Nicht oeffentlicher Teil','Un&ouml;ffentlicher Teil','Öffentlicher und nicht öffentlicher Teil','Teil B',''])
   assert.deepEqual(titles(agenda(group('&Ouml;ffentlicher Teil'),item(1,'Haushalt'),group(closed),item(2,'Geheim'),item('&Ouml; 3','Personal'))),['Haushalt'],closed||'(empty label)');
  assert.deepEqual(titles(agenda(group('Oeffentlicher Teil'),item(1,'Haushalt'))),['Haushalt'],'spelled without umlaut');
@@ -105,7 +107,8 @@ test('Halle: calendar and agenda pages of the older layout give public items, re
  const result=await collectSessionNet(halle,{now:new Date('2026-09-20T12:00:00Z'),window:'1m',get});
  assert.deepEqual([...new Set(log)].sort(),['si0040.asp','to0040.asp','vo0050.asp']);
  assert.equal(result.coverage.meetings,2);assert.deepEqual(result.coverage.issues,[]);assert.equal(result.coverage.complete,true);
- assert.deepEqual(result.topics.map(t=>t.id).sort(),['de-15002000-top-21804--1','de-15002000-top-21804--3-1','de-15002000-top-21804--4-1','de-15002000-vo-32100']);
+ assert.deepEqual(result.topics.filter(t=>!t.publicity).map(t=>t.id).sort(),['de-15002000-top-21804--1','de-15002000-top-21804--3-1','de-15002000-top-21804--4-1','de-15002000-vo-32100']);
+ assert.ok(result.topics.filter(t=>t.publicity).every(t=>t.publicity==='nonpublic'));
  const paper=result.topics.find(t=>t.id==='de-15002000-vo-32100');assert.equal(paper.events[0].url,halle.base+'to0040.asp?__ksinr=21804');assert.ok(paper.documents.some(d=>d.url===halle.base+'getfile.asp?id=1&type=do'));
  assert.ok(!paper.documents.some(d=>/halle\.de\/datenschutz/.test(d.url)),'a link to another host is no document of the paper');
  assert.deepEqual(Object.keys(result.marks).sort(),[halle.base+'to0040.asp?__ksinr=21804',halle.base+'to0040.asp?__ksinr=21850']);

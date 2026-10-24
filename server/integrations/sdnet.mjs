@@ -4,7 +4,7 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS,CANCELLED_MEETING} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {fnv,germanDayStrict as day} from './source-common.mjs';
+import {fnv,germanDayStrict as day,markPublicity,topicPublicity,PLACEHOLDER} from './source-common.mjs';
 // Public pages of SD.NET RIM (Sternberg). Only plain links of the public site are followed:
 // the paper list, the calendar export and the meeting pages. The calendar's data endpoint is not used,
 // because it answers only with a session cookie and a form token (HTTP 403 otherwise).
@@ -32,14 +32,14 @@ export function calendarMeetings(ics,source){
  }
  return meetings;
 }
-/** Public agenda items of one meeting page. Rows of the non-public part carry no public marker and are skipped. */
+/** Agenda items of one meeting page: rows top-oeff-data public, rows top-noeff-data of the non-public part taken marked (24.10.2026). */
 export function parseSdnetAgenda(html,meeting,source,now=new Date()){
  // "table-top" as a whole class name: a page may also carry a "table-top.tischvorlagen" table of late papers.
  const table=html.match(/<table[^>]*class=["'](?:[^"']*\s)?table-top(?:\s[^"']*)?["'][\s\S]*?<\/table>/i)?.[0];if(!table)return null;
  const today=now.toISOString().slice(0,10),items=[];
  for(const m of table.matchAll(/<tr\b([^>]*)>([\s\S]*?)<\/tr>/gi)){
-  if(!/class=["'][^"']*\btop-oeff-data\b/.test(m[1]))continue;
-  const headline=text(cell(m[2],'bezeichnung'));if(!headline)continue;
+  const part=m[1].match(/class=["'][^"']*\btop-(n?oeff)-data\b/)?.[1];if(!part)continue;
+  const headline=text(cell(m[2],'bezeichnung'));if(!headline||PLACEHOLDER.test(headline))continue;
   const number=text(cell(m[2],'topnrtext')),reference=text(cell(m[2],'nummer')),key=m[1].match(/data-vorgang-id=["']([\w-]+)["']/)?.[1];
   const all=anchors(cell(m[2],'dokumente')),matter=all.find(a=>/\/vorgang\/\?__=/.test(a.url));
   const documents=[];for(const a of all.filter(a=>/\/sdnetrim\//.test(a.url))){try{documents.push({title:(title(a)||a.label||'Originalunterlage').replace(/ im PDF-Format öffnen$/,'').replace(/\s*\((?:exportiert|aktualisiert):[^)]*\)\s*\([^)]*\)$/,''),url:allowed(new URL(a.url,source.base).href,source),kind:/\.pdf(?:$|\?)/i.test(a.url)?'application/pdf':'document'});}catch{/* foreign host */}}
@@ -51,8 +51,8 @@ export function parseSdnetAgenda(html,meeting,source,now=new Date()){
   // Older installations publish no record id. Addresses carry an opaque parameter whose stability over time is not
   // established, so the paper number (or meeting date, committee, item number and title) identifies the item instead.
   const stable=key||(reference?'nr-'+reference.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''):meeting.date.replace(/-/g,'')+'-'+fnv([meeting.committee,number,headline].join('|')));
-  items.push({id:`${source.id}-${reference?'vo':'top'}-${stable}`,title:headline,reference,sourceUrl:matterUrl||meeting.url,identityLinks:[matterUrl].filter(Boolean),status,documents,
-   event:{date:meeting.date,committee:meeting.committee,status,description,result:'',url:meeting.url,publicEvidence:'Abschnitt „Öffentliche Sitzung“ der Tagesordnung'},agenda:{number,key:key||null}});
+  items.push(markPublicity({id:`${source.id}-${reference?'vo':'top'}-${stable}`,title:headline,reference,sourceUrl:matterUrl||meeting.url,identityLinks:[matterUrl].filter(Boolean),status,documents,
+   event:{date:meeting.date,committee:meeting.committee,status,description,result:'',url:meeting.url,publicEvidence:'Abschnitt „Öffentliche Sitzung“ der Tagesordnung'},agenda:{number,key:key||null}},part==='noeff'?'nonpublic':null));
  }
  return items;
 }
@@ -125,7 +125,8 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
     let cut=false,complete=true;
     for(const row of items){
      row.sourceData={version:'public-source-fields-v1',method:'sdnet',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{reference:row.reference,title:row.title,number:row.agenda.number,matter:row.agenda.key}}],detailStatus:'completed',issues:[]};delete row.agenda;
-     if(row.reference&&row.identityLinks[0]){
+     // The paper of a non-public item is not asked (shut to guests); its title is what is public.
+     if(row.reference&&row.identityLinks[0]&&row.publicity!=='nonpublic'){
       try{const detail=await matter(row.identityLinks[0]);
        row.sourceData.records.push({kind:'paper',url:row.identityLinks[0],fields:detail.fields});
        const own=detail.consultations.find(c=>c.url===m.url);
@@ -148,7 +149,8 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);
-  const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Vorgang / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
+  const publicity=topicPublicity(row.events);
+  const t={...row,publicity:publicity||undefined,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),identityLinks:[...new Set(row.identityLinks)],documents:[...new Map([...row.documents,{title:'Vorgang / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t,{place:source.name}));
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SD.NET-Seite; Tagesordnungspunkte aus dem Abschnitt „Öffentliche Sitzung“.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }

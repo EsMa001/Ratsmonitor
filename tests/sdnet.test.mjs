@@ -21,14 +21,15 @@ test('SD.NET calendar export yields upcoming meetings and marks cancelled ones',
  const ics=['BEGIN:VCALENDAR','BEGIN:VEVENT','DTSTART;TZID=Europe/Berlin:20261013T180000','SUMMARY:Haupt- und Finanzausschuss','DESCRIPTION:Link zur Tagesordnung: '+meetingUrl(7)+'\\n\\nBemerkung:\\nDie Sitzung entfällt!','END:VEVENT','BEGIN:VEVENT','DTSTART;TZID=Europe/Berlin:20261103T180000','SUMMARY:Rat','DESCRIPTION:Link zur Tagesordnung: '+meetingUrl(8),'END:VEVENT','BEGIN:VEVENT','DTSTART:20261104T180000','SUMMARY:Fremd','DESCRIPTION:Link zur Tagesordnung: https://elsewhere.example/tops/?__=X','END:VEVENT','END:VCALENDAR'].join('\r\n');
  assert.deepEqual(calendarMeetings(ics,source),[{url:meetingUrl(7),date:'2026-10-13',committee:'Haupt- und Finanzausschuss',cancelled:true},{url:meetingUrl(8),date:'2026-11-03',committee:'Rat',cancelled:false}]);
 });
-test('SD.NET agenda keeps only rows of the public part and identifies items without relying on opaque addresses',()=>{
+test('SD.NET agenda marks rows of the non-public part and identifies items without relying on opaque addresses',()=>{
  const meeting={url:meetingUrl(1),date:'2026-09-03',committee:'Haupt- und Finanzausschuss'};
  const html=agenda('Haupt- und Finanzausschuss','Do, 03.09.2026',[agendaRow('top-oeff-head','','Öffentliche Sitzung','','200_1'),agendaRow('top-oeff-data','1.','Feststellung der Ausschließungsgründe','','200_6040'),agendaRow('top-oeff-data','3.','Bestellung einer Geschäftsführung','79/2026','505_3022',paperLinks('79/2026')),agendaRow('top-noeff-head','','Nichtöffentliche Sitzung','','200_9'),agendaRow('top-noeff-data','9.','Grundstücksangelegenheit','90/2026','505_9999',paperLinks('90/2026'))]);
- const items=parseSdnetAgenda(html,meeting,source,now);
+ const every=parseSdnetAgenda(html,meeting,source,now),items=every.filter(i=>!i.publicity);
  assert.deepEqual(items.map(i=>[i.id,i.title,i.reference,i.status]),[['nrw-05170004-top-200_6040','Feststellung der Ausschließungsgründe','','unknown'],['nrw-05170004-vo-505_3022','Bestellung einer Geschäftsführung','79/2026','unknown']]);
  assert.deepEqual(items[1].documents,[{title:'Verwaltungsvorlage 79/2026',url:base+'sdnetrim/FILE792026/Vorlage.pdf',kind:'application/pdf'}]);
  assert.equal(items[1].sourceUrl,matterUrl('792026'));assert.equal(items[0].sourceUrl,meeting.url);assert.match(items[0].event.publicEvidence,/Öffentliche Sitzung/);
  assert.ok(!JSON.stringify(items).includes('Grundstücksangelegenheit'));
+ assert.ok(every.some(i=>i.publicity==='nonpublic'&&/Grundstücksangelegenheit/.test(i.title)),'taken with its mark (24.10.2026)');
  // Older installations without record ids: the paper number, or date, committee, number and title.
  const plain=parseSdnetAgenda(agenda('Rat','Do, 01.10.2026',[agendaRow('top-oeff-data','1.1','Mitteilungen',''),agendaRow('top-oeff-data','11','Anfragen',''),agendaRow('top-oeff-data','5','Bebauungsplan','0287/26','',paperLinks('0287/26'))]),{url:meetingUrl(2),date:'2026-10-01',committee:'Rat'},source,now);
  assert.equal(plain[2].id,'nrw-05170004-vo-nr-0287-26');assert.match(plain[0].id,/^nrw-05170004-top-20261001-[0-9a-f]{8}$/);assert.notEqual(plain[0].id,plain[1].id);

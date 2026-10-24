@@ -32,29 +32,31 @@ test('ALLRIS calendar page names the address of its rows; the rows name each mee
  const rows=list([calendarRow('thu','03','15:00',1000587,'Sitzung des Rates der Stadt','Do., 03.09.2026'),calendarRow('tue','08','16:00',1000589,'Sitzung der Bezirksvertretung Süd',''),calendarRow('tue','','18:00',1000590,'Sitzung des Beirates','')]);
  assert.deepEqual(calendarMeetings(rows,source,{year:2026,month:9}),[{url:meetingUrl(1000587),date:'2026-09-03',name:'Sitzung des Rates der Stadt'},{url:meetingUrl(1000589),date:'2026-09-08',name:'Sitzung der Bezirksvertretung Süd'},{url:meetingUrl(1000590),date:'2026-09-08',name:'Sitzung des Beirates'}]);
 });
-test('ALLRIS agenda keeps only the public part, even where the system prints the titles of the non-public part',()=>{
+test('ALLRIS agenda marks the non-public part where the system prints its titles, and keeps the public part as it is',()=>{
  const meeting={url:meetingUrl(5),date:'2026-09-17',name:'Sitzung des Rates'};
  const html=agenda('Rat der Stadt','17.09.2026',[part('Öffentlicher Teil (16:00 - 19:08 Uhr)'),item(11,'','Tagesordnungsdebatte',{linked:true}),item(12,'','Dringlichkeitsantrag',{paper:901,reference:'25-30/01629',result:'nicht auf die Tagesordnung aufgenommen',linked:true}),item(13,'Ö 1','Fragestunde',{linked:true}),item(14,'Ö 2','Haushaltssatzung<br/>2027',{paper:902,reference:'25-30/01551',result:'einstimmig zugestimmt',role:'Entscheidung',linked:true}),item(15,'Ö 2.1','Bericht',{paper:903,reference:'25-30/01552',result:'zur Kenntnis genommen'}),part('Nichtöffentlicher Teil (bis 19:25 Uhr)'),item(16,'N 3','Neubeschaffung von Stromaggregaten',{paper:904,reference:'25-30/09999'}),item(17,'','Grundstücksangelegenheit',{paper:905,reference:'25-30/09998'})]);
  const read=parseAllrisAgenda(html,meeting,source,now);
  assert.equal(read.date,'2026-09-17');assert.equal(read.committee,'Rat der Stadt');
- assert.deepEqual(read.items.map(i=>[i.id,i.title,i.reference,i.status,i.event.result]),[
+ assert.deepEqual(read.items.filter(i=>!i.publicity).map(i=>[i.id,i.title,i.reference,i.status,i.event.result]),[
   ['nrw-05513000-vo-901','Dringlichkeitsantrag','25-30/01629','unknown','nicht auf die Tagesordnung aufgenommen'],
   ['nrw-05513000-top-13','Fragestunde','','unknown',''],
   ['nrw-05513000-vo-902','Haushaltssatzung 2027','25-30/01551','approved','einstimmig zugestimmt'],
   ['nrw-05513000-vo-903','Bericht','25-30/01552','info','zur Kenntnis genommen']]);
- assert.ok(!/Stromaggregat|Grundstück|Tagesordnungsdebatte/.test(JSON.stringify(read.items)));
+ // The titles of the non-public part are taken with their mark (24.10.2026); a row without number or paper is no item.
+ assert.deepEqual(read.items.filter(i=>i.publicity).map(i=>[i.id,i.publicity]),[['nrw-05513000-vo-904','nonpublic'],['nrw-05513000-vo-905','nonpublic']]);
+ assert.ok(!/Tagesordnungsdebatte/.test(JSON.stringify(read.items)));
  // Addresses carry the record number only; the item page is named only where the system links one.
  assert.equal(read.items[2].sourceUrl,paperUrl(902));assert.deepEqual(read.items[2].identityLinks,[paperUrl(902),base+'to020?TOLFDNR=14']);assert.deepEqual(read.items[3].identityLinks,[paperUrl(903)]);
  assert.equal(read.items[1].sourceUrl,base+'to020?TOLFDNR=13');assert.equal(read.items[2].event.url,meeting.url);assert.match(read.items[2].event.publicEvidence,/Ö 2/);assert.equal(read.items[2].agenda.role,'Entscheidung');
  // A committee recommends; a meeting that is still ahead is announced, never decided.
  assert.equal(parseAllrisAgenda(agenda('Bauausschuss','17.09.2026',[item(1,'Ö 1','Bebauungsplan',{paper:7,reference:'1/26',result:'mehrheitlich zugestimmt'})]),meeting,source,now).items[0].status,'recommended');
  assert.deepEqual(parseAllrisAgenda(agenda('Rat der Stadt','03.11.2026',[item(1,'Ö 1','Haushalt',{paper:7,reference:'1/26'}),item(2,'Ö 2','Mitteilungen')]),{...meeting,date:'2026-11-03'},source,now).items.map(i=>i.status),['consulting','announced']);
- // Without "Ö" numbers the heading of the part decides; without either nothing counts as public.
+ // Without "Ö" numbers the heading of the part decides; without either the items are taken marked unclear.
  const plain=[item(1,'1','Mitteilungen'),item(2,'2','Vergabe',{paper:8,reference:'2/26'})];
- assert.deepEqual(parseAllrisAgenda(agenda('Rat','17.09.2026',[part('Öffentliche Sitzung (17:00 Uhr)'),...plain,part('Nichtöffentliche Sitzung'),item(3,'3','Personal')]),meeting,source,now).items.map(i=>i.title),['Mitteilungen','Vergabe']);
- assert.deepEqual(parseAllrisAgenda(agenda('Rat','17.09.2026',plain),meeting,source,now).items,[]);
+ assert.deepEqual(parseAllrisAgenda(agenda('Rat','17.09.2026',[part('Öffentliche Sitzung (17:00 Uhr)'),...plain,part('Nichtöffentliche Sitzung'),item(3,'3','Personal')]),meeting,source,now).items.map(i=>[i.title,i.publicity||'public']),[['Mitteilungen','public'],['Vergabe','public'],['Personal','nonpublic']]);
+ assert.deepEqual(parseAllrisAgenda(agenda('Rat','17.09.2026',plain),meeting,source,now).items.map(i=>i.publicity),['unclear','unclear']);
  // An "Ö" number below the heading of the non-public part is not trusted.
- assert.deepEqual(parseAllrisAgenda(agenda('Rat','17.09.2026',[part('Nichtöffentlicher Teil'),item(4,'Ö 4','Vertrag')]),meeting,source,now).items,[]);
+ assert.deepEqual(parseAllrisAgenda(agenda('Rat','17.09.2026',[part('Nichtöffentlicher Teil'),item(4,'Ö 4','Vertrag')]),meeting,source,now).items.map(i=>i.publicity),['nonpublic']);
  assert.equal(parseAllrisAgenda('<html><h1>Rat - 17.09.2026</h1><p>Keine Tagesordnung.</p></html>',meeting,source,now),null);
 });
 test('ALLRIS paper page yields fields, documents with an address of their own and the result per meeting',()=>{
@@ -85,13 +87,13 @@ test('ALLRIS collector reads calendar, public agendas and each paper once, and t
  assert.deepEqual(calls.slice(0,2),[base+'si010?MM=11&YY=2026',listUrl(11,2026)],'the first month opens the session before anything else is asked');
  assert.equal(calls.filter(u=>u===paperUrl(902)).length,1);assert.ok(!calls.includes(paperUrl(950)),'a paper of the non-public part is never requested');assert.ok(calls.every(u=>u.startsWith(base)));
  assert.equal(d.coverage.method,'scraper');assert.equal(d.coverage.meetings,2);assert.equal(d.coverage.upcomingWithoutAgenda,1);assert.deepEqual(d.coverage.issues,[]);assert.equal(d.coverage.complete,true);assert.equal(d.readMeetings,2);
- assert.deepEqual(d.topics.map(t=>t.id).sort(),['nrw-05513000-top-13','nrw-05513000-vo-902']);
+ assert.deepEqual(d.topics.filter(t=>!t.publicity).map(t=>t.id).sort(),['nrw-05513000-top-13','nrw-05513000-vo-902']);
  const budget=d.topics.find(t=>t.id==='nrw-05513000-vo-902');
  assert.deepEqual(budget.events.map(e=>[e.date,e.committee,e.status,e.result,e.description]),[['2026-09-03','Hauptausschuss','recommended','einstimmig zugestimmt','Ergebnis laut Beratungsfolge: einstimmig zugestimmt'],['2026-09-24','Rat der Stadt','approved','einstimmig beschlossen','Ergebnis laut Tagesordnung: einstimmig beschlossen']]);
  assert.equal(budget.status,'approved');assert.equal(budget.eventDate,'2026-09-24');assert.equal(budget.regionId,source.id);assert.equal(budget.reference,'25-30/01551');assert.equal(budget.sourceUrl,paperUrl(902));
  assert.deepEqual(budget.documents,[{title:'Vorlage',url:doc(1),kind:'application/pdf'},{title:'Sammeldokument öffentlich',url:doc(2),kind:'application/pdf'},{title:'Vorlage / öffentliche Tagesordnung',url:paperUrl(902),kind:'html'}]);
  assert.equal(budget.sourceData.method,'allris');assert.deepEqual(budget.sourceData.records.map(r=>r.kind),['agenda','paper']);assert.equal(budget.events[0].attendance.status,'not_collected');
- assert.ok(!JSON.stringify(d).includes('Personalangelegenheit'));assert.ok(!JSON.stringify(d).includes('Text der Vorlage'));
+ assert.equal(d.topics.find(t=>t.title==='Personalangelegenheit')?.publicity,'nonpublic');assert.ok(!JSON.stringify(d).includes('Text der Vorlage'));
  assert.match(budget.longSummary[0],/Stadt Gelsenkirchen/);
 });
 test('ALLRIS collector skips meetings whose agenda is unchanged since their papers were read',async()=>{
@@ -105,7 +107,7 @@ test('ALLRIS collector skips meetings whose agenda is unchanged since their pape
  // The agenda says something new: the meeting is read again.
  pages[meetingUrl(5)]=pages[meetingUrl(5)].replace('einstimmig beschlossen','mehrheitlich beschlossen');calls.length=0;
  const changed=await collectAllris(source,{now:later,get,window:'3m',marks:{known:first.marks,stock}});
- assert.equal(changed.coverage.unchangedMeetings,1);assert.ok(calls.includes(paperUrl(902)));assert.deepEqual(changed.topics.map(t=>t.id).sort(),['nrw-05513000-top-13','nrw-05513000-vo-902']);
+ assert.equal(changed.coverage.unchangedMeetings,1);assert.ok(calls.includes(paperUrl(902)));assert.deepEqual(changed.topics.filter(t=>!t.publicity).map(t=>t.id).sort(),['nrw-05513000-top-13','nrw-05513000-vo-902']);
 });
 test('ALLRIS collector stops at once when the system reports too many requests, and does not resume by itself',async()=>{
  const {calls,get}=web();
@@ -136,14 +138,14 @@ test('ALLRIS collector reports a calendar it cannot read and a past meeting with
  const gap=await collectAllris(source,{now,window:'1m',get});assert.ok(gap.coverage.issues.includes('Keine lesbare öffentliche Tagesordnung: '+meetingUrl(5)));assert.equal(gap.coverage.complete,false);assert.equal(gap.coverage.warnings,undefined);
  // The system shows the meeting with its basic data but publishes no agenda for it: a remark, the import stays complete.
  pages[meetingUrl(5)]='<html><h1 class="title">Partnerschaftskomitee - 24.09.2026</h1><span class="text1" id="sigremium">Partnerschaftskomitee</span><span class="text4" id="sidatum">Do., 24.09.2026</span><span id="sistatus">öffentlich</span></html>';
- const bare=await collectAllris(source,{now,window:'1m',get});assert.deepEqual(bare.coverage.warnings,['Sitzung ohne veröffentlichte Tagesordnung: '+meetingUrl(5)]);assert.deepEqual(bare.coverage.issues,[]);assert.equal(bare.coverage.complete,true);assert.equal(bare.topics.length,1);
+ const bare=await collectAllris(source,{now,window:'1m',get});assert.deepEqual(bare.coverage.warnings,['Sitzung ohne veröffentlichte Tagesordnung: '+meetingUrl(5)]);assert.deepEqual(bare.coverage.issues,[]);assert.equal(bare.coverage.complete,true);assert.equal(bare.topics.filter(t=>!t.publicity).length,1);
  // Out of time: what was not read is named and the import can be resumed.
  const slow=web();let n=0;const cut=await collectAllris(source,{now,window:'1m',get:async url=>{if(url===paperUrl(902)&&++n)throw Error('Zeitbudget der Quelle erreicht');return slow.get(url);}});
  assert.equal(cut.coverage.resumable,true);assert.ok(cut.coverage.issues.some(i=>/Zeitbudget der Quelle erreicht; 2 Sitzungen/.test(i)));assert.deepEqual(cut.marks,{});
 });
 test('an ALLRIS source is read only while its own OParl address does not answer as an OParl system',async()=>{
  const {get,calls}=web();
- const d=await collectAllris(source,{now,window:'1m',checkOparl:true,get});assert.equal(calls[0],base+'oparl/system');assert.equal(d.topics.length,2);
+ const d=await collectAllris(source,{now,window:'1m',checkOparl:true,get});assert.equal(calls[0],base+'oparl/system');assert.equal(d.topics.filter(t=>!t.publicity).length,2);
  const asked=[];await assert.rejects(collectAllris(source,{now,window:'1m',checkOparl:true,get:async url=>{asked.push(url);return '{"type":"https://schema.oparl.org/1.1/System"}';}}),/Adapterfreigabe/);assert.deepEqual(asked,[base+'oparl/system']);
  // Through the catalog: the same gate, and every request stays inside the approved source.
  const entry=NRW_SOURCES.find(s=>s.adapter==='allris'&&!s.oparlFallback);if(!entry)return;

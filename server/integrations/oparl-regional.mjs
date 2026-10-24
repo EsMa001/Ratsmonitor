@@ -1,5 +1,6 @@
 import {compactOparl,sourceDecision,publicParticipants} from './source-fields.mjs';
 import {withoutPrivateNames} from '../../shared/private-names.mjs';
+import {selfClosed,topicPublicity,UNCLEAR_DESCRIPTION} from './source-common.mjs';
 import {windowStart,windowYears,historyWindow} from './history-window.mjs';
 import {usableMark,newMark,usableList} from './meeting-marks.mjs';
 import {chooseBody} from './body-identity.mjs';
@@ -249,19 +250,21 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
   const attendance=await publicParticipants(m,async p=>{throw Error('Person nicht geladen: '+p);},now.toISOString());
   const committee=org.join(', ')||clean(m.name)||'Öffentliche Sitzung';
   const resolved=await parallel(m.agendaItem||[],async a=>{try{return await object(a)}catch(e){fail('Tagesordnungspunkt: '+e.message);return {public:false};}},3);
-  const visible=publicAgenda(resolved,{assumePublic:source.assumePublicAgenda===true||Boolean(source.assumePublicAgenda?.decided)});if(visible.unclear)issues.push(visible.unclear+' Tagesordnungspunkte ohne eindeutigen Öffentlichkeitsnachweis ausgelassen.');
-  for(const a of visible.items){try{let c,p;try{if(a.consultation){c=await object(a.consultation);if(c.paper)p=await object(c.paper);}}catch(e){fail('Verknüpfung: '+e.message);/* Keep the independently public agenda item. A later official paper link can merge it. */}
+  const visible=publicAgenda(resolved,{assumePublic:source.assumePublicAgenda===true||Boolean(source.assumePublicAgenda?.decided)});
+  // Items not shown to be public are read like public ones, marked „unclear“ (24.10.2026); only those the source leads as
+  // non-public stay title and meeting (below), since their papers and files are shut to guests.
+  for(const a of [...visible.items,...(visible.others||[]).filter(o=>o.publicity==='unclear')]){try{let c,p;try{if(a.consultation){c=await object(a.consultation);if(c.paper)p=await object(c.paper);}}catch(e){fail('Verknüpfung: '+e.message);/* Keep the independently public agenda item. A later official paper link can merge it. */}
    if(c?.deleted||p?.deleted)continue;const rawKey=p?.id||a.id;if(!rawKey)continue;const key=allowed(rawKey);const officialTitle=clean(p?.name||a.name);if(!officialTitle)continue;
    let status=statusOf(a,c,m,now);if(m.start.slice(0,10)<=now.toISOString().slice(0,10)&&!clean(a.result))status='unknown';
-   const event={date:m.start.slice(0,10),committee,status,description:clean(a.result)||'Öffentlich auf der Tagesordnung; kein Ergebnis im erfassten Feld.',result:clean(a.result),url:allowed(m.id),publicEvidence:a.publicEvidence,attendance};event.decision=sourceDecision(event);
+   const event={date:m.start.slice(0,10),committee,status,description:clean(a.result)||(a.publicity==='unclear'?UNCLEAR_DESCRIPTION:'Öffentlich auf der Tagesordnung; kein Ergebnis im erfassten Feld.'),result:clean(a.result),url:allowed(m.id),publicEvidence:a.publicEvidence||'öffentliche Beratung nicht belegt',...(a.publicity==='unclear'?{publicity:'unclear'}:{}),attendance};event.decision=sourceDecision(event);
    const documents=[{title:'Amtlicher OParl-Datensatz',url:allowed(key),kind:'oparl'}];
-   for(const f0 of [p?.mainFile,...p?.auxiliaryFile||[],a.resolutionFile,...a.auxiliaryFile||[],m.invitation,m.resultsProtocol,m.verbatimProtocol,...m.auxiliaryFile||[]].filter(Boolean)){try{const f=await object(f0);if(f.deleted||!f.accessUrl)continue;documents.push({title:clean(f.name||f.fileName||'Originalunterlage'),url:allowed(f.accessUrl),kind:f.mimeType||'document'});}catch(e){fail('Dokumentverweis: '+e.message);}}
+   for(const f0 of [p?.mainFile,...p?.auxiliaryFile||[],a.resolutionFile,...a.auxiliaryFile||[],m.invitation,m.resultsProtocol,m.verbatimProtocol,...m.auxiliaryFile||[]].filter(Boolean)){try{const f=await object(f0);if(f.deleted||!f.accessUrl||selfClosed(f.name,f.fileName,f.accessUrl))continue;documents.push({title:clean(f.name||f.fileName||'Originalunterlage'),url:allowed(f.accessUrl),kind:f.mimeType||'document'});}catch(e){fail('Dokumentverweis: '+e.message);}}
    const topicId=source.id+'-oparl-'+(await hash(key)).slice(0,20);events++;
    if(grouped.has(key)){const prev=grouped.get(key);prev.events.push(event);prev.documents.push(...documents);prev.identityLinks.push(allowed(a.id));}else grouped.set(key,{id:topicId,regionId:source.id,source:source.kind,public:true,title:officialTitle,officialTitle,sourceData:{version:'public-source-fields-v1',method:'oparl',fetchedAt:now.toISOString(),records:[compactOparl(p,'paper'),compactOparl(a,'agenda'),compactOparl(c,'consultation'),compactOparl(m,'meeting')].filter(Boolean)},metadata:{sourceModifiedAt:p?.modified||a.modified||null},reference:clean(p?.reference),category:category(officialTitle),updatedAt:now.toISOString(),sourceUrl:key,identityLinks:[key,allowed(a.id)],events:[event],documents,relevanceReason:'Öffentlicher Vorgang: '+source.name});
   }catch(e){fail('Tagesordnungspunkt: '+e.message);}}
   // Punkte, die die Quelle nichtöffentlich führt oder nicht als öffentlich belegt (seit 24.10.2026): nur Titel und Sitzung, mit
   // Kennzeichen; Vorlage, Beratung und Dateien solcher Punkte werden nicht abgefragt. Namen von Privatpersonen fallen aus dem Titel.
-  for(const a of visible.others||[]){
+  for(const a of (visible.others||[]).filter(o=>o.publicity==='nonpublic')){
    if(!a.id)continue;const key=allowed(a.id),closed=a.publicity==='nonpublic',raw=clean(a.name),title=closed?withoutPrivateNames(raw):raw;if(!title)continue;
    const event={date:m.start.slice(0,10),committee,status:m.start.slice(0,10)>now.toISOString().slice(0,10)?'consulting':'unknown',description:closed?'Nichtöffentlicher Punkt laut veröffentlichter Tagesordnung; öffentlich bekannt sind Titel, Sitzung und Gremium.':'Auf der veröffentlichten Tagesordnung; ob öffentlich beraten wird, gibt die Quelle nicht an.',result:'',url:allowed(m.id),publicEvidence:closed?'nichtöffentlicher Teil laut Quelle':'',publicity:a.publicity,attendance};event.decision=sourceDecision(event);
    const topicId=source.id+'-oparl-'+(await hash(key)).slice(0,20);events++;
@@ -270,7 +273,7 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
   }
   if(!cut&&meeting&&!failed){held[meeting.url]=newMark(meeting,print,now,events);done++;}
  },3);
- const topics=[];for(const t of grouped.values()){t.events.sort((a,b)=>a.date.localeCompare(b.date));const last=t.events.at(-1);Object.assign(t,{status:last.status,eventDate:last.date,committee:last.committee});t.documents=[...new Map(t.documents.map(d=>[d.url,d])).values()];t.sourceText=t.title+'\n'+t.events.map(e=>e.description).join('\n');Object.assign(t,sourceSummary(t,{place:source.name.replace(/^(Stadt|Gemeinde) /,'')}));t.quality={passed:false,checks:[{name:'Öffentliche Quelle',passed:true,detail:'Öffentlichkeit durch Kennzeichen oder ausdrücklich bezeichneten öffentlichen Sitzungsabschnitt belegt.'},{name:'Inhaltsprüfung',passed:false,detail:'Automatischer Quellenüberblick; keine redaktionelle Freigabe.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);}
+ const topics=[];for(const t of grouped.values()){t.events.sort((a,b)=>a.date.localeCompare(b.date));{const p=topicPublicity(t.events);if(p)t.publicity=p;else delete t.publicity;}const last=t.events.at(-1);Object.assign(t,{status:last.status,eventDate:last.date,committee:last.committee});t.documents=[...new Map(t.documents.map(d=>[d.url,d])).values()];t.sourceText=t.title+'\n'+t.events.map(e=>e.description).join('\n');Object.assign(t,sourceSummary(t,{place:source.name.replace(/^(Stadt|Gemeinde) /,'')}));t.quality={passed:false,checks:[{name:'Öffentliche Quelle',passed:true,detail:'Öffentlichkeit durch Kennzeichen oder ausdrücklich bezeichneten öffentlichen Sitzungsabschnitt belegt.'},{name:'Inhaltsprüfung',passed:false,detail:'Automatischer Quellenüberblick; keine redaktionelle Freigabe.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);}
  onProgress(source.name+': '+topics.length+' Artikel');
  // Unchanged meetings are a successful reading: their reports are in the database already.
  if(spent&&!issues.some(exhausted))issues.push('Zeitbudget der Quelle erreicht');
