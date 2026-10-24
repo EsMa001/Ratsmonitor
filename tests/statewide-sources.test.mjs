@@ -54,7 +54,8 @@ test('one address serves one area; a shared system needs an explicitly assigned 
 });
 test('catalog corrections are applied and unreachable sources are not offered for import',async()=>{
  for(const [id,override] of Object.entries(overrides)){const source=discovered.find(s=>s.id===id);assert.ok(source,id);for(const [key,value] of Object.entries(override))assert.deepEqual(source[key],value,id+'.'+key+': run node scripts/apply-source-overrides.mjs');}
- const unreachable=NRW_SOURCES.filter(s=>s.method==='pending');assert.ok(unreachable.length>0);
+ // Switched-off sources (none left in NRW since Hagen reads its gazette, 24.10.2026): never offered, never asked.
+ const unreachable=NRW_SOURCES.filter(s=>s.method==='pending');
  for(const s of unreachable){assert.equal(canImport(s.id),false);assert.ok(s.note);
   // No request is made for a source that is switched off.
   const original=globalThis.fetch;globalThis.fetch=()=>{throw Error('unexpected request');};

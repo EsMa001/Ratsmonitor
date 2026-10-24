@@ -79,7 +79,8 @@ const PAGE_EXT=new Set(['html','htm','php','php3','php5','phtml','asp','aspx','j
 const kindOf=(url,type)=>{const t=String(type??'').toLowerCase();if(t.includes('pdf')||GAZETTE_FORM.test(String(url??'')))return 'pdf';if(t.includes('calendar'))return 'ics';if(/rss|atom/.test(t))return 'feed';if(t.includes('html'))return 'html';
  const {path,query}=pathOf(url),ext=path.match(/\.([a-z][a-z0-9]{1,4})$/i)?.[1]?.toLowerCase();
  // Download scripts name the file in the query (IKISS: download.php?fid=….PDF).
- if(ext==='pdf'||/\.pdf(?![a-z0-9])/i.test(query))return 'pdf';
+ // Also a document script with the type as parameter ("loadDocument.phtml?FID=…&Ext=PDF", Landkreis Ansbach 2026).
+ if(ext==='pdf'||/\.pdf(?![a-z0-9])/i.test(query)||/(?:^|[?&])ext=pdf(?:&|$)/i.test(query))return 'pdf';
  if(['ics','ical','ifb'].includes(ext))return 'ics';
  if(['rss','atom'].includes(ext)||/\/(?:feed|rss|atom)(?:\.xml)?\/?$/i.test(path)||/[?&](?:type=9818|format=feed)(?:&|$)/i.test(query))return 'feed';
  if(!ext||PAGE_EXT.has(ext))return 'html';return 'other';};

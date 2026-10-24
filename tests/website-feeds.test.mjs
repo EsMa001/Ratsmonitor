@@ -297,3 +297,8 @@ test('gazette issue: only the numbered chain from item 1 with an agenda word; cl
  assert.deepEqual(p.meetings[1].items,[]);
  assert.deepEqual(p.meetings[2].items.map(i=>i.number),['1','2']);
 });
+
+test('document script with the type as parameter is a PDF (loadDocument.phtml?…&Ext=PDF, Landkreis Ansbach)',()=>{
+ const [l]=documentLinks('<a href="/loadDocument.phtml?FID=3797.2611.1&amp;Ext=PDF">Nr. 20 vom 14. Oktober 2026</a>','https://www.landkreis-ansbach.de/x/');
+ assert.equal(l.kind,'pdf');assert.equal(l.url,'https://www.landkreis-ansbach.de/loadDocument.phtml?FID=3797.2611.1&Ext=PDF');
+});

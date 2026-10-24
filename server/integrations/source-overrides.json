@@ -62,10 +62,16 @@
     "meetingScan": "filter"
   },
   "nrw-05914000": {
-    "method": "pending",
-    "state": "unreachable",
-    "verifiedAt": "2026-10-01",
-    "note": "Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar."
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hagen.de/",
+    "pages": [
+      "https://www.hagen.de/hagen-aktuell/amtsblatt/"
+    ],
+    "state": "verified",
+    "verifiedSource": "https://www.hagen.de/hagen-aktuell/amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "note": "ALLRIS (allris.hagen.de) mit Zugriffsprüfung, OParl-Adresse 404; das Amtsblatt der Stadt nennt Sitzungen des Rats mit Tagesordnung (Probeabruf 3 Monate: 56 Berichte; Gremienname teils als „Beirat“ erkannt, offen)."
   },
   "nrw-05124000": {
     "method": "scraper",

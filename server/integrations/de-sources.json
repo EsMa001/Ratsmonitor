@@ -8258,7 +8258,13 @@
     "base": "https://bi.vg-jockgrim.de/",
     "extension": "php",
     "calendarQuery": "__cpanr=7",
-    "panrs": ["2", "3", "4", "5", "7"],
+    "panrs": [
+      "2",
+      "3",
+      "4",
+      "5",
+      "7"
+    ],
     "verifiedSource": "https://bi.vg-jockgrim.de/info.php",
     "verifiedAt": "2026-10-10",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
@@ -29655,7 +29661,12 @@
     "adapter": "kic",
     "base": "https://ris.komuna.net/vgthannhausen/",
     "api": "https://risapi1.komuna.net/",
-    "clients": [32, 34, 36, 38],
+    "clients": [
+      32,
+      34,
+      36,
+      38
+    ],
     "verifiedSource": "https://ris.komuna.net/vgthannhausen/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -30113,7 +30124,13 @@
     "adapter": "kic",
     "base": "https://ris.komuna.net/vgtuerkheim/",
     "api": "https://risapi3.komuna.net/",
-    "clients": [32, 76929, 77193, 77196, 77199],
+    "clients": [
+      32,
+      76929,
+      77193,
+      77196,
+      77199
+    ],
     "verifiedSource": "https://ris.komuna.net/vgtuerkheim/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
@@ -43195,5 +43212,49 @@
       "meetings": 8,
       "documents": 60
     }
+  },
+  {
+    "id": "de-09373",
+    "name": "Landkreis Neumarkt i.d.OPf.",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.landkreis-neumarkt.de/",
+    "pages": [
+      "https://www.landkreis-neumarkt.de/landkreis-neumarkt/landratsamt/amtsblatt/"
+    ],
+    "verifiedSource": "https://www.landkreis-neumarkt.de/landkreis-neumarkt/landratsamt/amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; Amtsblatt des Landkreises mit Tagesordnungen der Ausschüsse. Probeabruf 3 Monate: 7 Berichte aus 1 Sitzung."
+  },
+  {
+    "id": "de-09571",
+    "name": "Landkreis Ansbach",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.landkreis-ansbach.de/",
+    "pages": [
+      "https://www.landkreis-ansbach.de/Aktuelles/Bekanntmachungen/Amtsblatt/"
+    ],
+    "gazettePages": true,
+    "verifiedSource": "https://www.landkreis-ansbach.de/Aktuelles/Bekanntmachungen/Amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); das Amtsblatt des Landkreises (Ausgaben als loadDocument.phtml?…&Ext=PDF, Linktext nur Nummer und Tag) nennt Sitzungen des Kreistags mit Tagesordnung."
+  },
+  {
+    "id": "de-08119067",
+    "name": "Stadt Schorndorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.schorndorf.de/",
+    "pages": [
+      "https://www.schorndorf.de/de/stadt-buerger/aktuelles/oeffentliche-bekanntmachungen"
+    ],
+    "gazettePages": true,
+    "verifiedSource": "https://www.schorndorf.de/de/stadt-buerger/aktuelles/oeffentliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem bei ratsinfomanagement.net (für uns gesperrt); die öffentlichen Bekanntmachungen der Stadt nennen Sitzungen des Gemeinderats mit Tagesordnung."
   }
 ]

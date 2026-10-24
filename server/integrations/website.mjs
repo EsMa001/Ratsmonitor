@@ -410,7 +410,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    let html;try{html=await get(u,site);}catch(e){fail('Listenseite '+u,e);continue;}
    listRead.add(u);
    onProgress(`${source.id}: ${listReads} Listenseiten`);
-   for(const l of documentLinks(html,u))offer(l);
+   // gazettePages (catalog): the listed pages are a gazette's list of issues whose links name only number and day ("Nr. 20 vom …").
+   for(const l of documentLinks(html,u))offer(source.gazettePages&&l.kind==='pdf'&&!/amtsblatt|mitteilungsblatt|bekanntmachung/i.test(l.label)?{...l,label:`Amtsblatt ${l.label}`.trim()}:l);
    // Issues behind download forms only where the catalog asks for them: a whole gazette mixes much else into the items (24.10.2026).
    if(source.gazetteForms)for(const g of gazetteForms(html,u)){forms.set(g.url,g.form);offer(g);}
    // A download area loaded by script lists its files in JSON (CMS of the Saarpfalz-Kreis).

@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 357 angebunden, 70 nicht. Diese Datei beschreibt die 264 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 358 angebunden, 69 nicht. Diese Datei beschreibt die 264 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -307,7 +307,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Extertal | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | http://extertal.ratsinfomanagement.net/ |
 | Stadt Gescher | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | http://gescher.ratsinfomanagement.net/gremien |
 | Stadt Greven | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://greven.ratsinfomanagement.net/ |
-| Stadt Hagen | Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar. | https://www.hagen.de/buergerinfo/oparl/1.0/system.asp |
 | Stadt Halle (Westf.) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://hallewestfalen.ratsinfomanagement.net/ |
 | Stadt Harsewinkel | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.harsewinkel.de/ |
 | Gemeinde Heek | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://heek.ratsinfomanagement.net/ |

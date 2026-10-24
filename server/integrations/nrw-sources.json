@@ -180,11 +180,17 @@
     "name": "Stadt Hagen",
     "kind": "city",
     "system": "https://www.hagen.de/buergerinfo/oparl/1.0/system.asp",
-    "method": "pending",
+    "method": "scraper",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "unreachable",
-    "verifiedAt": "2026-10-01",
-    "note": "Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar."
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "note": "ALLRIS (allris.hagen.de) mit Zugriffsprüfung, OParl-Adresse 404; das Amtsblatt der Stadt nennt Sitzungen des Rats mit Tagesordnung (Probeabruf 3 Monate: 56 Berichte; Gremienname teils als „Beirat“ erkannt, offen).",
+    "adapter": "website",
+    "base": "https://www.hagen.de/",
+    "pages": [
+      "https://www.hagen.de/hagen-aktuell/amtsblatt/"
+    ],
+    "verifiedSource": "https://www.hagen.de/hagen-aktuell/amtsblatt/"
   },
   {
     "id": "nrw-05758012",
