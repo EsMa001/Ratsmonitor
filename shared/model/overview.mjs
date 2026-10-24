@@ -73,7 +73,7 @@ export function overviewOf(report,model,{parties=[],today=new Date().toISOString
  const s=sessions(report.events,today);if(s)out.push(s);
  // Nichtöffentlicher Punkt einer veröffentlichten Tagesordnung (seit 24.10.2026): öffentlich bekannt sind nur Titel, Sitzung, Gremium
  if(report.publicity==='nonpublic')out.push('Der Punkt wurde in nichtöffentlicher Sitzung beraten; öffentlich bekannt sind Titel, Sitzung und Gremium.');
- else if(report.publicity==='unclear')out.push('Ob der Punkt öffentlich beraten wurde, gibt die Quelle nicht an.');
+ // Unklarer Teil gilt als öffentlich (Nico, 24.10.2026: was öffentlich einsehbar ist, ist öffentlich): kein Hinweis.
  const d=documents(model.doctypes);if(d)out.push(d);
  return out.length?{version:OVERVIEW_VERSION,text:out.join(' ')}:null;
 }
