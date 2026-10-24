@@ -7,7 +7,8 @@
  * Grenzen je Nacht: höchstens `areas` Gebiete, je Anbieter höchstens `perProvider`, und je Anbieter höchstens `requestCap`
  * Anfragen des ganzen Prozesses (der Abruf des letzten Tages zählt mit; request-budget.mjs pacedFetch zählt). Anbieter, die
  * warten oder hochfahren, und Gebiete mit eigenem Termin im Fehlerspeicher lässt die Nacht aus (deferredRegions); sie bleiben
- * in der Runde. Reihenfolge einer Runde: Gebiete mit wenigen Berichten je Einwohner zuerst (dort sind die Lücken), dann der Rest.
+ * in der Runde. Reihenfolge einer Runde: Gebiete im Teilstand zuerst (seit 24.10.2026), darin wie im Rest Gebiete mit wenigen
+ * Berichten je Einwohner zuerst (dort sind die Lücken).
  *
  * Stand in system_state BACKFILL_KEY: {round, startedAt, total, remaining:[Gebiete], last:{at, picked, done, kept, failed, minutes}}.
  */
@@ -32,11 +33,22 @@ async function reportCounts(db){
  try{const {results}=await db.prepare("SELECT region_id,json_extract(stats,'$.count') AS n FROM region_stats").all();return new Map((results||[]).map(r=>[r.region_id,Number(r.n)||0]));}
  catch{return new Map();}
 }
-/** Die laufende Runde, oder eine neue (carry: Gebiete der alten Runde, die nie dran waren, kommen zuerst) */
+/**
+ * Gebiete im Teilstand (24.10.2026): Bestand vorhanden, aber der gespeicherte Zeitraum wurde nie vollständig gelesen
+ * (source_coverage.complete false, letzter Abruf nicht gescheitert). Ein voller Abruf über 12 Monate macht ihn vollständig.
+ */
+async function partialRegions(db){
+ try{const {results}=await db.prepare("SELECT region_id FROM source_coverage WHERE json_extract(payload,'$.complete')=0 AND coalesce(json_extract(payload,'$.attemptStatus'),'')<>'failed' AND coalesce(json_extract(payload,'$.importedAt'),'')<>''").all();return new Set((results||[]).map(r=>r.region_id));}
+ catch{return new Set();}
+}
+/** Gebiete im Teilstand zuerst, sonst die Reihenfolge der Runde (stabil) */
+export function partialFirst(remaining,partial){return [...remaining.filter(id=>partial.has(id)),...remaining.filter(id=>!partial.has(id))];}
+/** Die laufende Runde, oder eine neue (carry: Gebiete der alten Runde, die nie dran waren, kommen zuerst); Teilstand jeweils vorn */
 export async function currentRound(db,{now=Date.now(),ids=selectedRegions('sources')}={}){
  const state=await readState(db),known=new Set(ids);
- if(state?.remaining?.length){state.remaining=state.remaining.filter(id=>known.has(id));if(state.remaining.length)return state;}
- return newRound(db,{now,ids,carry:[],previous:state});
+ if(state?.remaining?.length){state.remaining=state.remaining.filter(id=>known.has(id));if(state.remaining.length){state.remaining=partialFirst(state.remaining,await partialRegions(db));return state;}}
+ const fresh=await newRound(db,{now,ids,carry:[],previous:state});
+ fresh.remaining=partialFirst(fresh.remaining,await partialRegions(db));return fresh;
 }
 async function newRound(db,{now,ids,carry,previous}){
  const rest=roundOrder(ids.filter(id=>!carry.includes(id)),await reportCounts(db));

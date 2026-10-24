@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {memoryDb} from './helpers/d1.mjs';
-import {backfillNight,pickTonight,currentRound,roundOrder,backfillView} from '../server/integrations/backfill.mjs';
+import {backfillNight,pickTonight,currentRound,roundOrder,backfillView,partialFirst} from '../server/integrations/backfill.mjs';
 import {PROVIDER_AREAS} from '../server/integrations/pipeline-jobs.mjs';
 import {parseArgs} from '../server/integrations/pipeline-worker.mjs';
 
@@ -55,4 +55,20 @@ test('Schalter des Lückenabrufs',()=>{
  assert.equal(o.backfill,300);assert.equal(o.backfillMinutes,90);assert.equal(o.backfillPerProvider,25);assert.equal(o.backfillCap,3000);
  assert.equal(parseArgs(['--create','sources']).backfill,0,'ohne Schalter kein Lückenabruf');
  assert.throws(()=>parseArgs(['--backfill','-1']),/--backfill/);
+});
+
+test('Teilstand zuerst: Gebiete, deren Zeitraum nie vollständig gelesen wurde, kommen in der laufenden Runde vorn',async()=>{
+ assert.deepEqual(partialFirst(['a','b','c','d'],new Set(['c','a'])),['a','c','b','d']);
+ const {sql,db}=memoryDb();
+ const first=await currentRound(db,{ids:single});
+ const last=first.remaining.at(-1),failed=first.remaining.at(-2);
+ const put=(id,p)=>sql.prepare('INSERT INTO source_coverage(region_id,payload) VALUES(?,?)').run(id,JSON.stringify(p));
+ put(last,{complete:false,attemptStatus:'completed',importedAt:'2026-10-23T23:00:00Z'});
+ put(failed,{complete:false,attemptStatus:'failed',importedAt:'2026-10-23T23:00:00Z'});
+ put(first.remaining[0],{complete:true,attemptStatus:'completed',importedAt:'2026-10-23T23:00:00Z'});
+ const again=await currentRound(db,{ids:single});
+ assert.equal(again.remaining[0],last,'Teilstand vorn');
+ assert.equal(again.remaining.length,single.length);
+ assert.equal(again.remaining.indexOf(failed),first.remaining.indexOf(failed)+1,'gescheiterte nicht vorgezogen');
+ sql.close();
 });
