@@ -42478,5 +42478,630 @@
     "verifiedSource": "https://www.hirschaid.de/seite/de/cms241020261408237e4c0fe5/0444:2195/-/Sitzungsprotokolle.html",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 34 Berichte aus 7 Sitzungen."
+  },
+  {
+    "id": "de-08116036",
+    "name": "Gemeinde Kohlberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kohlberg.de/",
+    "pages": [
+      "https://www.kohlberg.de/rathaus-service/gemeinderat/sitzungsberichte/seite-1/suche-none",
+      "https://www.kohlberg.de/rathaus-service/gemeinderat/sitzungsberichte/seite-2/suche-none",
+      "https://www.kohlberg.de/rathaus-service/gemeinderat/gemeinderatssitzungen/seite-1/suche-none",
+      "https://www.kohlberg.de/rathaus-service/gemeinderat/sitzungsberichte/416/gemeinderatssitzung-vom-23022026",
+      "https://www.kohlberg.de/rathaus-service/gemeinderat/sitzungsberichte/422/gemeinderatssitzung-vom-16032026"
+    ],
+    "verifiedSource": "https://www.kohlberg.de/rathaus-service/gemeinderat/sitzungsberichte/seite-1/suche-none",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 10 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08116079",
+    "name": "Gemeinde Lenningen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.lenningen.de/",
+    "pages": [
+      "https://www.lenningen.de/rathaus-service/kommunalpolitik/ortschaftsraete",
+      "https://www.lenningen.de/rathaus-service/oeffentliche-bekanntmachungen",
+      "https://www.lenningen.de/startseite",
+      "https://www.lenningen.de/rathaus-service/aktuelles/seite-1/suche-none"
+    ],
+    "verifiedSource": "https://www.lenningen.de/rathaus-service/kommunalpolitik/ortschaftsraete",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 8 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08426066",
+    "name": "Gemeinde Kirchdorf an der Iller",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kirchdorf-iller.de/",
+    "pages": [
+      "https://www.kirchdorf-iller.de/rathaus/kommunalpolitik-wahlen/sitzungsberichte/seite-1/suche-none",
+      "https://www.kirchdorf-iller.de/rathaus/kommunalpolitik-wahlen/sitzungsberichte/seite-2/suche-none",
+      "https://www.kirchdorf-iller.de/rathaus/kommunalpolitik-wahlen/sitzungsberichte/seite-3/suche-none",
+      "https://www.kirchdorf-iller.de/rathaus/kommunalpolitik-wahlen/sitzungsberichte/seite-4/suche-none",
+      "https://www.kirchdorf-iller.de/rathaus/kommunalpolitik-wahlen/sitzungsberichte/seite-5/suche-none"
+    ],
+    "verifiedSource": "https://www.kirchdorf-iller.de/rathaus/kommunalpolitik-wahlen/sitzungsberichte/seite-1/suche-none",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 29 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-09276127",
+    "name": "Gemeinde Kirchdorf i.Wald",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kirchdorf-im-wald.de/",
+    "pages": [
+      "https://www.kirchdorf-im-wald.de/rathaus/rathaus/bekanntmachungen-plakate.html",
+      "https://www.kirchdorf-im-wald.de/rathaus/rathaus/gemeinderatssitzungen.html",
+      "https://www.kirchdorf-im-wald.de/",
+      "https://www.kirchdorf-im-wald.de/aktuelles.html",
+      "https://www.kirchdorf-im-wald.de/index.html?tx_news_pi1%5B%40widget_0%2FcurrentPage%5D=1&tx_news_pi1%5Baction%5D=list&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5BoverwriteDemand%5D%5Bcategories%5D=176&cHash=8605df539672dd6b103555960f4514ea"
+    ],
+    "verifiedSource": "https://www.kirchdorf-im-wald.de/rathaus/rathaus/bekanntmachungen-plakate.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 17 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-09471150",
+    "name": "Gemeinde Kemmern",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kemmern.de/",
+    "pages": [
+      "https://www.kemmern.de/buergerservice-politik/gemeinderat/sitzungen/vergangene/2026",
+      "https://www.kemmern.de/buergerservice-politik/gemeinderat/sitzungen/dieser-monat",
+      "https://www.kemmern.de/buergerservice-politik/gemeinderat/sitzungen",
+      "https://www.kemmern.de/buergerservice-politik/gemeinderat/sitzungen/aussschuss",
+      "https://www.kemmern.de/buergerservice-politik/gemeinderat/sitzungen/heute"
+    ],
+    "verifiedSource": "https://www.kemmern.de/buergerservice-politik/gemeinderat/sitzungen/vergangene/2026",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 28 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-09674163",
+    "name": "Gemeinde Knetzgau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://knetzgau.de/",
+    "pages": [],
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 13 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09780125",
+    "name": "Gemeinde Lauben",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.lauben.de/",
+    "pages": [
+      "https://www.lauben.de/",
+      "https://www.lauben.de/aktuelles"
+    ],
+    "verifiedSource": "https://www.lauben.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 3 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-14521355",
+    "name": "Stadt Lauter-Bernsbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.lauter-bernsbach.de/",
+    "pages": [
+      "https://www.lauter-bernsbach.de/de/verwaltung-rathaus/stadtvertretung/bekanntgaben/",
+      "https://www.lauter-bernsbach.de/de/verwaltung-rathaus/stadtvertretung/termine/",
+      "https://www.lauter-bernsbach.de/de/verwaltung-rathaus/downloads/mitteilungsblatt/",
+      "https://www.lauter-bernsbach.de/de/verwaltung-rathaus/stadtvertretung/stadtrat/",
+      "https://www.lauter-bernsbach.de/de/unsere-stadt/willkommen/aktuelles/"
+    ],
+    "verifiedSource": "https://www.lauter-bernsbach.de/de/verwaltung-rathaus/stadtvertretung/bekanntgaben/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 8 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-14522300",
+    "name": "Gemeinde Kriebstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kriebstein.de/",
+    "pages": [
+      "https://www.kriebstein.de/veranstaltungen/2822969/2026/10/26/gemeinderatssitzung-der-gemeinde-kriebstein.html",
+      "https://www.kriebstein.de/seite/293503/%C3%B6ffentl.-bekanntmachungen.html",
+      "https://www.kriebstein.de/contact/index/link/?referrer=https://www.kriebstein.de/veranstaltungen/2822969/2026/10/26/gemeinderatssitzung-der-gemeinde-kriebstein.html",
+      "https://www.kriebstein.de/",
+      "https://www.kriebstein.de/rechtsgrundlagen/"
+    ],
+    "verifiedSource": "https://www.kriebstein.de/veranstaltungen/2822969/2026/10/26/gemeinderatssitzung-der-gemeinde-kriebstein.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 12 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-146285219",
+    "name": "Verwaltungsgemeinschaft Königstein/Sächs.Schw.",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://gohrisch.de/",
+    "pages": [
+      "https://gohrisch.de/bekanntmachungen/"
+    ],
+    "verifiedSource": "https://gohrisch.de/bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 22 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-16071101",
+    "name": "Gemeinde Ilmtal-Weinstraße",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ilmtal-weinstrasse.de/",
+    "pages": [
+      "https://www.ilmtal-weinstrasse.de/",
+      "https://www.ilmtal-weinstrasse.de/bekanntmachungen/index.php"
+    ],
+    "verifiedSource": "https://www.ilmtal-weinstrasse.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 13 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-06431018",
+    "name": "Stadt Neckarsteinach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.neckarsteinach.com/",
+    "pages": [
+      "https://www.neckarsteinach.com/rathaus-service/politische-gremien/sitzungsberichte",
+      "https://www.neckarsteinach.com/rathaus-service/politische-gremien/sitzungstermine/seite-1/suche-none",
+      "https://www.neckarsteinach.com/rathaus-service/politische-gremien/sitzungstermine/45/stadtverordnetenversammlung",
+      "https://www.neckarsteinach.com/rathaus-service/politische-gremien/sitzungstermine/44/haupt-und-finanzausschusssitzung",
+      "https://www.neckarsteinach.com/rathaus-service/bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.neckarsteinach.com/rathaus-service/politische-gremien/sitzungsberichte",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 35 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-06534015",
+    "name": "Gemeinde Münchhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-muenchhausen.de/",
+    "pages": [
+      "https://www.gemeinde-muenchhausen.de/",
+      "https://www.gemeinde-muenchhausen.de/rathaus-politik/bekanntmachungen/amtliche-bekanntmachungen/",
+      "https://www.gemeinde-muenchhausen.de/rathaus-politik/politik/gemeindevertretung/niederschriften-der-gemeindevertretung/",
+      "https://www.gemeinde-muenchhausen.de/rathaus-politik/bekanntmachungen/aktuelles/",
+      "https://www.gemeinde-muenchhausen.de/rathaus-politik/politik/sitzungskalender/"
+    ],
+    "verifiedSource": "https://www.gemeinde-muenchhausen.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 37 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08226046",
+    "name": "Gemeinde Malsch",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.malsch-weinort.de/",
+    "pages": [
+      "https://www.malsch-weinort.de/rathaus-service/gemeinderat/archiv/10/einladung-oeffentliche-sitzung-des-gemeinderats-290425",
+      "https://www.malsch-weinort.de/rathaus-service/gemeinderat/archiv/seite-1/suche-none",
+      "https://www.malsch-weinort.de/rathaus-service/gemeinderat/sitzungsberichte/seite-1/suche-none",
+      "https://www.malsch-weinort.de/rathaus-service/gemeinderat/archiv/11/einladung-oeffentliche-sitzung-des-gemeinderats-250325",
+      "https://www.malsch-weinort.de/rathaus-service/gemeinderat/archiv/13/einladung-oeffentliche-sitzung-des-gemeinderats-280125"
+    ],
+    "verifiedSource": "https://www.malsch-weinort.de/rathaus-service/gemeinderat/archiv/10/einladung-oeffentliche-sitzung-des-gemeinderats-290425",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 14 Berichte aus 5 Sitzungen."
+  },
+  {
+    "id": "de-08435035",
+    "name": "Gemeinde Meckenbeuren",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.meckenbeuren.de/",
+    "pages": [
+      "https://www.meckenbeuren.de/de/",
+      "https://www.meckenbeuren.de/de/rathaus-buergerservice/",
+      "https://www.meckenbeuren.de/de/rathaus-buergerservice/amtliche-bekantmachungen/"
+    ],
+    "verifiedSource": "https://www.meckenbeuren.de/de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 47 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-09177130",
+    "name": "Gemeinde Moosinning",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.moosinning.de/",
+    "pages": [
+      "https://www.moosinning.de/buergerservice-politik/gemeinderat/informationen-aus-den-sitzungen",
+      "https://www.moosinning.de/buergerservice-politik/gemeinderat/sitzungskalender/vergangene/2026",
+      "https://www.moosinning.de/buergerservice-politik/gemeinderat/sitzungskalender",
+      "https://www.moosinning.de/buergerservice-politik/gemeinderat/sitzungskalender/gemeinderatssitzung-40",
+      "https://www.moosinning.de/buergerservice-politik/gemeinderat/sitzungskalender/dieser-monat"
+    ],
+    "verifiedSource": "https://www.moosinning.de/buergerservice-politik/gemeinderat/informationen-aus-den-sitzungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 26 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-09272136",
+    "name": "Gemeinde Neureichenau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.neureichenau.de/",
+    "pages": [
+      "https://www.neureichenau.de/bekanntmachungen-sitzungen/"
+    ],
+    "verifiedSource": "https://www.neureichenau.de/bekanntmachungen-sitzungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 16 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-09275134",
+    "name": "Gemeinde Neuhaus a.Inn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.neuhaus-inn.de/",
+    "pages": [
+      "https://www.neuhaus-inn.de/bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.neuhaus-inn.de/bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 12 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09671140",
+    "name": "Gemeinde Mainaschaff",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.mainaschaff.de/",
+    "pages": [
+      "https://www.mainaschaff.de/rathaus-service/aktuelles-presse/amtliche-bekanntmachungen",
+      "https://www.mainaschaff.de/startseite"
+    ],
+    "verifiedSource": "https://www.mainaschaff.de/rathaus-service/aktuelles-presse/amtliche-bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 24 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-09778169",
+    "name": "Gemeinde Markt Wald",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.marktwald.de/",
+    "pages": [
+      "https://www.marktwald.de/seite/820916/sitzungsprotokolle.html",
+      "https://www.marktwald.de/news/1/1300854/nachrichten/n%C3%A4chste-%C3%B6ffentliche-sitzung-des-marktgemeinderates.html",
+      "https://www.marktwald.de/",
+      "https://www.marktwald.de/news/1/1300854",
+      "https://www.marktwald.de/bekanntmachungen/index.php"
+    ],
+    "verifiedSource": "https://www.marktwald.de/seite/820916/sitzungsprotokolle.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 13 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-06440016",
+    "name": "Stadt Nidda",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.nidda.de/",
+    "pages": [
+      "https://www.nidda.de/amtliche-bekanntmachungen/",
+      "https://www.nidda.de/amtliche-bekanntmachungen/ab-archiv/2-halbjahr-2025/",
+      "https://www.nidda.de/amtliche-bekanntmachungen/ab-archiv/2-quartal-2024/",
+      "https://www.nidda.de/amtliche-bekanntmachungen/ab-archiv/1-quartal-2024/",
+      "https://www.nidda.de/amtliche-bekanntmachungen/ab-archiv/2-quartal-2023/"
+    ],
+    "verifiedSource": "https://www.nidda.de/amtliche-bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 77 Berichte aus 14 Sitzungen."
+  },
+  {
+    "id": "de-06632016",
+    "name": "Gemeinde Philippsthal (Werra)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.philippsthal.de/",
+    "pages": [
+      "https://www.philippsthal.de/politik/sitzungstermine.html",
+      "https://www.philippsthal.de/rathausaktuell/amtlichebekanntmachungen.html"
+    ],
+    "verifiedSource": "https://www.philippsthal.de/politik/sitzungstermine.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 48 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-097785757",
+    "name": "Verwaltungsgemeinschaft Ottobeuren",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ottobeuren.de/",
+    "pages": [
+      "https://www.ottobeuren.de/vg-ottobeuren/?navid=385543385543",
+      "https://www.ottobeuren.de/vg-ottobeuren/?navid=980471980471",
+      "https://www.ottobeuren.de/de/marktgemeinde/aktuelles/"
+    ],
+    "verifiedSource": "https://www.ottobeuren.de/vg-ottobeuren/?navid=385543385543",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 4 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-160675053",
+    "name": "Erfüllende Gemeinde Nessetal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-nessetal.de/",
+    "pages": [
+      "https://www.gemeinde-nessetal.de/seite/640275/gemeinderat.html"
+    ],
+    "verifiedSource": "https://www.gemeinde-nessetal.de/seite/640275/gemeinderat.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 18 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-06437013",
+    "name": "Gemeinde Reichelsheim (Odenwald)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.reichelsheim.de/",
+    "pages": [
+      "https://www.reichelsheim.de/rathaus-politik/politische-gremien/einladungen-protokolle/protokolle-gemeindevertretung-2022/",
+      "https://www.reichelsheim.de/rathaus-politik/politische-gremien/einladungen-protokolle/protokolle-gemeindevertretung-2025/",
+      "https://www.reichelsheim.de/rathaus-politik/politische-gremien/einladungen-protokolle/protokolle-gemeindevertretung-2024/",
+      "https://www.reichelsheim.de/rathaus-politik/politische-gremien/einladungen-protokolle/protokolle-gemeindevertretung-2026/",
+      "https://www.reichelsheim.de/rathaus-politik/politische-gremien/einladungen-protokolle/"
+    ],
+    "verifiedSource": "https://www.reichelsheim.de/rathaus-politik/politische-gremien/einladungen-protokolle/protokolle-gemeindevertretung-2022/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 5 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08116063",
+    "name": "Gemeinde Schlaitdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.schlaitdorf.de/",
+    "pages": [
+      "https://www.schlaitdorf.de/rathaus-und-service/Gemeindeorgane/sitzungsberichte",
+      "https://www.schlaitdorf.de/rathaus-und-service/Gemeindeorgane/sitzungsunterlagen",
+      "https://www.schlaitdorf.de/aktuelles/projekte+der+gemeinde",
+      "https://www.schlaitdorf.de/rathaus-und-service/Gemeindeorgane",
+      "https://www.schlaitdorf.de/rathaus-und-service/Gemeindeorgane/sitzungstermine"
+    ],
+    "verifiedSource": "https://www.schlaitdorf.de/rathaus-und-service/Gemeindeorgane/sitzungsberichte",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 13 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-08325050",
+    "name": "Gemeinde Schenkenzell",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://schenkenzell.de/",
+    "pages": [
+      "https://schenkenzell.de/buerger/kommunalpolitik/sitzungen-2/",
+      "https://schenkenzell.de/service/"
+    ],
+    "verifiedSource": "https://schenkenzell.de/buerger/kommunalpolitik/sitzungen-2/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 35 Berichte aus 6 Sitzungen."
+  },
+  {
+    "id": "de-08425104",
+    "name": "Gemeinde Rottenacker",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://rottenacker.de/",
+    "pages": [
+      "https://rottenacker.de/mitteilungsblaetter-und-oeffentliche-bekanntmachungen/",
+      "https://rottenacker.de/",
+      "https://rottenacker.de/aus-dem-gemeinderat/",
+      "https://rottenacker.de/aktuelles/",
+      "https://rottenacker.de/aktuelles/einladung-zu-der-oeffentlichen-gemeinderatssitzung-am-15-10-2026-um-1830-uhr/"
+    ],
+    "verifiedSource": "https://rottenacker.de/mitteilungsblaetter-und-oeffentliche-bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 25 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-09372155",
+    "name": "Gemeinde Runding",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.runding.de/",
+    "pages": [],
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 6 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09475162",
+    "name": "Stadt Rehau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://rehau.bayern/",
+    "pages": [
+      "https://rehau.bayern/de/rathaus/rehport/",
+      "https://rehau.bayern/de/rathaus/stadtrat/sitzungstermine/",
+      "https://rehau.bayern/de/",
+      "https://rehau.bayern/de/rathaus/stadtrat/sitzungsprotokolle/",
+      "https://rehau.bayern/de/aktuelles/naechste-stadtratssitzung/"
+    ],
+    "verifiedSource": "https://rehau.bayern/de/rathaus/rehport/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 8 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-094755431",
+    "name": "Verwaltungsgemeinschaft Schauenstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.schauenstein.de/",
+    "pages": [
+      "https://www.schauenstein.de/aktuelles.html",
+      "https://www.schauenstein.de/",
+      "https://www.schauenstein.de/aktuelles.html?tx_news_pi1%5Baction%5D=detail&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5Bnews%5D=1014&cHash=06a9e162d83f9c3d1ade1827978fd645",
+      "https://www.schauenstein.de/tourismus-und-freizeit/veranstaltungskalender.html?tx_news_pi1%5Baction%5D=detail&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5Bnews%5D=1014&cHash=6b53466a7c53a6c6deb7492b3c5a01df"
+    ],
+    "verifiedSource": "https://www.schauenstein.de/aktuelles.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 8 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-13072091",
+    "name": "Gemeinde Sanitz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://gemeindesanitz.de/",
+    "pages": [
+      "https://gemeindesanitz.de/politische-gremien-gemeinde-sa/",
+      "https://gemeindesanitz.de/allgemeine-bekanntmachungen/"
+    ],
+    "verifiedSource": "https://gemeindesanitz.de/politische-gremien-gemeinde-sa/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 5 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-145245111",
+    "name": "Verwaltungsgemeinschaft Kirchberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kirchberg.de/",
+    "pages": [
+      "https://www.kirchberg.de/buergerservice/stadtrat/sitzungstermine/",
+      "https://www.kirchberg.de/buergerservice/service/amtsblatt/",
+      "https://www.kirchberg.de/buergerservice/stadtrat/",
+      "https://www.kirchberg.de/buergerservice/service/beteiligungsportal/",
+      "https://www.kirchberg.de/buergerservice/stadtrat/stadtratsmitglieder/"
+    ],
+    "verifiedSource": "https://www.kirchberg.de/buergerservice/stadtrat/sitzungstermine/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 87 Berichte aus 5 Sitzungen."
+  },
+  {
+    "id": "de-08119069",
+    "name": "Gemeinde Spiegelberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-spiegelberg.de/",
+    "pages": [
+      "https://www.gemeinde-spiegelberg.de/de/rathaus/gemeinderat/aus-dem-gemeinderat",
+      "https://www.gemeinde-spiegelberg.de/de/rathaus/gemeinderat/index.php?id=292&publish%5Bp%5D=292&publish%5Bstart%5D=2",
+      "https://www.gemeinde-spiegelberg.de/de/rathaus/gemeinderat/index.php?id=292&publish%5Bp%5D=292&publish%5Bstart%5D=3",
+      "https://www.gemeinde-spiegelberg.de/de/startseite",
+      "https://www.gemeinde-spiegelberg.de/de/rathaus/gemeinderat/index.php?id=3"
+    ],
+    "verifiedSource": "https://www.gemeinde-spiegelberg.de/de/rathaus/gemeinderat/aus-dem-gemeinderat",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 9 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08317129",
+    "name": "Gemeinde Steinach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.steinach.de/",
+    "pages": [
+      "https://www.steinach.de/startseite/gemeinde+_+politik/aktuelles.html",
+      "https://www.steinach.de/startseite/gemeinde+_+politik/gemeinderatssitzung.html",
+      "https://www.steinach.de/startseite/gemeinde+_+politik/einladung+zur+gemeinderatsitzung.html",
+      "https://www.steinach.de/startseite"
+    ],
+    "verifiedSource": "https://www.steinach.de/startseite/gemeinde+_+politik/aktuelles.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 22 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09274182",
+    "name": "Gemeinde Tiefenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.tiefenbach-gemeinde.de/",
+    "pages": [
+      "https://www.tiefenbach-gemeinde.de/gemeindeblatt/",
+      "https://www.tiefenbach-gemeinde.de/",
+      "https://www.tiefenbach-gemeinde.de/alle-meldungen/"
+    ],
+    "verifiedSource": "https://www.tiefenbach-gemeinde.de/gemeindeblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 16 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-09777169",
+    "name": "Gemeinde Schwangau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.schwangau.de/",
+    "pages": [
+      "https://gemeinde.schwangau.de/aktuelles",
+      "https://gemeinde.schwangau.de/aktuelles/alle-aktuellen-meldungen",
+      "https://gemeinde.schwangau.de/buergerservice/satzungen-und-verordnungen"
+    ],
+    "verifiedSource": "https://gemeinde.schwangau.de/aktuelles",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 8 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-16063076",
+    "name": "Stadt Treffurt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://treffurt.de/",
+    "pages": [
+      "https://treffurt.de/bekanntmachungen?page_n60=2",
+      "https://treffurt.de/bekanntmachungen/category/amtliche-bekanntmachung?page_n60=2",
+      "https://treffurt.de/stadtrat",
+      "https://treffurt.de/bekanntmachungen",
+      "https://treffurt.de/bekanntmachungen/category/amtliche-bekanntmachung"
+    ],
+    "verifiedSource": "https://treffurt.de/bekanntmachungen?page_n60=2",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Mitteilungsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 19 Berichte aus 1 Sitzungen."
   }
 ]
