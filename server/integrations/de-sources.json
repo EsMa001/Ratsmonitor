@@ -41845,5 +41845,106 @@
     "verifiedSource": "https://www.lichtenwald.de/amtsblatt/index.php",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt (verwaltungsportal.de, Ausgaben über Download-Formular), nur lückenlos nummerierte Tagesordnungen. Probeabruf 3 Monate: 11 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08315006",
+    "name": "Stadt Bad Krozingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bad-krozingen.de/",
+    "pages": [
+      "https://www.bad-krozingen.de/Rathaus-und-Service/Gemeinderat-Kommunalpolitik/Tunsel-district1529",
+      "https://www.bad-krozingen.de/Rathaus-und-Service/Gemeinderat-Kommunalpolitik/Biengen-district1536",
+      "https://www.bad-krozingen.de/Rathaus-und-Service/Gemeinderat-Kommunalpolitik/Schlatt-district1534",
+      "https://www.bad-krozingen.de/Rathaus-und-Service/Gemeinderat-Kommunalpolitik/Hausen-district1535"
+    ],
+    "verifiedSource": "https://www.bad-krozingen.de/Rathaus-und-Service/Gemeinderat-Kommunalpolitik/Tunsel-district1529",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 9 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08436003",
+    "name": "Gemeinde Aichstetten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.aichstetten.de/",
+    "pages": [
+      "https://www.aichstetten.de/Gemeinderat.html"
+    ],
+    "verifiedSource": "https://www.aichstetten.de/Gemeinderat.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 5 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-092785256",
+    "name": "Verwaltungsgemeinschaft Aiterhofen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.aiterhofen.de/",
+    "pages": [
+      "https://www.aiterhofen.de/sitzungsberichte/",
+      "https://www.aiterhofen.de/amtstafel/",
+      "https://www.aiterhofen.de/sitzungstermine/",
+      "https://www.aiterhofen.de/veranstaltungen/gemeinderatssitzung-62/",
+      "https://www.aiterhofen.de/veranstaltungen/gemeinderatssitzung-63/"
+    ],
+    "verifiedSource": "https://www.aiterhofen.de/sitzungsberichte/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 22 Berichte aus 5 Sitzungen."
+  },
+  {
+    "id": "de-145215132",
+    "name": "Verwaltungsgemeinschaft Kurort Seiffen - Deutschneudorf - Heidersdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://seiffen.de/",
+    "pages": [
+      "https://seiffen.de/rathaus/amtsblatt/",
+      "https://seiffen.de/bekanntmachung/",
+      "https://seiffen.de/oeffentliche-bekanntmachungen-copy/",
+      "https://seiffen.de/rathaus/gemeinderat/"
+    ],
+    "verifiedSource": "https://seiffen.de/rathaus/amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 39 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-14625010",
+    "name": "Gemeinde Arnsdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeindearnsdorf.de/",
+    "pages": [
+      "https://www.gemeindearnsdorf.de/gemeindegremien-ortsrecht/beschluesse/beschluesse-2024",
+      "https://www.gemeindearnsdorf.de/gemeindegremien-ortsrecht/beschluesse/beschluesse-2023",
+      "https://www.gemeindearnsdorf.de/gemeindegremien-ortsrecht/beschluesse/beschluesse-2022",
+      "https://www.gemeindearnsdorf.de/gemeindegremien-ortsrecht/beschluesse/beschluesse-2020",
+      "https://www.gemeindearnsdorf.de/gemeindegremien-ortsrecht/beschluesse/beschluesse-2021"
+    ],
+    "verifiedSource": "https://www.gemeindearnsdorf.de/gemeindegremien-ortsrecht/beschluesse/beschluesse-2024",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 15 Berichte aus 4 Sitzungen."
+  },
+  {
+    "id": "de-16061116",
+    "name": "Gemeinde Am Ohmberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://am-ohmberg.de/",
+    "pages": [
+      "https://am-ohmberg.de/index.php/beschluesse-2",
+      "https://am-ohmberg.de/index.php/einladungen",
+      "https://am-ohmberg.de/index.php/beschluesse-der-ausschusssitzungen",
+      "https://am-ohmberg.de/index.php/kommunalpolitik"
+    ],
+    "verifiedSource": "https://am-ohmberg.de/index.php/beschluesse-2",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 33 Berichte aus 3 Sitzungen."
   }
 ]

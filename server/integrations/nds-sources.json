@@ -4166,5 +4166,84 @@
     "verifiedSource": "https://www.wietze.de/rathaus-politik/buerger-ratsinfo/",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Website der Gemeinde zeigt Sitzungen und Tagesordnungen (Sitepark-Ratsinfo, nur kommende Sitzungen). Probeabruf: 14 Berichte."
+  },
+  {
+    "id": "nds-03157006",
+    "name": "Stadt Peine",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.peine.de/",
+    "pages": [
+      "https://www.peine.de/de/rathaus/stadtpolitik/ausschuesse/sitzungstermine.php",
+      "https://www.peine.de/de/rathaus/stadtpolitik/buergermeister-und-rat/",
+      "https://www.peine.de/de/rathaus/stadtpolitik/buergermeister-und-rat/reden/",
+      "https://www.peine.de/de/rathaus/stadtpolitik/ausschuesse/6.-Schulausschuss.php",
+      "https://www.peine.de/de/rathaus/stadtpolitik/ausschuesse/8.-Finanzausschuss.php"
+    ],
+    "verifiedSource": "https://www.peine.de/de/rathaus/stadtpolitik/ausschuesse/sitzungstermine.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 13 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "nds-03257",
+    "name": "Landkreis Schaumburg",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.schaumburg.de/",
+    "pages": [
+      "https://www.schaumburg.de/Aktuelles/Bekanntmachungen/",
+      "https://www.schaumburg.de/"
+    ],
+    "verifiedSource": "https://www.schaumburg.de/Aktuelles/Bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 72 Berichte aus 10 Sitzungen."
+  },
+  {
+    "id": "nds-03454032",
+    "name": "Stadt Lingen (Ems)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.lingen.de/",
+    "pages": [
+      "https://www.lingen.de/politik-rathaus-service/veroeffentlichungen/elektronisches-amtsblatt/elektronisches-amtsblatt.html"
+    ],
+    "verifiedSource": "https://www.lingen.de/politik-rathaus-service/veroeffentlichungen/elektronisches-amtsblatt/elektronisches-amtsblatt.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 24 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "nds-03458009",
+    "name": "Gemeinde Hatten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://hatten.de/",
+    "pages": [
+      "https://hatten.de/"
+    ],
+    "verifiedSource": "https://hatten.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 3 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "nds-03461001",
+    "name": "Gemeinde Berne",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.berne.de/",
+    "pages": [
+      "https://www.berne.de/news/2303/1290170/kategorie/amtsblatt-nr.-66-27.-sitzung-des-gemeinderates.html",
+      "https://www.berne.de/news/2303/1299264/kategorie/amtsblatt-nr.-70-28.-sitzung-des-gemeinderates.html",
+      "https://www.berne.de/news/2303/1299264/kategorie/amtsblatt-nr.-70-28.-sitzung-des-gemeinderates.html?sorting=0",
+      "https://www.berne.de/news/2303/1299264/kategorie/amtsblatt-nr.-70-28.-sitzung-des-gemeinderates.html?sorting=1",
+      "https://www.berne.de/contact/index/link/?referrer=https://www.berne.de/news/2303/1299264/kategorie/amtsblatt-nr.-70-28.-sitzung-des-gemeinderates.html"
+    ],
+    "verifiedSource": "https://www.berne.de/news/2303/1290170/kategorie/amtsblatt-nr.-66-27.-sitzung-des-gemeinderates.html",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 16 Berichte aus 3 Sitzungen."
   }
 ]

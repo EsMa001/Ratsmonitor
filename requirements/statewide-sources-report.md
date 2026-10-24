@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 355 angebunden, 72 nicht. Diese Datei beschreibt die 262 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 357 angebunden, 70 nicht. Diese Datei beschreibt die 264 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -294,7 +294,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Altena | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://altena.ratsinfomanagement.net/ |
 | Gemeinde Altenberge | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.altenberge.de/de/rathaus/politik/ratsinformationssystem.php |
 | Stadt Arnsberg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.arnsberg.de/termine |
-| Stadt Bad Oeynhausen | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 404) | https://www.badoeynhausen.de/rathaus-service-politik/ratsinformationssystem |
 | Stadt Bad Salzuflen | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://bad-salzuflen.ratsinfomanagement.net/ |
 | Stadt Balve | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.balve.de/leben-in-balve/buergerinformationen/notfallrettung-sicherstellung |
 | Stadt Barntrup | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.barntrup.de/Veranstaltungen/Buergerinformationsveranstaltung-Solarbatteriekraftwerk-Barntrup.html?extlink_img=0&target=2&extlink_txt=1 |
@@ -314,7 +313,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Heek | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://heek.ratsinfomanagement.net/ |
 | Gemeinde Heiden | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://heiden.ratsinfomanagement.net/ |
 | Kreis Herford | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.kreis-herford.de/KREIS-HERFORD/Politik-Recht-und-Demokratie/Kreistag-Virtueller-Sitzungsdienst-und-Gremienarbeit/ |
-| Stadt Herne | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://herne.allris.net/ri/logon.asp |
 | Kreis Hochsauerlandkreis | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.hochsauerlandkreis.de/hochsauerlandkreis/politik-und-verwaltung/kreistagsinformationssystem |
 | Gemeinde Hopsten | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://hopsten.ratsinfomanagement.net/ |
 | Stadt Horstmar | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://horstmar.ratsinfomanagement.net/ |

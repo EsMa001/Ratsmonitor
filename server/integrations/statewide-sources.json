@@ -2958,5 +2958,36 @@
     "verifiedSource": "https://www.engelskirchen.ratsportal.net/public/",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Ratsinformationssystem ALLRIS 4, Link auf der Website der Kommune. Probeabruf 3 Monate: 48 Berichte aus 5 Sitzungen."
+  },
+  {
+    "id": "nrw-05770004",
+    "name": "Stadt Bad Oeynhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.badoeynhausen.de/",
+    "pages": [
+      "https://www.badoeynhausen.de/rathaus-service-politik/aktuelles/bekanntmachungen",
+      "https://www.badoeynhausen.de/rathaus-service-politik/politik",
+      "https://www.badoeynhausen.de/rathaus-service-politik/politik/mitglieder-sitzverteilung-im-stadtrat"
+    ],
+    "verifiedSource": "https://www.badoeynhausen.de/rathaus-service-politik/aktuelles/bekanntmachungen",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 26 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "nrw-05916000",
+    "name": "Stadt Herne",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.herne.de/",
+    "pages": [
+      "https://www.herne.de/Rathaus/Buergerservice/Amtsblatt/",
+      "https://www.herne.de/Meldungen/News-Detailansicht_301059.html"
+    ],
+    "verifiedSource": "https://www.herne.de/Rathaus/Buergerservice/Amtsblatt/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein lesbares Ratsinformationssystem; amtliche Bekanntmachungen bzw. Amtsblatt der Kommune mit Tagesordnungen (Suche nach Bekanntmachungsseiten, Titel geprüft). Probeabruf 3 Monate: 129 Berichte aus 6 Sitzungen."
   }
 ]
