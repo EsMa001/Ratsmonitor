@@ -4260,5 +4260,20 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.rhauderfehn.de/rathaus/bekanntmachungen",
     "note": "ratsinfomanagement.net gesperrt. Bekanntmachungen nennen Aufstellungs- und Auslegungsbeschlüsse zu Bebauungsplänen (Probeabruf 12 Monate: 1 Bericht, Verwaltungsausschuss 06.10.2026). Wenige Treffer, Quelle trotzdem übernommen."
+  },
+  {
+    "id": "nds-03352011",
+    "name": "Stadt Cuxhaven",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.cuxhaven.de/",
+    "pages": [
+      "https://www.cuxhaven.de/aktuelle-nachrichten/bekanntmachungen.html"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-24",
+    "verifiedSource": "https://www.cuxhaven.de/aktuelle-nachrichten/bekanntmachungen.html",
+    "note": "stadt-cuxhaven.ratsinfomanagement.net gesperrt. Bekanntmachungen der Stadt verweisen auf Beschlüsse des Rates (z. B. Landesgartenschau, Schule). Probeabruf 12 Monate: 10 Berichte aus dem Gemeindewahlausschuss (27.07.2026); Ratsbeschlüsse erkennt der Leser auf dieser Seite bisher nicht."
   }
 ]
