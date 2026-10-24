@@ -38,7 +38,8 @@ test('a notice named by a body and a date is a document of a meeting, one named 
  ok('/wp-content/uploads/2026/09/GV-2026-070_Bekanntmachung_28.09.2026_Vermerk.pdf','Bekanntmachung');
  no('/wp-content/uploads/2026/10/Bekanntmachung_Kanalarbeiten_05.10.2026.pdf','Kanalarbeiten – Sperrung');
  no('/wp-content/uploads/2026/10/Bekanntmachung_Wasserrecht_05.10.2026.pdf','Bekanntmachung');
- no('/buergerservice/stadtrat/assets/files/stadtrat_2024-2029/2026/Bekanntmachung%20Bebauungsplan.pdf','Bekanntmachung Bebauungsplan');
+ // A notice of a plan is read since 24.10.2026: its text names the meeting that decided it (website-notices.mjs).
+ ok('/buergerservice/stadtrat/assets/files/stadtrat_2024-2029/2026/Bekanntmachung%20Bebauungsplan.pdf','Bekanntmachung Bebauungsplan');
  no('/wp-content/uploads/2026/10/GR-Programm_13.10.2026.pdf','Programm');
  assert.equal(score('/wp-content/uploads/2026/10/MGR-2026-060_Bekanntmachung_13.10.2026_NOE.pdf','Bekanntmachung'),-100);
 });

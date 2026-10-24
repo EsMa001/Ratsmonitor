@@ -1,3 +1,4 @@
+import {decisionNotice} from './website-notices.mjs';
 import {withoutPrivateNames} from '../../shared/private-names.mjs';
 import {extractText,getDocumentProxy} from 'unpdf';
 import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
@@ -604,7 +605,11 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   if(names.length&&!named){const all=words(t.title+' '+t.lines.join(' '));named=names.some(n=>all.includes(n));}
   const parsed=parsedOf.get(t);
   for(const note of parsed.issues)warnings.push(`${note} (${t.url})`);
-  const known=parsed.meetings.filter(m=>m.date&&m.committee);
+  let known=parsed.meetings.filter(m=>m.date&&m.committee);
+  // A notice of a decision without an agenda („Der Ortsgemeinderat X hat in seiner Sitzung am 15.05.2025 … beschlossen“): a report
+  // of that meeting with the matter of the notice as its title (website-notices.mjs, 24.10.2026).
+  // Also where the parser read the paragraphs of a Satzung as items: a text that names no agenda and shows no public item.
+  if(!t.event&&known.every(m=>!m.items.length)&&!/tagesordnung/i.test(t.lines.slice(0,60).join(' '))){const n=decisionNotice(t.title,t.lines);if(n){known=[{date:n.date,committee:n.committee,kind:'minutes',notice:true,items:[{number:'',title:n.title,status:'approved',result:'Beschlossen laut öffentlicher Bekanntmachung: '+n.sentence,votes:null}],otherItems:[],restricted:false,unclear:false,publicEvidence:'Öffentliche Bekanntmachung des Beschlusses',context:t.lines.slice(0,8).join(' '),lead:t.lines.slice(0,8),headLines:[],trailer:[],docIssuers:[]}];if(n.publicity==='nonpublic')known[0].items[0].publicity='nonpublic';}}
   if(!known.length){if(!t.event){issues.push('Keine Sitzung erkannt, nicht übernommen: '+t.url);if(unparsed.length<LIMITS.unparsed)unparsed.push(t.url);}continue;}
   if(parsed.meetings.some(m=>(!m.date||!m.committee)&&(m.items.length||m.unclear)))issues.push('Sitzung ohne erkennbares Datum oder Gremium, nicht übernommen: '+t.url);
   // Everything the town publishes is taken (24.10.2026); a linked notice that was not read only leaves its items unconfirmed.
@@ -634,7 +639,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    // Public items, then those of the non-public part and those not shown to be public, each with its publicity. Titles of
    // non-public items lose the names of private persons (shared/private-names.mjs).
    const own=unconfirmed||m.unclear&&!partHeading(m.publicEvidence)?'unclear':'public';
-   m={...m,items:[...m.items.map((it,k)=>({...it,publicity:cut>=0&&k>=cut?'nonpublic':own})),...(m.otherItems||[]).map(it=>({...it,status:null,result:'',votes:null}))]
+   m={...m,items:[...m.items.map((it,k)=>({...it,publicity:it.publicity==='nonpublic'||cut>=0&&k>=cut?'nonpublic':own})),...(m.otherItems||[]).map(it=>({...it,status:null,result:'',votes:null}))]
     .map(it=>it.publicity==='nonpublic'?{...it,title:withoutPrivateNames(it.title)}:it)};
    if(!m.items.length){if(m.date>today)upcoming.add(key);continue;}
    withItems.add(key);

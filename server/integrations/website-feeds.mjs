@@ -218,8 +218,14 @@ export function sessionScore({url,label}={}){
   // Also with its number in the year ("Amtsblatt 36/2026", "00_Amtsblatt_24_2026.pdf", Emsland and Hochsauerlandkreis 2026).
   if(kindOf(url)==='pdf'&&(firstDate(decode(label??''),LABEL_DATES)||urlDate(url)||/(?:^|\D)\d{1,3}\s*[\/_-]\s*(?:19|20)\d{2}(?!\d)/.test(decode(label??'')+' '+decode(String(url).split('/').pop()))))n+=1;
  }
- if(!sitting&&/haushaltssatzung|haushaltsplan|nachtragshaushalt/.test(t))n-=4;
- if(!sitting&&/bebauungsplan|flaechennutzungsplan|bauleitplan|planfeststellung|\bb plan\b/.test(t))n-=4;
+ // A notice of what a council decided (24.10.2026, website-notices.mjs): „Öffentliche Bekanntmachung … Bebauungsplan …“, a Satzung,
+ // a Veränderungssperre, a Vorkaufsrecht. Its text names the body and the day of the meeting; just enough to be read.
+ // Named so in its own link text or file name, not only by the folder of all notices.
+ const own=norm(`${decode(label??'')} ${decode(String(url||'').split(/[?#]/)[0].split('/').pop())}`);
+ const decision=/bekanntmachung/.test(own)&&/bebauungsplan|\bbpl\b|\bb plan\b|flaechennutzungsplan|\bfnp\b|bauleitplan|satzung|veraenderungssperre|vorkaufsrecht|aufstellungsbeschluss|beschluss|sanierungsgebiet|erhaltungs/.test(own)&&!/widmung|verordnung|allgemeinverfuegung|wahl/.test(own);
+ if(decision)n=Math.max(n,SESSION_THRESHOLD);
+ if(!decision&&!sitting&&/haushaltssatzung|haushaltsplan|nachtragshaushalt/.test(t))n-=4;
+ if(!decision&&!sitting&&/bebauungsplan|flaechennutzungsplan|bauleitplan|planfeststellung|\bb plan\b/.test(t))n-=4;
  if(/stellenausschreibung|stellenangebot|ausbildungsplatz|ausbildungsstelle|\bjobs?\b|karriere/.test(t))n-=6;
  if(/abfallkalender|abfuhrkalender|abfuhrtermin|muellabfuhr|muellkalender|wertstoffhof|gelbe[rn]? sack|biotonne/.test(t))n-=6;
  if(!body&&/veranstaltung|konzert|kirmes|kerwe|weihnachtsmarkt|flohmarkt|\bfest\b|festival|ausstellung/.test(t))n-=4;

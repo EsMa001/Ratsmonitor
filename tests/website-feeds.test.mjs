@@ -58,8 +58,10 @@ test('website sessionScore separates meeting documents from the non-public part 
  // "nichtöffentlich" in the address or "nicht öffentlich" in the label: -100, whatever else is said.
  assert.equal(score('/fileadmin/nichtoeffentlich/Vorlage_7.pdf'),-100);assert.equal(score('/fileadmin/sitzung/NOe-Teil.pdf'),-100);
  assert.equal(sessionScore({url:origin+'/x.pdf',label:'Niederschrift nicht-öffentliche Sitzung Gemeinderat'}),-100);
- for(const path of ['/aktuelles/2026/10/02/haushaltssatzung-2026/','/fileadmin/bauamt/BP_Nr_12_Bekanntmachung.pdf','/stellenausschreibung-erzieher.html','/service/abfallkalender-2026.pdf','/veranstaltungen/kirchweih','/datenschutz.html','/impressum','/formulare/antrag-sondernutzung.pdf','/wahlen/wahlbekanntmachung-buergermeisterwahl.pdf'])
+ for(const path of ['/aktuelles/2026/10/02/haushaltssatzung-2026/','/stellenausschreibung-erzieher.html','/service/abfallkalender-2026.pdf','/veranstaltungen/kirchweih','/datenschutz.html','/impressum','/formulare/antrag-sondernutzung.pdf','/wahlen/wahlbekanntmachung-buergermeisterwahl.pdf'])
   assert.ok(score(path)<0,path);
+ // A notice of a plan decided by the council is read since 24.10.2026 (website-notices.mjs).
+ assert.ok(score('/fileadmin/bauamt/BP_Nr_12_Bekanntmachung.pdf')>=SESSION_THRESHOLD);
  // A gazette is worth a look, never enough on its own.
  const gazette=score('/amtsblatt/Mitteilungsblatt_KW41.pdf');assert.ok(gazette>0&&gazette<SESSION_THRESHOLD);
  // A statute or a plan named with a meeting is no noise; a bare meeting word is too little.
@@ -71,7 +73,7 @@ test('website sessionScore separates meeting documents from the non-public part 
 });
 test('website listPageScore rewards lists of meeting documents and their headings',()=>{
  // Four links reach the threshold, the headings name "Amtstafel", "Bekanntmachungen", "Sitzungen" and "Gemeinderat".
- assert.equal(listPageScore(list,base),4+2*4);
+ assert.equal(listPageScore(list,base),5+2*4,'with the notice of the Bebauungsplan');
  assert.equal(listPageScore('<h1>Willkommen</h1><a href="/impressum">Impressum</a>',base),0);
  assert.equal(listPageScore('<h2>Niederschriften</h2><a href="/p/niederschrift-gr-2026-07-01.pdf">Niederschrift</a>',base),1+2);
 });

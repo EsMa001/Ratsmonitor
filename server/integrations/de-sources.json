@@ -8404,6 +8404,20 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-073365009",
+    "name": "Verbandsgemeinde Oberes Glantal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vgog.de/",
+    "pages": [
+      "https://www.vgog.de/vg_oberes_glantal/Aktuelles/%C3%96ffentliche%20Bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.vgog.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "RIS (vgog.ratsinfomanagement.net) sperrt Programme; öffentliche Bekanntmachungen der VG und ihrer Ortsgemeinden ohne Tagesordnungen: Beschluss-Bekanntmachungen (Bebauungspläne, FNP, Satzungen, Veränderungssperren) als Berichte ihrer Sitzung (Probe 12 Monate: 10 Berichte)."
+  },
+  {
     "id": "de-073365010",
     "name": "Verbandsgemeinde Kusel-Altenglan",
     "kind": "city",
