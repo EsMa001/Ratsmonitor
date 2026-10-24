@@ -572,9 +572,10 @@ export class MapEngine {
     ctx.save();
     ctx.clip(fp);
     ctx.strokeStyle = this.pal.mesh;
-    ctx.lineWidth = px(Math.max(0.35, Math.min(1.1, 0.25 + pxkm * 0.18)));
+    /* Gemeinden rausgezoomt (ganz Deutschland, pxkm um 0,7) nur ein Hauch, damit 11.000 Flächen nicht weiß zulaufen */
+    ctx.lineWidth = px(Math.max(0.15, Math.min(1.1, pxkm * 0.5 - 0.15)));
     ctx.stroke(G.mesh[0]);
-    ctx.lineWidth = px(pxkm < 1.2 ? 0.9 : Math.min(2, 1.1 + pxkm * 0.08));
+    ctx.lineWidth = px(pxkm < 1.2 ? 0.7 : Math.min(2, 1.1 + pxkm * 0.08));
     ctx.stroke(G.mesh[1]);
     ctx.lineWidth = px(Math.min(3, 1.6 + pxkm * 0.12));
     ctx.stroke(G.mesh[2]);
