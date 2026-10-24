@@ -1,3 +1,4 @@
+import {withoutPrivateNamesDeep} from '../../shared/private-names.mjs';
 import {windowStart,historyWindow} from './history-window.mjs';
 import {NRW_SOURCES} from './source-catalog.mjs';
 import {collectRegionalOparl} from './oparl-regional.mjs';
@@ -26,7 +27,8 @@ export async function collectRegion(id,options={}){
  let d;
  try{d=await collect(id,{...options,window,gate});}
  catch(e){if(gate.refused&&e&&typeof e==='object')e.refused=gate.refused;throw e;}
- return {...d,coverage:{...d.coverage,window},...(gate.refused?{refused:gate.refused}:{})};
+ // Names of private persons leave every report, whichever reader made it (24.10.2026, shared/private-names.mjs).
+ return {...d,topics:(d.topics||[]).map(t=>withoutPrivateNamesDeep(t)),coverage:{...d.coverage,window},...(gate.refused?{refused:gate.refused}:{})};
 }
 async function collect(id,options){
  // The gate sits outside the trace: requests it stops never reach the source and are not recorded.
