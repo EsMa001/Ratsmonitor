@@ -284,3 +284,16 @@ test('gazette issues behind a download form (verwaltungsportal.de): address with
  assert.deepEqual(g[0],{url:'https://www.bad-lobenstein.de/amtsblatt/index.php#gazette_90839',label:'Amtsblatt Nr. 10/2026 23.10.2026',date:'2026-10-23',kind:'pdf',form:{hash:'6a45',form:'gazette_90839'}});
  assert.ok(sessionScore({url:g[0].url,label:g[0].label})>=SESSION_THRESHOLD);
 });
+
+test('gazette issue: only the numbered chain from item 1 with an agenda word; club lists and pharmacy days drop out',async()=>{
+ const {gazetteAgendas}=await import('../server/integrations/website.mjs');
+ const it=(number,title)=>({number,title});
+ const p={meetings:[
+  {items:[],otherItems:[it('5','Kreditaufnahme'),it('6','Verschiedenes'),it('1','Bekanntgaben'),it('1.10','Kronen-Apotheke am Rathaus'),it('2','Bürger fragen'),it('3','Neubau Kita'),it('4','Bauantrag Müllerweg')]},
+  {items:[it('1','Platz Mattstedt'),it('2','Platz Kromsdorf'),it('3','Platz Willerstedt')],otherItems:[]},
+  {items:[it('1','Begrüßung'),it('2','Bericht des Bürgermeisters'),it('4','Sportverein')],otherItems:[]}]};
+ gazetteAgendas(p);
+ assert.deepEqual(p.meetings[0].otherItems.map(i=>i.number),['1','2','3','4','5','6']);
+ assert.deepEqual(p.meetings[1].items,[]);
+ assert.deepEqual(p.meetings[2].items.map(i=>i.number),['1','2']);
+});

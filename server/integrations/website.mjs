@@ -97,6 +97,31 @@ async function fetchSite(url,source,timeoutMs,request,accept,limit,form=null){
   return {bytes,type};
  }
 }
+// A whole gazette issue (download form, gazetteForms): besides the notices of meetings it holds club news, church services,
+// results and greetings, many of them numbered. An agenda there is only an unbroken numbered list from item 1 (sub-items
+// allowed, at least two items) that names at least one item an agenda has; whatever follows the first missing number is not part
+// of it. The same for items of unclear publicity (24.10.2026).
+const AGENDA_WORD=/eröffnung|begrüßung|beschlussfähigkeit|tagesordnung|niederschrift|protokoll|beschluss|satzung|bauantrag|bauvoranfrage|bebauungsplan|flächennutzungsplan|haushalt|vergabe|auftrag|bericht|anfragen|antrag|bekanntgabe|information|mitteilung|einwohnerfragestunde|bürgerfragestunde|verschiedenes|wahl|bestellung|zustimmung|genehmigung|stellungnahme|kenntnisnahme|jahresabschluss|gebühr|grundstück|annahme von spenden/i;
+// The chain 1, 2, 3 … by number, not by position (columns of a gazette come out of order), each next number taken after the one
+// before where it occurs twice; sub-items 2.1 … 2.9 with their item (".10" and above are days in lists of pharmacies on duty).
+function agendaRun(items){
+ const all=(items||[]).map((i,at)=>{const [a,b]=String(i.number??'').split('.').map(Number);return {i,at,a,b};}).filter(x=>Number.isFinite(x.a));
+ const run=[];let last=-1;
+ for(let k=1;;k++){
+  const mains=all.filter(x=>x.a===k&&!x.b);if(!mains.length)break;
+  const pick=mains.find(x=>x.at>last)||mains[0];last=pick.at;run.push(pick.i);
+  for(const x of all)if(x.a===k&&x.b>0&&x.b<10&&!run.some(r=>r.number===x.i.number))run.push(x.i);
+ }
+ return run.filter(i=>!String(i.number).includes('.')).length>=2&&run.some(i=>AGENDA_WORD.test(i.title))?run:[];
+}
+export function gazetteAgendas(parsed){
+ for(const m of parsed.meetings||[]){
+  m.items=agendaRun(m.items);
+  // Items the parser could not show to be public or non-public: in a whole issue the same test, else they are other texts.
+  m.otherItems=agendaRun(m.otherItems);
+ }
+ return parsed;
+}
 /** A page, feed, calendar or API answer of the site as text (at most 4 MB). */
 export async function fetchSiteText(url,source,timeoutMs=20000,request=fetch){
  const {bytes,type}=await fetchSite(url,source,timeoutMs,request,'text/html,application/xhtml+xml,application/xml,application/rss+xml,application/atom+xml,text/calendar,application/json,text/plain',LIMITS.htmlBytes);
@@ -492,7 +517,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    if(bytes.byteLength>LIMITS.pdfBytes){issues.push(`Dokument ${c.url}: Quelldokument zu groß`);return;}
    let text;try{text=repairFontUmlauts(await pdfText(bytes));}catch(e){fail('Dokument '+c.url,e);return;}
    if(String(text||'').replace(/\s+/g,' ').trim().length<80){issues.push('PDF ohne lesbaren Text (vermutlich eingescannt): '+c.url);if(unreadable.length<LIMITS.unreadable)unreadable.push(c.url);return;}
-   texts.push({url:c.url,title:c.label,lines:pdfLines(text).map(repair),kind:'application/pdf',wrapped:true,order,fetched:true});return;
+   texts.push({url:c.url,title:c.label,lines:pdfLines(text).map(repair),kind:'application/pdf',wrapped:true,order,fetched:true,...(forms.has(c.url)?{gazette:true}:{})});return;
   }
   if(bytes.byteLength>LIMITS.htmlBytes){issues.push(`Dokument ${c.url}: Quelldokument zu groß`);return;}
   const html=decodeText(bytes,type),t={url:c.url,title:c.label,lines:htmlToLines(html).map(repair),kind:'html',wrapped:false,order,fetched:true};
@@ -544,7 +569,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  // the address of the feed or of the page they link.
  const parsedOf=new Map(),closedOf=new Map(),publicOf=new Map(),moves=[];
  for(const t of texts.sort((a,b)=>a.order-b.order)){
-  const parsed=parseSessionText(t.lines,{title:t.title,wrapped:t.wrapped});parsedOf.set(t,parsed);
+  const parsed=parseSessionText(t.lines,{title:t.title,wrapped:t.wrapped});if(t.gazette)gazetteAgendas(parsed);parsedOf.set(t,parsed);
   moves.push(...meetingMoves(t.lines));
   // By day: the same body may be named otherwise in another document. An item numbered on after the public items of its
   // document (3 and 4 after 1 and 2) closes that number for the same body also where another document words it otherwise.

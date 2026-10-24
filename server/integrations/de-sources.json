@@ -41755,5 +41755,95 @@
     "verifiedSource": "https://www.tangstedt-stormarn.de/",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Website der Gemeinde zeigt Sitzungen und Tagesordnungen (Sitepark-Ratsinfo, nur kommende Sitzungen). Probeabruf: 22 Berichte."
+  },
+  {
+    "id": "de-12064512",
+    "name": "Stadt Wriezen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wriezen.de/",
+    "pages": [
+      "https://www.wriezen.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "verifiedSource": "https://www.wriezen.de/amtsblatt/index.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt (verwaltungsportal.de, Ausgaben über Download-Formular), nur lückenlos nummerierte Tagesordnungen. Probeabruf 3 Monate: 19 Berichte aus 3 Sitzungen."
+  },
+  {
+    "id": "de-14522190",
+    "name": "Stadt Geringswalde",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.geringswalde.de/",
+    "pages": [
+      "https://www.geringswalde.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "verifiedSource": "https://www.geringswalde.de/amtsblatt/index.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt (verwaltungsportal.de, Ausgaben über Download-Formular), nur lückenlos nummerierte Tagesordnungen. Probeabruf 3 Monate: 6 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-146255223",
+    "name": "Verwaltungsgemeinschaft Neschwitz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.neschwitz.de/",
+    "pages": [
+      "https://www.neschwitz.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "verifiedSource": "https://www.neschwitz.de/amtsblatt/index.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt (verwaltungsportal.de, Ausgaben über Download-Formular), nur lückenlos nummerierte Tagesordnungen. Probeabruf 3 Monate: 10 Berichte aus 1 Sitzungen."
+  },
+  {
+    "id": "de-09377133",
+    "name": "Gemeinde Kulmain",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kulmain.de/",
+    "pages": [
+      "https://www.kulmain.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "verifiedSource": "https://www.kulmain.de/amtsblatt/index.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt (verwaltungsportal.de, Ausgaben über Download-Formular), nur lückenlos nummerierte Tagesordnungen. Probeabruf 3 Monate: 12 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08117002",
+    "name": "Gemeinde Aichelberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.aichelberg.de/",
+    "pages": [
+      "https://www.aichelberg.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "verifiedSource": "https://www.aichelberg.de/amtsblatt/index.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt (verwaltungsportal.de, Ausgaben über Download-Formular), nur lückenlos nummerierte Tagesordnungen. Probeabruf 3 Monate: 15 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-08116037",
+    "name": "Gemeinde Lichtenwald",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.lichtenwald.de/",
+    "pages": [
+      "https://www.lichtenwald.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "verifiedSource": "https://www.lichtenwald.de/amtsblatt/index.php",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Kein Ratsinformationssystem bekannt; Amtsblatt (verwaltungsportal.de, Ausgaben über Download-Formular), nur lückenlos nummerierte Tagesordnungen. Probeabruf 3 Monate: 11 Berichte aus 2 Sitzungen."
   }
 ]
