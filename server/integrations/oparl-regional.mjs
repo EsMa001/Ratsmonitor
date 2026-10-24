@@ -57,7 +57,7 @@ export function committeePart(spec){
 /** A provider-configured, portable collector. No Cloudflare or app dependencies. */
 export async function collectRegionalOparl(source,{now=new Date(),getJson=null,maxRequests=350,maxPages=Math.min(24,source.maxPages||6),maxDurationMs=300000,onProgress=()=>{},window:lookback,trace=null,marks}={}){
  // The page limits were set for a year of meetings; a longer period gets as many for each of its years.
- const years=windowYears(lookback),pageLimit=maxPages*years,sortedLimit=Math.max(maxPages,24)*years,roughLimit=48*years;
+ const years=windowYears(lookback),pageLimit=maxPages*years,sortedLimit=Math.max(maxPages,Math.min(120,source.listPages||24))*years,roughLimit=48*years;
  const filter=source.organizations?organizationFilter(source.organizations):null,skipped={filtered:0,mixed:0,unassigned:0};
  const since=windowStart(now,lookback);const from=since.toISOString().slice(0,10),issues=[];let requests=0;const cache=new Map();const base=new URL(source.system);const deadline=Date.now()+maxDurationMs;let strategy='plain';
  const allowed=value=>{const u=new URL(value);if(source.upgradeHttpLinks&&u.protocol==='http:'&&u.hostname===base.hostname&&!u.port&&!base.port)u.protocol='https:';if(u.protocol!=='https:'||u.origin!==base.origin||u.username||u.password)throw Error('Quelle außerhalb der freigegebenen OParl-Adresse');return u.href;};
@@ -130,6 +130,8 @@ const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false
  // A list that is only roughly newest first (Magdeburg, Rastatt: ordered by record, a year of planned meetings on the first
  // pages, the current ones on pages 14 to 30) is followed beyond the page limit while its pages still reach into the window,
  // up to roughLimit; a page that lies entirely before the window ends it. A catalog entry with its own maxPages keeps it.
+ // listPages (catalog): pages of a sorted or filtered list where a source gives few meetings per page and lists far into the
+ // future (Karlsruhe 2026: 10 per page, planned meetings up to the end of 2027 first), at most 120 per year.
  // The same holds read from the end (Krefeld, Bamberg: more than 24 pages of planned meetings at the end of the list).
  if(recent&&!newestFirst&&!source.maxPages){
   // Meetings without a date (cancelled, placeholders) do not count either way.

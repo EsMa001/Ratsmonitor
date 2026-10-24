@@ -12114,7 +12114,8 @@
     "meetingScan": "filter",
     "state": "system-verified",
     "verifiedSource": "https://sitzungskalender.karlsruhe.de/db/ratsinformation/start",
-    "verifiedAt": "2026-10-04"
+    "verifiedAt": "2026-10-04",
+    "listPages": 120
   },
   {
     "id": "de-08215007",
