@@ -41696,5 +41696,64 @@
     "verifiedSource": "https://ratsinfo-online.de/amtschenkenlaendchen-bi/si010_e.asp",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Ratsinformationssystem ALLRIS 3, Link auf der Website der Kommune. Probeabruf 3 Monate: 346 Berichte aus 24 Sitzungen."
+  },
+  {
+    "id": "de-08236",
+    "name": "Enzkreis",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.enzkreis.de/",
+    "pages": [
+      "https://www.enzkreis.de/Landkreis-Politik/Amtliche-Bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.enzkreis.de/Landkreis-Politik/Amtliche-Bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem bei ratsinfomanagement.net (Browserprüfung, für uns gesperrt); die amtlichen Bekanntmachungen des Kreises nennen Sitzungen von Kreistag und Ausschüssen mit Tagesordnung. Probeabruf 3 Monate: 18 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "de-07232",
+    "name": "Eifelkreis Bitburg-Prüm",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "sitepark-ratsinfo",
+    "base": "https://www.bitburg-pruem.de/",
+    "pages": [
+      "https://www.bitburg-pruem.de/landkreis/kreistag-ratsinformationssystem-allris/termine/"
+    ],
+    "verifiedSource": "https://www.bitburg-pruem.de/landkreis/kreistag-ratsinformationssystem-allris/termine/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem ALLRIS (bitburg-pruem.sitzung-online.de) für unseren Server gesperrt, OParl nur nach Genehmigung; die Website des Kreises zeigt Sitzungen und Tagesordnungen selbst (Sitepark-Ratsinfo, nur kommende Sitzungen). Probeabruf: 17 Berichte."
+  },
+  {
+    "id": "de-010605034",
+    "name": "Amt Itzstedt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sitepark-ratsinfo",
+    "base": "https://www.amt-itzstedt.de/",
+    "pages": [
+      "https://www.amt-itzstedt.de/wissenswert/politische-gremien-sitzungen/"
+    ],
+    "excludeTitles": [
+      "Tangstedt"
+    ],
+    "verifiedSource": "https://www.amt-itzstedt.de/wissenswert/politische-gremien-sitzungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Website des Amts zeigt Sitzungen und Tagesordnungen von Amt und Mitgliedsgemeinden (Sitepark-Ratsinfo, nur kommende Sitzungen); Sitzungen der amtsfreien, mitverwalteten Gemeinde Tangstedt ausgenommen (eigene Quelle). Probeabruf: 69 Berichte."
+  },
+  {
+    "id": "de-01062076",
+    "name": "Gemeinde Tangstedt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sitepark-ratsinfo",
+    "base": "https://www.tangstedt-stormarn.de/",
+    "pages": [
+      "https://www.tangstedt-stormarn.de/"
+    ],
+    "verifiedSource": "https://www.tangstedt-stormarn.de/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Website der Gemeinde zeigt Sitzungen und Tagesordnungen (Sitepark-Ratsinfo, nur kommende Sitzungen). Probeabruf: 22 Berichte."
   }
 ]

@@ -4138,5 +4138,33 @@
     "verifiedSource": "https://ratsinfo.ronnenberg.de/public/gr020?GRLFDNR=1",
     "verifiedAt": "2026-10-24",
     "apiCheck": "Ratsinformationssystem ALLRIS 4, Link auf der Website der Kommune. Probeabruf 3 Monate: 89 Berichte aus 6 Sitzungen."
+  },
+  {
+    "id": "nds-03252",
+    "name": "Landkreis Hameln-Pyrmont",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hameln-pyrmont.de/",
+    "pages": [
+      "https://www.hameln-pyrmont.de/Wir-f%C3%BCr-Sie/Aktuelles/Amtsblatt-Bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.hameln-pyrmont.de/Wir-f%C3%BCr-Sie/Aktuelles/Amtsblatt-Bekanntmachungen/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Ratsinformationssystem ALLRIS (ktinfo.hameln-pyrmont.de) für uns gesperrt; das Amtsblatt des Kreises nennt Sitzungen des Kreistags mit Tagesordnung. Probeabruf 3 Monate: 26 Berichte aus 2 Sitzungen."
+  },
+  {
+    "id": "nds-03351023",
+    "name": "Gemeinde Wietze",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sitepark-ratsinfo",
+    "base": "https://www.wietze.de/",
+    "pages": [
+      "https://www.wietze.de/rathaus-politik/buerger-ratsinfo/"
+    ],
+    "verifiedSource": "https://www.wietze.de/rathaus-politik/buerger-ratsinfo/",
+    "verifiedAt": "2026-10-24",
+    "apiCheck": "Website der Gemeinde zeigt Sitzungen und Tagesordnungen (Sitepark-Ratsinfo, nur kommende Sitzungen). Probeabruf: 14 Berichte."
   }
 ]
