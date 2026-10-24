@@ -32,7 +32,7 @@ import {fnv,safeDecode} from './source-common.mjs';
 export const WEBSITE_READER_NAME='Website der Kommune (öffentliche Bekanntmachungen)';
 /** Product tokens our programs announce in robots.txt groups. */
 export const ROBOT_TOKENS=['vorort-politicaltopics','ratsmonitor-sourcecatalog'];
-export const LIMITS=Object.freeze({listPages:12,followPages:3,feeds:5,ics:3,wpPages:3,sitemaps:2,sitemapUrls:30,documents:60,unparsed:20,unreadable:20,pdfBytes:12e6,htmlBytes:4e6,pdfPages:150});
+export const LIMITS=Object.freeze({listPages:12,followPages:3,feeds:5,ics:3,wpPages:3,sitemaps:2,sitemapUrls:30,documents:60,unparsed:20,unreadable:20,pdfBytes:12e6,gazettePdfBytes:40e6,htmlBytes:4e6,pdfPages:150});
 /** Key under which collectWebsite hands its robots.txt check to fetchSiteText/fetchSiteBytes (also for redirect targets). */
 export const ROBOTS=Symbol('robots');
 export const ROBOTS_BLOCKED='Adresse laut robots.txt ausgeschlossen, nicht abgerufen';
@@ -133,7 +133,7 @@ export async function fetchSiteText(url,source,timeoutMs=20000,request=fetch){
 }
 /** A document of the site as bytes with its content type (at most 12 MB): {bytes, type}. */
 export async function fetchSiteBytes(url,source,timeoutMs=30000,request=fetch,form=null){
- const got=await fetchSite(url,source,timeoutMs,request,'application/pdf,text/html;q=0.9,*/*;q=0.5',LIMITS.pdfBytes,form);
+ const got=await fetchSite(url,source,timeoutMs,request,'application/pdf,text/html;q=0.9,*/*;q=0.5',source?.gazettePages?LIMITS.gazettePdfBytes:LIMITS.pdfBytes,form);
  if(/html|text\/plain/i.test(got.type)&&got.bytes.byteLength<8000&&isRejectionPage(decodeText(got.bytes,got.type)))throw Error(REFUSED);
  return got;
 }
@@ -144,9 +144,11 @@ const release=pdf=>pdf.destroy?pdf.destroy():pdf.loadingTask?.destroy?.();
  * letter-spaced heading ("N i c h t ö f f e n t l i c h e r   T e i l") arrives as one run of single letters; the
  * parser reads it without spaces (website-text.mjs: closedLine, NONPUBLIC_WORDS).
  */
+// Letter-spaced capitals of a heading ("S T A D T  I S S E L B U R G", Isselburg 2026) read as one word: the place is named.
+export function spacedCapitals(text){return String(text??'').replace(/\b\p{Lu}(?: \p{Lu}){3,}\b/gu,m=>m.replace(/ /g,''));}
 export async function readPdfText(bytes){
  const pdf=await getDocumentProxy(bytes,{isEvalSupported:false,verbosity:0});
- try{if(pdf.numPages>LIMITS.pdfPages)throw Error('Dokument zu umfangreich');const {text}=await extractText(pdf,{mergePages:true});return scattered(text)?await linesByHeight(pdf):text;}
+ try{if(pdf.numPages>LIMITS.pdfPages)throw Error('Dokument zu umfangreich');const {text}=await extractText(pdf,{mergePages:true});return scattered(text)?await linesByHeight(pdf):spacedCapitals(text);}
  finally{await release(pdf);}
 }
 // A text that falls apart into single words, one a line (pages turned by 270°, Freising 2026: pdf.js gives every word its
@@ -302,7 +304,8 @@ const NOT_PLACE_WORD=/^(?:rathaus\w*|sitzungssaal\w*|saal|buergerhaus\w*|gemeind
 const NOT_TOWN=/^(?:sitzung\w*|tagesordnung|einladung|bekanntmachung|niederschrift|protokoll|beschluss\w*|oeffentlich\w*|nichtoeffentlich\w*|am|vom|im|in|der|die|das|des|und|termin\w*|januar|februar|maerz|april|mai|juni|juli|august|september|oktober|november|dezember|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag|sonnabend|teil|top|nr|ergebnis\w*|bericht|aktuell|ausschuss\w*|haushalt\w*)$/;
 function foreignBody(m,committee,source,names,title=''){
  const head=String(m.context||''),issuer=capsFix(String(m.issuer||'')),trailer=[].concat(m.trailer||[]).map(capsFix),headLines=[].concat(m.headLines||[]).map(capsFix),lead=[].concat(m.lead||[]).map(capsFix);
- const own=place=>{const k=placeKey(place);return !k||names.some(n=>n.includes(k));};
+ // A heading with the name glued to its "Stadt" ("STADTISSELBURG", Isselburg 2026) names the place too.
+ const own=place=>{const k=String(placeKey(place)).toLowerCase();return !k||names.some(n=>{const nl=String(n).toLowerCase();return nl.includes(k)||(nl.length>=5&&k.endsWith(nl));});};
  const association=ASSOCIATION.test(source.name||'');
  if(isSpecialPurposeBody(m.committee)||isSpecialPurposeBody(head)||isSpecialPurposeBody(issuer)||ISSUER_SPECIAL.test(issuer)||isSpecialPurposeBody(title)||lead.some(l=>l.length<=100&&isSpecialPurposeBody(l)))return 'Zweckverband';
  // Sections of a collective notice set in capitals or named "Gemeinde X" ("NACHBARHAUSEN" above the second meeting): another member's.
@@ -522,7 +525,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   const bytes=got.bytes instanceof Uint8Array?got.bytes:new Uint8Array(got.bytes),type=got.type||'';
   const pdf=String.fromCharCode(...bytes.slice(0,1024)).includes('%PDF-')||/pdf/i.test(type)||/\.pdf$/i.test(new URL(c.url).pathname);
   if(pdf){
-   if(bytes.byteLength>LIMITS.pdfBytes){issues.push(`Dokument ${c.url}: Quelldokument zu groß`);return;}
+   if(bytes.byteLength>(source.gazettePages?LIMITS.gazettePdfBytes:LIMITS.pdfBytes)){issues.push(`Dokument ${c.url}: Quelldokument zu groß`);return;}
    let text;try{text=repairFontUmlauts(await pdfText(bytes));}catch(e){fail('Dokument '+c.url,e);return;}
    if(String(text||'').replace(/\s+/g,' ').trim().length<80){issues.push('PDF ohne lesbaren Text (vermutlich eingescannt): '+c.url);if(unreadable.length<LIMITS.unreadable)unreadable.push(c.url);return;}
    texts.push({url:c.url,title:c.label,lines:pdfLines(text).map(repair),kind:'application/pdf',wrapped:true,order,fetched:true,...(forms.has(c.url)?{gazette:true}:{})});return;
@@ -614,7 +617,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   // Also where the parser read the paragraphs of a Satzung as items: a text that names no agenda and shows no public item.
   if(!t.event&&known.every(m=>!m.items.length)&&!/tagesordnung/i.test(t.lines.slice(0,60).join(' '))){const n=decisionNotice(t.title,t.lines);if(n){known=[{date:n.date,committee:n.committee,kind:'minutes',notice:true,items:[{number:'',title:n.title,status:'approved',result:'Beschlossen laut öffentlicher Bekanntmachung: '+n.sentence,votes:null}],otherItems:[],restricted:false,unclear:false,publicEvidence:'Öffentliche Bekanntmachung des Beschlusses',context:t.lines.slice(0,8).join(' '),lead:t.lines.slice(0,8),headLines:[],trailer:[],docIssuers:[]}];if(n.publicity==='nonpublic')known[0].items[0].publicity='nonpublic';}}
   if(!known.length){if(!t.event){issues.push('Keine Sitzung erkannt, nicht übernommen: '+t.url);if(unparsed.length<LIMITS.unparsed)unparsed.push(t.url);}continue;}
-  if(parsed.meetings.some(m=>(!m.date||!m.committee)&&(m.items.length||m.unclear)))issues.push('Sitzung ohne erkennbares Datum oder Gremium, nicht übernommen: '+t.url);
+  // An empty unclear entry (a line of the table of contents) does not spoil a text with a meeting read in full.
+  if(parsed.meetings.some(m=>(!m.date||!m.committee)&&(m.items.length||(m.unclear&&!known.length))))issues.push('Sitzung ohne erkennbares Datum oder Gremium, nicht übernommen: '+t.url);
   // Everything the town publishes is taken (24.10.2026); a linked notice that was not read only leaves its items unconfirmed.
   const unconfirmed=Boolean(t.missingNotice&&parsed.meetings.some(m=>m.items.length));
   if(unconfirmed)warnings.push(`Verlinkte Bekanntmachung ${t.missingNotice} nicht gelesen; öffentlicher Teil der Seite nicht bestätigt: ${t.url}`);
