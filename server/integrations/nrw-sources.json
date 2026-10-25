@@ -796,5 +796,21 @@
     "verifiedAt": "2026-10-25",
     "verifiedSource": "https://www.isselburg.de/de/bekanntmachungen/",
     "note": "isselburg.ratsinfomanagement.net gesperrt. Das Amtsblatt (PDF, Bekanntmachungen der Sitzungen) nennt Tagesordnungen der Ausschüsse und des Rates (Probeabruf 12 Monate: 425 Berichte; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "nrw-05554052",
+    "name": "Gemeinde Schöppingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.schoeppingen.de/",
+    "pages": [
+      "https://www.schoeppingen.de/portal/seiten/amtsblatt-der-gemeinde-schoeppingen-900000022-28230.html"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-25",
+    "verifiedSource": "https://www.schoeppingen.de/portal/seiten/amtsblatt-der-gemeinde-schoeppingen-900000022-28230.html",
+    "note": "ratsinfo.schoeppingen gesperrt. Das Amtsblatt (PDF) nennt Tagesordnungspunkte und Beschlüsse des Rates (Probeabruf 12 Monate: 126 Berichte, Rat 12.10.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
