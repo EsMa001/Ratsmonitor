@@ -732,6 +732,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  const topics=[];
  for(const row of grouped.values()){
   // Statute text that became a title ("Satz 1 Nr. 2 des UmwRG …", "§ 1 Zuständigkeiten …") is no topic of a council.
+  // A line of a fee table ("Orgel/ Soundanlage 40 €", Aalen 2026): an amount ends the title, no agenda item.
+  if(/\d[\d.,]*\s?€\s*$/u.test(String(row.title??'').trim()))continue;
   if(STATUTE_FRAGMENT.test(String(row.title??'').trim())||/[,(]\s*$|\b(?:z\.\s?B\.|bzw\.|vgl\.)\s*$/u.test(String(row.title??'').trim()))continue;
   // Same day for all events of a topic: the invitation first, the minutes (with the outcome) last.
   row.events.sort((a,b)=>a.date.localeCompare(b.date)||(a.result?1:0)-(b.result?1:0));
