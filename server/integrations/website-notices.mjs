@@ -35,7 +35,9 @@ export function noticeMatter(label){
 function headingMatter(lines,at){
  const out=[];
  for(const raw of lines.slice(0,at)){let l=raw.trim();for(let k=0;k<3;k++)for(const f of FRAME)l=l.replace(f,'').trim();l=l.replace(/^[-–:,\s]+|[-–:,\s]+$/g,'');
-  if(l.length<3||/^(?:der|des)?\s*(?:ortsgemeinde|verbandsgemeinde|stadt|gemeinde|og|vg)\s+[\p{L}.-]+$/iu.test(l))continue;out.push(l);if(out.join(' ').length>120)break;}
+  if(l.length<3||/^(?:der|des)?\s*(?:ortsgemeinde|verbandsgemeinde|stadt|gemeinde|og|vg)\s+[\p{L}.-]+$/iu.test(l))continue;
+  // The running header of a gazette page ("Seite für die Region Hannover … AMTSBLATT Jahrgang 2026") is no matter.
+  if(/amtsblatt|jahrgang|^seite\s+für\s/i.test(l))continue;out.push(l);if(out.join(' ').length>120)break;}
  return out.join(' ').replace(/\s+/g,' ').trim();
 }
 /**
@@ -53,7 +55,7 @@ export function decisionNotice(label,lines){
  // The line the sentence starts in: what stands above it is the heading.
  const head=m[2].split(/\s+/)[0],at=Math.max(0,all.findIndex(l=>l.includes(head)&&/\b(?:hat|haben)\b|Sitzung/.test(l+' ')));
  // The label of a gazette issue names the issue ("Nr. 42 vom 21.10.2026 …"): then the heading of the notice gives the matter.
- const issueLabel=/^(?:nr\.?\s*\d|amtliche[sr]?\s|amtsblatt|amtliches?\s|bekanntmachungsblatt|mitteilungsblatt)|\bPDF\s*\|/i.test(String(label||'').trim());
+ const issueLabel=/^(?:download\s|nr\.?\s*\d|amtliche[sr]?\s|amtsblatt|amtliches?\s|bekanntmachungsblatt|mitteilungsblatt)|\bPDF\s*\|/i.test(String(label||'').trim());
  const sentenceTitle=flat.slice(m.index,m.index+400).replace(/^.*?(?:beschlossen|gefasst|gefasst\.)\s*/i,'').replace(/[.;:]\s*$/,'').slice(0,120).trim();
  const title=(!issueLabel&&noticeMatter(label))||headingMatter(all,at)||(issueLabel?sentenceTitle:noticeMatter(label));if(!title||title.length<6||/^(?:§|[Ss]atz\s*\d|[Aa]bs\.|[Nn]r\.|\(|\p{Ll})/u.test(title))return null;
  const end=flat.indexOf('.',m.index+m[0].length);
