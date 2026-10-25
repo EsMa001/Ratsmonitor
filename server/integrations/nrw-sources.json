@@ -746,7 +746,7 @@
     "id": "nrw-05958048",
     "name": "Stadt Winterberg",
     "kind": "city",
-    "method": "scraper",
+    "method": "pending",
     "adapter": "website",
     "base": "https://www.rathaus-winterberg.de/",
     "pages": [
@@ -755,15 +755,16 @@
     "gazettePages": true,
     "followArticles": true,
     "state": "verified",
-    "verifiedAt": "2026-10-24",
+    "verifiedAt": "2026-10-25",
     "verifiedSource": "https://www.rathaus-winterberg.de/politik-rathaus/amtsblaetter/",
-    "note": "winterberg.ratsinfomanagement.net gesperrt. Die Amtsblätter (über „mehr erfahren“) nennen Tagesordnungspunkte des Rates (Probeabruf 12 Monate: 173 Berichte, Rat 17.09.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers). Einzelne Titel enthalten Gesetzestext-Reste."
+    "note": "winterberg.ratsinfomanagement.net gesperrt. Die Amtsblätter (über „mehr erfahren“) nennen Tagesordnungspunkte des Rates (Probeabruf 12 Monate: 173 Berichte, Rat 17.09.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers). Einzelne Titel enthalten Gesetzestext-Reste.",
+    "pendingReason": "Titel enthalten Gesetzes-/Satzungsreste (Abs., Satz N, GO); Leser nachschärfen, dann wieder aktivieren"
   },
   {
     "id": "nrw-05754052",
     "name": "Stadt Werther (Westf.)",
     "kind": "city",
-    "method": "scraper",
+    "method": "pending",
     "adapter": "website",
     "base": "https://www.stadt-werther.de/",
     "pages": [
@@ -772,9 +773,10 @@
     "gazettePages": true,
     "followArticles": true,
     "state": "verified",
-    "verifiedAt": "2026-10-24",
+    "verifiedAt": "2026-10-25",
     "verifiedSource": "https://www.stadt-werther.de/",
-    "note": "werther.ratsinfomanagement.net gesperrt. Die Bekanntmachungen der Stadt nennen Beschlüsse des Rates (Grund- und Gewerbesteuer, Haushalt; Probeabruf 12 Monate: 3 Berichte, Rat 18.12.2025; wenige Treffer, Quelle trotzdem übernommen)."
+    "note": "werther.ratsinfomanagement.net gesperrt. Die Bekanntmachungen der Stadt nennen Beschlüsse des Rates (Grund- und Gewerbesteuer, Haushalt; Probeabruf 12 Monate: 3 Berichte, Rat 18.12.2025; wenige Treffer, Quelle trotzdem übernommen).",
+    "pendingReason": "Titel enthalten Gesetzes-/Satzungsreste (Abs., Satz N, GO); Leser nachschärfen, dann wieder aktivieren"
   },
   {
     "id": "nrw-05554032",
