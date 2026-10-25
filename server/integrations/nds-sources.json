@@ -4434,5 +4434,21 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://samtgemeindeverwaltung.de/dokumente/amtsblatt/",
     "note": "Ratsinformationssystem gesperrt. Die Samtgemeinde-Bekanntmachungen nennen Tagesordnungspunkte der Wahlausschüsse (Probeabruf 12 Monate: 42 Berichte, 21.09.2026)."
+  },
+  {
+    "id": "mv-karstaedt",
+    "name": "Gemeinde Karstädt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-karstaedt.de/",
+    "pages": [
+      "https://www.gemeinde-karstaedt.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-25",
+    "verifiedSource": "https://www.gemeinde-karstaedt.de/amtsblatt/index.php",
+    "note": "Amtsblatt der Gemeinde mit Beschlüssen der Gemeindevertretung (Ausgaben über Download-Formulare, Probeabruf: 14 Berichte, Sitzung 01.10.2026 und 31.03.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]

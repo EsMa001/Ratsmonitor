@@ -7,7 +7,7 @@ import {committeeOf,germanDates} from './website-text.mjs';
 // with its meeting (a Widmungsverfügung „nach dem Beschluss … vom“, an ordinance) are not taken for now.
 
 // „<Gremium> hat in seiner / ihrer / der (öffentlichen) Sitzung am / vom TT.MM.JJJJ“; also „… in öffentlicher Sitzung am“.
-const DECIDED=/((?:Der|Die|Das)\s+)?([\p{Lu}][\p{L}.-]*(?:\s+[\p{L}.-]+){0,6}?)\s+(?:hat|haben)\s+(?:in\s+(?:seiner|ihrer|der|einer)\s+|in\s+)(?:(nicht\s*-?\s*)?öffentliche[rn]?\s+)?Sitzung\s+(?:am|vom)\s+(?:\p{L}+,?\s+(?:den\s+)?)?(\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}|\d{1,2}\.\s?\p{L}+\s+\d{4})/u;
+const DECIDED=/((?:Der|Die|Das)\s+)?([\p{Lu}][\p{L}.-]*(?:\s+[\p{L}.-]+){0,6}?)\s+(?:hat|haben)\s+(?:(?:in|auf)\s+(?:seiner|ihrer|der|einer)\s+|in\s+)(?:(nicht\s*-?\s*)?öffentliche[rn]?\s+)?Sitzung\s+(?:am|vom)\s+(?:\p{L}+,?\s+(?:den\s+)?)?(\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}|\d{1,2}\.\s?\p{L}+\s+\d{4})/u;
 // The other order of the same sentence: „Der Gemeinderat der Stadt Walldorf hat am 24.02.2026 in öffentlicher Sitzung …“ (Walldorf,
 // Sindelfingen 2026). Groups as DECIDED, the day moved behind the verb: 1 article, 2 body, 3 day, 4 nonpublic part.
 const DECIDED_AM=/((?:Der|Die|Das)\s+)?([\p{Lu}][\p{L}.-]*(?:\s+[\p{L}.-]+){0,6}?)\s+(?:hat|haben)\s+am\s+(\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4})\s+in\s+(?:(nicht\s*-?\s*)?öffentlicher?\s+)?Sitzung/u;

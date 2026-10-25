@@ -156,7 +156,8 @@ export function gazetteForms(html,base){
   const form={};for(const f of m[3].matchAll(/<input\b[^>]*type="hidden"[^>]*>/gi)){const name=attr(f[0],'name'),value=attr(f[0],'value');if(name)form[name]=value??'';}
   if(!form.hash||!form.form)continue;
   // The row of the table names number and day of the issue ("Nr. 10/2026", "23.10.2026").
-  const row=text.slice(Math.max(0,text.lastIndexOf('<tr',m.index)),m.index);
+  // A card of an issue (<article>, Karstädt 2026) is as near as a table row.
+  const row=text.slice(Math.max(0,text.lastIndexOf('<tr',m.index),text.lastIndexOf('<article',m.index)),m.index);
   const label=('Amtsblatt '+strip(row)).replace(/[\u200b\u00a0]/g,'').replace(/&#8203;/g,'').replace(/\s+/g,' ').trim();
   out.push({url,label,date:firstDate(label,LABEL_DATES),kind:'pdf',form});
  }
