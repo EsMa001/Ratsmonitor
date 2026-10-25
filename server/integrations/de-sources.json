@@ -43336,5 +43336,23 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://www.amt-daenischer-wohld.de/politik-amt-gemeinden/amtsblatt/",
     "note": "ris des Amtes (sitzung-online) gesperrt. Das Amtsblatt nennt Tagesordnungspunkte des Hauptausschusses des Amtes (Probeabruf 12 Monate: 184 Berichte, Hauptausschuss 03.06.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "de-16052000",
+    "name": "Stadt Gera",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gera.de/",
+    "alsoFrom": [
+      "https://cms.gera.de/"
+    ],
+    "pages": [
+      "https://www.gera.de/presse/amtsblatt"
+    ],
+    "gazettePages": true,
+    "verifiedSource": "https://www.gera.de/presse/amtsblatt",
+    "verifiedAt": "2026-10-25",
+    "apiCheck": "Amtsblatt der Stadt Gera (PDF auf cms.gera.de) mit Tagesordnungen von Stadtrat, Ausschüssen und Ortsteilräten; Probeabruf 3 Monate 636 Berichte."
   }
 ]

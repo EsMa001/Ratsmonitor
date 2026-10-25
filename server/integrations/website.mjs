@@ -254,7 +254,7 @@ const ASSOCIATION=/Verwaltungsgemeinschaft|Verwaltungsverband|Gemeindeverwaltung
 const COUNTY_HEAD=/(?<!\p{L})(?:des|der|beim|im)\s+(?:Kreistag(?:e?s)?|Landkreis(?:es)?|Kreis(?:es)?|Bezirkstag(?:e?s)?|Landratsamt(?:e?s)?|Kreishaus(?:es)?)(?!\p{L})/u;
 const TOWN_COUNCIL=/^(?:Gemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Gemeindevertretung|Stadtvertretung|Stadtverordnetenversammlung|Ortsgemeinderat)\s+(\p{Lu}.*)$/u;
 // Bodies of a municipality (or of its districts and associations), never of a county.
-const MUNICIPAL_BODY=/^(?:Gemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Gemeindevertretung|Stadtvertretung|Stadtverordnetenversammlung|Ortsgemeinderat|Ortschaftsrat|Ortsrat|Ortsbeirat|Stadtbezirksrat|Verbandsgemeinderat|Samtgemeinderat|Amtsausschuss|Gemeinschaftsversammlung|Gemeinschaftsausschuss|Rat\s+der\s+(?:Stadt|Gemeinde))(?!\p{L})/u;
+const MUNICIPAL_BODY=/^(?:Gemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Gemeindevertretung|Stadtvertretung|Stadtverordnetenversammlung|Ortsgemeinderat|Ortschaftsrat|Ortsteilrat|Ortsrat|Ortsbeirat|Stadtbezirksrat|Verbandsgemeinderat|Samtgemeinderat|Amtsausschuss|Gemeinschaftsversammlung|Gemeinschaftsausschuss|Rat\s+der\s+(?:Stadt|Gemeinde))(?!\p{L})/u;
 // Bodies of a special-purpose association, never those of an Amt, Verbandsgemeinde or Verwaltungsgemeinschaft.
 const SPECIAL_BODY=/^(?:Verbandsversammlung|Verbandsausschuss|Verbandsvorstand|Verbandsrat)(?!\p{L})/u;
 const ASSOCIATION_BODY=/^(?:Verbandsgemeinderat|Samtgemeinderat|Amtsausschuss|Gemeinschaftsausschuss|Gemeinschaftsversammlung|Verbandsausschuss|Verbandsversammlung|Verbandsrat|Amtsvertretung|Samtgemeinde\p{L}*|Verbandsgemeinde\p{L}*|Verwaltungsgemeinschafts\p{L}*|Amts\p{L}*ausschuss)(?!\p{L})/u;
@@ -289,7 +289,8 @@ const placeKey=name=>{const w=words(name).trim().split(' ').filter(Boolean);retu
 // The heading of a section of a gazette that names a municipality ("Bdorf", "BDORF", "Aus der Gemeinde Bdorf",
 // "Amtliche Bekanntmachungen der Gemeinde Bdorf", "Mitgliedsgemeinde Bdorf").
 const SECTION_PLACE=/^(?:(?:(?:Amtliche\s+)?Bekanntmachung(?:en)?\s+|Aus\s+|Nachrichten\s+|Mitteilungen\s+)(?:der|dem|des)\s+)?(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Mitgliedsgemeinde|Ortsteil|Ortschaft)\s+(\p{Lu}[\p{L}-]+(?:\s+\p{Lu}[\p{L}-]+)?)$|^((?:(?:Bad|Sankt|St\.|Groß|Klein|Alt|Neu|Ober|Unter|Nieder|Hohen)\s+)?\p{Lu}[\p{Ll}-]+|\p{Lu}{3,}(?:-\p{Lu}+)?)$/u;
-const NOT_SECTION=/^(?:landkreis|kreis|kreistag|kreisausschuss|landratsamt|kreisverwaltung|ausschuesse|gremien|sitzungstermine|tagesordnungen|staedte|gemeinden|amtliche[rns]?|bekanntmachung(?:en)?|oeffentliche[rns]?|tagesordnung|sitzung(?:en)?|einladung|inhalt|inhaltsverzeichnis|nichtamtliche[rns]?|teil|hinweis(?:e)?|termine|veranstaltungen|rathaus|verwaltung|impressum|aktuelles|nachrichten|mitteilungen|niederschrift|protokoll|beschluesse|gemeinderat|stadtrat|bauausschuss|amtsblatt|mitteilungsblatt|ende|fortsetzung|seite|vereine|kirchen|schulen)$/;
+// Also the office below the previous meeting's items ("Vorsitzender", "Ortsteilbürgermeisterin", "Amtsleiter", Amtsblatt der Stadt Gera).
+const NOT_SECTION=/^(?:vorsitzende[rn]?|stellvertretende[rn]?|amtsleiter(?:in)?|[a-z]*buergermeister(?:in)?|stellenausschreibung(?:en)?|landkreis|kreis|kreistag|kreisausschuss|landratsamt|kreisverwaltung|ausschuesse|gremien|sitzungstermine|tagesordnungen|staedte|gemeinden|amtliche[rns]?|bekanntmachung(?:en)?|oeffentliche[rns]?|tagesordnung|sitzung(?:en)?|einladung|inhalt|inhaltsverzeichnis|nichtamtliche[rns]?|teil|hinweis(?:e)?|termine|veranstaltungen|rathaus|verwaltung|impressum|aktuelles|nachrichten|mitteilungen|niederschrift|protokoll|beschluesse|gemeinderat|stadtrat|bauausschuss|amtsblatt|mitteilungsblatt|ende|fortsetzung|seite|vereine|kirchen|schulen)$/;
 // A gazette of several municipalities by its head.
 const SHARED_GAZETTE=/Verwaltungsgemeinschaft|Verbandsgemeinde|Samtgemeinde|Verwaltungsverband|(?<!\p{L})Amt(?:e?s)?(?!\p{L})|Mitgliedsgemeinden|kreisangehörig/u;
 // A gazette that belongs to one municipality ("Amtsblatt der Gemeinde Musterbach").
@@ -349,12 +350,13 @@ export function foreignBody(m,committee,source,names,title=''){
  // The town a heading names in other ways (its first line, the link text or summary).
  const headingTowns=[...headLines.slice(0,3),String(m.heading||''),String(title)].flatMap(l=>[l.match(ISSUER_TOWN)?.[1],...HEADING_TOWNS.flatMap(re=>re.global?[...l.matchAll(re)].map(t=>t[1]):[l.match(re)?.[1]])]).filter(p=>p&&!NOT_TOWN.test(fold(p))&&!NOT_PLACE_WORD.test(fold(p))&&!/(?:ung|heit|keit|schaft|tion|sitzung|termin|halle|haus|saal|zentrum|heim|gebäude|schule|kirche|raum|stube)$/iu.test(p));
  const towns=[...headingTowns,council,...[...head.matchAll(HEAD_TOWN)].map(t=>t[1]),issuer.match(ISSUER_TOWN)?.[1],...trailer.flatMap(l=>[l.match(ISSUER_TOWN)?.[1],...[...l.matchAll(HEAD_TOWN)].map(t=>t[1])]),titleTown&&!NOT_TOWN.test(fold(titleTown))?titleTown:null].filter(Boolean);
- if(towns.some(t=>!own(t)))return 'andere Gemeinde';
+ // The district a district body is named after is where it meets ("Ortschaftsrat Unterdorf" in the Dorfgemeinschaftshaus Unterdorf);
+ // its name in the heading is no other town (Ortsteilrat Taubenpreskeln in the Amtsblatt der Stadt Gera).
+ const district=committee.match(/^(?:Ortschaftsrat|Ortsteilrat|Ortsrat|Ortsbeirat|Stadtbezirksrat|Bezirksbeirat|Bezirksausschuss)\s+(\p{Lu}.*)$/u)?.[1];
+ if(towns.some(t=>!own(t)&&!(district&&placeKey(t)===placeKey(district))))return 'andere Gemeinde';
  // A meeting held in the Rathaus of another town and signed there ("im Sitzungssaal des Rathauses Bdorf", "Bdorf, 07.10.2026"),
  // as the notice page of a Verwaltungsgemeinschaft lists those of all its members; unless the head or signature names the area.
  const places=[...headLines.flatMap(l=>[...[...l.matchAll(VENUE_TOWN)].map(t=>t[1]),...[...l.matchAll(POSTAL_PLACE)].map(t=>t[1])]),...trailer.map(l=>l.match(SIGN_PLACE)?.[1])].filter(p=>p&&!NOT_TOWN.test(fold(p))&&!/^(?:Gemeinde|Stadt|Markt|Rathaus|Sitzungssaal)$/u.test(p));
- // The district a district body is named after is where it meets ("Ortschaftsrat Unterdorf" in the Dorfgemeinschaftshaus Unterdorf).
- const district=committee.match(/^(?:Ortschaftsrat|Ortsrat|Ortsbeirat|Stadtbezirksrat|Bezirksbeirat|Bezirksausschuss)\s+(\p{Lu}.*)$/u)?.[1];
  if(places.some(p=>!own(p)&&!(district&&placeKey(p)===placeKey(district)))&&!names.some(n=>words([...headLines,...trailer].join(' ')).includes(n)))return 'andere Gemeinde';
  return null;
 }

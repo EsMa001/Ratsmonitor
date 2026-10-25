@@ -12,7 +12,7 @@ export {decodeEntities,repairMojibake,composeUmlauts};
 //   Where a line is not clearly an item it is not one.
 const entities=decodeEntities;
 /** Words that make a page, link or document worth reading for meetings. */
-export const SESSION_WORDS=/Sitzung|Tagesordnung|Einladung|Bekanntmachung[^.]{0,80}Sitzung|Niederschrift|Protokoll|Sitzungsbericht|Beschlüsse|Beschlussübersicht|Gemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Ausschuss|Ratssitzung|Stadtverordnetenversammlung|Gemeindevertretung|Stadtvertretung|Ortschaftsrat|Ortsrat|Ortsbeirat|Kreistag/i;
+export const SESSION_WORDS=/Sitzung|Tagesordnung|Einladung|Bekanntmachung[^.]{0,80}Sitzung|Niederschrift|Protokoll|Sitzungsbericht|Beschlüsse|Beschlussübersicht|Gemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Ausschuss|Ratssitzung|Stadtverordnetenversammlung|Gemeindevertretung|Stadtvertretung|Ortschaftsrat|Ortsteilrat|Ortsrat|Ortsbeirat|Kreistag/i;
 /** Link texts, titles and addresses of the non-public part; such documents are not read. */
 // Also the short forms "nö", "(NÖ)", "N.Ö.", "…_noe_…" and "nichtoeff-…" of labels and file names.
 export const NONPUBLIC_WORDS=/nicht(?:[\s_.-]|%20|%2D)*(?:ö|oe|o|%C3%B6)ffentl|nicht(?:[\s_.-]|%20|%2D)*(?:ö|oe|%C3%B6)ff(?!\p{L})|vertraulich|geschlossene[rn]?[\s_-]+(?:Sitzung|Teil)|Ausschlu(?:ss|ß)[\s_-]+der[\s_-]+(?:Ö|Oe)ffentlichkeit|(?<![\p{L}\p{N}])(?:N\.?\s?Ö\.?|NOE)(?!\p{L})/iu;
@@ -355,6 +355,7 @@ export function pdfLines(text){
 }
 
 const MONTH='(Januar|Jänner|Jan\\.?|Februar|Feb\\.?|März|Maerz|Mär\\.?|Mrz\\.?|April|Apr\\.?|Mai|Juni|Jun\\.?|Juli|Jul\\.?|August|Aug\\.?|September|Sept\\.?|Sep\\.?|Oktober|Okt\\.?|November|Nov\\.?|Dezember|Dez\\.?)';
+const MONTH_DAY=new RegExp(`^\\d{1,2}\\.\\s?${MONTH}\\s*\\d{4}(?!\\d)`,'iu');
 const MONTHS={jan:1,jän:1,feb:2,mär:3,mae:3,mrz:3,apr:4,mai:5,jun:6,jul:7,aug:8,sep:9,okt:10,nov:11,dez:12};
 const WEEKDAY='(?:(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend|Sonntag|Mo|Di|Mi|Do|Fr|Sa|So)\\.?,?\\s+(?:den\\s+)?)?';
 const DATE_RES=[
@@ -384,7 +385,7 @@ export function timeOf(s){
 // Committees: the bodies of a town, its districts and its county; every "…ausschuss" and "…beirat". Hyphenated words
 // before it belong to the name ("Haupt-, Finanz- und Personalausschuss").
 const BODY_PRE='(?:\\p{L}+-(?:\\s*,\\s*|\\s+(?:und|sowie|u\\.)\\s+))*';
-const BODY_CORE='(?:\\p{L}*?(?:gemeinderat|beirat|ausschuss|ausschuß)|(?:markt|stadt|orts|ortschafts|ältesten|stadtbezirks|bezirks)rat|stadtverordnetenversammlung|gemeinschaftsversammlung|verbandsversammlung|gemeindevertretung|stadtvertretung|bezirksvertretung|kreistag)';
+const BODY_CORE='(?:\\p{L}*?(?:gemeinderat|beirat|ausschuss|ausschuß)|(?:markt|stadt|orts|ortsteil|ortschafts|ältesten|stadtbezirks|bezirks)rat|stadtverordnetenversammlung|gemeinschaftsversammlung|verbandsversammlung|gemeindevertretung|stadtvertretung|bezirksvertretung|kreistag)';
 const BODY=new RegExp(`(?<![\\p{L}-])(${BODY_PRE})(${BODY_CORE})(e?s)?(?:sitzung(?:en)?)?(?![\\p{L}])`,'iu');
 const COUNCIL=/(?<!\p{L})Rat(?:es)?\s+der\s+(Stadt|Gemeinde)(?!\p{L})/u;
 // Words that follow a committee without being the name of a place.
@@ -425,7 +426,7 @@ export function committeeOf(s){
  }
  // A place name only after an article ("des Gemeinderates Oberdorf"): "Stadtrat Muster" may name a person. A body that
  // is never a person's title takes it also as the head of a notice ("Gemeindevertretung Nachbarhausen").
- if(/(?:^|\s)(?:des|der|dem|den|die)\s+$/i.test(text.slice(0,m.index))||m[3]||m.index===0&&!m[1]&&/(?:vertretung|versammlung|ortsgemeinderat|ortschaftsrat)$/i.test(core)){
+ if(/(?:^|\s)(?:des|der|dem|den|die)\s+$/i.test(text.slice(0,m.index))||m[3]||m.index===0&&!m[1]&&/(?:vertretung|versammlung|ortsgemeinderat|ortschaftsrat|ortsteilrat)$/i.test(core)){
   const w=after.match(/^\s+([\p{L}.-]+)(?:\s+([\p{L}-]+))?/u);
   if(w&&TWO_PART.test(w[1])&&placeWord(w[2]))name+=` ${w[1]} ${w[2]}`;
   else if(w&&placeWord(w[1]))name+=' '+w[1];
@@ -433,7 +434,7 @@ export function committeeOf(s){
  return name;
 }
 /** Bodies of special-purpose associations (Zweck-, Schul-, Abwasserverband), which are not the town's own bodies. */
-export function isSpecialPurposeBody(name){return /(?:wasserversorgungs|abwasser|wasser|klärwerks)gruppe|gruppenwasserversorgung|gruppenklär\p{L}+|fernwasserversorgung|zweckvereinbarung|^(?:Wasserversorgung|Abwasserbeseitigung|Abwasserentsorgung|Wasserbeschaffung)\s+\p{Lu}|(?:zweck|schul|abwasser|wasser|boden|abfall|planungs|unterhaltungs|deich|wege|forst|gewässer|verkehrs|tourismus|sparkassen|kultur|landschaftspflege|krankenhaus|friedhofs|breitband|erschließungs|gewerbe|industrie|regional)\p{L}{0,25}verband|(?<!\p{L})ZV(?=\s+\p{Lu})/iu.test(String(name||''));}
+export function isSpecialPurposeBody(name){return /jagdgenossenschaft|(?:wasserversorgungs|abwasser|wasser|klärwerks)gruppe|gruppenwasserversorgung|gruppenklär\p{L}+|fernwasserversorgung|zweckvereinbarung|^(?:Wasserversorgung|Abwasserbeseitigung|Abwasserentsorgung|Wasserbeschaffung)\s+\p{Lu}|(?:zweck|schul|abwasser|wasser|boden|abfall|planungs|unterhaltungs|deich|wege|forst|gewässer|verkehrs|tourismus|sparkassen|kultur|landschaftspflege|krankenhaus|friedhofs|breitband|erschließungs|gewerbe|industrie|regional)\p{L}{0,25}verband|(?<!\p{L})ZV(?=\s+\p{Lu})/iu.test(String(name||''));}
 
 const MINUTES=/Niederschrift|Protokoll|Sitzungsbericht|Bericht\s+(?:aus|über|von)\s|(?<!\p{L})Aus\s+(?:dem|der|den)\s+(?:Sitzung|\p{L}*(?:rat|ausschuss|vertretung|versammlung|tag|beirat)(?:e?s)?(?!\p{L})|\p{L}*sitzung)|Beschlüsse(?!n)|Beschlussübersicht|Beschlussfassungen|Ergebniss?e?\s+(?:der|aus\s+der)\s+\p{L}*sitzung|(?<!\p{L})fand\s.{0,100}(?:Sitzung|Tagung)/iu;
 const INVITATION=/Einladung|Bekanntmachung|Tagesordnung|(?<!\p{L})Ladung|(?<!\p{L})findet\s.{0,100}(?:Sitzung|Tagung)|(?:Sitzung|Tagung)\s.{0,100}(?<!\p{L})findet\s.{0,60}statt|(?<!\p{L})lade\s.{0,80}(?<!\p{L})ein(?!\p{L})/iu;
@@ -867,6 +868,10 @@ const SESSION_ON=/^(?:(?:nicht\s*-?\s*)?öffentliche\s+|ordentliche\s+)?(?:Sitzu
 // A day of its own with weekday ("Mittwoch, 14.10.2026") as on a page of dates, the time and body in the next line.
 const DATE_ONLY=new RegExp(`^${WEEKDAY}\\d{1,2}\\.\\s?(?:\\d{1,2}\\.\\s?\\d{2,4}|${MONTH}\\s*\\d{4})(?:\\s*[,|–-]?\\s*(?:ab\\s+|um\\s+)?(?:\\d{1,2}[:.]\\d{2}(?:\\s*Uhr)?|\\d{1,2}\\s*Uhr))?$`,'iu');
 const dayLine=line=>DATE_ONLY.test(line)&&WEEKDAY_WORD.test(line);
+// The day with time and then the place in the same line, below the body ("Ortsteilrat Lusan" / "Mittwoch, 14. Oktober 2026, 18:00 Uhr,
+// Beratungsraum," in the Amtsblatt der Stadt Gera); the time must be there, so a date in running text is no head.
+const DAY_PLACE=new RegExp(`^${WEEKDAY}\\d{1,2}\\.\\s?(?:\\d{1,2}\\.\\s?\\d{2,4}|${MONTH}\\s*\\d{4})\\s*,?\\s*(?:um\\s+)?\\d{1,2}[:.]\\d{2}\\s*Uhr\\s*,\\s*\\S.{0,80}$`,'iu');
+const dayPlaceLine=line=>DAY_PLACE.test(line)&&WEEKDAY_WORD.test(line);
 // A field that names the day of a meeting ("Termin: 21.10.2026, 18:00 Uhr", "Sitzungstag: Mittwoch, 14.10.2026").
 const DAY_FIELD=/^(?:Termin|Datum|Sitzungstermin|Sitzungstag|Sitzungsdatum|Tag|Wann)\s*:/iu;
 const SHORT_WEEKDAY=/(?<!\p{L})(?:Mo|Di|Mi|Do|Fr|Sa|So)\.?,?\s+\d/u;
@@ -902,7 +907,7 @@ function meetingHeader(lines,i,ctx){
  // "Bauausschuss" on a line of its own, "Sitzung am Dienstag, 21.10.2026", "Dienstag, 20. Oktober 2026, 18 Uhr" or
  // "Termin: 21.10.2026" below it.
  const alone=!SESSION_WORD.test(line)&&!it&&line.length<=80&&/^\p{Lu}/u.test(line);
- const twoLines=alone&&!NOT_HEADER.test(next)&&(SESSION_ON.test(next)||(dayLine(next)||DAY_FIELD.test(next))&&germanDates(next).length>0);
+ const twoLines=alone&&!NOT_HEADER.test(next)&&(SESSION_ON.test(next)||(dayLine(next)||dayPlaceLine(next)||DAY_FIELD.test(next))&&germanDates(next).length>0);
  // "Gemeinderat | Mittwoch 14.10.2026 | 19:00 Uhr": the body first, its day and time in the same line.
  const body=line.match(BODY),inline=!it&&!!body&&body.index<=1&&line.length<=120&&germanDates(line).length>0&&(timeOf(line)||WEEKDAY_WORD.test(line)||SHORT_WEEKDAY.test(line)||BODY_ON.test(line));
  if(!SESSION_WORD.test(line)&&!twoLines&&!inline&&!(AGENDA_HEAD.test(line)&&germanDates(line).length))return null;
@@ -977,7 +982,10 @@ function prepareLines(lines){
   if(/(?<![\d.])\d{1,2}\.$/.test(src[i])&&DAY_REST.test(src[i+1]||'')){src.splice(i,2,src[i]+' '+src[i+1]);}
   // A sub-item wrapped before its day ("c) Entscheidung über … gegen die Niederschrift vom" / "17.06.2026 (öffentlicher Teil)",
   // Löwenberger Land) is one line: the day and its part name the minutes, not another meeting or a part of this one.
-  if(/\s(?:vom|am)$/u.test(src[i])&&/^\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}(?!\d)/.test(src[i+1]||'')&&(src[i+1]||'').length<=100){src.splice(i,2,src[i]+' '+src[i+1]);}
+  // Also with the month as a word ("Bestätigung der Niederschrift vom" / "9. September 2026 (öffentlicher Teil)", Gera).
+  if(/\s(?:vom|am)$/u.test(src[i])&&(/^\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}(?!\d)/.test(src[i+1]||'')||MONTH_DAY.test(src[i+1]||''))&&(src[i+1]||'').length<=100){src.splice(i,2,src[i]+' '+src[i+1]);}
+  // A month broken at its hyphen ("… Niederschrift vom 22. Septem-" / "ber 2026 (öffentlicher Teil)", Gera) is one line.
+  {const m=(src[i]||'').match(/\d{1,2}\.\s?(\p{L}+)-$/u),n=(src[i+1]||'').match(/^(\p{Ll}+)\s+\d{4}/u);if(m&&n&&new RegExp(`^${MONTH}$`,'iu').test(m[1]+n[1]))src.splice(i,2,src[i].slice(0,-1)+src[i+1]);}
   // A body's name wrapped at its hyphen in a narrow column ("Öffentliche Sitzung des Bau-" / "und Umweltausschusses") is one line.
   if(/\p{L}-$/u.test(src[i])&&src[i+1]&&!itemOf(src[i])&&!itemOf(src[i+1])){const j=join(src[i],src[i+1]),c=committeeOf(j);if(c&&c!==committeeOf(src[i])&&c!==committeeOf(src[i+1]))src.splice(i,2,j);}
   // A committee's field wrapped after a comma ("… des Ausschusses für Soziales, Familie, Jugend," / "Integration, Gesundheit und Sport"):
@@ -1196,7 +1204,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   const end=segments[s+1]?.start??all.length;
   // After a meeting that ended in its non-public part, what follows belongs to that part unless a head of its own
   // names another day and another body (a running head, a note on an earlier reading are no new meeting).
-  if(carried&&!(seg.header?.own&&seg.header.date!==carried.date&&!sameBody(seg.header.committee,carried.committee||''))){
+  if(carried&&!(seg.header?.own&&!(seg.header.date===carried.date&&sameBody(seg.header.committee,carried.committee||''))&&(seg.header.date!==carried.date||!sameBody(seg.header.committee,carried.committee||'')))){
    // Everything the town publishes is taken (decision 24.10.2026, Nico: „nicht zu vorsichtig“): the items belong to the non-public
    // part of the meeting before and are kept there, marked non-public.
    const prev=meetings.at(-1),rest=items.slice(seg.start,end).filter(x=>x?.title);
@@ -1490,11 +1498,15 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    const pastPage=k=>{while(k<end&&(PAGE_LINE.test(all[k])||DATE_ALONE.test(all[k])&&PAGE_LINE.test(all[k+1]||'')))k++;return k;};
    const itemLine=i;let t=it.title,j=i+1;const pieces=[t],marked=new Set();read.add(mainNumber(it.number));
    if(!t&&j<end&&continues(j))t=all[j++];
-   if(kind==='minutes'){if(/(?:[,:-]|(?<!\p{L})und)$/u.test(t)&&j<end&&continues(j))t=join(t,all[j++]);}
+   // A word broken at the line's end goes on in the next line: in lower case („… in der Innen-“ / „stadt“), or in a name still in
+   // quotes („Bebauungsplan B/100/01 "Südliche Karl-Matthes-“ / „Straße"“), Amtsblatt der Stadt Gera.
+   const broken=k=>k<end&&/\p{L}-$/u.test(t)&&!itemOfLine(all[k])&&(/^\p{Ll}/u.test(all[k])||(t.match(/["„“”]/g)||[]).length%2===1&&all[k].length<=80);
+   if(kind==='minutes'){if(/(?:[,:-]|(?<!\p{L})und)$/u.test(t)&&j<end&&(continues(j)||broken(j)))t=join(t,all[j++]);for(let k=0;k<3&&broken(j);k++)t=join(t,all[j++]);}
    // A wrapped title that reports from the non-public part ("Bekanntgabe von Beschlüssen" / "aus nichtöffentlicher Sitzung").
    // A wrapped title whose next line starts with a number written otherwise than the item's own („15 Bauleitplanverfahren: … und“ /
    // „16. Änderung des Flächennutzungsplans“, Heiligenstadt i.OFr.) goes on in that line.
-   else if(wrapped)for(let k=0;k<3&&(j=pastPage(j))<end&&(continues(j)||wrapsOn(it,t,all[j])||!itemOf(all[j])&&isPublicReport(join(t,all[j]))&&!mentionsNonPublic(join(t,all[j])));k++){if(!continues(j)&&wrapsOn(it,t,all[j]))marked.add(pieces.length);pieces.push(all[j]);t=join(t,all[j++]);}
+   // Up to three lines, more only while a word is broken at the line's end („… nach § 9 des Thü-“ / „ringer Waldgesetzes“, Gera).
+   else if(wrapped)for(let k=0;(k<3||k<6&&/\p{L}-$/u.test(t))&&(j=pastPage(j))<end&&(continues(j)||broken(j)||wrapsOn(it,t,all[j])||!itemOf(all[j])&&isPublicReport(join(t,all[j]))&&!mentionsNonPublic(join(t,all[j])));k++){if(!continues(j)&&wrapsOn(it,t,all[j]))marked.add(pieces.length);pieces.push(all[j]);t=join(t,all[j++]);}
    t=t.replace(/\s+/g,' ').replace(/\s*[,;:–]$/,'').trim();
    i=j;lastItemEnd=j;
    if(!/\p{L}/u.test(t)||t.length<3||t.length>400){cur=null;continue;}

@@ -735,3 +735,20 @@ Tagesordnung:
  const {meetings}=parseSessionText(pdfLines(text),{title:'OEB_2026_09_05_SFJGS',wrapped:true});
  assert.deepEqual(meetings.map(m=>[m.date,m.committee]),[['2026-09-10','Ausschuss für Soziales, Familie, Jugend, Integration, Gesundheit und Sport']]);
 });
+
+test('Amtsblatt einer Stadt mit Ortsteilräten: Kopf mit Ort nach der Uhrzeit, getrennte Daten und Wörter, Jagdgenossenschaft',()=>{
+ assert.equal(committeeOf('Ortsteilrat Oberdorf'),'Ortsteilrat Oberdorf');
+ assert.equal(isSpecialPurposeBody('Nicht öffentliche Versammlung der Jagdgenossenschaft Oberdorf'),true);
+ const lines=['Vorläufige Tagesordnungen der öffentlichen Sitzungen der Ortsteilräte','Ortsteilrat Oberdorf','Mittwoch, 14. Oktober 2026, 18:00 Uhr, Beratungsraum,','Stadtteilzentrum, Hauptstraße 10','A) ÖFFENTLICHE SITZUNG',
+  '1 Bestätigung der Niederschrift vom 22. Septem-','ber 2026 (öffentlicher Teil)','2 Sicherung des Landschaftsschutzgebietes „Musterwald“ und Erhebung in den','Status „Erholungswald“ nach § 9 des Waldgesetzes in der','Fassung vom 1. Januar 2020 und der','Änderung des Lan-','desrechts','3 Radverkehr in der Innen-','stadt','B) NICHTÖFFENTLICHE SITZUNG','Erika Muster','Ortsteilbürgermeisterin',
+  'Ortsteilrat Unterdorf','Mittwoch, 14. Oktober 2026, 19:00 Uhr, Vereinshaus,','Dorfstraße 1','A) ÖFFENTLICHE SITZUNG','1 Bestätigung der Niederschrift vom','9. September 2026 (öffentlicher Teil)','2 Spielplatz Unterdorf','3 Sonstiges','B) NICHTÖFFENTLICHE SITZUNG'];
+ const p=parseSessionText(lines,{title:'Amtsblatt Nr. 70',wrapped:true});
+ const m=p.meetings.map(x=>[x.committee,x.date,x.items.map(i=>i.title)]);
+ assert.deepEqual(m[0].slice(0,2),['Ortsteilrat Oberdorf','2026-10-14']);
+ assert.equal(m[0][2][0],'Bestätigung der Niederschrift vom 22. September 2026 (öffentlicher Teil)');
+ assert.match(m[0][2][1],/Landesrechts$/);
+ assert.equal(m[0][2][2],'Radverkehr in der Innenstadt');
+ assert.deepEqual(m[1].slice(0,2),['Ortsteilrat Unterdorf','2026-10-14']);
+ assert.equal(m[1][2][0],'Bestätigung der Niederschrift vom 9. September 2026 (öffentlicher Teil)');
+ assert.equal(m[1][2].length,3);
+});
