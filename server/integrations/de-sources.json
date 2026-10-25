@@ -43354,5 +43354,19 @@
     "verifiedSource": "https://www.gera.de/presse/amtsblatt",
     "verifiedAt": "2026-10-25",
     "apiCheck": "Amtsblatt der Stadt Gera (PDF auf cms.gera.de) mit Tagesordnungen von Stadtrat, Ausschüssen und Ortsteilräten; Probeabruf 3 Monate 636 Berichte."
+  },
+  {
+    "id": "de-15086140",
+    "name": "Stadt Möckern",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://moeckern-flaeming.mein-intra.net/",
+    "token": "d3e9f875-d2ba28e9-d07d9581-19555f28",
+    "page": "https://www.moeckern-flaeming.de/seite/670749/ris.html",
+    "state": "verified",
+    "verifiedAt": "2026-10-25",
+    "verifiedSource": "https://www.moeckern-flaeming.de/seite/670749/ris.html",
+    "apiCheck": "Sitzungsdienst mein-intra (councilservice), öffentlicher Export der Website; Token aus der Seite."
   }
 ]
