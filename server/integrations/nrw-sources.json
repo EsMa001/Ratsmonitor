@@ -301,7 +301,9 @@
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
     "state": "discovered",
-    "meetingScan": "end"
+    "meetingScan": "end",
+    "budgetMs": 900000,
+    "budgetNote": "Probelauf 25.10.2026: 1 Monat ohne Budget nach 303 s abgebrochen (Zeitgrenze), mit 900 s vollständig in 524 s, 389 Berichte."
   },
   {
     "id": "nrw-05566032",
