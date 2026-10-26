@@ -16,7 +16,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/styles/dark.css (436 Zeilen, ⚠3)
 - app/styles/glass.css (180 Zeilen)
 - app/styles/header.css (411 Zeilen)
-- app/styles/info.css (1257 Zeilen)
+- app/styles/info.css (1261 Zeilen)
 - app/styles/print.css (61 Zeilen)
 - app/styles/search.css (317 Zeilen)
 - app/styles/tokens.css (311 Zeilen, ⚠1)
@@ -352,33 +352,34 @@ page-note dark.css:201
 pb-10 analytics.css:1048
 pl-band analytics.css:267
 pl-cta info.css:844
-pl-ctawrap info.css:1105
-pl-cut3 info.css:1156
+pl-ctawrap info.css:1113
+pl-cut3 info.css:1160
 pl-footer-accent dark.css:111
 pl-footer-accent info.css:821
-pl-grid info.css:1013
-pl-h1 info.css:1022
+pl-grid info.css:1018
+pl-h1 info.css:1027
 pl-h2 info.css:994
 pl-hero info.css:982
-pl-left info.css:1019
-pl-mapwrap info.css:1067
+pl-left info.css:1024
+pl-mapcol info.css:1072
+pl-mapwrap info.css:1075
 pl-num info.css:990
-pl-opt info.css:1142
-pl-ort info.css:1097
+pl-opt info.css:1146
+pl-ort info.css:1105
 pl-ort search.css:302
 pl-ping info.css:969
-pl-plus--inline info.css:1116
-pl-plus--map info.css:1122
+pl-plus--inline info.css:1009
+pl-plus--map info.css:1130
 pl-pop info.css:965
-pl-pulse info.css:1132
+pl-pulse info.css:1136
 pl-search search.css:297
 pl-slogan info.css:986
-pl-source info.css:1044
-pl-stand info.css:1044
-pl-still info.css:1085
+pl-source info.css:1049
+pl-stand info.css:1049
+pl-still info.css:1093
 pl-top analytics.css:1162
 pl-tp info.css:955
-pl-trends info.css:1051
+pl-trends info.css:1056
 popover base-layer.css:76
 process design-styles.css:119
 process__bar design-styles.css:121
@@ -411,9 +412,9 @@ ri-actions info.css:76
 ri-actions--far info.css:83
 ri-anw analytics.css:1149
 ri-anw info.css:854
-ri-below info.css:1159
-ri-below__h info.css:1162
-ri-below__lead info.css:1170
+ri-below info.css:1163
+ri-below__h info.css:1166
+ri-below__lead info.css:1174
 ri-bid analytics.css:1196
 ri-bid info.css:87
 ri-bid__icon analytics.css:1196
@@ -454,7 +455,7 @@ ri-h1--sm info.css:126
 ri-h2 dark.css:73
 ri-h2 info.css:155
 ri-h2--gap info.css:453
-ri-h2--live info.css:1222
+ri-h2--live info.css:1226
 ri-h2--md info.css:164
 ri-head analytics.css:1014
 ri-head dark.css:197
@@ -499,7 +500,7 @@ ri-qa__sign--plus info.css:424
 ri-sec info.css:140
 ri-sec--faq info.css:150
 ri-sec--prices info.css:448
-ri-sec--snug info.css:1215
+ri-sec--snug info.css:1219
 ri-sec--tight info.css:145
 ri-sub info.css:168
 ri-submit info.css:605
@@ -512,7 +513,7 @@ ri-tl__step info.css:196
 ri-tl__step--out info.css:210
 ri-tl__title dark.css:73
 ri-tl__title info.css:229
-ri-toc info.css:1179
+ri-toc info.css:1183
 ri-toc print.css:57
 ri-topnav header.css:248
 right-3 analytics.css:185
@@ -627,7 +628,7 @@ rm-wheel-list dark.css:406
 rm-wheel-list glass.css:144
 rm-wheels-lower analytics.css:1329
 rm-xbtn analytics.css:935
-rm-xcta info.css:1236
+rm-xcta info.css:1240
 rm-xebene analytics.css:92
 rm-xebene dark.css:337
 rm-xfield analytics.css:935
@@ -877,10 +878,10 @@ z- analytics.css:632
 - FilterSelect.tsx (124, ⚠1): FilterSelect
 - FollowButton.tsx (36): FollowButton
 - Footer.tsx (76): Footer
-- GateDialog.tsx (148): GateFeature, openGate, openLimitGate, GateDialog
+- GateDialog.tsx (158): GateFeature, openGate, openLimitGate, GateDialog
 - Header.tsx (128, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
-- PlanCards.tsx (158, ⚠1): PlanCards, PlanSummary
+- PlanCards.tsx (229, ⚠1): PlanCards, PlanSummary
 - PlusHint.tsx (84, ⚠1): PlusHint
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
@@ -922,7 +923,7 @@ z- analytics.css:632
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (88): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
-- StartseitePage.tsx (511, ⚠1): StartseitePage
+- StartseitePage.tsx (513, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠25): TodoPage
 - VideosPage.tsx (172): VideosPage
@@ -936,7 +937,7 @@ z- analytics.css:632
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
 ### components/ratsmonitor/lib/
-- account.ts (283): Me, getMe, AccountApiError, api, touchAccount, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
+- account.ts (302): Me, getMe, AccountApiError, api, touchAccount, reloadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
 - bandFigure.ts (32, ⚠1): publishBandFigure, useBandFigure, useCountUp
 - betreiber.ts (20): BETREIBER, betreiberAdresse
 - brand.ts (52): setLogo, useBrand, useBrandText

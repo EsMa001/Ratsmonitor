@@ -9,6 +9,7 @@ import {sendMail,processOutbox} from './mail.mjs';
 import {siteBase} from './config.mjs';
 import {limited} from './rate-limit.mjs';
 import {LIMITS,FEATURES} from '../../shared/plans.mjs';
+import {runningSubscription} from './billing.mjs';
 
 const iso=ms=>new Date(ms).toISOString();
 const DAY=86400000,CODE_MS=15*60000;
@@ -297,6 +298,9 @@ export async function deleteAccount(ctx){
  const user=await requireUser(ctx,{write:true}),session=user.session;
  const body=await readJson(ctx.request,1024);
  if(user.roles.includes('admin'))throw new AccountError(403,'Admin-Konten werden nur über die Kommandozeile gelöscht.');
+ // Laufendes Stripe-Abo (server/accounts/billing.mjs): erst kündigen, sonst bucht Stripe nach dem Löschen weiter ab
+ const sub=await runningSubscription(ctx.db,session.user_id);
+ if(sub&&!sub.cancel_at)throw new AccountError(409,'Bitte kündigen Sie zuerst Plus unter „Abo verwalten“. Danach können Sie das Konto löschen.');
  if(body.code===undefined){
   const {cookie,later}=await sendPurposeCode(ctx,session,'delete');
   return {response:respond({codeSent:true},{cookies:[cookie]}),later};

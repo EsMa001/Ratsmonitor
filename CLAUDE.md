@@ -38,6 +38,12 @@
 - **Regeln:** Abbestellen per Token (SHA-256 in `notify_tokens`), Ein-Klick nach RFC 8058 (`List-Unsubscribe`-Kopfzeilen, `POST /api/notify/unsubscribe`), Seite `/abbestellen#t=…` schreibt erst nach dem Klick. Betreff ohne Namen der Suchen. Weitere Empfänger (Enterprise `emails`) gibt es noch nicht. Web-Push (D5) ist nicht angebunden, Empfehlung: entfernen.
 - **Tests:** `tests/notify.test.mjs`.
 
+## Bezahlung über Stripe (Testmodus, Backend `server/accounts/billing.mjs`, seit 26.10.2026)
+
+- **Was:** Plus buchen über Stripe Checkout (`POST /api/billing/checkout`), Kundenportal (`POST /api/billing/portal`). Freigeschaltet wird nur per signierter Meldung (`POST /api/billing/webhook`, in der Zugangssperre frei) oder Abgleich (`scripts/billing/reconcile.mjs`): Abo neu abrufen, eine Zeile je Abo in `plan_grants` (`source='stripe'`, `ref` = Abo-ID, Ende = Periodenende plus 3 Tage), verlängert nur bei bezahlter Rechnung; Anfechtung beendet sofort. Tabellen `drizzle-accounts/0006`. Einrichtung und Test: `docs/betrieb/stripe-test.md` (lokal `node scripts/billing/setup-stripe.mjs`, dann `node scripts/billing/listen.mjs`); Wahl des Anbieters: `requirements/zahlungsdienste-recherche-2026-10-26.md`.
+- **Regeln:** Ohne `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` und `STRIPE_PRICE_PLUS` ist alles aus. Live-Schlüssel nur mit `STRIPE_LIVE=1`, und erst nach den offenen Rechtsfragen (Kündigungs- und Widerrufsbutton, Bestellschaltfläche). Keine Stripe-Bibliothek (fetch, WebCrypto), feste API-Fassung `STRIPE_VERSION`; aus Meldungen nur ID und Art, den Inhalt immer neu abrufen. Konto löschen erst nach Kündigung des Abos.
+- **Tests:** `tests/billing.test.mjs`.
+
 ## Suche: Wortliste (Backend, `server/integrations/search-words.mjs`)
 
 - **Was:** Tabellen `search_words` (jedes Wort aus `search_cards.search` ab 3 Zeichen, mit Kartenzahl), `search_postings` (Karten-IDs je Wort bis 500 Karten), `search_word_areas` und `search_word_facets` (vorberechnete Zahlen je Gebiet, Thema, Status für häufige Wörter), Stand in `system_state` `search-words`; `search_cards_gone` (Protokoll ersetzter und gelöschter Karten für das Nachführen). Schema: `drizzle/0013_search_words.sql`, `drizzle/0015_search_cards_gone.sql`. Die Daten selbst liegen nicht im Repo.

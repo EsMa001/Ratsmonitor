@@ -40,7 +40,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | Neue Auswertung auf Knopfdruck | `pages/analytics/useAnalysisRun.ts` (Ergebnis, Laden, Fehler, „veraltet“), Abfrage aus Suche und Filtern: `pages/analytics/useAnalyticsQuery.ts` |
 | Info-Seiten (Routing) | `info/InfoPages.tsx`; Texte/Daten: `info/content.ts`; Bausteine (Seitenkopf, Abschlussband): `info/blocks.tsx` |
 | Use Cases | `info/BranchenPages.tsx` (+ Daten in `info/content.ts` → `BRANCHEN`) |
-| Preise | `info/PreisePage.tsx`, Tarifkarten: `components/PlanCards.tsx`, Grenzen je Tarif: `lib/tier.ts` (gleich `shared/plans.mjs`), Preise: `PRICES` in `shared/plans.mjs` (`null` = „Preis folgt“), Upgrade-Knöpfe: „In der Testphase auf Anfrage“ (`/kontakt`) |
+| Preise | `info/PreisePage.tsx`, Tarifkarten: `components/PlanCards.tsx`, Grenzen je Tarif: `lib/tier.ts` (gleich `shared/plans.mjs`), Preise: `PRICES` in `shared/plans.mjs` (`null` = „Preis folgt“), Upgrade-Knöpfe: „In der Testphase auf Anfrage“ (`/kontakt`); „Plus buchen“ und „Abo verwalten“ (Stripe) nur, wenn `/api/me` `billing` meldet: `Billing` in `components/PlanCards.tsx` |
 | E-Mails: Vorlagen auf dem Server (`server/accounts/mail-templates.mjs`); Dev-Postfach (Postausgang des Dev-Servers, HTML im `<iframe sandbox>`) | `pages/PostfachPage.tsx` |
 | Anmelden (E-Mail, Wartebildschirm mit Code), Bestätigen (`/anmelden/bestaetigen#t=…`), Kontakt; `/registrieren` leitet auf `/anmelden` | `info/AccountPages.tsx` |
 | Impressum/Datenschutz | `pages/LegalPage.tsx` |

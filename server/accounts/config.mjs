@@ -48,6 +48,10 @@ export function accountsConfig(env,{dev=isDev()}={}){
   // Kunden-MCP über das Netz (server/accounts/oauth.mjs): Geheimnis der Zugangstoken und Kundendatei des Betreibers,
   // beide aus /etc/ratsmonitor/mcp.env; im Dev-Server feste Werte und tmp/mcp-customers.json
   mcp:{secret:env?.MCP_TOKEN_SECRET||(dev?DEV_SECRET:undefined),customersFile:env?.MCP_CUSTOMERS_FILE||(dev?'tmp/mcp-customers.json':undefined)},
+  // Bezahlung über Stripe (server/accounts/billing.mjs): nur mit allen drei Werten; Live-Schlüssel nur mit STRIPE_LIVE=1.
+  // STRIPE_PORTAL_CONFIG: eigene Einstellung des Kundenportals (scripts/billing/setup-stripe.mjs), sonst die des Dashboards
+  billing:{secretKey:env?.STRIPE_SECRET_KEY,webhookSecret:env?.STRIPE_WEBHOOK_SECRET,price:env?.STRIPE_PRICE_PLUS,live:env?.STRIPE_LIVE==='1',
+   portalConfig:env?.STRIPE_PORTAL_CONFIG},
  };
 }
 /** Anmelden per Link und Code aus der Mail: nur mit echtem Versand (Transport log verschickt nichts) */

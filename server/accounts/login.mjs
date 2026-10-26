@@ -10,6 +10,7 @@ import {sendMail,processOutbox} from './mail.mjs';
 import {safeNext} from '../../shared/safe-next.mjs';
 import {AGB_VERSION,PRIVACY_VERSION} from '../../shared/legal-versions.mjs';
 import {FEATURES,limitsJson,validTier,rank} from '../../shared/plans.mjs';
+import {billingReady,billingState} from './billing.mjs';
 
 export const TOKEN_MS=15*60000,FLOW_MS=15*60000;
 const DAY=86400000;
@@ -282,7 +283,9 @@ export async function me(ctx){
  return {response:respond({...common,user:{id:session.user_id,email:session.email,name:session.name},
   tier:tier.tier,tierUntil:tier.until,tierSource:tier.source,roles,adminHere,
   ...(roles.includes('admin')?{admin,totpConfirmed,realTier:realTier.tier,viewTier:session.view_tier??null}:{}),
-  features:FEATURES[tier.tier],limits:limitsJson(tier.tier),renewAfter:renewDue(session,ctx.now)})};
+  features:FEATURES[tier.tier],limits:limitsJson(tier.tier),renewAfter:renewDue(session,ctx.now),
+  // Bezahlung über Stripe (server/accounts/billing.mjs), nur wenn eingerichtet: Stand des Abos, Testmodus
+  ...(billingReady(ctx.cfg)?{billing:await billingState(ctx.db,session.user_id,ctx.cfg)}:{})})};
 }
 /** Geräte: Liste und Beenden einzelner, anderer oder aller Sitzungen */
 export async function sessionsList(ctx){

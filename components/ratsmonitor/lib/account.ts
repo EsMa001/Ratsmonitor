@@ -33,6 +33,8 @@ export interface Me {
   sender?: string;
   /** Wege der Anmeldeseite: Link und Code per Mail (mail), E-Mail-Adresse und Code aus der Authenticator-App (totp) */
   login?: { mail: boolean; totp: boolean };
+  /** Bezahlung über Stripe, nur wenn der Server sie eingerichtet hat: Testmodus, Stripe-Kunde (Portal), letztes Abo */
+  billing?: { test: boolean; customer: boolean; subscription: { status: string; periodEnd: string | null; cancelAt: string | null } | null };
   /** Zählt Anmelden, Abmelden und Änderungen aus anderen Tabs: Listen laden dann neu */
   rev: number;
 }
@@ -83,6 +85,19 @@ function limitsOf(tier: Tier, raw: unknown): TierLimits {
     else if (typeof v === "number" || typeof v === "boolean") out[k] = v;
   }
   return base;
+}
+
+/** Stand der Bezahlung aus /api/me; fehlt er, ist Bezahlung nicht eingerichtet */
+function billingOf(raw: unknown): Me["billing"] {
+  if (!raw || typeof raw !== "object") return undefined;
+  const b = raw as { test?: unknown; customer?: unknown; subscription?: { status?: unknown; periodEnd?: unknown; cancelAt?: unknown } | null };
+  const s = b.subscription;
+  const text = (v: unknown) => (typeof v === "string" ? v : null);
+  return {
+    test: b.test !== false,
+    customer: b.customer === true,
+    subscription: s && typeof s.status === "string" ? { status: s.status, periodEnd: text(s.periodEnd), cancelAt: text(s.cancelAt) } : null,
+  };
 }
 
 /** JSON-Abruf an eine Kontoroute. Nicht-GET immer als JSON (der Server verlangt es); 401 einer Kontoroute meldet ab. */
@@ -175,6 +190,7 @@ function loadMe(): Promise<void> {
         access,
         sender,
         login,
+        billing: billingOf(d.billing),
         rev: (u?.id ?? null) !== before ? state.rev + 1 : state.rev,
       });
       if (d.renewAfter === true && !renewed) {
@@ -195,6 +211,9 @@ function loggedOutHere() {
   if (!state.user) return;
   set({ ...INITIAL, ready: true, accounts: state.accounts, access: state.access, login: state.login, rev: state.rev + 1 });
 }
+
+/** Nur den Stand von /api/me neu laden, ohne Listen und andere Tabs (Warten auf die Bestätigung einer Zahlung) */
+export const reloadMe = () => loadMe();
 
 /** Nach Anmelden oder einer Kontoänderung: neu laden, Listen auffrischen, andere Tabs benachrichtigen */
 export async function accountChanged() {
