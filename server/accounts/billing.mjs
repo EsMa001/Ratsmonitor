@@ -115,12 +115,16 @@ export async function syncSubscription(ctx,sub){
  const periodEnd=periodEndOf(sub),endedAt=sub.ended_at?sub.ended_at*1000:null;
  // Das Kundenportal kündigt über cancel_at (Zeitpunkt), ältere Wege über cancel_at_period_end
  const cancelAt=sub.cancel_at?sub.cancel_at*1000:sub.cancel_at_period_end?periodEnd:null;
- const statements=[db.prepare(`INSERT INTO subscriptions(id,user_id,customer_id,status,price_id,period_end,cancel_at,ended_at,livemode,updated_at)
-   VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id,customer_id=excluded.customer_id,status=excluded.status,
-   price_id=excluded.price_id,period_end=excluded.period_end,cancel_at=excluded.cancel_at,ended_at=excluded.ended_at,
-   livemode=excluded.livemode,updated_at=excluded.updated_at`)
+ const seconds=value=>Number.isFinite(value)&&value>0?iso(value*1000):null;
+ // Letzte Zahlung nur aus einer aufgelösten Rechnung (expand); sonst bleibt der bekannte Wert
+ const paidAt=typeof sub.latest_invoice==='object'&&sub.latest_invoice?.status==='paid'?seconds(sub.latest_invoice.status_transitions?.paid_at):null;
+ const statements=[db.prepare(`INSERT INTO subscriptions(id,user_id,customer_id,status,price_id,period_end,cancel_at,ended_at,livemode,updated_at,
+   started_at,canceled_at,last_paid_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id,
+   customer_id=excluded.customer_id,status=excluded.status,price_id=excluded.price_id,period_end=excluded.period_end,cancel_at=excluded.cancel_at,
+   ended_at=excluded.ended_at,livemode=excluded.livemode,updated_at=excluded.updated_at,started_at=coalesce(excluded.started_at,subscriptions.started_at),
+   canceled_at=excluded.canceled_at,last_paid_at=coalesce(excluded.last_paid_at,subscriptions.last_paid_at)`)
   .bind(sub.id,userId,customer,sub.status,idOf(sub.items?.data?.[0]?.price),periodEnd?iso(periodEnd):null,cancelAt?iso(cancelAt):null,
-   endedAt?iso(endedAt):null,sub.livemode?1:0,iso(now))];
+   endedAt?iso(endedAt):null,sub.livemode?1:0,iso(now),seconds(sub.start_date),seconds(sub.canceled_at),paidAt)];
  const grant=await db.prepare("SELECT id,ends_at FROM plan_grants WHERE source='stripe' AND ref=?").bind(sub.id).first();
  if(['active','trialing'].includes(sub.status)&&periodEnd&&latestPaid(sub)){
   const ends=iso(periodEnd+GRACE_MS);

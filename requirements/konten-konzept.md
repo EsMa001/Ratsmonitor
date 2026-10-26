@@ -487,7 +487,13 @@ Auf der Profilseite ist die Adresse nur lesbar, mit dem Text „Adresse ändern:
 
 ### 6.2 Kontenverwaltung nur per CLI
 
-TA-25 verlangt, dass keine Nutzerlisten an den Browser gehen. Deshalb gibt es in der Testphase keinen Admin-Reiter für Konten.
+TA-25 verlangte, dass keine Nutzerlisten an den Browser gehen. **Entscheidung 26.10.2026:** Es gibt eine lesende
+Kontenübersicht in der Administration (Gruppe „Kunden“ → „Konten“, `/admin?seite=konten`, `components/admin-accounts.tsx`,
+`server/accounts/admin-accounts.mjs`, Route `/api/admin/accounts`): alle Konten mit Stufe, Zahlungsstand, Abo-Beginn,
+Verlängerung oder Ende, letzter Zahlung, Anlage, letzter Anmeldung und Nutzung, die Adresse nur gekürzt (`ma•••@g•••.com`).
+Die volle Adresse und den Namen zeigt ein Klick je Konto oder die Suche nach der genauen Adresse; jeder solche Abruf schreibt
+eine Zeile in `admin_audit` (`action` reveal, search oder search-miss, `target` = Konto-ID, keine Adresse). Die Übersicht
+liest nur; ändern (Stufe, Sperre, Löschen) geht weiter nur per CLI.
 
 **Aufruf:** nur über den Wrapper `/usr/local/bin/ratsmonitor-accounts`. Er lädt `ratsmonitor.env` und `accounts.env` und ruft `sudo -u ratsmonitor node …/scripts/accounts/manage.mjs` auf. Das Skript bricht ab, wenn es nicht als Eigentümer von `ACCOUNTS_FILE` läuft.
 
@@ -517,7 +523,7 @@ Jeder Aufruf schreibt `auth_events` bzw. `admin_audit` mit `user_id='cli'`, nur 
 
 Die Einladung gilt standardmäßig 30 Tage und wird danach gelöscht, beim Einlösen sofort.
 
-Braucht es später doch eine Oberfläche, dann ohne Liste, nur mit Suche nach der genauen Adresse.
+Ändernde Aktionen in einer Oberfläche gibt es weiterhin nicht (siehe Entscheidung oben).
 
 ### 6.3 Ablösung von Kopfzeilen und Basic-Auth
 

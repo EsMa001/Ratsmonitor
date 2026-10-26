@@ -29,6 +29,7 @@ const PATHS:Record<string,string>={
  checklist:'M11 6h9 M11 12h9 M11 18h9 M4 6l1.5 1.5L8 5 M4 12l1.5 1.5L8 11 M4 18l1.5 1.5L8 17',
  tags:'M3 12V4h8l9 9-8 8z M7.5 7.5h.01',
  sliders:'M4 6h9 M17 6h3 M4 12h3 M11 12h9 M4 18h11 M19 18h1 M15 4v4 M9 10v4 M17 16v4',
+ users:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M2 21v-1a7 7 0 0 1 14 0v1 M16 3.5a4 4 0 0 1 0 7.5 M22 21v-1a7 7 0 0 0-4-6.3',
  megaphone:'M4 10v4h3l8 4V6l-8 4z M18 9a3 3 0 0 1 0 6 M7 14l1 5h2',
  calculator:'M6 3h12v18H6z M9 7h6 M9 11h.01 M12 11h.01 M15 11h.01 M9 15h.01 M12 15h.01 M15 15h.01 M9 18h.01 M12 18h.01 M15 18h.01',
 };

@@ -16,7 +16,7 @@ import {AdminSignOut} from './admin-signout';
 // auf, je Eintrag Symbol, Name und leise die Frage, die die Seite beantwortet), Inhalt mit der Seitenbreite der Startseite und
 // eine Fußzeile. Die Seiten heißen in der Adresse nach ihrem Inhalt (?seite=abruf); frühere Namen und die Nummern 1 bis 3
 // führen weiter (app/admin/page.tsx). Startseite des Adminbereichs ist das Cockpit (ohne Parameter).
-export type AdminPage='start'|'abdeckung'|'atlas'|'nacht'|'abruf'|'pdf'|'verarbeitung'|'altbestand'|'regeltexte'|'pruefliste'|'bestand'|'steuerung'|'fehler'|'speicher'|'todo'|'hochrechnung'|'social';
+export type AdminPage='start'|'abdeckung'|'atlas'|'nacht'|'abruf'|'pdf'|'verarbeitung'|'altbestand'|'regeltexte'|'pruefliste'|'bestand'|'steuerung'|'fehler'|'speicher'|'todo'|'hochrechnung'|'social'|'konten';
 export type AdminEntry={id:AdminPage;label:string;icon:string;hint:string};
 /** Gruppen des Menüs in der Reihenfolge der Arbeit: was erreichen wir, wie kommen die Daten herein, stimmt der Bestand,
     läuft der Server, was ist geplant. */
@@ -34,6 +34,8 @@ export const ADMIN_GROUPS:{id:string;label:string;icon:string;pages:AdminEntry[]
   {id:'regeltexte',label:'Einordnungsmodell',icon:'text',hint:'Wie gut ist das Modell?'},
   {id:'pruefliste',label:'Prüfliste',icon:'checklist',hint:'Was braucht einen Blick?'},
   {id:'bestand',label:'Bestandsprüfung',icon:'database',hint:'Ist der Bestand stimmig?'}]},
+ {id:'kunden',label:'Kunden',icon:'users',pages:[
+  {id:'konten',label:'Konten',icon:'users',hint:'Wer nutzt Plenara, wer zahlt?'}]},
  {id:'betrieb',label:'Betrieb',icon:'server',pages:[
   {id:'steuerung',label:'Steuerung',icon:'clock',hint:'Was läuft, was starte ich?'},
   {id:'fehler',label:'Fehler & Server',icon:'alert',hint:'Was scheitert?'},
