@@ -614,13 +614,16 @@ export function ConfirmLoginPage() {
   );
 }
 
-type Unsub = { kind: "all" | "search" | "article" | "calendar"; title: string };
+type Unsub = { kind: "all" | "search" | "article" | "calendar" | "billing"; title: string };
 const UNSUB_WHAT: Record<Unsub["kind"], (t: string) => string> = {
   all: () => "alle Benachrichtigungen per E-Mail",
   search: (t) => (t ? `die Benachrichtigung zur Suche „${t}“` : "die Benachrichtigung zu dieser Suche"),
   article: (t) => (t ? `die Benachrichtigung zum Vorgang „${t}“` : "die Benachrichtigung zu diesem Vorgang"),
   calendar: () => "die E-Mails zu neuen Sitzungen in Ihren Kalendergebieten",
+  billing: () => "die E-Mails zu Zahlungen und zum Ende von Plus",
 };
+/** Wo man das Abbestellte wieder einschaltet: Zahlungsmails im Profil unter „Stufe“, alles andere bei den Benachrichtigungen */
+const unsubHome = (kind: Unsub["kind"]) => (kind === "billing" ? "/konto/profil" : "/konto/benachrichtigungen");
 
 /** Abbestellen über den Link aus einer Benachrichtigung (#t=…, ohne Anmeldung). Wie beim Anmeldelink: erst der Klick
  *  bestellt ab, damit Prüfprogramme der Postfächer nichts auslösen. Suchen und Artikel bleiben gespeichert. */
@@ -652,6 +655,8 @@ export function UnsubscribePage() {
     try {
       await api("/api/notify/unsubscribe", { method: "POST", body: { t: peek.token } });
       setDone(true);
+      // Angemeldet zeigen Konto und andere Tabs danach den neuen Stand (Zahlungsmails stehen in /api/me)
+      void accountChanged();
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -675,10 +680,12 @@ export function UnsubscribePage() {
                 Abbestellt
               </h2>
               <p role="status" style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
-                Sie erhalten {UNSUB_WHAT[data.kind](data.title)} nicht mehr. Ihre gespeicherten Suchen und Artikel bleiben erhalten; einschalten können Sie die Benachrichtigungen jederzeit wieder im Konto.
+                {data.kind === "billing"
+                  ? `Sie erhalten ${UNSUB_WHAT.billing("")} nicht mehr. Rechnungen finden Sie weiter unter „Abo verwalten“; einschalten können Sie die E-Mails jederzeit wieder im Konto.`
+                  : `Sie erhalten ${UNSUB_WHAT[data.kind](data.title)} nicht mehr. Ihre gespeicherten Suchen und Artikel bleiben erhalten; einschalten können Sie die Benachrichtigungen jederzeit wieder im Konto.`}
               </p>
-              <Link href="/konto/benachrichtigungen" className="ri-btn ri-btn--dark ri-btn--block ri-submit">
-                Zu den Benachrichtigungen
+              <Link href={unsubHome(data.kind)} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+                {data.kind === "billing" ? "Zum Konto" : "Zu den Benachrichtigungen"}
               </Link>
             </>
           ) : data && "error" in data ? (
@@ -696,9 +703,12 @@ export function UnsubscribePage() {
           ) : data ? (
             <form noValidate onSubmit={confirm} aria-label="Benachrichtigung abbestellen">
               <h2 ref={heading} tabIndex={-1} className={h2} style={{ overflowWrap: "anywhere" }}>
-                {data.kind === "all" ? "Alle Benachrichtigungen abbestellen?" : "Benachrichtigung abbestellen?"}
+                {data.kind === "all" ? "Alle Benachrichtigungen abbestellen?" : data.kind === "billing" ? "E-Mails zur Bezahlung abbestellen?" : "Benachrichtigung abbestellen?"}
               </h2>
-              <p style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>Sie erhalten danach {UNSUB_WHAT[data.kind](data.title)} nicht mehr. Gespeicherte Suchen und Artikel bleiben erhalten.</p>
+              <p style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
+                Sie erhalten danach {UNSUB_WHAT[data.kind](data.title)} nicht mehr.{" "}
+                {data.kind === "billing" ? "Ihr Abo bleibt unverändert; Rechnungen finden Sie weiter unter „Abo verwalten“." : "Gespeicherte Suchen und Artikel bleiben erhalten."}
+              </p>
               {error && (
                 <p role="alert" className="ri-err">
                   {error}

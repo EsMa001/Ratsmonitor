@@ -8,6 +8,7 @@ import {readSession,rolesOf} from './sessions.mjs';
 import {siteBase} from './config.mjs';
 import {limited} from './rate-limit.mjs';
 import {sendMail,processOutbox} from './mail.mjs';
+import {randomToken,sha256hex} from './crypto.mjs';
 
 const API='https://api.stripe.com/v1/';
 /** Feste API-Fassung aller Abrufe. Von einer Meldung zählen nur ID und Art; das Abo wird in dieser Fassung neu abgerufen. */
@@ -85,10 +86,10 @@ const RUNNING_SQL=`status IN (${RUNNING.map(s=>`'${s}'`).join(',')})`;
 /** Laufendes Abo eines Kontos (auch gekündigt zum Periodenende) oder null */
 export const runningSubscription=(db,userId)=>
  db.prepare(`SELECT id,status,period_end,cancel_at FROM subscriptions WHERE user_id=? AND ${RUNNING_SQL} ORDER BY updated_at DESC LIMIT 1`).bind(userId).first();
-/** Für /api/me: Stand des Abos, ob es einen Stripe-Kunden gibt (Portal) und ob Testmodus */
+/** Für /api/me: Stand des Abos, ob es einen Stripe-Kunden gibt (Portal), ob Testmodus und ob Zahlungsmails an sind */
 export async function billingState(db,userId,cfg){
  const sub=await db.prepare(`SELECT status,period_end,cancel_at FROM subscriptions WHERE user_id=? ORDER BY ${RUNNING_SQL} DESC,updated_at DESC LIMIT 1`).bind(userId).first();
- return {test:!cfg.billing.live,customer:!!(await customerOf(db,userId)),
+ return {test:!cfg.billing.live,customer:!!(await customerOf(db,userId)),mails:await billingMailsOn(db,userId),
   subscription:sub?{status:sub.status,periodEnd:sub.period_end,cancelAt:sub.cancel_at}:null};
 }
 async function linkCustomer(ctx,userId,customerId,livemode){
@@ -151,11 +152,26 @@ const euro=(cents,currency)=>`${(Number(cents||0)/100).toFixed(2).replace('.',',
 async function paidMail(ctx,{userId,periodEnd},invoice){
  const first=invoice.billing_reason==='subscription_create';
  if(!first&&!(invoice.amount_paid>0))return false;
- const user=await ctx.db.prepare('SELECT email FROM users WHERE id=?').bind(userId).first();
- if(!user?.email)return false;
- const mail=await sendMail(ctx.db,ctx.cfg,{to:user.email,template:'plus_paid',userId,quota:'account',now:ctx.now,data:{first,amount:euro(invoice.amount_paid,invoice.currency),
+ return sendBillingMail(ctx.db,ctx.cfg,{userId,template:'plus_paid',now:ctx.now,data:{first,amount:euro(invoice.amount_paid,invoice.currency),
   until:periodEnd?iso(periodEnd):null,receipt:typeof invoice.hosted_invoice_url==='string'?invoice.hosted_invoice_url:null,test:!invoice.livemode}});
- return mail.queued;
+}
+/** Zahlungsmails an (user_settings.billing_mails, ohne Zeile an) */
+export async function billingMailsOn(db,userId){
+ const row=await db.prepare('SELECT billing_mails FROM user_settings WHERE user_id=?').bind(userId).first();
+ return !row||!!row.billing_mails;
+}
+/**
+ * Mail zu Zahlung oder Ende von Plus (plus_paid, plus_ending): nur wenn nicht abbestellt; mit Abbestell-Token (Bezug 'b' in
+ * notify_tokens, Seite /abbestellen und Ein-Klick nach RFC 8058 wie die Benachrichtigungen). Die Kündigungsbestätigung
+ * (cancel.mjs) geht immer und ohne Token. Gibt zurück, ob eine Mail eingereiht wurde.
+ */
+export async function sendBillingMail(db,cfg,{userId,template,data,now=Date.now()}){
+ const user=await db.prepare("SELECT email FROM users WHERE id=? AND status='active'").bind(userId).first();
+ if(!user?.email||!(await billingMailsOn(db,userId)))return false;
+ const token=randomToken();
+ const mail=await sendMail(db,cfg,{to:user.email,template,userId,quota:'account',now,data:{...data,token},
+  extra:[db.prepare("INSERT INTO notify_tokens(id,user_id,ref,created_at) VALUES(?,?,'b',?)").bind(await sha256hex(token),userId,iso(now))]});
+ return !!mail.queued;
 }
 /** Anfechtung oder Rücklastschrift: laufende Abos des Kunden sofort beenden, die Freischaltung endet jetzt */
 async function disputed(ctx,dispute){

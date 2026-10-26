@@ -17,11 +17,12 @@ import {removeUser} from '../../server/accounts/account.mjs';
 import {NOTIFY_RETENTION} from '../../server/accounts/notify.mjs';
 import {TIER_LABEL,rank} from '../../shared/plans.mjs';
 import {pickGrant} from '../../server/accounts/sessions.mjs';
+import {sendBillingMail} from '../../server/accounts/billing.mjs';
 
 const DAY=86400000;
 /** Fristen (Platzhalter für Inaktivität und Sperre bis zur Entscheidung, konten-konzept.md Abschnitt 15) */
 export const RETENTION={tokensAfterExpiry:DAY,requests:DAY,flows:DAY,authEvents:90*DAY,mailOutbox:30*DAY,adminAudit:365*DAY,
- inactive:730*DAY,inactiveGrace:30*DAY,blocked:365*DAY,tierNotice:14*DAY,plusNotice:3*DAY,billingEvents:90*DAY};
+ inactive:730*DAY,inactiveGrace:30*DAY,blocked:365*DAY,tierNotice:14*DAY,plusNotice:3*DAY,billingEvents:90*DAY,cancellations:3*365*DAY};
 const iso=ms=>new Date(ms).toISOString();
 
 export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.log}={}){
@@ -40,6 +41,8 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
  await count('adminAudit','DELETE FROM admin_audit WHERE at<?',iso(now-RETENTION.adminAudit));
  // Meldungen von Stripe (server/accounts/billing.mjs): nur ID und Art, gegen doppelte Verarbeitung; Stripe stellt höchstens 3 Tage zu
  await count('billingEvents','DELETE FROM billing_events WHERE received_at<?',iso(now-RETENTION.billingEvents));
+ // Nachweise der Kündigungen (server/accounts/cancel.mjs): 3 Jahre (§ 195 BGB)
+ await count('cancellations','DELETE FROM cancellations WHERE received_at<?',iso(now-RETENTION.cancellations));
  // Benachrichtigungen (server/accounts/notify.mjs): Treffer nach 30 Tagen, verschickt, verfallen oder nie fällig geworden;
  // Abbestell-Tokens nach 180 Tagen (ältere Mails lassen sich dann nur noch im Konto abbestellen)
  await count('notifyItems','DELETE FROM notify_items WHERE created_at<?',iso(now-NOTIFY_RETENTION.items));
@@ -78,7 +81,8 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
   if(rank(pickGrant(others).tier)>=rank(g.tier))continue;
   report.plusEnding++;
   if(dryRun)continue;
-  await sendMail(db,cfg,{to:g.email,template:'plus_ending',data:{until:iso(end),reason},userId:g.user_id,quota:'account',now});
+  // Abbestellbar wie alle Zahlungsmails (billing.mjs); markiert wird auch ohne Mail, damit nichts nachkommt
+  await sendBillingMail(db,cfg,{userId:g.user_id,template:'plus_ending',data:{until:iso(end),reason},now});
   await db.prepare('UPDATE plan_grants SET end_notice_at=? WHERE id=?').bind(iso(now),g.id).run();
  }
  // Gesperrte Konten: nach der Frist löschen

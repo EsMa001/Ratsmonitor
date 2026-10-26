@@ -37,8 +37,8 @@ export interface Me {
   signup?: boolean;
   /** Plus lässt sich hier buchen (Stripe eingerichtet; Gäste erst nach Anmeldung, siehe lib/booking.ts) */
   checkout?: boolean;
-  /** Bezahlung über Stripe, nur wenn der Server sie eingerichtet hat: Testmodus, Stripe-Kunde (Portal), letztes Abo */
-  billing?: { test: boolean; customer: boolean; subscription: { status: string; periodEnd: string | null; cancelAt: string | null } | null };
+  /** Bezahlung über Stripe, nur wenn der Server sie eingerichtet hat: Testmodus, Stripe-Kunde (Portal), Mails zu Zahlungen an, letztes Abo */
+  billing?: { test: boolean; customer: boolean; mails: boolean; subscription: { status: string; periodEnd: string | null; cancelAt: string | null } | null };
   /** Zählt Anmelden, Abmelden und Änderungen aus anderen Tabs: Listen laden dann neu */
   rev: number;
 }
@@ -94,12 +94,13 @@ function limitsOf(tier: Tier, raw: unknown): TierLimits {
 /** Stand der Bezahlung aus /api/me; fehlt er, ist Bezahlung nicht eingerichtet */
 function billingOf(raw: unknown): Me["billing"] {
   if (!raw || typeof raw !== "object") return undefined;
-  const b = raw as { test?: unknown; customer?: unknown; subscription?: { status?: unknown; periodEnd?: unknown; cancelAt?: unknown } | null };
+  const b = raw as { test?: unknown; customer?: unknown; mails?: unknown; subscription?: { status?: unknown; periodEnd?: unknown; cancelAt?: unknown } | null };
   const s = b.subscription;
   const text = (v: unknown) => (typeof v === "string" ? v : null);
   return {
     test: b.test !== false,
     customer: b.customer === true,
+    mails: b.mails !== false,
     subscription: s && typeof s.status === "string" ? { status: s.status, periodEnd: text(s.periodEnd), cancelAt: text(s.cancelAt) } : null,
   };
 }

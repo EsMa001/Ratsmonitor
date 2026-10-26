@@ -748,6 +748,8 @@ Enterprise für Kommunen von Hand per Rechnung (oft XRechnung), der Admin vergib
 **Testanbindung (seit 26.10.2026):** Stripe im Testmodus nach diesem Ablauf (`server/accounts/billing.mjs`, Migration
 `drizzle-accounts/0006`, Einrichtung `docs/betrieb/stripe-test.md`). Eine Zeile je Abo in `plan_grants` (`ref` = Abo-ID),
 verlängert nur bei bezahlter Rechnung; Abgleich `scripts/billing/reconcile.mjs`. Live erst nach den offenen Rechtsfragen der Recherche.
+Kündigungsbutton nach § 312k BGB seit 26.10.2026: `/kuendigen` ohne Anmeldung (`server/accounts/cancel.mjs`, Nachweis in
+`cancellations`, Bestätigung per Mail); die Mails zu Zahlungen und zum Ende von Plus sind abbestellbar (`billing_mails`).
 
 ## 10. Mailversand und Domain
 

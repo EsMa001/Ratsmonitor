@@ -176,9 +176,9 @@ const cleanCalendar=list=>Array.isArray(list)?list.slice(0,200).filter(c=>c&&AGS
 const cleanAgs=list=>Array.isArray(list)?[...new Set(list.map(String).filter(a=>AGS.test(a)))].slice(0,200):[];
 export async function settingsRead(ctx){
  const {session}=await requireUser(ctx);
- const row=await ctx.db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,calendar_mail,calendar_freq,home_ags,home_name FROM user_settings WHERE user_id=?').bind(session.user_id).first();
+ const row=await ctx.db.prepare('SELECT weekly,weekly_day,calendar,calendar_ags,calendar_mail,calendar_freq,home_ags,home_name,billing_mails FROM user_settings WHERE user_id=?').bind(session.user_id).first();
  return {response:respond({name:session.name,email:session.email,home:row?.home_ags?{ags:row.home_ags,name:row.home_name??''}:null,weekly:!!row?.weekly,weeklyDay:row?.weekly_day??null,
-  calendar:JSON.parse(row?.calendar||'[]'),calendarAgs:JSON.parse(row?.calendar_ags||'[]'),calendarMail:!!row?.calendar_mail,calendarFreq:row?.calendar_freq||'daily'})};
+  calendar:JSON.parse(row?.calendar||'[]'),calendarAgs:JSON.parse(row?.calendar_ags||'[]'),calendarMail:!!row?.calendar_mail,calendarFreq:row?.calendar_freq||'daily',billingMails:!row||!!row.billing_mails})};
 }
 export async function settingsWrite(ctx){
  const {session,limits,features}=await requireUser(ctx,{write:true});
@@ -186,7 +186,9 @@ export async function settingsWrite(ctx){
  const {db,now}=ctx,at=iso(now),uid=session.user_id;
  const statements=[];
  if(body.name!==undefined)statements.push(db.prepare('UPDATE users SET name=? WHERE id=?').bind(cleanName(body.name),uid));
- const s=await db.prepare('SELECT weekly,weekly_day,weekly_since,calendar,calendar_ags,calendar_mail,calendar_freq,calendar_since,home_ags,home_name FROM user_settings WHERE user_id=?').bind(uid).first();
+ const s=await db.prepare('SELECT weekly,weekly_day,weekly_since,calendar,calendar_ags,calendar_mail,calendar_freq,calendar_since,home_ags,home_name,billing_mails FROM user_settings WHERE user_id=?').bind(uid).first();
+ // Mails zu Zahlungen und zum Ende von Plus (billing.mjs); ohne Zeile an
+ const billingMails=body.billingMails!==undefined?(body.billingMails===false?0:1):(s?(s.billing_mails?1:0):1);
  const weekly=body.weekly!==undefined?(body.weekly===true?1:0):(s?.weekly??0);
  const day=body.weeklyDay!==undefined?(Number.isInteger(body.weeklyDay)&&body.weeklyDay>=0&&body.weeklyDay<WEEKLY_DAYS?body.weeklyDay:null):(s?.weekly_day??null);
  // Wochenbericht und Kalender-Mails nur mit Benachrichtigungen in der Stufe, Kalender nur mit dem Merkmal (shared/plans.mjs)
@@ -198,10 +200,10 @@ export async function settingsWrite(ctx){
  const calendar=body.calendar!==undefined?JSON.stringify(cleanCalendar(body.calendar)):(s?.calendar??'[]');
  const ags=body.calendarAgs!==undefined?JSON.stringify(cleanAgs(body.calendarAgs)):(s?.calendar_ags??'[]');
  const home=body.home!==undefined?(body.home&&AGS.test(String(body.home.ags))?{ags:String(body.home.ags),name:str(body.home.name,120)??''}:null):(s?.home_ags?{ags:s.home_ags,name:s.home_name??''}:null);
- statements.push(db.prepare(`INSERT INTO user_settings(user_id,weekly,weekly_day,weekly_since,calendar,calendar_ags,calendar_mail,calendar_freq,calendar_since,home_ags,home_name,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
+ statements.push(db.prepare(`INSERT INTO user_settings(user_id,weekly,weekly_day,weekly_since,calendar,calendar_ags,calendar_mail,calendar_freq,calendar_since,home_ags,home_name,billing_mails,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
   ON CONFLICT(user_id) DO UPDATE SET weekly=excluded.weekly,weekly_day=excluded.weekly_day,weekly_since=excluded.weekly_since,calendar=excluded.calendar,calendar_ags=excluded.calendar_ags,
-  calendar_mail=excluded.calendar_mail,calendar_freq=excluded.calendar_freq,calendar_since=excluded.calendar_since,home_ags=excluded.home_ags,home_name=excluded.home_name,updated_at=excluded.updated_at`)
-  .bind(uid,weekly,day,since(weekly,s?.weekly,'weekly_since'),calendar,ags,calendarMail,calendarFreq,since(calendarMail,s?.calendar_mail,'calendar_since'),home?.ags??null,home?.name??null,at));
+  calendar_mail=excluded.calendar_mail,calendar_freq=excluded.calendar_freq,calendar_since=excluded.calendar_since,home_ags=excluded.home_ags,home_name=excluded.home_name,billing_mails=excluded.billing_mails,updated_at=excluded.updated_at`)
+  .bind(uid,weekly,day,since(weekly,s?.weekly,'weekly_since'),calendar,ags,calendarMail,calendarFreq,since(calendarMail,s?.calendar_mail,'calendar_since'),home?.ags??null,home?.name??null,billingMails,at));
  await db.batch(statements);
  return {response:respond({ok:true})};
 }

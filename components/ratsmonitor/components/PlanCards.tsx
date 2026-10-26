@@ -229,6 +229,34 @@ function Billing() {
         )}
       </div>
       {error && <p role="alert" className="m-0 mt-2 text-amber-800">{error}</p>}
+      {(billing.customer || sub) && <BillingMails on={billing.mails} />}
     </div>
+  );
+}
+
+/** Mails zu Zahlungen und zum Ende von Plus (server/accounts/billing.mjs sendBillingMail); auch per Link in jeder dieser Mails abbestellbar */
+function BillingMails({ on }: { on: boolean }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const toggle = async (next: boolean) => {
+    setBusy(true);
+    setError("");
+    try {
+      await api("/api/me/settings", { method: "PUT", body: { billingMails: next } });
+      await reloadMe();
+    } catch (e) {
+      setError(e instanceof AccountApiError ? e.message : "Das hat nicht geklappt.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <label className="mt-4 flex items-start gap-3 text-slate-600">
+        <input type="checkbox" checked={on} disabled={busy} onChange={(e) => void toggle(e.target.checked)} className="mt-[3px] h-4 w-4 flex-none accent-teal-700" />
+        <span>E-Mails zu Zahlungen und zum Ende von Plus</span>
+      </label>
+      {error && <p role="alert" className="m-0 mt-2 text-amber-800">{error}</p>}
+    </>
   );
 }

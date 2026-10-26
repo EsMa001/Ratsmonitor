@@ -11,6 +11,7 @@ import { VideosPage } from "./VideosPage";
 import { PreisePage } from "./PreisePage";
 import { AgbPage } from "./AgbPage";
 import { WiderrufPage } from "./WiderrufPage";
+import { KuendigenPage } from "./KuendigenPage";
 import { StartseitePage } from "./StartseitePage";
 
 const PAGES: Record<string, ComponentType> = {
@@ -26,6 +27,7 @@ const PAGES: Record<string, ComponentType> = {
   "/kontakt": KontaktPage,
   "/agb": AgbPage,
   "/widerruf": WiderrufPage,
+  "/kuendigen": KuendigenPage,
   "/abbestellen": UnsubscribePage,
 };
 

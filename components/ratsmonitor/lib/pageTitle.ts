@@ -14,6 +14,7 @@ const NAMES: Record<string, string> = {
   "/kontakt": "Kontakt",
   "/agb": "AGB",
   "/widerruf": "Widerruf",
+  "/kuendigen": "Kündigen",
   "/impressum": "Impressum",
   "/datenschutz": "Datenschutz",
   "/konto/suchen": "Meine Suchen",
