@@ -6,6 +6,7 @@ import { useClient } from "../lib/useClient";
 import { InfoHints, PageHead } from "./blocks";
 import { IS_DEV } from "../lib/tier";
 import { AccountApiError, accountChanged, api, devLogin, logout, useMe } from "../lib/account";
+import { BOOK_PATH } from "../lib/booking";
 import { postponeImport } from "../lib/browserData";
 import { safeNext } from "@/shared/safe-next.mjs";
 
@@ -151,6 +152,9 @@ export function LoginPage() {
   const me = useMe();
   const weiter = params.get("weiter");
   const next = nextOf(weiter);
+  /* /admin verweist mit neu=1 hierher, wenn die Admin-Anmeldung älter als 7 Tage ist: trotz Sitzung neu anmelden (sonst
+     zeigte die Seite nur „Weiter“ zurück zur Administration, die wieder hierher verwies) */
+  const fresh = params.get("neu") === "1";
   /* Erster Besuch nach der Anmeldung: die Willkommensseite statt des Profils */
   const firstVisit = useClient(() => { try { return !localStorage.getItem("plenara.willkommen"); } catch { return false; } }, false);
   const [step, setStep] = useState<"email" | "wait">("email");
@@ -166,6 +170,17 @@ export function LoginPage() {
   const [appCode, setAppCode] = useState("");
   const [appError, setAppError] = useState("");
   const [choice, setChoice] = useState<"mail" | "app" | null>(null);
+  /* Neu anmelden: die Adresse des angemeldeten Kontos vorbelegen, sobald /api/me sie kennt (beim Rendern nachgezogen) */
+  const [prefilled, setPrefilled] = useState(false);
+  if (fresh && me.user && !prefilled) {
+    setPrefilled(true);
+    setEmail(me.user.email);
+  }
+  const askText = fresh
+    ? "Ihre letzte Anmeldung ist älter als sieben Tage. Für die Administration bitte neu anmelden."
+    : next === BOOK_PATH
+      ? "Melden Sie sich an oder registrieren Sie sich kostenlos mit Ihrer E-Mail-Adresse. Danach geht es direkt weiter zur Buchung von Plus."
+      : "Bitte melden Sie sich an, um diese Seite zu öffnen.";
   /* Wege laut Server: ohne Mailversand nur E-Mail-Adresse und Code aus der Authenticator-App (Konten mit zweitem Faktor) */
   const mailOn = me.login?.mail !== false;
   const appOn = me.login?.totp === true;
@@ -280,12 +295,13 @@ export function LoginPage() {
     }
   };
 
-  const invite = me.access === "invite" || !!weiter;
+  /* Hinweis auf die geschlossene Testphase nur, solange neue Adressen eine Einladung brauchen (/api/me signup) */
+  const invite = !me.signup && (me.access === "invite" || !!weiter);
   const lead = step === "wait" ? undefined : mode === "app" ? "Mit Ihrer E-Mail-Adresse und dem Code aus Ihrer Authenticator-App anmelden." : "Mit Ihrer E-Mail-Adresse anmelden. Sie erhalten einen Link und einen Code, ein Passwort gibt es nicht.";
   const hints = <InfoHints items={[{ icon: "heart", text: "Mit dem Konto speichern Sie Suchen und Artikel." }, { icon: "shieldCheck", text: "Sie können sich jederzeit abmelden." }]} />;
   const head = <PageHead icon="user" label="Konto" name="Anmelden" title={step === "wait" ? "E-Mail prüfen" : "Anmelden"} lead={lead} />;
 
-  if (me.ready && me.user)
+  if (me.ready && me.user && !fresh)
     return (
       <>
         {head}
@@ -342,7 +358,7 @@ export function LoginPage() {
           <form className="ri-form ri-form--center" noValidate onSubmit={submitApp} aria-label="Anmelden mit Authenticator-App">
             {weiter && (
               <p role="status" style={{ margin: "0 0 16px", fontSize: 16 }}>
-                Bitte melden Sie sich an, um diese Seite zu öffnen.
+                {askText}
               </p>
             )}
             <Field id="login-email" label="E-Mail-Adresse" type="email" value={email} onChange={setEmail} error={emailError} autoComplete="email" inputMode="email" />
@@ -375,7 +391,7 @@ export function LoginPage() {
           <form className="ri-form ri-form--center" noValidate onSubmit={submitEmail} aria-label="Anmelden">
             {weiter && (
               <p role="status" style={{ margin: "0 0 16px", fontSize: 16 }}>
-                Bitte melden Sie sich an, um diese Seite zu öffnen.
+                {askText}
               </p>
             )}
             <Field id="login-email" label="E-Mail-Adresse" type="email" value={email} onChange={setEmail} error={emailError} autoComplete="email" inputMode="email" />
@@ -410,7 +426,8 @@ export function LoginPage() {
               E-Mail an {sent}
             </h2>
             <p style={{ margin: "8px 0 0", fontSize: 16, lineHeight: 1.5 }}>
-              Wenn die Adresse für Plenara freigeschaltet ist, kommt in wenigen Minuten eine E-Mail an <strong>{sent}</strong>, {senderText(me.sender)}. Sie enthält einen Link und einen Code. Es gilt nur die neueste E-Mail.
+              {me.signup ? "In wenigen Minuten kommt eine E-Mail an " : "Wenn die Adresse für Plenara freigeschaltet ist, kommt in wenigen Minuten eine E-Mail an "}
+              <strong>{sent}</strong>, {senderText(me.sender)}. Sie enthält einen Link und einen Code. Es gilt nur die neueste E-Mail.
             </p>
             <p className="ri-help">Keine E-Mail? Bitte auch im Spam- oder Quarantäneordner nachsehen.</p>
             <form noValidate onSubmit={submitCode} aria-label="Code eingeben" style={{ marginTop: 22 }}>

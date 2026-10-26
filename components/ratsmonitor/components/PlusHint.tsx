@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useMe } from "../lib/account";
+import { usePlusLink } from "../lib/booking";
 import { priceLabel } from "../lib/tier";
 import { useClient } from "../lib/useClient";
 
@@ -24,6 +25,7 @@ const closedNow = () => {
  */
 export function PlusHint({ placement }: { placement: "map" | "inline" }) {
   const me = useMe();
+  const plus = usePlusLink();
   const stored = useClient(closedNow, false);
   const [closed, setClosed] = useState(false);
   if (!me.ready || !me.accounts || me.tier === "pro" || me.tier === "enterprise" || stored || closed) return null;
@@ -69,10 +71,10 @@ export function PlusHint({ placement }: { placement: "map" | "inline" }) {
       </ul>
       <p className="m-0 mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] font-medium">
         <Link
-          href="/kontakt"
+          href={plus.href}
           className={map ? "inline-flex h-11 items-center gap-2 rounded-full bg-teal-700 px-5 text-white no-underline after:content-['→'] hover:opacity-85" : "inline-flex min-h-11 items-center gap-1.5 text-teal-700 no-underline after:content-['→'] after:transition-transform hover:after:translate-x-0.5"}
         >
-          Plus anfragen
+          {plus.book ? plus.label : "Plus anfragen"}
         </Link>
         <Link href="/preise" className="inline-flex min-h-11 items-center text-[var(--rm-c500)] underline-offset-2 hover:underline">
           Stufen vergleichen

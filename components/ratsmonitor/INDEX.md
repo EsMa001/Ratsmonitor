@@ -879,11 +879,11 @@ z- analytics.css:632
 - FilterSelect.tsx (124, ⚠1): FilterSelect
 - FollowButton.tsx (36): FollowButton
 - Footer.tsx (76): Footer
-- GateDialog.tsx (158): GateFeature, openGate, openLimitGate, GateDialog
+- GateDialog.tsx (164): GateFeature, openGate, openLimitGate, GateDialog
 - Header.tsx (128, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
-- PlanCards.tsx (229, ⚠1): PlanCards, PlanSummary
-- PlusHint.tsx (84, ⚠1): PlusHint
+- PlanCards.tsx (235, ⚠1): PlanCards, PlanSummary
+- PlusHint.tsx (86, ⚠1): PlusHint
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
@@ -895,7 +895,7 @@ z- analytics.css:632
 - ShareButton.tsx (49): shareLink, ShareButton
 - StepIcon.tsx (28): STEP_ICONS, StepIcon
 - SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
-- TierNotice.tsx (67): AccountLoading, LoginRequired, UsagePill
+- TierNotice.tsx (72): AccountLoading, LoginRequired, UsagePill
 - TopicSeed.tsx (11): TopicSeed
 - WheelList.tsx (42): WheelList
 - icons.tsx (193): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconRules, IconBell, IconFilter, IconStar, IconHeart, IconDownload, IconCalendarSync, ThemeIcon
@@ -911,7 +911,7 @@ z- analytics.css:632
 - suggestRows.ts (214): Row, takePickedText, RowContext, buildRows
 
 ### components/ratsmonitor/info/
-- AccountPages.tsx (742): LoginPage, ConfirmLoginPage, UnsubscribePage, RegisterPage, KontaktPage
+- AccountPages.tsx (759): LoginPage, ConfirmLoginPage, UnsubscribePage, RegisterPage, KontaktPage
 - AgbPage.tsx (181, ⚠15): AgbPage
 - AnwenderLive.tsx (173, ⚠2): AnwenderLivePage
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
@@ -922,7 +922,7 @@ z- analytics.css:632
 - InfoPages.tsx (49): InfoPages
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (30): NotFoundPage
-- PreisePage.tsx (88): PreisePage
+- PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
 - StartseitePage.tsx (513, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
@@ -938,9 +938,10 @@ z- analytics.css:632
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
 ### components/ratsmonitor/lib/
-- account.ts (302): Me, getMe, AccountApiError, api, touchAccount, reloadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
+- account.ts (308): Me, getMe, AccountApiError, api, touchAccount, reloadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
 - bandFigure.ts (32, ⚠1): publishBandFigure, useBandFigure, useCountUp
 - betreiber.ts (20): BETREIBER, betreiberAdresse
+- booking.ts (17): BOOK_PATH, bookHref, usePlusLink
 - brand.ts (52): setLogo, useBrand, useBrandText
 - brands.ts (45): BrandId, BRAND_NAME, LogoId, LOGOS, LOGO_IDS, DEFAULT_LOGO, DEFAULT_BRAND, pageTitle
 - browserData.ts (283): WEEK_DAYS, LocalArticle, LocalData, ImportPayload, ImportResult, useLocalData, hasLocal, shouldAsk, postponeImport, localSummary, buildPayload, downloadFile, saveLocalFile, importLocal, discardLocal, importFile, resultText
@@ -967,7 +968,7 @@ z- analytics.css:632
 - mapSlot.ts (18): setMapSlot, clearMapSlot, useMapSlot
 - methodikHost.ts (8): setMethodikHost, useMethodikHost
 - otherTab.ts (11): onOtherTab
-- pageTitle.ts (41): tabTitle
+- pageTitle.ts (42): tabTitle
 - place.ts (287, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, removePhrase
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
@@ -1007,12 +1008,13 @@ z- analytics.css:632
 - XSwitcher.tsx (34): XSheet
 
 ### components/ratsmonitor/pages/
+- BookingPage.tsx (91): BookingPage
 - DetailPage.tsx (222, ⚠17): DetailPage
 - KalenderPage.tsx (427, ⚠3): KalenderPage
 - LegalPage.tsx (287): useInhalt, LegalPage
 - NotificationsPage.tsx (93, ⚠1): NotificationsPage
 - OverviewPage.tsx (174): OverviewPage
-- PersonalPage.tsx (28): PersonalPage
+- PersonalPage.tsx (30): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
 - SavedArticlesPage.tsx (156, ⚠3): SavedArticlesPage

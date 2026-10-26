@@ -59,9 +59,9 @@ Das Skript startet `stripe listen` mit dem Schlüssel aus `.dev.vars` (ohne `str
 6. **Abgleich:** `node scripts/billing/reconcile.mjs` liest ohne `ACCOUNTS_FILE` die lokale D1-Datei und `STRIPE_*` aus `.dev.vars` und gibt `{"seen":…,"linked":…}` aus.
 7. **Stand ansehen:** Tabellen `billing_customers`, `subscriptions`, `billing_events` und `plan_grants` mit `source='stripe'` in der lokalen D1-Datei.
 
-## Testmodus auf plenara.de (seit 26.10.2026, nur Admins)
+## Testmodus auf plenara.de (seit 26.10.2026)
 
-Auf dem Server läuft dieselbe Sandbox wie lokal, aber nur Konten mit der Rolle admin sehen „Plus buchen“ und das Portal (`STRIPE_ADMINS_ONLY=1`); alle anderen merken nichts. So lässt sich der Ablauf mit dem eigenen Konto prüfen, ohne dass Testkonten Plus über die Testkarte bekommen.
+Auf dem Server läuft dieselbe Sandbox wie lokal. Seit dem Abend des 26.10.2026 ohne `STRIPE_ADMINS_ONLY` und mit freier Registrierung (`ACCOUNTS_OPEN_SIGNUP=1`): Jedes Konto kann Plus mit Testkarten buchen; die Seite steht weiter hinter dem Seitenpasswort. Mit `STRIPE_ADMINS_ONLY=1` sehen nur Konten mit der Rolle admin „Plus buchen“ und das Portal; alle anderen merken nichts. So lässt sich der Ablauf mit dem eigenen Konto prüfen, ohne dass Testkonten Plus über die Testkarte bekommen.
 
 - **Werte:** in `/etc/ratsmonitor/accounts.env` (root, 600; der Dienst `ratsmonitor` liest die Datei): `STRIPE_SECRET_KEY` (Testschlüssel), `STRIPE_PRICE_PLUS`, `STRIPE_PORTAL_CONFIG`, `STRIPE_WEBHOOK_SECRET` und `STRIPE_ADMINS_ONLY=1`. Danach `systemctl restart ratsmonitor`.
 - **Webhook-Endpunkt:** bei Stripe für `https://plenara.de/api/billing/webhook` mit den sieben Meldungen aus `EVENTS` (`billing.mjs`); sein Geheimnis ist `STRIPE_WEBHOOK_SECRET` auf dem Server (ein anderes als das der lokalen CLI).

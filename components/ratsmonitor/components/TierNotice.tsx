@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { IS_DEV, setTier, TIER_LABEL, UPGRADE_TEXT, useTier, usage } from "../lib/tier";
+import { IS_DEV, priceLabel, setTier, TIER_LABEL, UPGRADE_TEXT, useTier, usage } from "../lib/tier";
 import { useMe } from "../lib/account";
+import { usePlusLink } from "../lib/booking";
 
 /** Neutraler Platzhalter, solange /api/me noch nicht geantwortet hat (statt eines Sperrhinweises) */
 export function AccountLoading() {
@@ -14,6 +15,7 @@ export function AccountLoading() {
 /** Platzhalter für Bereiche, die eine Anmeldung bzw. eine freigeschaltete Stufe voraussetzen */
 export function LoginRequired({ title, text }: { title: string; text: string }) {
   const me = useMe();
+  const plus = usePlusLink();
   if (!me.ready) return <AccountLoading />;
   const signedIn = !!me.user;
   return (
@@ -25,11 +27,11 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
         </svg>
       </span>
       <h2 className="mb-1 mt-4 text-[18px] font-semibold">{signedIn ? "Teil von Plus" : title}</h2>
-      <p className="m-0 max-w-[48ch] text-slate-500">{signedIn ? "Diese Funktion gehört zu Plus. In der Testphase schalten wir Plus auf Anfrage frei." : text}</p>
+      <p className="m-0 max-w-[48ch] text-slate-500">{signedIn ? (plus.book ? `Diese Funktion gehört zu Plus, ${priceLabel("pro")}, monatlich kündbar.` : "Diese Funktion gehört zu Plus. In der Testphase schalten wir Plus auf Anfrage frei.") : text}</p>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
         {signedIn ? (
-          <Link className="btn-primary" href="/kontakt">
-            {UPGRADE_TEXT}
+          <Link className="btn-primary" href={plus.href}>
+            {plus.label}
           </Link>
         ) : (
           me.accounts && (
@@ -51,14 +53,17 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
 /** Verbrauch eines Limits, z. B. „5 von 5 · Konto“, mit Verweis auf eine Anfrage am Limit */
 export function UsagePill({ label, used, max }: { label: string; used: number; max: number }) {
   const { tier } = useTier();
+  const plus = usePlusLink();
   const full = Number.isFinite(max) && used >= max;
+  /* Am Limit: unter Plus zur Buchung, sonst (Plus ist schon da) zur Anfrage */
+  const more = plus.book && tier !== "pro" && tier !== "enterprise";
   return (
     <span className={`inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-[12px] font-medium ${full ? "border-amber-200 bg-amber-50 text-amber-800" : "border-slate-200 bg-white text-slate-600"}`}>
       {label}: {usage(used, max)}
       <span className="text-slate-500">· {TIER_LABEL[tier]}</span>
       {full && (
-        <Link href="/kontakt" title={UPGRADE_TEXT} className="font-semibold text-amber-900 underline underline-offset-2">
-          Mehr auf Anfrage
+        <Link href={more ? plus.href : "/kontakt"} title={more ? plus.label : UPGRADE_TEXT} className="font-semibold text-amber-900 underline underline-offset-2">
+          {more ? "Mehr mit Plus" : "Mehr auf Anfrage"}
         </Link>
       )}
     </span>

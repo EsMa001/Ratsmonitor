@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { DarkCta, PageHead, QaItem } from "./blocks";
 import { PRICE_FAQ } from "./content";
-import { LIMITS, priceLabel, TIER_LABEL, UPGRADE_TEXT, type Tier } from "../lib/tier";
+import { LIMITS, priceLabel, TIER_LABEL, type Tier } from "../lib/tier";
+import { usePlusLink } from "../lib/booking";
 import { PlanCards } from "../components/PlanCards";
 
 /* Angebotene Stufen; Enterprise gibt es noch nicht (später KI, Team, Schnittstelle) */
@@ -21,6 +22,8 @@ const COMPARE_ROWS: [string, (t: Tier) => string][] = [
 ];
 
 export function PreisePage() {
+  /* Mit Bezahlung führt Plus zur Buchung (lib/booking.ts), sonst zur Anfrage */
+  const plus = usePlusLink();
   return (
     <>
       <PageHead
@@ -28,7 +31,7 @@ export function PreisePage() {
         label="Informationen"
         name="Preise"
         title="Die Stufen im Überblick."
-        lead="Kostenlos suchen und lesen, für ganz Deutschland. Plus für 2,99 € im Monat. In der Testphase schalten wir Plus auf Anfrage frei."
+        lead={`Kostenlos suchen und lesen, für ganz Deutschland. Plus für 2,99 € im Monat, monatlich kündbar.${plus.book ? "" : " In der Testphase schalten wir Plus auf Anfrage frei."}`}
       />
       <section className="ri-sec ri-sec--prices">
         {/* Gleiche Tarifkarten wie im Konto */}
@@ -74,11 +77,11 @@ export function PreisePage() {
         </div>
       </section>
       <DarkCta
-        title="Plenara in der Testphase"
-        sub="Das Konto ist kostenlos. Plus schalten wir in der Testphase auf Anfrage frei, bis die Bezahlung angebunden ist."
+        title={plus.book ? "Plus für 2,99 € im Monat" : "Plenara in der Testphase"}
+        sub={plus.book ? "Das Konto ist kostenlos. Plus buchen Sie direkt hier: anmelden oder kostenlos registrieren, dann bezahlen. Monatlich kündbar." : "Das Konto ist kostenlos. Plus schalten wir in der Testphase auf Anfrage frei, bis die Bezahlung angebunden ist."}
         action={
-          <Link href="/kontakt" className="ri-btn ri-btn--inv">
-            {UPGRADE_TEXT}
+          <Link href={plus.href} className="ri-btn ri-btn--inv">
+            {plus.label}
           </Link>
         }
       />

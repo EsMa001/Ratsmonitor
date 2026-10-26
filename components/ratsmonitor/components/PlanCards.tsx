@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { IS_DEV, PLAN_MAX, priceLabel, setTier, TIER_LABEL, UPGRADE_TEXT, useTier, type Tier } from "../lib/tier";
 import { AccountApiError, api, reloadMe, shortDate, useMe } from "../lib/account";
+import { usePlusLink } from "../lib/booking";
 import { useClient } from "../lib/useClient";
 
 /* Leistungen je Tarif: Text, wenn enthalten (je Stufe auch abweichend), sonst null = nicht aufgeführt (steht in der Vergleichstabelle) */
@@ -32,10 +33,11 @@ const SHOWN = PLANS.filter((p) => p.tier === "basic" || p.tier === "pro");
 const PRIMARY = "mt-5 inline-flex h-11 items-center justify-center gap-2 self-start rounded-full bg-teal-700 px-5 text-[14px] font-medium text-white no-underline transition-opacity after:content-['→'] hover:opacity-85";
 const SECONDARY = "mt-5 inline-flex h-11 items-center gap-1.5 self-start text-[14px] font-medium text-teal-700 no-underline after:content-['→'] after:transition-transform hover:after:translate-x-0.5 disabled:text-slate-400 disabled:after:content-none";
 
-/** Tarifübersicht für Konto und Preisseite. Stufen gibt es in der Testphase auf Anfrage (Kontakt); in der Entwicklung
- *  lässt sich im Konto als Testkonto der Stufe anmelden */
+/** Tarifübersicht für Konto und Preisseite. Plus führt zur Buchung, solange der Server Bezahlung meldet (lib/booking.ts),
+ *  sonst zur Anfrage über den Kontakt; in der Entwicklung lässt sich im Konto als Testkonto der Stufe anmelden */
 export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
   const { tier } = useTier();
+  const plus = usePlusLink();
   /* Handy: ein Tarif auf einmal; seitlich wischen oder die Reiter antippen (beides bleibt abgeglichen) */
   const [pick, setPick] = useState<Tier>(publicPage || !SHOWN.some((p) => p.tier === tier) ? "pro" : tier);
   const track = useRef<HTMLDivElement>(null);
@@ -91,8 +93,12 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                   <Link href="/anmelden" className={SECONDARY}>
                     Kostenlos anmelden
                   </Link>
+                ) : plan.tier === "pro" ? (
+                  <Link href={plus.href} className={PRIMARY}>
+                    {plus.label}
+                  </Link>
                 ) : (
-                  <Link href="/kontakt" className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
+                  <Link href="/kontakt" className={SECONDARY}>
                     {UPGRADE_TEXT}
                   </Link>
                 )
@@ -102,8 +108,8 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                     {plan.tier === "guest" ? "Abmelden" : `Als ${TIER_LABEL[plan.tier]} anmelden`} (Dev)
                   </button>
                 ) : plan.tier === "basic" ? null : (
-                  <Link href="/kontakt" className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
-                    {UPGRADE_TEXT}
+                  <Link href={plan.tier === "pro" ? plus.href : "/kontakt"} className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
+                    {plan.tier === "pro" ? plus.label : UPGRADE_TEXT}
                   </Link>
                 ))}
             </div>
