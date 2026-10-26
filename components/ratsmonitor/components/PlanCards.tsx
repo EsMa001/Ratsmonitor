@@ -1,8 +1,9 @@
 import { Segmented } from "./Segmented";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { IS_DEV, PLAN_MAX, priceLabel, setTier, TIER_LABEL, UPGRADE_TEXT, useTier, type Tier } from "../lib/tier";
-import { shortDate, useMe } from "../lib/account";
+import { AccountApiError, api, reloadMe, shortDate, useMe } from "../lib/account";
 import { useClient } from "../lib/useClient";
 
 /* Leistungen je Tarif: Text, wenn enthalten (je Stufe auch abweichend), sonst null = nicht aufgeführt (steht in der Vergleichstabelle) */
@@ -133,7 +134,8 @@ export function PlanSummary() {
         {tier !== "guest" && <span className="rounded-full bg-teal-700 px-2 py-0.5 text-[12px] font-semibold text-white sm:hidden">Ihre Stufe</span>}
         {tier !== "guest" && <span className="font-normal text-slate-500 max-sm:basis-full"><span className="max-sm:hidden">· </span>{priceLabel(tier)} · {plan.note}</span>}
       </p>
-      {until && tier !== "guest" && (
+      {/* Abos über Stripe zeigen ihr Datum unter „Abo verwalten“; das Ende der Stufe enthält dort die Kulanz */}
+      {until && tier !== "guest" && tierSource !== "stripe" && (
         <p className={`m-0 mt-1 text-[14px] ${soon ? "text-amber-800" : "text-slate-500"}`} role={soon ? "status" : undefined}>
           {tierSource === "beta" ? `Testzugang ${TIER_LABEL[tier]} bis ${until}` : `${TIER_LABEL[tier]} bis ${until}`}
           {soon && ". Danach gelten die Rechte des kostenlosen Kontos; Verlängerung auf Anfrage über den Kontakt."}
@@ -151,7 +153,76 @@ export function PlanSummary() {
         })}
       </ul>
       </div>
+      <Billing />
       <Link href="/preise" className={SECONDARY}>Alle Stufen ansehen</Link>
     </section>
+  );
+}
+
+const RUNNING = ["active", "trialing", "past_due"];
+/** Plus über Stripe buchen und verwalten (server/accounts/billing.mjs), nur wenn der Server Bezahlung meldet. Nach der
+ *  Rückkehr aus dem Checkout (?zahlung=pruefen) fragt die Seite /api/me eine Minute lang nach, bis Stripe die Zahlung meldet. */
+function Billing() {
+  const me = useMe();
+  const returned = useSearchParams().get("zahlung");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [waited, setWaited] = useState(false);
+  const paid = me.tier === "pro" || me.tier === "enterprise";
+  const checking = returned === "pruefen" && !!me.billing && !paid && !waited;
+  useEffect(() => {
+    if (!checking) return;
+    let tries = 0;
+    const timer = window.setInterval(() => {
+      tries += 1;
+      void reloadMe();
+      if (tries >= 30) {
+        window.clearInterval(timer);
+        setWaited(true);
+      }
+    }, 2000);
+    return () => window.clearInterval(timer);
+  }, [checking]);
+  const billing = me.billing;
+  if (!billing || !me.user) return null;
+  const sub = billing.subscription;
+  const running = !!sub && RUNNING.includes(sub.status);
+  const go = async (path: string) => {
+    setBusy(true);
+    setError("");
+    try {
+      const { url } = await api<{ url: string }>(path, { method: "POST" });
+      window.location.assign(url);
+    } catch (e) {
+      setError(e instanceof AccountApiError ? e.message : "Das hat nicht geklappt.");
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="mt-5 border-t border-slate-200 pt-4 text-[14px]">
+      {checking && <p role="status" className="m-0 text-slate-600">Zahlung wird geprüft. Plus wird freigeschaltet, sobald Stripe die Zahlung bestätigt.</p>}
+      {returned === "pruefen" && waited && !paid && <p role="status" className="m-0 text-amber-800">Die Bestätigung von Stripe ist noch nicht da. Bitte laden Sie die Seite in einigen Minuten neu.</p>}
+      {returned === "pruefen" && paid && running && <p role="status" className="m-0 text-teal-800">Danke, Plus ist freigeschaltet.</p>}
+      {returned === "abgebrochen" && !running && <p role="status" className="m-0 text-slate-600">Bezahlung abgebrochen. Es wurde nichts gebucht.</p>}
+      {running && sub && (
+        <p className={`m-0 mt-1 ${sub.status === "past_due" ? "text-amber-800" : "text-slate-600"}`}>
+          {sub.status === "past_due" ? "Die letzte Zahlung ist offen. Bitte prüfen Sie die Zahlart unter „Abo verwalten“." : sub.cancelAt ? `Plus ist gekündigt und endet am ${shortDate(sub.cancelAt)}.` : `Plus verlängert sich am ${shortDate(sub.periodEnd)}.`}
+        </p>
+      )}
+      {billing.test && <p className="m-0 mt-1 text-[12px] text-slate-500">Testmodus: Es wird kein echtes Geld abgebucht.</p>}
+      <div className="flex flex-wrap gap-x-6">
+        {!running && !paid && (
+          <button type="button" disabled={busy} onClick={() => void go("/api/billing/checkout")} className={`${PRIMARY} disabled:opacity-50`}>
+            Plus buchen · {priceLabel("pro")}
+          </button>
+        )}
+        {billing.customer && (
+          <button type="button" disabled={busy} onClick={() => void go("/api/billing/portal")} className={SECONDARY}>
+            Abo verwalten
+          </button>
+        )}
+      </div>
+      {error && <p role="alert" className="m-0 mt-2 text-amber-800">{error}</p>}
+    </div>
   );
 }

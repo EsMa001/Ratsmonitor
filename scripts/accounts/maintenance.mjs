@@ -19,7 +19,7 @@ import {TIER_LABEL} from '../../shared/plans.mjs';
 const DAY=86400000;
 /** Fristen (Platzhalter für Inaktivität und Sperre bis zur Entscheidung, konten-konzept.md Abschnitt 15) */
 export const RETENTION={tokensAfterExpiry:DAY,requests:DAY,flows:DAY,authEvents:90*DAY,mailOutbox:30*DAY,adminAudit:365*DAY,
- inactive:730*DAY,inactiveGrace:30*DAY,blocked:365*DAY,tierNotice:14*DAY};
+ inactive:730*DAY,inactiveGrace:30*DAY,blocked:365*DAY,tierNotice:14*DAY,billingEvents:90*DAY};
 const iso=ms=>new Date(ms).toISOString();
 
 export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.log}={}){
@@ -36,6 +36,8 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
  await count('authEvents','DELETE FROM auth_events WHERE at<?',iso(now-RETENTION.authEvents));
  await count('mailOutbox',"DELETE FROM mail_outbox WHERE created_at<? AND status NOT IN ('queued','sending')",iso(now-RETENTION.mailOutbox));
  await count('adminAudit','DELETE FROM admin_audit WHERE at<?',iso(now-RETENTION.adminAudit));
+ // Meldungen von Stripe (server/accounts/billing.mjs): nur ID und Art, gegen doppelte Verarbeitung; Stripe stellt höchstens 3 Tage zu
+ await count('billingEvents','DELETE FROM billing_events WHERE received_at<?',iso(now-RETENTION.billingEvents));
  // Benachrichtigungen (server/accounts/notify.mjs): Treffer nach 30 Tagen, verschickt, verfallen oder nie fällig geworden;
  // Abbestell-Tokens nach 180 Tagen (ältere Mails lassen sich dann nur noch im Konto abbestellen)
  await count('notifyItems','DELETE FROM notify_items WHERE created_at<?',iso(now-NOTIFY_RETENTION.items));

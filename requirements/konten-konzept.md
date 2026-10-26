@@ -347,7 +347,7 @@ CREATE INDEX mail_outbox_at ON mail_outbox(created_at);  -- 30 Tage, dient zugle
 CREATE TABLE dev_mail (id INTEGER PRIMARY KEY, at TEXT, "to" TEXT, subject TEXT, text TEXT, html TEXT);
 ```
 
-**Wirksame Stufe:** `effectiveTier(user, now)` nimmt die höchste Zeile in `plan_grants` mit `starts_at ≤ now < ends_at` (oder leerem `ends_at`). Gibt es keine solche Zeile, gilt `ACCOUNT_DEFAULT_TIER` (`guest`, Abschnitt 9.1). Ohne Sitzung gilt `guest`. Rechte entstehen nur über `entitlements(tier)`, und kein Code liest `plan_grants` direkt.
+**Wirksame Stufe:** `effectiveTier(user, now)` nimmt die höchste Zeile in `plan_grants` mit `starts_at ≤ now < ends_at` (oder leerem `ends_at`). Gibt es keine solche Zeile, gilt `ACCOUNT_DEFAULT_TIER` (seit 23.10.2026 `basic`, Abschnitt 9.1). Ohne Sitzung gilt `guest`. Rechte entstehen nur über `entitlements(tier)`, und kein Code liest `plan_grants` direkt.
 
 **Löschprotokoll:** Es liegt außerhalb der Datei und damit außerhalb ihrer Sicherung, in `/srv/ratsmonitor/accounts/deleted.log`. Je Löschung gibt es eine Zeile mit dem SHA-256 der Konto-ID und dem HMAC der Adresse, jeweils mit Datum. Geschrieben wird es über `ACCOUNTS_HOOKS.logDeletion`.
 
@@ -709,18 +709,19 @@ Ein Stripe-Webhook mit Signaturprüfung schreibt künftig nur Zeilen in `plan_gr
 
 - `billing_customers` und `subscriptions`;
 - Rechnungsdaten mit eigener Frist (§ 147 AO, 8 Jahre), die beim Löschen des Kontos getrennt erhalten bleiben;
-- vertragsrelevante Nachweise (AGB-Version, Zustimmung zum vorzeitigen Leistungsbeginn bzw. Verlust des Widerrufsrechts nach § 356 Abs. 4/5 BGB, Zeitpunkt). Sie werden in die Abrechnungstabellen kopiert, mit eigener Frist von 3 Jahren ab Vertragsende (§ 195 BGB), weil `consents` mit dem Konto gelöscht wird;
+- vertragsrelevante Nachweise (AGB-Version, ausdrückliches Verlangen des vorzeitigen Leistungsbeginns und Kenntnis, dass das Widerrufsrecht mit vollständiger Erbringung erlischt, nach § 356 Abs. 5 Nr. 2 BGB, weil Plus sehr wahrscheinlich eine digitale Dienstleistung ist; § 356 Abs. 6 Nr. 2 gälte nur für digitale Inhalte; Zeitpunkt). Sie werden in die Abrechnungstabellen kopiert, mit eigener Frist von 3 Jahren ab Vertragsende (§ 195 BGB), weil `consents` mit dem Konto gelöscht wird;
 - das Löschen des Kontos schließt den Stripe-Kunden ein (löschen oder sperren, soweit die Aufbewahrung es zulässt);
 - Stripe überträgt in die USA (DPF) und ist für die Zahlung teils eigener Verantwortlicher. Das wird in Thema 3 geklärt und in der Datenschutzerklärung genannt.
 
 ### 9.1 Bezahlung und Freischaltung (Entscheidung 13.10.2026)
 
-Ein Konto wird erst freigeschaltet, wenn die Zahlung bestätigt ist. Ein Konto ohne gültige Zeile in `plan_grants` hat die
-Rechte eines Gasts, dazu Kontoverwaltung, Bezahlen, Datenauskunft und Löschen (`ACCOUNT_DEFAULT_TIER='guest'` in
-`shared/plans.mjs`, einstellbar, falls später doch eine kostenlose Stufe kommt). Testerinnen und Tester bekommen ihre
+Plus wird erst freigeschaltet, wenn die Zahlung bestätigt ist. Ein Konto ohne gültige Zeile in `plan_grants` hat seit
+23.10.2026 die kostenlose Stufe „Konto“ (`ACCOUNT_DEFAULT_TIER='basic'` in `shared/plans.mjs`, Stufen in
+`docs/produkt/stufen.md`); vorher galt `guest`, also die Rechte eines Gasts mit Kontoverwaltung, Bezahlen, Datenauskunft und Löschen. Testerinnen und Tester bekommen ihre
 Stufe über die Einladung (`source='beta'`, mit Ende).
 
-Ablauf mit dem Zahlungsdienst (Stripe, Mollie oder ein Merchant of Record; Entscheidung offen):
+Ablauf mit dem Zahlungsdienst (Stripe, Mollie oder ein Merchant of Record; Entscheidung offen, Recherche vom 26.10.2026 mit
+Empfehlung Stripe: `requirements/zahlungsdienste-recherche-2026-10-26.md`):
 
 1. Erst anmelden (E-Mail bestätigt), dann bezahlen. Der Server legt den Bezahlvorgang mit `users.id` als Bezug an; die
    Zahlung läuft auf der Seite des Dienstleisters, Kartendaten berühren den Server nie.
@@ -734,9 +735,13 @@ Ablauf mit dem Zahlungsdienst (Stripe, Mollie oder ein Merchant of Record; Entsc
    https (hinter Basic-Auth kommen keine Webhooks an).
 
 „Geldeingang“ heißt die Bestätigung des Dienstleisters: Karte und PayPal in Sekunden (sofort freischalten), SEPA-Lastschrift
-nach 2 bis 5 Werktagen (Rücklastschrift bis 8 Wochen), Überweisung nach Tagen. Vorschlag: zum Start Karte und PayPal;
+nach bis zu 6 Werktagen (Angabe Stripe; Rücklastschrift bis 8 Wochen), Überweisung nach Tagen. Vorschlag: zum Start Karte und PayPal;
 Enterprise für Kommunen von Hand per Rechnung (oft XRechnung), der Admin vergibt die Stufe nach Zahlungseingang
 (`source='manual'`). Kündigen, Zahlart und Rechnungen über das Kundenportal des Dienstleisters.
+
+**Testanbindung (seit 26.10.2026):** Stripe im Testmodus nach diesem Ablauf (`server/accounts/billing.mjs`, Migration
+`drizzle-accounts/0006`, Einrichtung `docs/betrieb/stripe-test.md`). Eine Zeile je Abo in `plan_grants` (`ref` = Abo-ID),
+verlängert nur bei bezahlter Rechnung; Abgleich `scripts/billing/reconcile.mjs`. Live erst nach den offenen Rechtsfragen der Recherche.
 
 ## 10. Mailversand und Domain
 

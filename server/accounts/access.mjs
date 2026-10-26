@@ -11,6 +11,8 @@ const FREE=[/^\/anmelden(\/|$)/,/^\/registrieren$/,/^\/api\/auth\//,/^\/api\/me$
  /^\/abbestellen$/,/^\/api\/notify\/unsubscribe$/,
  // Erreichbarkeitsprüfung für einen Uptime-Dienst (server/integrations/health.mjs): keine Daten, keine Personen, nur lesend
  /^\/api\/health$/,
+ // Meldungen von Stripe (server/accounts/billing.mjs): ohne Sitzung, berechtigt ist die Signatur
+ /^\/api\/billing\/webhook$/,
  // OAuth für den Kunden-MCP: Registrierung, Token und Widerruf rufen Anwendungen ohne Sitzung auf; die Zustimmung
  // (/verbinden, /api/oauth/*) verlangt weiter eine Anmeldung
  /^\/oauth\/(authorize|token|register|revoke)$/];
