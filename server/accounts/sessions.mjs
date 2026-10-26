@@ -43,8 +43,12 @@ export const renewDue=(session,now=Date.now())=>Date.parse(session.last_seen_at)
 export async function effectiveTier(db,userId,{now=Date.now()}={}){
  const at=iso(now);
  const {results}=await db.prepare('SELECT tier,source,ends_at FROM plan_grants WHERE user_id=? AND starts_at<=? AND (ends_at IS NULL OR ends_at>?)').bind(userId,at,at).all();
+ return pickGrant(results||[]);
+}
+/** Aus den gültigen Zeilen eines Kontos die wirksame: höchste Stufe, bei gleicher die am längsten laufende (auch für die Kontenübersicht) */
+export function pickGrant(rows){
  let best=null;
- for(const r of results||[])if(!best||rank(r.tier)>rank(best.tier)||(rank(r.tier)===rank(best.tier)&&(r.ends_at===null||(best.ends_at!==null&&r.ends_at>best.ends_at))))best=r;
+ for(const r of rows)if(!best||rank(r.tier)>rank(best.tier)||(rank(r.tier)===rank(best.tier)&&(r.ends_at===null||(best.ends_at!==null&&r.ends_at>best.ends_at))))best=r;
  return best?{tier:best.tier,until:best.ends_at,source:best.source}:{tier:ACCOUNT_DEFAULT_TIER,until:null,source:null};
 }
 export async function rolesOf(db,userId){

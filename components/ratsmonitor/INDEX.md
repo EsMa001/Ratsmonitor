@@ -785,7 +785,7 @@ z- analytics.css:632
 - page.tsx (4): metadata, Page
 
 ### app/admin/
-- page.tsx (91, ⚠7): dynamic, metadata, AdminPage
+- page.tsx (93, ⚠7): dynamic, metadata, AdminPage
 
 ### app/
 - chatgpt-auth.ts (92): ChatGPTUser, getChatGPTUser, chatGPTSignInAvailable, chatGPTSignInPath, chatGPTSignOutPath
@@ -812,12 +812,13 @@ z- analytics.css:632
 - sitemap.ts (12): sitemap
 
 ### components/
+- admin-accounts.tsx (153): AdminAccounts
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-ai-local.tsx (117, ⚠8): AdminAiLocal
 - admin-altbestand.tsx (149, ⚠7): AdminAltbestand, AltbestandSteuern
 - admin-atlas.tsx (204, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
-- admin-chrome.tsx (144, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
+- admin-chrome.tsx (146, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
 - admin-cockpit.tsx (104): AdminCockpit
 - admin-colors.ts (26): AC, HATCH_CSS, COVERAGE, shareColor, bucketColor, ACCESS_COLOR, CATEGORY_COLOR
 - admin-dashboard.tsx (111, ⚠7): AdminRuns, AdminReview, AdminStock
@@ -825,7 +826,7 @@ z- analytics.css:632
 - admin-estimate.tsx (350, ⚠57): AdminEstimate
 - admin-fehler.tsx (100, ⚠4): AdminFehler, FehlerSteuern
 - admin-format.ts (25): n, nOr, pct, mio, gb, size, day, mm, when, clock, dur
-- admin-icons.tsx (41): IconName, Icon
+- admin-icons.tsx (42): IconName, Icon
 - admin-loader.tsx (39): DashboardPage, AdminLoader
 - admin-mobile.tsx (45, ⚠2): AdminMobile
 - admin-overview.tsx (174, ⚠14): AdminOverview
@@ -844,7 +845,7 @@ z- analytics.css:632
 - admin-stand.tsx (28): standText, StandLine
 - admin-storage.tsx (143, ⚠9): AdminStorage, SpeicherSteuern
 - admin-store.ts (98): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (385, ⚠6): href, Todo, Help, PAGE_HEAD, FOOT, ZUSTAND, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, STATE_HELP, ATLAS_TODO, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, PROTOKOLL, TITLES, HOCHRECHNUNG
+- admin-texts.ts (387, ⚠7): href, Todo, Help, PAGE_HEAD, FOOT, ZUSTAND, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, STATE_HELP, ATLAS_TODO, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, PROTOKOLL, TITLES, HOCHRECHNUNG
 - admin-timeline.tsx (87, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-totp.tsx (62): AdminTotp, AdminTotpSetup

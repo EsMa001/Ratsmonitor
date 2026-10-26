@@ -17,6 +17,7 @@ import {AdminEstimate} from '@/components/admin-estimate';
 import {AdminRuleTexts} from '@/components/admin-rule-texts';
 import {AdminTodo} from '@/components/admin-todo';
 import {AdminSocial} from '@/components/admin-social';
+import {AdminAccounts} from '@/components/admin-accounts';
 import {AdminPdf} from '@/components/admin-pdf';
 import {AdminStorage} from '@/components/admin-storage';
 import {AdminSchedules} from '@/components/admin-schedules';
@@ -31,7 +32,7 @@ export const metadata={title:'Administration · '+BRAND_NAME[DEFAULT_BRAND],robo
 // "Abdeckung", qualitaet the "Prüfliste", debug "Letzte Nacht"). "auswahl" (areas handed over by the estimate) and
 // "filter" (a list filter) open the import page. Without a page: the cockpit. 'start' stands here as text: values from
 // admin-chrome.tsx ('use client') arrive in a server component only as client references, not as strings.
-const PAGES:Record<string,AdminPage>={start:'start',cockpit:'start',abdeckung:'abdeckung',uebersicht:'abdeckung',atlas:'atlas',nacht:'nacht',debug:'nacht',abruf:'abruf',pdf:'pdf','pdf-import':'pdf',verarbeitung:'verarbeitung',altbestand:'altbestand',regeltexte:'regeltexte',pruefliste:'pruefliste',qualitaet:'pruefliste',bestand:'bestand',zeitplaene:'steuerung',steuerung:'steuerung',jobs:'steuerung',fehler:'fehler',speicher:'speicher',todo:'todo',hochrechnung:'hochrechnung',social:'social','1':'abruf','2':'pruefliste','3':'hochrechnung'};
+const PAGES:Record<string,AdminPage>={start:'start',cockpit:'start',abdeckung:'abdeckung',uebersicht:'abdeckung',atlas:'atlas',nacht:'nacht',debug:'nacht',abruf:'abruf',pdf:'pdf','pdf-import':'pdf',verarbeitung:'verarbeitung',altbestand:'altbestand',regeltexte:'regeltexte',pruefliste:'pruefliste',qualitaet:'pruefliste',bestand:'bestand',zeitplaene:'steuerung',steuerung:'steuerung',jobs:'steuerung',fehler:'fehler',speicher:'speicher',todo:'todo',hochrechnung:'hochrechnung',social:'social',konten:'konten',kunden:'konten','1':'abruf','2':'pruefliste','3':'hochrechnung'};
 const FILTERS=['all','connected','data','empty','issues','partial','stale','failed','shallow','quiet','selected'];
 export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string;filter?:string;auftrag?:string}>}){const {seite,auswahl,filter,auftrag}=await searchParams;
  // "auswahl" preselects areas on the import page; only known area ids are accepted.
@@ -73,6 +74,7 @@ async function AdminContent({page,mobile,selection,filter,control}:{page:AdminPa
  if(page==='todo')return frame(<AdminTodo/>);
  if(page==='regeltexte')return frame(<AdminRuleTexts/>);
  if(page==='social')return frame(<AdminSocial/>);
+ if(page==='konten')return frame(<AdminAccounts/>);
  if(page==='pdf')return frame(<AdminPdf/>);
  if(page==='speicher')return frame(<AdminStorage/>);
  if(page==='steuerung')return frame(<AdminSchedules/>);
