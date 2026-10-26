@@ -25,6 +25,21 @@ ${body}
 const button=(href,label)=>html`<p style="margin:20px 0"><a href="${href}" style="display:inline-block;background:#0f5e66;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:bold">${label}</a></p>`;
 const codeBox=code=>html`<p style="margin:16px 0;font-size:28px;letter-spacing:4px;font-weight:bold">${groupCode(code)}</p>`;
 const p=text=>html`<p style="margin:0 0 12px;line-height:1.5">${text}</p>`;
+/** Abbestellen der Zahlungsmails: Link auf /abbestellen (Token im Fragment) und Ein-Klick nach RFC 8058; ohne Token nichts */
+function billingOff(token,site){
+ if(!token)return {text:'',html:'',headers:undefined};
+ const off=`${site}/abbestellen#t=${encodeURIComponent(token)}`;
+ return {text:`\nMails zu Zahlungen und zum Ende von Plus abbestellen: ${off}`,
+  html:html`<p style="margin:20px 0 0;font-size:13px"><a href="${off}" style="color:#6b7280">Mails zu Zahlungen und zum Ende von Plus abbestellen</a></p>`,
+  headers:{'List-Unsubscribe':`<${site}/api/notify/unsubscribe?t=${encodeURIComponent(token)}>`,'List-Unsubscribe-Post':'List-Unsubscribe=One-Click'}};
+}
+/** „2026-10-26T20:15:00Z“ → „26.10.2026 um 21:15 Uhr“ (deutsche Zeit) */
+const deTime=at=>{
+ const d=new Date(at);
+ if(Number.isNaN(d.getTime()))return '';
+ const f=o=>new Intl.DateTimeFormat('de-DE',{timeZone:'Europe/Berlin',...o}).format(d);
+ return `${f({day:'2-digit',month:'2-digit',year:'numeric'})} um ${f({hour:'2-digit',minute:'2-digit'})} Uhr`;
+};
 
 /** Jede Vorlage: (data, {site}) → {subject, text, html} */
 const T={
@@ -77,9 +92,58 @@ const T={
  }),
  tier_ending:({tier,until},{site})=>({
   subject:'Ihr Testzugang endet bald',
-  text:`Ihr Testzugang ${tier} bei Plenara endet am ${String(until).slice(0,10)}. Danach bleibt Ihr Konto bestehen, mit den Rechten ohne Stufe. Konto: ${site}/konto/profil`,
-  html:page('Testzugang',[p(`Ihr Testzugang ${tier} bei Plenara endet am ${String(until).slice(0,10)}.`),p('Danach bleibt Ihr Konto bestehen, mit den Rechten ohne Stufe. Sie können es jederzeit löschen.'),button(site+'/konto/profil','Zum Konto')]),
+  text:`Ihr Testzugang ${tier} bei Plenara endet am ${deDate(until)}. Danach bleibt Ihr Konto bestehen, mit den Rechten des kostenlosen Kontos. Konto: ${site}/konto/profil`,
+  html:page('Testzugang',[p(`Ihr Testzugang ${tier} bei Plenara endet am ${deDate(until)}.`),p('Danach bleibt Ihr Konto bestehen, mit den Rechten des kostenlosen Kontos. Sie können es jederzeit löschen.'),button(site+'/konto/profil','Zum Konto')]),
  }),
+ /* Bezahlung (server/accounts/billing.mjs, Meldung invoice.paid): erste Zahlung schaltet Plus frei, jede weitere verlängert.
+    Abbestellbar wie die Benachrichtigungen (Token mit Bezug 'b', billingOff) */
+ plus_paid:({first,amount,until,receipt,test,token},{site})=>{
+  const head=first?`Ihre Zahlung über ${amount} ist eingegangen. Plus ist für Ihr Konto freigeschaltet.`:`Ihre Zahlung über ${amount} ist eingegangen. Plus läuft weiter.`;
+  const next=until?`Nächste Abrechnung am ${deDate(until)}; Plus verlängert sich monatlich, bis Sie kündigen.`:'';
+  const note=test?'Testmodus: Es wurde kein echtes Geld abgebucht.':'';
+  const off=billingOff(token,site);
+  return {
+   subject:first?'Zahlung eingegangen: Plus ist freigeschaltet':'Zahlung eingegangen: Plus verlängert',
+   text:[head,next,receipt?`Beleg: ${receipt}`:'',`Abo verwalten (kündigen, Zahlart, Rechnungen): ${site}/konto/profil`,note,off.text].filter(Boolean).join('\n'),
+   html:page('Zahlung eingegangen',[p(head),next?p(next):'',receipt?html`<p style="margin:0 0 12px"><a href="${receipt}">Beleg ansehen</a></p>`:'',button(site+'/konto/profil','Zum Konto'),
+    p('Kündigen, Zahlart ändern und Rechnungen finden Sie im Konto unter „Abo verwalten“.'),note?p(note):'',off.html]),
+   headers:off.headers,
+  };
+ },
+ /* Plus endet in höchstens 3 Tagen und wird nicht verlängert (scripts/accounts/maintenance.mjs): gekündigt, Zahlung offen
+    oder eine Freischaltung von Hand mit Ende. Abbestellbar wie plus_paid */
+ plus_ending:({until,reason,token},{site})=>{
+  const lead=reason==='canceled'?`Sie haben Plus gekündigt. Plus endet am ${deDate(until)}.`
+   :reason==='payment'?`Die letzte Zahlung für Plus ist nicht eingegangen. Ohne Zahlung endet Plus am ${deDate(until)}.`
+   :`Ihr Zugang zu Plus endet am ${deDate(until)}.`;
+  const after='Danach gelten die Rechte des kostenlosen Kontos; Ihr Konto bleibt bestehen.';
+  const act=reason==='payment'?'Bitte prüfen Sie Ihre Zahlart im Konto unter „Abo verwalten“.':reason==='canceled'?'Die Kündigung können Sie bis dahin im Konto unter „Abo verwalten“ zurücknehmen.':'Plus können Sie jederzeit buchen.';
+  const target=reason==='grant'?site+'/preise':site+'/konto/profil';
+  const off=billingOff(token,site);
+  return {
+   subject:'Ihr Plus endet in wenigen Tagen',
+   text:[lead,after,act,target,off.text].filter(Boolean).join('\n'),
+   html:page('Plus endet',[p(lead),p(after),p(act),button(target,reason==='grant'?'Stufen ansehen':'Zum Konto'),off.html]),
+   headers:off.headers,
+  };
+ },
+ /* Kündigungsbestätigung nach § 312k Abs. 4 BGB (server/accounts/cancel.mjs): Inhalt der Kündigung, Eingang mit Datum und
+    Uhrzeit, Vertragsende. Geht an jede angegebene Adresse und ist nicht abbestellbar */
+ cancel_received:({receivedAt,kind,reason,when,date,result,endsAt},{site})=>{
+  const lines=[`Eingegangen am ${deTime(receivedAt)}`,'Vertrag: Plenara Plus',
+   `Art: ${kind==='extraordinary'?'außerordentliche Kündigung':'ordentliche Kündigung'}`,...(kind==='extraordinary'&&reason?[`Grund: ${reason}`]:[]),
+   `Gewünschter Zeitpunkt: ${when==='date'&&date?`zum ${deDate(date)}`:'zum nächstmöglichen Zeitpunkt'}`];
+  const outcome=result==='canceled'?`Ihr Abo endet am ${deDate(endsAt)}. Bis dahin können Sie Plus nutzen; danach wird nichts mehr abgebucht.`
+   :result==='review'?`Ihre außerordentliche Kündigung prüfen wir und melden uns. Unabhängig davon endet Ihr Abo spätestens am ${deDate(endsAt)}; es wird nichts mehr abgebucht.`
+   :result==='none'?`Zu dieser E-Mail-Adresse finden wir kein laufendes Plus-Abo. Haben Sie Plus mit einer anderen Adresse gebucht, kündigen Sie bitte mit jener Adresse: ${site}/kuendigen`
+   :'Wir bearbeiten Ihre Kündigung und bestätigen Ihnen das Vertragsende in Kürze.';
+  const keep='Bitte bewahren Sie diese E-Mail als Nachweis auf.';
+  return {
+   subject:'Ihre Kündigung bei Plenara ist eingegangen',
+   text:['Ihre Kündigung ist bei uns eingegangen.','',...lines,'',outcome,'',keep].join('\n'),
+   html:page('Kündigung eingegangen',[p('Ihre Kündigung ist bei uns eingegangen.'),html`<p style="margin:0 0 12px;line-height:1.5">${lines.map((l,i)=>i?html`<br>${l}`:l)}</p>`,p(outcome),p(keep)]),
+  };
+ },
  inactive:(_d,{site})=>({
   subject:'Ihr Plenara-Konto wird bald gelöscht',
   text:`Ihr Plenara-Konto wurde seit zwei Jahren nicht genutzt. Melden Sie sich in den nächsten 30 Tagen unter ${site}/anmelden an, wenn Sie es behalten möchten; sonst löschen wir es mit allen gespeicherten Daten.`,

@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { useState } from "react";
+import { LEGAL } from "../components/Footer";
 import { Icon } from "../info/icons";
 import { BRANCHEN } from "../info/content";
 import { ANWENDER, INFO } from "./MainMenu";
@@ -26,7 +28,13 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
               <li key={f.href}><Tile href={f.href} label={f.label} icon={<Icon name={f.icon} size={22} />} /></li>
             ))}
       </ul>
-      {app.kind === "prompt" && <button type="button" onClick={() => { app.install(); onClose(); }} className="mt-3 flex h-11 w-full items-center gap-3 rounded-xl border border-teal-600/30 px-3 text-left text-[14px] font-medium text-teal-800"><Icon name="check" size={18} />Als App hinzufügen</button>}
+      {/* Rechtliches: auf der Suche fehlt die Handyzeile der Fußzeile (search.css), hier ist es immer erreichbar */}
+      <nav aria-label="Rechtliches" className="mt-3 flex flex-wrap gap-x-4 text-[13px]">
+        {LEGAL.map(([href, label]) => (
+          <Link key={href} href={href} onClick={onClose} className="inline-block min-h-[44px] leading-[44px] text-slate-600 no-underline">{label}</Link>
+        ))}
+      </nav>
+      {app.kind === "prompt" &&<button type="button" onClick={() => { app.install(); onClose(); }} className="mt-3 flex h-11 w-full items-center gap-3 rounded-xl border border-teal-600/30 px-3 text-left text-[14px] font-medium text-teal-800"><Icon name="check" size={18} />Als App hinzufügen</button>}
     </Sheet>
   );
 }

@@ -5,9 +5,12 @@ import { setMethodikHost } from "../lib/methodikHost";
 import { useMe } from "../lib/account";
 import { useBrand, useBrandText } from "../lib/brand";
 
+/** Rechtliche Links auf jeder Seite (Fußzeile, Handyzeile, „Mehr“); „Verträge hier kündigen“ verlangt § 312k BGB */
+export const LEGAL: [string, string][] = [["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"], ["/agb", "AGB"], ["/widerruf", "Widerruf"], ["/kuendigen", "Verträge hier kündigen"]];
+
 const GROUPS: { title: string; links: [string, string][] }[] = [
   { title: "Informationen", links: [["/preise", "Preise"], ["/faq", "FAQ"], ["/videos", "Videos"], ["/datenabdeckung", "Datenabdeckung"]] },
-  { title: "Rechtliches", links: [["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"], ["/agb", "AGB"], ["/widerruf", "Widerruf"]] },
+  { title: "Rechtliches", links: LEGAL },
 ];
 
 /** Fußzeile auf allen Seiten: Marke, Linkgruppen, Hinweis auf die Originalquellen */
@@ -66,7 +69,7 @@ export function Footer() {
       <div className="mx-auto max-w-page border-t border-slate-100 py-2 text-[12px] text-slate-500">© {new Date().getFullYear()} {name}</div>
     </footer>
     <nav aria-label="Rechtliches" className="rm-legalbar flex flex-wrap items-center justify-center border-t border-slate-200 px-4 py-1 text-[12px] text-slate-500 sm:hidden print:hidden">
-      {[["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"], ["/agb", "AGB"], ["/widerruf", "Widerruf"], ["/kontakt", "Kontakt"]].map(([href, label]) => (
+      {[...LEGAL, ["/kontakt", "Kontakt"]].map(([href, label]) => (
         <Link key={href} href={href} className="inline-block min-h-[44px] min-w-[44px] px-2.5 text-center leading-[44px] text-slate-500 no-underline">{label}</Link>
       ))}
     </nav>

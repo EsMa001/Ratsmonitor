@@ -28,6 +28,12 @@ function fakeStripe(h){
   else if(method==='POST'&&path==='billing_portal/sessions')data={id:'bps_1',url:'https://billing.stripe.com/p/session/test_1'};
   else if(kind==='subscriptions'&&!id)data={object:'list',data:[...subs.values()],has_more:false};
   else if(kind==='subscriptions'&&method==='DELETE'&&subs.has(id))data=Object.assign(subs.get(id),{status:'canceled',ended_at:Math.floor(h.now()/1000)});
+  else if(kind==='subscriptions'&&method==='POST'&&subs.has(id)){
+   const b=new URLSearchParams(init.body||''),s=subs.get(id);
+   if(b.has('cancel_at_period_end'))Object.assign(s,{cancel_at_period_end:b.get('cancel_at_period_end')==='true',cancel_at:null});
+   if(b.has('cancel_at'))Object.assign(s,{cancel_at_period_end:false,cancel_at:Number(b.get('cancel_at'))});
+   data=s;
+  }
   else if(kind==='subscriptions')data=subs.get(id)??null;
   else if(kind==='invoices')data=invoices.get(id)??null;
   else if(kind==='charges')data=charges.get(id)??null;
@@ -90,7 +96,7 @@ test('Checkout, Meldung, Freischaltung, doppelte Meldung, Portal',async t=>{
  const {h,stripe,userId}=await prepare(t);
  const before=await h.call(me,{method:'GET'});
  assert.equal(before.body.tier,'basic');
- assert.deepEqual(before.body.billing,{test:true,customer:false,subscription:null});
+ assert.deepEqual(before.body.billing,{test:true,customer:false,mails:true,subscription:null});
 
  const started=await h.call(checkout,{path:'/api/billing/checkout'});
  assert.equal(started.status,200);
@@ -169,6 +175,73 @@ test('Folgerechnung verlängert, offene Rechnung nicht, Kündigung beendet zum A
  h.tick(5*DAY+1000);
  assert.equal(await tierAt(h,userId),'basic');
  assert.equal(grants(h).length,1,'eine Zeile je Abo');
+});
+
+test('Mail „Zahlung eingegangen“: erste Zahlung schaltet frei, Folgezahlung verlängert, je Meldung einmal',async t=>{
+ const {h,stripe,userId}=await prepare(t);
+ stripe.subs.set('sub_1',subscription(h,'sub_1',{userId}));
+ const invoice=(id,reason)=>({id,status:'paid',billing_reason:reason,amount_paid:299,currency:'eur',livemode:false,
+  hosted_invoice_url:'https://invoice.stripe.com/i/'+id,parent:{subscription_details:{subscription:'sub_1'}}});
+ stripe.invoices.set('in_1',invoice('in_1','subscription_create'));
+ await deliver(h,'invoice.paid',{id:'in_1'},{id:'evt_paid_1'});
+ await deliver(h,'invoice.paid',{id:'in_1'},{id:'evt_paid_1'});
+ let mails=h.mails('kunde@example.org').filter(m=>/Zahlung eingegangen/.test(m.subject));
+ assert.equal(mails.length,1,'doppelte Meldung, eine Mail');
+ assert.equal(mails[0].subject,'Zahlung eingegangen: Plus ist freigeschaltet');
+ assert.match(mails[0].text,/2,99 €/);assert.match(mails[0].text,/Testmodus/);assert.match(mails[0].text,/invoice\.stripe\.com\/i\/in_1/);
+ assert.match(mails[0].text,/Nächste Abrechnung am \d{2}\.\d{2}\.\d{4}/);
+
+ stripe.invoices.set('in_2',invoice('in_2','subscription_cycle'));
+ await deliver(h,'invoice.paid',{id:'in_2'});
+ mails=h.mails('kunde@example.org').filter(m=>/Zahlung eingegangen/.test(m.subject));
+ assert.equal(mails.at(-1).subject,'Zahlung eingegangen: Plus verlängert');
+ assert.equal(mails.length,2);
+
+ stripe.invoices.set('in_3',{...invoice('in_3','subscription_cycle'),amount_paid:0});
+ await deliver(h,'invoice.paid',{id:'in_3'});
+ assert.equal(h.mails('kunde@example.org').filter(m=>/Zahlung eingegangen/.test(m.subject)).length,2,'0 € verlängert ohne Mail');
+});
+
+test('Pflegejob: „Plus endet“ 3 Tage vorher bei Kündigung, offener Zahlung und Freischaltung von Hand, nicht bei laufendem Abo',async t=>{
+ const {maintain}=await import('../scripts/accounts/maintenance.mjs');
+ const {h,stripe}=await prepare(t);
+ const iso=ms=>new Date(ms).toISOString();
+ const user=(email,{status='active',days=2,cancel=null,source='stripe'}={})=>{
+  const id=h.addUser(email);
+  const end=h.now()+days*DAY;
+  if(source==='stripe'){
+   h.accounts.sql.prepare('INSERT INTO subscriptions(id,user_id,customer_id,status,period_end,cancel_at,updated_at) VALUES(?,?,?,?,?,?,?)')
+    .run('sub_'+id,id,'cus_'+id,status,iso(end),cancel===null?null:iso(h.now()+cancel*DAY),iso(h.now()));
+   h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at,ref) VALUES(?,'pro','stripe',?,?,?)").run(id,iso(h.now()-DAY),iso(end),'sub_'+id);
+  }else h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at) VALUES(?,'pro','manual',?,?)").run(id,iso(h.now()-DAY),iso(end));
+  return id;
+ };
+ user('gekuendigt@example.org',{days:5,cancel:2});
+ user('offen@example.org',{status:'past_due',days:2});
+ user('hand@example.org',{source:'manual',days:2});
+ user('laeuft@example.org',{days:2});
+ user('spaeter@example.org',{days:12,cancel:9});
+ const keeps=user('dauer@example.org',{days:5,cancel:2});
+ h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at) VALUES(?,'enterprise','manual',?)").run(keeps,iso(h.now()-DAY));
+ const quiet=user('still@example.org',{days:5,cancel:2});
+ h.accounts.sql.prepare('INSERT INTO user_settings(user_id,billing_mails,updated_at) VALUES(?,0,?)').run(quiet,iso(h.now()));
+
+ const report=await maintain(h.accounts.db,h.cfg,{now:h.now(),log:()=>{}});
+ assert.equal(report.plusEnding,4);
+ assert.equal(h.mails('still@example.org').length,0,'Zahlungsmails abbestellt');
+ assert.ok(h.accounts.sql.prepare('SELECT end_notice_at FROM plan_grants WHERE user_id=?').get(quiet).end_notice_at,'trotzdem vermerkt');
+ const ending=email=>h.mails(email).filter(m=>/Ihr Plus endet/.test(m.subject));
+ assert.match(ending('gekuendigt@example.org')[0].text,/Sie haben Plus gekündigt\. Plus endet am \d{2}\.\d{2}\.\d{4}/);
+ assert.match(ending('offen@example.org')[0].text,/Zahlung für Plus ist nicht eingegangen/);
+ assert.match(ending('hand@example.org')[0].text,/Ihr Zugang zu Plus endet am/);
+ for(const email of ['laeuft@example.org','spaeter@example.org','dauer@example.org'])assert.equal(ending(email).length,0,email);
+ assert.equal((await maintain(h.accounts.db,h.cfg,{now:h.now(),log:()=>{}})).plusEnding,0,'nur einmal');
+
+ /* Bezahlt die offene Zahlung doch noch, verlängert die Zeile und der Hinweis gilt wieder für das neue Ende */
+ const late=h.accounts.sql.prepare("SELECT id FROM users WHERE email='offen@example.org'").get().id;
+ stripe.subs.set('sub_'+late,{...subscription(h,'sub_'+late,{userId:late,customer:'cus_'+late,days:30}),id:'sub_'+late});
+ await deliver(h,'customer.subscription.updated',{id:'sub_'+late});
+ assert.equal(h.accounts.sql.prepare("SELECT end_notice_at FROM plan_grants WHERE ref=?").get('sub_'+late).end_notice_at,null);
 });
 
 test('Anfechtung beendet Abo und Freischaltung sofort',async t=>{
@@ -281,10 +354,102 @@ test('Kündigung über das Portal (cancel_at) und über cancel_at_period_end, R�
  assert.equal(await tierOf(h),'pro');
 });
 
-test('Zugangssperre lässt nur die Meldungen von Stripe ohne Sitzung durch',async()=>{
+test('Mails zur Bezahlung: abbestellbar per Link aus der Mail, Schalter im Konto, danach keine Mail mehr',async t=>{
+ const {unsubscribeRoute}=await import('../server/accounts/notify.mjs');
+ const {settingsWrite}=await import('../server/accounts/account.mjs');
+ const {render}=await import('../server/accounts/mail-templates.mjs');
+ const {h,stripe,userId}=await prepare(t);
+ stripe.subs.set('sub_1',subscription(h,'sub_1',{userId}));
+ const invoice=(id,reason)=>({id,status:'paid',billing_reason:reason,amount_paid:299,currency:'eur',livemode:false,parent:{subscription_details:{subscription:'sub_1'}}});
+ const paid=()=>h.mails('kunde@example.org').filter(m=>/Zahlung eingegangen/.test(m.subject)).length;
+ stripe.invoices.set('in_1',invoice('in_1','subscription_create'));
+ await deliver(h,'invoice.paid',{id:'in_1'});
+ const mail=h.lastMail('kunde@example.org');
+ assert.match(mail.text,/Mails zu Zahlungen und zum Ende von Plus abbestellen: \S+\/abbestellen#t=/);
+ const headers=render('plus_ending',{until:new Date(h.now()).toISOString(),reason:'canceled',token:'T'.repeat(43)},{site:'https://plenara.test'}).headers;
+ assert.equal(headers['List-Unsubscribe'],`<https://plenara.test/api/notify/unsubscribe?t=${'T'.repeat(43)}>`);
+ assert.equal(headers['List-Unsubscribe-Post'],'List-Unsubscribe=One-Click');
+
+ // Wie ein Mailprogramm: fremde Herkunft, ohne Cookie
+ const unsub=body=>h.call(unsubscribeRoute,{path:'/api/notify/unsubscribe',body,origin:'https://mail.example.net',cookies:new Map()});
+ const peek=await unsub({t:mail.token,peek:true});
+ assert.equal(peek.body.kind,'billing');
+ assert.equal((await h.call(me,{method:'GET'})).body.billing.mails,true,'ansehen ändert nichts');
+ assert.equal((await unsub({t:mail.token})).status,200);
+ assert.equal((await h.call(me,{method:'GET'})).body.billing.mails,false);
+ stripe.invoices.set('in_2',invoice('in_2','subscription_cycle'));
+ await deliver(h,'invoice.paid',{id:'in_2'});
+ assert.equal(paid(),1,'abbestellt: keine Mail');
+ assert.equal(grants(h).length,1,'die Zahlung zählt trotzdem');
+
+ await h.call(settingsWrite,{method:'PUT',body:{weekly:true}});
+ assert.equal((await h.call(me,{method:'GET'})).body.billing.mails,false,'andere Einstellungen lassen den Schalter');
+ await h.call(settingsWrite,{method:'PUT',body:{billingMails:true}});
+ assert.equal((await h.call(me,{method:'GET'})).body.billing.mails,true);
+ stripe.invoices.set('in_3',invoice('in_3','subscription_cycle'));
+ await deliver(h,'invoice.paid',{id:'in_3'});
+ assert.equal(paid(),2);
+});
+
+test('Kündigungsbutton (§ 312k BGB): ohne Anmeldung, gleiche Antwort für jede Adresse, Abo bei Stripe beendet, Nachweis und Bestätigung',async t=>{
+ const {cancelRoute}=await import('../server/accounts/cancel.mjs');
+ const {h,stripe,userId}=await prepare(t,{env:{...STRIPE_ENV,OPERATOR_EMAIL:'betrieb@example.org'}});
+ stripe.subs.set('sub_1',subscription(h,'sub_1',{userId}));
+ await deliver(h,'customer.subscription.updated',{id:'sub_1'});
+ const cancel=(body,opts={})=>h.call(cancelRoute,{path:'/api/billing/cancel',body,cookies:new Map(),...opts});
+ const posts=()=>stripe.calls.filter(c=>c.method==='POST'&&c.path==='subscriptions/sub_1');
+ const rows=()=>h.accounts.sql.prepare('SELECT * FROM cancellations ORDER BY id').all();
+
+ const known=await cancel({email:'Kunde@Example.org',kind:'ordinary',when:'next'});
+ const unknown=await cancel({email:'niemand@example.org',kind:'ordinary',when:'next'});
+ assert.equal(known.status,200);assert.equal(unknown.status,200);
+ assert.deepEqual(Object.keys(known.body).sort(),Object.keys(unknown.body).sort(),'kein Rückschluss auf ein Konto');
+ assert.equal(known.body.contract,'Plenara Plus');assert.equal(known.body.receivedAt,new Date(h.now()).toISOString());
+ assert.equal(posts().at(-1).body.get('cancel_at_period_end'),'true');
+ const [first,second]=rows();
+ assert.equal(first.user_id,userId);assert.equal(first.result,'canceled');assert.equal(first.subscription_id,'sub_1');assert.equal(first.kind,'ordinary');
+ assert.equal(second.user_id,null);assert.equal(second.result,'none');
+ assert.ok(rows().every(r=>!JSON.stringify(r).includes('@')),'keine Adresse im Nachweis');
+ const mail=h.lastMail('kunde@example.org');
+ assert.equal(mail.subject,'Ihre Kündigung bei Plenara ist eingegangen');
+ assert.match(mail.text,/Eingegangen am \d{2}\.\d{2}\.\d{4} um \d{2}:\d{2} Uhr/);
+ assert.match(mail.text,/Ihr Abo endet am \d{2}\.\d{2}\.\d{4}/);
+ assert.doesNotMatch(mail.text,/abbestellen/,'Bestätigung ist nicht abbestellbar');
+ assert.match(h.lastMail('niemand@example.org').text,/kein laufendes Plus-Abo/);
+ assert.ok((await h.call(me,{method:'GET'})).body.billing.subscription.cancelAt,'Abo als gekündigt übernommen');
+
+ h.tick(60000);
+ await cancel({email:'kunde@example.org',kind:'extraordinary',reason:'Dienst nicht erreichbar',when:'next'});
+ assert.equal(rows().at(-1).result,'review');assert.equal(rows().at(-1).reason,'Dienst nicht erreichbar');
+ assert.match(h.lastMail('kunde@example.org').text,/Grund: Dienst nicht erreichbar/);
+ assert.match(h.lastMail('betrieb@example.org').text,/Außerordentliche Kündigung eingegangen.*Grund: Dienst nicht erreichbar/s);
+
+ const later=new Date(h.now()+60*DAY).toISOString().slice(0,10);
+ await cancel({email:'kunde@example.org',kind:'ordinary',when:'date',date:later});
+ assert.equal(posts().at(-1).body.get('cancel_at'),String(Math.floor(Date.parse(later+'T23:59:59Z')/1000)));
+ assert.equal(posts().at(-1).body.get('proration_behavior'),'none');
+ assert.equal(rows().at(-1).wanted,later);
+ assert.match(h.lastMail('kunde@example.org').text,new RegExp(`Gewünschter Zeitpunkt: zum ${later.split('-').reverse().join('\\.')}`));
+
+ const count=h.mails('kunde@example.org').length;
+ assert.equal((await cancel({email:'kunde@example.org'},{ip:'198.51.100.9'})).status,200);
+ assert.equal(h.mails('kunde@example.org').length,count,'je Adresse höchstens 3 Bestätigungen am Tag');
+
+ const bad=body=>cancel(body,{ip:'192.0.2.50'});
+ assert.equal((await bad({email:'kein'})).body.field,'email');
+ assert.equal((await bad({email:'a@example.org',kind:'extraordinary'})).body.field,'reason');
+ assert.equal((await bad({email:'a@example.org',when:'date',date:'2020-01-01'})).body.field,'date');
+ assert.equal((await cancel({email:'a@example.org'},{origin:'https://fremd.example'})).status,403);
+ for(let i=0;i<5;i++)assert.equal((await cancel({email:`x${i}@example.org`},{ip:'192.0.2.1'})).status,200);
+ assert.equal((await cancel({email:'y@example.org'},{ip:'192.0.2.1'})).status,429);
+});
+
+test('Zugangssperre lässt nur die Meldungen von Stripe und den Kündigungsbutton ohne Sitzung durch',async()=>{
  const h=setup({extraEnv:STRIPE_ENV});
  const ask=path=>accessDecision(new Request('https://plenara.test'+path,{method:'POST'}),h.env,{cfg:h.cfg});
  assert.deepEqual(await ask('/api/billing/webhook'),{allow:true});
+ assert.deepEqual(await ask('/api/billing/cancel'),{allow:true});
+ assert.deepEqual(await accessDecision(new Request('https://plenara.test/kuendigen'),h.env,{cfg:h.cfg}),{allow:true});
  assert.deepEqual(await ask('/api/billing/checkout'),{status:401});
  assert.deepEqual(await ask('/api/billing/portal'),{status:401});
 });

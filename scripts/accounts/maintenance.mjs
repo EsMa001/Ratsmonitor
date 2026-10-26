@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Pflegejob der Kontendatei (requirements/konten-konzept.md, 12 und 13), nachts über den Zeitplaner (Job „accounts“):
- * Fristen anwenden, „Testzugang endet“ 14 Tage vorher, Hinweis bei langer Inaktivität, Überwachung des Postausgangs.
+ * Fristen anwenden, „Testzugang endet“ 14 Tage vorher, „Plus endet“ 3 Tage vorher (gekündigt, Zahlung offen, von Hand),
+ * Hinweis bei langer Inaktivität, Überwachung des Postausgangs.
  * Danach sichert deploy/node/accounts-backup.sh die Kontendatei verschlüsselt (deploy/node/accounts-job.sh).
  *   ACCOUNTS_FILE=… node scripts/accounts/maintenance.mjs [--dry-run]
  */
@@ -14,12 +15,14 @@ import {accountsConfig} from '../../server/accounts/config.mjs';
 import {sendMail,processOutbox,warnOperator} from '../../server/accounts/mail.mjs';
 import {removeUser} from '../../server/accounts/account.mjs';
 import {NOTIFY_RETENTION} from '../../server/accounts/notify.mjs';
-import {TIER_LABEL} from '../../shared/plans.mjs';
+import {TIER_LABEL,rank} from '../../shared/plans.mjs';
+import {pickGrant} from '../../server/accounts/sessions.mjs';
+import {sendBillingMail} from '../../server/accounts/billing.mjs';
 
 const DAY=86400000;
 /** Fristen (Platzhalter für Inaktivität und Sperre bis zur Entscheidung, konten-konzept.md Abschnitt 15) */
 export const RETENTION={tokensAfterExpiry:DAY,requests:DAY,flows:DAY,authEvents:90*DAY,mailOutbox:30*DAY,adminAudit:365*DAY,
- inactive:730*DAY,inactiveGrace:30*DAY,blocked:365*DAY,tierNotice:14*DAY,billingEvents:90*DAY};
+ inactive:730*DAY,inactiveGrace:30*DAY,blocked:365*DAY,tierNotice:14*DAY,plusNotice:3*DAY,billingEvents:90*DAY,cancellations:3*365*DAY};
 const iso=ms=>new Date(ms).toISOString();
 
 export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.log}={}){
@@ -38,6 +41,8 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
  await count('adminAudit','DELETE FROM admin_audit WHERE at<?',iso(now-RETENTION.adminAudit));
  // Meldungen von Stripe (server/accounts/billing.mjs): nur ID und Art, gegen doppelte Verarbeitung; Stripe stellt höchstens 3 Tage zu
  await count('billingEvents','DELETE FROM billing_events WHERE received_at<?',iso(now-RETENTION.billingEvents));
+ // Nachweise der Kündigungen (server/accounts/cancel.mjs): 3 Jahre (§ 195 BGB)
+ await count('cancellations','DELETE FROM cancellations WHERE received_at<?',iso(now-RETENTION.cancellations));
  // Benachrichtigungen (server/accounts/notify.mjs): Treffer nach 30 Tagen, verschickt, verfallen oder nie fällig geworden;
  // Abbestell-Tokens nach 180 Tagen (ältere Mails lassen sich dann nur noch im Konto abbestellen)
  await count('notifyItems','DELETE FROM notify_items WHERE created_at<?',iso(now-NOTIFY_RETENTION.items));
@@ -53,6 +58,31 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
  report.tierNotices=ending.length;
  if(!dryRun)for(const g of ending){
   await sendMail(db,cfg,{to:g.email,template:'tier_ending',data:{tier:TIER_LABEL[g.tier]||g.tier,until:g.ends_at},userId:g.user_id,quota:'account',now});
+  await db.prepare('UPDATE plan_grants SET end_notice_at=? WHERE id=?').bind(iso(now),g.id).run();
+ }
+ // Plus endet in höchstens 3 Tagen und wird nicht verlängert: Abo gekündigt (Ende = cancel_at) oder Zahlung offen (Stripe),
+ // Freischaltung von Hand mit Ende. Einmal je Zeile (end_notice_at; billing.mjs leert es, wenn eine Zahlung verlängert).
+ // Läuft das Abo normal weiter oder hält eine andere Zeile die Stufe, kommt nichts.
+ const soon=(await db.prepare(`SELECT g.id,g.user_id,g.tier,g.source,g.ends_at,u.email,s.status,s.cancel_at FROM plan_grants g
+   JOIN users u ON u.id=g.user_id LEFT JOIN subscriptions s ON g.source='stripe' AND s.id=g.ref
+   WHERE g.source IN ('stripe','manual') AND g.tier IN ('pro','enterprise') AND g.end_notice_at IS NULL AND g.ends_at IS NOT NULL
+   AND g.ends_at>? AND g.starts_at<=? AND u.status='active'`).bind(iso(now),iso(now)).all()).results||[];
+ report.plusEnding=0;
+ for(const g of soon){
+  let end=Date.parse(g.ends_at),reason='grant';
+  if(g.source==='stripe'){
+   if(g.cancel_at){reason='canceled';end=Math.min(end,Date.parse(g.cancel_at));}
+   else if(['past_due','unpaid','incomplete'].includes(g.status))reason='payment';
+   else continue;
+  }
+  if(end<=now||end>now+RETENTION.plusNotice)continue;
+  const others=(await db.prepare('SELECT tier,source,ends_at FROM plan_grants WHERE user_id=? AND id<>? AND starts_at<=? AND (ends_at IS NULL OR ends_at>?)')
+   .bind(g.user_id,g.id,iso(end+1000),iso(end+1000)).all()).results||[];
+  if(rank(pickGrant(others).tier)>=rank(g.tier))continue;
+  report.plusEnding++;
+  if(dryRun)continue;
+  // Abbestellbar wie alle Zahlungsmails (billing.mjs); markiert wird auch ohne Mail, damit nichts nachkommt
+  await sendBillingMail(db,cfg,{userId:g.user_id,template:'plus_ending',data:{until:iso(end),reason},now});
   await db.prepare('UPDATE plan_grants SET end_notice_at=? WHERE id=?').bind(iso(now),g.id).run();
  }
  // Gesperrte Konten: nach der Frist löschen

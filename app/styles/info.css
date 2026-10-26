@@ -768,6 +768,11 @@ select.ri-input {
   transform: translateX(2px);
 }
 
+/* Knopf, dessen Beschriftung genau vorgegeben ist („jetzt kündigen“, § 312k BGB): ohne Pfeil */
+.ri-btn--dark.ri-btn--bare::after {
+  content: none;
+}
+
 .ratsmonitor footer {
   border-top: 0;
 }

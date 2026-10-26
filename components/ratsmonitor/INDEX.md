@@ -16,7 +16,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/styles/dark.css (436 Zeilen, ⚠3)
 - app/styles/glass.css (180 Zeilen)
 - app/styles/header.css (411 Zeilen)
-- app/styles/info.css (1261 Zeilen)
+- app/styles/info.css (1266 Zeilen)
 - app/styles/print.css (61 Zeilen)
 - app/styles/search.css (317 Zeilen)
 - app/styles/tokens.css (311 Zeilen, ⚠1)
@@ -279,17 +279,17 @@ font-bold base.css:11
 font-medium base.css:19
 font-semibold base.css:15
 gap-10 analytics.css:1084
-gap-10 info.css:894
+gap-10 info.css:899
 gap-6 analytics.css:1090
 gap-8 analytics.css:1087
 gap-y-12 analytics.css:1075
-gap-y-12 info.css:874
+gap-y-12 info.css:879
 gap-y-6 analytics.css:1081
 gap-y-8 analytics.css:1078
-gap-y-8 info.css:877
+gap-y-8 info.css:882
 grid analytics.css:506
 group dark.css:149
-h-16 info.css:927
+h-16 info.css:932
 heading-m design-styles.css:44
 hidden analytics.css:282
 icon design-styles.css:22
@@ -326,7 +326,7 @@ left-3 analytics.css:516
 legend design-styles.css:251
 link-btn base-layer.css:50
 map-canvas analyse-admin.css:33
-mb-6 info.css:900
+mb-6 info.css:905
 mb-8 analytics.css:1051
 min-w-0 analytics.css:157
 min-w-0 dark.css:341
@@ -334,13 +334,13 @@ monthly-mix analyse-admin.css:23
 mt-10 analytics.css:1060
 mt-12 analytics.css:1057
 mt-16 analytics.css:1054
-mt-3 info.css:912
+mt-3 info.css:917
 mt-4 analytics.css:1072
-mt-4 info.css:909
+mt-4 info.css:914
 mt-5 analytics.css:1069
-mt-5 info.css:883
+mt-5 info.css:888
 mt-6 analytics.css:1066
-mt-6 info.css:903
+mt-6 info.css:908
 mt-8 analytics.css:1063
 needs-attention admin.css:6
 notice design-styles.css:245
@@ -351,35 +351,35 @@ page-note base-layer.css:89
 page-note dark.css:201
 pb-10 analytics.css:1048
 pl-band analytics.css:267
-pl-cta info.css:844
-pl-ctawrap info.css:1113
-pl-cut3 info.css:1160
+pl-cta info.css:849
+pl-ctawrap info.css:1118
+pl-cut3 info.css:1165
 pl-footer-accent dark.css:111
-pl-footer-accent info.css:821
-pl-grid info.css:1018
-pl-h1 info.css:1027
-pl-h2 info.css:994
-pl-hero info.css:982
-pl-left info.css:1024
-pl-mapcol info.css:1072
-pl-mapwrap info.css:1075
-pl-num info.css:990
-pl-opt info.css:1146
-pl-ort info.css:1105
+pl-footer-accent info.css:826
+pl-grid info.css:1023
+pl-h1 info.css:1032
+pl-h2 info.css:999
+pl-hero info.css:987
+pl-left info.css:1029
+pl-mapcol info.css:1077
+pl-mapwrap info.css:1080
+pl-num info.css:995
+pl-opt info.css:1151
+pl-ort info.css:1110
 pl-ort search.css:302
-pl-ping info.css:969
-pl-plus--inline info.css:1009
-pl-plus--map info.css:1130
-pl-pop info.css:965
-pl-pulse info.css:1136
+pl-ping info.css:974
+pl-plus--inline info.css:1014
+pl-plus--map info.css:1135
+pl-pop info.css:970
+pl-pulse info.css:1141
 pl-search search.css:297
-pl-slogan info.css:986
-pl-source info.css:1049
-pl-stand info.css:1049
-pl-still info.css:1093
+pl-slogan info.css:991
+pl-source info.css:1054
+pl-stand info.css:1054
+pl-still info.css:1098
 pl-top analytics.css:1162
-pl-tp info.css:955
-pl-trends info.css:1056
+pl-tp info.css:960
+pl-trends info.css:1061
 popover base-layer.css:76
 process design-styles.css:119
 process__bar design-styles.css:121
@@ -390,9 +390,9 @@ prose analyse-admin.css:8
 prose design-styles.css:201
 prose base-layer.css:86
 py-10 analytics.css:1099
-py-2 info.css:919
-py-3 info.css:915
-py-6 info.css:923
+py-2 info.css:924
+py-3 info.css:920
+py-6 info.css:928
 ratsmonitor base-layer.css:3
 ratsmonitor base.css:3
 ratsmonitor dark.css:63
@@ -411,10 +411,10 @@ ri-actions analytics.css:1205
 ri-actions info.css:76
 ri-actions--far info.css:83
 ri-anw analytics.css:1149
-ri-anw info.css:854
-ri-below info.css:1163
-ri-below__h info.css:1166
-ri-below__lead info.css:1174
+ri-anw info.css:859
+ri-below info.css:1168
+ri-below__h info.css:1171
+ri-below__lead info.css:1179
 ri-bid analytics.css:1196
 ri-bid info.css:87
 ri-bid__icon analytics.css:1196
@@ -425,6 +425,7 @@ ri-bid__name analytics.css:1289
 ri-bid__name dark.css:73
 ri-bid__name info.css:109
 ri-btn info.css:20
+ri-btn--bare info.css:772
 ri-btn--block info.css:71
 ri-btn--dark dark.css:161
 ri-btn--dark info.css:39
@@ -455,7 +456,7 @@ ri-h1--sm info.css:126
 ri-h2 dark.css:73
 ri-h2 info.css:155
 ri-h2--gap info.css:453
-ri-h2--live info.css:1226
+ri-h2--live info.css:1231
 ri-h2--md info.css:164
 ri-head analytics.css:1014
 ri-head dark.css:197
@@ -465,7 +466,7 @@ ri-head__grid--top analytics.css:1026
 ri-help info.css:564
 ri-input info.css:525
 ri-konto analytics.css:1152
-ri-konto info.css:890
+ri-konto info.css:895
 ri-lead analytics.css:1190
 ri-lead info.css:131
 ri-link info.css:595
@@ -500,7 +501,7 @@ ri-qa__sign--plus info.css:424
 ri-sec info.css:140
 ri-sec--faq info.css:150
 ri-sec--prices info.css:448
-ri-sec--snug info.css:1219
+ri-sec--snug info.css:1224
 ri-sec--tight info.css:145
 ri-sub info.css:168
 ri-submit info.css:605
@@ -513,7 +514,7 @@ ri-tl__step info.css:196
 ri-tl__step--out info.css:210
 ri-tl__title dark.css:73
 ri-tl__title info.css:229
-ri-toc info.css:1183
+ri-toc info.css:1188
 ri-toc print.css:57
 ri-topnav header.css:248
 right-3 analytics.css:185
@@ -534,7 +535,7 @@ rm-dark analytics.css:1106
 rm-dark dark.css:2
 rm-dark glass.css:144
 rm-dark header.css:316
-rm-dark info.css:834
+rm-dark info.css:839
 rm-dark tokens.css:170
 rm-deskbar analytics.css:373
 rm-dialog base.css:305
@@ -628,7 +629,7 @@ rm-wheel-list dark.css:406
 rm-wheel-list glass.css:144
 rm-wheels-lower analytics.css:1329
 rm-xbtn analytics.css:935
-rm-xcta info.css:1240
+rm-xcta info.css:1245
 rm-xebene analytics.css:92
 rm-xebene dark.css:337
 rm-xfield analytics.css:935
@@ -682,7 +683,7 @@ share-button design-styles.css:82
 skip-link analyse-admin.css:6
 skip-link print.css:16
 space-y-6 analytics.css:1096
-space-y-6 info.css:880
+space-y-6 info.css:885
 space-y-8 analytics.css:1093
 steps design-styles.css:114
 steps__bar design-styles.css:115
@@ -756,6 +757,9 @@ z- analytics.css:632
 
 ### app/(monitor)/konto/[[...section]]/
 - page.tsx (6, ⚠1): metadata, Page
+
+### app/(monitor)/kuendigen/
+- page.tsx (4): metadata, Page
 
 ### app/(monitor)/
 - layout.tsx (11): MonitorLayout
@@ -878,11 +882,11 @@ z- analytics.css:632
 - FilterPanel.tsx (137, ⚠2): FilterPanel
 - FilterSelect.tsx (124, ⚠1): FilterSelect
 - FollowButton.tsx (36): FollowButton
-- Footer.tsx (76): Footer
+- Footer.tsx (79): LEGAL, Footer
 - GateDialog.tsx (164): GateFeature, openGate, openLimitGate, GateDialog
 - Header.tsx (128, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
-- PlanCards.tsx (235, ⚠1): PlanCards, PlanSummary
+- PlanCards.tsx (263, ⚠1): PlanCards, PlanSummary
 - PlusHint.tsx (66, ⚠1): PlusHint
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
@@ -911,7 +915,7 @@ z- analytics.css:632
 - suggestRows.ts (214): Row, takePickedText, RowContext, buildRows
 
 ### components/ratsmonitor/info/
-- AccountPages.tsx (759): LoginPage, ConfirmLoginPage, UnsubscribePage, RegisterPage, KontaktPage
+- AccountPages.tsx (769): LoginPage, ConfirmLoginPage, UnsubscribePage, RegisterPage, KontaktPage
 - AgbPage.tsx (181, ⚠15): AgbPage
 - AnwenderLive.tsx (173, ⚠2): AnwenderLivePage
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
@@ -919,7 +923,8 @@ z- analytics.css:632
 - BranchenPages.tsx (121): BranchePage
 - ConnectPage.tsx (142): ConnectPage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (49): InfoPages
+- InfoPages.tsx (51): InfoPages
+- KuendigenPage.tsx (212, ⚠1): KuendigenPage
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (91): PreisePage
@@ -938,7 +943,7 @@ z- analytics.css:632
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
 ### components/ratsmonitor/lib/
-- account.ts (308): Me, getMe, AccountApiError, api, touchAccount, reloadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
+- account.ts (309): Me, getMe, AccountApiError, api, touchAccount, reloadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
 - bandFigure.ts (32, ⚠1): publishBandFigure, useBandFigure, useCountUp
 - betreiber.ts (20): BETREIBER, betreiberAdresse
 - booking.ts (17): BOOK_PATH, bookHref, usePlusLink
@@ -968,7 +973,7 @@ z- analytics.css:632
 - mapSlot.ts (18): setMapSlot, clearMapSlot, useMapSlot
 - methodikHost.ts (8): setMethodikHost, useMethodikHost
 - otherTab.ts (11): onOtherTab
-- pageTitle.ts (42): tabTitle
+- pageTitle.ts (43): tabTitle
 - place.ts (287, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, removePhrase
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
@@ -1002,7 +1007,7 @@ z- analytics.css:632
 ### components/ratsmonitor/menu/
 - MainMenu.tsx (295, ⚠1): ANWENDER, XEintrag, ANALYSE, EINBLICKE, HINTERGRUENDE, INFO, MainMenu
 - MeinSheet.tsx (29): MeinSheet
-- MoreSheet.tsx (33, ⚠1): MoreSheet
+- MoreSheet.tsx (41, ⚠1): MoreSheet
 - SegTiles.tsx (25): Segmented, Tile
 - Sheet.tsx (97, ⚠1): Sheet
 - XSwitcher.tsx (34): XSheet

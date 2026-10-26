@@ -7,6 +7,8 @@ import {AccountError,respond,requireSameOrigin,readText} from './http.mjs';
 import {readSession,rolesOf} from './sessions.mjs';
 import {siteBase} from './config.mjs';
 import {limited} from './rate-limit.mjs';
+import {sendMail,processOutbox} from './mail.mjs';
+import {randomToken,sha256hex} from './crypto.mjs';
 
 const API='https://api.stripe.com/v1/';
 /** Feste API-Fassung aller Abrufe. Von einer Meldung zählen nur ID und Art; das Abo wird in dieser Fassung neu abgerufen. */
@@ -84,10 +86,10 @@ const RUNNING_SQL=`status IN (${RUNNING.map(s=>`'${s}'`).join(',')})`;
 /** Laufendes Abo eines Kontos (auch gekündigt zum Periodenende) oder null */
 export const runningSubscription=(db,userId)=>
  db.prepare(`SELECT id,status,period_end,cancel_at FROM subscriptions WHERE user_id=? AND ${RUNNING_SQL} ORDER BY updated_at DESC LIMIT 1`).bind(userId).first();
-/** Für /api/me: Stand des Abos, ob es einen Stripe-Kunden gibt (Portal) und ob Testmodus */
+/** Für /api/me: Stand des Abos, ob es einen Stripe-Kunden gibt (Portal), ob Testmodus und ob Zahlungsmails an sind */
 export async function billingState(db,userId,cfg){
  const sub=await db.prepare(`SELECT status,period_end,cancel_at FROM subscriptions WHERE user_id=? ORDER BY ${RUNNING_SQL} DESC,updated_at DESC LIMIT 1`).bind(userId).first();
- return {test:!cfg.billing.live,customer:!!(await customerOf(db,userId)),
+ return {test:!cfg.billing.live,customer:!!(await customerOf(db,userId)),mails:await billingMailsOn(db,userId),
   subscription:sub?{status:sub.status,periodEnd:sub.period_end,cancelAt:sub.cancel_at}:null};
 }
 async function linkCustomer(ctx,userId,customerId,livemode){
@@ -131,7 +133,8 @@ export async function syncSubscription(ctx,sub){
  if(['active','trialing'].includes(sub.status)&&periodEnd&&latestPaid(sub)){
   const ends=iso(periodEnd+GRACE_MS);
   statements.push(grant
-   ?db.prepare('UPDATE plan_grants SET user_id=?,ends_at=? WHERE id=?').bind(userId,ends,grant.id)
+   // Verlängert: ein früherer Hinweis „Plus endet bald“ gilt nicht mehr (scripts/accounts/maintenance.mjs)
+   ?db.prepare('UPDATE plan_grants SET user_id=?,end_notice_at=CASE WHEN ?>ends_at THEN NULL ELSE end_notice_at END,ends_at=? WHERE id=?').bind(userId,ends,ends,grant.id)
    :db.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at,ref,note,created_by) VALUES(?,?,'stripe',?,?,?,'Stripe-Abo','stripe')")
     .bind(userId,TIER,iso(now),ends,sub.id));
  }else if(ENDED.includes(sub.status)&&grant){
@@ -139,7 +142,36 @@ export async function syncSubscription(ctx,sub){
   if(grant.ends_at===null||Date.parse(grant.ends_at)>end)statements.push(db.prepare('UPDATE plan_grants SET ends_at=? WHERE id=?').bind(iso(end),grant.id));
  }
  await db.batch(statements);
- return {userId,status:sub.status};
+ return {userId,status:sub.status,periodEnd};
+}
+const euro=(cents,currency)=>`${(Number(cents||0)/100).toFixed(2).replace('.',',')} ${String(currency||'eur').toLowerCase()==='eur'?'€':String(currency).toUpperCase()}`;
+/**
+ * Mail „Zahlung eingegangen“ zu einer bezahlten Rechnung (einmal je Meldung, billing_events): die erste Rechnung des Abos
+ * schaltet Plus frei, jede weitere verlängert. Verschickt wird über den Postausgang gleich nach der Antwort (webhook, later).
+ */
+async function paidMail(ctx,{userId,periodEnd},invoice){
+ const first=invoice.billing_reason==='subscription_create';
+ if(!first&&!(invoice.amount_paid>0))return false;
+ return sendBillingMail(ctx.db,ctx.cfg,{userId,template:'plus_paid',now:ctx.now,data:{first,amount:euro(invoice.amount_paid,invoice.currency),
+  until:periodEnd?iso(periodEnd):null,receipt:typeof invoice.hosted_invoice_url==='string'?invoice.hosted_invoice_url:null,test:!invoice.livemode}});
+}
+/** Zahlungsmails an (user_settings.billing_mails, ohne Zeile an) */
+export async function billingMailsOn(db,userId){
+ const row=await db.prepare('SELECT billing_mails FROM user_settings WHERE user_id=?').bind(userId).first();
+ return !row||!!row.billing_mails;
+}
+/**
+ * Mail zu Zahlung oder Ende von Plus (plus_paid, plus_ending): nur wenn nicht abbestellt; mit Abbestell-Token (Bezug 'b' in
+ * notify_tokens, Seite /abbestellen und Ein-Klick nach RFC 8058 wie die Benachrichtigungen). Die Kündigungsbestätigung
+ * (cancel.mjs) geht immer und ohne Token. Gibt zurück, ob eine Mail eingereiht wurde.
+ */
+export async function sendBillingMail(db,cfg,{userId,template,data,now=Date.now()}){
+ const user=await db.prepare("SELECT email FROM users WHERE id=? AND status='active'").bind(userId).first();
+ if(!user?.email||!(await billingMailsOn(db,userId)))return false;
+ const token=randomToken();
+ const mail=await sendMail(db,cfg,{to:user.email,template,userId,quota:'account',now,data:{...data,token},
+  extra:[db.prepare("INSERT INTO notify_tokens(id,user_id,ref,created_at) VALUES(?,?,'b',?)").bind(await sha256hex(token),userId,iso(now))]});
+ return !!mail.queued;
 }
 /** Anfechtung oder Rücklastschrift: laufende Abos des Kunden sofort beenden, die Freischaltung endet jetzt */
 async function disputed(ctx,dispute){
@@ -163,8 +195,9 @@ export async function handleEvent(ctx,event){
   case 'invoice.payment_failed':{
    const invoice=await stripeApi(ctx.cfg,'GET','invoices/'+encodeURIComponent(object.id));
    const id=idOf(invoice.parent?.subscription_details?.subscription??invoice.subscription);
-   if(id)await syncSubscription(ctx,await fetchSubscription(ctx,id));
-   return;
+   if(!id)return;
+   const synced=await syncSubscription(ctx,await fetchSubscription(ctx,id));
+   return {mailed:event.type==='invoice.paid'&&!!synced.userId&&await paidMail(ctx,synced,invoice)};
   }
   case 'charge.dispute.created':
    return disputed(ctx,object);
@@ -241,11 +274,14 @@ export async function webhook(ctx){
  const seen=await db.prepare('SELECT done_at FROM billing_events WHERE id=?').bind(event.id).first();
  if(seen?.done_at)return {response:respond({received:true,duplicate:true})};
  if(!seen)await db.prepare('INSERT INTO billing_events(id,type,received_at) VALUES(?,?,?) ON CONFLICT(id) DO NOTHING').bind(event.id,event.type,iso(now)).run();
- try{await handleEvent(ctx,event);}
+ let result;
+ try{result=await handleEvent(ctx,event);}
  catch(error){
   await db.prepare('UPDATE billing_events SET error=? WHERE id=?').bind(String(error?.message||error).slice(0,300),event.id).run();
   throw error;
  }
  await db.prepare('UPDATE billing_events SET done_at=?,error=NULL WHERE id=?').bind(iso(now),event.id).run();
- return {response:respond({received:true})};
+ // Eingereihte Mail („Zahlung eingegangen“) gleich nach der Antwort verschicken, nicht erst mit dem nächsten Lauf
+ const site=siteBase(ctx.cfg,ctx.request);
+ return {response:respond({received:true}),later:result?.mailed&&site?[()=>processOutbox(db,ctx.cfg,{site,now})]:[]};
 }

@@ -233,6 +233,7 @@ export async function unsubscribeInfo(db,token){
  const row=await tokenRow(db,token);
  if(row.ref==='*')return {kind:'all',title:''};
  if(row.ref==='c')return {kind:'calendar',title:''};
+ if(row.ref==='b')return {kind:'billing',title:''};
  if(row.ref.startsWith('s:')){const s=await db.prepare('SELECT name FROM saved_searches WHERE user_id=? AND id=?').bind(row.user_id,row.ref.slice(2)).first();return {kind:'search',title:s?.name??''};}
  const a=await db.prepare('SELECT snapshot FROM saved_articles WHERE user_id=? AND topic_id=?').bind(row.user_id,row.ref.slice(2)).first();
  return {kind:'article',title:parse(a?.snapshot,{}).title||''};
@@ -251,6 +252,9 @@ export async function unsubscribe(db,token,{now=Date.now()}={}){
    db.prepare('UPDATE notify_items SET dropped=1 WHERE user_id=? AND mail_id IS NULL').bind(uid));
  }else if(row.ref==='c'){
   statements.push(db.prepare('UPDATE user_settings SET calendar_mail=0,calendar_since=NULL,updated_at=? WHERE user_id=?').bind(at,uid));
+ }else if(row.ref==='b'){
+  // Mails zu Zahlungen und zum Ende von Plus (billing.mjs); das Konto hat nicht unbedingt schon eine Zeile
+  statements.push(db.prepare('INSERT INTO user_settings(user_id,billing_mails,updated_at) VALUES(?,0,?) ON CONFLICT(user_id) DO UPDATE SET billing_mails=0,updated_at=excluded.updated_at').bind(uid,at));
  }else if(row.ref.startsWith('s:')){
   // Eine Suche ohne eigene Glocke kam über den Wochenbericht: dann endet der Wochenbericht (sonst käme sie wieder)
   const s=await db.prepare('SELECT notify_mail FROM saved_searches WHERE user_id=? AND id=?').bind(uid,row.ref.slice(2)).first();
@@ -260,7 +264,7 @@ export async function unsubscribe(db,token,{now=Date.now()}={}){
  if(row.ref!=='*')statements.push(db.prepare('UPDATE notify_items SET dropped=1 WHERE user_id=? AND ref=? AND mail_id IS NULL').bind(uid,row.ref));
  statements.push(db.prepare("INSERT INTO auth_events(at,user_id,kind,detail) VALUES(?,?,'unsubscribe',?)").bind(at,uid,JSON.stringify({ref:row.ref==='*'?'*':row.ref.slice(0,2)})));
  await db.batch(statements);
- return {ok:true,kind:row.ref==='*'?'all':row.ref==='c'?'calendar':row.ref.startsWith('s:')?'search':'article'};
+ return {ok:true,kind:row.ref==='*'?'all':row.ref==='c'?'calendar':row.ref==='b'?'billing':row.ref.startsWith('s:')?'search':'article'};
 }
 /**
  * POST /api/notify/unsubscribe, ohne Sitzung und ohne gleiche Herkunft (das Token ist die Berechtigung):
