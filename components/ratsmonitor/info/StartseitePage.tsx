@@ -423,7 +423,7 @@ export function StartseitePage() {
   return (
     <>
       <section className="ri-sec pl-hero">
-        <div className="pl-grid relative mx-auto grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-start gap-12">
+        <div className="pl-grid mx-auto grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-start gap-12">
           <div className="pl-left pt-10">
             <h1 className="pl-h1 text-[clamp(28px,8vw,44px)] font-[600] leading-[1.08] tracking-[-0.02em] text-[var(--rm-c900)]">
               Deutschlands Kommunalpolitik<br /> <span className="text-[var(--rm-ac)]">in Echtzeit.</span>
@@ -497,10 +497,12 @@ export function StartseitePage() {
             </p>
             <PlusHint placement="inline" />
           </div>
-          <div className="pl-mapwrap -mt-[50px] ml-14 w-[calc(100%-3.5rem)] max-w-[min(679px,max(362px,calc((100vh_-_230px)_/_1.149)))] justify-self-start">
-            <GermanyMap pops={pops} onPick={(n) => openSearch(n)} />
+          <div className="pl-mapcol relative -mt-[50px]">
+            <div className="pl-mapwrap ml-14 w-[calc(100%-3.5rem)] max-w-[min(679px,max(362px,calc((100vh_-_230px)_/_1.149)))]">
+              <GermanyMap pops={pops} onPick={(n) => openSearch(n)} />
+            </div>
+            <PlusHint placement="map" />
           </div>
-          <PlusHint placement="map" />
         </div>
       </section>
 

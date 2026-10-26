@@ -19,7 +19,7 @@ const closedNow = () => {
 /**
  * Hinweis auf Plus für die Startseite: nur für Gäste und kostenlose Konten, erst wenn /api/me geantwortet hat (Plus-Nutzer
  * sehen ihn nie, auch nicht kurz). Vorteile nach docs/produkt/vorteile.json (Rang 3, 7/8, 11), dazu die eigene Treffergrenze.
- * placement "map": Overlay unten rechts im Kopf der Startseite, am rechten Rand über der Karte (Desktop, Milchglas, mit ×); "inline": unter dem Startknopf (Handy).
+ * placement "map": Overlay unten an der Karte, am rechten Rand der Kartenspalte (`.pl-mapcol`) (Desktop, Milchglas, mit ×); "inline": unter dem Startknopf (Handy).
  * Welche Fassung zu sehen ist, entscheidet info.css (`.pl-plus--map` / `.pl-plus--inline`).
  */
 export function PlusHint({ placement }: { placement: "map" | "inline" }) {
