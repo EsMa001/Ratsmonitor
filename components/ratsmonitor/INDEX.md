@@ -816,16 +816,16 @@ z- analytics.css:632
 - admin-catch-up.tsx (10): RegionCatchUp
 - admin-chrome.tsx (144, ⚠1): AdminPage, AdminEntry, ADMIN_GROUPS, START_PAGE, ADMIN_PAGES, VISIBLE_PAGES, groupOf, adminHref, AdminBar, AdminFrame
 - admin-cockpit.tsx (104): AdminCockpit
-- admin-colors.ts (24): AC, HATCH_CSS, COVERAGE, shareColor, bucketColor, ACCESS_COLOR, CATEGORY_COLOR
-- admin-dashboard.tsx (111, ⚠6): AdminRuns, AdminReview, AdminStock
+- admin-colors.ts (26): AC, HATCH_CSS, COVERAGE, shareColor, bucketColor, ACCESS_COLOR, CATEGORY_COLOR
+- admin-dashboard.tsx (111, ⚠7): AdminRuns, AdminReview, AdminStock
 - admin-debug.tsx (144, ⚠9): AdminDebug
-- admin-estimate.tsx (350, ⚠56): AdminEstimate
+- admin-estimate.tsx (350, ⚠57): AdminEstimate
 - admin-fehler.tsx (100, ⚠4): AdminFehler, FehlerSteuern
 - admin-format.ts (25): n, nOr, pct, mio, gb, size, day, mm, when, clock, dur
 - admin-icons.tsx (41): IconName, Icon
 - admin-loader.tsx (39): DashboardPage, AdminLoader
 - admin-mobile.tsx (45, ⚠2): AdminMobile
-- admin-overview.tsx (169, ⚠14): AdminOverview
+- admin-overview.tsx (174, ⚠14): AdminOverview
 - admin-pdf-parts.tsx (161, ⚠10): month, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
 - admin-pdf.tsx (280, ⚠17): AdminPdf, PdfSteuern
 - admin-pipeline-parts.tsx (109, ⚠3): Step, FailRow, Glossary, StepList, result, Timeline, FailureTable, HostTable, ProviderTable
@@ -841,7 +841,7 @@ z- analytics.css:632
 - admin-stand.tsx (28): standText, StandLine
 - admin-storage.tsx (143, ⚠9): AdminStorage, SpeicherSteuern
 - admin-store.ts (98): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (384, ⚠5): href, Todo, Help, PAGE_HEAD, FOOT, ZUSTAND, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, STATE_HELP, ATLAS_TODO, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, PROTOKOLL, TITLES, HOCHRECHNUNG
+- admin-texts.ts (385, ⚠6): href, Todo, Help, PAGE_HEAD, FOOT, ZUSTAND, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, STATE_HELP, ATLAS_TODO, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, PROTOKOLL, TITLES, HOCHRECHNUNG
 - admin-timeline.tsx (87, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-totp.tsx (62): AdminTotp, AdminTotpSetup
@@ -919,9 +919,9 @@ z- analytics.css:632
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (88): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
-- StartseitePage.tsx (508, ⚠1): StartseitePage
+- StartseitePage.tsx (510, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
-- TodoPage.tsx (267, ⚠24): TodoPage
+- TodoPage.tsx (267, ⚠25): TodoPage
 - VideosPage.tsx (172): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - XAuszug.tsx (220, ⚠2): XAuszug

@@ -1111,6 +1111,12 @@ html.rm-dark .ri-bid__label {
     min-height: 44px;
     padding: 0 20px;
   }
+
+  /* Hinweis auf Plus (PlusHint) unter dem Startknopf, nicht über der Überschrift */
+  .pl-plus {
+    order: 10;
+    margin: 24px 0 0;
+  }
 }
 
 .pl-pulse {

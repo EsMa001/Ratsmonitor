@@ -5,6 +5,7 @@ import { Ladefehler, useOpenSearch } from "./blocks";
 import { todayLocal } from "../lib/text";
 import { useMe } from "../lib/account";
 import { usePhone } from "../lib/usePhone";
+import { PlusHint } from "../components/PlusHint";
 import topicList from "./startseite-topics.json";
 
 /* Startseite (noch nicht die Landingpage).
@@ -494,6 +495,7 @@ export function StartseitePage() {
             <p className="pl-source max-w-[460px] text-[14px] leading-normal text-[var(--rm-c500)]" style={{ margin: "14px 0 0" }}>
               {`Aus den öffentlichen Ratsinformationssystemen${cov ? ` von ${nf.format(cov.length)} Kommunen und Gebieten` : " der Kommunen"}${allTotal !== null ? `: insgesamt ${nf.format(allTotal)} Berichte aus Räten und Ausschüssen` : ""}.`}
             </p>
+            <PlusHint />
           </div>
           <div className="pl-mapwrap -mt-[50px] ml-14 w-[calc(100%-3.5rem)] max-w-[min(679px,max(362px,calc((100vh_-_230px)_/_1.149)))] justify-self-start">
             <GermanyMap pops={pops} onPick={(n) => openSearch(n)} />
