@@ -9,7 +9,7 @@ Entscheidung 23.10.2026: sehr niedriger Preis, schnell wachsen ohne Vertrieb und
 - **Plus** (pro, 2,99 € im Monat, monatlich kündbar, kein kostenloser Test): alles, auch plenara.X und der Kalender.
 - **Enterprise**: noch nicht im Angebot, kommt vielleicht mit KI, Team-Funktionen, Schnittstelle. Im Code bleibt die Stufe (Rechte wie Plus, dazu 5 E-Mail-Empfänger), die Preisseite zeigt sie nicht.
 - Die Preisseite zeigt Konto und Plus als Karten, „ohne Anmeldung“ als Satz darüber.
-- Bezahlung ist noch nicht angebunden; Plus schaltet der Admin in der Testphase auf Anfrage frei.
+- Bezahlung über Stripe, derzeit im Testmodus (seit 26.10.2026, `docs/betrieb/stripe-test.md`): Alle Plus-Knöpfe führen zur Buchung (`/konto/buchen`); ohne Anmeldung erst anmelden oder kostenlos registrieren, danach weiter zur Bezahlseite. Ohne eingerichtete Bezahlung bleibt es bei der Anfrage über den Kontakt.
 
 | Funktion | Gast | Konto | Plus | Enterprise (später) |
 |---|---|---|---|---|

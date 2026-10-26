@@ -42,7 +42,7 @@ export function priceLabel(t: Tier): string {
   return p === null || p === undefined ? "Preis folgt" : typeof p === "number" ? `${p.toLocaleString("de-DE", { minimumFractionDigits: 2 })} € / Monat` : p;
 }
 /** Text der Upgrade-Knöpfe, solange es keine Bezahlung gibt (verweist auf /kontakt) */
-export const UPGRADE_TEXT = "In der Testphase auf Anfrage";
+export const UPGRADE_TEXT = "Jetzt anfragen";
 
 /** Dev-Umschalter und Dev-Abkürzungen nur in der Entwicklung anzeigen */
 export const IS_DEV = process.env.NODE_ENV !== "production";

@@ -276,11 +276,13 @@ export async function accountState(ctx,session){
 const senderOf=from=>String(from||'').match(/<([^>]+)>/)?.[1]||(/^[^\s<>]+@[^\s<>]+$/.test(String(from||''))?String(from):null);
 export async function me(ctx){
  const session=await currentSession(ctx);
- // login: welche Wege die Anmeldeseite anbietet (Link und Code per Mail, E-Mail-Adresse und Code aus der App)
- const common={accounts:true,access:ctx.cfg.access??'open',sender:senderOf(ctx.cfg.mail.from),login:{mail:mailLogin(ctx.cfg),totp:!!ctx.cfg.totpLogin}};
- if(!session)return {response:respond({...common,tier:'guest',features:FEATURES.guest,limits:limitsJson('guest')})};
+ // login: welche Wege die Anmeldeseite anbietet (Link und Code per Mail, E-Mail-Adresse und Code aus der App);
+ // signup: neue Adressen bekommen ohne Einladung ein Konto; checkout: Plus lässt sich buchen (Gäste: ohne STRIPE_ADMINS_ONLY)
+ const access=ctx.cfg.access??'open';
+ const common={accounts:true,access,signup:access==='open'&&!!ctx.cfg.openSignup,sender:senderOf(ctx.cfg.mail.from),login:{mail:mailLogin(ctx.cfg),totp:!!ctx.cfg.totpLogin}};
+ if(!session)return {response:respond({...common,checkout:billingFor(ctx.cfg,[]),tier:'guest',features:FEATURES.guest,limits:limitsJson('guest')})};
  const {tier,realTier,roles,admin,adminHere,totpConfirmed}=await accountState(ctx,session);
- return {response:respond({...common,user:{id:session.user_id,email:session.email,name:session.name},
+ return {response:respond({...common,checkout:billingFor(ctx.cfg,roles),user:{id:session.user_id,email:session.email,name:session.name},
   tier:tier.tier,tierUntil:tier.until,tierSource:tier.source,roles,adminHere,
   ...(roles.includes('admin')?{admin,totpConfirmed,realTier:realTier.tier,viewTier:session.view_tier??null}:{}),
   features:FEATURES[tier.tier],limits:limitsJson(tier.tier),renewAfter:renewDue(session,ctx.now),

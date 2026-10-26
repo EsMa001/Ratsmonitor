@@ -227,6 +227,17 @@ test('STRIPE_ADMINS_ONLY: Admins sehen die Bezahlung und können buchen',async t
  assert.equal((await admin.h.call(checkout,{path:'/api/billing/checkout'})).status,200);
 });
 
+test('/api/me meldet Gästen, ob sie sich frei registrieren und Plus buchen können',async()=>{
+ const guest=async(opts)=>(await setup(opts).call(me,{method:'GET',cookies:new Map()})).body;
+ const open=await guest({access:'open',openSignup:true,extraEnv:STRIPE_ENV});
+ assert.equal(open.signup,true);assert.equal(open.checkout,true);
+ const closed=await guest({access:'open',extraEnv:STRIPE_ENV});
+ assert.equal(closed.signup,false,'ohne ACCOUNTS_OPEN_SIGNUP nur mit Einladung');
+ assert.equal((await guest({access:'invite',openSignup:true,extraEnv:STRIPE_ENV})).signup,false,'im Einladungsmodus nie frei');
+ assert.equal((await guest({access:'open',extraEnv:{...STRIPE_ENV,STRIPE_ADMINS_ONLY:'1'}})).checkout,false,'nur Admins: Gäste sehen die Anfrage');
+ assert.equal((await guest({access:'open'})).checkout,false,'ohne Stripe keine Buchung');
+});
+
 test('Checkout und Portal nur angemeldet und von der eigenen Seite',async t=>{
  const {h}=await prepare(t);
  assert.equal((await h.call(checkout,{path:'/api/billing/checkout',origin:'https://boese.example'})).status,403);

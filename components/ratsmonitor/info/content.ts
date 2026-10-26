@@ -99,7 +99,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
 ];
 
 export const PRICE_FAQ: Qa[] = [
-  { q: "Was kosten die Stufen?", a: "Suchen und Lesen ohne Anmeldung und das Konto sind kostenlos. Plus kostet 2,99 € im Monat und ist monatlich kündbar. In der Testphase schalten wir Plus auf Anfrage frei." },
+  { q: "Was kosten die Stufen?", a: "Suchen und Lesen ohne Anmeldung und das Konto sind kostenlos. Plus kostet 2,99 € im Monat und ist monatlich kündbar." },
   { q: "Brauche ich für das Konto Zahlungsdaten?", a: "Nein. Das Konto ist kostenlos und ohne Zahlungsdaten nutzbar." },
   { q: "Kann ich später zu Plus wechseln?", a: "Ja, der Wechsel zu Plus ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
   { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit dem kostenlosen Konto je 5 Suchen, 5 Artikel und 5 Benachrichtigungen, per E-Mail täglich oder wöchentlich. Mit Plus kommen E-Mails auch sofort, und Sie haben jeweils bis zu 100 gespeicherte Suchen, bis zu 100 gespeicherte Artikel und bis zu 100 aktive Benachrichtigungen." },

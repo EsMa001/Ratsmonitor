@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { IS_DEV, setTier, getTier, priceLabel, TIER_LABEL, UPGRADE_TEXT, type Tier } from "../lib/tier";
 import { getMe, useMe } from "../lib/account";
+import { usePlusLink } from "../lib/booking";
 
 /** Funktionen, die je nach Stufe gesperrt oder begrenzt sind */
 export type GateFeature = "results" | "filters" | "bookmarks" | "searches" | "notifications" | "emails";
@@ -84,6 +85,7 @@ export function GateDialog() {
     () => null,
   );
   const me = useMe();
+  const plus = usePlusLink();
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     if (g && !ref.current?.open) ref.current?.showModal();
@@ -91,7 +93,7 @@ export function GateDialog() {
   }, [g]);
 
   const f = g ? FEATURE[g.feature] : null;
-  /* Ohne Konto: Anmelden. Mit Konto: Stufe nennen, Freischaltung in der Testphase auf Anfrage */
+  /* Ohne Konto: Anmelden. Mit Konto: Stufe nennen; Plus führt zur Buchung (lib/booking.ts), sonst zur Anfrage */
   const login = !me.user && me.accounts;
   const text = f && g ? (login ? f.login : me.tier === "guest" ? `${NO_TIER} ${f.upgrade}`.trim() : f.upgrade || NO_TIER) : "";
   const here = typeof window === "undefined" ? "/" : window.location.pathname + window.location.search;
@@ -128,6 +130,10 @@ export function GateDialog() {
             {login ? (
               <Link href={`/anmelden?weiter=${encodeURIComponent(here)}`} onClick={closeGate} className="btn-primary">
                 Anmelden
+              </Link>
+            ) : g.needs === "pro" ? (
+              <Link href={plus.href} onClick={closeGate} className="btn-primary">
+                {plus.label}
               </Link>
             ) : (
               <Link href="/kontakt" onClick={closeGate} className="btn-primary">

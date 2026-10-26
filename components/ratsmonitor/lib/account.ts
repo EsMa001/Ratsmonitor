@@ -33,6 +33,10 @@ export interface Me {
   sender?: string;
   /** Wege der Anmeldeseite: Link und Code per Mail (mail), E-Mail-Adresse und Code aus der Authenticator-App (totp) */
   login?: { mail: boolean; totp: boolean };
+  /** Neue Adressen bekommen ohne Einladung ein kostenloses Konto (ACCOUNTS_OPEN_SIGNUP) */
+  signup?: boolean;
+  /** Plus lässt sich hier buchen (Stripe eingerichtet; Gäste erst nach Anmeldung, siehe lib/booking.ts) */
+  checkout?: boolean;
   /** Bezahlung über Stripe, nur wenn der Server sie eingerichtet hat: Testmodus, Stripe-Kunde (Portal), letztes Abo */
   billing?: { test: boolean; customer: boolean; subscription: { status: string; periodEnd: string | null; cancelAt: string | null } | null };
   /** Zählt Anmelden, Abmelden und Änderungen aus anderen Tabs: Listen laden dann neu */
@@ -191,6 +195,8 @@ function loadMe(): Promise<void> {
         sender,
         login,
         billing: billingOf(d.billing),
+        signup: d.signup === true,
+        checkout: d.checkout === true,
         rev: (u?.id ?? null) !== before ? state.rev + 1 : state.rev,
       });
       if (d.renewAfter === true && !renewed) {
