@@ -24,6 +24,7 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  todo:{title:'To-do-Liste',intro:'Aktuelle Aufgaben und nächste Vorhaben für Plenara.'},
  hochrechnung:{title:'Hochrechnung',intro:'Schätzt, wie viele Berichte alle kommunalen Gremien in Deutschland pro Tag erzeugen und wie viel Text das ist. Grundlage für die Abschätzung der KI-Kosten.'},
  social:{title:'Social Media',intro:'Schlägt je Tag bis zu drei Einzelfälle aus Orten vor, die polarisieren können. Ausgewählt über das Unterthema des Modells und seine gelernte Streitquote, verstärkt durch Fraktionsanträge und den Status (abgelehnt oder vertagt zählt mehr). Zu jedem Vorschlag gibt es einen kurzen Textentwurf aus festen Satzvorlagen. Ohne fremden Dienst; schwache Tage bleiben leer.'},
+ konten:{title:'Konten',intro:'Alle Konten mit Stufe, Zahlungsstand und Abo: wer Plus bezahlt, wer gekündigt hat, bei wem eine Zahlung offen ist, seit wann ein Abo läuft und wann es sich verlängert oder endet. Adressen stehen gekürzt da; die volle Adresse zeigt ein Klick je Konto oder die Suche nach der genauen Adresse.'},
 };
 export const FOOT:Record<AdminPage,string>={
  start:'Jede Kachel liest denselben Stand wie ihre Seite; das Cockpit rechnet nichts und startet nichts.',
@@ -43,6 +44,7 @@ export const FOOT:Record<AdminPage,string>={
  todo:'Interne Projektplanung · Plenara',
  hochrechnung:'Die Hochrechnung liest nur den gespeicherten Bestand und startet keinen Abruf.',
  social:'Vorschläge aus den gespeicherten Berichten; vor einem Beitrag Zahl und Fundstellen prüfen. Die Seite startet keine Analyse.',
+ konten:'Liest nur die Kontendatei; die volle Adresse eines Kontos gibt es auf Klick oder über die Suche, jeder Abruf steht im Admin-Protokoll. Ändern (Stufe, Sperre, Löschen) nur per Kommandozeile.',
 };
 
 // ---- 6.2 Allgemeine Zustandstexte ---------------------------------------------------------------------------------
