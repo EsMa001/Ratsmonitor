@@ -883,7 +883,7 @@ z- analytics.css:632
 - Header.tsx (128, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
 - PlanCards.tsx (235, ⚠1): PlanCards, PlanSummary
-- PlusHint.tsx (86, ⚠1): PlusHint
+- PlusHint.tsx (66, ⚠1): PlusHint
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
