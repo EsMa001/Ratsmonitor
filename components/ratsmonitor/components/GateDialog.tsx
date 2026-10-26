@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useRef, useSyncExternalStore } from "react";
-import { IS_DEV, setTier, getTier, TIER_LABEL, UPGRADE_TEXT, type Tier } from "../lib/tier";
+import { IS_DEV, setTier, getTier, priceLabel, TIER_LABEL, UPGRADE_TEXT, type Tier } from "../lib/tier";
 import { getMe, useMe } from "../lib/account";
 
 /** Funktionen, die je nach Stufe gesperrt oder begrenzt sind */
@@ -70,6 +70,8 @@ const FEATURE: Record<GateFeature, { title: string; login: string; upgrade: stri
   },
 };
 const NO_TIER = "Ihr Konto ist noch für keine Stufe freigeschaltet.";
+/** Grenzen, die Plus aufhebt: dort steht unter dem Text ein Hinweis auf das Abo */
+const PLUS: GateFeature[] = ["results", "bookmarks", "searches", "notifications"];
 
 /** Gemeinsamer Hinweis-Dialog für gesperrte Funktionen; einmal in der App eingebunden */
 export function GateDialog() {
@@ -114,6 +116,14 @@ export function GateDialog() {
             {text}
             {g.feature === "results" && g.total ? ` Insgesamt gibt es ${g.total.toLocaleString("de-DE")} Treffer.` : ""}
           </p>
+          {PLUS.includes(g.feature) && (
+            <p className="m-0 mt-4 border-t border-slate-200 pt-4 text-[14px] leading-relaxed text-slate-600">
+              <span className="font-semibold text-slate-900">Plus</span> · {priceLabel("pro")} · monatlich kündbar: alle Treffer, E-Mail-Alarm, plenara.X und Sitzungskalender.{" "}
+              <Link href="/preise" onClick={closeGate} className="font-medium text-teal-700 no-underline after:content-['_→'] hover:underline">
+                Plus ansehen
+              </Link>
+            </p>
+          )}
           <div className="mt-5 flex flex-wrap items-center gap-2">
             {login ? (
               <Link href={`/anmelden?weiter=${encodeURIComponent(here)}`} onClick={closeGate} className="btn-primary">

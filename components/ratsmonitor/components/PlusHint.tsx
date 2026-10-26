@@ -19,7 +19,7 @@ const closedNow = () => {
 /**
  * Hinweis auf Plus für die Startseite: nur für Gäste und kostenlose Konten, erst wenn /api/me geantwortet hat (Plus-Nutzer
  * sehen ihn nie, auch nicht kurz). Vorteile nach docs/produkt/vorteile.json (Rang 3, 7/8, 11), dazu die eigene Treffergrenze.
- * placement "map": Overlay unten rechts auf der Karte (Desktop, Milchglas, mit ×); "inline": unter dem Startknopf (Handy).
+ * placement "map": Overlay unten rechts im Kopf der Startseite, am rechten Rand über der Karte (Desktop, Milchglas, mit ×); "inline": unter dem Startknopf (Handy).
  * Welche Fassung zu sehen ist, entscheidet info.css (`.pl-plus--map` / `.pl-plus--inline`).
  */
 export function PlusHint({ placement }: { placement: "map" | "inline" }) {
@@ -46,7 +46,7 @@ export function PlusHint({ placement }: { placement: "map" | "inline" }) {
   return (
     <aside
       aria-labelledby={`plus-hint-${placement}`}
-      className={map ? "pl-plus pl-plus--map rm-glass absolute bottom-[3%] right-0 z-10 w-[340px] max-w-[calc(100%-1rem)] rounded-2xl p-4 pr-10" : "pl-plus pl-plus--inline mt-7 max-w-[460px] border-t border-[var(--rm-c200)] pt-5"}
+      className={map ? "pl-plus pl-plus--map rm-glass absolute bottom-[3%] right-0 z-10 w-[400px] max-w-[calc(100%-1rem)] rounded-2xl p-4 pr-10" : "pl-plus pl-plus--inline mt-7 max-w-[460px] border-t border-[var(--rm-c200)] pt-5"}
     >
       {map && (
         <button type="button" onClick={close} aria-label="Hinweis auf Plus ausblenden" className="absolute right-1.5 top-1.5 inline-flex size-9 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-[18px] leading-none text-[var(--rm-c500)] hover:text-[var(--rm-c900)]">
