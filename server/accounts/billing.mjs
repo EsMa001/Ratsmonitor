@@ -7,6 +7,7 @@ import {AccountError,respond,requireSameOrigin,readText} from './http.mjs';
 import {readSession,rolesOf} from './sessions.mjs';
 import {siteBase} from './config.mjs';
 import {limited} from './rate-limit.mjs';
+import {sendMail,processOutbox} from './mail.mjs';
 
 const API='https://api.stripe.com/v1/';
 /** Feste API-Fassung aller Abrufe. Von einer Meldung zählen nur ID und Art; das Abo wird in dieser Fassung neu abgerufen. */
@@ -131,7 +132,8 @@ export async function syncSubscription(ctx,sub){
  if(['active','trialing'].includes(sub.status)&&periodEnd&&latestPaid(sub)){
   const ends=iso(periodEnd+GRACE_MS);
   statements.push(grant
-   ?db.prepare('UPDATE plan_grants SET user_id=?,ends_at=? WHERE id=?').bind(userId,ends,grant.id)
+   // Verlängert: ein früherer Hinweis „Plus endet bald“ gilt nicht mehr (scripts/accounts/maintenance.mjs)
+   ?db.prepare('UPDATE plan_grants SET user_id=?,end_notice_at=CASE WHEN ?>ends_at THEN NULL ELSE end_notice_at END,ends_at=? WHERE id=?').bind(userId,ends,ends,grant.id)
    :db.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at,ref,note,created_by) VALUES(?,?,'stripe',?,?,?,'Stripe-Abo','stripe')")
     .bind(userId,TIER,iso(now),ends,sub.id));
  }else if(ENDED.includes(sub.status)&&grant){
@@ -139,7 +141,21 @@ export async function syncSubscription(ctx,sub){
   if(grant.ends_at===null||Date.parse(grant.ends_at)>end)statements.push(db.prepare('UPDATE plan_grants SET ends_at=? WHERE id=?').bind(iso(end),grant.id));
  }
  await db.batch(statements);
- return {userId,status:sub.status};
+ return {userId,status:sub.status,periodEnd};
+}
+const euro=(cents,currency)=>`${(Number(cents||0)/100).toFixed(2).replace('.',',')} ${String(currency||'eur').toLowerCase()==='eur'?'€':String(currency).toUpperCase()}`;
+/**
+ * Mail „Zahlung eingegangen“ zu einer bezahlten Rechnung (einmal je Meldung, billing_events): die erste Rechnung des Abos
+ * schaltet Plus frei, jede weitere verlängert. Verschickt wird über den Postausgang gleich nach der Antwort (webhook, later).
+ */
+async function paidMail(ctx,{userId,periodEnd},invoice){
+ const first=invoice.billing_reason==='subscription_create';
+ if(!first&&!(invoice.amount_paid>0))return false;
+ const user=await ctx.db.prepare('SELECT email FROM users WHERE id=?').bind(userId).first();
+ if(!user?.email)return false;
+ const mail=await sendMail(ctx.db,ctx.cfg,{to:user.email,template:'plus_paid',userId,quota:'account',now:ctx.now,data:{first,amount:euro(invoice.amount_paid,invoice.currency),
+  until:periodEnd?iso(periodEnd):null,receipt:typeof invoice.hosted_invoice_url==='string'?invoice.hosted_invoice_url:null,test:!invoice.livemode}});
+ return mail.queued;
 }
 /** Anfechtung oder Rücklastschrift: laufende Abos des Kunden sofort beenden, die Freischaltung endet jetzt */
 async function disputed(ctx,dispute){
@@ -163,8 +179,9 @@ export async function handleEvent(ctx,event){
   case 'invoice.payment_failed':{
    const invoice=await stripeApi(ctx.cfg,'GET','invoices/'+encodeURIComponent(object.id));
    const id=idOf(invoice.parent?.subscription_details?.subscription??invoice.subscription);
-   if(id)await syncSubscription(ctx,await fetchSubscription(ctx,id));
-   return;
+   if(!id)return;
+   const synced=await syncSubscription(ctx,await fetchSubscription(ctx,id));
+   return {mailed:event.type==='invoice.paid'&&!!synced.userId&&await paidMail(ctx,synced,invoice)};
   }
   case 'charge.dispute.created':
    return disputed(ctx,object);
@@ -241,11 +258,14 @@ export async function webhook(ctx){
  const seen=await db.prepare('SELECT done_at FROM billing_events WHERE id=?').bind(event.id).first();
  if(seen?.done_at)return {response:respond({received:true,duplicate:true})};
  if(!seen)await db.prepare('INSERT INTO billing_events(id,type,received_at) VALUES(?,?,?) ON CONFLICT(id) DO NOTHING').bind(event.id,event.type,iso(now)).run();
- try{await handleEvent(ctx,event);}
+ let result;
+ try{result=await handleEvent(ctx,event);}
  catch(error){
   await db.prepare('UPDATE billing_events SET error=? WHERE id=?').bind(String(error?.message||error).slice(0,300),event.id).run();
   throw error;
  }
  await db.prepare('UPDATE billing_events SET done_at=?,error=NULL WHERE id=?').bind(iso(now),event.id).run();
- return {response:respond({received:true})};
+ // Eingereihte Mail („Zahlung eingegangen“) gleich nach der Antwort verschicken, nicht erst mit dem nächsten Lauf
+ const site=siteBase(ctx.cfg,ctx.request);
+ return {response:respond({received:true}),later:result?.mailed&&site?[()=>processOutbox(db,ctx.cfg,{site,now})]:[]};
 }

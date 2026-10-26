@@ -18,6 +18,7 @@ Stand: 26.10.2026. Testanbindung für Plus: Bezahlen mit Stripe Checkout, Freisc
 6. „Abo verwalten“ öffnet das Kundenportal von Stripe: kündigen, Zahlart ändern, Rechnungen.
 7. Der Abgleich (`scripts/billing/reconcile.mjs`) liest alle Abos bei Stripe und führt `plan_grants` nach. Er fängt verpasste Meldungen auf.
 8. Ein Konto mit laufendem, nicht gekündigtem Abo lässt sich erst nach der Kündigung löschen.
+9. Mails über den Postausgang: zu jeder bezahlten Rechnung „Zahlung eingegangen“ (erste Rechnung: „Plus ist freigeschaltet“, danach „Plus verlängert“, mit Betrag, nächster Abrechnung und Beleg von Stripe; Vorlage `plus_paid`). Der nächtliche Pflegejob schickt 3 Tage vor dem Ende „Ihr Plus endet in wenigen Tagen“, wenn Plus nicht verlängert wird: Abo gekündigt, Zahlung offen oder Freischaltung von Hand mit Ende (Vorlage `plus_ending`, einmal je Zeile, `scripts/accounts/maintenance.mjs`).
 
 Ohne die drei Werte `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` und `STRIPE_PRICE_PLUS` ist alles aus: Die Kontoseite zeigt keine Knöpfe, und die Routen antworten mit 503. Live-Schlüssel (`sk_live_…`) gelten nur mit `STRIPE_LIVE=1`.
 

@@ -171,6 +171,69 @@ test('Folgerechnung verlängert, offene Rechnung nicht, Kündigung beendet zum A
  assert.equal(grants(h).length,1,'eine Zeile je Abo');
 });
 
+test('Mail „Zahlung eingegangen“: erste Zahlung schaltet frei, Folgezahlung verlängert, je Meldung einmal',async t=>{
+ const {h,stripe,userId}=await prepare(t);
+ stripe.subs.set('sub_1',subscription(h,'sub_1',{userId}));
+ const invoice=(id,reason)=>({id,status:'paid',billing_reason:reason,amount_paid:299,currency:'eur',livemode:false,
+  hosted_invoice_url:'https://invoice.stripe.com/i/'+id,parent:{subscription_details:{subscription:'sub_1'}}});
+ stripe.invoices.set('in_1',invoice('in_1','subscription_create'));
+ await deliver(h,'invoice.paid',{id:'in_1'},{id:'evt_paid_1'});
+ await deliver(h,'invoice.paid',{id:'in_1'},{id:'evt_paid_1'});
+ let mails=h.mails('kunde@example.org').filter(m=>/Zahlung eingegangen/.test(m.subject));
+ assert.equal(mails.length,1,'doppelte Meldung, eine Mail');
+ assert.equal(mails[0].subject,'Zahlung eingegangen: Plus ist freigeschaltet');
+ assert.match(mails[0].text,/2,99 €/);assert.match(mails[0].text,/Testmodus/);assert.match(mails[0].text,/invoice\.stripe\.com\/i\/in_1/);
+ assert.match(mails[0].text,/Nächste Abrechnung am \d{2}\.\d{2}\.\d{4}/);
+
+ stripe.invoices.set('in_2',invoice('in_2','subscription_cycle'));
+ await deliver(h,'invoice.paid',{id:'in_2'});
+ mails=h.mails('kunde@example.org').filter(m=>/Zahlung eingegangen/.test(m.subject));
+ assert.equal(mails.at(-1).subject,'Zahlung eingegangen: Plus verlängert');
+ assert.equal(mails.length,2);
+
+ stripe.invoices.set('in_3',{...invoice('in_3','subscription_cycle'),amount_paid:0});
+ await deliver(h,'invoice.paid',{id:'in_3'});
+ assert.equal(h.mails('kunde@example.org').filter(m=>/Zahlung eingegangen/.test(m.subject)).length,2,'0 € verlängert ohne Mail');
+});
+
+test('Pflegejob: „Plus endet“ 3 Tage vorher bei Kündigung, offener Zahlung und Freischaltung von Hand, nicht bei laufendem Abo',async t=>{
+ const {maintain}=await import('../scripts/accounts/maintenance.mjs');
+ const {h,stripe}=await prepare(t);
+ const iso=ms=>new Date(ms).toISOString();
+ const user=(email,{status='active',days=2,cancel=null,source='stripe'}={})=>{
+  const id=h.addUser(email);
+  const end=h.now()+days*DAY;
+  if(source==='stripe'){
+   h.accounts.sql.prepare('INSERT INTO subscriptions(id,user_id,customer_id,status,period_end,cancel_at,updated_at) VALUES(?,?,?,?,?,?,?)')
+    .run('sub_'+id,id,'cus_'+id,status,iso(end),cancel===null?null:iso(h.now()+cancel*DAY),iso(h.now()));
+   h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at,ref) VALUES(?,'pro','stripe',?,?,?)").run(id,iso(h.now()-DAY),iso(end),'sub_'+id);
+  }else h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at) VALUES(?,'pro','manual',?,?)").run(id,iso(h.now()-DAY),iso(end));
+  return id;
+ };
+ user('gekuendigt@example.org',{days:5,cancel:2});
+ user('offen@example.org',{status:'past_due',days:2});
+ user('hand@example.org',{source:'manual',days:2});
+ user('laeuft@example.org',{days:2});
+ user('spaeter@example.org',{days:12,cancel:9});
+ const keeps=user('dauer@example.org',{days:5,cancel:2});
+ h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at) VALUES(?,'enterprise','manual',?)").run(keeps,iso(h.now()-DAY));
+
+ const report=await maintain(h.accounts.db,h.cfg,{now:h.now(),log:()=>{}});
+ assert.equal(report.plusEnding,3);
+ const ending=email=>h.mails(email).filter(m=>/Ihr Plus endet/.test(m.subject));
+ assert.match(ending('gekuendigt@example.org')[0].text,/Sie haben Plus gekündigt\. Plus endet am \d{2}\.\d{2}\.\d{4}/);
+ assert.match(ending('offen@example.org')[0].text,/Zahlung für Plus ist nicht eingegangen/);
+ assert.match(ending('hand@example.org')[0].text,/Ihr Zugang zu Plus endet am/);
+ for(const email of ['laeuft@example.org','spaeter@example.org','dauer@example.org'])assert.equal(ending(email).length,0,email);
+ assert.equal((await maintain(h.accounts.db,h.cfg,{now:h.now(),log:()=>{}})).plusEnding,0,'nur einmal');
+
+ /* Bezahlt die offene Zahlung doch noch, verlängert die Zeile und der Hinweis gilt wieder für das neue Ende */
+ const late=h.accounts.sql.prepare("SELECT id FROM users WHERE email='offen@example.org'").get().id;
+ stripe.subs.set('sub_'+late,{...subscription(h,'sub_'+late,{userId:late,customer:'cus_'+late,days:30}),id:'sub_'+late});
+ await deliver(h,'customer.subscription.updated',{id:'sub_'+late});
+ assert.equal(h.accounts.sql.prepare("SELECT end_notice_at FROM plan_grants WHERE ref=?").get('sub_'+late).end_notice_at,null);
+});
+
 test('Anfechtung beendet Abo und Freischaltung sofort',async t=>{
  const {h,stripe,userId}=await prepare(t);
  stripe.subs.set('sub_1',subscription(h,'sub_1',{userId}));

@@ -77,9 +77,36 @@ const T={
  }),
  tier_ending:({tier,until},{site})=>({
   subject:'Ihr Testzugang endet bald',
-  text:`Ihr Testzugang ${tier} bei Plenara endet am ${String(until).slice(0,10)}. Danach bleibt Ihr Konto bestehen, mit den Rechten ohne Stufe. Konto: ${site}/konto/profil`,
-  html:page('Testzugang',[p(`Ihr Testzugang ${tier} bei Plenara endet am ${String(until).slice(0,10)}.`),p('Danach bleibt Ihr Konto bestehen, mit den Rechten ohne Stufe. Sie können es jederzeit löschen.'),button(site+'/konto/profil','Zum Konto')]),
+  text:`Ihr Testzugang ${tier} bei Plenara endet am ${deDate(until)}. Danach bleibt Ihr Konto bestehen, mit den Rechten des kostenlosen Kontos. Konto: ${site}/konto/profil`,
+  html:page('Testzugang',[p(`Ihr Testzugang ${tier} bei Plenara endet am ${deDate(until)}.`),p('Danach bleibt Ihr Konto bestehen, mit den Rechten des kostenlosen Kontos. Sie können es jederzeit löschen.'),button(site+'/konto/profil','Zum Konto')]),
  }),
+ /* Bezahlung (server/accounts/billing.mjs, Meldung invoice.paid): erste Zahlung schaltet Plus frei, jede weitere verlängert */
+ plus_paid:({first,amount,until,receipt,test},{site})=>{
+  const head=first?`Ihre Zahlung über ${amount} ist eingegangen. Plus ist für Ihr Konto freigeschaltet.`:`Ihre Zahlung über ${amount} ist eingegangen. Plus läuft weiter.`;
+  const next=until?`Nächste Abrechnung am ${deDate(until)}; Plus verlängert sich monatlich, bis Sie kündigen.`:'';
+  const note=test?'Testmodus: Es wurde kein echtes Geld abgebucht.':'';
+  return {
+   subject:first?'Zahlung eingegangen: Plus ist freigeschaltet':'Zahlung eingegangen: Plus verlängert',
+   text:[head,next,receipt?`Beleg: ${receipt}`:'',`Abo verwalten (kündigen, Zahlart, Rechnungen): ${site}/konto/profil`,note].filter(Boolean).join('\n'),
+   html:page('Zahlung eingegangen',[p(head),next?p(next):'',receipt?html`<p style="margin:0 0 12px"><a href="${receipt}">Beleg ansehen</a></p>`:'',button(site+'/konto/profil','Zum Konto'),
+    p('Kündigen, Zahlart ändern und Rechnungen finden Sie im Konto unter „Abo verwalten“.'),note?p(note):'']),
+  };
+ },
+ /* Plus endet in höchstens 3 Tagen und wird nicht verlängert (scripts/accounts/maintenance.mjs): gekündigt, Zahlung offen
+    oder eine Freischaltung von Hand mit Ende */
+ plus_ending:({until,reason},{site})=>{
+  const lead=reason==='canceled'?`Sie haben Plus gekündigt. Plus endet am ${deDate(until)}.`
+   :reason==='payment'?`Die letzte Zahlung für Plus ist nicht eingegangen. Ohne Zahlung endet Plus am ${deDate(until)}.`
+   :`Ihr Zugang zu Plus endet am ${deDate(until)}.`;
+  const after='Danach gelten die Rechte des kostenlosen Kontos; Ihr Konto bleibt bestehen.';
+  const act=reason==='payment'?'Bitte prüfen Sie Ihre Zahlart im Konto unter „Abo verwalten“.':reason==='canceled'?'Die Kündigung können Sie bis dahin im Konto unter „Abo verwalten“ zurücknehmen.':'Plus können Sie jederzeit buchen.';
+  const target=reason==='grant'?site+'/preise':site+'/konto/profil';
+  return {
+   subject:'Ihr Plus endet in wenigen Tagen',
+   text:[lead,after,act,target].join('\n'),
+   html:page('Plus endet',[p(lead),p(after),p(act),button(target,reason==='grant'?'Stufen ansehen':'Zum Konto')]),
+  };
+ },
  inactive:(_d,{site})=>({
   subject:'Ihr Plenara-Konto wird bald gelöscht',
   text:`Ihr Plenara-Konto wurde seit zwei Jahren nicht genutzt. Melden Sie sich in den nächsten 30 Tagen unter ${site}/anmelden an, wenn Sie es behalten möchten; sonst löschen wir es mit allen gespeicherten Daten.`,
