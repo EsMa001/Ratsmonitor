@@ -4,7 +4,7 @@
 // bei Stripe neu ab und führen eine Zeile je Abo in plan_grants (source='stripe', ref = Abo-ID). Die Rückkehr aus dem
 // Checkout schaltet nichts frei. Ohne Stripe-Bibliothek: REST über fetch, Signatur über WebCrypto.
 import {AccountError,respond,requireSameOrigin,readText} from './http.mjs';
-import {readSession} from './sessions.mjs';
+import {readSession,rolesOf} from './sessions.mjs';
 import {siteBase} from './config.mjs';
 import {limited} from './rate-limit.mjs';
 
@@ -31,6 +31,8 @@ export function billingReady(cfg){
  if(!b?.secretKey||!b.webhookSecret||!b.price)return false;
  return (b.live?/^(sk|rk)_live_/:/^(sk|rk)_test_/).test(b.secretKey);
 }
+/** Darf ein Konto mit diesen Rollen buchen? Mit STRIPE_ADMINS_ONLY=1 (Testmodus auf dem Server) nur Admins */
+export const billingFor=(cfg,roles)=>billingReady(cfg)&&(!cfg.billing.adminsOnly||roles.includes('admin'));
 function requireBilling(cfg){
  if(!billingReady(cfg))throw new AccountError(503,'Bezahlung ist auf diesem Server nicht eingerichtet.');
  return cfg.billing;
@@ -187,6 +189,7 @@ async function requireSession(ctx){
  requireSameOrigin(ctx.request);
  const session=await readSession(ctx.db,ctx.cookies.get(ctx.names.session),{now:ctx.now});
  if(!session)throw new AccountError(401,'Bitte anmelden.');
+ if(!billingFor(ctx.cfg,await rolesOf(ctx.db,session.user_id)))throw new AccountError(403,'Plus lässt sich auf diesem Server noch nicht buchen.');
  if(limited('billing',session.user_id,{max:10,windowMs:15*60000,now:ctx.now}))throw new AccountError(429,'Zu viele Versuche. Bitte kurz warten.');
  return session;
 }

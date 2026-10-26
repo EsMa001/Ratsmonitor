@@ -47,13 +47,13 @@ async function deliver(h,type,object,{secret=WHSEC,livemode=false,id='evt_'+(++e
  const signature=await signPayload(JSON.stringify(event),secret,Math.floor(h.now()/1000)-age);
  return h.call(webhook,{path:'/api/billing/webhook',body:event,headers:{'stripe-signature':signature}});
 }
-async function prepare(t,{env=STRIPE_ENV}={}){
+async function prepare(t,{env=STRIPE_ENV,admin=false}={}){
  const h=setup({extraEnv:env});
  const stripe=fakeStripe(h);
  const original=globalThis.fetch;
  globalThis.fetch=stripe.fetch;
  t.after(()=>{globalThis.fetch=original;});
- const userId=h.addUser('kunde@example.org');
+ const userId=h.addUser('kunde@example.org',{admin});
  await h.call(requestLink,{body:{email:'kunde@example.org'}});
  await h.call(enterCode,{body:{code:h.lastMail('kunde@example.org').code}});
  return {h,stripe,userId};
@@ -208,6 +208,23 @@ test('Ohne Einrichtung: Routen antworten 503, /api/me ohne billing',async t=>{
  assert.equal((await h.call(checkout,{path:'/api/billing/checkout'})).status,503);
  assert.equal((await deliver(h,'customer.subscription.created',{id:'sub_1'})).status,503);
  assert.equal((await h.call(me,{method:'GET'})).body.billing,undefined);
+});
+
+test('STRIPE_ADMINS_ONLY: buchen und Portal nur für Admins, Meldungen weiter für alle',async t=>{
+ const env={...STRIPE_ENV,STRIPE_ADMINS_ONLY:'1'};
+ const user=await prepare(t,{env});
+ assert.equal((await user.h.call(me,{method:'GET'})).body.billing,undefined,'ohne Admin-Rolle keine Knöpfe');
+ const refused=await user.h.call(checkout,{path:'/api/billing/checkout'});
+ assert.equal(refused.status,403);assert.match(refused.body.error,/noch nicht buchen/);
+ assert.equal((await user.h.call(portal,{path:'/api/billing/portal'})).status,403);
+ user.stripe.subs.set('sub_1',subscription(user.h,'sub_1',{userId:user.userId}));
+ assert.equal((await deliver(user.h,'customer.subscription.created',{id:'sub_1'})).status,200,'Meldungen gelten unabhängig von der Rolle');
+});
+
+test('STRIPE_ADMINS_ONLY: Admins sehen die Bezahlung und können buchen',async t=>{
+ const admin=await prepare(t,{env:{...STRIPE_ENV,STRIPE_ADMINS_ONLY:'1'},admin:true});
+ assert.equal((await admin.h.call(me,{method:'GET'})).body.billing.test,true);
+ assert.equal((await admin.h.call(checkout,{path:'/api/billing/checkout'})).status,200);
 });
 
 test('Checkout und Portal nur angemeldet und von der eigenen Seite',async t=>{

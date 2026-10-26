@@ -63,6 +63,7 @@
 # Kunden-MCP (ratsmonitor-mcp.service, 127.0.0.1:3002) und die OAuth-Endpunkte der App: ohne Seitenpasswort erreichbar,
 # sie prüfen selbst (Schlüssel oder Token, PKCE). In der Site vor basicauth importieren und basicauth auf @site_password
 # begrenzen. Die Zustimmung (/verbinden) bleibt hinter dem Passwort und verlangt die Anmeldung.
+# Ebenso die Meldungen von Stripe (/api/billing/webhook, server/accounts/billing.mjs): berechtigt ist nur die Signatur.
 (mcp_routes) {
 	@mcp_service path /mcp /mcp/* /.well-known/oauth-protected-resource /.well-known/oauth-protected-resource/* /.well-known/oauth-authorization-server /.well-known/oauth-authorization-server/*
 	handle @mcp_service {
@@ -70,7 +71,7 @@
 			flush_interval -1
 		}
 	}
-	@site_password not path /mcp /mcp/* /.well-known/oauth-protected-resource /.well-known/oauth-protected-resource/* /.well-known/oauth-authorization-server /.well-known/oauth-authorization-server/* /oauth/authorize /oauth/token /oauth/register /oauth/revoke
+	@site_password not path /mcp /mcp/* /.well-known/oauth-protected-resource /.well-known/oauth-protected-resource/* /.well-known/oauth-authorization-server /.well-known/oauth-authorization-server/* /oauth/authorize /oauth/token /oauth/register /oauth/revoke /api/billing/webhook
 }
 
 (public_site) {
