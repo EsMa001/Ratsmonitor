@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useMe } from "../lib/account";
-import { priceLabel, UPGRADE_TEXT } from "../lib/tier";
+import { priceLabel } from "../lib/tier";
 import { useClient } from "../lib/useClient";
 
 /** Ausgeblendet per × (nur dieser Browser, 14 Tage) */
@@ -72,7 +72,7 @@ export function PlusHint({ placement }: { placement: "map" | "inline" }) {
           href="/kontakt"
           className={map ? "inline-flex h-11 items-center gap-2 rounded-full bg-teal-700 px-5 text-white no-underline after:content-['→'] hover:opacity-85" : "inline-flex min-h-11 items-center gap-1.5 text-teal-700 no-underline after:content-['→'] after:transition-transform hover:after:translate-x-0.5"}
         >
-          {UPGRADE_TEXT}
+          Plus anfragen
         </Link>
         <Link href="/preise" className="inline-flex min-h-11 items-center text-[var(--rm-c500)] underline-offset-2 hover:underline">
           Stufen vergleichen
