@@ -492,6 +492,18 @@ Schritte: `shared/pipeline-terms.mjs`.
   nach der Leiter „bremst“. Gelingt die Stichprobe der Nacharbeit, fährt er hoch: 20 Gebiete am ersten Tag, täglich doppelt so viele
   (`rampAllowance`, Stand `system_state` `provider-ramp`, nur der Nachtauftrag teilt zu). Der Importprozess schickt jedem Anbieter
   höchstens eine Anfrage alle 1,5 s (`pacedFetch`, `SOURCE_SPACING_MS`). Anzeige: `/admin?seite=fehler`, „Anbieter, die nicht frei sind“.
+- **Ausweichquelle** (seit 26.10.2026, `server/integrations/fallback-source.mjs`): Ein Katalogeintrag kann neben seinem
+  Ratsinformationssystem ein Feld `fallback` tragen (Website der Kommune: `base`, `pages`, Optionen des Lesers `website` wie
+  `gazettePages`). Wartet die Servergruppe des Systems (`source_hosts`) und die der Website nicht, liest der Abruf die Website
+  (`planFallback` in `runSync`); der Nachtauftrag und der Lückenabruf stellen das Gebiet dann nicht zurück (`deferredRegions`), und
+  Erfolg wie Fehler zählen für den Server der Website, nicht für den wartenden Anbieter (`noteImport`). Ist die Stichprobe beim Anbieter
+  fällig, wird wieder das System gefragt; liefert es, endet die Ausweichzeit von selbst. Doppelte Sitzungen: Die Ausweichquelle übernimmt
+  nur Sitzungen ab dem Tag des letzten Erfolgs des Systems und keinen Sitzungstag, den es schon hat; danach übernimmt das System keinen
+  neuen Bericht an einem Tag der Ausweichquelle (gelöscht wird nichts). Berichte tragen `viaFallback`, der Quellenstand `fallback`
+  (`active`, `since`, `server`, `primary`, `lastRunAt`, `startedAt`/`endedAt`). Eingetragen am 26.10.2026 für 16 hessische Gemeinden,
+  deren System bei ekom21 die Server-IP sperrt; Gemeinden, deren Website ebenfalls im ekom21-Netz liegt, erreicht auch die
+  Ausweichquelle nicht. Neue Einträge: `LAND=<Land> DIR=<Ordner> ONLY_FILE=<IDs> node scripts/source-discovery/website.mjs`, dann
+  Probeabruf über 12 Monate und Titel prüfen. Tests: `tests/fallback-source.test.mjs`, `tests/fallback-sync.test.mjs`.
 - **Fehlerspeicher** (Migration `0040`, `server/integrations/work-failures.mjs`): Grund je Eintrag (Quelle bremst, Zugriff verweigert,
   vorübergehend, fehlt dauerhaft, zu langsam, Sperre im Haus, Fehler im eigenen Code), Stufe, nächster Termin; `source_hosts` je Server
   (liefert, bremst 1 h → 7 d, gesperrt 7 d → 30 d → prüfen mit Stichprobe alle 30 Tage). Nichts wird endgültig außer 404, „kein PDF“,

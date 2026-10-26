@@ -10,6 +10,7 @@ import {collectAllris} from './allris.mjs';
 import {collectOparl,requestJson} from './oparl.mjs';
 import {READERS} from './readers.mjs';
 import {refusalGate,isRefusal} from './request-budget.mjs';
+import {fallbackOf} from './fallback-source.mjs';
 // A negative OParl probe of a source holds this long; until then the probe is not sent again. Almost every vendor
 // endpoint answers 404, and the probe cost up to 20 s per import. A probe gets at most PROBE_MS.
 export const PROBE_DAYS=30;
@@ -21,6 +22,8 @@ const PROBE_MS=8000;
  * The result's coverage.oparlProbeAt names the negative probe this import relies on, if any.
  * result.refused ({retryAfterMs}): the source refused a request (HTTP 429 or a rejection page); no further request
  * went to it in this import (refusalGate).
+ * options.fallback ({server, primary}, fallback-source.mjs): read the area's fallback (catalog field `fallback`, the notices
+ * on the municipality's website) instead of its council system, which is not reached; coverage.fallback names both servers.
  */
 export async function collectRegion(id,options={}){
  const window=historyWindow(options.window),gate=refusalGate();
@@ -33,6 +36,11 @@ export async function collectRegion(id,options={}){
 async function collect(id,options){
  // The gate sits outside the trace: requests it stops never reach the source and are not recorded.
  const trace=options.trace,traced=trace?trace.wrap(fetchText):fetchText,text=options.gate?options.gate.wrap(traced):traced,pages=text===fetchText?options:{...options,get:text};
+ if(options.fallback){
+  const site=fallbackOf(NRW_SOURCES.find(s=>s.id===id));if(!site)throw Error('Gebiet ohne Ausweichquelle');
+  const d=await READERS.website.collect(site,pages);
+  return {...d,coverage:{...d.coverage,regionId:id,fallback:{server:options.fallback.server,primary:options.fallback.primary}}};
+ }
  if(id==='muenster'){const d=await collectOparl(trace?{...options,getJson:trace.wrap(requestJson)}:options);return {...d,topics:d.topics.map(t=>({...t,regionId:id})),coverage:{...d.coverage,regionId:id,method:'oparl'}};}
  const nrw=NRW_SOURCES.find(s=>s.id===id);if(nrw?.method==='oparl')return collectRegionalOparl(nrw,options);
  const source=nrw||SOURCES.find(s=>s.id===id);if(!source)throw Error('Unbekanntes Gebiet');

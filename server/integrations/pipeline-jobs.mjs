@@ -194,8 +194,9 @@ async function step(db,id,run){
   // jedes einzeln zu fragen; der Fehlerspeicher lässt ihn danach warten und prüft ihn mit einer Stichprobe (work-failures.mjs)
   else if(job.stage==='metadata'&&unreached(d)){
    const server=serverOfItem(item);item.status='partial';item.message=('Anbieter nicht erreicht: '+unreached(d)).slice(0,long);
-   job.unreached={...job.unreached,[server]:(job.unreached?.[server]||0)+1};
-   if(job.unreached[server]>=HOST_FAILS)for(const other of job.items)if(other.status==='queued'&&serverOfItem(other)===server){other.status='deferred';other.message=`Anbieter ${server} in diesem Lauf ${job.unreached[server]}-mal nicht erreicht; zurückgestellt, Stichprobe über die Nacharbeit.`;}
+   // Eine nicht erreichte Ausweichquelle (Website der Kommune) sagt nichts über die übrigen Gebiete des Anbieters
+   if(!d.fallback)job.unreached={...job.unreached,[server]:(job.unreached?.[server]||0)+1};
+   if(!d.fallback&&job.unreached[server]>=HOST_FAILS)for(const other of job.items)if(other.status==='queued'&&serverOfItem(other)===server){other.status='deferred';other.message=`Anbieter ${server} in diesem Lauf ${job.unreached[server]}-mal nicht erreicht; zurückgestellt, Stichprobe über die Nacharbeit.`;}
   }
   else {item.processed+=Number(d.processed??d.topics??0);
    // The item reports this attempt; the stored period may still be partial from an earlier, wider import.
@@ -252,7 +253,8 @@ export async function noteImport(db,region,{result,failure='',server=provider(re
  try{
   const d=result?.data||{};
   if(result?.status===409)return;
-  const f={step:'import',key:region,host:server,origin:origin==='backlog'?'backlog':'daily'};
+  // Ausweichquelle (fallback-source.mjs): Erfolg und Fehler gehören ihrem Server, nicht dem wartenden Ratsinformationssystem
+  const f={step:'import',key:region,host:d.fallback?d.fallback.server||null:server,origin:origin==='backlog'?'backlog':'daily'};
   const missed=result?.status===200&&!d.refused?unreached(d):null;
   // Ganzer Anbieter nicht erreicht: zählt für die Servergruppe (nach HOST_FAILS Gebieten wartet sie, verweigert: PROVIDER_LOCK)
   if(missed)await recordFailure(db,{...f,cls:unreachedClass(missed),error:missed,provider:true});

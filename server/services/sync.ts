@@ -18,6 +18,7 @@ import {REGIONS} from '@/shared/regions';
 import { env } from 'cloudflare:workers';
 import { ensureData } from '@/server/repositories/seed';
 import { collectRegion } from '@/server/integrations/collect-region.mjs';
+import { planFallback, keepFallbackTopics, keepPrimaryTopics, fallbackState } from '@/server/integrations/fallback-source.mjs';
 import type { StoredTopic as Topic, ImportData as FeedData } from '@/server/types';
 const FAILURE_CAUSE = 'Fehlerursache: ';
 /** Import runs (import_runs) are kept this long; the record of each area's last import stays in import-debug. */
@@ -44,6 +45,9 @@ export async function runSync(mode: 'metadata',region='muenster', trigger: 'manu
     // busy: 'area' (this area is being imported elsewhere) or 'stock' (something else holds the whole stock); the job
     // sets the area back for a while or waits as a whole (pipeline-jobs.mjs).
     if (!lock.ok) return { status: 409, data: { error: 'Import läuft bereits', retryAfter: 60, busy: (lock as { reason?: string }).reason } };
+    // Ausweichquelle (fallback-source.mjs): wartet die Servergruppe des Ratsinformationssystems, liest der Abruf die Website.
+    const fallback = await planFallback(env.DB, region, { coverage: previousCoverage, window: lookback }).catch(() => null);
+    if (fallback) lookback = fallback.window;
     // Every import of official data is recorded for the debug view (import-trace.mjs).
     const trace = createTrace(region, { window: lookback });
     // Cached analysis results go when the reports may have changed: always, except after an import that wrote nothing.
@@ -53,7 +57,7 @@ export async function runSync(mode: 'metadata',region='muenster', trigger: 'manu
     // Runs older than RUNS_KEEP_DAYS go, a few hundred per import, oldest first (index on started_at); the table stays bounded.
     const db = env.DB;
     await bestEffort('Aufräumen alter Läufe', () => db.prepare('DELETE FROM import_runs WHERE id IN (SELECT id FROM import_runs WHERE started_at<? ORDER BY started_at LIMIT 200)').bind(new Date(Date.now() - RUNS_KEEP_DAYS * 864e5).toISOString()).run());
-    const data = await refreshMetadata(id, started,region,previousCoverage,lookback,trace,lock.renew);
+    const data = await refreshMetadata(id, started,region,previousCoverage,lookback,trace,lock.renew,fallback);
     wrote = Boolean(data.stored);
     /* Wortliste der Suche nachführen, wenn dieser Import Vorgänge geschrieben hat (nur Neues; fehlt sie noch oder
        schlägt es fehl, sucht die Suche wie gewohnt). Änderungen ohne Import holt der nächste Import mit Änderungen
@@ -81,7 +85,8 @@ catch (e) {
     // After a failure the OParl probe is sent again (it may be the reason: "OParl vorhanden").
     delete coverage.oparlProbeAt;
     await db.prepare(SAVE_COVERAGE_SQL).bind(region,JSON.stringify(coverage)).run();
-    return { status: 502, data: { error: 'Import fehlgeschlagen; der angezeigte Bestand kann teilweise aktualisiert sein', cause, ...(refused ? { refused } : {}) } };
+    // fallback: the failure belongs to the server of the fallback, not to the council system (noteImport in pipeline-jobs.mjs).
+    return { status: 502, data: { error: 'Import fehlgeschlagen; der angezeigte Bestand kann teilweise aktualisiert sein', cause, ...(refused ? { refused } : {}), ...(fallback ? { fallback: { server: fallback.server } } : {}) } };
 }
 finally {
     if (wrote) invalidateReads();
@@ -89,7 +94,7 @@ finally {
 } }
 // What of a record goes into the details of the run.
 const brief = (record: {summary: {requests: number; failed: number; networkMs: number}; durationMs: number}) => ({ requests: record.summary.requests, failed: record.summary.failed, networkMs: record.summary.networkMs, durationMs: record.durationMs });
-async function refreshMetadata(id: string, started: string,region:string,previousCoverage:Record<string, unknown>,lookback:string,trace:ReturnType<typeof createTrace>,renew:()=>Promise<void>) {
+async function refreshMetadata(id: string, started: string,region:string,previousCoverage:Record<string, unknown>,lookback:string,trace:ReturnType<typeof createTrace>,renew:()=>Promise<void>,fallback:{since:string;server:string|null;primary:string|null}|null=null) {
     if (!env.DB)
         throw Error('Datenbank fehlt');
     const previous = await env.DB.prepare('SELECT id,payload FROM topics WHERE region_id=?').bind(region).all<{
@@ -111,7 +116,15 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const collectStarted = Date.now();
     // Time per area: 2 minutes; a long window (backfill over 12 months) 5 minutes, so that one step reads more of the period
     // (at one request per 1.5 s per provider, 2 minutes are about 80 requests).
-    const fresh = await collectRegion(region,{maxDurationMs:windowSpanDays(lookback)>=180?300000:120000,window:lookback,marks:{known,stock,list:keptList},trace,oparlProbeAt:previousCoverage.oparlProbeAt}) as FeedData & {refused?:{retryAfterMs:number|null}};
+    // The fallback reads another source: the meeting list of the council system is neither handed over nor replaced.
+    const fresh = await collectRegion(region,{maxDurationMs:windowSpanDays(lookback)>=180?300000:120000,window:lookback,marks:fallback?{known,stock}:{known,stock,list:keptList},trace,oparlProbeAt:previousCoverage.oparlProbeAt,...(fallback?{fallback}:{})}) as FeedData & {refused?:{retryAfterMs:number|null}};
+    if (fallback) { delete fresh.list; fresh.coverage.oparlProbeAt = previousCoverage.oparlProbeAt as string | undefined; }
+    // One meeting day, one source (fallback-source.mjs): the fallback takes no day the council system has, and after a
+    // fallback period the system takes no new report on a day the fallback has.
+    const sourced = fallback ? keepFallbackTopics(fresh.topics, old, fallback.since) : keepPrimaryTopics(fresh.topics, old);
+    const left = fresh.topics.length - sourced.length;
+    if (left) { fresh.topics = sourced; fresh.coverage.warnings = [...(fresh.coverage.warnings || []), `${left} Berichte an Sitzungstagen der anderen Quelle nicht übernommen (Ausweichquelle).`]; }
+    else fresh.topics = sourced;
     // Storing a large area takes a while; the lock is held for it anew (import-lock.mjs).
     await bestEffort('Sperre verlängern (gilt ohnehin noch einige Minuten)', renew);
     const collectMs = Date.now() - collectStarted, written = { created: 0, changed: 0, unchanged: 0 };
@@ -152,6 +165,10 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const coverage:Record<string, unknown>={...combined.coverage,regionId:region,...health,importedAt:health.lastSuccessAt};
     // The negative OParl probe this import relied on (collect-region.mjs); without one the next import asks again.
     if(fresh.coverage.oparlProbeAt)coverage.oparlProbeAt=fresh.coverage.oparlProbeAt;else delete coverage.oparlProbeAt;
+    // Ausweichzeit: aktiv mit diesem Abruf, beendet, wenn das System wieder geliefert hat, sonst wie gespeichert.
+    const reached = Boolean(fresh.coverage.complete) || quiet || fresh.topics.length > 0 || unchanged > 0;
+    const state = fallbackState(previousCoverage.fallback as Record<string, unknown> | undefined, fallback, started, reached);
+    if (state) coverage.fallback = state; else delete coverage.fallback;
     // Missing items remain in the archive. A partial scan never deletes an article.
     await env.DB.prepare(SAVE_COVERAGE_SQL).bind(region,JSON.stringify(coverage)).run();
     // Only now, with the reports stored, do the marks of this import count. Unchanged marks and lists are not written again.
@@ -169,5 +186,5 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     // stored: reports written (new, changed, or with changed metadata). refused: the source refused a request; the job
     // pauses its server and continues the area later (pipeline-jobs.mjs). requests: requests sent to the source and failed
     // (all failed and nothing read: the provider was not reached, unreached() in pipeline-jobs.mjs).
-    return { topics: fresh.topics.length, decisions: decisions.length, coverage, window: lookback, quiet, attemptComplete: Boolean(fresh.coverage.complete) || quiet, unchanged, warnings, resume: Boolean(fresh.coverage.resumable) && (Number(fresh.readMeetings || 0) > 0 || listAdvanced), stored: written.created + written.changed + touch.length, requests: { sent: record.summary.requests, failed: record.summary.failed }, ...(fresh.refused ? { refused: fresh.refused } : {}) };
+    return { topics: fresh.topics.length, decisions: decisions.length, coverage, window: lookback, quiet, attemptComplete: Boolean(fresh.coverage.complete) || quiet, unchanged, warnings, resume: Boolean(fresh.coverage.resumable) && (Number(fresh.readMeetings || 0) > 0 || listAdvanced), stored: written.created + written.changed + touch.length, requests: { sent: record.summary.requests, failed: record.summary.failed }, ...(fresh.refused ? { refused: fresh.refused } : {}), ...(fallback ? { fallback: { server: fallback.server } } : {}) };
 }
