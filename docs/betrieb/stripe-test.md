@@ -59,6 +59,16 @@ Das Skript startet `stripe listen` mit dem Schlüssel aus `.dev.vars` (ohne `str
 6. **Abgleich:** `node scripts/billing/reconcile.mjs` liest ohne `ACCOUNTS_FILE` die lokale D1-Datei und `STRIPE_*` aus `.dev.vars` und gibt `{"seen":…,"linked":…}` aus.
 7. **Stand ansehen:** Tabellen `billing_customers`, `subscriptions`, `billing_events` und `plan_grants` mit `source='stripe'` in der lokalen D1-Datei.
 
+## Testmodus auf plenara.de (seit 26.10.2026, nur Admins)
+
+Auf dem Server läuft dieselbe Sandbox wie lokal, aber nur Konten mit der Rolle admin sehen „Plus buchen“ und das Portal (`STRIPE_ADMINS_ONLY=1`); alle anderen merken nichts. So lässt sich der Ablauf mit dem eigenen Konto prüfen, ohne dass Testkonten Plus über die Testkarte bekommen.
+
+- **Werte:** in `/etc/ratsmonitor/accounts.env` (root, 600; der Dienst `ratsmonitor` liest die Datei): `STRIPE_SECRET_KEY` (Testschlüssel), `STRIPE_PRICE_PLUS`, `STRIPE_PORTAL_CONFIG`, `STRIPE_WEBHOOK_SECRET` und `STRIPE_ADMINS_ONLY=1`. Danach `systemctl restart ratsmonitor`.
+- **Webhook-Endpunkt:** bei Stripe für `https://plenara.de/api/billing/webhook` mit den sieben Meldungen aus `EVENTS` (`billing.mjs`); sein Geheimnis ist `STRIPE_WEBHOOK_SECRET` auf dem Server (ein anderes als das der lokalen CLI).
+- **Caddy:** `/api/billing/webhook` steht in `@site_password` unter den Ausnahmen vom Seitenpasswort (`deploy/node/caddy/snippets.caddy`, auf dem Server `/etc/caddy/Caddyfile`).
+- **Lokal und Server nebeneinander:** Beide erhalten die Meldungen derselben Sandbox. Abos, deren Konto es auf der jeweiligen Seite nicht gibt, überspringen Meldungen und Abgleich (`syncSubscription` ohne passendes Konto).
+- **Ausschalten:** die `STRIPE_*`-Zeilen entfernen und den Dienst neu starten; den Endpunkt im Dashboard löschen.
+
 ## Vor dem Live-Betrieb
 
 Nicht Teil der Testanbindung, aber nötig, bevor `STRIPE_LIVE=1` gesetzt wird:
