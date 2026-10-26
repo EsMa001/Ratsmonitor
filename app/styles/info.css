@@ -1005,6 +1005,11 @@ html.rm-dark .ri-bid__label {
   font-weight: 600;
 }
 
+/* Hinweis auf Plus (PlusHint): Desktop als Overlay auf der Karte, die Fassung unter dem Startknopf nur am Handy (Block unten) */
+.pl-plus--inline {
+  display: none;
+}
+
 @media (max-width:640px) {
   .pl-hero {
     padding-top: 12px;
@@ -1112,12 +1117,18 @@ html.rm-dark .ri-bid__label {
     padding: 0 20px;
   }
 
-  /* Hinweis auf Plus (PlusHint) unter dem Startknopf, nicht über der Überschrift */
-  .pl-plus {
+  /* Hinweis auf Plus (PlusHint): am Handy unter dem Startknopf statt auf der kleinen Karte */
+  .pl-plus--inline {
+    display: block;
     order: 10;
     margin: 24px 0 0;
   }
+
+  .pl-plus--map {
+    display: none;
+  }
 }
+
 
 .pl-pulse {
   animation: plpulse 2.4s ease-in-out infinite;

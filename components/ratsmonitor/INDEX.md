@@ -16,7 +16,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/styles/dark.css (436 Zeilen, ⚠3)
 - app/styles/glass.css (180 Zeilen)
 - app/styles/header.css (411 Zeilen)
-- app/styles/info.css (1241 Zeilen)
+- app/styles/info.css (1257 Zeilen)
 - app/styles/print.css (61 Zeilen)
 - app/styles/search.css (317 Zeilen)
 - app/styles/tokens.css (311 Zeilen, ⚠1)
@@ -353,7 +353,7 @@ pb-10 analytics.css:1048
 pl-band analytics.css:267
 pl-cta info.css:844
 pl-ctawrap info.css:1105
-pl-cut3 info.css:1140
+pl-cut3 info.css:1156
 pl-footer-accent dark.css:111
 pl-footer-accent info.css:821
 pl-grid info.css:1013
@@ -363,12 +363,14 @@ pl-hero info.css:982
 pl-left info.css:1019
 pl-mapwrap info.css:1067
 pl-num info.css:990
-pl-opt info.css:1126
+pl-opt info.css:1142
 pl-ort info.css:1097
 pl-ort search.css:302
 pl-ping info.css:969
+pl-plus--inline info.css:1116
+pl-plus--map info.css:1122
 pl-pop info.css:965
-pl-pulse info.css:1116
+pl-pulse info.css:1132
 pl-search search.css:297
 pl-slogan info.css:986
 pl-source info.css:1044
@@ -409,9 +411,9 @@ ri-actions info.css:76
 ri-actions--far info.css:83
 ri-anw analytics.css:1149
 ri-anw info.css:854
-ri-below info.css:1143
-ri-below__h info.css:1146
-ri-below__lead info.css:1154
+ri-below info.css:1159
+ri-below__h info.css:1162
+ri-below__lead info.css:1170
 ri-bid analytics.css:1196
 ri-bid info.css:87
 ri-bid__icon analytics.css:1196
@@ -452,7 +454,7 @@ ri-h1--sm info.css:126
 ri-h2 dark.css:73
 ri-h2 info.css:155
 ri-h2--gap info.css:453
-ri-h2--live info.css:1206
+ri-h2--live info.css:1222
 ri-h2--md info.css:164
 ri-head analytics.css:1014
 ri-head dark.css:197
@@ -497,7 +499,7 @@ ri-qa__sign--plus info.css:424
 ri-sec info.css:140
 ri-sec--faq info.css:150
 ri-sec--prices info.css:448
-ri-sec--snug info.css:1199
+ri-sec--snug info.css:1215
 ri-sec--tight info.css:145
 ri-sub info.css:168
 ri-submit info.css:605
@@ -510,7 +512,7 @@ ri-tl__step info.css:196
 ri-tl__step--out info.css:210
 ri-tl__title dark.css:73
 ri-tl__title info.css:229
-ri-toc info.css:1163
+ri-toc info.css:1179
 ri-toc print.css:57
 ri-topnav header.css:248
 right-3 analytics.css:185
@@ -625,7 +627,7 @@ rm-wheel-list dark.css:406
 rm-wheel-list glass.css:144
 rm-wheels-lower analytics.css:1329
 rm-xbtn analytics.css:935
-rm-xcta info.css:1220
+rm-xcta info.css:1236
 rm-xebene analytics.css:92
 rm-xebene dark.css:337
 rm-xfield analytics.css:935
@@ -879,6 +881,7 @@ z- analytics.css:632
 - Header.tsx (128, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
 - PlanCards.tsx (158, ⚠1): PlanCards, PlanSummary
+- PlusHint.tsx (84, ⚠1): PlusHint
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
@@ -919,7 +922,7 @@ z- analytics.css:632
 - NotFoundPage.tsx (30): NotFoundPage
 - PreisePage.tsx (88): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
-- StartseitePage.tsx (510, ⚠1): StartseitePage
+- StartseitePage.tsx (511, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠25): TodoPage
 - VideosPage.tsx (172): VideosPage
