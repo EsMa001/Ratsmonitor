@@ -10602,22 +10602,11 @@
     "system": "https://gemeinderat-online.fellbach.de/oparl/system",
     "method": "oparl",
     "body": "https://gemeinderat-online.fellbach.de/oparl/bodies/0001",
-    "note": "Einzige Körperschaft des von der offiziellen Website verlinkten Systems („Große Kreisstadt Fellbach“); fest zugeordnet.",
+    "note": "Einzige Körperschaft des von der offiziellen Website verlinkten Systems („Große Kreisstadt Fellbach“); fest zugeordnet. Die Website (https://www.fellbach.de/Amtliche-Bekanntmachungen; Probeabruf 12 Monate am 27.10.2026: 111 Berichte aus 18 Sitzungen) taugt nicht als Ausweichquelle: sie liegt in derselben Servergruppe wie das System (fellbach.de), dort würde eine Ausweichquelle nie aktiv (27.10.2026).",
     "meetingScan": "end",
     "state": "system-verified",
     "verifiedSource": "https://gemeinderat-online.fellbach.de/info.asp",
-    "verifiedAt": "2026-10-04",
-    "fallback": {
-      "adapter": "website",
-      "base": "https://www.fellbach.de/",
-      "pages": [
-        "https://www.fellbach.de/Amtliche-Bekanntmachungen",
-        "https://www.fellbach.de/de/Rathaus/Kommunalpolitik/Jugendgemeinderat"
-      ],
-      "verifiedSource": "https://www.fellbach.de/Amtliche-Bekanntmachungen",
-      "verifiedAt": "2026-10-27",
-      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 111 Berichte aus 18 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
-    }
+    "verifiedAt": "2026-10-04"
   },
   {
     "id": "de-08119024",
@@ -33584,21 +33573,7 @@
     ],
     "verifiedSource": "https://www.amt-guestrow-land.de/",
     "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website.",
-    "fallback": {
-      "adapter": "website",
-      "base": "https://www.amt-guestrow-land.de/",
-      "pages": [
-        "https://www.amt-guestrow-land.de/sitzungen/beschluesse.html",
-        "https://www.amt-guestrow-land.de/sitzungen/niederschriften.html",
-        "https://www.amt-guestrow-land.de/bekanntmachungen/wahlen.html",
-        "https://www.amt-guestrow-land.de/bekanntmachungen/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen-amt-guestrow-land.html",
-        "https://www.amt-guestrow-land.de/bekanntmachungen/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen/glasewitz.html"
-      ],
-      "verifiedSource": "https://www.amt-guestrow-land.de/sitzungen/beschluesse.html",
-      "verifiedAt": "2026-10-27",
-      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 242 Berichte aus 32 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Beschlüsse und Niederschriften der Gemeindevertretungen; die meisten Punkte ohne Öffentlichkeitsnachweis, einzelne Sätze aus Niederschriften."
-    }
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website. Probeabruf 12 Monate am 27.10.2026 über dieselben Seiten: 242 Berichte aus 32 Sitzungen; eine Ausweichquelle auf derselben Website ist keine, entfernt am 27.10.2026."
   },
   {
     "id": "de-130725258",
