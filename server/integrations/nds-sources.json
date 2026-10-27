@@ -32,7 +32,19 @@
     "base": "https://ratsinfob.stadt.wolfsburg.de/",
     "verifiedSource": "https://ratsinfob.stadt.wolfsburg.de/",
     "verifiedAt": "2026-10-10",
-    "apiCheck": "OParl-Adresse des Systems (https://ratsinfob.stadt.wolfsburg.de/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinfob.stadt.wolfsburg.de/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.wolfsburg.de/",
+      "pages": [
+        "https://www.wolfsburg.de/rathaus/bekanntmachungen/amtliche-bekanntmachungen",
+        "https://www.wolfsburg.de/en-us/rathaus/bekanntmachungen/amtliche-bekanntmachungen",
+        "https://www.wolfsburg.de/rathaus/bekanntmachungen"
+      ],
+      "verifiedSource": "https://www.wolfsburg.de/rathaus/bekanntmachungen/amtliche-bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 1559 Berichte aus 88 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Amtsblatt und Bekanntmachungen der Stadt mit Ortsräten und Ausschüssen; einzelne Zeilen aus Wahlbekanntmachungen und abgeschnittene Titel."
+    }
   },
   {
     "id": "nds-03151",
@@ -4434,21 +4446,5 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://samtgemeindeverwaltung.de/dokumente/amtsblatt/",
     "note": "Ratsinformationssystem gesperrt. Die Samtgemeinde-Bekanntmachungen nennen Tagesordnungspunkte der Wahlausschüsse (Probeabruf 12 Monate: 42 Berichte, 21.09.2026)."
-  },
-  {
-    "id": "mv-karstaedt",
-    "name": "Gemeinde Karstädt",
-    "kind": "city",
-    "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.gemeinde-karstaedt.de/",
-    "pages": [
-      "https://www.gemeinde-karstaedt.de/amtsblatt/index.php"
-    ],
-    "gazetteForms": true,
-    "state": "verified",
-    "verifiedAt": "2026-10-25",
-    "verifiedSource": "https://www.gemeinde-karstaedt.de/amtsblatt/index.php",
-    "note": "Amtsblatt der Gemeinde mit Beschlüssen der Gemeindevertretung (Ausgaben über Download-Formulare, Probeabruf: 14 Berichte, Sitzung 01.10.2026 und 31.03.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]

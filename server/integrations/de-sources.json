@@ -432,7 +432,22 @@
     },
     "verifiedSource": "https://amtnt.ris-portal.de/web/ratsinformation/startseite",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar; gemeinsames System von Amt Nordsee-Treene und Stadt Friedrichstadt, getrennt über die Gremienangabe."
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar; gemeinsames System von Amt Nordsee-Treene und Stadt Friedrichstadt, getrennt über die Gremienangabe.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.amt-nordsee-treene.de/",
+      "pages": [
+        "https://www.amt-nordsee-treene.de/Verwaltung-B%C3%BCrgerservice/Amt-Nordsee-Treene/Bekanntmachungen/",
+        "https://www.amt-nordsee-treene.de/Verwaltung-B%C3%BCrgerservice/Amt-Nordsee-Treene/Bekanntmachungen/?La=1",
+        "https://www.amt-nordsee-treene.de/Verwaltung-B%C3%BCrgerservice/Amt-Nordsee-Treene/Bekanntmachungen/?NavID=3254.26&kat=3254.626%2C3254.1272&kuo=1&mt=2&k_sub=1&startkat=3254.626&ModID=6&object=tx%7C3974.3.1&alpha=S",
+        "https://www.amt-nordsee-treene.de/Verwaltung-B%C3%BCrgerservice/Amt-Nordsee-Treene/Bekanntmachungen/?NavID=3254.26&kat=3254.626%2C3254.1272&kuo=1&mt=2&k_sub=1&startkat=3254.626&ModID=6&object=tx%7C3974.3.1&alpha=B",
+        "https://www.amt-nordsee-treene.de/Verwaltung-B%C3%BCrgerservice/Amt-Nordsee-Treene/Bekanntmachungen/?NavID=3254.26&kat=3254.626%2C3254.1272&kuo=1&mt=2&k_sub=1&startkat=3254.626&ModID=6&object=tx%7C3974.3.1&alpha=F"
+      ],
+      "sitemap": "https://www.amt-nordsee-treene.de/sitemap.xml",
+      "verifiedSource": "https://www.amt-nordsee-treene.de/Verwaltung-B%C3%BCrgerservice/Amt-Nordsee-Treene/Bekanntmachungen/",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 54 Berichte aus 9 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+    }
   },
   {
     "id": "de-010545494",
@@ -3424,7 +3439,17 @@
     "base": "https://langen.ris-portal.de/",
     "verifiedSource": "https://langen.ris-portal.de/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten, Teil A - Öffentlicher Teil) erreichbar."
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten, Teil A - Öffentlicher Teil) erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.langen.de/",
+      "pages": [
+        "https://www.langen.de/de/bekanntmachungen.html"
+      ],
+      "verifiedSource": "https://www.langen.de/de/bekanntmachungen.html",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 20 Berichte aus 1 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Im Probeabruf nur eine Sitzung (22.10.2026), Titel teils am Zeilenende abgeschnitten."
+    }
   },
   {
     "id": "de-06438007",
@@ -10362,7 +10387,18 @@
     "meetingScan": "end",
     "state": "system-verified",
     "verifiedSource": "https://gemeinderat-online.fellbach.de/info.asp",
-    "verifiedAt": "2026-10-04"
+    "verifiedAt": "2026-10-04",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.fellbach.de/",
+      "pages": [
+        "https://www.fellbach.de/Amtliche-Bekanntmachungen",
+        "https://www.fellbach.de/de/Rathaus/Kommunalpolitik/Jugendgemeinderat"
+      ],
+      "verifiedSource": "https://www.fellbach.de/Amtliche-Bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 111 Berichte aus 18 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+    }
   },
   {
     "id": "de-08119024",
@@ -17698,7 +17734,21 @@
     "base": "https://unlingen.ris-portal.de/",
     "verifiedSource": "https://unlingen.ris-portal.de/startseite",
     "verifiedAt": "2026-10-10",
-    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.unlingen.de/",
+      "pages": [
+        "https://www.unlingen.de/rathaus-service/gemeinderat/berichte-aus-den-sitzungen",
+        "https://www.unlingen.de/rathaus-service/gemeinderat/sitzungen-vorlagen",
+        "https://www.unlingen.de/rathaus-service/aktuelles/oeffentliche-bekanntmachungen/seite-3/suche-none",
+        "https://www.unlingen.de/rathaus-service/gemeinderat/sitzungstermine/seite-1/suche-none",
+        "https://www.unlingen.de/rathaus-service/aktuelles/oeffentliche-bekanntmachungen/seite-1/suche-none"
+      ],
+      "verifiedSource": "https://www.unlingen.de/rathaus-service/gemeinderat/berichte-aus-den-sitzungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 72 Berichte aus 8 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Berichte aus den Sitzungen des Gemeinderats."
+    }
   },
   {
     "id": "de-08426128",
@@ -29415,7 +29465,22 @@
     "extension": "asp",
     "verifiedSource": "https://buergerinfo-lechfeld.digitalfabrix.de/",
     "verifiedAt": "2026-10-10",
-    "apiCheck": "Öffentlicher Hersteller-Standardpfad lieferte kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad lieferte kein OParl-System; öffentlicher SessionNet-Kalender erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://lechfeld.de/",
+      "pages": [
+        "https://lechfeld.de/rathaus-verwaltung/bekanntmachungen/",
+        "https://lechfeld.de/rathaus-verwaltung/bekanntmachungen/?ort=untermeitingen",
+        "https://lechfeld.de/rathaus-verwaltung/bekanntmachungen/?ort=klosterlechfeld",
+        "https://lechfeld.de/aktuelles/?zuordnung=bekanntmachungen",
+        "https://lechfeld.de/untermeitingen/bekanntmachungen/"
+      ],
+      "sitemap": "https://lechfeld.de/bekanntmachungen-sitemap.xml",
+      "verifiedSource": "https://lechfeld.de/rathaus-verwaltung/bekanntmachungen/",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 8 Berichte aus 2 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Im Probeabruf nur der Gemeinderat Untermeitingen (8 Punkte)."
+    }
   },
   {
     "id": "de-097725712",
@@ -33279,7 +33344,21 @@
     ],
     "verifiedSource": "https://www.amt-guestrow-land.de/",
     "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.amt-guestrow-land.de/",
+      "pages": [
+        "https://www.amt-guestrow-land.de/sitzungen/beschluesse.html",
+        "https://www.amt-guestrow-land.de/sitzungen/niederschriften.html",
+        "https://www.amt-guestrow-land.de/bekanntmachungen/wahlen.html",
+        "https://www.amt-guestrow-land.de/bekanntmachungen/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen-amt-guestrow-land.html",
+        "https://www.amt-guestrow-land.de/bekanntmachungen/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen/glasewitz.html"
+      ],
+      "verifiedSource": "https://www.amt-guestrow-land.de/sitzungen/beschluesse.html",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 242 Berichte aus 32 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Beschlüsse und Niederschriften der Gemeindevertretungen; die meisten Punkte ohne Öffentlichkeitsnachweis, einzelne Sätze aus Niederschriften."
+    }
   },
   {
     "id": "de-130725258",
@@ -33872,7 +33951,21 @@
     "base": "https://amtboizenburgland.ris-portal.de/",
     "verifiedSource": "https://amtboizenburgland.ris-portal.de/",
     "verifiedAt": "2026-10-10",
-    "apiCheck": "collectRisPortal 3m: 141 Punkte, Amtsausschuss + Gemeindevertretungen der Mitglieder (ris.boizenburgland.de leitet dorthin)"
+    "apiCheck": "collectRisPortal 3m: 141 Punkte, Amtsausschuss + Gemeindevertretungen der Mitglieder (ris.boizenburgland.de leitet dorthin)",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.amtboizenburgland.de/",
+      "pages": [
+        "https://www.amtboizenburgland.de/amt-gemeinden/dersenow/oeffentliche-bekanntmachungen/",
+        "https://www.amtboizenburgland.de/amt-gemeinden/dersenow/oeffentliche-bekanntmachungen/?p900000024=1&naviID=900000053&brotID=900000053&webcode_id=0&navi_typ=2&no_container_bilder=1&bereich=2&id=0&owner=28910&rubrik=900000007&nolisScrollTo=nolis_seiten_aktuelles900000024",
+        "https://www.amtboizenburgland.de/amt-gemeinden/dersenow/oeffentliche-bekanntmachungen/?p900000024=1&naviID=900000053&brotID=900000053&rubrik=900000007&typ=2&site=900000043&owner=28910&webcode_id=0&navi_typ=2&no_container_bilder=1&bereich=2&id=0&id=0&owner=28910&nolisScrollTo=nolis_seiten_aktuelles900000024",
+        "https://www.amtboizenburgland.de/amt-gemeinden/dersenow/oeffentliche-bekanntmachungen/?p900000024=3&naviID=900000053&brotID=900000053&webcode_id=0&navi_typ=2&no_container_bilder=1&bereich=2&id=0&owner=28910&rubrik=900000007&nolisScrollTo=nolis_seiten_aktuelles900000024",
+        "https://www.amtboizenburgland.de/amt-gemeinden/dersenow/oeffentliche-bekanntmachungen/?p900000024=3&naviID=900000053&brotID=900000053&rubrik=900000007&typ=2&site=900000043&owner=28910&webcode_id=0&navi_typ=2&no_container_bilder=1&bereich=2&id=0&id=0&owner=28910&nolisScrollTo=nolis_seiten_aktuelles900000024"
+      ],
+      "verifiedSource": "https://www.amtboizenburgland.de/amt-gemeinden/dersenow/oeffentliche-bekanntmachungen/",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 77 Berichte aus 5 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Nur Gemeindevertretung Dersenow (Mitgliedsgemeinde)."
+    }
   },
   {
     "id": "de-130765654",
@@ -38941,7 +39034,22 @@
     "verifiedSource": "https://amt-huettener-berge.ris-portal.de/web/ratsinformation/",
     "verifiedAt": "2026-10-09",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
-    "foundBy": "Recherche 2026-10-09"
+    "foundBy": "Recherche 2026-10-09",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.amt-huettener-berge.de/",
+      "pages": [
+        "https://www.amt-huettener-berge.de/das-amt/bekanntmachungen",
+        "https://www.amt-huettener-berge.de/gemeinden/ahlenfeld-bistensee/bekanntmachungen",
+        "https://www.amt-huettener-berge.de/aktuelles/details/news/bekanntmachung-zur-sitzung-der-gemeindevertretung-der-gemeinde-ascheffel",
+        "https://www.amt-huettener-berge.de/aktuelles/details/news/bekanntmachung-zur-sitzung-der-gemeindevertretung-der-gemeinde-brekendorf",
+        "https://www.amt-huettener-berge.de/aktuelles/details/news/bekanntmachung-zur-sitzung-der-gemeindevertretung-der-gemeinde-ahlefeld-bistensee"
+      ],
+      "sitemap": "https://www.amt-huettener-berge.de/startseite/sitemap.xml?sitemap=news&cHash=702c3183b9569b8aac84c564dbafa58b",
+      "verifiedSource": "https://www.amt-huettener-berge.de/das-amt/bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 43 Berichte aus 5 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+    }
   },
   {
     "id": "de-06435023",
@@ -39041,7 +39149,17 @@
     "verifiedSource": "https://duernau.ris-portal.de/",
     "verifiedAt": "2026-10-09",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
-    "foundBy": "Recherche 2026-10-09"
+    "foundBy": "Recherche 2026-10-09",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.duernau.de/",
+      "pages": [
+        "https://www.duernau.de/de/buerger/mitteilungsblatt"
+      ],
+      "verifiedSource": "https://www.duernau.de/de/buerger/mitteilungsblatt",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 45 Berichte aus 5 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Mitteilungsblatt; etwa jeder dritte Titel am Zeilenende abgeschnitten."
+    }
   },
   {
     "id": "de-08119083",
@@ -39577,7 +39695,21 @@
     "verifiedSource": "https://roederaue.ris-portal.de/",
     "verifiedAt": "2026-10-09",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
-    "foundBy": "Recherche 2026-10-09"
+    "foundBy": "Recherche 2026-10-09",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.roederaue.de/",
+      "pages": [
+        "https://www.roederaue.de/aktuelles/bekanntmachungen.html",
+        "https://www.roederaue.de/aktuelles/bekanntmachungen/elektronisches-amtsblatt-der-gemeinde-roederaue-nr-e19-2026.html",
+        "https://www.roederaue.de/aktuelles/bekanntmachungen/elektronisches-amtsblatt-der-gemeinde-roederaue-nr-e20-2026.html",
+        "https://www.roederaue.de/aktuelles/bekanntmachungen/elektronisches-amtsblatt-der-gemeinde-roederaue-nr-e21-2026.html",
+        "https://www.roederaue.de/aktuelles/bekanntmachungen/elektronisches-amtsblatt-der-gemeinde-roederaue-nr-e22-2026.html"
+      ],
+      "verifiedSource": "https://www.roederaue.de/aktuelles/bekanntmachungen.html",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 77 Berichte aus 7 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Gemeinderat Röderaue und Ausschuss; einzelne Titel am Zeilenende abgeschnitten."
+    }
   },
   {
     "id": "de-147295307",
@@ -43368,5 +43500,513 @@
     "verifiedAt": "2026-10-25",
     "verifiedSource": "https://www.moeckern-flaeming.de/seite/670749/ris.html",
     "apiCheck": "Sitzungsdienst mein-intra (councilservice), öffentlicher Export der Website; Token aus der Seite."
+  },
+  {
+    "id": "de-08118073",
+    "name": "Stadt Vaihingen an der Enz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vaihingen.de/",
+    "pages": [
+      "https://www.vaihingen.de/rathaus-service/aktuelles-presse/amtsblatt"
+    ],
+    "verifiedSource": "https://www.vaihingen.de/rathaus-service/aktuelles-presse/amtsblatt",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "vaihingen.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 237 Berichte aus 16 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Etwa jeder fünfte Titel am Zeilenende abgeschnitten."
+  },
+  {
+    "id": "de-08226041",
+    "name": "Stadt Leimen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.leimen.de/",
+    "pages": [
+      "https://www.leimen.de/rathaus-service/aktuelles/oeffentliche-bekanntmachungen",
+      "https://www.leimen.de/rathaus-service/leimener-gemeinderat/sitzungstermine",
+      "https://www.leimen.de/startseite",
+      "https://www.leimen.de/rathaus-service/leimener-gemeinderat/sitzungskalender",
+      "https://www.leimen.de/rathaus-service/leimener-gemeinderat/ausschuesse/5/gemeinderat"
+    ],
+    "sitemap": "https://www.leimen.de/startseite?sitemap=pages&type=1533906435&cHash=a3557b612de41c6d89514c0300094772",
+    "verifiedSource": "https://www.leimen.de/rathaus-service/aktuelles/oeffentliche-bekanntmachungen",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.leimen.de nicht lesbar (Ratsinformationsmodul der Website zeigt nur Sitzungstermine und Protokolle als PDF, keine). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 19 Berichte aus 3 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Nur Jugendgemeinderat und Seniorenbeirat; der Gemeinderat steht nicht auf der Website."
+  },
+  {
+    "id": "de-12060269",
+    "name": "Gemeinde Wandlitz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wandlitz.de/",
+    "pages": [
+      "https://www.wandlitz.de/bekanntmachungen/index.php",
+      "https://www.wandlitz.de/bekanntmachungen/index.php?modus=drucken"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.wandlitz.de/bekanntmachungen/index.php",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "ris.wandlitz.de nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 197 Berichte aus 7 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-08215103",
+    "name": "Gemeinde Karlsdorf-Neuthard",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.karlsdorf-neuthard.de/",
+    "pages": [
+      "https://www.karlsdorf-neuthard.de/news?action=view_navigator&category_id=129",
+      "https://www.karlsdorf-neuthard.de/news?action=view_one_article&article_id=129",
+      "https://www.karlsdorf-neuthard.de/news?action=view_one_article&article_id=130",
+      "https://www.karlsdorf-neuthard.de/news?action=view_one_article&article_id=137",
+      "https://www.karlsdorf-neuthard.de/news?action=view_one_article&article_id=140"
+    ],
+    "verifiedSource": "https://www.karlsdorf-neuthard.de/news?action=view_navigator&category_id=129",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "karlsdorf-neuthard.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 49 Berichte aus 8 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-097785768",
+    "name": "Verwaltungsgemeinschaft Bad Grönenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bad-groenenbach.de/",
+    "pages": [
+      "https://rathaus.bad-groenenbach.de/kommunalpolitik/marktgemeinderat/beschluesse",
+      "https://rathaus.bad-groenenbach.de/bauen-und-wohnen/energieteam-klimaschutz/aktuelles",
+      "https://rathaus.bad-groenenbach.de/bekanntmachungen-veroeffentlichungen/planauslegungen",
+      "https://rathaus.bad-groenenbach.de/bekanntmachungen-veroeffentlichungen/bekanntmachungen",
+      "https://rathaus.bad-groenenbach.de/bauen-und-wohnen/energieteam-klimaschutz/aktuelles?tx_events2_list%5Baction%5D=show&tx_events2_list%5Bcontroller%5D=Day&tx_events2_list%5Bevent%5D=627&tx_events2_list%5Btimestamp%5D=1795550400&cHash=a3274e71be5a80e48d915dfe289995ba"
+    ],
+    "alsoFrom": [
+      "https://rathaus.bad-groenenbach.de"
+    ],
+    "verifiedSource": "https://rathaus.bad-groenenbach.de/kommunalpolitik/marktgemeinderat/beschluesse",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.bad-groenenbach.de nicht lesbar (Sitzungsbekanntmachungen oder Unterlagen auf der Gemeinde-Website gefunden, aber keine öff). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 86 Berichte aus 20 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Beschlussseite des Marktes Bad Grönenbach."
+  },
+  {
+    "id": "de-06533004",
+    "name": "Gemeinde Dornburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-dornburg.de/",
+    "pages": [
+      "https://www.gemeinde-dornburg.de/ortsteile-gemeinde/politik-2021-2026/einladungen/",
+      "https://www.gemeinde-dornburg.de/ortsteile-gemeinde/politik-2021-2026/protokolle/",
+      "https://www.gemeinde-dornburg.de/ortsteile-gemeinde/politik-2021-2026/archiv-protokolle/",
+      "https://www.gemeinde-dornburg.de/ortsteile-gemeinde/politik-ab-2026/einladungen/",
+      "https://www.gemeinde-dornburg.de/ortsteile-gemeinde/politik-ab-2026/protokolle/"
+    ],
+    "verifiedSource": "https://www.gemeinde-dornburg.de/ortsteile-gemeinde/politik-2021-2026/einladungen/",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.gemeinde-dornburg.de nicht lesbar (Sitzungsbekanntmachungen oder Unterlagen auf der Gemeinde-Website gefunden, aber keine öff). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 239 Berichte aus 34 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-12067544",
+    "name": "Gemeinde Woltersdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.woltersdorf-schleuse.de/",
+    "pages": [
+      "https://www.woltersdorf-schleuse.de/bekanntmachungen/index.php",
+      "https://www.woltersdorf-schleuse.de/rechtsgrundlagen/1/44534/gesch%C3%A4ftsordnung-der-gemeindevertretung.html"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.woltersdorf-schleuse.de/bekanntmachungen/index.php",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "Kein Ratsinformationssystem bekannt. Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 6 Berichte aus 4 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Wenige Bekanntmachungen (Wahlausschuss, Gemeindevertretung)."
+  },
+  {
+    "id": "de-15085040",
+    "name": "Stadt Ballenstedt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ballenstedt.de/",
+    "pages": [
+      "https://www.ballenstedt.de/rathaus-und-buergerservice/stadtrat/sitzungsplan",
+      "https://www.ballenstedt.de/rathaus-und-buergerservice/stadtrat"
+    ],
+    "sitemap": "https://www.ballenstedt.de/sitemap.xml",
+    "verifiedSource": "https://www.ballenstedt.de/rathaus-und-buergerservice/stadtrat/sitzungsplan",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "rats-info.ballenstedt.de nicht lesbar (Nur für angemeldete Mitglieder oder passwortgeschützt, kein öffentlicher Teil ; Link geprü). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 369 Berichte aus 22 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-092735219",
+    "name": "Verwaltungsgemeinschaft Mainburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.attenhofen.de/",
+    "pages": [
+      "https://www.attenhofen.de/sitzungsberichte/",
+      "https://www.attenhofen.de/gemeindeblatt/",
+      "https://www.attenhofen.de/buergermeister/",
+      "https://www.attenhofen.de/",
+      "https://www.attenhofen.de/bekanntmachungen/"
+    ],
+    "sitemap": "https://www.attenhofen.de/aktuelles-kategorie-sitemap.xml",
+    "verifiedSource": "https://www.attenhofen.de/sitzungsberichte/",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "buergerinfo-mainburg.digitalfabrix.de nicht lesbar (Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website ge). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 128 Berichte aus 7 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Sitzungsberichte des Gemeinderats Attenhofen (Mitgliedsgemeinde) auf attenhofen.de."
+  },
+  {
+    "id": "de-15085185",
+    "name": "Gemeinde Huy",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeindehuy.de/",
+    "pages": [
+      "https://www.gemeindehuy.de/Aktuelles/Wichtige-Bekanntmachungen/Beschl%C3%BCsse-aus-Ausschuss-und-Gemeinderatssitzungen/",
+      "https://www.gemeindehuy.de/Aktuelles/Wichtige-Bekanntmachungen/",
+      "https://www.gemeindehuy.de/B%C3%BCrgerservice/Was-erledige-ich-wo-/Dienstleistungen/Ver%C3%B6ffentlichung-von-amtlichen-Bekanntmachungen.php?ModID=10&FID=3543.257.1"
+    ],
+    "sitemap": "https://www.gemeindehuy.de/sitemap.xml",
+    "verifiedSource": "https://www.gemeindehuy.de/Aktuelles/Wichtige-Bekanntmachungen/Beschl%C3%BCsse-aus-Ausschuss-und-Gemeinderatssitzungen/",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "huy.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 14 Berichte aus 1 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Im Probeabruf nur ein Ausschuss."
+  },
+  {
+    "id": "de-16071008",
+    "name": "Stadt Blankenhain",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.blankenhain.de/",
+    "pages": [
+      "https://www.blankenhain.de/aktuelles/amtsblatt/amtsblatt-archiv/",
+      "https://www.blankenhain.de/stadtbuergerservice/stadtrat/ausschusssitzungen/",
+      "https://www.blankenhain.de/stadtbuergerservice/stadtrat/stadtratssitzungen/",
+      "https://www.blankenhain.de/aktuelles/amtsblatt/amtsblatt-aktuell/",
+      "https://www.blankenhain.de/stadtbuergerservice/stadtrat/ausschuesseausschussbesetzung/"
+    ],
+    "verifiedSource": "https://www.blankenhain.de/aktuelles/amtsblatt/amtsblatt-archiv/",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.blankenhain.de nicht lesbar (Sitzungsunterlagen nur auf der Gemeinde-Website , kein Ratsinformationssystem erkennbar). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 179 Berichte aus 20 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Viele Punkte ohne Öffentlichkeitsnachweis (Amtsblatt mit Beschlüssen)."
+  },
+  {
+    "id": "de-14729190",
+    "name": "Gemeinde Großpösna",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.grosspoesna.de/",
+    "pages": [
+      "https://www.grosspoesna.de/bekanntmachungen/index.php",
+      "https://www.grosspoesna.de/verzeichnis/mandat.php?mandat=64318&kategorie=63",
+      "https://www.grosspoesna.de/news/index.php?rubrik=1",
+      "https://www.grosspoesna.de/",
+      "https://www.grosspoesna.de/news/1/1286452/nachrichten/einladung-zur-gemeinderatssitzung-am-21.-september-2026-in-g%C3%BCldengossa.html"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.grosspoesna.de/bekanntmachungen/index.php",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.grosspoesna.de nicht lesbar (Link gespeichert : Seite nennt ein Ratsinformationssystem, bei der Prüfung aber kein lesba). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 23 Berichte aus 2 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-091905180",
+    "name": "Verwaltungsgemeinschaft Steingaden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.steingaden.de/",
+    "pages": [
+      "https://www.steingaden.de/gemeinde/gemeinde/mitteilungsblatt",
+      "https://www.steingaden.de/gemeinde/gemeinde/rathaus"
+    ],
+    "verifiedSource": "https://www.steingaden.de/gemeinde/gemeinde/mitteilungsblatt",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "vg-steingaden.ris.kommune-aktiv.de nicht lesbar (Kommune aktiv: antwortet Programmen mit HTTP 403). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 28 Berichte aus 5 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Mitteilungsblatt; Gemeinderat Steingaden, vereinzelt Vereinsmeldungen und abgeschnittene Titel."
+  },
+  {
+    "id": "de-08116068",
+    "name": "Gemeinde Unterensingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.unterensingen.de/",
+    "pages": [
+      "https://www.unterensingen.de/rathaus-service/aktuelles/pressemitteilungen/seite-1/suche-none",
+      "https://www.unterensingen.de/startseite",
+      "https://www.unterensingen.de/rathaus-service/ortsrecht",
+      "https://www.unterensingen.de/freizeit-kultur/veranstaltungskalender/459/gemeinderatssitzung"
+    ],
+    "verifiedSource": "https://www.unterensingen.de/rathaus-service/aktuelles/pressemitteilungen/seite-1/suche-none",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "unterensingen.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 47 Berichte aus 4 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-091765116",
+    "name": "Verwaltungsgemeinschaft Eitensheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.boehmfeld.eu/",
+    "pages": [
+      "https://www.boehmfeld.eu/aktuelles/amtliche-bekanntmachungen/?page=6",
+      "https://www.boehmfeld.eu/aktuelles/amtliche-bekanntmachungen/?category=8668",
+      "https://www.boehmfeld.eu/aktuelles/amtliche-bekanntmachungen/?category=8467"
+    ],
+    "verifiedSource": "https://www.boehmfeld.eu/aktuelles/amtliche-bekanntmachungen/?page=6",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "vg-eitensheim.ris.kommune-aktiv.de nicht lesbar (Kommune aktiv: antwortet Programmen mit HTTP 403). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 57 Berichte aus 13 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Bekanntmachungen der Mitgliedsgemeinde Böhmfeld (boehmfeld.eu)."
+  },
+  {
+    "id": "de-146255212",
+    "name": "Verwaltungsgemeinschaft Großpostwitz/O.L.",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.grosspostwitz.de/",
+    "pages": [
+      "https://www.grosspostwitz.de/",
+      "https://www.grosspostwitz.de/aktuelles/informationen-bekanntmachungen",
+      "https://www.grosspostwitz.de/aktuelles/aktuelle-nachrichten/id-2020"
+    ],
+    "sitemap": "https://www.grosspostwitz.de/sitemap.xml",
+    "verifiedSource": "https://www.grosspostwitz.de/",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "Kein Ratsinformationssystem bekannt. Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 82 Berichte aus 11 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-08236050",
+    "name": "Gemeinde Ötisheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.oetisheim.de/",
+    "pages": [
+      "https://www.oetisheim.de/rathaus-service/gemeinderat/sitzungsberichte",
+      "https://www.oetisheim.de/rathaus-service/gemeinderat/sitzungsberichte?tx_hwnews_hwnews%5B%40widget_0%5D%5BcurrentPage%5D=1&tx_hwnews_hwnews%5Baction%5D=list&tx_hwnews_hwnews%5Bcontroller%5D=Newsartikel&cHash=025f9923a459c03fbc60151b76afd811",
+      "https://www.oetisheim.de/rathaus-service/aktuelles/amtliche-bekanntmachungen",
+      "https://www.oetisheim.de/rathaus-service/gemeinderat/sitzungsberichte?tx_hwnews_hwnews%5Baction%5D=show&tx_hwnews_hwnews%5Bcontroller%5D=Newsartikel&tx_hwnews_hwnews%5BcurrentPage%5D=1&tx_hwnews_hwnews%5BnewsartikelId%5D=152&cHash=26fb95a6d974a9558ca0d1b6c7d0b1c4",
+      "https://www.oetisheim.de/startseite"
+    ],
+    "verifiedSource": "https://www.oetisheim.de/rathaus-service/gemeinderat/sitzungsberichte",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "oetisheim.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 10 Berichte aus 1 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Sitzungsberichte des Gemeinderats; im Probeabruf eine Sitzung."
+  },
+  {
+    "id": "de-08315109",
+    "name": "Gemeinde Stegen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.stegen.de/",
+    "pages": [
+      "https://www.stegen.de/de/mitteilungsblatt/",
+      "https://www.stegen.de/de/gemeinderat/",
+      "https://www.stegen.de/p/gemeinderats-und-ortschaftsratswahlen"
+    ],
+    "verifiedSource": "https://www.stegen.de/de/mitteilungsblatt/",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.stegen.de nicht lesbar (Einladungen und Vorlagen als Download auf der Gemeinde-Website; der Website-Leser erkennt). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 133 Berichte aus 13 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Mitteilungsblatt; etwa jeder fünfte Titel am Zeilenende abgeschnitten, die meisten Punkte ohne Öffentlichkeitsnachweis."
+  },
+  {
+    "id": "de-096755615",
+    "name": "Verwaltungsgemeinschaft Großlangheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wiesenbronn.de/",
+    "pages": [
+      "https://www.wiesenbronn.de/rathaus/sitzungsprotokolle/",
+      "https://www.wiesenbronn.de/rathaus/",
+      "https://www.wiesenbronn.de/rathaus/gemeinderat/",
+      "https://www.wiesenbronn.de/rathaus/info-kontakt/",
+      "https://www.wiesenbronn.de/rathaus/verordnungen/"
+    ],
+    "sitemap": "https://www.wiesenbronn.de/wp-sitemap-posts-page-1.xml",
+    "verifiedSource": "https://www.wiesenbronn.de/rathaus/sitzungsprotokolle/",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.grosslangheim.de nicht lesbar (Sitzungsunterlagen nur auf der Gemeinde-Website , kein Ratsinformationssystem erkennbar). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 97 Berichte aus 12 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Sitzungsprotokolle der Mitgliedsgemeinde Wiesenbronn (wiesenbronn.de)."
+  },
+  {
+    "id": "de-09779218",
+    "name": "Gemeinde Tapfheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.tapfheim.de/",
+    "pages": [
+      "https://www.tapfheim.de/news/index.php?rubrik=1",
+      "https://www.tapfheim.de/veranstaltungen/2988977/2026/10/27/sitzung-des-gemeinderats.html",
+      "https://www.tapfheim.de/news/1/1300952/nachrichten/einladung-zur-sitzung-des-gemeinderates.html",
+      "https://www.tapfheim.de/news/1/1219870/nachrichten/einladung-zur-sitzung-des-bau-und-umweltausschusses.html",
+      "https://www.tapfheim.de/news/1/1235002/nachrichten/einladung-zur-sitzung-des-bau-und-umweltausschusses.html"
+    ],
+    "verifiedSource": "https://www.tapfheim.de/news/index.php?rubrik=1",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.tapfheim.de nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 17 Berichte aus 16 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Im Probeabruf nur der Bau- und Umweltausschuss."
+  },
+  {
+    "id": "de-09778123",
+    "name": "Gemeinde Buxheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.buxheim.de/",
+    "pages": [
+      "https://www.buxheim.de/aktuelles/gemeinderat-sitzungsprotokolle",
+      "https://www.buxheim.de/aktuelles",
+      "https://www.buxheim.de/aktuelles/amtliche-bekanntmachungen",
+      "https://www.buxheim.de/rathaus/ortsrecht-satzungen",
+      "https://www.buxheim.de/aktuelles/wahlen"
+    ],
+    "verifiedSource": "https://www.buxheim.de/aktuelles/gemeinderat-sitzungsprotokolle",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.buxheim.de nicht lesbar (Sitzungsbekanntmachungen oder Unterlagen auf der Gemeinde-Website gefunden, aber keine öff). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 95 Berichte aus 14 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Sitzungsprotokolle des Gemeinderats."
+  },
+  {
+    "id": "de-09171118",
+    "name": "Gemeinde Haiming",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.haiming.de/",
+    "pages": [
+      "https://www.haiming.de/rathaus-service/gemeinderat/termine-berichte/?tx_qtcouncilmeetings_councilmeetings%5Baction%5D=archiv&tx_qtcouncilmeetings_councilmeetings%5Bcontroller%5D=CouncilMeetings&cHash=538740d1cd9227ac3f221b37dd5c9fdf",
+      "https://www.haiming.de/aktuelles-termine/aktuelles/amtl-bekanntmachungen/",
+      "https://www.haiming.de/rathaus-service/gemeinderat/termine-berichte/"
+    ],
+    "verifiedSource": "https://www.haiming.de/rathaus-service/gemeinderat/termine-berichte/?tx_qtcouncilmeetings_councilmeetings%5Baction%5D=archiv&tx_qtcouncilmeetings_councilmeetings%5Bcontroller%5D=CouncilMeetings&cHash=538740d1cd9227ac3f221b37dd5c9fdf",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.haiming.de nicht lesbar (Sitzungsunterlagen nur auf der Gemeinde-Website , kein Ratsinformationssystem erkennbar). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 12 Berichte aus 1 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Archiv der Sitzungsberichte; im Probeabruf eine Sitzung."
+  },
+  {
+    "id": "de-09473138",
+    "name": "Gemeinde Itzgrund",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.itzgrund.de/",
+    "pages": [
+      "https://www.itzgrund.de/gemeinde-rathaus/politik/sitzungskalender.html",
+      "https://www.itzgrund.de/aktuelles/aktuelle-bekanntmachungen.html",
+      "https://www.itzgrund.de/gemeinde-rathaus/politik/gemeinderatsmitglieder.html",
+      "https://www.itzgrund.de/gemeinde-rathaus/politik/berichte-aus-dem-gemeinderat/protokolle-2026.html",
+      "https://www.itzgrund.de/"
+    ],
+    "verifiedSource": "https://www.itzgrund.de/gemeinde-rathaus/politik/sitzungskalender.html",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.itzgrund.de nicht lesbar (Sitzungsbekanntmachungen oder Unterlagen auf der Gemeinde-Website gefunden, aber keine öff). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 26 Berichte aus 4 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-14627070",
+    "name": "Gemeinde Hirschstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hirschstein.de/",
+    "pages": [
+      "https://www.hirschstein.de/politik/sitzungskalender/gremium/2598/gemeinderat",
+      "https://www.hirschstein.de/politik/gremium.php?id=2598",
+      "https://www.hirschstein.de/politik/gremium/2598/Gemeinderat",
+      "https://www.hirschstein.de/politik/gremium/2598/gemeinderat-hirschstein",
+      "https://www.hirschstein.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.hirschstein.de/politik/sitzungskalender/gremium/2598/gemeinderat",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.hirschstein.de nicht lesbar (Sitzungsunterlagen nur auf der Gemeinde-Website , kein Ratsinformationssystem erkennbar). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 12 Berichte aus 2 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Sitzungskalender; im Probeabruf zwei Sitzungen."
+  },
+  {
+    "id": "de-08235035",
+    "name": "Gemeinde Höfen an der Enz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hoefen-enz.de/",
+    "pages": [
+      "https://www.hoefen-enz.de/rathaus-service/amtliche-bekanntmachungen/oeffentliche-bekanntmachungen/bekanntmachungen",
+      "https://www.hoefen-enz.de/rathaus-service/bauamt/projektentwicklung/breitbandausbau"
+    ],
+    "verifiedSource": "https://www.hoefen-enz.de/rathaus-service/amtliche-bekanntmachungen/oeffentliche-bekanntmachungen/bekanntmachungen",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "hoefen-enz.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 13 Berichte aus 2 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Im Probeabruf zwei Sitzungen."
+  },
+  {
+    "id": "de-09571183",
+    "name": "Gemeinde Oberdachstetten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.oberdachstetten.de/",
+    "pages": [
+      "https://www.oberdachstetten.de/rathaus/downloads.html",
+      "https://www.oberdachstetten.de/aktuelles/bekanntmachungen.html",
+      "https://www.oberdachstetten.de/rathaus/gemeinderat.html"
+    ],
+    "verifiedSource": "https://www.oberdachstetten.de/rathaus/downloads.html",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.oberdachstetten.de nicht lesbar (Sitzungsbekanntmachungen oder Unterlagen auf der Gemeinde-Website gefunden, aber keine öff). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 125 Berichte aus 13 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Mitteilungsblatt; vereinzelt Kopfzeilen der Ausgabe als Titel."
+  },
+  {
+    "id": "de-06636002",
+    "name": "Gemeinde Berkatal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.berkatal.de/",
+    "pages": [
+      "https://www.berkatal.de/bekanntmachungen/index.php",
+      "https://www.berkatal.de/veranstaltungen/2986726/2026/10/27/%C3%B6ffentliche-sitzung-der-gemeindevertretung.html",
+      "https://www.berkatal.de/contact/index/link/?referrer=https://www.berkatal.de/veranstaltungen/2986726/2026/10/27/%C3%B6ffentliche-sitzung-der-gemeindevertretung.html",
+      "https://www.berkatal.de/rechtsgrundlagen/1/48560/gesch%C3%A4ftsordnung-gemeindevertretung-und-aussch%C3%BCsse.html",
+      "https://www.berkatal.de/veranstaltungen/2986726/2026/10/27/%C3%B6ffentliche-sitzung-der-gemeindevertretung.html?modus=drucken"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.berkatal.de/bekanntmachungen/index.php",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.berkatal.de nicht lesbar (Link gefunden ; die Seite antwortet Programmen mit HTTP 401/403 oder einer Zugriffsprüfung). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 222 Berichte aus 35 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Gemeindevertretung, Ausschüsse und Ortsbeiräte; etwa jeder fünfte Titel am Zeilenende abgeschnitten."
+  },
+  {
+    "id": "de-08425073",
+    "name": "Gemeinde Lauterach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://gemeinde-lauterach.de/",
+    "pages": [
+      "https://gemeinde-lauterach.de/buergerservice/mitteilungsblatt/"
+    ],
+    "verifiedSource": "https://gemeinde-lauterach.de/buergerservice/mitteilungsblatt/",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "gemeinde-lauterach.de nicht lesbar (Sitzungsunterlagen nur auf der Gemeinde-Website , kein Ratsinformationssystem erkennbar). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 140 Berichte aus 12 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Mitteilungsblatt; vereinzelt Gebührenzeilen und Satzfragmente als Titel."
+  },
+  {
+    "id": "de-12070173",
+    "name": "Gemeinde Karstädt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-karstaedt.de/",
+    "pages": [
+      "https://www.gemeinde-karstaedt.de/amtsblatt/index.php"
+    ],
+    "gazetteForms": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-25",
+    "verifiedSource": "https://www.gemeinde-karstaedt.de/amtsblatt/index.php",
+    "note": "Amtsblatt der Gemeinde mit Beschlüssen der Gemeindevertretung (Ausgaben über Download-Formulare, Probeabruf: 14 Berichte, Sitzung 01.10.2026 und 31.03.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
   }
 ]
