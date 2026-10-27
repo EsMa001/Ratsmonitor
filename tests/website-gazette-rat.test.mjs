@@ -143,3 +143,16 @@ test('eine Geschäftsordnung für Rat und Ausschüsse ist keine Sitzung, auch we
  const r=parseSessionText(lines,{title:'Amtsblatt Nr. 30',wrapped:true});
  assert.ok(r.meetings.every(m=>!m.items.length&&!(m.otherItems||[]).length&&!(m.closedItems||[]).length));
 });
+
+// Nachgebildet nach dem Amtsblatt der Stadt Velbert (Nr. 14 und 15/2026).
+test('eine ordnungsbehördliche Verordnung und eine Satzung „gemäß Beschluss des Rates“ sind keine Sitzung',()=>{
+ const ordinance=['Nr. 15/2026 vom 07.08.2026 – 34. Jahrgang','Bekanntmachungen','Ordnungsbehördliche Verordnung über die Aufrechterhaltung','der öffentlichen Sicherheit und Ordnung im Gebiet der Stadt Musterbert vom 03.08.2026',
+  'Ordnungsbehördliche Verordnung','über die Aufrechterhaltung der','öffentlichen Sicherheit und Ordnung','vom 03.08.2026','wird gemäß Beschluss des Rates der Stadt Musterbert vom 14.07.2026 folgende Verordnung erlassen:',
+  '1. Personen bedrängend verfolgt oder','2. Kraftfahrzeuge zu reparieren mit Ausnahme von Notreparaturen','3. Die Benutzung von Schleudergeräten'];
+ const statute=['Nr. 14/2026 vom 22.07.2026 – 34. Jahrgang','Satzung zur Änderung der Hauptsatzung der Stadt Musterbert','Der Rat der Stadt Musterbert hat in seiner Sitzung am 14.07.2026 folgende Satzung beschlossen:',
+  '1. § 3 erhält folgende Fassung','2. Diese Satzung tritt am Tage nach ihrer Bekanntmachung in Kraft.'];
+ for(const lines of [ordinance,statute]){
+  const r=parseSessionText(lines,{title:'Amtsblatt',wrapped:true});
+  assert.ok(r.meetings.every(m=>!m.items.length&&!(m.otherItems||[]).length&&!(m.closedItems||[]).length),lines[1]);
+ }
+});
