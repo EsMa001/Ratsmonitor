@@ -986,6 +986,8 @@ const isPerson=t=>PERSON.test(t)||person(t);
 // The heading of the agenda; numbered lines before it are lists of the head (those present, offices), not items.
 // A notice of an election, not of a meeting (parseSessionText, segments).
 const ELECTION_NOTICE=/Wahlbekanntmachung|Bekanntmachung\s+(?:über|zur|der)\s+(?:die\s+)?(?:Durchführung\s+der\s+)?(?:\p{L}*wahl|Wahl)(?!\p{L})|(?<!\p{L})(?:Wahl|Neuwahl|Direktwahl)\s+(?:zum|zur|des|der)\s+(?:Rat|Stadtrat|Gemeinderat|Kreistag|Ortsrat|Ortsrats|Ortsräte|Bezirksvertretung|Stadtbezirksrat|Stadtbezirksräte|Integrationsrat|Bürgermeister\p{L}*|Oberbürgermeister\p{L}*|Landrat|Landrätin|Gemeindevertretung|Stadtverordnetenversammlung|Kreistages)(?!\p{L})|Wahlvorschl[äa]ge|(?<!\p{L})Wahlbezirk|Briefwahl|Wahlschein|Wahlraum|Wahllokal/u;
+// The rules of procedure of the council and its committees (Amtsblatt der Stadt Wolfsburg Nr. 30/2026): no meeting either.
+const STANDING_ORDERS=/(?<!\p{L})Geschäftsordnung\s+(?:für\s+(?:den|die)|des|der)\s+(?:Rat|Rates|Kreistag|Kreistages|Gemeinderat|Gemeinderates|Stadtrat|Stadtrates|Stadtverordnetenversammlung|Gemeindevertretung|Stadtvertretung|Verwaltungsausschuss)(?!\p{L})/u;
 const AGENDA_LINE=/^(?:Tagesordnung|TO)(?:\s*[-–:(]\s*(?:öffentliche[rn]?\s+(?:Teil|Sitzung)|öffentlich)\s*\)?)?\s*:?$/iu;
 const where=(committee,date,title)=>[committee,ddmmyyyy(date)].filter(Boolean).join(' ')||title||'Sitzung';
 
@@ -1258,8 +1260,10 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   // Wahlausschuss that meets: „Tagesordnung“).
   // Only the head before the first item: an item „Wahl des Bürgermeisters“ makes no election notice.
   let headEnd=seg.start;while(headEnd<end&&!items[headEnd])headEnd++;
-  const near=all.slice(Math.max(0,seg.start-2),Math.min(headEnd,seg.start+12));
-  if(ELECTION_NOTICE.test(near.join(' '))&&!all.slice(seg.start,end).some(l=>AGENDA_LINE.test(l)||/^Tagesordnung(?!\p{L})/iu.test(l))){issues.push(`Wahlbekanntmachung (${where(seg.header?.committee,seg.header?.date,title)}): keine Sitzung, nicht gelesen.`);return;}
+  // The whole head: in a gazette the notice stands below the imprint and the contents, the rules of procedure run over pages before
+  // their first numbered line (Wolfsburg Nr. 30 and 35/2026). A meeting with a line „Tagesordnung“ stays.
+  const near=all.slice(Math.max(0,seg.start-2),headEnd);
+  if((ELECTION_NOTICE.test(near.join(' '))||STANDING_ORDERS.test(near.join(' ')))&&!all.slice(seg.start,end).some(l=>AGENDA_LINE.test(l)||l.length<=120&&!/[.;]$/.test(l)&&/^Tagesordnung(?:\s*:|\s+(?:der|für|zur|zu|des)\s)/iu.test(l))){issues.push(`${ELECTION_NOTICE.test(near.join(' '))?'Wahlbekanntmachung':'Geschäftsordnung'} (${where(seg.header?.committee,seg.header?.date,title)}): keine Sitzung, nicht gelesen.`);return;}
   let first=seg.start;while(first<end&&!items[first])first++;
   // Numbered lines before the heading of the agenda are lists of the head (those present, offices), not items. A day or
   // body named between them and that heading is the head of another meeting: then nothing is clear.

@@ -133,3 +133,13 @@ test('§ 37 GemO (Baden-Württemberg) ist keine Vorschrift über den nichtöffen
  assert.equal(m.unclear,false);
  assert.deepEqual(m.closedItems||[],[]);
 });
+
+// Nachgebildet nach dem Amtsblatt der Stadt Wolfsburg (Nr. 30/2026): Geschäftsordnung mit Fließtext „Tagesordnung gesetzt wird.“
+test('eine Geschäftsordnung für Rat und Ausschüsse ist keine Sitzung, auch wenn eine Fließtextzeile mit „Tagesordnung“ beginnt',()=>{
+ const lines=['Amtsblatt für die Stadt Musterburg','Jahrgang 23 Musterburg, 31. Juli 2026 Nummer 30','Inhaltsverzeichnis','Verkaufsoffener Sonntag','Geschäftsordnung für den Rat, den','Verwaltungsausschuss, die Ausschüsse und Ortsräte',
+  'Am Sonntag, 02. August 2026 findet ein verkaufsoffener Sonntag statt.','Geschäftsordnung','für den Rat, den Verwaltungsausschuss, die Ausschüsse','und Ortsräte der Stadt Musterburg',
+  '§ 1 Inkrafttreten','Jedes Ratsmitglied kann verlangen, dass ein Beratungsgegenstand auf die','Tagesordnung gesetzt wird. Das Verlangen ist spätestens drei Arbeitstage vor Beginn zu stellen.',
+  'Der Verwaltungsausschuss besteht aus','1. dem Oberbürgermeister','2. zehn Beigeordneten','3. Vertreter*in der Kreishandwerkerschaft','4. Vertreter*in des Fremdenverkehrsverbandes'];
+ const r=parseSessionText(lines,{title:'Amtsblatt Nr. 30',wrapped:true});
+ assert.ok(r.meetings.every(m=>!m.items.length&&!(m.otherItems||[]).length&&!(m.closedItems||[]).length));
+});
