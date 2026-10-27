@@ -28,7 +28,8 @@ function load(file){if(cache.has(file))return cache.get(file);let code=fs.readFi
  const result=uri(code);cache.set(file,result);return result;
 }
 const sync=await import(load(path.join(root,'server/services/sync.ts')));
-const area=NRW_SOURCES.find(s=>fallbackOf(s)),region=area.id;
+// Ein Gebiet, dessen Website in einer anderen Servergruppe liegt als das System (nur so eine Ausweichquelle wird je aktiv).
+const area=NRW_SOURCES.find(s=>fallbackOf(s)&&primaryServer(s)!==fallbackServer(s)),region=area.id;
 const topic=(id,eventDate,extra={})=>({id,regionId:region,source:'city',sourceUrl:'https://x.example/'+id,officialTitle:'Punkt '+id,title:'Punkt '+id,shortSummary:'Quelle',longSummary:['Quelle'],generatedBy:'Quellenüberblick',reference:'',status:'scheduled',eventDate,updatedAt:eventDate,events:[{date:eventDate,committee:'Gemeindevertretung',status:'scheduled',description:'',url:'https://x.example/s/'+eventDate}],documents:[],sourceText:'',...extra});
 const coverage=(extra={})=>({regionId:region,importedAt:new Date().toISOString(),from:'2026-10-01',to:'2026-10-27',complete:true,issues:[],...extra});
 const stored=()=>new Map(db.prepare('SELECT id,payload FROM topics WHERE region_id=?').all(region).map(r=>[r.id,JSON.parse(r.payload)]));

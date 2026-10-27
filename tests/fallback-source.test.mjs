@@ -71,8 +71,17 @@ test('fallbackState: aktiv mit Plan, beendet nach einem Abruf des Systems',()=>{
  assert.equal(fallbackState(undefined,null,'x'),undefined);
 });
 
-// Gebiet des Katalogs mit Ausweichquelle (ekom21, 26.10.2026)
-const area=NRW_SOURCES.find(s=>fallbackOf(s));
+// Gebiet des Katalogs mit Ausweichquelle (ekom21, 26.10.2026). Nicht der erste Eintrag mit dem Feld, sondern einer, dessen Website in
+// einer anderen Servergruppe liegt als das System; nur so eine wird je aktiv (fallbackActive).
+const area=NRW_SOURCES.find(s=>fallbackOf(s)&&primaryServer(s)!==fallbackServer(s));
+
+test('Katalog: jede Ausweichquelle ist gültig und liegt in einer anderen Servergruppe als das System',()=>{
+ const entries=NRW_SOURCES.filter(s=>s.fallback);
+ assert.ok(entries.length>0,'Katalog hat Ausweichquellen');
+ assert.deepEqual(entries.filter(s=>!fallbackOf(s)).map(s=>s.id),[],'Ausweichquelle ohne base oder pages');
+ // Dieselbe Servergruppe (Domain oder IP, source-servers.mjs): wartet das System, wartet auch die Website; fallbackActive wäre nie wahr.
+ assert.deepEqual(entries.filter(s=>primaryServer(s)===fallbackServer(s)).map(s=>`${s.id} (${primaryServer(s)})`),[],'Website in der Servergruppe des Systems: die Ausweichquelle würde nie aktiv');
+});
 
 test('collectRegion mit fallback liest nur die Website, nie das System',async()=>{
  assert.ok(area,'Katalog hat ein Gebiet mit Ausweichquelle');
