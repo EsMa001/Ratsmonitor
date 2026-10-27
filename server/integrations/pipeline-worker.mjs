@@ -1,5 +1,7 @@
 import {pipelineAction,selectedRegions,provider,noteImport,PER_PROVIDER,PARTIAL_PREFIX,PROVIDER_AREAS} from './pipeline-jobs.mjs';
 import {hasFailureStore,hostStates,hostWaiting,providerRamps,setRamp,rampAllowance,rampRank} from './work-failures.mjs';
+import {NRW_SOURCES} from './source-catalog.mjs';
+import {fallbackActive} from './fallback-source.mjs';
 import {refreshStep} from './admin-refresh.mjs';
 /**
  * Drives the stored import job of the administration from a process of its own (server/node/import-worker.mjs, A14 of
@@ -8,6 +10,8 @@ import {refreshStep} from './admin-refresh.mjs';
  * driving the same job at the same time only shares the work (every area is claimed once, pipeline-jobs.mjs).
  */
 const JOB_KEY='admin-pipeline-job';
+let sources=null;
+const catalog=()=>sources||(sources=new Map(NRW_SOURCES.map(s=>[s.id,s])));
 const pause=ms=>new Promise(done=>setTimeout(done,ms));
 // A lane that found nothing to claim asks again after this long (plus a little spread, so lanes do not all ask at once).
 const IDLE_MS=5000,IDLE_SPREAD_MS=2000;
@@ -49,10 +53,13 @@ export const nightlyBusy=(job,now=Date.now())=>!!job&&job.owner==='nightly'&&ope
 export async function deferredRegions(db,ids,now=Date.now()){
  if(!await hasFailureStore(db))return {};
  // Einträge „teilweise:“ halten den Nachtlauf nicht auf: das Gebiet liefert, nur ein Teil fehlte; die Nacharbeit holt den Rest
- const {results}=await db.prepare("SELECT key,class,next_try_at FROM work_failures WHERE step='import' AND coalesce(reason,'') NOT LIKE ?").bind(PARTIAL_PREFIX+'%').all();
+ const {results}=await db.prepare("SELECT key,host,class,next_try_at FROM work_failures WHERE step='import' AND coalesce(reason,'') NOT LIKE ?").bind(PARTIAL_PREFIX+'%').all();
  const own=new Map((results||[]).map(r=>[r.key,r])),hosts=await hostStates(db),out={};
  for(const id of ids){
   const e=own.get(id),h=hosts.get(provider(id));
+  // Ausweichquelle (fallback-source.mjs): wartet nur der Anbieter des Ratsinformationssystems, liest der Abruf die Website; ein
+  // Eintrag, der dem wartenden Anbieter gilt, hält das Gebiet dann nicht auf, einer der Ausweichquelle schon
+  if(fallbackActive(catalog().get(id),hosts,now)&&(!e||e.host===provider(id)||!(Date.parse(e.next_try_at||'')>now)))continue;
   if(e?.next_try_at&&Date.parse(e.next_try_at)>now)out[id]=`Zurückgestellt (${e.class}); nächster Versuch ${e.next_try_at.slice(0,16).replace('T',' ')} über die Nacharbeit.`;
   else if(hostWaiting(h,now))out[id]=`Server ${h.host} wartet (${h.state}) bis ${h.next_try_at?h.next_try_at.slice(0,16).replace('T',' '):'zur Prüfung'}; Abruf über die Nacharbeit.`;
  }

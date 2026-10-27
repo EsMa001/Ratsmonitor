@@ -17,6 +17,8 @@ export interface StoredTopic extends TopicDetail {
     summaryModel?: string;
     summaryEvidence?: string[];
     summaryGeneratedAt?: string;
+    /** Aus der Ausweichquelle (Website der Kommune), solange das Ratsinformationssystem nicht erreicht wird (fallback-source.mjs). */
+    viaFallback?: boolean;
 }
 export interface ImportData {
     topics: StoredTopic[];

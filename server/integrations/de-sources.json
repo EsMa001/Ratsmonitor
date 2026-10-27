@@ -2124,7 +2124,22 @@
     "base": "https://rim.ekom21.de/fuerth/",
     "verifiedSource": "https://rim.ekom21.de/fuerth/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.gemeinde-fuerth.de/",
+      "pages": [
+        "https://www.gemeinde-fuerth.de/gemeinde/amtl-bekanntmachungen/",
+        "https://www.gemeinde-fuerth.de/gemeinde/news-archiv/2026/konstituierende-sitzung-der-gemeindevertretung-ortsbeiraete/",
+        "https://www.gemeinde-fuerth.de/rathaus/rat-politik/sitzungstermine/",
+        "https://www.gemeinde-fuerth.de/rathaus/rat-politik/gemeindevertretung/",
+        "https://www.gemeinde-fuerth.de/gemeinde/bekanntmachungen-buergerinformation/"
+      ],
+      "sitemap": "https://www.gemeinde-fuerth.de/sitemap.xml",
+      "verifiedSource": "https://www.gemeinde-fuerth.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 42 Berichte aus 5 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06431008",
@@ -2179,7 +2194,17 @@
     "base": "https://rim.ekom21.de/lampertheim/",
     "verifiedSource": "https://rim.ekom21.de/lampertheim/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.lampertheim.de/",
+      "pages": [
+        "https://www.lampertheim.de/de/presse/"
+      ],
+      "verifiedSource": "https://www.lampertheim.de/de/presse/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Einladungen in den Pressemitteilungen der Stadt (erst seit Beginn der Wahlperiode im Mai 2026). Probeabruf 12 Monate am 26.10.2026: 186 Berichte aus 33 Sitzungen, Titel geprüft; ohne followArticles, sonst kommen Namenslisten aus Wahlergebnis-Bekanntmachungen hinzu."
+    }
   },
   {
     "id": "de-06431014",
@@ -2326,7 +2351,23 @@
     "base": "https://rim.ekom21.de/eppertshausen/",
     "verifiedSource": "https://rim.ekom21.de/eppertshausen/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://eppertshausen.de/",
+      "pages": [
+        "https://eppertshausen.de/category/amtliche-bekanntmachungen/"
+      ],
+      "sitemap": "https://eppertshausen.de/post-sitemap1.xml",
+      "feeds": [
+        "https://eppertshausen.de/feed/",
+        "https://eppertshausen.de/category/amtliche-bekanntmachungen/feed/"
+      ],
+      "wp": "https://eppertshausen.de/wp-json/",
+      "verifiedSource": "https://www.eppertshausen.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 4 Berichte aus 2 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06432006",
@@ -2633,7 +2674,22 @@
     "state": "system-verified",
     "verifiedSource": "https://rim.ekom21.de/ruesselsheim/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-06",
-    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.ruesselsheim.de/",
+      "pages": [
+        "https://www.ruesselsheim.de/rathaus/ortsrecht/oeffentliche-bekanntmachungen/",
+        "https://www.ruesselsheim.de/rathaus/ortsrecht/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen/bekanntmachung-der-4.sitzung-des-kultur-schul-und-sportausschusses",
+        "https://www.ruesselsheim.de/rathaus/ortsrecht/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen/bekanntmachung-der-35.sitzung-des-kultur-schul-und-sportausschusses",
+        "https://www.ruesselsheim.de/rathaus/ortsrecht/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen/bekanntmachung-der-36.sitzung-des-sozial-integrations-und-jugendausschusses",
+        "https://www.ruesselsheim.de/rathaus/ortsrecht/oeffentliche-bekanntmachungen/oeffentliche-bekanntmachungen/satzung-zur-einfuehrung-des-2b-in-die-hauptsatzung"
+      ],
+      "sitemap": "https://www.ruesselsheim.de/?sp%3Aout=sitemap&sp%3Apage=1",
+      "verifiedSource": "https://www.ruesselsheim.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 399 Berichte aus 43 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06433013",
@@ -2737,7 +2793,19 @@
     "state": "system-verified",
     "verifiedSource": "https://rim.ekom21.de/neu-anspach/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-06",
-    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.neu-anspach.de/",
+      "pages": [
+        "https://www.neu-anspach.de/rathaus-politik/aktuelles/bekanntmachungen-2026/bekanntmachungen-2025/",
+        "https://www.neu-anspach.de/rathaus-politik/aktuelles/bekanntmachungen-2026/"
+      ],
+      "sitemap": "https://www.neu-anspach.de/sitemap.xml",
+      "verifiedSource": "https://www.neu-anspach.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 624 Berichte aus 44 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06434008",
@@ -2860,7 +2928,21 @@
     "base": "https://rim.ekom21.de/erlensee/",
     "verifiedSource": "https://rim.ekom21.de/erlensee/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.erlensee.de/",
+      "pages": [
+        "https://www.erlensee.de/portal/bekanntmachungen/uebersicht-0-32880.html?p0=3&mr_medium=&bereich=2&naviID=0&id=0&owner=32880&rubrik=0",
+        "https://www.erlensee.de/rathaus-politik/aktuelles/amtliche-bekanntmachungen-der-stadt-erlensee/",
+        "https://www.erlensee.de/portal/bekanntmachungen/uebersicht-0-32880.html?p0=47&mr_medium=&bereich=2&naviID=0&id=0&owner=32880&rubrik=0",
+        "https://www.erlensee.de/portal/bekanntmachungen/zeitraum-0-32880.html?naviID=900000013&brotID=900000013&bereich=2&no_container_bilder=0&modus=0&anzahl=&von=&bis=",
+        "https://www.erlensee.de/portal/bekanntmachungen/uebersicht-0-32880.html?p0=46&mr_medium=&bereich=2&naviID=0&id=0&owner=32880&rubrik=0"
+      ],
+      "verifiedSource": "https://www.erlensee.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 31 Berichte aus 21 Sitzungen, Titel geprüft. Einzelne Unterpunkte (Feuerwehr) als eigene Titel."
+    }
   },
   {
     "id": "de-06435009",
@@ -3769,7 +3851,22 @@
     "base": "https://rim.ekom21.de/buedingen/",
     "verifiedSource": "https://rim.ekom21.de/buedingen/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.stadt-buedingen.de/",
+      "pages": [
+        "https://www.stadt-buedingen.de/B%C3%BCrgerservice/Stadtpolitik/Amtliche-Bekanntmachungen/Amtsblatt/",
+        "https://www.stadt-buedingen.de/B%C3%BCrgerservice/Stadtpolitik/Amtliche-Bekanntmachungen/Bekanntmachungen/",
+        "https://www.stadt-buedingen.de/",
+        "https://www.stadt-buedingen.de/B%C3%BCrgerservice/Stadtpolitik/Amtliche-Bekanntmachungen/",
+        "https://www.stadt-buedingen.de/B%C3%BCrgerservice/Aktuelles/Amtliche-Bekanntmachung-der-Stadt-B%C3%BCdingen.php?ModID=255&FID=3139.8495.1"
+      ],
+      "sitemap": "https://www.stadt-buedingen.de/sitemap.xml",
+      "verifiedSource": "https://www.stadt-buedingen.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 478 Berichte aus 51 Sitzungen, Titel geprüft. Etwa jeder zehnte Titel endet am Zeilenumbruch."
+    }
   },
   {
     "id": "de-06440005",
@@ -4459,7 +4556,21 @@
     "base": "https://rim.ekom21.de/elbtal/",
     "verifiedSource": "https://rim.ekom21.de/elbtal/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.gemeinde-elbtal.de/",
+      "pages": [
+        "https://www.gemeinde-elbtal.de/gemeinde/aktuelles",
+        "https://www.gemeinde-elbtal.de/",
+        "https://www.gemeinde-elbtal.de/gemeinde/aktuelles/details/einladung-zur-sitzung-der-gemeindevertretung-61",
+        "https://www.gemeinde-elbtal.de/gemeinde/aktuelles/details/einladung-zur-sitzung-der-gemeindevertretung-62",
+        "https://www.gemeinde-elbtal.de/gemeinde/aktuelles/details/ausscheiden-eines-mitglieds-aus-der-gemeindevertretung-der-gemeinde-elbtal-und-nachruecken-einer-ersatzperson-2"
+      ],
+      "verifiedSource": "https://www.gemeinde-elbtal.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 20 Berichte aus 9 Sitzungen, Titel geprüft. Zwei Bekanntmachungen über Nachrücker als Titel."
+    }
   },
   {
     "id": "de-06533006",
@@ -4786,7 +4897,18 @@
     "base": "https://rim.ekom21.de/neustadt/",
     "verifiedSource": "https://rim.ekom21.de/neustadt/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.neustadt-hessen.de/",
+      "pages": [
+        "https://www.neustadt-hessen.de/rathaus-politik/rathaus-stadt-neustadt/bekanntmachungen.html"
+      ],
+      "sitemap": "https://www.neustadt-hessen.de/sitemap.xml",
+      "verifiedSource": "https://www.neustadt-hessen.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 5 Berichte aus 2 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06534017",
@@ -4838,7 +4960,26 @@
     "base": "https://rim.ekom21.de/weimar/",
     "verifiedSource": "https://rim.ekom21.de/weimar/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.gemeinde-weimar.de/",
+      "pages": [
+        "https://www.gemeinde-weimar.de/rathaus-politik/politik/protokolle-ortsbeiraete.html",
+        "https://www.gemeinde-weimar.de/rathaus-politik/politik/protokolle-ortsbeiraete/ortsbeiratsprotokolle-wenkbach.html",
+        "https://www.gemeinde-weimar.de/rathaus-politik/politik/protokolle-ortsbeiraete/ortsbeiratsprotokolle-roth.html",
+        "https://www.gemeinde-weimar.de/rathaus-politik/politik/protokolle-ortsbeiraete/ortsbeiratsprotokolle-oberweimar.html",
+        "https://www.gemeinde-weimar.de/rathaus-politik/politik/protokolle-ortsbeiraete/ortsbeiratsprotokolle-wolfshausen.html"
+      ],
+      "sitemap": "https://www.gemeinde-weimar.de/sitemap.xml",
+      "feeds": [
+        "https://www.gemeinde-weimar.de/rathaus-politik/politik/protokolle-ortsbeiraete.feed?type=rss",
+        "https://www.gemeinde-weimar.de/rathaus-politik/politik/protokolle-ortsbeiraete.feed?type=atom"
+      ],
+      "verifiedSource": "https://www.gemeinde-weimar.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 156 Berichte aus 14 Sitzungen, Titel geprüft. Vor allem Ortsbeiräte; etwa jeder vierte Titel ist abgeschnitten oder ein Satz der Niederschrift."
+    }
   },
   {
     "id": "de-06534021",
@@ -4967,7 +5108,17 @@
     "state": "system-verified",
     "verifiedSource": "https://rim.ekom21.de/homberg-ohm/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-04",
-    "foundBy": "OParl-Register: Homberg (Ohm)"
+    "foundBy": "OParl-Register: Homberg (Ohm)",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.homberg.de/",
+      "pages": [
+        "https://www.homberg.de/de/rathaus/aktuelles/oeffentliche-bekanntmachungen"
+      ],
+      "verifiedSource": "https://www.homberg.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 30 Berichte aus 5 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06535010",
@@ -5518,7 +5669,17 @@
     "base": "https://rim.ekom21.de/neuenstein/",
     "verifiedSource": "https://rim.ekom21.de/neuenstein/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.neuenstein.net/",
+      "pages": [
+        "https://www.neuenstein.net/aktuelles.html"
+      ],
+      "verifiedSource": "https://www.neuenstein.net/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 7 Berichte aus 3 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06632017",
@@ -5771,7 +5932,26 @@
     "base": "https://rim.ekom21.de/nieste/",
     "verifiedSource": "https://rim.ekom21.de/nieste/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.nieste.de/",
+      "pages": [
+        "https://www.nieste.de/rathaus-politik/gemeindeblatt/",
+        "https://www.nieste.de/veranstaltungen/oeffentliche-sitzung-der-gemeindevertretung-2/",
+        "https://www.nieste.de/veranstaltungen/oeffentliche-sitzung-des-haupt-und-finanzausschusses/",
+        "https://www.nieste.de/",
+        "https://www.nieste.de/rathaus-politik/haushaltsplaene/"
+      ],
+      "ics": [
+        "https://www.nieste.de/veranstaltungen/?ical=1",
+        "https://www.nieste.de/veranstaltungen/oeffentliche-sitzung-des-haupt-und-finanzausschusses/?ical=1"
+      ],
+      "wp": "https://www.nieste.de/wp-json/",
+      "verifiedSource": "https://www.nieste.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 90 Berichte aus 20 Sitzungen, Titel geprüft. Etwa jeder fünfte Titel endet an einer Silbentrennung."
+    }
   },
   {
     "id": "de-06633023",
@@ -6277,7 +6457,21 @@
     "base": "https://rim.ekom21.de/volkmarsen/",
     "verifiedSource": "https://rim.ekom21.de/volkmarsen/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.volkmarsen.de/",
+      "pages": [
+        "https://www.volkmarsen.de/rathaus/oeffentliche-bekanntmachungen",
+        "https://www.volkmarsen.de/rathaus/oeffentliche-bekanntmachungen?tx_news_pi1%5Baction%5D=detail&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5Bnews%5D=4705&cHash=643d82ac7db93888b3f0e7dea7280d9b",
+        "https://www.volkmarsen.de/rathaus/oeffentliche-bekanntmachungen?tx_news_pi1%5Baction%5D=detail&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5Bnews%5D=4726&cHash=d46aacb4ce6dba645a525efe651606a4",
+        "https://www.volkmarsen.de/rathaus/oeffentliche-bekanntmachungen?tx_news_pi1%5Baction%5D=detail&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5Bnews%5D=4817&cHash=ae8ce57e0b70052a2d26a0a9c23d8013",
+        "https://www.volkmarsen.de/rathaus/oeffentliche-bekanntmachungen?tx_news_pi1%5Baction%5D=detail&tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5Bnews%5D=995&cHash=5418a03d3b0664097010fc99e6955c25"
+      ],
+      "verifiedSource": "https://www.volkmarsen.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 31 Berichte aus 5 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06635021",
@@ -6340,7 +6534,21 @@
     "base": "https://rim.ekom21.de/eschwege/",
     "verifiedSource": "https://rim.ekom21.de/eschwege/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.eschwege.de/",
+      "pages": [
+        "https://www.eschwege.de/stadt/rathaus/politik/stadtverordnetenversammlung.php",
+        "https://www.eschwege.de/stadt/rathaus/politik/stadtverordnetenversammlung.php?contrast=On",
+        "https://www.eschwege.de/stadt/rathaus/politik/stadtverordnetenversammlung.php?contrast=Off",
+        "https://www.eschwege.de/stadt/rathaus/politik/stadtverordnetenversammlung.php?viewmode=print",
+        "https://www.eschwege.de/stadt/rathaus/stadtverwaltung/bekanntmachungen/bekanntmachungen-sitzungen.php"
+      ],
+      "verifiedSource": "https://www.eschwege.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 20 Berichte aus 4 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06636004",
@@ -40516,7 +40724,20 @@
     "verifiedSource": "https://rim.ekom21.de/niederdorfelden/",
     "verifiedAt": "2026-10-10",
     "foundBy": "Mandantenname bei ekom21 geraten (10.10.2026), Leser liefert öffentliche Tagesordnungspunkte",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 10.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 10.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.niederdorfelden.de/",
+      "pages": [
+        "https://www.niederdorfelden.de/bekanntmachungen/index.php"
+      ],
+      "alsoFrom": [
+        "https://daten.verwaltungsportal.de"
+      ],
+      "verifiedSource": "https://www.niederdorfelden.de/",
+      "verifiedAt": "2026-10-26",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem bei ekom21 nicht erreicht wird (Sperre der Server-IP seit Oktober 2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 26.10.2026: 12 Berichte aus 2 Sitzungen, Titel geprüft."
+    }
   },
   {
     "id": "de-06440018",

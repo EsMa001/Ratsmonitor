@@ -8,7 +8,7 @@ Stand: 17. Oktober 2026, gelesen am Code des Branchs `nachtlauf-fixes`. Teil der
 | Begriff | Was es ist | Woher |
 |---|---|---|
 | **Gebiet** | Eintrag im Katalog `CATALOG` (`shared/catalog.mjs`), 5.324 Gebiete: NRW `nrw-<Schlüssel>` (dazu sieben benannte Kennungen wie `billerbeck`, `muenster`), Niedersachsen `nds-<Schlüssel>`, übrige Länder `de-<Schlüssel>`; Arten `city` (Gemeindeebene, auch Gemeindeverbände mit `members`) und `district` (Kreis) | `nrw-regions.json`, `nds-regions.json`, `de-regions.json` (BKG VG250, Stand 04.10.2026), Einwohner aus Wikidata |
-| **Quelle** | Katalogeintrag mit derselben Kennung, der sagt, wie das Gebiet gelesen wird: `url`, `adapter` oder `method` (`oparl`, `pending`), `extension` (asp/php bei SessionNet), `body` (OParl-Körperschaft), `oparlFallback`, `consent` | `NRW_SOURCES` in `server/integrations/source-catalog.mjs` aus sieben JSON-Dateien (`nrw-`, `nds-`, `de-`, `expanded-`, `nearby-`, `statewide-`, `citystate-sources.json`); bei gleicher Kennung gilt die zuletzt genannte Datei. Dazu sechs fest eingetragene Altquellen (`regions.mjs`) und Münster. `canImport` gilt für 4.041 Gebiete (alles außer `method:'pending'`) |
+| **Quelle** | Katalogeintrag mit derselben Kennung, der sagt, wie das Gebiet gelesen wird: `url`, `adapter` oder `method` (`oparl`, `pending`), `extension` (asp/php bei SessionNet), `body` (OParl-Körperschaft), `oparlFallback`, `fallback` (Ausweichquelle), `consent` | `NRW_SOURCES` in `server/integrations/source-catalog.mjs` aus sieben JSON-Dateien (`nrw-`, `nds-`, `de-`, `expanded-`, `nearby-`, `statewide-`, `citystate-sources.json`); bei gleicher Kennung gilt die zuletzt genannte Datei. Dazu sechs fest eingetragene Altquellen (`regions.mjs`) und Münster. `canImport` gilt für 4.041 Gebiete (alles außer `method:'pending'`) |
 | **Leser** | Modul, das ein Ratsinformationsprodukt liest (Abschnitt 3); Registry `READERS` in `readers.mjs`, Auswahl in `collect-region.mjs` | |
 | **Server** | Gruppe von Hosts nach registrierbarer Domain plus IP (`source-servers.mjs`, `source-servers.json`); `provider(region)` liefert ihn. Grenze 2 gleichzeitige Abrufe je Server, Pausen (`holds`) und Serverstufe in `source_hosts` hängen daran | |
 | **Körperschaft** | OParl-Körperschaft innerhalb eines gemeinsamen Systems, gewählt über `source.body`, Gemeindeschlüssel oder normalisierten Namen; muss eindeutig sein (`body-identity.mjs`) | |
@@ -140,6 +140,10 @@ flowchart TD
 **OParl-Probe:** Viele Produkte bieten neben HTML eine OParl-Schnittstelle. Ein negatives Ergebnis der Probe gilt 30 Tage
 (`PROBE_DAYS`, `oparlProbeAt` im Quellenstand); `oparlFallback` im Katalog überspringt sie; ein positives Ergebnis bricht mit
 „Adapterfreigabe erforderlich“ ab, damit die Quelle bewusst auf `method:'oparl'` umgestellt wird.
+
+**Ausweichquelle:** `fallback` im Katalog (Website der Kommune, Leser `website`) gilt nur, solange die Servergruppe des Systems
+wartet (`source_hosts`); dann liest `collectRegion` mit `options.fallback` die Website statt des Systems. Ein Sitzungstag gehört der
+Quelle, die ihn zuerst hatte. Einzelheiten: `server/integrations/fallback-source.mjs` und `docs/betrieb/node-server.md`, „Ausweichquelle“.
 
 ### Leser und Produkte
 
