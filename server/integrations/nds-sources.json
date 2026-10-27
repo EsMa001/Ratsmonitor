@@ -4446,5 +4446,71 @@
     "verifiedAt": "2026-10-24",
     "verifiedSource": "https://samtgemeindeverwaltung.de/dokumente/amtsblatt/",
     "note": "Ratsinformationssystem gesperrt. Die Samtgemeinde-Bekanntmachungen nennen Tagesordnungspunkte der Wahlausschüsse (Probeabruf 12 Monate: 42 Berichte, 21.09.2026)."
+  },
+  {
+    "id": "nds-03454035",
+    "name": "Stadt Meppen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.meppen.de/",
+    "pages": [
+      "https://www.meppen.de/unsere-stadt/aktuelles/bekanntmachungen-elektronisches-amtsblatt/"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.meppen.de/unsere-stadt/aktuelles/bekanntmachungen-elektronisches-amtsblatt/",
+    "note": "meppen.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 84 Berichte aus 26 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Elektronisches Amtsblatt mit Einladungen der Ausschüsse; Wahlbekanntmachungen erscheinen als Punkte des Wahlausschusses."
+  },
+  {
+    "id": "nds-033525411",
+    "name": "Samtgemeinde Land Hadeln",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.samtgemeinde-land-hadeln.de/",
+    "pages": [
+      "https://www.samtgemeinde-land-hadeln.de/aktuelles-service/bekanntmachungen.html"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.samtgemeinde-land-hadeln.de/aktuelles-service/bekanntmachungen.html",
+    "note": "land-hadeln.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 80 Berichte aus 5 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "nds-03361003",
+    "name": "Gemeinde Dörverden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.doerverden.de/",
+    "pages": [
+      "https://www.doerverden.de/portal/seiten/amtsblatt-fuer-die-gemeinde-doerverden-2026-903000318-20620.html?rubrik=3000009",
+      "https://www.doerverden.de/portal/seiten/amtsblatt-903000273-20620.html",
+      "https://www.doerverden.de/portal/bekanntmachungen/uebersicht-0-20620.html?naviID=903000051&brotID=903000051&rubrik=3000009&bereich=2&no_container_bilder=0"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.doerverden.de/portal/seiten/amtsblatt-fuer-die-gemeinde-doerverden-2026-903000318-20620.html?rubrik=3000009",
+    "note": "www.doerverden.de nicht lesbar (Website der Gemeinde geprüft, keine Sitzungsseite oder keine Sitzungsunterlagen im Zeitrau). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 52 Berichte aus 13 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "nds-03356",
+    "name": "Landkreis Osterholz",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.landkreis-osterholz.de/",
+    "pages": [
+      "https://www.landkreis-osterholz.de/bekanntmachungen",
+      "https://www.landkreis-osterholz.de/fuer-buerger/verkuendungen-und-bekanntmachungen/"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.landkreis-osterholz.de/bekanntmachungen",
+    "note": "landkreis-osterholz.ratsinfomanagement.net nicht lesbar (SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert ; F). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 17 Berichte aus 5 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Kreistag und Kreiswahlausschuss."
   }
 ]

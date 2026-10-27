@@ -44008,5 +44008,171 @@
     "verifiedAt": "2026-10-25",
     "verifiedSource": "https://www.gemeinde-karstaedt.de/amtsblatt/index.php",
     "note": "Amtsblatt der Gemeinde mit Beschlüssen der Gemeindevertretung (Ausgaben über Download-Formulare, Probeabruf: 14 Berichte, Sitzung 01.10.2026 und 31.03.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+  },
+  {
+    "id": "de-120675707",
+    "name": "Amt Scharmützelsee",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.amt-scharmuetzelsee.de/",
+    "pages": [
+      "https://www.amt-scharmuetzelsee.de/amtsblatt/index.php",
+      "https://www.amt-scharmuetzelsee.de/news/index.php?rubrik=1"
+    ],
+    "verifiedSource": "https://www.amt-scharmuetzelsee.de/amtsblatt/index.php",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.amt-scharmuetzelsee.de nicht lesbar (Link gefunden ; die Seite antwortet Programmen mit HTTP 401/403 oder einer Zugriffsprüfung). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 19 Berichte aus 2 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Im Probeabruf nur der Senioren- und Behindertenbeirat."
+  },
+  {
+    "id": "de-091905174",
+    "name": "Verwaltungsgemeinschaft Altenstadt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.schwabsoien.de/",
+    "pages": [
+      "https://www.schwabsoien.de/gemeinde/gemeinderatssitzung"
+    ],
+    "verifiedSource": "https://www.schwabsoien.de/gemeinde/gemeinderatssitzung",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.vg-altenstadt.de nicht lesbar (Sitzungsunterlagen nur auf der Gemeinde-Website , kein Ratsinformationssystem erkennbar). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 9 Berichte aus 4 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Sitzungsseite der Mitgliedsgemeinde Schwabsoien (schwabsoien.de)."
+  },
+  {
+    "id": "de-146255501",
+    "name": "Verwaltungsverband Am Klosterwasser",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.am-klosterwasser.de/",
+    "pages": [
+      "https://www.am-klosterwasser.de/de/verband-und-buerger/bekanntmachungen-und-mitteilungen"
+    ],
+    "verifiedSource": "https://www.am-klosterwasser.de/de/verband-und-buerger/bekanntmachungen-und-mitteilungen",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.am-klosterwasser.de nicht lesbar (Website der Gemeinde geprüft, keine Sitzungsseite oder keine Sitzungsunterlagen im Zeitrau). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 287 Berichte aus 36 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Titel teils zweisprachig (Sorbisch/Deutsch), etwa jeder fünfte am Zeilenende abgeschnitten."
+  },
+  {
+    "id": "de-09187114",
+    "name": "Gemeinde Aschau i.Chiemgau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-aschau.de/",
+    "pages": [
+      "https://www.gemeinde-aschau.de/rathaus-politik-buergerservice/buergerservice/amtliche-bekanntmachungen",
+      "https://www.gemeinde-aschau.de/rathaus-politik-buergerservice/gemeinderat/tagesordnung",
+      "https://www.gemeinde-aschau.de/unsere-gemeinde/gemeindeblatt/download"
+    ],
+    "verifiedSource": "https://www.gemeinde-aschau.de/rathaus-politik-buergerservice/buergerservice/amtliche-bekanntmachungen",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.aschau.de nicht lesbar (Website der Gemeinde geprüft, keine Sitzungsseite oder keine Sitzungsunterlagen im Zeitrau). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 44 Berichte aus 22 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-096735638",
+    "name": "Verwaltungsgemeinschaft Heustreu",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.heustreu.de/",
+    "pages": [
+      "https://www.heustreu.de/bekanntmachungen/sitzungsinfos"
+    ],
+    "verifiedSource": "https://www.heustreu.de/bekanntmachungen/sitzungsinfos",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "vg-heustreu.ris.kommune-aktiv.de nicht lesbar (Kommune aktiv: antwortet Programmen mit HTTP 403). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 9 Berichte aus 1 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Im Probeabruf eine Sitzung (Sitzungsinfos der VG)."
+  },
+  {
+    "id": "de-097795725",
+    "name": "Verwaltungsgemeinschaft Rain",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-holzheim.de/",
+    "pages": [
+      "https://www.gemeinde-holzheim.de/rathaus-service/amtliche-bekanntmachungen/",
+      "https://www.gemeinde-holzheim.de/rathaus-service/mitteilungsblaetter/"
+    ],
+    "verifiedSource": "https://www.gemeinde-holzheim.de/rathaus-service/amtliche-bekanntmachungen/",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "vg-rain.de nicht lesbar (Sitzungsbekanntmachungen oder Unterlagen auf der Gemeinde-Website gefunden, aber keine öff). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 12 Berichte aus 1 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Bekanntmachungen der Mitgliedsgemeinde Holzheim (gemeinde-holzheim.de); im Probeabruf eine Sitzung."
+  },
+  {
+    "id": "de-16063082",
+    "name": "Stadt Vacha",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.stadt-vacha.de/",
+    "pages": [
+      "https://www.stadt-vacha.de/Rathaus/Oeffentliche-Bekanntmachungen/Oeffentliche-Sitzungen-Ausschuesse",
+      "https://www.stadt-vacha.de/Rathaus/Oeffentliche-Bekanntmachungen/Allgemeine-Bekanntmachungen",
+      "https://www.stadt-vacha.de/Rathaus/Amtsblatt"
+    ],
+    "gazettePages": true,
+    "verifiedSource": "https://www.stadt-vacha.de/Rathaus/Oeffentliche-Bekanntmachungen/Oeffentliche-Sitzungen-Ausschuesse",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.stadt-vacha.de nicht lesbar (Sitzungsunterlagen nur auf der Gemeinde-Website , kein Ratsinformationssystem erkennbar). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 12 Berichte aus 4 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Seite der öffentlichen Sitzungen; wenige Einladungen."
+  },
+  {
+    "id": "de-095775536",
+    "name": "Verwaltungsgemeinschaft Hahnenkamm",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://heidenheim.hahnenkamm.de/",
+    "pages": [
+      "https://heidenheim.hahnenkamm.de/index.php/gemeinde/aktuelles/bekanntmachung-gemeinderat",
+      "https://heidenheim.hahnenkamm.de/index.php/gemeinde/mitteilungsblaetter"
+    ],
+    "verifiedSource": "https://heidenheim.hahnenkamm.de/index.php/gemeinde/aktuelles/bekanntmachung-gemeinderat",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "Kein Ratsinformationssystem bekannt. Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 222 Berichte aus 30 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Bekanntmachungen des Marktes Heidenheim (heidenheim.hahnenkamm.de); Bauanträge nennen Antragsteller, die der Import als Privatpersonen entfernt."
+  },
+  {
+    "id": "de-08127012",
+    "name": "Gemeinde Bühlertann",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.buehlertann.de/",
+    "pages": [
+      "https://www.buehlertann.de/rathaus-service/aktuelles-bekanntmachungen/oeffentliche-bekanntmachungen",
+      "https://www.buehlertann.de/rathaus-service/mitteilungsblatt"
+    ],
+    "verifiedSource": "https://www.buehlertann.de/rathaus-service/aktuelles-bekanntmachungen/oeffentliche-bekanntmachungen",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "buehlertann.ratsinformationsdienst.de nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 59 Berichte aus 7 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Wahlbekanntmachungen erscheinen als Punkte; die Seite listet sehr viele Dokumente (Dokumentlimit)."
+  },
+  {
+    "id": "de-08317118",
+    "name": "Gemeinde Sasbachwalden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-sasbachwalden.de/",
+    "pages": [
+      "https://www.gemeinde-sasbachwalden.de/Unser-Dorf/Aktuelles-Oeffentliche-Bekanntmachungen"
+    ],
+    "gazettePages": true,
+    "verifiedSource": "https://www.gemeinde-sasbachwalden.de/Unser-Dorf/Aktuelles-Oeffentliche-Bekanntmachungen",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "sasbachwalden.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 23 Berichte aus 2 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "de-08337027",
+    "name": "Gemeinde Dachsberg (Südschwarzwald)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-dachsberg.de/",
+    "pages": [
+      "https://www.gemeinde-dachsberg.de/Aktuelles/Archiv-Mitteilungsblatt",
+      "https://www.gemeinde-dachsberg.de/Oeffentl.-Bekanntmachungen"
+    ],
+    "gazettePages": true,
+    "verifiedSource": "https://www.gemeinde-dachsberg.de/Aktuelles/Archiv-Mitteilungsblatt",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "www.dachsberg.de nicht lesbar (Sitzungsbekanntmachungen oder Unterlagen auf der Gemeinde-Website gefunden, aber keine öff). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 19 Berichte aus 4 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Mitteilungsblatt gemeinsam mit Ibach; im Probeabruf vier Sitzungen."
   }
 ]
