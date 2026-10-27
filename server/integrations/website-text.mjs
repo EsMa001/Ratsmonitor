@@ -93,6 +93,9 @@ const LAW_LAND='(?:(?:Sächs|Bay|Bbg|Brandenb|Thür|Hess|Nds|Nieders|Meckl|Saarl
 const LAW_MUNICIPAL='(?:GemO|GO(?:\\s*(?:NRW|SH|BW))?|HGO|KO|KV(?:\\s*M-?V)?|KVMV|KVerf|NKomVG|KSVG|KVG(?:\\s*LSA)?|SächsGemO|BbgKVerf|BayGO|ThürKO|Gemeindeordnung|Kommunalordnung|Kommunalverfassung(?:sgesetz)?|Kommunalselbstverwaltungsgesetz)';
 const LAW_COUNTY='(?:LKrO|KrO(?:\\s*NRW)?|HKO|SächsLKrO|BezO|LKO|NKomVG|ThürKO|BbgKVerf|KVerf|Landkreisordnung|Kreisordnung|Bezirksordnung)';
 const LAW_NP=new RegExp(`(?:§§?|Paragraph|Art\\.?|Artikel)\\s*(?:(?:35|52|40|29|48|64|37|36)${LAW_REF}${LAW_LAND}${LAW_MUNICIPAL}|(?:28|30|32|33|41|46|64|40|36)${LAW_REF}${LAW_LAND}${LAW_COUNTY})(?![\\p{L}])`,'u');
+// § 37 excludes the public only in the Saxon code (SächsGemO); § 37 of the GemO of Baden-Württemberg is the taking of decisions
+// („gem. § 37 Abs. 1 GemO gefassten Beschlüsse einfacher Art“, Bruchsal 2026).
+const GEMO_37=/(?:§§?|Paragraph)\s*37(?:\s*(?:Abs\.?|Absatz)\s*\d+)?(?:\s*(?:Satz|S\.)\s*\d+)?\s*(?:der\s+)?GemO(?!\p{L})/gu;
 // Hyphenated, letter-spaced or split words read without anything but letters.
 // Also words read by OCR or without the ligature "ff" ("Nichtöffentiiche", "Nichtöentliche").
 const NP_COMPACT=/nicht(?:oe|o|e|ae|#)?ff?entl|nicht(?:oe|o|e|ae|#)?f{0,2}ent[il]{1,2}ch|unterausschlu(?:ss|s)deroeffentlichkeit|geschlossene(?:sitzung|rteil|nteil)|vertraulich/;
@@ -150,7 +153,7 @@ export function mentionsNonPublic(s){
  // A rule of the standing orders that only gives a competence („fällt nach § 12 … GeschO in die Zuständigkeit des ersten
  // Bürgermeisters“, Neutraubling) says nothing about the public, nor the end of a citation another line began („Einwohnerfragestunde
  // gemäß § 16 a GemO“ / „i. V. m. § 21 Geschäftsordnung (GeschO)“, Kirchen (Sieg)).
- return NP_SPACED.some(re=>re.test(t))||NP_COMPACT.test(t.replace(/[^a-z#]/g,''))||LAW_NP.test(n)||RULES_NP.test(n.replace(/(?:^|\s)i\.\s?V\.\s?m\.\s*(?:§§?|Art\.?)[^,;]*/giu,' '))&&!/zuständig/iu.test(n)||typoNonPublic(t);
+ return NP_SPACED.some(re=>re.test(t))||NP_COMPACT.test(t.replace(/[^a-z#]/g,''))||LAW_NP.test(n.replace(GEMO_37,' '))||RULES_NP.test(n.replace(/(?:^|\s)i\.\s?V\.\s?m\.\s*(?:§§?|Art\.?)[^,;]*/giu,' '))&&!/zuständig/iu.test(n)||typoNonPublic(t);
 }
 // Labels and addresses only: "Teil N", "(intern)", "interner Teil", a folder or name part "geschlossen".
 // Also "(geschl.)", "geheim" and a name part "np" (gr-2026-09-16-np.pdf).
@@ -561,7 +564,7 @@ const PARTICLE=/^(?:von|van|de|der|den|zu|vom|di|da|del|ten|ter|und)$/;
 // Also with the votes or a share after the name (a list of results, „Nachname, Vorname 9.420“) and a double first name.
 const VOTES_TAIL=/\s+\d{1,3}(?:\.\d{3})*(?:,\d+)?\s*%?$/u;
 // A line of an election result: number, „Nachname, Vorname“ (also „Dr.“, a double name, a party in brackets), then the votes or share.
-const NAME_VOTES=/^(?:\d{1,3}[.)]?\s+)?\p{Lu}[\p{L}'’-]+(?:\s+\p{Lu}[\p{L}'’-]+)?,\s+(?:(?:Dr|Prof)\.\s+)?\p{Lu}[\p{Ll}'’-]+(?:[-\s]\p{Lu}[\p{Ll}'’-]+)?(?:\s+\([^)]{1,30}\))?\s+\d{1,3}(?:\.\d{3})*(?:,\d+)?\s*%?$/u;
+const NAME_VOTES=/^(?:\d{1,3}[.)]?\s+)?(?:(?:Dr|Prof)\.\s+(?:(?:Dr|med|rer\.\s?nat|phil)\.\s+)*)?\p{Lu}[\p{L}'’-]+(?:\s+\p{Lu}[\p{L}'’-]+)?,\s+(?:(?:Dr|Prof)\.\s+)?\p{Lu}[\p{Ll}'’-]+(?:[-\s]\p{Lu}[\p{Ll}'’-]+)?(?:\s+\([^)]{1,30}\))?\s+\d{1,3}(?:\.\d{3})*(?:,\d+)?\s*%?$/u;
 const nameish=t=>{const b=String(t).replace(VOTES_TAIL,'').trim();return person(t)||person(b)||/^\p{Lu}[\p{Ll}ß'-]+,?\s+(?:(?:Dr|Prof)\.\s+)?\p{Lu}[\p{Ll}ß'-]+(?:-\p{Lu}[\p{Ll}ß'-]+)?$/u.test(b)&&b.split(/[,\s-]+/).some(firstName);};
 function personLine(raw){
  const t=String(raw||'').trim();
@@ -1015,6 +1018,9 @@ function prepareLines(lines){
   // The item before may carry lines of its own („hier: Bewilligung“): the last item among the last four lines counts.
   {const m=src[i].match(/^(\d{1,2})(?:\.\d{1,2}){0,3}\.?$/),prev=m&&out.slice(-4).reverse().map(l=>itemOf(l)).find(Boolean),next=src[i+1]||'';
    if(m&&prev){const sub=m[0].includes('.'),titled=/^(?!TOP\s*\d)[\p{L}„"“(]/u.test(next)||sub&&/^\d{1,2}\.\s+\p{L}/u.test(next);const main=Number(m[1]),was=mainNumber(prev.number);if(titled&&(main===was||main===was+1))src.splice(i,2,src[i]+' '+next);}}
+  // The matter of an item in a line of its own after the item („Kommunale Wärmeplanung - Wärmeplan -“ / „hier: Beschluss über den
+  // Wärmeplan …“, Bochum 2026): part of its title.
+  if(out.length&&/^hier\s*:\s*\S/iu.test(src[i])&&src[i].length<=240&&itemOf(out.at(-1))){out[out.length-1]=out.at(-1)+' '+src[i];continue;}
   const l=src[i],f=fold(l).match(NP_FRAGMENT);
   // A field and its value on two lines (<dt>Öffentliche Sitzung</dt><dd>nein</dd>) are one line.
   if(l.length<=40&&/öffentlich/iu.test(l)&&!/:\s*\S/.test(l)&&/^(?:ja|nein|no|yes|x|-|–)$/iu.test(src[i+1]||'')){out.push(`${l.replace(/:\s*$/,'')}: ${src[i+1]}`);i++;continue;}
@@ -1110,7 +1116,8 @@ function refsOf(line){
 // Also a letter as mark ("Grundstück a)", "Personal (a)"), as Word numbers its footnotes.
 // An asterisk between two letters is a gender star („Beigeordnete*r“, „Bürger*innen“, Bochum 2026), no footnote mark.
 // A superscript after m or O is a unit or a formula („m²“, „CO²“ as written in Bochum), no mark either.
-const FOOTNOTE={test:t=>/(?<!\p{L})\*|\*(?!\p{L})|[†‡¹⁴⁵⁶⁷⁸⁹⁰￼]|(?<![mO])[²³]|\(\d\)\s*$|\p{Ll}\d{1,2}$|(?:^|\s)\(?\p{Ll}\)\s*$/u.test(t)||/(?<=\s)\d\)\s*$/.test(t)&&!t.includes('(')};
+// „(2)“ after a paragraph is its subsection („nach § 3 (2)“, Bruchsal 2026), no mark.
+const FOOTNOTE={test:t=>/(?<!\p{L})\*|\*(?!\p{L})|[†‡¹⁴⁵⁶⁷⁸⁹⁰￼]|(?<![mO])[²³]|(?<!§\s*\d{1,3}\s?[a-z]?\s*)\(\d\)\s*$|\p{Ll}\d{1,2}$|(?:^|\s)\(?\p{Ll}\)\s*$/u.test(t)||/(?<=\s)\d\)\s*$/.test(t)&&!t.includes('(')};
 // A past report in the block of an item that reports from the non-public part ("In der nichtöffentlichen Sitzung vom
 // 16.09.2026 wurde … beschlossen").
 const PAST_REPORT=/(?<!\p{L})(?:wurde|wurden|hat|hatte|haben|hatten|gefasst\p{L}*|beschloss\p{L}*|beschlossen|vergeben|gibt|gab|teilt|teilte)(?!\p{L})/iu;
@@ -1403,6 +1410,9 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
     // The general announcement of this very meeting as a running head („öffentliche / nicht öffentliche Sitzung des Stadtrates am
     // 24.09.2026“ on each page, Neutraubling) names no item.
     if(np&&BOTH_PARTS.test(normalizeLine(line))&&germanDates(line).length&&germanDates(line).every(d=>d.iso===date)){i++;continue;}
+    // The rest of a standing item broken over lines, also below a sub-point („a) in der Gemeinderatssitzung am 28.07.2026 im“ /
+    // „nichtöffentlichen Teil gefassten Beschlüsse“, Bruchsal 2026): no heading of the non-public part.
+    if(np&&i>0&&seenItem&&state!=='nonpublic'&&reportTail(i)){i++;continue;}
     if(np){
      const mark=markOnly(line)&&!(dashParts&&DASH_FRAMED.test(line.trim())),names=namesItems(line);
      const heading=isNonPublicHeading(line)||closedLine(line)||startsNonPublic(line)||report&&line.length<=110&&!/[.!?]$/.test(line)||line.length<=120&&/:\s*$/.test(line)&&!names.named.length&&!/[„"“”»«]/.test(line)

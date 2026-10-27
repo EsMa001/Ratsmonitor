@@ -593,7 +593,10 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   // document (3 and 4 after 1 and 2) closes that number for the same body also where another document words it otherwise.
   for(const m of parsed.meetings)if(m.date){
    const committee=m.committee?body(m.committee):'';
-   for(const c of m.closedItems||[])closedOf.set(m.date,[...closedOf.get(m.date)||[],{...c,text:t,url:t.url,committee,standard:standardTitle(c.title),continues:m.lastPublic>0&&mainNumber(c.number)>m.lastPublic}]);
+   // alsoPublic: the document itself lists the same matter in its public part too (a development plan decided in public, the
+   // assignment of the statements to names in private, Bochum 2026). Such a non-public item says nothing about the public items of
+   // another document of the meeting.
+   for(const c of m.closedItems||[])closedOf.set(m.date,[...closedOf.get(m.date)||[],{...c,text:t,url:t.url,committee,standard:standardTitle(c.title),continues:m.lastPublic>0&&mainNumber(c.number)>m.lastPublic,alsoPublic:(m.items||[]).some(x=>closeTitles(x.title,c.title))}]);
    // The public items of a document that marks its non-public part: an item another document of the meeting gives beyond these
    // (minutes numbered anew after an item was taken off) is not shown to be public.
    if(m.closedItems?.length&&!m.unclear)publicOf.set(m.date,[...publicOf.get(m.date)||[],{text:t,committee,items:m.items}]);
@@ -613,7 +616,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  // notice the reader found.
  // Another day: only the very same body by name. Councils of different member municipalities of a Verbandsgemeinde
  // („Ortsgemeinderat“ of Friesenhagen, „Stadtrat“ of Kirchen) count as alike for one meeting, not across meetings.
- const closedNear=(date,committee)=>[...closedOf.entries()].filter(([d])=>d!==date&&Math.abs(dayDiff(d,date))<=45).flatMap(([,list])=>list).filter(c=>!c.standard&&sameBodies(c.committee,committee)&&slug(c.committee)===slug(committee));
+ const closedNear=(date,committee)=>[...closedOf.entries()].filter(([d])=>d!==date&&Math.abs(dayDiff(d,date))<=45).flatMap(([,list])=>list).filter(c=>!c.standard&&!c.alsoPublic&&sameBodies(c.committee,committee)&&slug(c.committee)===slug(committee));
  for(const t of texts){
   if(names.length&&!named){const all=words(t.title+' '+t.lines.join(' '));named=names.some(n=>all.includes(n));}
   const parsed=parsedOf.get(t);
@@ -643,7 +646,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    // A meeting on a day a notice moved or cancelled.
    if(movedFrom.some(mv=>mv.from===m.date&&(!mv.committee||sameBodies(body(mv.committee),committee))&&!(mv.to===m.date))){if(m.items.length)issues.push(`Sitzung ${committee} ${ddmmyyyy(m.date)} laut Bekanntmachung verlegt oder abgesagt, nicht übernommen: ${t.url}`);continue;}
    // An item another document of the same meeting puts in the non-public part goes, with all items after it.
-   const elsewhere=(closedOf.get(m.date)||[]).filter(c=>c.text!==t);
+   const elsewhere=(closedOf.get(m.date)||[]).filter(c=>c.text!==t&&!c.alsoPublic);
    const near=closedNear(m.date,committee).filter(c=>c.text!==t);
    let cut=m.items.findIndex(it=>elsewhere.some(c=>!c.standard&&(!c.committee||!committee||sameBodies(c.committee,committee))&&closeTitles(c.title,it.title)||c.continues&&sameBodies(c.committee,committee)&&mainNumber(it.number)>=mainNumber(c.number))||near.some(c=>closeTitles(c.title,it.title)));
    // An item that is none of the public items of another document of the meeting that marks its non-public part.

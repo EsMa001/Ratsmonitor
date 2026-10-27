@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {parseSessionText} from '../server/integrations/website-text.mjs';
+import {parseSessionText,mentionsNonPublic} from '../server/integrations/website-text.mjs';
 import {articleCandidates} from '../server/integrations/website-feeds.mjs';
 
 // Nachgebildet nach dem Amtsblatt der Stadt Bochum und ihren Seiten „Sitzungstermine und Tagesordnungen des Rates“ (27.10.2026):
@@ -116,4 +116,20 @@ test('eine Wahlbekanntmachung ist keine Sitzung; ein Punkt „Wahl des Bürgerme
  const agenda=['Einladung','zur Sitzung des Rates der Stadt Musterburg am Donnerstag, 01.10.2026, 17:00 Uhr','1. Eröffnung der Sitzung','2. Wahl des Bürgermeisters und seiner Stellvertreter','3. Beschluss über die Wahlvorschläge für die Ausschüsse','4. Verschiedenes'];
  const m=parseSessionText(agenda,{title:'Einladung Rat',wrapped:true}).meetings.find(x=>x.items.length);
  assert.deepEqual(m.items.map(i=>i.number),['1','2','3','4']);
+});
+
+// Nachgebildet nach der Bekanntmachung des Gemeinderats der Stadt Bruchsal vom 29.09.2026.
+test('§ 37 GemO (Baden-Württemberg) ist keine Vorschrift über den nichtöffentlichen Teil, „§ 3 (2)“ keine Fußnote, ein Unterpunkt mit Restzeile kein Abschnitt',()=>{
+ assert.equal(mentionsNonPublic('b) gem. § 37 Abs. 1 GemO gefassten Beschlüsse einfacher Art'),false);
+ assert.equal(mentionsNonPublic('nichtöffentlich gem. § 37 Abs. 1 SächsGemO'),true);
+ assert.equal(mentionsNonPublic('(§ 37 Abs. 1 Satz 1 Sächs. GemO)'),true);
+ assert.equal(mentionsNonPublic('Bekanntgabe gem. § 35 GemO'),true);
+ const lines=['Bekanntmachung','Die nächste Sitzung des Gemeinderates findet','am Dienstag, 29. September 2026, um 17:00 Uhr','im Bürgersaal statt.','TAGESORDNUNG',
+  '1 Bekanntgabe der','a) in der Gemeinderatssitzung am 28.07.2026 im','nichtöffentlichen Teil gefassten Beschlüsse','b) gem. § 37 Abs. 1 GemO gefassten Beschlüsse einfacher Art','im elektronischen Verfahren',
+  '2 Vorhabenbezogener Bebauungsplan und örtliche','Bauvorschriften, Gemarkung Musterau','- Beschluss über die Beteiligung der Öffentlichkeit nach § 3 (2)','BauGB und der Behörden gemäß § 4 (2) BauGB','213 / 2026',
+  '3 Mitteilungen und Anfragen','Musterbruch, 21.09.2026'];
+ const m=parseSessionText(lines,{title:'Bekanntmachung Gemeinderat',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3']);
+ assert.equal(m.unclear,false);
+ assert.deepEqual(m.closedItems||[],[]);
 });
