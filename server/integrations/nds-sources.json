@@ -32,7 +32,18 @@
     "base": "https://ratsinfob.stadt.wolfsburg.de/",
     "verifiedSource": "https://ratsinfob.stadt.wolfsburg.de/",
     "verifiedAt": "2026-10-10",
-    "apiCheck": "OParl-Adresse des Systems (https://ratsinfob.stadt.wolfsburg.de/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar. Die Website (https://www.wolfsburg.de/rathaus/bekanntmachungen/amtliche-bekanntmachungen; Probeabruf 12 Monate am 27.10.2026: 1559 Berichte aus 88 Sitzungen) taugt nicht als Ausweichquelle: sie liegt in derselben Servergruppe wie das System (wolfsburg.de), dort würde eine Ausweichquelle nie aktiv (27.10.2026)."
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinfob.stadt.wolfsburg.de/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar. Die Website (https://www.wolfsburg.de/rathaus/bekanntmachungen/amtliche-bekanntmachungen; Probeabruf 12 Monate am 27.10.2026: 1559 Berichte aus 88 Sitzungen) taugt nicht als Ausweichquelle: sie liegt in derselben Servergruppe wie das System (wolfsburg.de), dort würde eine Ausweichquelle nie aktiv (27.10.2026).",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.wolfsburg.de/",
+      "pages": [
+        "https://www.wolfsburg.de/rathaus/bekanntmachungen/amtliche-bekanntmachungen"
+      ],
+      "gazettePages": true,
+      "verifiedSource": "https://www.wolfsburg.de/rathaus/bekanntmachungen/amtliche-bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem vom Server nicht erreicht wird (wolfsburg.de, letzter Erfolg nie): Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 1439 Berichte aus 89 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Wöchentliches Amtsblatt mit Rat, Fachausschüssen und Ortsräten (mit Vorlagennummern); Wahlbekanntmachungen und Geschäftsordnung werden nicht als Sitzung gelesen; etwa jeder 25. Titel am Zeilenende abgeschnitten; viele Ausgaben (Dokumentlimit)."
+    }
   },
   {
     "id": "nds-03151",

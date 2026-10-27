@@ -427,7 +427,18 @@
     "base": "https://amt-suedtondern.ris-portal.de/web/ratsinformation/",
     "verifiedSource": "https://www.amt-suedtondern.de/",
     "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.amt-suedtondern.de/",
+      "pages": [
+        "https://www.amt-suedtondern.de/Das-Amt/Politik/Sitzungstermine/"
+      ],
+      "gazettePages": true,
+      "verifiedSource": "https://www.amt-suedtondern.de/Das-Amt/Politik/Sitzungstermine/",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem vom Server nicht erreicht wird (ris-portal.de, letzter Erfolg 09.10.2026): Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 252 Berichte aus 24 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Nur anstehende Sitzungen (etwa sechs Wochen) von Amt, Stadt Niebüll, Leck und Mitgliedsgemeinden; etwa jeder achte Titel am Zeilenende abgeschnitten, Öffentlichkeit meist nicht angegeben."
+    }
   },
   {
     "id": "de-010545492",
@@ -2816,7 +2827,18 @@
     "base": "https://rim.ekom21.de/oberursel/",
     "verifiedSource": "https://rim.ekom21.de/oberursel/",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.oberursel.de/",
+      "pages": [
+        "https://www.oberursel.de/de/rathaus/veroeffentlichungen/bekanntmachungen/"
+      ],
+      "followArticles": true,
+      "verifiedSource": "https://www.oberursel.de/de/rathaus/veroeffentlichungen/bekanntmachungen/",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem vom Server nicht erreicht wird (ekom21.de, letzter Erfolg 10.10.2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 127 Berichte aus 7 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Nur die aktuellen Einladungen je Gremium (keine Rückschau); Ausschüsse der Stadtverordnetenversammlung und Ortsbeiräte."
+    }
   },
   {
     "id": "de-06434009",
@@ -5356,7 +5378,20 @@
     "state": "system-verified",
     "verifiedSource": "https://fulda.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-06",
-    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.fulda.de/",
+      "pages": [
+        "https://www.fulda.de/stadt-politik/information/amtliche-bekanntmachungen",
+        "https://www.fulda.de/stadt-politik/information/amtliche-bekanntmachungen/kategorie/2026",
+        "https://www.fulda.de/stadtverordnetenversammlung"
+      ],
+      "followArticles": true,
+      "verifiedSource": "https://www.fulda.de/stadt-politik/information/amtliche-bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem vom Server nicht erreicht wird (ip:185.212.46.221, letzter Erfolg 06.10.2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 266 Berichte aus 87 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Stadtverordnetenversammlung (Tagesordnungs-PDF) und Ortsbeiräte (wöchentliche Bekanntmachungen); Öffentlichkeit meist nicht angegeben, etwa jeder siebte Titel am Zeilenende abgeschnitten."
+    }
   },
   {
     "id": "de-06631010",
@@ -10606,7 +10641,18 @@
     "meetingScan": "end",
     "state": "system-verified",
     "verifiedSource": "https://gemeinderat-online.fellbach.de/info.asp",
-    "verifiedAt": "2026-10-04"
+    "verifiedAt": "2026-10-04",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.fellbach.de/",
+      "pages": [
+        "https://www.fellbach.de/Amtliche-Bekanntmachungen"
+      ],
+      "gazettePages": true,
+      "verifiedSource": "https://www.fellbach.de/Amtliche-Bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem vom Server nicht erreicht wird (fellbach.de, letzter Erfolg nie): Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 119 Berichte aus 20 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Gemeinderat, Ausschüsse und Jugendgemeinderat; Gremiennamen in Großbuchstaben, ältere Bekanntmachungen stehen nicht mehr auf der Seite."
+    }
   },
   {
     "id": "de-08119024",
@@ -12405,7 +12451,18 @@
     "base": "https://bruchsal.ris-portal.de/",
     "verifiedSource": "https://www.bruchsal.de/informieren/politik/gemeinderat/ratsinformation",
     "verifiedAt": "2026-10-05",
-    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.bruchsal.de/",
+      "pages": [
+        "https://www.bruchsal.de/informieren/verwaltung/bekanntmachungen",
+        "https://www.bruchsal.de/informieren/verwaltung/bekanntmachungen/bekanntgaben"
+      ],
+      "verifiedSource": "https://www.bruchsal.de/informieren/verwaltung/bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem vom Server nicht erreicht wird (ris-portal.de, letzter Erfolg 09.10.2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 86 Berichte aus 8 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Tagesordnungen der öffentlichen Gemeinderatssitzungen als signierte PDF; Vorlagennummer am Titelende."
+    }
   },
   {
     "id": "de-08215017",

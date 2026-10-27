@@ -625,15 +625,16 @@
     "kind": "city",
     "method": "scraper",
     "state": "verified",
-    "verifiedAt": "2026-10-24",
-    "note": "Ratsinformationssystem luenen.ratsinfomanagement.net gesperrt (Zugriffsschutz). Amtsblatt-Archiv nennt Satzungsbeschlüsse; Tagesordnungen im Amtsblatt (Probeabruf 12 Monate: 59 Berichte, u. a. Rat 18.12.2025 und 20.11.2025, nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe der Betreiber).",
+    "verifiedAt": "2026-10-27",
+    "note": "Ratsinformationssystem luenen.ratsinfomanagement.net gesperrt (Zugriffsschutz). Amtsblatt-Archiv nennt Satzungsbeschlüsse; Tagesordnungen im Amtsblatt (Probeabruf 12 Monate: 59 Berichte, u. a. Rat 18.12.2025 und 20.11.2025, nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe der Betreiber). Seiten erneuert am 27.10.2026, vorher keine Berichte (Noch keine Artikel erfolgreich erfasst.): Amtsblatt-Ausgaben. Probeabruf 12 Monate am 27.10.2026: 138 Berichte aus 8 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Nur der Rat (etwa sechs bis acht Sitzungen im Jahr); Nachträge zur Tagesordnung als eigene Ausgaben.",
     "adapter": "website",
     "base": "https://www.luenen.de/",
     "pages": [
+      "https://www.luenen.de/de/rathaus/amtsblatt/",
       "https://www.luenen.de/de/rathaus/amtsblatt/amtsblatt-archiv.php"
     ],
     "gazettePages": true,
-    "verifiedSource": "https://www.luenen.de/de/rathaus/amtsblatt/amtsblatt-archiv.php"
+    "verifiedSource": "https://www.luenen.de/de/rathaus/amtsblatt/"
   },
   {
     "id": "nrw-05958004",
@@ -641,15 +642,16 @@
     "kind": "city",
     "method": "scraper",
     "state": "verified",
-    "verifiedAt": "2026-10-24",
-    "note": "ratsinfo.arnsberg.de gesperrt. Öffentliche Bekanntmachungen der Stadt nennen Sitzungen des Rats mit Tagesordnungspunkten (Probeabruf 12 Monate: 46 Berichte, Sitzungen 11./12.12.2025, nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe der Betreiber).",
+    "verifiedAt": "2026-10-27",
+    "note": "ratsinfo.arnsberg.de gesperrt. Öffentliche Bekanntmachungen der Stadt nennen Sitzungen des Rats mit Tagesordnungspunkten (Probeabruf 12 Monate: 46 Berichte, Sitzungen 11./12.12.2025, nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe der Betreiber). Seiten erneuert am 27.10.2026, vorher keine Berichte (Noch keine Artikel erfolgreich erfasst.): Amtsblatt-Ausgaben. Probeabruf 12 Monate am 27.10.2026: 145 Berichte aus 16 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Nur der Rat; nichtöffentliche Punkte stehen nur mit Drucksachennummer; etwa jeder zwölfte Titel am Zeilenende abgeschnitten; einzelne Ausgaben eingescannt.",
     "adapter": "website",
     "base": "https://www.arnsberg.de/",
     "pages": [
+      "https://www.arnsberg.de/rathaus-politik/amtliche-bekanntmachungen/2026",
       "https://www.arnsberg.de/rathaus-politik/amtliche-bekanntmachungen/2025"
     ],
     "gazettePages": true,
-    "verifiedSource": "https://www.arnsberg.de/rathaus-politik/amtliche-bekanntmachungen"
+    "verifiedSource": "https://www.arnsberg.de/rathaus-politik/amtliche-bekanntmachungen/2026"
   },
   {
     "id": "nrw-05554068",
@@ -828,5 +830,21 @@
     "verifiedAt": "2026-10-27",
     "verifiedSource": "https://www.gemeinde-schlangen.de/gemeinde/rathaus/bekanntmachungen.php",
     "note": "schlangen.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 209 Berichte aus 24 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "nrw-05158032",
+    "name": "Stadt Velbert",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.velbert.de/",
+    "pages": [
+      "https://www.velbert.de/aktuelles/amtsblatt"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.velbert.de/aktuelles/amtsblatt",
+    "note": "velbert.ratsinfomanagement.net nicht lesbar (SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert …). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 153 Berichte aus 5 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Einladungen zu den Ratssitzungen mit vollständiger Tagesordnung im Amtsblatt; Ausschüsse nur im Ratsinformationssystem; Verordnungen und Satzungen werden nicht als Sitzung gelesen."
   }
 ]
