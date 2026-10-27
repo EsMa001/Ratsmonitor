@@ -100,3 +100,20 @@ test('Wahlergebnisse mit Namen und Stimmenzahl werden nie Punkte',()=>{
  assert.ok(r.meetings.every(m=>!m.items.length&&!(m.otherItems||[]).length&&!(m.closedItems||[]).length));
  assert.ok(r.issues.some(i=>/Wahlergebnis/.test(i)));
 });
+
+// Nachgebildet nach dem Amtsblatt der Stadt Wolfsburg (Nr. 37/2026): Wahlbekanntmachung vor der Einladung eines Ortsrats.
+test('eine Wahlbekanntmachung ist keine Sitzung; ein Punkt „Wahl des Bürgermeisters“ macht aus einer Tagesordnung keine Wahlbekanntmachung',()=>{
+ const gazette=['Amtsblatt für die Stadt Musterburg','Jahrgang 23 Nr. 37 Musterburg, 04.09.2026','Wahlbekanntmachung','für die Wahl zum Rat der Stadt Musterburg am 13.09.2026',
+  '1. Am Sonntag, dem 13.09.2026, findet die Wahl zum Rat der Stadt Musterburg statt. Die Wahl dauert von 8 bis 18 Uhr.','2. Das Wahlgebiet ist in fünf Wahlbereiche mit','insgesamt 66 Wahlbezirke eingeteilt.',
+  '3. Die Wahl ist öffentlich. Jedermann hat während der Wahlhandlung Zutritt zum Wahlraum.','Musterburg, 01.09.2026','Der Oberbürgermeister','Einladung','zur Sitzung des Ortsrates Stadtmitte am Mittwoch, 16.09.2026, 18:00 Uhr',
+  'Tagesordnung','Öffentlicher Teil','1. Eröffnung der Sitzung','2. Genehmigung des Protokolls','3. Radfahrstreifen Schillerstraße','4. Anfragen und Anregungen'];
+ const r=parseSessionText(gazette,{title:'Amtsblatt Nr. 37',wrapped:true});
+ const withItems=r.meetings.filter(m=>m.items.length);
+ assert.equal(withItems.length,1);
+ assert.equal(withItems[0].committee,'Ortsrat Stadtmitte');
+ assert.ok(!withItems[0].items.some(i=>/Wahl/.test(i.title)));
+ assert.ok(r.issues.some(i=>/Wahlbekanntmachung/.test(i)));
+ const agenda=['Einladung','zur Sitzung des Rates der Stadt Musterburg am Donnerstag, 01.10.2026, 17:00 Uhr','1. Eröffnung der Sitzung','2. Wahl des Bürgermeisters und seiner Stellvertreter','3. Beschluss über die Wahlvorschläge für die Ausschüsse','4. Verschiedenes'];
+ const m=parseSessionText(agenda,{title:'Einladung Rat',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3','4']);
+});
