@@ -141,8 +141,10 @@ flowchart TD
 (`PROBE_DAYS`, `oparlProbeAt` im Quellenstand); `oparlFallback` im Katalog überspringt sie; ein positives Ergebnis bricht mit
 „Adapterfreigabe erforderlich“ ab, damit die Quelle bewusst auf `method:'oparl'` umgestellt wird.
 
-**Ausweichquelle:** `fallback` im Katalog (Website der Kommune, Leser `website`) gilt nur, solange die Servergruppe des Systems
-wartet (`source_hosts`); dann liest `collectRegion` mit `options.fallback` die Website statt des Systems. Ein Sitzungstag gehört der
+**Ausweichquelle:** `fallback` im Katalog (Website der Kommune, Leser `website`) gilt, solange die Servergruppe des Systems
+wartet (`source_hosts`) oder das System seit 7 Tagen keinen Erfolg hatte (seit 27.10.2026; alle 7 Tage eine Stichprobe beim System,
+`probedAt` im Quellenstand); dann liest `collectRegion` mit `options.fallback` die Website statt des Systems. Eine Website in der
+Servergruppe des Systems zählt für die Wartestufe als eigener Server (`host:<Rechnername>`). Ein Sitzungstag gehört der
 Quelle, die ihn zuerst hatte. Einzelheiten: `server/integrations/fallback-source.mjs` und `docs/betrieb/node-server.md`, „Ausweichquelle“.
 
 ### Leser und Produkte

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {memoryDb} from './helpers/d1.mjs';
 import {fallbackOf,fallbackActive,fallbackPlan,primaryServer,fallbackServer,keepFallbackTopics,keepPrimaryTopics,fallbackState,meetingDays} from '../server/integrations/fallback-source.mjs';
+import {windowStart} from '../server/integrations/history-window.mjs';
 import {NRW_SOURCES} from '../server/integrations/source-catalog.mjs';
 import {collectRegion} from '../server/integrations/collect-region.mjs';
 import {deferredRegions} from '../server/integrations/pipeline-worker.mjs';
@@ -21,6 +22,9 @@ test('fallbackOf: Quelle der Website mit Gebiet und Leser; ohne Seiten keine',()
  assert.equal(fallbackOf({...source,fallback:{base:'https://www.x-stadt.de/',pages:[]}}),null);
  assert.equal(fallbackOf({...source,fallback:undefined}),null);
  assert.notEqual(primaryServer(source),fallbackServer(source));
+ // Website in der Domain des Systems (selbst betriebenes System, Wolfsburg): für die Wartestufe ein eigener Server, nicht die Gruppe
+ const own={...source,adapter:'allris',base:'https://ratsinfo.x-stadt.de/'};
+ assert.equal(primaryServer(own),'x-stadt.de');assert.equal(fallbackServer(own),'host:www.x-stadt.de');
 });
 
 test('fallbackActive: nur wenn der Anbieter wartet und die Website nicht',()=>{
@@ -31,6 +35,21 @@ test('fallbackActive: nur wenn der Anbieter wartet und die Website nicht',()=>{
  assert.equal(fallbackActive({...source,fallback:undefined},hosts(p)),false,'ohne Ausweichquelle');
  const due={host:p,state:'bremsen',level:6,next_try_at:'2000-01-01T00:00:00.000Z'};
  assert.equal(fallbackActive(source,new Map([[p,due]])),false,'Stichprobe fällig: das System wird gefragt');
+ // Selbst betriebenes System in der Domain der Kommune: wartet die Gruppe, gilt die Website trotzdem (eigene Wartestufe)
+ const own={...source,adapter:'allris',base:'https://ratsinfo.x-stadt.de/'};
+ assert.equal(fallbackActive(own,hosts('x-stadt.de')),true,'Website in derselben Domain wartet nicht mit dem System');
+ assert.equal(fallbackActive(own,hosts('x-stadt.de','host:www.x-stadt.de')),false,'die Website selbst wartet');
+});
+
+test('fallbackActive: das System seit 7 Tagen ohne Erfolg, auch ohne wartende Servergruppe; alle 7 Tage wird es selbst gefragt',()=>{
+ const now=Date.parse('2026-10-27T01:00:00Z'),none=hosts();
+ assert.equal(fallbackActive(source,none,now,{lastSuccessAt:'2026-10-25T00:00:00Z'}),false,'Erfolg vor zwei Tagen: das System gilt');
+ assert.equal(fallbackActive(source,none,now,{lastSuccessAt:'2026-10-10T00:00:00Z'}),false,'ohne vermerkten Versuch wird zuerst das System gefragt');
+ assert.equal(fallbackActive(source,none,now,{lastSuccessAt:'2026-10-10T00:00:00Z',fallback:{probedAt:'2026-10-26T01:00:00Z'}}),true,'Versuch gestern ohne Erfolg: die Website gilt');
+ assert.equal(fallbackActive(source,none,now,{fallback:{probedAt:'2026-10-26T01:00:00Z'}}),true,'nie geliefert, Versuch gestern');
+ assert.equal(fallbackActive(source,none,now,{lastSuccessAt:'2026-10-10T00:00:00Z',fallback:{probedAt:'2026-10-19T01:00:00Z'}}),false,'Versuch vor acht Tagen: das System wird wieder gefragt');
+ assert.equal(fallbackActive(source,hosts(fallbackServer(source)),now,{fallback:{probedAt:'2026-10-26T01:00:00Z'}}),false,'die Website wartet');
+ assert.equal(fallbackActive(source,none,now),false,'ohne Quellenstand nur die Wartestufe');
 });
 
 test('fallbackPlan: Beginn am Tag des letzten Erfolgs, erster Abruf reicht bis dahin, danach bis zum letzten Abruf',()=>{
@@ -42,6 +61,9 @@ test('fallbackPlan: Beginn am Tag des letzten Erfolgs, erster Abruf reicht bis d
  assert.equal(next.since,'2026-10-10','Beginn bleibt');assert.equal(next.window,'1w');
  assert.equal(fallbackPlan(source,{hosts:hosts(),coverage:{},window:'1d',now}),null);
  assert.equal(fallbackPlan(source,{hosts:h,coverage:{lastSuccessAt:'2025-01-01T00:00:00Z'},window:'1d',now}).window,'12m','höchstens 12 Monate');
+ // Nie geliefert (kein Erfolg des Systems): die Ausweichzeit beginnt 12 Monate zurück, wie ein erster Abruf
+ const never=fallbackPlan(source,{hosts:hosts(),coverage:{fallback:{probedAt:'2026-10-26T01:00:00Z'}},window:'1d',now});
+ assert.equal(never.since,windowStart(now,'12m').toISOString().slice(0,10));assert.equal(never.window,'12m');
 });
 
 test('ein Sitzungstag, eine Quelle: Ausweichquelle ab since und nicht an Tagen des Systems, danach umgekehrt',()=>{
@@ -64,23 +86,31 @@ test('fallbackState: aktiv mit Plan, beendet nach einem Abruf des Systems',()=>{
  const a=fallbackState(undefined,plan,'2026-10-26T01:00:00Z');
  assert.deepEqual({...a},{active:true,since:'2026-10-10',server:'x-stadt.de',primary:'rim.ekom21.de',lastRunAt:'2026-10-26T01:00:00Z',startedAt:'2026-10-26T01:00:00Z'});
  assert.equal(fallbackState(a,plan,'2026-10-27T01:00:00Z').startedAt,'2026-10-26T01:00:00Z');
- assert.equal(fallbackState(a,null,'2026-10-28T01:00:00Z',false),a,'gescheiterte Stichprobe beim Anbieter beendet nichts');
- const ended=fallbackState(a,null,'2026-11-02T01:00:00Z');
+ // Gescheiterte Stichprobe beim Anbieter: beendet nichts, wird als probedAt vermerkt (fallbackActive, STALE_MS/PROBE_MS)
+ const probed=fallbackState(a,null,'2026-10-28T01:00:00Z',false);
+ assert.deepEqual(probed,{...a,probedAt:'2026-10-28T01:00:00Z'},'gescheiterte Stichprobe beim Anbieter beendet nichts');
+ assert.equal(fallbackState(probed,plan,'2026-10-29T01:00:00Z').probedAt,'2026-10-28T01:00:00Z','der Vermerk bleibt in der Ausweichzeit');
+ assert.deepEqual(fallbackState(undefined,null,'2026-10-28T01:00:00Z',false),{probedAt:'2026-10-28T01:00:00Z'},'auch ohne Ausweichzeit vermerkt');
+ const ended=fallbackState(probed,null,'2026-11-02T01:00:00Z');
  assert.equal(ended.active,false);assert.equal(ended.endedAt,'2026-11-02T01:00:00Z');assert.equal(ended.since,'2026-10-10');
+ assert.equal(ended.probedAt,undefined,'das System liefert wieder: der Vermerk geht');
  assert.equal(fallbackState(ended,null,'2026-11-03T01:00:00Z').endedAt,'2026-11-02T01:00:00Z','bleibt als Vermerk');
  assert.equal(fallbackState(undefined,null,'x'),undefined);
 });
 
-// Gebiet des Katalogs mit Ausweichquelle (ekom21, 26.10.2026). Nicht der erste Eintrag mit dem Feld, sondern einer, dessen Website in
-// einer anderen Servergruppe liegt als das System; nur so eine wird je aktiv (fallbackActive).
-const area=NRW_SOURCES.find(s=>fallbackOf(s)&&primaryServer(s)!==fallbackServer(s));
+// Gebiet des Katalogs mit Ausweichquelle (ekom21, 26.10.2026): eines, dessen Website in einer anderen Servergruppe liegt als das
+// System (die Tests unten setzen die Wartestufe der Gruppe des Systems).
+const area=NRW_SOURCES.find(s=>fallbackOf(s)&&!String(fallbackServer(s)).startsWith('host:'));
 
-test('Katalog: jede Ausweichquelle ist gültig und liegt in einer anderen Servergruppe als das System',()=>{
+test('Katalog: jede Ausweichquelle ist gültig, liegt auf einem anderen Rechner als das System und hat eine eigene Wartestufe',()=>{
  const entries=NRW_SOURCES.filter(s=>s.fallback);
  assert.ok(entries.length>0,'Katalog hat Ausweichquellen');
  assert.deepEqual(entries.filter(s=>!fallbackOf(s)).map(s=>s.id),[],'Ausweichquelle ohne base oder pages');
- // Dieselbe Servergruppe (Domain oder IP, source-servers.mjs): wartet das System, wartet auch die Website; fallbackActive wäre nie wahr.
- assert.deepEqual(entries.filter(s=>primaryServer(s)===fallbackServer(s)).map(s=>`${s.id} (${primaryServer(s)})`),[],'Website in der Servergruppe des Systems: die Ausweichquelle würde nie aktiv');
+ const host=u=>{try{return new URL(u).hostname;}catch{return null;}};
+ assert.deepEqual(entries.filter(s=>host(s.fallback.base)===host(s.system||s.base)).map(s=>s.id),[],'Website auf dem Rechner des Systems: keine Ausweichquelle');
+ // Dieselbe Servergruppe (Domain oder IP, source-servers.mjs): die Website bekommt eine eigene Wartestufe (fallbackServer), sonst
+ // wartete sie mit dem System und fallbackActive wäre nie wahr (Wolfsburg, 27.10.2026).
+ assert.deepEqual(entries.filter(s=>primaryServer(s)===fallbackServer(s)).map(s=>`${s.id} (${primaryServer(s)})`),[],'Website in der Wartestufe des Systems');
 });
 
 test('collectRegion mit fallback liest nur die Website, nie das System',async()=>{

@@ -84,6 +84,8 @@ catch (e) {
     const coverage={...previousCoverage,regionId:region,...importHealth(previousCoverage,{at:started,failed:true}),complete:false,issues:[...new Set([...(previousCoverage.issues||[]).filter((i:string)=>!String(i).startsWith(FAILURE_CAUSE)),'Abruf fehlgeschlagen; letzter übernommener Bestand bleibt erhalten.',FAILURE_CAUSE+cause])]};
     // After a failure the OParl probe is sent again (it may be the reason: "OParl vorhanden").
     delete coverage.oparlProbeAt;
+    // Das System wurde gefragt und lieferte nicht: vermerkt (probedAt), damit die Ausweichquelle greift (fallback-source.mjs).
+    if (!fallback) { const state = fallbackState(previousCoverage.fallback as Record<string, unknown> | undefined, null, started, false); if (state) coverage.fallback = state; }
     await db.prepare(SAVE_COVERAGE_SQL).bind(region,JSON.stringify(coverage)).run();
     // fallback: the failure belongs to the server of the fallback, not to the council system (noteImport in pipeline-jobs.mjs).
     return { status: 502, data: { error: 'Import fehlgeschlagen; der angezeigte Bestand kann teilweise aktualisiert sein', cause, ...(refused ? { refused } : {}), ...(fallback ? { fallback: { server: fallback.server } } : {}) } };

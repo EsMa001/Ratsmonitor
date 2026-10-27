@@ -1704,7 +1704,17 @@
     "extension": "asp",
     "verifiedSource": "https://www.bielefeld.de/",
     "verifiedAt": "2026-10-01",
-    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.bielefeld.de/",
+      "pages": [
+        "https://www.bielefeld.de/oeffentliche-bekanntmachungen"
+      ],
+      "verifiedSource": "https://www.bielefeld.de/oeffentliche-bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem vom Server nicht erreicht wird (bielefeld.de, letzter Erfolg 17.10.2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 304 Berichte aus 10 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Nur die Tagesordnungen des Rates; Ausschüsse und Bezirksvertretungen nur im Ratsinformationssystem. Eine Satzungsänderung wurde als Sitzung eines Fachbeirats mit fünf Satzungszeilen gelesen."
+    }
   },
   {
     "id": "nrw-05754008",
@@ -2126,7 +2136,20 @@
     "state": "system-verified",
     "verifiedSource": "https://www.bochum.de/Ratsinformationssystem",
     "verifiedAt": "2026-10-01",
-    "meetingScan": "end"
+    "meetingScan": "end",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.bochum.de/",
+      "pages": [
+        "https://www.bochum.de/Rat-der-Stadt-Bochum/Sitzungstermine-und-Tagesordnungen-des-Rates",
+        "https://www.bochum.de/Amtsblatt",
+        "https://www.bochum.de/C125830C0038F229/vwContentByKey/W2DC8CJY318BOCMDE"
+      ],
+      "followArticles": true,
+      "verifiedSource": "https://www.bochum.de/Rat-der-Stadt-Bochum/Sitzungstermine-und-Tagesordnungen-des-Rates",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange das Ratsinformationssystem vom Server nicht erreicht wird (ip:185.212.46.221, letzter Erfolg 06.10.2026): Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 543 Berichte aus 9 Sitzungen, Titel geprüft (50 größte Lücken, 27.10.2026). Nur der Rat: Seite der Ratssitzungen und Amtsblatt je Sitzung; Ausschüsse und Bezirksvertretungen gibt es nur im Ratsinformationssystem. robots.txt der Stadt sperrt den Pfad der Artikel und Amtsblätter für alle Programme (wird protokolliert, nicht befolgt). Etwa jeder zwanzigste Titel am Zeilenende abgeschnitten."
+    }
   },
   {
     "id": "nrw-05913000",
