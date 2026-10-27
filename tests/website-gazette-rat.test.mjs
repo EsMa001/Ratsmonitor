@@ -22,13 +22,16 @@ test('Amtsblatt einer Stadt: die Ratssitzung trotz Heftkopf mit anderen Tagen, U
  const m=r.meetings.find(x=>x.items.length);
  assert.ok(m,'eine Sitzung mit Punkten');
  assert.equal(m.date,'2026-07-16');
+ assert.equal(m.committee,'Rat','„Sitzung des Rates“ ist der Rat');
  assert.equal(m.unclear,false);
+ // Der Heftkopf (13. Juli 2026) ist keine Sitzung mit Gremium und Punkten; der Leser übernimmt ihn nicht.
+ assert.ok(r.meetings.filter(x=>x!==m).every(x=>!x.committee&&!x.items.length));
  assert.deepEqual(m.items.map(i=>i.number),['1','1.1','1.2','1.3','2','2.1','3','3.1','4','4.1']);
  assert.match(m.items.find(i=>i.number==='1.2').title,/Musterstadt vom 14\.07\.2025$/,'eine Satzung mit Datum in der Folgezeile ist kein anderer Sitzungstag');
  assert.ok(m.closedItems.some(i=>i.number==='6.1'&&/Bebauungsplans Nr\. 344/.test(i.title)),'der nichtöffentliche Punkt bleibt nichtöffentlich');
  assert.ok(!m.items.some(i=>i.number==='6.1'),'und kommt nicht unter die öffentlichen');
  assert.ok(!m.items.some(i=>/Beschaffer|Verfahren|Los/.test(i.title)),'nach der Unterschrift beginnt ein anderer Text');
- assert.deepEqual(r.issues,[]);
+ assert.deepEqual(r.issues.filter(i=>i.includes('16.07.2026')),[]);
 });
 
 // Dieselbe Tagesordnung als Seite der Stadt: Nummer und Titel stehen in getrennten Zellen, Titel mit Genderstern, ein Unterpunkt nennt
@@ -45,6 +48,7 @@ test('Seite der Ratssitzungen: Nummer und Titel in getrennten Zeilen, Genderster
  const m=r.meetings.find(x=>x.items.length);
  assert.ok(m,'eine Sitzung mit Punkten');
  assert.equal(m.date,'2026-10-01');
+ assert.equal(m.committee,'Rat','„Ratssitzung“ ist der Rat');
  assert.deepEqual(m.items.map(i=>i.number),['1','1.1','1.2','1.2.1','1.3','2','2.1','3','3.1','3.2','4','4.1']);
  assert.equal(m.items.find(i=>i.number==='1.1').title,'Neuwahl der Ausschüsse');
  assert.match(m.items.find(i=>i.number==='1.3').title,/Beigeordnete\*r/);
@@ -64,4 +68,35 @@ test('Artikelseiten einer Lotus-Domino-Site (vwContentByKey) gelten als Artikel 
  const links=[{url:'https://www.musterstadt.example.test/C125830C0038F229/vwContentByKey/W2DZ5954612BOCMDE',kind:'html',label:'Ausgabe 28 / 2026 vom 13. Juli 2026'},
   {url:'https://www.musterstadt.example.test/kontakt',kind:'html',label:'Kontakt'}];
  assert.deepEqual(articleCandidates(links,list),['https://www.musterstadt.example.test/C125830C0038F229/vwContentByKey/W2DZ5954612BOCMDE']);
+});
+
+// Nachgebildet nach der Bekanntmachung des Gemeinderats der Stadt Bruchsal (Oktober 2026): der feste Punkt 1 auf drei Zeilen.
+test('ein umbrochener fester Punkt „… im / nichtöffentlichen Teil gefassten Beschlüsse“ ist keine Überschrift des nichtöffentlichen Teils',()=>{
+ const lines=['Stadt Musterbruch','Öffentliche Bekanntmachung','Am Dienstag, 20.10.2026, 17:00 Uhr, findet im Bürgersaal des Rathauses eine öffentliche Sitzung des Gemeinderats statt.','Tagesordnung',
+  '1 Bekanntgabe der','in der Gemeinderatssitzung am 29.09.2026 im','nichtöffentlichen Teil gefassten Beschlüsse','2 Übernahme einer Bürgschaft für die Energie- und','Wasserversorgung in Höhe von 4.000.000 Euro','3 Verschiedenes',
+  'Musterbruch, 12.10.2026','gez. Name','Oberbürgermeisterin'];
+ const m=parseSessionText(lines,{title:'Öffentliche Bekanntmachung Gemeinderat',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','3']);
+ assert.equal(m.items[0].title,'Bekanntgabe der in der Gemeinderatssitzung am 29.09.2026 im nichtöffentlichen Teil gefassten Beschlüsse');
+ assert.deepEqual(m.closedItems||[],[]);
+});
+
+// Nachgebildet nach dem Amtsblatt der Stadt Lünen (Nr. 33 und 36/2026): Vermerk „2. Ergänzung“ unter einem Antrag, Spalte „2N“ (Nachträge).
+test('ein Vermerk „2. Ergänzung“ ist kein Punkt 2, „VL-144/2026 2N“ zählt Nachträge und ist keine Markierung „nichtöffentlich“',()=>{
+ const lines=['Amtsblatt','Nr. 33/2026','BEKANNTMACHUNG 6 / 2026','GREMIUM Rat der Stadt Musterlünen','SITZUNGSTERMIN Donnerstag, 08.10.2026, 17:00 Uhr','TAGESORDNUNG','ÖF FENTLICHER TE I L',
+  '1 Einwohnerfragestunde','2 Beschlussangelegenheiten','2.1 Antrag zum Tag der Vereine','AF-72/2026','2. Ergänzung','2.2 Neufassung der Standgeldsatzung VL-144/2026 2N','3 Mündliche Mitteilungen der Verwaltung',
+  'NI CHTÖFFENTLICHER TE I L','4 Beschlussangelegenheiten','4.1 Grundstücksangelegenheit'];
+ const m=parseSessionText(lines,{title:'Amtsblatt Nr. 33/2026',wrapped:true}).meetings.find(x=>x.items.length);
+ assert.deepEqual(m.items.map(i=>i.number),['1','2','2.1','2.2','3']);
+ assert.equal(m.items.find(i=>i.number==='2.2').title,'Neufassung der Standgeldsatzung VL-144/2026');
+ assert.deepEqual(m.closedItems.map(i=>i.number),['4','4.1']);
+});
+
+// Nachgebildet nach einer Bekanntmachung des Wahlausschusses (Fulda 2026), Namen erfunden.
+test('Wahlergebnisse mit Namen und Stimmenzahl werden nie Punkte',()=>{
+ const lines=['Öffentliche Bekanntmachung','des Wahlausschusses der Stadt Musterfeld','Der Wahlausschuss hat in seiner Sitzung am 23.03.2026 das endgültige Wahlergebnis festgestellt.','Gewählt sind:',
+  '1 Mustermann, Sebastian 9.420','2 Beispiel, Carsten 14.112','3 Probe, Anna-Lena 3.409','4 Testmann, Peter 1.461','Musterfeld, 24.03.2026','gez. Name','Wahlleiter'];
+ const r=parseSessionText(lines,{title:'Wahlausschuss',wrapped:true});
+ assert.ok(r.meetings.every(m=>!m.items.length&&!(m.otherItems||[]).length&&!(m.closedItems||[]).length));
+ assert.ok(r.issues.some(i=>/Wahlergebnis/.test(i)));
 });

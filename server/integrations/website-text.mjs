@@ -22,7 +22,7 @@ export const NONPUBLIC_WORDS=/nicht(?:[\s_.-]|%20|%2D)*(?:ö|oe|o|%C3%B6)ffentl|
 // Sitzung", "aus der letzten NÖ-Sitzung", "die in nichtöffentlicher Sitzung (der 6. Niederschrift …) gefassten Beschlüsse". Only these past reports; "Bericht … in
 // nichtöffentlicher Sitzung" or "Information zu TOP 3: Beratung in nichtöffentlicher Sitzung" name the part itself.
 const NP_ADJ='nicht\\s*-?\\s*öffentlich';
-const PUBLIC_REPORT=new RegExp(`(?:Bekanntgabe|Bekanntgaben|Mitteilung|Mitteilungen|Information|Informationen|Unterrichtung|Bericht|Berichte)\\s[^.:;]{0,100}?(?<!\\p{L})aus\\s+(?:der\\s+|einer\\s+|den\\s+|dem\\s+)?(?:\\p{L}+\\s+){0,2}(?:${NP_ADJ}(?:e[rnms]?)?\\s+|NÖ\\s*-\\s*)(?:Sitzung(?:en)?|Beratung(?:en)?|Teil|Sitzungsteil)(?!\\p{L})|(?:in|aus)\\s+(?:der\\s+|den\\s+)?(?:\\p{L}+\\s+)?${NP_ADJ}e[rnm]?\\s+Sitzung(?:en)?\\s+(?:[\\p{L}\\d.]+\\s+){0,8}gefasste[n]?\\s+Beschl\\p{L}*|${NP_ADJ}\\s+gefasste[rn]?\\s+Beschl\\p{L}*|Beschl\\p{L}*\\s+(?:des|der)\\s+(?:\\p{L}+\\s+)?${NP_ADJ}(?:e[rnms]?)?\\s+(?:Sitzung|Teil(?:es)?|Sitzungsteil(?:es)?)(?!\\p{L})`,'giu');
+const PUBLIC_REPORT=new RegExp(`(?:Bekanntgabe|Bekanntgaben|Mitteilung|Mitteilungen|Information|Informationen|Unterrichtung|Bericht|Berichte)\\s[^.:;]{0,100}?(?<!\\p{L})aus\\s+(?:der\\s+|einer\\s+|den\\s+|dem\\s+)?(?:\\p{L}+\\s+){0,2}(?:${NP_ADJ}(?:e[rnms]?)?\\s+|NÖ\\s*-\\s*)(?:Sitzung(?:en)?|Beratung(?:en)?|Teil|Sitzungsteil)(?!\\p{L})|(?:in|im|aus)\\s+(?:der\\s+|den\\s+|dem\\s+)?(?:\\p{L}+\\s+)?${NP_ADJ}e[rnm]?\\s+(?:Sitzung(?:en)?|Sitzungsteil|Teil)\\s+(?:[\\p{L}\\d.]+\\s+){0,8}gefasste[n]?\\s+Beschl\\p{L}*|${NP_ADJ}\\s+gefasste[rn]?\\s+Beschl\\p{L}*|Beschl\\p{L}*\\s+(?:des|der)\\s+(?:\\p{L}+\\s+)?${NP_ADJ}(?:e[rnms]?)?\\s+(?:Sitzung|Teil(?:es)?|Sitzungsteil(?:es)?)(?!\\p{L})`,'giu');
 const isPublicReport=s=>new RegExp(PUBLIC_REPORT.source,'iu').test(s);
 // The text compared without case and umlauts; a lost character (U+FFFD) stands for any letter.
 const foldText=s=>s.toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/�/g,'#');
@@ -404,6 +404,10 @@ export function committeeOf(s){
  // A bare council in a sitting line ("Sitzung des Rates", Hessisch Oldendorf 2026): the council of the place.
  if(/^(?:der|des|dem)?\s*rat(?:es)?$/i.test(text.trim()))return 'Rat der Gemeinde';
  if(c&&(!m||c.index<m.index))return `Rat der ${c[1]}`;
+ // The council by its meeting („8. Sitzung des Rates“, „Eine Sitzung des Rates findet am …“, „Ratssitzung am 1. Oktober“, Rat in
+ // Nordrhein-Westfalen, Bochum, Greven, Velbert 2026), not a council „für …“ of a field: „Rat“ (website.mjs names it after the area).
+ const r=text.match(/(?<!\p{L})(?:(?:Sitzung|Tagung)\s+des\s+Rates(?!\p{L})(?!\s+(?:für|der\s+(?:Senioren|Jugend|Kinder|Integration|Migration)))|Ratssitzung(?:en)?(?!\p{L}))/u);
+ if(r&&(!m||r.index<m.index))return 'Rat';
  if(!m)return null;
  const core=upper(m[2].replace(/ß/g,'ss')),after=text.slice(m.index+m[0].length);
  let name=m[1]+core;
@@ -474,6 +478,8 @@ const MID_N=/(?:^|\s)(?:NÖ|Nö|nö|NOE|N|NS|NÖS|NÖT)(?=\s|$)/u;
 function withMark(prefix,title){
  let p=prefix,t=title;
  const a=!p&&t.match(AFTER_MARK);if(a){p=markOf(a[1]);t=t.slice(a[0].length).trim();}
+ // The count of a paper's supplements after its number („VL-144/2026 2N“: two supplements, Lünen 2026): no mark, dropped.
+ const s=t.match(/(?<=\p{Lu}{1,5}[-\s]?\d{1,5}\/\d{2,4})\s+\d{1,2}N$/u);if(s)t=t.slice(0,s.index).trim();
  // A mark glued to the title, the column set close to it ("Fl.Nr. 412N", "PersonalangelegenheitN").
  const g=t.match(/(?<=[\p{Ll}\d)\]])(NÖ|N|Ö)$/u);
  if(g){const m=markOf(g[1]);p=p==='N'||m==='N'?'N':p||m;t=t.slice(0,g.index).trim();}
@@ -552,7 +558,11 @@ const COMMA_NAME=new RegExp(`^${NAME_WORD}(?:-${NAME_WORD})?,\\s*(?:(?:Dr|Prof)\
 const SURNAME=new RegExp(`^${NAME_WORD}(?:-${NAME_WORD})?$`,'u');
 const PARTICLE=/^(?:von|van|de|der|den|zu|vom|di|da|del|ten|ter|und)$/;
 // A person also as "Huber Josef" (name and common first name in either order), as lists of those present have it.
-const nameish=t=>person(t)||/^\p{Lu}[\p{Ll}ß'-]+,?\s+\p{Lu}[\p{Ll}ß'-]+$/u.test(t)&&t.split(/[,\s]+/).some(firstName);
+// Also with the votes or a share after the name (a list of results, „Nachname, Vorname 9.420“) and a double first name.
+const VOTES_TAIL=/\s+\d{1,3}(?:\.\d{3})*(?:,\d+)?\s*%?$/u;
+// A line of an election result: number, „Nachname, Vorname“ (also „Dr.“, a double name, a party in brackets), then the votes or share.
+const NAME_VOTES=/^(?:\d{1,3}[.)]?\s+)?\p{Lu}[\p{L}'’-]+(?:\s+\p{Lu}[\p{L}'’-]+)?,\s+(?:(?:Dr|Prof)\.\s+)?\p{Lu}[\p{Ll}'’-]+(?:[-\s]\p{Lu}[\p{Ll}'’-]+)?(?:\s+\([^)]{1,30}\))?\s+\d{1,3}(?:\.\d{3})*(?:,\d+)?\s*%?$/u;
+const nameish=t=>{const b=String(t).replace(VOTES_TAIL,'').trim();return person(t)||person(b)||/^\p{Lu}[\p{Ll}ß'-]+,?\s+(?:(?:Dr|Prof)\.\s+)?\p{Lu}[\p{Ll}ß'-]+(?:-\p{Lu}[\p{Ll}ß'-]+)?$/u.test(b)&&b.split(/[,\s-]+/).some(firstName);};
 function personLine(raw){
  const t=String(raw||'').trim();
  const c=t.match(COMMA_NAME);if(c&&firstName(c[1]))return true;
@@ -583,7 +593,10 @@ function itemOf(raw){
  if((m=line.match(PLAIN))){
   const n=key(m[1]),first=Number(n.split('.')[0]),{prefix,title}=withMark(null,m[3].trim());
   if(first<1||first>60||!titleOk(title)||!/\p{L}/u.test(title))return null;
-  if(germanDates(line)[0]?.index===0||timeOf(line)&&/^Uhr\b/.test(title)||person(title))return null;
+  // A note of a paper's version below an item („2. Ergänzung“, „1. Nachtrag“, „3. Fassung“, Lünen 2026): no item, only an ordinal and that word.
+  if(!String(m[1]).includes('.')&&m[2]!==')'&&/^(?:Ergänzung|Nachtrag|Neufassung|Fassung|Version|Lesung|Austauschvorlage|Tischvorlage|Änderung)$/u.test(title))return null;
+  // Also a person with the number of votes or a share after the name („Nachname, Vorname 9.420“, results of an election, Fulda 2026).
+  if(germanDates(line)[0]?.index===0||timeOf(line)&&/^Uhr\b/.test(title)||person(title)||/\s\d{1,3}(?:\.\d{3})*(?:,\d+)?\s*%?$/u.test(title)&&person(title.replace(/\s+\d{1,3}(?:\.\d{3})*(?:,\d+)?\s*%?$/u,'').trim()))return null;
   if(!m[2]&&!m[1].includes('.')&&UNIT.test(title)||UNIT.test(title)&&/^(?:Uhr|Stimmen?|Ja|Nein|Gegenstimmen?|Enthaltung)/.test(title))return null;
   return {prefix,number:n,title,form:'plain',mark:m[2]||''};
  }
@@ -1172,7 +1185,10 @@ function otherItems(taken,closed,unclear){
  */
 export function parseSessionText(lines,{title='',wrapped=false}={}){
  const issues=[];title=normalizeLine(title);
- const all=prepareLines(lines);
+ // Results of an election (a list of persons with their votes, „3 Hunold, Aylin 3.409“, Fulda 2026) are never read: names of persons.
+ const prepared=prepareLines(lines),votes=prepared.filter(l=>NAME_VOTES.test(l)).length;
+ const all=votes>=2?prepared.filter(l=>!NAME_VOTES.test(l)):prepared;
+ if(votes>=2)issues.push(`${votes} Zeilen mit Namen und Stimmenzahl (Wahlergebnis) nicht gelesen.`);
  const kind=documentKind(title,all),items=all.map(itemOfLine);
  // A numbered list of persons whose numbering starts again after it (those present before the agenda, whatever the line
  // that introduces them says) is no list of items.
@@ -1333,7 +1349,10 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   const applyRefs=r=>{if(r.vague||!r.nums.length||r.nums.some(n=>!numbers.has(n)))discard('Nichtöffentliche Punkte erst nach der Tagesordnung benannt','welche Punkte öffentlich sind, ist nicht eindeutig');else{const min=Math.min(...r.nums),k=taken.findIndex(x=>mainNumber(x.number)>=min);if(k>=0)cuts.push(k);}};
   // Which items read so far a line names by their title (quoted text that is no title counts as naming another).
   const namesItems=line=>{const words=new Set(titleWords(line)),named=taken.filter(x=>titleWords(x.title).some(w=>words.has(w)));const quoted=/[„"“”»«]/.test(line);return {named,other:named.some(x=>x!==(cur||taken.at(-1)))||quoted&&!named.length};};
-  const continues=(j)=>{const line=all[j];return !itemOfLine(line)&&!headerLines.has(j)&&!headerLines.has(j+1)&&!isPublicHeading(line)&&!isNonPublicHeading(line)&&!closedLine(line)&&!mentionsNonPublic(line)&&!isPublicReport(line)&&!BARE_N.test(line)&&!NP_BROKEN.test(fold(line))&&!PART_HEADING.test(line)&&!(line.length<=40&&PART_WORD.test(line))&&!LEGEND.test(line)&&!/^[*¹²³(■#]/u.test(line)&&!signed(line)&&!PLACE_DATE.test(line)&&!HINT.test(line)&&!STOP.test(line)&&!STOP_SENTENCE.test(line)&&!ATTENDANCE.test(line)&&!LIST_INTRO.test(line)&&!(germanDates(line).length&&(timeOf(line)||WEEKDAY_WORD.test(line)||SHORT_WEEKDAY.test(line)))&&/[\p{L}\d]/u.test(line)&&!(committeeOf(line)&&SESSION_ON.test(all[j+1]||''))&&
+  // The end of a standing item broken over lines („1 Bekanntgabe der“ / „in der Gemeinderatssitzung am 29.09.2026 im“ / „nichtöffentlichen
+  // Teil gefassten Beschlüsse“, Bruchsal 2026): it goes on the item; read alone it would be the heading of the non-public part.
+  const reportTail=j=>{const prev=String(all[j-1]||'').trim(),line=String(all[j]||'');return line.length<=100&&/(?<!\p{L})(?:im|in|aus|der|den|dem)$/iu.test(prev)&&!isPublicReport(prev)&&isPublicReport(prev+' '+line);};
+  const continues=(j)=>{const line=all[j];if(j>0&&!itemOfLine(line)&&reportTail(j))return true;return !itemOfLine(line)&&!headerLines.has(j)&&!headerLines.has(j+1)&&!isPublicHeading(line)&&!isNonPublicHeading(line)&&!closedLine(line)&&!mentionsNonPublic(line)&&!isPublicReport(line)&&!BARE_N.test(line)&&!NP_BROKEN.test(fold(line))&&!PART_HEADING.test(line)&&!(line.length<=40&&PART_WORD.test(line))&&!LEGEND.test(line)&&!/^[*¹²³(■#]/u.test(line)&&!signed(line)&&!PLACE_DATE.test(line)&&!HINT.test(line)&&!STOP.test(line)&&!STOP_SENTENCE.test(line)&&!ATTENDANCE.test(line)&&!LIST_INTRO.test(line)&&!(germanDates(line).length&&(timeOf(line)||WEEKDAY_WORD.test(line)||SHORT_WEEKDAY.test(line)))&&/[\p{L}\d]/u.test(line)&&!(committeeOf(line)&&SESSION_ON.test(all[j+1]||''))&&
    // Never a line that speaks of the public, listeners or secrecy, refers to items or the rest of the agenda, or is the name above an office.
    !suspect(line)&&!separator(line)&&!REFERS.test(line)&&!FORWARD.test(line)&&!personLine(line)&&!(line.length<=40&&signed(all[j+1]||''));};
   for(let i=seg.start;i<end;){

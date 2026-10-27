@@ -576,7 +576,9 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  if(heldBack.length)warnings.push(`Dokumentlimit erreicht; ${heldBack.length} bereits vollständig gelesene ${heldBack.length===1?'Dokument':'Dokumente'} diesmal nicht erneut gelesen.`);
  // 5. Meetings of each text.
  const place=String(source.name||'').replace(PLACE_KIND,'').trim();
- const body=c=>place&&c.endsWith(' '+place)?c.slice(0,-place.length-1):c;
+ // The council named only by its meeting („Sitzung des Rates“, committeeOf → „Rat“) after the area: „Rat der Stadt“ or „Rat der Gemeinde“.
+ const council=/^(?:Stadt|Hansestadt|Große\s+Kreisstadt|Kreisstadt|Universitätsstadt)\s/u.test(String(source.name||''))?'Rat der Stadt':'Rat der Gemeinde';
+ const body=c=>c==='Rat'?council:place&&c.endsWith(' '+place)?c.slice(0,-place.length-1):c;
  const sessions=[],keys=new Set(),withItems=new Set(),upcoming=new Set(),names=(expectNames||[]).map(words).filter(n=>n.trim());let named=false;
  const ownNames=[words(place),words(source.name),...names].filter(n=>n.trim());
  // Every text is read first: an item one document of a meeting puts in the non-public part (the invitation) never comes
