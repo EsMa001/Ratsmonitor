@@ -4512,5 +4512,22 @@
     "verifiedAt": "2026-10-27",
     "verifiedSource": "https://www.landkreis-osterholz.de/bekanntmachungen",
     "note": "landkreis-osterholz.ratsinfomanagement.net nicht lesbar (SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert ; F). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 17 Berichte aus 5 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Kreistag und Kreiswahlausschuss."
+  },
+  {
+    "id": "nds-03252005",
+    "name": "Gemeinde Emmerthal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.emmerthal.de/",
+    "pages": [
+      "https://www.emmerthal.de/rathaus-politik/amtsblatt/?vs=1",
+      "https://www.emmerthal.de/rathaus-politik/amtliche-bekanntmachungen/?vs=1"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.emmerthal.de/rathaus-politik/amtsblatt/?vs=1",
+    "note": "www.emmerthal.sitzung-online.de nicht lesbar (ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe ; OParl nicht akt). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 215 Berichte aus 43 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Amtsblatt mit Rat, Bauausschuss und Ortsräten; die Seite listet sehr viele Dokumente (Dokumentlimit)."
   }
 ]

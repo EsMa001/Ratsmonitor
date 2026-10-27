@@ -317,7 +317,18 @@
     },
     "verifiedSource": "https://amtnt.ris-portal.de/web/ratsinformation/startseite",
     "verifiedAt": "2026-10-09",
-    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar; gemeinsames System von Amt Nordsee-Treene und Stadt Friedrichstadt, getrennt über die Gremienangabe."
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar; gemeinsames System von Amt Nordsee-Treene und Stadt Friedrichstadt, getrennt über die Gremienangabe.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://rathaus-friedrichstadt.de/",
+      "pages": [
+        "https://rathaus-friedrichstadt.de/category/aktuelles/",
+        "https://rathaus-friedrichstadt.de/stadtverordnetenversammlung/"
+      ],
+      "verifiedSource": "https://rathaus-friedrichstadt.de/category/aktuelles/",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 211 Berichte aus 13 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Stadtverordnetenversammlung und Ausschüsse, Punkte meist ohne Öffentlichkeitsnachweis."
+    }
   },
   {
     "id": "de-01054056",
@@ -19654,7 +19665,18 @@
     "extension": "asp",
     "verifiedSource": "https://www.wartenberg.de/sitzungstermine",
     "verifiedAt": "2026-10-10",
-    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.wartenberg.de/",
+      "pages": [
+        "https://www.wartenberg.de/aktuelles/",
+        "https://www.wartenberg.de/sitzungstermine/"
+      ],
+      "verifiedSource": "https://www.wartenberg.de/aktuelles/",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 7 Berichte aus 1 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Nachrichten des Marktes Wartenberg; im Probeabruf eine Sitzung."
+    }
   },
   {
     "id": "de-09178116",
@@ -30898,7 +30920,17 @@
     "base": "https://schmelz.ris-portal.de/",
     "verifiedSource": "https://schmelz.ris-portal.de/",
     "verifiedAt": "2026-10-10",
-    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal (öffentliche Seiten) erreichbar."
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal (öffentliche Seiten) erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.schmelz.de/",
+      "pages": [
+        "https://www.schmelz.de/rathaus-verwaltung/amtliche-bekanntmachungen"
+      ],
+      "verifiedSource": "https://www.schmelz.de/rathaus-verwaltung/amtliche-bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 144 Berichte aus 15 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Gemeinderat, Ausschüsse und Ortsräte; etwa jeder vierte Titel am Zeilenende abgeschnitten."
+    }
   },
   {
     "id": "de-10044118",
@@ -37031,7 +37063,18 @@
     "verifiedSource": "https://www.stadt-burg.de/ratsinfo/buergerinfo/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
-    "foundBy": "Websuche"
+    "foundBy": "Websuche",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.stadtburg.info/",
+      "pages": [
+        "https://www.stadtburg.info/Amtsblaetter.html"
+      ],
+      "followArticles": true,
+      "verifiedSource": "https://www.stadtburg.info/Amtsblaetter.html",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 329 Berichte aus 39 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Amtsblätter als Artikelseiten; Ortschaftsräte, Ausschüsse und Stadtrat. Etwa jeder zehnte Titel am Zeilenende abgeschnitten."
+    }
   },
   {
     "id": "de-15086035",
@@ -39393,7 +39436,17 @@
     "verifiedSource": "https://buergerinfo-vg-diespeck.digitalfabrix.de/",
     "verifiedAt": "2026-10-09",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
-    "foundBy": "Recherche 2026-10-09"
+    "foundBy": "Recherche 2026-10-09",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.vg-diespeck.de/",
+      "pages": [
+        "https://www.vg-diespeck.de/politik-1"
+      ],
+      "verifiedSource": "https://www.vg-diespeck.de/politik-1",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 35 Berichte aus 3 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Gemeinderäte Gutenstetten, Baudenbach und Diespeck."
+    }
   },
   {
     "id": "de-09673149",
@@ -39782,7 +39835,19 @@
     "verifiedSource": "https://ratsinfo-online.de/vgem-seehausen-bi/",
     "verifiedAt": "2026-10-09",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
-    "foundBy": "Recherche 2026-10-09"
+    "foundBy": "Recherche 2026-10-09",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.seehausen-altmark.de/",
+      "pages": [
+        "https://www.seehausen-altmark.de/service-verwaltung/service/oeffentliche-bekanntmachungen-aus-den-mitteilungsblaettern/",
+        "https://www.seehausen-altmark.de/service-verwaltung/gemeinden-politik/sitzungen-und-termine/"
+      ],
+      "followArticles": true,
+      "verifiedSource": "https://www.seehausen-altmark.de/service-verwaltung/service/oeffentliche-bekanntmachungen-aus-den-mitteilungsblaettern/",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 20 Berichte aus 1 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Im Probeabruf eine Sitzung des Verbandsgemeinderats."
+    }
   },
   {
     "id": "de-16063101",
@@ -44174,5 +44239,21 @@
     "verifiedSource": "https://www.gemeinde-dachsberg.de/Aktuelles/Archiv-Mitteilungsblatt",
     "verifiedAt": "2026-10-27",
     "apiCheck": "www.dachsberg.de nicht lesbar (Sitzungsbekanntmachungen oder Unterlagen auf der Gemeinde-Website gefunden, aber keine öff). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 19 Berichte aus 4 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Mitteilungsblatt gemeinsam mit Ibach; im Probeabruf vier Sitzungen."
+  },
+  {
+    "id": "de-13072029",
+    "name": "Gemeinde Dummerstorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.dummerstorf.de/",
+    "pages": [
+      "https://www.dummerstorf.de/rathaus-politik/gremien/einladungen-protokolle/?vs=1",
+      "https://www.dummerstorf.de/bekanntmachungen/bekanntmachungen/?vs=1",
+      "https://www.dummerstorf.de/rathaus-politik/gremien/sitzungstermine-2026/?vs=1"
+    ],
+    "verifiedSource": "https://www.dummerstorf.de/rathaus-politik/gremien/einladungen-protokolle/?vs=1",
+    "verifiedAt": "2026-10-27",
+    "apiCheck": "dummerstorf.sitzung-mv.de nicht lesbar (Nur für angemeldete Mitglieder oder passwortgeschützt, kein öffentlicher Teil ; Link geprü). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 180 Berichte aus 12 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
   }
 ]
