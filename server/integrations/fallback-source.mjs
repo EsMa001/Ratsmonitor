@@ -21,15 +21,38 @@ export function fallbackOf(source){
 export const fallbackFor=id=>fallbackOf(catalog.get(id));
 /** Servergruppe des Ratsinformationssystems (wie provider() in pipeline-jobs.mjs) und der Ausweichquelle. */
 export const primaryServer=source=>source?serverOf(source.system||source.base)||null:null;
-export const fallbackServer=source=>{const f=fallbackOf(source);return f?serverOf(f.base):null;};
 /**
- * Liest dieser Abruf die Ausweichquelle? Ja, wenn das Gebiet eine hat, die Servergruppe seines Systems wartet und die der
- * Ausweichquelle nicht. hosts: Map host → Zeile (hostStates) oder eine Funktion host → Zeile.
+ * Servergruppe der Website. Liegt sie in der Gruppe des Systems (ein selbst betriebenes System unter der Domain der Kommune,
+ * Wolfsburg, Bielefeld, Fellbach, 27.10.2026), zählt die Website für die Wartestufe als eigener Server `host:<Rechnername>`:
+ * sonst wartete sie mit dem System und die Ausweichquelle würde nie aktiv. Der Abstand je Anfrage (request-budget.mjs,
+ * serverOf) bleibt der der Gruppe, der Betreiber bekommt nicht mehr Anfragen.
  */
-export function fallbackActive(source,hosts,now=Date.now()){
+export const fallbackServer=source=>{
+ const f=fallbackOf(source);if(!f)return null;
+ const group=serverOf(f.base);
+ if(group&&group===primaryServer(source)){try{return 'host:'+new URL(f.base).hostname;}catch{return group;}}
+ return group;
+};
+/** Das System gilt als ausgefallen, wenn es so lange keinen Erfolg hatte; so oft wird es dann selbst wieder gefragt. */
+export const STALE_MS=7*864e5,PROBE_MS=7*864e5;
+/**
+ * Liest dieser Abruf die Ausweichquelle? Ja, wenn das Gebiet eine hat, die Website nicht wartet und das System entweder
+ * wartet (seine Servergruppe, source_hosts) oder seit STALE_MS keinen Erfolg hatte (coverage.lastSuccessAt; auch ein
+ * System, dessen Leser Netzfehler nur als Hinweis meldet, oder ein selbst betriebenes, das die Servergruppe nie wartend
+ * sieht). Im zweiten Fall wird das System alle PROBE_MS selbst gefragt: ohne vermerkten Versuch (coverage.fallback.probedAt,
+ * fallbackState) oder mit einem älteren gilt das System, liefert es nicht, vermerkt der Abruf den Versuch und die Website
+ * ist wieder dran. hosts: Map host → Zeile (hostStates) oder eine Funktion host → Zeile; coverage: der Quellenstand.
+ */
+export function fallbackActive(source,hosts,now=Date.now(),coverage=null){
  if(!fallbackOf(source))return false;
  const row=h=>typeof hosts==='function'?hosts(h):hosts?.get?.(h);
- return hostWaiting(row(primaryServer(source)),now)&&!hostWaiting(row(fallbackServer(source)),now);
+ if(hostWaiting(row(fallbackServer(source)),now))return false;
+ if(hostWaiting(row(primaryServer(source)),now))return true;
+ if(!coverage)return false;
+ const ok=Date.parse(coverage.lastSuccessAt||'');
+ if(ok&&now-ok<STALE_MS)return false;
+ const probed=Date.parse(coverage.fallback?.probedAt||'');
+ return Boolean(probed)&&now-probed<PROBE_MS;
 }
 /**
  * Plan eines Abrufs mit Ausweichquelle oder null. since: erster Tag der Ausweichzeit (bleibt, solange sie läuft; sonst der Tag
@@ -38,9 +61,10 @@ export function fallbackActive(source,hosts,now=Date.now()){
  * @param {any} source @param {{hosts?:any,coverage?:Record<string,any>,window?:string,now?:Date}} [options]
  */
 export function fallbackPlan(source,{hosts,coverage={},window,now=new Date()}={}){
- if(!fallbackActive(source,hosts,now.getTime()))return null;
+ if(!fallbackActive(source,hosts,now.getTime(),coverage))return null;
  const state=coverage.fallback?.active?coverage.fallback:null;
- const since=state?.since||day(coverage.lastSuccessAt||now.toISOString());
+ // Ohne je einen Erfolg des Systems (nie geliefert) beginnt die Ausweichzeit 12 Monate zurück, wie ein erster Abruf.
+ const since=state?.since||day(coverage.lastSuccessAt||windowStart(now,'12m').toISOString());
  const reach=state?.lastRunAt?day(new Date(Date.parse(state.lastRunAt)-864e5).toISOString()):since;
  const from=reach>since?reach:since,keys=Object.keys(HISTORY_WINDOWS),start=Math.max(0,keys.indexOf(historyWindow(window)));
  const fit=keys.slice(start,keys.indexOf('12m')+1).find(k=>day(windowStart(now,k).toISOString())<=from)||'12m';
@@ -76,10 +100,13 @@ export function keepPrimaryTopics(fresh,old){
 }
 /**
  * Stand der Ausweichzeit im Quellenstand: aktiv mit Plan, beendet nach einem Abruf, bei dem das System wieder geliefert hat
- * (reached), sonst unverändert (eine gescheiterte Stichprobe beim wartenden Anbieter beendet sie nicht).
+ * (reached). Ein Abruf beim System ohne Erfolg (gescheiterte Stichprobe, Netzfehler, nichts gelesen) beendet nichts und
+ * wird als probedAt vermerkt: so weiß fallbackActive, dass das System gefragt wurde (STALE_MS, PROBE_MS).
  */
 export function fallbackState(previous,plan,at,reached=true){
- if(!plan&&!reached)return previous;
- if(plan)return {active:true,since:plan.since,server:plan.server,primary:plan.primary,lastRunAt:at,...(previous?.active&&previous.startedAt?{startedAt:previous.startedAt}:{startedAt:at})};
- return previous?{...previous,active:false,...(previous.active?{endedAt:at}:{})}:undefined;
+ if(!plan&&!reached)return {...(previous||{}),probedAt:at};
+ if(plan)return {active:true,since:plan.since,server:plan.server,primary:plan.primary,lastRunAt:at,...(previous?.probedAt?{probedAt:previous.probedAt}:{}),...(previous?.active&&previous.startedAt?{startedAt:previous.startedAt}:{startedAt:at})};
+ if(!previous)return undefined;
+ const {probedAt,...rest}=previous;
+ return {...rest,active:false,...(previous.active?{endedAt:at}:{})};
 }

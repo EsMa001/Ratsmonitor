@@ -497,10 +497,15 @@ Schritte: `shared/pipeline-terms.mjs`.
   `gazettePages`). Wartet die Servergruppe des Systems (`source_hosts`) und die der Website nicht, liest der Abruf die Website
   (`planFallback` in `runSync`); der Nachtauftrag und der Lückenabruf stellen das Gebiet dann nicht zurück (`deferredRegions`), und
   Erfolg wie Fehler zählen für den Server der Website, nicht für den wartenden Anbieter (`noteImport`). Ist die Stichprobe beim Anbieter
-  fällig, wird wieder das System gefragt; liefert es, endet die Ausweichzeit von selbst. Doppelte Sitzungen: Die Ausweichquelle übernimmt
-  nur Sitzungen ab dem Tag des letzten Erfolgs des Systems und keinen Sitzungstag, den es schon hat; danach übernimmt das System keinen
-  neuen Bericht an einem Tag der Ausweichquelle (gelöscht wird nichts). Berichte tragen `viaFallback`, der Quellenstand `fallback`
-  (`active`, `since`, `server`, `primary`, `lastRunAt`, `startedAt`/`endedAt`). Eingetragen am 26.10.2026 für 16 hessische Gemeinden,
+  fällig, wird wieder das System gefragt; liefert es, endet die Ausweichzeit von selbst. Seit 27.10.2026 gilt die Website auch, wenn
+  das System seit 7 Tagen keinen Erfolg hatte (`coverage.lastSuccessAt`, `STALE_MS`), obwohl seine Servergruppe nicht wartet (ein Leser,
+  der Netzfehler nur als Hinweis meldet; ein selbst betriebenes System): dann wird das System alle 7 Tage selbst gefragt (`PROBE_MS`),
+  der Versuch ohne Erfolg steht als `probedAt` im Quellenstand. Liegt die Website in der Servergruppe des Systems (Wolfsburg,
+  Bielefeld: System unter der Domain der Kommune), zählt sie für die Wartestufe als eigener Server `host:<Rechnername>`
+  (`fallbackServer`); der Abstand je Anfrage bleibt der der Gruppe. Doppelte Sitzungen: Die Ausweichquelle übernimmt
+  nur Sitzungen ab dem Tag des letzten Erfolgs des Systems (nie geliefert: 12 Monate zurück) und keinen Sitzungstag, den es schon hat;
+  danach übernimmt das System keinen neuen Bericht an einem Tag der Ausweichquelle (gelöscht wird nichts). Berichte tragen `viaFallback`,
+  der Quellenstand `fallback` (`active`, `since`, `server`, `primary`, `lastRunAt`, `startedAt`/`endedAt`, `probedAt`). Eingetragen am 26.10.2026 für 16 hessische Gemeinden,
   deren System bei ekom21 die Server-IP sperrt; Gemeinden, deren Website ebenfalls im ekom21-Netz liegt, erreicht auch die
   Ausweichquelle nicht. Neue Einträge: `LAND=<Land> DIR=<Ordner> ONLY_FILE=<IDs> node scripts/source-discovery/website.mjs`, dann
   Probeabruf über 12 Monate und Titel prüfen. Tests: `tests/fallback-source.test.mjs`, `tests/fallback-sync.test.mjs`.
