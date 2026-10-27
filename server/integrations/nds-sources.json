@@ -32,7 +32,19 @@
     "base": "https://ratsinfob.stadt.wolfsburg.de/",
     "verifiedSource": "https://ratsinfob.stadt.wolfsburg.de/",
     "verifiedAt": "2026-10-10",
-    "apiCheck": "OParl-Adresse des Systems (https://ratsinfob.stadt.wolfsburg.de/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinfob.stadt.wolfsburg.de/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+    "fallback": {
+      "adapter": "website",
+      "base": "https://www.wolfsburg.de/",
+      "pages": [
+        "https://www.wolfsburg.de/rathaus/bekanntmachungen/amtliche-bekanntmachungen",
+        "https://www.wolfsburg.de/en-us/rathaus/bekanntmachungen/amtliche-bekanntmachungen",
+        "https://www.wolfsburg.de/rathaus/bekanntmachungen"
+      ],
+      "verifiedSource": "https://www.wolfsburg.de/rathaus/bekanntmachungen/amtliche-bekanntmachungen",
+      "verifiedAt": "2026-10-27",
+      "note": "Ausweichquelle, solange der Anbieter des Ratsinformationssystems die Server-IP sperrt: Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 1559 Berichte aus 88 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Amtsblatt und Bekanntmachungen der Stadt mit Ortsräten und Ausschüssen; einzelne Zeilen aus Wahlbekanntmachungen und abgeschnittene Titel."
+    }
   },
   {
     "id": "nds-03151",
@@ -4436,19 +4448,107 @@
     "note": "Ratsinformationssystem gesperrt. Die Samtgemeinde-Bekanntmachungen nennen Tagesordnungspunkte der Wahlausschüsse (Probeabruf 12 Monate: 42 Berichte, 21.09.2026)."
   },
   {
-    "id": "mv-karstaedt",
-    "name": "Gemeinde Karstädt",
+    "id": "nds-03454035",
+    "name": "Stadt Meppen",
     "kind": "city",
     "method": "scraper",
     "adapter": "website",
-    "base": "https://www.gemeinde-karstaedt.de/",
+    "base": "https://www.meppen.de/",
     "pages": [
-      "https://www.gemeinde-karstaedt.de/amtsblatt/index.php"
+      "https://www.meppen.de/unsere-stadt/aktuelles/bekanntmachungen-elektronisches-amtsblatt/"
     ],
-    "gazetteForms": true,
+    "gazettePages": true,
     "state": "verified",
-    "verifiedAt": "2026-10-25",
-    "verifiedSource": "https://www.gemeinde-karstaedt.de/amtsblatt/index.php",
-    "note": "Amtsblatt der Gemeinde mit Beschlüssen der Gemeindevertretung (Ausgaben über Download-Formulare, Probeabruf: 14 Berichte, Sitzung 01.10.2026 und 31.03.2026; nichtöffentlicher Teil als markierte Titel übernommen, nach Freigabe des Betreibers)."
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.meppen.de/unsere-stadt/aktuelles/bekanntmachungen-elektronisches-amtsblatt/",
+    "note": "meppen.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 84 Berichte aus 26 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Elektronisches Amtsblatt mit Einladungen der Ausschüsse; Wahlbekanntmachungen erscheinen als Punkte des Wahlausschusses."
+  },
+  {
+    "id": "nds-033525411",
+    "name": "Samtgemeinde Land Hadeln",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.samtgemeinde-land-hadeln.de/",
+    "pages": [
+      "https://www.samtgemeinde-land-hadeln.de/aktuelles-service/bekanntmachungen.html"
+    ],
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.samtgemeinde-land-hadeln.de/aktuelles-service/bekanntmachungen.html",
+    "note": "land-hadeln.ratsinfomanagement.net nicht lesbar (Zugriffsschutz für Programme; OParl nicht aktiviert). Bekanntmachungen auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 80 Berichte aus 5 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "nds-03361003",
+    "name": "Gemeinde Dörverden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.doerverden.de/",
+    "pages": [
+      "https://www.doerverden.de/portal/seiten/amtsblatt-fuer-die-gemeinde-doerverden-2026-903000318-20620.html?rubrik=3000009",
+      "https://www.doerverden.de/portal/seiten/amtsblatt-903000273-20620.html",
+      "https://www.doerverden.de/portal/bekanntmachungen/uebersicht-0-20620.html?naviID=903000051&brotID=903000051&rubrik=3000009&bereich=2&no_container_bilder=0"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.doerverden.de/portal/seiten/amtsblatt-fuer-die-gemeinde-doerverden-2026-903000318-20620.html?rubrik=3000009",
+    "note": "www.doerverden.de nicht lesbar (Website der Gemeinde geprüft, keine Sitzungsseite oder keine Sitzungsunterlagen im …). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 52 Berichte aus 13 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026)."
+  },
+  {
+    "id": "nds-03356",
+    "name": "Landkreis Osterholz",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.landkreis-osterholz.de/",
+    "pages": [
+      "https://www.landkreis-osterholz.de/bekanntmachungen",
+      "https://www.landkreis-osterholz.de/fuer-buerger/verkuendungen-und-bekanntmachungen/"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.landkreis-osterholz.de/bekanntmachungen",
+    "note": "landkreis-osterholz.ratsinfomanagement.net nicht lesbar (SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert …). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 17 Berichte aus 5 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Kreistag und Kreiswahlausschuss."
+  },
+  {
+    "id": "nds-03252005",
+    "name": "Gemeinde Emmerthal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.emmerthal.de/",
+    "pages": [
+      "https://www.emmerthal.de/rathaus-politik/amtsblatt/?vs=1",
+      "https://www.emmerthal.de/rathaus-politik/amtliche-bekanntmachungen/?vs=1"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.emmerthal.de/rathaus-politik/amtsblatt/?vs=1",
+    "note": "www.emmerthal.sitzung-online.de nicht lesbar (ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe; OParl nicht …). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 215 Berichte aus 43 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Amtsblatt mit Rat, Bauausschuss und Ortsräten; die Seite listet sehr viele Dokumente (Dokumentlimit)."
+  },
+  {
+    "id": "nds-03361005",
+    "name": "Gemeinde Kirchlinteln",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kirchlinteln.de/",
+    "pages": [
+      "https://www.kirchlinteln.de/rathaus-politik/aktuelles/bekanntmachungen/",
+      "https://www.kirchlinteln.de/regional/veranstaltungen/oeffentliche-sitzung-gemeinderat-der-gemeinde-kirchlinteln-904003288-20640.html",
+      "https://www.kirchlinteln.de/portal/bekanntmachungen/uebersicht-0-20640.html?naviID=904000163&brotID=904000163&bereich=2&no_container_bilder=0",
+      "https://www.kirchlinteln.de/rathaus-politik/aktuelles/bekanntmachungen/?p0=1&naviID=904000163&brotID=904000163&bereich=2&no_container_bilder=0&webcode_id=0&navi_typ=1&id=0&owner=20640",
+      "https://www.kirchlinteln.de/rathaus-politik/aktuelles/bekanntmachungen/?p0=1&naviID=904000163&brotID=904000163&bereich=2&no_container_bilder=0&typ=1&site=15&id=0&owner=20640&webcode_id=0&navi_typ=1",
+      "https://www.kirchlinteln.de/rathaus-politik/aktuelles/bekanntmachungen/?p0=2&naviID=904000163&brotID=904000163&bereich=2&no_container_bilder=0&typ=1&site=15&id=0&owner=20640&webcode_id=0&navi_typ=1"
+    ],
+    "gazettePages": true,
+    "state": "verified",
+    "verifiedAt": "2026-10-27",
+    "verifiedSource": "https://www.kirchlinteln.de/rathaus-politik/aktuelles/bekanntmachungen/",
+    "note": "kirchlinteln.ratsinfomanagement.net nicht lesbar (SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert …). Amtsblatt-Ausgaben auf der Website der Kommune. Probeabruf 12 Monate am 27.10.2026: 16 Berichte aus 1 Sitzungen, Titel geprüft (Nachtsuche 27.10.2026). Sitzungen als Veranstaltungen und Bekanntmachungen; im Probeabruf eine (konstituierende) Ratssitzung."
   }
 ]
