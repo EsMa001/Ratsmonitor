@@ -19,7 +19,6 @@ const PAGES = [
   ["anwender-verbaende", "/anwender/verbaende", 8000, true],
   ["anwender-planung", "/anwender/planung", 8000, true],
   ["abdeckung", "/datenabdeckung", 7000, true],
-  ["x-ueber", "/analytics/ueber", 5000, true],
   ["alarme", "/funktionen/benachrichtigungen", 4000, true],
 ];
 const browser = await chromium.launch({ executablePath: EXE });
