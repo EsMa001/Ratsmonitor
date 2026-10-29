@@ -5,6 +5,36 @@ export const IDENTITY_VERSION='official-records-v1';
 /* Zulässige Vorgangs-ID (Detailseite, Merken, Folgen): Importe vergeben auch Großbuchstaben, „_“, „.“ und „:“
    (Essen „nrw-05113000-vo-505_64282“, Hamburg „22-1665.01“); eine engere Prüfung macht solche Vorgänge unerreichbar */
 export const TOPIC_ID=/^[A-Za-z0-9_.:-]{1,200}$/;
+const ID_CHARS=/^[A-Za-z0-9_.:-]*$/,FOLD={ä:'ae',ö:'oe',ü:'ue',Ä:'Ae',Ö:'Oe',Ü:'Ue',ß:'ss'};
+// FNV-1a (32 bit) als 8 Hex-Ziffern, wie fnv in server/integrations/source-common.mjs (shared liest nicht aus server/).
+const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
+/* Teil einer Vorgangs-ID aus einem Wert der Quelle (Vorlagennummer, Datensatznummer). Ein Wert aus zulässigen Zeichen bleibt
+   unverändert, damit bestehende IDs gleich bleiben; sonst Umlaute ausgeschrieben, Akzente weg, jede Folge anderer Zeichen „-“
+   (KOMFA „Vorlage Ö/12“ → „Vorlage-Oe-12“); bleibt nichts übrig, die Prüfsumme des Werts. */
+export function safeIdPart(value){
+ const s=String(value??'');if(ID_CHARS.test(s))return s;
+ return s.replace(/[äöüÄÖÜß]/g,c=>FOLD[c]).normalize('NFKD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9_.:-]+/g,'-').replace(/^-+|-+$/g,'')||fnv(s);
+}
+/* Zulässige Vorgangs-ID (TOPIC_ID) aus der eines Lesers: eine gültige bleibt, wie sie ist; sonst Zeichen wie safeIdPart,
+   und über 200 Zeichen gekürzt mit der Prüfsumme der ganzen ID am Ende (eindeutig, beim nächsten Import dieselbe). */
+export function safeTopicId(id){
+ const s=String(id??'');if(TOPIC_ID.test(s))return s;
+ const x=safeIdPart(s)||fnv(s);return x.length<=200?x:x.slice(0,191).replace(/-+$/,'')+'-'+fnv(s);
+}
+/* Vorgänge eines Imports mit zulässigen IDs (auch der Verweis identity.mergedInto); changed nennt umgeschriebene IDs.
+   Jeder Import geht hier durch (collectRegion, mergeImport): kein Leser kann eine ID speichern, die sich nicht öffnen lässt. */
+export function withSafeTopicIds(topics){
+ const changed=[];
+ const fixed=(topics||[]).map(t=>{
+  const id=safeTopicId(t.id),into=t.identity?.mergedInto,target=into==null?into:safeTopicId(into);
+  if(id===t.id&&target===into)return t;
+  if(id!==t.id)changed.push([t.id,id]);
+  return {...t,id,...(target!==into?{identity:{...t.identity,mergedInto:target}}:{})};
+ });
+ return {topics:fixed,changed};
+}
+/** Warnung des Imports zu umgeschriebenen IDs (null ohne). */
+export const safeIdWarning=changed=>changed.length?`${changed.length} Vorgangs-IDs der Quelle mit unzulässigen Zeichen oder über 200 Zeichen umgeschrieben (z. B. „${String(changed[0][0]).slice(0,80)}“ → „${changed[0][1].slice(0,80)}“).`:null;
 const region=t=>t.regionId||'muenster';
 export function recordUrl(value){
  try{const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password)return null;

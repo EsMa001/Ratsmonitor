@@ -2,6 +2,8 @@
 // the readers import them under their former local names (germanDay as day, asciiSlug as slug, httpsUrl as https).
 // website-feeds.mjs keeps its own copies: it imports nothing (website-plan.mjs, tests/website-discovery.test.mjs).
 import {withoutPrivateNames} from '../../shared/private-names.mjs';
+/** Part of a topic id from a raw value of the source; a value of allowed characters stays as it is (shared/topic-identity.mjs). */
+export {safeIdPart} from '../../shared/topic-identity.mjs';
 
 /** FNV-1a (32 bit) as 8 hex digits: stable ids of meetings, items and papers. */
 export const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};

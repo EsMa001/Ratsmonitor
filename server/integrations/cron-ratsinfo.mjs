@@ -4,7 +4,7 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted,paced,REFUSED,BUDGET_REACHED} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {fnv,markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
+import {fnv,safeIdPart,markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
 import {isNonPublicText} from './website-text.mjs';
 // Public pages of the TYPO3 extension "cronmmratsinfo" (cron IT), e.g. ris.helmstedt.de. Read are the list "Alle Sitzungen"
 // with its agenda option, which names every meeting and the numbered items of its public agenda on one page, and the page
@@ -104,7 +104,7 @@ export function cronAgenda(meeting,page,source,now=new Date()){
   const papers=row?.papers||[],paper=papers[0];
   const status=meeting.date>today?(paper?'consulting':'announced'):'unknown';
   const description=meeting.date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
-  return markPublicity({id:`${source.id}-${paper?'vo-'+paper.record:'top-'+meeting.record+'-'+fnv([item.number,item.title].join('|'))}`,title:item.title,reference:paper?.reference||'',sourceUrl:meeting.url,identityLinks:[],status,
+  return markPublicity({id:`${source.id}-${paper?'vo-'+safeIdPart(paper.record):'top-'+safeIdPart(meeting.record)+'-'+fnv([item.number,item.title].join('|'))}`,title:item.title,reference:paper?.reference||'',sourceUrl:meeting.url,identityLinks:[],status,
    documents:papers.filter(p=>p.url).map(p=>({title:p.reference?'Vorlage '+p.reference:'Vorlage',url:p.url,kind:'application/pdf'})),
    event:{date:meeting.date,committee:meeting.committee,status,description,result:'',url:meeting.url,publicEvidence:'Öffentliche Tagesordnung in der Sitzungsliste „Alle Sitzungen“'},agenda:{number:item.number,papers:papers.map(p=>p.reference||p.record),onPage:Boolean(row)}},publicity);
  };

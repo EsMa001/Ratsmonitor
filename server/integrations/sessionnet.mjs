@@ -7,7 +7,7 @@ import {bodyBytes} from './body-bytes.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {hash,category,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
-import {markPublicity,topicPublicity,selfClosed} from './source-common.mjs';
+import {markPublicity,topicPublicity,selfClosed,safeIdPart} from './source-common.mjs';
 const entities={amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',ouml:'ö',auml:'ä',uuml:'ü',Ouml:'Ö',Auml:'Ä',Uuml:'Ü',szlig:'ß',ndash:'-',mdash:'-'};
 export function decode(s){return String(s||'').replace(/&(#x[0-9a-f]+|#\d+|\w+);/gi,(m,k)=>k[0]==='#'?String.fromCodePoint(k[1].toLowerCase()==='x'?parseInt(k.slice(2),16):Number(k.slice(1))):entities[k]??m)}
 export function text(s){return decode(String(s||'').replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim()}
@@ -110,7 +110,7 @@ function itemStatus(decision,meeting,paper,now){
 function agendaItem({number,title,paper,top,decision,all,publicity},meeting,source,now){
  const status=itemStatus(decision,meeting,paper,now);
  const url=paper?.url||top?.url||meeting.url;const key=paper?new URL(paper.url).searchParams.get('__kvonr'):new URL(meeting.url).searchParams.get('__ksinr')+'-'+number.replace(/\D+/g,'-');
- return markPublicity({id:`${source.id}-${paper?'vo':'top'}-${key}`,title,reference:paper?.label||'',sourceUrl:url,identityLinks:[paper?.url,top?.url].filter(Boolean),status,documents:[...new Map(all.filter(l=>/getfile\.|\/getfile|\.pdf/i.test(l.url)).flatMap(l=>{try{return [[l.url,{title:l.label||'Originalunterlage',url:allowed(l.url,source),kind:'application/pdf'}]];}catch{return [];/* outside the source */}})).values()],event:{date:meeting.date,committee:meeting.committee,status,description:decision||'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.',result:decision,url:meeting.url}},publicity);
+ return markPublicity({id:`${source.id}-${paper?'vo':'top'}-${safeIdPart(key)}`,title,reference:paper?.label||'',sourceUrl:url,identityLinks:[paper?.url,top?.url].filter(Boolean),status,documents:[...new Map(all.filter(l=>/getfile\.|\/getfile|\.pdf/i.test(l.url)).flatMap(l=>{try{return [[l.url,{title:l.label||'Originalunterlage',url:allowed(l.url,source),kind:'application/pdf'}]];}catch{return [];/* outside the source */}})).values()],event:{date:meeting.date,committee:meeting.committee,status,description:decision||'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.',result:decision,url:meeting.url}},publicity);
 }
 /** Items of a meeting from its public notice (PDF), read with the website reader's text parser, each with its publicity. */
 async function noticeItems(notice,meeting,source,now){

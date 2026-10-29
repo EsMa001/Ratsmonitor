@@ -6,7 +6,7 @@ import {fetchText,allowed,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {restoreLostLetters,LOST} from '../../shared/lost-letters.mjs';
-import {markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
+import {markPublicity,topicPublicity,openDocuments,PLACEHOLDER,safeIdPart} from './source-common.mjs';
 // Public guest access of the KIC council information system (kiC RIS, React app such as ris.aschaffenburg.de/app/).
 // The page is an empty shell; the app reads /<version>/webconfig.json (serviceUrl, org_key) and then asks the JSON
 // interface named there, sending the headers x-orgkey (org_key), x-uniqueid (host name of the app, plus "/<name>"
@@ -176,7 +176,7 @@ export async function collectKic(source,{now=new Date(),get=fetchText,request=fe
     // An item not released to guests is taken with its title and mark; its page is not asked (it would refuse a guest).
     if(item.publicity){
      const status=agenda.date>today?'announced':'unknown',event={date:agenda.date,committee:agenda.committee,status,description:'',result:'',url:m.url,attendance:{status:'not_collected',sourceUrl:m.url,fetchedAt:now.toISOString(),people:[]}};
-     const row=markPublicity({id:`${source.id}-vo-${item.key}`,title:item.title,reference:'',sourceUrl:own,identityLinks:[own],status,documents:[],event,
+     const row=markPublicity({id:`${source.id}-vo-${safeIdPart(item.key)}`,title:item.title,reference:'',sourceUrl:own,identityLinks:[own],status,documents:[],event,
       sourceData:{version:'public-source-fields-v1',method:'kic',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{number:item.number,title:item.title,publicity:item.publicity}}],detailStatus:'completed',issues:[]}},item.publicity);
      row.event.decision=sourceDecision(row.event);const ev=row.event;delete row.event;
      const previous=grouped.get(row.id);if(previous){previous.events.push(ev);previous.identityLinks.push(...row.identityLinks);}else grouped.set(row.id,{...row,events:[ev]});
@@ -194,7 +194,7 @@ export async function collectKic(source,{now=new Date(),get=fetchText,request=fe
     const status=agenda.date>today?(detail.consultations.length?'consulting':'announced'):resultStatus(result,agenda.committee)||'unknown';
     const description=agenda.date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?'Abstimmungsergebnis: '+result:'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
     const event={date:agenda.date,committee:agenda.committee,status,description,result,url:m.url,publicEvidence:'Öffentlicher Teil der Tagesordnung im Gastzugang',attendance:{status:'not_collected',sourceUrl:m.url,fetchedAt:now.toISOString(),people:[]}};event.decision=sourceDecision(event);
-    const row={id:`${source.id}-vo-${first.key}`,title:item.title,reference:'',sourceUrl,identityLinks:[...new Set([sourceUrl,own])],status,documents:item.downloads?openDocuments(detail.documents):[],
+    const row={id:`${source.id}-vo-${safeIdPart(first.key)}`,title:item.title,reference:'',sourceUrl,identityLinks:[...new Set([sourceUrl,own])],status,documents:item.downloads?openDocuments(detail.documents):[],
      sourceData:{version:'public-source-fields-v1',method:'kic',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{number:item.number,title:item.title,role:detail.role,result,...(item.globalId?{globalId:item.globalId}:{})}},{kind:'agenda-item',url:own,fields:{consultations:detail.consultations.map(c=>({date:c.date,committee:c.committee,number:c.number,role:c.role,public:c.public}))}}],detailStatus:'completed',issues:[]}};
     const previous=grouped.get(row.id);if(previous){previous.events.push(event);previous.documents.push(...row.documents);previous.identityLinks.push(...row.identityLinks);}else grouped.set(row.id,{...row,events:[event]});
    }

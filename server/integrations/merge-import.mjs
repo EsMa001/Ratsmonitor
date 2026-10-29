@@ -1,10 +1,14 @@
-import {reconcileTopics} from '../../shared/topic-identity.mjs';
+import {reconcileTopics,withSafeTopicIds,safeIdWarning} from '../../shared/topic-identity.mjs';
 import {importedMetadata} from '../../shared/article-record.mjs';
 import {windowSpanDays,DEFAULT_HISTORY_WINDOW} from '../../shared/history-window.mjs';
 // Notes of an earlier failed attempt; a later successful attempt removes them.
 const FAILURE_NOTE=/^(Abruf fehlgeschlagen;|Fehlerursache: )/;
 /** Merge a bounded import without erasing older events or the last successful data date. */
 export function mergeImport(previous,incoming){
+ // Ids that cannot be opened (TOPIC_ID) never reach the stock, whichever path delivered them: collectRegion fixes them
+ // already, the packed history of apply-backfill.mjs not.
+ const safe=withSafeTopicIds(incoming.topics),warning=safeIdWarning(safe.changed);
+ if(warning)incoming={...incoming,topics:safe.topics,coverage:{...incoming.coverage,warnings:[...(incoming.coverage?.warnings||[]),warning]}};
  const prior=new Map((previous?.topics||[]).map(t=>[t.id,t]));
  const merged=reconcileTopics(previous?.topics||[],incoming.topics.map(t=>({...t,metadata:importedMetadata(t,prior.get(t.id),incoming.coverage?.importedAt)})));
  const requested=incoming.coverage?.window,span=windowSpanDays(requested),stored=windowSpanDays(previous?.coverage?.window);

@@ -5,7 +5,7 @@ import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {markPublicity,topicPublicity,openDocuments} from './source-common.mjs';
+import {markPublicity,topicPublicity,openDocuments,safeIdPart} from './source-common.mjs';
 // Public JSON interface of SessionNet 6 (Somacos). The citizens' information system is an Angular app ("SessionNet |
 // Bürgerinformationssystem") that reads everything from <base>api/v1/. The reader asks the addresses the app asks for
 // its calendar and its meeting page, and nothing else: the meeting list of a period (sitzungen?von&bis), the agenda
@@ -68,7 +68,7 @@ export function parseSessionNet6Agenda(list,meeting,source,committees=new Map(),
   const status=meeting.date>today?(paper?'consulting':'announced'):resultStatus(decision,committee)||'unknown';
   const description=meeting.date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?'Ergebnis laut Tagesordnung: '+result:'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
   const long=text(t.textLang);
-  items.push(markPublicity({id:`${source.id}-${paper?'vo-'+paper:'top-'+t.toNr}`,title,reference:'',sourceUrl:url,identityLinks:[],status,documents:[],
+  items.push(markPublicity({id:`${source.id}-${paper?'vo-'+paper:'top-'+safeIdPart(t.toNr)}`,title,reference:'',sourceUrl:url,identityLinks:[],status,documents:[],
    event:{date:meeting.date,committee,status,description,result,url:meeting.url,publicEvidence:'Öffentlicher Teil der Tagesordnung laut Schnittstelle des Bürgerinformationssystems'},
    agenda:{number,top:String(t.toNr),paper,...(long&&long!==title&&long.length<1200?{longTitle:long}:{})}},Number(t.oSt)===1?null:'nonpublic'));
  }
