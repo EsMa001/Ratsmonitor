@@ -109,7 +109,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                     Kostenlos anmelden
                   </Link>
                 ) : link ? (
-                  <Link href={link.href} className={plan.tier === "plus" ? PRIMARY : SECONDARY}>
+                  <Link href={link.href} className={PRIMARY}>
                     {link.label}
                   </Link>
                 ) : (
@@ -238,7 +238,7 @@ function Billing() {
         {!running &&
           !paid &&
           bookable.map((t) => (
-            <button key={t} type="button" disabled={busy} onClick={() => void go("/api/billing/checkout", { tier: t })} className={`${t === "plus" ? PRIMARY : SECONDARY} disabled:opacity-50`}>
+            <button key={t} type="button" disabled={busy} onClick={() => void go("/api/billing/checkout", { tier: t })} className={`${PRIMARY} disabled:opacity-50`}>
               {TIER_LABEL[t]} buchen · {priceLabel(t)}
             </button>
           ))}

@@ -89,7 +89,7 @@ export function BookingPage() {
                   ) : !can ? (
                     <Link href="/kontakt" className={SECONDARY}>{UPGRADE_TEXT}</Link>
                   ) : (
-                    <button type="button" disabled={!!busy} onClick={() => void go(tier)} className={picked ? PRIMARY : SECONDARY}>
+                    <button type="button" disabled={!!busy} onClick={() => void go(tier)} className={PRIMARY}>
                       {busy === tier ? "Wird geöffnet …" : subscribed ? `Zu ${TIER_LABEL[tier]} wechseln` : `${TIER_LABEL[tier]} buchen`}
                     </button>
                   )}
