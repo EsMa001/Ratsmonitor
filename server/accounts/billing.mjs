@@ -3,12 +3,15 @@
 // Server nie. Freigeschaltet wird nur über eine signaturgeprüfte Meldung (Webhook) oder den Abgleich; beide rufen das Abo
 // bei Stripe neu ab und führen eine Zeile je Abo in plan_grants (source='stripe', ref = Abo-ID). Die Rückkehr aus dem
 // Checkout schaltet nichts frei. Ohne Stripe-Bibliothek: REST über fetch, Signatur über WebCrypto.
-import {AccountError,respond,requireSameOrigin,readText} from './http.mjs';
+// Zwei Stufen zu buchen, Plus und Pro (shared/plans.mjs, BOOKABLE): je ein Preis bei Stripe, die Stufe einer Freischaltung folgt
+// dem Preis des Abos. Ein Konto hat höchstens ein laufendes Abo; Wechsel zwischen Plus und Pro über das Kundenportal.
+import {AccountError,respond,requireSameOrigin,readText,readJson} from './http.mjs';
 import {readSession,rolesOf} from './sessions.mjs';
 import {siteBase} from './config.mjs';
 import {limited} from './rate-limit.mjs';
 import {sendMail,processOutbox} from './mail.mjs';
 import {randomToken,sha256hex} from './crypto.mjs';
+import {BOOKABLE,TIER_LABEL} from '../../shared/plans.mjs';
 
 const API='https://api.stripe.com/v1/';
 /** Feste API-Fassung aller Abrufe. Von einer Meldung zählen nur ID und Art; das Abo wird in dieser Fassung neu abgerufen. */
@@ -22,19 +25,22 @@ const ENDED=['canceled','incomplete_expired','unpaid'];
 /** Verarbeitete Meldungen; alle anderen werden nur quittiert */
 export const EVENTS=['checkout.session.completed','customer.subscription.created','customer.subscription.updated','customer.subscription.deleted',
  'invoice.paid','invoice.payment_failed','charge.dispute.created'];
-const TIER='pro';
 const iso=ms=>new Date(ms).toISOString();
 const enc=new TextEncoder();
 const idOf=value=>typeof value==='string'?value:value?.id??null;
 
-/** Eingerichtet: Schlüssel, Meldungsgeheimnis und Preis; Testschlüssel, Live-Schlüssel nur mit STRIPE_LIVE=1 */
+/** Eingerichtet: Schlüssel, Meldungsgeheimnis und der Preis von Plus; Testschlüssel, Live-Schlüssel nur mit STRIPE_LIVE=1 */
 export function billingReady(cfg){
  const b=cfg?.billing;
- if(!b?.secretKey||!b.webhookSecret||!b.price)return false;
+ if(!b?.secretKey||!b.webhookSecret||!b.prices?.plus)return false;
  return (b.live?/^(sk|rk)_live_/:/^(sk|rk)_test_/).test(b.secretKey);
 }
 /** Darf ein Konto mit diesen Rollen buchen? Mit STRIPE_ADMINS_ONLY=1 (Testmodus auf dem Server) nur Admins */
 export const billingFor=(cfg,roles)=>billingReady(cfg)&&(!cfg.billing.adminsOnly||roles.includes('admin'));
+/** Stufen mit Preis bei Stripe (Plus immer, Pro mit STRIPE_PRICE_PRO), für /api/me und die Buchungsseite */
+export const bookableTiers=(cfg,roles)=>billingFor(cfg,roles)?BOOKABLE.filter(t=>cfg.billing.prices?.[t]):[];
+/** Stufe zum Preis eines Abos; ein unbekannter Preis (älterer, gelöschter) schaltet nie mehr frei als Plus */
+export const tierOfPrice=(cfg,price)=>BOOKABLE.find(t=>price&&cfg?.billing?.prices?.[t]===price)??'plus';
 function requireBilling(cfg){
  if(!billingReady(cfg))throw new AccountError(503,'Bezahlung ist auf diesem Server nicht eingerichtet.');
  return cfg.billing;
@@ -85,12 +91,12 @@ const customerOf=async(db,userId)=>(await db.prepare('SELECT customer_id FROM bi
 const RUNNING_SQL=`status IN (${RUNNING.map(s=>`'${s}'`).join(',')})`;
 /** Laufendes Abo eines Kontos (auch gekündigt zum Periodenende) oder null */
 export const runningSubscription=(db,userId)=>
- db.prepare(`SELECT id,status,period_end,cancel_at FROM subscriptions WHERE user_id=? AND ${RUNNING_SQL} ORDER BY updated_at DESC LIMIT 1`).bind(userId).first();
-/** Für /api/me: Stand des Abos, ob es einen Stripe-Kunden gibt (Portal), ob Testmodus und ob Zahlungsmails an sind */
+ db.prepare(`SELECT id,status,price_id,period_end,cancel_at FROM subscriptions WHERE user_id=? AND ${RUNNING_SQL} ORDER BY updated_at DESC LIMIT 1`).bind(userId).first();
+/** Für /api/me: Stand des Abos (mit gebuchter Stufe), ob es einen Stripe-Kunden gibt (Portal), ob Testmodus und ob Zahlungsmails an sind */
 export async function billingState(db,userId,cfg){
- const sub=await db.prepare(`SELECT status,period_end,cancel_at FROM subscriptions WHERE user_id=? ORDER BY ${RUNNING_SQL} DESC,updated_at DESC LIMIT 1`).bind(userId).first();
+ const sub=await db.prepare(`SELECT status,price_id,period_end,cancel_at FROM subscriptions WHERE user_id=? ORDER BY ${RUNNING_SQL} DESC,updated_at DESC LIMIT 1`).bind(userId).first();
  return {test:!cfg.billing.live,customer:!!(await customerOf(db,userId)),mails:await billingMailsOn(db,userId),
-  subscription:sub?{status:sub.status,periodEnd:sub.period_end,cancelAt:sub.cancel_at}:null};
+  subscription:sub?{status:sub.status,tier:tierOfPrice(cfg,sub.price_id),periodEnd:sub.period_end,cancelAt:sub.cancel_at}:null};
 }
 async function linkCustomer(ctx,userId,customerId,livemode){
  if(!(await ctx.db.prepare('SELECT 1 FROM users WHERE id=?').bind(userId).first()))return null;
@@ -106,7 +112,8 @@ const periodEndOf=sub=>{
 const latestPaid=sub=>typeof sub.latest_invoice!=='object'||!sub.latest_invoice||sub.latest_invoice.status==='paid';
 
 /**
- * Stand eines Abos übernehmen (Objekt frisch von Stripe). Bezahlt und aktiv: Freischaltung bis Periodenende plus Kulanz.
+ * Stand eines Abos übernehmen (Objekt frisch von Stripe). Bezahlt und aktiv: Freischaltung bis Periodenende plus Kulanz, in
+ * der Stufe des Preises (ein Wechsel im Kundenportal gilt erst mit bezahlter Rechnung; ein Wechsel nach unten zum Periodenende).
  * Beendet: Freischaltung endet mit dem Abo. Offen oder überfällig: nichts verlängern, die Zeile läuft von selbst aus.
  * Abos ohne Plenara-Konto (anderer Ursprung, Konto gelöscht) werden übersprungen.
  */
@@ -116,7 +123,7 @@ export async function syncSubscription(ctx,sub){
  let userId=(await db.prepare('SELECT user_id FROM billing_customers WHERE customer_id=?').bind(customer).first())?.user_id;
  if(!userId&&sub.metadata?.user_id)userId=await linkCustomer(ctx,sub.metadata.user_id,customer,sub.livemode);
  if(!userId)return {skipped:true};
- const periodEnd=periodEndOf(sub),endedAt=sub.ended_at?sub.ended_at*1000:null;
+ const periodEnd=periodEndOf(sub),endedAt=sub.ended_at?sub.ended_at*1000:null,price=idOf(sub.items?.data?.[0]?.price),tier=tierOfPrice(ctx.cfg,price);
  // Das Kundenportal kündigt über cancel_at (Zeitpunkt), ältere Wege über cancel_at_period_end
  const cancelAt=sub.cancel_at?sub.cancel_at*1000:sub.cancel_at_period_end?periodEnd:null;
  const seconds=value=>Number.isFinite(value)&&value>0?iso(value*1000):null;
@@ -127,32 +134,32 @@ export async function syncSubscription(ctx,sub){
    customer_id=excluded.customer_id,status=excluded.status,price_id=excluded.price_id,period_end=excluded.period_end,cancel_at=excluded.cancel_at,
    ended_at=excluded.ended_at,livemode=excluded.livemode,updated_at=excluded.updated_at,started_at=coalesce(excluded.started_at,subscriptions.started_at),
    canceled_at=excluded.canceled_at,last_paid_at=coalesce(excluded.last_paid_at,subscriptions.last_paid_at)`)
-  .bind(sub.id,userId,customer,sub.status,idOf(sub.items?.data?.[0]?.price),periodEnd?iso(periodEnd):null,cancelAt?iso(cancelAt):null,
+  .bind(sub.id,userId,customer,sub.status,price,periodEnd?iso(periodEnd):null,cancelAt?iso(cancelAt):null,
    endedAt?iso(endedAt):null,sub.livemode?1:0,iso(now),seconds(sub.start_date),seconds(sub.canceled_at),paidAt)];
  const grant=await db.prepare("SELECT id,ends_at FROM plan_grants WHERE source='stripe' AND ref=?").bind(sub.id).first();
  if(['active','trialing'].includes(sub.status)&&periodEnd&&latestPaid(sub)){
   const ends=iso(periodEnd+GRACE_MS);
   statements.push(grant
    // Verlängert: ein früherer Hinweis „Plus endet bald“ gilt nicht mehr (scripts/accounts/maintenance.mjs)
-   ?db.prepare('UPDATE plan_grants SET user_id=?,end_notice_at=CASE WHEN ?>ends_at THEN NULL ELSE end_notice_at END,ends_at=? WHERE id=?').bind(userId,ends,ends,grant.id)
+   ?db.prepare('UPDATE plan_grants SET user_id=?,tier=?,end_notice_at=CASE WHEN ?>ends_at THEN NULL ELSE end_notice_at END,ends_at=? WHERE id=?').bind(userId,tier,ends,ends,grant.id)
    :db.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at,ref,note,created_by) VALUES(?,?,'stripe',?,?,?,'Stripe-Abo','stripe')")
-    .bind(userId,TIER,iso(now),ends,sub.id));
+    .bind(userId,tier,iso(now),ends,sub.id));
  }else if(ENDED.includes(sub.status)&&grant){
   const end=endedAt??now;
   if(grant.ends_at===null||Date.parse(grant.ends_at)>end)statements.push(db.prepare('UPDATE plan_grants SET ends_at=? WHERE id=?').bind(iso(end),grant.id));
  }
  await db.batch(statements);
- return {userId,status:sub.status,periodEnd};
+ return {userId,status:sub.status,periodEnd,tier};
 }
 const euro=(cents,currency)=>`${(Number(cents||0)/100).toFixed(2).replace('.',',')} ${String(currency||'eur').toLowerCase()==='eur'?'€':String(currency).toUpperCase()}`;
 /**
  * Mail „Zahlung eingegangen“ zu einer bezahlten Rechnung (einmal je Meldung, billing_events): die erste Rechnung des Abos
- * schaltet Plus frei, jede weitere verlängert. Verschickt wird über den Postausgang gleich nach der Antwort (webhook, later).
+ * schaltet Plus oder Pro frei, jede weitere verlängert. Verschickt wird über den Postausgang gleich nach der Antwort (webhook, later).
  */
-async function paidMail(ctx,{userId,periodEnd},invoice){
+async function paidMail(ctx,{userId,periodEnd,tier},invoice){
  const first=invoice.billing_reason==='subscription_create';
  if(!first&&!(invoice.amount_paid>0))return false;
- return sendBillingMail(ctx.db,ctx.cfg,{userId,template:'plus_paid',now:ctx.now,data:{first,amount:euro(invoice.amount_paid,invoice.currency),
+ return sendBillingMail(ctx.db,ctx.cfg,{userId,template:'plus_paid',now:ctx.now,data:{first,tier:TIER_LABEL[tier]||TIER_LABEL.plus,amount:euro(invoice.amount_paid,invoice.currency),
   until:periodEnd?iso(periodEnd):null,receipt:typeof invoice.hosted_invoice_url==='string'?invoice.hosted_invoice_url:null,test:!invoice.livemode}});
 }
 /** Zahlungsmails an (user_settings.billing_mails, ohne Zeile an) */
@@ -161,7 +168,7 @@ export async function billingMailsOn(db,userId){
  return !row||!!row.billing_mails;
 }
 /**
- * Mail zu Zahlung oder Ende von Plus (plus_paid, plus_ending): nur wenn nicht abbestellt; mit Abbestell-Token (Bezug 'b' in
+ * Mail zu Zahlung oder Ende von Plus oder Pro (plus_paid, plus_ending): nur wenn nicht abbestellt; mit Abbestell-Token (Bezug 'b' in
  * notify_tokens, Seite /abbestellen und Ein-Klick nach RFC 8058 wie die Benachrichtigungen). Die Kündigungsbestätigung
  * (cancel.mjs) geht immer und ohne Token. Gibt zurück, ob eine Mail eingereiht wurde.
  */
@@ -222,7 +229,7 @@ async function requireSession(ctx){
  requireSameOrigin(ctx.request);
  const session=await readSession(ctx.db,ctx.cookies.get(ctx.names.session),{now:ctx.now});
  if(!session)throw new AccountError(401,'Bitte anmelden.');
- if(!billingFor(ctx.cfg,await rolesOf(ctx.db,session.user_id)))throw new AccountError(403,'Plus lässt sich auf diesem Server noch nicht buchen.');
+ if(!billingFor(ctx.cfg,await rolesOf(ctx.db,session.user_id)))throw new AccountError(403,'Plus und Pro lassen sich auf diesem Server noch nicht buchen.');
  if(limited('billing',session.user_id,{max:10,windowMs:15*60000,now:ctx.now}))throw new AccountError(429,'Zu viele Versuche. Bitte kurz warten.');
  return session;
 }
@@ -231,14 +238,21 @@ function site(ctx){
  if(!base)throw new AccountError(503,'Bezahlung ist auf diesem Server nicht vollständig eingerichtet.');
  return base;
 }
-/** POST /api/billing/checkout: Bezahlseite von Stripe für Plus, Antwort {url}. Freigeschaltet wird erst per Meldung. */
+/**
+ * POST /api/billing/checkout {tier:'plus'|'pro'}: Bezahlseite von Stripe für die Stufe (ohne Angabe Plus), Antwort {url}.
+ * Freigeschaltet wird erst per Meldung. Läuft schon ein Abo, geht der Wechsel über das Kundenportal (kein zweites Abo).
+ */
 export async function checkout(ctx){
  const b=requireBilling(ctx.cfg);
  const session=await requireSession(ctx);
- if(await runningSubscription(ctx.db,session.user_id))throw new AccountError(409,'Plus ist bereits gebucht. Ändern oder kündigen können Sie es unter „Abo verwalten“.');
+ const body=await readJson(ctx.request,1024);
+ const tier=body.tier===undefined?'plus':body.tier;
+ if(!BOOKABLE.includes(tier)||!b.prices?.[tier])throw new AccountError(400,'Diese Stufe lässt sich nicht buchen.');
+ const running=await runningSubscription(ctx.db,session.user_id);
+ if(running)throw new AccountError(409,`${TIER_LABEL[tierOfPrice(ctx.cfg,running.price_id)]} ist bereits gebucht. Wechseln oder kündigen können Sie unter „Abo verwalten“.`,{subscription:true});
  const base=site(ctx),customer=await customerOf(ctx.db,session.user_id);
  const created=await stripeApi(ctx.cfg,'POST','checkout/sessions',{
-  mode:'subscription',line_items:[{price:b.price,quantity:1}],locale:'de',
+  mode:'subscription',line_items:[{price:b.prices[tier],quantity:1}],locale:'de',
   client_reference_id:session.user_id,metadata:{user_id:session.user_id},subscription_data:{metadata:{user_id:session.user_id}},
   ...(customer?{customer}:{customer_email:session.email}),
   success_url:base+'/konto/profil?zahlung=pruefen',cancel_url:base+'/konto/profil?zahlung=abgebrochen',
@@ -246,13 +260,35 @@ export async function checkout(ctx){
  if(typeof created.url!=='string')throw new Error('Stripe: Checkout ohne Adresse');
  return {response:respond({url:created.url})};
 }
-/** POST /api/billing/portal: Kundenportal von Stripe (kündigen, Zahlart, Rechnungen), Antwort {url} */
+/** POST /api/billing/portal [{tier}]: Kundenportal von Stripe (Plus und Pro wechseln, kündigen, Zahlart, Rechnungen), mit Stufe gleich die
+    Bestätigung des Wechsels zu ihr (flow_data subscription_update_confirm, Buchungsseite); Antwort {url} */
 export async function portal(ctx){
  const b=requireBilling(ctx.cfg);
  const session=await requireSession(ctx);
+ const body=await readJson(ctx.request,1024);
  const customer=await customerOf(ctx.db,session.user_id);
  if(!customer)throw new AccountError(404,'Für dieses Konto gibt es noch kein Abo.');
- const created=await stripeApi(ctx.cfg,'POST','billing_portal/sessions',{customer,return_url:site(ctx)+'/konto/profil',locale:'de',configuration:b.portalConfig});
+ const base=site(ctx);
+ // {tier}: gleich die Bestätigung des Wechsels zu dieser Stufe öffnen (Stripe rechnet nach oben anteilig ab, nach unten
+ // zum Periodenende, je nach Einstellung des Portals); freigeschaltet wird wie immer erst per Meldung
+ let flow;
+ if(body.tier!==undefined){
+  if(!BOOKABLE.includes(body.tier)||!b.prices?.[body.tier])throw new AccountError(400,'Diese Stufe lässt sich nicht buchen.');
+  const running=await runningSubscription(ctx.db,session.user_id);
+  if(!running)throw new AccountError(404,'Für dieses Konto läuft kein Abo.');
+  const sub=await stripeApi(ctx.cfg,'GET','subscriptions/'+encodeURIComponent(running.id));
+  const item=sub.items?.data?.[0];
+  if(!item?.id)throw new Error('Stripe: Abo ohne Position');
+  if(idOf(item.price)===b.prices[body.tier])throw new AccountError(409,`${TIER_LABEL[body.tier]} ist bereits gebucht.`);
+  flow={type:'subscription_update_confirm',subscription_update_confirm:{subscription:sub.id,items:[{id:item.id,price:b.prices[body.tier],quantity:1}]},
+   after_completion:{type:'redirect',redirect:{return_url:base+'/konto/profil?zahlung=pruefen'}}};
+ }
+ const created=await stripeApi(ctx.cfg,'POST','billing_portal/sessions',{customer,return_url:base+'/konto/profil',locale:'de',configuration:b.portalConfig,flow_data:flow})
+  .catch(error=>{
+   // Einstellung des Portals ohne Wechsel (scripts/billing/setup-stripe.mjs noch nicht erneut gelaufen)
+   if(flow&&/subscription update feature/i.test(String(error?.message)))throw new AccountError(503,'Der Wechsel der Stufe ist bei Stripe noch nicht eingerichtet. Bitte melden Sie sich über den Kontakt.',{portal:'update'});
+   throw error;
+  });
  if(typeof created.url!=='string')throw new Error('Stripe: Portal ohne Adresse');
  return {response:respond({url:created.url})};
 }

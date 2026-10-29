@@ -8,7 +8,7 @@ import {eventStatement,effectiveTier} from './sessions.mjs';
 import {sendMail,processOutbox} from './mail.mjs';
 import {siteBase} from './config.mjs';
 import {limited} from './rate-limit.mjs';
-import {LIMITS,FEATURES} from '../../shared/plans.mjs';
+import {LIMITS,FEATURES,FREQS,PLAN_MAX,freqFor,calendarAgsFor} from '../../shared/plans.mjs';
 import {TOPIC_ID} from '../../shared/topic-identity.mjs';
 import {runningSubscription} from './billing.mjs';
 
@@ -50,11 +50,12 @@ export function cleanState(input){
 }
 const cleanQuery=q=>typeof q==='string'&&q.length<=2000&&!/[\u0000-\u001f]/.test(q)?q:null;
 const cleanName=n=>{const v=typeof n==='string'?n.normalize('NFC').replace(/\s+/g,' ').trim().slice(0,120):'';return v||null;};
-const FREQ=['instant','daily','weekly'];
+/** Rhythmus einer Glocke oder der Kalender-Mails, wie die Stufe ihn erlaubt (höchstens täglich, Konto und Plus wöchentlich) */
+const freqOf=(user,wanted)=>freqFor(user.tier.tier,FREQS.includes(wanted)?wanted:null);
 /** Beginn der Meldungen: beim Einschalten jetzt, beim Ausschalten leer (zwei Parameter: an 1/0, Zeitpunkt) */
 const SINCE=col=>`${col}=CASE WHEN ?=1 THEN coalesce(${col},?) ELSE NULL END`;
 /** Rhythmus des Wochenberichts: 0 bis 6 Wochentag, 7 täglich (notify.mjs, DAILY_REPORT) */
-const WEEKLY_DAYS=8;
+const WEEKLY_DAYS=8,DAILY_REPORT=7;
 const searchRow=r=>({id:r.id,name:r.name,signature:r.signature,state:JSON.parse(r.ui_state),query:r.query,position:r.position,active:!!r.active,
  notify:{mail:!!r.notify_mail,freq:r.notify_freq||null},created:r.created_at,lastSeen:r.last_seen_at});
 
@@ -85,7 +86,7 @@ export async function searchesWrite(ctx){
   const mail=body.notify?.mail===true;
   if(mail)await checkNotifications(ctx,uid,user.limits);
   const r=await db.prepare('INSERT INTO saved_searches(user_id,id,signature,name,ui_state,query,query_version,position,active,notify_mail,notify_freq,notify_since,created_at,updated_at,last_seen_at) VALUES(?,?,?,?,?,?,1,?,1,?,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING id')
-   .bind(uid,id,signature,name,state,cleanQuery(body.query),Number(count.last)+1,mail?1:0,FREQ.includes(body.notify?.freq)?body.notify.freq:null,mail?at:null,at,at,at).first();
+   .bind(uid,id,signature,name,state,cleanQuery(body.query),Number(count.last)+1,mail?1:0,mail||body.notify?.freq?freqOf(user,body.notify?.freq):null,mail?at:null,at,at,at).first();
   if(!r)throw new AccountError(409,'Diese Suche ist schon gespeichert.',{duplicate:true});
   return {response:respond({ok:true},{status:201})};
  }
@@ -97,7 +98,7 @@ export async function searchesWrite(ctx){
    const mail=body.notify?.mail===true;
    if(mail)await checkNotifications(ctx,uid,user.limits,{search:id});
    // Gemeldet wird ab dem Einschalten (notify.mjs); bleibt die Glocke an, bleibt auch der Zeitpunkt
-   sets.push('notify_mail=?','notify_freq=?',SINCE('notify_since'));args.push(mail?1:0,FREQ.includes(body.notify?.freq)?body.notify.freq:null,mail?1:0,at);
+   sets.push('notify_mail=?','notify_freq=?',SINCE('notify_since'));args.push(mail?1:0,mail||body.notify?.freq?freqOf(user,body.notify?.freq):null,mail?1:0,at);
   }
   if(body.seen===true){sets.push('last_seen_at=?');args.push(at);}
   if(Number.isInteger(body.position)&&body.position>=0&&body.position<10000){sets.push('position=?');args.push(body.position);}
@@ -181,7 +182,7 @@ export async function settingsRead(ctx){
   calendar:JSON.parse(row?.calendar||'[]'),calendarAgs:JSON.parse(row?.calendar_ags||'[]'),calendarMail:!!row?.calendar_mail,calendarFreq:row?.calendar_freq||'daily',billingMails:!row||!!row.billing_mails})};
 }
 export async function settingsWrite(ctx){
- const {session,limits,features}=await requireUser(ctx,{write:true});
+ const user=await requireUser(ctx,{write:true}),{session,limits,features}=user;
  const body=await readJson(ctx.request,65536);
  const {db,now}=ctx,at=iso(now),uid=session.user_id;
  const statements=[];
@@ -191,13 +192,22 @@ export async function settingsWrite(ctx){
  const billingMails=body.billingMails!==undefined?(body.billingMails===false?0:1):(s?(s.billing_mails?1:0):1);
  const weekly=body.weekly!==undefined?(body.weekly===true?1:0):(s?.weekly??0);
  const day=body.weeklyDay!==undefined?(Number.isInteger(body.weeklyDay)&&body.weeklyDay>=0&&body.weeklyDay<WEEKLY_DAYS?body.weeklyDay:null):(s?.weekly_day??null);
- // Wochenbericht und Kalender-Mails nur mit Benachrichtigungen in der Stufe, Kalender nur mit dem Merkmal (shared/plans.mjs)
- if(weekly&&!s?.weekly&&!limits.notifications)throw new AccountError(409,'Der Wochenbericht gehört nicht zu Ihrer Stufe.',{limit:'notifications'});
+ // Wochenbericht ab Plus, täglich nur mit täglichen Mails (Pro), Kalender und Kalender-Mails nur mit dem Merkmal (shared/plans.mjs)
+ if(weekly&&!s?.weekly&&!limits.weeklyReport)throw new AccountError(409,'Der Wochenbericht gehört zu Plus.',{limit:'weeklyReport'});
+ if(body.weeklyDay===DAILY_REPORT&&s?.weekly_day!==DAILY_REPORT&&!limits.freqs.includes('daily'))throw new AccountError(409,'Tägliche Mails gehören zu Pro.',{limit:'freq'});
  const calendarMail=body.calendarMail!==undefined?(body.calendarMail===true?1:0):(s?.calendar_mail??0);
- if(calendarMail&&!s?.calendar_mail&&!features.calendar)throw new AccountError(409,'Kalender-Mails gehören zu Plus.',{limit:'calendar'});
- const calendarFreq=body.calendarFreq!==undefined?(FREQ.includes(body.calendarFreq)?body.calendarFreq:null):(s?.calendar_freq??null);
+ if(calendarMail&&!s?.calendar_mail&&!features.calendar)throw new AccountError(409,'Der Kalender gehört zu einer höheren Stufe.',{limit:'calendar'});
+ const calendarFreq=body.calendarFreq!==undefined?(FREQS.includes(body.calendarFreq)?freqOf(user,body.calendarFreq):null):(s?.calendar_freq??null);
  const since=(on,old,col)=>on?(old?s?.[col]??at:at):null;
- const calendar=body.calendar!==undefined?JSON.stringify(cleanCalendar(body.calendar)):(s?.calendar??'[]');
+ let calendar=s?.calendar??'[]';
+ if(body.calendar!==undefined){
+  // Mehr Gebiete, als die Stufe erlaubt, nur wenn alle schon gespeichert waren (nach einem Wechsel nach unten: nur entfernen)
+  const next=cleanCalendar(body.calendar),old=cleanCalendar(JSON.parse(calendar));
+  if(next.length&&!features.calendar)throw new AccountError(409,'Der Kalender gehört zu einer höheren Stufe.',{limit:'calendar'});
+  if(next.length>limits.calendarAreas&&!next.every(a=>old.some(o=>o.ags===a.ags&&o.km===a.km)))
+   throw new AccountError(409,'Grenze der Gebiete im Kalender erreicht.',{limit:'calendarAreas'});
+  calendar=JSON.stringify(next);
+ }
  const ags=body.calendarAgs!==undefined?JSON.stringify(cleanAgs(body.calendarAgs)):(s?.calendar_ags??'[]');
  const home=body.home!==undefined?(body.home&&AGS.test(String(body.home.ags))?{ags:String(body.home.ags),name:str(body.home.name,120)??''}:null):(s?.home_ags?{ags:s.home_ags,name:s.home_name??''}:null);
  statements.push(db.prepare(`INSERT INTO user_settings(user_id,weekly,weekly_day,weekly_since,calendar,calendar_ags,calendar_mail,calendar_freq,calendar_since,home_ags,home_name,billing_mails,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
@@ -235,7 +245,7 @@ export async function importData(ctx){
    const active=activeSearches<user.limits.savedSearches;if(active)activeSearches++;
    const notify=active?allowNotify(s.notify?.mail===true):0;
    statements.push({kind:'search',id,stmt:db.prepare('INSERT INTO saved_searches(user_id,id,signature,name,ui_state,query,query_version,position,active,notify_mail,notify_freq,notify_since,created_at,updated_at,last_seen_at) VALUES(?,?,?,?,?,?,1,?,?,?,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING id')
-    .bind(uid,id,signature,name,state,cleanQuery(s.query),position++,active?1:0,notify,FREQ.includes(s.notify?.freq)?s.notify.freq:null,notify?at:null,str(s.created,30)??at,at,str(s.lastSeen,30)??null)});
+    .bind(uid,id,signature,name,state,cleanQuery(s.query),position++,active?1:0,notify,notify?freqOf(user,s.notify?.freq):null,notify?at:null,str(s.created,30)??at,at,str(s.lastSeen,30)??null)});
   }catch{result.searches.invalid.push(id??null);}
  }
  const ids=articles.map(a=>str(a?.id,200)).filter(id=>id&&TOPIC_ID.test(id));
@@ -251,9 +261,13 @@ export async function importData(ctx){
    .bind(uid,snap.id,follow,follow?at:null,active?1:0,JSON.stringify(snap),snap.status??null,str(a.savedAt,30)??at)});
  }
  const settings=body.settings&&typeof body.settings==='object'?body.settings:null;
+ // Wochenbericht und Kalender nur im Umfang der Stufe; zu viele Gebiete: die ersten, ohne Umkreis (calendarAgsFor)
+ const weekly=settings?.weekly===true&&user.limits.weeklyReport;
+ const areas=settings?cleanCalendar(settings.calendar).slice(0,user.features.calendar?user.limits.calendarAreas:0):[];
+ const areaAgs=settings?calendarAgsFor(cleanCalendar(settings.calendar),cleanAgs(settings.calendarAgs),user.features.calendar?user.tier.tier:'guest'):[];
  const batch=statements.map(s=>s.stmt);
  if(settings)batch.push(db.prepare('INSERT INTO user_settings(user_id,weekly,weekly_day,weekly_since,calendar,calendar_ags,updated_at) VALUES(?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET weekly=excluded.weekly,weekly_day=excluded.weekly_day,weekly_since=CASE WHEN excluded.weekly=1 THEN coalesce(user_settings.weekly_since,excluded.weekly_since) END,calendar=CASE WHEN excluded.calendar<>\'[]\' THEN excluded.calendar ELSE user_settings.calendar END,calendar_ags=CASE WHEN excluded.calendar_ags<>\'[]\' THEN excluded.calendar_ags ELSE user_settings.calendar_ags END,updated_at=excluded.updated_at')
-  .bind(uid,settings.weekly===true?1:0,Number.isInteger(settings.weeklyDay)&&settings.weeklyDay>=0&&settings.weeklyDay<WEEKLY_DAYS?settings.weeklyDay:null,settings.weekly===true?at:null,JSON.stringify(cleanCalendar(settings.calendar)),JSON.stringify(cleanAgs(settings.calendarAgs)),at));
+  .bind(uid,weekly?1:0,Number.isInteger(settings.weeklyDay)&&settings.weeklyDay>=0&&settings.weeklyDay<WEEKLY_DAYS?settings.weeklyDay:null,weekly?at:null,JSON.stringify(areas),JSON.stringify(areaAgs),at));
  if(typeof body.name==='string'&&!user.session.name)batch.push(db.prepare('UPDATE users SET name=? WHERE id=? AND name IS NULL').bind(cleanName(body.name),uid));
  const answers=batch.length?await db.batch(batch):[];
  statements.forEach((s,i)=>{
@@ -406,10 +420,19 @@ export async function calendarFeed(ctx){
 export async function feedAreas(db,token,{now=Date.now()}={}){
  const value=String(token||'').replace(/\.ics$/,'');
  if(!TOKEN_RE.test(value))return null;
- const row=await db.prepare(`SELECT f.user_id,s.calendar_ags FROM calendar_feeds f JOIN users u ON u.id=f.user_id
+ const row=await db.prepare(`SELECT f.user_id,s.calendar,s.calendar_ags FROM calendar_feeds f JOIN users u ON u.id=f.user_id
    LEFT JOIN user_settings s ON s.user_id=f.user_id WHERE f.id=? AND f.revoked_at IS NULL AND u.status='active'`).bind(await sha256hex(value)).first();
  if(!row)return null;
  const tier=await effectiveTier(db,row.user_id,{now});
  if(!FEATURES[tier.tier]?.calendar)return null;
- return JSON.parse(row.calendar_ags||'[]');
+ return calendarAgsFor(JSON.parse(row.calendar||'[]'),JSON.parse(row.calendar_ags||'[]'),tier.tier);
+}
+/**
+ * Gebiete, die /api/calendar und die Kalender-Datei einem Konto zeigen (shared/plans.mjs, calendarAreas): null ohne Grenze
+ * (Pro, Enterprise), sonst die Gebietsschlüssel der gespeicherten Kalendergebiete (calendarAgsFor).
+ */
+export async function calendarScope(db,userId,tier){
+ if((LIMITS[tier]?.calendarAreas??0)>=PLAN_MAX)return null;
+ const row=await db.prepare('SELECT calendar,calendar_ags FROM user_settings WHERE user_id=?').bind(userId).first();
+ return new Set(calendarAgsFor(JSON.parse(row?.calendar||'[]'),JSON.parse(row?.calendar_ags||'[]'),tier));
 }

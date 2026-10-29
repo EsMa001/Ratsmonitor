@@ -1,8 +1,7 @@
-import { openGate, type GateFeature } from "../components/GateDialog";
+import { needsFor, openGate, type GateFeature } from "../components/GateDialog";
 import { useAccount } from "../state/account";
 import { useMe } from "./account";
 import { useSavedArticles } from "./savedArticles";
-import { type Tier } from "./tier";
 
 /**
  * Stufe plus aktuelle Nutzung. `allow(feature)` prüft, ob noch ein weiteres Element
@@ -27,7 +26,7 @@ export function useEntitlements() {
   const max = { bookmarks: limits.bookmarks, searches: limits.savedSearches, notifications: limits.notifications };
 
   /** Nächsthöhere Stufe, die die Funktion freischaltet */
-  const needs = (feature: GateFeature): Tier => (tier === "guest" ? "basic" : feature === "emails" ? "enterprise" : "pro");
+  const needs = (feature: GateFeature) => needsFor(feature, tier);
 
   const allow = (feature: "bookmarks" | "searches" | "notifications"): boolean => {
     if (!ready) return false;
@@ -41,9 +40,9 @@ export function useEntitlements() {
     const ok = feature === "filters" ? limits.filters : !Number.isFinite(limits.maxResults);
     if (ok) return true;
     if (!ready) return false;
-    openGate({ feature, needs: tier === "guest" ? "basic" : "pro", total });
+    openGate({ feature, needs: needs(feature), total });
     return false;
   };
 
-  return { tier, limits, ready, signedIn: !!me.user, used, max, allow, allowFeature };
+  return { tier, limits, ready, signedIn: !!me.user, used, max, allow, allowFeature, needs };
 }

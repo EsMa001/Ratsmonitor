@@ -7,7 +7,7 @@
  *   ratsmonitor-accounts create --email-stdin --note "eigenes Konto" [--tier enterprise [--until …]] [--admin]
  *                        Konto direkt anlegen (Betreiber, ohne Mail), danach Anmeldung mit login-link
  *   ratsmonitor-accounts role admin|user (--id u_… | --email-stdin)
- *   ratsmonitor-accounts tier basic|pro|enterprise [--until 2027-01-31] [--source manual|beta] (--id | --email-stdin)
+ *   ratsmonitor-accounts tier basic|plus|pro|enterprise [--until 2027-01-31] [--source manual|beta] (--id | --email-stdin)
  *   ratsmonitor-accounts block --note "Grund" | unblock | revoke | delete (--id | --email-stdin)
  *   ratsmonitor-accounts export --out datei.json (--id | --email-stdin)
  *   ratsmonitor-accounts list [--invites] [--full] | stats
@@ -81,7 +81,7 @@ switch(command){
  case 'create':{
   const note=option('--note'),tier=option('--tier'),until=untilDate(option('--until')),admin=flag('--admin');
   if(!note)fail('--note mit Anlass ist Pflicht.');
-  if(tier&&(!validTier(tier)||tier==='guest'))fail('Stufe: basic, pro oder enterprise.');
+  if(tier&&(!validTier(tier)||tier==='guest'))fail('Stufe: basic, plus, pro oder enterprise.');
   const email=await readEmail();if(!email)fail('Bitte --email-stdin.');
   if(sql.prepare('SELECT 1 FROM users WHERE email=?').get(email))fail('Für diese Adresse gibt es schon ein Konto.');
   const id=randomId('u_'),at=iso(now);
@@ -99,7 +99,7 @@ switch(command){
  case 'invite':{
   const note=option('--note'),tier=option('--tier'),until=untilDate(option('--until')),days=Number(option('--days')||30),send=flag('--send');
   if(!note)fail('--note mit Anlass und Zustimmung ist Pflicht (Art. 6 Abs. 1 b).');
-  if(tier&&(!validTier(tier)||tier==='guest'))fail('Stufe: basic, pro oder enterprise.');
+  if(tier&&(!validTier(tier)||tier==='guest'))fail('Stufe: basic, plus, pro oder enterprise.');
   if(tier&&!until)fail('Eine Teststufe braucht --until.');
   const email=await readEmail();if(!email)fail('Bitte --email-stdin.');
   if(sql.prepare('SELECT 1 FROM users WHERE email=?').get(email))fail('Für diese Adresse gibt es schon ein Konto.');
@@ -121,7 +121,7 @@ switch(command){
  }
  case 'tier':{
   const tier=args.shift(),until=untilDate(option('--until')),source=option('--source')||'manual';
-  if(!validTier(tier)||tier==='guest')fail('tier basic|pro|enterprise');
+  if(!validTier(tier)||tier==='guest')fail('tier basic|plus|pro|enterprise');
   if(!['manual','beta'].includes(source))fail('--source manual|beta (stripe nur über den Zahlungsdienst)');
   const user=await target();
   sql.prepare('INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at,created_by) VALUES(?,?,?,?,?,?)').run(user.id,tier,source,iso(now),until,'cli');

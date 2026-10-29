@@ -10,7 +10,7 @@ import {sendMail,processOutbox} from './mail.mjs';
 import {safeNext} from '../../shared/safe-next.mjs';
 import {AGB_VERSION,PRIVACY_VERSION} from '../../shared/legal-versions.mjs';
 import {FEATURES,limitsJson,validTier,rank} from '../../shared/plans.mjs';
-import {billingFor,billingState} from './billing.mjs';
+import {billingFor,billingState,bookableTiers} from './billing.mjs';
 
 export const TOKEN_MS=15*60000,FLOW_MS=15*60000;
 const DAY=86400000;
@@ -277,12 +277,13 @@ const senderOf=from=>String(from||'').match(/<([^>]+)>/)?.[1]||(/^[^\s<>]+@[^\s<
 export async function me(ctx){
  const session=await currentSession(ctx);
  // login: welche Wege die Anmeldeseite anbietet (Link und Code per Mail, E-Mail-Adresse und Code aus der App);
- // signup: neue Adressen bekommen ohne Einladung ein Konto; checkout: Plus lässt sich buchen (Gäste: ohne STRIPE_ADMINS_ONLY)
+ // signup: neue Adressen bekommen ohne Einladung ein Konto; checkout: Plus lässt sich buchen (Gäste: ohne STRIPE_ADMINS_ONLY),
+ // bookable: welche Stufen (plus, pro) einen Preis bei Stripe haben
  const access=ctx.cfg.access??'open';
  const common={accounts:true,access,signup:access==='open'&&!!ctx.cfg.openSignup,sender:senderOf(ctx.cfg.mail.from),login:{mail:mailLogin(ctx.cfg),totp:!!ctx.cfg.totpLogin}};
- if(!session)return {response:respond({...common,checkout:billingFor(ctx.cfg,[]),tier:'guest',features:FEATURES.guest,limits:limitsJson('guest')})};
+ if(!session)return {response:respond({...common,checkout:billingFor(ctx.cfg,[]),bookable:bookableTiers(ctx.cfg,[]),tier:'guest',features:FEATURES.guest,limits:limitsJson('guest')})};
  const {tier,realTier,roles,admin,adminHere,totpConfirmed}=await accountState(ctx,session);
- return {response:respond({...common,checkout:billingFor(ctx.cfg,roles),user:{id:session.user_id,email:session.email,name:session.name},
+ return {response:respond({...common,checkout:billingFor(ctx.cfg,roles),bookable:bookableTiers(ctx.cfg,roles),user:{id:session.user_id,email:session.email,name:session.name},
   tier:tier.tier,tierUntil:tier.until,tierSource:tier.source,roles,adminHere,
   ...(roles.includes('admin')?{admin,totpConfirmed,realTier:realTier.tier,viewTier:session.view_tier??null}:{}),
   features:FEATURES[tier.tier],limits:limitsJson(tier.tier),renewAfter:renewDue(session,ctx.now),

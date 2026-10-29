@@ -7,7 +7,8 @@ import { H2, P, Ul } from "./LegalText";
 import { useInhalt } from "../pages/LegalPage";
 
 /* Entwurf, nicht anwaltlich geprüft. Offene Punkte stehen in docs/recht/pflichten-und-avv.md und in der To-Do-Liste.
-   Die Tarife entsprechen shared/plans.mjs: Konto kostenlos, Plus 2,99 € je Monat inkl. MwSt. (Entscheidung 23.10.2026). */
+   Die Tarife entsprechen shared/plans.mjs: Konto kostenlos, Plus 2,99 € und Pro 19,99 € je Monat inkl. MwSt. (seit 29.10.2026;
+   Fassung in shared/legal-versions.mjs). */
 /* Absatz: Text oder Text mit Aufzählung darunter (kein <ul> in <p>) */
 type Para = ReactNode | { text: string; list: string[] };
 type Section = { title: string; paras: Para[] };
@@ -33,8 +34,8 @@ function sections(brand: string): Section[] {
     {
       title: "Leistungen",
       paras: [
-        `${brand} ist ein Informationsdienst. Wir bereiten öffentlich zugängliche Informationen aus Ratsinformationssystemen von Kommunen und Kreisen auf, insbesondere Sitzungen, Vorlagen, Beschlüsse und zugehörige Dokumente, und machen sie durchsuchbar. Je nach Tarif umfasst das die Suche mit Filtern, die Kartenansicht, gespeicherte Suchen und Artikel, E-Mail-Benachrichtigungen und den Sitzungskalender.`,
-        "Es gibt die Tarife Konto (kostenlos) und Plus. Maßgeblich sind Umfang und Grenzen (zum Beispiel die Zahl gespeicherter Suchen, Artikel und Benachrichtigungen), die auf der Seite „Preise“ zum Zeitpunkt Ihres Vertragsschlusses angegeben sind. Zusatzleistungen, zum Beispiel individuelle Analysen, erbringen wir nur nach gesonderter Vereinbarung.",
+        `${brand} ist ein Informationsdienst. Wir bereiten öffentlich zugängliche Informationen aus Ratsinformationssystemen von Kommunen und Kreisen auf, insbesondere Sitzungen, Vorlagen, Beschlüsse und zugehörige Dokumente, und machen sie durchsuchbar. Je nach Tarif umfasst das die Suche mit Filtern, die Kartenansicht, die Analysen von plenara.X, gespeicherte Suchen und Artikel, E-Mail-Benachrichtigungen und den Sitzungskalender.`,
+        "Es gibt die Tarife Konto (kostenlos), Plus und Pro. Maßgeblich sind Umfang und Grenzen (zum Beispiel die Zahl gespeicherter Suchen, Artikel und Benachrichtigungen, der Rhythmus der E-Mails und die Gebiete im Kalender), die auf der Seite „Preise“ zum Zeitpunkt Ihres Vertragsschlusses angegeben sind. Zusatzleistungen, zum Beispiel individuelle Analysen, erbringen wir nur nach gesonderter Vereinbarung.",
         "Wir geben Inhalte Dritter wieder. Die Zusammenfassungen und thematischen Einordnungen werden teilweise automatisiert, auch mit Hilfe künstlicher Intelligenz, erstellt und können Fehler enthalten. Maßgeblich sind ausschließlich die verlinkten Originalunterlagen der jeweiligen Kommune. Wir erbringen keine Rechts-, Steuer- oder sonstige Beratung.",
         "Wir schulden keine lückenlose Erfassung aller Sitzungen, Vorlagen oder Beschlüsse. Die Daten hängen davon ab, was Kommunen und ihre IT-Dienstleister veröffentlichen und technisch bereitstellen. Quellen können sich ändern oder ausfallen. Benachrichtigungen sind ein Hilfsmittel und keine Zusicherung, dass Sie über jeden Vorgang oder rechtzeitig informiert werden. Fristen, Genehmigungen, Ausschreibungen und Rechtsmittel müssen Sie anhand der Originalunterlagen selbst prüfen.",
         "Wir bemühen uns um eine hohe Verfügbarkeit des Dienstes. Wartungsarbeiten, technische Störungen und Ausfälle bei Dienstleistern können die Nutzung zeitweise einschränken. Eine bestimmte Verfügbarkeit schulden wir nur, soweit sie individuell vereinbart ist.",
@@ -55,7 +56,7 @@ function sections(brand: string): Section[] {
     {
       title: "Preise und Zahlung",
       paras: [
-        "Das Konto ist kostenlos. Für Plus gelten die Preise, die im Bestellvorgang und auf der Seite „Preise“ angegeben sind. Alle Preise sind Endpreise in Euro einschließlich der gesetzlichen Umsatzsteuer.",
+        "Das Konto ist kostenlos. Für Plus und Pro gelten die Preise, die im Bestellvorgang und auf der Seite „Preise“ angegeben sind. Alle Preise sind Endpreise in Euro einschließlich der gesetzlichen Umsatzsteuer.",
         "Der Preis wird monatlich im Voraus berechnet. Die erste Zahlung wird mit Vertragsschluss fällig, jede weitere jeweils zum selben Tag des Folgemonats.",
         "Sie können die im Bestellvorgang angebotenen Zahlungsarten nutzen. Die Zahlung wird über den Zahlungsdienstleister [Name des Zahlungsdienstleisters] abgewickelt. Rechnungen erhalten Sie elektronisch, per E-Mail oder in Ihrem Konto. Für Unternehmen und Organisationen stimmen wir Abrechnung und Rechnungsstellung auf Anfrage individuell ab.",
         "Kommen Sie mit einer Zahlung in Verzug, gelten die gesetzlichen Regeln. Nach Mahnung und angemessener Fristsetzung dürfen wir den Zugriff auf die kostenpflichtigen Funktionen sperren, bis der Rückstand ausgeglichen ist.",
@@ -66,10 +67,10 @@ function sections(brand: string): Section[] {
       title: "Laufzeit und Kündigung",
       paras: [
         "Das kostenlose Konto läuft auf unbestimmte Zeit. Sie können es jederzeit beenden, indem Sie Ihr Konto löschen. Wir können es mit einer Frist von 14 Tagen kündigen.",
-        "Plus läuft auf unbestimmte Zeit und wird monatlich abgerechnet. Es gibt keine Mindestlaufzeit. Sie können jederzeit zum Ende des laufenden Abrechnungsmonats kündigen und den Tarif bis dahin weiter nutzen.",
+        "Plus und Pro laufen auf unbestimmte Zeit und werden monatlich abgerechnet. Es gibt keine Mindestlaufzeit. Sie können jederzeit zum Ende des laufenden Abrechnungsmonats kündigen und den Tarif bis dahin weiter nutzen.",
         "Sie können die Kündigung über die Kündigungsschaltfläche auf der Website, in Ihrem Konto oder in Textform (zum Beispiel per E-Mail) erklären.",
-        "Wir können Plus mit einer Frist von einem Monat zum Ende eines Abrechnungsmonats kündigen. Das Recht beider Seiten zur Kündigung aus wichtigem Grund bleibt unberührt. Ein wichtiger Grund liegt für uns insbesondere vor, wenn Sie wesentlich gegen Abschnitt 7 verstoßen oder trotz Mahnung und Fristsetzung weiter mit der Zahlung in Verzug sind.",
-        "Ein Wechsel in einen höheren Tarif ist jederzeit möglich. Einzelheiten zur Abrechnung zeigen wir Ihnen vor dem Wechsel an.",
+        "Wir können Plus und Pro mit einer Frist von einem Monat zum Ende eines Abrechnungsmonats kündigen. Das Recht beider Seiten zur Kündigung aus wichtigem Grund bleibt unberührt. Ein wichtiger Grund liegt für uns insbesondere vor, wenn Sie wesentlich gegen Abschnitt 7 verstoßen oder trotz Mahnung und Fristsetzung weiter mit der Zahlung in Verzug sind.",
+        "Ein Wechsel in einen höheren Tarif (von Plus zu Pro) ist jederzeit möglich; der Unterschied für den laufenden Monat wird anteilig berechnet. Ein Wechsel in einen niedrigeren Tarif gilt ab dem nächsten Abrechnungsmonat. Einzelheiten zur Abrechnung zeigen wir Ihnen vor dem Wechsel an.",
         "Mit dem Vertragsende endet der Zugriff auf die Funktionen des beendeten Tarifs. Ihre Daten löschen wir nach den Regeln unserer Datenschutzerklärung.",
       ],
     },

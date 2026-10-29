@@ -23,7 +23,7 @@ const NAMES: Record<string, string> = {
   "/konto/kalender": "Kalender",
   "/konto/profil": "Profil",
   "/konto/willkommen": "Willkommen",
-  "/konto/buchen": "Plus buchen",
+  "/konto/buchen": "Buchen",
   "/konto/postfach": "Postfach",
 };
 

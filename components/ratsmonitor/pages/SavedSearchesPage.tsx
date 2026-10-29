@@ -22,7 +22,8 @@ import { MONTH_SHORT, todayLocal } from "../lib/text";
 import { useToast } from "../state/toast";
 import { queue } from "../lib/queue";
 import { AccountApiError, api, touchAccount, useMe } from "../lib/account";
-import { openLimitGate } from "../components/GateDialog";
+import { openGate, openLimitGate } from "../components/GateDialog";
+import { FREQ_LABEL, freqIn } from "../lib/tier";
 import { WEEK_DAYS } from "../lib/browserData";
 
 type Item = { id: string; title: string; date: string; gemeinde: string; gremium: string; teaser: string; status: Article["status"] };
@@ -63,11 +64,11 @@ function SavedCard({ s }: { s: SavedSearch }) {
   const search = useSearch();
   const { goOverview } = useAppNav();
   const preview = usePreview(s);
-  const { allow } = useEntitlements();
+  const { allow, limits } = useEntitlements();
   const n = s.notify;
-  /* „Sofort“ erst mit Plus; ohne kommt eine gespeicherte Sofort-Glocke einmal am Tag (der Server rechnet ebenso) */
-  const instant = useMe().limits.instant;
-  const freq = !instant && n.freq === "instant" ? "daily" : n.freq;
+  /* Rhythmus der Stufe (shared/plans.mjs): Konto und Plus wöchentlich, Pro täglich oder wöchentlich; „sofort“ gibt es nicht mehr */
+  const freq = freqIn(limits, n.freq);
+  const daily = limits.freqs.includes("daily");
   /* Glocke: per E-Mail bei neuen Treffern (server/accounts/notify.mjs); einschalten nur innerhalb der Grenze der Stufe */
   const setNotify = (patch: Partial<SavedSearch["notify"]>) => void updateSaved(s.id, { notify: { ...n, ...patch } }).then((err) => err && toast(err));
   const bell = () => {
@@ -157,21 +158,23 @@ function SavedCard({ s }: { s: SavedSearch }) {
       {n.mail && (
         <div className="mt-3 flex flex-wrap items-center gap-2 pl-9 text-[14px] text-slate-500">
           <span>E-Mail bei neuen Treffern:</span>
-          <FilterSelect
-            id={`freq-${s.id}`}
-            label="Häufigkeit"
-            allLabel=""
-            value={freq}
-            options={[
-              ...(instant ? [{ value: "instant", label: "Sofort" }] : []),
-              { value: "daily", label: "Täglich" },
-              { value: "weekly", label: "Wöchentlich" },
-            ]}
-            onChange={(v) => setNotify({ freq: v as NotifyFreq })}
-            size="sm"
-            highlight={false}
-          />
-          {!instant && <span>Sofort mit <Link href="/preise" className="text-teal-700 hover:underline">Plus</Link></span>}
+          {daily ? (
+            <FilterSelect
+              id={`freq-${s.id}`}
+              label="Häufigkeit"
+              allLabel=""
+              value={freq}
+              options={limits.freqs.map((f) => ({ value: f, label: FREQ_LABEL[f].replace(/^./, (c) => c.toUpperCase()) }))}
+              onChange={(v) => setNotify({ freq: v as NotifyFreq })}
+              size="sm"
+              highlight={false}
+            />
+          ) : (
+            <>
+              <span className="text-slate-900">{FREQ_LABEL[freq]}, am Tag des Wochenberichts</span>
+              <button type="button" onClick={() => openGate({ feature: "freq", needs: "pro" })} className="text-teal-700 hover:underline">Täglich mit Pro</button>
+            </>
+          )}
           {s.active === false && <span className="text-amber-800">Ruht, solange die Suche nicht aktiv ist.</span>}
         </div>
       )}
@@ -247,7 +250,7 @@ export function SavedSearchesPage() {
 export function WeeklyReport({ bare = false }: { /** ohne eigene Überschrift (steht schon über dem Abschnitt) */ bare?: boolean } = {}) {
   const me = useMe();
   const toast = useToast();
-  const { allow } = useEntitlements();
+  const { limits, needs } = useEntitlements();
   const key = me.user ? `${me.user.id}:${me.rev}` : "";
   const [got, setGot] = useState<{ key: string; weekly: boolean; day: number | null } | null>(null);
   useEffect(() => {
@@ -262,11 +265,13 @@ export function WeeklyReport({ bare = false }: { /** ohne eigene Überschrift (s
     };
   }, [key]);
   const s = got?.key === key ? got : null;
-  const day = s?.day ?? 1;
-  /* Sofort in der Anzeige, bei Fehler zurück; die Grenze der Stufe öffnet den Hinweis */
+  /* Täglich nur mit täglichen Mails (Pro); ohne gilt ein gespeichertes „täglich“ als Montag (wie notify.mjs) */
+  const daily = limits.freqs.includes("daily");
+  const day = s?.day === 7 && !daily ? 1 : (s?.day ?? 1);
+  /* Sofort in der Anzeige, bei Fehler zurück; ohne Wochenbericht in der Stufe (Konto) öffnet der Hinweis auf Plus */
   const save = async (next: { weekly: boolean; day: number }) => {
     if (!s) return;
-    if (next.weekly && !s.weekly && !allow("notifications")) return;
+    if (next.weekly && !s.weekly && !limits.weeklyReport) return openGate({ feature: "weeklyReport", needs: needs("weeklyReport") });
     const before = s;
     setGot({ key, weekly: next.weekly, day: next.day });
     try {
@@ -280,9 +285,9 @@ export function WeeklyReport({ bare = false }: { /** ohne eigene Überschrift (s
   return (
     <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-200 pb-5 text-[14px]">
       <span className={bare ? "sr-only" : "font-semibold text-slate-900"}>Wochenbericht</span>
-      <span className="text-slate-500">Alle neuen Treffer Ihrer Suchen ohne eigene Glocke in einer E-Mail, täglich oder an dem Wochentag, den Sie wählen:</span>
+      <span className="text-slate-500">Alle neuen Treffer Ihrer Suchen ohne eigene Glocke in einer E-Mail, {daily ? "täglich oder " : ""}an dem Wochentag, den Sie wählen{limits.weeklyReport ? "" : " (ab Plus)"}:</span>
       <select aria-label="Rhythmus des Wochenberichts" disabled={!s} value={String(day)} onChange={(e) => void save({ weekly: !!s?.weekly, day: Number(e.target.value) })} className="h-8 rounded-md border border-slate-200 bg-white px-2 text-[14px] max-sm:text-[16px] text-slate-900">
-        <option value="7">Täglich</option>
+        {daily && <option value="7">Täglich</option>}
         {[1, 2, 3, 4, 5, 6, 0].map((i) => (
           <option key={i} value={String(i)}>
             Jeden {WEEK_DAYS[i]}

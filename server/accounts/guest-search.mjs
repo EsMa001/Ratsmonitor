@@ -6,6 +6,23 @@ export const GUEST_RESULTS=LIMITS.guest.maxResults;
 /** Seite 2 und folgende sind für Stufen mit Treffergrenze gesperrt */
 export const guestPageBlocked=params=>Number(params.get('page')||'1')>1;
 
+/** Filter, die Gäste nicht setzen (LIMITS.guest.filters): Thema, Unterthema, Monat, Zeitraum, Status, Exakt, Sortierung;
+    Formalien bleiben wie in der Oberfläche ausgeblendet (noformal=1) */
+export const GUEST_FILTERS=['label','sub','month','from','status','noformal','exact','sort'];
+const dayOf=(ms,zone)=>new Intl.DateTimeFormat('sv-SE',{timeZone:zone}).format(new Date(ms));
+/**
+ * Suche ohne Filter: Begriff und Ort (mit Umkreis und weiteren Orten) bleiben, die Filter fallen weg, der Zeitraum endet heute
+ * (ohne künftige Sitzungen). Der Browser rechnet „heute“ in seiner Zeitzone; ein Tag Abweichung bleibt deshalb stehen.
+ */
+export function withoutFilters(params,{now=Date.now(),zone='Europe/Berlin'}={}){
+ const out=new URLSearchParams(params);
+ for(const key of GUEST_FILTERS)out.delete(key);
+ out.set('noformal','1');
+ const days=[-1,0,1].map(d=>dayOf(now+d*86400000,zone));
+ if(!days.includes(out.get('to')||''))out.set('to',days[1]);
+ return out;
+}
+
 /** Ergebnis ohne Strom: Artikel kürzen, „weitere“ melden */
 export function trimResult(result,max=GUEST_RESULTS){
  if(!result||!Array.isArray(result.articles)||result.articles.length<=max)return result;

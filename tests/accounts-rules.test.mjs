@@ -6,11 +6,11 @@ import {setup,SITE} from './helpers/accounts.mjs';
 import {requestLink,enterCode} from '../server/accounts/login.mjs';
 import {accessDecision} from '../server/accounts/access.mjs';
 import {accountsDb,accountsConfig} from '../server/accounts/config.mjs';
-import {trimStream,trimResult,guestPageBlocked} from '../server/accounts/guest-search.mjs';
+import {trimStream,trimResult,guestPageBlocked,withoutFilters} from '../server/accounts/guest-search.mjs';
 import {calendarFeed,feedAreas,settingsWrite} from '../server/accounts/account.mjs';
 import {devLogin,devMails,devTier} from '../server/accounts/dev.mjs';
 import {maintain} from '../scripts/accounts/maintenance.mjs';
-import {LIMITS,FEATURES,ACCOUNT_DEFAULT_TIER} from '../shared/plans.mjs';
+import {LIMITS,FEATURES,ACCOUNT_DEFAULT_TIER,PLAN_MAX,TIERS,PRICES,freqFor,calendarAgsFor} from '../shared/plans.mjs';
 import {TRANSFER_TABLES} from '../shared/database-transfer.mjs';
 
 const root=new URL('../',import.meta.url);
@@ -68,33 +68,62 @@ test('Gastgrenze: Strom über alle Etappen höchstens 10 Treffer, dann eigenes E
  assert.equal(guestPageBlocked(new URLSearchParams('q=x')),false);
 });
 
+test('Gäste suchen ohne Filter: Begriff und Ort bleiben, Filter fallen weg, Zeitraum endet heute',()=>{
+ const now=Date.parse('2026-10-29T10:00:00Z');
+ const p=withoutFilters(new URLSearchParams('q=schule&area=05558008&scope=only&more=05558012:with&label=bildung&sub=x&month=2026-10&from=2026-01-01&to=2027-12-31&status=approved&noformal=1&exact=1&sort=asc&size=15'),{now});
+ assert.equal(p.toString(),'q=schule&area=05558008&scope=only&more=05558012%3Awith&to=2026-10-29&size=15&noformal=1');
+ assert.equal(withoutFilters(new URLSearchParams('q=a&to=2026-10-28'),{now}).get('to'),'2026-10-28','ein Tag Abweichung (Zeitzone des Browsers) bleibt');
+ assert.equal(withoutFilters(new URLSearchParams('q=a'),{now}).get('to'),'2026-10-29','ohne Ende (künftige Sitzungen): heute');
+});
+
 test('Stufen: eine Quelle, gleich dem Frontend und stufen.md; Konto ohne Freischaltung ist „Konto“ (basic)',()=>{
  const doc=fs.readFileSync(new URL('docs/produkt/stufen.md',root),'utf8');
- const row=label=>doc.split('\n').find(l=>l.startsWith('| '+label))?.split('|').slice(2,6).map(s=>s.trim());
- const val=v=>v===Number.POSITIVE_INFINITY?'unbegrenzt':typeof v==='boolean'?(v?'ja':'nein'):String(v);
- const tiers=['guest','basic','pro','enterprise'];
- assert.deepEqual(row('Treffer je Suche'),tiers.map(t=>val(LIMITS[t].maxResults)));
- assert.deepEqual(row('Gemerkte Artikel'),tiers.map(t=>val(LIMITS[t].bookmarks)));
- assert.deepEqual(row('Gespeicherte Suchen'),tiers.map(t=>val(LIMITS[t].savedSearches)));
- assert.deepEqual(row('Kalender'),tiers.map(t=>val(FEATURES[t].calendar)));
- assert.deepEqual(row('plenara.X'),tiers.map(t=>val(FEATURES[t].analytics)));
- assert.deepEqual(row('Filter'),tiers.map(t=>val(LIMITS[t].filters)));
- assert.deepEqual(row('Benachrichtigungen (aktiv)'),tiers.map(t=>val(LIMITS[t].notifications)));
- assert.deepEqual(row('E-Mails sofort'),tiers.map(t=>val(LIMITS[t].instant)));
- assert.ok(tiers.every(t=>!('mcp' in FEATURES[t])),'KI-Assistenten gehören zu keiner Stufe');
+ const row=label=>doc.split('\n').find(l=>l.startsWith('| '+label+' |'))?.split('|').slice(2,7).map(s=>s.trim());
+ const val=v=>v===Number.POSITIVE_INFINITY||v>=PLAN_MAX?'unbegrenzt':typeof v==='boolean'?(v?'ja':'nein'):String(v);
+ const freq=f=>f.length?f.map(x=>({daily:'täglich',weekly:'wöchentlich'})[x]).join(' oder '):'–';
+ assert.deepEqual(TIERS,['guest','basic','plus','pro','enterprise']);
+ assert.deepEqual(row('Preis im Monat'),TIERS.map(t=>t==='guest'?'–':PRICES[t]===null?'–':PRICES[t]===0?'kostenlos':PRICES[t].toFixed(2).replace('.',',')+' €'));
+ assert.deepEqual(row('Treffer je Suche'),TIERS.map(t=>val(LIMITS[t].maxResults)));
+ assert.deepEqual(row('Filter'),TIERS.map(t=>val(LIMITS[t].filters)));
+ assert.deepEqual(row('Gespeicherte Suchen'),TIERS.map(t=>val(LIMITS[t].savedSearches)));
+ assert.deepEqual(row('Gemerkte Artikel'),TIERS.map(t=>val(LIMITS[t].bookmarks)));
+ assert.deepEqual(row('Glocken (Suchen und Vorgänge)'),TIERS.map(t=>val(LIMITS[t].notifications)));
+ assert.deepEqual(row('Rhythmus der Mails'),TIERS.map(t=>freq(LIMITS[t].freqs)));
+ assert.deepEqual(row('Wochenbericht über alle Suchen'),TIERS.map(t=>val(LIMITS[t].weeklyReport)));
+ assert.deepEqual(row('Gebiete im Kalender'),TIERS.map(t=>val(LIMITS[t].calendarAreas)));
+ assert.deepEqual(row('plenara.X'),TIERS.map(t=>val(FEATURES[t].analytics)));
+ assert.deepEqual(row('Volltextsuche'),TIERS.map(t=>FEATURES[t].fulltext?'ja (folgt)':'nein'));
+ assert.ok(TIERS.every(t=>!('mcp' in FEATURES[t])),'KI-Assistenten gehören zu keiner Stufe');
+ assert.ok(TIERS.every(t=>LIMITS[t].calendarAreas>0===FEATURES[t].calendar),'Kalender genau mit Gebieten');
+ assert.ok(TIERS.every(t=>!LIMITS[t].freqs.includes('instant')),'„sofort“ gibt es in keiner Stufe');
+ // Die Oberfläche liest dieselbe Quelle und hat keine eigenen Zahlen
  const front=fs.readFileSync(new URL('components/ratsmonitor/lib/tier.ts',root),'utf8');
- for(const t of tiers)assert.ok(front.includes(`${t}: { maxResults: ${LIMITS[t].maxResults===Number.POSITIVE_INFINITY?'INF':LIMITS[t].maxResults}`),t);
+ assert.match(front,/from "@\/shared\/plans\.mjs"/);
+ assert.ok(!/maxResults:\s*\d/.test(front),'keine eigenen Grenzen in tier.ts');
  assert.equal(ACCOUNT_DEFAULT_TIER,'basic');
 });
 
-test('Kalender-Abo: nur mit Kalender-Stufe, Token widerrufbar, Gebiete aus den Einstellungen',async()=>{
- const h=setup();await signedIn(h,'konto@example.org',{tier:'basic'});
- assert.equal((await h.call(calendarFeed,{body:{}})).status,403);
- h.jar.clear();await signedIn(h,'plus@example.org',{tier:'pro'});
- await h.call(settingsWrite,{method:'PUT',body:{calendarAgs:['05558008','evil']}});
+test('Rhythmus und Kalendergebiete je Stufe (freqFor, calendarAgsFor)',()=>{
+ assert.equal(freqFor('basic','daily'),'weekly');assert.equal(freqFor('basic',null),'weekly');
+ assert.equal(freqFor('plus','instant'),'weekly');
+ assert.equal(freqFor('pro','instant'),'daily');assert.equal(freqFor('pro','weekly'),'weekly');assert.equal(freqFor('pro',null),'daily');
+ assert.equal(freqFor('guest','daily'),null);
+ const areas=[{ags:'05558008',km:10},{ags:'05558012',km:0}],ags=['05558008','05558004','05558012'];
+ assert.deepEqual(calendarAgsFor(areas,ags,'plus'),ags);
+ assert.deepEqual(calendarAgsFor(areas,ags,'basic'),['05558008'],'über der Grenze: nur die ersten Orte selbst');
+ assert.deepEqual(calendarAgsFor(areas,ags,'guest'),[]);
+});
+
+test('Kalender-Abo: ab Konto, Token widerrufbar, Gebiete aus den Einstellungen im Umfang der Stufe',async()=>{
+ const h=setup();const id=await signedIn(h,'konto@example.org',{tier:'plus'});
+ const areas=[{ags:'05558008',name:'Billerbeck',km:10},{ags:'05558012',name:'Coesfeld',km:0}];
+ await h.call(settingsWrite,{method:'PUT',body:{calendar:areas,calendarAgs:['05558008','05558004','05558012','evil']}});
  const r=await h.call(calendarFeed,{body:{}});
  assert.equal(r.status,200);assert.ok(r.body.url.startsWith(SITE+'/api/calendar/feed/'));
  const token=r.body.url.split('/').pop();
+ assert.deepEqual(await feedAreas(h.accounts.db,token,{now:h.now()}),['05558008','05558004','05558012']);
+ // Zurück zum Konto (1 Gebiet): nur der erste Ort selbst, ohne Umkreis
+ h.accounts.sql.prepare("UPDATE plan_grants SET tier='basic' WHERE user_id=?").run(id);
  assert.deepEqual(await feedAreas(h.accounts.db,token,{now:h.now()}),['05558008']);
  const second=(await h.call(calendarFeed,{body:{}})).body.url.split('/').pop();
  assert.equal(await feedAreas(h.accounts.db,token,{now:h.now()}),null,'alter Link ungültig');
@@ -111,7 +140,7 @@ test('Dev-Routen antworten außerhalb des Dev-Servers mit 404',async()=>{
 test('Pflegejob: Fristen, „Testzugang endet“ einmal, gesperrte Konten nach der Frist gelöscht',async()=>{
  const h=setup();const day=86400000;
  const id=h.addUser('beta@example.org');
- h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at) VALUES(?,'pro','beta',?,?)").run(id,new Date(h.now()).toISOString(),new Date(h.now()+10*day).toISOString());
+ h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at) VALUES(?,'plus','beta',?,?)").run(id,new Date(h.now()).toISOString(),new Date(h.now()+10*day).toISOString());
  const blocked=h.addUser('blocked@example.org',{status:'blocked'});
  h.accounts.sql.prepare('UPDATE users SET blocked_at=? WHERE id=?').run(new Date(h.now()-400*day).toISOString(),blocked);
  h.accounts.sql.prepare('INSERT INTO auth_events(at,kind) VALUES(?,?)').run(new Date(h.now()-100*day).toISOString(),'login');

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Lokaler Dev-Server: Kontotabellen (drizzle-accounts/, Buchführung accounts_migrations) in die lokale D1-Datei einspielen
- * und Testkonten anlegen: basic@, pro@, enterprise@ und admin@plenara.test (requirements/konten-konzept.md, 13).
+ * und Testkonten anlegen: basic@, plus@, pro@, enterprise@ und admin@plenara.test (requirements/konten-konzept.md, 13).
  * Läuft beim Start von scripts/run-framework.mjs dev; ohne lokale Datenbank passiert nichts. Anmelden lokal über
  * /konto (Dev-Login) oder per Code aus dem Dev-Postfach (/konto/postfach).
  */
@@ -10,7 +10,7 @@ import {fileURLToPath} from 'node:url';
 import {DatabaseSync} from 'node:sqlite';
 import {applyMigrations} from '../node-migrate.mjs';
 
-const DEV_ACCOUNTS=[['basic@plenara.test','basic',false],['pro@plenara.test','pro',false],['enterprise@plenara.test','enterprise',false],['admin@plenara.test','enterprise',true]];
+const DEV_ACCOUNTS=[['basic@plenara.test','basic',false],['plus@plenara.test','plus',false],['pro@plenara.test','pro',false],['enterprise@plenara.test','enterprise',false],['admin@plenara.test','enterprise',true]];
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
 const local=fs.existsSync(dir)?fs.readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;
 const file=process.env.ACCOUNTS_DEV_FILE||(local?dir+local:null);
@@ -23,7 +23,9 @@ try{
  for(const [email,tier,admin] of DEV_ACCOUNTS){
   const id='u_dev_'+email.split('@')[0];
   db.prepare("INSERT OR IGNORE INTO users(id,email,email_verified_at,status,created_at) VALUES(?,?,?,'active',?)").run(id,email,at,at);
+  // Stufe des Testkontos nachziehen (seit drizzle-accounts/0009 ist das frühere 'pro' von pro@ die Stufe Plus)
   if(!db.prepare("SELECT 1 FROM plan_grants WHERE user_id=? AND note='dev-seed'").get(id))db.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,note,created_by) VALUES(?,?,'manual',?,'dev-seed','dev')").run(id,tier,at);
+  else db.prepare("UPDATE plan_grants SET tier=? WHERE user_id=? AND note='dev-seed' AND tier<>?").run(tier,id,tier);
   if(admin)db.prepare("INSERT OR IGNORE INTO user_roles(user_id,role,granted_at,granted_by) VALUES(?,'admin',?,'dev')").run(id,at);
  }
 }catch(error){console.error('Kontotabellen lokal nicht eingerichtet:',error.message);}

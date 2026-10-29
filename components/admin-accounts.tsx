@@ -11,7 +11,7 @@ type Data={at:string;summary:Summary;rows:Row[]};
 type Full={id:string;email:string;name:string|null};
 type Filter='alle'|'zahlend'|'offen'|'gekuendigt'|'test'|'kostenlos'|'gesperrt'|'admins';
 
-const TIER:Record<string,string>={basic:'Kostenlos',pro:'Plus',enterprise:'Enterprise'};
+const TIER:Record<string,string>={basic:'Kostenlos',plus:'Plus',pro:'Pro',enterprise:'Enterprise'};
 const SOURCE:Record<string,string>={stripe:'Abo',beta:'Testzugang',manual:'von Hand'};
 const PAYMENT:Record<Payment,{label:string;cls:string}>={
  paid:{label:'bezahlt',cls:'text-teal-700'},
@@ -22,7 +22,7 @@ const PAYMENT:Record<Payment,{label:string;cls:string}>={
 };
 const FILTERS:[Filter,string,(r:Row)=>boolean][]=[
  ['alle','Alle',()=>true],
- ['zahlend','Plus bezahlt',r=>r.payment==='paid'||r.payment==='canceling'],
+ ['zahlend','Abo bezahlt',r=>r.payment==='paid'||r.payment==='canceling'],
  ['offen','Zahlung offen',r=>r.payment==='due'||r.payment==='pending'],
  ['gekuendigt','Gekündigt',r=>r.payment==='canceling'],
  ['test','Test & von Hand',r=>r.tierSource==='beta'||r.tierSource==='manual'],
@@ -111,15 +111,15 @@ export function AdminAccounts(){
  const paying=sm?sm.paid+sm.canceling:0,open=sm?sm.due+sm.pending:0;
  const chip=(on:boolean)=>'h-8 rounded-lg px-3 text-[14px] '+(on?'bg-teal-600 text-white':'bg-slate-100 text-slate-700 hover:bg-slate-200');
  return <>
-  <AdminPageHead page="konten" figure={sm?{value:num(sm.accounts),label:'Konten',note:`${num(paying)} zahlen für Plus`}:undefined}/>
+  <AdminPageHead page="konten" figure={sm?{value:num(sm.accounts),label:'Konten',note:`${num(paying)} zahlen für Plus oder Pro`}:undefined}/>
   {error&&<Fehler onRetry={()=>void load()}>{error}</Fehler>}
   {!data&&!error&&<Laden/>}
   {sm&&<>
    <Befund stand={<>{busy?'Wird geladen …':'Stand '+new Date(data!.at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})} · <button type="button" className="font-medium text-teal-700" onClick={()=>void load()}>Neu laden</button></>}>
-    {num(sm.accounts)} Konten, davon {num(paying)} mit bezahltem Plus{sm.canceling?` (${num(sm.canceling)} gekündigt)`:''}{open?`; bei ${num(open)} ist eine Zahlung offen`:''}.
+    {num(sm.accounts)} Konten, davon {num(paying)} mit bezahltem Abo (Plus oder Pro){sm.canceling?` (${num(sm.canceling)} gekündigt)`:''}{open?`; bei ${num(open)} ist eine Zahlung offen`:''}.
    </Befund>
    <Zahlen items={[
-    {value:num(sm.tiers.basic||0),label:'kostenlos'},{value:num(sm.tiers.pro||0),label:'Plus (auch Testzugänge)'},
+    {value:num(sm.tiers.basic||0),label:'kostenlos'},{value:num(sm.tiers.plus||0),label:'Plus (auch Testzugänge)'},{value:num(sm.tiers.pro||0),label:'Pro (auch Testzugänge)'},
     ...(sm.tiers.enterprise?[{value:num(sm.tiers.enterprise),label:'Enterprise'}]:[]),
     {value:num(sm.new7),label:'neu in 7 Tagen'},{value:num(sm.new30),label:'neu in 30 Tagen'},{value:num(sm.active30),label:'in 30 Tagen angemeldet'},
     {value:num(sm.invites),label:'offene Einladungen'},{value:num(sm.blocked),label:'gesperrt'},{value:num(sm.admins),label:'mit Admin-Rolle'},

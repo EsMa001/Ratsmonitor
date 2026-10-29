@@ -80,6 +80,13 @@ export function isReplacement(prev: string, next: string): boolean {
   return removed > 1 && inserted > 0;
 }
 
+/** Suche ohne Filter (Gäste, LIMITS.guest.filters): Begriff und Ort bleiben, Zeitraum, Thema, Status und Schalter auf Standard,
+ *  wie auf dem Server (server/accounts/guest-search.mjs). Unverändert, wenn schon nichts gesetzt ist. */
+export function withoutFilters(s: SearchState): SearchState {
+  const plain = !s.thema && !s.monat && !s.von && !s.bis && !s.status && s.sort === "desc" && !s.future && s.noformal !== false && !s.allterms && !s.exact;
+  return plain ? s : { ...s, thema: "", monat: "", von: "", bis: "", status: "", sort: "desc", future: false, noformal: true, allterms: false, exact: false };
+}
+
 /** Ersten Ortsfilter entfernen; der nächste weitere Ort rückt nach */
 export function clearAreaState(s: SearchState, parse: Parse): SearchState {
   const [next, ...rest] = s.morePlaces ?? [];

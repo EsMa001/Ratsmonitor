@@ -1,4 +1,4 @@
-import { IS_DEV, setTier, TIER_LABEL, useTier, type Tier } from "../lib/tier";
+import { IS_DEV, priceShort, setTier, TIER_LABEL, useTier, type Tier } from "../lib/tier";
 
 /** Nur in der Entwicklung: Account-Zustand ohne echten Login wechseln */
 export function DevTierSwitcher() {
@@ -15,7 +15,7 @@ export function DevTierSwitcher() {
       >
         {(Object.keys(TIER_LABEL) as Tier[]).map((t) => (
           <option key={t} value={t}>
-            {t === "guest" ? "Gast (nicht eingeloggt)" : t === "basic" ? "Konto (kostenlos)" : t === "pro" ? "Plus (2,99 €)" : "Enterprise (später)"}
+            {t === "guest" ? "Gast (nicht eingeloggt)" : t === "basic" ? "Konto (kostenlos)" : t === "enterprise" ? "Enterprise (verborgen)" : `${TIER_LABEL[t]} (${priceShort(t)})`}
           </option>
         ))}
       </select>

@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useLayoutEffect, use
 import type { FilterSpec } from "../lib/filter";
 import type { MapEngine } from "../lib/geo/mapEngine";
 import type { ParseResult, PlaceHit } from "../lib/place";
-import { applySearchState, clearAreaState, commitPlacesState, deriveFilters } from "../lib/searchLogic";
+import { applySearchState, clearAreaState, commitPlacesState, deriveFilters, withoutFilters } from "../lib/searchLogic";
 import { canonicalQuery, hasScope, queryText, resolveRange, signature, type SearchSnapshot } from "../lib/savedSearch";
 import { onlyText, readableQuery, searchFromUrl, searchToUrl } from "../lib/searchUrl";
 import { terms as toTerms, todayLocal } from "../lib/text";
@@ -83,6 +83,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const { geo, place } = useData();
   const [state, setState] = useState<SearchState>(INITIAL_SEARCH);
   const params=useSearchParams();
+  /* Gäste suchen ohne Filter (shared/plans.mjs): Filter aus einem geteilten Link fallen weg, wie auf dem Server */
+  const {ready:meReady,limits:{filters:canFilter}}=useMe();
+  if(meReady&&!canFilter&&withoutFilters(state)!==state)setState(withoutFilters(state));
   // Die Karte kennt Samtgemeinden und neue Fusionsgemeinden nicht: sie werden über eine Mitglieds- bzw. frühere
   // Gemeinde gewählt, die Suche ordnet diese ihnen zu.
   // Der Katalog wird dafür erst geladen, wenn die Adresse ein Gebiet nennt. Bis er da ist, wartet die Suche (regionWait),

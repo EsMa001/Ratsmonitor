@@ -8,8 +8,8 @@ import { Tile } from "./SegTiles";
 export function MeinSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const path = usePathname();
   const { limits, ready } = useTier();
-  /* Kalender nur für Stufen mit Kalender (Plus): alle anderen sehen das Schloss, die Seite zeigt dann eine Vorschau */
-  const locked = ready && !limits.calendar;
+  /* Kalender ab dem kostenlosen Konto: ohne Anmeldung das Schloss, die Seite zeigt dann eine Vorschau */
+  const locked = ready && !limits.calendarAreas;
   const items = [
     { href: "/konto/suchen", label: "Meine Suchen", icon: <Heart size={22} strokeWidth={1.6} /> },
     { href: "/konto/benachrichtigungen", label: "Benachrichtigungen", icon: <Bell size={22} strokeWidth={1.6} /> },

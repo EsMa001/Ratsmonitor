@@ -11,7 +11,7 @@ import {effectiveTier} from '../server/accounts/sessions.mjs';
 import {billingReady,checkout,portal,webhook,reconcile,verifySignature,signPayload,formEncode,GRACE_MS} from '../server/accounts/billing.mjs';
 
 const WHSEC='whsec_test_0123456789abcdef';
-const STRIPE_ENV={STRIPE_SECRET_KEY:'sk_test_abc',STRIPE_WEBHOOK_SECRET:WHSEC,STRIPE_PRICE_PLUS:'price_plus'};
+const STRIPE_ENV={STRIPE_SECRET_KEY:'sk_test_abc',STRIPE_WEBHOOK_SECRET:WHSEC,STRIPE_PRICE_PLUS:'price_plus',STRIPE_PRICE_PRO:'price_pro'};
 const DAY=86400000;
 
 /** Stripe-Attrappe: Abos, Rechnungen und Belastungen im Speicher, jeder Aufruf protokolliert */
@@ -42,10 +42,10 @@ function fakeStripe(h){
  return {calls,subs,invoices,charges,fetch,fail:on=>{failing=on;}};
 }
 /** cancel: 'portal' kündigt wie das Kundenportal (cancel_at = Periodenende), 'period' über cancel_at_period_end */
-function subscription(h,id,{userId,customer='cus_1',status='active',days=30,invoice='paid',cancel=null}={}){
+function subscription(h,id,{userId,customer='cus_1',status='active',days=30,invoice='paid',cancel=null,price='price_plus'}={}){
  const end=Math.floor((h.now()+days*DAY)/1000);
  return {id,object:'subscription',customer,status,livemode:false,cancel_at_period_end:cancel==='period',cancel_at:cancel==='portal'?end:null,ended_at:null,
-  metadata:userId?{user_id:userId}:{},items:{data:[{current_period_end:end,price:{id:'price_plus'}}]},latest_invoice:{id:'in_'+id,status:invoice}};
+  metadata:userId?{user_id:userId}:{},items:{data:[{id:'si_'+id,current_period_end:end,price:{id:price}}]},latest_invoice:{id:'in_'+id,status:invoice}};
 }
 let eventNo=0;
 async function deliver(h,type,object,{secret=WHSEC,livemode=false,id='evt_'+(++eventNo),age=0}={}){
@@ -115,10 +115,10 @@ test('Checkout, Meldung, Freischaltung, doppelte Meldung, Portal',async t=>{
  const done=await deliver(h,'checkout.session.completed',{id:'cs_test_1',object:'checkout.session',mode:'subscription',client_reference_id:userId,customer:'cus_1',subscription:'sub_1',livemode:false},{id:'evt_done'});
  assert.equal(done.status,200);
  const [grant]=grants(h);
- assert.equal(grant.user_id,userId);assert.equal(grant.tier,'pro');assert.equal(grant.ref,'sub_1');
+ assert.equal(grant.user_id,userId);assert.equal(grant.tier,'plus');assert.equal(grant.ref,'sub_1');
  assert.equal(Date.parse(grant.ends_at),Math.floor((h.now()+30*DAY)/1000)*1000+GRACE_MS);
  const after=await h.call(me,{method:'GET'});
- assert.equal(after.body.tier,'pro');assert.equal(after.body.tierSource,'stripe');
+ assert.equal(after.body.tier,'plus');assert.equal(after.body.tierSource,'stripe');assert.equal(after.body.billing.subscription.tier,'plus');
  assert.equal(after.body.billing.customer,true);assert.equal(after.body.billing.subscription.status,'active');
 
  const again=await deliver(h,'checkout.session.completed',{id:'cs_test_1',mode:'subscription',client_reference_id:userId,customer:'cus_1',subscription:'sub_1'},{id:'evt_done'});
@@ -161,7 +161,7 @@ test('Folgerechnung verlängert, offene Rechnung nicht, Kündigung beendet zum A
  stripe.subs.set('sub_1',subscription(h,'sub_1',{userId,invoice:'open'}));
  await deliver(h,'customer.subscription.updated',{id:'sub_1'});
  assert.equal(grants(h)[0].ends_at,first,'neue Periode ohne bezahlte Rechnung verlängert nicht');
- assert.equal(await tierAt(h,userId),'pro','Kulanz nach dem Periodenende');
+ assert.equal(await tierAt(h,userId),'plus','Kulanz nach dem Periodenende');
 
  stripe.subs.set('sub_1',subscription(h,'sub_1',{userId}));
  stripe.invoices.set('in_2',{id:'in_2',status:'paid',parent:{subscription_details:{subscription:'sub_1'}}});
@@ -212,8 +212,8 @@ test('Pflegejob: „Plus endet“ 3 Tage vorher bei Kündigung, offener Zahlung 
   if(source==='stripe'){
    h.accounts.sql.prepare('INSERT INTO subscriptions(id,user_id,customer_id,status,period_end,cancel_at,updated_at) VALUES(?,?,?,?,?,?,?)')
     .run('sub_'+id,id,'cus_'+id,status,iso(end),cancel===null?null:iso(h.now()+cancel*DAY),iso(h.now()));
-   h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at,ref) VALUES(?,'pro','stripe',?,?,?)").run(id,iso(h.now()-DAY),iso(end),'sub_'+id);
-  }else h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at) VALUES(?,'pro','manual',?,?)").run(id,iso(h.now()-DAY),iso(end));
+   h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at,ref) VALUES(?,'plus','stripe',?,?,?)").run(id,iso(h.now()-DAY),iso(end),'sub_'+id);
+  }else h.accounts.sql.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at) VALUES(?,'plus','manual',?,?)").run(id,iso(h.now()-DAY),iso(end));
   return id;
  };
  user('gekuendigt@example.org',{days:5,cancel:2});
@@ -303,7 +303,8 @@ test('STRIPE_ADMINS_ONLY: Admins sehen die Bezahlung und können buchen',async t
 test('/api/me meldet Gästen, ob sie sich frei registrieren und Plus buchen können',async()=>{
  const guest=async(opts)=>(await setup(opts).call(me,{method:'GET',cookies:new Map()})).body;
  const open=await guest({access:'open',openSignup:true,extraEnv:STRIPE_ENV});
- assert.equal(open.signup,true);assert.equal(open.checkout,true);
+ assert.equal(open.signup,true);assert.equal(open.checkout,true);assert.deepEqual(open.bookable,['plus','pro']);
+ assert.deepEqual((await guest({access:'open',extraEnv:{...STRIPE_ENV,STRIPE_PRICE_PRO:''}})).bookable,['plus'],'Pro nur mit eigenem Preis');
  const closed=await guest({access:'open',extraEnv:STRIPE_ENV});
  assert.equal(closed.signup,false,'ohne ACCOUNTS_OPEN_SIGNUP nur mit Einladung');
  assert.equal((await guest({access:'invite',openSignup:true,extraEnv:STRIPE_ENV})).signup,false,'im Einladungsmodus nie frei');
@@ -351,7 +352,7 @@ test('Kündigung über das Portal (cancel_at) und über cancel_at_period_end, R�
  stripe.subs.set('sub_1',subscription(h,'sub_1',{userId}));
  await deliver(h,'customer.subscription.updated',{id:'sub_1'});
  assert.equal(await cancelAt(),null,'Kündigung zurückgenommen');
- assert.equal(await tierOf(h),'pro');
+ assert.equal(await tierOf(h),'plus');
 });
 
 test('Mails zur Bezahlung: abbestellbar per Link aus der Mail, Schalter im Konto, danach keine Mail mehr',async t=>{
@@ -365,7 +366,7 @@ test('Mails zur Bezahlung: abbestellbar per Link aus der Mail, Schalter im Konto
  stripe.invoices.set('in_1',invoice('in_1','subscription_create'));
  await deliver(h,'invoice.paid',{id:'in_1'});
  const mail=h.lastMail('kunde@example.org');
- assert.match(mail.text,/Mails zu Zahlungen und zum Ende von Plus abbestellen: \S+\/abbestellen#t=/);
+ assert.match(mail.text,/Mails zu Zahlungen und zum Ende Ihres Abos abbestellen: \S+\/abbestellen#t=/);
  const headers=render('plus_ending',{until:new Date(h.now()).toISOString(),reason:'canceled',token:'T'.repeat(43)},{site:'https://plenara.test'}).headers;
  assert.equal(headers['List-Unsubscribe'],`<https://plenara.test/api/notify/unsubscribe?t=${'T'.repeat(43)}>`);
  assert.equal(headers['List-Unsubscribe-Post'],'List-Unsubscribe=One-Click');
@@ -404,7 +405,7 @@ test('Kündigungsbutton (§ 312k BGB): ohne Anmeldung, gleiche Antwort für jede
  const unknown=await cancel({email:'niemand@example.org',kind:'ordinary',when:'next'});
  assert.equal(known.status,200);assert.equal(unknown.status,200);
  assert.deepEqual(Object.keys(known.body).sort(),Object.keys(unknown.body).sort(),'kein Rückschluss auf ein Konto');
- assert.equal(known.body.contract,'Plenara Plus');assert.equal(known.body.receivedAt,new Date(h.now()).toISOString());
+ assert.equal(known.body.contract,'Plenara-Abo (Plus oder Pro)');assert.equal(known.body.receivedAt,new Date(h.now()).toISOString());
  assert.equal(posts().at(-1).body.get('cancel_at_period_end'),'true');
  const [first,second]=rows();
  assert.equal(first.user_id,userId);assert.equal(first.result,'canceled');assert.equal(first.subscription_id,'sub_1');assert.equal(first.kind,'ordinary');
@@ -415,7 +416,7 @@ test('Kündigungsbutton (§ 312k BGB): ohne Anmeldung, gleiche Antwort für jede
  assert.match(mail.text,/Eingegangen am \d{2}\.\d{2}\.\d{4} um \d{2}:\d{2} Uhr/);
  assert.match(mail.text,/Ihr Abo endet am \d{2}\.\d{2}\.\d{4}/);
  assert.doesNotMatch(mail.text,/abbestellen/,'Bestätigung ist nicht abbestellbar');
- assert.match(h.lastMail('niemand@example.org').text,/kein laufendes Plus-Abo/);
+ assert.match(h.lastMail('niemand@example.org').text,/kein laufendes Abo\. Haben Sie Plus oder Pro/);
  assert.ok((await h.call(me,{method:'GET'})).body.billing.subscription.cancelAt,'Abo als gekündigt übernommen');
 
  h.tick(60000);
@@ -452,4 +453,45 @@ test('Zugangssperre lässt nur die Meldungen von Stripe und den Kündigungsbutto
  assert.deepEqual(await accessDecision(new Request('https://plenara.test/kuendigen'),h.env,{cfg:h.cfg}),{allow:true});
  assert.deepEqual(await ask('/api/billing/checkout'),{status:401});
  assert.deepEqual(await ask('/api/billing/portal'),{status:401});
+});
+
+test('Pro buchen: eigener Preis, Stufe folgt dem Preis, Wechsel über das Portal erst mit bezahlter Rechnung, kein zweites Abo',async t=>{
+ const {h,stripe,userId}=await prepare(t);
+ assert.equal((await h.call(checkout,{path:'/api/billing/checkout',body:{tier:'enterprise'}})).status,400);
+ assert.equal((await h.call(checkout,{path:'/api/billing/checkout',body:{tier:'pro'}})).status,200);
+ assert.equal(stripe.calls.filter(c=>c.path==='checkout/sessions').at(-1).body.get('line_items[0][price]'),'price_pro');
+ stripe.subs.set('sub_9',subscription(h,'sub_9',{userId,price:'price_pro'}));
+ await deliver(h,'checkout.session.completed',{id:'cs_test_1',mode:'subscription',client_reference_id:userId,customer:'cus_1',subscription:'sub_9'});
+ assert.equal(await tierOf(h),'pro');
+ const second=await h.call(checkout,{path:'/api/billing/checkout',body:{tier:'plus'}});
+ assert.equal(second.status,409);assert.match(second.body.error,/^Pro ist bereits gebucht/);
+ // Wechsel nach unten im Portal: Rechnung noch offen, Stufe bleibt; bezahlt: Plus
+ Object.assign(stripe.subs.get('sub_9'),{items:{data:[{current_period_end:Math.floor((h.now()+30*DAY)/1000),price:{id:'price_plus'}}]},latest_invoice:{id:'in_x',status:'open'}});
+ await deliver(h,'customer.subscription.updated',{id:'sub_9'});
+ assert.equal(await tierOf(h),'pro','ohne bezahlte Rechnung kein Wechsel');
+ stripe.subs.get('sub_9').latest_invoice.status='paid';
+ await deliver(h,'customer.subscription.updated',{id:'sub_9'});
+ assert.equal(await tierOf(h),'plus');
+ assert.equal(grants(h).length,1,'eine Zeile je Abo');
+ // Unbekannter Preis schaltet nie mehr frei als Plus
+ stripe.subs.get('sub_9').items.data[0].price={id:'price_alt'};
+ await deliver(h,'customer.subscription.updated',{id:'sub_9'});
+ assert.equal(grants(h)[0].tier,'plus');
+});
+
+test('Wechsel mit laufendem Abo: die Buchungsseite öffnet die Bestätigung im Portal (flow_data), gleiche Stufe 409',async t=>{
+ const {h,stripe,userId}=await prepare(t);
+ stripe.subs.set('sub_7',subscription(h,'sub_7',{userId}));
+ await deliver(h,'checkout.session.completed',{id:'cs_test_1',mode:'subscription',client_reference_id:userId,customer:'cus_1',subscription:'sub_7'});
+ assert.equal((await h.call(portal,{path:'/api/billing/portal',body:{tier:'plus'}})).status,409,'Plus ist schon gebucht');
+ assert.equal((await h.call(portal,{path:'/api/billing/portal',body:{tier:'enterprise'}})).status,400);
+ assert.equal((await h.call(portal,{path:'/api/billing/portal',body:{tier:'pro'}})).status,200);
+ const sent=stripe.calls.filter(c=>c.path==='billing_portal/sessions').at(-1).body;
+ assert.equal(sent.get('flow_data[type]'),'subscription_update_confirm');
+ assert.equal(sent.get('flow_data[subscription_update_confirm][subscription]'),'sub_7');
+ assert.equal(sent.get('flow_data[subscription_update_confirm][items][0][id]'),'si_sub_7');
+ assert.equal(sent.get('flow_data[subscription_update_confirm][items][0][price]'),'price_pro');
+ assert.match(sent.get('flow_data[after_completion][redirect][return_url]'),/\/konto\/profil\?zahlung=pruefen$/);
+ assert.equal((await h.call(portal,{path:'/api/billing/portal',body:{}})).status,200,'ohne Stufe das Portal wie bisher');
+ assert.equal(stripe.calls.filter(c=>c.path==='billing_portal/sessions').at(-1).body.get('flow_data[type]'),null);
 });

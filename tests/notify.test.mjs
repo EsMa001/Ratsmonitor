@@ -80,17 +80,20 @@ test('Abfrage der Meldung: ohne Seite und „bis heute“, Schnellauswahl entfä
  assert.equal(alertParams(q,{von:'2026-09-01',bis:'2026-10-14'}).toString(),'q=schule&area=05558008&from=2026-09-01&to=2026-10-14');
 });
 
-test('Suche mit Glocke: Treffer genau wie die Suche, einmal; sofort und täglich in getrennten Mails zur Zeit',async()=>{
+test('Suche mit Glocke (Pro): Treffer genau wie die Suche, einmal; täglich und wöchentlich in getrennten Mails, „sofort“ gibt es nicht mehr',async()=>{
  const h=setup();const uid=await signedIn(h,'pro@example.org');
  assert.equal((await search(h,'s1')).status,201);
- assert.equal((await search(h,'s2',{q:'haushalt',notify:{mail:true,freq:'daily'}})).status,201);
+ assert.equal((await search(h,'s2',{q:'haushalt',notify:{mail:true,freq:'weekly'}})).status,201);
  h.tick(60000);
  event(h,null,topic(h,'t1'));
  event(h,null,topic(h,'t2',{title:'Haushalt 2027'}));
  event(h,null,topic(h,'t3',{title:'Schulweg',region:'other'}),{region:'other'});
  const first=await run(h);
  assert.equal(first.collect.items,2,'Schulweg liegt außerhalb des Gebiets');
- assert.equal(first.deliver.mails,1,'nur die sofortige Suche');
+ assert.equal(first.deliver.mails,0,'„sofort“ gilt als täglich');
+ assert.equal((await run(h)).collect.items,0,'nichts doppelt');
+ h.tick(Date.parse('2026-10-15T05:01:00Z')-h.now());
+ assert.equal((await run(h)).deliver.mails,1,'am nächsten Morgen um 7 die tägliche');
  const mail=h.lastMail('pro@example.org');
  assert.equal(mail.subject,'Plenara: 1 Neuigkeit zu Ihren Suchen');
  assert.match(mail.text,/Neue Treffer der Suche „Suche schule“/);
@@ -99,15 +102,12 @@ test('Suche mit Glocke: Treffer genau wie die Suche, einmal; sofort und täglich
  assert.match(mail.text,/abbestellen#t=[A-Za-z0-9_-]{43}/);
  assert.match(mail.text,/Ohne Gewähr/);
  assert.ok(!mail.text.includes('Haushalt'));
- // zweiter Lauf: nichts doppelt
- assert.equal((await run(h)).collect.items,0);
- assert.equal(h.mails('pro@example.org').filter(m=>m.subject.startsWith('Plenara:')).length,1);
- // am nächsten Morgen um 7 Uhr die tägliche
- h.tick(Date.parse('2026-10-15T05:01:00Z')-h.now());
- const daily=await run(h);
- assert.equal(daily.deliver.mails,1);
- assert.match(h.lastMail('pro@example.org').text,/Haushalt 2027/);
  assert.equal((await run(h)).deliver.mails,0);
+ // am Montag um 7 Uhr die wöchentliche
+ h.tick(Date.parse('2026-10-19T05:01:00Z')-h.now());
+ assert.equal((await run(h)).deliver.mails,1);
+ assert.match(h.lastMail('pro@example.org').text,/Haushalt 2027/);
+ assert.equal(h.mails('pro@example.org').filter(m=>m.subject.startsWith('Plenara:')).length,2);
  assert.ok(items(h).every(i=>i.mail_id),'alle Treffer einer Mail zugeordnet');
  const ids=h.accounts.sql.prepare("SELECT id FROM mail_outbox WHERE template='notify' AND user_id=? ORDER BY id").all(uid).map(r=>r.id);
  assert.deepEqual([...new Set(items(h).map(i=>i.mail_id))].sort(),ids,'mail_id ist die Mail im Postausgang');
@@ -128,16 +128,18 @@ test('Vor dem Einschalten Gemeldetes zählt nicht; Glocke aus und Stufe ohne Ben
  const r=await run(h);
  assert.equal(r.deliver.mails,0);assert.equal(r.deliver.dropped,1);
  assert.equal(items(h)[0].dropped,1);
- // Ein Konto ohne Freischaltung hat seit 23.10.2026 die Stufe Konto mit 5 Benachrichtigungen; eine Stufe ohne gibt es nicht mehr
+ // Ein Konto ohne Freischaltung hat seit 23.10.2026 die Stufe Konto mit einer Benachrichtigung; eine Stufe ohne gibt es nicht mehr
 });
 
-test('Gefolgter Vorgang: neuer Stand sofort, mit Satz zur Änderung',async()=>{
+test('Gefolgter Vorgang (Pro): neuer Stand am nächsten Morgen, mit Satz zur Änderung',async()=>{
  const h=setup();await signedIn(h,'pro@example.org');
  const t=topic(h,'t9',{title:'Neubau Feuerwehrhaus',date:'2026-10-10'});
  assert.equal((await h.call(articlesWrite,{body:{id:'t9',follow:true}})).status,201);
  h.tick(60000);
  const next={...t,status:'approved'};topic(h,'t9',{title:'Neubau Feuerwehrhaus',date:'2026-10-10',status:'approved'});
  event(h,t,next);
+ assert.equal((await run(h)).deliver.mails,0);
+ h.tick(Date.parse('2026-10-15T05:01:00Z')-h.now());
  const r=await run(h);
  assert.equal(r.deliver.mails,1);
  const mail=h.lastMail('pro@example.org');
@@ -146,20 +148,58 @@ test('Gefolgter Vorgang: neuer Stand sofort, mit Satz zur Änderung',async()=>{
  assert.equal(changeNote({prev_status:'consulting',status:'consulting',at:'2026-10-14T10:00:00Z',detail:JSON.stringify({sessions:[{d:'2026-11-03',c:'Bauausschuss'}]})}),'Angesetzt am 03.11.2026 im Gremium Bauausschuss');
 });
 
-test('Konto (kostenlos): Glocke „sofort“ und gefolgte Vorgänge kommen erst mit dem täglichen Termin, Plus sofort',async()=>{
+test('Konto (kostenlos): eine Glocke, wöchentlich am Montag; die zweite Glocke ist gesperrt',async()=>{
  const h=setup();await signedIn(h,'konto@example.org',{tier:'basic'});
  const t=topic(h,'t9',{title:'Neubau Feuerwehrhaus',date:'2026-10-10'});
  assert.equal((await h.call(articlesWrite,{body:{id:'t9',follow:true}})).status,201);
- await search(h,'s1');
+ const second=await search(h,'s1');
+ assert.equal(second.status,409);assert.equal(second.body.limit,'notifications');
+ assert.equal((await search(h,'s1',{notify:{mail:false}})).status,201,'ohne Glocke speichern geht');
  h.tick(60000);
  event(h,null,topic(h,'t1'));
  const next={...t,status:'approved'};topic(h,'t9',{title:'Neubau Feuerwehrhaus',date:'2026-10-10',status:'approved'});
  event(h,t,next);
  const r=await run(h);
- assert.equal(r.collect.items,2);assert.equal(r.deliver.mails,0,'nicht sofort');
- assert.ok(items(h).every(i=>Date.parse(i.due_at)>h.now()),'fällig erst am nächsten Morgen');
- h.tick(DAY);
- assert.equal((await run(h)).deliver.mails,1,'eine Sammelmail');
+ assert.equal(r.collect.items,1,'nur der gefolgte Vorgang, die Suche hat keine Glocke');
+ assert.deepEqual(items(h).map(i=>i.due_at),['2026-10-19T05:00:00.000Z'],'wöchentlich: nächster Montag');
+ h.tick(Date.parse('2026-10-15T05:01:00Z')-h.now());
+ assert.equal((await run(h)).deliver.mails,0,'nicht täglich');
+ h.tick(Date.parse('2026-10-19T05:01:00Z')-h.now());
+ assert.equal((await run(h)).deliver.mails,1);
+});
+
+test('Plus: Wochenbericht über alle Suchen und gefolgten Vorgänge in einer Mail am gewählten Tag, täglich gesperrt',async()=>{
+ const h=setup();await signedIn(h,'plus@example.org',{tier:'plus'});
+ const t=topic(h,'t9',{title:'Neubau Feuerwehrhaus',date:'2026-10-10'});
+ assert.equal((await h.call(articlesWrite,{body:{id:'t9',follow:true}})).status,201);
+ await search(h,'s1',{notify:{mail:false}});await search(h,'s2',{q:'haushalt',notify:{mail:true,freq:'daily'}});
+ assert.equal((await h.call(settingsWrite,{method:'PUT',body:{weekly:true,weeklyDay:7}})).status,409,'täglich gehört zu Pro');
+ assert.equal((await h.call(settingsWrite,{method:'PUT',body:{weekly:true,weeklyDay:3}})).status,200);
+ h.tick(60000);
+ event(h,null,topic(h,'t1'));event(h,null,topic(h,'t2',{title:'Haushalt 2027'}));
+ const next={...t,status:'approved'};topic(h,'t9',{title:'Neubau Feuerwehrhaus',date:'2026-10-10',status:'approved'});
+ event(h,t,next);
+ await run(h);
+ assert.deepEqual([...new Set(items(h).map(i=>i.due_at))],['2026-10-21T05:00:00.000Z'],'alles am Mittwoch');
+ assert.equal(items(h).length,3);
+ h.tick(Date.parse('2026-10-21T05:01:00Z')-h.now());
+ assert.equal((await run(h)).deliver.mails,1,'eine Mail je Woche');
+ const text=h.lastMail('plus@example.org').text;
+ assert.match(text,/Grundschule/);assert.match(text,/Haushalt 2027/);assert.match(text,/Feuerwehrhaus/);
+});
+
+test('Nach einem Wechsel nach unten: nur die ältesten Glocken im Umfang der Stufe, der Rest verfällt',async()=>{
+ const h=setup();const uid=await signedIn(h,'pro@example.org');
+ await search(h,'s1');h.tick(1000);await search(h,'s2',{q:'haushalt'});
+ h.accounts.sql.prepare("UPDATE plan_grants SET tier='basic' WHERE user_id=?").run(uid);
+ h.tick(60000);
+ event(h,null,topic(h,'t1'));event(h,null,topic(h,'t2',{title:'Haushalt 2027'}));
+ await run(h);
+ assert.deepEqual(items(h).map(i=>i.ref),['s:s1'],'Konto: eine Glocke, die älteste');
+ h.tick(Date.parse('2026-10-19T05:01:00Z')-h.now());
+ await run(h);
+ assert.ok(!h.lastMail('pro@example.org').text.includes('Haushalt'));
+ assert.equal(h.accounts.sql.prepare('SELECT count(*) n FROM saved_searches WHERE notify_mail=1').get().n,2,'gespeichert bleibt alles');
 });
 
 test('Wochenbericht: Suchen ohne Glocke täglich um 7; mit Glocke nicht doppelt',async()=>{
@@ -178,14 +218,22 @@ test('Wochenbericht: Suchen ohne Glocke täglich um 7; mit Glocke nicht doppelt'
  assert.match(h.lastMail('pro@example.org').text,/Grundschule/);
 });
 
-test('Kalender: neue Sitzungen in den Gebieten nur mit Plus',async()=>{
- const p=setup();await signedIn(p,'konto@example.org',{tier:'basic'});
- assert.equal((await p.call(settingsWrite,{method:'PUT',body:{calendarMail:true}})).status,409);
+test('Kalender: neue Sitzungen in den Gebieten der Stufe, im Rhythmus der Stufe',async()=>{
+ const p=setup();const konto=await signedIn(p,'konto@example.org',{tier:'basic'});
+ assert.equal((await p.call(settingsWrite,{method:'PUT',body:{calendarMail:true,calendarFreq:'daily',calendar:[{ags:'05558012',name:'Anderer Ort',km:0}],calendarAgs:['05558012']}})).status,200);
+ // Zwei Gebiete aus einer höheren Stufe: das Konto bekommt nur das erste
+ p.accounts.sql.prepare('UPDATE user_settings SET calendar=?,calendar_ags=? WHERE user_id=?')
+  .run(JSON.stringify([{ags:'05558012',name:'Anderer Ort',km:0},{ags:'05558008',name:'Billerbeck',km:0}]),JSON.stringify(['05558012','05558008']),konto);
+ p.tick(60000);
+ event(p,null,topic(p,'t1',{date:'2026-11-05'}));event(p,null,topic(p,'t3',{title:'Woanders',region:'other',date:'2026-11-06'}),{region:'other'});
+ await run(p);
+ assert.deepEqual(items(p).map(i=>[i.key,i.due_at]),[['other|2026-11-06|Rat','2026-10-19T05:00:00.000Z']],'nur das erste Gebiet, wöchentlich');
  const h=setup();await signedIn(h,'ent@example.org',{tier:'enterprise'});
  assert.equal((await h.call(settingsWrite,{method:'PUT',body:{calendarMail:true,calendarFreq:'instant',calendarAgs:['05558008']}})).status,200);
  h.tick(60000);
  event(h,null,topic(h,'t1',{date:'2026-11-05'}));event(h,null,topic(h,'t2',{title:'Haushalt 2027',date:'2026-11-05'}));
  event(h,null,topic(h,'t3',{title:'Woanders',region:'other'}),{region:'other'});
+ h.tick(Date.parse('2026-10-15T05:01:00Z')-h.now());
  const r=await run(h);
  assert.equal(r.collect.items,1,'eine Sitzung, zwei Vorgänge');
  const mail=h.lastMail('ent@example.org');
@@ -214,6 +262,7 @@ test('Abbestellen: ansehen schreibt nichts, Ein-Klick ohne Sitzung und Herkunft,
  await search(h,'s1');await search(h,'s2',{q:'haushalt'});
  await h.call(settingsWrite,{method:'PUT',body:{weekly:true}});
  h.tick(60000);event(h,null,topic(h,'t1'));event(h,null,topic(h,'t2',{title:'Haushalt 2027'}));
+ h.tick(Date.parse('2026-10-15T05:01:00Z')-h.now());
  await run(h);
  const text=h.lastMail('pro@example.org').text;
  const one=text.match(/Diese Suche nicht mehr melden: \S+#t=([A-Za-z0-9_-]{43})/)[1];

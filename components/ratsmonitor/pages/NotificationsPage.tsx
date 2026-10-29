@@ -8,6 +8,7 @@ import { useEntitlements } from "../lib/entitlements";
 import { useSavedArticles, useSavedArticlesReady } from "../lib/savedArticles";
 import { useAccount } from "../state/account";
 import { WeeklyReport } from "./SavedSearchesPage";
+import { FREQ_LABEL, freqIn } from "../lib/tier";
 
 /** Benachrichtigungen im Konto: alles an einem Ort, was per E-Mail meldet (Wochenbericht, Suchen und Artikel mit Glocke, Kalender).
  *  Versand: Job notify auf dem Server (server/accounts/notify.mjs); geschaltet wird hier und an den Suchen, Artikeln und im Kalender. */
@@ -26,7 +27,6 @@ export function NotificationsPage() {
       </>
     );
   const searches = saved.filter((s) => s.notify?.mail && s.active !== false);
-  const freq = { instant: "sofort", daily: "täglich", weekly: "wöchentlich" } as const;
   const followed = articles.filter((a) => a.follow && a.active !== false);
   const row = "flex items-center gap-3 border-b border-slate-200 py-3 text-[16px] text-slate-900 no-underline last:border-b-0 hover:text-teal-700";
   /* Handy: jeder Abschnitt als Karte mit Symbol */
@@ -42,7 +42,7 @@ export function NotificationsPage() {
         </div>
       </PageHead>
       <section className="ri-sec ri-sec--tight">
-        <p className="m-0 mb-4 text-[14px] text-slate-500">Täglich und wöchentlich kommen die E-Mails um 7 Uhr, wöchentlich am Tag des Wochenberichts. Jede E-Mail enthält einen Link zum Abbestellen.</p>
+        <p className="m-0 mb-4 text-[14px] text-slate-500">{limits.freqs.includes("daily") ? "Täglich und wöchentlich kommen die E-Mails um 7 Uhr, wöchentlich am Tag des Wochenberichts." : "In Ihrer Stufe kommen die E-Mails einmal in der Woche um 7 Uhr, am Tag des Wochenberichts; täglich gibt es mit Pro."} Jede E-Mail enthält einen Link zum Abbestellen.</p>
 
         <div className={card}>
         <h2 className={head}>{ico("newspaper")}Wochenbericht</h2>
@@ -54,7 +54,7 @@ export function NotificationsPage() {
         {!ready ? <AccountLoading /> : searches.length ? (
           <ul className="m-0 list-none p-0">
             {searches.map((s) => (
-              <li key={s.id}><Link href="/konto/suchen" className={row}><IconBell size={18} filled /><span className="min-w-0 flex-1 truncate">{s.name}</span><span className="flex-none text-[12px] text-slate-500">{freq[s.notify.freq] ?? "täglich"}</span></Link></li>
+              <li key={s.id}><Link href="/konto/suchen" className={row}><IconBell size={18} filled /><span className="min-w-0 flex-1 truncate">{s.name}</span><span className="flex-none text-[12px] text-slate-500">{FREQ_LABEL[freqIn(limits, s.notify.freq)]}</span></Link></li>
             ))}
           </ul>
         ) : (
@@ -78,7 +78,7 @@ export function NotificationsPage() {
         <div className={card}>
         <h2 className={head}>{ico("clock")}Kalender</h2>
         <p className={empty}>
-          {limits.calendar ? "Neue Sitzungen in Ihren Kalendergebieten per E-Mail: der Schalter steht im Kalender." : "Der Kalender gehört zu Plus."}{" "}
+          {limits.calendarAreas ? "Neue Sitzungen in Ihren Kalendergebieten per E-Mail: der Schalter steht im Kalender." : "Den Kalender gibt es mit einem kostenlosen Konto."}{" "}
           <Link href="/konto/kalender" className="font-medium text-teal-700 hover:underline">Zum Kalender</Link>
         </p>
         </div>

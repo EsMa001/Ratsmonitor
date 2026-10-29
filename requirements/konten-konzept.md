@@ -1,5 +1,7 @@
 # Konzept Thema 1: Konten und Anmeldung
 
+> **Stand 29.10.2026:** Vier Stufen im Angebot: Gast (ohne Filter, 10 Treffer), Konto (basic, kostenlos: 20 Treffer, je 1 Suche, Artikel und Benachrichtigung, wöchentlich, Kalender 1 Gebiet), Plus (plus, 2,99 €: plenara.X, je 10 Suchen und Artikel, Wochenbericht, Kalender 5 Gebiete) und Pro (pro, 19,99 €: unbegrenzt, Mails je Suche bis täglich, Volltextsuche folgt); Enterprise verborgen darüber. Der interne Schlüssel `pro` hieß bis dahin Plus (Migration `drizzle-accounts/0009`). Grenzen und Preise: `docs/produkt/stufen.md`.
+>
 > **Stand 23.10.2026:** Die Stufen heißen für Kunden jetzt Konto (basic, kostenlos, jedes angemeldete Konto), Plus (pro, 2,99 € im Monat, mit plenara.X und Kalender) und Enterprise (noch nicht im Angebot). Grenzen und Preise: `docs/produkt/stufen.md`. Ältere Abschnitte unten nennen noch Basic, Pro und Enterprise mit den damaligen Rechten.
 
 Stand: 13.10.2026. Ablage: `requirements/konten-konzept.md`. Pfade sind relativ zu `C:\Git\vor-ort-quellcode`.

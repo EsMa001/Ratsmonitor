@@ -6,7 +6,7 @@ import { brancheBySlug } from "./content";
 /* Drei Wege zur Benachrichtigung; jeweils mit dem Ort, an dem man sie einstellt */
 const WAYS: [string, string, string, string][] = [
   ["Gespeicherte Suche", "Speichern Sie eine Suche mit dem Stern und schalten Sie die Glocke ein. Sie erfahren von jedem neuen Treffer zu Ihrem Thema, Ort oder Umkreis.", "/konto/suchen", "Zu den gespeicherten Suchen"],
-  ["Gespeicherter Artikel", "Folgen Sie einem einzelnen Vorgang mit der Glocke. Sie erfahren, sobald er weiter beraten, vertagt oder beschlossen wird.", "/konto/artikel", "Zu den gespeicherten Artikeln"],
+  ["Gespeicherter Artikel", "Folgen Sie einem einzelnen Vorgang mit der Glocke. Sie erfahren, wenn er weiter beraten, vertagt oder beschlossen wird.", "/konto/artikel", "Zu den gespeicherten Artikeln"],
   ["Kalender", "Legen Sie Ihre Gebiete fest, etwa Ihr Vertriebsgebiet mit Umkreis. Sie erfahren von neuen Sitzungsterminen, bevor die Tagesordnung verhandelt wird.", "/konto/kalender", "Zum Kalender"],
 ];
 
@@ -29,7 +29,7 @@ export function BenachrichtigungenPage() {
         label="Funktionen"
         name="Benachrichtigungen"
         title={<>Früher wissen. Alarme statt tägliches Suchen.</>}
-        lead={`Kommunale Entscheidungen entscheiden über Aufträge, Grundstücke und Standorte. ${name} meldet sich, sobald zu Ihren Themen und Gebieten etwas beraten wird: per E-Mail, sofort, täglich oder wöchentlich.`}
+        lead={`Kommunale Entscheidungen entscheiden über Aufträge, Grundstücke und Standorte. ${name} meldet sich, wenn zu Ihren Themen und Gebieten etwas beraten wird: per E-Mail, wöchentlich und mit Pro auch täglich.`}
       />
 
       <section className="ri-sec">

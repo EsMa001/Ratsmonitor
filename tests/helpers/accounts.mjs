@@ -46,7 +46,7 @@ export function setup({access='invite',openSignup=false,extraEnv={}}={}){
    if(admin)accounts.sql.prepare("INSERT INTO user_roles(user_id,role,granted_at) VALUES(?,'admin',?)").run(id,at);
    return id;
   },
-  invite(email,{tier='pro',until='2027-01-31T00:00:00.000Z'}={}){
+  invite(email,{tier='plus',until='2027-01-31T00:00:00.000Z'}={}){
    accounts.sql.prepare('INSERT INTO invites(email,tier,tier_until,note,created_at,expires_at) VALUES(?,?,?,?,?,?)').run(email,tier,until,'Test',new Date(clock).toISOString(),new Date(clock+30*86400000).toISOString());
   },
  };

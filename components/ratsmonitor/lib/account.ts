@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { LIMITS as PLAN_LIMITS, FEATURES as PLAN_FEATURES } from "@/shared/plans.mjs";
+import { LIMITS as PLAN_LIMITS, FEATURES as PLAN_FEATURES, TIERS as PLAN_TIERS } from "@/shared/plans.mjs";
 import { onOtherTab } from "./otherTab";
 import { clearRecent } from "./recentSearches";
 import type { Tier, TierLimits } from "./tier";
@@ -16,7 +16,7 @@ export interface Me {
   accounts: boolean;
   tier: Tier;
   limits: TierLimits;
-  features: { analytics: boolean; calendar: boolean; lenaPerMin: number };
+  features: { analytics: boolean; calendar: boolean; fulltext: boolean; lenaPerMin: number };
   user: { id: string; email: string; name: string | null } | null;
   tierUntil: string | null;
   tierSource: "beta" | "manual" | "stripe" | null;
@@ -37,15 +37,17 @@ export interface Me {
   signup?: boolean;
   /** Plus lässt sich hier buchen (Stripe eingerichtet; Gäste erst nach Anmeldung, siehe lib/booking.ts) */
   checkout?: boolean;
-  /** Bezahlung über Stripe, nur wenn der Server sie eingerichtet hat: Testmodus, Stripe-Kunde (Portal), Mails zu Zahlungen an, letztes Abo */
-  billing?: { test: boolean; customer: boolean; mails: boolean; subscription: { status: string; periodEnd: string | null; cancelAt: string | null } | null };
+  /** Stufen mit Preis bei Stripe (plus, pro) */
+  bookable?: Tier[];
+  /** Bezahlung über Stripe, nur wenn der Server sie eingerichtet hat: Testmodus, Stripe-Kunde (Portal), Mails zu Zahlungen an, letztes Abo (mit gebuchter Stufe) */
+  billing?: { test: boolean; customer: boolean; mails: boolean; subscription: { status: string; tier: Tier | null; periodEnd: string | null; cancelAt: string | null } | null };
   /** Zählt Anmelden, Abmelden und Änderungen aus anderen Tabs: Listen laden dann neu */
   rev: number;
 }
 
 const ACCOUNT_REV = "ratsmonitor:account-rev:v1";
 
-const guestLimits = (): TierLimits => ({ ...(PLAN_LIMITS.guest as TierLimits) });
+const guestLimits = (): TierLimits => ({ ...(PLAN_LIMITS.guest as unknown as TierLimits) });
 const INITIAL: Me = {
   ready: false,
   accounts: true,
@@ -76,17 +78,18 @@ export class AccountApiError extends Error {
   }
 }
 
-const TIERS: Tier[] = ["guest", "basic", "pro", "enterprise"];
+const TIERS = PLAN_TIERS as Tier[];
 const tierOf = (v: unknown): Tier => (TIERS.includes(v as Tier) ? (v as Tier) : "guest");
 /** Grenzen aus der Antwort: null heißt unbegrenzt */
 function limitsOf(tier: Tier, raw: unknown): TierLimits {
-  const base = { ...(PLAN_LIMITS[tier] as TierLimits) };
+  const base = { ...(PLAN_LIMITS[tier] as unknown as TierLimits) };
   if (!raw || typeof raw !== "object") return base;
-  const out = base as unknown as Record<string, number | boolean>;
+  const out = base as unknown as Record<string, number | boolean | string[]>;
   for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
     if (!(k in out)) continue;
     if (v === null) out[k] = Number.POSITIVE_INFINITY;
     else if (typeof v === "number" || typeof v === "boolean") out[k] = v;
+    else if (Array.isArray(v)) out[k] = v.filter((x) => x === "daily" || x === "weekly");
   }
   return base;
 }
@@ -94,14 +97,14 @@ function limitsOf(tier: Tier, raw: unknown): TierLimits {
 /** Stand der Bezahlung aus /api/me; fehlt er, ist Bezahlung nicht eingerichtet */
 function billingOf(raw: unknown): Me["billing"] {
   if (!raw || typeof raw !== "object") return undefined;
-  const b = raw as { test?: unknown; customer?: unknown; mails?: unknown; subscription?: { status?: unknown; periodEnd?: unknown; cancelAt?: unknown } | null };
+  const b = raw as { test?: unknown; customer?: unknown; mails?: unknown; subscription?: { status?: unknown; tier?: unknown; periodEnd?: unknown; cancelAt?: unknown } | null };
   const s = b.subscription;
   const text = (v: unknown) => (typeof v === "string" ? v : null);
   return {
     test: b.test !== false,
     customer: b.customer === true,
     mails: b.mails !== false,
-    subscription: s && typeof s.status === "string" ? { status: s.status, periodEnd: text(s.periodEnd), cancelAt: text(s.cancelAt) } : null,
+    subscription: s && typeof s.status === "string" ? { status: s.status, tier: s.tier ? tierOf(s.tier) : null, periodEnd: text(s.periodEnd), cancelAt: text(s.cancelAt) } : null,
   };
 }
 
@@ -198,6 +201,7 @@ function loadMe(): Promise<void> {
         billing: billingOf(d.billing),
         signup: d.signup === true,
         checkout: d.checkout === true,
+        bookable: Array.isArray(d.bookable) ? (d.bookable as unknown[]).map(tierOf).filter((t) => t === "plus" || t === "pro") : [],
         rev: (u?.id ?? null) !== before ? state.rev + 1 : state.rev,
       });
       if (d.renewAfter === true && !renewed) {

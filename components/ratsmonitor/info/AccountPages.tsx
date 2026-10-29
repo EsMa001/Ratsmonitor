@@ -179,7 +179,7 @@ export function LoginPage() {
   const askText = fresh
     ? "Ihre letzte Anmeldung ist älter als sieben Tage. Für die Administration bitte neu anmelden."
     : next === BOOK_PATH
-      ? "Melden Sie sich an oder registrieren Sie sich kostenlos mit Ihrer E-Mail-Adresse. Danach geht es direkt weiter zur Buchung von Plus."
+      ? "Melden Sie sich an oder registrieren Sie sich kostenlos mit Ihrer E-Mail-Adresse. Danach geht es direkt weiter zur Buchung."
       : "Bitte melden Sie sich an, um diese Seite zu öffnen.";
   /* Wege laut Server: ohne Mailversand nur E-Mail-Adresse und Code aus der Authenticator-App (Konten mit zweitem Faktor) */
   const mailOn = me.login?.mail !== false;
@@ -479,7 +479,7 @@ function DevLogin({ next }: { next: string }) {
   return (
     <p className="ri-form__foot" style={{ fontSize: 14 }}>
       Dev:{" "}
-      {(["basic", "pro", "enterprise"] as const).map((t, i) => (
+      {(["basic", "plus", "pro", "enterprise"] as const).map((t, i) => (
         <span key={t}>
           {i > 0 && " · "}
           <button type="button" className="ri-link max-sm:py-[10px]" onClick={() => void devLogin(t).then(() => router.push(next))}>
@@ -620,7 +620,7 @@ const UNSUB_WHAT: Record<Unsub["kind"], (t: string) => string> = {
   search: (t) => (t ? `die Benachrichtigung zur Suche „${t}“` : "die Benachrichtigung zu dieser Suche"),
   article: (t) => (t ? `die Benachrichtigung zum Vorgang „${t}“` : "die Benachrichtigung zu diesem Vorgang"),
   calendar: () => "die E-Mails zu neuen Sitzungen in Ihren Kalendergebieten",
-  billing: () => "die E-Mails zu Zahlungen und zum Ende von Plus",
+  billing: () => "die E-Mails zu Zahlungen und zum Ende Ihres Abos",
 };
 /** Wo man das Abbestellte wieder einschaltet: Zahlungsmails im Profil unter „Stufe“, alles andere bei den Benachrichtigungen */
 const unsubHome = (kind: Unsub["kind"]) => (kind === "billing" ? "/konto/profil" : "/konto/benachrichtigungen");

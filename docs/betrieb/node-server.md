@@ -664,8 +664,9 @@ Konzept und Begründungen: `requirements/benachrichtigungen-konzept.md`. Der Imp
 Stand oder neuer Sitzung eines vorhandenen ein Ereignis (`notify_events`, `drizzle/0046`, `server/integrations/notify-events.mjs`).
 Der Job **notify** (Zeitplaner, alle 10 Minuten, `scripts/accounts/notify.mjs`, Logik `server/accounts/notify.mjs`) liest die
 Ereignisse der letzten 48 Stunden, prüft sie mit derselben Abfrage wie die Übersicht gegen gespeicherte Suchen mit Glocke, den
-Wochenbericht, gefolgte Vorgänge und Kalendergebiete (Plus), merkt jeden Treffer einmal (`notify_items`) und reiht fällige
-Treffer je Konto als eine Mail ein (sofort, täglich oder wöchentlich um 07:00 Uhr; Kontingent `notify`, 1.000 je Stunde).
+Wochenbericht (ab Plus), gefolgte Vorgänge und Kalendergebiete, jeweils im Umfang der Stufe (`mailScope`), merkt jeden Treffer einmal
+(`notify_items`) und reiht fällige Treffer je Konto als eine Mail ein (täglich nur Pro, sonst wöchentlich, um 07:00 Uhr; seit
+29.10.2026 nicht mehr sofort; Kontingent `notify`, 1.000 je Stunde).
 Abbestellen per Link oder Ein-Klick (`/abbestellen`, `POST /api/notify/unsubscribe`). Protokoll: `accounts/notify.log`.
 
 Einrichten (einmal, als root). `deploy.sh` bricht ab, solange `0046` fehlt, und nennt die Schritte: Importprozess und Timer

@@ -60,12 +60,12 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
   await sendMail(db,cfg,{to:g.email,template:'tier_ending',data:{tier:TIER_LABEL[g.tier]||g.tier,until:g.ends_at},userId:g.user_id,quota:'account',now});
   await db.prepare('UPDATE plan_grants SET end_notice_at=? WHERE id=?').bind(iso(now),g.id).run();
  }
- // Plus endet in höchstens 3 Tagen und wird nicht verlängert: Abo gekündigt (Ende = cancel_at) oder Zahlung offen (Stripe),
+ // Plus oder Pro endet in höchstens 3 Tagen und wird nicht verlängert: Abo gekündigt (Ende = cancel_at) oder Zahlung offen (Stripe),
  // Freischaltung von Hand mit Ende. Einmal je Zeile (end_notice_at; billing.mjs leert es, wenn eine Zahlung verlängert).
  // Läuft das Abo normal weiter oder hält eine andere Zeile die Stufe, kommt nichts.
  const soon=(await db.prepare(`SELECT g.id,g.user_id,g.tier,g.source,g.ends_at,u.email,s.status,s.cancel_at FROM plan_grants g
    JOIN users u ON u.id=g.user_id LEFT JOIN subscriptions s ON g.source='stripe' AND s.id=g.ref
-   WHERE g.source IN ('stripe','manual') AND g.tier IN ('pro','enterprise') AND g.end_notice_at IS NULL AND g.ends_at IS NOT NULL
+   WHERE g.source IN ('stripe','manual') AND g.tier IN ('plus','pro','enterprise') AND g.end_notice_at IS NULL AND g.ends_at IS NOT NULL
    AND g.ends_at>? AND g.starts_at<=? AND u.status='active'`).bind(iso(now),iso(now)).all()).results||[];
  report.plusEnding=0;
  for(const g of soon){
@@ -82,7 +82,7 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
   report.plusEnding++;
   if(dryRun)continue;
   // Abbestellbar wie alle Zahlungsmails (billing.mjs); markiert wird auch ohne Mail, damit nichts nachkommt
-  await sendBillingMail(db,cfg,{userId:g.user_id,template:'plus_ending',data:{until:iso(end),reason},now});
+  await sendBillingMail(db,cfg,{userId:g.user_id,template:'plus_ending',data:{tier:TIER_LABEL[g.tier]||g.tier,until:iso(end),reason},now});
   await db.prepare('UPDATE plan_grants SET end_notice_at=? WHERE id=?').bind(iso(now),g.id).run();
  }
  // Gesperrte Konten: nach der Frist löschen

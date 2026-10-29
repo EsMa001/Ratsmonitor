@@ -101,7 +101,7 @@ export function KuendigenPage() {
   const legend = "mb-1 p-0 text-[16px] font-semibold text-slate-900";
   return (
     <>
-      <PageHead icon="fileText" label="Rechtliches" name="Kündigen" title="Verträge hier kündigen" lead="Plenara Plus kündigen, ohne Anmeldung. Die Bestätigung kommt sofort per E-Mail." />
+      <PageHead icon="fileText" label="Rechtliches" name="Kündigen" title="Verträge hier kündigen" lead="Plenara Plus oder Pro kündigen, ohne Anmeldung. Die Bestätigung kommt sofort per E-Mail." />
       <section className="ri-sec">
         <div className="ri-form ri-form--center">
           {sent ? (
@@ -161,7 +161,7 @@ export function KuendigenPage() {
 
               <div className="ri-field" style={{ marginTop: 22 }}>
                 <p className="m-0 mb-2 text-[16px] font-semibold text-slate-900">Vertrag</p>
-                <p className="m-0 text-[16px] text-slate-700">Plenara Plus (Abo der Stufe Plus)</p>
+                <p className="m-0 text-[16px] text-slate-700">Plenara-Abo (Stufe Plus oder Pro)</p>
               </div>
 
               <div className="ri-field" style={{ marginTop: 22 }}>
@@ -188,7 +188,7 @@ export function KuendigenPage() {
                     <Err id="kuendigen-date-err" text={errors.date} />
                   </div>
                 )}
-                <p className="ri-help">Plus endet frühestens mit dem bereits bezahlten Monat; danach wird nichts mehr abgebucht.</p>
+                <p className="ri-help">Das Abo endet frühestens mit dem bereits bezahlten Monat; danach wird nichts mehr abgebucht.</p>
               </fieldset>
 
               {error && (
@@ -200,7 +200,7 @@ export function KuendigenPage() {
                 {busy ? "Wird gesendet …" : "jetzt kündigen"}
               </button>
               <p className="ri-help">
-                Angemeldet können Sie Plus auch im <Link href="/konto/profil" className="ri-link">Konto</Link> unter „Abo verwalten“ kündigen.
+                Angemeldet können Sie Ihr Abo auch im <Link href="/konto/profil" className="ri-link">Konto</Link> unter „Abo verwalten“ kündigen.
               </p>
             </form>
           )}

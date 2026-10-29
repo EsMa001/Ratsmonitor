@@ -40,7 +40,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
  const item='block rounded-lg px-3 py-2 text-[14px] text-slate-900 no-underline hover:bg-slate-100';
  const loggedIn=!!me.user;
  const isAdmin=me.roles.includes('admin');
- const VIEWS:[Tier|null,string][]=[[null,'eigene Stufe'],['guest','ohne Stufe (wie Gast)'],['basic',TIER_LABEL.basic],['pro',TIER_LABEL.pro],['enterprise',TIER_LABEL.enterprise]];
+ const VIEWS:[Tier|null,string][]=[[null,'eigene Stufe'],['guest','ohne Stufe (wie Gast)'],['basic',TIER_LABEL.basic],['plus',TIER_LABEL.plus],['pro',TIER_LABEL.pro],['enterprise',TIER_LABEL.enterprise]];
  const signOut=async()=>{setOpen(false);await logout();router.push('/');};
  return <nav aria-label="Konto" className="flex items-center gap-0.5">
   {isAdmin&&<Link href="/admin" title={me.adminHere?'Administration':'Administration (Code aus der Authenticator-App nötig)'} aria-label="Administration" className={cls(false)}>
