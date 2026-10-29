@@ -117,11 +117,11 @@ export function DetailPage(){
       <article className="py-2">
         <div className="flex items-center gap-2">
           <button type="button" className="back-btn -ml-1.5" onClick={()=>cameFromApp()?router.back():goBack()}><IconChevronLeft/>Zurück</button>
-          {/* Teilen, Folgen, Merken als Knöpfe mit Rand und Beschriftung (am Handy nur Symbol); Teilen gefüllt, weil Weitergeben am meisten bringt */}
+          {/* Teilen, Folgen, Merken als Knöpfe mit Rand und Beschriftung (am Handy nur Symbol, Folgen und Merken dort ohne Rand); Teilen gefüllt, weil Weitergeben am meisten bringt */}
           <span className="ml-auto flex items-center gap-2">
             <ShareButton title={t.title} url={typeof window!=='undefined'?window.location.origin+'/beschluss/'+t.id:''} label className={`${ACTION} border-teal-700 bg-teal-700 !text-white hover:bg-teal-800`}/>
-            <FollowButton article={article} size={20} label className={`${ACTION} border-slate-300 hover:border-teal-700`}/>
-            <SaveArticleButton article={article} size={20} label className={`${ACTION} border-slate-300 hover:border-teal-700`}/>
+            <FollowButton article={article} size={20} label className={`${ACTION} border-slate-300 hover:border-teal-700 max-sm:border-transparent`}/>
+            <SaveArticleButton article={article} size={20} label className={`${ACTION} border-slate-300 hover:border-teal-700 max-sm:border-transparent`}/>
           </span>
         </div>
 

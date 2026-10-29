@@ -43,7 +43,8 @@ const TEILE: ["je" | "themen" | "ausgang", string, LucideIcon, string][] = [
   ["themen", "Themenprofil", LayoutGrid, "Themenprofil"],
   ["ausgang", "Was aus den Anträgen wird", CircleCheck, "Was aus den Anträgen wird"],
 ];
-const SHARE_TONES = ["bg-teal-700", "bg-sky-800", "bg-amber-600", "bg-teal-400", "bg-sky-500"];
+const KINDS = { antrag: "Anträge", anfrage: "Anfragen" } as const;
+const SHARE_TONES =["bg-teal-700", "bg-sky-800", "bg-amber-600", "bg-teal-400", "bg-sky-500"];
 
 /* Themen, die eine Fraktion deutlich häufiger aufgreift als die übrigen (Index ab 120), als kleine Symbole */
 function TopThemen({ top, label = false }: { top: Cell[]; label?: boolean }) {
@@ -71,16 +72,21 @@ export function FraktionenPage() {
   /* Handy: nur die ersten 6 Fraktionen je Liste, bis „Alle zeigen“ */
   const [allP, setAllP] = useState(false);
   const [tab, setTab] = useState<"je" | "themen" | "ausgang">("je");
+  /* Legende als Filter: "" = Anträge und Anfragen, sonst nur eine Art */
+  const [kind, setKind] = useState<"" | "antrag" | "anfrage">("");
   /* Handy, Themenprofil: Fraktionen, deren alle Themen aufgeklappt sind */
   const [openT, setOpenT] = useState<Record<string, boolean>>({});
   const rowHide = (i: number) => (!allP && i >= 6 ? " hidden" : "");
   const toggle = (k: string) => setOpen(open === k ? "" : k);
 
-  /* Liste hinter einer Zeile: alle Vorgänge der Fraktion (all) oder ihre Anträge mit Entscheidung (decided) */
-  const drill = (outcome: "all" | "decided", party: string, label: string) => open === `${outcome}:${party}` && <RadarDrill base={`/api/analytics/fraktionen?${outcome === "decided" ? "outcome=decided" : "list=1"}`} query={ranKey} by="party" value={party} label={label} />;
+  /* Liste hinter einer Zeile in „Was aus den Anträgen wird“: Anträge der Fraktion mit Entscheidung */
+  const drill = (party: string, label: string) => open === `decided:${party}` && <RadarDrill base="/api/analytics/fraktionen?outcome=decided" query={ranKey} by="party" value={party} label={label} />;
 
   const parties = res?.parties ?? [];
-  const maxN = Math.max(1, ...parties.map((p) => p.n));
+  /* Filter der Legende: nur Anträge oder nur Anfragen; Reihenfolge und Maßstab folgen der gezeigten Zahl */
+  const count = (p: { n: number; antrag: number; anfrage: number }) => (kind ? p[kind] : p.n);
+  const shown = kind ? parties.filter((p) => p[kind] > 0).sort((a, b) => b[kind] - a[kind]) : parties;
+  const maxN = Math.max(1, ...shown.map(count));
   const decided = parties.filter((p) => p.decided >= 10);
   /* Spalten der Profiltabelle: die häufigsten Themenfelder aller Fraktionsanträge */
   const cols = (res?.labels ?? []).slice(0, 8);
@@ -150,30 +156,36 @@ export function FraktionenPage() {
               <TabPane on={tab === "je"}>
               <Reveal><section className="rm-sec">
                 <h2 className="text-[22px] font-semibold sm:sr-only">Anträge und Anfragen je Fraktion</h2>
-                <p className="mb-3 mt-1 text-[14px] text-slate-500">Gemeinsame Anträge zählen bei jeder beteiligten Fraktion. <span className="sm:hidden">Zahl rechts: Anträge und Anfragen zusammen; Tippen zeigt die Liste.</span></p>
-                <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
-                  <li className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm bg-teal-600" />Anträge</li>
-                  <li className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm bg-teal-200" />Anfragen</li>
-                </ul>
+                <p className="mb-3 mt-1 text-[14px] text-slate-500">Gemeinsame Anträge zählen bei jeder beteiligten Fraktion. <span className="sm:hidden">{kind ? `Zahl rechts: ${KINDS[kind]}` : "Zahl rechts: Anträge und Anfragen zusammen"}; Tippen zeigt die Liste.</span></p>
+                {/* Legende zugleich Filter: Antippen zeigt nur Anträge bzw. nur Anfragen (Balken, Zahl, Reihenfolge und Liste), erneutes Antippen wieder beide */}
+                <div role="group" aria-label="Nur Anträge oder nur Anfragen zeigen" className="mb-3 flex flex-wrap gap-2 text-[13px] text-slate-700">
+                  {(["antrag", "anfrage"] as const).map((k) => (
+                    <button key={k} type="button" aria-pressed={kind === k} onClick={() => { setKind(kind === k ? "" : k); setOpen(""); }}
+                      className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3 ${kind === k ? "border-teal-600 bg-teal-50 font-medium text-teal-800" : kind ? "border-slate-200 text-slate-400" : "border-slate-200 hover:bg-slate-50"}`}>
+                      <i className={`inline-block h-3 w-3 rounded-sm ${k === "antrag" ? "bg-teal-600" : "bg-teal-200"}`} />{KINDS[k]}
+                    </button>
+                  ))}
+                </div>
                 <ol className="rm-focusrows m-0 list-none border-t border-slate-200 p-0">
-                  {parties.map((p, i) => (
+                  {shown.map((p, i) => (
                     <li key={p.name} className={"border-b border-slate-200" + rowHide(i)}>
                       <button type="button" onClick={() => toggle(`all:${p.name}`)} aria-expanded={open === `all:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] max-sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 max-sm:gap-2 py-3 max-sm:py-0.5 max-sm:min-h-[44px] text-left sm:grid-cols-[200px_minmax(0,1fr)_150px] ${open === `all:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
                       <span className="min-w-0"><span className="block truncate text-[16px] max-sm:text-[14px]">{p.name}</span><span className="mt-1 block max-sm:hidden"><TopThemen top={p.top} /></span></span>
-                      <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 max-sm:order-none max-sm:col-span-1 sm:order-none sm:col-span-1" role="img" aria-label={`${p.name}: ${n(p.antrag)} Anträge, ${n(p.anfrage)} Anfragen`}>
-                        <span className="bg-teal-600" style={{ width: `${(p.antrag / maxN) * 100}%` }} />
-                        <span className="bg-teal-200" style={{ width: `${(p.anfrage / maxN) * 100}%` }} />
+                      <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 max-sm:order-none max-sm:col-span-1 sm:order-none sm:col-span-1" role="img" aria-label={`${p.name}: ${kind === "anfrage" ? "" : `${n(p.antrag)} Anträge`}${kind ? "" : ", "}${kind === "antrag" ? "" : `${n(p.anfrage)} Anfragen`}`}>
+                        {kind !== "anfrage" && <span className="bg-teal-600" style={{ width: `${(p.antrag / maxN) * 100}%` }} />}
+                        {kind !== "antrag" && <span className="bg-teal-200" style={{ width: `${(p.anfrage / maxN) * 100}%` }} />}
                       </span>
-                      <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(p.n)}</b><span className="ml-2 text-slate-500 max-sm:hidden">{n(p.antrag)} / {n(p.anfrage)}</span></span>
+                      <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(count(p))}</b>{!kind && <span className="ml-2 text-slate-500 max-sm:hidden">{n(p.antrag)} / {n(p.anfrage)}</span>}</span>
                       </button>
-                      {drill("all", p.name, `${p.name}: Anträge und Anfragen`)}
+                      {open === `all:${p.name}` && <RadarDrill base={`/api/analytics/fraktionen?${kind ? `outcome=${kind}` : "list=1"}`} query={ranKey} by="party" value={p.name} label={`${p.name}: ${kind ? KINDS[kind] : "Anträge und Anfragen"}`} />}
                     </li>
                   ))}
                 </ol>
+                {kind && !shown.length && <p className="mt-2 text-[14px] text-slate-500">Keine {KINDS[kind]} in dieser Auswahl.</p>}
                 {res.small.length > 0 && <p className="mt-2 text-[12px] text-slate-500">Mit weniger als 10 Vorgängen nicht einzeln gezeigt: {res.small.map((s) => `${s.name} (${s.n})`).join(", ")}.</p>}
               </section></Reveal>
 
-              {parties.length > 6 && <button type="button" onClick={() => setAllP(!allP)} className="mt-3 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{allP ? "Weniger Fraktionen zeigen" : `Alle ${parties.length} Fraktionen zeigen`}</button>}
+              {shown.length > 6 && <button type="button" onClick={() => setAllP(!allP)} className="mt-3 inline-flex min-h-[44px] items-center text-[14px] font-medium text-teal-700">{allP ? "Weniger Fraktionen zeigen" : `Alle ${shown.length} Fraktionen zeigen`}</button>}
               </TabPane>
               <TabPane on={tab === "themen"}>
               <Reveal><section className="rm-sec">
@@ -234,7 +246,7 @@ export function FraktionenPage() {
                   {([["beschlossen", DEC_COLORS.approved, "approved"], ["vertagt", DEC_COLORS.postponed, "postponed"], ["abgelehnt", DEC_COLORS.rejected, "rejected"]] as const).map(([l, c, k]) => <li key={l} onMouseEnter={() => setHotOutcome(k)} onMouseLeave={() => setHotOutcome("")} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
                 </ul>
                 {decided.length === 0 ? <p className="text-[14px] text-slate-500">Zu wenige entschiedene Anträge für diese Suche.</p> : (
-                  <ol className="rm-focusrows m-0 list-none border-t border-slate-200 p-0">{(allP ? decided : decided.slice(0, 6)).map((p) => <DecisionRow hot={hotOutcome} key={p.name} cut={{ id: p.name, name: p.name, decided: p.decided, approved: p.approved, rejected: p.rejected, postponed: p.postponed, rate: p.rate }} onToggle={() => toggle(`decided:${p.name}`)} expanded={open === `decided:${p.name}`} drill={drill("decided", p.name, `${p.name}: Anträge mit Entscheidung`)} />)}</ol>
+                  <ol className="rm-focusrows m-0 list-none border-t border-slate-200 p-0">{(allP ? decided : decided.slice(0, 6)).map((p) => <DecisionRow hot={hotOutcome} key={p.name} cut={{ id: p.name, name: p.name, decided: p.decided, approved: p.approved, rejected: p.rejected, postponed: p.postponed, rate: p.rate }} onToggle={() => toggle(`decided:${p.name}`)} expanded={open === `decided:${p.name}`} drill={drill(p.name, `${p.name}: Anträge mit Entscheidung`)} />)}</ol>
                 )}
               </section></Reveal>
               </TabPane>
