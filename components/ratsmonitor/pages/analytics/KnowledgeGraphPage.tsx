@@ -39,6 +39,21 @@ const DOT: Record<"center" | "term" | "topic", { background: string; border: str
 const n = (v: number) => v.toLocaleString("de-DE");
 const pct = (v: number, total: number) => (total ? `${Math.max(1, Math.round((v / total) * 100))} %` : "–");
 
+/* Verbindung in der Liste: Begriff ── Anzahl ── Begriff, ungekürzt; lange Wörter trennen statt „…“ */
+function PairTitle({ a, b, count }: { a: string; b: string; count: string }) {
+  return (
+    <span className="flex items-center gap-2">
+      <span className="min-w-0 break-words hyphens-auto">{a}</span>
+      <span className="flex min-w-[64px] flex-1 items-center">
+        <span aria-hidden="true" className="h-px flex-1 bg-teal-600" />
+        <span className="px-1.5 text-[13px] tabular-nums text-teal-800">{count}×</span>
+        <span aria-hidden="true" className="h-px flex-1 bg-teal-600" />
+      </span>
+      <span className="min-w-0 break-words text-right hyphens-auto">{b}</span>
+    </span>
+  );
+}
+
 /* Detailstufen: Begriffe, Themenfelder, Kanten je Knoten. Der Server liefert die Stufe „Detail“ (Knoten nach Rang),
    kleinere Stufen sind ein Ausschnitt davon; Umschalten ohne neue Anfrage */
 const LEVELS: Record<Level, { label: string; terms: number; topics: number; per: number }> = {
@@ -275,7 +290,7 @@ export function KnowledgeGraphPage() {
               <p className="mb-3 mt-1 text-[14px] text-slate-500">{gesamt ? "Begriffe, die viel öfter zusammen vorkommen, als es ihre Häufigkeit erwarten lässt." : "Begriffe, die in denselben Einträgen vorkommen."}</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {(allPairs ? strongest : strongest.slice(0, 5)).map((e, i) => (
-                  <ListRow key={e.a + e.b} nr={i + 1} title={`${byId.get(e.a)?.label} · ${byId.get(e.b)?.label}`} bar={e.w * 100} value={gesamt ? `${n(e.n)} Einträge · ×${Math.round(lift(e)).toLocaleString("de-DE")}` : `${n(e.n)} Einträge`}
+                  <ListRow key={e.a + e.b} nr={i + 1} wrap title={<PairTitle a={byId.get(e.a)?.label ?? ""} b={byId.get(e.b)?.label ?? ""} count={n(e.n)} />}
                     onClick={() => { setNetz(true); setSelected(e.a); setPair(e); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} />
                 ))}
               </ol>
@@ -287,7 +302,7 @@ export function KnowledgeGraphPage() {
               <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, Themen, Gremien und Länder mit den meisten Einträgen im Netz.</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {topNodes.map((x, i) => (
-                  <ListRow key={x.id} nr={i + 1} title={x.label} tag={TYP[x.type] ?? ""} value={`${n(x.count)} Einträge`}
+                  <ListRow key={x.id} nr={i + 1} title={x.label} tag={TYP[x.type] ?? ""} value={`${n(x.count)}×`}
                     onClick={() => { setNetz(true); setSelected(x.id); setPair(null); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} />
                 ))}
               </ol>
