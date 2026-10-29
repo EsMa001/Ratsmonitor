@@ -886,7 +886,7 @@ z- analytics.css:632
 - GateDialog.tsx (201): GateFeature, needsFor, openGate, openLimitGate, GateDialog
 - Header.tsx (144, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
-- PlanCards.tsx (281, ⚠2): PlanCards, PlanSummary
+- PlanCards.tsx (288, ⚠1): planFeatures, PlanCards, PlanSummary
 - PlusHint.tsx (66, ⚠2): PlusHint
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
@@ -946,7 +946,7 @@ z- analytics.css:632
 - account.ts (313): Me, getMe, AccountApiError, api, touchAccount, reloadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
 - bandFigure.ts (32, ⚠1): publishBandFigure, useBandFigure, useCountUp
 - betreiber.ts (20): BETREIBER, betreiberAdresse
-- booking.ts (20): BOOK_PATH, Bookable, bookHref, usePlusLink
+- booking.ts (22): BOOK_PATH, Bookable, bookHref, usePlusLink
 - brand.ts (52): setLogo, useBrand, useBrandText
 - brands.ts (45): BrandId, BRAND_NAME, LogoId, LOGOS, LOGO_IDS, DEFAULT_LOGO, DEFAULT_BRAND, pageTitle
 - browserData.ts (283): WEEK_DAYS, LocalArticle, LocalData, ImportPayload, ImportResult, useLocalData, hasLocal, shouldAsk, postponeImport, localSummary, buildPayload, downloadFile, saveLocalFile, importLocal, discardLocal, importFile, resultText
@@ -1013,7 +1013,7 @@ z- analytics.css:632
 - XSwitcher.tsx (34): XSheet
 
 ### components/ratsmonitor/pages/
-- BookingPage.tsx (104): BookingPage
+- BookingPage.tsx (113): BookingPage
 - DetailPage.tsx (224, ⚠17): DetailPage
 - KalenderPage.tsx (443, ⚠3): KalenderPage
 - LegalPage.tsx (287): useInhalt, LegalPage

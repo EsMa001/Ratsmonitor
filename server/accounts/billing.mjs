@@ -260,13 +260,35 @@ export async function checkout(ctx){
  if(typeof created.url!=='string')throw new Error('Stripe: Checkout ohne Adresse');
  return {response:respond({url:created.url})};
 }
-/** POST /api/billing/portal: Kundenportal von Stripe (Plus und Pro wechseln, kündigen, Zahlart, Rechnungen), Antwort {url} */
+/** POST /api/billing/portal [{tier}]: Kundenportal von Stripe (Plus und Pro wechseln, kündigen, Zahlart, Rechnungen), mit Stufe gleich die
+    Bestätigung des Wechsels zu ihr (flow_data subscription_update_confirm, Buchungsseite); Antwort {url} */
 export async function portal(ctx){
  const b=requireBilling(ctx.cfg);
  const session=await requireSession(ctx);
+ const body=await readJson(ctx.request,1024);
  const customer=await customerOf(ctx.db,session.user_id);
  if(!customer)throw new AccountError(404,'Für dieses Konto gibt es noch kein Abo.');
- const created=await stripeApi(ctx.cfg,'POST','billing_portal/sessions',{customer,return_url:site(ctx)+'/konto/profil',locale:'de',configuration:b.portalConfig});
+ const base=site(ctx);
+ // {tier}: gleich die Bestätigung des Wechsels zu dieser Stufe öffnen (Stripe rechnet nach oben anteilig ab, nach unten
+ // zum Periodenende, je nach Einstellung des Portals); freigeschaltet wird wie immer erst per Meldung
+ let flow;
+ if(body.tier!==undefined){
+  if(!BOOKABLE.includes(body.tier)||!b.prices?.[body.tier])throw new AccountError(400,'Diese Stufe lässt sich nicht buchen.');
+  const running=await runningSubscription(ctx.db,session.user_id);
+  if(!running)throw new AccountError(404,'Für dieses Konto läuft kein Abo.');
+  const sub=await stripeApi(ctx.cfg,'GET','subscriptions/'+encodeURIComponent(running.id));
+  const item=sub.items?.data?.[0];
+  if(!item?.id)throw new Error('Stripe: Abo ohne Position');
+  if(idOf(item.price)===b.prices[body.tier])throw new AccountError(409,`${TIER_LABEL[body.tier]} ist bereits gebucht.`);
+  flow={type:'subscription_update_confirm',subscription_update_confirm:{subscription:sub.id,items:[{id:item.id,price:b.prices[body.tier],quantity:1}]},
+   after_completion:{type:'redirect',redirect:{return_url:base+'/konto/profil?zahlung=pruefen'}}};
+ }
+ const created=await stripeApi(ctx.cfg,'POST','billing_portal/sessions',{customer,return_url:base+'/konto/profil',locale:'de',configuration:b.portalConfig,flow_data:flow})
+  .catch(error=>{
+   // Einstellung des Portals ohne Wechsel (scripts/billing/setup-stripe.mjs noch nicht erneut gelaufen)
+   if(flow&&/subscription update feature/i.test(String(error?.message)))throw new AccountError(503,'Der Wechsel der Stufe ist bei Stripe noch nicht eingerichtet. Bitte melden Sie sich über den Kontakt.',{portal:'update'});
+   throw error;
+  });
  if(typeof created.url!=='string')throw new Error('Stripe: Portal ohne Adresse');
  return {response:respond({url:created.url})};
 }

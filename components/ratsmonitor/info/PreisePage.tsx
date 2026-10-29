@@ -32,7 +32,7 @@ const COMPARE_ROWS: [string, (t: Tier) => string][] = [
 
 export function PreisePage() {
   /* Mit Bezahlung führen Plus und Pro zur Buchung (lib/booking.ts), sonst zur Anfrage */
-  const plus = usePlusLink("plus");
+  const plus = usePlusLink();
   return (
     <>
       <PageHead

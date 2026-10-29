@@ -45,7 +45,7 @@ function fakeStripe(h){
 function subscription(h,id,{userId,customer='cus_1',status='active',days=30,invoice='paid',cancel=null,price='price_plus'}={}){
  const end=Math.floor((h.now()+days*DAY)/1000);
  return {id,object:'subscription',customer,status,livemode:false,cancel_at_period_end:cancel==='period',cancel_at:cancel==='portal'?end:null,ended_at:null,
-  metadata:userId?{user_id:userId}:{},items:{data:[{current_period_end:end,price:{id:price}}]},latest_invoice:{id:'in_'+id,status:invoice}};
+  metadata:userId?{user_id:userId}:{},items:{data:[{id:'si_'+id,current_period_end:end,price:{id:price}}]},latest_invoice:{id:'in_'+id,status:invoice}};
 }
 let eventNo=0;
 async function deliver(h,type,object,{secret=WHSEC,livemode=false,id='evt_'+(++eventNo),age=0}={}){
@@ -477,4 +477,21 @@ test('Pro buchen: eigener Preis, Stufe folgt dem Preis, Wechsel über das Portal
  stripe.subs.get('sub_9').items.data[0].price={id:'price_alt'};
  await deliver(h,'customer.subscription.updated',{id:'sub_9'});
  assert.equal(grants(h)[0].tier,'plus');
+});
+
+test('Wechsel mit laufendem Abo: die Buchungsseite öffnet die Bestätigung im Portal (flow_data), gleiche Stufe 409',async t=>{
+ const {h,stripe,userId}=await prepare(t);
+ stripe.subs.set('sub_7',subscription(h,'sub_7',{userId}));
+ await deliver(h,'checkout.session.completed',{id:'cs_test_1',mode:'subscription',client_reference_id:userId,customer:'cus_1',subscription:'sub_7'});
+ assert.equal((await h.call(portal,{path:'/api/billing/portal',body:{tier:'plus'}})).status,409,'Plus ist schon gebucht');
+ assert.equal((await h.call(portal,{path:'/api/billing/portal',body:{tier:'enterprise'}})).status,400);
+ assert.equal((await h.call(portal,{path:'/api/billing/portal',body:{tier:'pro'}})).status,200);
+ const sent=stripe.calls.filter(c=>c.path==='billing_portal/sessions').at(-1).body;
+ assert.equal(sent.get('flow_data[type]'),'subscription_update_confirm');
+ assert.equal(sent.get('flow_data[subscription_update_confirm][subscription]'),'sub_7');
+ assert.equal(sent.get('flow_data[subscription_update_confirm][items][0][id]'),'si_sub_7');
+ assert.equal(sent.get('flow_data[subscription_update_confirm][items][0][price]'),'price_pro');
+ assert.match(sent.get('flow_data[after_completion][redirect][return_url]'),/\/konto\/profil\?zahlung=pruefen$/);
+ assert.equal((await h.call(portal,{path:'/api/billing/portal',body:{}})).status,200,'ohne Stufe das Portal wie bisher');
+ assert.equal(stripe.calls.filter(c=>c.path==='billing_portal/sessions').at(-1).body.get('flow_data[type]'),null);
 });

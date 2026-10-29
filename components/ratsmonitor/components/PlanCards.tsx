@@ -30,6 +30,8 @@ const FEATURES: { label: string; text: (t: Tier) => string | null }[] = [
   { label: "plenara.X", text: (t) => (t === "plus" || t === "pro" || t === "enterprise" ? "plenara.X: alle Analysen, bundesweit" : null) },
   { label: "E-Mail-Empfänger", text: (t) => (LIMITS[t].emails > 1 ? `Bis zu ${LIMITS[t].emails} E-Mail-Empfänger je Benachrichtigung` : null) },
 ];
+/** Leistungen einer Stufe als Sätze (Buchungsseite, Tarifkarten) */
+export const planFeatures = (t: Tier) => FEATURES.map((f) => f.text(t)).filter((x): x is string => !!x);
 const PLANS: { tier: Tier; note: string; nutzen: string }[] = [
   { tier: "guest", note: "Ohne Anmeldung", nutzen: "Suchen, lesen und teilen." },
   { tier: "basic", note: "Kostenlos, mit Anmeldung", nutzen: "Ein Thema speichern und per E-Mail im Blick behalten." },
@@ -228,7 +230,7 @@ function Billing() {
       {returned === "abgebrochen" && !running && <p role="status" className="m-0 text-slate-600">Bezahlung abgebrochen. Es wurde nichts gebucht.</p>}
       {running && sub && (
         <p className={`m-0 mt-1 ${sub.status === "past_due" ? "text-amber-800" : "text-slate-600"}`}>
-          {sub.status === "past_due" ? "Die letzte Zahlung ist offen. Bitte prüfen Sie die Zahlart unter „Abo verwalten“." : sub.cancelAt ? `${booked} ist gekündigt und endet am ${shortDate(sub.cancelAt)}.` : `${booked} verlängert sich am ${shortDate(sub.periodEnd)}.${sub.tier === "plus" && bookable.includes("pro") ? " Zu Pro wechseln Sie unter „Abo verwalten“." : ""}`}
+          {sub.status === "past_due" ? "Die letzte Zahlung ist offen. Bitte prüfen Sie die Zahlart unter „Abo verwalten“." : sub.cancelAt ? `${booked} ist gekündigt und endet am ${shortDate(sub.cancelAt)}.` : `${booked} verlängert sich am ${shortDate(sub.periodEnd)}.`}
         </p>
       )}
       {billing.test && <p className="m-0 mt-1 text-[12px] text-slate-500">Testmodus: Es wird kein echtes Geld abgebucht.</p>}
@@ -240,6 +242,11 @@ function Billing() {
               {TIER_LABEL[t]} buchen · {priceLabel(t)}
             </button>
           ))}
+        {running && bookable.length > 1 && (
+          <Link href={`/konto/buchen?stufe=${sub?.tier === "pro" ? "plus" : "pro"}`} className={SECONDARY}>
+            Zu {sub?.tier === "pro" ? "Plus" : "Pro"} wechseln
+          </Link>
+        )}
         {billing.customer && (
           <button type="button" disabled={busy} onClick={() => void go("/api/billing/portal")} className={SECONDARY}>
             Abo verwalten
