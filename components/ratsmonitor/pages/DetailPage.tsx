@@ -71,7 +71,9 @@ export function DetailPage(){
  // Tab-Titel wie vom Server (generateMetadata): Vorgangstitel · Marke; solange nichts da ist, „Vorgang“
  const {name}=useBrand(),tabTitle=t?.title?.replace(/^[\s\-–:;,]+|[\s\-–:;,]+$/g,'')||(cur.id===id&&cur.error?'Vorgang nicht gefunden':'Vorgang');
  useEffect(()=>{document.title=`${tabTitle} · ${name}`;},[tabTitle,name]);
- if(!t)return <main id="inhalt" className="mx-auto max-w-page py-[12px]"><Link className="link-btn" href="/suche">Zur Übersicht</Link>{cur.id===id&&cur.error?<div role="alert" className="card-shell mt-6 p-6"><p>{cur.error}</p><button className="btn-secondary mt-4" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></div>:<p role="status" className="mt-6">Vorgang wird geladen …</p>}</main>;
+ /* „Zur Übersicht“ führt zur zuletzt gezeigten Suche mit ihren Filtern (goBack), nicht zur leeren Suche: am Handy ist die
+    Übersicht nach einem Fehler oder Neuladen sonst leer */
+ if(!t)return <main id="inhalt" className="mx-auto max-w-page py-[12px]"><Link className="link-btn" href="/suche" onClick={e=>{e.preventDefault();goBack();}}>Zur Übersicht</Link>{cur.id===id&&cur.error?<div role="alert" className="card-shell mt-6 p-6"><p>{cur.error}</p><button className="btn-secondary mt-4" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></div>:<p role="status" className="mt-6">Vorgang wird geladen …</p>}</main>;
   const host=(u:string)=>{try{return new URL(u).host;}catch{return '';}},events=t.events.filter(e=>!t.sourceUrl||!e.url||!host(e.url)||host(e.url)===host(t.sourceUrl)),status=STATUS[t.status]||STATUS.unknown;
   /* KI-Texte (Zusammenfassung, Zitate, Thema) zeigt das Frontend nicht; ohne Auszug aus der Vorlage bleibt der Abschnitt knapp */
   const ki=/^KI-Zusammenfassung/.test(t.generatedBy||'')||t.contentAnalysis?.status==='completed',rule=t.ruleSummary;
