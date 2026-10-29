@@ -137,8 +137,12 @@ export class PlaceIndex {
     };
     const add = (key: string, e: PlaceEntry | undefined, alias: boolean) => {
       if (!key || key.length < 3 || !e) return;
-      put(this.byKey, key, e, alias);
-      put(this.byLoose, loose(key), e, alias);
+      /* Auch so, wie die Eingabe gelesen wird (Wörter ohne Klammern und Punkt am Rand, clean): sonst trifft „Gronau (Westf.)“
+         nur „Gronau“ und „(Westf.)“ bleibt als Suchtext übrig, „St. Wendel“ wird gar nicht erkannt */
+      for (const k of new Set([key, splitToks(key).map(clean).filter(Boolean).join(" ")])) {
+        put(this.byKey, k, e, alias);
+        put(this.byLoose, loose(k), e, alias);
+      }
     };
     const mk = (ags: string, name: string, kind: Kind): PlaceEntry => {
       const e = { ags, name, kind, n: norm(name) };
@@ -239,7 +243,8 @@ export class PlaceIndex {
       for (let st = 0; st + len <= toks.length; st++) {
         const phraseRaw = toks.slice(st, st + len).map(clean).join(" ").trim();
         const key = norm(phraseRaw);
-        if (key.length < 3 || ignored[key] || (len === 1 && STOP.has(key))) continue;
+        /* Sperrwörter gelten nicht, wenn der Ort ausdrücklich gewählt wurde (Vorschlag „Hof“, „Lage“, „Heide“ angetippt) */
+        if (key.length < 3 || ignored[key] || (len === 1 && STOP.has(key) && !overrides[key])) continue;
         const list = this.byKey.get(key) ?? [];
         /* Lose Schreibweise: allein nur bei mehreren Wörtern („Mühlheim an der Ruhr“ = Mülheim an der Ruhr), sonst als weitere
            Wahl hinter den genauen Treffern („Mühlheim“: Donau, Main, dann Mülheim an der Ruhr) */

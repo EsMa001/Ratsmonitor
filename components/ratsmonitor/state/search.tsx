@@ -11,7 +11,7 @@ import { onlyText, readableQuery, searchFromUrl, searchToUrl } from "../lib/sear
 import { terms as toTerms, todayLocal } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
-import { rememberSearchHref } from "./nav";
+import { lastSearchHref, rememberSearchHref } from "./nav";
 import { useFiltersOpen } from "../lib/filtersOpen";
 import { ApiError, errorText, fetchJson, fetchOrFail, readJson } from "../lib/fetchJson";
 import { usePhone } from "../lib/usePhone";
@@ -259,16 +259,22 @@ export function SearchProvider({ children }: { children: ReactNode }) {
      einer leeren Suche leert sie. ?suche= übernimmt die Übersicht (gespeicherte Suche), ?region= die Zeilen oben. */
   const urlNow=onHome?readableQuery(params.toString()):null;
   const written=useRef<string|null>(null),fromUrl=useRef(false),wroteAt=useRef(0);
+  /* Erster Aufruf der Übersicht nach dem Laden über eine Adresse ohne Suche (Menü, untere Leiste, „Zur Suche“) bei leerer Suche:
+     die zuletzt gezeigte Suche dieses Tabs (lastSearchHref) übernehmen. Am Handy lädt Safari Tabs oft neu, sonst wären Ort und
+     Filter weg. undefined: noch nicht geprüft; bleibt gesetzt, bis die Suche gelesen ist (die Karte kann noch fehlen) */
+  const restore=useRef<string|null|undefined>(undefined);
   useEffect(()=>{
     if(urlNow===null||regionWait||params.has('suche'))return;
-    const url=urlNow,enc=searchToUrl(state),region=params.has('region');
-    const mark=(history.state as {rmSearch?:unknown}|null)?.rmSearch,marked=typeof mark==='string';
+    const mark=(history.state as {rmSearch?:unknown}|null)?.rmSearch,marked=typeof mark==='string',region=params.has('region');
+    if(restore.current===undefined){const last=lastSearchHref();restore.current=urlNow===''&&!marked&&!region&&!searchToUrl(state)&&last.startsWith('/suche?')?last.slice(7):null;}
+    if(restore.current&&(urlNow!==''||marked))restore.current=null;
+    const url=restore.current||urlNow,enc=searchToUrl(state);
     if(url===enc){written.current=url;fromUrl.current=false;rememberSearchHref(enc?`/suche?${enc}`:'/suche');return;}
     if(!region&&url!==written.current&&(url||marked)){
       const p=new URLSearchParams(url);
       if(onlyText(p))actions.applySearch(p.get('q')!,{...INITIAL_SEARCH});
       else{const next=searchFromUrl(p,INITIAL_SEARCH,(ags)=>geo?.center(ags));if(!next)return;commit(next);}
-      written.current=url;fromUrl.current=true;
+      written.current=url;fromUrl.current=true;restore.current=null;
       return;
     }
     /* Ersetzen statt neuer Eintrag: gleich nach dem Lesen, beim Aufräumen von ?region= und auf /suche ohne Kennzeichen (Menülink) */
