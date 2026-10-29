@@ -45,14 +45,6 @@ const TEILE: ["je" | "themen" | "ausgang", string, LucideIcon, string][] = [
 ];
 const SHARE_TONES = ["bg-teal-700", "bg-sky-800", "bg-amber-600", "bg-teal-400", "bg-sky-500"];
 
-/* Verlauf der letzten 24 Monate als kleine Linie (Anträge und Anfragen je Monat) */
-function Spark({ months }: { months: { m: string; n: number }[] }) {
-  const last = months.slice(-24);
-  if (last.length < 3) return <span aria-hidden="true" />;
-  const max = Math.max(1, ...last.map((x) => x.n)), w = 80, h = 22;
-  const pts = last.map((x, i) => `${((i / (last.length - 1)) * w).toFixed(1)},${(h - 2 - (x.n / max) * (h - 4)).toFixed(1)}`).join(" ");
-  return <svg aria-hidden="true" width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="block overflow-visible"><polyline points={pts} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" /></svg>;
-}
 /* Themen, die eine Fraktion deutlich häufiger aufgreift als die übrigen (Index ab 120), als kleine Symbole */
 function TopThemen({ top, label = false }: { top: Cell[]; label?: boolean }) {
   if (!top.length) return null;
@@ -166,13 +158,12 @@ export function FraktionenPage() {
                 <ol className="rm-focusrows m-0 list-none border-t border-slate-200 p-0">
                   {parties.map((p, i) => (
                     <li key={p.name} className={"border-b border-slate-200" + rowHide(i)}>
-                      <button type="button" onClick={() => toggle(`all:${p.name}`)} aria-expanded={open === `all:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] max-sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 max-sm:gap-2 py-3 max-sm:py-0.5 max-sm:min-h-[44px] text-left sm:grid-cols-[200px_minmax(0,1fr)_80px_150px] ${open === `all:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
+                      <button type="button" onClick={() => toggle(`all:${p.name}`)} aria-expanded={open === `all:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] max-sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 max-sm:gap-2 py-3 max-sm:py-0.5 max-sm:min-h-[44px] text-left sm:grid-cols-[200px_minmax(0,1fr)_150px] ${open === `all:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
                       <span className="min-w-0"><span className="block truncate text-[16px] max-sm:text-[14px]">{p.name}</span><span className="mt-1 block max-sm:hidden"><TopThemen top={p.top} /></span></span>
                       <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 max-sm:order-none max-sm:col-span-1 sm:order-none sm:col-span-1" role="img" aria-label={`${p.name}: ${n(p.antrag)} Anträge, ${n(p.anfrage)} Anfragen`}>
                         <span className="bg-teal-600" style={{ width: `${(p.antrag / maxN) * 100}%` }} />
                         <span className="bg-teal-200" style={{ width: `${(p.anfrage / maxN) * 100}%` }} />
                       </span>
-                      <span className="text-teal-700 max-sm:hidden" title="Anträge und Anfragen je Monat, letzte 24 Monate"><Spark months={p.months} /></span>
                       <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(p.n)}</b><span className="ml-2 text-slate-500 max-sm:hidden">{n(p.antrag)} / {n(p.anfrage)}</span></span>
                       </button>
                       {drill("all", p.name, `${p.name}: Anträge und Anfragen`)}
