@@ -113,8 +113,9 @@ export function ActiveFilters({ hide = [] }: { hide?: string[] } = {}) {
           <IconX size={14} className="text-slate-400 group-hover:text-slate-900" />
         </button>
       ))}
+      {/* Gleich groß wie die übrigen Chips: kein hover:underline (base.css gäbe Textknöpfen am Handy 44 px Höhe), Tippfläche über before: */}
       {chips.length + regions.length + toggles.length > 1 && (
-        <button type="button" title="Alle entfernen (Umschalt+Esc)" onClick={search.resetAll} className="inline-flex h-7 items-center rm-chip rounded-full px-2.5 text-[14px] font-medium hover:underline max-sm:order-first">
+        <button type="button" title="Alle entfernen (Umschalt+Esc)" onClick={search.resetAll} className="relative inline-flex h-7 items-center rounded-full before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] rm-chip px-2.5 text-[14px] font-medium max-sm:order-first">
           Alle entfernen
         </button>
       )}
