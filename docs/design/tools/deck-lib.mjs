@@ -108,7 +108,7 @@ const IMG = {
   liste: await shot("suche-liste", { left: 0, top: 150, width: 2880, height: 1100 }),
   artikel: await shot("artikel", { left: 0, top: 150, width: 2880, height: 1640 }),
   alarme: await shot("alarme", { left: 0, top: 150, width: 2000, height: 1150 }),
-  ausbreitung: await shot("x-ueber", { left: 1740, top: 200, width: 1100, height: 775 }),
+  ausbreitung: await shot("ausbreitung-photovoltaik", { left: 1740, top: 200, width: 1100, height: 775 }), // Aufnahme 15.10.26; /analytics/ueber gibt es nicht mehr
   start: await shot("start", { left: 1560, top: 130, width: 1300, height: 1600 }),
 };
 
