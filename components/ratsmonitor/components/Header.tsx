@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronUp } from "lucide-react";
 import { usePhone } from "../lib/usePhone";
+import { cameFromApp, useAppNav } from "../state/nav";
 import { MainMenu } from "../menu/MainMenu";
 import { AccountMenu } from "./AccountMenu";
 import { Brand } from "./Brand";
@@ -10,6 +11,7 @@ import { DevTierSwitcher } from "./DevTierSwitcher";
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { goBack } = useAppNav();
   const kontoPage = pathname.startsWith("/konto/") ? pathname.split("/")[2] : "";
 
   const phone = usePhone();
@@ -82,23 +84,37 @@ export function Header() {
     return () => { ro.disconnect(); root.style.removeProperty("--hdr"); };
   }, [phone]);
 
-  /* Handy: Wischen vom linken Rand geht eine Seite zurück (wie bei iOS), außer auf Start, Suche und in Blättern/Feldern */
+  /* Handy: Wischen vom linken Rand geht eine Seite zurück (wie bei iOS), außer auf Start, Suche und in Blättern/Feldern.
+     Safari und Android blättern bei derselben Geste oft schon selbst zurück; dann nicht noch einmal (sonst Artikel → Suche →
+     Startseite). Deshalb kurz warten und nur zurück, wenn bis dahin kein Zurück des Browsers kam. Wie der Zurück-Knopf der
+     Artikelseite: ohne eigenen Verlauf (neu geladen) zur zuletzt gezeigten Suche mit ihren Filtern.
+     Nur in der installierten App auf dem iPhone (navigator.standalone): nur dort fehlt eine Zurück-Geste des Systems. */
   useEffect(() => {
-    if (!phone || pathname === "/" || pathname === "/suche") return;
-    let s: { x: number; y: number } | null = null;
+    if (!phone || pathname === "/" || pathname === "/suche" || (navigator as Navigator & { standalone?: boolean }).standalone !== true) return;
+    let s: { x: number; y: number } | null = null, popped = false, timer = 0;
+    const pop = () => { popped = true; };
     const down = (e: TouchEvent) => {
       const t = e.touches[0];
+      popped = false;
       s = e.touches.length === 1 && t.clientX < 20 && !document.querySelector('[role="dialog"], [data-sheet]') ? { x: t.clientX, y: t.clientY } : null;
     };
     const up = (e: TouchEvent) => {
       const t = e.changedTouches[0];
-      if (s && t.clientX - s.x > 80 && Math.abs(t.clientY - s.y) < 50 && window.history.length > 1) router.back();
+      if (s && t.clientX - s.x > 80 && Math.abs(t.clientY - s.y) < 50) {
+        const from = location.href;
+        timer = window.setTimeout(() => {
+          if (popped || location.href !== from) return;
+          if (cameFromApp()) router.back();
+          else if (pathname.startsWith("/beschluss/")) goBack();
+        }, 350);
+      }
       s = null;
     };
     window.addEventListener("touchstart", down, { passive: true });
     window.addEventListener("touchend", up, { passive: true });
-    return () => { window.removeEventListener("touchstart", down); window.removeEventListener("touchend", up); };
-  }, [phone, pathname, router]);
+    window.addEventListener("popstate", pop);
+    return () => { clearTimeout(timer); window.removeEventListener("touchstart", down); window.removeEventListener("touchend", up); window.removeEventListener("popstate", pop); };
+  }, [phone, pathname, router, goBack]);
 
   /* Logo: zur Startseite; auf dem Handy dazu an den Seitenanfang. Suche und Filter bleiben dabei unverändert. */
   const leave = () => {
