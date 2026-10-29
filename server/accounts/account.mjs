@@ -9,6 +9,7 @@ import {sendMail,processOutbox} from './mail.mjs';
 import {siteBase} from './config.mjs';
 import {limited} from './rate-limit.mjs';
 import {LIMITS,FEATURES} from '../../shared/plans.mjs';
+import {TOPIC_ID} from '../../shared/topic-identity.mjs';
 import {runningSubscription} from './billing.mjs';
 
 const iso=ms=>new Date(ms).toISOString();
@@ -140,7 +141,6 @@ export async function articlesList(ctx){
  const {results}=await ctx.db.prepare('SELECT topic_id,follow,active,snapshot,saved_at,last_seen_at FROM saved_articles WHERE user_id=? ORDER BY saved_at DESC').bind(session.user_id).all();
  return {response:respond({articles:(results||[]).map(r=>({id:r.topic_id,follow:!!r.follow,active:!!r.active,savedAt:r.saved_at,lastSeen:r.last_seen_at,...(r.snapshot?{snapshot:JSON.parse(r.snapshot)}:{})}))})};
 }
-const TOPIC_ID=/^[A-Za-z0-9_.:-]{1,200}$/;
 export async function articlesWrite(ctx){
  const user=await requireUser(ctx,{write:true}),uid=user.session.user_id;
  const body=await readJson(ctx.request,4096);

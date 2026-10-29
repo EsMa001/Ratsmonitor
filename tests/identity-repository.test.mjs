@@ -54,6 +54,14 @@ test('failed canonical/alias batch rolls back both changes and preserves origina
  assert.equal(db.prepare('SELECT count(*) AS n FROM topics').get().n,2);
  assert.equal((await topics.getTopic('b')).id,'b');
 });
+test('detail lookup accepts imported ids with underscore, capitals and dots',async()=>{
+ reset();
+ const ids=['nrw-05113000-vo-505_64282','de-08315-top-200_8783','nrw-05158028-vo-A12','hh-22-1665.01'];
+ for(const id of ids)insert(make(id));
+ for(const id of ids)assert.equal((await topics.getTopic(id))?.id,id);
+ assert.equal(await topics.getTopic('a b'),undefined);
+ assert.equal(await topics.getTopic('../x'),undefined);
+});
 test('repository caller excludes own district for a district origin as well as its municipality',async()=>{
  reset();const own=analysed(make('own','coesfeld','district')),other=analysed(make('other','steinfurt','district'));insert(own);insert(other);
  assert.deepEqual((await regions.getRelated({...own,id:'origin'})).totalDistricts,['steinfurt']);

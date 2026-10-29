@@ -105,6 +105,9 @@ function tidy(t: string): string {
   return s;
 }
 
+/** Schreibweise ohne Dehnungs-h („mühlheim“ = „mülheim“): häufige Verwechslung bei Ortsnamen; gilt nur als Ausweichschlüssel */
+const loose = (n: string) => n.replace(/([aeiouy])h(?![aeiouy])/g, "$1");
+
 function bases(name: string): string[] {
   const b1 = name.replace(/\s*\(.*?\)\s*$/, "").trim();
   const out: string[] = [];
@@ -119,20 +122,32 @@ function bases(name: string): string[] {
  */
 export class PlaceIndex {
   private byKey = new Map<string, { e: PlaceEntry; alias: boolean }[]>();
+  /** Dieselben Schlüssel in loser Schreibweise (loose) */
+  private byLoose = new Map<string, { e: PlaceEntry; alias: boolean }[]>();
   private entries: PlaceEntry[] = [];
+  private looseN = new Map<PlaceEntry, string>();
   private geo: GeoModel;
 
   constructor(data: MapData, geo: GeoModel) {
     this.geo = geo;
+    const put = (map: Map<string, { e: PlaceEntry; alias: boolean }[]>, key: string, e: PlaceEntry, alias: boolean) => {
+      let a = map.get(key);
+      if (!a) map.set(key, (a = []));
+      if (!a.some((x) => x.e === e)) a.push({ e, alias });
+    };
     const add = (key: string, e: PlaceEntry | undefined, alias: boolean) => {
       if (!key || key.length < 3 || !e) return;
-      let a = this.byKey.get(key);
-      if (!a) this.byKey.set(key, (a = []));
-      if (!a.some((x) => x.e === e)) a.push({ e, alias });
+      /* Auch so, wie die Eingabe gelesen wird (Wörter ohne Klammern und Punkt am Rand, clean): sonst trifft „Gronau (Westf.)“
+         nur „Gronau“ und „(Westf.)“ bleibt als Suchtext übrig, „St. Wendel“ wird gar nicht erkannt */
+      for (const k of new Set([key, splitToks(key).map(clean).filter(Boolean).join(" ")])) {
+        put(this.byKey, k, e, alias);
+        put(this.byLoose, loose(k), e, alias);
+      }
     };
     const mk = (ags: string, name: string, kind: Kind): PlaceEntry => {
       const e = { ags, name, kind, n: norm(name) };
       this.entries.push(e);
+      this.looseN.set(e, loose(e.n));
       return e;
     };
     const landE = new Map<string, PlaceEntry>();
@@ -228,14 +243,20 @@ export class PlaceIndex {
       for (let st = 0; st + len <= toks.length; st++) {
         const phraseRaw = toks.slice(st, st + len).map(clean).join(" ").trim();
         const key = norm(phraseRaw);
-        if (key.length < 3 || ignored[key] || (len === 1 && STOP.has(key))) continue;
-        const list = this.byKey.get(key);
-        if (!list) continue;
+        /* Sperrwörter gelten nicht, wenn der Ort ausdrücklich gewählt wurde (Vorschlag „Hof“, „Lage“, „Heide“ angetippt) */
+        if (key.length < 3 || ignored[key] || (len === 1 && STOP.has(key) && !overrides[key])) continue;
+        const list = this.byKey.get(key) ?? [];
+        /* Lose Schreibweise: allein nur bei mehreren Wörtern („Mühlheim an der Ruhr“ = Mülheim an der Ruhr), sonst als weitere
+           Wahl hinter den genauen Treffern („Mühlheim“: Donau, Main, dann Mülheim an der Ruhr) */
+        const near = (this.byLoose.get(loose(key)) ?? []).filter((x) => !list.some((y) => y.e === x.e));
+        if (!list.length && (len === 1 || !near.length)) continue;
         const rl = phraseRaw.toLowerCase();
-        const ranked = list
-          .map((x) => ({ e: x.e, s: this.score(x.e, rl, x.alias) }))
-          .sort((a, b) => b.s - a.s)
-          .map((x) => x.e);
+        const rank = (l: { e: PlaceEntry; alias: boolean }[]) =>
+          l
+            .map((x) => ({ e: x.e, s: this.score(x.e, rl, x.alias) }))
+            .sort((a, b) => b.s - a.s)
+            .map((x) => x.e);
+        const ranked = [...rank(list), ...rank(near)];
         const ov = overrides[key];
         if (ov) {
           const i = ranked.findIndex((e) => e.ags === ov);
@@ -254,11 +275,16 @@ export class PlaceIndex {
       const st = toks.length - len;
       const p = norm(toks.slice(st).map(clean).join(" "));
       if (p.length < 3) continue;
-      const hits = this.entries.filter((e) => e.n.startsWith(p) && (!exclude || e.ags !== exclude));
+      /* Ab fünf Zeichen auch in loser Schreibweise („mühlheim“ schlägt Mülheim an der Ruhr vor), hinter den genauen Anfängen */
+      const lp = p.length >= 5 ? loose(p) : "";
+      const hits = this.entries.filter((e) => (e.n.startsWith(p) || (lp && this.looseN.get(e)!.startsWith(lp))) && (!exclude || e.ags !== exclude));
       if (!hits.length) continue;
       hits.sort(
         (a, b) =>
-          Number(b.n === p) - Number(a.n === p) || this.score(b, "", false) - this.score(a, "", false) || a.name.localeCompare(b.name, "de"),
+          Number(b.n === p) - Number(a.n === p) ||
+          Number(b.n.startsWith(p)) - Number(a.n.startsWith(p)) ||
+          this.score(b, "", false) - this.score(a, "", false) ||
+          a.name.localeCompare(b.name, "de"),
       );
       return { items: hits.slice(0, 6), start: st, toks };
     }

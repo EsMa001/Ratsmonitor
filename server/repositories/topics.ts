@@ -1,4 +1,4 @@
-import {activeTopics,resolveTopic} from '@/shared/topic-identity.mjs';
+import {activeTopics,resolveTopic,TOPIC_ID} from '@/shared/topic-identity.mjs';
 import 'server-only';
 import { env } from 'cloudflare:workers';
 import seed from '@/data/topics.json';
@@ -68,7 +68,7 @@ export async function getSourceStats(): Promise<SourceStats> {
     }
 }
 export async function getTopic(id: string): Promise<TopicDetail | undefined> {
-    if (!/^[a-z0-9.-]{1,120}$/.test(id))
+    if (!TOPIC_ID.test(id))
         return undefined;
     try {
 

@@ -2,6 +2,9 @@ import {preserveArticleContent} from './article-record.mjs';
 // Only official record relations establish identity. Titles, references, PDFs and
 // meeting URLs deliberately cannot merge records.
 export const IDENTITY_VERSION='official-records-v1';
+/* Zulässige Vorgangs-ID (Detailseite, Merken, Folgen): Importe vergeben auch Großbuchstaben, „_“, „.“ und „:“
+   (Essen „nrw-05113000-vo-505_64282“, Hamburg „22-1665.01“); eine engere Prüfung macht solche Vorgänge unerreichbar */
+export const TOPIC_ID=/^[A-Za-z0-9_.:-]{1,200}$/;
 const region=t=>t.regionId||'muenster';
 export function recordUrl(value){
  try{const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password)return null;
