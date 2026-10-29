@@ -152,8 +152,8 @@ const PILL = (on: boolean) => `inline-flex h-8 items-center gap-1.5 rounded-full
 export function SignalePage({ fest }: { fest?: string } = {}) {
   const params = useSearchParams(), router = useRouter(), path = usePathname();
   const basis = fest ? "/analytics/ausschreibungen" : "/analytics/signale";
-  /* Standard: die erste Kategorie (steht dann nicht in der Adresse); „Ausschreibungen und Vergaben“ ist seit 18.10.2026 eine eigene Seite unter Einblicke */
-  const standard = fest ?? SIGNALE[0][0];
+  /* Standard: „Alle Projekte“ (steht dann nicht in der Adresse); „Ausschreibungen und Vergaben“ ist seit 18.10.2026 eine eigene Seite unter Einblicke */
+  const standard = fest ?? ALLE;
   const signal = fest ?? (SIGNAL_IDS.has(params.get("signal") ?? "") ? params.get("signal")! : standard);
   const phase = params.get("stand") ?? "";
   /* Stand grob (Ausschreibungen): noch offen oder entschieden; der Schritt (stand) wählt darin genauer */
@@ -332,7 +332,8 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
           </div>
           <div className={`rm-xsplit${karte ? "" : " rm-xsplit--solo"} mt-4 grid grid-cols-1 gap-x-8 gap-y-8 max-sm:gap-y-5 min-[640px]:grid-cols-12`}>
             {karte && <div id="signale-karte" className="rm-xsplit-map min-w-0 min-[640px]:sticky min-[640px]:top-4 min-[640px]:col-span-6 min-[640px]:self-start">
-              {res.places.length > 0 ? <SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} 
+              {/* Auch ohne Treffer: am Handy sitzen Kategorie bzw. Thema als Walzen auf der Karte, sonst ließe sich aus dem leeren Ergebnis nicht umschalten */}
+              {<SignalMap places={res.places} hover={hoverPlace} onPlace={(ags) => search.setArea(ags, "map")} zeit={zeit} onZeit={(k) => pick({ zeit: k === "6" ? "" : k })} 
                 /* Ausschreibungen: keine Kategorien (eine feste Kategorie); Handy: Bereich und Leistung als Doppelwalze auf der Karte, wie die Kategorie auf Projekte */
                 wheels={fest ? <><MapWheels single label="Thema" value={thema} onPick={pickThema}
                   items={[{ id: "", label: "Alle Themen", icon: <ThemeIcon theme="alle" size={16} className="text-slate-500" /> }, ...THEMES.map((t: { id: string; name: string }) => ({ id: t.id, label: t.name, icon: <ThemeIcon theme={t.id} size={16} className="text-slate-500" /> }))]} />
@@ -341,7 +342,7 @@ export function SignalePage({ fest }: { fest?: string } = {}) {
                   subs={res.signal.id === signal && (res.arts ?? []).length > 0 ? res.arts.filter((a) => a.key).map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={14} className="text-slate-500" /> })) : undefined} subValue={art} onSub={(id) => pick({ art: id })} /></>
                   : <MapWheels label="Kategorie" subLabel="Art" subAll="Alle Arten" value={signal === standard ? "" : signal} onPick={(id) => pick({ signal: id, phase: "", art: "" })}
                   items={MIT_ALLE.map(([id, lab]) => { const I = ICONS[id]; return { id: id === standard ? "" : id, label: lab, icon: I ? <I size={16} strokeWidth={1.4} aria-hidden="true" className="text-slate-500" /> : undefined }; })}
-                  subs={signal !== ALLE && res.signal.id === signal && (res.arts ?? []).length > 0 ? res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={14} className="text-slate-500" /> })) : undefined} subValue={art} onSub={(id) => pick({ art: id })} />} /> : <p className="text-[14px] text-slate-500">Keine Gebiete zur Auswahl.</p>}
+                  subs={signal !== ALLE && res.signal.id === signal && (res.arts ?? []).length > 0 ? res.arts.map((a) => ({ id: a.key, label: artShort(a.name), icon: <ArtIcon value={a.key} size={14} className="text-slate-500" /> })) : undefined} subValue={art} onSub={(id) => pick({ art: id })} />} />}
             </div>}
             <div className={`min-w-0 ${karte ? "min-[640px]:col-span-6" : "min-[640px]:col-span-12"}`}>
               {pending && <ListSkeleton />}
