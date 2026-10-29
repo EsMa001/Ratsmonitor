@@ -7,7 +7,7 @@ import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {organizationFilter} from './oparl-regional.mjs';
 import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
-import {fnv,germanDay as day,markPublicity,topicPublicity,selfClosed,PLACEHOLDER} from './source-common.mjs';
+import {fnv,safeIdPart,germanDay as day,markPublicity,topicPublicity,selfClosed,PLACEHOLDER} from './source-common.mjs';
 // RIS-Portal of comundus regisafe (<name>.ris-portal.de): a Liferay portal "Ratsinformation" with the portlet RisSitzung.
 // Read are the addresses the public site asks for every visitor, nothing that needs a login:
 // - the meetings of one month (portlet resource loadSessions, JSON: sitzungId, start, sessionLink and the body),
@@ -126,7 +126,7 @@ export function parseRisPortalMeeting(html,meeting,source,now=new Date()){
    documents.push({title:label,url,kind:'application/pdf',type,docid});
   }
   const paper=documents.find(d=>/^Sitzungsvorlage$/i.test(d.type)||/vorlage/i.test(d.type)&&!/unterlage/i.test(d.type));
-  const id=`${source.id}-rp-${paper?'vo-'+paper.docid:'top-'+date.replace(/-/g,'')+'-'+fnv([committee,number,title].join('|'))}`;
+  const id=`${source.id}-rp-${paper?'vo-'+safeIdPart(paper.docid):'top-'+date.replace(/-/g,'')+'-'+fnv([committee,number,title].join('|'))}`;
   if(items.has(id)){items.get(id).documents.push(...documents);continue;}
   const decided=documents.some(d=>/beschluss/i.test(d.type)||/beschluss/i.test(d.title));
   const voteId=chunk.match(/data-target=["']offcanvas-abstimmung(\d+)["']/i)?.[1],result=date<=today&&voteId?parseRisPortalVote(page,voteId)||'':'';

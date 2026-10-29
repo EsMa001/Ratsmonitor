@@ -5,7 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
-import {clip,markPublicity,topicPublicity,PLACEHOLDER} from './source-common.mjs';
+import {clip,markPublicity,topicPublicity,PLACEHOLDER,safeIdPart} from './source-common.mjs';
 // Shared frame of the small readers (ris, hhdocuments, rio-sys, hitcom Rats-Info-System): each reader lists the meetings
 // of the period and reads one page per meeting; this frame turns the items into reports (topics), keeps marks and builds
 // the coverage in the same way as sdnet-rim4.mjs. Only public pages are read.
@@ -34,7 +34,7 @@ export function smallItems(meeting,items,source,prefix,label,now=new Date()){
  return items.filter(i=>!PLACEHOLDER.test(i.title||'')).map(i=>{
   const result=i.result||'',status=!past?'consulting':result?resolutionStatus(result,committee):'unknown';
   const description=!past?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?`Beschluss/Protokoll: ${clip(result,600)}`:'In der Tagesordnung geführt; ein Beschluss ist öffentlich nicht veröffentlicht.';
-  return markPublicity({id:`${source.id}-${prefix}-${i.key}`,title:i.title,reference:i.reference||i.number||i.key,sourceUrl:i.url||meeting.url,identityLinks:[],documents:(i.documents||[]).map(d=>({title:d.title,url:d.url,kind:/\.pdf\b|ceasy\/resource|file\.php|\/ris\//i.test(d.url)?'pdf':'html'})),status,
+  return markPublicity({id:`${source.id}-${prefix}-${safeIdPart(i.key)}`,title:i.title,reference:i.reference||i.number||i.key,sourceUrl:i.url||meeting.url,identityLinks:[],documents:(i.documents||[]).map(d=>({title:d.title,url:d.url,kind:/\.pdf\b|ceasy\/resource|file\.php|\/ris\//i.test(d.url)?'pdf':'html'})),status,
    record:{number:i.number||'',paper:i.reference||'',resolution:result?clip(result,600):'',...(i.record||{})},
    event:{date,committee,status,description,result:result?clip(result,600):'',url:meeting.url,publicEvidence:`Öffentliche Tagesordnung ${label}${i.number?', TOP '+i.number:''}`}},i.publicity);
  });

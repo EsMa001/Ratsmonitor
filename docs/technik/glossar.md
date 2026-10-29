@@ -124,7 +124,7 @@ Vom Groben zum Feinen: Gebiet → Quelle → Sitzung → Punkt → Bericht → S
 | Kennung | Form | Beispiel | Wo |
 |---|---|---|---|
 | Gebiet | `nrw-`, `nds-`, `de-` plus amtlicher Schlüssel, oder benannte Kennung | `de-09162000`, `nds-03241001`, `billerbeck` | `region_id` überall |
-| Bericht | je Leser; `<quelle>-vo-<nr>`, `<quelle>-top-<sitzung>-<nr>`, `<quelle>-oparl-<hash>`, Münster `papers-…` | `billerbeck-vo-12345` | `topics.id`, `search_cards.id`, `report_rules.topic_id`, `topic_facts.topic_id`, `ai_work_items.topic_id` |
+| Bericht | je Leser; `<quelle>-vo-<nr>`, `<quelle>-top-<sitzung>-<nr>`, `<quelle>-oparl-<hash>`, Münster `papers-…`; nur `A–Z a–z 0–9 _ . : -`, höchstens 200 Zeichen (`TOPIC_ID` in `shared/topic-identity.mjs`, sonst nicht zu öffnen). Rohwerte der Quelle über `safeIdPart`; der Import (`collectRegion`, `mergeImport`) schreibt jede andere ID um (`withSafeTopicIds`), gültige bleiben unverändert. Bestand prüfen: `scripts/check-topic-ids.mjs` | `billerbeck-vo-12345` | `topics.id`, `search_cards.id`, `report_rules.topic_id`, `topic_facts.topic_id`, `ai_work_items.topic_id` |
 | Vorgang | Gebiet + `\|` + normalisierter Titel (`titleKey`: klein, alles außer Buchstaben und Ziffern wird Leerzeichen); ungelesene Berichte Gebiet + `\|` + `lower(title)` | `billerbeck\|bebauungsplan nr 12` | `report_rules.case_key`, `x_cases.case_key`, `x_signals.case_key` |
 | PDF | SHA-256 des Inhalts | `3f9a…` | `pdfs.sha256`, `texts.sha256`, Dateiname in `files/<ab>/` |
 | Fehlerspeicher | Schritt + Gegenstand | `pdf` + Adresse, `import` + Gebiet, `rules` + Bericht, `ocr` + Prüfsumme | `work_failures (step, key)` |

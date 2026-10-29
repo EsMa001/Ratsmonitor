@@ -6,7 +6,7 @@ import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
 import {isNonPublicText,isNonPublicHeading} from './website-text.mjs';
-import {fnv,germanDay as day,markPublicity,topicPublicity,selfClosed,PLACEHOLDER} from './source-common.mjs';
+import {fnv,safeIdPart,germanDay as day,markPublicity,topicPublicity,selfClosed,PLACEHOLDER} from './source-common.mjs';
 // Public pages of KOMFA-RIS (kommunalfabrik, ris-<name>.komfa.de). Read are the month view of the calendar, through the
 // link the calendar itself offers for the previous and the next month (action=cal&SetFilter=calstartdate&FilterValue=
 // <first day>), and the agenda page of each meeting (action=to&id=<id>).
@@ -121,7 +121,7 @@ export function parseKomfaAgenda(html,meeting,source,now=new Date()){
   const documents=box?boxes.get(box)||[]:[];
   const key=reference?reference.replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,''):'';
   const status=date>today?(reference?'consulting':'announced'):'unknown';
-  items.push({publicity,id:`${source.id}-kf-${key?'vo-'+key:'top-'+date.replace(/-/g,'')+'-'+fnv([committee,number,title].join('|'))}`,title,reference,sourceUrl:meeting.url,identityLinks:[],status,documents,
+  items.push({publicity,id:`${source.id}-kf-${key?'vo-'+safeIdPart(key):'top-'+date.replace(/-/g,'')+'-'+fnv([committee,number,title].join('|'))}`,title,reference,sourceUrl:meeting.url,identityLinks:[],status,documents,
    event:{date,committee,status,description:date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.',result:'',url:meeting.url,publicEvidence:state==='public'?'Öffentlicher Teil der Tagesordnung im Ratsinformationssystem (KOMFA)':'Tagesordnung ohne Teilüberschrift; öffentliche Bekanntmachung der Sitzung im Ratsinformationssystem (KOMFA)'},
    agenda:{number}});
  }

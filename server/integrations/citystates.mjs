@@ -28,7 +28,7 @@ import {sourceDecision} from './source-fields.mjs';
 import {category,hash,sourceSummary} from './oparl.mjs';
 import {collectRegionalOparl} from './oparl-regional.mjs';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
-import {RESTRICTED,fnv,httpsUrl as https,isoDay,markPublicity} from './source-common.mjs';
+import {RESTRICTED,fnv,httpsUrl as https,isoDay,markPublicity,safeIdPart} from './source-common.mjs';
 
 export const HAMBURG_DISTRICTS=['Altona','Bergedorf','Eimsbüttel','Hamburg-Mitte','Hamburg-Nord','Harburg','Wandsbek'];
 export const HAMBURG_NOTE='Drucksachen und Sitzungen mit öffentlicher Tagesordnung der Bezirksversammlungen sowie Mitteilungen des Senats an die Bürgerschaft aus dem Transparenzportal; Sitzungen erst mit der Niederschrift, ohne Ergebnis.';
@@ -164,7 +164,7 @@ export async function collectHamburgTransparenz(source,{now=new Date(),get=fetch
  for(const [key,p] of papers){
   const committee='Bezirksversammlung '+p.district,status='unknown';
   const event={date:p.date,committee,status,description:'Drucksache im Transparenzportal veröffentlicht; Sitzung und Ergebnis sind dort nicht angegeben.',result:'',url:p.url,publicEvidence:'Veröffentlicht im Transparenzportal Hamburg (HmbTG, dl-de/by-2.0)'};
-  await topic({id:`${source.id}-hh-${key}`,regionId:source.id,source:source.kind,public:true,title:p.title,officialTitle:p.title,reference:p.reference,category:category(p.title),status,committee,eventDate:p.date,updatedAt:fetchedAt,
+  await topic({id:`${source.id}-hh-${safeIdPart(key)}`,regionId:source.id,source:source.kind,public:true,title:p.title,officialTitle:p.title,reference:p.reference,category:category(p.title),status,committee,eventDate:p.date,updatedAt:fetchedAt,
    relevanceReason:'Öffentliche Drucksache: Bezirksversammlung '+p.district,sourceText:[p.title,'Drucksache '+p.reference+' der Bezirksversammlung '+p.district,p.notes].filter(Boolean).join('\n'),
    identityLinks:[p.url],events:[event],documents:p.documents,sourceUrl:p.url,
    sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt,records:[{kind:'paper',url:p.url,fields:{reference:p.reference,district:p.district,published:p.date,modified:p.modified}}],detailStatus:'completed',issues:[]}},
@@ -176,7 +176,7 @@ export async function collectHamburgTransparenz(source,{now=new Date(),get=fetch
   for(const [item,shut] of [...s.items.map(i=>[i,false]),...(s.closed||[]).map(i=>[i,true])]){
    const status='unknown',event={date:s.date,committee:s.committee,status,description:`Öffentlicher Tagesordnungspunkt; das Ergebnis steht im Protokoll der Sitzung (${s.number}), verlinkt, nicht eingelesen.`,result:'',url:s.url,publicEvidence:'Öffentliche Tagesordnung im Transparenzportal Hamburg (HmbTG, dl-de/by-2.0); Punkte des nichtöffentlichen Teils fehlen dort oder stehen nur als „(nichtöffentlich)“'};
    const row=shut?markPublicity({title:item,event},'nonpublic'):{title:item,event};
-   await topic({id:`${source.id}-hh-${key}-${fnv(item)}`,...(shut?{publicity:'nonpublic'}:{}),regionId:source.id,source:source.kind,public:true,title:row.title,officialTitle:row.title,reference:'',category:category(item),status,committee:s.committee,eventDate:s.date,updatedAt:fetchedAt,
+   await topic({id:`${source.id}-hh-${safeIdPart(key)}-${fnv(item)}`,...(shut?{publicity:'nonpublic'}:{}),regionId:source.id,source:source.kind,public:true,title:row.title,officialTitle:row.title,reference:'',category:category(item),status,committee:s.committee,eventDate:s.date,updatedAt:fetchedAt,
     relevanceReason:'Öffentlicher Tagesordnungspunkt: '+s.committee,sourceText:[row.title,`Sitzung ${s.number}: ${s.committee}, ${s.date}`].join('\n'),
     identityLinks:[s.url],events:[row.event],documents:s.documents,sourceUrl:s.url,
     sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt,records:[{kind:'agenda',url:s.url,fields:{meeting:s.number,district:s.district,date:s.date,committee:s.committee,title:row.title,...(shut?{publicity:'nonpublic'}:{}),published:s.published}}],detailStatus:'completed',issues:[]}},
@@ -187,7 +187,7 @@ export async function collectHamburgTransparenz(source,{now=new Date(),get=fetch
  for(const [key,p] of senate){
   const committee='Bürgerschaft (Mitteilung des Senats)',status='unknown';
   const event={date:p.date,committee,status,description:`Mitteilung des Senats an die Bürgerschaft (Drucksache ${p.reference}) im Transparenzportal veröffentlicht; Beratung und Beschluss der Bürgerschaft sind dort nicht angegeben.`,result:'',url:p.url,publicEvidence:'Veröffentlicht im Transparenzportal Hamburg (HmbTG, dl-de/by-2.0)'};
-  await topic({id:`${source.id}-hh-bs-${key}`,regionId:source.id,source:source.kind,public:true,title:p.title,officialTitle:p.title,reference:p.reference,category:category(p.title),status,committee,eventDate:p.date,updatedAt:fetchedAt,
+  await topic({id:`${source.id}-hh-bs-${safeIdPart(key)}`,regionId:source.id,source:source.kind,public:true,title:p.title,officialTitle:p.title,reference:p.reference,category:category(p.title),status,committee,eventDate:p.date,updatedAt:fetchedAt,
    relevanceReason:'Mitteilung des Senats an die Bürgerschaft',sourceText:[p.title,'Drucksache '+p.reference+' der Bürgerschaft (Mitteilung des Senats)',p.notes].filter(Boolean).join('\n'),
    identityLinks:[p.url],events:[event],documents:p.documents,sourceUrl:p.url,
    sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt,records:[{kind:'paper',url:p.url,fields:{reference:p.reference,body:'Bürgerschaft',published:p.date,modified:p.modified}}],detailStatus:'completed',issues:[]}},

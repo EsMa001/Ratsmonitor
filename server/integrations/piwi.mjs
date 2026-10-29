@@ -69,7 +69,10 @@ export function parsePiwiAgenda(html,meeting,source,now=new Date()){
   const link=all.find(a=>/\/\w+\/detail\/\d+(?:[?#]|$)/.test(a.url)&&/Vorgang/.test(title(a))),vote=all.find(a=>/\/top\/\d+\/abstimmungsergebnis(?:[?#]|$)/.test(a.url));
   const paperUrl=link?address(link.url,meeting.url,source):null,voteUrl=vote?address(vote.url,meeting.url,source):null;
   const reference=paperUrl?quoted(title(link))||link.label:'',note=text(row.match(/<em>([\s\S]*?)<\/em>/i)?.[1]||''),documents=pdfs(row,meeting.url,source);
-  const id=`${source.id}-${reference?'vo-'+slug(reference):paperUrl?'vo-'+paperUrl.match(/(\w+)\/detail\/(\d+)$/).slice(1).join('-'):'top-'+date.replace(/-/g,'')+'-'+fnv([committee,section,number,headline].join('|'))}`;
+  // address() drops query and fragment, so the address of the matter ends in its number; should it not, the item is a TOP
+  // instead of ending the import.
+  const detail=paperUrl?.match(/(\w+)\/detail\/(\d+)$/);
+  const id=`${source.id}-${reference?'vo-'+slug(reference):detail?'vo-'+detail.slice(1).join('-'):'top-'+date.replace(/-/g,'')+'-'+fnv([committee,section,number,headline].join('|'))}`;
   const previous=items.get(id);
   // The row that carries the vote (the part where the item was decided) describes the item.
   if(previous){previous.documents.push(...documents);if(voteUrl&&!previous.agenda.voteUrl)Object.assign(previous.agenda,{number,section,voteUrl,note});continue;}

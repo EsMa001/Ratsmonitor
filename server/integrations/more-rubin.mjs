@@ -5,7 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
-import {markPublicity,topicPublicity,openDocuments,PLACEHOLDER} from './source-common.mjs';
+import {markPublicity,topicPublicity,openDocuments,PLACEHOLDER,safeIdPart} from './source-common.mjs';
 // Public interface of More! Rubin (more! software), read anonymously. Items with the public status (1) are public, items
 // with another status are taken marked non-public, without a status unclear (24.10.2026, markPublicity); only documents with
 // the public status are linked.
@@ -172,7 +172,7 @@ export function mapRubinMeeting(m,source,now=new Date(),url=rubinMeetingUrl(m,so
   // Older installations publish no ai_id. Their item id names the meeting, whose number gains "ni_" with the minutes.
   const item=a.ai_id!=null&&a.ai_id!==''?String(a.ai_id):slug(String(a.id||[m.nummer,a.vorlagennummer,a.topnummer].join('|')).replace(/^ni_/,''));
   // A paper is an item of the kind "vl". Standard items carry short numbers too ("1" for the opening in every meeting).
-  const paper=/^\d+$/.test(a.vorlagennummer)&&(a.topart?a.topart==='vl':String(a.vorlagennummer).length>=6),id=paper?source.id+'-vo-'+a.vorlagennummer:source.id+'-top-'+item;
+  const paper=/^\d+$/.test(a.vorlagennummer)&&(a.topart?a.topart==='vl':String(a.vorlagennummer).length>=6),id=paper?source.id+'-vo-'+a.vorlagennummer:source.id+'-top-'+safeIdPart(item);
   const event={date:m.datum,committee,status,description:result||'Öffentlicher Tagesordnungspunkt; ein Beschlussergebnis ist im erfassten Text nicht belegt.',result,url,attendance:{status:'not_collected',sourceUrl:url,fetchedAt:now.toISOString(),people:[]}};event.decision=sourceDecision(event);
   return publish({id,regionId:source.id,source:source.kind,public:true,title:text(a.title),officialTitle:text(a.title),status,category:category(a.title),committee,eventDate:m.datum,updatedAt:now.toISOString(),reference:(a.documents||[]).find(d=>d.alias)?.alias||a.submission?.alias||'',documents:[...documents,{title:'Öffentliche Sitzung',url,kind:'html'}],events:[event],sourceData:{version:'public-source-fields-v1',method:'official-api',fetchedAt:now.toISOString(),records:[{kind:'agenda',url,fields:{id:item,reference:a.vorlagennummer,title:text(a.title),result,consultationStatus:a.counselling_status?.name||'',committees:(m.committees||[]).map(c=>({id:c.id,name:c.name}))}}]},sourceUrl:url,identityRecords:[{authority,kind:'agenda',id:item},...(paper?[{authority,kind:'paper',id:String(a.vorlagennummer)}]:[])],relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:text(a.title)+'\n'+result},publicity);
  });
