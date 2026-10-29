@@ -115,7 +115,7 @@ export function NewsradarPage() {
           {res.items.length === 0 ? <Leer tipp="Einen längeren Zeitraum wählen; gezeigt werden nur Vorgänge mit zitierbarer Zusammenfassung.">Keine berichtenswerten Vorgänge in diesem Zeitraum.</Leer> : (
             <>
               <div className={HERO_PANEL}>
-              <Befund>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
+              <Befund noPhone>{`Von ${n(res.totals.considered)} Sachvorgängen zwischen ${datum(res.from)} und ${datum(res.to)} zeigt die Seite die ${res.items.length} mit dem höchsten Nachrichtenwert, höchstens ${res.rule.perRegion} je Gebiet.`}</Befund>
                 {/* Bühne: warum die Meldungen berichtenswert sind (Gründe mit Häufigkeit) und die Rangliste nach Nachrichtenwert; ein Klick springt hin */}
                 {(() => {
                   const max = Math.max(1, ...res.items.map((k) => k.score));
@@ -143,9 +143,6 @@ export function NewsradarPage() {
               </div>
               {pending && <ListSkeleton />}
               <div className={pending ? "hidden" : undefined}>
-              <nav aria-label="Meldungen" className="-mx-4 mt-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden">
-                {res.items.map((k, n) => (n >= sicht) ? null : <a key={k.id} href={`#meldung-${n + 1}`} className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-[14px] text-slate-700 no-underline"><b className="font-semibold tabular-nums text-teal-700">{n + 1}</b>{k.dateline.place.replace(/^(Stadt|Gemeinde|Markt|Verbandsgemeinde|Samtgemeinde|Hansestadt) /, "")}</a>)}
-              </nav>
               <div className="mt-4 max-sm:hidden"><ListenKopf eyebrow="Meldungen" title="Berichtenswerte Vorgänge" icon={<Newspaper size={20} strokeWidth={1.4} />} count={`${n(res.items.length)} von ${n(res.totals.considered)}`} /></div>
               <Reveal><section className="mt-4 max-sm:mt-3 border-t border-slate-200">
                 {res.items.map((k, n) => <Meldung key={k.id} i={k} nr={n + 1} total={res.items.length} hide={n >= sicht} />)}

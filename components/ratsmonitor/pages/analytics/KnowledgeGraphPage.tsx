@@ -180,7 +180,7 @@ export function KnowledgeGraphPage() {
   const empty = !!res && nodes.length <= 1;
 
   /* Der Satz zur Auswertung: am Desktop über dem Netz, am Handy unter dem Netz */
-  const befund = res && !empty ? (gesamt ? <Befund>Über alle Vorgänge hängen vor allem diese Themen und Begriffe zusammen. Mit einem Begriff zeigt das Netz, was dazugehört.</Befund> : strongest[0] ? <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund> : null) : null;
+  const befund = res && !empty ? (gesamt ? <Befund noPhone>Über alle Vorgänge hängen vor allem diese Themen und Begriffe zusammen. Mit einem Begriff zeigt das Netz, was dazugehört.</Befund> : strongest[0] ? <Befund noPhone>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund> : null) : null;
 
   return (
     <main id="inhalt" className="rm-xnet rm-noplay w-full px-[max(1vw,16px)] pb-10 text-slate-900">
