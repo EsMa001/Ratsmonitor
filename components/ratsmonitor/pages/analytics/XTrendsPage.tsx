@@ -4,6 +4,7 @@ import { busyProps } from "./XBusy";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Befund, Fehler, Leer } from "./Befund";
 import { ThemenLeiste, XKopf, XWeiter } from "./XKopf";
+import { cameFromApp } from "../../state/nav";
 import { ListSkeleton } from "./ListSkeleton";
 import { SplitHandle } from "./SplitHandle";
 import { Laden } from "./Laden";
@@ -250,7 +251,7 @@ export function XTrendsPage() {
               {begriff ? (
                 <Steckbrief begriff={begriff} row={selRow} spread={selSpread} df={df} error={diff.url === diffUrl ? diff.error : ""} firsts={firsts} day={day}
                   onDay={(d) => { setPlaying(false); setDay(d); }} playing={playing} onToggle={toggle} res={res} area={area} zeitText={DAVOR[zeit]}
-                  listQuery={`${query}&window=${zeit}`} onBack={() => (window.history.length > 1 ? router.back() : pick({ begriff: "" }))} />
+                  listQuery={`${query}&window=${zeit}`} onBack={() => (cameFromApp() ? router.back() : pick({ begriff: "" }))} />
               ) : (
                 <>
                   <div className="flex flex-wrap items-center justify-between gap-2">

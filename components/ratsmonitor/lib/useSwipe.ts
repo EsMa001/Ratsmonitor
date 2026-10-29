@@ -1,5 +1,8 @@
 import { useRef, useState, type TouchEvent } from "react";
 
+/** Breite des Randstreifens, in dem die Gesten des Browsers beginnen (px) */
+const EDGE = 24;
+
 /** Waagerechtes Wischen auf dem Handy. Gibt Berührungs-Handler und die aktuelle Verschiebung zurück; `onSwipe(-1)` nach links, `onSwipe(1)` nach rechts.
  *  Senkrechtes Scrollen bleibt unberührt: erst wenn die Bewegung deutlich waagerecht ist, wird die Geste gezählt. */
 export function useSwipe(onSwipe: (dir: -1 | 1) => void, { distance = 72, follow = false }: { distance?: number; follow?: boolean } = {}) {
@@ -8,7 +11,9 @@ export function useSwipe(onSwipe: (dir: -1 | 1) => void, { distance = 72, follow
   return {
     dx,
     handlers: {
-      onTouchStart: (e: TouchEvent) => { const t = e.touches[0]; start.current = { x: t.clientX, y: t.clientY, horizontal: null }; },
+      /* Am Rand beginnt die Zurück- bzw. Vor-Geste des Browsers (Safari, Android): dort nicht mitwischen, sonst merkt
+         z. B. die Trefferkarte den Artikel vor, während der Browser die Seite wechselt */
+      onTouchStart: (e: TouchEvent) => { const t = e.touches[0]; start.current = t.clientX < EDGE || t.clientX > window.innerWidth - EDGE ? null : { x: t.clientX, y: t.clientY, horizontal: null }; },
       onTouchMove: (e: TouchEvent) => {
         const s = start.current; if (!s) return;
         const t = e.touches[0], mx = t.clientX - s.x, my = t.clientY - s.y;
