@@ -862,7 +862,7 @@ z- analytics.css:632
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (90, ⚠4): AccountMenu
-- ActiveFilters.tsx (124): ActiveFilters
+- ActiveFilters.tsx (125): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
 - ArtIcon.tsx (156, ⚠1): artIconOf, ArtIcon
 - BandDots.tsx (50): BandDots
@@ -883,11 +883,11 @@ z- analytics.css:632
 - FilterSelect.tsx (124, ⚠1): FilterSelect
 - FollowButton.tsx (36): FollowButton
 - Footer.tsx (79): LEGAL, Footer
-- GateDialog.tsx (164): GateFeature, openGate, openLimitGate, GateDialog
-- Header.tsx (128, ⚠2): Header
+- GateDialog.tsx (201): GateFeature, needsFor, openGate, openLimitGate, GateDialog
+- Header.tsx (144, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
-- PlanCards.tsx (263, ⚠1): PlanCards, PlanSummary
-- PlusHint.tsx (66, ⚠1): PlusHint
+- PlanCards.tsx (281, ⚠2): PlanCards, PlanSummary
+- PlusHint.tsx (66, ⚠2): PlusHint
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
@@ -899,7 +899,7 @@ z- analytics.css:632
 - ShareButton.tsx (49): shareLink, ShareButton
 - StepIcon.tsx (28): STEP_ICONS, StepIcon
 - SubtopicIcon.tsx (81, ⚠1): SubtopicIcon
-- TierNotice.tsx (72): AccountLoading, LoginRequired, UsagePill
+- TierNotice.tsx (74): AccountLoading, LoginRequired, UsagePill
 - TopicSeed.tsx (11): TopicSeed
 - WheelList.tsx (42): WheelList
 - icons.tsx (193): IconSearch, IconPin, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconEmptySearch, IconDoc, IconRules, IconBell, IconFilter, IconStar, IconHeart, IconDownload, IconCalendarSync, ThemeIcon
@@ -916,7 +916,7 @@ z- analytics.css:632
 
 ### components/ratsmonitor/info/
 - AccountPages.tsx (769): LoginPage, ConfirmLoginPage, UnsubscribePage, RegisterPage, KontaktPage
-- AgbPage.tsx (181, ⚠15): AgbPage
+- AgbPage.tsx (182, ⚠15): AgbPage
 - AnwenderLive.tsx (173, ⚠2): AnwenderLivePage
 - BenachrichtigungenPage.tsx (95): BenachrichtigungenPage
 - BranchenLive.tsx (244): LiveThumb
@@ -927,7 +927,7 @@ z- analytics.css:632
 - KuendigenPage.tsx (212, ⚠1): KuendigenPage
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (30): NotFoundPage
-- PreisePage.tsx (91): PreisePage
+- PreisePage.tsx (100, ⚠1): PreisePage
 - QuellenPage.tsx (174, ⚠3): QuellenPage
 - StartseitePage.tsx (513, ⚠1): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
@@ -938,15 +938,15 @@ z- analytics.css:632
 - anwender-beispiele.ts (37, ⚠21): BEISPIELE
 - blocks.tsx (258, ⚠1): useOpenSearch, PageHead, SearchTermButton, HitPreview, DarkCta, QaItem, Ladefehler, InfoHints
 - branchen-enterprise.ts (111, ⚠1): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
-- content.ts (207, ⚠29): Status, Example, Branche, Qa, FAQ, PRICE_FAQ, BRANCHEN, brancheBySlug
+- content.ts (207, ⚠30): Status, Example, Branche, Qa, FAQ, PRICE_FAQ, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
 ### components/ratsmonitor/lib/
-- account.ts (309): Me, getMe, AccountApiError, api, touchAccount, reloadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
+- account.ts (313): Me, getMe, AccountApiError, api, touchAccount, reloadMe, accountChanged, logout, setViewTier, devLogin, useMe, onMe, shortDate
 - bandFigure.ts (32, ⚠1): publishBandFigure, useBandFigure, useCountUp
 - betreiber.ts (20): BETREIBER, betreiberAdresse
-- booking.ts (17): BOOK_PATH, bookHref, usePlusLink
+- booking.ts (20): BOOK_PATH, Bookable, bookHref, usePlusLink
 - brand.ts (52): setLogo, useBrand, useBrandText
 - brands.ts (45): BrandId, BRAND_NAME, LogoId, LOGOS, LOGO_IDS, DEFAULT_LOGO, DEFAULT_BRAND, pageTitle
 - browserData.ts (283): WEEK_DAYS, LocalArticle, LocalData, ImportPayload, ImportResult, useLocalData, hasLocal, shouldAsk, postponeImport, localSummary, buildPayload, downloadFile, saveLocalFile, importLocal, discardLocal, importFile, resultText
@@ -954,7 +954,7 @@ z- analytics.css:632
 - catalog.ts (22): loadCatalog, useCatalog
 - clipboard.ts (26): copyText
 - constants.ts (63, ⚠1): THEMEN, shownThema, StatusInfo, STATUS, STATUS_BY_ID, MAP_COLORS, MAP_COLORS_DARK, colorForCoverageDark, colorForCoverage, STATUS_COLOR
-- entitlements.ts (50): useEntitlements
+- entitlements.ts (49): useEntitlements
 - favicon.ts (39, ⚠1): setFavicon
 - fetchJson.ts (44): ApiError, fetchJson, readJson, fetchOrFail, errorText
 - filter.ts (25): FilterSpec, FilterKey, matches
@@ -974,7 +974,7 @@ z- analytics.css:632
 - methodikHost.ts (8): setMethodikHost, useMethodikHost
 - otherTab.ts (11): onOtherTab
 - pageTitle.ts (43): tabTitle
-- place.ts (287, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, removePhrase
+- place.ts (313, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, removePhrase
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
@@ -982,14 +982,14 @@ z- analytics.css:632
 - routes.ts (10): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (168): SavedArticle, toggleSavedArticle, setArticleFollow, removeSavedArticle, restoreSavedArticle, useSavedArticles, useSavedArticlesReady
 - savedSearch.ts (155, ⚠1): SearchSnapshot, snapshotOf, signature, queryText, canonicalQuery, hasFilters, FilterChip, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, hasScope, splitTerms, suggestName
-- searchLogic.ts (104): Parse, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
+- searchLogic.ts (111): Parse, applySearchState, commitPlacesState, isReplacement, withoutFilters, clearAreaState, deriveFilters
 - searchUrl.ts (106): readableQuery, searchToUrl, onlyText, searchFromUrl
 - sheetStage.ts (26): SheetStage, setSheetStage, toggleSheetStage, useSheetStage, setPeekHidden, usePeekHidden
 - signedInHint.ts (7): SignedInHint, useSignedInHint
 - subParam.ts (17): useSubParam
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem
 - text.ts (96): norm, terms, Segment, highlightSegments, plural, fmtDate, isoDay, todayLocal, MONTH_SHORT, monthLabel
-- tier.ts (70): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, priceLabel, UPGRADE_TEXT, IS_DEV, getTier, setTier, useTier, usage
+- tier.ts (105): Tier, Freq, TierLimits, LIMITS, PLAN_MAX, TIER_LABEL, BOOKABLE, OFFERED, rankOf, nextTier, tierFor, unlimited, countLabel, FREQ_LABEL, freqsLabel, freqIn, priceLabel, priceShort, UPGRADE_TEXT, IS_DEV, getTier, setTier, useTier, usage
 - todos.ts (118): TodoStatus, TodoPersonId, TodoResolution, TodoPriority, TodoSubtask, TODO_STATUSES, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_PEOPLE, TodoItem, TodoCategory, TodoData, taskStatus, todoPriority, taskResolution, normalizeTodoItem, TodoKind, TodoState, localToday, fmtShort, todoState
 - topicCache.ts (43): TopicError, seedTopic, peekTopic, loadTopic, prefetchDetail
 - useClient.ts (12): useClient, useHydrated
@@ -1000,7 +1000,7 @@ z- analytics.css:632
 - usePhone.ts (30): PHONE_QUERY, isPhone, usePhone, useTinyPhone
 - useRailFold.ts (44): useRailFold, useRailPeek
 - useScrollMemory.ts (49): useScrollMemory
-- useSwipe.ts (30): useSwipe
+- useSwipe.ts (35): useSwipe
 - uuid.ts (12): newId
 - viewClamp.ts (18): NetViewState, NetBox, clampView
 
@@ -1013,22 +1013,22 @@ z- analytics.css:632
 - XSwitcher.tsx (34): XSheet
 
 ### components/ratsmonitor/pages/
-- BookingPage.tsx (91): BookingPage
-- DetailPage.tsx (222, ⚠17): DetailPage
-- KalenderPage.tsx (427, ⚠3): KalenderPage
+- BookingPage.tsx (104): BookingPage
+- DetailPage.tsx (224, ⚠17): DetailPage
+- KalenderPage.tsx (443, ⚠3): KalenderPage
 - LegalPage.tsx (287): useInhalt, LegalPage
-- NotificationsPage.tsx (93, ⚠1): NotificationsPage
+- NotificationsPage.tsx (93, ⚠2): NotificationsPage
 - OverviewPage.tsx (174): OverviewPage
 - PersonalPage.tsx (30): PersonalPage
 - PostfachPage.tsx (64): PostfachPage
 - ProfilePage.tsx (454): ProfilePage
 - SavedArticlesPage.tsx (156, ⚠3): SavedArticlesPage
-- SavedSearchesPage.tsx (299, ⚠2): SavedSearchesPage, WeeklyReport
+- SavedSearchesPage.tsx (304, ⚠2): SavedSearchesPage, WeeklyReport
 - WillkommenPage.tsx (60): WillkommenPage
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (232, ⚠18): ANALYSE_THUMBS, MethodikText
-- AnalyticsLocked.tsx (54): AnalyticsLocked
+- AnalyticsLocked.tsx (56): AnalyticsLocked
 - AnalyticsPages.tsx (64): AnalyticsPages
 - AtlasMap.tsx (108, ⚠2): AtlasMap
 - AtlasPage.tsx (100): AtlasPage
@@ -1040,13 +1040,13 @@ z- analytics.css:632
 - ComparePage.tsx (382, ⚠11): ComparePage
 - CompareParts.tsx (74, ⚠3): Share, Place, Result, ORT, asPlace, n, inhaltlich, datenlage, Hinweis, Duell
 - DecisionCharts.tsx (66, ⚠2): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
-- DiffusionSearch.tsx (94, ⚠3): PlayState, DiffusionSearch
+- DiffusionSearch.tsx (99, ⚠2): PlayState, DiffusionSearch
 - FaktenPage.tsx (416, ⚠6): FaktenPage
-- FraktionenPage.tsx (261, ⚠8): FraktionenPage
+- FraktionenPage.tsx (264, ⚠9): FraktionenPage
 - GraphView.tsx (389, ⚠2): GNode, GEdge, KIND, seeded, GraphView
 - GremiennetzPage.tsx (220, ⚠4): GremiennetzPage
 - Kennzahlen.tsx (125): weekAgo, Kennzahlen, countScale, zeitText, ZeitExtra, ZeitPills, useOrtInAdresse, Folgen
-- KnowledgeGraphPage.tsx (304, ⚠9): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (319, ⚠9): KnowledgeGraphPage
 - Laden.tsx (32): Laden
 - ListRow.tsx (34, ⚠1): ListRow
 - ListSkeleton.tsx (13): ListSkeleton
@@ -1056,21 +1056,21 @@ z- analytics.css:632
 - Methodik.tsx (43): MethodikUnten, MethodikNote
 - NetControls.tsx (50): Level, netLevel, LevelSegmented, LevelPill, NetLegend, NetZoom
 - NetView.tsx (321): NNode, NEdge, ROLE, NetKind, NET_KIND, NetView
-- NewsradarPage.tsx (164, ⚠1): NewsradarPage
+- NewsradarPage.tsx (161): NewsradarPage
 - PageBand.tsx (23): PageBand
 - RadarDrill.tsx (131, ⚠3): DrillItem, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RailToggle.tsx (34): RailToggle
 - RegionMap.tsx (184, ⚠5): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (435, ⚠17): SignalePage
+- SignalePage.tsx (436, ⚠17): SignalePage
 - SplitHandle.tsx (53): SplitHandle
 - Tabs.tsx (7): TabPane
 - TrendViews.tsx (72, ⚠1): Trend, TrendKind, Spark, TrendMap
 - XAtlasView.tsx (293, ⚠9): XAtlasView
 - XBusy.tsx (14): busyProps, PendingVeil, HERO_MAIN, HERO_PANEL
 - XKopf.tsx (235, ⚠2): XKopf, XWeiter, ThemenLeiste
-- XTrendsPage.tsx (372, ⚠6): XTrendsPage
+- XTrendsPage.tsx (373, ⚠6): XTrendsPage
 - XTrendsParts.tsx (153, ⚠1): DAY, toDay, fmt, SpreadRegion, keysOf, SpreadMap, SpreadChart, MiniCurve
 - useAnalysisRun.ts (70): useAnalysisRun
 - useAnalyticsQuery.ts (88): useAnalyticsQuery
@@ -1082,7 +1082,7 @@ z- analytics.css:632
 - account.tsx (108): AccountProvider, useAccount, useSavedStats
 - data.tsx (42, ⚠1): DataProvider, useData
 - nav.ts (24, ⚠1): View, noteRoute, cameFromApp, rememberSearchHref, lastSearchHref, overviewScroll, useAppNav
-- search.tsx (667, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchQuery, useSearchResults
+- search.tsx (676, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 

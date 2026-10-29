@@ -1,15 +1,17 @@
-import {gated} from '@/server/services/session';
+import {gated,calendarScope} from '@/server/services/session';
 import {env} from 'cloudflare:workers';
 import {REGIONS} from '@/shared/regions';
 import {validSpan,parseAgs,eventsSql} from '@/server/integrations/calendar-events.mjs';
 
 /** Sitzungstermine für den Kalender: je Gebiet, Tag und Gremium mit Anzahl der beratenen Vorgänge.
  *  ?ags=05558012,05558&from=YYYY-MM-DD&to=YYYY-MM-DD (höchstens 200 Gebiete, höchstens ~3 Monate).
- *  Die Antwort darf fünf Minuten zwischengespeichert werden: Termine ändern sich nur mit dem Import. */
+ *  Die Antwort darf fünf Minuten zwischengespeichert werden: Termine ändern sich nur mit dem Import.
+ *  Konto und Plus sehen nur die Gebiete, die im Kalender gespeichert sind (shared/plans.mjs, calendarAreas). */
 export const GET=gated(calendarGet,{feature:'calendar'});
 async function calendarGet(request:Request){
  const p=new URL(request.url).searchParams;
- const ags=parseAgs(p.get('ags'));
+ const scope=await calendarScope(request);
+ const ags=parseAgs(p.get('ags')).filter((a:string)=>!scope||scope.has(a));
  const from=p.get('from')||'',to=p.get('to')||'';
  if(!validSpan(from,to))return Response.json({error:'Ungültiger Zeitraum.'},{status:400,headers:{'Cache-Control':'no-store'}});
  if(!env.DB)return Response.json({error:'Datenbank fehlt'},{status:503,headers:{'Cache-Control':'no-store'}});

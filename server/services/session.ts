@@ -3,6 +3,7 @@ import {env} from 'cloudflare:workers';
 import {headers} from 'next/headers';
 import {after} from 'next/server';
 import {context,currentSession,accountState} from '../accounts/login.mjs';
+import {calendarScope as accountCalendarScope} from '../accounts/account.mjs';
 import {accountsConfig,isDev} from '../accounts/config.mjs';
 import {failure} from '../accounts/http.mjs';
 import {oauthFailure} from '../accounts/oauth.mjs';
@@ -116,6 +117,20 @@ async function readTier(request:Request){
 }
 
 // ---------------------------------------------------------------- Zugang (Einladungsmodus) und Stufen in Datenrouten
+/** Funktionen, die eine Stufe haben muss (FEATURES in shared/plans.mjs) */
+type Feature='analytics'|'calendar'|'fulltext';
+/**
+ * Gebietsschlüssel, die der Kalender dieser Anfrage zeigen darf: null ohne Grenze (interne Aufrufe, ohne Kontendatei, Pro),
+ * sonst die gespeicherten Kalendergebiete des Kontos im Umfang seiner Stufe (calendarScope in server/accounts/account.mjs).
+ */
+export async function calendarScope(request:Request):Promise<Set<string>|null>{
+ if(await internalCall(request))return null;
+ const t=await requestTier(request);
+ const cfg=accountsConfig(env);
+ if(!t.accounts||!cfg.db)return null;
+ if(!t.userId)return new Set();
+ return accountCalendarScope(cfg.db,t.userId,t.tier);
+}
 const DENY={'Cache-Control':'private, no-store, max-age=0','Vary':'Cookie'};
 /** Interne Aufrufe (serve.mjs wärmt vor, Runner): Bearer IMPORT_TOKEN, mindestens 16 Zeichen */
 export function internalCall(request:Request){
@@ -127,7 +142,7 @@ export function internalCall(request:Request){
  * Zweite Linie hinter der Middleware: im Einladungsmodus nur mit Sitzung; mit feature nur, wenn die Stufe es erlaubt.
  * Liefert eine Antwort zum Abweisen oder null. Interne Aufrufe kommen immer durch.
  */
-export async function guard(request:Request,{feature}:{feature?:'analytics'|'calendar'}={}){
+export async function guard(request:Request,{feature}:{feature?:Feature}={}){
  if(await internalCall(request))return null;
  const cfg=accountsConfig(env);
  const t=await requestTier(request);
@@ -136,7 +151,7 @@ export async function guard(request:Request,{feature}:{feature?:'analytics'|'cal
  return null;
 }
 /** Route mit Prüfung; öffentliche Zwischenspeicher-Angaben werden privat, weil die Antwort an der Stufe hängt */
-export function gated<A extends unknown[]>(handler:(request:Request,...rest:A)=>Promise<Response>,options:{feature?:'analytics'|'calendar'}={}){
+export function gated<A extends unknown[]>(handler:(request:Request,...rest:A)=>Promise<Response>,options:{feature?:Feature}={}){
  return async(request:Request,...rest:A)=>{
   const denied=await guard(request,options);
   if(denied)return denied;

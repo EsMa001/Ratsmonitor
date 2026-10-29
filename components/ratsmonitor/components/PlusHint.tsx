@@ -2,10 +2,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useMe } from "../lib/account";
 import { usePlusLink } from "../lib/booking";
-import { priceLabel } from "../lib/tier";
+import { LIMITS, priceLabel, rankOf } from "../lib/tier";
 
 /**
- * Hinweis auf Plus für die Startseite: nur für Gäste und kostenlose Konten, erst wenn /api/me geantwortet hat (Plus-Nutzer
+ * Hinweis auf Plus für die Startseite: nur für Gäste und kostenlose Konten, erst wenn /api/me geantwortet hat (Plus- und Pro-Nutzer
  * sehen ihn nie, auch nicht kurz). × blendet ihn nur für diesen Aufruf aus; beim nächsten Aufruf der Startseite ist er
  * wieder da (nichts im Browser gespeichert). Vorteile nach docs/produkt/vorteile.json (Rang 3, 7/8, 11), dazu die eigene Treffergrenze.
  * placement "map": Overlay unten an der Karte, am rechten Rand der Kartenspalte (`.pl-mapcol`) (Desktop, Milchglas, mit ×); "inline": unter dem Startknopf (Handy).
@@ -13,15 +13,15 @@ import { priceLabel } from "../lib/tier";
  */
 export function PlusHint({ placement }: { placement: "map" | "inline" }) {
   const me = useMe();
-  const plus = usePlusLink();
+  const plus = usePlusLink("plus");
   const [closed, setClosed] = useState(false);
-  if (!me.ready || !me.accounts || me.tier === "pro" || me.tier === "enterprise" || closed) return null;
+  if (!me.ready || !me.accounts || rankOf(me.tier) >= rankOf("plus") || closed) return null;
   const max = me.limits.maxResults;
   const points = [
     Number.isFinite(max) ? `Alle Treffer statt ${max} je Suche` : "Alle Treffer",
-    "E-Mail-Alarm, auch sofort, statt täglich selbst suchen",
+    "Jede Woche ein Bericht zu allen Suchen, statt selbst nachzusehen",
     "plenara.X: sehen, wo etwas passiert und wie es sich ausbreitet",
-    "Sitzungskalender mit Abo: keine Sitzung verpassen",
+    `Sitzungskalender für ${LIMITS.plus.calendarAreas} Gebiete: keine Sitzung verpassen`,
   ];
   const map = placement === "map";
   const close = () => setClosed(true);
@@ -39,7 +39,7 @@ export function PlusHint({ placement }: { placement: "map" | "inline" }) {
         <span id={`plus-hint-${placement}`} className={`${map ? "text-[18px]" : "text-[16px]"} font-semibold text-[var(--rm-c900)]`}>
           Mehr mit Plus
         </span>
-        <span className="text-[14px] text-[var(--rm-c500)]">{priceLabel("pro")} · monatlich kündbar</span>
+        <span className="text-[14px] text-[var(--rm-c500)]">{priceLabel("plus")} · monatlich kündbar</span>
       </p>
       <ul className="m-0 mt-3 list-none space-y-1.5 p-0 text-[14px] text-[var(--rm-c900)]">
         {points.map((p) => (

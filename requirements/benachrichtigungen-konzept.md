@@ -1,5 +1,7 @@
 # Benachrichtigungen per E-Mail (Thema 2, Konzept und Umsetzung, 22.10.2026)
 
+> **Stand 29.10.2026:** Der Rhythmus hängt an der Stufe (`LIMITS.freqs` in `shared/plans.mjs`, `freqFor`): Konto eine Glocke, wöchentlich; Plus Wochenbericht über alle Suchen und gefolgten Vorgänge, wöchentlich; Pro je Suche täglich oder wöchentlich. „Sofort“ gibt es nicht mehr (gespeicherte Glocken „sofort“ gelten als täglich bzw. wöchentlich); gefolgte Vorgänge und Kalender-Mails kommen im selben Rhythmus. Nach einem Wechsel nach unten meldet `mailScope` nur den Umfang der neuen Stufe. Die Tabelle unten beschreibt den Stand vom 22.10.2026.
+
 Ausgangslage: Die Seiten „Benachrichtigungen“ (Konto und Funktionsseite) versprechen E-Mails „sofort, täglich oder
 wöchentlich“. Gespeicherte Suchen (`saved_searches.notify_mail`, `notify_freq`), gemerkte Artikel (`saved_articles.follow`)
 und der Wochenbericht (`user_settings.weekly`, `weekly_day`) tragen die Felder, aber es gab keinen Job, keine Vorlage und

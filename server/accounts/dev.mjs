@@ -6,7 +6,7 @@ import {createSession,eventStatement} from './sessions.mjs';
 import {currentSession,normalizeEmail} from './login.mjs';
 import {validTier} from '../../shared/plans.mjs';
 const iso=ms=>new Date(ms).toISOString();
-export const DEV_ACCOUNTS=[{email:'basic@plenara.test',tier:'basic'},{email:'pro@plenara.test',tier:'pro'},{email:'enterprise@plenara.test',tier:'enterprise'},{email:'admin@plenara.test',tier:'enterprise',admin:true}];
+export const DEV_ACCOUNTS=[{email:'basic@plenara.test',tier:'basic'},{email:'plus@plenara.test',tier:'plus'},{email:'pro@plenara.test',tier:'pro'},{email:'enterprise@plenara.test',tier:'enterprise'},{email:'admin@plenara.test',tier:'enterprise',admin:true}];
 const devOnly=ctx=>{if(!ctx.cfg.dev)throw new AccountError(404,'Nicht gefunden.');};
 export async function devLogin(ctx){
  devOnly(ctx);requireSameOrigin(ctx.request);

@@ -10,11 +10,12 @@ import {limited,limitedAll} from './rate-limit.mjs';
 import {sendMail,processOutbox} from './mail.mjs';
 import {siteBase} from './config.mjs';
 import {normalizeEmail} from './login.mjs';
-import {billingReady,stripeApi,syncSubscription,RUNNING} from './billing.mjs';
+import {billingReady,stripeApi,syncSubscription,tierOfPrice,RUNNING} from './billing.mjs';
+import {TIER_LABEL} from '../../shared/plans.mjs';
 
 const DAY=86400000;
 const iso=ms=>new Date(ms).toISOString();
-export const CONTRACT='Plenara Plus';
+export const CONTRACT='Plenara-Abo (Plus oder Pro)';
 
 /** Eingaben prüfen; ungültig → 400 mit Hinweis für das Formular */
 export function cleanCancellation(body,{now=Date.now()}={}){
@@ -40,7 +41,7 @@ export function cleanCancellation(body,{now=Date.now()}={}){
 export async function processCancellation(ctx,input,{receivedAt,site}){
  const {db,cfg,now}=ctx;
  const user=await db.prepare("SELECT id FROM users WHERE email=? AND status='active'").bind(input.email).first();
- const sub=user?await db.prepare(`SELECT id,period_end FROM subscriptions WHERE user_id=? AND status IN (${RUNNING.map(s=>`'${s}'`).join(',')})
+ const sub=user?await db.prepare(`SELECT id,price_id,period_end FROM subscriptions WHERE user_id=? AND status IN (${RUNNING.map(s=>`'${s}'`).join(',')})
    ORDER BY updated_at DESC LIMIT 1`).bind(user.id).first():null;
  let result='none',endsAt=null;
  if(sub){
@@ -62,7 +63,7 @@ export async function processCancellation(ctx,input,{receivedAt,site}){
   .bind(receivedAt,await hmacHex(cfg.secret,'cancellation',input.email),user?.id??null,input.kind,input.reason||null,input.date??'next',sub?.id??null,endsAt?iso(endsAt):null,result).run();
  // Bestätigung immer, auch ohne Konto (sonst verriete das Ausbleiben, ob es eines gibt); nicht abbestellbar
  await sendMail(db,cfg,{to:input.email,template:'cancel_received',userId:user?.id??null,quota:'account',now,
-  data:{receivedAt,kind:input.kind,reason:input.reason,when:input.when,date:input.date,result,endsAt:endsAt?iso(endsAt):null}});
+  data:{receivedAt,tier:sub?TIER_LABEL[tierOfPrice(cfg,sub.price_id)]:null,kind:input.kind,reason:input.reason,when:input.when,date:input.date,result,endsAt:endsAt?iso(endsAt):null}});
  if(cfg.mail.operator&&(result==='review'||result==='error'))await sendMail(db,cfg,{to:cfg.mail.operator,template:'operator',quota:'operator',now,
   data:{message:result==='review'?`Außerordentliche Kündigung eingegangen (Konto ${user.id}, Abo ${sub.id}). Das Abo endet spätestens am ${iso(endsAt).slice(0,10)}. Grund: ${input.reason}`
    :`Kündigung konnte nicht bei Stripe eingetragen werden (Konto ${user?.id}, Abo ${sub?.id}). Bitte von Hand im Dashboard kündigen.`}});

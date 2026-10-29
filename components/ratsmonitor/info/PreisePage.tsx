@@ -1,29 +1,38 @@
 import Link from "next/link";
 import { DarkCta, PageHead, QaItem } from "./blocks";
 import { PRICE_FAQ } from "./content";
-import { LIMITS, priceLabel, TIER_LABEL, type Tier } from "../lib/tier";
+import { LIMITS, priceLabel, priceShort, TIER_LABEL, unlimited, type Tier } from "../lib/tier";
 import { usePlusLink } from "../lib/booking";
 import { PlanCards } from "../components/PlanCards";
 
-/* Angebotene Stufen; Enterprise gibt es noch nicht (später KI, Team, Schnittstelle) */
-const TIERS: Tier[] = ["guest", "basic", "pro"];
-const count = (n: number) => (n === 0 ? "–" : n > 1 ? `bis zu ${n}` : String(n));
+/* Angebotene Stufen; Enterprise gibt es noch nicht (später KI, Team, Schnittstelle). Alle Zahlen aus shared/plans.mjs */
+const TIERS: Tier[] = ["guest", "basic", "plus", "pro"];
+const count = (n: number) => (n === 0 ? "–" : unlimited(n) ? "unbegrenzt" : String(n));
 const COMPARE_ROWS: [string, (t: Tier) => string][] = [
   ["Preis", priceLabel],
   ["Ganz Deutschland: alle Gebiete mit Daten", () => "✓"],
+  ["Suche nach Begriff und Ort", () => "✓"],
   ["Treffer je Suche", (t) => (Number.isFinite(LIMITS[t].maxResults) ? String(LIMITS[t].maxResults) : "alle")],
-  ["Filter (Gebiet, Zeitraum, Thema, Status)", (t) => (LIMITS[t].filters ? "✓" : "–")],
+  ["Filter (Zeitraum, Thema, Status)", (t) => (LIMITS[t].filters ? "✓" : "–")],
   ["Meine Suchen", (t) => count(LIMITS[t].savedSearches)],
   ["Gespeicherte Artikel", (t) => count(LIMITS[t].bookmarks)],
-  ["Aktive Benachrichtigungen", (t) => count(LIMITS[t].notifications)],
-  ["E-Mails sofort (sonst täglich oder wöchentlich)", (t) => (LIMITS[t].instant ? "✓" : "–")],
-  ["Sitzungskalender mit Kalender-Abo", (t) => (LIMITS[t].calendar ? "✓" : "–")],
-  ["plenara.X (Analysen)", (t) => (t === "pro" || t === "enterprise" ? "✓" : "–")],
+  [
+    "E-Mail-Benachrichtigungen",
+    (t) => {
+      const l = LIMITS[t];
+      if (!l.notifications) return "–";
+      if (l.freqs.includes("daily")) return "je Suche, täglich oder wöchentlich";
+      if (l.weeklyReport) return "Wochenbericht zu allen Suchen";
+      return `${count(l.notifications)}, wöchentlich`;
+    },
+  ],
+  ["Gebiete im Sitzungskalender (mit Kalender-Abo)", (t) => count(LIMITS[t].calendarAreas)],
+  ["plenara.X (Analysen)", (t) => (t === "plus" || t === "pro" || t === "enterprise" ? "✓" : "–")],
 ];
 
 export function PreisePage() {
-  /* Mit Bezahlung führt Plus zur Buchung (lib/booking.ts), sonst zur Anfrage */
-  const plus = usePlusLink();
+  /* Mit Bezahlung führen Plus und Pro zur Buchung (lib/booking.ts), sonst zur Anfrage */
+  const plus = usePlusLink("plus");
   return (
     <>
       <PageHead
@@ -31,7 +40,7 @@ export function PreisePage() {
         label="Informationen"
         name="Preise"
         title="Die Stufen im Überblick."
-        lead={`Kostenlos suchen und lesen, für ganz Deutschland. Plus für 2,99 € im Monat, monatlich kündbar.${plus.book ? "" : " In der Testphase schalten wir Plus auf Anfrage frei."}`}
+        lead={`Kostenlos suchen und lesen, für ganz Deutschland. Plus für ${priceShort("plus")}, Pro für ${priceShort("pro")} im Monat, monatlich kündbar.${plus.book ? "" : " In der Testphase schalten wir Plus und Pro auf Anfrage frei."}`}
       />
       <section className="ri-sec ri-sec--prices">
         {/* Gleiche Tarifkarten wie im Konto */}
@@ -77,8 +86,8 @@ export function PreisePage() {
         </div>
       </section>
       <DarkCta
-        title={plus.book ? "Plus für 2,99 € im Monat" : "Plenara in der Testphase"}
-        sub={plus.book ? "Das Konto ist kostenlos. Plus buchen Sie direkt hier: anmelden oder kostenlos registrieren, dann bezahlen. Monatlich kündbar." : "Das Konto ist kostenlos. Plus schalten wir in der Testphase auf Anfrage frei, bis die Bezahlung angebunden ist."}
+        title={plus.book ? `Plus für ${priceShort("plus")} im Monat` : "Plenara in der Testphase"}
+        sub={plus.book ? `Das Konto ist kostenlos. Plus und Pro (${priceShort("pro")} im Monat) buchen Sie direkt hier: anmelden oder kostenlos registrieren, dann bezahlen. Monatlich kündbar.` : "Das Konto ist kostenlos. Plus und Pro schalten wir in der Testphase auf Anfrage frei, bis die Bezahlung angebunden ist."}
         action={
           <Link href={plus.href} className="ri-btn ri-btn--inv">
             {plus.label}

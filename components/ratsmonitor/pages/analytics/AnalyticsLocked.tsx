@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { IS_DEV, setTier, UPGRADE_TEXT } from "../../lib/tier";
+import { IS_DEV, priceShort, setTier } from "../../lib/tier";
+import { usePlusLink } from "../../lib/booking";
 import { XKopf } from "./XKopf";
 import { LiveThumb } from "../../info/BranchenLive";
 import { ANALYSEN, NEU_NAME, type AnalyseId } from "../../info/branchen-enterprise";
@@ -24,18 +25,19 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
   const v = VORSCHAU[path];
   /* Neue Seite plenara.X Trends unter der früheren Adresse der Trends: ihr Name, nicht „Alt: …“ */
   const title = v ? NEU_NAME[v.id] || ANALYSEN[v.id].name : "";
+  const plus = usePlusLink("plus");
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-12 text-slate-900">
       {/* Gleicher Kopf wie die Seite selbst (Titel und Frage); darunter, was Plus freischaltet */}
       <XKopf seite={(path.split("/").pop() || "atlas") as Parameters<typeof XKopf>[0]["seite"]} />
       <section aria-label="Freischalten" className="mt-2 max-w-[760px]">
         {v && <p className="m-0 text-[18px] leading-relaxed text-slate-700">{v.text}</p>}
-        <p className="mt-3 text-[16px] text-slate-500">Die Analysen von plenara.X gehören zu Plus: alle Analysen für ganz Deutschland, 2,99 € im Monat.</p>
+        <p className="mt-3 text-[16px] text-slate-500">Die Analysen von plenara.X gehören zu Plus und Pro: alle Analysen für ganz Deutschland, ab {priceShort("plus")} im Monat.</p>
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Link href="/kontakt" className="btn-primary max-w-full whitespace-normal">Plus: {UPGRADE_TEXT}</Link>
+          <Link href={plus.href} className="btn-primary max-w-full whitespace-normal">{plus.book ? plus.label : `Plus: ${plus.label}`}</Link>
           <Link href="/preise" className="btn-secondary">Was kann plenara.X?</Link>
           {IS_DEV && (
-            <button type="button" onClick={() => setTier("pro")} className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
+            <button type="button" onClick={() => setTier("plus")} className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
               Dev: als Plus fortfahren
             </button>
           )}

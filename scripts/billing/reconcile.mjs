@@ -2,7 +2,7 @@
 /**
  * Abgleich mit Stripe (server/accounts/billing.mjs, docs/betrieb/stripe-test.md): alle Abos des Stripe-Kontos neu
  * übernehmen und plan_grants nachführen; fängt verpasste Meldungen auf. Gedacht für den täglichen Zeitplaner.
- *   ACCOUNTS_FILE=… STRIPE_SECRET_KEY=… STRIPE_WEBHOOK_SECRET=… STRIPE_PRICE_PLUS=… node scripts/billing/reconcile.mjs
+ *   ACCOUNTS_FILE=… STRIPE_SECRET_KEY=… STRIPE_WEBHOOK_SECRET=… STRIPE_PRICE_PLUS=… [STRIPE_PRICE_PRO=…] node scripts/billing/reconcile.mjs
  * Lokal ohne ACCOUNTS_FILE: die lokale D1-Datei des Dev-Servers (wie scripts/accounts/dev-setup.mjs), STRIPE_* aus .dev.vars.
  */
 import fs from 'node:fs';
@@ -28,7 +28,7 @@ try{
  sql.exec('PRAGMA busy_timeout=15000');
  const cfg=accountsConfig({...vars,ACCOUNTS:sqliteAdapter(sql)},{dev:false});
  if(!billingReady(cfg)){
-  console.error('Stripe ist nicht eingerichtet: STRIPE_SECRET_KEY (Testschlüssel; Live nur mit STRIPE_LIVE=1), STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_PLUS.');
+  console.error('Stripe ist nicht eingerichtet: STRIPE_SECRET_KEY (Testschlüssel; Live nur mit STRIPE_LIVE=1), STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_PLUS (dazu STRIPE_PRICE_PRO für Pro).');
   process.exitCode=1;
  }else console.log(JSON.stringify(await reconcile({db:cfg.db,cfg,now:Date.now()})));
 }finally{sql.close();}

@@ -28,7 +28,7 @@ const ctx = await browser.newContext({ ...(STATE ? { storageState: STATE } : {})
 await ctx.addInitScript(cursor);
 /* VIDEO_ME=plus: Testinstanz ohne Kontendatei (Daten des Servers, nur lesend) – die Oberfläche bekommt im Aufnahme-Browser ein Plus-Konto,
    sonst zeigt plenara.X die Gast-Vorschau; die App selbst bleibt unverändert */
-if (process.env.VIDEO_ME === "plus") await ctx.route("**/api/me", (r) => r.request().method() === "GET" ? r.fulfill({ contentType: "application/json", body: JSON.stringify({ accounts: true, access: "open", user: { id: "u_video", email: "video@plenara.test", name: null }, tier: "pro", tierSource: "manual", roles: [], features: { analytics: true, calendar: true }, limits: { maxResults: null, filters: true, bookmarks: 100, savedSearches: 100, notifications: 100, emails: 1, calendar: true, instant: true } }) }) : r.continue());
+if (process.env.VIDEO_ME === "plus") await ctx.route("**/api/me", (r) => r.request().method() === "GET" ? r.fulfill({ contentType: "application/json", body: JSON.stringify({ accounts: true, access: "open", user: { id: "u_video", email: "video@plenara.test", name: null }, tier: "plus", tierSource: "manual", roles: [], features: { analytics: true, calendar: true, fulltext: false }, limits: { maxResults: null, filters: true, bookmarks: 10, savedSearches: 10, notifications: 20, freqs: ["weekly"], weeklyReport: true, calendarAreas: 5, emails: 1 } }) }) : r.continue());
 await ctx.addInitScript((d) => { window.__dunkel = d; }, THEME === "dunkel");
 await ctx.addInitScript(() => {
   try { localStorage.setItem("ratsmonitor:brand:v1", "plenara-v2sq"); localStorage.setItem("ratsmonitor:tier:v1", "enterprise"); localStorage.setItem("rm-dark", window.__dunkel ? "1" : "0"); } catch {}

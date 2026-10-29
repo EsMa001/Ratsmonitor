@@ -18,7 +18,7 @@ const line = { margin: "0 0 10px", fontSize: 16, lineHeight: 1.7, color: "var(--
 export function WiderrufPage() {
   return (
     <>
-      <PageHead icon="fileText" label="Rechtliches" name="Widerruf" title="Widerrufsbelehrung" lead="Gilt für Verbraucher beim Abschluss eines kostenpflichtigen Tarifs (Plus)." />
+      <PageHead icon="fileText" label="Rechtliches" name="Widerruf" title="Widerrufsbelehrung" lead="Gilt für Verbraucher beim Abschluss eines kostenpflichtigen Tarifs (Plus oder Pro)." />
       <section className="ri-sec ri-sec--tight">
         <div className="max-w-[80ch] [&>h2:first-child]:mt-0">
           <P>Stand: Oktober 2026</P>

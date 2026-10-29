@@ -29,8 +29,8 @@ const p=text=>html`<p style="margin:0 0 12px;line-height:1.5">${text}</p>`;
 function billingOff(token,site){
  if(!token)return {text:'',html:'',headers:undefined};
  const off=`${site}/abbestellen#t=${encodeURIComponent(token)}`;
- return {text:`\nMails zu Zahlungen und zum Ende von Plus abbestellen: ${off}`,
-  html:html`<p style="margin:20px 0 0;font-size:13px"><a href="${off}" style="color:#6b7280">Mails zu Zahlungen und zum Ende von Plus abbestellen</a></p>`,
+ return {text:`\nMails zu Zahlungen und zum Ende Ihres Abos abbestellen: ${off}`,
+  html:html`<p style="margin:20px 0 0;font-size:13px"><a href="${off}" style="color:#6b7280">Mails zu Zahlungen und zum Ende Ihres Abos abbestellen</a></p>`,
   headers:{'List-Unsubscribe':`<${site}/api/notify/unsubscribe?t=${encodeURIComponent(token)}>`,'List-Unsubscribe-Post':'List-Unsubscribe=One-Click'}};
 }
 /** „2026-10-26T20:15:00Z“ → „26.10.2026 um 21:15 Uhr“ (deutsche Zeit) */
@@ -95,47 +95,47 @@ const T={
   text:`Ihr Testzugang ${tier} bei Plenara endet am ${deDate(until)}. Danach bleibt Ihr Konto bestehen, mit den Rechten des kostenlosen Kontos. Konto: ${site}/konto/profil`,
   html:page('Testzugang',[p(`Ihr Testzugang ${tier} bei Plenara endet am ${deDate(until)}.`),p('Danach bleibt Ihr Konto bestehen, mit den Rechten des kostenlosen Kontos. Sie können es jederzeit löschen.'),button(site+'/konto/profil','Zum Konto')]),
  }),
- /* Bezahlung (server/accounts/billing.mjs, Meldung invoice.paid): erste Zahlung schaltet Plus frei, jede weitere verlängert.
-    Abbestellbar wie die Benachrichtigungen (Token mit Bezug 'b', billingOff) */
- plus_paid:({first,amount,until,receipt,test,token},{site})=>{
-  const head=first?`Ihre Zahlung über ${amount} ist eingegangen. Plus ist für Ihr Konto freigeschaltet.`:`Ihre Zahlung über ${amount} ist eingegangen. Plus läuft weiter.`;
-  const next=until?`Nächste Abrechnung am ${deDate(until)}; Plus verlängert sich monatlich, bis Sie kündigen.`:'';
+ /* Bezahlung (server/accounts/billing.mjs, Meldung invoice.paid): erste Zahlung schaltet Plus oder Pro frei (tier: Name der
+    Stufe), jede weitere verlängert. Abbestellbar wie die Benachrichtigungen (Token mit Bezug 'b', billingOff) */
+ plus_paid:({first,tier='Plus',amount,until,receipt,test,token},{site})=>{
+  const head=first?`Ihre Zahlung über ${amount} ist eingegangen. ${tier} ist für Ihr Konto freigeschaltet.`:`Ihre Zahlung über ${amount} ist eingegangen. ${tier} läuft weiter.`;
+  const next=until?`Nächste Abrechnung am ${deDate(until)}; ${tier} verlängert sich monatlich, bis Sie kündigen.`:'';
   const note=test?'Testmodus: Es wurde kein echtes Geld abgebucht.':'';
   const off=billingOff(token,site);
   return {
-   subject:first?'Zahlung eingegangen: Plus ist freigeschaltet':'Zahlung eingegangen: Plus verlängert',
-   text:[head,next,receipt?`Beleg: ${receipt}`:'',`Abo verwalten (kündigen, Zahlart, Rechnungen): ${site}/konto/profil`,note,off.text].filter(Boolean).join('\n'),
+   subject:first?`Zahlung eingegangen: ${tier} ist freigeschaltet`:`Zahlung eingegangen: ${tier} verlängert`,
+   text:[head,next,receipt?`Beleg: ${receipt}`:'',`Abo verwalten (Stufe wechseln, kündigen, Zahlart, Rechnungen): ${site}/konto/profil`,note,off.text].filter(Boolean).join('\n'),
    html:page('Zahlung eingegangen',[p(head),next?p(next):'',receipt?html`<p style="margin:0 0 12px"><a href="${receipt}">Beleg ansehen</a></p>`:'',button(site+'/konto/profil','Zum Konto'),
-    p('Kündigen, Zahlart ändern und Rechnungen finden Sie im Konto unter „Abo verwalten“.'),note?p(note):'',off.html]),
+    p('Stufe wechseln, kündigen, Zahlart ändern und Rechnungen finden Sie im Konto unter „Abo verwalten“.'),note?p(note):'',off.html]),
    headers:off.headers,
   };
  },
- /* Plus endet in höchstens 3 Tagen und wird nicht verlängert (scripts/accounts/maintenance.mjs): gekündigt, Zahlung offen
-    oder eine Freischaltung von Hand mit Ende. Abbestellbar wie plus_paid */
- plus_ending:({until,reason,token},{site})=>{
-  const lead=reason==='canceled'?`Sie haben Plus gekündigt. Plus endet am ${deDate(until)}.`
-   :reason==='payment'?`Die letzte Zahlung für Plus ist nicht eingegangen. Ohne Zahlung endet Plus am ${deDate(until)}.`
-   :`Ihr Zugang zu Plus endet am ${deDate(until)}.`;
+ /* Plus oder Pro (tier) endet in höchstens 3 Tagen und wird nicht verlängert (scripts/accounts/maintenance.mjs): gekündigt,
+    Zahlung offen oder eine Freischaltung von Hand mit Ende. Abbestellbar wie plus_paid */
+ plus_ending:({tier='Plus',until,reason,token},{site})=>{
+  const lead=reason==='canceled'?`Sie haben ${tier} gekündigt. ${tier} endet am ${deDate(until)}.`
+   :reason==='payment'?`Die letzte Zahlung für ${tier} ist nicht eingegangen. Ohne Zahlung endet ${tier} am ${deDate(until)}.`
+   :`Ihr Zugang zu ${tier} endet am ${deDate(until)}.`;
   const after='Danach gelten die Rechte des kostenlosen Kontos; Ihr Konto bleibt bestehen.';
-  const act=reason==='payment'?'Bitte prüfen Sie Ihre Zahlart im Konto unter „Abo verwalten“.':reason==='canceled'?'Die Kündigung können Sie bis dahin im Konto unter „Abo verwalten“ zurücknehmen.':'Plus können Sie jederzeit buchen.';
+  const act=reason==='payment'?'Bitte prüfen Sie Ihre Zahlart im Konto unter „Abo verwalten“.':reason==='canceled'?'Die Kündigung können Sie bis dahin im Konto unter „Abo verwalten“ zurücknehmen.':`${tier} können Sie jederzeit buchen.`;
   const target=reason==='grant'?site+'/preise':site+'/konto/profil';
   const off=billingOff(token,site);
   return {
-   subject:'Ihr Plus endet in wenigen Tagen',
+   subject:`Ihr ${tier} endet in wenigen Tagen`,
    text:[lead,after,act,target,off.text].filter(Boolean).join('\n'),
-   html:page('Plus endet',[p(lead),p(after),p(act),button(target,reason==='grant'?'Stufen ansehen':'Zum Konto'),off.html]),
+   html:page(`${tier} endet`,[p(lead),p(after),p(act),button(target,reason==='grant'?'Stufen ansehen':'Zum Konto'),off.html]),
    headers:off.headers,
   };
  },
  /* Kündigungsbestätigung nach § 312k Abs. 4 BGB (server/accounts/cancel.mjs): Inhalt der Kündigung, Eingang mit Datum und
     Uhrzeit, Vertragsende. Geht an jede angegebene Adresse und ist nicht abbestellbar */
- cancel_received:({receivedAt,kind,reason,when,date,result,endsAt},{site})=>{
-  const lines=[`Eingegangen am ${deTime(receivedAt)}`,'Vertrag: Plenara Plus',
+ cancel_received:({receivedAt,tier,kind,reason,when,date,result,endsAt},{site})=>{
+  const lines=[`Eingegangen am ${deTime(receivedAt)}`,`Vertrag: ${tier?`Plenara ${tier}`:'Plenara Plus oder Pro'}`,
    `Art: ${kind==='extraordinary'?'außerordentliche Kündigung':'ordentliche Kündigung'}`,...(kind==='extraordinary'&&reason?[`Grund: ${reason}`]:[]),
    `Gewünschter Zeitpunkt: ${when==='date'&&date?`zum ${deDate(date)}`:'zum nächstmöglichen Zeitpunkt'}`];
-  const outcome=result==='canceled'?`Ihr Abo endet am ${deDate(endsAt)}. Bis dahin können Sie Plus nutzen; danach wird nichts mehr abgebucht.`
+  const outcome=result==='canceled'?`Ihr Abo endet am ${deDate(endsAt)}. Bis dahin können Sie ${tier||'Ihre Stufe'} nutzen; danach wird nichts mehr abgebucht.`
    :result==='review'?`Ihre außerordentliche Kündigung prüfen wir und melden uns. Unabhängig davon endet Ihr Abo spätestens am ${deDate(endsAt)}; es wird nichts mehr abgebucht.`
-   :result==='none'?`Zu dieser E-Mail-Adresse finden wir kein laufendes Plus-Abo. Haben Sie Plus mit einer anderen Adresse gebucht, kündigen Sie bitte mit jener Adresse: ${site}/kuendigen`
+   :result==='none'?`Zu dieser E-Mail-Adresse finden wir kein laufendes Abo. Haben Sie Plus oder Pro mit einer anderen Adresse gebucht, kündigen Sie bitte mit jener Adresse: ${site}/kuendigen`
    :'Wir bearbeiten Ihre Kündigung und bestätigen Ihnen das Vertragsende in Kürze.';
   const keep='Bitte bewahren Sie diese E-Mail als Nachweis auf.';
   return {

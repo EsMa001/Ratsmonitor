@@ -82,7 +82,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
   {
     group: "Alarme und Stufen",
     items: [
-      { q: "Wie funktionieren die Benachrichtigungen und E-Mail-Alarme?", a: "Speichern Sie eine Suche mit dem Stern neben dem Suchfeld. Unter „Meine Suchen“ schalten Sie für jede Suche mit der Glocke E-Mails bei neuen Treffern ein und wählen, ob Sie sofort, täglich oder wöchentlich informiert werden. Einem einzelnen Vorgang folgen Sie mit der Glocke auf seiner Seite: Sie erfahren, sobald er weiter beraten, vertagt oder beschlossen wird. Jede E-Mail enthält einen Link zum Abbestellen." },
+      { q: "Wie funktionieren die Benachrichtigungen und E-Mail-Alarme?", a: "Speichern Sie eine Suche mit dem Stern neben dem Suchfeld. Unter „Meine Suchen“ schalten Sie mit der Glocke E-Mails bei neuen Treffern ein. Mit dem kostenlosen Konto geht das für eine Suche oder einen Vorgang, wöchentlich. Mit Plus kommt jede Woche ein Bericht zu allen Suchen und gefolgten Vorgängen, mit Pro wählen Sie je Suche täglich oder wöchentlich. Einem einzelnen Vorgang folgen Sie mit der Glocke auf seiner Seite: Sie erfahren, wenn er weiter beraten, vertagt oder beschlossen wird. Jede E-Mail enthält einen Link zum Abbestellen." },
       { q: "Was ist der Unterschied zwischen gespeicherter Suche und Bookmark?", a: "Eine gespeicherte Suche beobachtet ein Thema oder Gebiet und meldet neue Treffer. Ein Bookmark (gespeicherter Artikel) merkt sich einen einzelnen Vorgang; mit der Glocke werden Sie informiert, wenn er weiter beraten oder beschlossen wird." },
       { q: "Kann ich meine Stufe wechseln oder kündigen?", a: "Ja. Sie können jederzeit auf eine höhere Stufe wechseln. Kostenpflichtige Stufen sind jederzeit kündbar, eine Mindestlaufzeit gibt es nicht." },
     ],
@@ -90,7 +90,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
   {
     group: "Für Unternehmen und Organisationen",
     items: [
-      { q: "Kann ich plenara im Team nutzen?", a: "Eine eigene Stufe für Teams ist geplant. Bis dahin nutzt jede Person ein eigenes Konto, mit Plus für 2,99 € im Monat." },
+      { q: "Kann ich plenara im Team nutzen?", a: "Eine eigene Stufe für Teams ist geplant. Bis dahin nutzt jede Person ein eigenes Konto, mit Plus für 2,99 € oder Pro für 19,99 € im Monat." },
       { q: "Erhalte ich eine Rechnung für mein Unternehmen?", a: "Für Unternehmen und Organisationen stimmen wir Abrechnung und Rechnungsstellung gern individuell ab. Sprechen Sie uns dazu über die Kontaktseite an." },
       { q: "Kann ich mehrere Regionen oder Themen beobachten?", a: "Ja. Legen Sie für jede Region oder jedes Thema eine eigene gespeicherte Suche an. In einer Suche können Sie außerdem mehrere Orte und mehrere Begriffe kombinieren. Wie viele Suchen Sie speichern können, hängt von der Stufe ab." },
       { q: "Was unterscheidet plenara von Vergabeportalen?", a: "Vergabeportale zeigen Ausschreibungen, also das Ende eines Prozesses. plenara zeigt, was davor in Räten und Ausschüssen beraten und beschlossen wird. So sehen Sie Projekte, bevor sie ausgeschrieben werden." },
@@ -99,12 +99,12 @@ export const FAQ: { group: string; items: Qa[] }[] = [
 ];
 
 export const PRICE_FAQ: Qa[] = [
-  { q: "Was kosten die Stufen?", a: "Suchen und Lesen ohne Anmeldung und das Konto sind kostenlos. Plus kostet 2,99 € im Monat und ist monatlich kündbar." },
+  { q: "Was kosten die Stufen?", a: "Suchen und Lesen ohne Anmeldung und das Konto sind kostenlos. Plus kostet 2,99 € im Monat, Pro 19,99 € im Monat; beide sind monatlich kündbar." },
   { q: "Brauche ich für das Konto Zahlungsdaten?", a: "Nein. Das Konto ist kostenlos und ohne Zahlungsdaten nutzbar." },
-  { q: "Kann ich später zu Plus wechseln?", a: "Ja, der Wechsel zu Plus ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
-  { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit dem kostenlosen Konto je 5 Suchen, 5 Artikel und 5 Benachrichtigungen, per E-Mail täglich oder wöchentlich. Mit Plus kommen E-Mails auch sofort, und Sie haben jeweils bis zu 100 gespeicherte Suchen, bis zu 100 gespeicherte Artikel und bis zu 100 aktive Benachrichtigungen." },
-  { q: "Welche Stufe enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo ist in Plus enthalten. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
-  { q: "Was ist plenara.X und welche Stufe enthält es?", a: "plenara.X sind die Analysen, Einblicke und Hintergründe zu plenara: Analysen (Atlas, Ortsvergleich, Trends mit Ausbreitung, Beschlusslage der Vorgänge), Einblicke (Signale, Ausschreibungen, Aktuelles, Fakten aus den Unterlagen) und Hintergründe (Fraktionen, Gremien, Themennetz). Sie sind in Plus enthalten, für ganz Deutschland. Ohne Plus bleiben Suche, Artikel und Benachrichtigungen." },
+  { q: "Kann ich später zu Plus oder Pro wechseln?", a: "Ja, der Wechsel ist jederzeit möglich, auch zwischen Plus und Pro (im Konto unter „Abo verwalten“). Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten; nach einem Wechsel nach unten gelten die Grenzen der neuen Stufe." },
+  { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit dem kostenlosen Konto je eine Suche und einen Artikel, dazu eine Benachrichtigung per E-Mail, wöchentlich. Mit Plus je 10 Suchen und Artikel und jede Woche einen Bericht zu allen Suchen und gefolgten Vorgängen. Mit Pro ist alles unbegrenzt, und die E-Mails stellen Sie je Suche ein, bis täglich." },
+  { q: "Welche Stufe enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo gehört zu jedem Konto: kostenlos für ein Gebiet, mit Plus für 5 Gebiete, mit Pro unbegrenzt. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
+  { q: "Was ist plenara.X und welche Stufe enthält es?", a: "plenara.X sind die Analysen, Einblicke und Hintergründe zu plenara: Analysen (Atlas, Ortsvergleich, Trends mit Ausbreitung, Beschlusslage der Vorgänge), Einblicke (Signale, Ausschreibungen, Aktuelles, Fakten aus den Unterlagen) und Hintergründe (Fraktionen, Gremien, Themennetz). Sie sind in Plus und Pro enthalten, für ganz Deutschland. Ohne Plus bleiben Suche, Artikel, Benachrichtigungen und Kalender." },
 ];
 
 

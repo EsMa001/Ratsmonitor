@@ -1,7 +1,9 @@
-import { UPGRADE_TEXT, useTier } from "../lib/tier";
+import { FREQ_LABEL, freqIn, unlimited, useTier } from "../lib/tier";
+import { openGate } from "../components/GateDialog";
+import { useEntitlements } from "../lib/entitlements";
 import { api, useMe } from "../lib/account";
 import { areaOwners, calendarAgs, cleanAreas, type CalArea } from "../lib/calendarAreas";
-import { AccountLoading, LoginRequired } from "../components/TierNotice";
+import { AccountLoading, LoginRequired, UsagePill } from "../components/TierNotice";
 import { CalendarFeed } from "../components/CalendarFeed";
 import { useToast } from "../state/toast";
 import { IconCalendarSync, IconDownload } from "../components/icons";
@@ -35,7 +37,8 @@ export function KalenderPage() {
   const { geo } = useData();
   const { saved } = useAccount();
   /* Gebiete aus dem Konto, je Konto und Kontostand geladen */
-  const key = me.user && limits.calendar ? `${me.user.id}:${me.rev}` : "";
+  const { needs } = useEntitlements();
+  const key = me.user && limits.calendarAreas > 0 ? `${me.user.id}:${me.rev}` : "";
   const [stored, setStored] = useState<{ key: string; areas: CalArea[]; agsSent: string[]; mail: boolean; freq: NotifyFreq } | null>(null);
   useEffect(() => {
     if (!key) return;
@@ -50,16 +53,22 @@ export function KalenderPage() {
   }, [key]);
   const loaded = !!key && stored?.key === key;
   const cfg: CalSettings = useMemo(() => ({ areas: loaded && stored ? stored.areas : [] }), [loaded, stored]);
+  /* Gespeicherter Stand: Konto und Plus sehen auf dem Server nur gespeicherte Gebiete (calendarAreas), deshalb nach dem
+     Speichern die Termine neu holen */
+  const [savedRev, setSavedRev] = useState(0);
   /* Speichern im Konto: Gebiete und die im Browser gerechnete Schlüsselliste (mit Umkreis); bei Fehler zurück */
   const save = (next: CalSettings) => {
     if (!stored) return;
     const before = stored;
     const ags = calendarAgs(next.areas, geo);
     setStored({ ...stored, areas: next.areas, agsSent: ags });
-    api("/api/me/settings", { method: "PUT", body: { calendar: next.areas, calendarAgs: ags } }).catch((e: Error) => {
-      setStored(before);
-      toast(e.message);
-    });
+    api("/api/me/settings", { method: "PUT", body: { calendar: next.areas, calendarAgs: ags } }).then(
+      () => setSavedRev((v) => v + 1),
+      (e: Error) => {
+        setStored(before);
+        toast(e.message);
+      },
+    );
   };
   /* E-Mail bei neuen Sitzungen in den Gebieten (server/accounts/notify.mjs); bei Fehler zurück */
   const saveMail = (next: { mail: boolean; freq: NotifyFreq }) => {
@@ -105,7 +114,7 @@ export function KalenderPage() {
   /* Termine des sichtbaren Monats laden */
   /* Ergebnis je Abfrage (Gebiete und Monat); solange die aktuelle fehlt, lädt sie */
   const from = iso(month), to = iso(new Date(month.getFullYear(), month.getMonth() + 1, 0));
-  const calUrl = agsList.length && today ? `/api/calendar?ags=${agsList.join(",")}&from=${from}&to=${to}` : "";
+  const calUrl = agsList.length && today ? `/api/calendar?ags=${agsList.join(",")}&from=${from}&to=${to}${savedRev ? `&v=${savedRev}` : ""}` : "";
   const [got, setGot] = useState<{ url: string; events: CalEvent[]; error: boolean }>({ url: "", events: [], error: false });
   const events = useMemo(() => (calUrl && got.url === calUrl ? got.events : []), [calUrl, got]);
   const state = !calUrl ? "idle" : got.url !== calUrl ? "loading" : got.error ? "error" : "idle";
@@ -144,8 +153,15 @@ export function KalenderPage() {
     if (q.length < 2 || !regions) return [];
     return regions.filter((r) => norm(r.name).includes(q)).slice(0, 6);
   }, [find, regions]);
+  /* Gebiete je Stufe (Konto 1, Plus 5, Pro unbegrenzt); am Limit der Hinweis auf die nächste Stufe */
+  const maxAreas = limits.calendarAreas;
+  const over = cfg.areas.length > maxAreas;
   const add = (ags: string, name: string, radius = km) => {
     if (cfg.areas.some((a) => a.ags === ags && a.km === radius)) return;
+    if (cfg.areas.length >= maxAreas) {
+      setFind("");
+      return openGate({ feature: "calendarAreas", needs: needs("calendarAreas") });
+    }
     save({ ...cfg, areas: [...cfg.areas, { ags, name, km: radius }] });
     setFind("");
   };
@@ -160,11 +176,11 @@ export function KalenderPage() {
   const dayLabel = day ? new Date(day + "T00:00:00").toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" }) : "";
   const regionName = (ags: string) => geo?.info(ags).name ?? regions?.find((r) => r.ags === ags)?.name ?? ags;
 
-  /* Nur Plus: alle anderen sehen, was der Kalender kann, und den Weg zur Stufe */
+  /* Ab dem kostenlosen Konto; ohne Gebiete in der Stufe sieht man, was der Kalender kann */
   const head = <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" />;
   if (!tierReady) return <>{head}<section className="ri-sec ri-sec--tight"><AccountLoading /></section></>;
-  if (!me.user) return <>{head}<section className="ri-sec ri-sec--tight"><LoginRequired title="Sitzungskalender" text="Melden Sie sich an. Der Sitzungskalender ist Teil von Plus." /></section></>;
-  if (!limits.calendar) return <KalenderTeaser />;
+  if (!me.user) return <>{head}<section className="ri-sec ri-sec--tight"><LoginRequired title="Sitzungskalender" text="Melden Sie sich an. Den Sitzungskalender gibt es mit jedem kostenlosen Konto." /></section></>;
+  if (!limits.calendarAreas) return <KalenderTeaser />;
   if (!loaded) return <>{head}<section className="ri-sec ri-sec--tight"><AccountLoading /></section></>;
   return (
     <>
@@ -275,7 +291,11 @@ export function KalenderPage() {
       <section className="ri-sec ri-sec--tight">
         <div className="max-w-[640px]">
           <div>
-            <h2 className="m-0 text-[18px] font-semibold text-slate-900">Meine Gebiete</h2>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              <h2 className="m-0 text-[18px] font-semibold text-slate-900">Meine Gebiete</h2>
+              {!unlimited(maxAreas) && <UsagePill label="Gebiete" used={cfg.areas.length} max={maxAreas} />}
+            </div>
+            {over && <p className="m-0 mt-2 text-[14px] text-amber-800">In Ihrer Stufe zeigt der Kalender die ersten {maxAreas === 1 ? "Gebiet" : `${maxAreas} Gebiete`}, ohne Umkreis. Entfernen Sie Gebiete oder wählen Sie eine höhere Stufe.</p>}
             <ul className="m-0 mt-3 list-none p-0">
               {cfg.areas.map((a, i) => (
                 <li key={a.ags + a.km} className="flex items-center gap-3 border-b border-slate-200 py-2.5">
@@ -336,7 +356,7 @@ export function KalenderPage() {
               <IconBell size={28} className="text-teal-700" />
               <h3 className="m-0 mt-3 text-[16px] font-semibold text-slate-900">Per E-Mail benachrichtigen</h3>
               <p className="m-0 mt-1.5 text-[16px] leading-relaxed text-slate-500">
-                Sie erhalten eine E-Mail, sobald in Ihren Gebieten <strong className="font-semibold text-slate-900">neue Sitzungen angesetzt</strong> werden, sofort, täglich oder wöchentlich.
+                Sie erhalten eine E-Mail, sobald in Ihren Gebieten <strong className="font-semibold text-slate-900">neue Sitzungen angesetzt</strong> werden, {limits.freqs.map((f) => FREQ_LABEL[f]).join(" oder ")}.
               </p>
               <div className="mt-4 flex flex-wrap items-center gap-3 text-[14px]">
                 <button type="button" role="switch" aria-checked={!!stored?.mail} aria-label="Benachrichtigung per E-Mail" disabled={!loaded} onClick={() => stored && saveMail({ mail: !stored.mail, freq: stored.freq })} className={`relative h-6 w-10 flex-none rounded-full transition-colors ${stored?.mail ? "bg-teal-600" : "bg-slate-200"}`}>
@@ -347,12 +367,8 @@ export function KalenderPage() {
                     id="cal-mail-freq"
                     label="Häufigkeit"
                     allLabel=""
-                    value={stored.freq}
-                    options={[
-                      { value: "instant", label: "Sofort" },
-                      { value: "daily", label: "Täglich" },
-                      { value: "weekly", label: "Wöchentlich" },
-                    ]}
+                    value={freqIn(limits, stored.freq)}
+                    options={limits.freqs.map((f) => ({ value: f, label: FREQ_LABEL[f].replace(/^./, (c) => c.toUpperCase()) }))}
                     onChange={(v) => saveMail({ mail: true, freq: v as NotifyFreq })}
                     size="sm"
                     highlight={false}
@@ -396,11 +412,11 @@ const CAL_POINTS: [string, string][] = [
   ["Tagesordnung vorab", "Zu jedem Termin die beratenen Vorgänge, bevor entschieden wird."],
 ];
 
-/** Kalender für Stufen ohne Kalender: was er kann, und der Weg zu Plus */
+/** Kalender für Stufen ohne Kalender: was er kann, und der Weg zum Konto */
 function KalenderTeaser() {
   return (
     <>
-      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine. In Ihren Gebieten.</>} lead="Der Sitzungskalender ist Teil von Plus." />
+      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine. In Ihren Gebieten.</>} lead="Den Sitzungskalender gibt es mit jedem kostenlosen Konto: ein Gebiet, mit Plus fünf, mit Pro unbegrenzt." />
       <section className="ri-sec ri-sec--tight">
         <h2 className="ri-h2">Was der Kalender kann</h2>
         <div className="ri-points ri-points--2">
@@ -413,8 +429,8 @@ function KalenderTeaser() {
           ))}
         </div>
         <div className="ri-actions ri-actions--far">
-          <Link href="/kontakt" className="ri-btn ri-btn--dark">
-            Plus: {UPGRADE_TEXT}
+          <Link href="/anmelden" className="ri-btn ri-btn--dark">
+            Kostenlos anmelden
           </Link>
           <Link href="/preise" className="ri-btn ri-btn--light">
             Preise vergleichen

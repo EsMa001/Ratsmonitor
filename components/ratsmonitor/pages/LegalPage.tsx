@@ -74,7 +74,7 @@ function Datenschutz() {
       <H2>2. Das Wichtigste in Kürze</H2>
       <Ul
         items={[
-          "Die Suche ist ohne Konto nutzbar. Ein Konto brauchen Sie für gespeicherte Suchen und Artikel, den Kalender und Plus.",
+          "Die Suche ist ohne Konto nutzbar. Ein Konto brauchen Sie für gespeicherte Suchen und Artikel, den Kalender, Plus und Pro.",
           "Die Anmeldung geschieht ohne Passwort, mit einem Link oder Code per E-Mail.",
           "Wir setzen keine Analyse- oder Tracking-Werkzeuge und keine Werbe-Cookies ein. Es gibt nur technisch notwendige Cookies.",
           "Unser Server steht in einem Rechenzentrum in Deutschland. Schriftarten und Kartendaten liefern wir selbst aus; beim Aufruf der Seite werden keine Daten an Google Fonts oder Kartendienste übertragen.",
