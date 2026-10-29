@@ -53,7 +53,7 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
 /** Verbrauch eines Limits, z. B. „1 von 1 · Konto“, mit Verweis auf die nächste Stufe am Limit */
 export function UsagePill({ label, used, max }: { label: string; used: number; max: number }) {
   const { tier } = useTier();
-  const links = { plus: usePlusLink("plus"), pro: usePlusLink("pro") };
+  const links = { plus: usePlusLink(), pro: usePlusLink("pro") };
   const full = Number.isFinite(max) && used >= max;
   /* Am Limit: Konto zu Plus, Plus zu Pro (zur Buchung, sonst zur Anfrage); Pro und Enterprise haben keine Grenze */
   const next = rankOf(tier) < rankOf("plus") ? "plus" : "pro";
@@ -65,7 +65,7 @@ export function UsagePill({ label, used, max }: { label: string; used: number; m
       <span className="text-slate-500">· {TIER_LABEL[tier]}</span>
       {full && (
         <Link href={more && plus.book ? plus.href : "/kontakt"} title={more && plus.book ? plus.label : UPGRADE_TEXT} className="font-semibold text-amber-900 underline underline-offset-2">
-          {more ? `Mehr mit ${TIER_LABEL[next]}` : "Mehr auf Anfrage"}
+          {more ? (next === "plus" ? "Mehr mit Plus oder Pro" : "Mehr mit Pro") : "Mehr auf Anfrage"}
         </Link>
       )}
     </span>

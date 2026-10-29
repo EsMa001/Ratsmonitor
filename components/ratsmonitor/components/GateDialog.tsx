@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { useEffect, useRef, useSyncExternalStore } from "react";
-import { countLabel, IS_DEV, LIMITS, nextTier, setTier, getTier, priceLabel, TIER_LABEL, UPGRADE_TEXT, type Tier } from "../lib/tier";
+import { countLabel, IS_DEV, LIMITS, nextTier, setTier, getTier, TIER_LABEL, UPGRADE_TEXT, type Tier } from "../lib/tier";
 import { getMe, useMe } from "../lib/account";
-import { usePlusLink } from "../lib/booking";
+import { type Bookable } from "../lib/booking";
+import { AboModels } from "./AboModels";
 
 /** Funktionen, die je nach Stufe gesperrt oder begrenzt sind */
 export type GateFeature = "results" | "filters" | "bookmarks" | "searches" | "notifications" | "emails" | "calendarAreas" | "freq" | "weeklyReport";
@@ -102,11 +103,8 @@ const FEATURE: Record<GateFeature, { title: string; login: string; upgrade: (tie
   },
 };
 const NO_TIER = "Ihr Konto ist noch für keine Stufe freigeschaltet.";
-/** Kurz, was Plus und Pro bringen (unter dem Text, mit Link zur Preisseite) */
-const OFFER: Partial<Record<Tier, string>> = {
-  plus: `alle Treffer, plenara.X, je ${P.savedSearches} Suchen und Artikel, Wochenbericht, Kalender mit ${P.calendarAreas} Gebieten`,
-  pro: "alles unbegrenzt, Mails je Suche bis täglich",
-};
+/** Abo-Modelle, die eine Grenze heben (AboModels unter dem Text): braucht es Pro, nur Pro; weitere Empfänger gibt es noch nicht */
+const modelsFor = (g: Gate): Bookable[] => (g.feature === "emails" ? [] : g.needs === "pro" ? ["pro"] : ["plus", "pro"]);
 
 /** Gemeinsamer Hinweis-Dialog für gesperrte Funktionen; einmal in der App eingebunden */
 export function GateDialog() {
@@ -119,8 +117,6 @@ export function GateDialog() {
     () => null,
   );
   const me = useMe();
-  const plus = usePlusLink("plus");
-  const pro = usePlusLink("pro");
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     if (g && !ref.current?.open) ref.current?.showModal();
@@ -132,7 +128,7 @@ export function GateDialog() {
   const login = !me.user && me.accounts;
   const upgrade = f ? f.upgrade(me.tier) : "";
   const text = f && g ? (login ? f.login : me.tier === "guest" ? `${NO_TIER} ${upgrade}`.trim() : upgrade || NO_TIER) : "";
-  const book = g?.needs === "pro" ? pro : plus;
+  const models = g ? modelsFor(g) : [];
   const here = typeof window === "undefined" ? "/" : window.location.pathname + window.location.search;
 
   return (
@@ -155,27 +151,19 @@ export function GateDialog() {
             {text}
             {g.feature === "results" && g.total ? ` Insgesamt gibt es ${g.total.toLocaleString("de-DE")} Treffer.` : ""}
           </p>
-          {OFFER[g.needs] && (
-            <p className="m-0 mt-4 border-t border-slate-200 pt-4 text-[14px] leading-relaxed text-slate-600">
-              <span className="font-semibold text-slate-900">{TIER_LABEL[g.needs]}</span> · {priceLabel(g.needs)} · monatlich kündbar: {OFFER[g.needs]}.{" "}
-              <Link href="/preise" onClick={closeGate} className="font-medium text-teal-700 no-underline after:content-['_→'] hover:underline">
-                Stufen ansehen
-              </Link>
-            </p>
-          )}
+          {/* An jeder Grenze derselbe Hinweis auf die Abo-Modelle */}
+          {models.length > 0 && <AboModels only={models} onPick={closeGate} className="mt-4 border-t border-slate-200 pt-4" />}
           <div className="mt-5 flex flex-wrap items-center gap-2">
             {login ? (
               <Link href={`/anmelden?weiter=${encodeURIComponent(here)}`} onClick={closeGate} className="btn-primary">
-                Anmelden
-              </Link>
-            ) : g.needs === "plus" || g.needs === "pro" ? (
-              <Link href={book.href} onClick={closeGate} className="btn-primary">
-                {book.label}
+                Kostenlos anmelden
               </Link>
             ) : (
-              <Link href="/kontakt" onClick={closeGate} className="btn-primary">
-                {UPGRADE_TEXT}
-              </Link>
+              !models.length && (
+                <Link href="/kontakt" onClick={closeGate} className="btn-primary">
+                  {UPGRADE_TEXT}
+                </Link>
+              )
             )}
             <button type="button" onClick={closeGate} className="btn-secondary">
               Später

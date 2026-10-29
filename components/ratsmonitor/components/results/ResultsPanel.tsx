@@ -9,6 +9,7 @@ import { IconArrowUp, IconEmptySearch, IconChevronLeft, IconChevronRight } from 
 import { ArticleCard } from "./ArticleCard";
 import { useEntitlements } from "../../lib/entitlements";
 import { LIMITS } from "../../lib/tier";
+import { AboModels } from "../AboModels";
 import { CountDots } from "../CountDots";
 import { isPhone } from "../../lib/usePhone";
 
@@ -187,19 +188,23 @@ export function ResultsPanel() {
             <IconChevronRight size={20} />
           </button>
         )}
-        {/* Gast und Konto: sagen, warum nach der ersten Seite Schluss ist (der Server liefert ihnen keine zweite Seite) */}
+        {/* Gast und Konto: sagen, warum nach der ersten Seite Schluss ist (der Server liefert ihnen keine zweite Seite), und wie
+            an jeder Grenze die Abo-Modelle zeigen (AboModels) */}
         {ready && Number.isFinite(limits.maxResults) && res.hasMore && (
-          limits.maxResults <= LIMITS.guest.maxResults ? (
-            <span className="w-full text-center text-[14px] text-slate-500">
-              Mit einem kostenlosen Konto sehen Sie {LIMITS.basic.maxResults} Treffer, mit Plus alle.{" "}
-              <button type="button" className="font-medium text-teal-700 hover:underline" onClick={() => push("/anmelden")}>Anmelden →</button>
-            </span>
-          ) : (
-            <span className="w-full text-center text-[14px] text-slate-500">
-              Alle Treffer sehen Sie mit Plus.{" "}
-              <button type="button" className="font-medium text-teal-700 hover:underline" onClick={() => push("/preise")}>Preise →</button>
-            </span>
-          )
+          <div className="mt-2 w-full max-w-[460px] rounded-2xl border border-slate-200 p-4 text-left">
+            <p className="m-0 text-[16px] font-semibold text-slate-900">Alle Treffer mit einem Abo</p>
+            <p className="m-0 mb-3 mt-1 text-[14px] text-slate-500">
+              {limits.maxResults <= LIMITS.guest.maxResults ? (
+                <>
+                  Ohne Anmeldung sehen Sie {LIMITS.guest.maxResults} Treffer, mit einem kostenlosen Konto {LIMITS.basic.maxResults}.{" "}
+                  <button type="button" className="font-medium text-teal-700 hover:underline" onClick={() => push("/anmelden")}>Kostenlos anmelden →</button>
+                </>
+              ) : (
+                <>Mit dem kostenlosen Konto sehen Sie {LIMITS.basic.maxResults} Treffer je Suche.</>
+              )}
+            </p>
+            <AboModels />
+          </div>
         )}
         {res.page >= MAX_PAGE && pages > MAX_PAGE && <span className="w-full text-center text-[14px] text-slate-500">Für weitere Treffer bitte die Suche eingrenzen.</span>}
       </nav>

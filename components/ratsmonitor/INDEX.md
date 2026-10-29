@@ -861,6 +861,7 @@ z- analytics.css:632
 - App.tsx (76, ⚠2): MonitorApp
 
 ### components/ratsmonitor/components/
+- AboModels.tsx (49): AboModels
 - AccountMenu.tsx (90, ⚠4): AccountMenu
 - ActiveFilters.tsx (125): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
@@ -883,11 +884,11 @@ z- analytics.css:632
 - FilterSelect.tsx (124, ⚠1): FilterSelect
 - FollowButton.tsx (36): FollowButton
 - Footer.tsx (79): LEGAL, Footer
-- GateDialog.tsx (201): GateFeature, needsFor, openGate, openLimitGate, GateDialog
+- GateDialog.tsx (189): GateFeature, needsFor, openGate, openLimitGate, GateDialog
 - Header.tsx (144, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
 - PlanCards.tsx (288, ⚠1): planFeatures, PlanCards, PlanSummary
-- PlusHint.tsx (66, ⚠2): PlusHint
+- PlusHint.tsx (40, ⚠1): PlusHint
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
@@ -909,7 +910,7 @@ z- analytics.css:632
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (174, ⚠2): ArticleCard, StepTimeline
-- ResultsPanel.tsx (233): ResultsPanel
+- ResultsPanel.tsx (238): ResultsPanel
 
 ### components/ratsmonitor/components/
 - suggestRows.ts (214): Row, takePickedText, RowContext, buildRows
@@ -1028,7 +1029,7 @@ z- analytics.css:632
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (232, ⚠18): ANALYSE_THUMBS, MethodikText
-- AnalyticsLocked.tsx (56): AnalyticsLocked
+- AnalyticsLocked.tsx (54): AnalyticsLocked
 - AnalyticsPages.tsx (64): AnalyticsPages
 - AtlasMap.tsx (108, ⚠2): AtlasMap
 - AtlasPage.tsx (100): AtlasPage
