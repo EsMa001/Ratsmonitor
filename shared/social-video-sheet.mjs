@@ -36,11 +36,14 @@ const ORD_SPECIAL={1:'ersten',2:'zweiten',3:'dritten',7:'siebten',8:'achten'};
 export const spokenDay=d=>ORD_SPECIAL[d]||(d<20?spokenNumber(d)+'ten':spokenNumber(d)+'sten');
 export const spokenDate=iso=>{const [,m,d]=iso.split('-').map(Number);return `${spokenDay(d)} ${MONTHS[m-1]}`;};
 const shortDate=iso=>{const [y,m,d]=iso.split('-');return `${d}.${m}.${y.slice(2)}`;};
+/** Betrag: „241.000 €“, „241.000,- €“, „241.000,00 €“, auch „200.000,-“ ohne Eurozeichen */
+const AMOUNT=/(\d{1,3}(?:\.\d{3})+|\d+)(?:,-\s?(?:€|Euro)?|,00\s?(?:€|Euro)|\s?(?:€|Euro))/g;
+const AMOUNT_LABELS=[['Gesamtkosten','Kosten'],['Kostenschätzung','Kosten'],['Kosten','Kosten'],['Förderung','Förderung'],['Zuschuss','Zuschuss'],['Zuwendung','Zuschuss'],['Haushaltsmittel','Haushaltsmittel'],['Eigenanteil','Eigenanteil'],['Puffer','Puffer']];
 const SPOKEN_YEAR=/\b(19|20)\d{2}\b/g;
 /** Text für die Stimme: Jahreszahlen und Beträge ausgeschrieben, „&“ und Kürzel ersetzt */
 export function spoken(text){
  return String(text)
-  .replace(/(\d{1,3}(?:\.\d{3})+|\d+)(?:,-|,00)?\s?(?:€|Euro)/g,(_,n)=>spokenNumber(+n.replace(/\./g,''))+' Euro')
+  .replace(AMOUNT,(_,n)=>spokenNumber(+n.replace(/\./g,''))+' Euro')
   .replace(/\b(\d+)\s?%/g,(_,n)=>spokenNumber(+n)+' Prozent')
   .replace(SPOKEN_YEAR,y=>spokenNumber(+y))
   .replace(/\bP&R\b/g,'P und R').replace(/&/g,' und ').replace(/\bff\.?/g,'und folgende')
@@ -71,7 +74,6 @@ export function shortTitle(title,regionName){
  t=t.replace(/\s+/g,' ').replace(/^[\s:,-]+|[\s:,-]+$/g,'');
  return t&&t.length<=34?t:null;
 }
-const AMOUNT=/(\d{1,3}(?:\.\d{3})+|\d+)(?:,-|,\d{2})?\s?(?:€|Euro)/g;
 
 /**
  * @param {{title:string,status?:string,committee?:string,events?:{date:string,committee:string}[],ruleSummary?:{short?:string},theme?:{id?:string}}} topic
@@ -92,15 +94,17 @@ export function videoSheet(topic,{regionName,today,titleShort}){
  if(!t2)warnings.push(topic.title?'Titel lässt sich nicht auf 34 Zeichen kürzen':'kein Titel');
  else if(t2.length>34)warnings.push(`Titelzeile 2 hat ${t2.length} Zeichen (höchstens 34): Kurzform fehlt`);
  const proposal=!['approved','rejected'].includes(topic.status);
- const amounts=quote?[...quote.matchAll(AMOUNT)].map(m=>({text:m[1]+' €',spoken:spokenNumber(+m[1].replace(/\./g,''))+' Euro'})):[];
+ const amounts=[];
+ if(quote){let from=0;for(const m of quote.matchAll(AMOUNT)){
+  const before=quote.slice(from,m.index),hit=AMOUNT_LABELS.map(([k,l])=>({l,i:before.lastIndexOf(k)})).filter(x=>x.i>=0).sort((a,b)=>b.i-a.i)[0];
+  const value=+m[1].replace(/\./g,'');from=m.index+m[0].length;
+  if(!amounts.some(a=>a.value===value))amounts.push({text:m[1]+' €',value,spoken:spokenNumber(value)+' Euro',label:hit?hit.l:null});}}
+ const days=next?Math.round((Date.UTC(...next.date.split('-').map((x,i)=>i===1?+x-1:+x))-Date.UTC(...today.split('-').map((x,i)=>i===1?+x-1:+x)))/864e5):null;
  // Sprechtext
  const w=s=>s.split(/\s+/).length,place=regionName;
- let hook=null;
- for(const f of [`${place}: ${spoken(t2)}. Stand: ${st.spokenWord}.`,`${place}: ${spoken(t2)}. Der Stand ist ${st.spokenWord}.`,`${place}: ${spoken(t2)}. Der aktuelle Stand ist ${st.spokenWord}.`]){
-  const before=f.slice(0,f.lastIndexOf(st.spokenWord.split(' ')[0])).trim(),pos=(before?w(before):0)+1; // Position des Standworts
-  if(pos>=5&&pos<=8){hook=f;break;}
- }
- if(!hook){hook=`${place}: ${spoken(t2)}. Der Stand ist ${st.spokenWord}.`;warnings.push('Standwort nicht als 5. bis 8. Wort der Hook-Szene');}
+ // Hook: Standwort gleich im ersten Satz („Beschlossen in Dresden: Hitzeaktionsplan …“), so schlägt der Stempel in der ersten Sekunde ein
+ const hw=st.word==='Zur Kenntnis'?'Zur Kenntnis genommen':st.word;
+ const hook=`${hw} in ${place}: ${spoken(t2)}.`;
  const stand=[st.word==='Stand offen'?'Stand offen.':`${st.spokenWord[0].toUpperCase()+st.spokenWord.slice(1)}.`,st.spokenExtra,
   last?`Zuletzt beraten: ${last.committee}, am ${spokenDate(last.date)}.`:null,
   next?`Nächste Sitzung: ${next.committee}, ${spokenDate(next.date)}.`:null].filter(Boolean).join(' ');
@@ -114,7 +118,7 @@ export function videoSheet(topic,{regionName,today,titleShort}){
   ort:regionName,titel1:`${regionName}:`,titel2:t2,
   stand:{word:st.word,stamp:st.stamp,icon:st.icon,extra:st.extra,statusKey:STATUS[topic.status]?topic.status:'unknown'},
   zitat:quote,zitat2:quote2,verlauf,themaIcon:THEME_ICON[topic.theme?.id]||'pin',zitatHinweis:proposal?'Vorschlag aus der Vorlage':'Aus der Vorlage',
-  betraege:amounts,meta,
+  betraege:amounts,naechste:next?{committee:next.committee,datum:shortDate(next.date),tage:days}:null,meta,
   quelle:`Quelle: öffentliche Ratsunterlagen der Stadt ${regionName}`,
   sprechtext:{1:hook,2:kern,3:verlaufText,4:'',5:stand,6:'Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenara.'}};
 }

@@ -29,14 +29,14 @@ test('Wirtschaftswege: Stand offen, Verlauf, Zitat', () => {
  assert.equal(s.stand.extra,'Noch nicht beschlossen');
  assert.deepEqual(s.meta,['Rat der Stadt · zuletzt beraten am 13.10.26','Davor: Stadtentwicklungs- und Bauausschuss · 08.09.26']);
  assert.equal(s.zitatHinweis,'Vorschlag aus der Vorlage');
- assert.match(s.sprechtext[1],/^Billerbeck: Wirtschaftswege ab zweitausendsiebenundzwanzig\. Stand: offen\.$/);
+ assert.match(s.sprechtext[1],/^Stand offen in Billerbeck: Wirtschaftswege ab zweitausendsiebenundzwanzig\.$/);
  assert.match(s.sprechtext[5],/Noch kein Beschluss\. Zuletzt beraten: Rat der Stadt, am dreizehnten Oktober\.$/);
 });
 
-test('P&R: In Beratung, Standwort als 5. bis 8. Wort, gesprochene Haushaltsangabe', () => {
+test('P&R: In Beratung, Standwort im ersten Satz, gesprochene Haushaltsangabe', () => {
  const s=videoSheet(pr,{regionName:'Billerbeck',today:'2026-10-31',titleShort:'P&R Weihgarten'});
  assert.equal(s.ok,true,s.warnings.join('; '));
- assert.equal(s.sprechtext[1],'Billerbeck: P und R Weihgarten. Stand: In Beratung.');
+ assert.equal(s.sprechtext[1],'In Beratung in Billerbeck: P und R Weihgarten.');
  assert.match(s.sprechtext[2],/Haushalt zweitausendsiebenundzwanzig und folgende zu verplanen/);
 });
 
@@ -74,3 +74,22 @@ test('Titel werden vor „ - “ und „:“ gekürzt, der Ort fällt weg', () =
  assert.equal(shortTitle('Ein sehr langer Titel ohne Trennzeichen der nicht passt','Billerbeck'),null);
 });
 
+
+test('Beträge mit Bezeichnung (auch „200.000,-“ ohne Eurozeichen) und Tage bis zur nächsten Sitzung', () => {
+ const t={title:'P&R Weihgarten',status:'consulting',events:[{date:'2026-10-13',committee:'Rat der Stadt'},{date:'2026-11-12',committee:'Rat der Stadt'}],
+  ruleSummary:{short:'Die Gesamtkosten werden auf 241.000,- € geschätzt, dem steht eine voraussichtliche Förderung von 200.000,- gegenüber und wird beschlossen.'}};
+ const s=videoSheet(t,{regionName:'Billerbeck',today:'2026-10-31',titleShort:'P&R Weihgarten'});
+ assert.deepEqual(s.betraege.map(b=>[b.value,b.label]),[[241000,'Kosten'],[200000,'Förderung']]);
+ assert.equal(s.naechste.tage,12);
+ assert.equal(s.naechste.datum,'12.11.26');
+ assert.match(s.sprechtext[1],/^In Beratung in Billerbeck/);
+ const d=videoSheet({...t,events:[{date:'2026-10-13',committee:'Rat der Stadt'}]},{regionName:'Billerbeck',today:'2026-10-31',titleShort:'P&R Weihgarten'});
+ assert.equal(d.naechste,null);
+});
+
+test('Hook nennt das Standwort in jedem Status als erste Wörter', () => {
+ for (const [status,start] of [['approved','Beschlossen in Ort'],['rejected','Abgelehnt in Ort'],['announced','Angekündigt in Ort'],['recommended','Empfehlung in Ort'],['postponed','Vertagt in Ort'],['info','Zur Kenntnis genommen in Ort'],['unknown','Stand offen in Ort']]) {
+  const s=videoSheet({title:'Thema',status,events:[{date:'2026-10-13',committee:'Rat'}],ruleSummary:{short:'Der Rat beschließt das Thema für alle Beteiligten im Ort.'}},{regionName:'Ort',today:'2026-10-31',titleShort:'Thema'});
+  assert.ok(s.sprechtext[1].startsWith(start),s.sprechtext[1]);
+ }
+});
