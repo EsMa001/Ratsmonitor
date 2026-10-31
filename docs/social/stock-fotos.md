@@ -2966,14 +2966,14 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Kraftsdorf | Thüringen | 16076089 | – | – | noch nicht gesucht | – |
 | Krailling | Bayern | 09188127 | – | – | noch nicht gesucht | – |
 | Kranzberg | Bayern | 09178137 | – | – | noch nicht gesucht | – |
-| Krauchenwies | Baden-Württemberg | 08437065 | – | – | noch nicht gesucht | – |
+| Krauchenwies | Baden-Württemberg | 08437065 | 2743967 | https://pixabay.com/de/photos/fluss-krauchenwies-f%C3%BCrstenpark-2743967/ | Pixabay-Lizenz; Fluss im Fürstenpark Krauchenwies | 8 |
 | Krauschwitz i.d.O.L. | Sachsen | 14626250 | – | – | noch nicht gesucht | – |
-| Krayenberggemeinde | Thüringen | 16063101 | – | – | noch nicht gesucht | – |
+| Krayenberggemeinde | Thüringen | 16063101 | 1225496 | https://pixabay.com/de/photos/burg-berg-krayenberg-tiefenort-1225496/ | Pixabay-Lizenz; Burg Krayenberg (Tiefenort, Ortsteil der Gemeinde) | 7 |
 | Kreischa | Sachsen | 14628220 | – | – | noch nicht gesucht | – |
-| Kressbronn am Bodensee | Baden-Württemberg | 08435029 | – | – | noch nicht gesucht | – |
-| Kreuth | Bayern | 09182124 | – | – | noch nicht gesucht | – |
+| Kressbronn am Bodensee | Baden-Württemberg | 08435029 | 282484 | https://pixabay.com/de/photos/bodensee-see-kressbronn-282484/ | Pixabay-Lizenz; Bodensee bei Kressbronn | 8 |
+| Kreuth | Bayern | 09182124 | 1127758 | https://pixabay.com/photos/bavaria-wildbad-kreuth-tegernsee-1127758/ | Pixabay-Lizenz; Wildbad Kreuth am Tegernsee (Ortsteil) | 7 |
 | Kreßberg | Baden-Württemberg | 08127101 | – | – | noch nicht gesucht | – |
-| Kriebstein | Sachsen | 14522300 | – | – | noch nicht gesucht | – |
+| Kriebstein | Sachsen | 14522300 | 1191318 | https://pixabay.com/de/photos/burg-kriebstein-sachsen-m%C3%A4rchenburg-1191318/ | Pixabay-Lizenz; Burg Kriebstein | 9 |
 | Kronau | Baden-Württemberg | 08215039 | – | – | noch nicht gesucht | – |
 | Krün | Bayern | 09180122 | – | – | noch nicht gesucht | – |
 | Kubschütz | Sachsen | 14625290 | – | – | noch nicht gesucht | – |
