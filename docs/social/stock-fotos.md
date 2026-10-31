@@ -550,7 +550,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 499 | Kulmbach | 09477128 | 2897132 | https://pixabay.com/photos/kulmbach-castle-plassenburg-2897132/ | Pixabay-Lizenz, Stadt mit Plassenburg | 8 |
 | 500 | Helmstedt | 03154028 | – | – | kein Bild gefunden | – |
 | 501 | Horb am Neckar | 08237040 | 17939738 | https://www.pexels.com/zh-cn/photo/17939738/ | Pexels-Lizenz, Ortsbezug nur über Schlagwörter | 6 |
-| 502 | Rinteln | 03257031 | – | – | kein Bild gefunden | – |
+| 502 | Rinteln | 03257031 | 226546 | https://pixabay.com/de/photos/rinteln-altstadt-nrw-historisch-226546/ | Pixabay-Lizenz; Altstadt, historische Fachwerkhäuser (Titel „Rinteln, Altstadt, Nrw, Historisch“) | 8 |
 | 503 | Ellwangen (Jagst) | 08136019 | 3198898 | https://pixabay.com/de/photos/schloss-kloster-burg-ellwangen-3198898/ | Pixabay-Lizenz; Schloss/Kloster Ellwangen | 7 |
 | 504 | Friedrichsdorf | 06434002 | – | – | kein Bild gefunden | – |
 | 505 | Geretsried | 09173126 | – | – | kein Bild gefunden | – |
@@ -576,17 +576,17 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 525 | Norden | 03452019 | 2463036 | https://pixabay.com/de/photos/landschaft-norden-niedersachsen-2463036/ | Pixabay-Lizenz, Ortsbezug unklar (Stadt oder Himmelsrichtung) | 3 |
 | 526 | Espelkamp | 05770008 | – | – | kein Bild gefunden | – |
 | 527 | Ditzingen | 08118011 | – | – | kein Bild gefunden | – |
-| 528 | Köthen (Anhalt) | 15082180 | – | – | kein Bild gefunden | – |
+| 528 | Köthen (Anhalt) | 15082180 | 639542 | https://pixabay.com/de/photos/brauhaus-k%C3%B6then-architektur-hdr-639542/ | Pixabay-Lizenz; Brauhaus Köthen, Architektur | 5 |
 | 529 | Olpe | 05966024 | – | – | kein Bild gefunden | – |
 | 530 | Plettenberg | 05962052 | 200442 | https://pixabay.com/de/photos/plettenberg-funkturm-aussichtspunkt-200442/ | Pixabay-Lizenz; "Plettenberg mit Funkturm" (Aussichtspunkt, kein klassisches Wahrzeichen) | 5 |
-| 531 | Bad Oldesloe | 01062004 | – | – | kein Bild gefunden | – |
+| 531 | Bad Oldesloe | 01062004 | 97202 | https://pixabay.com/de/photos/travebr%C3%BCcke-br%C3%BCcke-bauwerk-97202/ | Pixabay-Lizenz; Travebrücke (Schlagwort „bad oldesloe“); die Stadt wird nur über die Schlagwörter zugeordnet | 6 |
 | 532 | Schmallenberg | 05958040 | – | – | kein Bild gefunden | – |
 | 533 | Meckenheim | 05382032 | – | – | kein Bild gefunden | – |
 | 534 | Sprockhövel | 05954028 | – | – | kein Bild gefunden | – |
 | 535 | Syke | 03251041 | – | – | kein Bild gefunden | – |
-| 536 | Markkleeberg | 14729260 | – | – | kein Bild gefunden | – |
+| 536 | Markkleeberg | 14729260 | 3529394 | https://pixabay.com/de/photos/see-cospudener-see-markkleeberg-3529394/ | Pixabay-Lizenz; Cospudener See (Titel nennt Markkleeberg) | 9 |
 | 537 | Rudolstadt | 16073076 | 1284754 | https://pixabay.com/de/photos/schloss-heidecksburg-rudolstadt-1284754/ | Pixabay-Lizenz, Schloss Heidecksburg | 7 |
-| 538 | Meiningen | 16066042 | – | – | kein Bild gefunden | – |
+| 538 | Meiningen | 16066042 | 6560752 | https://pixabay.com/photos/landsberg-castle-landsberg-meiningen-6560752/ | Pixabay-Lizenz; Burg/Schloss Landsberg (Titel "Meiningen") | 6 |
 | 539 | Warstein | 05974044 | – | – | kein Bild gefunden | – |
 | 540 | Waldshut-Tiengen | 08337126 | – | – | kein Bild gefunden | – |
 | 541 | Rathenow | 12063252 | 259119 | https://pixabay.com/de/photos/rathenow-winter-schleusenspucker-259119/ | Pixabay-Lizenz, Winter/Schleuse | 5 |
@@ -596,13 +596,13 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 545 | Zittau | 14626610 | 22619624 | https://www.pexels.com/photo/town-hall-in-zittau-germany-22619624/ | Pexels-Lizenz, Rathaus | 7 |
 | 546 | Haren (Ems) | 03454018 | – | – | kein Bild gefunden | – |
 | 547 | Waldkraiburg | 09183148 | – | – | kein Bild gefunden | – |
-| 548 | Attendorn | 05966004 | – | – | kein Bild gefunden | – |
+| 548 | Attendorn | 05966004 | 2892871 | https://pixabay.com/de/photos/sommer-biggesee-skywalk-stausee-2892871/ | Pixabay-Lizenz; Biggesee mit Skywalk, kein Stadtbild | 5 |
 | 549 | Herzogenaurach | 09572132 | – | – | kein Bild gefunden | – |
 | 550 | Varel | 03455026 | 1479479 | https://pixabay.com/de/photos/nordsee-camping-varel-1479479/ | Pixabay-Lizenz, Nordsee-Camping | 5 |
 | 551 | Bedburg | 05362004 | – | – | kein Bild gefunden | – |
 | 552 | Freudenstadt | 08237028 | 2503810 | https://pixabay.com/de/photos/freudenstadt-historischer-marktplatz-2503810/ | Pixabay-Lizenz, Historischer Marktplatz | 8 |
 | 553 | Staßfurt | 15089310 | 2974592 | https://pixabay.com/de/photos/dampflok-traditionslok-sta%C3%9Ffurt-2974592/ | Pixabay-Lizenz, Traditionslok (kein Stadtbild) | 4 |
-| 554 | Calw | 08235085 | – | – | kein Bild gefunden | – |
+| 554 | Calw | 08235085 | 2216319 | https://pixabay.com/de/photos/calw-altstadt-fachwerk-mittelalter-2216319/ | Pixabay-Lizenz; Altstadt mit Fachwerk | 8 |
 | 555 | Übach-Palenberg | 05370028 | 5214393 | https://pixabay.com/de/photos/wasserturm-%C3%BCbach-palenberg-himmel-5214393/ | Pixabay-Lizenz, Wasserturm | 6 |
 | 556 | Riedstadt | 06433011 | 2155184 | https://pixabay.com/de/photos/riedstadt-goddelau-hessen-2155184/ | Pixabay-Lizenz, Ortsteil Goddelau | 6 |
 | 557 | Sehnde | 03241016 | – | – | kein Bild gefunden | – |
