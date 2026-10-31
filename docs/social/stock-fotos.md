@@ -3881,7 +3881,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Walddorfhäslach | Baden-Württemberg | 08415087 | – | – | noch nicht gesucht | – |
 | Waldems | Hessen | 06439016 | – | – | noch nicht gesucht | – |
 | Waldsolms | Hessen | 06532022 | – | – | noch nicht gesucht | – |
-| Waldstetten | Baden-Württemberg | 08136079 | – | – | noch nicht gesucht | – |
+| Waldstetten | Baden-Württemberg | 08136079 | 57969 | https://pixabay.com/photos/chapel-idyll-reiterleskapelle-57969/ | Pixabay-Lizenz; Reiterleskapelle bei Waldstetten (Ostalb). Gefunden über die Pixabay-Suchseite "waldstetten". Alternativen: 57972, 57974, 59966 | 7 |
 | Waldthurn | Bayern | 09374165 | – | – | noch nicht gesucht | – |
 | Walheim | Baden-Württemberg | 08118074 | – | – | noch nicht gesucht | – |
 | Wallerfangen | Saarland | 10044121 | – | – | noch nicht gesucht | – |
