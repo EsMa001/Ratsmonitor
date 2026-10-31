@@ -546,16 +546,16 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 495 | Harsewinkel | 05754016 | – | – | kein Bild gefunden | – |
 | 496 | Unterhaching | 09184148 | – | – | kein Bild gefunden | – |
 | 497 | Lindau (Bodensee) | 09776116 | 10977586 | https://www.pexels.com/photo/the-lindau-lighthouse-in-lake-constance-lindau-germany-10977586/ | Pexels-Lizenz, Leuchtturm am Hafen | 8 |
-| 498 | Schleswig | 01059075 | – | – | kein Bild gefunden | – |
+| 498 | Schleswig | 01059075 | 1781120 | https://pixabay.com/de/photos/schloss-gottorf-schleswig-1781120/ | Pixabay-Lizenz; Schloss Gottorf | 8 |
 | 499 | Kulmbach | 09477128 | 2897132 | https://pixabay.com/photos/kulmbach-castle-plassenburg-2897132/ | Pixabay-Lizenz, Stadt mit Plassenburg | 8 |
 | 500 | Helmstedt | 03154028 | – | – | kein Bild gefunden | – |
 | 501 | Horb am Neckar | 08237040 | 17939738 | https://www.pexels.com/zh-cn/photo/17939738/ | Pexels-Lizenz, Ortsbezug nur über Schlagwörter | 6 |
 | 502 | Rinteln | 03257031 | – | – | kein Bild gefunden | – |
-| 503 | Ellwangen (Jagst) | 08136019 | – | – | kein Bild gefunden | – |
+| 503 | Ellwangen (Jagst) | 08136019 | 3198898 | https://pixabay.com/de/photos/schloss-kloster-burg-ellwangen-3198898/ | Pixabay-Lizenz; Schloss/Kloster Ellwangen | 7 |
 | 504 | Friedrichsdorf | 06434002 | – | – | kein Bild gefunden | – |
 | 505 | Geretsried | 09173126 | – | – | kein Bild gefunden | – |
 | 506 | Sankt Wendel | 10046117 | – | – | kein Bild gefunden | – |
-| 507 | Idstein | 06439008 | – | – | kein Bild gefunden | – |
+| 507 | Idstein | 06439008 | 3907236 | https://pixabay.com/photos/idstein-hexenturm-places-of-interest-3907236/ | Pixabay-Lizenz; Hexenturm | 8 |
 | 508 | Vaterstetten | 09175132 | – | – | kein Bild gefunden | – |
 | 509 | Verl | 05754044 | 5345691 | https://pixabay.com/de/photos/verl-verler-see-rundgang-5345691/ | Pixabay-Lizenz, Verler See | 5 |
 | 510 | Rottweil | 08325049 | 2859971 | https://pixabay.com/photos/rottweil-baden-wuerttemberg-germany-2859971/ | Pixabay-Lizenz, Rottweil | 6 |
@@ -569,7 +569,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 518 | Obertshausen | 06438010 | – | – | kein Bild gefunden | – |
 | 519 | Lüdinghausen | 05558024 | 3642642 | https://pixabay.com/photos/germany-burg-vischering-m%C3%BCnsterland-3642642/ | Pixabay-Lizenz, Burg Vischering | 6 |
 | 520 | Weingarten (Württemberg) | 08436082 | 1187779 | https://pixabay.com/photos/pl%C3%A4tzler-pl%C3%A4tzler-guild-vineyard-1187779/ | Pixabay-Lizenz, Fastnacht der Plätzler, Ortsbezug unsicher | 4 |
-| 521 | Delitzsch | 14730070 | – | – | kein Bild gefunden | – |
+| 521 | Delitzsch | 14730070 | 4637901 | https://pixabay.com/photos/delitzsch-saxony-anhalt-castle-park-4637901/ | Pixabay-Lizenz; barocker Schlosspark Delitzsch (Titel: "Formal baroque garden in Delitzsch") | 7 |
 | 522 | Pfungstadt | 06432018 | – | – | kein Bild gefunden | – |
 | 523 | Petershagen | 05770028 | – | – | kein Bild gefunden | – |
 | 524 | Stutensee | 08215109 | – | – | kein Bild gefunden | – |
@@ -578,7 +578,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 527 | Ditzingen | 08118011 | – | – | kein Bild gefunden | – |
 | 528 | Köthen (Anhalt) | 15082180 | – | – | kein Bild gefunden | – |
 | 529 | Olpe | 05966024 | – | – | kein Bild gefunden | – |
-| 530 | Plettenberg | 05962052 | – | – | kein Bild gefunden | – |
+| 530 | Plettenberg | 05962052 | 200442 | https://pixabay.com/de/photos/plettenberg-funkturm-aussichtspunkt-200442/ | Pixabay-Lizenz; "Plettenberg mit Funkturm" (Aussichtspunkt, kein klassisches Wahrzeichen) | 5 |
 | 531 | Bad Oldesloe | 01062004 | – | – | kein Bild gefunden | – |
 | 532 | Schmallenberg | 05958040 | – | – | kein Bild gefunden | – |
 | 533 | Meckenheim | 05382032 | – | – | kein Bild gefunden | – |
@@ -616,7 +616,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 565 | Döbeln | 14522080 | – | – | kein Bild gefunden | – |
 | 566 | Starnberg | 09188139 | 1850767 | https://pixabay.com/photos/starnberger-lake-starnberg-lake-1850767/ | Pixabay-Lizenz, Starnberger See | 6 |
 | 567 | Husum | 01054056 | 2299109 | https://pixabay.com/en/husum-port-nordfriesland-city-2299109/ | Pixabay-Lizenz, Hafen | 7 |
-| 568 | Korbach | 06635015 | – | – | kein Bild gefunden | – |
+| 568 | Korbach | 06635015 | 30061180 | https://www.pexels.com/photo/historic-stone-building-in-korbach-germany-30061180/ | Pexels-Lizenz; Titel "Historic Stone Building in Korbach, Germany", Motiv nicht verifiziert (evtl. Kirche/Rathaus) | 5 |
 | 569 | Gelnhausen | 06435010 | 2501895 | https://pixabay.com/photos/unterer-marktplatz-gelnhausen-hesse-2501895/ | Pixabay-Lizenz, Unterer Marktplatz | 7 |
 | 570 | Salzwedel | 15081455 | – | – | kein Bild gefunden | – |
 | 571 | Kaltenkirchen | 01060044 | – | – | kein Bild gefunden | – |
@@ -630,7 +630,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 579 | Warburg | 05762036 | – | – | kein Bild gefunden | – |
 | 580 | Quedlinburg | 15085235 | 18947084 | https://www.pexels.com/photo/town-hall-in-quedlinburg-18947084/ | Pexels-Lizenz, Rathaus | 8 |
 | 581 | Gersthofen | 09772147 | – | – | kein Bild gefunden | – |
-| 582 | Wertheim | 08128131 | – | – | kein Bild gefunden | – |
+| 582 | Wertheim | 08128131 | 5292076 | https://pixabay.com/de/photos/wertheim-burg-fluss-schiff-5292076/ | Pixabay-Lizenz; Burg Wertheim über dem Main (alternativ 869783: https://pixabay.com/de/photos/wertheim-am-main-burg-turm-869783/) | 7 |
 | 583 | Rastede | 03451005 | – | – | kein Bild gefunden | – |
 | 584 | Karben | 06440012 | – | – | kein Bild gefunden | – |
 | 585 | Bad Soden am Taunus | 06436001 | – | – | kein Bild gefunden | – |
@@ -641,10 +641,10 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 590 | Bad Kissingen | 09672114 | 1010874 | https://pixabay.com/de/photos/bad-kissingen-wasser-br%C3%BCcken-blumen-1010874/ | Pixabay-Lizenz, Wasser, Brücken, Blumen | 7 |
 | 591 | Bad Salzungen | 16063003 | 2246048 | https://pixabay.com/photos/bad-salzungen-thuringia-town-hall-2246048/ | Pixabay-Lizenz, Rathaus und Marktplatz | 8 |
 | 592 | Wallenhorst | 03459033 | – | – | kein Bild gefunden | – |
-| 593 | Nagold | 08235046 | – | – | kein Bild gefunden | – |
+| 593 | Nagold | 08235046 | 2205740 | https://pixabay.com/de/photos/nagold-staustufe-wasser-landschaft-2205740/ | Pixabay-Lizenz; Staustufe an der Nagold, nur Flusslandschaft, kein Wahrzeichen | 4 |
 | 594 | Lengerich | 05566040 | – | – | kein Bild gefunden | – |
 | 595 | Friesoythe | 03453007 | – | – | kein Bild gefunden | – |
-| 596 | Kitzingen | 09675141 | – | – | kein Bild gefunden | – |
+| 596 | Kitzingen | 09675141 | 3716108 | https://pixabay.com/photos/falterturm-kitzingen-tower-germany-3716108/ | Pixabay-Lizenz; Falterturm | 8 |
 | 597 | Edewecht | 03451004 | – | – | kein Bild gefunden | – |
 | 598 | Senden (Bayern) | 09775152 | – | – | kein Bild gefunden | – |
 | 599 | Neusäß | 09772184 | – | – | kein Bild gefunden | – |
