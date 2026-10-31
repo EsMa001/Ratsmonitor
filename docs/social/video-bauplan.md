@@ -31,7 +31,7 @@ Die Videos kommen ohne Fotos und ohne Untertitel aus. Sie müssen auch stumm les
 | Stempel | Poppen mit höchstens 20 Prozent, damit die Breite nie über den Bildrand geht; danach schwingt die Neigung um −5 Grad und klingt in etwa einer Sekunde auf −5 Grad ab (Ausschlag anfangs bis −9 Grad) |
 | Pulsieren | Dauerbewegung, Größe 100 bis 104 Prozent, Periode 2 s (Icon im Hook und Pille im Schluss) |
 
-Pulsieren und Wackeln zählen in der Prüfung nicht als „neues Element“ (Abschnitt 13). Der Punktring im Hintergrund (Durchmesser 1500, Petrol, Deckkraft etwa 9 bis 13 Prozent) dreht sich mit etwa 30 bis 36 Grad je Sekunde.
+Pulsieren und die Schwingung des Stempels zählen in der Prüfung nicht als „neues Element“ (Abschnitt 13). Der Punktring im Hintergrund (Durchmesser 1500, Petrol, Deckkraft etwa 9 bis 13 Prozent) dreht sich mit etwa 30 bis 36 Grad je Sekunde.
 
 ### Tonkette
 
@@ -52,14 +52,14 @@ Beispiel: Stimme 5,5 s, Mindestdauer 6 s, Nachlauf 1 s ergibt Maximum aus 6 und 
 
 | Nr. | Szene | Mindestdauer | Nachlauf | Inhalt |
 | --- | --- | --- | --- | --- |
-| 1 | Hook | 6 s | 1 s | Zeile 1: Ort oder Rubrik mit Doppelpunkt (Schwarzgrau), Zeile 2: Thema oder Name des Vorgangs (Petrol, darf auf zwei Zeilen umbrechen). Optional eine einzige Nebenzeile: der Antragsteller („Antrag: Fraktion Freie Wähler“, „Vorschlag der Verwaltung“), sonst das Stichwort; sie entfällt zuerst, wenn der Platz fehlt. Darunter der Stempel mit nur dem Standwort (kein Zusatz, kein Icon), Neigung −5 Grad (weiße Schrift auf Fläche in Statusfarbe, Radius 22, Polster 75 Pixel seitlich und 15 oben und unten), darunter das pulsierende Themen-Icon (Kreis 300). Zeile 1 steht von Beginn an, Zeile 2 und das Icon erscheinen bei 0,5 s, der Stempel beim Standwort. Bei Platznot weicht zuerst die Nebenzeile, dann schrumpft das Icon bis 220, dann die Abstände (Zeile 2 zum Stempel von 90 auf 50, Stempel zum Icon von 70 auf 40), dann beginnt der Hook bis 370 höher, zuletzt wird Zeile 2 verkleinert. Das Standwort ist das 5. bis 8. gesprochene Wort |
-| 2 | Kern | 7 s | 2,5 s | Die Kernaussage groß, bei mehreren Varianten als Auswahl (A, B mit Buchstaben-Kreis) |
+| 1 | Hook | 6 s | 1 s | Zeile 1: Ort oder Rubrik mit Doppelpunkt (Schwarzgrau), Zeile 2: Thema oder Name des Vorgangs (Petrol, darf auf zwei Zeilen umbrechen). Optional eine einzige Nebenzeile: der Antragsteller („Antrag: Fraktion Freie Wähler“, „Vorschlag der Verwaltung“), sonst das Stichwort; sie entfällt zuerst, wenn der Platz fehlt. Darunter der Stempel mit nur dem Standwort (kein Zusatz, kein Icon), Neigung −5 Grad (weiße Schrift auf Fläche in Statusfarbe, Radius 22, Polster 75 Pixel seitlich und 15 oben und unten), darunter das pulsierende Themen-Icon (Kreis 300). Zeile 1 steht von Beginn an, Zeile 2 und das Icon erscheinen bei 0,5 s, der Stempel beim Standwort. Abstände: Zeile 1 zu Zeile 2 40, Zeile 2 zum Stempel 90, Stempel zum Icon 70. Bei Platznot weicht zuerst die Nebenzeile, dann schrumpft das Icon bis 220, dann die Abstände (Zeile 2 zum Stempel von 90 auf 50, Stempel zum Icon von 70 auf 40), dann beginnt der Hook statt bei y = 400 bei y = 370, zuletzt wird Zeile 2 verkleinert. Das Standwort ist das 5. bis 8. gesprochene Wort |
+| 2 | Kern | 7 s | 2,5 s | Die Kernaussage groß (Satz in Satzteilen). Bei mehreren Varianten steht darunter die Auswahl: Karten A, B mit Buchstaben-Kreis, Kreis zuerst, Text 0,25 s später, die Karten im Abstand von mindestens 1,4 s |
 | 3 | Details | 7 s | 3 s | Betroffene oder Maßnahmen als Zeilen mit Icon, bei Abläufen mit Verbindungslinie, oder Kernzahlen mit Beschriftung |
-| 4 | Zitat | Maximum aus 6,5 s und 0,07 s je Zeichen des Zitats (mit Leerzeichen und […], ohne äußere Anführungszeichen); die Szene ist stumm, es gibt keinen Nachlauf | – | Wörtlich aus der Vorlage, Schlüsselwörter (Datenblatt) in Petrol hervorgehoben, darunter „Aus der Vorlage · Ort“. Bei einem Stand außer „Beschlossen“ steht dort „Vorschlag aus der Vorlage · Ort“, damit ein Beschlussvorschlag nicht wie ein Beschluss wirkt. Wird nicht gesprochen, damit Zeit zum Lesen bleibt. Hier ist Stillstand gewollt (Lesezeit), die Ruhebild-Prüfung gilt für diese Szene nicht (Abschnitt 13) |
+| 4 | Zitat | Maximum aus 6,5 s und 0,07 s je Zeichen des Zitats (mit Leerzeichen und […], ohne äußere Anführungszeichen); die Szene ist stumm, es gibt keinen Nachlauf | – | Wörtlich aus der Vorlage, Schlüsselwörter (Datenblatt) in Petrol hervorgehoben, darunter „Aus der Vorlage · Ort“. Ist der zitierte Text ein Beschluss- oder Empfehlungsvorschlag („beschließt“, „empfiehlt“) und der Stand nicht „Beschlossen“, steht dort „Vorschlag aus der Vorlage · Ort“, damit er nicht wie ein Beschluss wirkt; ein bloßer Tagesordnungstext („berät über“) heißt „Aus der Vorlage · Ort“. Wird nicht gesprochen, damit Zeit zum Lesen bleibt. Hier ist Stillstand gewollt (Lesezeit), die Ruhebild-Prüfung gilt für diese Szene nicht (Abschnitt 13) |
 | 5 | Stand | 7 s | 1,5 s | Statuskarte mit Band in Statusfarbe, Badge, Statuswort, darunter Gremium und „zuletzt beraten am …“, bei Bedarf nächste Sitzung |
 | 6 | Schluss | 8,5 s | 1 s | Titel „Beschlüsse zu Ihrem Ort“, Logo groß, festes Motto, plenara.de als pulsierende Pille, Quelle und Hinweis „kein amtliches Dokument“ |
 
-Statuskarte (von oben, mit Logo-Chip und Ortschip bei y = 190): Beginn bei y = 430. Ein Band über die ganze Bildbreite in der Statusfarbe mit etwa 12 Prozent Deckkraft (Höhe: 60 + Badge 300 + 30 + Höhe des Statusworts + 70). In der linken oberen Ecke des Bandes (x = 72, y = 466) die Beschriftung in Großbuchstaben, 48, Nebenzeilenfarbe, weit gesetzt: bei „Beschlossen“ und „Abgelehnt“ „STAND“, sonst die Zusatzzeile der Tabelle in Abschnitt 5 („NOCH NICHT BESCHLOSSEN“). Darin mittig das Badge (Kreis 300 in der Statusfarbe mit weißem Symbol, y = 530) und darunter das Statuswort (Schwarzgrau, mittig, bis 190 und so klein, dass es in 936 Pixel passt). Unter dem Band bis zu zwei Meta-Zeilen mit je einem Icon (68, Petrol) links und zweizeiligem Text (52 bis 60, Schwarzgrau): Zeile 1 mit Kalender „Gremium / zuletzt beraten am TT.MM.JJ“, Zeile 2 mit Halle „Gremium / nächste Sitzung TT.MM.JJ“, Abstand zwischen den Zeilen 40. Ende bei etwa 1440; bei Platznot Meta 52 und Statuswort 140. Zeiten: Band und Beschriftung ab 0 s, Badge ab 0,3 bis 0,8 s (0,5 s vor dem gesprochenen Standwort), Statuswort 0,4 s später, Meta-Zeilen ab 1,2 s nach dem Badge im Abstand 0,5 s.
+Statuskarte (von oben, mit Logo-Chip und Ortschip bei y = 190): Beginn bei y = 430. Ein Band über die ganze Bildbreite in der Statusfarbe mit etwa 12 Prozent Deckkraft (Höhe: 100 + Badge 300 + 30 + Höhe des Statusworts + 30; das Badge liegt also 100 unter dem Bandanfang). In der linken oberen Ecke des Bandes (x = 72, y = 466) die Beschriftung in Großbuchstaben, 48, Nebenzeilenfarbe, weit gesetzt: bei „Beschlossen“ und „Abgelehnt“ „STAND“, sonst die Zusatzzeile der Tabelle in Abschnitt 5 („NOCH NICHT BESCHLOSSEN“). Darin mittig das Badge (Kreis 300 in der Statusfarbe mit weißem Symbol, y = 530) und darunter das Statuswort (Schwarzgrau, mittig, bis 190 und so klein, dass es in 936 Pixel passt). Unter dem Band höchstens zwei Meta-Zeilen (bei Platznot ersetzt „Nächster Schritt: …“, Dokument-Icon, die nächste Sitzung) mit je einem Icon (68, Petrol) links und zweizeiligem Text (52 bis 60, Schwarzgrau): Zeile 1 mit Kalender „Gremium / zuletzt beraten am TT.MM.JJ“, Zeile 2 mit Halle „Gremium / nächste Sitzung TT.MM.JJ“ (so gebaut; gab es noch keine gehaltene Sitzung, entfällt Zeile 1 und die nächste Sitzung steht allein als Zeile 1 mit Halle), Abstand zwischen den Zeilen 40. Ende bei etwa 1440; bei Platznot Meta 52 und Statuswort 140. Zeiten: Band und Beschriftung ab 0 s, Badge ab 0,3 bis 0,8 s (0,5 s vor dem gesprochenen Standwort), Statuswort 0,4 s später, Meta-Zeilen ab 1,2 s nach dem Beginn des Badges, im Abstand von mindestens 0,5 s; die letzte erscheint nicht vor Dauer − 4 s (bei 7 s also ab 3,0 s, bei nur einer Zeile erscheint diese dann erst dort).
 
 Schlusskarte (von oben, ohne Logo und Ortschip oben, Beginn bei y = 190, Abstände in Klammern): Titel „Beschlüsse zu Ihrem Ort“ 100 in Schwarzgrau, bricht bei 700 Pixel Breite in zwei Zeilen um (24), Zeile „finden Sie bei“ 64 mit Pin 76 (20), Logo 520 breit, etwa 134 hoch (40), Motto 64 in bis zu zwei Zeilen (40), Pille plenara.de 104 mit 55 Pixel Rand links und rechts, 20 oben und unten (46), Quelle 50, darunter (14) Hinweis „Zusammenfassung von Plenara, kein amtliches Dokument.“ 48. Quelle und Hinweis dürfen umbrechen. Das Ende liegt bei etwa 1370 und höchstens bei 1450 (das Bauskript meldet den Wert). Der Titel steht von Beginn an. „(24)“ usw. sind die Abstände unter dem jeweiligen Element in Pixel. „104“ bei der Pille ist die Schriftgröße. Das Motto lautet „Besser verstehen, was vor Ort beraten wird.“ Die Folge baut die Karte gestaffelt auf: Pin und Zeile ab 0,4 s, Logo ab 0,3 s, Motto ab 1,1 s, Pille ab 1,5 s, Quelle und Hinweis ab 1,6 s.
 
@@ -69,7 +69,7 @@ Die Schlussszene verwendet in jeder Folge dieselbe Sprechdatei mit dem Wortlaut 
 
 Rand links und rechts 72 Pixel, Satzbreite 936 Pixel. Logo-Chip (links) und Ortschip (rechts daneben, Abstand 20, gleiche Höhe, leichter Schatten) stehen bei y = 190, ab dort in jeder Szene außer dem Schluss. Inhalte beginnen bei y = 350 bis 400 (Hook ab 400, Zitat mittig im Feld 400 bis 1440) und enden bei höchstens 1450. Ab y = 1500 bleibt alles frei, dort liegen die Bedienelemente der Apps. Text ist links ausgerichtet, der Stempel, das Statuswort und die Icons im Hook und im Stand sind mittig.
 
-Schriftgrößen sind **Höchstwerte in Pixel**. Passt ein Text nicht in die Satzbreite, wird er in Schritten von 2 bis 6 Pixel verkleinert, bis jede Zeile passt. Untergrenzen: 44 für jeden Text, 56 für Zitate, 72 für Titelzeilen (darunter wird umgebrochen oder gekürzt), 100 für Statuswort und Stempel (darunter anderes Wort wählen).
+Schriftgrößen sind **Höchstwerte in Pixel**. Passt ein Text nicht in die Satzbreite, wird er in Schritten von 2 bis 6 Pixel verkleinert, bis jede Zeile passt. Untergrenzen: 44 für jeden Text, 56 für Zitate, 72 für Titelzeilen (darunter wird umgebrochen, dann gekürzt), 100 für Statuswort und Stempel (reicht das nicht, legt das Datenblatt eine Kurzform fest; die Zusatzzeile nennt das volle Plenara-Wort). Zeilenhöhe: 1,0 für Titel und Zahlen, 1,1 bis 1,2 für Fließtext. Textspalte neben einem Icon-Kreis: 936 minus Kreis minus 30, bei Listen und Auswahlkarten etwa 730. Schnitt: Titel, Zahlen, Statuswort und Stempel SemiBold, übriger Text Regular. Langer Titel: erst verkleinern bis 72, dann umbrechen, dann kürzen
 
 | Element | Größe |
 | --- | --- |
@@ -155,9 +155,9 @@ Gebaut und gesehen sind bisher Beschlossen, Abgelehnt, Stand offen und Angekünd
 
 ## 6. Bewegung und Takt
 
-- Etwas Neues erscheint etwa alle ein bis zwei Sekunden, ungefähr dann, wenn es gesprochen wird; hart gilt höchstens 4 Sekunden. Ein „Element“ ist eine einzeln einblendende Einheit: eine Textzeile oder ein Satzteil, ein Icon, eine Zahl mit Beschriftung, eine Listenzeile. Sätze in Kern und Details werden deshalb in Satzteile zerlegt (je ein bis drei Zeilen), die nacheinander erscheinen; ein Block, der als Ganzes einblendet, ist nur ein Element. Listenzeilen erscheinen gestaffelt: erst das Icon, 0,25 s später der Text.
+- Etwas Neues erscheint etwa alle ein bis zwei Sekunden, ungefähr dann, wenn es gesprochen wird; hart gilt höchstens 4 Sekunden, auch bis zum Szenenende: Zwischen dem letzten Element und dem Ende einer Szene liegen höchstens 4 Sekunden, das letzte Element erscheint also frühestens bei Dauer − 4 s (Ausnahmen: Zitat und Schluss, Abschnitt 13). In Szenen mit langer Mindestdauer, vor allem der Stand-Szene (7 s, letztes Element ab 3,0 s), werden die späten Elemente deshalb später gelegt, als die Stimme sie nennt. Ein „Element“ ist eine einzeln einblendende Einheit: eine Textzeile oder ein Satzteil, ein Icon, eine Zahl mit Beschriftung, eine Listenzeile. Sätze in Kern und Details werden deshalb in Satzteile zerlegt (je ein bis drei Zeilen), die nacheinander erscheinen; ein Block, der als Ganzes einblendet, ist nur ein Element. Listenzeilen erscheinen gestaffelt: erst das Icon, 0,25 s später der Text.
 - Jede Szene zeigt innerhalb von 0,8 s etwas Lesbares außer Logo, Ortschip und Balken (kein leerer Szenenanfang, kein Ruhebild über mehrere Sekunden).
-- Der Stempel im Hook erscheint 0,3 s vor dem gesprochenen Standwort, frühestens bei 1,8 s und spätestens bei 5,0 s. Deshalb ist das Standwort das 5. bis 8. gesprochene Wort (es beginnt dann etwa zwischen 2,1 und 4,5 s).
+- Der Stempel im Hook erscheint 0,3 s vor dem gesprochenen Standwort, frühestens bei 1,8 s und spätestens bei 4,2 s. Das Standwort ist das 5. bis 8. gesprochene Wort (bei zwei Wörtern je Sekunde beginnt es zwischen 2,5 und 4,0 s). Bei einem Standwort aus mehreren Wörtern („In Beratung“) zählt das erste. In der Stand-Szene gilt die 5.-bis-8.-Regel nicht: Der Sprechtext beginnt dort mit „Stand: <Standwort>.“, das Badge erscheint 0,5 s vor dem Standwort, zwischen 0,3 und 0,8 s.
 - Wortzeiten: Jedes Wort wiegt Zeichenzahl plus 2. Ein Wort beginnt bei Szenenanfang + 0,5 s + Länge der Sprechdatei × (Gewicht aller Wörter davor ÷ Gewicht aller Wörter). Gemessene Wortzeiten ersetzen diese Schätzung, sobald es sie gibt.
 - Zahlen zählen nicht hoch, sie erscheinen fertig.
 - Die Schlussszene baut sich gestaffelt auf, die Adresse pulsiert, Quelle und Hinweis erscheinen früh genug, um gelesen zu werden.
@@ -171,14 +171,14 @@ Jede Folge entsteht aus einem Datenblatt mit diesen Feldern. Ohne vollständiges
 | Vorgang | Kennung bei Plenara (verhindert doppelte Folgen). Eine Testfolge ohne Plenara-Eintrag trägt „Test“ und wird nicht veröffentlicht |
 | Ort | Kurzname ohne Gemeindeart („Dresden“): im Ortschip, in Hook-Zeile 1 und in der Zitat-Unterzeile |
 | Stand | genau einer der Stände aus der Tabelle in Abschnitt 5, so wie ihn Plenara für den Vorgang führt. Liegt nur der Verlauf vor, zählt die jüngste bereits gehaltene Sitzung; angesetzte Termine erscheinen nur als „nächste Sitzung“. Der Verlauf liefert Datum und Sitzung, nicht den Stand |
-| Gremium der letzten Beratung | wie in der Quelle |
+| Gremium der letzten Beratung | wie in der Quelle; fehlt, wenn noch keine Sitzung stattfand (dann entfällt auch das Datum) |
 | Datum der letzten Beratung | im Bild TT.MM.JJ (29.10.26), im Sprechtext Tag und Monat ausgeschrieben, ohne Jahr („am neunundzwanzigsten Oktober“). Gleiches Format für „nächste Sitzung“ in der Stand-Szene; Termine in Detailzeilen TT.MM.JJJJ |
 | Gremium und Datum der nächsten Sitzung | nur wenn in den Unterlagen vorhanden. Künftige Termine heißen „nächste Sitzung“, vergangene „zuletzt beraten am“ |
 | Titel und Stichwort | Titel zeigt Ort (Zeile 1) und Thema (Zeile 2), Stichwort oder Antragsteller klein darunter. Bei 108 Pixel passen etwa 16 Zeichen je Zeile; längere Zeilen werden verkleinert (Untergrenze 72), dann umgebrochen oder gekürzt |
 | Themen-Icon | ein Symbol aus Abschnitt 4 |
 | Antragsteller | nur wenn die Vorlage ihn nennt, nur im Bild (Abschnitt 9, Punkt 4) |
 | Kernaussage | ein Satz; bei mehreren Varianten Buchstaben und Kurztexte |
-| Details | entweder drei bis vier Zeilen mit Icon (Betroffene, Maßnahmen, Termine; Datum TT.MM.JJJJ oder „Februar 2027“) oder höchstens drei Kernzahlen mit Beschriftung (Beträge, Mengen, Abstimmung), nicht gemischt. Die Reihenfolge im Datenblatt ist die Rangfolge; was nicht passt, entfällt oder steht im Zitat. Beträge werden gezeigt, nicht gesprochen |
+| Details | entweder drei bis vier Zeilen mit Icon (Betroffene, Maßnahmen, Termine; Datum TT.MM.JJJJ oder „Februar 2027“) oder höchstens drei Kernzahlen mit Beschriftung (Beträge, Mengen), nicht gemischt; die Abstimmung zählt als ein Block (Abschnitt 9, Punkt 8). Die Reihenfolge im Datenblatt ist die Rangfolge; was nicht passt, entfällt oder steht im Zitat. Beträge werden gezeigt, nicht gesprochen |
 | Abstimmung | nur wenn die Vorlage Zahlen nennt: Ja, Nein, Enthaltungen in der Reihenfolge der Vorlage (Abschnitt 9, Punkt 8). Ohne Zahlen entfällt die Abstimmung ganz, auch Wörter wie „einstimmig“ oder „mehrheitlich“ |
 | Wirksam ab / nächster Schritt | wenn vorhanden, als Detailzeile oder in der Stand-Szene („Nächster Schritt: …“, ohne Gremium als Zeile ohne Kalender-Icon) |
 | Originalzitat | wörtlich, höchstens 165 Zeichen, Ziel etwa 150 (gezählt mit Leerzeichen und […], ohne die äußeren Anführungszeichen „…“, die im Bild stehen). Auslassungen mit […], auch am Anfang; Kernverb und Gegenstand der Entscheidung bleiben stehen, Kosten und Nebensätze fallen weg. Innere Anführungszeichen einfach (‚…‘). Bei mehreren Varianten wird ein Satz der Kernentscheidung zitiert, die Varianten stehen in der Kern-Szene |
@@ -203,13 +203,14 @@ Jede Folge entsteht aus einem Datenblatt mit diesen Feldern. Ohne vollständiges
 1. Sachlich und neutral. Berichtet wird, was beschlossen oder beraten wurde, nicht bewertet. Keine Superlative, keine Vergleiche.
 2. Quelle immer sichtbar (Zitatunterzeile und Schlusskarte). Absender ist Plenara, nicht die Kommune.
 3. Zitate wörtlich. Was als „Aus der Vorlage“ erscheint, ist Originaltext. Eigene Zusammenfassungen sind keine Zitate.
-4. Antragsteller nur, wenn die Vorlage sie nennt. Sie stehen klein in der Nebenzeile (Nebenzeilenfarbe), nie im Titel, nie im Stempel und nie im gesprochenen Text.
+4. Antragsteller nur, wenn die Vorlage sie nennt. Die Verfahrensart („Einwohnerantrag“) nennt keinen Namen und darf im Bild und im Ton stehen; die Nebenzeile lautet dann „Antrag aus der Einwohnerschaft“, eine Unterschriftenzahl steht nur, wenn die Vorlage sie nennt, als Detailzeile (Icon Gruppe). Sie stehen klein in der Nebenzeile (Nebenzeilenfarbe), nie im Titel, nie im Stempel und nie im gesprochenen Text.
 5. Empfehlung ist kein Beschluss. Begriffe wie „Förderung empfohlen“ gehören mit „Noch nicht beschlossen“ zusammen.
 6. Gegenprüfung vor der Veröffentlichung: Zahlen, Daten, Namen und Zitat gegen die Vorlage prüfen, durch jemanden, der das Video nicht gebaut hat.
 7. Keine Bilder erkennbarer Personen. Ohne Fotos entfällt die Bildkennzeichnung.
-8. Abstimmungsergebnisse stehen als Zahlen in der Reihenfolge der Vorlage, alle in derselben Farbe (Zahl Petrol, Wort Schwarzgrau), nie als Gegenüberstellung, Balken oder mit Wörtern wie „knapp“ oder „deutlich“.
+8. Abstimmungsergebnisse stehen als Zahlen in der Reihenfolge der Vorlage, alle in derselben Farbe (Zahl Petrol, Wort Schwarzgrau), nie als Gegenüberstellung, Balken oder mit Wörtern wie „knapp“ oder „deutlich“. Die Abstimmung ist in den Details ein einziger Block (Überschrift „Abstimmung · Gremium“, Halle-Icon, die drei Zahlen nebeneinander); sie nutzt kein Haken- und Kreuz-Symbol. Sie darf gesprochen werden.
+11. Pakete (zum Beispiel ein Haushalt mit Steuersatz): Die Kernaussage nennt den Gegenstand und jede Teilentscheidung, die Bürger unmittelbar betrifft, im Wortlaut der Vorlage („Hebesatz … angehoben“, nicht „Steuererhöhung“). Zahlen werden nie verrechnet oder gegenübergestellt (keine Differenz zwischen Erträgen und Aufwendungen). Vorher-nachher-Werte stehen als eine Zahl mit Beschriftung („520 Prozent, vorher 480“). Was nicht auf die Karten passt, steht höchstens im Zitat.
 9. Angekündigte Folgeschritte (zum Beispiel ein neuer Antrag) stehen nur, wenn die Vorlage sie nennt, mit demselben Gewicht wie die übrigen Meta-Zeilen.
-10. Ist der Stand nicht „Beschlossen“, heißt das Zitat „Vorschlag aus der Vorlage“.
+10. Ist der zitierte Text ein Vorschlag und der Stand nicht „Beschlossen“, heißt die Unterzeile „Vorschlag aus der Vorlage“.
 
 ## 10. Ablauf
 
@@ -242,7 +243,7 @@ Jede Folge entsteht aus einem Datenblatt mit diesen Feldern. Ohne vollständiges
 - Die Status Empfehlung, In Beratung, Vertagt und Zur Kenntnis in je einer Folge erproben.
 - Messung von Sehdauer, Speichern, Teilen und Klicks nach der Veröffentlichung.
 - Die Maschinenprüfung aus Abschnitt 13 liegt bisher nur teilweise im Bauskript (Unterkanten, Wortbreite). Layoutprotokoll, leerer Szenenanfang, Ruhebild, Mindestschrift, Stimme gegen Musik und Ton sind noch zu automatisieren. Die Schwelle „12 dB“ ist ein Startwert.
-- Bildrate und Wortzeiten: Die Zeiten der Wörter werden aus der Zeichenzahl geschätzt, nicht gemessen. Eine Zeitmarkierung aus der Sprechdatei (Wortausrichtung) würde den Stempel und die Listenzeilen genauer an die Stimme binden.
+- Wortzeiten: Die Zeiten der Wörter werden aus der Zeichenzahl geschätzt, nicht gemessen. Eine Zeitmarkierung aus der Sprechdatei (Wortausrichtung) würde den Stempel und die Listenzeilen genauer an die Stimme binden.
 - Das Panel aus Abschnitt 13 ist noch nicht an einer Folge erprobt, die Werte der Tabelle sind Startwerte.
 
 ## 13. Prüfverfahren: jede Runde muss besser werden
@@ -254,25 +255,27 @@ In den ersten zehn Runden prüfte jedes Mal eine andere Person, die Noten sprang
 1. **Erst Maschine, dann Mensch.** Alles, was sich messen lässt, wird automatisch geprüft und ist ein Ausschlusskriterium. Personen beurteilen nur, was sich nicht messen lässt.
 2. **Vergleichen statt benoten.** Prüfpersonen bekommen Alt und Neu, in zufälliger Reihenfolge und ohne Hinweis, welche Fassung neu ist, und entscheiden je Kriterium, welche besser ist. Ein Vergleich ist weit weniger verrauscht als eine Note von 1 bis 10.
 3. **Eine feste Messlatte.** Dieselben Kriterien mit festen Ankern in jeder Runde (Abschnitt „Kriterien“). Keine freie Bewertung.
-4. **Festes Panel plus ein Gast.** Drei feste Prüfpersonen (Rollen unten) sehen jede Fassung. Dazu kommt je Runde eine wechselnde Gastperson für neue Blickwinkel. Befunde des Gasts gelten erst, wenn sie zweimal vorkommen oder messbar sind.
+4. **Festes Panel plus ein Gast.** Drei feste Prüfpersonen (Rollen unten) sehen jede Fassung. Dazu kommt je Runde eine wechselnde Gastperson für neue Blickwinkel. Befunde des Gasts gelten erst, wenn sie zweimal vorkommen (auch durch feste Prüfpersonen bestätigt) oder messbar sind.
 5. **Ein Befundregister.** Jeder Befund hat eine Nummer, einen Status und einen Nachweis. Eine Runde bearbeitet höchstens drei Befunde, damit klar bleibt, was wirkte.
 6. **Nur Fortschritt übernehmen.** Eine Änderung gilt als besser, wenn sie den Befund beseitigt, kein Kriterium verschlechtert und alle Maschinenprüfungen besteht. Sonst wird sie verworfen.
 
 ### Maschinenprüfung (Ausschlusskriterien)
 
-Jede Fassung muss bestehen, bevor Personen sie sehen. Das Bauskript schreibt dafür je Szene ein Layoutprotokoll (Liste der Elemente mit Art, Rechteck vor dem Zoom, Schriftgröße, Wortbreiten, Einblend- und Ausblendzeit). Dauerhafte Elemente (Logo-Chip, Ortschip, Fortschrittsbalken, Hintergrund, Punktring) sind als „Rahmen“ markiert und zählen bei den Prüfungen zu Szenenanfang, Ruhebild und Bildrand nicht. Das Prüfskript liest nur dieses Protokoll und die fertige Datei und gibt je Prüfung Messwert, Grenze und Ergebnis aus (Exit-Code ungleich 0 bei einem Fehler).
+Jede Fassung muss bestehen, bevor Personen sie sehen. Das Bauskript schreibt dafür je Szene ein Layoutprotokoll (Liste der Elemente mit Art, Rechteck vor dem Zoom, Schriftgröße, Wortbreiten, Einblend- und Ausblendzeit). Dauerhafte Elemente (Logo-Chip, Ortschip, Fortschrittsbalken, Hintergrund, Punktring) sind als „Rahmen“ markiert und zählen bei den Prüfungen zu Szenenanfang, Ruhebild und Bildrand nicht. Das Prüfskript liest nur dieses Protokoll, die beiden Tonspuren und die fertige Datei und gibt je Prüfung Messwert, Grenze und Ergebnis aus (Exit-Code ungleich 0 bei einem Fehler).
+
+**Layoutprotokoll** (`layout.json`, neben der Videodatei, Stand: Soll, noch nicht im Bauskript): Pixel mit Ursprung oben links, vor dem Zoom; Zeiten in Sekunden ab Szenenanfang. Aufbau: `szenen[]` mit `nr`, `dauer`, `elemente[]`; jedes Element hat `id`, `art`, `x`, `y`, `b`, `h`, `schrift` (Pixel, bei Text), `wortbreite_max` (Pixel, bei Text), `t_ein`, `t_aus`. Rechteck: der Umriss nach der Drehung (Stempel), Endgröße nach dem Poppen. Werte für `art`: `text`, `zahl`, `icon`, `badge`, `stempel`, `zitat`, `unterzeile`, `pille`, `band`, `rahmen`. Eine Listenzeile besteht aus zwei Elementen (`icon`, `text`). „Sichtbar“ im Test zum Szenenanfang heißt: `t_ein` ≤ 0,8. Als `rahmen` gelten Logo-Chip, Ortschip, Fortschrittsbalken, Hintergrund und Punktring. Zusätzlich prüft eine Pixelprobe an den Einzelbildern, dass ab y = 1500 keine Pixel in Text- oder Statusfarben mit mehr als 50 Prozent Deckkraft liegen.
 
 | Prüfung | Grenze | Messung |
 | --- | --- | --- |
-| Unterkante aller Inhalte je Szene | höchstens 1450 Pixel | Protokoll, größte Unterkante aller Elemente zu jeder Zeit, einschließlich Pop-Überschwingern, vor dem Zoom |
-| Kleinste Schrift | mindestens 44 Pixel | Protokoll |
-| Angeschnittene Wörter | keines | längstes Wort je Text höchstens 936 Pixel (Zitat 896), Stempel höchstens 860, kein Element über den Bildrand hinaus |
+| Unterkante aller Inhalte je Szene | höchstens 1450 Pixel | Protokoll, Unterkante aller Elemente außer „Rahmen“ in der Ruhelage nach dem Poppen, vor dem Zoom. Gleiten (34 Pixel) und Pulsieren zählen nicht, weil sie auch mit Zoom unter 1500 bleiben |
+| Kleinste Schrift | 44 Pixel; je Art: Nebenzeile und Meta 48, Zitat 56, Titelzeile 72, Stempel und Statuswort 100 | Protokoll |
+| Angeschnittene Wörter | keines | längstes Wort je Text höchstens so breit wie seine Spalte: 936 Pixel, Zitat 896, neben einem Icon-Kreis 936 minus Kreis minus 30 (Listen und Karten etwa 730); Stempel höchstens 860 vor der Drehung und nach Drehung und Zoom höchstens 1008; kein Element außer „Rahmen“ über den Bildrand hinaus |
 | Leerer Szenenanfang | in den ersten 0,8 Sekunden jeder Szene ist ein Element mit Text oder Symbol (ohne Rahmen) sichtbar | Protokoll, Einblendzeit relativ zum Szenenanfang |
-| Ruhebild | höchstens 4 Sekunden ohne neues Element | größte Lücke zwischen den Einblendzeiten (ohne Rahmen) innerhalb einer Szene, auch vom letzten Element bis Szenenende; Pulsieren und Wackeln zählen nicht. Ausnahmen: Zitat-Szene (Lesezeit) und Schluss (der Aufruf bleibt stehen, die Pille pulsiert; Lücke bis 7 Sekunden) |
-| Zitat | höchstens 800 Pixel hoch, Quelle darunter | Protokoll |
-| Ton | −14 LUFS (±1), True Peak höchstens −1,5 dB | EBU R128 integriert (Abschnitt 2, Messung) |
-| Stimme gegen Musik | Während die Stimme läuft, liegt die Musik im Mittel mindestens 12 dB darunter (Startwert, noch nicht an einer Folge gemessen) | Pegel in Fenstern von 1 s, Stimme und Musik getrennt vor dem Mischen |
-| Länge | 42 bis 65 Sekunden | Dauer der Datei |
+| Ruhebild | höchstens 4 Sekunden ohne neues Element | größte Lücke zwischen den Einblendzeiten (ohne Rahmen) innerhalb einer Szene, auch vom letzten Element bis Szenenende; Pulsieren und die Schwingung des Stempels zählen nicht. Ausnahmen: Zitat-Szene (Lesezeit) und Schluss (der Aufruf bleibt stehen, die Pille pulsiert; Lücke bis 7 Sekunden) |
+| Zitat | höchstens 800 Pixel hoch, Zitat-Unterzeile darunter | Protokoll |
+| Ton | −14 LUFS (±1), True Peak höchstens −1,5 dB | `ffmpeg -i datei -af ebur128=peak=true -f null -`, Werte „I“ und „True peak“ der Zusammenfassung. Reißt der True Peak knapp, wird der Begrenzer auf 0,80 gesenkt |
+| Stimme gegen Musik | Während die Stimme läuft, liegt die Musik im Mittel mindestens 12 dB darunter (Startwert, noch nicht an einer Folge gemessen) | Das Bauskript legt Stimmenbus und Musik nach dem Ducking als getrennte WAV-Dateien ab. Gemessen wird der RMS-Pegel in nicht überlappenden Fenstern von 1 s; ausgewertet werden Fenster, in denen die Stimme über −45 dBFS liegt; Mittel der Pegeldifferenz in dB |
+| Länge | 42 bis 65 Sekunden (Toleranz 0,1 s) | Dauer der Datei |
 | Fakten | Zahlen, Daten, Namen und Zitat stimmen mit der Vorlage überein | **Handprüfung** (Person oder Agent, der nur Vorlage und Datenblatt sieht), kein Skript |
 
 ### Kriterien (feste Messlatte, je 0 bis 2)
@@ -298,8 +301,8 @@ Die Rolle der Prüfperson ändert die Kriterien nicht, nur den Blick. Gesamtwert
 | --- | --- | --- |
 | Bürger mit wenig Zeit | Mutter oder Vater, schaut nebenbei, oft ohne Ton | Verstehen, Tempo, „Was heißt das für mich“ |
 | Ältere Person mit schwacher Sehkraft | Handy auf Armlänge | Lesbarkeit, Tempo |
-| Kommunalpolitiker oder Redakteur | prüft Sachlichkeit | Neutralität, Vertrauen, Fakten |
-| Gast (wechselt) | zum Beispiel Designer, Stratege, Barrierefreiheit | frischer Blick, Befund zählt erst ab zweiter Nennung |
+| Kommunalpolitiker oder Redakteur | prüft Sachlichkeit | Neutralität, Vertrauen |
+| Gast (wechselt) | zum Beispiel Designer, Stratege, Barrierefreiheit | frischer Blick, Befund zählt erst ab zweiter Nennung oder wenn er messbar ist |
 
 Jede Prüfperson ist ein frischer Agent ohne Vorwissen. Er bekommt nur die Bilder, den festen Briefkasten (Abschnitt „Material für die Prüfung“) und nicht die Absicht der Änderung. In der ersten Runde einer Folge gibt es keine Alt-Fassung: das Panel vergibt dann nur die Werte je Kriterium, der Vergleich beginnt ab der zweiten Fassung.
 
@@ -321,8 +324,8 @@ Je Fassung ein Kontaktbogen (ein Bild alle 1,5 Sekunden, 8 Spalten, 270 Pixel Br
 3. **Befunde ins Register** (Nummer, Szene, Kriterium, wer, wie oft, messbar?). Doppelte werden zusammengeführt.
 4. **Auswahl:** Höchstens drei Befunde mit der größten Wirkung (zuerst Ausschlusskriterien, dann Befunde mit zwei oder mehr Nennungen).
 5. **Ändern** und neu rendern.
-6. **Wiederholung** ab Schritt 1 mit Alt = letzte übernommene Fassung.
-7. **Übernahme nur bei Fortschritt:** Befund behoben, kein Kriterium schlechter (Median des Panels), Maschinenprüfung bestanden. Sonst zurück zur letzten übernommenen Fassung und anderen Weg wählen.
+6. **Neue Fassung prüfen:** Schritte 1 bis 3 mit der geänderten Fassung als Neu und der letzten übernommenen Fassung als Alt.
+7. **Übernahme nur bei Fortschritt:** Befund behoben, kein Kriterium schlechter (Median des Panels), Maschinenprüfung bestanden. Dann ist Neu die letzte übernommene Fassung. Sonst zurück zur letzten übernommenen Fassung und anderen Weg wählen. Danach beginnt die nächste Runde.
 
 ### Befundregister
 
@@ -352,3 +355,4 @@ Der Bauplan wird wie eine Folge geprüft: Agenten ohne Vorwissen bauen aus ihm u
 | --- | --- | --- | --- |
 | 1 | Folge „Tempo 30“ (beschlossen), Folge „Mittagessen“ (abgelehnter Antrag), Technikprüfung | 12 + 12 + 12 | Dauerformel, Tonkette, Animationen, Schlusskarte mit Maßen und fester Sprechdatei, Hook-Aufbau, Farbzuordnung je Element, Datenblattfelder, Regeln zu Antragsteller und Abstimmung, Maschinenprüfung mit Messmethode, Briefkasten |
 | 2 | Folge „Bebauungsplan“ (vertagt), Folge „Photovoltaik“ (Empfehlung), Widerspruchsprüfung | 10 + 10 + 12, davon 3 + 4 + 2 blockierend | Ruhebild-Ausnahme für den Schluss, Standwort als 5. bis 8. Wort, Statuskarte mit Maßen, Definition „Element“ und Satzteile, Stand aus Plenara, Abstimmung nur mit Zahlen, Details entweder Zeilen oder Zahlen, Zitatgrenze 165, Kurzname und Quellenname getrennt, Datumsformate, Wortzeitformel, Hook bei Platznot, Zoom und Rahmen |
+| 3 | Folge „Haushalt“ (Paketbeschluss mit Abstimmung), Folge „Einwohnerantrag“ (Angekündigt, Varianten, lange Wörter), Widerspruchs- und Umsetzbarkeitsprüfung | 10 + 10 + 11, davon 3 + 3 + 5 blockierend | Letztes Element frühestens bei Dauer − 4 s, Stempelfenster 1,8 bis 4,2 s, Layoutprotokoll mit Schema, Unterkante nur in der Ruhelage, Tonspuren getrennt, Mindestschriften je Art, Abstimmung als ein Block, Paketbeschlüsse, Einwohnerantrag, Kern bei Varianten |
