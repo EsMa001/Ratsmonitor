@@ -494,7 +494,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 444 | Baunatal | 06633003 | – | – | kein Bild gefunden | – |
 | 445 | Henstedt-Ulzburg | 01060039 | – | – | kein Bild gefunden | – |
 | 446 | Geilenkirchen | 05370012 | 17144608 | https://www.pexels.com/photo/secondary-school-in-geilenkirchen-17144608/ | Pexels-Lizenz, Schule (wenig repräsentativ) | 3 |
-| 447 | Kevelaer | 05154032 | – | – | kein Bild gefunden | – |
+| 447 | Kevelaer | 05154032 | 7390301 | https://pixabay.com/de/photos/kevelaer-kirche-architektur-fassade-7390301/ | Pixabay-Lizenz; Kirchenfassade in Kevelaer (Schlagwörter nennen Kevelaer ausdrücklich) | 9 |
 | 448 | Königsbrunn | 09772163 | – | – | kein Bild gefunden | – |
 | 449 | Grimma | 14729160 | 844731 | https://pixabay.com/de/photos/mulde-grimma-fluss-wasser-844731/ | Pixabay-Lizenz, Mulde | 6 |
 | 450 | Arnstadt | 16070004 | – | – | kein Bild gefunden | – |
@@ -506,12 +506,12 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 456 | Griesheim | 06432008 | 7360662 | https://pixabay.com/de/photos/wagenhalle-griesheim-7360662/ | Pixabay-Lizenz, Wagenhalle (Ortsbezug unklar, vermutlich Frankfurt-Griesheim) | 3 |
 | 457 | Lohne (Oldenburg) | 03460006 | – | – | kein Bild gefunden | – |
 | 458 | Sundern (Sauerland) | 05958044 | – | – | kein Bild gefunden | – |
-| 459 | Teltow | 12069616 | – | – | kein Bild gefunden | – |
-| 460 | Baesweiler | 05334008 | – | – | kein Bild gefunden | – |
+| 459 | Teltow | 12069616 | 7347996 | https://pixabay.com/de/photos/kanal-teltow-teltow-kanal-wolken-7347996/ | Pixabay-Lizenz; Teltowkanal mit Wolken (Schlagwort „Teltow“; der Kanal verläuft am Ort, Motiv ist nicht der Stadtkern) | 6 |
+| 460 | Baesweiler | 05334008 | 5214395 | https://pixabay.com/de/photos/weg-baesweiler-cap-park-hdr-5214395/ | Pixabay-Lizenz; Weg im Park (Schlagwort „Baesweiler“; das Motiv ist unspezifisch) | 5 |
 | 461 | Wetter (Ruhr) | 05954032 | – | – | kein Bild gefunden | – |
 | 462 | Garmisch-Partenkirchen | 09180117 | 12568191 | https://www.pexels.com/photo/mountain-at-zugspitze-during-sunset-12568191/ | Pexels-Lizenz, Zugspitze bei Sonnenuntergang, Ortsbezug nur über die Region | 5 |
 | 462 | Garmisch-Partenkirchen | 09180117 | 12568191 | https://www.pexels.com/photo/mountain-at-zugspitze-during-sunset-12568191/ | Pexels-Lizenz, Zugspitze bei Sonnenuntergang, Ortsbezug nur über die Region | 5 |
-| 463 | Schloß Holte-Stukenbrock | 05754036 | – | – | kein Bild gefunden | – |
+| 463 | Schloß Holte-Stukenbrock | 05754036 | 6001195 | https://pixabay.com/de/photos/ausflug-zugang-schloss-holte-burg-6001195/ | Pixabay-Lizenz; Zugang zum Schloss Holte (Schlagwort „Schloss Holte“; Ortsbezug nur aus dem Titel geschätzt) | 6 |
 | 464 | Wangen im Allgäu | 08436081 | 141181 | https://pixabay.com/de/photos/wangen-allg%C3%A4u-geb%C3%A4ude-architektur-141181/ | Pixabay-Lizenz, Gebäude/Architektur | 7 |
 | 465 | Overath | 05378024 | – | – | kein Bild gefunden | – |
 | 466 | Butzbach | 06440005 | – | – | kein Bild gefunden | – |
@@ -526,7 +526,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 475 | Werder (Havel) | 12069656 | 1985007 | https://pixabay.com/de/photos/werder-havel-sonne-plessow-see-1985007/ | Pixabay-Lizenz, Sonne am Plessower See | 7 |
 | 476 | Heppenheim | 06431011 | 5468392 | https://pixabay.com/photos/alley-paved-road-architecture-5468392/ | Pixabay-Lizenz, Gasse, Ortsbezug nur über Suchtreffer | 3 |
 | 477 | Pfaffenhofen an der Ilm | 09186143 | 204918 | https://pixabay.com/photos/pfaffenhofen-town-hall-ilm-flow-204918/ | Pixabay-Lizenz, Rathaus | 8 |
-| 478 | Hennigsdorf | 12065136 | – | – | kein Bild gefunden | – |
+| 478 | Hennigsdorf | 12065136 | 2168177 | https://pixabay.com/de/photos/schiff-kahn-wasser-havel-2168177/ | Pixabay-Lizenz; Schiff/Kahn auf der Havel, Titel nennt Hennigsdorf | 6 |
 | 479 | Heiligenhaus | 05158012 | – | – | kein Bild gefunden | – |
 | 480 | Bad Neuenahr-Ahrweiler | 07131007 | 873395 | https://pixabay.com/de/photos/bad-neuenahr-haus-sommer-873395/ | Pixabay-Lizenz; "Historisches Stadthaus" in Bad Neuenahr, Motiv nach Titel nicht eindeutig | 4 |
 | 481 | Aschersleben | 15089015 | – | – | kein Bild gefunden | – |
@@ -536,7 +536,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 485 | Lauf an der Pegnitz | 09574138 | 33987979 | https://www.pexels.com/photo/historic-lauf-castle-by-the-pegnitz-river-33987979/ | Pexels-Lizenz, Wenzelschloss | 7 |
 | 486 | Groß-Gerau | 06433006 | – | – | kein Bild gefunden | – |
 | 487 | Mühlacker | 08236040 | – | – | kein Bild gefunden | – |
-| 488 | Weiterstadt | 06432023 | – | – | kein Bild gefunden | – |
+| 488 | Weiterstadt | 06432023 | 1745268 | https://pixabay.com/de/photos/weiterstadt-darmstadt-hessen-1745268/ | Pixabay-Lizenz; Motiv unbekannt, Titel "Weiterstadt, Darmstadt, Hessen" | 5 |
 | 489 | Bingen am Rhein | 07339005 | 19429209 | https://www.pexels.com/photo/view-of-bingen-am-rhein-in-summer-19429209/ | Pexels-Lizenz, Ansicht im Sommer | 7 |
 | 490 | Nordenham | 03461007 | – | – | kein Bild gefunden | – |
 | 491 | Zirndorf | 09573134 | 2881286 | https://pixabay.com/photos/play-mobile-land-funpark-zirndorf-2881286/ | Pixabay-Lizenz, Playmobil-Funpark (kein Stadtbild) | 5 |
@@ -550,7 +550,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 499 | Kulmbach | 09477128 | 2897132 | https://pixabay.com/photos/kulmbach-castle-plassenburg-2897132/ | Pixabay-Lizenz, Stadt mit Plassenburg | 8 |
 | 500 | Helmstedt | 03154028 | – | – | kein Bild gefunden | – |
 | 501 | Horb am Neckar | 08237040 | 17939738 | https://www.pexels.com/zh-cn/photo/17939738/ | Pexels-Lizenz, Ortsbezug nur über Schlagwörter | 6 |
-| 502 | Rinteln | 03257031 | – | – | kein Bild gefunden | – |
+| 502 | Rinteln | 03257031 | 226546 | https://pixabay.com/de/photos/rinteln-altstadt-nrw-historisch-226546/ | Pixabay-Lizenz; Altstadt, historische Fachwerkhäuser (Titel „Rinteln, Altstadt, Nrw, Historisch“) | 8 |
 | 503 | Ellwangen (Jagst) | 08136019 | 3198898 | https://pixabay.com/de/photos/schloss-kloster-burg-ellwangen-3198898/ | Pixabay-Lizenz; Schloss/Kloster Ellwangen | 7 |
 | 504 | Friedrichsdorf | 06434002 | – | – | kein Bild gefunden | – |
 | 505 | Geretsried | 09173126 | – | – | kein Bild gefunden | – |
@@ -576,17 +576,17 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 525 | Norden | 03452019 | 2463036 | https://pixabay.com/de/photos/landschaft-norden-niedersachsen-2463036/ | Pixabay-Lizenz, Ortsbezug unklar (Stadt oder Himmelsrichtung) | 3 |
 | 526 | Espelkamp | 05770008 | – | – | kein Bild gefunden | – |
 | 527 | Ditzingen | 08118011 | – | – | kein Bild gefunden | – |
-| 528 | Köthen (Anhalt) | 15082180 | – | – | kein Bild gefunden | – |
+| 528 | Köthen (Anhalt) | 15082180 | 639542 | https://pixabay.com/de/photos/brauhaus-k%C3%B6then-architektur-hdr-639542/ | Pixabay-Lizenz; Brauhaus Köthen, Architektur | 5 |
 | 529 | Olpe | 05966024 | – | – | kein Bild gefunden | – |
 | 530 | Plettenberg | 05962052 | 200442 | https://pixabay.com/de/photos/plettenberg-funkturm-aussichtspunkt-200442/ | Pixabay-Lizenz; "Plettenberg mit Funkturm" (Aussichtspunkt, kein klassisches Wahrzeichen) | 5 |
-| 531 | Bad Oldesloe | 01062004 | – | – | kein Bild gefunden | – |
+| 531 | Bad Oldesloe | 01062004 | 97202 | https://pixabay.com/de/photos/travebr%C3%BCcke-br%C3%BCcke-bauwerk-97202/ | Pixabay-Lizenz; Travebrücke (Schlagwort „bad oldesloe“); die Stadt wird nur über die Schlagwörter zugeordnet | 6 |
 | 532 | Schmallenberg | 05958040 | – | – | kein Bild gefunden | – |
 | 533 | Meckenheim | 05382032 | – | – | kein Bild gefunden | – |
 | 534 | Sprockhövel | 05954028 | – | – | kein Bild gefunden | – |
 | 535 | Syke | 03251041 | – | – | kein Bild gefunden | – |
-| 536 | Markkleeberg | 14729260 | – | – | kein Bild gefunden | – |
+| 536 | Markkleeberg | 14729260 | 3529394 | https://pixabay.com/de/photos/see-cospudener-see-markkleeberg-3529394/ | Pixabay-Lizenz; Cospudener See (Titel nennt Markkleeberg) | 9 |
 | 537 | Rudolstadt | 16073076 | 1284754 | https://pixabay.com/de/photos/schloss-heidecksburg-rudolstadt-1284754/ | Pixabay-Lizenz, Schloss Heidecksburg | 7 |
-| 538 | Meiningen | 16066042 | – | – | kein Bild gefunden | – |
+| 538 | Meiningen | 16066042 | 6560752 | https://pixabay.com/photos/landsberg-castle-landsberg-meiningen-6560752/ | Pixabay-Lizenz; Burg/Schloss Landsberg (Titel "Meiningen") | 6 |
 | 539 | Warstein | 05974044 | – | – | kein Bild gefunden | – |
 | 540 | Waldshut-Tiengen | 08337126 | – | – | kein Bild gefunden | – |
 | 541 | Rathenow | 12063252 | 259119 | https://pixabay.com/de/photos/rathenow-winter-schleusenspucker-259119/ | Pixabay-Lizenz, Winter/Schleuse | 5 |
@@ -596,13 +596,13 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 545 | Zittau | 14626610 | 22619624 | https://www.pexels.com/photo/town-hall-in-zittau-germany-22619624/ | Pexels-Lizenz, Rathaus | 7 |
 | 546 | Haren (Ems) | 03454018 | – | – | kein Bild gefunden | – |
 | 547 | Waldkraiburg | 09183148 | – | – | kein Bild gefunden | – |
-| 548 | Attendorn | 05966004 | – | – | kein Bild gefunden | – |
+| 548 | Attendorn | 05966004 | 2892871 | https://pixabay.com/de/photos/sommer-biggesee-skywalk-stausee-2892871/ | Pixabay-Lizenz; Biggesee mit Skywalk, kein Stadtbild | 5 |
 | 549 | Herzogenaurach | 09572132 | – | – | kein Bild gefunden | – |
 | 550 | Varel | 03455026 | 1479479 | https://pixabay.com/de/photos/nordsee-camping-varel-1479479/ | Pixabay-Lizenz, Nordsee-Camping | 5 |
 | 551 | Bedburg | 05362004 | – | – | kein Bild gefunden | – |
 | 552 | Freudenstadt | 08237028 | 2503810 | https://pixabay.com/de/photos/freudenstadt-historischer-marktplatz-2503810/ | Pixabay-Lizenz, Historischer Marktplatz | 8 |
 | 553 | Staßfurt | 15089310 | 2974592 | https://pixabay.com/de/photos/dampflok-traditionslok-sta%C3%9Ffurt-2974592/ | Pixabay-Lizenz, Traditionslok (kein Stadtbild) | 4 |
-| 554 | Calw | 08235085 | – | – | kein Bild gefunden | – |
+| 554 | Calw | 08235085 | 2216319 | https://pixabay.com/de/photos/calw-altstadt-fachwerk-mittelalter-2216319/ | Pixabay-Lizenz; Altstadt mit Fachwerk | 8 |
 | 555 | Übach-Palenberg | 05370028 | 5214393 | https://pixabay.com/de/photos/wasserturm-%C3%BCbach-palenberg-himmel-5214393/ | Pixabay-Lizenz, Wasserturm | 6 |
 | 556 | Riedstadt | 06433011 | 2155184 | https://pixabay.com/de/photos/riedstadt-goddelau-hessen-2155184/ | Pixabay-Lizenz, Ortsteil Goddelau | 6 |
 | 557 | Sehnde | 03241016 | – | – | kein Bild gefunden | – |
@@ -613,27 +613,27 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 562 | Alfter | 05382004 | – | – | kein Bild gefunden | – |
 | 563 | Westerstede | 03451007 | 3630226 | https://pixabay.com/photos/westerstede-city-park-thale-pasture-3630226/ | Pixabay-Lizenz, Stadtpark/Weide | 5 |
 | 564 | Limbach-Oberfrohna | 14524180 | – | – | kein Bild gefunden | – |
-| 565 | Döbeln | 14522080 | – | – | kein Bild gefunden | – |
+| 565 | Döbeln | 14522080 | 4339182 | https://pixabay.com/de/photos/d%C3%B6beln-rathaus-sachsen-obermarkt-4339182/ | Pixabay-Lizenz; Rathaus am Obermarkt, Altstadt (Tags: Döbeln, Rathaus, Sachsen) | 9 |
 | 566 | Starnberg | 09188139 | 1850767 | https://pixabay.com/photos/starnberger-lake-starnberg-lake-1850767/ | Pixabay-Lizenz, Starnberger See | 6 |
 | 567 | Husum | 01054056 | 2299109 | https://pixabay.com/en/husum-port-nordfriesland-city-2299109/ | Pixabay-Lizenz, Hafen | 7 |
 | 568 | Korbach | 06635015 | 30061180 | https://www.pexels.com/photo/historic-stone-building-in-korbach-germany-30061180/ | Pexels-Lizenz; Titel "Historic Stone Building in Korbach, Germany", Motiv nicht verifiziert (evtl. Kirche/Rathaus) | 5 |
 | 569 | Gelnhausen | 06435010 | 2501895 | https://pixabay.com/photos/unterer-marktplatz-gelnhausen-hesse-2501895/ | Pixabay-Lizenz, Unterer Marktplatz | 7 |
-| 570 | Salzwedel | 15081455 | – | – | kein Bild gefunden | – |
+| 570 | Salzwedel | 15081455 | 671581 | https://pixabay.com/de/photos/altstadt-salzwedel-gasse-671581/ | Pixabay-Lizenz; Altstadtgasse (Alternative: schiefer Kirchturm, ID 671591) | 7 |
 | 571 | Kaltenkirchen | 01060044 | – | – | kein Bild gefunden | – |
 | 572 | Hann. Münden | 03159017 | 3784052 | https://pixabay.com/de/photos/welfen-schloss-hann-m%C3%BCnden-stadt-3784052/ | Pixabay-Lizenz, Welfenschloss | 7 |
 | 573 | Sonneberg | 16072018 | – | – | kein Bild gefunden | – |
-| 574 | Mosbach | 08225058 | – | – | kein Bild gefunden | – |
-| 575 | Dillenburg | 06532006 | – | – | kein Bild gefunden | – |
+| 574 | Mosbach | 08225058 | 3551155 | https://pixabay.com/de/photos/mosbach-marktplatz-neckar-odenwald-3551155/ | Pixabay-Lizenz; Marktplatz mit Fachwerk (Tags: Neckar-Odenwald, Odenwald) | 9 |
+| 575 | Dillenburg | 06532006 | 3838435 | https://pixabay.com/photos/wilhelm-storm-dillenburg-castle-3838435/ | Pixabay-Lizenz; Wilhelmsturm und Kirche | 8 |
 | 576 | Senftenberg | 12066304 | 17178541 | https://www.pexels.com/photo/rostiger-nagel-by-bridge-in-senftenberg-germany-17178541/ | Pexels-Lizenz, Detail an Brücke, wenig repräsentativ | 4 |
 | 577 | Netphen | 05970032 | – | – | kein Bild gefunden | – |
 | 578 | Leutkirch im Allgäu | 08436055 | – | – | kein Bild gefunden | – |
-| 579 | Warburg | 05762036 | – | – | kein Bild gefunden | – |
+| 579 | Warburg | 05762036 | 2491767 | https://pixabay.com/de/photos/fluss-diemel-nrw-warburg-2491767/ | Pixabay-Lizenz; Diemel in Warburg, NRW (Alternative: Brücke über die Diemel, ID 2372604) | 6 |
 | 580 | Quedlinburg | 15085235 | 18947084 | https://www.pexels.com/photo/town-hall-in-quedlinburg-18947084/ | Pexels-Lizenz, Rathaus | 8 |
-| 581 | Gersthofen | 09772147 | – | – | kein Bild gefunden | – |
+| 581 | Gersthofen | 09772147 | 1882468 | https://pixabay.com/photos/tower-museum-balloon-museum-1882468/ | Pixabay-Lizenz; Turm des Ballonmuseums, laut Suchtreffer zu Gersthofen (nur aus den Suchbegriffen abgeleitet, nicht bestätigt) | 5 |
 | 582 | Wertheim | 08128131 | 5292076 | https://pixabay.com/de/photos/wertheim-burg-fluss-schiff-5292076/ | Pixabay-Lizenz; Burg Wertheim über dem Main (alternativ 869783: https://pixabay.com/de/photos/wertheim-am-main-burg-turm-869783/) | 7 |
 | 583 | Rastede | 03451005 | – | – | kein Bild gefunden | – |
 | 584 | Karben | 06440012 | – | – | kein Bild gefunden | – |
-| 585 | Bad Soden am Taunus | 06436001 | – | – | kein Bild gefunden | – |
+| 585 | Bad Soden am Taunus | 06436001 | 2505085 | https://pixabay.com/de/photos/hundertwasserhaus-bad-soden-taunus-2505085/ | Pixabay-Lizenz; Hundertwasserhaus | 8 |
 | 586 | Vreden | 05554068 | – | – | kein Bild gefunden | – |
 | 587 | Überlingen | 08435059 | 453804 | https://pixabay.com/photos/%C3%BCberlingen-lake-constance-panorama-453804/ | Pixabay-Lizenz, Panorama Bodensee | 8 |
 | 588 | Apolda | 16071001 | – | – | kein Bild gefunden | – |
@@ -649,11 +649,11 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 598 | Senden (Bayern) | 09775152 | – | – | kein Bild gefunden | – |
 | 599 | Neusäß | 09772184 | – | – | kein Bild gefunden | – |
 | 600 | Laupheim | 08426070 | 228233 | https://pixabay.com/id/photos/jalan-castle-avenue-laupheim-228233/ | Pixabay-Lizenz, Castle Avenue | 6 |
-| 601 | Herdecke | 05954020 | – | – | kein Bild gefunden | – |
+| 601 | Herdecke | 05954020 | 6254980 | https://pixabay.com/de/photos/viadukt-herdecke-steinbrücke-6254980/ | Pixabay-Lizenz; Viadukt Herdecke (Steinbrücke), Nutzer JAderhold | 7 |
 | 602 | Burg bei Magdeburg | 15086015 | – | – | kein Bild gefunden | – |
 | 603 | Rotenburg (Wümme) | 03357039 | 2538981 | https://pixabay.com/da/photos/bullensee-rotenburg-w%C3%BCmme-2538981/ | Pixabay-Lizenz, Bullensee | 5 |
 | 604 | Stadthagen | 03257035 | 540567 | https://pixabay.com/photos/stadthagen-lower-saxony-540567/ | Pixabay-Lizenz, Schlosshof | 7 |
-| 605 | Lutherstadt Eisleben | 15087130 | – | – | kein Bild gefunden | – |
+| 605 | Lutherstadt Eisleben | 15087130 | 2243744 | https://pixabay.com/photos/lutherstadt-eisleben-saxony-anhalt-2243744/ | Pixabay-Lizenz; Marktplatz mit Lutherdenkmal (Titel "Market square with Martin Luther monument", URL nennt Lutherstadt Eisleben, Sachsen-Anhalt) | 8 |
 | 606 | Büdingen | 06440004 | 350676 | https://pixabay.com/photos/b%C3%BCdingen-jerusalem-gate-fortress-350676/ | Pixabay-Lizenz, Jerusalemer Tor | 7 |
 | 607 | Haar | 09184123 | – | – | kein Bild gefunden | – |
 | 608 | Metzingen | 08415050 | – | – | kein Bild gefunden | – |
@@ -682,14 +682,14 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 631 | Eislingen/Fils | 08117019 | – | – | kein Bild gefunden | – |
 | 632 | Hockenheim | 08226032 | 836245 | https://pixabay.com/photos/water-tower-hockenheim-germany-836245/ | Pixabay-Lizenz, Wasserturm | 6 |
 | 633 | Bad Harzburg | 03153002 | 3020001 | https://pixabay.com/de/photos/waldwipfelpfad-harz-bad-harzburg-3020001/ | Pixabay-Lizenz, Waldwipfelpfad | 7 |
-| 634 | Mühldorf am Inn | 09183128 | – | – | kein Bild gefunden | – |
+| 634 | Mühldorf am Inn | 09183128 | 2644357 | https://pixabay.com/de/photos/stadt-m%C3%BChldorf-stadtplatz-h%C3%A4user-2644357/ | Pixabay-Lizenz; Stadtplatz mit Häuserzeile (Fotograf kizemu; Tags "Stadt, Mühldorf, Stadtplatz, Häuser") | 8 |
 | 635 | Geseke | 05974020 | – | – | kein Bild gefunden | – |
 | 636 | Bad Krozingen | 08315006 | – | – | kein Bild gefunden | – |
 | 637 | Westoverledingen | 03457022 | – | – | kein Bild gefunden | – |
 | 638 | Lindlar | 05374020 | 2687036 | https://pixabay.com/de/photos/burg-ruine-wasserburg-mittelalter-2687036/ | Pixabay-Lizenz, Burgruine, Ortsbezug unklar | 3 |
-| 639 | Spremberg | 12071372 | – | – | kein Bild gefunden | – |
+| 639 | Spremberg | 12071372 | 1754158 | https://pixabay.com/de/photos/deutschland-spremberg-bismarkturm-1754158/ | Pixabay-Lizenz; Bismarckturm Spremberg (Fotograf neufal54; Titel "Deutschland, Spremberg, Bismarkturm") | 6 |
 | 640 | Xanten | 05170052 | 2424098 | https://pixabay.com/photos/city-cityscape-xanten-germany-2424098/ | Pixabay-Lizenz, Park und Dom | 8 |
-| 641 | Seligenstadt | 06438013 | – | – | kein Bild gefunden | – |
+| 641 | Seligenstadt | 06438013 | 3713929 | https://pixabay.com/de/photos/seligenstadt-kloster-basilika-3713929/ | Pixabay-Lizenz; Kloster und Basilika (Fotograf moritz320; Tags "Seligenstadt, Kloster, Basilika") | 8 |
 | 642 | Stadtallendorf | 06534018 | – | – | kein Bild gefunden | – |
 | 643 | Zerbst | 15082430 | 5118088 | https://pixabay.com/fr/photos/zerbst-roland-saxe-anhalt-anhalt-5118088/ | Pixabay-Lizenz, Roland von Zerbst | 7 |
 | 644 | Eckernförde | 01058043 | 2392657 | https://pixabay.com/photos/eckernf%c3%b6rde-the-outer-harbor-2392657/ | Pixabay-Lizenz, Außenhafen | 7 |
@@ -702,7 +702,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 651 | Puchheim | 09179145 | – | – | kein Bild gefunden | – |
 | 652 | Sondershausen | 16065067 | 1578214 | https://pixabay.com/de/photos/f%C3%B6rderturm-sondershausen-bergwerk-1578214/ | Pixabay-Lizenz, Förderturm Bergwerk | 7 |
 | 653 | Gauting | 09188120 | – | – | kein Bild gefunden | – |
-| 654 | Waren (Müritz) | 13071156 | – | – | kein Bild gefunden | – |
+| 654 | Waren (Müritz) | 13071156 | 4663076 | https://pixabay.com/de/photos/waren-m%C3%BCritz-stadthafen-4663076/ | Pixabay-Lizenz; Stadthafen (Fotograf UweWaren; Titel "Waren Müritz, Stadthafen") | 7 |
 | 655 | Traunstein | 09189155 | – | – | kein Bild gefunden (Treffer zeigen den Berg in Österreich) | – |
 | 656 | Wildeshausen | 03458014 | – | – | kein Bild gefunden | – |
 | 657 | Schramberg | 08325053 | – | – | kein Bild gefunden | – |
@@ -715,14 +715,14 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 664 | Nördlingen | 09779194 | 29174227 | https://www.pexels.com/photo/aerial-view-of-nordlingen-s-historic-tiled-rooftops-29174227/ | Pexels-Lizenz, Luftbild historische Dächer | 8 |
 | 665 | Mössingen | 08416025 | 3vlGNkDep4E | https://unsplash.com/photos/white-vans-parked-in-mossingen-3vlGNkDep4E | Unsplash-Lizenz, geparkte Transporter, wenig repräsentativ | 3 |
 | 666 | Senden (Westfalen) | 05558044 | – | – | kein Bild gefunden | – |
-| 667 | Herborn | 06532012 | – | – | kein Bild gefunden | – |
+| 667 | Herborn | 06532012 | 1124889 | https://pixabay.com/de/photos/herborn-deutschland-altstadt-haus-1124889/ | Pixabay-Lizenz; Altstadt, Haus. "Herborn" steht im Titel. | 8 |
 | 668 | Panketal | 12060181 | – | – | kein Bild gefunden | – |
 | 669 | Luckenwalde | 12072232 | – | – | kein Bild gefunden | – |
 | 670 | Bruchköbel | 06435006 | – | – | kein Bild gefunden | – |
 | 671 | Meinerzhagen | 05962036 | – | – | kein Bild gefunden | – |
 | 672 | Stadtlohn | 05554056 | – | – | kein Bild gefunden | – |
 | 673 | Schortens | 03455015 | – | – | kein Bild gefunden | – |
-| 674 | Wittmund | 03462019 | – | – | kein Bild gefunden | – |
+| 674 | Wittmund | 03462019 | 3100184 | https://pixabay.com/de/photos/wittmund-ostfriesland-stadtkirche-3100184/ | Pixabay-Lizenz; Stadtkirche. "Wittmund" und "Ostfriesland" stehen im Titel. | 8 |
 | 675 | Hörstel | 05566016 | – | – | kein Bild gefunden | – |
 | 676 | Enger | 05758008 | – | – | kein Bild gefunden | – |
 | 677 | Werdau | 14524300 | 3620284 | https://pixabay.com/de/photos/h3a-s4000-1-ifa-ddr-horch-werdau-3620284/ | Pixabay-Lizenz, Oldtimer-Lkw, Ortsbezug nur über Herstellernamen | 2 |
@@ -734,7 +734,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 683 | Schifferstadt | 07338025 | – | – | kein Bild gefunden | – |
 | 684 | Dingolfing | 09279112 | 607609 | https://pixabay.com/de/photos/stadttor-wollertor-gewerbe-607609/ | Pixabay-Lizenz, Stadttor Wollertor, Ortsbezug unsicher | 3 |
 | 685 | Neufahrn bei Freising | 09178145 | – | – | kein Bild gefunden | – |
-| 686 | Wachtberg | 05382072 | – | – | kein Bild gefunden | – |
+| 686 | Wachtberg | 05382072 | 3512658 | https://pixabay.com/de/photos/radom-wachtberg-radarkuppel-technik-3512658/ | Pixabay-Lizenz; Radarkuppel (Radom) in Wachtberg bei Bonn. Es ist der einzige Treffer. Das Motiv ist technisch und nicht typisch für die Stadt. | 6 |
 | 687 | Fröndenberg | 05978012 | – | – | kein Bild gefunden | – |
 | 688 | Coswig (Sachsen) | 14627010 | 182433 | https://pixabay.com/de/photos/coswig-elbe-f%C3%A4hre-schloss-182433/ | Pixabay-Lizenz; Titel "Schloss an der Elbe in Coswig". Ort unsicher: Schloss und Elbfähre passen eher zu Coswig (Anhalt) als zu Coswig (Sachsen), vor Verwendung prüfen. | 3 |
 | 689 | Burgwedel | 03241004 | – | – | kein Bild gefunden | – |
@@ -785,9 +785,9 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 733 | Burghausen | 09171112 | 329913 | https://pixabay.com/photos/burghausen-historic-center-castle-329913/ | Pixabay-Lizenz, keine Namensnennung nötig (Burg und Altstadt) | 8 |
 | 734 | Hiddenhausen | 05758016 | – | – | kein Bild gefunden | – |
 | 735 | Mayen | 07137068 | 5363639 | https://pixabay.com/photos/b%c3%bcrresheim-castle-eifel-mayen-5363639/ | Pixabay-Lizenz, keine Namensnennung nötig (Schloss Bürresheim bei Mayen, Ortsbezug indirekt) | 6 |
-| 739 | Nauen | 12063208 | – | – | kein Bild gefunden | – |
+| 739 | Nauen | 12063208 | 760779 | https://pixabay.com/de/photos/architektur-kirchturm-nauen-kirche-760779/ | Pixabay-Lizenz; Kirchturm Nauen (laut Titel) | 7 |
 | 741 | Alzey | 07331003 | – | – | kein Bild gefunden | – |
-| 742 | Blankenburg (Harz) | 15085055 | – | – | kein Bild gefunden | – |
+| 742 | Blankenburg (Harz) | 15085055 | 3562348 | https://pixabay.com/de/photos/kloster-michaelstein-blankenburg-harz-3562348/ | Pixabay-Lizenz; Kloster Michaelstein, Blankenburg Harz | 7 |
 | 743 | Burscheid | 05378008 | – | – | kein Bild gefunden | – |
 | 746 | Bückeburg | 03257009 | 5150912 | https://pixabay.com/de/photos/schloss-b%C3%BCckeburg-schaumburg-5150912/ | Pixabay-Lizenz, keine Namensnennung nötig (Schloss Bückeburg) | 8 |
 | 748 | Haiger | 06532011 | – | – | kein Bild gefunden | – |
@@ -795,11 +795,11 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 750 | Haldensleben | 15083270 | 5538762 | https://pixabay.com/de/photos/hundisburg-sachsen-anhalt-5538762/ | Pixabay-Lizenz; Titel "Hundisburg Sachsen-Anhalt" (Ortsteil von Haldensleben, kein Treffer zur Kernstadt) | 4 |
 | 751 | Gröbenzell | 09179126 | – | – | kein Bild gefunden | – |
 | 753 | Neuenhagen bei Berlin | 12064336 | – | – | kein Bild gefunden | – |
-| 754 | Eitorf | 05382016 | – | – | kein Bild gefunden | – |
+| 754 | Eitorf | 05382016 | 6650175 | https://pixabay.com/es/photos/eitorf-alemania-tierra-de-bergisches-6650175/ | Pixabay-Lizenz; Landschaft / Ortsbezug Eitorf im Bergischen Land (Titel) | 5 |
 | 755 | Korntal-Münchingen | 08118080 | – | – | kein Bild gefunden | – |
 | 756 | Annaberg-Buchholz | 14521020 | – | – | kein Bild gefunden | – |
 | 758 | Aue-Bad Schlema | 14521035 | – | – | kein Bild gefunden | – |
-| 760 | Bad Dürkheim | 07332002 | – | – | kein Bild gefunden | – |
+| 760 | Bad Dürkheim | 07332002 | 3298264 | https://pixabay.com/de/photos/bad-d%C3%BCrkheim-pfalz-weinstra%C3%9Fe-3298264/ | Pixabay-Lizenz; Bad Dürkheim, Pfalz, Weinstraße, Zentrum (Titel) | 8 |
 | 761 | Gilching | 09188121 | – | – | kein Bild gefunden | – |
 | 763 | Bad Segeberg | 01060005 | 53561 | https://pixabay.com/photos/bad-segeberg-kalkberg-53561/ | Pixabay-Lizenz; Titel "Bad Segeberg Kalkberg Open Air" | 7 |
 | 765 | Kolbermoor | 09187150 | – | – | kein Bild gefunden | – |
@@ -812,7 +812,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 778 | Lahnstein | 07141075 | 2169056 | https://pixabay.com/de/photos/burg-lahneck-lahnstein-schloss-2169056/ | Pixabay-Lizenz; Titel "Burg Lahneck Lahnstein" | 8 |
 | 779 | Gerlingen | 08118019 | – | – | kein Bild gefunden | – |
 | 780 | Kronberg im Taunus | 06434006 | – | – | kein Bild gefunden | – |
-| 782 | Bremervörde | 03357008 | – | – | kein Bild gefunden | – |
+| 782 | Bremervörde | 03357008 | 6741711 | https://pixabay.com/de/photos/bremerv%C3%B6rde-schloss-haus-fluss-6741711/ | Pixabay-Lizenz; Schlosshaus am Fluss (Oste), Titel nennt Bremervörde | 8 |
 | 784 | Hessisch Oldendorf | 03252007 | – | – | kein Bild gefunden | – |
 | 786 | Bergneustadt | 05374004 | – | – | kein Bild gefunden | – |
 | 788 | Marktoberdorf | 09777151 | 3132238 | https://pixabay.com/photos/marktoberdorf-linden-avenue-fall-3132238/ | Pixabay-Lizenz (Lindenallee im Herbst, Ortsname im Titel) | 7 |
@@ -822,11 +822,11 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 798 | Illertissen | 09775129 | – | – | kein Bild gefunden | – |
 | 800 | Bad Reichenhall | 09172114 | 210566 | https://pixabay.com/photos/bad-reichenhall-kurpark-palm-trees-210566/ | Pixabay-Lizenz; Kurpark mit Palmen, Ortsbezug im Titel | 6 |
 | 801 | Buchen (Odenwald) | 08225014 | – | – | kein Bild gefunden | – |
-| 802 | Bad Münstereifel | 05366004 | – | – | kein Bild gefunden | – |
+| 802 | Bad Münstereifel | 05366004 | 746924 | https://pixabay.com/de/photos/bad-m%C3%BCnstereifel-erft-stadt-746924/ | Pixabay-Lizenz; Stadtansicht an der Erft | 8 |
 | 803 | Pfinztal | 08215101 | 2183289 | https://pixabay.com/de/photos/sonnenaufgang-landschaft-pfinztal-2183289/ | Pixabay-Lizenz (Sonnenaufgang, Landschaft, Pfinztal) | 6 |
 | 804 | Großenhain | 14627060 | – | – | kein Bild gefunden | – |
 | 805 | Hoppegarten | 12064227 | – | – | kein Bild gefunden | – |
-| 806 | Bad Berleburg | 05970004 | – | – | kein Bild gefunden | – |
+| 806 | Bad Berleburg | 05970004 | 5248028 | https://pixabay.com/photos/bad-berleburg-castle-5248028/ | Pixabay-Lizenz; Schloss Berleburg | 8 |
 | 808 | Bad Aibling | 09187117 | – | – | kein Bild gefunden | – |
 | 809 | Konz | 07235068 | – | – | kein Bild gefunden | – |
 | 811 | Kreuzau | 05358028 | – | – | kein Bild gefunden | – |
@@ -838,10 +838,10 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 821 | Bobingen | 09772125 | – | – | kein Bild gefunden | – |
 | 822 | Bexbach | 10045111 | – | – | kein Bild gefunden | – |
 | 823 | Alzenau | 09671111 | 1927876 | https://pixabay.com/de/photos/alzenau-unterfranken-bayern-1927876/ | Pixabay-Lizenz (Alzenau Unterfranken Bayern) | 7 |
-| 824 | Diepholz | 03251012 | – | – | kein Bild gefunden | – |
+| 824 | Diepholz | 03251012 | 707556 | https://pixabay.com/de/photos/stadt-h%C3%A4user-d%C3%A4cher-kirche-707556/ | Pixabay-Lizenz; Stadtansicht mit Häusern, Dächern und Kirche (Titel nennt Diepholz) | 7 |
 | 827 | Holzwickede | 05978016 | 4837380 | https://pixabay.com/fi/photos/opherdicke-linna-unna-4837380/ | Pixabay-Lizenz; Schloss Opherdicke (Ortsteil von Holzwickede), Titel nennt Opherdicke und Unna, nicht Holzwickede selbst | 5 |
 | 828 | Garching b.München | 09184119 | – | – | kein Bild gefunden | – |
-| 829 | Bad Säckingen | 08337096 | – | – | kein Bild gefunden (nur Suchseiten) | – |
+| 829 | Bad Säckingen | 08337096 | 1989952 | https://pixabay.com/de/photos/holzbr%C3%BCcke-bad-s%C3%A4ckingen-rhein-1989952/ | Pixabay-Lizenz; Holzbrücke über den Rhein (Wahrzeichen) | 8 |
 | 832 | Frankenberg (Eder) | 06635011 | 2225323 | https://pixabay.com/nl/frankenberg-hessen-duitsland-2225323/ | Pixabay-Lizenz (Titel „Frankenberg, Hessen, Duitsland“) | 7 |
 | 833 | Bürstadt | 06431005 | – | – | kein Bild gefunden | – |
 | 834 | Ismaning | 09184130 | – | – | kein Bild gefunden | – |
@@ -854,7 +854,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 844 | Gescher | 05554016 | – | – | kein Bild gefunden | – |
 | 845 | Freudenberg | 05970016 | 4572407 | https://pixabay.com/photos/freudenberg-historic-old-town-4572407/ | Pixabay-Lizenz (Historische Altstadt; Freudenberg nicht eindeutig, Fachwerk-Stichwort) | 6 |
 | 846 | Auerbach/Vogtl. | 14523020 | – | – | kein Bild gefunden | – |
-| 848 | Bad Münder am Deister | 03252002 | – | – | kein Bild gefunden | – |
+| 848 | Bad Münder am Deister | 03252002 | 1180590 | https://pixabay.com/de/photos/kurpark-bad-m%C3%BCnder-deister-winter-1180590/ | Pixabay-Lizenz; Kurpark im Winter | 6 |
 | 849 | Cham | 09372116 | – | – | kein Bild gefunden | – |
 | 850 | Horn-Bad Meinberg | 05766032 | 3890940 | https://pixabay.com/de/photos/brunnentempel-bad-meinberg-3890940/ | Pixabay-Lizenz (Brunnentempel Bad Meinberg) | 7 |
 | 851 | Forst (Lausitz) | 12071076 | – | – | kein Bild gefunden (nur Suchseiten) | – |
@@ -865,7 +865,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 856 | Oerlinghausen | 05766056 | – | – | kein Bild gefunden | – |
 | 858 | Leopoldshöhe | 05766048 | – | – | kein Bild gefunden | – |
 | 860 | Finnentrop | 05966012 | – | – | kein Bild gefunden | – |
-| 861 | Kamenz | 14625250 | – | – | kein Bild gefunden | – |
+| 861 | Kamenz | 14625250 | 7412040 | https://pixabay.com/de/photos/kamenz-kirche-architektur-7412040/ | Pixabay-Lizenz; Kirche in Kamenz (Schlagwörter: Kamenz, Kirche, Architektur) | 8 |
 | 863 | Marktredwitz | 09479136 | – | – | kein Bild gefunden | – |
 | 864 | Eltville am Rhein | 06439003 | 1159039 | https://pixabay.com/photos/rheingau-eltville-flood-1159039/ | Pixabay-Lizenz, Rheingau Eltville, Hochwasser am Rhein | 6 |
 | 867 | Künzell | 06631017 | – | – | kein Bild gefunden | – |
@@ -880,7 +880,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 876 | Heidenau | 14628160 | – | – | kein Bild gefunden | – |
 | 877 | Hövelhof | 05774024 | – | – | kein Bild gefunden | – |
 | 879 | Bad Bentheim | 03456001 | 1587946 | https://pixabay.com/de/burg-bentheim-pulverturm-bergfried-1587946 | Pixabay-Lizenz, Burg Bentheim | 7 |
-| 880 | Bruckmühl | 09187122 | – | – | kein Bild gefunden | – |
+| 880 | Bruckmühl | 09187122 | 2714310 | https://pixabay.com/de/photos/fluss-bruckm%C3%BChl-mangfall-ufer-2714310/ | Pixabay-Lizenz; Mangfall-Ufer mit Deich bei Bruckmühl (Schlagwörter: Fluss, Bruckmühl, Mangfall, Ufer, Deich) | 7 |
 | 881 | Altena | 05962004 | 6014053 | https://pixabay.com/photos/flower-nature-altena-rose-6014053/ | Pixabay-Lizenz, Blume, Ortsbezug nur Schlagwort | 3 |
 | 882 | Eppelborn | 10043111 | – | – | kein Bild gefunden | – |
 | 883 | Bitburg | 07232018 | – | – | kein Bild gefunden | – |
@@ -915,7 +915,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 927 | Karlsbad | 08215096 | – | – | kein Bild gefunden | – |
 | 928 | Guben | 12071160 | – | – | kein Bild gefunden | – |
 | 931 | Großostheim | 09671122 | – | – | kein Bild gefunden | – |
-| 932 | Hude (Oldb) | 03458010 | – | – | kein Bild gefunden | – |
+| 932 | Hude (Oldb) | 03458010 | 1584063 | https://pixabay.com/photos/grim-ruin-decay-monastery-1584063/ | Pixabay-Lizenz; Klosterruine Hude (Titel nennt Hude) | 6 |
 | 933 | Illingen | 10043112 | – | – | kein Bild gefunden | – |
 | 934 | Kelsterbach | 06433007 | – | – | kein Bild gefunden | – |
 | 935 | Bad Arolsen | 06635002 | – | – | kein Bild gefunden | – |
@@ -936,7 +936,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 961 | Beckingen | 10042111 | – | – | kein Bild gefunden | – |
 | 962 | Alsfeld | 06535001 | – | – | kein Bild gefunden | – |
 | 963 | Michelstadt | 06437011 | – | – | kein Bild gefunden | – |
-| 964 | Marbach am Neckar | 08118049 | – | – | kein Bild gefunden | – |
+| 964 | Marbach am Neckar | 08118049 | 4107493 | https://pixabay.com/de/photos/neckar-marbach-schiller-deutschland-4107493/ | Pixabay-Lizenz; Neckar und Marbach (Schiller-Stadt), Stadtansicht | 7 |
 | 967 | Bad Bramstedt | 01060004 | – | – | kein Bild gefunden | – |
 | 969 | Königslutter am Elm | 03154013 | – | – | kein Bild gefunden | – |
 | 971 | Altdorf b.Nürnberg | 09574112 | – | – | kein Bild gefunden | – |
