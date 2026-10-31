@@ -3130,7 +3130,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Meinhard | Hessen | 06636007 | – | – | noch nicht gesucht | – |
 | Meißenheim | Baden-Württemberg | 08317075 | – | – | noch nicht gesucht | – |
 | Meißner | Hessen | 06636008 | – | – | noch nicht gesucht | – |
-| Memmelsdorf | Bayern | 09471159 | – | – | noch nicht gesucht | – |
+| Memmelsdorf | Bayern | 09471159 | 248949 | https://pixabay.com/de/photos/schloss-seehof-memmelsdorf-248949/ | Pixabay-Lizenz; Schloss Seehof, Memmelsdorf | 8 |
 | Mengerskirchen | Hessen | 06533011 | – | – | noch nicht gesucht | – |
 | Mengkofen | Bayern | 09279127 | – | – | noch nicht gesucht | – |
 | Merching | Bayern | 09771145 | – | – | noch nicht gesucht | – |
@@ -3140,7 +3140,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Mertingen | Bayern | 09779181 | – | – | noch nicht gesucht | – |
 | Merzhausen | Baden-Württemberg | 08315073 | – | – | noch nicht gesucht | – |
 | Messel | Hessen | 06432012 | – | – | noch nicht gesucht | – |
-| Metten | Bayern | 09271132 | – | – | noch nicht gesucht | – |
+| Metten | Bayern | 09271132 | 2478445 | https://pixabay.com/de/photos/metten-kloster-abtei-benediktiner-2478445/ | Pixabay-Lizenz; Benediktinerabtei Metten (Nutzer maxmann; Alternativen: 2478460, 2478459, 2478186, 2478184) | 8 |
 | Mettenheim | Bayern | 09183127 | – | – | noch nicht gesucht | – |
 | Michelau i.OFr. | Bayern | 09478145 | – | – | noch nicht gesucht | – |
 | Michelbach an der Bilz | Baden-Württemberg | 08127056 | – | – | noch nicht gesucht | – |
@@ -3153,7 +3153,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Mittelbiberach | Baden-Württemberg | 08426074 | – | – | noch nicht gesucht | – |
 | Mittelherwigsdorf | Sachsen | 14626310 | – | – | noch nicht gesucht | – |
 | Mittenaar | Hessen | 06532017 | – | – | noch nicht gesucht | – |
-| Mittenwald | Bayern | 09180123 | – | – | noch nicht gesucht | – |
+| Mittenwald | Bayern | 09180123 | 7105393 | https://pixabay.com/de/photos/mittenwald-berge-karwendel-natur-7105393/ | Pixabay-Lizenz; Mittenwald mit Karwendel-Bergen | 7 |
 | Mitterskirchen | Bayern | 09277134 | – | – | noch nicht gesucht | – |
 | Mockrehna | Sachsen | 14730190 | – | – | noch nicht gesucht | – |
 | Modautal | Hessen | 06432013 | – | – | noch nicht gesucht | – |
@@ -3164,7 +3164,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Moosburg | Baden-Württemberg | 08426078 | – | – | noch nicht gesucht | – |
 | Moosinning | Bayern | 09177130 | – | – | noch nicht gesucht | – |
 | Moosthenning | Bayern | 09279128 | – | – | noch nicht gesucht | – |
-| Moritzburg | Sachsen | 14627150 | – | – | noch nicht gesucht | – |
+| Moritzburg | Sachsen | 14627150 | 5823845 | https://pixabay.com/de/photos/schloss-moritzburg-aschenputtel-5823845/ | Pixabay-Lizenz; Schloss Moritzburg | 8 |
 | Morschen | Hessen | 06634015 | – | – | noch nicht gesucht | – |
 | Mossautal | Hessen | 06437012 | – | – | noch nicht gesucht | – |
 | Motten | Bayern | 09672134 | – | – | noch nicht gesucht | – |
