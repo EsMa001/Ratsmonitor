@@ -1770,9 +1770,9 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Renningen | BW | 08115041 | – | – | noch nicht gesucht | – |
 | Rhede | NRW | 05554048 | – | – | noch nicht gesucht | – |
 | Rheinau | BW | 08317153 | – | – | noch nicht gesucht | – |
-| Rheinsberg | Brandenburg | 12068353 | – | – | noch nicht gesucht | – |
-| Riedenburg | Bayern | 09273164 | – | – | noch nicht gesucht | – |
-| Riedlingen | BW | 08426097 | – | – | noch nicht gesucht | – |
+| Rheinsberg | Brandenburg | 12068353 | 3814238 | https://pixabay.com/photos/castle-rheinsberg-brandenburg-3814238/ | Pixabay-Lizenz; Schloss Rheinsberg | 8 |
+| Riedenburg | Bayern | 09273164 | 646367 | https://pixabay.com/de/photos/kletterfelsen-altm%C3%BChltal-riedenburg-646367/ | Pixabay-Lizenz; Kletterfelsen im Altmühltal bei Riedenburg | 5 |
+| Riedlingen | BW | 08426097 | 6009485 | https://pixabay.com/de/photos/br%C3%BCcke-nordtangente-riedlingen-6009485/ | Pixabay-Lizenz; Brücke Nordtangente Riedlingen | 4 |
 | Rieneck | Bayern | 09677177 | – | – | noch nicht gesucht | – |
 | Rodewisch | Sachsen | 14523360 | – | – | noch nicht gesucht | – |
 | Roding | Bayern | 09372153 | – | – | noch nicht gesucht | – |
@@ -1782,11 +1782,11 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Rosenfeld | BW | 08417054 | – | – | noch nicht gesucht | – |
 | Rosenthal | Hessen | 06635017 | – | – | noch nicht gesucht | – |
 | Rotenburg a.d.Fulda | Hessen | 06632018 | – | – | noch nicht gesucht | – |
-| Rothenburg ob der Tauber | Bayern | 09571193 | – | – | noch nicht gesucht | – |
+| Rothenburg ob der Tauber | Bayern | 09571193 | 1622693 | https://pixabay.com/de/photos/rothenburg-ob-der-tauber-pl%C3%B6nlein-1622693/ | Pixabay-Lizenz; Plönlein | 10 |
 | Rottenburg a.d.Laaber | Bayern | 09274176 | – | – | noch nicht gesucht | – |
 | Roßleben-Wiehe | Thüringen | 16065087 | – | – | noch nicht gesucht | – |
 | Roßwein | Sachsen | 14522510 | – | – | noch nicht gesucht | – |
-| Runkel | Hessen | 06533013 | – | – | noch nicht gesucht | – |
+| Runkel | Hessen | 06533013 | 3096510 | https://pixabay.com/photos/germany-lahn-castle-runkel-waters-3096510/ | Pixabay-Lizenz; Burg Runkel an der Lahn | 8 |
 | Rutesheim | BW | 08115042 | – | – | noch nicht gesucht | – |
 | Rödental | Bayern | 09473159 | – | – | noch nicht gesucht | – |
 | Römhild | Thüringen | 16069062 | – | – | noch nicht gesucht | – |
