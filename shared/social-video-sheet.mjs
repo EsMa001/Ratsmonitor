@@ -37,7 +37,7 @@ export const spokenDay=d=>ORD_SPECIAL[d]||(d<20?spokenNumber(d)+'ten':spokenNumb
 export const spokenDate=iso=>{const [,m,d]=iso.split('-').map(Number);return `${spokenDay(d)} ${MONTHS[m-1]}`;};
 const shortDate=iso=>{const [y,m,d]=iso.split('-');return `${d}.${m}.${y.slice(2)}`;};
 /** Betrag: „241.000 €“, „241.000,- €“, „241.000,00 €“, auch „200.000,-“ ohne Eurozeichen */
-const AMOUNT=/(\d{1,3}(?:\.\d{3})+|\d+)(?:,-\s?(?:€|Euro)?|,00\s?(?:€|Euro)|\s?(?:€|Euro))/g;
+const AMOUNT=/(\d{1,3}(?:\.\d{3})+|\d+)(?:,-(?:\s?(?:€|Euro))?|,00\s?(?:€|Euro)|\s?(?:€|Euro))/g;
 const AMOUNT_LABELS=[['Gesamtkosten','Kosten'],['Kostenschätzung','Kosten'],['Kosten','Kosten'],['Förderung','Förderung'],['Zuschuss','Zuschuss'],['Zuwendung','Zuschuss'],['Haushaltsmittel','Haushaltsmittel'],['Eigenanteil','Eigenanteil'],['Puffer','Puffer']];
 const SPOKEN_YEAR=/\b(19|20)\d{2}\b/g;
 /** Text für die Stimme: Jahreszahlen und Beträge ausgeschrieben, „&“ und Kürzel ersetzt */
@@ -107,7 +107,7 @@ export function videoSheet(topic,{regionName,today,titleShort}){
  const hook=`${hw} in ${place}: ${spoken(t2)}.`;
  const stand=[st.word==='Stand offen'?'Stand offen.':`${st.spokenWord[0].toUpperCase()+st.spokenWord.slice(1)}.`,st.spokenExtra,
   last?`Zuletzt beraten: ${last.committee}, am ${spokenDate(last.date)}.`:null,
-  next?`Nächste Sitzung: ${next.committee}, ${spokenDate(next.date)}.`:null].filter(Boolean).join(' ');
+  next?`Nächste Sitzung: ${next.committee}, am ${spokenDate(next.date)}.`:null].filter(Boolean).join(' ');
  const kern=quote?spoken(quote):null;
  const quote2=quote?pickQuote(topic.ruleSummary,[quote.replace(/ \[…\]$/,'')]):null;
  const verlauf=past.slice(-3).map(e=>({date:e.date,datum:shortDate(e.date),committee:e.committee,result:String(e.result||'').trim()||null,spokenDay:spokenDay(+e.date.slice(8)),spoken:`Am ${spokenDate(e.date)}, ${e.committee}${e.result?': '+spoken(String(e.result).trim()):''}.`}));

@@ -93,3 +93,10 @@ test('Hook nennt das Standwort in jedem Status als erste Wörter', () => {
   assert.ok(s.sprechtext[1].startsWith(start),s.sprechtext[1]);
  }
 });
+
+test('Betrag mit „,-“ ohne Eurozeichen behält das Leerzeichen, nächste Sitzung mit „am“', () => {
+ assert.equal(spoken('Förderung von 200.000,- gegenüber'),'Förderung von zweihunderttausend Euro gegenüber');
+ assert.equal(spoken('241.000,- € geschätzt'),'zweihunderteinundvierzigtausend Euro geschätzt');
+ const s=videoSheet({title:'Thema',status:'consulting',events:[{date:'2026-10-13',committee:'Rat'},{date:'2026-11-12',committee:'Rat'}],ruleSummary:{short:'Der Rat beschließt das Thema für alle Beteiligten im Ort.'}},{regionName:'Ort',today:'2026-10-31',titleShort:'Thema'});
+ assert.match(s.sprechtext[5],/Nächste Sitzung: Rat, am zwölften November\./);
+});
