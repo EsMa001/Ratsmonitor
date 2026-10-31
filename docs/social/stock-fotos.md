@@ -1993,11 +1993,11 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Wernau (Neckar) | BW | 08116072 | – | – | noch nicht gesucht | – |
 | Werneuchen | Brandenburg | 12060280 | – | – | noch nicht gesucht | – |
 | Werra-Suhl-Tal | Thüringen | 16063103 | – | – | noch nicht gesucht | – |
-| Werther (Westf.) | NRW | 05754052 | – | – | noch nicht gesucht | – |
+| Werther (Westf.) | NRW | 05754052 | 6817098 | https://pixabay.com/photos/church-autumn-season-werther-6817098/ | Pixabay-Lizenz; Kirche im Herbst. Zuordnung nur über das Schlagwort "werther" in der URL. Das Foto habe ich nicht gesehen. | 6 |
 | Wetter (Hessen) | Hessen | 06534021 | – | – | noch nicht gesucht | – |
 | Wettin-Löbejün | Sachsen-Anhalt | 15088216 | – | – | noch nicht gesucht | – |
 | Widdern | BW | 08125103 | – | – | noch nicht gesucht | – |
-| Wiesensteig | BW | 08117058 | – | – | noch nicht gesucht | – |
+| Wiesensteig | BW | 08117058 | 2779343 | https://pixabay.com/photos/fils-filsursprung-source-2779343/ | Pixabay-Lizenz; Filsursprung in Wiesensteig | 7 |
 | Wiesmoor | Niedersachsen | 03452025 | – | – | noch nicht gesucht | – |
 | Wildau | Brandenburg | 12061540 | – | – | noch nicht gesucht | – |
 | Wildberg | BW | 08235080 | 27421503 | https://www.pexels.com/photo/wildberg-in-the-black-forest-germany-27421503/ | Pexels-Lizenz; Wildberg im Schwarzwald (BW) | 7 |
@@ -2009,17 +2009,17 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Wilthen | Sachsen | 14625630 | – | – | noch nicht gesucht | – |
 | Windischeschenbach | Bayern | 09374168 | – | – | noch nicht gesucht | – |
 | Windsbach | Bayern | 09571226 | – | – | noch nicht gesucht | – |
-| Winterberg | NRW | 05958048 | – | – | noch nicht gesucht | – |
-| Wittenberge | Brandenburg | 12070424 | – | – | noch nicht gesucht | – |
+| Winterberg | NRW | 05958048 | 1961027 | https://pixabay.com/photos/winterberg-north-slope-hochsauerland-1961027/ | Pixabay-Lizenz; verschneite Skipiste mit Sessellift, Winterberg Nordhang (Hochsauerland) | 8 |
+| Wittenberge | Brandenburg | 12070424 | 1217342 | https://pixabay.com/de/photos/wittenberge-elbe-deutschland-hafen-1217342/ | Pixabay-Lizenz; Elbe und Hafen Wittenberge | 8 |
 | Wittichenau | Sachsen | 14625640 | – | – | noch nicht gesucht | – |
 | Wittingen | Niedersachsen | 03151040 | – | – | noch nicht gesucht | – |
 | Wittlich | Rheinland-Pfalz | 07231134 | – | – | noch nicht gesucht | – |
 | Wittstock/Dosse | Brandenburg | 12068468 | – | – | noch nicht gesucht | – |
-| Witzenhausen | Hessen | 06636016 | – | – | noch nicht gesucht | – |
+| Witzenhausen | Hessen | 06636016 | 338610 | https://pixabay.com/photos/witzenhausen-bridge-river-houses-338610/ | Pixabay-Lizenz; Brücke, Fluss und Häuser | 7 |
 | Wolfach | BW | 08317145 | – | – | noch nicht gesucht | – |
 | Wolfhagen | Hessen | 06633028 | 2799484 | https://pixabay.com/photos/church-evangelical-wolf-hagen-tower-2799484/ | Pixabay-Lizenz; evangelische Kirche, Turm | 6 |
-| Wolfratshausen | Bayern | 09173147 | – | – | noch nicht gesucht | – |
-| Wolkenstein | Sachsen | 14521670 | – | – | noch nicht gesucht | – |
+| Wolfratshausen | Bayern | 09173147 | 2988784 | https://pixabay.com/photos/wolfratshausen-loisach-isar-2988784/ | Pixabay-Lizenz; kleiner Wasserfall unter Brücke an der Loisach (Tag "Wolfratshausen") | 6 |
+| Wolkenstein | Sachsen | 14521670 | 7537890 | https://pixabay.com/photos/schloss-castle-wolkenstein-history-7537890/ | Pixabay-Lizenz; Schloss Wolkenstein (Tags Germany, Erzgebirge; Tag-Abgleich mit Sachsen, Ort nicht ausdrücklich genannt) | 6 |
 | Wolmirstedt | Sachsen-Anhalt | 15083565 | – | – | noch nicht gesucht | – |
 | Wriezen | Brandenburg | 12064512 | – | – | noch nicht gesucht | – |
 | Wunsiedel | Bayern | 09479169 | 30069336 | https://www.pexels.com/photo/snow-covered-alpine-forest-in-wunsiedel-germany-30069336/ | Pexels-Lizenz; verschneiter Wald bei Wunsiedel | 5 |
@@ -2034,7 +2034,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Zell am Harmersbach | BW | 08317146 | – | – | noch nicht gesucht | – |
 | Zell im Wiesental | BW | 08336103 | – | – | noch nicht gesucht | – |
 | Zella-Mehlis | Thüringen | 16066092 | – | – | noch nicht gesucht | – |
-| Zierenberg | Hessen | 06633029 | – | – | noch nicht gesucht | – |
+| Zierenberg | Hessen | 06633029 | 2753245 | https://pixabay.com/de/photos/holztor-tor-rathaus-zierenberg-alt-2753245/ | Pixabay-Lizenz; Holztor und Rathaus Zierenberg (Titel nennt den Ort) | 8 |
 | Zwenkau | Sachsen | 14729430 | – | – | noch nicht gesucht | – |
 | Zwiesel | Bayern | 09276148 | – | – | noch nicht gesucht | – |
 | Zwingenberg | Hessen | 06431022 | – | – | noch nicht gesucht | – |
@@ -2052,7 +2052,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Abtsteinach | Hessen | 06431001 | – | – | noch nicht gesucht | – |
 | Achberg | Baden-Württemberg | 08436001 | – | – | noch nicht gesucht | – |
 | Achstetten | Baden-Württemberg | 08426001 | – | – | noch nicht gesucht | – |
-| Adelberg | Baden-Württemberg | 08117001 | – | – | noch nicht gesucht | – |
+| Adelberg | Baden-Württemberg | 08117001 | 2910555 | https://pixabay.com/de/photos/kloster-adelberg-kloster-g%C3%B6ppingen-2910555/ | Pixabay-Lizenz; Kloster Adelberg (Göppingen) | 8 |
 | Adelmannsfelden | Baden-Württemberg | 08136003 | – | – | noch nicht gesucht | – |
 | Adelsdorf | Bayern | 09572111 | – | – | noch nicht gesucht | – |
 | Adelsried | Bayern | 09772111 | – | – | noch nicht gesucht | – |
@@ -2077,7 +2077,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Aitrach | Baden-Württemberg | 08436004 | – | – | noch nicht gesucht | – |
 | Albbruck | Baden-Württemberg | 08337002 | – | – | noch nicht gesucht | – |
 | Albershausen | Baden-Württemberg | 08117003 | – | – | noch nicht gesucht | – |
-| Aldersbach | Bayern | 09275114 | – | – | noch nicht gesucht | – |
+| Aldersbach | Bayern | 09275114 | 2446777 | https://pixabay.com/de/photos/aldersbach-kloster-brauerei-bavaria-2446777/ | Pixabay-Lizenz; Kloster und Brauerei Aldersbach | 8 |
 | Aldingen | Baden-Württemberg | 08327002 | – | – | noch nicht gesucht | – |
 | Alfdorf | Baden-Württemberg | 08119001 | – | – | noch nicht gesucht | – |
 | Alheim | Hessen | 06632001 | – | – | noch nicht gesucht | – |
