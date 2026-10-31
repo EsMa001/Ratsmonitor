@@ -144,7 +144,7 @@ export function videoSheet(topic,{regionName,today,titleShort,kommune}){
   last?`Zuletzt beraten: ${last.committee}, am ${spokenDate(last.date)}.`:null,
   next?`Nächste Sitzung: ${next.committee}, am ${spokenDate(next.date)}.`:null].filter(Boolean).join(' ');
  const kern=quote?spoken(quote):null;
- const verlauf=past.slice(-3).map(e=>({date:e.date,datum:shortDate(e.date),committee:e.committee,result:String(e.result||'').trim()||null,spokenDay:spokenDay(+e.date.slice(8)),spoken:`Am ${spokenDate(e.date)}, ${e.committee}${e.result?': '+spoken(String(e.result).trim()):''}.`}));
+ const verlauf=past.slice(-3).map(e=>({date:e.date,datum:shortDate(e.date),committee:e.committee,result:String(e.result||'').trim()||null,spokenDay:spokenDay(+e.date.slice(8)),spoken:`Am ${spokenDate(e.date)}${e.result?': '+spoken(String(e.result).trim()):', '+e.committee}.`}));
  const verlaufText=verlauf.length?'Bisher: '+verlauf.map(v=>v.spoken).join(' '):null;
  const meta=[last&&`${last.committee} · zuletzt beraten am ${shortDate(last.date)}`,
   next?`${next.committee} · nächste Sitzung ${shortDate(next.date)}`:before?`Davor: ${before.committee} · ${shortDate(before.date)}`:null].filter(Boolean);

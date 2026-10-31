@@ -209,7 +209,7 @@ def make_voices(sheet, vdir):
 
 def total_len(cfg, vdir):
     vo = [wavlen(f'{vdir}/v{i + 1}.wav') for i in range(6)]
-    mins = [6.0, 7.0, 7.0, max(6.5, 0.05 * len(cfg['quote'])), 7.0, 5.0]; tails = [1.0, 2.5, 3.0, 1.0, 1.5, 1.0]
+    mins = [6.0, 7.0, 5.0, max(6.5, 0.05 * len(cfg['quote'])), 7.0, 5.0]; tails = [1.0, 2.5, 1.5, 1.0, 1.5, 1.0]
     return sum(round(max(m, x + V.LEAD + t), 2) for m, x, t in zip(mins, vo, tails))
 
 

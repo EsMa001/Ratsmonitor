@@ -263,9 +263,11 @@ def make(cfg):
         ta = min(max(find(wt, cfg['standkey'], 1.2) - 0.5, 0.3), 0.8)
         lab = b.text_block(cfg.get('standlab', 'STAND'), 48, 'S', GRAY2, maxw=CW, tr_em=0.14)
         y = 430
-        band = Image.new('RGBA', (W, 60 + 300 + 30 + st.height + 70), tuple(cfg['stampcol']) + (30,))
-        els = chips(cfg) + [E(band, 0, y, 0, dur=0.4, slide=0), E(lab, MX, y + 36, 0, dur=0.4, slide=0), slam(sb, (W - 300) // 2, y + 100, ta, 0.5, 0.4), slam(st, (W - st.width) // 2, y + 100 + 300 + 30, ta + 0.4, 0.4, 0.4)]
-        yy = y + 60 + 300 + 30 + st.height + 50 + 60
+        # Zeichen mittig zwischen Beschriftung und Statuswort: gleicher Abstand oben und unten (das Statuswort hat oben etwas Luft im Bild, daher unten 10 weniger)
+        by = y + 36 + lab.height + 46; wy = by + 300 + 36
+        band = Image.new('RGBA', (W, wy - y + st.height + 44), tuple(cfg['stampcol']) + (30,))
+        els = chips(cfg) + [E(band, 0, y, 0, dur=0.4, slide=0), E(lab, MX, y + 36, 0, dur=0.4, slide=0), slam(sb, (W - 300) // 2, by, ta, 0.5, 0.4), slam(st, (W - st.width) // 2, wy, ta + 0.4, 0.4, 0.4)]
+        yy = y + band.height + 40
         nrows = len(cfg['meta'].split('\n'))
         for k, row in enumerate(cfg['meta'].split('\n')):
             row = row.replace(' · ', '\n')
@@ -364,8 +366,8 @@ def run(cfg, vdir, outfile):
     global SCENES, CFG
     CFG = cfg; SCENES = make(cfg); os.makedirs(cfg['out'], exist_ok=True)
     vo = [v.wavlen(f'{vdir}/v{i + 1}.wav') for i in range(NS)]
-    mins = [6.0, 7.0, 7.0, max(6.5, 0.05 * len(cfg['quote'])), 7.0, 5.0]
-    tails = [1.0, 2.5, 3.0, 1.0, 1.5, 1.0]
+    mins = [6.0, 7.0, 5.0, max(6.5, 0.05 * len(cfg['quote'])), 7.0, 5.0]
+    tails = [1.0, 2.5, 1.5, 1.0, 1.5, 1.0]
     durs = [round(max(m, x + LEAD + t_), 2) for m, x, t_ in zip(mins, vo, tails)]
     print('durs', durs, round(sum(durs), 2), flush=True)
     tot = sum(durs); st_ = [sum(durs[:i]) for i in range(NS)]
