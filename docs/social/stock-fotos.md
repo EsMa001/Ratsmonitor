@@ -715,14 +715,14 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 664 | Nördlingen | 09779194 | 29174227 | https://www.pexels.com/photo/aerial-view-of-nordlingen-s-historic-tiled-rooftops-29174227/ | Pexels-Lizenz, Luftbild historische Dächer | 8 |
 | 665 | Mössingen | 08416025 | 3vlGNkDep4E | https://unsplash.com/photos/white-vans-parked-in-mossingen-3vlGNkDep4E | Unsplash-Lizenz, geparkte Transporter, wenig repräsentativ | 3 |
 | 666 | Senden (Westfalen) | 05558044 | – | – | kein Bild gefunden | – |
-| 667 | Herborn | 06532012 | – | – | kein Bild gefunden | – |
+| 667 | Herborn | 06532012 | 1124889 | https://pixabay.com/de/photos/herborn-deutschland-altstadt-haus-1124889/ | Pixabay-Lizenz; Altstadt, Haus. "Herborn" steht im Titel. | 8 |
 | 668 | Panketal | 12060181 | – | – | kein Bild gefunden | – |
 | 669 | Luckenwalde | 12072232 | – | – | kein Bild gefunden | – |
 | 670 | Bruchköbel | 06435006 | – | – | kein Bild gefunden | – |
 | 671 | Meinerzhagen | 05962036 | – | – | kein Bild gefunden | – |
 | 672 | Stadtlohn | 05554056 | – | – | kein Bild gefunden | – |
 | 673 | Schortens | 03455015 | – | – | kein Bild gefunden | – |
-| 674 | Wittmund | 03462019 | – | – | kein Bild gefunden | – |
+| 674 | Wittmund | 03462019 | 3100184 | https://pixabay.com/de/photos/wittmund-ostfriesland-stadtkirche-3100184/ | Pixabay-Lizenz; Stadtkirche. "Wittmund" und "Ostfriesland" stehen im Titel. | 8 |
 | 675 | Hörstel | 05566016 | – | – | kein Bild gefunden | – |
 | 676 | Enger | 05758008 | – | – | kein Bild gefunden | – |
 | 677 | Werdau | 14524300 | 3620284 | https://pixabay.com/de/photos/h3a-s4000-1-ifa-ddr-horch-werdau-3620284/ | Pixabay-Lizenz, Oldtimer-Lkw, Ortsbezug nur über Herstellernamen | 2 |
@@ -734,7 +734,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 683 | Schifferstadt | 07338025 | – | – | kein Bild gefunden | – |
 | 684 | Dingolfing | 09279112 | 607609 | https://pixabay.com/de/photos/stadttor-wollertor-gewerbe-607609/ | Pixabay-Lizenz, Stadttor Wollertor, Ortsbezug unsicher | 3 |
 | 685 | Neufahrn bei Freising | 09178145 | – | – | kein Bild gefunden | – |
-| 686 | Wachtberg | 05382072 | – | – | kein Bild gefunden | – |
+| 686 | Wachtberg | 05382072 | 3512658 | https://pixabay.com/de/photos/radom-wachtberg-radarkuppel-technik-3512658/ | Pixabay-Lizenz; Radarkuppel (Radom) in Wachtberg bei Bonn. Es ist der einzige Treffer. Das Motiv ist technisch und nicht typisch für die Stadt. | 6 |
 | 687 | Fröndenberg | 05978012 | – | – | kein Bild gefunden | – |
 | 688 | Coswig (Sachsen) | 14627010 | 182433 | https://pixabay.com/de/photos/coswig-elbe-f%C3%A4hre-schloss-182433/ | Pixabay-Lizenz; Titel "Schloss an der Elbe in Coswig". Ort unsicher: Schloss und Elbfähre passen eher zu Coswig (Anhalt) als zu Coswig (Sachsen), vor Verwendung prüfen. | 3 |
 | 689 | Burgwedel | 03241004 | – | – | kein Bild gefunden | – |
@@ -785,9 +785,9 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 733 | Burghausen | 09171112 | 329913 | https://pixabay.com/photos/burghausen-historic-center-castle-329913/ | Pixabay-Lizenz, keine Namensnennung nötig (Burg und Altstadt) | 8 |
 | 734 | Hiddenhausen | 05758016 | – | – | kein Bild gefunden | – |
 | 735 | Mayen | 07137068 | 5363639 | https://pixabay.com/photos/b%c3%bcrresheim-castle-eifel-mayen-5363639/ | Pixabay-Lizenz, keine Namensnennung nötig (Schloss Bürresheim bei Mayen, Ortsbezug indirekt) | 6 |
-| 739 | Nauen | 12063208 | – | – | kein Bild gefunden | – |
+| 739 | Nauen | 12063208 | 760779 | https://pixabay.com/de/photos/architektur-kirchturm-nauen-kirche-760779/ | Pixabay-Lizenz; Kirchturm Nauen (laut Titel) | 7 |
 | 741 | Alzey | 07331003 | – | – | kein Bild gefunden | – |
-| 742 | Blankenburg (Harz) | 15085055 | – | – | kein Bild gefunden | – |
+| 742 | Blankenburg (Harz) | 15085055 | 3562348 | https://pixabay.com/de/photos/kloster-michaelstein-blankenburg-harz-3562348/ | Pixabay-Lizenz; Kloster Michaelstein, Blankenburg Harz | 7 |
 | 743 | Burscheid | 05378008 | – | – | kein Bild gefunden | – |
 | 746 | Bückeburg | 03257009 | 5150912 | https://pixabay.com/de/photos/schloss-b%C3%BCckeburg-schaumburg-5150912/ | Pixabay-Lizenz, keine Namensnennung nötig (Schloss Bückeburg) | 8 |
 | 748 | Haiger | 06532011 | – | – | kein Bild gefunden | – |
@@ -795,11 +795,11 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 750 | Haldensleben | 15083270 | 5538762 | https://pixabay.com/de/photos/hundisburg-sachsen-anhalt-5538762/ | Pixabay-Lizenz; Titel "Hundisburg Sachsen-Anhalt" (Ortsteil von Haldensleben, kein Treffer zur Kernstadt) | 4 |
 | 751 | Gröbenzell | 09179126 | – | – | kein Bild gefunden | – |
 | 753 | Neuenhagen bei Berlin | 12064336 | – | – | kein Bild gefunden | – |
-| 754 | Eitorf | 05382016 | – | – | kein Bild gefunden | – |
+| 754 | Eitorf | 05382016 | 6650175 | https://pixabay.com/es/photos/eitorf-alemania-tierra-de-bergisches-6650175/ | Pixabay-Lizenz; Landschaft / Ortsbezug Eitorf im Bergischen Land (Titel) | 5 |
 | 755 | Korntal-Münchingen | 08118080 | – | – | kein Bild gefunden | – |
 | 756 | Annaberg-Buchholz | 14521020 | – | – | kein Bild gefunden | – |
 | 758 | Aue-Bad Schlema | 14521035 | – | – | kein Bild gefunden | – |
-| 760 | Bad Dürkheim | 07332002 | – | – | kein Bild gefunden | – |
+| 760 | Bad Dürkheim | 07332002 | 3298264 | https://pixabay.com/de/photos/bad-d%C3%BCrkheim-pfalz-weinstra%C3%9Fe-3298264/ | Pixabay-Lizenz; Bad Dürkheim, Pfalz, Weinstraße, Zentrum (Titel) | 8 |
 | 761 | Gilching | 09188121 | – | – | kein Bild gefunden | – |
 | 763 | Bad Segeberg | 01060005 | 53561 | https://pixabay.com/photos/bad-segeberg-kalkberg-53561/ | Pixabay-Lizenz; Titel "Bad Segeberg Kalkberg Open Air" | 7 |
 | 765 | Kolbermoor | 09187150 | – | – | kein Bild gefunden | – |
