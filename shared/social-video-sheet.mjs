@@ -58,21 +58,23 @@ const DECISION=/\b(bestätigt|beschließt|beschlossen|genehmigt|beauftragt|empfi
 const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])(?<!\b\d{1,2}\.)(?<!\b(?:einschl|ggfls|ggf|bzw|ca|usw|Nr|Abs|Art|Zt|z|u|d|inkl|evtl|vgl|Std|Dr|Prof|Hr|Fr|ff|mind|max|insb|ggü|sog|zzgl|exkl)\.)\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
 /** Zitat: wörtlich aus dem Auszug. Erster Entscheidungssatz (Kernsatz zuerst, dann Auszug) mit höchstens 160 Zeichen; ist er länger,
  *  wird er vor einem Bindewort gekürzt und mit „[…]“ beendet. Nichts wird umformuliert. */
-export function pickQuote(summary,exclude=[]){
+export function pickQuote(summary,exclude=[]){return pickQuoteFull(summary,exclude)?.text||null;}
+export function pickQuoteFull(summary,exclude=[]){
  const list=[...sentencesOf(summary?.short),...sentencesOf(summary?.long)];
  const same=(a,b)=>a.slice(0,40)===b.slice(0,40);
  const dec0=list.filter(x=>DECISION.test(x)&&!exclude.some(e=>same(x,e))),dec=[...dec0.filter(x=>STRONG.test(x)),...dec0.filter(x=>!STRONG.test(x))],first=dec[0];
  if(!first)return null;
- if(first.length<=MAX_QUOTE)return first;
+ const R=text=>({text,src:first});
+ if(first.length<=MAX_QUOTE)return R(first);
  // zu lang: zuerst einen langen Satzanfang vor dem Entscheidungsverb (Gremiumsname) mit […] auslassen, damit der Beschluss selbst vollständig bleibt
  const sv=first.match(STRONG);
- if(sv&&sv.index>45&&!/;|\b(?:wird|werden|ist|sind)\b/.test(first.slice(0,sv.index))){const cand=first.slice(0,sv.index).trim().split(/\s+/).slice(0,2).join(' ')+' […] '+first.slice(sv.index);if(cand.length<=MAX_QUOTE)return cand;}
+ if(sv&&sv.index>45&&!/;|\b(?:wird|werden|ist|sind)\b/.test(first.slice(0,sv.index))){const cand=first.slice(0,sv.index).trim().split(/\s+/).slice(0,2).join(' ')+' […] '+first.slice(sv.index);if(cand.length<=MAX_QUOTE)return R(cand);}
  // dann nach dem ersten Komma hinter einem Verb kürzen („… wird gestellt […]“), wenn der Satzteil davor ein Verb enthält
  const comma=[...first.matchAll(/,\s/g)].map(m=>m.index).find(i=>i>=60&&i<=MAX_QUOTE-6);
- if(comma&&/\b(?:wird|werden|empfiehlt|beschließt|beauftragt|bestätigt|genehmigt|soll|sollen)\b/.test(first.slice(0,comma)))return first.slice(0,comma)+' […]';
+ if(comma&&/\b(?:wird|werden|empfiehlt|beschließt|beauftragt|bestätigt|genehmigt|soll|sollen)\b/.test(first.slice(0,comma)))return R(first.slice(0,comma)+' […]');
  const head=first.slice(0,MAX_QUOTE-4),cut=[...head.matchAll(/\s(?:als|zum|zur|und|für|insbesondere|sowie|gemäß)\s/g)].at(-1);
- if(cut&&cut.index>60)return head.slice(0,cut.index).replace(/[,;]$/,'')+' […]';
- return dec.find(x=>x.length<=MAX_QUOTE)||null;
+ if(cut&&cut.index>60){let t=head.slice(0,cut.index).replace(/[,;]$/,'');while(/\s(?:und|oder|die|der|das|den|dem|des|ein|eine|zu|zur|zum|mit|für|von|im|in|an|auf|nach|bei|als|sowie)$/i.test(t))t=t.replace(/\s\S+$/,'');return R(t+' […]');}
+ const alt=dec.find(x=>x.length<=MAX_QUOTE);return alt?{text:alt,src:alt}:null;
 }
 /** Titel für Zeile 2: Teil vor „ - “ oder „:“, ohne „der Stadt/Landeshauptstadt <Ort>“ und ohne den Ortsnamen; höchstens 34 Zeichen, sonst null */
 export function shortTitle(title,regionName){
@@ -102,7 +104,7 @@ export function videoSheet(topic,{regionName,today,titleShort,kommune}){
  const past=events.filter(e=>e.date<=today),future=events.filter(e=>e.date>today);
  const last=past.at(-1)||null,next=future[0]||null,before=past.length>1?past.at(-2):null;
  if(!last)warnings.push('keine beratene Sitzung');
- const quote=pickQuote(topic.ruleSummary);
+ const q1=pickQuoteFull(topic.ruleSummary),quote=q1?.text||null;
  const norm=x=>String(x||'').toLowerCase().replace(/[^a-zäöüß0-9]+/g,' ').trim();
  if(!quote)warnings.push('kein Zitat (Auszug fehlt oder zu lang)');
  else if(norm(quote)===norm(topic.title)||norm(topic.title).startsWith(norm(quote)))warnings.push('Zitat wiederholt nur den Titel');
@@ -111,7 +113,7 @@ export function videoSheet(topic,{regionName,today,titleShort,kommune}){
  else if(t2.length>34)warnings.push(`Titelzeile 2 hat ${t2.length} Zeichen (höchstens 34): Kurzform fehlt`);
  const proposal=!['approved','rejected'].includes(topic.status);
  const amounts=[];
- const quote2=quote?pickQuote(topic.ruleSummary,[quote.replace(/ \[…\]$/,'')]):null;
+ const quote2=q1?pickQuote(topic.ruleSummary,[q1.src]):null;
  [quote,quote2].forEach((src,qi)=>{if(!src)return;let from=0;for(const m of src.matchAll(AMOUNT)){
   const before=src.slice(from,m.index),after=src.slice(m.index+m[0].length,m.index+m[0].length+30),hit=AMOUNT_LABELS.map(k=>({k,i:before.lastIndexOf(k)})).filter(x=>x.i>=0).sort((a,b)=>b.i-a.i)[0];
   const value=+m[1].replace(/\./g,'');from=m.index+m[0].length;

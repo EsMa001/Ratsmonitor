@@ -18,7 +18,7 @@ strip = lambda w: w.strip(',.„“[]…"():;')
 
 def highlight(quote, title):
     tw = {strip(w).lower() for w in title.split() if len(strip(w)) >= 4}
-    return {strip(w) for w in quote.split() if strip(w).lower() in tw or strip(w).lower() in VERBS or strip(w).isdigit()}
+    return {strip(w) for w in quote.split() if strip(w).lower() in tw or strip(w).lower() in VERBS or (strip(w).isdigit() and len(strip(w)) >= 4)}
 
 
 def build_cfg(sheet, out):
@@ -85,8 +85,11 @@ def build_cfg(sheet, out):
         y = 450; text = sheet['zitat']; words = text.split(); times = align(words, wt)
         if sheet['betraege'] and sheet['betraege'][0].get('inZitat') and not bars_on:
             e, hh = count_el(sheet['betraege'][0]['text'], MX - 4, y, 0.5); els.append(e); y += hh + 30; sfx.append((0.5, 'hit')); punch.append(0.5)
-        parts = split_quote(text) or (text, '', '')
-        sizes = [(150, INK), (124, PET), (72, GRAY2)] if split_quote(text) else [(92, INK)]
+        _c = text.find(':')
+        if 0 < _c < 110 and len(text) - _c > 25: parts, sizes = (text[:_c + 1], text[_c + 1:].strip(), ''), [(100, GRAY2), (136, PET)]
+        else:
+            parts = split_quote(text) or (text, '', '')
+            sizes = [(150, INK), (124, PET), (72, GRAY2)] if split_quote(text) else [(92, INK)]
         def build(scale):
             plan = []
             for (sz, col), p in zip(sizes, parts):
