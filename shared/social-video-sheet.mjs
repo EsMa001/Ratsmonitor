@@ -45,12 +45,28 @@ export function spoken(text){
   .replace(/\s+/g,' ').trim();
 }
 
-/** Zitat: erster ganzer Satz des Auszugs, höchstens 160 Zeichen (Lesezeit der Zitatszene, Bauplan Abschnitt 3) */
-function pickQuote(summary){
- const s=String(summary?.short||'').replace(/\s+/g,' ').trim();
- if(!s)return null;
- const first=(s.match(/^.+?[.!?](?=\s|$)/)||[s])[0];
- return first.length<=160?first.replace(/^„|“$/g,''):null;
+const MAX_QUOTE=160;
+const DECISION=/\b(bestätigt|beschließt|beschlossen|genehmigt|beauftragt|empfiehlt|stimmt|wird|werden|soll|sollen|ist vorgesehen)\b/i;
+/** Auszug in Sätze zerlegen: an „[…]“ und an Satzenden (Satzende = Punkt, dann Leerzeichen und Großbuchstabe oder Anführungszeichen) */
+const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
+/** Zitat: wörtlich aus dem Auszug. Erster Entscheidungssatz (Kernsatz zuerst, dann Auszug) mit höchstens 160 Zeichen; ist er länger,
+ *  wird er vor einem Bindewort gekürzt und mit „[…]“ beendet. Nichts wird umformuliert. */
+export function pickQuote(summary){
+ const list=[...sentencesOf(summary?.short),...sentencesOf(summary?.long)];
+ const dec=list.filter(x=>DECISION.test(x)),first=dec[0];
+ if(!first)return null;
+ if(first.length<=MAX_QUOTE)return first;
+ const head=first.slice(0,MAX_QUOTE-4),cut=[...head.matchAll(/\s(?:als|zum|zur|und|für|insbesondere|sowie|gemäß)\s/g)].at(-1);
+ if(cut&&cut.index>60)return head.slice(0,cut.index).replace(/[,;]$/,'')+' […]';
+ return dec.find(x=>x.length<=MAX_QUOTE)||null;
+}
+/** Titel für Zeile 2: Teil vor „ - “ oder „:“, ohne „der Stadt/Landeshauptstadt <Ort>“ und ohne den Ortsnamen; höchstens 34 Zeichen, sonst null */
+export function shortTitle(title,regionName){
+ let t=String(title||'').split(/\s+[-–]\s+|:\s/)[0];
+ const ort=regionName.replace(/^(Stadt|Gemeinde|Kreis|Landkreis)\s+/,'');
+ t=t.replace(new RegExp(`\\s+(?:der|des)\\s+(?:Stadt|Landeshauptstadt|Gemeinde|Hansestadt)\\s+${ort}`,'gi'),'').replace(new RegExp(`\\b${ort}\\b`,'g'),'');
+ t=t.replace(/\s+/g,' ').replace(/^[\s:,-]+|[\s:,-]+$/g,'');
+ return t&&t.length<=34?t:null;
 }
 const AMOUNT=/(\d{1,3}(?:\.\d{3})+|\d+)(?:,-|,\d{2})?\s?(?:€|Euro)/g;
 
@@ -69,8 +85,8 @@ export function videoSheet(topic,{regionName,today,titleShort}){
  const norm=x=>String(x||'').toLowerCase().replace(/[^a-zäöüß0-9]+/g,' ').trim();
  if(!quote)warnings.push('kein Zitat (Auszug fehlt oder zu lang)');
  else if(norm(quote)===norm(topic.title)||norm(topic.title).startsWith(norm(quote)))warnings.push('Zitat wiederholt nur den Titel');
- const t2=(titleShort||topic.title||'').trim();
- if(!t2)warnings.push('kein Titel');
+ const t2=(titleShort||shortTitle(topic.title,regionName)||'').trim();
+ if(!t2)warnings.push(topic.title?'Titel lässt sich nicht auf 34 Zeichen kürzen':'kein Titel');
  else if(t2.length>34)warnings.push(`Titelzeile 2 hat ${t2.length} Zeichen (höchstens 34): Kurzform fehlt`);
  const proposal=!['approved','rejected'].includes(topic.status);
  const amounts=quote?[...quote.matchAll(AMOUNT)].map(m=>({text:m[1]+' €',spoken:spokenNumber(+m[1].replace(/\./g,''))+' Euro'})):[];

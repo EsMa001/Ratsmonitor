@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {videoSheet,spokenNumber,spokenDate,spoken} from '../shared/social-video-sheet.mjs';
+import {videoSheet,spokenNumber,spokenDate,spoken,shortTitle} from '../shared/social-video-sheet.mjs';
 
 test('Zahlen, Daten und Beträge werden ausgeschrieben', () => {
  assert.equal(spokenNumber(2027),'zweitausendsiebenundzwanzig');
@@ -49,7 +49,28 @@ test('Fehlende Angaben stoppen das Video, statt zu raten', () => {
 });
 
 test('Ein Zitat, das nur den Titel wiederholt, zählt nicht', () => {
- const s=videoSheet({...wege,ruleSummary:{short:'Ausbau Wirtschaftswege ab 2027.'}},{regionName:'Billerbeck',today:'2026-10-31',titleShort:'Wirtschaftswege ab 2027'});
+ const title='Ausbau Wirtschaftswege ab 2027 und Prioritätenliste werden beschlossen';
+ const s=videoSheet({...wege,title,ruleSummary:{short:title+'.'}},{regionName:'Billerbeck',today:'2026-10-31',titleShort:'Wirtschaftswege ab 2027'});
  assert.equal(s.ok,false);
  assert.ok(s.warnings.some(w=>/nur den Titel/.test(w)));
 });
+
+// Dresden: Kernsatz länger als 160 Zeichen, Titel mit Zusatz nach „ - “
+const dresden={"title":"Hitzeaktionsplan der Landeshauptstadt Dresden 2026 bis 2030 - ein Plan zum Schutz der Gesundheit vor Hitze","status":"approved",
+"events":[{"date":"2026-08-31","committee":"Seniorenbeirat","result":"Zustimmung mit Ergänzung"},{"date":"2026-09-02","committee":"Beirat für Menschen mit Behinderungen","result":"Zustimmung mit Ergänzung"},{"date":"2026-09-24","committee":"Stadtrat","result":"Vertagung"},{"date":"2026-10-29","committee":"Stadtrat","result":"punktweise Abstimmung"}],
+"ruleSummary":{"short":"Der Stadtrat bestätigt den Hitzeaktionsplan 2026 bis 2030 der Landeshauptstadt Dresden gemäß Anlage 1 als Grundlage für Maßnahmen zur Minderung gesundheitlicher Risiken durch Hitze und zum Schutz der Dresdner Bevölkerung, insbesondere besonders betroffener Personengruppen.",
+"long":"Die gesundheitlichen Auswirkungen sind im Faktenblatt Hitze und Gesundheit des Amtes für Gesundheit und Prävention beschrieben (siehe www.dresden.de/hitzeaktionsplan). […] Der Stadtrat bestätigt den Hitzeaktionsplan 2026 bis 2030 der Landeshauptstadt Dresden gemäß Anlage 1 als Grundlage für Maßnahmen zur Minderung gesundheitlicher Risiken durch Hitze und zum Schutz der Dresdner Bevölkerung, insbesondere besonders betroffener Personengruppen. Der Stadtrat beauftragt den Oberbürgermeister, den Hitzeaktionsplan umzusetzen, zu evaluieren und seine Fortschreibung am Ende des Aktionszeitraumes zu prüfen. […] Zu Beschlussunkt 1: Der Hitzeaktionsplan (HAP) bündelt für den Zeitraum 2026 bis 2030 strategische und operative Maßnahmen."}};
+test('Dresden: Kurztitel, gekürzter Kernsatz mit […], beschlossen ohne Zusatzzeile', () => {
+ const s=videoSheet(dresden,{regionName:'Dresden',today:'2026-10-31'});
+ assert.equal(s.ok,true,s.warnings.join('; '));
+ assert.equal(s.titel2,'Hitzeaktionsplan 2026 bis 2030');
+ assert.match(s.zitat,/^Der Stadtrat bestätigt den Hitzeaktionsplan 2026 bis 2030 .* \[…\]$/);
+ assert.ok(s.zitat.length<=160);
+ assert.equal(s.stand.extra,null);
+ assert.equal(s.zitatHinweis,'Aus der Vorlage');
+});
+test('Titel werden vor „ - “ und „:“ gekürzt, der Ort fällt weg', () => {
+ assert.equal(shortTitle('P&R Weihgarten: hier: Vorstellung der Planung','Billerbeck'),'P&R Weihgarten');
+ assert.equal(shortTitle('Ein sehr langer Titel ohne Trennzeichen der nicht passt','Billerbeck'),null);
+});
+
