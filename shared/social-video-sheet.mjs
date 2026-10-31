@@ -16,6 +16,8 @@ export const STATUS={
  unknown:{word:'Stand offen',stamp:'STAND OFFEN',icon:'hourglass',spokenWord:'offen',extra:'Noch nicht beschlossen',spokenExtra:'Noch kein Beschluss.'},
 };
 
+/** Themen-Icon im Hook (Bauplan, Icon-Katalog); unbekannt: Pin */
+export const THEME_ICON={bauen:'house',finanzen:'coin',mobilitaet:'road',bildung:'child',umwelt:'sun',soziales:'heart',kultur:'hall',sicherheit:'pin',verwaltung:'doc',wirtschaft:'coin'};
 const MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 const ONES=['null','eins','zwei','drei','vier','fünf','sechs','sieben','acht','neun','zehn','elf','zwölf','dreizehn','vierzehn','fünfzehn','sechzehn','siebzehn','achtzehn','neunzehn'];
 const TENS=['','','zwanzig','dreißig','vierzig','fünfzig','sechzig','siebzig','achtzig','neunzig'];
@@ -51,9 +53,10 @@ const DECISION=/\b(bestätigt|beschließt|beschlossen|genehmigt|beauftragt|empfi
 const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
 /** Zitat: wörtlich aus dem Auszug. Erster Entscheidungssatz (Kernsatz zuerst, dann Auszug) mit höchstens 160 Zeichen; ist er länger,
  *  wird er vor einem Bindewort gekürzt und mit „[…]“ beendet. Nichts wird umformuliert. */
-export function pickQuote(summary){
+export function pickQuote(summary,exclude=[]){
  const list=[...sentencesOf(summary?.short),...sentencesOf(summary?.long)];
- const dec=list.filter(x=>DECISION.test(x)),first=dec[0];
+ const same=(a,b)=>a.slice(0,40)===b.slice(0,40);
+ const dec=list.filter(x=>DECISION.test(x)&&!exclude.some(e=>same(x,e))),first=dec[0];
  if(!first)return null;
  if(first.length<=MAX_QUOTE)return first;
  const head=first.slice(0,MAX_QUOTE-4),cut=[...head.matchAll(/\s(?:als|zum|zur|und|für|insbesondere|sowie|gemäß)\s/g)].at(-1);
@@ -99,16 +102,19 @@ export function videoSheet(topic,{regionName,today,titleShort}){
  }
  if(!hook){hook=`${place}: ${spoken(t2)}. Der Stand ist ${st.spokenWord}.`;warnings.push('Standwort nicht als 5. bis 8. Wort der Hook-Szene');}
  const stand=[st.word==='Stand offen'?'Stand offen.':`${st.spokenWord[0].toUpperCase()+st.spokenWord.slice(1)}.`,st.spokenExtra,
-  last?`Zuletzt beraten im ${last.committee} am ${spokenDate(last.date)}.`:null,
+  last?`Zuletzt beraten: ${last.committee}, am ${spokenDate(last.date)}.`:null,
   next?`Nächste Sitzung: ${next.committee}, ${spokenDate(next.date)}.`:null].filter(Boolean).join(' ');
  const kern=quote?spoken(quote):null;
+ const quote2=quote?pickQuote(topic.ruleSummary,[quote.replace(/ \[…\]$/,'')]):null;
+ const verlauf=past.slice(-3).map(e=>({date:e.date,datum:shortDate(e.date),committee:e.committee,result:String(e.result||'').trim()||null,spokenDay:spokenDay(+e.date.slice(8))}));
+ const verlaufText=verlauf.length?'Bisher: '+verlauf.map(v=>`Am ${spokenDate(v.date)}, ${v.committee}${v.result?': '+spoken(v.result):''}.`).join(' '):null;
  const meta=[last&&`${last.committee} · zuletzt beraten am ${shortDate(last.date)}`,
   next?`${next.committee} · nächste Sitzung ${shortDate(next.date)}`:before?`Davor: ${before.committee} · ${shortDate(before.date)}`:null].filter(Boolean);
  return {version:SHEET_VERSION,ok:!warnings.length,warnings,
   ort:regionName,titel1:`${regionName}:`,titel2:t2,
   stand:{word:st.word,stamp:st.stamp,icon:st.icon,extra:st.extra,statusKey:STATUS[topic.status]?topic.status:'unknown'},
-  zitat:quote,zitatHinweis:proposal?'Vorschlag aus der Vorlage':'Aus der Vorlage',
+  zitat:quote,zitat2:quote2,verlauf,themaIcon:THEME_ICON[topic.theme?.id]||'pin',zitatHinweis:proposal?'Vorschlag aus der Vorlage':'Aus der Vorlage',
   betraege:amounts,meta,
   quelle:`Quelle: öffentliche Ratsunterlagen der Stadt ${regionName}`,
-  sprechtext:{1:hook,2:kern,3:null,4:'',5:stand,6:'Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenara.'}};
+  sprechtext:{1:hook,2:kern,3:verlaufText,4:'',5:stand,6:'Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenara.'}};
 }

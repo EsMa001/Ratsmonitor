@@ -30,7 +30,7 @@ test('Wirtschaftswege: Stand offen, Verlauf, Zitat', () => {
  assert.deepEqual(s.meta,['Rat der Stadt · zuletzt beraten am 13.10.26','Davor: Stadtentwicklungs- und Bauausschuss · 08.09.26']);
  assert.equal(s.zitatHinweis,'Vorschlag aus der Vorlage');
  assert.match(s.sprechtext[1],/^Billerbeck: Wirtschaftswege ab zweitausendsiebenundzwanzig\. Stand: offen\.$/);
- assert.match(s.sprechtext[5],/Noch kein Beschluss\. Zuletzt beraten im Rat der Stadt am dreizehnten Oktober\.$/);
+ assert.match(s.sprechtext[5],/Noch kein Beschluss\. Zuletzt beraten: Rat der Stadt, am dreizehnten Oktober\.$/);
 });
 
 test('P&R: In Beratung, Standwort als 5. bis 8. Wort, gesprochene Haushaltsangabe', () => {
