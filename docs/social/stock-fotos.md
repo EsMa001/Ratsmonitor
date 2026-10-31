@@ -1133,14 +1133,14 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1230 | Kirchheim b.München | 09184131 | – | – | noch nicht gesucht | – |
 | 1232 | Manching | 09186137 | – | – | noch nicht gesucht | – |
 | 1234 | Jüterbog | 12072169 | – | – | noch nicht gesucht | – |
-| 1235 | Ladenburg | 08226038 | – | – | noch nicht gesucht | – |
+| 1235 | Ladenburg | 08226038 | 636111 | https://pixabay.com/de/photos/ladenburg-altstadt-gasse-h%C3%A4user-636111/ | Pixabay-Lizenz; Altstadtgasse mit Häusern (Titel "Ladenburg, Altstadt, Gasse, Häuser"; ein zweites Foto, 1816926, trägt im Titel "Hessen" und wurde deshalb nicht genommen) | 7 |
 | 1236 | Bischofsheim | 06433002 | – | – | noch nicht gesucht | – |
 | 1237 | Kaufungen | 06633015 | – | – | noch nicht gesucht | – |
 | 1238 | Pfarrkirchen | 09277138 | – | – | noch nicht gesucht | – |
 | 1241 | Bad Urach | 08415078 | 4670014 | https://pixabay.com/photos/bad-urach-waterfall-bach-fall-4670014/ | Pixabay-Lizenz; Wasserfall Bad Urach | 7 |
 | 1242 | Neunkirchen | 05970036 | – | – | noch nicht gesucht | – |
 | 1243 | Beverungen | 05762008 | – | – | noch nicht gesucht | – |
-| 1245 | Brunsbüttel | 01051011 | – | – | noch nicht gesucht | – |
+| 1245 | Brunsbüttel | 01051011 | 2380594 | https://pixabay.com/photos/north-baltic-canal-2380594/ | Pixabay-Lizenz; Nord-Ostsee-Kanal (Titel nennt Brunsbüttel). Alternative: Wasserturm, ID 277513, https://pixabay.com/photos/water-tower-brunsb%C3%BCttel-building-277513/ | 6 |
 | 1247 | Hungen | 06531008 | – | – | noch nicht gesucht | – |
 | 1248 | Neuenburg am Rhein | 08315076 | – | – | noch nicht gesucht | – |
 | 1252 | Möckern | 15086140 | – | – | noch nicht gesucht | – |
@@ -1150,7 +1150,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1256 | Altenstadt | 06440001 | – | – | noch nicht gesucht | – |
 | 1258 | Feuchtwangen | 09571145 | – | – | noch nicht gesucht | – |
 | 1263 | Bretzfeld | 08126011 | – | – | noch nicht gesucht | – |
-| 1264 | Hirschaid | 09471145 | – | – | noch nicht gesucht | – |
+| 1264 | Hirschaid | 09471145 | 1051182 | https://pixabay.com/photos/landscape-village-locality-fall-1051182/ | Pixabay-Lizenz; Herbstlandschaft mit Ort (Titel der Suchtreffer: "Autumn landscape of Hirschaid"); nur der Treffertitel geprüft, die Seite selbst nicht abgerufen | 6 |
 | 1265 | Buseck | 06531003 | – | – | noch nicht gesucht | – |
 | 1266 | Niefern-Öschelbronn | 08236046 | – | – | noch nicht gesucht | – |
 | 1267 | Emstek | 03453005 | – | – | noch nicht gesucht | – |
