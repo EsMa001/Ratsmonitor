@@ -915,7 +915,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 927 | Karlsbad | 08215096 | – | – | kein Bild gefunden | – |
 | 928 | Guben | 12071160 | – | – | kein Bild gefunden | – |
 | 931 | Großostheim | 09671122 | – | – | kein Bild gefunden | – |
-| 932 | Hude (Oldb) | 03458010 | – | – | kein Bild gefunden | – |
+| 932 | Hude (Oldb) | 03458010 | 1584063 | https://pixabay.com/photos/grim-ruin-decay-monastery-1584063/ | Pixabay-Lizenz; Klosterruine Hude (Titel nennt Hude) | 6 |
 | 933 | Illingen | 10043112 | – | – | kein Bild gefunden | – |
 | 934 | Kelsterbach | 06433007 | – | – | kein Bild gefunden | – |
 | 935 | Bad Arolsen | 06635002 | – | – | kein Bild gefunden | – |
