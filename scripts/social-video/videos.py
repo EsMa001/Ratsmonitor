@@ -218,7 +218,11 @@ def make(cfg):
         for _s in range(cfg['t1s'] + 46, cfg['t1s'] - 20, -2):
             t1 = big(cfg['t1'], _s, INK, lh=1.0)
             if t1.width <= CW: break
-        t2 = big(cfg['t2'], cfg['t2s'] + 10, cfg.get('t2col', PET), maxw=CW, lh=1.02)
+        # Thema: möglichst zweizeilig; sonst in Schritten kleiner bis höchstens 72 (Bauplan Abschnitt 4), dann dreizeilig
+        for _s in range(cfg['t2s'] + 10, 71, -2):
+            t2 = big(cfg['t2'], _s, cfg.get('t2col', PET), maxw=CW, lh=1.02)
+            _f = b.F(_s, 'S')
+            if len(b.wrap(cfg['t2'], _f, CW, -0.04 * _s)) <= 2 and max(_f.getlength(w_) for w_ in cfg['t2'].split()) <= CW - 10: break
         sh0 = stamp(cfg['stamp'], cfg['stampcol'], cfg['ssize']).height + 30
         G1, G2, G3, IB = 40, 90, 70, 300
         y0 = 400

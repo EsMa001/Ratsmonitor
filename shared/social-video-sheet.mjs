@@ -76,16 +76,17 @@ export function pickQuoteFull(summary,exclude=[]){
  if(cut&&cut.index>60){let t=head.slice(0,cut.index).replace(/[,;]$/,'');while(/\s(?:und|oder|die|der|das|den|dem|des|ein|eine|zu|zur|zum|mit|für|von|im|in|an|auf|nach|bei|als|sowie)$/i.test(t))t=t.replace(/\s\S+$/,'');return R(t+' […]');}
  const alt=dec.find(x=>x.length<=MAX_QUOTE);return alt?{text:alt,src:alt}:null;
 }
-/** Titel für Zeile 2: Teil vor „ - “ oder „:“, ohne „der Stadt/Landeshauptstadt <Ort>“ und ohne den Ortsnamen; höchstens 34 Zeichen, sonst null */
+/** Titel für Zeile 2: Teil vor „ - “ oder „:“, ohne „der Stadt/Landeshauptstadt <Ort>“ und ohne den Ortsnamen; höchstens TITLE_MAX Zeichen (Kurzform bis TITLE_PREF, wenn sie sich sauber schneiden lässt), sonst null */
+export const TITLE_PREF=34,TITLE_MAX=34; // kurze Titel genügen: im Social-Reiter landen höchstens 3 Vorschläge je Tag; längere gelten als nicht geeignet
 export function shortTitle(title,regionName){
  let t=String(title||'').split(/\s+[-–]\s+|:\s/)[0];
  t=t.replace(/^(?:Beratung und )?(?:Beschlussfassung|Beschluss)(?:\s+(?:über|zu|zur|zum))?\s+(?:(?:den|die|das|der|dem)\s+)?/i,'');
  const ort=regionName.replace(/^(Stadt|Gemeinde|Kreis|Landkreis)\s+/,'');
  t=t.replace(new RegExp(`\\s+(?:der|des)\\s+(?:Stadt|Landeshauptstadt|Gemeinde|Hansestadt)\\s+${ort}`,'gi'),'').replace(new RegExp(`\\b${ort}\\b`,'g'),'');
  t=t.replace(/\s+/g,' ').replace(/^[\s:,-]+|[\s:,-]+$/g,'');
- if(t.length>34){const m=t.match(/^(.+?)\s+(?:für|zur|zum|zu|im|in)\s+(.*)$/);
-  if(m){const yr=(m[2].match(/\b(20\d{2})\b/)||[])[1];const c=yr&&!m[1].includes(yr)?`${m[1]} ${yr}`:m[1];if(c.length<=34)t=c;}}
- return t&&t.length<=34?t[0].toUpperCase()+t.slice(1):null;
+ if(t.length>TITLE_PREF){const m=t.match(/^(.+?)\s+(?:für|zur|zum|zu|im|in)\s+(.*)$/);
+  if(m){const yr=(m[2].match(/\b(20\d{2})\b/)||[])[1];const c=yr&&!m[1].includes(yr)?`${m[1]} ${yr}`:m[1];if(c.length<=TITLE_PREF)t=c;}}
+ return t&&t.length<=TITLE_MAX?t[0].toUpperCase()+t.slice(1):null;
 }
 
 /**
@@ -109,8 +110,9 @@ export function videoSheet(topic,{regionName,today,titleShort,kommune}){
  if(!quote)warnings.push('kein Zitat (Auszug fehlt oder zu lang)');
  else if(norm(quote)===norm(topic.title)||norm(topic.title).startsWith(norm(quote)))warnings.push('Zitat wiederholt nur den Titel');
  const t2=(titleShort||shortTitle(topic.title,regionName)||'').trim();
- if(!t2)warnings.push(topic.title?'Titel lässt sich nicht auf 34 Zeichen kürzen':'kein Titel');
- else if(t2.length>34)warnings.push(`Titelzeile 2 hat ${t2.length} Zeichen (höchstens 34): Kurzform fehlt`);
+ if(!t2)warnings.push(topic.title?`Titel lässt sich nicht auf ${TITLE_MAX} Zeichen kürzen`:'kein Titel');
+ else if(/(?:^|\s)(?:\p{L}|und|oder|der|die|das|des|dem|den|für|zur|zum|von|im|in|an|am|auf|mit|zu|bei|nach)$/iu.test(t2))warnings.push('Titel wirkt abgeschnitten (endet mitten im Satz)');
+ else if(t2.length>TITLE_MAX)warnings.push(`Titelzeile 2 hat ${t2.length} Zeichen (höchstens ${TITLE_MAX}): Kurzform fehlt`);
  const proposal=!['approved','rejected'].includes(topic.status);
  const amounts=[];
  const quote2=q1?pickQuote(topic.ruleSummary,[q1.src]):null;
