@@ -2983,14 +2983,14 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Kupferzell | Baden-Württemberg | 08126047 | – | – | noch nicht gesucht | – |
 | Kusterdingen | Baden-Württemberg | 08416023 | – | – | noch nicht gesucht | – |
 | Kutzenhausen | Bayern | 09772167 | – | – | noch nicht gesucht | – |
-| Kyffhäuserland | Thüringen | 16065085 | – | – | noch nicht gesucht | – |
+| Kyffhäuserland | Thüringen | 16065085 | 6791035 | https://pixabay.com/de/photos/monument-kyffh%C3%A4user-th%C3%BCringen-6791035/ | Pixabay-Lizenz; Kyffhäuserdenkmal (Titel: Monument, Kyffhäuser, Thüringen) | 7 |
 | Käbschütztal | Sachsen | 14627080 | – | – | noch nicht gesucht | – |
 | Kämpfelbach | Baden-Württemberg | 08236074 | – | – | noch nicht gesucht | – |
 | Köditz | Bayern | 09475141 | – | – | noch nicht gesucht | – |
 | Köfering | Bayern | 09375161 | – | – | noch nicht gesucht | – |
-| Köngen | Baden-Württemberg | 08116035 | – | – | noch nicht gesucht | – |
+| Köngen | Baden-Württemberg | 08116035 | 3331268 | https://pixabay.com/de/photos/kastell-burg-r%C3%B6merkastell-grinario-3331268/ | Pixabay-Lizenz; Römerkastell Grinario | 7 |
 | Königheim | Baden-Württemberg | 08128061 | – | – | noch nicht gesucht | – |
-| Königsbronn | Baden-Württemberg | 08135025 | – | – | noch nicht gesucht | – |
+| Königsbronn | Baden-Württemberg | 08135025 | 2085796 | https://pixabay.com/photos/k%C3%B6nigsbronn-town-hall-brenz-2085796/ | Pixabay-Lizenz; Historisches Rathaus an der Brenz | 9 |
 | Königsdorf | Bayern | 09173134 | – | – | noch nicht gesucht | – |
 | Königseggwald | Baden-Württemberg | 08436053 | – | – | noch nicht gesucht | – |
 | Königsfeld im Schwarzwald | Baden-Württemberg | 08326031 | – | – | noch nicht gesucht | – |
@@ -3010,10 +3010,10 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Laberweinting | Bayern | 09278144 | – | – | noch nicht gesucht | – |
 | Lahnau | Hessen | 06532015 | – | – | noch nicht gesucht | – |
 | Lahntal | Hessen | 06534012 | – | – | noch nicht gesucht | – |
-| Lam | Bayern | 09372138 | – | – | noch nicht gesucht | – |
+| Lam | Bayern | 09372138 | 176191 | https://pixabay.com/photos/osser-outlook-mountains-176191/ | Pixabay-Lizenz; Aussicht vom Osser (Berg bei Lam, Bayerischer Wald), nicht der Ort selbst | 5 |
 | Langdorf | Bayern | 09276129 | – | – | noch nicht gesucht | – |
 | Langenaltheim | Bayern | 09577148 | – | – | noch nicht gesucht | – |
-| Langenargen | Baden-Württemberg | 08435030 | – | – | noch nicht gesucht | – |
+| Langenargen | Baden-Württemberg | 08435030 | 8699380 | https://pixabay.com/de/photos/schloss-montfort-langenargen-8699380/ | Pixabay-Lizenz; Schloss Montfort in Langenargen am Bodensee | 9 |
 | Langenbach | Bayern | 09178138 | – | – | noch nicht gesucht | – |
 | Langenbernsdorf | Sachsen | 14524140 | – | – | noch nicht gesucht | – |
 | Langenbrettach | Baden-Württemberg | 08125113 | – | – | noch nicht gesucht | – |
@@ -3039,7 +3039,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Leegebruch | Brandenburg | 12065180 | – | – | noch nicht gesucht | – |
 | Lehrberg | Bayern | 09571171 | – | – | noch nicht gesucht | – |
 | Lehrensteinsfeld | Baden-Württemberg | 08125057 | – | – | noch nicht gesucht | – |
-| Leibertingen | Baden-Württemberg | 08437072 | – | – | noch nicht gesucht | – |
+| Leibertingen | Baden-Württemberg | 08437072 | 6387345 | https://pixabay.com/photos/burg-wildenstein-leibertingen-6387345/ | Pixabay-Lizenz; Burg Wildenstein bei Leibertingen (Titel nennt den Ort ausdrücklich) | 8 |
 | Leiblfing | Bayern | 09278146 | – | – | noch nicht gesucht | – |
 | Leidersbach | Bayern | 09676136 | – | – | noch nicht gesucht | – |
 | Leinach | Bayern | 09679200 | – | – | noch nicht gesucht | – |
