@@ -2563,7 +2563,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Floß | Bayern | 09374121 | – | – | noch nicht gesucht | – |
 | Fluorn-Winzeln | Baden-Württemberg | 08325070 | – | – | noch nicht gesucht | – |
 | Flörsbachtal | Hessen | 06435008 | – | – | noch nicht gesucht | – |
-| Forbach | Baden-Württemberg | 08216013 | – | – | noch nicht gesucht | – |
+| Forbach | Baden-Württemberg | 08216013 | 228882 | https://pixabay.com/photos/forbach-black-forest-city-houses-228882/ | Pixabay-Lizenz; Dorf- und Kirchenansicht, Forbach im Schwarzwald (Murgtal) | 6 |
 | Forchheim | Baden-Württemberg | 08316013 | – | – | noch nicht gesucht | – |
 | Forst | Baden-Württemberg | 08215021 | – | – | noch nicht gesucht | – |
 | Forstern | Bayern | 09177119 | – | – | noch nicht gesucht | – |
@@ -2571,7 +2571,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Frammersbach | Bayern | 09677129 | – | – | noch nicht gesucht | – |
 | Frankenblick | Thüringen | 16072023 | – | – | noch nicht gesucht | – |
 | Frankenhardt | Baden-Württemberg | 08127103 | – | – | noch nicht gesucht | – |
-| Frasdorf | Bayern | 09187132 | – | – | noch nicht gesucht | – |
+| Frasdorf | Bayern | 09187132 | 5721797 | https://pixabay.com/de/photos/schmiedalm-frasdorf-oberbayern-5721797/ | Pixabay-Lizenz; Schmiedalm bei Frasdorf, Oberbayern (Gemeinde im Chiemgau) | 7 |
 | Frauenau | Bayern | 09276121 | – | – | noch nicht gesucht | – |
 | Fraunberg | Bayern | 09177120 | – | – | noch nicht gesucht | – |
 | Fraureuth | Sachsen | 14524060 | – | – | noch nicht gesucht | – |
@@ -2601,7 +2601,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Fuldabrück | Hessen | 06633008 | – | – | noch nicht gesucht | – |
 | Föritztal | Thüringen | 16072024 | – | – | noch nicht gesucht | – |
 | Fürstenstein | Bayern | 09275121 | – | – | noch nicht gesucht | – |
-| Fürstenzell | Bayern | 09275122 | – | – | noch nicht gesucht | – |
+| Fürstenzell | Bayern | 09275122 | 60339 | https://pixabay.com/hu/photos/portenkirche-f%C3%BCrstenzell-templom-60339/ | Pixabay-Lizenz; Portenkirche Fürstenzell (Kirche), Titel nennt den Ort | 8 |
 | Gablingen | Bayern | 09772145 | – | – | noch nicht gesucht | – |
 | Gaiberg | Baden-Württemberg | 08226022 | – | – | noch nicht gesucht | – |
 | Gaienhofen | Baden-Württemberg | 08335025 | – | – | noch nicht gesucht | – |
