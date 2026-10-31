@@ -49,11 +49,11 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 17 | Wuppertal | 05124000 | RYZN50k333Q | https://unsplash.com/photos/a-blue-suspended-monorail-train-on-a-green-track-RYZN50k333Q | Unsplash-Lizenz, vermutlich Schwebebahn; Ort steht nicht im Titel, vorher prüfen | 6 |
 | 18 | Bielefeld | 05711000 | 2554694 | https://pixabay.com/photos/sparrenburg-bielefeld-historical-2554694/ | Pixabay-Lizenz, Sparrenburg | 8 |
 | 19 | Bonn | 05314000 | – | – | kein Bild gefunden | – |
-| 20 | Münster | 05515000 | – | – | kein Bild gefunden | – |
+| 20 | Münster | 05515000 | 1662569 | https://pixabay.com/photos/muenster-principal-market-westphalia-1662569/ | Pixabay-Lizenz, Prinzipalmarkt | 8 |
 | 21 | Mannheim | 08222000 | YNDNuGl7IBs | https://unsplash.com/photos/cityscape-of-mannheim-baden-wurttemberg-germany-friedrichsplatz-with-the-mannheim-water-tower-wasserturm-in-the-foreground-YNDNuGl7IBs | Unsplash-Lizenz, Wasserturm am Friedrichsplatz; möglicherweise Unsplash+, prüfen | 8 |
-| 22 | Karlsruhe | 08212000 | – | – | kein Bild gefunden | – |
+| 22 | Karlsruhe | 08212000 | 4028380 | https://pixabay.com/de/photos/karlsruhe-karlsruher-schloss-h%C3%A4ndel-4028380/ | Pixabay-Lizenz, Schloss | 8 |
 | 23 | Augsburg | 09761000 | – | – | kein Bild gefunden | – |
-| 24 | Wiesbaden | 06414000 | – | – | kein Bild gefunden | – |
+| 24 | Wiesbaden | 06414000 | 18883666 | https://www.pexels.com/photo/fountain-in-front-of-the-kurhaus-wiesbaden-in-germany-18883666/ | Pexels-Lizenz, Kurhaus | 8 |
 | 25 | Mönchengladbach | 05116000 | – | – | kein Bild gefunden | – |
 | 26 | Gelsenkirchen | 05513000 | – | – | kein Bild gefunden | – |
 | 27 | Aachen | 05334002 | 2693287 | https://pixabay.com/photos/aachen-dom-treasury-gold-religion-2693287/ | Pixabay-Lizenz, Domschatz (Innenmotiv, kein Stadtbild) | 5 |
@@ -103,7 +103,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 71 | Remscheid | 05120000 | – | – | kein Bild gefunden | – |
 | 72 | Bergisch Gladbach | 05378004 | 4933565 | https://pixabay.com/photos/castle-historical-schloss-bensberg-4933565/ | Pixabay-Lizenz, Schloss Bensberg (Stadtteil). Alternative mit Stadtname: https://pixabay.com/photos/bergisch-gladbach-pedestrian-zone-4380062/ | 6 |
 | 73 | Recklinghausen | 05562032 | – | – | kein Bild gefunden | – |
-| 74 | Trier | 07211000 | – | – | kein Bild gefunden | – |
+| 74 | Trier | 07211000 | 14597797 | https://www.pexels.com/photo/porta-nigra-in-trier-in-germany-14597797/ | Pexels-Lizenz, Porta Nigra | 8 |
 | 75 | Jena | 16053000 | 5072121 | https://pixabay.com/photos/jena-city-center-jentower-5072121/ | Pixabay-Lizenz, Innenstadt mit JenTower | 7 |
 | 76 | Moers | 05170024 | 6008548 | https://pixabay.com/photos/moers-duisburg-ruhr-area-6008548/ | Pixabay-Lizenz, Motiv unklar, kein Wahrzeichen | 3 |
 | 77 | Salzgitter | 03102000 | 5246352 | https://pixabay.com/de/photos/salzgittersee-landschaft-salzgitter-5246352/ | Pixabay-Lizenz, Salzgittersee, wenig Wiedererkennung | 3 |
