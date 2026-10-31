@@ -18,7 +18,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/styles/header.css (411 Zeilen)
 - app/styles/info.css (1266 Zeilen)
 - app/styles/print.css (61 Zeilen)
-- app/styles/search.css (317 Zeilen)
+- app/styles/search.css (323 Zeilen)
 - app/styles/tokens.css (311 Zeilen, ⚠1)
 
 absolute base.css:370
@@ -540,6 +540,7 @@ rm-dark tokens.css:170
 rm-deskbar analytics.css:373
 rm-dialog base.css:305
 rm-dialog dark.css:424
+rm-docsnip search.css:319
 rm-dotfield analytics.css:1372
 rm-dotfield base.css:528
 rm-dotfield search.css:308
@@ -835,7 +836,7 @@ z- analytics.css:632
 - admin-mobile.tsx (45, ⚠2): AdminMobile
 - admin-overview.tsx (174, ⚠14): AdminOverview
 - admin-pdf-parts.tsx (161, ⚠10): month, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
-- admin-pdf.tsx (280, ⚠17): AdminPdf, PdfSteuern
+- admin-pdf.tsx (303, ⚠18): AdminPdf, PdfSteuern
 - admin-pipeline-parts.tsx (109, ⚠3): Step, FailRow, Glossary, StepList, result, Timeline, FailureTable, HostTable, ProviderTable
 - admin-processing-map.tsx (50, ⚠3): AdminProcessingMap
 - admin-processing.tsx (191, ⚠21): AdminProcessing
@@ -858,7 +859,7 @@ z- analytics.css:632
 - database-admin.tsx (34, ⚠3): DatabaseAdmin
 
 ### components/ratsmonitor/
-- App.tsx (76, ⚠2): MonitorApp
+- App.tsx (77, ⚠2): MonitorApp
 
 ### components/ratsmonitor/components/
 - AboModels.tsx (49): AboModels
@@ -884,16 +885,16 @@ z- analytics.css:632
 - FilterSelect.tsx (124, ⚠1): FilterSelect
 - FollowButton.tsx (36): FollowButton
 - Footer.tsx (79): LEGAL, Footer
-- GateDialog.tsx (189): GateFeature, needsFor, openGate, openLimitGate, GateDialog
+- GateDialog.tsx (197): GateFeature, needsFor, openGate, openLimitGate, GateDialog
 - Header.tsx (144, ⚠2): Header
 - ImportDialog.tsx (151): ImportDialog
-- PlanCards.tsx (288, ⚠1): planFeatures, PlanCards, PlanSummary
+- PlanCards.tsx (290, ⚠1): planFeatures, PlanCards, PlanSummary
 - PlusHint.tsx (40, ⚠1): PlusHint
 - PullToRefresh.tsx (27): PullToRefresh
 - SaveArticleButton.tsx (29): SaveArticleButton
 - SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (385, ⚠1): isSearchInput, focusSearch, SearchBox
-- SearchFilterPanel.tsx (69): SearchFilterPanel
+- SearchFilterPanel.tsx (72): SearchFilterPanel
 - SearchOverlay.tsx (91): SearchOverlay
 - SearchSplit.tsx (48): SearchSplit
 - Segmented.tsx (66, ⚠1): Segmented
@@ -940,7 +941,7 @@ z- analytics.css:632
 - blocks.tsx (258, ⚠1): useOpenSearch, PageHead, SearchTermButton, HitPreview, DarkCta, QaItem, Ladefehler, InfoHints
 - branchen-enterprise.ts (111, ⚠1): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, NEU_HREF, NEU_NAME, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (207, ⚠30): Status, Example, Branche, Qa, FAQ, PRICE_FAQ, BRANCHEN, brancheBySlug
-- icons.tsx (128): IconName, Icon
+- icons.tsx (130): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
 ### components/ratsmonitor/lib/
@@ -974,13 +975,13 @@ z- analytics.css:632
 - mapSlot.ts (18): setMapSlot, clearMapSlot, useMapSlot
 - methodikHost.ts (8): setMethodikHost, useMethodikHost
 - otherTab.ts (11): onOtherTab
-- pageTitle.ts (43): tabTitle
+- pageTitle.ts (44): tabTitle
 - place.ts (313, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, removePhrase
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - reportError.ts (28): reportError, installErrorReporting
-- routes.ts (10): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
+- routes.ts (13): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath, DOCS_PATH, isDocsPath
 - savedArticles.ts (168): SavedArticle, toggleSavedArticle, setArticleFollow, removeSavedArticle, restoreSavedArticle, useSavedArticles, useSavedArticlesReady
 - savedSearch.ts (155, ⚠1): SearchSnapshot, snapshotOf, signature, queryText, canonicalQuery, hasFilters, FilterChip, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (111): Parse, applySearchState, commitPlacesState, isReplacement, withoutFilters, clearAreaState, deriveFilters
@@ -1006,7 +1007,7 @@ z- analytics.css:632
 - viewClamp.ts (18): NetViewState, NetBox, clampView
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (295, ⚠1): ANWENDER, XEintrag, ANALYSE, EINBLICKE, HINTERGRUENDE, INFO, MainMenu
+- MainMenu.tsx (297, ⚠1): ANWENDER, XEintrag, ANALYSE, EINBLICKE, HINTERGRUENDE, INFO, MainMenu
 - MeinSheet.tsx (29): MeinSheet
 - MoreSheet.tsx (41, ⚠1): MoreSheet
 - SegTiles.tsx (25): Segmented, Tile

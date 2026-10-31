@@ -11,6 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
 import {DEFAULT_PDF_STORE} from '../server/node/pdf-store.mjs';
+import {indexBytes as docIndexBytes} from '../server/node/doc-index.mjs';
 import {DISK_KEY} from '../server/integrations/server-storage.mjs';
 import {STATS_KEY} from '../server/integrations/pdf-store-admin.mjs';
 import {databaseFile} from './pdf-store/state.mjs';
@@ -44,9 +45,11 @@ const storeDir=path.resolve(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE);
 const db=new DatabaseSync(abs);db.exec('PRAGMA busy_timeout=30000');
 const read=key=>{try{const r=db.prepare('SELECT value FROM system_state WHERE key=?').get(key);return r?JSON.parse(r.value):null;}catch{return null;}};
 const ps=read(STATS_KEY),indexBytes=['index.sqlite','index.sqlite-wal','index.sqlite-shm'].reduce((a,n)=>a+size(path.join(storeDir,n)),0);
-const pdfStore=fs.existsSync(storeDir)?{dir:storeDir,pdfPrimary:ps?.bytes?.pdfPrimary??ps?.bytes?.pdf??null,pdfOthers:ps?.bytes?.pdfOthers??0,text:ps?.bytes?.text??null,index:indexBytes,
+/* Dokumentindex der Dokumentsuche (fts.sqlite, ein angefangener Neubau): abgeleitet, nicht in der Sicherung (backup.sh) */
+const docIndex=docIndexBytes(storeDir);
+const pdfStore=fs.existsSync(storeDir)?{dir:storeDir,pdfPrimary:ps?.bytes?.pdfPrimary??ps?.bytes?.pdf??null,pdfOthers:ps?.bytes?.pdfOthers??0,text:ps?.bytes?.text??null,index:indexBytes,docIndex,
  at:ps?.at||null,budgetGb:ps?.budgetGb??null}:null;
-if(pdfStore)pdfStore.bytes=(pdfStore.pdfPrimary||0)+(pdfStore.pdfOthers||0)+(pdfStore.text||0)+indexBytes;
+if(pdfStore)pdfStore.bytes=(pdfStore.pdfPrimary||0)+(pdfStore.pdfOthers||0)+(pdfStore.text||0)+indexBytes+docIndex;
 
 /* Sicherungen: Datenbankkopien (backup.sh) und Sicherungen der Einstellungsdatei (nur Name und Größe, nie der Inhalt) */
 const backupDir=path.resolve(process.env.BACKUP_DIR||path.join(base,'backups'));

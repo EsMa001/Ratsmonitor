@@ -36,6 +36,7 @@ export const STEPS=Object.freeze([
  {id:'model',name:'Modell anwenden',phase:'verarbeitung',what:'Art, Thema, Unterthemen, Vorgangsart, Status, Dokumente und weitere Fragen je Bericht mit dem gelernten Modell',aliases:[]},
  {id:'rules',name:'Zusammenfassung und Fakten',phase:'verarbeitung',what:'Zusammenfassung (Kernsätze aus dem Modell) und Fakten je Bericht (Art, Thema und Hauptdokument aus dem Modell)',aliases:['Regeln je Bericht','Regeln anwenden']},
  {id:'search',name:'Suche aktualisieren',phase:'verarbeitung',what:'Wortliste der Suche nachführen',aliases:['Wortliste']},
+ {id:'docindex',name:'Dokumente indizieren',phase:'verarbeitung',what:'Texte der Hauptdokumente in den Index der Dokumentsuche (fts.sqlite in der PDF-Ablage) aufnehmen'},
  {id:'xcases',name:'Zahlen rechnen',phase:'verarbeitung',what:'Zahlen für plenara.X',aliases:['Zahlen für plenara.X']},
  {id:'ai',name:'KI',phase:'verarbeitung',what:'Kurz- und Langfassung und KI-Einordnung (Agent über MCP, von Hand)'},
  {id:'trace',name:'Wege zählen',phase:null,what:'zählen, welchen Weg die Berichte genommen haben (Pipeline-Debug)'},
@@ -63,8 +64,8 @@ export const CLASS_TERMS=Object.freeze({
 export const HOST_TERMS=Object.freeze({ok:'liefert',bremsen:'bremst',gesperrt:'gesperrt',pruefen:'prüfen',anlauf:'fährt hoch'});
 
 /** Aufträge der PDF-Ablage (Reiter PDF-Import und Seite Altbestand; pdf-store-admin.mjs JOB_KINDS) als Knopf */
-export const PDF_JOB_TERMS=Object.freeze({run:'Ältere Monate laden',retry:'Alte Fehler erneut versuchen',others:'Anlagen laden',texts:'Text lesen',ocr:'OCR des Altbestands'});
+export const PDF_JOB_TERMS=Object.freeze({run:'Ältere Monate laden',retry:'Alte Fehler erneut versuchen',others:'Anlagen laden',texts:'Text lesen',ocr:'OCR des Altbestands',index:'Dokumentindex aufbauen','index-full':'Dokumentindex neu aufbauen'});
 /** Arten der Läufe im Protokoll der PDF-Ablage (pdf-store-runs.kind) */
-export const RUN_KIND_TERMS=Object.freeze({nightly:'Extraktion, nachts',run:'Ältere Monate laden',retry:'Alte Fehler erneut versuchen',others:'Anlagen laden',texts:'Text lesen',ocr:'OCR',fetch:'PDF laden (von Hand)',text:'Text lesen (von Hand)'});
+export const RUN_KIND_TERMS=Object.freeze({nightly:'Extraktion, nachts',run:'Ältere Monate laden',retry:'Alte Fehler erneut versuchen',others:'Anlagen laden',texts:'Text lesen',ocr:'OCR',fetch:'PDF laden (von Hand)',text:'Text lesen (von Hand)',index:'Dokumentindex aufbauen','index-full':'Dokumentindex neu aufbauen'});
 /** Ergebnis eines Laufs */
 export const RESULT_TERMS=Object.freeze({ok:'fertig',done:'fertig',failed:'mit Fehler',stopped:'angehalten',skipped:'ausgelassen'});

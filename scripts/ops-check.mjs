@@ -19,6 +19,7 @@ import {OPS_KEY,opsThresholds,opsWarnings,opsDigest,opsMail} from '../server/int
 import {SCHEDULES_KEY,SCHEDULE_RUNS_KEY,UNITS_KEY} from '../server/integrations/schedules.mjs';
 import {databaseFile} from './pdf-store/state.mjs';
 import {sendOperatorMail} from './operator-mail.mjs';
+import {DOC_INDEX_KEY} from '../server/integrations/pdf-store-admin.mjs';
 
 const args=process.argv.slice(2),dryRun=args.includes('--dry-run'),print=args.includes('--print');
 const file=databaseFile();
@@ -44,7 +45,7 @@ let disk=null;try{const s=fs.statfsSync(dataDir);disk={total:s.blocks*s.bsize,us
 const dbBytes=size(abs)+size(abs+'-wal');
 
 const state=get(OPS_KEY),thresholds=opsThresholds(process.env);
-const warnings=opsWarnings({now,units:get(UNITS_KEY),runs:get(SCHEDULE_RUNS_KEY)||{},schedules:get(SCHEDULES_KEY),backupAt,disk,dbBytes,prev:state?.measure||null},thresholds);
+const warnings=opsWarnings({now,units:get(UNITS_KEY),runs:get(SCHEDULE_RUNS_KEY)||{},schedules:get(SCHEDULES_KEY),backupAt,disk,dbBytes,prev:state?.measure||null,docIndex:get(DOC_INDEX_KEY)},thresholds);
 const gbOf=b=>(b/1073741824).toFixed(1);
 console.log(`${new Date(now).toISOString()} Betriebsprüfung: ${warnings.length} Befund(e); Sicherung ${backupAt||'keine'}, Platte ${disk?Math.round(disk.used/disk.total*100)+' %':'?'}, Datenbank ${gbOf(dbBytes)} GB${state?.measure?` (vorige Messung ${gbOf(state.measure.dbBytes)} GB)`:''}`);
 for(const w of warnings)console.log(`  - [${w.key}] ${w.text}`);

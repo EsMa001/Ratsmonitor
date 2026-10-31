@@ -30,7 +30,7 @@ export const LIMITS={
 /** Funktionen je Stufe, die der Server prüft (gated(…,{feature}) in server/services/session.ts) */
 export const FEATURES={
  // KI-Assistenten (Kunden-MCP) gehören zu keiner Stufe: Zugang nur über die Kundendatei des Betreibers (server/accounts/oauth.mjs).
- // fulltext: Suche in den Texten der Dokumente (Pro); gesperrt ist sie schon, gebaut wird sie getrennt (Parameter volltext=1).
+ // fulltext: Dokumentsuche, Suche in den Texten der Sitzungsunterlagen (Pro; Seite /dokumente, Route /api/dokumente).
  guest:{analytics:false,calendar:false,fulltext:false,lenaPerMin:10},
  basic:{analytics:false,calendar:true,fulltext:false,lenaPerMin:30},
  plus:{analytics:true,calendar:true,fulltext:false,lenaPerMin:60},

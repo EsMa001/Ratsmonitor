@@ -6,10 +6,12 @@ import { type Bookable } from "../lib/booking";
 import { AboModels } from "./AboModels";
 
 /** Funktionen, die je nach Stufe gesperrt oder begrenzt sind */
-export type GateFeature = "results" | "filters" | "bookmarks" | "searches" | "notifications" | "emails" | "calendarAreas" | "freq" | "weeklyReport";
+export type GateFeature = "results" | "filters" | "bookmarks" | "searches" | "notifications" | "emails" | "calendarAreas" | "freq" | "weeklyReport" | "fulltext";
 
 /** Stufe, die eine Funktion freischaltet: ohne Konto das Konto, sonst die nächste Stufe (Plus, dann Pro) */
 export function needsFor(feature: GateFeature, tier: Tier): Tier {
+  /* Die Dokumentsuche gibt es nur mit Pro, auch für Gäste (ein Konto allein hilft nicht) */
+  if (feature === "fulltext") return "pro";
   if (tier === "guest") return "basic";
   if (feature === "emails") return "enterprise";
   if (feature === "freq") return "pro";
@@ -38,7 +40,7 @@ export function openGate(g: Gate) {
 export function openLimitGate(limit: unknown, total?: number) {
   const feature: GateFeature | null =
     limit === "bookmarks" ? "bookmarks" : limit === "savedSearches" ? "searches" : limit === "notifications" ? "notifications" : limit === "results" ? "results"
-    : limit === "filters" ? "filters" : limit === "calendarAreas" ? "calendarAreas" : limit === "freq" ? "freq" : limit === "weeklyReport" ? "weeklyReport" : null;
+    : limit === "filters" ? "filters" : limit === "calendarAreas" ? "calendarAreas" : limit === "freq" ? "freq" : limit === "weeklyReport" ? "weeklyReport" : limit === "fulltext" ? "fulltext" : null;
   if (!feature) return false;
   openGate({ feature, needs: needsFor(feature, getMe().user ? getTier() : "guest"), total });
   return true;
@@ -51,8 +53,8 @@ function closeGate() {
 /* Zahlen aus shared/plans.mjs (lib/tier.ts); „Mit Plus …, mit Pro …“ je nach eigener Stufe */
 const { basic: B, plus: P } = LIMITS;
 const more = (tier: Tier, plus: string, pro: string) => (tier === "plus" ? `Mit Pro ${pro}.` : `Mit Plus ${plus}, mit Pro ${pro}.`);
-/* login: ohne Konto; upgrade: Konto mit Stufe, die nicht reicht */
-const FEATURE: Record<GateFeature, { title: string; login: string; upgrade: (tier: Tier) => string }> = {
+/* login: ohne Konto; upgrade: Konto mit Stufe, die nicht reicht; proOnly: nur mit Pro, auch ohne Konto derselbe Text und kein „Anmelden“ */
+const FEATURE: Record<GateFeature, { title: string; login: string; upgrade: (tier: Tier) => string; proOnly?: boolean }> = {
   results: {
     title: "Alle Treffer sehen",
     login: `Ohne Anmeldung sehen Sie die ersten ${LIMITS.guest.maxResults} Treffer je Suche, mit einem kostenlosen Konto ${B.maxResults}. Mit Plus sehen Sie alle Treffer.`,
@@ -96,6 +98,12 @@ const FEATURE: Record<GateFeature, { title: string; login: string; upgrade: (tie
     login: "Melden Sie sich an, um per E-Mail von neuen Treffern zu erfahren.",
     upgrade: () => "Tägliche Mails gibt es mit Pro, für jede Suche einzeln einstellbar. Konto und Plus bekommen ihre Mails einmal in der Woche.",
   },
+  fulltext: {
+    title: "In Dokumenten suchen",
+    login: "",
+    upgrade: () => "Die Dokumentsuche findet Begriffe in den Texten der Sitzungsunterlagen, nicht nur in Titeln: mit Seitenzahl, Textstelle und Link zum Original. Sie gehört zu Pro.",
+    proOnly: true,
+  },
   weeklyReport: {
     title: "Wochenbericht",
     login: "Melden Sie sich an, um neue Treffer Ihrer Suchen per E-Mail zu bekommen.",
@@ -125,9 +133,9 @@ export function GateDialog() {
 
   const f = g ? FEATURE[g.feature] : null;
   /* Ohne Konto: Anmelden. Mit Konto: Stufe nennen; Plus führt zur Buchung (lib/booking.ts), sonst zur Anfrage */
-  const login = !me.user && me.accounts;
+  const login = !me.user && me.accounts && !f?.proOnly;
   const upgrade = f ? f.upgrade(me.tier) : "";
-  const text = f && g ? (login ? f.login : me.tier === "guest" ? `${NO_TIER} ${upgrade}`.trim() : upgrade || NO_TIER) : "";
+  const text = f && g ? (f.proOnly ? upgrade : login ? f.login : me.tier === "guest" ? `${NO_TIER} ${upgrade}`.trim() : upgrade || NO_TIER) : "";
   const models = g ? modelsFor(g) : [];
   const here = typeof window === "undefined" ? "/" : window.location.pathname + window.location.search;
 

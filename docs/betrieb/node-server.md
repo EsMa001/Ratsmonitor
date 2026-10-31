@@ -451,6 +451,42 @@ Lücken: Der Import legt das PDF ab, aber nicht den daraus gelesenen Text (die K
 OCR; der Job `rule-texts` liest danach jeden Bericht mit dem Text der Ablage. Nach einer Änderung an einer Regelfassung
 (`READ_VERSION` setzt sich aus allen zusammen) läuft das von selbst beim nächsten Job; nach `TEXT_VERSION` liest die Kette alle Texte neu (Nächte).
 
+## Dokumentsuche: Index der PDF-Ablage (seit 31.10.2026, noch nicht eingerichtet)
+
+Die Dokumentsuche (Pro, `/dokumente`, technisch `docs/technik/suche.md`, Abschnitt 7) liest einen eigenen Index
+`RM_PDF_STORE/fts.sqlite` (eine Zeile je Seite der Hauptdokumente). Einziger Schreiber ist `scripts/pdf-store/doc-index.mjs`;
+der Webdienst und seine plenara.X-Worker-Threads öffnen die Datei nur lesend (sie lesen dort schon für die KI-Quellen). Ohne
+Datei antwortet `/api/dokumente` mit 503, sonst ändert sich nichts.
+
+**Vor dem Erstaufbau messen** (zehn Minuten, ändert nichts an der Ablage, Probedatei wird gelöscht):
+
+```bash
+cd /srv/ratsmonitor/app/current && set -a && . /srv/ratsmonitor/ratsmonitor.env && set +a
+node scripts/pdf-store/fts-probe.mjs --files 20000
+```
+
+Ausgabe: Größe und Dauer hochgerechnet auf alle Hauptdokumente (`projected_gb`, `projected_hours`) und Abfragezeiten kalt/warm.
+Liegt `projected_gb` über 8, `--detail column` messen und vor dem Erstaufbau `DETAIL` in `doc-index.mjs` umstellen (dann ohne
+Phrasen und NAHE, `INDEX_VERSION` erhöhen).
+
+**Erstaufbau**: Admin → PDF-Import → Steuerung „Dokumentindex aufbauen“ (Auftrag `index`, Bahn „Laden“, 10 bis 22 Uhr, je Auftrag
+bis 180 min, neueste Sitzungen zuerst). Mehrmals anfordern, bis der Rückstand null ist; die Suche liefert ab dem ersten Stück
+Treffer aus dem, was schon im Index ist. Von Hand: `node scripts/pdf-store/doc-index.mjs --max-minutes 120`.
+
+**Danach von selbst** (nur, wenn `fts.sqlite` existiert, `--if-exists`): nachts als Schritt „Dokumente indizieren“ am Ende der
+Tagespipeline (`nightly.mjs --daily`, höchstens 45 min, `--daily-index-minutes`), tagsüber nach jedem OCR-Lauf für die Berichte mit
+neuem Text (`--ids`). Stand: Reiter PDF-Import, Abschnitt „Dokumentindex“ (`system_state` `doc-index-last`), Größe im Reiter
+„Speicher & Sicherungen“. Die Betriebsprüfung warnt, wenn der letzte ganze Lauf älter als 2 Tage ist und (erst nach dem ersten
+vollständigen Aufbau) wenn der Rückstand über 5 % liegt.
+
+**Neubau** (neue `INDEX_VERSION` nach Änderung an Schema, Tokenizer oder `indexText`, sonst nur bei Verdacht): „Dokumentindex neu
+aufbauen“ (Auftrag `index-full`). Gebaut wird in `fts.next.sqlite` neben dem alten Index (doppelter Platz während des Baus), die
+Suche liest bis zum Ende den alten; der letzte Lauf ersetzt die Datei.
+
+**Platz und Sicherung**: Schätzung 5 bis 7 GB bei `detail=full` für alle Hauptdokumente, dazu WAL während des Aufbaus. Die Datei ist
+aus den Texten wiederherstellbar und gehört nicht in die Sicherung (`backup.sh` sichert nur `index.sqlite` und die `.txt`).
+**Rückbau**: `fts.sqlite` löschen (Route antwortet 503), in `shared/plans.mjs` `fulltext` für alle auf `false`.
+
 ## Modell (seit 22.10.2026, noch nicht auf dem Server eingerichtet)
 
 Ein lokal laufendes Modell (requirements/modell-konzept.md, Fragen im Begriffsbuch requirements/begriffsbuch-kern.md) ordnet jeden Bericht ein: Art, Thema, Unterthemen, Unter-Unterthemen, Vorgangsart, Status, Vorhaben, Schritt, Antragsteller, Leistungsart, Dokumentart, Haupt- und Ergebnisdokument. Kein fremder Dienst. Schritt „Modell anwenden“ (`scripts/model/apply.mjs`) im Job „Themen & Texte“ vor Zusammenfassung und Fakten, auch in Nacharbeit und OCR-Kette; Ergebnisse in `model_labels` (Migration 0046), Thema über `payload.theme` (Fassung `model-v1`, Migration 0047), sicherer Status (ab 0,7) direkt in `topics.status`.

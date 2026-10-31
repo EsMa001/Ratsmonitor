@@ -7,7 +7,7 @@ Entscheidung 29.10.2026 (ersetzt die vom 23.10.2026): vier Stufen im Angebot, Ga
 - **Ohne Anmeldung** (Gast): Suche nach Begriff und Ort (auch mit Umkreis), ohne Filter, 10 Treffer, Artikel lesen und teilen. Filter aus einem geteilten Link entfernt der Server (`withoutFilters` in `server/accounts/guest-search.mjs`), der Zeitraum endet heute, Formalien bleiben ausgeblendet.
 - **Konto** (`basic`, kostenlos): jedes angemeldete Konto ohne Freischaltung (`ACCOUNT_DEFAULT_TIER`); 20 Treffer, alle Filter, 1 gespeicherte Suche, 1 gespeicherter Artikel, 1 Benachrichtigung (Glocke an einer Suche oder einem Vorgang), wöchentlich, Sitzungskalender mit 1 Gebiet.
 - **Plus** (`plus`, 2,99 € im Monat, monatlich kündbar, kein kostenloser Test): alle Treffer, plenara.X, 10 gespeicherte Suchen und 10 Artikel, ein Wochenbericht je Woche zu allen Suchen und gefolgten Vorgängen (Wochentag wählbar), Kalender mit 5 Gebieten.
-- **Pro** (`pro`, 19,99 € im Monat, monatlich kündbar): alles unbegrenzt (intern höchstens 1.000, `PLAN_MAX`), Benachrichtigung je Suche einstellbar, täglich oder wöchentlich, Volltextsuche (Suche in den Texten der Dokumente; die Stufe hat das Recht schon, gebaut wird sie getrennt, bis dahin antwortet `volltext=1` mit 501 und die Preisseite nennt sie nicht).
+- **Pro** (`pro`, 19,99 € im Monat, monatlich kündbar): alles unbegrenzt (intern höchstens 1.000, `PLAN_MAX`), Benachrichtigung je Suche einstellbar, täglich oder wöchentlich, Dokumentsuche (Suche in den Texten der Sitzungsunterlagen, Seite `/dokumente`, Route `/api/dokumente`; Konzept `requirements/dokumentsuche-konzept.md`).
 - **Enterprise** (`enterprise`): nicht im Angebot, verborgen über Pro (Rechte wie Pro, dazu 5 E-Mail-Empfänger, die es noch nicht gibt). Die Preisseite zeigt sie nicht; Testkonto `enterprise@plenara.test`, Admin-Testkonto `admin@plenara.test`.
 - „Sofort“ gibt es in keiner Stufe mehr: höchstens täglich (Pro), sonst wöchentlich. Gespeicherte Glocken „sofort“ gelten als täglich (Pro) bzw. wöchentlich (`freqFor` in `shared/plans.mjs`, Migration `drizzle-accounts/0009`).
 - Die Preisseite zeigt Konto, Plus und Pro als Karten, „ohne Anmeldung“ als Satz darüber.
@@ -25,12 +25,12 @@ Entscheidung 29.10.2026 (ersetzt die vom 23.10.2026): vier Stufen im Angebot, Ga
 | Wochenbericht über alle Suchen | nein | nein | ja | ja | ja |
 | Gebiete im Kalender | 0 | 1 | 5 | unbegrenzt | unbegrenzt |
 | plenara.X | nein | nein | ja | ja | ja |
-| Volltextsuche | nein | nein | nein | ja (folgt) | ja (folgt) |
+| Dokumentsuche | nein | nein | nein | ja | ja |
 | E-Mail-Empfänger | 0 | 1 | 1 | 1 | 5 |
 
 Hinweise:
 
-- Durchgesetzt wird serverseitig: Trefferzahl und Filter (`app/api/search/route.ts`), gespeicherte Suchen, Artikel, Glocken, Rhythmus, Wochenbericht und Kalendergebiete (`server/accounts/account.mjs`), Versand nur im Umfang der Stufe (`mailScope` in `server/accounts/notify.mjs`), Kalendergebiete in `/api/calendar`, der Kalender-Datei und dem Abo-Link (`calendarScope`, `calendarAgsFor`), plenara.X über `gated(…,{feature:'analytics'})`, Volltextsuche über `FEATURES.fulltext`.
+- Durchgesetzt wird serverseitig: Trefferzahl und Filter (`app/api/search/route.ts`), gespeicherte Suchen, Artikel, Glocken, Rhythmus, Wochenbericht und Kalendergebiete (`server/accounts/account.mjs`), Versand nur im Umfang der Stufe (`mailScope` in `server/accounts/notify.mjs`), Kalendergebiete in `/api/calendar`, der Kalender-Datei und dem Abo-Link (`calendarScope`, `calendarAgsFor`), plenara.X über `gated(…,{feature:'analytics'})`, Dokumentsuche über `gated(…,{feature:'fulltext'})` (`FEATURES.fulltext`).
 - Ein Gebiet im Kalender ist ein Eintrag: ein Ort oder Kreis, auf Wunsch mit Umkreis (die Liste der Gemeindeschlüssel im Umkreis rechnet der Browser).
 - Nach einem Wechsel nach unten wird nichts gelöscht. Gemeldet werden nur die ersten Suchen und Artikel bis zur Grenze, davon die ältesten Glocken bis zur Grenze; der Kalender zeigt die ersten Gebiete, ohne Umkreis. Neues lässt sich erst wieder anlegen, wenn man unter der Grenze ist.
 - Plus: Weil alle Suchen und gefolgten Vorgänge in einer Mail je Woche kommen, darf jede gespeicherte Suche und jeder Artikel eine Glocke haben (20).

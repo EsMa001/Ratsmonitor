@@ -8,9 +8,11 @@ import { useMe } from "../lib/account";
 import { IconChevronDown } from "../components/icons";
 import { AnalyticsX } from "../components/Brand";
 
-/* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
-const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" | "circleHelp" }[] = [
+/* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Dokumentsuche, Benachrichtigungen) und die Arbeitsbereiche */
+const FUNKTIONEN: { href: string; label: string; icon: "search" | "fileSearch" | "heart" | "bell" | "calendar" | "fileText" | "circleHelp" }[] = [
   { href: "/suche", label: "Suche", icon: "search" },
+  /* Dokumentsuche (Pro): Seite für alle sichtbar, ohne Pro mit Beispiel und Hinweis */
+  { href: "/dokumente", label: "Dokumentsuche", icon: "fileSearch" },
   { href: "/konto/suchen", label: "Meine Suchen", icon: "heart" },
   { href: "/konto/artikel", label: "Gespeicherte Artikel", icon: "fileText" },
   { href: "/funktionen/benachrichtigungen", label: "Benachrichtigungen", icon: "bell" },

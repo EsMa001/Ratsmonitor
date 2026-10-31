@@ -1,7 +1,8 @@
 // Aufträge aus dem Admin-Reiter „PDF-Ablage“ ausführen (server/integrations/pdf-store-admin.mjs, system_state 'pdf-store-job':
 // {queue, running:{chain,ocr}, recent}). Auf dem Server alle 10 Minuten per Timer und sofort per Knopf (deploy/node/ratsmonitor-pdf-job.*).
 // Zwei Bahnen laufen nebeneinander, je Bahn ein Auftrag zur Zeit (laneOf): „Laden“ ('run' Kette wie nachts, 'retry' dazu mit
-// erneutem Versuch der fehlgeschlagenen Abrufe, 'others' die übrigen PDFs, 'texts' nur Texte aus schon abgelegten PDFs) und
+// erneutem Versuch der fehlgeschlagenen Abrufe, 'others' die übrigen PDFs, 'texts' nur Texte aus schon abgelegten PDFs,
+// 'index'/'index-full' Dokumentindex der Dokumentsuche weiter- bzw. neu bauen) und
 // „OCR“ ('ocr', nightly.mjs --ocr-only). Je Aufruf:
 //  - Lebenszeichen schreiben ('pdf-store-heartbeat'); ohne es sperrt die Seite die Knöpfe (etwa lokal, wo niemand ausführt).
 //  - Einen als „läuft“ vermerkten Auftrag, hinter dem keine Sperre seiner Bahn mehr steht (Dienst angehalten, Server neu
@@ -94,6 +95,7 @@ function run(lane,job){
  console.log(`Auftrag ${job.kind} vom ${job.requestedAt} startet (Bahn ${lane==='ocr'?'OCR':'Laden'})`);
  const child=spawn(process.execPath,['--no-warnings','scripts/pdf-store/nightly.mjs','--kind',job.kind,'--minutes',String(jobMinutes),'--budget-gb',opt('budget-gb',String(BUDGET_GB)),
   ...(job.kind==='retry'?['--retry-errors']:[]),...(job.kind==='others'?['--others']:[]),...(job.kind==='texts'?['--texts']:[]),...(job.kind==='ocr'?['--ocr-only']:[]),
+  ...(job.kind==='index'?['--index']:[]),...(job.kind==='index-full'?['--index','--full']:[]),
   ...(args.includes('--no-window')?[]:['--until',BACKLOG_WINDOW[1]]),...(args.includes('--dry-run')?['--dry-run']:[])],{cwd:root,stdio:'inherit',env:process.env});
  const done=new Promise(resolve=>child.on('exit',(c,s)=>resolve(c??s))).then(code=>{
   const stopped=!!stopping||code===3;

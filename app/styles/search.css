@@ -314,3 +314,9 @@ html.rm-search .rm-dotfield {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Dokumentsuche (/dokumente, pages/dokumente/DocumentRow.tsx): eine Fundstelle ist ein Link zum Original; beim Zeigen ist der Treffer unterstrichen */
+.rm-docsnip:hover b, .rm-docsnip:focus-visible b {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

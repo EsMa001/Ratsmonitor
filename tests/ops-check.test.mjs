@@ -73,7 +73,7 @@ test('backup age, disk usage, database growth against thresholds',()=>{
  g.prev={at:new Date(NOW-48*H).toISOString(),dbBytes:29*GB};assert.deepEqual(opsWarnings(g),[],'über zwei Tage sind es 2 GB je Tag');
  g.prev={at:new Date(NOW-H).toISOString(),dbBytes:29*GB};assert.deepEqual(opsWarnings(g),[],'vorige Messung zu frisch: kein Urteil');
  g.prev=null;assert.deepEqual(opsWarnings(g),[],'erste Messung');
- assert.deepEqual(opsThresholds({OPS_BACKUP_HOURS:'48',OPS_DISK_PERCENT:'x',OPS_DB_GROWTH_GB:''}),{backupHours:48,diskPercent:85,dbGrowthGb:3});
+ assert.deepEqual(opsThresholds({OPS_BACKUP_HOURS:'48',OPS_DISK_PERCENT:'x',OPS_DB_GROWTH_GB:''}),{backupHours:48,diskPercent:85,dbGrowthGb:3,docIndexDays:2,docIndexBacklogPercent:5});
 });
 
 test('digest: each warning once per German day; a failed send keeps it fresh',()=>{

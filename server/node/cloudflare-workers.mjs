@@ -10,6 +10,8 @@
  * - `env.ACCOUNTS`: die Kontendatei aus ACCOUNTS_FILE (eigene Datei, requirements/konten-konzept.md 3.2), eigener
  *   globalThis-Schlüssel, secure_delete an. `env.ACCOUNTS_HOOKS`: Löschprotokoll neben der Datei (deleted.log) und
  *   wal_checkpoint, nur hier im Node-Betrieb; unter Miniflare fehlen sie (die Kontomodule rufen sie optional auf).
+ * - `env.DOC_INDEX`: Dokumentindex der Dokumentsuche (openDocReader in server/node/doc-index.mjs, fts.sqlite in RM_PDF_STORE),
+ *   nur lesen; ohne Datei ist ready() false und /api/dokumente antwortet 503.
  * - alle anderen Schlüssel (ADMIN_SETUP_HASH, IMPORT_TOKEN, …) aus process.env,
  *   gelesen beim Zugriff. Leere Werte gelten als nicht gesetzt.
  *
@@ -19,9 +21,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { openD1 } from './d1-sqlite.mjs';
 import { createLocalSourceReader } from './ai-local-sources.mjs';
+import { openDocReader } from './doc-index.mjs';
 
 let sourceReader;
 const localSources = () => sourceReader ??= createLocalSourceReader({directory:process.env.RM_PDF_STORE||'tmp/pdf-store'});
+// Dokumentindex der Dokumentsuche (fts.sqlite in der Ablage), nur lesen; eine Verbindung je Prozess, auch über mehrere Server-Pakete
+const DOCS = Symbol.for('ratsmonitor.node.doc-index');
+const docIndex = () => globalThis[DOCS] ??= openDocReader(process.env.RM_PDF_STORE || 'tmp/pdf-store');
 
 const STATE = Symbol.for('ratsmonitor.node.database');
 const state = (globalThis[STATE] ??= { database: undefined, failedAt: 0, warned: false });
@@ -83,13 +89,14 @@ export const env = new Proxy(Object.create(null), {
     if (typeof key !== 'string') return undefined;
     if (key === 'DB') return db();
     if (key === 'AI_LOCAL_SOURCES') return localSources();
+    if (key === 'DOC_INDEX') return docIndex();
     if (key === 'ACCOUNTS') return accounts();
     if (key === 'ACCOUNTS_HOOKS') return process.env.ACCOUNTS_FILE ? accountHooks : undefined;
     return value(key);
   },
   has(_target, key) {
     if (typeof key !== 'string') return false;
-    if (key === 'AI_LOCAL_SOURCES') return true;
+    if (key === 'AI_LOCAL_SOURCES' || key === 'DOC_INDEX') return true;
     if (key === 'ACCOUNTS') return accounts() !== undefined;
     return key === 'DB' ? db() !== undefined : value(key) !== undefined;
   },

@@ -99,10 +99,32 @@ const ftsCount=async(db,t,max)=>Number((await db.prepare('SELECT count(*) n FROM
  * die Ergebnisseite den Datumsindex und liest nur, bis 20 Treffer gefunden sind (4 bis 10 ms). Alle Gebiete in
  * search_cards stehen im Katalog; ein unbekanntes Gebiet würde bei einer großen Auswahl mitgezählt.
  */
-function regionCondition(ids,catalog){
- if(ids.length*2<=catalog.length)return {sql:'region_id IN (SELECT value FROM json_each(?))',arg:JSON.stringify(ids)};
+export function regionCondition(ids,catalog,column='region_id'){
+ if(ids.length*2<=catalog.length)return {sql:column+' IN (SELECT value FROM json_each(?))',arg:JSON.stringify(ids)};
  const keep=new Set(ids);
- return {sql:'region_id NOT IN (SELECT value FROM json_each(?))',arg:JSON.stringify(catalog.filter(r=>!keep.has(r.id)).map(r=>r.id))};
+ return {sql:column+' NOT IN (SELECT value FROM json_each(?))',arg:JSON.stringify(catalog.filter(r=>!keep.has(r.id)).map(r=>r.id))};
+}
+/**
+ * Gebiete der Ortsauswahl: Ort (area mit scope), weitere Orte (more), Umkreis (within/without); ohne Ort alle Gebiete der Ebene
+ * level (ohne level alle). Gemeinsam für die Suche (searchFilters) und die Dokumentsuche (doc-search.mjs).
+ */
+export function placeScope(catalog,f){
+ /* Mit Gebiet: Kreis- und Gemeindeebene gemeinsam, der Umfang (nur/inklusive) entscheidet */
+ const places=[...(f.area?[{ags:f.area,scope:f.scope}]:[]),...(f.more||[])];
+ /* Mit Gebiet (auch Bundesland) zählen Gemeinde- und Kreisebene gemeinsam; ohne Gebiet entscheidet die Ebene */
+ const regions=places.length||!f.level?catalog:catalog.filter(r=>r.kind===f.level);
+ /* Regionen eines Orts je nach Umfang: nur das Gebiet oder inklusive Kreis bzw. Gemeinden.
+    Eine niedersächsische Mitgliedsgemeinde liegt in ihrer Samtgemeinde: deren Rat und System führen ihre Vorgänge. */
+ const isPlace=(r,ags)=>r.ags===ags||!!r.members?.some(m=>m.ags===ags)||!!r.formerAgs?.includes(ags);
+ /* Kreisfreie Stadt mit Kreisschlüssel (5 Stellen, ohne eigenen Kreis-Eintrag): „nur das Gebiet“ ist die Stadt selbst */
+ const agsSet=new Set(regions.map(r=>r.ags));
+ const ownCity=(r,ags)=>ags.length===5&&!agsSet.has(ags)&&r.ags===ags+'000';
+ const inPlace=(r,{ags,scope})=>ags.length===2?r.ags.startsWith(ags):scope==='only'?isPlace(r,ags)||ownCity(r,ags):ags.length===5?r.ags.startsWith(ags):isPlace(r,ags)||r.ags===ags.slice(0,5);
+ let scoped=places.length?regions.filter(r=>places.some(p=>inPlace(r,p))):regions;
+ const listed=list=>{const w=new Set(list);return r=>w.has(r.ags)||!!r.members?.some(m=>w.has(m.ags))||!!r.formerAgs?.some(a=>w.has(a));};
+ if(f.within)scoped=scoped.filter(listed(f.within));
+ if(f.without){const outside=listed(f.without);scoped=scoped.filter(r=>!outside(r));}
+ return {places,regions,scoped};
 }
 
 // Liest ausschließlich aus search_cards (per Trigger gepflegt, drizzle/0006): flache Spalten,
@@ -115,22 +137,8 @@ function regionCondition(ids,catalog){
 export async function searchFilters(db,catalog,f){
  const formalReady=f.noformal?await formalColumn(db):false;
  const ftsReady=(f.groups||[f.terms]).some(g=>g.some(t=>FTS_TERM.test(t)))?await ftsTable(db):false;
- /* Mit Gebiet: Kreis- und Gemeindeebene gemeinsam, der Umfang (nur/inklusive) entscheidet */
- const places=[...(f.area?[{ags:f.area,scope:f.scope}]:[]),...f.more];
- /* Mit Gebiet (auch Bundesland) zählen Gemeinde- und Kreisebene gemeinsam; ohne Gebiet entscheidet die Ebene */
- const regions=places.length?catalog:catalog.filter(r=>r.kind===f.level);
+ const {places,regions,scoped}=placeScope(catalog,f);
  const byId=new Map(regions.map(r=>[r.id,r]));
- /* Regionen eines Orts je nach Umfang: nur das Gebiet oder inklusive Kreis bzw. Gemeinden.
-    Eine niedersächsische Mitgliedsgemeinde liegt in ihrer Samtgemeinde: deren Rat und System führen ihre Vorgänge. */
- const isPlace=(r,ags)=>r.ags===ags||!!r.members?.some(m=>m.ags===ags)||!!r.formerAgs?.includes(ags);
- /* Kreisfreie Stadt mit Kreisschlüssel (5 Stellen, ohne eigenen Kreis-Eintrag): „nur das Gebiet“ ist die Stadt selbst */
- const agsSet=new Set(regions.map(r=>r.ags));
- const ownCity=(r,ags)=>ags.length===5&&!agsSet.has(ags)&&r.ags===ags+'000';
- const inPlace=(r,{ags,scope})=>ags.length===2?r.ags.startsWith(ags):scope==='only'?isPlace(r,ags)||ownCity(r,ags):ags.length===5?r.ags.startsWith(ags):isPlace(r,ags)||r.ags===ags.slice(0,5);
- let scoped=places.length?regions.filter(r=>places.some(p=>inPlace(r,p))):regions;
- const listed=list=>{const w=new Set(list);return r=>w.has(r.ags)||!!r.members?.some(m=>w.has(m.ags))||!!r.formerAgs?.some(a=>w.has(a));};
- if(f.within)scoped=scoped.filter(listed(f.within));
- if(f.without){const outside=listed(f.without);scoped=scoped.filter(r=>!outside(r));}
  const scopedIds=new Set(scoped.map(r=>r.id));
  /* Begriff trifft auch den Gemeindenamen: passende Regionen vorab in JS ermitteln (je Begriff einmal) */
  const names=regions.map(r=>[r.id,norm(r.name)]),hits=new Map();

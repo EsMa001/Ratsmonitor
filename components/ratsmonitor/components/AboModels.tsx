@@ -5,7 +5,7 @@ import { LIMITS, priceLabel, TIER_LABEL } from "../lib/tier";
 /** Was die Abo-Modelle bringen, in einem Satz (Zahlen aus shared/plans.mjs) */
 const NUTZEN: Record<Bookable, string> = {
   plus: `Alle Treffer, plenara.X, je ${LIMITS.plus.savedSearches} Suchen und Artikel, Wochenbericht, Kalender mit ${LIMITS.plus.calendarAreas} Gebieten.`,
-  pro: "Alles unbegrenzt, E-Mails je Suche bis täglich.",
+  pro: "Alles unbegrenzt, Dokumentsuche, E-Mails je Suche bis täglich.",
 };
 
 /**

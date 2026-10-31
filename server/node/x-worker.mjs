@@ -8,16 +8,22 @@ import {CATALOG} from '../../shared/catalog.mjs';
 import {X_FUNCTIONS} from '../integrations/x-registry.mjs';
 import {AnalyticsError} from '../integrations/analytics-diffusion.mjs';
 import {warmX} from '../integrations/x-cases.mjs';
+import {searchDocuments,DocSearchError} from '../integrations/doc-search.mjs';
+import {openDocReader} from './doc-index.mjs';
 
 const file=workerData?.file||process.env.DATABASE_FILE;
 let db;
 const database=()=>db??=openD1(file,{readOnly:true,busyTimeoutMs:Number(process.env.DATABASE_BUSY_TIMEOUT_MS||5000)});
+/* Dokumentsuche (/api/dokumente, server/integrations/doc-search.mjs): hier wie plenara.X, mit eigener Verbindung auf den
+   Dokumentindex (fts.sqlite) statt auf x_cases */
+let docs;
+const LOCAL={dokumente:(d,catalog,params)=>searchDocuments(d,docs??=openDocReader(process.env.RM_PDF_STORE||'tmp/pdf-store'),catalog,params)};
 
 parentPort.on('message',async({id,kind,params,warm})=>{
  /* {warm:true} von serve.mjs: x_cases und seine Indizes einmal lesen (warmX), Antwort die Dauer in ms */
  if(warm){try{parentPort.postMessage({id,ok:true,value:warmX(database().sqlite)});}catch(error){parentPort.postMessage({id,ok:false,message:error?.message||String(error)});}return;}
- const fn=X_FUNCTIONS[kind];
+ const fn=LOCAL[kind]||X_FUNCTIONS[kind];
  if(!fn){parentPort.postMessage({id,unknown:true});return;}
  try{parentPort.postMessage({id,ok:true,value:await fn(database(),CATALOG,new URLSearchParams(params))});}
- catch(error){parentPort.postMessage({id,ok:false,message:error?.message||String(error),status:error?.status,analytics:error instanceof AnalyticsError});}
+ catch(error){parentPort.postMessage({id,ok:false,message:error?.message||String(error),status:error?.status,analytics:error instanceof AnalyticsError,docSearch:error instanceof DocSearchError});}
 });
