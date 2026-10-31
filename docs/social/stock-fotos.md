@@ -1048,11 +1048,11 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1108 | Hohenstein-Ernstthal | 14524120 | – | – | noch nicht gesucht | – |
 | 1109 | Mittweida | 14522360 | – | – | noch nicht gesucht | – |
 | 1110 | Grafing b.München | 09175122 | – | – | noch nicht gesucht | – |
-| 1112 | Immenstadt i.Allgäu | 09780124 | – | – | noch nicht gesucht | – |
+| 1112 | Immenstadt i.Allgäu | 09780124 | 451385 | https://pixabay.com/photos/alpsee-immenstadt-allg%C3%A4u-sky-view-451385/ | Pixabay-Lizenz, Alpsee | 7 |
 | 1113 | Friesenheim | 08317031 | – | – | noch nicht gesucht | – |
 | 1114 | Höchstadt a.d.Aisch | 09572135 | – | – | noch nicht gesucht | – |
 | 1116 | Maisach | 09179134 | – | – | noch nicht gesucht | – |
-| 1117 | Eichstätt | 09176123 | – | – | noch nicht gesucht | – |
+| 1117 | Eichstätt | 09176123 | 171959 | https://pixabay.com/de/photos/willibaldsburg-eichst%C3%A4tt-bayern-171959/ | Pixabay-Lizenz, Willibaldsburg | 8 |
 | 1119 | Neuenkirchen | 05566060 | – | – | noch nicht gesucht | – |
 | 1120 | Lohfelden | 06633017 | – | – | noch nicht gesucht | – |
 | 1121 | Lotte | 05566048 | – | – | noch nicht gesucht | – |
@@ -1067,8 +1067,8 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1134 | Gräfelfing | 09184120 | – | – | noch nicht gesucht | – |
 | 1135 | Hünxe | 05170016 | – | – | noch nicht gesucht | – |
 | 1136 | Barßel | 03453001 | – | – | noch nicht gesucht | – |
-| 1137 | Jessen (Elster) | 15091145 | – | – | noch nicht gesucht | – |
-| 1138 | Denzlingen | 08316009 | – | – | noch nicht gesucht | – |
+| 1137 | Jessen (Elster) | 15091145 | 1277754 | https://pixabay.com/photos/moated-castle-hemsendorf-hemsendorf-1277754/ | Pixabay-Lizenz, Wasserschloss Hemsendorf (Ortsteil) | 6 |
+| 1138 | Denzlingen | 08316009 | 7352046 | https://pixabay.com/de/photos/denzlingen-mediathek-rocca-b%C3%BCcherei-7352046/ | Pixabay-Lizenz, Mediathek Rocca | 6 |
 | 1140 | Philippsburg | 08215066 | – | – | noch nicht gesucht | – |
 | 1141 | Frankenberg/Sa. | 14522150 | – | – | noch nicht gesucht | – |
 | 1142 | Markt Schwaben | 09175127 | – | – | noch nicht gesucht | – |
@@ -1076,14 +1076,14 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1144 | Bergen auf Rügen | 13073010 | – | – | noch nicht gesucht | – |
 | 1145 | Hilpoltstein | 09576127 | – | – | noch nicht gesucht | – |
 | 1146 | Bad Soden-Salmünster | 06435002 | – | – | noch nicht gesucht | – |
-| 1148 | Bedburg-Hau | 05154004 | – | – | noch nicht gesucht | – |
+| 1148 | Bedburg-Hau | 05154004 | 103156 | https://pixabay.com/photos/bedburg-hau-germany-castle-moyland-103156/ | Pixabay-Lizenz, Schloss Moyland | 8 |
 | 1149 | Michendorf | 12069397 | – | – | noch nicht gesucht | – |
 | 1150 | Ettenheim | 08317026 | – | – | noch nicht gesucht | – |
 | 1151 | Pegnitz | 09472175 | – | – | noch nicht gesucht | – |
 | 1154 | Genthin | 15086040 | – | – | noch nicht gesucht | – |
 | 1156 | Linnich | 05358036 | – | – | noch nicht gesucht | – |
 | 1158 | Haselünne | 03454019 | – | – | noch nicht gesucht | – |
-| 1160 | Asperg | 08118003 | – | – | noch nicht gesucht | – |
+| 1160 | Asperg | 08118003 | 2305157 | https://pixabay.com/fr/photos/hohenasperg-ch%C3%A2teau-ge%C3%B4le-mur-2305157/ | Pixabay-Lizenz, Festung Hohenasperg | 7 |
 | 1162 | Dinklage | 03460003 | – | – | noch nicht gesucht | – |
 | 1163 | Oberhaching | 09184134 | – | – | noch nicht gesucht | – |
 | 1166 | Östringen | 08215064 | – | – | noch nicht gesucht | – |
@@ -1101,30 +1101,30 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1180 | Fehmarn | 01055046 | – | – | noch nicht gesucht | – |
 | 1181 | Lappersdorf | 09375165 | – | – | noch nicht gesucht | – |
 | 1182 | Herbrechtingen | 08135020 | – | – | noch nicht gesucht | – |
-| 1183 | Bad Dürrheim | 08326003 | – | – | noch nicht gesucht | – |
+| 1183 | Bad Dürrheim | 08326003 | 824965 | https://pixabay.com/de/photos/rathaus-bad-d%C3%BCrrheim-deutschland-824965/ | Pixabay-Lizenz, Rathaus | 6 |
 | 1184 | Hagen am Teutoburger Wald | 03459020 | – | – | noch nicht gesucht | – |
 | 1185 | Linden | 06531012 | – | – | noch nicht gesucht | – |
 | 1187 | Plattling | 09271146 | – | – | noch nicht gesucht | – |
-| 1189 | Ketsch | 08226037 | – | – | noch nicht gesucht | – |
+| 1189 | Ketsch | 08226037 | 5020621 | https://pixabay.com/photos/ketsch-germany-church-river-blue-5020621/ | Pixabay-Lizenz, Kirche am Fluss, Region nicht geprüft | 5 |
 | 1190 | Neustadt a.d.Aisch | 09575153 | – | – | noch nicht gesucht | – |
 | 1192 | Bad Laasphe | 05970028 | – | – | noch nicht gesucht | – |
 | 1193 | Gangelt | 05370008 | – | – | noch nicht gesucht | – |
 | 1194 | Hadamar | 06533007 | – | – | noch nicht gesucht | – |
 | 1196 | Ottersberg | 03361008 | – | – | noch nicht gesucht | – |
 | 1197 | Brieselang | 12063036 | – | – | noch nicht gesucht | – |
-| 1198 | Bad Doberan | 13072006 | – | – | noch nicht gesucht | – |
+| 1198 | Bad Doberan | 13072006 | 427066 | https://pixabay.com/de/photos/bad-doberan-kloster-m%C3%BCnster-kirche-427066/ | Pixabay-Lizenz, Münster | 8 |
 | 1201 | Biedenkopf | 06534004 | – | – | noch nicht gesucht | – |
 | 1204 | Bohmte | 03459013 | – | – | noch nicht gesucht | – |
 | 1205 | Bebra | 06632003 | – | – | noch nicht gesucht | – |
 | 1207 | Olfen | 05558036 | – | – | noch nicht gesucht | – |
-| 1209 | Lauterbach (Hessen) | 06535011 | – | – | noch nicht gesucht | – |
+| 1209 | Lauterbach (Hessen) | 06535011 | 97748 | https://pixabay.com/de/photos/schloss-eisenbach-burg-lauterbach-97748/ | Pixabay-Lizenz, Schloss Eisenbach | 6 |
 | 1214 | Kerken | 05154028 | – | – | noch nicht gesucht | – |
 | 1215 | Gärtringen | 08115015 | – | – | noch nicht gesucht | – |
 | 1216 | Eppstein | 06436002 | – | – | noch nicht gesucht | – |
 | 1217 | Hösbach | 09671130 | – | – | noch nicht gesucht | – |
 | 1218 | Oebisfelde-Weferlingen | 15083411 | – | – | noch nicht gesucht | – |
-| 1219 | Altötting | 09171111 | – | – | noch nicht gesucht | – |
-| 1222 | Peißenberg | 09190139 | – | – | noch nicht gesucht | – |
+| 1219 | Altötting | 09171111 | 325027 | https://pixabay.com/de/photos/alt%C3%B6tting-gnadenkapelle-325027/ | Pixabay-Lizenz, Gnadenkapelle | 8 |
+| 1222 | Peißenberg | 09190139 | 62006 | https://pixabay.com/de/photos/hoher-pei%C3%9Fenberg-berg-funk-turm-62006/ | Pixabay-Lizenz, Hoher Peißenberg, Landschaft | 6 |
 | 1223 | Cremlingen | 03158006 | – | – | noch nicht gesucht | – |
 | 1224 | Herzberg am Harz | 03159019 | – | – | noch nicht gesucht | – |
 | 1226 | Bergen | 03351004 | – | – | noch nicht gesucht | – |
