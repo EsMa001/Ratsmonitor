@@ -1837,22 +1837,22 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Schwentinental | Schleswig-Holstein | 01057091 | – | – | noch nicht gesucht | – |
 | Schömberg | BW | 08417057 | – | – | noch nicht gesucht | – |
 | Schönau | BW | 08226080 | – | – | noch nicht gesucht | – |
-| Schönau im Schwarzwald | BW | 08336079 | – | – | noch nicht gesucht | – |
+| Schönau im Schwarzwald | BW | 08336079 | 726195 | https://pixabay.com/de/photos/belchen-gipfel-schwarzwald-726195/ | Pixabay-Lizenz; Belchen-Gipfel im Schwarzwald. Das ist nur die Landschaft der Umgebung, der Ortsname steht nicht im Titel. | 4 |
 | Schönewalde | Brandenburg | 12062461 | – | – | noch nicht gesucht | – |
 | Schöningen | Niedersachsen | 03154019 | – | – | noch nicht gesucht | – |
 | Schönwald | Bayern | 09479150 | – | – | noch nicht gesucht | – |
 | Sebnitz | Sachsen | 14628360 | – | – | noch nicht gesucht | – |
 | Seeland | Sachsen-Anhalt | 15089307 | – | – | noch nicht gesucht | – |
-| Seelow | Brandenburg | 12064448 | – | – | noch nicht gesucht | – |
+| Seelow | Brandenburg | 12064448 | 205450 | https://pixabay.com/nl/photos/seelow-duitsland-monument-205450/ | Pixabay-Lizenz; Denkmal in Seelow. Ortsname steht im Titel. | 7 |
 | Seesen | Niedersachsen | 03153012 | – | – | noch nicht gesucht | – |
 | Seifhennersdorf | Sachsen | 14626530 | – | – | noch nicht gesucht | – |
-| Selb | Bayern | 09479152 | – | – | noch nicht gesucht | – |
+| Selb | Bayern | 09479152 | 6614144 | https://pixabay.com/photos/bavaria-rosenthal-6614144/ | Pixabay-Lizenz; Rosenthal-Outlet in Bayern. Der Ortsname Selb steht nicht im Titel, nur das Rosenthal-Wahrzeichen. | 5 |
 | Selbitz | Bayern | 09475171 | – | – | noch nicht gesucht | – |
 | Sendenhorst | NRW | 05570040 | – | – | noch nicht gesucht | – |
 | Seßlach | Bayern | 09473165 | – | – | noch nicht gesucht | – |
 | Sigmaringen | BW | 08437104 | – | – | noch nicht gesucht | – |
 | Simbach a.Inn | Bayern | 09277145 | – | – | noch nicht gesucht | – |
-| Sinzig | Rheinland-Pfalz | 07131077 | – | – | noch nicht gesucht | – |
+| Sinzig | Rheinland-Pfalz | 07131077 | 1439217 | https://pixabay.com/de/photos/sinzig-kirche-rhein-rheinland-pfalz-1439217/ | Pixabay-Lizenz; Kirche in Sinzig am Rhein (Rheinland-Pfalz im URL) | 8 |
 | Solms | Hessen | 06532021 | – | – | noch nicht gesucht | – |
 | Sonnewalde | Brandenburg | 12062469 | – | – | noch nicht gesucht | – |
 | Sontra | Hessen | 06636011 | – | – | noch nicht gesucht | – |
@@ -1860,13 +1860,13 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Spalt | Bayern | 09576147 | – | – | noch nicht gesucht | – |
 | Spangenberg | Hessen | 06634024 | – | – | noch nicht gesucht | – |
 | Spenge | NRW | 05758032 | – | – | noch nicht gesucht | – |
-| St. Blasien | BW | 08337097 | – | – | noch nicht gesucht | – |
+| St. Blasien | BW | 08337097 | 213466 | https://pixabay.com/es/photos/dom-blaise-sankt-blasien-213466/ | Pixabay-Lizenz; Dom St. Blasien | 8 |
 | St. Georgen im Schwarzwald | BW | 08326052 | – | – | noch nicht gesucht | – |
 | Stadtbergen | Bayern | 09772202 | – | – | noch nicht gesucht | – |
-| Stadtilm | Thüringen | 16070048 | – | – | noch nicht gesucht | – |
-| Staufen im Breisgau | BW | 08315108 | – | – | noch nicht gesucht | – |
+| Stadtilm | Thüringen | 16070048 | 1281917 | https://pixabay.com/photos/viaduct-stadtilm-thuringia-1281917/ | Pixabay-Lizenz; historisches Eisenbahnviadukt Stadtilm (Thüringen) | 8 |
+| Staufen im Breisgau | BW | 08315108 | 2673085 | https://pixabay.com/photos/castle-to-staufen-castle-ruins-2673085/ | Pixabay-Lizenz; Burgruine Staufen. Der Titel nennt "Staufen" ohne "im Breisgau", die Zuordnung stammt aus den Suchtreffern. Vor Verwendung prüfen. | 6 |
 | Staufenberg | Hessen | 06531017 | – | – | noch nicht gesucht | – |
-| Stein | Bayern | 09573127 | – | – | noch nicht gesucht | – |
+| Stein | Bayern | 09573127 | 1908243 | https://pixabay.com/photos/castle-faber-castel-architecture-1908243/ | Pixabay-Lizenz; Faber-Castell-Schloss (Stein bei Nürnberg). Das Bundesland steht nicht im Titel. | 6 |
 | Steinach | Thüringen | 16072019 | – | – | noch nicht gesucht | – |
 | Steinau an der Straße | Hessen | 06435028 | – | – | noch nicht gesucht | – |
 | Steinbach (Taunus) | Hessen | 06434010 | – | – | noch nicht gesucht | – |
