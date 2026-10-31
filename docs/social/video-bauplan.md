@@ -43,7 +43,7 @@ Pulsieren und die Schwingung des Stempels zählen in der Prüfung nicht als „n
 | Stimmenbus auffüllen | Der Stimmenbus wird vor dem Ducking mit Stille auf die volle Videolänge aufgefüllt (`apad`). Sonst endet das Ducking mit der letzten Stimme, und die Datei wird um den stillen Rest der Schlusskarte (im Test 4,4 s) zu kurz |
 | Ducking | Sidechain von der Stimme auf die Musik: Schwelle 0,02, Verhältnis 10, Attack 15 ms, Release 400 ms |
 | Töne (nur Automatik) | Eigens erzeugt (`sfx.py`, keine fremde Datei): „Schlag“ (tiefer Ton mit Knack, Spitze 0,8) beim Stempel und beim Statusbadge, „Klick“ (1,5 kHz, Spitze 0,3) bei jedem neuen Teil, „Wusch“ (Rauschen, Spitze 0,38) 0,22 s vor jedem Szenenwechsel, Soundlogo aus drei aufsteigenden Glockentönen (C, E, G) bei 0,1 s und zum Schluss 2,2 s vor dem Ende (E, G, hohes C). Pegel 0,8, gemischt nach dem Ducking, es duckt die Musik nicht |
-| Summe | Stimme und Musik (mit Tönen) gemischt, `loudnorm` auf −14 LUFS (Spitze −1,5 dB, LRA 7), danach genaue Pegelung auf −14 LUFS mit Begrenzer 0,84 (etwa −1,5 dB). AAC 192 kbit/s |
+| Summe | Stimme und Musik (mit Tönen) gemischt, `loudnorm` auf −14 LUFS (Spitze −1,5 dB, LRA 7), danach genaue Pegelung auf −14 LUFS mit Begrenzer, der so lange um 15 Prozent abgesenkt wird (Start 0,84), bis die Spitze nach der AAC-Kodierung höchstens −1,5 dB erreicht (`loud.sh`; ohne diese Schleife lag sie mit den Tönen bei −0,1 dB). AAC 192 kbit/s |
 | Messung | EBU R128, integriert (`ebur128=peak=true`): Lautheit −14 ±1 LUFS, True Peak höchstens −1,5 dB |
 
 ## 3. Aufbau: sechs Szenen
