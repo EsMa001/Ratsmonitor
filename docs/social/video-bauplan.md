@@ -116,7 +116,7 @@ Themen-Icons im Hook und in Zeilen kommen aus dem vorhandenen Satz (ein Stil: Pe
 | Verfahren, Unterlagen | Dokument, Stift, Kran (Bau), Lupe |
 | Wohnen, Gebäude | Haus |
 | Kinder, Schule, Bildung | Kind |
-| Verkehr, Straße | Pin; wer ein Schild oder Auto braucht, ergänzt es im selben Stil und trägt es hier ein |
+| Verkehr, Straße, Wege | Straße (Fahrbahn in Perspektive mit Mittelstrich, ergänzt am 31.10.2026 für „Billerbeck: Wirtschaftswege“); Pin nur für Orte. Wer ein Schild oder Auto braucht, ergänzt es im selben Stil und trägt es hier ein |
 | Gremium, Rathaus | Halle |
 | Termin | Kalender |
 | Stand | Haken, Kreuz, Sanduhr |
