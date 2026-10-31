@@ -622,9 +622,48 @@ PARK = dict(source='Quelle: öffentliche Ratsunterlagen der Stadt Billerbeck', o
            'In Beratung. Noch kein Beschluss. Zuletzt beraten im Rat der Stadt am dreizehnten Oktober.',
            'Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenara.'])
 
+
+def dresden2_A(wt):
+    cfg = DRE2
+    pill = b.pill('Beschluss laut Vorlage', 52, b.PETH, b.PETD, padx=36, pady=18)
+    w1 = fitbig('Hitzeaktionsplan', 150, PET, CW - 230, tr=-0.05)
+    t = big('Der Stadtrat bestätigt den Plan 2026 bis 2030 als Grundlage für Maßnahmen gegen gesundheitliche Risiken durch Hitze.', 66, INK, maxw=CW, lh=1.12, tr=-0.015)
+    s_ = b.text_block('Gemäß Anlage 1 der Vorlage', 58, 'R', GRAY2, maxw=CW)
+    ts = max(find(wt, 'Grundlage', 4.0), CUR_DUR - 4.0)
+    els = chips(cfg) + [E(pill, MX, 350, 0.0, slide=0), slam(w1, MX - 4, 470, 0.4, 0.5, 0.3), slam(ibadge('thermo', 180), W - MX - 180, 470 + (w1.height - 180) // 2, 0.9, 0.5, 0.3),
+                        E(t, MX, 470 + w1.height + 70, max(find(wt, 'bestätigt', 1.5) - 0.2, 1.5), dur=0.6), E(s_, MX, 470 + w1.height + 70 + t.height + 40, ts, dur=0.6, slide=0)]
+    return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None)
+
+def dresden2_B(wt):
+    cfg = DRE2
+    els = chips(cfg)
+    h = big('Der Stadtrat beauftragt den Oberbürgermeister:', 70, INK, maxw=CW, w='S', tr=-0.02, lh=1.05)
+    els += [E(h, MX, 360, 0.3, dur=0.6, slide=0)]
+    y = 600
+    rows = [('Plan umsetzen', 'umzusetzen', 'crane'), ('Plan evaluieren', 'evaluieren', 'mag'), ('Fortschreibung am Ende des Zeitraums prüfen', 'Fortschreibung', 'calendar')]
+    for k_, (wd, k, icn) in enumerate(rows):
+        im = big(wd, 80 if k_ < 2 else 66, INK, maxw=CW - 240, lh=1.0, tr=-0.03)
+        tt = max(find(wt, k, 1.5) - 0.2, 0.5)
+        if k_ == len(rows) - 1: tt = max(tt, CUR_DUR - 4.0)
+        els += [slam(ibadge(icn, 176, dark=True), MX, y, tt, 0.3, 0.3), E(im, MX + 214, y + (176 - im.height) // 2, tt + 0.25, dur=0.4, slide=0)]
+        y += 176 + 62
+    return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None)
+
+DRE2 = dict(source='Quelle: öffentliche Ratsunterlagen der Landeshauptstadt Dresden', ort='Dresden', out=f'{S_}/vid12d', ticker='',
+    icon='thermo', status='check', stamp='BESCHLOSSEN', stampcol=BLUE, ssize=160, t1='Hitze in Dresden:', t1s=108, t2='Hitzeaktionsplan 2026 bis 2030', t2s=94, beatsA=dresden2_A, beatsB=dresden2_B, stkey='beschlossen',
+    quote='„Der Stadtrat bestätigt den Hitzeaktionsplan 2026 bis 2030 der Landeshauptstadt Dresden gemäß Anlage 1 als Grundlage für Maßnahmen zur Minderung gesundheitlicher Risiken durch Hitze […]“',
+    quote_cap='Aus der Vorlage', hl={'bestätigt','Hitzeaktionsplan','2026','2030','Minderung','Risiken','Hitze'}, standword='Beschlossen', standkey='beschlossen', stsize=170, metasize=52,
+    meta='Stadtrat · zuletzt beraten am 29.10.26\nDavor: Stadtrat · 24.09.26, vertagt',
+    texts=['Dresden: Hitzeaktionsplan zweitausendsechsundzwanzig bis zweitausenddreißig. Stand: beschlossen.',
+           'Der Stadtrat bestätigt den Plan als Grundlage für Maßnahmen gegen gesundheitliche Risiken durch Hitze.',
+           'Der Stadtrat beauftragt den Oberbürgermeister: den Plan umzusetzen, ihn zu evaluieren und am Ende des Zeitraums die Fortschreibung zu prüfen.', '',
+           'Beschlossen. Zuletzt beraten: Stadtrat, neunundzwanzigster Oktober. Am vierundzwanzigsten September war der Punkt vertagt worden.',
+           'Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenara.'])
+
 if __name__ == '__main__':
     if sys.argv[1] == 'p': run(PARK, f'{S_}/tts/p1', f'{S_}/PundR_Weihgarten_Billerbeck_Social_v1.mp4'); sys.exit()
     if sys.argv[1] == 'w': run(WIRT, f'{S_}/tts/w1', f'{S_}/Wirtschaftswege_Billerbeck_Social_v1.mp4'); sys.exit()
+    if sys.argv[1] == 'd2': run(DRE2, f'{S_}/tts/d7', f'{S_}/Hitzeaktionsplan_Dresden_Social_v5.mp4'); sys.exit()
     if sys.argv[1] == 'b': run(BIL, f'{S_}/tts/b6', f'{S_}/Starkregenschutz_Billerbeck_Social_v4.mp4'); sys.exit()
     if sys.argv[1] == 'o': run(OST, f'{S_}/tts/o7', f'{S_}/Quartierswaermemanagement_Oststeinbek_Social_v5.mp4'); sys.exit()
     if sys.argv[1] == 'h': run(HAL, f'{S_}/tts/h6', f'{S_}/Baumschutz_Halle_Social_v4.mp4')

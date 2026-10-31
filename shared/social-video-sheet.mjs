@@ -106,8 +106,8 @@ export function videoSheet(topic,{regionName,today,titleShort}){
   next?`Nächste Sitzung: ${next.committee}, ${spokenDate(next.date)}.`:null].filter(Boolean).join(' ');
  const kern=quote?spoken(quote):null;
  const quote2=quote?pickQuote(topic.ruleSummary,[quote.replace(/ \[…\]$/,'')]):null;
- const verlauf=past.slice(-3).map(e=>({date:e.date,datum:shortDate(e.date),committee:e.committee,result:String(e.result||'').trim()||null,spokenDay:spokenDay(+e.date.slice(8))}));
- const verlaufText=verlauf.length?'Bisher: '+verlauf.map(v=>`Am ${spokenDate(v.date)}, ${v.committee}${v.result?': '+spoken(v.result):''}.`).join(' '):null;
+ const verlauf=past.slice(-3).map(e=>({date:e.date,datum:shortDate(e.date),committee:e.committee,result:String(e.result||'').trim()||null,spokenDay:spokenDay(+e.date.slice(8)),spoken:`Am ${spokenDate(e.date)}, ${e.committee}${e.result?': '+spoken(String(e.result).trim()):''}.`}));
+ const verlaufText=verlauf.length?'Bisher: '+verlauf.map(v=>v.spoken).join(' '):null;
  const meta=[last&&`${last.committee} · zuletzt beraten am ${shortDate(last.date)}`,
   next?`${next.committee} · nächste Sitzung ${shortDate(next.date)}`:before?`Davor: ${before.committee} · ${shortDate(before.date)}`:null].filter(Boolean);
  return {version:SHEET_VERSION,ok:!warnings.length,warnings,
