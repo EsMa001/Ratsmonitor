@@ -1247,19 +1247,19 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1401 | Oestrich-Winkel | 06439012 | – | – | noch nicht gesucht | – |
 | 1402 | Geisenheim | 06439004 | 4642086 | https://pixabay.com/es/photos/r%C3%ADo-rin-geisenheim-humor-oto%C3%B1al-4642086/ | Pixabay-Lizenz; Rhein bei Geisenheim, Herbststimmung | 8 |
 | 1404 | Nußloch | 08226060 | – | – | noch nicht gesucht | – |
-| 1406 | Extertal | 05766028 | – | – | noch nicht gesucht | – |
+| 1406 | Extertal | 05766028 | 7905209 | https://pixabay.com/photos/horses-field-extertal-7905209/ | Pixabay-Lizenz; Pferde auf Feld, Tag "extertal" | 5 |
 | 1407 | Krummhörn | 03452014 | 13215452 | https://www.pexels.com/photo/pilsum-lighthouse-in-krummhorn-germany-13215452/ | Pexels-Lizenz; Pilsumer Leuchtturm, Krummhörn | 9 |
 | 1408 | Ostbevern | 05570032 | 988507 | https://pixabay.com/de/photos/schloss-loburg-collegium-johanneum-988507/ | Pixabay-Lizenz; Schloss Loburg / Collegium Johanneum | 7 |
-| 1411 | Diez | 07141029 | – | – | noch nicht gesucht | – |
+| 1411 | Diez | 07141029 | 2704398 | https://pixabay.com/de/photos/diez-grafenschloss-lahn-lahntal-2704398/ | Pixabay-Lizenz; Grafenschloss Diez, Lahntal | 8 |
 | 1414 | Engen | 08335022 | – | – | noch nicht gesucht | – |
 | 1415 | Gräfenhainichen | 15091110 | 2156650 | https://pixabay.com/cs/photos/rypadlo-ferropolis-2156650/ | Pixabay-Lizenz; Schaufelradbagger in der Ferropolis | 8 |
 | 1418 | Coswig (Anhalt) | 15091060 | – | – | noch nicht gesucht | – |
 | 1420 | Drochtersen | 03359013 | 633021 | https://pixabay.com/photos/outside-you-north-kehdingen-elbe-633021/ | Pixabay-Lizenz; Kehdingen an der Elbe, nur Regionsbezug | 3 |
 | 1421 | Ochsenfurt | 09679170 | 3297384 | https://pixabay.com/de/photos/ochsenfurt-fachwerk-fachwerkhaus-3297384/ | Pixabay-Lizenz; Fachwerkhaus in Ochsenfurt | 7 |
-| 1422 | Balve | 05962008 | – | – | noch nicht gesucht | – |
+| 1422 | Balve | 05962008 | 3599626 | https://pixabay.com/de/photos/kirche-balve-sakral-alt-alte-3599626/ | Pixabay-Lizenz; Kirche in Balve, Titel nennt den Ort | 6 |
 | 1424 | Kranenburg | 05154040 | – | – | noch nicht gesucht | – |
 | 1425 | Kriftel | 06436009 | – | – | noch nicht gesucht | – |
-| 1426 | Cadolzburg | 09573114 | – | – | noch nicht gesucht | – |
+| 1426 | Cadolzburg | 09573114 | 6803716 | https://pixabay.com/photos/burg-cadolzburg-castle-6803716/ | Pixabay-Lizenz; Burg Cadolzburg | 9 |
 | 1428 | Isselburg | 05554032 | 179333 | https://pixabay.com/cs/photos/vodn%C3%AD-z%C3%A1mek-anholt-v%C4%9B%C5%BEe-179333/ | Pixabay-Lizenz; Wasserschloss Anholt, Türme | 8 |
 | 1429 | Mömbris | 09671143 | – | – | noch nicht gesucht | – |
 | 1432 | Kall | 05366024 | – | – | noch nicht gesucht | – |
@@ -1276,7 +1276,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1447 | Boizenburg/ Elbe | 13076014 | – | – | noch nicht gesucht | – |
 | 1448 | Bad Belzig | 12069020 | – | – | noch nicht gesucht | – |
 | 1450 | Niestetal | 06633020 | – | – | noch nicht gesucht | – |
-| 1451 | Oelsnitz/Erzgeb. | 14521450 | – | – | noch nicht gesucht | – |
+| 1451 | Oelsnitz/Erzgeb. | 14521450 | 2752981 | https://pixabay.com/sv/photos/manor-byggnad-oelsnitz-malmbergen-2752981/ | Pixabay-Lizenz; Herrenhaus/Gebäude in Oelsnitz, Erzgebirge (Titel nennt Oelsnitz und Erzgebirge) | 6 |
 | 1452 | Herrsching am Ammersee | 09188124 | 1009375 | https://pixabay.com/de/photos/dampfersteg-herrsching-ammersee-1009375/ | Pixabay-Lizenz; Dampfersteg Herrsching am Ammersee, Ortsbezug im Titel | 8 |
 | 1453 | Herxheim bei Landau/ Pfalz | 07337038 | – | – | noch nicht gesucht | – |
 | 1456 | Braunfels | 06532003 | 18543316 | https://www.pexels.com/photo/braunfels-castle-in-germany-18543316/ | Pexels-Lizenz; Schloss Braunfels (Hessen), nur aus dem Titel abgeleitet, "in Germany" spricht gegen New Braunfels in Texas | 7 |
@@ -1291,8 +1291,8 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1468 | Haigerloch | 08417025 | 5479 | https://pixabay.com/pl/photos/zamek-haigerloch-zamek-haigerloch-5479/ | Pixabay-Lizenz; Schloss Haigerloch | 8 |
 | 1470 | Hasbergen | 03459021 | – | – | noch nicht gesucht | – |
 | 1471 | Lichtenau | 05774028 | – | – | noch nicht gesucht | – |
-| 1472 | Lorch | 08136042 | – | – | noch nicht gesucht | – |
-| 1473 | Malente | 01055028 | – | – | noch nicht gesucht | – |
+| 1472 | Lorch | 08136042 | 5868473 | https://pixabay.com/de/photos/kloster-lorch-ostalbkreis-staufer-5868473/ | Pixabay-Lizenz; Kloster Lorch, Ostalbkreis (Titel nennt Ostalbkreis, also Lorch in BW) | 8 |
+| 1473 | Malente | 01055028 | 3412894 | https://pixabay.com/photos/lake-fog-mood-malente-3412894/ | Pixabay-Lizenz; See im Nebel, Titel enthält "Malente" | 6 |
 | 1474 | Gottmadingen | 08335028 | – | – | noch nicht gesucht | – |
 | 1476 | Fürth | 06431007 | – | – | noch nicht gesucht | – |
 | 1479 | Neuhof | 06631018 | – | – | noch nicht gesucht | – |
