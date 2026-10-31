@@ -3035,7 +3035,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Lautertal (Odenwald) | Hessen | 06431014 | – | – | noch nicht gesucht | – |
 | Lautertal (Vogelsberg) | Hessen | 06535012 | – | – | noch nicht gesucht | – |
 | Laußig | Sachsen | 14730160 | – | – | noch nicht gesucht | – |
-| Lechbruck am See | Bayern | 09777147 | – | – | noch nicht gesucht | – |
+| Lechbruck am See | Bayern | 09777147 | 168307 | https://pixabay.com/de/photos/allg%C3%A4u-lechbruck-lech-wasser-fluss-168307/ | Pixabay-Lizenz; Lech (Fluss) bei Lechbruck, Allgäu, Wasser | 6 |
 | Leegebruch | Brandenburg | 12065180 | – | – | noch nicht gesucht | – |
 | Lehrberg | Bayern | 09571171 | – | – | noch nicht gesucht | – |
 | Lehrensteinsfeld | Baden-Württemberg | 08125057 | – | – | noch nicht gesucht | – |
