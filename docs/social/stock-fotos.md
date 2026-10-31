@@ -2659,12 +2659,12 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Grafenrheinfeld | Bayern | 09678136 | – | – | noch nicht gesucht | – |
 | Grafenwiesen | Bayern | 09372130 | – | – | noch nicht gesucht | – |
 | Grafling | Bayern | 09271122 | – | – | noch nicht gesucht | – |
-| Grainau | Bayern | 09180118 | – | – | noch nicht gesucht | – |
+| Grainau | Bayern | 09180118 | 2529050 | https://pixabay.com/de/photos/eibsee-grainau-see-wasser-bayern-2529050/ | Pixabay-Lizenz; Eibsee bei Grainau (Tags: Grainau, Eibsee) | 8 |
 | Grainet | Bayern | 09272121 | – | – | noch nicht gesucht | – |
 | Grammetal | Thüringen | 16071103 | – | – | noch nicht gesucht | – |
 | Grasbrunn | Bayern | 09184121 | – | – | noch nicht gesucht | – |
 | Grasellenbach | Hessen | 06431009 | – | – | noch nicht gesucht | – |
-| Grassau | Bayern | 09189120 | – | – | noch nicht gesucht | – |
+| Grassau | Bayern | 09189120 | 291140 | https://pixabay.com/photos/landscape-chiemgau-mountains-291140/ | Pixabay-Lizenz; Panorama von Grassau und den Alpen (Titel nennt Grassau) | 7 |
 | Grebenhain | Hessen | 06535007 | – | – | noch nicht gesucht | – |
 | Greifenstein | Hessen | 06532010 | – | – | noch nicht gesucht | – |
 | Grettstadt | Bayern | 09678138 | – | – | noch nicht gesucht | – |
