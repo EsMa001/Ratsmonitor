@@ -206,7 +206,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 169 | Langenhagen | 03241010 | – | – | kein Bild gefunden | – |
 | 170 | Nordhorn | 03456015 | 2080639 | https://pixabay.com/photos/almelo-nordhorn-canal-channel-water-2080639/ | Pixabay-Lizenz, Almelo-Nordhorn-Kanal (Ortsbezug nur über den Kanal) | 4 |
 | 171 | Bad Homburg | 06434001 | 2842579 | https://pixabay.com/de/photos/bad-homburg-wei%C3%9Fer-turm-wahrzeichen-2842579/ | Pixabay-Lizenz, Weißer Turm (Wahrzeichen) | 7 |
-| 172 | Bad Salzuflen | 05766008 | – | – | kein Bild gefunden | – |
+| 172 | Bad Salzuflen | 05766008 | 5150905 | https://pixabay.com/photos/bad-salzuflen-lippe-heilbad-5150905/ | Pixabay-Lizenz; verziertes Fachwerkhaus in Bad Salzuflen | 8 |
 | 173 | Schweinfurt | 09662000 | 4905516 | https://pixabay.com/photos/schweinfurt-historic-center-houses-4905516/ | Pixabay-Lizenz, historische Fassaden Altstadt | 6 |
 | 174 | Hattingen | 05954016 | 7591285 | https://pixabay.com/photos/ruhrtalsperre-hattingen-bochum-7591285/ | Pixabay-Lizenz, Ruhrtalsperre Hattingen/Bochum (kein Altstadtmotiv) | 5 |
 | 175 | Wetzlar | 06532023 | 2834808 | https://pixabay.com/de/photos/eisenmarkt-wetzlar-hessen-2834808/ | Pixabay-Lizenz, Eisenmarkt Altstadt | 7 |
@@ -234,7 +234,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 197 | Lörrach | 08336050 | – | – | kein Bild gefunden | – |
 | 198 | Gronau | 05554020 | 4230849 | https://pixabay.com/photos/gronau-flow-water-bridge-stone-4230849/ | Pixabay-Lizenz, Wasserlauf mit Brücke (Ortsbezug unklar, mehrere Orte heißen Gronau) | 3 |
 | 199 | Leonberg | 08115028 | 2077083 | https://pixabay.com/de/photos/leonberg-rathaus-marktplatz-2077083/ | Pixabay-Lizenz, Rathaus am Marktplatz | 8 |
-| 200 | Rheda-Wiedenbrück | 05754028 | – | – | kein Bild gefunden | – |
+| 200 | Rheda-Wiedenbrück | 05754028 | 2661925 | https://pixabay.com/photos/rheda-rheda-wiedenbr%C3%BCck-park-2661925/ | Pixabay-Lizenz; Parkanlage mit Bänken und Blumen, Rheda | 6 |
 
 ### Rang 201 bis 409
 
@@ -242,7 +242,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 
 | Rang | Ort | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|---|
-| 201 | Bad Oeynhausen | 05770004 | – | – | kein Bild gefunden | – |
+| 201 | Bad Oeynhausen | 05770004 | 5150911 | https://pixabay.com/photos/bad-oeynhausen-kurbad-minden-5150911/ | Pixabay-Lizenz; historisches Kurhaus in Bad Oeynhausen | 8 |
 | 202 | Singen (Hohentwiel) | 08335075 | 788398 | https://pixabay.com/de/photos/burg-ruine-mittelalter-hohentwiel-788398/ | Pixabay-Lizenz, Festungsruine Hohentwiel (Wahrzeichen) | 6 |
 | 203 | Freising | 09178124 | 1979218 | https://pixabay.com/photos/freising-bavaria-germany-church-1979218/ | Pixabay-Lizenz, historischer Platz | 7 |
 | 204 | Bergkamen | 05978004 | – | – | kein Bild gefunden | – |
@@ -259,7 +259,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 215 | Oranienburg | 12065256 | – | – | kein Bild gefunden | – |
 | 216 | Landau in der Pfalz | 07313000 | 2366466 | https://pixabay.com/photos/landau-in-der-pfalz-town-hall-square-2366466/ | Pixabay-Lizenz, Rathausplatz | 8 |
 | 217 | Dülmen | 05558016 | – | – | kein Bild gefunden | – |
-| 218 | Melle | 03459024 | – | – | kein Bild gefunden | – |
+| 218 | Melle | 03459024 | 5067452 | https://pixabay.com/photos/city-of-melle-germany-shop-building-5067452/ | Pixabay-Lizenz; Geschäft/Gebäude, Titel "City Of Melle Germany Shop" | 7 |
 | 219 | Oberursel (Taunus) | 06434008 | 2088518 | https://pixabay.com/photos/oberursel-hesse-germany-2088518/ | Pixabay-Lizenz, Fachwerkhäuser | 7 |
 | 220 | Herzogenrath | 05334016 | – | – | kein Bild gefunden | – |
 | 221 | Neunkirchen (Saar) | 10043114 | – | – | kein Bild gefunden | – |
@@ -290,7 +290,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 247 | Gifhorn | 03151009 | 6yfT6C3PS_k | https://unsplash.com/photos/a-church-with-a-golden-dome-and-blue-domes-6yfT6C3PS_k | Unsplash-Lizenz, vermutlich Kirche im Mühlenmuseum (Ortsbezug unsicher) | 4 |
 | 248 | Borken (Westfalen) | 05554012 | 732023 | https://pixabay.com/fr/photos/l-eau-lac-ch%C3%A2teau-tour-gemen-732023/ | Pixabay-Lizenz, Wasserschloss Gemen (Ortsteil) | 6 |
 | 249 | Heinsberg | 05370016 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
-| 250 | Nettetal | 05166016 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
+| 250 | Nettetal | 05166016 | 1991992 | https://pixabay.com/photos/nettetal-round-arch-hall-1991992/ | Pixabay-Lizenz; Halle mit Rundbogen. Das Motiv ist nur grob erkennbar. | 6 |
 | 251 | Kamen | 05978020 | – | – | kein Bild gefunden | – |
 | 252 | Weiden in der Oberpfalz | 09363000 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
 | 253 | Monheim am Rhein | 05158026 | – | – | kein Bild gefunden | – |
