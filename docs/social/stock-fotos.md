@@ -2229,14 +2229,14 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Betzenweiler | Baden-Württemberg | 08426020 | – | – | noch nicht gesucht | – |
 | Betzigau | Bayern | 09780114 | – | – | noch nicht gesucht | – |
 | Beuren | Baden-Württemberg | 08116011 | – | – | noch nicht gesucht | – |
-| Beuron | Baden-Württemberg | 08437005 | – | – | noch nicht gesucht | – |
+| Beuron | Baden-Württemberg | 08437005 | 2899413 | https://pixabay.com/de/photos/kloster-beuron-deutschland-2899413/ | Pixabay-Lizenz; Kloster Beuron | 8 |
 | Biberach | Baden-Württemberg | 08317011 | – | – | noch nicht gesucht | – |
-| Biberbach | Bayern | 09772121 | – | – | noch nicht gesucht | – |
+| Biberbach | Bayern | 09772121 | 702136 | https://pixabay.com/de/photos/osterei-osterbrunnen-biberbach-702136/ | Pixabay-Lizenz; Osterbrunnen Biberbach (Schwaben). Der Ort ist nur aus dem Titel geschlossen. | 6 |
 | Bibertal | Bayern | 09774119 | – | – | noch nicht gesucht | – |
 | Biblis | Hessen | 06431003 | – | – | noch nicht gesucht | – |
 | Bickenbach | Hessen | 06432003 | – | – | noch nicht gesucht | – |
 | Biebergemünd | Hessen | 06435003 | – | – | noch nicht gesucht | – |
-| Biebertal | Hessen | 06531002 | – | – | noch nicht gesucht | – |
+| Biebertal | Hessen | 06531002 | 643644 | https://pixabay.com/de/photos/d%C3%BCnsberg-berg-landschaft-643644/ | Pixabay-Lizenz; Dünsberg (liegt bei Biebertal), Berg mit Fernsehturm | 6 |
 | Biebesheim am Rhein | Hessen | 06433001 | – | – | noch nicht gesucht | – |
 | Biederbach | Baden-Württemberg | 08316003 | – | – | noch nicht gesucht | – |
 | Biederitz | Sachsen-Anhalt | 15086005 | – | – | noch nicht gesucht | – |
@@ -2245,7 +2245,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Binau | Baden-Württemberg | 08225010 | – | – | noch nicht gesucht | – |
 | Bindlach | Bayern | 09472119 | – | – | noch nicht gesucht | – |
 | Bingen | Baden-Württemberg | 08437008 | – | – | noch nicht gesucht | – |
-| Binz | Mecklenburg-Vorpommern | 13073011 | – | – | noch nicht gesucht | – |
+| Binz | Mecklenburg-Vorpommern | 13073011 | 1284561 | https://pixabay.com/de/photos/binz-r%C3%BCgen-kurhaus-seebr%C3%BCcke-1284561/ | Pixabay-Lizenz; Kurhaus und Seebrücke Binz, Rügen (laut Titel) | 8 |
 | Binzen | Baden-Württemberg | 08336008 | – | – | noch nicht gesucht | – |
 | Birenbach | Baden-Württemberg | 08117009 | – | – | noch nicht gesucht | – |
 | Birkenau | Hessen | 06431004 | – | – | noch nicht gesucht | – |
@@ -2259,7 +2259,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Bischweier | Baden-Württemberg | 08216006 | – | – | noch nicht gesucht | – |
 | Bisingen | Baden-Württemberg | 08417008 | – | – | noch nicht gesucht | – |
 | Bissingen | Bayern | 09773117 | – | – | noch nicht gesucht | – |
-| Bissingen an der Teck | Baden-Württemberg | 08116012 | – | – | noch nicht gesucht | – |
+| Bissingen an der Teck | Baden-Württemberg | 08116012 | 1464767 | https://pixabay.com/de/photos/schw%C3%A4bische-alb-bissingen-an-der-teck-1464767/ | Pixabay-Lizenz; Landschaft Schwäbische Alb bei Bissingen an der Teck (Titel nennt den Ort) | 6 |
 | Bitz | Baden-Württemberg | 08417010 | – | – | noch nicht gesucht | – |
 | Blaibach | Bayern | 09372115 | – | – | noch nicht gesucht | – |
 | Blaichach | Bayern | 09780115 | – | – | noch nicht gesucht | – |
@@ -2269,12 +2269,12 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Bockhorn | Bayern | 09177113 | – | – | noch nicht gesucht | – |
 | Bodelshausen | Baden-Württemberg | 08416006 | – | – | noch nicht gesucht | – |
 | Bodenkirchen | Bayern | 09274120 | – | – | noch nicht gesucht | – |
-| Bodenmais | Bayern | 09276117 | – | – | noch nicht gesucht | – |
+| Bodenmais | Bayern | 09276117 | 3625663 | https://pixabay.com/de/photos/bodenmais-stadt-bayerischer-wald-3625663/ | Pixabay-Lizenz; Ortsansicht Bodenmais, Bayerischer Wald | 8 |
 | Bodenwöhr | Bayern | 09376116 | – | – | noch nicht gesucht | – |
-| Bodman-Ludwigshafen | Baden-Württemberg | 08335098 | – | – | noch nicht gesucht | – |
+| Bodman-Ludwigshafen | Baden-Württemberg | 08335098 | 3625856 | https://pixabay.com/photos/ludwigshafen-bodman-lake-constance-3625856/ | Pixabay-Lizenz; Ludwigshafen/Bodman am Bodensee (Titel nennt den Ort) | 7 |
 | Bodnegg | Baden-Württemberg | 08436018 | – | – | noch nicht gesucht | – |
 | Bodolz | Bayern | 09776111 | – | – | noch nicht gesucht | – |
-| Boitzenburger Land | Brandenburg | 12073069 | – | – | noch nicht gesucht | – |
+| Boitzenburger Land | Brandenburg | 12073069 | 7456823 | https://pixabay.com/de/photos/klosterm%C3%BChle-boitzenburg-uckermark-7456823/ | Pixabay-Lizenz; Klostermühle Boitzenburg, Uckermark (Boitzenburg ist Hauptort der Gemeinde) | 6 |
 | Bollschweil | Baden-Württemberg | 08315014 | – | – | noch nicht gesucht | – |
 | Boms | Baden-Württemberg | 08436019 | – | – | noch nicht gesucht | – |
 | Bondorf | Baden-Württemberg | 08115004 | – | – | noch nicht gesucht | – |
