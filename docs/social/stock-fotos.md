@@ -285,8 +285,8 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 242 | Erkelenz | 05370004 | 4974648 | https://pixabay.com/nl/photos/begraafplaats-immerath-erkelenz-4974648/ | Pixabay-Lizenz, Friedhof Immerath, wenig repräsentativ | 4 |
 | 243 | Wismar | 13074087 | 2817532 | https://pixabay.com/photos/marketplace-wismar-germany-city-2817532/ | Pixabay-Lizenz, Marktplatz | 8 |
 | 244 | Erkrath | 05158004 | – | – | kein Bild gefunden | – |
-| 245 | Bietigheim-Bissingen | 08118079 | – | – | kein Bild gefunden | – |
-| 246 | Bernau bei Berlin | 12060020 | – | – | kein Bild gefunden | – |
+| 245 | Bietigheim-Bissingen | 08118079 | 1745445 | https://pixabay.com/photos/bridge-viaduct-offer-home-enz-1745445/ | Pixabay-Lizenz, Enzviadukt | 7 |
+| 246 | Bernau bei Berlin | 12060020 | 607146 | https://pixabay.com/photos/church-architecture-jesus-crosses-607146/ | Pixabay-Lizenz, gotische Kirche bei Nacht, Ort unsicher | 4 |
 | 247 | Gifhorn | 03151009 | 6yfT6C3PS_k | https://unsplash.com/photos/a-church-with-a-golden-dome-and-blue-domes-6yfT6C3PS_k | Unsplash-Lizenz, vermutlich Kirche im Mühlenmuseum (Ortsbezug unsicher) | 4 |
 | 248 | Borken (Westfalen) | 05554012 | 732023 | https://pixabay.com/fr/photos/l-eau-lac-ch%C3%A2teau-tour-gemen-732023/ | Pixabay-Lizenz, Wasserschloss Gemen (Ortsteil) | 6 |
 | 249 | Heinsberg | 05370016 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
@@ -294,19 +294,19 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 251 | Kamen | 05978020 | – | – | kein Bild gefunden | – |
 | 252 | Weiden in der Oberpfalz | 09363000 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
 | 253 | Monheim am Rhein | 05158026 | – | – | kein Bild gefunden | – |
-| 254 | Aurich | 03452001 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
+| 254 | Aurich | 03452001 | 329140 | https://pixabay.com/photos/ostfriesland-aurich-marketplace-329140/ | Pixabay-Lizenz, Marktplatz | 7 |
 | 255 | Laatzen | 03241009 | – | – | kein Bild gefunden | – |
 | 256 | Amberg | 09361000 | – | – | kein Bild gefunden | – |
 | 257 | Seevetal | 03353031 | – | – | kein Bild gefunden | – |
 | 258 | Eisenach | 16063105 | 874529 | https://pixabay.com/photos/thuringia-eisenach-wartburg-castle-874529/ | Pixabay-Lizenz, Wartburg | 8 |
 | 259 | Homburg (Saar) | 10045114 | 833944 | https://pixabay.com/de/photos/klosterruine-w%C3%B6rschweiler-homburg-833944/ | Pixabay-Lizenz, Klosterruine Wörschweiler | 5 |
-| 260 | Dreieich | 06438002 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
+| 260 | Dreieich | 06438002 | 2615922 | https://pixabay.com/de/photos/burg-hayn-dreieich-dreieichenhain-2615922/ | Pixabay-Lizenz, Burg Hayn | 8 |
 | 261 | Ansbach | 09561000 | – | – | kein Bild gefunden | – |
 | 262 | Bensheim | 06431002 | 884250 | https://pixabay.com/hu/photos/ernst-ludwig-s%C3%A9t%C3%A1ny-auerbach-bensheim-884250/ | Pixabay-Lizenz, Ernst-Ludwig-Sétány Auerbach | 5 |
-| 263 | Siegburg | 05382060 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
-| 264 | Kirchheim unter Teck | 08116033 | – | – | kein Bild gefunden | – |
-| 265 | Schwäbisch Hall | 08127076 | – | – | kein Bild gefunden | – |
-| 266 | Coburg | 09463000 | – | – | kein Bild gefunden | – |
+| 263 | Siegburg | 05382060 | 219225 | https://pixabay.com/photos/siegburg-germany-church-city-square-219225/ | Pixabay-Lizenz, Kirchturm und Marktplatz | 7 |
+| 264 | Kirchheim unter Teck | 08116033 | 4759688 | https://pixabay.com/photos/kirchheim-teck-town-hall-winter-4759688/ | Pixabay-Lizenz, Rathaus im Winter | 8 |
+| 265 | Schwäbisch Hall | 08127076 | 34446701 | https://www.pexels.com/photo/elderly-couple-walking-in-schwabisch-hall-park-34446701/ | Pexels-Lizenz, Park mit Personen, kein Wahrzeichen | 3 |
+| 266 | Coburg | 09463000 | 4325765 | https://pixabay.com/photos/veste-coburg-bulgarians-tower-4325765/ | Pixabay-Lizenz, Veste Coburg | 8 |
 | 267 | Wunstorf | 03241021 | – | – | kein Bild gefunden | – |
 | 268 | Königswinter | 05382024 | 3615763 | https://pixabay.com/de/photos/drachenfels-germany-k%c3%b6nigswinter-3615763/ | Pixabay-Lizenz, Drachenfels | 7 |
 | 269 | Eberswalde | 12060052 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
@@ -320,18 +320,18 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 277 | Neumarkt in der Oberpfalz | 09373147 | – | – | kein Bild gefunden | – |
 | 278 | Pirmasens | 07317000 | – | – | kein Bild gefunden | – |
 | 279 | Lemgo | 05766044 | 646464 | https://pixabay.com/de/photos/marktplatz-lemgo-hansestadt-646464/ | Pixabay-Lizenz, Marktplatz | 7 |
-| 280 | Freiberg (Sachsen) | 14522180 | – | – | kein Bild gefunden | – |
+| 280 | Freiberg (Sachsen) | 14522180 | 3696889 | https://pixabay.com/no/photos/freiberger-dom-freiberg-historisk-3696889/ | Pixabay-Lizenz, Freiberger Dom | 7 |
 | 281 | Halberstadt | 15085135 | – | – | kein Bild gefunden | – |
-| 282 | Leinfelden-Echterdingen | 08116078 | – | – | kein Bild gefunden | – |
+| 282 | Leinfelden-Echterdingen | 08116078 | 5808451 | https://pixabay.com/photos/leinfelden-echterdingen-airport-5808451/ | Pixabay-Lizenz, Flughafen Stuttgart | 4 |
 | 283 | Hofheim am Taunus | 06436007 | – | – | kein Bild gefunden | – |
 | 284 | Löhne | 05758024 | – | – | kein Bild gefunden | – |
 | 285 | Ahaus | 05554004 | – | – | kein Bild gefunden | – |
-| 286 | Schorndorf | 08119067 | – | – | kein Bild gefunden | – |
+| 286 | Schorndorf | 08119067 | 2756549 | https://pixabay.com/photos/schorndorf-marketplace-2756549/ | Pixabay-Lizenz, Marktplatz | 7 |
 | 287 | Völklingen | 10041519 | 682004 | https://pixabay.com/de/photos/v%C3%B6lklinger-h%C3%BCtte-industrie-682004/ | Pixabay-Lizenz, Völklinger Hütte | 7 |
 | 288 | Maintal | 06435019 | – | – | kein Bild gefunden | – |
 | 289 | Ostfildern | 08116080 | 5661355 | https://pixabay.com/de/photos/altstadt-ostfildern-nellingen-5661355/ | Pixabay-Lizenz, Altstadt Nellingen | 6 |
-| 290 | Ettlingen | 08215017 | – | – | kein Bild gefunden | – |
-| 291 | Freital | 14628110 | – | – | kein Bild gefunden | – |
+| 290 | Ettlingen | 08215017 | 2119017 | https://pixabay.com/photos/ettlingen-silly-st-martin-bridge-2119017/ | Pixabay-Lizenz, St. Martin mit Brücke | 6 |
+| 291 | Freital | 14628110 | 5069207 | https://pixabay.com/photos/sunset-freital-saxony-sunshine-5069207/ | Pixabay-Lizenz, Sonnenuntergang, kein Wahrzeichen | 4 |
 | 292 | Neu-Isenburg | 06438009 | – | – | kein Bild gefunden | – |
 | 293 | Niederkassel | 05382044 | – | – | kein Bild gefunden | – |
 | 294 | Langen (Hessen) | 06438006 | – | – | kein Bild gefunden | – |
@@ -347,7 +347,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 304 | Greven | 05566012 | – | – | kein Bild gefunden | – |
 | 305 | Wesseling | 05362040 | 3613522 | https://pixabay.com/photos/refinery-oil-industry-silhouette-3613522/ | Pixabay-Lizenz, Raffinerie-Silhouette, Ortsbezug unklar | 3 |
 | 306 | Kehl | 08317057 | – | – | kein Bild gefunden | – |
-| 307 | Bautzen | 14625020 | – | – | kein Bild gefunden | – |
+| 307 | Bautzen | 14625020 | 1749453 | https://pixabay.com/de/photos/bautzen-stadt-panorama-altstadt-1749453/ | Pixabay-Lizenz, Altstadt-Panorama | 8 |
 | 308 | Haltern am See | 05562016 | 2968148 | https://pixabay.com/photos/varus-monument-bronze-figure-2968148/ | Pixabay-Lizenz, Varus-Denkmal, Ortsbezug nur über Suchtreffer | 5 |
 | 309 | Backnang | 08119008 | 3005670 | https://pixabay.com/de/photos/skulptur-applaus-kunst-bronze-3005670/ | Pixabay-Lizenz, Skulptur "Applaus" | 5 |
 | 310 | Bitterfeld-Wolfen | 15082015 | – | – | kein Bild gefunden | – |
@@ -360,14 +360,14 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 317 | Suhl | 16054000 | 1421556 | https://pixabay.com/photos/moped-simson-sr2-suhl-gdr-old-1421556/ | Pixabay-Lizenz, Simson-Moped (kein Stadtbild) | 5 |
 | 318 | Erding | 09177117 | 1097527 | https://pixabay.com/photos/thunderstorm-night-erding-heaven-1097527/ | Pixabay-Lizenz, Gewitter bei Nacht | 6 |
 | 319 | Sinsheim | 08226085 | 7159144 | https://pixabay.com/photos/concorde-plane-air-france-aviation-7159144/ | Pixabay-Lizenz, Concorde (Technik Museum), Ortsbezug nur über Suchtreffer | 4 |
-| 320 | Porta Westfalica | 05770032 | – | – | kein Bild gefunden | – |
+| 320 | Porta Westfalica | 05770032 | 4721979 | https://pixabay.com/photos/monument-mountain-landscape-heaven-4721979/ | Pixabay-Lizenz, Kaiser-Wilhelm-Denkmal | 8 |
 | 321 | Emsdetten | 05566008 | – | – | kein Bild gefunden | – |
-| 322 | Winsen (Luhe) | 03353040 | – | – | kein Bild gefunden | – |
+| 322 | Winsen (Luhe) | 03353040 | 4370690 | https://pixabay.com/nl/photos/winsen-luhe-kasteel-zonneschijn-4370690/ | Pixabay-Lizenz, Schloss | 6 |
 | 323 | Mühlhausen/Thüringen | 16064046 | 8339581 | https://pixabay.com/de/photos/m%C3%BChlhausen-th%C3%BCringen-postgeb%C3%A4ude-8339581/ | Pixabay-Lizenz, Postgebäude | 6 |
 | 324 | Voerde (Niederrhein) | 05170044 | – | – | kein Bild gefunden | – |
-| 325 | Meppen | 03454035 | – | – | kein Bild gefunden | – |
+| 325 | Meppen | 03454035 | 2464227 | https://pixabay.com/photos/mepping-town-hall-historic-center-2464227/ | Pixabay-Lizenz, historisches Rathaus | 8 |
 | 326 | Limburg an der Lahn | 06533009 | 5317981 | https://pixabay.com/photos/limburg-old-town-frame-house-travel-5317981/ | Pixabay-Lizenz, Altstadt mit Fachwerkhaus (Titel nur "Limburg") | 5 |
-| 327 | Ingelheim am Rhein | 07339030 | – | – | kein Bild gefunden | – |
+| 327 | Ingelheim am Rhein | 07339030 | 885186 | https://pixabay.com/de/photos/f%C3%A4hre-rhein-ingelheim-wasser-885186/ | Pixabay-Lizenz, Rheinfähre | 4 |
 | 328 | Crailsheim | 08127014 | 3631307 | https://pixabay.com/photos/matthew-church-crailsheim-ingersheim-3631307/ | Pixabay-Lizenz, Matthäuskirche Ingersheim | 6 |
 | 329 | Bad Vilbel | 06440003 | 2142755 | https://pixabay.com/photos/bad-vilbel-hesse-germany-castle-2142755/ | Pixabay-Lizenz, Burg | 7 |
 | 330 | Leer (Ostfriesland) | 03457013 | 2555364 | https://pixabay.com/de/photos/leer-hafen-ostfriesland-architektur-2555364/ | Pixabay-Lizenz, Hafen | 7 |
@@ -378,7 +378,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 335 | Datteln | 05562008 | – | – | kein Bild gefunden | – |
 | 336 | Deggendorf | 09271119 | 591401 | https://pixabay.com/photos/state-garden-show-deggendorf-591401/ | Pixabay-Lizenz, Landesgartenschau | 5 |
 | 337 | Barsinghausen | 03241002 | – | – | kein Bild gefunden | – |
-| 338 | Steinfurt | 05566084 | – | – | kein Bild gefunden | – |
+| 338 | Steinfurt | 05566084 | 141320 | https://pixabay.com/photos/steinfurt-germany-bakery-truck-141320/ | Pixabay-Lizenz, Bäckereiwagen, kein Wahrzeichen | 3 |
 | 339 | Balingen | 08417002 | – | – | kein Bild gefunden | – |
 | 340 | Dietzenbach | 06438001 | – | – | kein Bild gefunden | – |
 | 341 | Kempen | 05166012 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite) | – |
