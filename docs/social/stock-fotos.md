@@ -763,7 +763,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 
 ### Rang 706 bis 999 (Zensus 2022, A bis Po)
 
-Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wikipedia-Schätzung 2022 der Ränge oben; die Nummern können um wenige Plätze abweichen. Alle Orte dieses Abschnitts sind durchsucht. Es fehlen die Orte von „Po“ bis „Z“ in diesem Bereich (keine Liste verfügbar). AGS aus BKG VG250.
+Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wikipedia-Schätzung 2022 der Ränge oben; die Nummern können um wenige Plätze abweichen. Alle Orte dieses Abschnitts sind auf Pixabay mit Wahrzeichen durchsucht; bei den Rängen 874 bis 999 ohne Fund fehlt die Suche auf Pexels/Unsplash (Ratenlimit), dort kann „kein Bild gefunden“ noch ein Bild haben. Es fehlen die Orte von „Po“ bis „Z“ in diesem Bereich (keine Liste verfügbar). AGS aus BKG VG250.
 
 | Rang | Ort | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|---|
