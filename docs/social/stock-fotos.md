@@ -865,7 +865,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 856 | Oerlinghausen | 05766056 | – | – | kein Bild gefunden | – |
 | 858 | Leopoldshöhe | 05766048 | – | – | kein Bild gefunden | – |
 | 860 | Finnentrop | 05966012 | – | – | kein Bild gefunden | – |
-| 861 | Kamenz | 14625250 | – | – | kein Bild gefunden | – |
+| 861 | Kamenz | 14625250 | 7412040 | https://pixabay.com/de/photos/kamenz-kirche-architektur-7412040/ | Pixabay-Lizenz; Kirche in Kamenz (Schlagwörter: Kamenz, Kirche, Architektur) | 8 |
 | 863 | Marktredwitz | 09479136 | – | – | kein Bild gefunden | – |
 | 864 | Eltville am Rhein | 06439003 | 1159039 | https://pixabay.com/photos/rheingau-eltville-flood-1159039/ | Pixabay-Lizenz, Rheingau Eltville, Hochwasser am Rhein | 6 |
 | 867 | Künzell | 06631017 | – | – | kein Bild gefunden | – |
@@ -880,7 +880,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 876 | Heidenau | 14628160 | – | – | kein Bild gefunden | – |
 | 877 | Hövelhof | 05774024 | – | – | kein Bild gefunden | – |
 | 879 | Bad Bentheim | 03456001 | 1587946 | https://pixabay.com/de/burg-bentheim-pulverturm-bergfried-1587946 | Pixabay-Lizenz, Burg Bentheim | 7 |
-| 880 | Bruckmühl | 09187122 | – | – | kein Bild gefunden | – |
+| 880 | Bruckmühl | 09187122 | 2714310 | https://pixabay.com/de/photos/fluss-bruckm%C3%BChl-mangfall-ufer-2714310/ | Pixabay-Lizenz; Mangfall-Ufer mit Deich bei Bruckmühl (Schlagwörter: Fluss, Bruckmühl, Mangfall, Ufer, Deich) | 7 |
 | 881 | Altena | 05962004 | 6014053 | https://pixabay.com/photos/flower-nature-altena-rose-6014053/ | Pixabay-Lizenz, Blume, Ortsbezug nur Schlagwort | 3 |
 | 882 | Eppelborn | 10043111 | – | – | kein Bild gefunden | – |
 | 883 | Bitburg | 07232018 | – | – | kein Bild gefunden | – |
@@ -936,7 +936,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 961 | Beckingen | 10042111 | – | – | kein Bild gefunden | – |
 | 962 | Alsfeld | 06535001 | – | – | kein Bild gefunden | – |
 | 963 | Michelstadt | 06437011 | – | – | kein Bild gefunden | – |
-| 964 | Marbach am Neckar | 08118049 | – | – | kein Bild gefunden | – |
+| 964 | Marbach am Neckar | 08118049 | 4107493 | https://pixabay.com/de/photos/neckar-marbach-schiller-deutschland-4107493/ | Pixabay-Lizenz; Neckar und Marbach (Schiller-Stadt), Stadtansicht | 7 |
 | 967 | Bad Bramstedt | 01060004 | – | – | kein Bild gefunden | – |
 | 969 | Königslutter am Elm | 03154013 | – | – | kein Bild gefunden | – |
 | 971 | Altdorf b.Nürnberg | 09574112 | – | – | kein Bild gefunden | – |
