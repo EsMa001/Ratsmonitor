@@ -1156,10 +1156,10 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1267 | Emstek | 03453005 | – | – | noch nicht gesucht | – |
 | 1268 | Gaimersheim | 09176126 | – | – | noch nicht gesucht | – |
 | 1269 | Fuldatal | 06633009 | – | – | noch nicht gesucht | – |
-| 1270 | Hersbruck | 09574132 | – | – | noch nicht gesucht | – |
+| 1270 | Hersbruck | 09574132 | 3112386 | https://pixabay.com/de/photos/altstadt-rathaus-marktplatz-3112386/ | Pixabay-Lizenz; Altstadt, Rathaus, Marktplatz (Ortsbezug nur aus der Suchtreffer-Zuordnung, Titel nennt Hersbruck nicht) | 6 |
 | 1271 | Ihlow | 03452012 | – | – | noch nicht gesucht | – |
-| 1272 | Bad Windsheim | 09575112 | – | – | noch nicht gesucht | – |
-| 1274 | Edemissen | 03157001 | – | – | noch nicht gesucht | – |
+| 1272 | Bad Windsheim | 09575112 | 2261953 | https://pixabay.com/de/photos/museum-freilandmuseum-franken-2261953/ | Pixabay-Lizenz; Fränkisches Freilandmuseum (Titel nennt Bad Windsheim nicht; es gibt auch andere Freilandmuseen in Franken) | 5 |
+| 1274 | Edemissen | 03157001 | 105453 | https://pixabay.com/pl/photos/edemissen-historyczny-dom-105453/ | Pixabay-Lizenz; historisches Fachwerkhaus, Tag "Edemissen" | 6 |
 | 1277 | Hessisch Lichtenau | 06636006 | – | – | noch nicht gesucht | – |
 | 1278 | Graben-Neudorf | 08215099 | – | – | noch nicht gesucht | – |
 | 1279 | Bad Wünnenberg | 05774040 | – | – | noch nicht gesucht | – |
@@ -1177,11 +1177,11 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1297 | Besigheim | 08118007 | 579853 | https://pixabay.com/photos/besigheim-historic-center-flow-579853/ | Pixabay-Lizenz; historische Häuser am Fluss (Alternative: 1581184, Altstadt mit Burg) | 8 |
 | 1300 | Oftersheim | 08226062 | – | – | noch nicht gesucht | – |
 | 1302 | Frohburg | 14729140 | – | – | noch nicht gesucht | – |
-| 1303 | Havixbeck | 05558020 | – | – | noch nicht gesucht | – |
+| 1303 | Havixbeck | 05558020 | 6990719 | https://pixabay.com/de/photos/schloss-h%C3%BClshoff-schloss-havixbeck-6990719/ | Pixabay-Lizenz; Schloss/Burg Hülshoff (Wasserburg in Havixbeck), Titel nennt Havixbeck | 8 |
 | 1304 | Ebersberg | 09175115 | 7267700 | https://pixabay.com/photos/alpine-foothills-village-ebersberg-7267700/ | Pixabay-Lizenz; Ort im Alpenvorland (Alternative: 6565051, Kirchturm) | 6 |
 | 1305 | Leutenbach | 08119042 | – | – | noch nicht gesucht | – |
 | 1306 | Meitingen | 09772177 | – | – | noch nicht gesucht | – |
-| 1307 | Bad Sassendorf | 05974008 | – | – | noch nicht gesucht | – |
+| 1307 | Bad Sassendorf | 05974008 | 2406127 | https://pixabay.com/photos/bad-sassendorf-spa-saline-2406127/ | Pixabay-Lizenz; Kurort/Saline (Gradierwerk), Titel nennt Bad Sassendorf | 8 |
 | 1308 | Kronshagen | 01058092 | – | – | noch nicht gesucht | – |
 | 1309 | Perleberg | 12070296 | – | – | noch nicht gesucht | – |
 | 1310 | Ludwigslust | 13076090 | 607718 | https://pixabay.com/photos/castle-ludwigslust-park-fixed-607718/ | Pixabay-Lizenz; Schloss Ludwigslust mit Park (Alternative: 1562957, Statuen am Schloss) | 8 |
