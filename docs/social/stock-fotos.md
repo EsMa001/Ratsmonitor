@@ -1629,7 +1629,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Laubach | Hessen | 06531010 | – | – | noch nicht gesucht | – |
 | Lauchheim | BW | 08136038 | – | – | noch nicht gesucht | – |
 | Laufen | Bayern | 09172122 | – | – | noch nicht gesucht | – |
-| Laufenburg (Baden) | BW | 08337066 | – | – | noch nicht gesucht | – |
+| Laufenburg (Baden) | BW | 08337066 | 256417 | https://pixabay.com/de/photos/laufenburg-rheinbr%C3%BCcke-steinbr%C3%BCcke-256417/ | Pixabay-Lizenz; Rheinbrücke (Steinbrücke) Laufenburg. Der Ort liegt am Rhein und die Brücke verbindet Laufenburg (Baden) mit der Schweizer Seite. Das Bundesland steht nicht im Titel. | 7 |
 | Lauscha | Thüringen | 16072011 | – | – | noch nicht gesucht | – |
 | Lauta | Sachsen | 14625310 | – | – | noch nicht gesucht | – |
 | Lauter-Bernsbach | Sachsen | 14521355 | – | – | noch nicht gesucht | – |
@@ -1650,7 +1650,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Lucka | Thüringen | 16077028 | – | – | noch nicht gesucht | – |
 | Luckau | Brandenburg | 12061320 | – | – | noch nicht gesucht | – |
 | Ludwigsstadt | Bayern | 09476152 | – | – | noch nicht gesucht | – |
-| Lunzenau | Sachsen | 14522350 | – | – | noch nicht gesucht | – |
+| Lunzenau | Sachsen | 14522350 | 7369322 | https://pixabay.com/de/photos/g%C3%B6hrener-viadukt-br%C3%BCcke-7369322/ | Pixabay-Lizenz; Göhrener Viadukt über die Zwickauer Mulde. Göhren ist ein Ortsteil von Lunzenau (aus dem Ortswissen ergänzt, nicht aus dem Treffer). Ortsname Lunzenau steht nicht im Titel. | 5 |
 | Lychen | Brandenburg | 12073384 | – | – | noch nicht gesucht | – |
 | Löffingen | BW | 08315070 | – | – | noch nicht gesucht | – |
 | Löwenstein | BW | 08125059 | – | – | noch nicht gesucht | – |
@@ -1665,8 +1665,8 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Marienmünster | NRW | 05762024 | – | – | noch nicht gesucht | – |
 | Markneukirchen | Sachsen | 14523200 | – | – | noch nicht gesucht | – |
 | Marktleuthen | Bayern | 09479135 | – | – | noch nicht gesucht | – |
-| Marlow | Mecklenburg-Vorpommern | 13073055 | – | – | noch nicht gesucht | – |
-| Maulbronn | BW | 08236038 | – | – | noch nicht gesucht | – |
+| Marlow | Mecklenburg-Vorpommern | 13073055 | 3434297 | https://pixabay.com/de/photos/vogelpark-marlow-natur-sittich-3434297/ | Pixabay-Lizenz; Sittich im Vogelpark Marlow. Der Park ist das Wahrzeichen, das Foto zeigt aber nur ein Tier und keine Stadtansicht. | 5 |
+| Maulbronn | BW | 08236038 | 2104354 | https://pixabay.com/de/photos/gew%C3%B6lbe-kloster-maulbronn-2104354/ | Pixabay-Lizenz; Gewölbe im Kloster Maulbronn (Innenaufnahme). | 6 |
 | Medebach | NRW | 05958028 | – | – | noch nicht gesucht | – |
 | Meersburg | BW | 08435036 | – | – | noch nicht gesucht | – |
 | Merkendorf | Bayern | 09571177 | – | – | noch nicht gesucht | – |
