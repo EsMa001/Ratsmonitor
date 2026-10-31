@@ -653,7 +653,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 602 | Burg bei Magdeburg | 15086015 | – | – | kein Bild gefunden | – |
 | 603 | Rotenburg (Wümme) | 03357039 | 2538981 | https://pixabay.com/da/photos/bullensee-rotenburg-w%C3%BCmme-2538981/ | Pixabay-Lizenz, Bullensee | 5 |
 | 604 | Stadthagen | 03257035 | 540567 | https://pixabay.com/photos/stadthagen-lower-saxony-540567/ | Pixabay-Lizenz, Schlosshof | 7 |
-| 605 | Lutherstadt Eisleben | 15087130 | – | – | kein Bild gefunden | – |
+| 605 | Lutherstadt Eisleben | 15087130 | 2243744 | https://pixabay.com/photos/lutherstadt-eisleben-saxony-anhalt-2243744/ | Pixabay-Lizenz; Marktplatz mit Lutherdenkmal (Titel "Market square with Martin Luther monument", URL nennt Lutherstadt Eisleben, Sachsen-Anhalt) | 8 |
 | 606 | Büdingen | 06440004 | 350676 | https://pixabay.com/photos/b%C3%BCdingen-jerusalem-gate-fortress-350676/ | Pixabay-Lizenz, Jerusalemer Tor | 7 |
 | 607 | Haar | 09184123 | – | – | kein Bild gefunden | – |
 | 608 | Metzingen | 08415050 | – | – | kein Bild gefunden | – |
@@ -682,14 +682,14 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 631 | Eislingen/Fils | 08117019 | – | – | kein Bild gefunden | – |
 | 632 | Hockenheim | 08226032 | 836245 | https://pixabay.com/photos/water-tower-hockenheim-germany-836245/ | Pixabay-Lizenz, Wasserturm | 6 |
 | 633 | Bad Harzburg | 03153002 | 3020001 | https://pixabay.com/de/photos/waldwipfelpfad-harz-bad-harzburg-3020001/ | Pixabay-Lizenz, Waldwipfelpfad | 7 |
-| 634 | Mühldorf am Inn | 09183128 | – | – | kein Bild gefunden | – |
+| 634 | Mühldorf am Inn | 09183128 | 2644357 | https://pixabay.com/de/photos/stadt-m%C3%BChldorf-stadtplatz-h%C3%A4user-2644357/ | Pixabay-Lizenz; Stadtplatz mit Häuserzeile (Fotograf kizemu; Tags "Stadt, Mühldorf, Stadtplatz, Häuser") | 8 |
 | 635 | Geseke | 05974020 | – | – | kein Bild gefunden | – |
 | 636 | Bad Krozingen | 08315006 | – | – | kein Bild gefunden | – |
 | 637 | Westoverledingen | 03457022 | – | – | kein Bild gefunden | – |
 | 638 | Lindlar | 05374020 | 2687036 | https://pixabay.com/de/photos/burg-ruine-wasserburg-mittelalter-2687036/ | Pixabay-Lizenz, Burgruine, Ortsbezug unklar | 3 |
-| 639 | Spremberg | 12071372 | – | – | kein Bild gefunden | – |
+| 639 | Spremberg | 12071372 | 1754158 | https://pixabay.com/de/photos/deutschland-spremberg-bismarkturm-1754158/ | Pixabay-Lizenz; Bismarckturm Spremberg (Fotograf neufal54; Titel "Deutschland, Spremberg, Bismarkturm") | 6 |
 | 640 | Xanten | 05170052 | 2424098 | https://pixabay.com/photos/city-cityscape-xanten-germany-2424098/ | Pixabay-Lizenz, Park und Dom | 8 |
-| 641 | Seligenstadt | 06438013 | – | – | kein Bild gefunden | – |
+| 641 | Seligenstadt | 06438013 | 3713929 | https://pixabay.com/de/photos/seligenstadt-kloster-basilika-3713929/ | Pixabay-Lizenz; Kloster und Basilika (Fotograf moritz320; Tags "Seligenstadt, Kloster, Basilika") | 8 |
 | 642 | Stadtallendorf | 06534018 | – | – | kein Bild gefunden | – |
 | 643 | Zerbst | 15082430 | 5118088 | https://pixabay.com/fr/photos/zerbst-roland-saxe-anhalt-anhalt-5118088/ | Pixabay-Lizenz, Roland von Zerbst | 7 |
 | 644 | Eckernförde | 01058043 | 2392657 | https://pixabay.com/photos/eckernf%c3%b6rde-the-outer-harbor-2392657/ | Pixabay-Lizenz, Außenhafen | 7 |
@@ -702,7 +702,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 651 | Puchheim | 09179145 | – | – | kein Bild gefunden | – |
 | 652 | Sondershausen | 16065067 | 1578214 | https://pixabay.com/de/photos/f%C3%B6rderturm-sondershausen-bergwerk-1578214/ | Pixabay-Lizenz, Förderturm Bergwerk | 7 |
 | 653 | Gauting | 09188120 | – | – | kein Bild gefunden | – |
-| 654 | Waren (Müritz) | 13071156 | – | – | kein Bild gefunden | – |
+| 654 | Waren (Müritz) | 13071156 | 4663076 | https://pixabay.com/de/photos/waren-m%C3%BCritz-stadthafen-4663076/ | Pixabay-Lizenz; Stadthafen (Fotograf UweWaren; Titel "Waren Müritz, Stadthafen") | 7 |
 | 655 | Traunstein | 09189155 | – | – | kein Bild gefunden (Treffer zeigen den Berg in Österreich) | – |
 | 656 | Wildeshausen | 03458014 | – | – | kein Bild gefunden | – |
 | 657 | Schramberg | 08325053 | – | – | kein Bild gefunden | – |
