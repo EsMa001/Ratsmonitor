@@ -85,12 +85,17 @@ def build_cfg(sheet, out):
         if sheet['betraege'] and not bars_on:
             e, hh = count_el(sheet['betraege'][0]['text'], MX - 4, y, 0.5); els.append(e); y += hh + 30; sfx.append((0.5, 'hit')); punch.append(0.5)
         parts = split_quote(text) or (text, '', '')
-        sizes = [(120, INK), (96, PET), (60, GRAY2)] if split_quote(text) else [(76, INK)]
-        k0 = 0
+        sizes = [(150, INK), (124, PET), (72, GRAY2)] if split_quote(text) else [(92, INK)]
+        plan = []
         for (sz, col), p in zip(sizes, parts):
             if not p: continue
             pos, hgt = layout(p, sz)
-            while hgt > 620 and sz > 48: sz -= 6; pos, hgt = layout(p, sz)
+            while hgt > 560 and sz > 48: sz -= 6; pos, hgt = layout(p, sz)
+            plan.append((sz, col, pos, hgt))
+        used = sum(h_ + 24 for _, _, _, h_ in plan) + 110
+        y = max(y, 430 + (1340 - 430 - used) // 2 + (y - 450))  # Block mittig zwischen Kopfzeile und Unterkante
+        k0 = 0
+        for sz, col, pos, hgt in plan:
             for n, (wd, x, dy, w) in enumerate(pos):
                 im = b.text_block(wd, sz, 'S', col, maxw=int(w) + sz, tr_em=-0.03, lh=1.0)
                 tw = max(times[min(k0 + n, len(times) - 1)] - 0.05, 0.3)
@@ -134,11 +139,11 @@ def build_cfg(sheet, out):
     def verlauf(wt):  # Szene 3: Zeitleiste der Sitzungen (Punkte, wachsende Linie)
         h = V_.big('Bisheriger Verlauf:', 74, INK, maxw=CW, w='S', tr=-0.02, lh=1.05)
         els = V_.chips(cfg) + [V_.E(h, MX, 360, 0.3, dur=0.6, slide=0)]
-        y, tprev, prev_c = 540, 0.0, None; sfx, punch = [], []
+        y, tprev, prev_c = 560 + max(0, 3 - len(sheet['verlauf'])) * 90, 0.0, None; sfx, punch = [], []
         rows = sheet['verlauf']; D = 60; cx = MX + D // 2
         for k, v in enumerate(rows):
-            l1 = V_.big(f"{v['datum']} · {v['committee']}", 58, INK, maxw=CW - 130, lh=1.05, tr=-0.02)
-            l2 = b.text_block(v['result'], 52, 'R', GRAY2, maxw=CW - 130) if v['result'] else None
+            l1 = V_.big(f"{v['datum']} · {v['committee']}", 64, INK, maxw=CW - 130, lh=1.05, tr=-0.02)
+            l2 = b.text_block(v['result'], 58, 'R', GRAY2, maxw=CW - 130) if v['result'] else None
             hgt = max(D, l1.height + (l2.height + 10 if l2 else 0))
             tt = max(V_.find(wt, v['spokenDay'][:6], 1.5) - 0.3, 0.5, tprev + 0.8)
             if k == len(rows) - 1: tt = max(tt, V_.CUR_DUR - 4.0)
@@ -146,8 +151,8 @@ def build_cfg(sheet, out):
             if prev_c is not None: els.append(grow_line(cx - 4, prev_c, y + D // 2, tt - 0.5))
             els += [V_.slam(dot(D, PET if k == len(rows) - 1 else GRAY2), MX, y, tt, 0.3, 0.3), V_.E(l1, MX + 100, y, tt + 0.2, dur=0.4, slide=0)]
             if l2: els.append(V_.E(l2, MX + 100, y + l1.height + 10, tt + 0.2, dur=0.4, slide=0))
-            prev_c = y + D // 2; y += hgt + 90
-        print('AUTO_B_END', y - 90, flush=True)
+            prev_c = y + D // 2; y += hgt + 130
+        print('AUTO_B_END', y - 130, flush=True)
         return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None, sfx=sfx, punch=punch)
 
     cfg = dict(source=sheet['quelle'], ort=sheet['ort'], out=out, ticker='', icon=sheet['themaIcon'], status=st['icon'], stamp=st['stamp'], stampcol=stampcol, ssize=160,
