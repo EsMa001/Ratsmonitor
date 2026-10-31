@@ -2082,15 +2082,15 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Alfdorf | Baden-Württemberg | 08119001 | – | – | noch nicht gesucht | – |
 | Alheim | Hessen | 06632001 | – | – | noch nicht gesucht | – |
 | Allendorf (Eder) | Hessen | 06635001 | – | – | noch nicht gesucht | – |
-| Allensbach | Baden-Württemberg | 08335002 | – | – | noch nicht gesucht | – |
+| Allensbach | Baden-Württemberg | 08335002 | 4433429 | https://pixabay.com/de/photos/allensbach-bodensee-steg-hafen-4433429/ | Pixabay-Lizenz; Steg und Hafen am Bodensee | 8 |
 | Allersberg | Bayern | 09576113 | – | – | noch nicht gesucht | – |
 | Alleshausen | Baden-Württemberg | 08426005 | – | – | noch nicht gesucht | – |
 | Alling | Bayern | 09179113 | – | – | noch nicht gesucht | – |
 | Allmannsweiler | Baden-Württemberg | 08426006 | – | – | noch nicht gesucht | – |
 | Allmendingen | Baden-Württemberg | 08425002 | – | – | noch nicht gesucht | – |
 | Allmersbach im Tal | Baden-Württemberg | 08119003 | – | – | noch nicht gesucht | – |
-| Alsbach-Hähnlein | Hessen | 06432001 | – | – | noch nicht gesucht | – |
-| Altbach | Baden-Württemberg | 08116004 | – | – | noch nicht gesucht | – |
+| Alsbach-Hähnlein | Hessen | 06432001 | 2530120 | https://pixabay.com/photos/castle-alsbach-mountain-road-hesse-2530120/ | Pixabay-Lizenz; Schloss Alsbach, Hessen (Ortsteil Alsbach) | 7 |
+| Altbach | Baden-Württemberg | 08116004 | 3381326 | https://pixabay.com/photos/village-church-altbach-neckar-3381326/ | Pixabay-Lizenz; Dorfkirche Altbach am Neckar | 7 |
 | Altdorf | Baden-Württemberg | 08115002 | – | – | noch nicht gesucht | – |
 | Altdorf | Baden-Württemberg | 08116005 | – | – | noch nicht gesucht | – |
 | Altdorf | Bayern | 09274113 | – | – | noch nicht gesucht | – |
@@ -2122,7 +2122,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Amt Wachsenburg | Thüringen | 16070028 | – | – | noch nicht gesucht | – |
 | Amtsberg | Sachsen | 14521010 | – | – | noch nicht gesucht | – |
 | Amtzell | Baden-Württemberg | 08436006 | – | – | noch nicht gesucht | – |
-| Andechs | Bayern | 09188117 | – | – | noch nicht gesucht | – |
+| Andechs | Bayern | 09188117 | 7345050 | https://pixabay.com/de/photos/andechs-kloster-kloster-andechs-7345050/ | Pixabay-Lizenz; Kloster Andechs | 8 |
 | Angelbachtal | Baden-Württemberg | 08226102 | – | – | noch nicht gesucht | – |
 | Angelburg | Hessen | 06534002 | – | – | noch nicht gesucht | – |
 | Anger | Bayern | 09172112 | – | – | noch nicht gesucht | – |
@@ -2138,12 +2138,12 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Arrach | Bayern | 09372113 | – | – | noch nicht gesucht | – |
 | Asbach-Bäumenheim | Bayern | 09779115 | – | – | noch nicht gesucht | – |
 | Aschau a.Inn | Bayern | 09183113 | – | – | noch nicht gesucht | – |
-| Aschau i.Chiemgau | Bayern | 09187114 | – | – | noch nicht gesucht | – |
+| Aschau i.Chiemgau | Bayern | 09187114 | 49899 | https://pixabay.com/de/photos/kampenwand-chiemgau-aschau-berg-49899/ | Pixabay-Lizenz; Kampenwand bei Aschau im Chiemgau (Berg) | 8 |
 | Ascheberg (Holstein) | Schleswig-Holstein | 01057001 | – | – | noch nicht gesucht | – |
-| Aschheim | Bayern | 09184112 | – | – | noch nicht gesucht | – |
+| Aschheim | Bayern | 09184112 | 5357472 | https://pixabay.com/de/photos/wirecard-it-aschheim-b%C3%B6rse-aktie-5357472/ | Pixabay-Lizenz; Wirecard-Firmensitz in Aschheim (Gebäude) | 6 |
 | Aspach | Baden-Württemberg | 08119087 | – | – | noch nicht gesucht | – |
 | Assamstadt | Baden-Württemberg | 08128006 | – | – | noch nicht gesucht | – |
-| Asselfingen | Baden-Württemberg | 08425011 | – | – | noch nicht gesucht | – |
+| Asselfingen | Baden-Württemberg | 08425011 | 95198 | https://pixabay.com/de/photos/hohlenstein-h%C3%B6hlenportal-stadelh%C3%B6hle-95198/ | Pixabay-Lizenz; Hohlenstein-Stadel, Höhlenportal (Stadelhöhle) | 5 |
 | Attenweiler | Baden-Württemberg | 08426011 | – | – | noch nicht gesucht | – |
 | Au | Baden-Württemberg | 08315003 | – | – | noch nicht gesucht | – |
 | Au am Rhein | Baden-Württemberg | 08216002 | – | – | noch nicht gesucht | – |
