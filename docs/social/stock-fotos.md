@@ -2000,7 +2000,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Wiesensteig | BW | 08117058 | – | – | noch nicht gesucht | – |
 | Wiesmoor | Niedersachsen | 03452025 | – | – | noch nicht gesucht | – |
 | Wildau | Brandenburg | 12061540 | – | – | noch nicht gesucht | – |
-| Wildberg | BW | 08235080 | – | – | noch nicht gesucht | – |
+| Wildberg | BW | 08235080 | 27421503 | https://www.pexels.com/photo/wildberg-in-the-black-forest-germany-27421503/ | Pexels-Lizenz; Wildberg im Schwarzwald (BW) | 7 |
 | Wildenfels | Sachsen | 14524310 | – | – | noch nicht gesucht | – |
 | Wilkau-Haßlau | Sachsen | 14524320 | – | – | noch nicht gesucht | – |
 | Willebadessen | NRW | 05762040 | – | – | noch nicht gesucht | – |
@@ -2017,14 +2017,14 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Wittstock/Dosse | Brandenburg | 12068468 | – | – | noch nicht gesucht | – |
 | Witzenhausen | Hessen | 06636016 | – | – | noch nicht gesucht | – |
 | Wolfach | BW | 08317145 | – | – | noch nicht gesucht | – |
-| Wolfhagen | Hessen | 06633028 | – | – | noch nicht gesucht | – |
+| Wolfhagen | Hessen | 06633028 | 2799484 | https://pixabay.com/photos/church-evangelical-wolf-hagen-tower-2799484/ | Pixabay-Lizenz; evangelische Kirche, Turm | 6 |
 | Wolfratshausen | Bayern | 09173147 | – | – | noch nicht gesucht | – |
 | Wolkenstein | Sachsen | 14521670 | – | – | noch nicht gesucht | – |
 | Wolmirstedt | Sachsen-Anhalt | 15083565 | – | – | noch nicht gesucht | – |
 | Wriezen | Brandenburg | 12064512 | – | – | noch nicht gesucht | – |
-| Wunsiedel | Bayern | 09479169 | – | – | noch nicht gesucht | – |
+| Wunsiedel | Bayern | 09479169 | 30069336 | https://www.pexels.com/photo/snow-covered-alpine-forest-in-wunsiedel-germany-30069336/ | Pexels-Lizenz; verschneiter Wald bei Wunsiedel | 5 |
 | Wurzbach | Thüringen | 16075133 | – | – | noch nicht gesucht | – |
-| Wurzen | Sachsen | 14729410 | – | – | noch nicht gesucht | – |
+| Wurzen | Sachsen | 14729410 | 406251 | https://pixabay.com/photos/church-heaven-locality-wurzen-406251/ | Pixabay-Lizenz; Kirche mit Himmel | 6 |
 | Wächtersbach | Hessen | 06435029 | – | – | noch nicht gesucht | – |
 | Wörth a.Main | Bayern | 09676169 | – | – | noch nicht gesucht | – |
 | Wörth am Rhein | Rheinland-Pfalz | 07334501 | – | – | noch nicht gesucht | – |
