@@ -55,7 +55,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 23 | Augsburg | 09761000 | – | – | kein Bild gefunden | – |
 | 24 | Wiesbaden | 06414000 | 18883666 | https://www.pexels.com/photo/fountain-in-front-of-the-kurhaus-wiesbaden-in-germany-18883666/ | Pexels-Lizenz, Kurhaus | 8 |
 | 25 | Mönchengladbach | 05116000 | – | – | kein Bild gefunden | – |
-| 26 | Gelsenkirchen | 05513000 | – | – | kein Bild gefunden | – |
+| 26 | Gelsenkirchen | 05513000 | 1846803 | https://pixabay.com/de/photos/gelsenkirchen-rhein-herne-kanal-1846803/ | Pixabay-Lizenz, Rhein-Herne-Kanal, kein Wahrzeichen | 4 |
 | 27 | Aachen | 05334002 | 2693287 | https://pixabay.com/photos/aachen-dom-treasury-gold-religion-2693287/ | Pixabay-Lizenz, Domschatz (Innenmotiv, kein Stadtbild) | 5 |
 | 28 | Braunschweig | 03101000 | 3730275 | https://pixabay.com/de/photos/braunschweig-burgplatz-l%c3%b6we-3730275/ | Pixabay-Lizenz, Burgplatz mit Löwe | 7 |
 | 29 | Kiel | 01002000 | GVgUGaG2eG4 | https://unsplash.com/photos/GVgUGaG2eG4 | Unsplash-Lizenz, Titel "Free Kiel Image", Motiv unbekannt | 4 |
@@ -63,7 +63,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 31 | Halle (Saale) | 15002000 | 2348421 | https://pixabay.com/de/photos/halle-halle-saale-marktplatz-2348421/ | Pixabay-Lizenz, Marktplatz mit Kirchtürmen | 7 |
 | 32 | Magdeburg | 15003000 | 3912864 | https://pixabay.com/photos/saxony-anhalt-dom-magdeburg-3912864/ | Pixabay-Lizenz, Dom | 6 |
 | 33 | Freiburg im Breisgau | 08311000 | 12476350 | https://www.pexels.com/photo/freiburger-munster-12476350/ | Pexels-Lizenz, Freiburger Münster | 7 |
-| 34 | Krefeld | 05114000 | – | – | kein Bild gefunden | – |
+| 34 | Krefeld | 05114000 | 1218793 | https://pixabay.com/de/photos/burg-krefeld-linn-deutschland-1218793/ | Pixabay-Lizenz, Burg Linn | 8 |
 | 35 | Mainz | 07315000 | 1720867 | https://pixabay.com/photos/mainzer-cathedral-mainz-dom-church-1720867/ | Pixabay-Lizenz, Dom | 7 |
 | 36 | Lübeck | 01003000 | N0VGTiagj_M | https://unsplash.com/photos/a-large-building-with-pointy-towers-with-holstentor-in-the-background-N0VGTiagj_M | Unsplash-Lizenz, Holstentor | 8 |
 | 37 | Erfurt | 16051000 | 2368028 | https://pixabay.com/de/photos/kr%C3%A4merbr%C3%BCcke-erfurt-th%C3%BCringen-2368028/ | Pixabay-Lizenz, Krämerbrücke | 7 |
@@ -78,13 +78,13 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 46 | Mülheim an der Ruhr | 05117000 | 5295799 | https://pixabay.com/de/photos/turm-rathaus-m%C3%BClheim-ruhr-fluss-5295799/ | Pixabay-Lizenz, Rathausturm an der Ruhr | 7 |
 | 47 | Oldenburg | 03403000 | 6711383 | https://pixabay.com/photos/oldenburg-palace-park-path-palace-6711383/ | Pixabay-Lizenz, Schloss/Schlosspark | 6 |
 | 48 | Osnabrück | 03404000 | – | – | kein Bild gefunden | – |
-| 49 | Leverkusen | 05316000 | – | – | kein Bild gefunden | – |
+| 49 | Leverkusen | 05316000 | 1286419 | https://pixabay.com/photos/bridge-line-curves-building-1286419/ | Pixabay-Lizenz, Brücke in Leverkusen, Ortsbezug im Text | 5 |
 | 50 | Darmstadt | 06411000 | 27951815 | https://www.pexels.com/photo/residential-palace-darmstadt-27951815/ | Pexels-Lizenz, Residenzschloss | 7 |
 | 51 | Heidelberg | 08221000 | wzAfU7fws6Y | https://unsplash.com/photos/heidelberg-germany-seen-from-above-wzAfU7fws6Y | Unsplash-Lizenz, Heidelberg von oben | 8 |
 | 52 | Solingen | 05122000 | 1131154 | https://pixabay.com/photos/solingen-m%c3%bcngstener-bridge-bridge-1131154/ | Pixabay-Lizenz, Müngstener Brücke (an der Stadtgrenze zu Remscheid) | 6 |
 | 53 | Herne | 05916000 | – | – | kein Bild gefunden | – |
 | 54 | Regensburg | 09362000 | VMtdAWqzE5g | https://unsplash.com/photos/a-river-with-regensburg-and-buildings-along-it-VMtdAWqzE5g | Unsplash-Lizenz, Donau mit Altstadt | 8 |
-| 55 | Neuss | 05162024 | – | – | kein Bild gefunden | – |
+| 55 | Neuss | 05162024 | 645026 | https://pixabay.com/photos/neuss-town-hall-architecture-645026/ | Pixabay-Lizenz, Rathaus-Innenhof | 6 |
 | 56 | Paderborn | 05774032 | 97832 | https://pixabay.com/photos/paderborn-germany-neuhaus-schloss-97832/ | Pixabay-Lizenz, Schloss Neuhaus; Dom/Rathaus nicht gefunden | 5 |
 | 57 | Ingolstadt | 09161000 | 2750012 | https://pixabay.com/photos/ingolstadt-bavaria-street-germany-2750012/ | Pixabay-Lizenz, ca. 2017, Straßenszene, Motiv unklar | 4 |
 | 58 | Offenbach am Main | 06413000 | – | – | kein Bild gefunden | – |
@@ -96,13 +96,13 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 64 | Wolfsburg | 03103000 | 1104122 | https://pixabay.com/photos/autostadt-wolfsburg-wolfsburg-1104122/ | Pixabay-Lizenz, ca. 2016, Autostadt; Markenbezug möglich | 7 |
 | 65 | Bottrop | 05512000 | 115786 | https://pixabay.com/de/photos/tetraeder-bottrop-ruhrgebiet-kunst-115786/ | Pixabay-Lizenz, älteres Bild, Tetraeder auf der Halde | 7 |
 | 66 | Göttingen | 03159016 | 1269450 | https://pixabay.com/photos/g%C3%B6ttingen-skyline-city-germany-1269450/ | Pixabay-Lizenz, ca. 2016, Luftbild der Altstadt | 6 |
-| 67 | Reutlingen | 08415061 | – | – | kein Bild gefunden | – |
+| 67 | Reutlingen | 08415061 | 865 | https://pixabay.com/photos/spreuerhofstrasse-865/ | Pixabay-Lizenz, Spreuerhofstraße (schmalste Gasse) | 7 |
 | 68 | Koblenz | 07111000 | 708804 | https://pixabay.com/photos/koblenz-ehrenbreitstein-fortress-708804/ | Pixabay-Lizenz, ca. 2015, Deutsches Eck mit Festung Ehrenbreitstein | 8 |
 | 69 | Erlangen | 09562000 | 350237 | https://pixabay.com/photos/margravial-castle-gain-bavaria-city-350237/ | Pixabay-Lizenz, ca. 2014, Markgrafenschloss; Titel nennt Erlangen nicht | 6 |
 | 70 | Bremerhaven | 04012000 | 7034882 | https://pixabay.com/de/photos/bremerhaven-hafen-stadt-bremen-7034882/ | Pixabay-Lizenz, ca. 2022, Hafen | 6 |
-| 71 | Remscheid | 05120000 | – | – | kein Bild gefunden | – |
+| 71 | Remscheid | 05120000 | 4923172 | https://pixabay.com/photos/remscheid-lennep-hasenberg-panorama-4923172/ | Pixabay-Lizenz, Panorama Remscheid-Lennep | 5 |
 | 72 | Bergisch Gladbach | 05378004 | 4933565 | https://pixabay.com/photos/castle-historical-schloss-bensberg-4933565/ | Pixabay-Lizenz, Schloss Bensberg (Stadtteil). Alternative mit Stadtname: https://pixabay.com/photos/bergisch-gladbach-pedestrian-zone-4380062/ | 6 |
-| 73 | Recklinghausen | 05562032 | – | – | kein Bild gefunden | – |
+| 73 | Recklinghausen | 05562032 | 1725732 | https://pixabay.com/photos/recklinghausen-evening-atmosphere-1725732/ | Pixabay-Lizenz, Abendstimmung, Motiv nicht verifiziert | 4 |
 | 74 | Trier | 07211000 | 14597797 | https://www.pexels.com/photo/porta-nigra-in-trier-in-germany-14597797/ | Pexels-Lizenz, Porta Nigra | 8 |
 | 75 | Jena | 16053000 | 5072121 | https://pixabay.com/photos/jena-city-center-jentower-5072121/ | Pixabay-Lizenz, Innenstadt mit JenTower | 7 |
 | 76 | Moers | 05170024 | 6008548 | https://pixabay.com/photos/moers-duisburg-ruhr-area-6008548/ | Pixabay-Lizenz, Motiv unklar, kein Wahrzeichen | 3 |
@@ -111,7 +111,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 79 | Gütersloh | 05754008 | – | – | kein Bild gefunden | – |
 | 80 | Hildesheim | 03254021 | 711035 | https://pixabay.com/photos/hildesheim-germany-lower-saxony-711035/ | Pixabay-Lizenz, vermutlich älter, Motiv nur aus Titel geschätzt | 6 |
 | 81+ | Cottbus | 12052000 | 1532766 | https://pixabay.com/de/photos/cottbus-spremberger-turm-1532766/ | Pixabay-Lizenz, vermutlich älter, Spremberger Turm | 7 |
-| 81+ | Hanau | 06435014 | – | – | kein Bild gefunden | – |
+| 81+ | Hanau | 06435014 | 3667216 | https://pixabay.com/photos/old-town-hall-brothers-grimm-hanau-3667216/ | Pixabay-Lizenz, Altes Rathaus mit Brüder-Grimm-Denkmal | 8 |
 | 81+ | Zwickau | 14524330 | – | – | kein Bild gefunden | – |
 | 81+ | Ludwigsburg | 08118048 | wEa511RxpBc | https://unsplash.com/photos/ludwigsburg-palace-near-green-field-and-park-during-daytime-wEa511RxpBc | Unsplash-Lizenz, Residenzschloss mit Park | 8 |
 | 81+ | Esslingen am Neckar | 08116019 | 694249 | https://pixabay.com/photos/esslingen-town-hall-old-town-hall-694249/ | Pixabay-Lizenz, vermutlich älter, Altes Rathaus | 7 |
