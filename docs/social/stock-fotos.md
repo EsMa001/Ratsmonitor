@@ -3047,6 +3047,1005 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Leinzell | Baden-Württemberg | 08136040 | – | – | noch nicht gesucht | – |
 | Lengdorf | Bayern | 09177127 | – | – | noch nicht gesucht | – |
 
+### Weitere Gemeinden (Rang 4000 bis 5000, Rang nicht bekannt)
+
+Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Gemeinden aus der Gebietsliste, alphabetisch.
+
+| Ort | Land | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
+|---|---|---|---|---|---|---|
+| Lenningen | Baden-Württemberg | 08116079 | – | – | noch nicht gesucht | – |
+| Lenting | Bayern | 09176143 | – | – | noch nicht gesucht | – |
+| Lenzkirch | Baden-Württemberg | 08315068 | – | – | noch nicht gesucht | – |
+| Letschin | Brandenburg | 12064274 | – | – | noch nicht gesucht | – |
+| Leubsdorf | Sachsen | 14522320 | – | – | noch nicht gesucht | – |
+| Leutersdorf | Sachsen | 14626280 | – | – | noch nicht gesucht | – |
+| Lichtenau | Bayern | 09571175 | – | – | noch nicht gesucht | – |
+| Lichtenau | Sachsen | 14522330 | – | – | noch nicht gesucht | – |
+| Lichtenstein | Baden-Württemberg | 08415092 | – | – | noch nicht gesucht | – |
+| Lichtentanne | Sachsen | 14524170 | – | – | noch nicht gesucht | – |
+| Lichtenwald | Baden-Württemberg | 08116037 | – | – | noch nicht gesucht | – |
+| Liebschützberg | Sachsen | 14730170 | – | – | noch nicht gesucht | – |
+| Liederbach am Taunus | Hessen | 06436010 | – | – | noch nicht gesucht | – |
+| Limbach | Baden-Württemberg | 08225052 | – | – | noch nicht gesucht | – |
+| Limeshain | Hessen | 06440014 | – | – | noch nicht gesucht | – |
+| Lindberg | Bayern | 09276130 | – | – | noch nicht gesucht | – |
+| Linsengericht | Hessen | 06435018 | – | – | noch nicht gesucht | – |
+| Litzendorf | Bayern | 09471155 | – | – | noch nicht gesucht | – |
+| Lobbach | Baden-Württemberg | 08226104 | – | – | noch nicht gesucht | – |
+| Loffenau | Baden-Württemberg | 08216029 | – | – | noch nicht gesucht | – |
+| Lohberg | Bayern | 09372178 | – | – | noch nicht gesucht | – |
+| Lohra | Hessen | 06534013 | – | – | noch nicht gesucht | – |
+| Lohsa | Sachsen | 14625330 | – | – | noch nicht gesucht | – |
+| Loiching | Bayern | 09279124 | – | – | noch nicht gesucht | – |
+| Lonsee | Baden-Württemberg | 08425075 | – | – | noch nicht gesucht | – |
+| Lossatal | Sachsen | 14729245 | – | – | noch nicht gesucht | – |
+| Lottstetten | Baden-Württemberg | 08337070 | – | – | noch nicht gesucht | – |
+| Loßburg | Baden-Württemberg | 08237045 | – | – | noch nicht gesucht | – |
+| Ludwigsau | Hessen | 06632012 | – | – | noch nicht gesucht | – |
+| Luhe-Wildenau | Bayern | 09374133 | – | – | noch nicht gesucht | – |
+| Lupburg | Bayern | 09373143 | – | – | noch nicht gesucht | – |
+| Löbnitz | Sachsen | 14730180 | – | – | noch nicht gesucht | – |
+| Löchgau | Baden-Württemberg | 08118047 | – | – | noch nicht gesucht | – |
+| Löhnberg | Hessen | 06533010 | – | – | noch nicht gesucht | – |
+| Löwenberger Land | Brandenburg | 12065198 | – | – | noch nicht gesucht | – |
+| Lützelbach | Hessen | 06437010 | – | – | noch nicht gesucht | – |
+| Machern | Sachsen | 14729250 | – | – | noch nicht gesucht | – |
+| Magstadt | Baden-Württemberg | 08115029 | – | – | noch nicht gesucht | – |
+| Mahlstetten | Baden-Württemberg | 08327033 | – | – | noch nicht gesucht | – |
+| Mainaschaff | Bayern | 09671140 | – | – | noch nicht gesucht | – |
+| Mainhardt | Baden-Württemberg | 08127052 | – | – | noch nicht gesucht | – |
+| Mainhausen | Hessen | 06438007 | – | – | noch nicht gesucht | – |
+| Mainleus | Bayern | 09477136 | – | – | noch nicht gesucht | – |
+| Mallersdorf-Pfaffenberg | Bayern | 09278148 | – | – | noch nicht gesucht | – |
+| Malsburg-Marzell | Baden-Württemberg | 08336104 | – | – | noch nicht gesucht | – |
+| Malsch | Baden-Württemberg | 08226046 | – | – | noch nicht gesucht | – |
+| Malschwitz | Sachsen | 14625340 | – | – | noch nicht gesucht | – |
+| Malsfeld | Hessen | 06634013 | – | – | noch nicht gesucht | – |
+| Malterdingen | Baden-Württemberg | 08316024 | – | – | noch nicht gesucht | – |
+| Mantel | Bayern | 09374134 | – | – | noch nicht gesucht | – |
+| March | Baden-Württemberg | 08315132 | – | – | noch nicht gesucht | – |
+| Markersdorf | Sachsen | 14626300 | – | – | noch nicht gesucht | – |
+| Marklkofen | Bayern | 09279126 | – | – | noch nicht gesucht | – |
+| Markt Erlbach | Bayern | 09575145 | – | – | noch nicht gesucht | – |
+| Markt Rettenbach | Bayern | 09778168 | – | – | noch nicht gesucht | – |
+| Markt Wald | Bayern | 09778169 | – | – | noch nicht gesucht | – |
+| Marktrodach | Bayern | 09476183 | – | – | noch nicht gesucht | – |
+| Marktschellenberg | Bayern | 09172124 | – | – | noch nicht gesucht | – |
+| Marktschorgast | Bayern | 09477139 | – | – | noch nicht gesucht | – |
+| Maroldsweisach | Bayern | 09674171 | – | – | noch nicht gesucht | – |
+| Marxheim | Bayern | 09779178 | – | – | noch nicht gesucht | – |
+| Marxzell | Baden-Württemberg | 08215047 | – | – | noch nicht gesucht | – |
+| Marzling | Bayern | 09178140 | – | – | noch nicht gesucht | – |
+| Maselheim | Baden-Württemberg | 08426071 | – | – | noch nicht gesucht | – |
+| Massenbachhausen | Baden-Württemberg | 08125061 | – | – | noch nicht gesucht | – |
+| Masserberg | Thüringen | 16069061 | – | – | noch nicht gesucht | – |
+| Mauer | Baden-Württemberg | 08226048 | – | – | noch nicht gesucht | – |
+| Mauerstetten | Bayern | 09777152 | – | – | noch nicht gesucht | – |
+| Maulburg | Baden-Württemberg | 08336057 | – | – | noch nicht gesucht | – |
+| Mauth | Bayern | 09272134 | – | – | noch nicht gesucht | – |
+| Meckesheim | Baden-Württemberg | 08226049 | – | – | noch nicht gesucht | – |
+| Meeder | Bayern | 09473144 | – | – | noch nicht gesucht | – |
+| Mehlmeisel | Bayern | 09472164 | – | – | noch nicht gesucht | – |
+| Mehrstetten | Baden-Württemberg | 08415048 | – | – | noch nicht gesucht | – |
+| Meinhard | Hessen | 06636007 | – | – | noch nicht gesucht | – |
+| Meißenheim | Baden-Württemberg | 08317075 | – | – | noch nicht gesucht | – |
+| Meißner | Hessen | 06636008 | – | – | noch nicht gesucht | – |
+| Memmelsdorf | Bayern | 09471159 | – | – | noch nicht gesucht | – |
+| Mengerskirchen | Hessen | 06533011 | – | – | noch nicht gesucht | – |
+| Mengkofen | Bayern | 09279127 | – | – | noch nicht gesucht | – |
+| Merching | Bayern | 09771145 | – | – | noch nicht gesucht | – |
+| Merdingen | Baden-Württemberg | 08315072 | – | – | noch nicht gesucht | – |
+| Merenberg | Hessen | 06533012 | – | – | noch nicht gesucht | – |
+| Merklingen | Baden-Württemberg | 08425079 | – | – | noch nicht gesucht | – |
+| Mertingen | Bayern | 09779181 | – | – | noch nicht gesucht | – |
+| Merzhausen | Baden-Württemberg | 08315073 | – | – | noch nicht gesucht | – |
+| Messel | Hessen | 06432012 | – | – | noch nicht gesucht | – |
+| Metten | Bayern | 09271132 | – | – | noch nicht gesucht | – |
+| Mettenheim | Bayern | 09183127 | – | – | noch nicht gesucht | – |
+| Michelau i.OFr. | Bayern | 09478145 | – | – | noch nicht gesucht | – |
+| Michelbach an der Bilz | Baden-Württemberg | 08127056 | – | – | noch nicht gesucht | – |
+| Michelfeld | Baden-Württemberg | 08127059 | – | – | noch nicht gesucht | – |
+| Mietingen | Baden-Württemberg | 08426073 | – | – | noch nicht gesucht | – |
+| Mildenau | Sachsen | 14521400 | – | – | noch nicht gesucht | – |
+| Milower Land | Brandenburg | 12063189 | – | – | noch nicht gesucht | – |
+| Miltach | Bayern | 09372143 | – | – | noch nicht gesucht | – |
+| Mintraching | Bayern | 09375170 | – | – | noch nicht gesucht | – |
+| Mittelbiberach | Baden-Württemberg | 08426074 | – | – | noch nicht gesucht | – |
+| Mittelherwigsdorf | Sachsen | 14626310 | – | – | noch nicht gesucht | – |
+| Mittenaar | Hessen | 06532017 | – | – | noch nicht gesucht | – |
+| Mittenwald | Bayern | 09180123 | – | – | noch nicht gesucht | – |
+| Mitterskirchen | Bayern | 09277134 | – | – | noch nicht gesucht | – |
+| Mockrehna | Sachsen | 14730190 | – | – | noch nicht gesucht | – |
+| Modautal | Hessen | 06432013 | – | – | noch nicht gesucht | – |
+| Mohlsdorf-Teichwolframsdorf | Thüringen | 16076093 | – | – | noch nicht gesucht | – |
+| Moorenweis | Bayern | 09179138 | – | – | noch nicht gesucht | – |
+| Moos | Baden-Württemberg | 08335055 | – | – | noch nicht gesucht | – |
+| Moosbach | Bayern | 09374137 | – | – | noch nicht gesucht | – |
+| Moosburg | Baden-Württemberg | 08426078 | – | – | noch nicht gesucht | – |
+| Moosinning | Bayern | 09177130 | – | – | noch nicht gesucht | – |
+| Moosthenning | Bayern | 09279128 | – | – | noch nicht gesucht | – |
+| Moritzburg | Sachsen | 14627150 | – | – | noch nicht gesucht | – |
+| Morschen | Hessen | 06634015 | – | – | noch nicht gesucht | – |
+| Mossautal | Hessen | 06437012 | – | – | noch nicht gesucht | – |
+| Motten | Bayern | 09672134 | – | – | noch nicht gesucht | – |
+| Mudau | Baden-Württemberg | 08225060 | – | – | noch nicht gesucht | – |
+| Muggensturm | Baden-Württemberg | 08216033 | – | – | noch nicht gesucht | – |
+| Muhr a.See | Bayern | 09577114 | – | – | noch nicht gesucht | – |
+| Mulda/Sa. | Sachsen | 14522390 | – | – | noch nicht gesucht | – |
+| Muldenhammer | Sachsen | 14523245 | – | – | noch nicht gesucht | – |
+| Mulfingen | Baden-Württemberg | 08126056 | – | – | noch nicht gesucht | – |
+| Mundelsheim | Baden-Württemberg | 08118053 | – | – | noch nicht gesucht | – |
+| Murg | Baden-Württemberg | 08337076 | – | – | noch nicht gesucht | – |
+| Murr | Baden-Württemberg | 08118054 | – | – | noch nicht gesucht | – |
+| Mutlangen | Baden-Württemberg | 08136044 | – | – | noch nicht gesucht | – |
+| Mähring | Bayern | 09377139 | – | – | noch nicht gesucht | – |
+| Märkische Heide | Brandenburg | 12061329 | – | – | noch nicht gesucht | – |
+| Mögglingen | Baden-Württemberg | 08136043 | – | – | noch nicht gesucht | – |
+| Möhrendorf | Bayern | 09572142 | – | – | noch nicht gesucht | – |
+| Mömlingen | Bayern | 09676140 | – | – | noch nicht gesucht | – |
+| Mönchweiler | Baden-Württemberg | 08326037 | – | – | noch nicht gesucht | – |
+| Mönsheim | Baden-Württemberg | 08236039 | – | – | noch nicht gesucht | – |
+| Mörnsheim | Bayern | 09176148 | – | – | noch nicht gesucht | – |
+| Möser | Sachsen-Anhalt | 15086145 | – | – | noch nicht gesucht | – |
+| Möttingen | Bayern | 09779185 | – | – | noch nicht gesucht | – |
+| Mötzingen | Baden-Württemberg | 08115034 | – | – | noch nicht gesucht | – |
+| Mücke | Hessen | 06535013 | – | – | noch nicht gesucht | – |
+| Mühlenbach | Baden-Württemberg | 08317078 | – | – | noch nicht gesucht | – |
+| Mühlhausen | Baden-Württemberg | 08226054 | – | – | noch nicht gesucht | – |
+| Mühlhausen | Bayern | 09373146 | – | – | noch nicht gesucht | – |
+| Mühlhausen im Täle | Baden-Württemberg | 08117035 | – | – | noch nicht gesucht | – |
+| Mühlhausen-Ehingen | Baden-Württemberg | 08335097 | – | – | noch nicht gesucht | – |
+| Mühlingen | Baden-Württemberg | 08335057 | – | – | noch nicht gesucht | – |
+| Münchhausen | Hessen | 06534015 | – | – | noch nicht gesucht | – |
+| Münchsmünster | Bayern | 09186139 | – | – | noch nicht gesucht | – |
+| Münsing | Bayern | 09173137 | – | – | noch nicht gesucht | – |
+| Münstertal/Schwarzwald | Baden-Württemberg | 08315130 | – | – | noch nicht gesucht | – |
+| Nalbach | Saarland | 10044113 | – | – | noch nicht gesucht | – |
+| Namborn | Saarland | 10046113 | – | – | noch nicht gesucht | – |
+| Nandlstadt | Bayern | 09178144 | – | – | noch nicht gesucht | – |
+| Nattheim | Baden-Württemberg | 08135026 | – | – | noch nicht gesucht | – |
+| Naundorf | Sachsen | 14730210 | – | – | noch nicht gesucht | – |
+| Neckargerach | Baden-Württemberg | 08225064 | – | – | noch nicht gesucht | – |
+| Neckartailfingen | Baden-Württemberg | 08116041 | – | – | noch nicht gesucht | – |
+| Neckartenzlingen | Baden-Württemberg | 08116042 | – | – | noch nicht gesucht | – |
+| Neckarwestheim | Baden-Württemberg | 08125066 | – | – | noch nicht gesucht | – |
+| Neckarzimmern | Baden-Württemberg | 08225067 | – | – | noch nicht gesucht | – |
+| Neenstetten | Baden-Württemberg | 08425083 | – | – | noch nicht gesucht | – |
+| Nehren | Baden-Württemberg | 08416026 | – | – | noch nicht gesucht | – |
+| Neidenstein | Baden-Württemberg | 08226058 | – | – | noch nicht gesucht | – |
+| Neidlingen | Baden-Württemberg | 08116043 | – | – | noch nicht gesucht | – |
+| Nellingen | Baden-Württemberg | 08425084 | – | – | noch nicht gesucht | – |
+| Nentershausen | Hessen | 06632013 | – | – | noch nicht gesucht | – |
+| Nerenstetten | Baden-Württemberg | 08425085 | – | – | noch nicht gesucht | – |
+| Nersingen | Bayern | 09775134 | – | – | noch nicht gesucht | – |
+| Nesse-Apfelstädt | Thüringen | 16067087 | – | – | noch nicht gesucht | – |
+| Nesselwang | Bayern | 09777153 | – | – | noch nicht gesucht | – |
+| Neu-Eichenberg | Hessen | 06636009 | – | – | noch nicht gesucht | – |
+| Neuberg | Hessen | 06435020 | – | – | noch nicht gesucht | – |
+| Neubeuern | Bayern | 09187154 | – | – | noch nicht gesucht | – |
+| Neubrunn | Bayern | 09679164 | – | – | noch nicht gesucht | – |
+| Neuburg a.Inn | Bayern | 09275133 | – | – | noch nicht gesucht | – |
+| Neuburg a.d.Kammel | Bayern | 09774162 | – | – | noch nicht gesucht | – |
+| Neudrossenfeld | Bayern | 09477142 | – | – | noch nicht gesucht | – |
+| Neuendettelsau | Bayern | 09571180 | – | – | noch nicht gesucht | – |
+| Neuenmarkt | Bayern | 09477143 | – | – | noch nicht gesucht | – |
+| Neuenstein | Hessen | 06632014 | – | – | noch nicht gesucht | – |
+| Neuental | Hessen | 06634016 | – | – | noch nicht gesucht | – |
+| Neufahrn i.NB | Bayern | 09274153 | – | – | noch nicht gesucht | – |
+| Neufra | Baden-Württemberg | 08437082 | – | – | noch nicht gesucht | – |
+| Neuhaus a.Inn | Bayern | 09275134 | – | – | noch nicht gesucht | – |
+| Neuhaus a.d.Pegnitz | Bayern | 09574140 | – | – | noch nicht gesucht | – |
+| Neuhausen | Baden-Württemberg | 08236044 | – | – | noch nicht gesucht | – |
+| Neuhausen ob Eck | Baden-Württemberg | 08327038 | – | – | noch nicht gesucht | – |
+| Neuhausen/Erzgeb. | Sachsen | 14522400 | – | – | noch nicht gesucht | – |
+| Neuhausen/Spree | Brandenburg | 12071301 | – | – | noch nicht gesucht | – |
+| Neukieritzsch | Sachsen | 14729320 | – | – | noch nicht gesucht | – |
+| Neukirch | Baden-Württemberg | 08435042 | – | – | noch nicht gesucht | – |
+| Neukirch/Lausitz | Sachsen | 14625380 | – | – | noch nicht gesucht | – |
+| Neukirchen b.Hl.Blut | Bayern | 09372144 | – | – | noch nicht gesucht | – |
+| Neukirchen vorm Wald | Bayern | 09275135 | – | – | noch nicht gesucht | – |
+| Neukirchen/Erzgeb. | Sachsen | 14521410 | – | – | noch nicht gesucht | – |
+| Neukirchen/Pleiße | Sachsen | 14524210 | – | – | noch nicht gesucht | – |
+| Neuler | Baden-Württemberg | 08136046 | – | – | noch nicht gesucht | – |
+| Neulingen | Baden-Württemberg | 08236073 | – | – | noch nicht gesucht | – |
+| Neulußheim | Baden-Württemberg | 08226059 | – | – | noch nicht gesucht | – |
+| Neumark | Sachsen | 14523280 | – | – | noch nicht gesucht | – |
+| Neunkirchen | Baden-Württemberg | 08225068 | – | – | noch nicht gesucht | – |
+| Neunkirchen a.Brand | Bayern | 09474154 | – | – | noch nicht gesucht | – |
+| Neunkirchen a.Sand | Bayern | 09574141 | – | – | noch nicht gesucht | – |
+| Neureichenau | Bayern | 09272136 | – | – | noch nicht gesucht | – |
+| Neuried | Baden-Württemberg | 08317151 | – | – | noch nicht gesucht | – |
+| Neuried | Bayern | 09184132 | – | – | noch nicht gesucht | – |
+| Neuschönau | Bayern | 09272146 | – | – | noch nicht gesucht | – |
+| Neustetten | Baden-Württemberg | 08416049 | – | – | noch nicht gesucht | – |
+| Neuweiler | Baden-Württemberg | 08235050 | – | – | noch nicht gesucht | – |
+| Niederaichbach | Bayern | 09274156 | – | – | noch nicht gesucht | – |
+| Niederalteich | Bayern | 09271138 | – | – | noch nicht gesucht | – |
+| Niederau | Sachsen | 14627170 | – | – | noch nicht gesucht | – |
+| Niederaula | Hessen | 06632015 | – | – | noch nicht gesucht | – |
+| Niederdorfelden | Hessen | 06435022 | – | – | noch nicht gesucht | – |
+| Niedere Börde | Sachsen-Anhalt | 15083390 | – | – | noch nicht gesucht | – |
+| Niedereschach | Baden-Württemberg | 08326041 | – | – | noch nicht gesucht | – |
+| Niedergörsdorf | Brandenburg | 12072297 | – | – | noch nicht gesucht | – |
+| Niedernberg | Bayern | 09676144 | – | – | noch nicht gesucht | – |
+| Niederorschel | Thüringen | 16061074 | – | – | noch nicht gesucht | – |
+| Niederviehbach | Bayern | 09279130 | – | – | noch nicht gesucht | – |
+| Niederwerrn | Bayern | 09678160 | – | – | noch nicht gesucht | – |
+| Niederwiesa | Sachsen | 14522420 | – | – | noch nicht gesucht | – |
+| Nieste | Hessen | 06633019 | – | – | noch nicht gesucht | – |
+| Nittendorf | Bayern | 09375175 | – | – | noch nicht gesucht | – |
+| Nonnenhorn | Bayern | 09776120 | – | – | noch nicht gesucht | – |
+| Nonnweiler | Saarland | 10046115 | – | – | noch nicht gesucht | – |
+| Nordhalben | Bayern | 09476159 | – | – | noch nicht gesucht | – |
+| Nordharz | Sachsen-Anhalt | 15085227 | – | – | noch nicht gesucht | – |
+| Nordheim | Baden-Württemberg | 08125074 | – | – | noch nicht gesucht | – |
+| Nordrach | Baden-Württemberg | 08317085 | – | – | noch nicht gesucht | – |
+| Nordwestuckermark | Brandenburg | 12073429 | – | – | noch nicht gesucht | – |
+| Notzingen | Baden-Württemberg | 08116048 | – | – | noch nicht gesucht | – |
+| Nufringen | Baden-Württemberg | 08115037 | – | – | noch nicht gesucht | – |
+| Nusplingen | Baden-Württemberg | 08417045 | – | – | noch nicht gesucht | – |
+| Nuthe-Urstromtal | Brandenburg | 12072312 | – | – | noch nicht gesucht | – |
+| Nuthetal | Brandenburg | 12069454 | – | – | noch nicht gesucht | – |
+| Nußdorf | Bayern | 09189130 | – | – | noch nicht gesucht | – |
+| Nußdorf a.Inn | Bayern | 09187156 | – | – | noch nicht gesucht | – |
+| Nüdlingen | Bayern | 09672136 | – | – | noch nicht gesucht | – |
+| Nüsttal | Hessen | 06631019 | – | – | noch nicht gesucht | – |
+| Ober-Mörlen | Hessen | 06440018 | – | – | noch nicht gesucht | – |
+| Oberammergau | Bayern | 09180125 | – | – | noch nicht gesucht | – |
+| Oberau | Bayern | 09180126 | – | – | noch nicht gesucht | – |
+| Oberaudorf | Bayern | 09187157 | – | – | noch nicht gesucht | – |
+| Oberaula | Hessen | 06634019 | – | – | noch nicht gesucht | – |
+| Oberaurach | Bayern | 09674159 | – | – | noch nicht gesucht | – |
+| Oberboihingen | Baden-Württemberg | 08116050 | – | – | noch nicht gesucht | – |
+| Oberdachstetten | Bayern | 09571183 | – | – | noch nicht gesucht | – |
+| Oberdischingen | Baden-Württemberg | 08425088 | – | – | noch nicht gesucht | – |
+| Oberelsbach | Bayern | 09673149 | – | – | noch nicht gesucht | – |
+| Obergröningen | Baden-Württemberg | 08136049 | – | – | noch nicht gesucht | – |
+| Oberhaid | Bayern | 09471165 | – | – | noch nicht gesucht | – |
+| Oberharmersbach | Baden-Württemberg | 08317088 | – | – | noch nicht gesucht | – |
+| Oberhausen | Bayern | 09185150 | – | – | noch nicht gesucht | – |
+| Oberhausen-Rheinhausen | Baden-Württemberg | 08215107 | – | – | noch nicht gesucht | – |
+| Oberkotzau | Bayern | 09475158 | – | – | noch nicht gesucht | – |
+| Obermarchtal | Baden-Württemberg | 08425090 | – | – | noch nicht gesucht | – |
+| Oberndorf a.Lech | Bayern | 09779196 | – | – | noch nicht gesucht | – |
+| Obernheim | Baden-Württemberg | 08417047 | – | – | noch nicht gesucht | – |
+| Obernzell | Bayern | 09275137 | – | – | noch nicht gesucht | – |
+| Obernzenn | Bayern | 09575156 | – | – | noch nicht gesucht | – |
+| Oberreichenbach | Baden-Württemberg | 08235055 | – | – | noch nicht gesucht | – |
+| Oberried | Baden-Württemberg | 08315084 | – | – | noch nicht gesucht | – |
+| Oberrot | Baden-Württemberg | 08127062 | – | – | noch nicht gesucht | – |
+| Oberschneiding | Bayern | 09278167 | – | – | noch nicht gesucht | – |
+| Oberschöna | Sachsen | 14522430 | – | – | noch nicht gesucht | – |
+| Obersontheim | Baden-Württemberg | 08127063 | – | – | noch nicht gesucht | – |
+| Oberstadion | Baden-Württemberg | 08425091 | – | – | noch nicht gesucht | – |
+| Oberstaufen | Bayern | 09780132 | – | – | noch nicht gesucht | – |
+| Oberstdorf | Bayern | 09780133 | – | – | noch nicht gesucht | – |
+| Oberstenfeld | Baden-Württemberg | 08118060 | – | – | noch nicht gesucht | – |
+| Obertaufkirchen | Bayern | 09183135 | – | – | noch nicht gesucht | – |
+| Oberteuringen | Baden-Württemberg | 08435045 | – | – | noch nicht gesucht | – |
+| Oberthal | Saarland | 10046116 | – | – | noch nicht gesucht | – |
+| Oberthulba | Bayern | 09672139 | – | – | noch nicht gesucht | – |
+| Obertraubling | Bayern | 09375179 | – | – | noch nicht gesucht | – |
+| Obertrubach | Bayern | 09474156 | – | – | noch nicht gesucht | – |
+| Oberwolfach | Baden-Württemberg | 08317093 | – | – | noch nicht gesucht | – |
+| Obrigheim | Baden-Württemberg | 08225074 | – | – | noch nicht gesucht | – |
+| Odelzhausen | Bayern | 09174135 | – | – | noch nicht gesucht | – |
+| Oderwitz | Sachsen | 14626390 | – | – | noch nicht gesucht | – |
+| Oedheim | Baden-Württemberg | 08125078 | – | – | noch nicht gesucht | – |
+| Oerlenbach | Bayern | 09672140 | – | – | noch nicht gesucht | – |
+| Offenau | Baden-Württemberg | 08125079 | – | – | noch nicht gesucht | – |
+| Offenberg | Bayern | 09271140 | – | – | noch nicht gesucht | – |
+| Ofterdingen | Baden-Württemberg | 08416031 | – | – | noch nicht gesucht | – |
+| Oggelshausen | Baden-Württemberg | 08426090 | – | – | noch nicht gesucht | – |
+| Ohlsbach | Baden-Württemberg | 08317097 | – | – | noch nicht gesucht | – |
+| Ohmden | Baden-Württemberg | 08116053 | – | – | noch nicht gesucht | – |
+| Opfenbach | Bayern | 09776122 | – | – | noch nicht gesucht | – |
+| Oppenweiler | Baden-Württemberg | 08119053 | – | – | noch nicht gesucht | – |
+| Orsingen-Nenzingen | Baden-Württemberg | 08335099 | – | – | noch nicht gesucht | – |
+| Ortenberg | Baden-Württemberg | 08317100 | – | – | noch nicht gesucht | – |
+| Ortenburg | Bayern | 09275138 | – | – | noch nicht gesucht | – |
+| Ostelsheim | Baden-Württemberg | 08235057 | – | – | noch nicht gesucht | – |
+| Osternienburger Land | Sachsen-Anhalt | 15082256 | – | – | noch nicht gesucht | – |
+| Ostrach | Baden-Württemberg | 08437086 | – | – | noch nicht gesucht | – |
+| Oststeinbek | Schleswig-Holstein | 01062053 | – | – | noch nicht gesucht | – |
+| Ottenbach | Baden-Württemberg | 08117037 | – | – | noch nicht gesucht | – |
+| Ottendorf-Okrilla | Sachsen | 14625430 | – | – | noch nicht gesucht | – |
+| Ottenhöfen im Schwarzwald | Baden-Württemberg | 08317102 | – | – | noch nicht gesucht | – |
+| Ottensoos | Bayern | 09574146 | – | – | noch nicht gesucht | – |
+| Otterfing | Bayern | 09182127 | – | – | noch nicht gesucht | – |
+| Ottersweier | Baden-Württemberg | 08216041 | – | – | noch nicht gesucht | – |
+| Ottrau | Hessen | 06634020 | – | – | noch nicht gesucht | – |
+| Otzberg | Hessen | 06432017 | – | – | noch nicht gesucht | – |
+| Owingen | Baden-Württemberg | 08435047 | – | – | noch nicht gesucht | – |
+| Oy-Mittelberg | Bayern | 09780128 | – | – | noch nicht gesucht | – |
+| Oßling | Sachsen | 14625420 | – | – | noch nicht gesucht | – |
+| Painten | Bayern | 09273159 | – | – | noch nicht gesucht | – |
+| Palling | Bayern | 09189134 | – | – | noch nicht gesucht | – |
+| Parkstetten | Bayern | 09278170 | – | – | noch nicht gesucht | – |
+| Patersdorf | Bayern | 09276134 | – | – | noch nicht gesucht | – |
+| Pemfling | Bayern | 09372146 | – | – | noch nicht gesucht | – |
+| Pentling | Bayern | 09375180 | – | – | noch nicht gesucht | – |
+| Penzing | Bayern | 09181132 | – | – | noch nicht gesucht | – |
+| Perl | Saarland | 10042115 | – | – | noch nicht gesucht | – |
+| Petersaurach | Bayern | 09571190 | – | – | noch nicht gesucht | – |
+| Petersberg | Hessen | 06631020 | – | – | noch nicht gesucht | – |
+| Petersberg | Sachsen-Anhalt | 15088295 | – | – | noch nicht gesucht | – |
+| Petershagen/Eggersdorf | Brandenburg | 12064380 | – | – | noch nicht gesucht | – |
+| Petershausen | Bayern | 09174136 | – | – | noch nicht gesucht | – |
+| Pettendorf | Bayern | 09375181 | – | – | noch nicht gesucht | – |
+| Petting | Bayern | 09189135 | – | – | noch nicht gesucht | – |
+| Pettstadt | Bayern | 09471169 | – | – | noch nicht gesucht | – |
+| Pfaffenhofen | Baden-Württemberg | 08125081 | – | – | noch nicht gesucht | – |
+| Pfaffenhofen a.d.Glonn | Bayern | 09174137 | – | – | noch nicht gesucht | – |
+| Pfaffenweiler | Baden-Württemberg | 08315089 | – | – | noch nicht gesucht | – |
+| Pfalzgrafenweiler | Baden-Württemberg | 08237054 | – | – | noch nicht gesucht | – |
+| Pfatter | Bayern | 09375183 | – | – | noch nicht gesucht | – |
+| Pfedelbach | Baden-Württemberg | 08126069 | – | – | noch nicht gesucht | – |
+| Pfeffenhausen | Bayern | 09274172 | – | – | noch nicht gesucht | – |
+| Pfronstetten | Baden-Württemberg | 08415058 | – | – | noch nicht gesucht | – |
+| Pfronten | Bayern | 09777159 | – | – | noch nicht gesucht | – |
+| Philippsthal (Werra) | Hessen | 06632016 | – | – | noch nicht gesucht | – |
+| Piding | Bayern | 09172128 | – | – | noch nicht gesucht | – |
+| Pilsting | Bayern | 09279132 | – | – | noch nicht gesucht | – |
+| Plattenburg | Brandenburg | 12070302 | – | – | noch nicht gesucht | – |
+| Pleidelsheim | Baden-Württemberg | 08118063 | – | – | noch nicht gesucht | – |
+| Pleinfeld | Bayern | 09577161 | – | – | noch nicht gesucht | – |
+| Pleiskirchen | Bayern | 09171127 | – | – | noch nicht gesucht | – |
+| Pliening | Bayern | 09175133 | – | – | noch nicht gesucht | – |
+| Pliezhausen | Baden-Württemberg | 08415060 | – | – | noch nicht gesucht | – |
+| Plößberg | Bayern | 09377146 | – | – | noch nicht gesucht | – |
+| Plüderhausen | Baden-Württemberg | 08119055 | – | – | noch nicht gesucht | – |
+| Poing | Bayern | 09175135 | – | – | noch nicht gesucht | – |
+| Polling | Bayern | 09190142 | – | – | noch nicht gesucht | – |
+| Polsingen | Bayern | 09577162 | – | – | noch nicht gesucht | – |
+| Pommelsbrunn | Bayern | 09574147 | – | – | noch nicht gesucht | – |
+| Pommersfelden | Bayern | 09471172 | – | – | noch nicht gesucht | – |
+| Poppenhausen | Bayern | 09678168 | – | – | noch nicht gesucht | – |
+| Poppenhausen (Wasserkuppe) | Hessen | 06631021 | – | – | noch nicht gesucht | – |
+| Poppenricht | Bayern | 09371144 | – | – | noch nicht gesucht | – |
+| Postbauer-Heng | Bayern | 09373155 | – | – | noch nicht gesucht | – |
+| Postmünster | Bayern | 09277139 | – | – | noch nicht gesucht | – |
+| Prackenbach | Bayern | 09276135 | – | – | noch nicht gesucht | – |
+| Presseck | Bayern | 09477148 | – | – | noch nicht gesucht | – |
+| Pressig | Bayern | 09476164 | – | – | noch nicht gesucht | – |
+| Pretzfeld | Bayern | 09474161 | – | – | noch nicht gesucht | – |
+| Prien a.Chiemsee | Bayern | 09187162 | – | – | noch nicht gesucht | – |
+| Priestewitz | Sachsen | 14627200 | – | – | noch nicht gesucht | – |
+| Prutting | Bayern | 09187163 | – | – | noch nicht gesucht | – |
+| Pullach i.Isartal | Bayern | 09184139 | – | – | noch nicht gesucht | – |
+| Puschendorf | Bayern | 09573124 | – | – | noch nicht gesucht | – |
+| Putzbrunn | Bayern | 09184140 | – | – | noch nicht gesucht | – |
+| Pyrbaum | Bayern | 09373156 | – | – | noch nicht gesucht | – |
+| Pähl | Bayern | 09190138 | – | – | noch nicht gesucht | – |
+| Pöcking | Bayern | 09188137 | – | – | noch nicht gesucht | – |
+| Pöhl | Sachsen | 14523330 | – | – | noch nicht gesucht | – |
+| Quierschied | Saarland | 10041516 | – | – | noch nicht gesucht | – |
+| Rabenau | Hessen | 06531015 | – | – | noch nicht gesucht | – |
+| Rackwitz | Sachsen | 14730250 | – | – | noch nicht gesucht | – |
+| Radibor | Sachsen | 14625490 | – | – | noch nicht gesucht | – |
+| Rainau | Baden-Württemberg | 08136089 | – | – | noch nicht gesucht | – |
+| Raisting | Bayern | 09190144 | – | – | noch nicht gesucht | – |
+| Rammingen | Baden-Württemberg | 08425097 | – | – | noch nicht gesucht | – |
+| Ramsau b.Berchtesgaden | Bayern | 09172129 | – | – | noch nicht gesucht | – |
+| Randersacker | Bayern | 09679175 | – | – | noch nicht gesucht | – |
+| Rangendingen | Baden-Württemberg | 08417051 | – | – | noch nicht gesucht | – |
+| Rangsdorf | Brandenburg | 12072340 | – | – | noch nicht gesucht | – |
+| Ranstadt | Hessen | 06440020 | – | – | noch nicht gesucht | – |
+| Raschau-Markersbach | Sachsen | 14521500 | – | – | noch nicht gesucht | – |
+| Rasdorf | Hessen | 06631022 | – | – | noch nicht gesucht | – |
+| Ratekau | Schleswig-Holstein | 01055035 | – | – | noch nicht gesucht | – |
+| Ratshausen | Baden-Württemberg | 08417052 | – | – | noch nicht gesucht | – |
+| Rattelsdorf | Bayern | 09471174 | – | – | noch nicht gesucht | – |
+| Rattenberg | Bayern | 09278178 | – | – | noch nicht gesucht | – |
+| Raubling | Bayern | 09187165 | – | – | noch nicht gesucht | – |
+| Rauhenebrach | Bayern | 09674187 | – | – | noch nicht gesucht | – |
+| Rechberghausen | Baden-Württemberg | 08117038 | – | – | noch nicht gesucht | – |
+| Rechenberg-Bienenmühle | Sachsen | 14522470 | – | – | noch nicht gesucht | – |
+| Rechtenstein | Baden-Württemberg | 08425098 | – | – | noch nicht gesucht | – |
+| Rednitzhembach | Bayern | 09576137 | – | – | noch nicht gesucht | – |
+| Regenstauf | Bayern | 09375190 | – | – | noch nicht gesucht | – |
+| Regnitzlosau | Bayern | 09475161 | – | – | noch nicht gesucht | – |
+| Rehling | Bayern | 09771158 | – | – | noch nicht gesucht | – |
+| Rehlingen-Siersburg | Saarland | 10044114 | – | – | noch nicht gesucht | – |
+| Reichartshausen | Baden-Württemberg | 08226066 | – | – | noch nicht gesucht | – |
+| Reichelsheim (Odenwald) | Hessen | 06437013 | – | – | noch nicht gesucht | – |
+| Reichenau | Baden-Württemberg | 08335066 | – | – | noch nicht gesucht | – |
+| Reichenbach am Heuberg | Baden-Württemberg | 08327040 | – | – | noch nicht gesucht | – |
+| Reichenbach an der Fils | Baden-Württemberg | 08116058 | – | – | noch nicht gesucht | – |
+| Reichenberg | Bayern | 09679176 | – | – | noch nicht gesucht | – |
+| Reichenschwand | Bayern | 09574150 | – | – | noch nicht gesucht | – |
+| Reichertshausen | Bayern | 09186146 | – | – | noch nicht gesucht | – |
+| Reilingen | Baden-Württemberg | 08226068 | – | – | noch nicht gesucht | – |
+| Reinhardshagen | Hessen | 06633022 | – | – | noch nicht gesucht | – |
+| Reinsberg | Sachsen | 14522480 | – | – | noch nicht gesucht | – |
+| Reinsdorf | Sachsen | 14524250 | – | – | noch nicht gesucht | – |
+| Reisbach | Bayern | 09279134 | – | – | noch nicht gesucht | – |
+| Reiskirchen | Hessen | 06531016 | – | – | noch nicht gesucht | – |
+| Reit im Winkl | Bayern | 09189139 | – | – | noch nicht gesucht | – |
+| Rellingen | Schleswig-Holstein | 01056043 | – | – | noch nicht gesucht | – |
+| Remchingen | Baden-Württemberg | 08236071 | – | – | noch nicht gesucht | – |
+| Remptendorf | Thüringen | 16075134 | – | – | noch nicht gesucht | – |
+| Remshalden | Baden-Württemberg | 08119090 | – | – | noch nicht gesucht | – |
+| Rennertshofen | Bayern | 09185153 | – | – | noch nicht gesucht | – |
+| Renquishausen | Baden-Württemberg | 08327041 | – | – | noch nicht gesucht | – |
+| Rettenberg | Bayern | 09780137 | – | – | noch nicht gesucht | – |
+| Reute | Baden-Württemberg | 08316036 | – | – | noch nicht gesucht | – |
+| Reußenköge | Schleswig-Holstein | 01054108 | – | – | noch nicht gesucht | – |
+| Rheinhausen | Baden-Württemberg | 08316053 | – | – | noch nicht gesucht | – |
+| Rheinmünster | Baden-Württemberg | 08216063 | – | – | noch nicht gesucht | – |
+| Rhönblick | Thüringen | 16066093 | – | – | noch nicht gesucht | – |
+| Rickenbach | Baden-Württemberg | 08337090 | – | – | noch nicht gesucht | – |
+| Ried | Bayern | 09771160 | – | – | noch nicht gesucht | – |
+| Rieden | Bayern | 09371146 | – | – | noch nicht gesucht | – |
+| Riederich | Baden-Württemberg | 08415062 | – | – | noch nicht gesucht | – |
+| Riedering | Bayern | 09187167 | – | – | noch nicht gesucht | – |
+| Riedhausen | Baden-Württemberg | 08436067 | – | – | noch nicht gesucht | – |
+| Riegel am Kaiserstuhl | Baden-Württemberg | 08316037 | – | – | noch nicht gesucht | – |
+| Riegelsberg | Saarland | 10041517 | – | – | noch nicht gesucht | – |
+| Rielasingen-Worblingen | Baden-Württemberg | 08335100 | – | – | noch nicht gesucht | – |
+| Riesbürg | Baden-Württemberg | 08136087 | – | – | noch nicht gesucht | – |
+| Rietheim-Weilheim | Baden-Württemberg | 08327056 | – | – | noch nicht gesucht | – |
+| Rietz-Neuendorf | Brandenburg | 12067426 | – | – | noch nicht gesucht | – |
+| Rimbach | Hessen | 06431019 | – | – | noch nicht gesucht | – |
+| Rimbach | Bayern | 09372151 | – | – | noch nicht gesucht | – |
+| Rimpar | Bayern | 09679180 | – | – | noch nicht gesucht | – |
+| Rimsting | Bayern | 09187168 | – | – | noch nicht gesucht | – |
+| Rinchnach | Bayern | 09276139 | – | – | noch nicht gesucht | – |
+| Ringelai | Bayern | 09272140 | – | – | noch nicht gesucht | – |
+| Ringgau | Hessen | 06636010 | – | – | noch nicht gesucht | – |
+| Ringsheim | Baden-Württemberg | 08317113 | – | – | noch nicht gesucht | – |
+| Rockenberg | Hessen | 06440022 | – | – | noch nicht gesucht | – |
+| Rodenbach | Hessen | 06435023 | – | – | noch nicht gesucht | – |
+| Roggenburg | Bayern | 09775149 | – | – | noch nicht gesucht | – |
+| Rohr | Bayern | 09576142 | – | – | noch nicht gesucht | – |
+| Rohr i.NB | Bayern | 09273165 | – | – | noch nicht gesucht | – |
+| Rohrbach | Bayern | 09186149 | – | – | noch nicht gesucht | – |
+| Rohrdorf | Baden-Württemberg | 08235060 | – | – | noch nicht gesucht | – |
+| Rohrdorf | Bayern | 09187169 | – | – | noch nicht gesucht | – |
+| Roigheim | Baden-Württemberg | 08125084 | – | – | noch nicht gesucht | – |
+| Ronneburg | Hessen | 06435024 | – | – | noch nicht gesucht | – |
+| Ronsberg | Bayern | 09777165 | – | – | noch nicht gesucht | – |
+| Ronshausen | Hessen | 06632017 | – | – | noch nicht gesucht | – |
+| Rosenbach/Vogtl. | Sachsen | 14523365 | – | – | noch nicht gesucht | – |
+| Rosenberg | Baden-Württemberg | 08136060 | – | – | noch nicht gesucht | – |
+| Rosenberg | Baden-Württemberg | 08225082 | – | – | noch nicht gesucht | – |
+| Rosengarten | Baden-Württemberg | 08127100 | – | – | noch nicht gesucht | – |
+| Rosenthal am Rennsteig | Thüringen | 16075136 | – | – | noch nicht gesucht | – |
+| Rossau | Sachsen | 14522500 | – | – | noch nicht gesucht | – |
+| Rot am See | Baden-Württemberg | 08127071 | – | – | noch nicht gesucht | – |
+| Rot an der Rot | Baden-Württemberg | 08426100 | – | – | noch nicht gesucht | – |
+| Rothenbuch | Bayern | 09671148 | – | – | noch nicht gesucht | – |
+| Rottach-Egern | Bayern | 09182129 | – | – | noch nicht gesucht | – |
+| Rottenacker | Baden-Württemberg | 08425104 | – | – | noch nicht gesucht | – |
+| Rottendorf | Bayern | 09679185 | – | – | noch nicht gesucht | – |
+| Roßbach | Bayern | 09277142 | – | – | noch nicht gesucht | – |
+| Roßdorf | Hessen | 06432020 | – | – | noch nicht gesucht | – |
+| Roßtal | Bayern | 09573125 | – | – | noch nicht gesucht | – |
+| Rudelzhausen | Bayern | 09178122 | – | – | noch nicht gesucht | – |
+| Rudersberg | Baden-Württemberg | 08119061 | – | – | noch nicht gesucht | – |
+| Ruderting | Bayern | 09275144 | – | – | noch nicht gesucht | – |
+| Ruhpolding | Bayern | 09189140 | – | – | noch nicht gesucht | – |
+| Ruhstorf a.d.Rott | Bayern | 09275145 | – | – | noch nicht gesucht | – |
+| Runding | Bayern | 09372155 | – | – | noch nicht gesucht | – |
+| Ruppertshofen | Baden-Württemberg | 08136061 | – | – | noch nicht gesucht | – |
+| Rust | Baden-Württemberg | 08317114 | – | – | noch nicht gesucht | – |
+| Röderland | Brandenburg | 12062410 | – | – | noch nicht gesucht | – |
+| Röhrmoos | Bayern | 09174141 | – | – | noch nicht gesucht | – |
+| Röhrnbach | Bayern | 09272141 | – | – | noch nicht gesucht | – |
+| Römerstein | Baden-Württemberg | 08415088 | – | – | noch nicht gesucht | – |
+| Röslau | Bayern | 09479145 | – | – | noch nicht gesucht | – |
+| Röthlein | Bayern | 09678170 | – | – | noch nicht gesucht | – |
+| Röttenbach | Bayern | 09572149 | – | – | noch nicht gesucht | – |
+| Röttenbach | Bayern | 09576141 | – | – | noch nicht gesucht | – |
+| Rückersdorf | Bayern | 09574154 | – | – | noch nicht gesucht | – |
+| Rüdersdorf bei Berlin | Brandenburg | 12064428 | – | – | noch nicht gesucht | – |
+| Rümmingen | Baden-Württemberg | 08336073 | – | – | noch nicht gesucht | – |
+| Saaldorf-Surheim | Bayern | 09172130 | – | – | noch nicht gesucht | – |
+| Saarwellingen | Saarland | 10044116 | – | – | noch nicht gesucht | – |
+| Sachsen b.Ansbach | Bayern | 09571196 | – | – | noch nicht gesucht | – |
+| Sailauf | Bayern | 09671150 | – | – | noch nicht gesucht | – |
+| Salach | Baden-Württemberg | 08117042 | – | – | noch nicht gesucht | – |
+| Saldenburg | Bayern | 09272142 | – | – | noch nicht gesucht | – |
+| Salem | Baden-Württemberg | 08435052 | – | – | noch nicht gesucht | – |
+| Salzatal | Sachsen-Anhalt | 15088319 | – | – | noch nicht gesucht | – |
+| Salzweg | Bayern | 09275146 | – | – | noch nicht gesucht | – |
+| Samerberg | Bayern | 09187172 | – | – | noch nicht gesucht | – |
+| Sand a.Main | Bayern | 09674195 | – | – | noch nicht gesucht | – |
+| Sandberg | Bayern | 09673162 | – | – | noch nicht gesucht | – |
+| Sandhausen | Baden-Württemberg | 08226076 | – | – | noch nicht gesucht | – |
+| Sanitz | Mecklenburg-Vorpommern | 13072091 | – | – | noch nicht gesucht | – |
+| Sankt Englmar | Bayern | 09278184 | – | – | noch nicht gesucht | – |
+| Sankt Oswald-Riedlhütte | Bayern | 09272143 | – | – | noch nicht gesucht | – |
+| Sankt Wolfgang | Bayern | 09177137 | – | – | noch nicht gesucht | – |
+| Sasbach | Baden-Württemberg | 08317116 | – | – | noch nicht gesucht | – |
+| Sasbach am Kaiserstuhl | Baden-Württemberg | 08316038 | – | – | noch nicht gesucht | – |
+| Sasbachwalden | Baden-Württemberg | 08317118 | – | – | noch nicht gesucht | – |
+| Satow | Mecklenburg-Vorpommern | 13072093 | – | – | noch nicht gesucht | – |
+| Satteldorf | Baden-Württemberg | 08127073 | – | – | noch nicht gesucht | – |
+| Sauerlach | Bayern | 09184141 | – | – | noch nicht gesucht | – |
+| Sauldorf | Baden-Württemberg | 08437123 | – | – | noch nicht gesucht | – |
+| Schaafheim | Hessen | 06432021 | – | – | noch nicht gesucht | – |
+| Schallbach | Baden-Württemberg | 08336075 | – | – | noch nicht gesucht | – |
+| Schallstadt | Baden-Württemberg | 08315098 | – | – | noch nicht gesucht | – |
+| Scharbeutz | Schleswig-Holstein | 01055044 | – | – | noch nicht gesucht | – |
+| Schauenburg | Hessen | 06633023 | – | – | noch nicht gesucht | – |
+| Schechen | Bayern | 09187142 | – | – | noch nicht gesucht | – |
+| Schechingen | Baden-Württemberg | 08136062 | – | – | noch nicht gesucht | – |
+| Schefflenz | Baden-Württemberg | 08225115 | – | – | noch nicht gesucht | – |
+| Scheidegg | Bayern | 09776125 | – | – | noch nicht gesucht | – |
+| Schemmerhofen | Baden-Württemberg | 08426134 | – | – | noch nicht gesucht | – |
+| Schenkendöbern | Brandenburg | 12071337 | – | – | noch nicht gesucht | – |
+| Schenkenzell | Baden-Württemberg | 08325050 | – | – | noch nicht gesucht | – |
+| Schenklengsfeld | Hessen | 06632019 | – | – | noch nicht gesucht | – |
+| Scheyern | Bayern | 09186151 | – | – | noch nicht gesucht | – |
+| Schierling | Bayern | 09375196 | – | – | noch nicht gesucht | – |
+| Schiffweiler | Saarland | 10043116 | – | – | noch nicht gesucht | – |
+| Schipkau | Brandenburg | 12066285 | – | – | noch nicht gesucht | – |
+| Schkopau | Sachsen-Anhalt | 15088330 | – | – | noch nicht gesucht | – |
+| Schlaitdorf | Baden-Württemberg | 08116063 | – | – | noch nicht gesucht | – |
+| Schlangenbad | Hessen | 06439014 | – | – | noch nicht gesucht | – |
+| Schlat | Baden-Württemberg | 08117043 | – | – | noch nicht gesucht | – |
+| Schleching | Bayern | 09189141 | – | – | noch nicht gesucht | – |
+| Schleusegrund | Thüringen | 16069042 | – | – | noch nicht gesucht | – |
+| Schliengen | Baden-Württemberg | 08336078 | – | – | noch nicht gesucht | – |
+| Schlier | Baden-Württemberg | 08436069 | – | – | noch nicht gesucht | – |
+| Schlierbach | Baden-Württemberg | 08117044 | – | – | noch nicht gesucht | – |
+| Schliersee | Bayern | 09182131 | – | – | noch nicht gesucht | – |
+| Schluchsee | Baden-Württemberg | 08315102 | – | – | noch nicht gesucht | – |
+| Schmelz | Saarland | 10044117 | – | – | noch nicht gesucht | – |
+| Schmidgaden | Bayern | 09376159 | – | – | noch nicht gesucht | – |
+| Schmidmühlen | Bayern | 09371148 | – | – | noch nicht gesucht | – |
+| Schmitten im Taunus | Hessen | 06434009 | – | – | noch nicht gesucht | – |
+| Schmölln-Putzkau | Sachsen | 14625530 | – | – | noch nicht gesucht | – |
+| Schnaitsee | Bayern | 09189142 | – | – | noch nicht gesucht | – |
+| Schnaittach | Bayern | 09574155 | – | – | noch nicht gesucht | – |
+| Schneeberg | Bayern | 09676156 | – | – | noch nicht gesucht | – |
+| Schneizlreuth | Bayern | 09172131 | – | – | noch nicht gesucht | – |
+| Schnelldorf | Bayern | 09571199 | – | – | noch nicht gesucht | – |
+| Schnürpflingen | Baden-Württemberg | 08425110 | – | – | noch nicht gesucht | – |
+| Schonach im Schwarzwald | Baden-Württemberg | 08326055 | – | – | noch nicht gesucht | – |
+| Schonungen | Bayern | 09678174 | – | – | noch nicht gesucht | – |
+| Schopfloch | Baden-Württemberg | 08237061 | – | – | noch nicht gesucht | – |
+| Schopfloch | Bayern | 09571200 | – | – | noch nicht gesucht | – |
+| Schorfheide | Brandenburg | 12060198 | – | – | noch nicht gesucht | – |
+| Schorndorf | Bayern | 09372158 | – | – | noch nicht gesucht | – |
+| Schrecksbach | Hessen | 06634021 | – | – | noch nicht gesucht | – |
+| Schulzendorf | Brandenburg | 12061444 | – | – | noch nicht gesucht | – |
+| Schuttertal | Baden-Württemberg | 08317121 | – | – | noch nicht gesucht | – |
+| Schutterwald | Baden-Württemberg | 08317122 | – | – | noch nicht gesucht | – |
+| Schwabhausen | Bayern | 09174143 | – | – | noch nicht gesucht | – |
+| Schwaig b.Nürnberg | Bayern | 09574156 | – | – | noch nicht gesucht | – |
+| Schwaikheim | Baden-Württemberg | 08119068 | – | – | noch nicht gesucht | – |
+| Schwalbach | Saarland | 10044118 | – | – | noch nicht gesucht | – |
+| Schwalmtal | Hessen | 06535017 | – | – | noch nicht gesucht | – |
+| Schwanau | Baden-Württemberg | 08317150 | – | – | noch nicht gesucht | – |
+| Schwangau | Bayern | 09777169 | – | – | noch nicht gesucht | – |
+| Schwanstetten | Bayern | 09576132 | – | – | noch nicht gesucht | – |
+| Schwarzach | Baden-Württemberg | 08225116 | – | – | noch nicht gesucht | – |
+| Schwarzach a.Main | Bayern | 09675165 | – | – | noch nicht gesucht | – |
+| Schwarzenbruck | Bayern | 09574157 | – | – | noch nicht gesucht | – |
+| Schwebheim | Bayern | 09678176 | – | – | noch nicht gesucht | – |
+| Schweitenkirchen | Bayern | 09186152 | – | – | noch nicht gesucht | – |
+| Schwendi | Baden-Württemberg | 08426108 | – | – | noch nicht gesucht | – |
+| Schwenningen | Baden-Württemberg | 08437102 | – | – | noch nicht gesucht | – |
+| Schwepnitz | Sachsen | 14625550 | – | – | noch nicht gesucht | – |
+| Schwieberdingen | Baden-Württemberg | 08118067 | – | – | noch nicht gesucht | – |
+| Schwielowsee | Brandenburg | 12069590 | – | – | noch nicht gesucht | – |
+| Schwindegg | Bayern | 09183144 | – | – | noch nicht gesucht | – |
+| Schwörstadt | Baden-Württemberg | 08336082 | – | – | noch nicht gesucht | – |
+| Schäftlarn | Bayern | 09184142 | – | – | noch nicht gesucht | – |
+| Schöffengrund | Hessen | 06532018 | – | – | noch nicht gesucht | – |
+| Schömberg | Baden-Württemberg | 08235065 | – | – | noch nicht gesucht | – |
+| Schönaich | Baden-Württemberg | 08115044 | – | – | noch nicht gesucht | – |
+| Schönau | Bayern | 09277144 | – | – | noch nicht gesucht | – |
+| Schönau a.Königssee | Bayern | 09172132 | – | – | noch nicht gesucht | – |
+| Schönbrunn | Baden-Württemberg | 08226081 | – | – | noch nicht gesucht | – |
+| Schöneck | Hessen | 06435026 | – | – | noch nicht gesucht | – |
+| Schönefeld | Brandenburg | 12061433 | – | – | noch nicht gesucht | – |
+| Schöneiche bei Berlin | Brandenburg | 12067440 | – | – | noch nicht gesucht | – |
+| Schönenberg | Baden-Württemberg | 08336080 | – | – | noch nicht gesucht | – |
+| Schönheide | Sachsen | 14521540 | – | – | noch nicht gesucht | – |
+| Schöntal | Baden-Württemberg | 08126072 | – | – | noch nicht gesucht | – |
+| Schönthal | Bayern | 09372157 | – | – | noch nicht gesucht | – |
+| Schönwald im Schwarzwald | Baden-Württemberg | 08326054 | – | – | noch nicht gesucht | – |
+| Schönwalde-Glien | Brandenburg | 12063273 | – | – | noch nicht gesucht | – |
+| Seckach | Baden-Württemberg | 08225091 | – | – | noch nicht gesucht | – |
+| Seddiner See | Brandenburg | 12069596 | – | – | noch nicht gesucht | – |
+| Seebach | Baden-Württemberg | 08317126 | – | – | noch nicht gesucht | – |
+| Seefeld | Bayern | 09188132 | – | – | noch nicht gesucht | – |
+| Seegebiet Mansfelder Land | Sachsen-Anhalt | 15087386 | – | – | noch nicht gesucht | – |
+| Seeheim-Jugenheim | Hessen | 06432022 | – | – | noch nicht gesucht | – |
+| Seekirch | Baden-Württemberg | 08426109 | – | – | noch nicht gesucht | – |
+| Seelbach | Baden-Württemberg | 08317127 | – | – | noch nicht gesucht | – |
+| Seeon-Seebruck | Bayern | 09189143 | – | – | noch nicht gesucht | – |
+| Seewald | Baden-Württemberg | 08237073 | – | – | noch nicht gesucht | – |
+| Sehmatal | Sachsen | 14521560 | – | – | noch nicht gesucht | – |
+| Seitingen-Oberflacht | Baden-Württemberg | 08327055 | – | – | noch nicht gesucht | – |
+| Selters (Taunus) | Hessen | 06533014 | – | – | noch nicht gesucht | – |
+| Sennfeld | Bayern | 09678178 | – | – | noch nicht gesucht | – |
+| Sersheim | Baden-Württemberg | 08118068 | – | – | noch nicht gesucht | – |
+| Setzingen | Baden-Württemberg | 08425112 | – | – | noch nicht gesucht | – |
+| Seubersdorf i.d.OPf. | Bayern | 09373160 | – | – | noch nicht gesucht | – |
+| Sexau | Baden-Württemberg | 08316039 | – | – | noch nicht gesucht | – |
+| Siegbach | Hessen | 06532019 | – | – | noch nicht gesucht | – |
+| Siegelsbach | Baden-Württemberg | 08125087 | – | – | noch nicht gesucht | – |
+| Siegsdorf | Bayern | 09189145 | – | – | noch nicht gesucht | – |
+| Sigmaringendorf | Baden-Württemberg | 08437105 | – | – | noch nicht gesucht | – |
+| Simbach | Bayern | 09279135 | – | – | noch nicht gesucht | – |
+| Simmelsdorf | Bayern | 09574158 | – | – | noch nicht gesucht | – |
+| Simmersfeld | Baden-Württemberg | 08235066 | – | – | noch nicht gesucht | – |
+| Simmozheim | Baden-Württemberg | 08235067 | – | – | noch nicht gesucht | – |
+| Simonswald | Baden-Württemberg | 08316042 | – | – | noch nicht gesucht | – |
+| Sinn | Hessen | 06532020 | – | – | noch nicht gesucht | – |
+| Sinntal | Hessen | 06435027 | – | – | noch nicht gesucht | – |
+| Sinzheim | Baden-Württemberg | 08216049 | – | – | noch nicht gesucht | – |
+| Sinzing | Bayern | 09375199 | – | – | noch nicht gesucht | – |
+| Sipplingen | Baden-Württemberg | 08435053 | – | – | noch nicht gesucht | – |
+| Sohland a.d.Spree | Sachsen | 14625560 | – | – | noch nicht gesucht | – |
+| Sollstedt | Thüringen | 16062049 | – | – | noch nicht gesucht | – |
+| Solnhofen | Bayern | 09577168 | – | – | noch nicht gesucht | – |
+| Sonnefeld | Bayern | 09473166 | – | – | noch nicht gesucht | – |
+| Sonnen | Bayern | 09275148 | – | – | noch nicht gesucht | – |
+| Sonnenbühl | Baden-Württemberg | 08415091 | – | – | noch nicht gesucht | – |
+| Sonnenstein | Thüringen | 16061117 | – | – | noch nicht gesucht | – |
+| Sontheim | Bayern | 09778196 | – | – | noch nicht gesucht | – |
+| Sontheim an der Brenz | Baden-Württemberg | 08135031 | – | – | noch nicht gesucht | – |
+| Soyen | Bayern | 09187176 | – | – | noch nicht gesucht | – |
+| Spechbach | Baden-Württemberg | 08226086 | – | – | noch nicht gesucht | – |
+| Speichersdorf | Bayern | 09472190 | – | – | noch nicht gesucht | – |
+| Spiegelau | Bayern | 09272149 | – | – | noch nicht gesucht | – |
+| Spiegelberg | Baden-Württemberg | 08119069 | – | – | noch nicht gesucht | – |
+| Spiesen-Elversberg | Saarland | 10043117 | – | – | noch nicht gesucht | – |
+| Spraitbach | Baden-Württemberg | 08136066 | – | – | noch nicht gesucht | – |
+| Spreetal | Sachsen | 14625570 | – | – | noch nicht gesucht | – |
+| St. Johann | Baden-Württemberg | 08415093 | – | – | noch nicht gesucht | – |
+| St. Leon-Rot | Baden-Württemberg | 08226103 | – | – | noch nicht gesucht | – |
+| St. Märgen | Baden-Württemberg | 08315094 | – | – | noch nicht gesucht | – |
+| St. Peter | Baden-Württemberg | 08315095 | – | – | noch nicht gesucht | – |
+| Stadtlauringen | Bayern | 09678181 | – | – | noch nicht gesucht | – |
+| Stahnsdorf | Brandenburg | 12069604 | – | – | noch nicht gesucht | – |
+| Staig | Baden-Württemberg | 08425138 | – | – | noch nicht gesucht | – |
+| Stammbach | Bayern | 09475175 | – | – | noch nicht gesucht | – |
+| Stammham | Bayern | 09176161 | – | – | noch nicht gesucht | – |
+| Starzach | Baden-Württemberg | 08416050 | – | – | noch nicht gesucht | – |
+| Stauchitz | Sachsen | 14627260 | – | – | noch nicht gesucht | – |
+| Steffenberg | Hessen | 06534019 | – | – | noch nicht gesucht | – |
+| Stegaurach | Bayern | 09471191 | – | – | noch nicht gesucht | – |
+| Stegen | Baden-Württemberg | 08315109 | – | – | noch nicht gesucht | – |
+| Steinach | Baden-Württemberg | 08317129 | – | – | noch nicht gesucht | – |
+| Steinach | Bayern | 09278190 | – | – | noch nicht gesucht | – |
+| Steinbach a.Wald | Bayern | 09476175 | – | – | noch nicht gesucht | – |
+| Steinberg | Sachsen | 14523380 | – | – | noch nicht gesucht | – |
+| Steinen | Baden-Württemberg | 08336084 | – | – | noch nicht gesucht | – |
+| Steinenbronn | Baden-Württemberg | 08115046 | – | – | noch nicht gesucht | – |
+| Steinhausen an der Rottum | Baden-Württemberg | 08426113 | – | – | noch nicht gesucht | – |
+| Steinheim am Albuch | Baden-Württemberg | 08135032 | – | – | noch nicht gesucht | – |
+| Steinhöring | Bayern | 09175137 | – | – | noch nicht gesucht | – |
+| Steinigtwolmsdorf | Sachsen | 14625590 | – | – | noch nicht gesucht | – |
+| Steinmauern | Baden-Württemberg | 08216052 | – | – | noch nicht gesucht | – |
+| Steinwiesen | Bayern | 09476177 | – | – | noch nicht gesucht | – |
+| Steißlingen | Baden-Württemberg | 08335077 | – | – | noch nicht gesucht | – |
+| Stephanskirchen | Bayern | 09187177 | – | – | noch nicht gesucht | – |
+| Stephansposching | Bayern | 09271151 | – | – | noch nicht gesucht | – |
+| Sternenfels | Baden-Württemberg | 08236061 | – | – | noch nicht gesucht | – |
+| Stetten | Baden-Württemberg | 08435054 | – | – | noch nicht gesucht | – |
+| Stetten am kalten Markt | Baden-Württemberg | 08437107 | – | – | noch nicht gesucht | – |
+| Stimpfach | Baden-Württemberg | 08127104 | – | – | noch nicht gesucht | – |
+| Stockelsdorf | Schleswig-Holstein | 01055040 | – | – | noch nicht gesucht | – |
+| Stockheim | Bayern | 09476178 | – | – | noch nicht gesucht | – |
+| Stockstadt a.Main | Bayern | 09671155 | – | – | noch nicht gesucht | – |
+| Stockstadt am Rhein | Hessen | 06433013 | – | – | noch nicht gesucht | – |
+| Straubenhardt | Baden-Württemberg | 08236072 | – | – | noch nicht gesucht | – |
+| Straßberg | Baden-Württemberg | 08417063 | – | – | noch nicht gesucht | – |
+| Straßlach-Dingharting | Bayern | 09184144 | – | – | noch nicht gesucht | – |
+| Striegistal | Sachsen | 14522540 | – | – | noch nicht gesucht | – |
+| Strullendorf | Bayern | 09471195 | – | – | noch nicht gesucht | – |
+| Stödtlen | Baden-Württemberg | 08136068 | – | – | noch nicht gesucht | – |
+| Stützengrün | Sachsen | 14521600 | – | – | noch nicht gesucht | – |
+| Sulzbach (Taunus) | Hessen | 06436012 | – | – | noch nicht gesucht | – |
+| Sulzbach a.Main | Bayern | 09676160 | – | – | noch nicht gesucht | – |
+| Sulzbach an der Murr | Baden-Württemberg | 08119075 | – | – | noch nicht gesucht | – |
+| Sulzbach-Laufen | Baden-Württemberg | 08127079 | – | – | noch nicht gesucht | – |
+| Sulzberg | Bayern | 09780140 | – | – | noch nicht gesucht | – |
+| Sulzemoos | Bayern | 09174146 | – | – | noch nicht gesucht | – |
+| Sulzfeld | Baden-Württemberg | 08215082 | – | – | noch nicht gesucht | – |
+| Surberg | Bayern | 09189148 | – | – | noch nicht gesucht | – |
+| Sylt | Schleswig-Holstein | 01054168 | – | – | noch nicht gesucht | – |
+| Söchtenau | Bayern | 09187174 | – | – | noch nicht gesucht | – |
+| Söhrewald | Hessen | 06633024 | – | – | noch nicht gesucht | – |
+| Sölden | Baden-Württemberg | 08315107 | – | – | noch nicht gesucht | – |
+| Südeichsfeld | Thüringen | 16064074 | – | – | noch nicht gesucht | – |
+| Süderholz | Mecklenburg-Vorpommern | 13073089 | – | – | noch nicht gesucht | – |
+| Südharz | Sachsen-Anhalt | 15087412 | – | – | noch nicht gesucht | – |
+| Sülzetal | Sachsen-Anhalt | 15083490 | – | – | noch nicht gesucht | – |
+| Süsel | Schleswig-Holstein | 01055041 | – | – | noch nicht gesucht | – |
+| Tacherting | Bayern | 09189149 | – | – | noch nicht gesucht | – |
+| Talheim | Baden-Württemberg | 08125094 | – | – | noch nicht gesucht | – |
+| Talheim | Baden-Württemberg | 08327048 | – | – | noch nicht gesucht | – |
+| Tangstedt | Schleswig-Holstein | 01062076 | – | – | noch nicht gesucht | – |
+| Tannhausen | Baden-Württemberg | 08136071 | – | – | noch nicht gesucht | – |
+| Tannheim | Baden-Württemberg | 08426117 | – | – | noch nicht gesucht | – |
+| Tapfheim | Bayern | 09779218 | – | – | noch nicht gesucht | – |
+| Tauche | Brandenburg | 12067493 | – | – | noch nicht gesucht | – |
+| Taufkirchen | Bayern | 09184145 | – | – | noch nicht gesucht | – |
+| Taufkirchen (Vils) | Bayern | 09177139 | – | – | noch nicht gesucht | – |
+| Tegernheim | Bayern | 09375204 | – | – | noch nicht gesucht | – |
+| Teisendorf | Bayern | 09172134 | – | – | noch nicht gesucht | – |
+| Teising | Bayern | 09171131 | – | – | noch nicht gesucht | – |
+| Teisnach | Bayern | 09276143 | – | – | noch nicht gesucht | – |
+| Teningen | Baden-Württemberg | 08316043 | – | – | noch nicht gesucht | – |
+| Tettau | Bayern | 09476179 | – | – | noch nicht gesucht | – |
+| Tettenweis | Bayern | 09275149 | – | – | noch nicht gesucht | – |
+| Teutschenthal | Sachsen-Anhalt | 15088365 | – | – | noch nicht gesucht | – |
+| Thallwitz | Sachsen | 14729380 | – | – | noch nicht gesucht | – |
+| Thalmassing | Bayern | 09375205 | – | – | noch nicht gesucht | – |
+| Thalmässing | Bayern | 09576148 | – | – | noch nicht gesucht | – |
+| Theilheim | Bayern | 09679193 | – | – | noch nicht gesucht | – |
+| Thermalbad Wiesenbad | Sachsen | 14521630 | – | – | noch nicht gesucht | – |
+| Thiendorf | Sachsen | 14627290 | – | – | noch nicht gesucht | – |
+| Thierhaupten | Bayern | 09772207 | – | – | noch nicht gesucht | – |
+| Tholey | Saarland | 10046118 | – | – | noch nicht gesucht | – |
+| Thurnau | Bayern | 09477157 | – | – | noch nicht gesucht | – |
+| Thyrnau | Bayern | 09275150 | – | – | noch nicht gesucht | – |
+| Thüngersheim | Bayern | 09679194 | – | – | noch nicht gesucht | – |
+| Tiefenbach | Baden-Württemberg | 08426118 | – | – | noch nicht gesucht | – |
+| Tiefenbach | Bayern | 09274182 | – | – | noch nicht gesucht | – |
+| Tiefenbach | Bayern | 09275151 | – | – | noch nicht gesucht | – |
+| Tiefenbronn | Baden-Württemberg | 08236062 | – | – | noch nicht gesucht | – |
+| Timmendorfer Strand | Schleswig-Holstein | 01055042 | – | – | noch nicht gesucht | – |
+| Titting | Bayern | 09176164 | – | – | noch nicht gesucht | – |
+| Todtmoos | Baden-Württemberg | 08337108 | – | – | noch nicht gesucht | – |
+| Traitsching | Bayern | 09372164 | – | – | noch nicht gesucht | – |
+| Trebur | Hessen | 06433014 | – | – | noch nicht gesucht | – |
+| Triefenstein | Bayern | 09677154 | – | – | noch nicht gesucht | – |
+| Triftern | Bayern | 09277149 | – | – | noch nicht gesucht | – |
+| Tunau | Baden-Württemberg | 08336089 | – | – | noch nicht gesucht | – |
+| Tuningen | Baden-Württemberg | 08326061 | – | – | noch nicht gesucht | – |
+| Tuntenhausen | Bayern | 09187179 | – | – | noch nicht gesucht | – |
+| Tussenhausen | Bayern | 09778204 | – | – | noch nicht gesucht | – |
+| Tutzing | Bayern | 09188141 | – | – | noch nicht gesucht | – |
+| Twistetal | Hessen | 06635018 | – | – | noch nicht gesucht | – |
+| Täferrot | Baden-Württemberg | 08136070 | – | – | noch nicht gesucht | – |
+| Türkenfeld | Bayern | 09179149 | – | – | noch nicht gesucht | – |
+| Tüßling | Bayern | 09171133 | – | – | noch nicht gesucht | – |
+| Ubstadt-Weiher | Baden-Württemberg | 08215084 | – | – | noch nicht gesucht | – |
+| Uckerland | Brandenburg | 12073579 | – | – | noch nicht gesucht | – |
+| Uffing a.Staffelsee | Bayern | 09180134 | – | – | noch nicht gesucht | – |
+| Uhldingen-Mühlhofen | Baden-Württemberg | 08435066 | – | – | noch nicht gesucht | – |
+| Uhlstädt-Kirchhasel | Thüringen | 16073109 | – | – | noch nicht gesucht | – |
+| Umkirch | Baden-Württemberg | 08315115 | – | – | noch nicht gesucht | – |
+| Ummendorf | Baden-Württemberg | 08426120 | – | – | noch nicht gesucht | – |
+| Unlingen | Baden-Württemberg | 08426121 | – | – | noch nicht gesucht | – |
+| Unstrut-Hainich | Thüringen | 16064076 | – | – | noch nicht gesucht | – |
+| Unstruttal | Thüringen | 16064071 | – | – | noch nicht gesucht | – |
+| Unterbreizbach | Thüringen | 16063078 | – | – | noch nicht gesucht | – |
+| Unterdietfurt | Bayern | 09277151 | – | – | noch nicht gesucht | – |
+| Untereisesheim | Baden-Württemberg | 08125096 | – | – | noch nicht gesucht | – |
+| Unterensingen | Baden-Württemberg | 08116068 | – | – | noch nicht gesucht | – |
+| Unterföhring | Bayern | 09184147 | – | – | noch nicht gesucht | – |
+| Untergriesbach | Bayern | 09275153 | – | – | noch nicht gesucht | – |
+| Untergruppenbach | Baden-Württemberg | 08125098 | – | – | noch nicht gesucht | – |
+| Unterkirnach | Baden-Württemberg | 08326065 | – | – | noch nicht gesucht | – |
+| Untermarchtal | Baden-Württemberg | 08425123 | – | – | noch nicht gesucht | – |
+| Untermerzbach | Bayern | 09674210 | – | – | noch nicht gesucht | – |
+| Untermünkheim | Baden-Württemberg | 08127086 | – | – | noch nicht gesucht | – |
+| Unterpleichfeld | Bayern | 09679201 | – | – | noch nicht gesucht | – |
+| Unterreichenbach | Baden-Württemberg | 08235073 | – | – | noch nicht gesucht | – |
+| Unterschneidheim | Baden-Württemberg | 08136075 | – | – | noch nicht gesucht | – |
+| Untersiemau | Bayern | 09473170 | – | – | noch nicht gesucht | – |
+| Unterstadion | Baden-Württemberg | 08425124 | – | – | noch nicht gesucht | – |
+| Unterwachingen | Baden-Württemberg | 08425125 | – | – | noch nicht gesucht | – |
+| Unterwaldhausen | Baden-Württemberg | 08436077 | – | – | noch nicht gesucht | – |
+| Unterwellenborn | Thüringen | 16073111 | – | – | noch nicht gesucht | – |
+| Unterwössen | Bayern | 09189160 | – | – | noch nicht gesucht | – |
+| Urbach | Baden-Württemberg | 08119076 | – | – | noch nicht gesucht | – |
+| Ursberg | Bayern | 09774116 | – | – | noch nicht gesucht | – |
+| Ursensollen | Bayern | 09371154 | – | – | noch nicht gesucht | – |
+| Uttenweiler | Baden-Württemberg | 08426124 | – | – | noch nicht gesucht | – |
+| Utting am Ammersee | Bayern | 09181144 | – | – | noch nicht gesucht | – |
+| Utzenfeld | Baden-Württemberg | 08336090 | – | – | noch nicht gesucht | – |
+| Valley | Bayern | 09182133 | – | – | noch nicht gesucht | – |
+| Veilsdorf | Thüringen | 16069053 | – | – | noch nicht gesucht | – |
+| Veitshöchheim | Bayern | 09679202 | – | – | noch nicht gesucht | – |
+| Viereth-Trunstadt | Bayern | 09471207 | – | – | noch nicht gesucht | – |
+| Vierkirchen | Bayern | 09174150 | – | – | noch nicht gesucht | – |
+| Villingendorf | Baden-Württemberg | 08325060 | – | – | noch nicht gesucht | – |
+| Villmar | Hessen | 06533015 | – | – | noch nicht gesucht | – |
+| Vilsheim | Bayern | 09274185 | – | – | noch nicht gesucht | – |
+| Vogt | Baden-Württemberg | 08436078 | – | – | noch nicht gesucht | – |
+| Vogtareuth | Bayern | 09187181 | – | – | noch nicht gesucht | – |
+| Volkertshausen | Baden-Württemberg | 08335081 | – | – | noch nicht gesucht | – |
+| Vöhl | Hessen | 06635019 | – | – | noch nicht gesucht | – |
+| Vöhringen | Baden-Württemberg | 08325061 | – | – | noch nicht gesucht | – |
+| Vörstetten | Baden-Württemberg | 08316045 | – | – | noch nicht gesucht | – |
+| Waakirchen | Bayern | 09182134 | – | – | noch nicht gesucht | – |
+| Wabern | Hessen | 06634025 | – | – | noch nicht gesucht | – |
+| Wachau | Sachsen | 14625600 | – | – | noch nicht gesucht | – |
+| Wachenroth | Bayern | 09572160 | – | – | noch nicht gesucht | – |
+| Wackersberg | Bayern | 09173145 | – | – | noch nicht gesucht | – |
+| Wadgassen | Saarland | 10044120 | – | – | noch nicht gesucht | – |
+| Waffenbrunn | Bayern | 09372168 | – | – | noch nicht gesucht | – |
+| Waidhaus | Bayern | 09374164 | – | – | noch nicht gesucht | – |
+| Waigolshausen | Bayern | 09678190 | – | – | noch nicht gesucht | – |
+| Wain | Baden-Württemberg | 08426125 | – | – | noch nicht gesucht | – |
+| Wald | Baden-Württemberg | 08437118 | – | – | noch nicht gesucht | – |
+| Wald-Michelbach | Hessen | 06431021 | – | – | noch nicht gesucht | – |
+| Waldachtal | Baden-Württemberg | 08237074 | – | – | noch nicht gesucht | – |
+| Waldaschaff | Bayern | 09671156 | – | – | noch nicht gesucht | – |
+| Waldbronn | Baden-Württemberg | 08215110 | – | – | noch nicht gesucht | – |
+| Waldbrunn | Baden-Württemberg | 08225118 | – | – | noch nicht gesucht | – |
+| Waldbrunn | Bayern | 09679204 | – | – | noch nicht gesucht | – |
+| Waldbrunn (Westerwald) | Hessen | 06533016 | – | – | noch nicht gesucht | – |
+| Waldburg | Baden-Württemberg | 08436079 | – | – | noch nicht gesucht | – |
+| Waldbüttelbrunn | Bayern | 09679205 | – | – | noch nicht gesucht | – |
+| Walddorfhäslach | Baden-Württemberg | 08415087 | – | – | noch nicht gesucht | – |
+| Waldems | Hessen | 06439016 | – | – | noch nicht gesucht | – |
+| Waldsolms | Hessen | 06532022 | – | – | noch nicht gesucht | – |
+| Waldstetten | Baden-Württemberg | 08136079 | – | – | noch nicht gesucht | – |
+| Waldthurn | Bayern | 09374165 | – | – | noch nicht gesucht | – |
+| Walheim | Baden-Württemberg | 08118074 | – | – | noch nicht gesucht | – |
+| Wallerfangen | Saarland | 10044121 | – | – | noch nicht gesucht | – |
+| Wallersdorf | Bayern | 09279137 | – | – | noch nicht gesucht | – |
+| Wallgau | Bayern | 09180136 | – | – | noch nicht gesucht | – |
+| Wallhausen | Baden-Württemberg | 08127091 | – | – | noch nicht gesucht | – |
+| Walluf | Hessen | 06439017 | – | – | noch nicht gesucht | – |
+| Walsdorf | Bayern | 09471208 | – | – | noch nicht gesucht | – |
+| Waltenhofen | Bayern | 09780143 | – | – | noch nicht gesucht | – |
+| Walzbachtal | Baden-Württemberg | 08215089 | – | – | noch nicht gesucht | – |
+| Wangen | Baden-Württemberg | 08117055 | – | – | noch nicht gesucht | – |
+| Wannweil | Baden-Württemberg | 08415080 | – | – | noch nicht gesucht | – |
+| Warmensteinach | Bayern | 09472198 | – | – | noch nicht gesucht | – |
+| Warngau | Bayern | 09182136 | – | – | noch nicht gesucht | – |
+| Wartenberg | Hessen | 06535019 | – | – | noch nicht gesucht | – |
+| Warthausen | Baden-Württemberg | 08426128 | – | – | noch nicht gesucht | – |
+| Wartmannsroth | Bayern | 09672161 | – | – | noch nicht gesucht | – |
+| Wasbek | Schleswig-Holstein | 01058169 | – | – | noch nicht gesucht | – |
+| Wasserburg (Bodensee) | Bayern | 09776128 | – | – | noch nicht gesucht | – |
+| Wasserlosen | Bayern | 09678192 | – | – | noch nicht gesucht | – |
+| Wechselburg | Sachsen | 14522580 | – | – | noch nicht gesucht | – |
+| Wegscheid | Bayern | 09275156 | – | – | noch nicht gesucht | – |
+| Wehingen | Baden-Württemberg | 08327051 | – | – | noch nicht gesucht | – |
+| Wehretal | Hessen | 06636014 | – | – | noch nicht gesucht | – |
+| Wehrheim | Hessen | 06434012 | – | – | noch nicht gesucht | – |
+| Wehringen | Bayern | 09772215 | – | – | noch nicht gesucht | – |
+| Weibersbrunn | Bayern | 09671157 | – | – | noch nicht gesucht | – |
+| Weichering | Bayern | 09185168 | – | – | noch nicht gesucht | – |
+| Weichs | Bayern | 09174151 | – | – | noch nicht gesucht | – |
+| Weidenstetten | Baden-Württemberg | 08425130 | – | – | noch nicht gesucht | – |
+| Weidhausen b.Coburg | Bayern | 09473174 | – | – | noch nicht gesucht | – |
+| Weil | Bayern | 09181145 | – | – | noch nicht gesucht | – |
+| Weil im Schönbuch | Baden-Württemberg | 08115051 | – | – | noch nicht gesucht | – |
+| Weilbach | Bayern | 09676165 | – | – | noch nicht gesucht | – |
+| Weilen unter den Rinnen | Baden-Württemberg | 08417071 | – | – | noch nicht gesucht | – |
+| Weiler-Simmerberg | Bayern | 09776129 | – | – | noch nicht gesucht | – |
+| Weilheim | Baden-Württemberg | 08337118 | – | – | noch nicht gesucht | – |
+| Weilmünster | Hessen | 06533018 | – | – | noch nicht gesucht | – |
+| Weilrod | Hessen | 06434013 | – | – | noch nicht gesucht | – |
+| Weimar (Lahn) | Hessen | 06534020 | – | – | noch nicht gesucht | – |
+| Weinbach | Hessen | 06533019 | – | – | noch nicht gesucht | – |
+| Weinböhla | Sachsen | 14627310 | – | – | noch nicht gesucht | – |
+| Weingarten (Baden) | Baden-Württemberg | 08215090 | – | – | noch nicht gesucht | – |
+| Weischlitz | Sachsen | 14523450 | – | – | noch nicht gesucht | – |
+| Weisenbach | Baden-Württemberg | 08216059 | – | – | noch nicht gesucht | – |
+| Weisendorf | Bayern | 09572164 | – | – | noch nicht gesucht | – |
+| Weiskirchen | Saarland | 10042117 | – | – | noch nicht gesucht | – |
+| Weissach | Baden-Württemberg | 08115052 | – | – | noch nicht gesucht | – |
+| Weissach im Tal | Baden-Württemberg | 08119083 | – | – | noch nicht gesucht | – |
+| Weisweil | Baden-Württemberg | 08316049 | – | – | noch nicht gesucht | – |
+| Weitramsdorf | Bayern | 09473175 | – | – | noch nicht gesucht | – |
+| Weißbach | Baden-Württemberg | 08126086 | – | – | noch nicht gesucht | – |
+| Weißenborn | Hessen | 06636015 | – | – | noch nicht gesucht | – |
+| Weißenbrunn | Bayern | 09476185 | – | – | noch nicht gesucht | – |
+| Wellendingen | Baden-Württemberg | 08325064 | – | – | noch nicht gesucht | – |
+| Wellheim | Bayern | 09176166 | – | – | noch nicht gesucht | – |
+| Wembach | Baden-Württemberg | 08336094 | – | – | noch nicht gesucht | – |
+| Wendelstein | Bayern | 09576151 | – | – | noch nicht gesucht | – |
+| Wentorf bei Hamburg | Schleswig-Holstein | 01053129 | – | – | noch nicht gesucht | – |
+| Wenzenbach | Bayern | 09375208 | – | – | noch nicht gesucht | – |
+| Werbach | Baden-Württemberg | 08128128 | – | – | noch nicht gesucht | – |
+| Wermsdorf | Sachsen | 14730330 | – | – | noch nicht gesucht | – |
+| Wernberg-Köblitz | Bayern | 09376150 | – | – | noch nicht gesucht | – |
+| Werneck | Bayern | 09678193 | – | – | noch nicht gesucht | – |
+| Wertach | Bayern | 09780145 | – | – | noch nicht gesucht | – |
+| Werther | Thüringen | 16062063 | – | – | noch nicht gesucht | – |
+| Wesertal | Hessen | 06633030 | – | – | noch nicht gesucht | – |
+| Wessobrunn | Bayern | 09190158 | – | – | noch nicht gesucht | – |
+| Westerheim | Baden-Württemberg | 08425134 | – | – | noch nicht gesucht | – |
+| Westerstetten | Baden-Württemberg | 08425135 | – | – | noch nicht gesucht | – |
+| Westhausen | Baden-Württemberg | 08136082 | – | – | noch nicht gesucht | – |
+| Wettenberg | Hessen | 06531018 | – | – | noch nicht gesucht | – |
+| Wettstetten | Bayern | 09176167 | – | – | noch nicht gesucht | – |
+| Weyarn | Bayern | 09182137 | – | – | noch nicht gesucht | – |
+| Weßling | Bayern | 09188144 | – | – | noch nicht gesucht | – |
+| Wiedemar | Sachsen | 14730340 | – | – | noch nicht gesucht | – |
+| Wieden | Baden-Württemberg | 08336096 | – | – | noch nicht gesucht | – |
+| Wielenbach | Bayern | 09190159 | – | – | noch nicht gesucht | – |
+| Wiernsheim | Baden-Württemberg | 08236065 | – | – | noch nicht gesucht | – |
+| Wiesenbach | Baden-Württemberg | 08226097 | – | – | noch nicht gesucht | – |
+| Wiesenburg/Mark | Brandenburg | 12069665 | – | – | noch nicht gesucht | – |
+| Wiesenfelden | Bayern | 09278197 | – | – | noch nicht gesucht | – |
+| Wiesent | Bayern | 09375209 | – | – | noch nicht gesucht | – |
+| Wiesenttal | Bayern | 09474176 | – | – | noch nicht gesucht | – |
+| Wiggensbach | Bayern | 09780146 | – | – | noch nicht gesucht | – |
+| Wildeck | Hessen | 06632020 | – | – | noch nicht gesucht | – |
+| Wildflecken | Bayern | 09672163 | – | – | noch nicht gesucht | – |
+| Wildpoldsried | Bayern | 09780147 | – | – | noch nicht gesucht | – |
+| Wilhelmsdorf | Baden-Württemberg | 08436083 | – | – | noch nicht gesucht | – |
+| Wilhelmsfeld | Baden-Württemberg | 08226099 | – | – | noch nicht gesucht | – |
+| Wilhelmsthal | Bayern | 09476189 | – | – | noch nicht gesucht | – |
+| Wilhermsdorf | Bayern | 09573133 | – | – | noch nicht gesucht | – |
+| Willingen (Upland) | Hessen | 06635022 | – | – | noch nicht gesucht | – |
+| Willingshausen | Hessen | 06634026 | – | – | noch nicht gesucht | – |
+| Willmering | Bayern | 09372175 | – | – | noch nicht gesucht | – |
+| Willstätt | Baden-Württemberg | 08317141 | – | – | noch nicht gesucht | – |
+| Wimsheim | Baden-Württemberg | 08236067 | – | – | noch nicht gesucht | – |
+| Winden im Elztal | Baden-Württemberg | 08316055 | – | – | noch nicht gesucht | – |
+| Windorf | Bayern | 09275159 | – | – | noch nicht gesucht | – |
+| Winhöring | Bayern | 09171137 | – | – | noch nicht gesucht | – |
+| Winkelhaid | Bayern | 09574164 | – | – | noch nicht gesucht | – |
+| Winterbach | Baden-Württemberg | 08119086 | – | – | noch nicht gesucht | – |
+| Winterlingen | Baden-Württemberg | 08417075 | – | – | noch nicht gesucht | – |
+| Winzer | Bayern | 09271153 | – | – | noch nicht gesucht | – |
+| Wirsberg | Bayern | 09477163 | – | – | noch nicht gesucht | – |
+| Wittibreut | Bayern | 09277152 | – | – | noch nicht gesucht | – |
+| Wittighausen | Baden-Württemberg | 08128137 | – | – | noch nicht gesucht | – |
+| Wittlingen | Baden-Württemberg | 08336100 | – | – | noch nicht gesucht | – |
+| Wittnau | Baden-Württemberg | 08315125 | – | – | noch nicht gesucht | – |
+| Wohratal | Hessen | 06534022 | – | – | noch nicht gesucht | – |
+| Wolfegg | Baden-Württemberg | 08436085 | – | – | noch nicht gesucht | – |
+| Wolfschlugen | Baden-Württemberg | 08116073 | – | – | noch nicht gesucht | – |
+| Wolnzach | Bayern | 09186162 | – | – | noch nicht gesucht | – |
+| Wolpertshausen | Baden-Württemberg | 08127099 | – | – | noch nicht gesucht | – |
+| Wolpertswende | Baden-Württemberg | 08436087 | – | – | noch nicht gesucht | – |
+| Woltersdorf | Brandenburg | 12067544 | – | – | noch nicht gesucht | – |
+| Wurmannsquick | Bayern | 09277153 | – | – | noch nicht gesucht | – |
+| Wurmberg | Baden-Württemberg | 08236068 | – | – | noch nicht gesucht | – |
+| Wurmlingen | Baden-Württemberg | 08327054 | – | – | noch nicht gesucht | – |
+| Wusterhausen/Dosse | Brandenburg | 12068477 | – | – | noch nicht gesucht | – |
+| Wustermark | Brandenburg | 12063357 | – | – | noch nicht gesucht | – |
+| Wutach | Baden-Württemberg | 08337127 | – | – | noch nicht gesucht | – |
+| Wutha-Farnroda | Thüringen | 16063092 | – | – | noch nicht gesucht | – |
+| Wutöschingen | Baden-Württemberg | 08337123 | – | – | noch nicht gesucht | – |
+| Wyhl am Kaiserstuhl | Baden-Württemberg | 08316051 | – | – | noch nicht gesucht | – |
+| Wäschenbeuren | Baden-Württemberg | 08117053 | – | – | noch nicht gesucht | – |
+| Wölfersheim | Hessen | 06440024 | – | – | noch nicht gesucht | – |
+| Wöllstadt | Hessen | 06440025 | – | – | noch nicht gesucht | – |
+| Wörnersberg | Baden-Württemberg | 08237072 | – | – | noch nicht gesucht | – |
+| Wört | Baden-Württemberg | 08136084 | – | – | noch nicht gesucht | – |
+| Wörthsee | Bayern | 09188145 | – | – | noch nicht gesucht | – |
+| Wüstenrot | Baden-Württemberg | 08125107 | – | – | noch nicht gesucht | – |
+| Zaberfeld | Baden-Württemberg | 08125108 | – | – | noch nicht gesucht | – |
+| Zaisenhausen | Baden-Württemberg | 08215094 | – | – | noch nicht gesucht | – |
+| Zandt | Bayern | 09372177 | – | – | noch nicht gesucht | – |
+| Zapfendorf | Bayern | 09471214 | – | – | noch nicht gesucht | – |
+| Zeilarn | Bayern | 09277154 | – | – | noch nicht gesucht | – |
+| Zeithain | Sachsen | 14627360 | – | – | noch nicht gesucht | – |
+| Zeitlarn | Bayern | 09375213 | – | – | noch nicht gesucht | – |
+| Zeitlofs | Bayern | 09672166 | – | – | noch nicht gesucht | – |
+| Zell a.Main | Bayern | 09679209 | – | – | noch nicht gesucht | – |
+| Zell im Fichtelgebirge | Bayern | 09475189 | – | – | noch nicht gesucht | – |
+| Zell unter Aichelberg | Baden-Württemberg | 08117060 | – | – | noch nicht gesucht | – |
+| Zeuthen | Brandenburg | 12061572 | – | – | noch nicht gesucht | – |
+| Zimmern ob Rottweil | Baden-Württemberg | 08325069 | – | – | noch nicht gesucht | – |
+| Zimmern unter der Burg | Baden-Württemberg | 08417078 | – | – | noch nicht gesucht | – |
+| Zingst | Mecklenburg-Vorpommern | 13073105 | – | – | noch nicht gesucht | – |
+| Zorneding | Bayern | 09175139 | – | – | noch nicht gesucht | – |
+| Zusmarshausen | Bayern | 09772223 | – | – | noch nicht gesucht | – |
+| Zuzenhausen | Baden-Württemberg | 08226101 | – | – | noch nicht gesucht | – |
+| Zweiflingen | Baden-Württemberg | 08126094 | – | – | noch nicht gesucht | – |
+| Zwiefalten | Baden-Württemberg | 08415085 | – | – | noch nicht gesucht | – |
+| Zwingenberg | Baden-Württemberg | 08225113 | – | – | noch nicht gesucht | – |
+| Öhningen | Baden-Württemberg | 08335061 | – | – | noch nicht gesucht | – |
+| Ölbronn-Dürrn | Baden-Württemberg | 08236075 | – | – | noch nicht gesucht | – |
+| Öllingen | Baden-Württemberg | 08425092 | – | – | noch nicht gesucht | – |
+| Öpfingen | Baden-Württemberg | 08425093 | – | – | noch nicht gesucht | – |
+| Ötigheim | Baden-Württemberg | 08216039 | – | – | noch nicht gesucht | – |
+| Ötisheim | Baden-Württemberg | 08236050 | – | – | noch nicht gesucht | – |
+| Überherrn | Saarland | 10044119 | – | – | noch nicht gesucht | – |
+| Übersee | Bayern | 09189159 | – | – | noch nicht gesucht | – |
+| Üchtelhausen | Bayern | 09678186 | – | – | noch nicht gesucht | – |
+| Ühlingen-Birkendorf | Baden-Württemberg | 08337128 | – | – | noch nicht gesucht | – |
+
 ## Nicht verwenden
 
 Bilder, die Namensnennung verlangen (CC BY, CC BY-SA, GFDL), zum Beispiel die Kölner-Dom-, Dortmund-Stadion- und Stuttgart-Schloss-Fotos auf Wikimedia Commons. Bildagenturen (Getty, Alamy, Photo12, Adobe Stock) sind kostenpflichtig.
