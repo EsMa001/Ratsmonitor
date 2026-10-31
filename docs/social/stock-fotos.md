@@ -436,7 +436,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 393 | Friedberg (Hessen) | 06440008 | 3688760 | https://pixabay.com/photos/friedberg-hesse-castle-wall-tower-3688760/ | Pixabay-Lizenz, Burg Friedberg | 7 |
 | 394 | Taunusstein | 06439015 | 2702319 | https://pixabay.com/photos/wehener-castle-blow-taunusstein-2702319/ | Pixabay-Lizenz; Wehener Burg/Schloss, Taunusstein (nur aus dem Titel, Bild nicht geprüft) | 7 |
 | 395 | Weil am Rhein | 08336091 | – | – | kein Bild gefunden | – |
-| 396 | Einbeck | 03155013 | – | – | kein Bild gefunden | – |
+| 396 | Einbeck | 03155013 | 5010968 | https://pixabay.com/de/photos/fachwerk-geb%C3%A4ude-architektur-5010968/ | Pixabay-Lizenz; Fachwerkgebäude, Schlagwort Einbeck | 6 |
 | 397 | Osterholz-Scharmbeck | 03356007 | 2463074 | https://pixabay.com/de/photos/w%C3%BCmme-fluss-bremen-osterholz-2463074/ | Pixabay-Lizenz, Wümme, Ortsbezug nur über "Osterholz" | 4 |
 | 398 | Bad Hersfeld | 06632002 | 1934781 | https://pixabay.com/de/photos/bad-hersfeld-lullusfest-riesenrad-1934781/ | Pixabay-Lizenz, Lullusfest mit Riesenrad | 5 |
 | 399 | Ennepetal | 05954008 | 4673131 | https://pixabay.com/de/photos/panorama-ennepetal-hohenstein-4673131/ | Pixabay-Lizenz, Panorama Hohenstein | 6 |
@@ -460,7 +460,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 410 | Rietberg | 05754032 | – | – | kein Bild gefunden | – |
 | 411 | Wedemark | 03241019 | – | – | kein Bild gefunden | – |
 | 412 | Bad Zwischenahn | 03451002 | 5086428 | https://pixabay.com/photos/bad-zwischenahn-r%C3%BCgenwalder-m%C3%BChle-5086428/ | Pixabay-Lizenz, Rügenwalder Mühle (eher Firmengebäude) | 5 |
-| 413 | Rendsburg | 01058135 | – | – | kein Bild gefunden | – |
+| 413 | Rendsburg | 01058135 | 1504083 | https://pixabay.com/de/photos/schwebef%C3%A4hre-rendsburg-1504083/ | Pixabay-Lizenz; Schwebefähre Rendsburg | 8 |
 | 414 | Werne | 05978040 | – | – | kein Bild gefunden | – |
 | 415 | Waltrop | 05562036 | 22821155 | https://www.pexels.com/photo/schiffshebewerk-waltrop-22821155/ | Pexels-Lizenz, Schiffshebewerk | 7 |
 | 416 | Oelde | 05570028 | – | – | kein Bild gefunden | – |
@@ -477,7 +477,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 427 | Bühl (Baden) | 08216007 | 344226 | https://pixabay.com/photos/windeck-castle-b%C3%BChl-to-bathe-344226/ | Pixabay-Lizenz; Burgruine Windeck über Weinberg, Bühl im URL | 6 |
 | 428 | Springe | 03241017 | – | – | kein Bild gefunden | – |
 | 429 | Kelkheim (Taunus) | 06436008 | 2670780 | https://pixabay.com/photos/old-town-hall-kelkheim-taunus-hesse-2670780/ | Pixabay-Lizenz, Historisches Rathaus | 8 |
-| 430 | Riesa | 14627230 | – | – | kein Bild gefunden | – |
+| 430 | Riesa | 14627230 | 3415451 | https://pixabay.com/de/photos/riesa-stadtpark-b%C3%A4ume-herbst-3415451/ | Pixabay-Lizenz; Stadtpark Riesa im Herbst | 6 |
 | 431 | Meißen | 14627140 | 3398170 | https://pixabay.com/photos/meissen-elbe-saxony-albrechtsburg-3398170/ | Pixabay-Lizenz, Elbe, Albrechtsburg | 8 |
 | 432 | Rösrath | 05378028 | 5028434 | https://pixabay.com/photos/cologne-r%C3%B6srath-castle-owl-broich-5028434/ | Pixabay-Lizenz, Schloss Eulenbroich | 7 |
 | 433 | Emmendingen | 08316011 | 21358301 | https://www.pexels.com/photo/hochburg-castle-ruins-in-emmendingen-in-germany-21358301/ | Pexels-Lizenz, Ruine Hochburg | 7 |
