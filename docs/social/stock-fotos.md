@@ -2623,7 +2623,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Gemmrigheim | Baden-Württemberg | 08118018 | – | – | noch nicht gesucht | – |
 | Gemünden (Felda) | Hessen | 06535005 | – | – | noch nicht gesucht | – |
 | Georgensgmünd | Bayern | 09576121 | – | – | noch nicht gesucht | – |
-| Geratal | Thüringen | 16070057 | – | – | noch nicht gesucht | – |
+| Geratal | Thüringen | 16070057 | 4465878 | https://pixabay.com/photos/geratal-valley-outlook-geratal-view-4465878/ | Pixabay-Lizenz; Blick ins Geratal (Titel/Schlagwörter "geratal view") | 6 |
 | Gerbrunn | Bayern | 09679136 | – | – | noch nicht gesucht | – |
 | Germaringen | Bayern | 09777130 | – | – | noch nicht gesucht | – |
 | Geroldsgrün | Bayern | 09475128 | – | – | noch nicht gesucht | – |
@@ -2633,13 +2633,13 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Gerstungen | Thüringen | 16063097 | – | – | noch nicht gesucht | – |
 | Gilserberg | Hessen | 06634006 | – | – | noch nicht gesucht | – |
 | Gingen an der Fils | Baden-Württemberg | 08117025 | – | – | noch nicht gesucht | – |
-| Glashütten | Hessen | 06434003 | – | – | noch nicht gesucht | – |
+| Glashütten | Hessen | 06434003 | 1768923 | https://pixabay.com/de/photos/glash%C3%BCtten-glaspfad-taunus-glasbild-1768923/ | Pixabay-Lizenz; Glaspfad Glashütten im Taunus | 6 |
 | Glattbach | Bayern | 09671120 | – | – | noch nicht gesucht | – |
 | Glatten | Baden-Württemberg | 08237030 | – | – | noch nicht gesucht | – |
 | Glauburg | Hessen | 06440010 | – | – | noch nicht gesucht | – |
 | Glienicke/Nordbahn | Brandenburg | 12065096 | – | – | noch nicht gesucht | – |
-| Glottertal | Baden-Württemberg | 08315041 | – | – | noch nicht gesucht | – |
-| Gmund a.Tegernsee | Bayern | 09182116 | – | – | noch nicht gesucht | – |
+| Glottertal | Baden-Württemberg | 08315041 | 476102 | https://pixabay.com/photos/torrent-bach-glottertal-winter-476102/ | Pixabay-Lizenz; Bach im Winter, Titel nennt Glottertal | 6 |
+| Gmund a.Tegernsee | Bayern | 09182116 | 4271159 | https://pixabay.com/de/photos/tegernsee-gmund-bayern-steg-blau-4271159/ | Pixabay-Lizenz; Tegernsee mit Holzsteg, Schlagwort Gmund | 7 |
 | Gochsheim | Bayern | 09678135 | – | – | noch nicht gesucht | – |
 | Goldbach | Bayern | 09671121 | – | – | noch nicht gesucht | – |
 | Gomadingen | Baden-Württemberg | 08415027 | – | – | noch nicht gesucht | – |
@@ -2648,9 +2648,9 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Gorxheimertal | Hessen | 06431008 | – | – | noch nicht gesucht | – |
 | Gosheim | Baden-Württemberg | 08327019 | – | – | noch nicht gesucht | – |
 | Gottenheim | Baden-Württemberg | 08315043 | – | – | noch nicht gesucht | – |
-| Graal-Müritz | Mecklenburg-Vorpommern | 13072036 | – | – | noch nicht gesucht | – |
+| Graal-Müritz | Mecklenburg-Vorpommern | 13072036 | 2503247 | https://pixabay.com/de/photos/seebrücke-graal-müritz-ostsee-2503247/ | Pixabay-Lizenz; Seebrücke Graal-Müritz, Ostsee | 9 |
 | Graben | Bayern | 09772149 | – | – | noch nicht gesucht | – |
-| Grabenstetten | Baden-Württemberg | 08415028 | – | – | noch nicht gesucht | – |
+| Grabenstetten | Baden-Württemberg | 08415028 | 767557 | https://pixabay.com/photos/falkensteiner-cave-cave-caves-portal-767557/ | Pixabay-Lizenz; Falkensteiner Höhle (liegt bei Grabenstetten), Fund über die Suche "Grabenstetten" | 6 |
 | Grabenstätt | Bayern | 09189119 | – | – | noch nicht gesucht | – |
 | Grabfeld | Thüringen | 16066094 | – | – | noch nicht gesucht | – |
 | Grafenau | Baden-Württemberg | 08115054 | – | – | noch nicht gesucht | – |
