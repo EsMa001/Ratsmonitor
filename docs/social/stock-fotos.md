@@ -3898,11 +3898,11 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Warngau | Bayern | 09182136 | – | – | noch nicht gesucht | – |
 | Wartenberg | Hessen | 06535019 | – | – | noch nicht gesucht | – |
 | Warthausen | Baden-Württemberg | 08426128 | – | – | noch nicht gesucht | – |
-| Wartmannsroth | Bayern | 09672161 | – | – | noch nicht gesucht | – |
+| Wartmannsroth | Bayern | 09672161 | 106874 | https://pixabay.com/tr/photos/wartmannsroth-almanya-%C5%9Felale-dere-106874/ | Pixabay-Lizenz; Wasserfall/Bach bei Wartmannsroth (Titel und Schlagwörter nennen den Ort) | 7 |
 | Wasbek | Schleswig-Holstein | 01058169 | – | – | noch nicht gesucht | – |
-| Wasserburg (Bodensee) | Bayern | 09776128 | – | – | noch nicht gesucht | – |
+| Wasserburg (Bodensee) | Bayern | 09776128 | 108588 | https://pixabay.com/de/photos/bodensee-wasserburg-see-108588/ | Pixabay-Lizenz; Bodensee bei Wasserburg (nur aus dem Titel geschätzt) | 6 |
 | Wasserlosen | Bayern | 09678192 | – | – | noch nicht gesucht | – |
-| Wechselburg | Sachsen | 14522580 | – | – | noch nicht gesucht | – |
+| Wechselburg | Sachsen | 14522580 | 1610454 | https://pixabay.com/de/photos/kloster-wechselburg-sachsen-1610454/ | Pixabay-Lizenz; Kloster Wechselburg, Sachsen (Alternative: 1610442 Klostergarten Wechselburg) | 8 |
 | Wegscheid | Bayern | 09275156 | – | – | noch nicht gesucht | – |
 | Wehingen | Baden-Württemberg | 08327051 | – | – | noch nicht gesucht | – |
 | Wehretal | Hessen | 06636014 | – | – | noch nicht gesucht | – |
