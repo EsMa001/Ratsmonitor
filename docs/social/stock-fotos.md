@@ -2699,7 +2699,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Grundsheim | Baden-Württemberg | 08425052 | – | – | noch nicht gesucht | – |
 | Grävenwiesbach | Hessen | 06434004 | – | – | noch nicht gesucht | – |
 | Grömbach | Baden-Württemberg | 08237032 | – | – | noch nicht gesucht | – |
-| Grömitz | Schleswig-Holstein | 01055016 | – | – | noch nicht gesucht | – |
+| Grömitz | Schleswig-Holstein | 01055016 | 2710333 | https://pixabay.com/photos/gr%C3%B6mitz-cliff-beach-baltic-sea-sea-2710333/ | Pixabay-Lizenz; Steilküste und Strand in Grömitz (Ostsee). Alternative: 2711560 (Seebrücke Grömitz). | 8 |
 | Grünheide (Mark) | Brandenburg | 12067201 | – | – | noch nicht gesucht | – |
 | Grünkraut | Baden-Württemberg | 08436039 | – | – | noch nicht gesucht | – |
 | Gschwend | Baden-Württemberg | 08136027 | – | – | noch nicht gesucht | – |
@@ -2710,19 +2710,19 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Gutach (Schwarzwaldbahn) | Baden-Württemberg | 08317039 | – | – | noch nicht gesucht | – |
 | Gutach im Breisgau | Baden-Württemberg | 08316014 | – | – | noch nicht gesucht | – |
 | Gutenzell-Hürbel | Baden-Württemberg | 08426135 | – | – | noch nicht gesucht | – |
-| Guxhagen | Hessen | 06634008 | – | – | noch nicht gesucht | – |
+| Guxhagen | Hessen | 06634008 | 6291795 | https://pixabay.com/pl/photos/ko%C5%9Bci%C3%B3%C5%82-klasztorny-breitenau-6291795/ | Pixabay-Lizenz; Klosterkirche Breitenau, ein Ortsteil von Guxhagen. Die Zuordnung beruht auf dem Schlagwort „Güxhagen“. | 6 |
 | Gäufelden | Baden-Württemberg | 08115016 | – | – | noch nicht gesucht | – |
 | Göda | Sachsen | 14625150 | – | – | noch nicht gesucht | – |
 | Göggingen | Baden-Württemberg | 08136024 | – | – | noch nicht gesucht | – |
 | Görwihl | Baden-Württemberg | 08337038 | – | – | noch nicht gesucht | – |
-| Gößweinstein | Bayern | 09474129 | – | – | noch nicht gesucht | – |
+| Gößweinstein | Bayern | 09474129 | 937989 | https://pixabay.com/de/photos/fr%C3%A4nkische-schweiz-burg-g%C3%B6%C3%9Fweinstein-937989/ | Pixabay-Lizenz; Burg Gößweinstein, Fränkische Schweiz. Alternativen: 2711091 und 6753096 (Basilika und Rathaus). | 8 |
 | Güntersleben | Bayern | 09679142 | – | – | noch nicht gesucht | – |
 | Gütenbach | Baden-Württemberg | 08326020 | – | – | noch nicht gesucht | – |
 | Haag i.OB | Bayern | 09183119 | – | – | noch nicht gesucht | – |
 | Haarbach | Bayern | 09275125 | – | – | noch nicht gesucht | – |
 | Habichtswald | Hessen | 06633011 | – | – | noch nicht gesucht | – |
 | Hagelstadt | Bayern | 09375143 | – | – | noch nicht gesucht | – |
-| Hagnau am Bodensee | Baden-Württemberg | 08435018 | – | – | noch nicht gesucht | – |
+| Hagnau am Bodensee | Baden-Württemberg | 08435018 | 538289 | https://pixabay.com/de/photos/bodensee-steg-hagnau-wasser-hafen-538289/ | Pixabay-Lizenz; Steg und Hafen von Hagnau am Bodensee | 8 |
 | Haibach | Bayern | 09278129 | – | – | noch nicht gesucht | – |
 | Haibach | Bayern | 09671124 | – | – | noch nicht gesucht | – |
 | Haidmühle | Bayern | 09272122 | – | – | noch nicht gesucht | – |
