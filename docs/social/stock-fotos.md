@@ -3318,9 +3318,9 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Oberschöna | Sachsen | 14522430 | – | – | noch nicht gesucht | – |
 | Obersontheim | Baden-Württemberg | 08127063 | – | – | noch nicht gesucht | – |
 | Oberstadion | Baden-Württemberg | 08425091 | – | – | noch nicht gesucht | – |
-| Oberstaufen | Bayern | 09780132 | – | – | noch nicht gesucht | – |
-| Oberstdorf | Bayern | 09780133 | – | – | noch nicht gesucht | – |
-| Oberstenfeld | Baden-Württemberg | 08118060 | – | – | noch nicht gesucht | – |
+| Oberstaufen | Bayern | 09780132 | 1969280 | https://pixabay.com/de/photos/oberstaufen-ortsansicht-kirche-1969280/ | Pixabay-Lizenz; Ortsansicht mit Kirche, Winter | 8 |
+| Oberstdorf | Bayern | 09780133 | 2910527 | https://pixabay.com/photos/oberstdorf-2910527/ | Pixabay-Lizenz; Oberstdorf, Allgäu (nur Titel "Oberstdorf") | 7 |
+| Oberstenfeld | Baden-Württemberg | 08118060 | 2345655 | https://pixabay.com/es/photos/castillo-lichtenberg-oberstenfeld-2345655/ | Pixabay-Lizenz; Burg Lichtenberg bei Oberstenfeld | 8 |
 | Obertaufkirchen | Bayern | 09183135 | – | – | noch nicht gesucht | – |
 | Oberteuringen | Baden-Württemberg | 08435045 | – | – | noch nicht gesucht | – |
 | Oberthal | Saarland | 10046116 | – | – | noch nicht gesucht | – |
@@ -3328,7 +3328,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Obertraubling | Bayern | 09375179 | – | – | noch nicht gesucht | – |
 | Obertrubach | Bayern | 09474156 | – | – | noch nicht gesucht | – |
 | Oberwolfach | Baden-Württemberg | 08317093 | – | – | noch nicht gesucht | – |
-| Obrigheim | Baden-Württemberg | 08225074 | – | – | noch nicht gesucht | – |
+| Obrigheim | Baden-Württemberg | 08225074 | 5969897 | https://pixabay.com/pl/photos/zamek-zamek-neuburg-obrigheim-most-5969897/ | Pixabay-Lizenz; Schloss Neuburg Obrigheim (Neckar) mit Brücke | 7 |
 | Odelzhausen | Bayern | 09174135 | – | – | noch nicht gesucht | – |
 | Oderwitz | Sachsen | 14626390 | – | – | noch nicht gesucht | – |
 | Oedheim | Baden-Württemberg | 08125078 | – | – | noch nicht gesucht | – |
@@ -3350,7 +3350,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Oststeinbek | Schleswig-Holstein | 01062053 | – | – | noch nicht gesucht | – |
 | Ottenbach | Baden-Württemberg | 08117037 | – | – | noch nicht gesucht | – |
 | Ottendorf-Okrilla | Sachsen | 14625430 | – | – | noch nicht gesucht | – |
-| Ottenhöfen im Schwarzwald | Baden-Württemberg | 08317102 | – | – | noch nicht gesucht | – |
+| Ottenhöfen im Schwarzwald | Baden-Württemberg | 08317102 | 249861 | https://pixabay.com/de/photos/ottenh%C3%B6fen-bahnhof-eisenbahnfahrzeug-249861/ | Pixabay-Lizenz; Bahnhof Ottenhöfen mit Eisenbahnfahrzeug | 6 |
 | Ottensoos | Bayern | 09574146 | – | – | noch nicht gesucht | – |
 | Otterfing | Bayern | 09182127 | – | – | noch nicht gesucht | – |
 | Ottersweier | Baden-Württemberg | 08216041 | – | – | noch nicht gesucht | – |
