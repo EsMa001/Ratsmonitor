@@ -1105,26 +1105,26 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1184 | Hagen am Teutoburger Wald | 03459020 | – | – | noch nicht gesucht | – |
 | 1185 | Linden | 06531012 | – | – | noch nicht gesucht | – |
 | 1187 | Plattling | 09271146 | – | – | noch nicht gesucht | – |
-| 1189 | Ketsch | 08226037 | 5020621 | https://pixabay.com/photos/ketsch-germany-church-river-blue-5020621/ | Pixabay-Lizenz, Kirche am Fluss, Region nicht geprüft | 5 |
+| 1189 | Ketsch | 08226037 | 5020621 | https://pixabay.com/photos/ketsch-germany-church-river-blue-5020621/ | Pixabay-Lizenz; Kirche am Fluss, Ortsbezug nur über den Titel, Region nicht geprüft | 5 |
 | 1190 | Neustadt a.d.Aisch | 09575153 | – | – | noch nicht gesucht | – |
 | 1192 | Bad Laasphe | 05970028 | – | – | noch nicht gesucht | – |
 | 1193 | Gangelt | 05370008 | – | – | noch nicht gesucht | – |
 | 1194 | Hadamar | 06533007 | – | – | noch nicht gesucht | – |
 | 1196 | Ottersberg | 03361008 | – | – | noch nicht gesucht | – |
 | 1197 | Brieselang | 12063036 | – | – | noch nicht gesucht | – |
-| 1198 | Bad Doberan | 13072006 | 427066 | https://pixabay.com/de/photos/bad-doberan-kloster-m%C3%BCnster-kirche-427066/ | Pixabay-Lizenz, Münster | 8 |
+| 1198 | Bad Doberan | 13072006 | 427066 | https://pixabay.com/de/photos/bad-doberan-kloster-m%C3%BCnster-kirche-427066/ | Pixabay-Lizenz; Münster/Kloster Bad Doberan | 8 |
 | 1201 | Biedenkopf | 06534004 | – | – | noch nicht gesucht | – |
 | 1204 | Bohmte | 03459013 | – | – | noch nicht gesucht | – |
 | 1205 | Bebra | 06632003 | – | – | noch nicht gesucht | – |
 | 1207 | Olfen | 05558036 | – | – | noch nicht gesucht | – |
-| 1209 | Lauterbach (Hessen) | 06535011 | 97748 | https://pixabay.com/de/photos/schloss-eisenbach-burg-lauterbach-97748/ | Pixabay-Lizenz, Schloss Eisenbach | 6 |
+| 1209 | Lauterbach (Hessen) | 06535011 | 97748 | https://pixabay.com/de/photos/schloss-eisenbach-burg-lauterbach-97748/ | Pixabay-Lizenz; Schloss Eisenbach (gehört zu Lauterbach/Hessen), Region nur aus dem Schloss abgeleitet | 6 |
 | 1214 | Kerken | 05154028 | – | – | noch nicht gesucht | – |
 | 1215 | Gärtringen | 08115015 | – | – | noch nicht gesucht | – |
 | 1216 | Eppstein | 06436002 | – | – | noch nicht gesucht | – |
 | 1217 | Hösbach | 09671130 | – | – | noch nicht gesucht | – |
 | 1218 | Oebisfelde-Weferlingen | 15083411 | – | – | noch nicht gesucht | – |
-| 1219 | Altötting | 09171111 | 325027 | https://pixabay.com/de/photos/alt%C3%B6tting-gnadenkapelle-325027/ | Pixabay-Lizenz, Gnadenkapelle | 8 |
-| 1222 | Peißenberg | 09190139 | 62006 | https://pixabay.com/de/photos/hoher-pei%C3%9Fenberg-berg-funk-turm-62006/ | Pixabay-Lizenz, Hoher Peißenberg, Landschaft | 6 |
+| 1219 | Altötting | 09171111 | 325027 | https://pixabay.com/de/photos/alt%C3%B6tting-gnadenkapelle-325027/ | Pixabay-Lizenz; Gnadenkapelle Altötting | 8 |
+| 1222 | Peißenberg | 09190139 | 62006 | https://pixabay.com/de/photos/hoher-pei%C3%9Fenberg-berg-funk-turm-62006/ | Pixabay-Lizenz; Hoher Peißenberg mit Funkturm, Landschaft statt Ortsmotiv | 6 |
 | 1223 | Cremlingen | 03158006 | – | – | noch nicht gesucht | – |
 | 1224 | Herzberg am Harz | 03159019 | – | – | noch nicht gesucht | – |
 | 1226 | Bergen | 03351004 | – | – | noch nicht gesucht | – |
