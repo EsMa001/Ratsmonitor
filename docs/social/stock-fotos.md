@@ -966,11 +966,11 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | Rang | Ort | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|---|
 | 1001 | Garrel | 03453008 | – | – | noch nicht gesucht | – |
-| 1002 | Langerwehe | 05358032 | – | – | noch nicht gesucht | – |
+| 1002 | Langerwehe | 05358032 | 1516640 | https://pixabay.com/de/photos/burg-reiterhof-felder-burg-holzheim-1516640/ | Pixabay-Lizenz; Burg Holzheim, Reiterhof und Felder. Die Burg liegt bei Langerwehe, im Titel steht der Ort aber nicht. | 6 |
 | 1004 | Karlstadt | 09677148 | – | – | noch nicht gesucht | – |
 | 1007 | Münster (Hessen) | 06432015 | – | – | noch nicht gesucht | – |
 | 1008 | Landsberg | 15088195 | – | – | noch nicht gesucht | – |
-| 1009 | Montabaur | 07143048 | – | – | noch nicht gesucht | – |
+| 1009 | Montabaur | 07143048 | 2278452 | https://pixabay.com/photos/montabaur-castle-evening-atmosphere-2278452/ | Pixabay-Lizenz; Schloss Montabaur in Abendstimmung | 9 |
 | 1011 | Homberg (Efze) | 06634009 | – | – | noch nicht gesucht | – |
 | 1012 | Jever | 03455007 | 643515 | https://pixabay.com/de/photos/ems-jade-kanal-jever-pils-bier-643515/ | Pixabay-Lizenz, Ems-Jade-Kanal | 5 |
 | 1013 | Münsingen | 08415053 | – | – | noch nicht gesucht | – |
@@ -984,7 +984,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1022 | Niederkrüchten | 05166020 | – | – | noch nicht gesucht | – |
 | 1024 | Much | 05382036 | – | – | noch nicht gesucht | – |
 | 1025 | Büttelborn | 06433003 | – | – | noch nicht gesucht | – |
-| 1026 | Burbach | 05970008 | – | – | noch nicht gesucht | – |
+| 1026 | Burbach | 05970008 | 2652865 | https://pixabay.com/photos/town-hall-burbach-siegerland-2652865/ | Pixabay-Lizenz; Rathaus Burbach (Siegerland) in Hügellandschaft | 9 |
 | 1029 | Groß-Zimmern | 06432011 | – | – | noch nicht gesucht | – |
 | 1030 | Löbau | 14626290 | – | – | noch nicht gesucht | – |
 | 1031 | Eberbach | 08226013 | – | – | noch nicht gesucht | – |
@@ -993,7 +993,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1035 | Fredersdorf-Vogelsdorf | 12064136 | – | – | noch nicht gesucht | – |
 | 1036 | Eckental | 09572121 | – | – | noch nicht gesucht | – |
 | 1037 | Hofgeismar | 06633013 | 875806 | https://pixabay.com/photos/altst%c3%a4dter-church-hofgeismar-tower-875806/ | Pixabay-Lizenz, Altstädter Kirche (Turm) | 7 |
-| 1038 | Murrhardt | 08119044 | – | – | noch nicht gesucht | – |
+| 1038 | Murrhardt | 08119044 | 1615099 | https://pixabay.com/de/photos/murrhardt-stadtkirche-kirche-1615099/ | Pixabay-Lizenz; Stadtkirche Murrhardt (Titel nennt den Ort ausdrücklich) | 8 |
 | 1039 | Aßlar | 06532001 | – | – | noch nicht gesucht | – |
 | 1040 | Hilchenbach | 05970020 | – | – | noch nicht gesucht | – |
 | 1041 | Neubiberg | 09184146 | – | – | noch nicht gesucht | – |
@@ -1013,18 +1013,18 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1060 | Grünstadt | 07332024 | – | – | noch nicht gesucht | – |
 | 1061 | Neu-Anspach | 06434007 | 2212660 | https://pixabay.com/pl/photos/neu-anspach-hesja-niemcy-2212660/ | Pixabay-Lizenz, Motiv nicht erkennbar | 6 |
 | 1062 | Löningen | 03453011 | – | – | noch nicht gesucht | – |
-| 1064 | Lorsch | 06431016 | – | – | noch nicht gesucht | – |
+| 1064 | Lorsch | 06431016 | 863627 | https://pixabay.com/de/photos/lorsch-altstadt-rathaus-panorama-863627/ | Pixabay-Lizenz; Altstadt mit Rathaus, Panorama | 8 |
 | 1065 | Markdorf | 08435034 | – | – | noch nicht gesucht | – |
 | 1066 | Freigericht | 06435009 | – | – | noch nicht gesucht | – |
 | 1068 | Bad Camberg | 06533003 | 3752535 | https://pixabay.com/de/photos/deutschland-bad-camberg-stadttor-3752535/ | Pixabay-Lizenz, Stadttor | 7 |
 | 1069 | Lauda-Königshofen | 08128139 | – | – | noch nicht gesucht | – |
 | 1070 | Brühl | 08226009 | – | – | noch nicht gesucht | – |
 | 1071 | Angermünde | 12073008 | 1643475 | https://pixabay.com/de/photos/angerm%C3%BCnde-stolper-turm-gr%C3%BCtzpott-1643475/ | Pixabay-Lizenz, Stolper Turm (Grützpott) | 6 |
-| 1072 | Kalkar | 05154024 | – | – | noch nicht gesucht | – |
+| 1072 | Kalkar | 05154024 | 736294 | https://pixabay.com/de/photos/kalkar-historische-altstadt-kirche-736294/ | Pixabay-Lizenz; historische Altstadt mit Kirche | 8 |
 | 1073 | Gernsbach | 08216017 | – | – | noch nicht gesucht | – |
-| 1075 | Lauchhammer | 12066176 | – | – | noch nicht gesucht | – |
+| 1075 | Lauchhammer | 12066176 | 4909708 | https://pixabay.com/photos/brown-coal-smelting-towers-4909708/ | Pixabay-Lizenz; historische Biotürme (Wahrzeichen) | 8 |
 | 1076 | Aldenhoven | 05358004 | – | – | noch nicht gesucht | – |
-| 1077 | Plochingen | 08116056 | – | – | noch nicht gesucht | – |
+| 1077 | Plochingen | 08116056 | 2779300 | https://pixabay.com/cs/photos/plochingen-krk-tr%C5%BEi%C5%A1t%C4%9B-p%C4%9B%C5%A1%C3%AD-z%C3%B3na-2779300/ | Pixabay-Lizenz; Marktplatz und Fußgängerzone | 7 |
 | 1078 | Hatten | 03458009 | – | – | noch nicht gesucht | – |
 | 1079 | Clausthal-Zellerfeld | 03153018 | 11443366 | https://www.pexels.com/photo/facade-of-the-holy-spirit-market-church-in-clausthal-zellerfeld-germany-11443366/ | Pexels-Lizenz, Marktkirche zum Heiligen Geist | 8 |
 | 1081 | Markgröningen | 08118050 | – | – | noch nicht gesucht | – |
@@ -1047,7 +1047,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1106 | Dippoldiswalde | 14628060 | 7463886 | https://pixabay.com/de/photos/windm%C3%BChle-reichst%C3%A4dt-wahrzeichen-7463886/ | Pixabay-Lizenz, Windmühle Reichstädt (Ortsteil), indirekter Bezug | 5 |
 | 1108 | Hohenstein-Ernstthal | 14524120 | – | – | noch nicht gesucht | – |
 | 1109 | Mittweida | 14522360 | – | – | noch nicht gesucht | – |
-| 1110 | Grafing b.München | 09175122 | – | – | noch nicht gesucht | – |
+| 1110 | Grafing b.München | 09175122 | 6299882 | https://pixabay.com/photos/grafing-upper-bavaria-ebe-downtown-6299882/ | Pixabay-Lizenz; Innenstadt Grafing (Oberbayern), Pixabay-Seite mit Ortsnamen "Grafing" getaggt | 8 |
 | 1112 | Immenstadt i.Allgäu | 09780124 | 451385 | https://pixabay.com/photos/alpsee-immenstadt-allg%C3%A4u-sky-view-451385/ | Pixabay-Lizenz, Alpsee | 7 |
 | 1113 | Friesenheim | 08317031 | – | – | noch nicht gesucht | – |
 | 1114 | Höchstadt a.d.Aisch | 09572135 | – | – | noch nicht gesucht | – |
