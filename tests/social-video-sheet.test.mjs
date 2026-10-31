@@ -79,7 +79,7 @@ test('Beträge mit Bezeichnung (auch „200.000,-“ ohne Eurozeichen) und Tage 
  const t={title:'P&R Weihgarten',status:'consulting',events:[{date:'2026-10-13',committee:'Rat der Stadt'},{date:'2026-11-12',committee:'Rat der Stadt'}],
   ruleSummary:{short:'Die Gesamtkosten werden auf 241.000,- € geschätzt, dem steht eine voraussichtliche Förderung von 200.000,- gegenüber und wird beschlossen.'}};
  const s=videoSheet(t,{regionName:'Billerbeck',today:'2026-10-31',titleShort:'P&R Weihgarten'});
- assert.deepEqual(s.betraege.map(b=>[b.value,b.label]),[[241000,'Kosten'],[200000,'Förderung']]);
+ assert.deepEqual(s.betraege.map(b=>[b.value,b.label]),[[241000,'Geschätzte Gesamtkosten'],[200000,'Voraussichtliche Förderung']]);
  assert.equal(s.naechste.tage,12);
  assert.equal(s.naechste.datum,'12.11.26');
  assert.match(s.sprechtext[1],/^In Beratung in Billerbeck/);

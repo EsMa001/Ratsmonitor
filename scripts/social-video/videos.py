@@ -271,12 +271,6 @@ def make(cfg):
             els += [E(mi, MX, yy + 4, tm, dur=0.5), E(mt, MX + 90, yy, tm, dur=0.5)]
             yy += mt.height + 40
         sfx = [(ta, 'hit'), (ta + 0.4, 'tick')]
-        if cfg.get('naechste'):
-            n_ = cfg['naechste']['tage']
-            txt = 'heute' if n_ == 0 else 'morgen' if n_ == 1 else f'in {n_} Tagen'
-            pl_ = b.pill('Nächste Sitzung ' + txt, 56, b.PETH, b.PETD, padx=40, pady=22)
-            tc_ = max(ta + 1.2 + 0.5 * nrows, CUR_DUR - 4.0)
-            els.append(slam(pl_, MX, yy + 10, tc_, 0.3, 0.3)); sfx.append((tc_, 'tick'))
         return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 100, 300, PET, 22, -5), els=els, marquee=(PET, WHITE), punch=[ta, ta + 0.4], sfx=sfx)
     # 4 Plenara + Ende
     def plen(wt):
@@ -366,7 +360,7 @@ def run(cfg, vdir, outfile):
     global SCENES, CFG
     CFG = cfg; SCENES = make(cfg); os.makedirs(cfg['out'], exist_ok=True)
     vo = [v.wavlen(f'{vdir}/v{i + 1}.wav') for i in range(NS)]
-    mins = [6.0, 7.0, 7.0, max(6.5, 0.07 * len(cfg['quote'])), 7.0, 8.5]
+    mins = [6.0, 7.0, 7.0, max(6.5, 0.05 * len(cfg['quote'])), 7.0, 5.0]
     tails = [1.0, 2.5, 3.0, 1.0, 1.5, 1.0]
     durs = [round(max(m, x + LEAD + t_), 2) for m, x, t_ in zip(mins, vo, tails)]
     print('durs', durs, round(sum(durs), 2), flush=True)

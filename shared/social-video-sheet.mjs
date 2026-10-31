@@ -38,7 +38,7 @@ export const spokenDate=iso=>{const [,m,d]=iso.split('-').map(Number);return `${
 const shortDate=iso=>{const [y,m,d]=iso.split('-');return `${d}.${m}.${y.slice(2)}`;};
 /** Betrag: „241.000 €“, „241.000,- €“, „241.000,00 €“, auch „200.000,-“ ohne Eurozeichen */
 const AMOUNT=/(\d{1,3}(?:\.\d{3})+|\d+)(?:,-(?:\s?(?:€|Euro))?|,00\s?(?:€|Euro)|\s?(?:€|Euro))/g;
-const AMOUNT_LABELS=[['Gesamtkosten','Kosten'],['Kostenschätzung','Kosten'],['Kosten','Kosten'],['Förderung','Förderung'],['Zuschuss','Zuschuss'],['Zuwendung','Zuschuss'],['Haushaltsmittel','Haushaltsmittel'],['Eigenanteil','Eigenanteil'],['Puffer','Puffer']];
+const AMOUNT_LABELS=['Gesamtkosten','Kostenschätzung','Kosten','Förderung','Zuschuss','Zuwendung','Haushaltsmittel','Eigenanteil','Puffer'];
 const SPOKEN_YEAR=/\b(19|20)\d{2}\b/g;
 /** Text für die Stimme: Jahreszahlen und Beträge ausgeschrieben, „&“ und Kürzel ersetzt */
 export function spoken(text){
@@ -51,6 +51,8 @@ export function spoken(text){
 }
 
 const MAX_QUOTE=160;
+const STRONG=/\b(beauftragt|beschließt|beschlossen|genehmigt|bestätigt|empfiehlt|zugestimmt|stimmt)\b/i;
+const PROPOSAL=/\b(beschließt|empfiehlt|beauftragt|genehmigt|bestätigt|zugestimmt|beschlossen|vorgesehen|soll|sollen)\b/i;
 const DECISION=/\b(bestätigt|beschließt|beschlossen|genehmigt|beauftragt|empfiehlt|stimmt|wird|werden|soll|sollen|ist vorgesehen)\b/i;
 /** Auszug in Sätze zerlegen: an „[…]“ und an Satzenden (Satzende = Punkt, dann Leerzeichen und Großbuchstabe oder Anführungszeichen) */
 const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
@@ -59,7 +61,7 @@ const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=
 export function pickQuote(summary,exclude=[]){
  const list=[...sentencesOf(summary?.short),...sentencesOf(summary?.long)];
  const same=(a,b)=>a.slice(0,40)===b.slice(0,40);
- const dec=list.filter(x=>DECISION.test(x)&&!exclude.some(e=>same(x,e))),first=dec[0];
+ const dec0=list.filter(x=>DECISION.test(x)&&!exclude.some(e=>same(x,e))),dec=[...dec0.filter(x=>STRONG.test(x)),...dec0.filter(x=>!STRONG.test(x))],first=dec[0];
  if(!first)return null;
  if(first.length<=MAX_QUOTE)return first;
  const head=first.slice(0,MAX_QUOTE-4),cut=[...head.matchAll(/\s(?:als|zum|zur|und|für|insbesondere|sowie|gemäß)\s/g)].at(-1);
@@ -95,10 +97,15 @@ export function videoSheet(topic,{regionName,today,titleShort}){
  else if(t2.length>34)warnings.push(`Titelzeile 2 hat ${t2.length} Zeichen (höchstens 34): Kurzform fehlt`);
  const proposal=!['approved','rejected'].includes(topic.status);
  const amounts=[];
- if(quote){let from=0;for(const m of quote.matchAll(AMOUNT)){
-  const before=quote.slice(from,m.index),hit=AMOUNT_LABELS.map(([k,l])=>({l,i:before.lastIndexOf(k)})).filter(x=>x.i>=0).sort((a,b)=>b.i-a.i)[0];
+ const quote2=quote?pickQuote(topic.ruleSummary,[quote.replace(/ \[…\]$/,'')]):null;
+ [quote,quote2].forEach((src,qi)=>{if(!src)return;let from=0;for(const m of src.matchAll(AMOUNT)){
+  const before=src.slice(from,m.index),after=src.slice(m.index+m[0].length,m.index+m[0].length+30),hit=AMOUNT_LABELS.map(k=>({k,i:before.lastIndexOf(k)})).filter(x=>x.i>=0).sort((a,b)=>b.i-a.i)[0];
   const value=+m[1].replace(/\./g,'');from=m.index+m[0].length;
-  if(!amounts.some(a=>a.value===value))amounts.push({text:m[1]+' €',value,spoken:spokenNumber(value)+' Euro',label:hit?hit.l:null});}}
+  let label=hit?hit.k:null;
+  if(label){const pre=before.slice(0,hit.i).trim().split(/\s+/).at(-1)||'';
+   if(/^(voraussichtlich|geschätzt|geplant|erwartet)\w*$/i.test(pre))label=pre[0].toUpperCase()+pre.slice(1)+' '+label;
+   else if(/^\s*geschätzt/.test(after)&&/kosten/i.test(label))label='Geschätzte '+label;}
+  if(!amounts.some(a=>a.value===value))amounts.push({text:m[1]+' €',value,spoken:spokenNumber(value)+' Euro',label,inZitat:qi===0});}});
  const days=next?Math.round((Date.UTC(...next.date.split('-').map((x,i)=>i===1?+x-1:+x))-Date.UTC(...today.split('-').map((x,i)=>i===1?+x-1:+x)))/864e5):null;
  // Sprechtext
  const w=s=>s.split(/\s+/).length,place=regionName;
@@ -109,7 +116,6 @@ export function videoSheet(topic,{regionName,today,titleShort}){
   last?`Zuletzt beraten: ${last.committee}, am ${spokenDate(last.date)}.`:null,
   next?`Nächste Sitzung: ${next.committee}, am ${spokenDate(next.date)}.`:null].filter(Boolean).join(' ');
  const kern=quote?spoken(quote):null;
- const quote2=quote?pickQuote(topic.ruleSummary,[quote.replace(/ \[…\]$/,'')]):null;
  const verlauf=past.slice(-3).map(e=>({date:e.date,datum:shortDate(e.date),committee:e.committee,result:String(e.result||'').trim()||null,spokenDay:spokenDay(+e.date.slice(8)),spoken:`Am ${spokenDate(e.date)}, ${e.committee}${e.result?': '+spoken(String(e.result).trim()):''}.`}));
  const verlaufText=verlauf.length?'Bisher: '+verlauf.map(v=>v.spoken).join(' '):null;
  const meta=[last&&`${last.committee} · zuletzt beraten am ${shortDate(last.date)}`,
@@ -117,7 +123,7 @@ export function videoSheet(topic,{regionName,today,titleShort}){
  return {version:SHEET_VERSION,ok:!warnings.length,warnings,
   ort:regionName,titel1:`${regionName}:`,titel2:t2,
   stand:{word:st.word,stamp:st.stamp,icon:st.icon,extra:st.extra,statusKey:STATUS[topic.status]?topic.status:'unknown'},
-  zitat:quote,zitat2:quote2,verlauf,themaIcon:THEME_ICON[topic.theme?.id]||'pin',zitatHinweis:proposal?'Vorschlag aus der Vorlage':'Aus der Vorlage',
+  zitat:quote,zitat2:quote2,verlauf,themaIcon:THEME_ICON[topic.theme?.id]||'pin',zitatHinweis:proposal&&quote&&PROPOSAL.test(quote)?'Vorschlag aus der Vorlage':'Aus der Vorlage',
   betraege:amounts,naechste:next?{committee:next.committee,datum:shortDate(next.date),tage:days}:null,meta,
   quelle:`Quelle: öffentliche Ratsunterlagen der Stadt ${regionName}`,
   sprechtext:{1:hook,2:kern,3:verlaufText,4:'',5:stand,6:'Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenara.'}};
