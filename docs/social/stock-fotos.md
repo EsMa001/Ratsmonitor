@@ -1594,9 +1594,9 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Hornberg | BW | 08317051 | – | – | noch nicht gesucht | – |
 | Horstmar | NRW | 05566024 | – | – | noch nicht gesucht | – |
 | Hüfingen | BW | 08326027 | – | – | noch nicht gesucht | – |
-| Ilsenburg (Harz) | Sachsen-Anhalt | 15085190 | – | – | noch nicht gesucht | – |
+| Ilsenburg (Harz) | Sachsen-Anhalt | 15085190 | 2776179 | https://pixabay.com/de/photos/brocken-harz-ilsenburg-wernigerode-2776179/ | Pixabay-Lizenz; Brocken/Harz mit Ilsenburg im Titel (Bundesland nicht geprüft, Ilsenburg liegt im Harz in Sachsen-Anhalt) | 5 |
 | Ilshofen | BW | 08127043 | – | – | noch nicht gesucht | – |
-| Immenhausen | Hessen | 06633014 | – | – | noch nicht gesucht | – |
+| Immenhausen | Hessen | 06633014 | 2184567 | https://pixabay.com/photos/riseberg-bartholomew-immenhausen-2184567/ | Pixabay-Lizenz; Riseberg/Bartholomäus bei Immenhausen (Hessen), kein Wahrzeichen des Ortes selbst | 5 |
 | Ingelfingen | BW | 08126039 | – | – | noch nicht gesucht | – |
 | Jerichow | Sachsen-Anhalt | 15086080 | – | – | noch nicht gesucht | – |
 | Johanngeorgenstadt | Sachsen | 14521320 | – | – | noch nicht gesucht | – |
@@ -1625,7 +1625,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Könnern | Sachsen-Anhalt | 15089195 | – | – | noch nicht gesucht | – |
 | Kühlungsborn | Mecklenburg-Vorpommern | 13072060 | – | – | noch nicht gesucht | – |
 | Külsheim | BW | 08128064 | – | – | noch nicht gesucht | – |
-| Langenburg | BW | 08127047 | – | – | noch nicht gesucht | – |
+| Langenburg | BW | 08127047 | 5668792 | https://pixabay.com/photos/castle-langenburg-castle-langenburg-5668792/ | Pixabay-Lizenz; Schloss Langenburg ("Castle Langenburg") | 8 |
 | Laubach | Hessen | 06531010 | – | – | noch nicht gesucht | – |
 | Lauchheim | BW | 08136038 | – | – | noch nicht gesucht | – |
 | Laufen | Bayern | 09172122 | – | – | noch nicht gesucht | – |
