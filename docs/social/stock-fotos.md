@@ -1793,24 +1793,24 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Rötha | Sachsen | 14729370 | – | – | noch nicht gesucht | – |
 | Röthenbach a.d.Pegnitz | Bayern | 09574152 | – | – | noch nicht gesucht | – |
 | Rötz | Bayern | 09372154 | – | – | noch nicht gesucht | – |
-| Rüdesheim am Rhein | Hessen | 06439013 | – | – | noch nicht gesucht | – |
+| Rüdesheim am Rhein | Hessen | 06439013 | 4021822 | https://pixabay.com/ja/photos/%E3%83%88%E3%83%A9%E3%83%99%E3%83%AB-%E3%83%89%E3%82%A4%E3%83%84-4021822/ | Pixabay-Lizenz; Titel "Travel Germany Rudesheim", Motiv nicht näher bekannt | 6 |
 | Rüthen | NRW | 05974036 | – | – | noch nicht gesucht | – |
 | Saalburg-Ebersdorf | Thüringen | 16075135 | – | – | noch nicht gesucht | – |
 | Sachsenheim | BW | 08118076 | – | – | noch nicht gesucht | – |
 | Sandersdorf-Brehna | Sachsen-Anhalt | 15082340 | – | – | noch nicht gesucht | – |
 | Sarstedt | Niedersachsen | 03254028 | – | – | noch nicht gesucht | – |
 | Sassenberg | NRW | 05570036 | – | – | noch nicht gesucht | – |
-| Sassnitz | Mecklenburg-Vorpommern | 13073080 | – | – | noch nicht gesucht | – |
+| Sassnitz | Mecklenburg-Vorpommern | 13073080 | 1466437 | https://pixabay.com/de/photos/bornholm-f%C3%A4hre-f%C3%A4hrhafen-sassnitz-1466437/ | Pixabay-Lizenz; Bornholm-Fähre im Fährhafen Sassnitz | 7 |
 | Schalkau | Thüringen | 16072015 | – | – | noch nicht gesucht | – |
 | Scheer | BW | 08437101 | – | – | noch nicht gesucht | – |
 | Schelklingen | BW | 08425108 | – | – | noch nicht gesucht | – |
 | Schenefeld | Schleswig-Holstein | 01056044 | – | – | noch nicht gesucht | – |
 | Scheßlitz | Bayern | 09471185 | – | – | noch nicht gesucht | – |
-| Schieder-Schwalenberg | NRW | 05766060 | – | – | noch nicht gesucht | – |
+| Schieder-Schwalenberg | NRW | 05766060 | 31231421 | https://www.pexels.com/photo/charming-timbered-houses-in-schieder-schwalenberg-31231421/ | Pexels-Lizenz; Fachwerkhäuser in Schieder-Schwalenberg | 8 |
 | Schiltach | BW | 08325051 | – | – | noch nicht gesucht | – |
 | Schirgiswalde-Kirschau | Sachsen | 14625525 | – | – | noch nicht gesucht | – |
 | Schkeuditz | Sachsen | 14730270 | – | – | noch nicht gesucht | – |
-| Schleiden | NRW | 05366036 | – | – | noch nicht gesucht | – |
+| Schleiden | NRW | 05366036 | 5305733 | https://pixabay.com/de/photos/burg-museum-schleiden-eifel-5305733/ | Pixabay-Lizenz; Burg/Schloss Schleiden mit Museum, Eifel | 8 |
 | Schleiz | Thüringen | 16075098 | – | – | noch nicht gesucht | – |
 | Schleusingen | Thüringen | 16069043 | – | – | noch nicht gesucht | – |
 | Schlitz | Hessen | 06535015 | – | – | noch nicht gesucht | – |
