@@ -3700,10 +3700,10 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Spreetal | Sachsen | 14625570 | – | – | noch nicht gesucht | – |
 | St. Johann | Baden-Württemberg | 08415093 | – | – | noch nicht gesucht | – |
 | St. Leon-Rot | Baden-Württemberg | 08226103 | – | – | noch nicht gesucht | – |
-| St. Märgen | Baden-Württemberg | 08315094 | – | – | noch nicht gesucht | – |
-| St. Peter | Baden-Württemberg | 08315095 | – | – | noch nicht gesucht | – |
+| St. Märgen | Baden-Württemberg | 08315094 | 245419 | https://pixabay.com/photos/high-black-forest-monastery-church-245419/ | Pixabay-Lizenz; Klosterkirche St. Märgen mit Landschaft (Titel nennt St. Märgen) | 8 |
+| St. Peter | Baden-Württemberg | 08315095 | 1158680 | https://pixabay.com/photos/baroque-church-glottertal-st-peter-1158680/ | Pixabay-Lizenz; barocke Klosterkirche St. Peter im Schwarzwald | 7 |
 | Stadtlauringen | Bayern | 09678181 | – | – | noch nicht gesucht | – |
-| Stahnsdorf | Brandenburg | 12069604 | – | – | noch nicht gesucht | – |
+| Stahnsdorf | Brandenburg | 12069604 | 7744639 | https://pixabay.com/de/photos/grabmal-friedhof-stahnsdorf-7744639/ | Pixabay-Lizenz; Grabmal auf dem Südwestkirchhof Stahnsdorf | 7 |
 | Staig | Baden-Württemberg | 08425138 | – | – | noch nicht gesucht | – |
 | Stammbach | Bayern | 09475175 | – | – | noch nicht gesucht | – |
 | Stammham | Bayern | 09176161 | – | – | noch nicht gesucht | – |
@@ -3727,7 +3727,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Steißlingen | Baden-Württemberg | 08335077 | – | – | noch nicht gesucht | – |
 | Stephanskirchen | Bayern | 09187177 | – | – | noch nicht gesucht | – |
 | Stephansposching | Bayern | 09271151 | – | – | noch nicht gesucht | – |
-| Sternenfels | Baden-Württemberg | 08236061 | – | – | noch nicht gesucht | – |
+| Sternenfels | Baden-Württemberg | 08236061 | 199135 | https://pixabay.com/de/photos/weinberg-enzkreis-sternenfels-199135/ | Pixabay-Lizenz; Weinberg bei Sternenfels (Enzkreis) | 7 |
 | Stetten | Baden-Württemberg | 08435054 | – | – | noch nicht gesucht | – |
 | Stetten am kalten Markt | Baden-Württemberg | 08437107 | – | – | noch nicht gesucht | – |
 | Stimpfach | Baden-Württemberg | 08127104 | – | – | noch nicht gesucht | – |
