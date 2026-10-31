@@ -1370,11 +1370,11 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1581 | Olbernhau | 14521460 | 3418921 | https://pixabay.com/de/photos/marktplatz-olbernhau-erzgebirge-3418921/ | Pixabay-Lizenz; Marktplatz Olbernhau (weitere Olbernhau-Fotos: Stadtkirche 3418918, Saigerhütte 3418894) | 8 |
 | 1583 | Hilter am Teutoburger Wald | 03459022 | – | – | noch nicht gesucht | – |
 | 1584 | Königsbach-Stein | 08236076 | 2056120 | https://pixabay.com/de/photos/k%C3%B6nigsbach-k%C3%B6nigsbach-stein-2056120/ | Pixabay-Lizenz; Königsbach (Bach) in Königsbach-Stein. Alternativen derselben Serie: 2056118, 2056117 | 6 |
-| 1585 | Beilngries | 09176114 | – | – | noch nicht gesucht | – |
+| 1585 | Beilngries | 09176114 | 2874836 | https://pixabay.com/de/photos/beilngries-altm%C3%BChltal-kirche-2874836/ | Pixabay-Lizenz; Kirche in Beilngries (Titel "Beilngries, Altmühltal, Kirche"). Alternativen: 2874835 und 2874833 (Main-Donau-Kanal), 2874830 (Kloster). | 8 |
 | 1586 | Kaufering | 09181128 | – | – | noch nicht gesucht | – |
 | 1587 | Heubach | 08136028 | – | – | noch nicht gesucht | – |
 | 1588 | Gemünden a.Main | 09677131 | – | – | noch nicht gesucht | – |
-| 1590 | Nohfelden | 10046114 | – | – | noch nicht gesucht | – |
+| 1590 | Nohfelden | 10046114 | 4530506 | https://pixabay.com/de/photos/see-bostalsee-wasser-yachthafen-4530506/ | Pixabay-Lizenz; Bostalsee mit Yachthafen. Der See liegt in der Gemeinde Nohfelden, der Titel nennt den Ort aber nicht. Alternativen: 3204736 und 3771329 (Bostalsee). | 5 |
 | 1591 | Dettingen an der Erms | 08415014 | – | – | noch nicht gesucht | – |
 | 1592 | Blumberg | 08326005 | – | – | noch nicht gesucht | – |
 | 1593 | Lenggries | 09173135 | 1364563 | https://pixabay.com/photos/mountains-lenggries-snow-winter-1364563/ | Pixabay-Lizenz; Berge bei Lenggries im Schnee. Alternative: Brauneck, 5297643 | 7 |
