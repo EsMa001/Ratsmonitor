@@ -1805,9 +1805,9 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Scheer | BW | 08437101 | – | – | noch nicht gesucht | – |
 | Schelklingen | BW | 08425108 | – | – | noch nicht gesucht | – |
 | Schenefeld | Schleswig-Holstein | 01056044 | – | – | noch nicht gesucht | – |
-| Scheßlitz | Bayern | 09471185 | – | – | noch nicht gesucht | – |
+| Scheßlitz | Bayern | 09471185 | 248956 | https://pixabay.com/de/photos/g%C3%BCgel-kapelle-jurafelsen-248956/ | Pixabay-Lizenz; Gügelkapelle auf dem Jurafelsen (Schlagwort Scheßlitz) | 7 |
 | Schieder-Schwalenberg | NRW | 05766060 | 31231421 | https://www.pexels.com/photo/charming-timbered-houses-in-schieder-schwalenberg-31231421/ | Pexels-Lizenz; Fachwerkhäuser in Schieder-Schwalenberg | 8 |
-| Schiltach | BW | 08325051 | – | – | noch nicht gesucht | – |
+| Schiltach | BW | 08325051 | 85888 | https://pixabay.com/de/photos/schiltach-deutschland-dorf-stadt-85888/ | Pixabay-Lizenz; Ortsansicht Schiltach (Titel nennt Schiltach) | 8 |
 | Schirgiswalde-Kirschau | Sachsen | 14625525 | – | – | noch nicht gesucht | – |
 | Schkeuditz | Sachsen | 14730270 | – | – | noch nicht gesucht | – |
 | Schleiden | NRW | 05366036 | 5305733 | https://pixabay.com/de/photos/burg-museum-schleiden-eifel-5305733/ | Pixabay-Lizenz; Burg/Schloss Schleiden mit Museum, Eifel | 8 |
@@ -1818,11 +1818,11 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Schlüsselfeld | Bayern | 09471220 | – | – | noch nicht gesucht | – |
 | Schnaittenbach | Bayern | 09371150 | – | – | noch nicht gesucht | – |
 | Schneeberg | Sachsen | 14521530 | – | – | noch nicht gesucht | – |
-| Schneverdingen | Niedersachsen | 03358019 | – | – | noch nicht gesucht | – |
-| Schongau | Bayern | 09190148 | – | – | noch nicht gesucht | – |
+| Schneverdingen | Niedersachsen | 03358019 | 1740831 | https://pixabay.com/de/photos/pietzmoor-schneverdingen-bohlenweg-1740831/ | Pixabay-Lizenz; Pietzmoor mit Bohlenweg (Titel nennt Schneverdingen) | 8 |
+| Schongau | Bayern | 09190148 | 4770495 | https://pixabay.com/de/photos/schongau-altstadt-bayern-stadtmauer-4770495/ | Pixabay-Lizenz; Altstadt mit Stadtmauer (Titel nennt Schongau) | 9 |
 | Schotten | Hessen | 06535016 | – | – | noch nicht gesucht | – |
 | Schriesheim | BW | 08226082 | – | – | noch nicht gesucht | – |
-| Schrobenhausen | Bayern | 09185158 | – | – | noch nicht gesucht | – |
+| Schrobenhausen | Bayern | 09185158 | 197634 | https://pixabay.com/photos/schrobenhausen-city-bavaria-germany-197634/ | Pixabay-Lizenz; historische Staffelgiebelhäuser (Titel nennt Schrobenhausen) | 9 |
 | Schrozberg | BW | 08127075 | – | – | noch nicht gesucht | – |
 | Schwabmünchen | Bayern | 09772200 | – | – | noch nicht gesucht | – |
 | Schwaigern | BW | 08125086 | – | – | noch nicht gesucht | – |
@@ -1831,7 +1831,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Schwarzenbach a.Wald | Bayern | 09475169 | – | – | noch nicht gesucht | – |
 | Schwarzenbach a.d.Saale | Bayern | 09475168 | – | – | noch nicht gesucht | – |
 | Schwarzenbek | Schleswig-Holstein | 01053116 | – | – | noch nicht gesucht | – |
-| Schwarzenberg/Erzgeb. | Sachsen | 14521550 | – | – | noch nicht gesucht | – |
+| Schwarzenberg/Erzgeb. | Sachsen | 14521550 | 7510171 | https://pixabay.com/de/photos/schloss-schwarzenberg-erzgebirge-7510171/ | Pixabay-Lizenz; Schloss Schwarzenberg im Erzgebirge | 8 |
 | Schwarzenborn | Hessen | 06634023 | – | – | noch nicht gesucht | – |
 | Schwarzheide | Brandenburg | 12066296 | – | – | noch nicht gesucht | – |
 | Schwentinental | Schleswig-Holstein | 01057091 | – | – | noch nicht gesucht | – |
@@ -1841,16 +1841,16 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Schönewalde | Brandenburg | 12062461 | – | – | noch nicht gesucht | – |
 | Schöningen | Niedersachsen | 03154019 | – | – | noch nicht gesucht | – |
 | Schönwald | Bayern | 09479150 | – | – | noch nicht gesucht | – |
-| Sebnitz | Sachsen | 14628360 | – | – | noch nicht gesucht | – |
+| Sebnitz | Sachsen | 14628360 | 4598723 | https://pixabay.com/de/photos/sebnitz-marktplatz-posts%C3%A4ule-4598723/ | Pixabay-Lizenz; Marktplatz mit Postsäule | 8 |
 | Seeland | Sachsen-Anhalt | 15089307 | – | – | noch nicht gesucht | – |
 | Seelow | Brandenburg | 12064448 | 205450 | https://pixabay.com/nl/photos/seelow-duitsland-monument-205450/ | Pixabay-Lizenz; Denkmal in Seelow. Ortsname steht im Titel. | 7 |
 | Seesen | Niedersachsen | 03153012 | – | – | noch nicht gesucht | – |
 | Seifhennersdorf | Sachsen | 14626530 | – | – | noch nicht gesucht | – |
 | Selb | Bayern | 09479152 | 6614144 | https://pixabay.com/photos/bavaria-rosenthal-6614144/ | Pixabay-Lizenz; Rosenthal-Outlet in Bayern. Der Ortsname Selb steht nicht im Titel, nur das Rosenthal-Wahrzeichen. | 5 |
 | Selbitz | Bayern | 09475171 | – | – | noch nicht gesucht | – |
-| Sendenhorst | NRW | 05570040 | – | – | noch nicht gesucht | – |
+| Sendenhorst | NRW | 05570040 | 1560942 | https://pixabay.com/photos/physical-therapy-centre-building-1560942/ | Pixabay-Lizenz; Reha-Klinik-Gebäude in Sendenhorst (Titel „Rehabilitation clinic in Sendenhorst“) | 5 |
 | Seßlach | Bayern | 09473165 | – | – | noch nicht gesucht | – |
-| Sigmaringen | BW | 08437104 | – | – | noch nicht gesucht | – |
+| Sigmaringen | BW | 08437104 | 545720 | https://pixabay.com/de/photos/schloss-sigmaringen-donau-schloss-545720/ | Pixabay-Lizenz; Schloss Sigmaringen mit Donau | 8 |
 | Simbach a.Inn | Bayern | 09277145 | – | – | noch nicht gesucht | – |
 | Sinzig | Rheinland-Pfalz | 07131077 | 1439217 | https://pixabay.com/de/photos/sinzig-kirche-rhein-rheinland-pfalz-1439217/ | Pixabay-Lizenz; Kirche in Sinzig am Rhein (Rheinland-Pfalz im URL) | 8 |
 | Solms | Hessen | 06532021 | – | – | noch nicht gesucht | – |
