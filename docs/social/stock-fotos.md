@@ -1572,7 +1572,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Hayingen | BW | 08415034 | – | – | noch nicht gesucht | – |
 | Hecklingen | Sachsen-Anhalt | 15089175 | – | – | noch nicht gesucht | – |
 | Heideck | Bayern | 09576126 | – | – | noch nicht gesucht | – |
-| Heiligenhafen | Schleswig-Holstein | 01055021 | – | – | noch nicht gesucht | – |
+| Heiligenhafen | Schleswig-Holstein | 01055021 | 2490916 | https://pixabay.com/de/photos/heiligenhafen-hafen-ostsee-2490916/ | Pixabay-Lizenz; Hafen an der Ostsee (Titel: "Heiligenhafen, Hafen, Ostsee") | 8 |
 | Heilsbronn | Bayern | 09571165 | – | – | noch nicht gesucht | – |
 | Heimbach | NRW | 05358012 | 268234 | https://pixabay.com/de/photos/burg-hengebach-burg-heimbach-268234/ | Pixabay-Lizenz; Burg Hengebach, Heimbach (Eifel). Ob NRW stimmt, ist aus dem Titel nicht belegt, die Eifel passt aber. | 7 |
 | Heimsheim | BW | 08236025 | – | – | noch nicht gesucht | – |
@@ -1587,9 +1587,9 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Hettingen | BW | 08437047 | – | – | noch nicht gesucht | – |
 | Hirschau | Bayern | 09371127 | – | – | noch nicht gesucht | – |
 | Hirschberg | Thüringen | 16075046 | – | – | noch nicht gesucht | – |
-| Hirschhorn (Neckar) | Hessen | 06431012 | – | – | noch nicht gesucht | – |
+| Hirschhorn (Neckar) | Hessen | 06431012 | 89601 | https://pixabay.com/de/photos/deutschland-fachwerkhaus-hirschhorn-89601/ | Pixabay-Lizenz; Fachwerkhaus (nur über die URL als Hirschhorn eingeordnet, Ort ungeprüft) | 5 |
 | Hohenmölsen | Sachsen-Anhalt | 15084235 | – | – | noch nicht gesucht | – |
-| Hohnstein | Sachsen | 14628190 | – | – | noch nicht gesucht | – |
+| Hohnstein | Sachsen | 14628190 | 110247 | https://pixabay.com/photos/castle-hohnstein-h%C3%B6henburg-110247/ | Pixabay-Lizenz; Burg Hohnstein (Höhenburg), Sächsische Schweiz | 8 |
 | Homberg (Ohm) | Hessen | 06535009 | – | – | noch nicht gesucht | – |
 | Hornberg | BW | 08317051 | – | – | noch nicht gesucht | – |
 | Horstmar | NRW | 05566024 | – | – | noch nicht gesucht | – |
@@ -1601,17 +1601,17 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Jerichow | Sachsen-Anhalt | 15086080 | – | – | noch nicht gesucht | – |
 | Johanngeorgenstadt | Sachsen | 14521320 | – | – | noch nicht gesucht | – |
 | Jöhstadt | Sachsen | 14521330 | – | – | noch nicht gesucht | – |
-| Kahla | Thüringen | 16074044 | – | – | noch nicht gesucht | – |
+| Kahla | Thüringen | 16074044 | 4073923 | https://pixabay.com/de/photos/th%C3%BCringen-seidenroda-kahla-4073923/ | Pixabay-Lizenz; Titel "Thüringen, Seidenroda, Kahla, Natur" (Landschaft bei Kahla, Autor LPArt) | 6 |
 | Kalbe (Milde) | Sachsen-Anhalt | 15081240 | – | – | noch nicht gesucht | – |
 | Kandern | BW | 08336045 | – | – | noch nicht gesucht | – |
-| Kappeln | Schleswig-Holstein | 01059045 | – | – | noch nicht gesucht | – |
+| Kappeln | Schleswig-Holstein | 01059045 | 924315 | https://pixabay.com/de/photos/kappeln-hafen-schlei-924315/ | Pixabay-Lizenz; Hafen von Kappeln an der Schlei | 8 |
 | Kemberg | Sachsen-Anhalt | 15091160 | – | – | noch nicht gesucht | – |
 | Ketzin/Havel | Brandenburg | 12063148 | – | – | noch nicht gesucht | – |
 | Kirchberg an der Jagst | BW | 08127046 | – | – | noch nicht gesucht | – |
 | Kirchenlamitz | Bayern | 09479129 | – | – | noch nicht gesucht | – |
 | Kirtorf | Hessen | 06535010 | – | – | noch nicht gesucht | – |
 | Kitzscher | Sachsen | 14729220 | – | – | noch nicht gesucht | – |
-| Klingenberg a.Main | Bayern | 09676134 | – | – | noch nicht gesucht | – |
+| Klingenberg a.Main | Bayern | 09676134 | 7528300 | https://pixabay.com/photos/onion-tower-half-timbered-houses-7528300/ | Pixabay-Lizenz; Zwiebelturm und Fachwerkhäuser (Ort nur aus den Schlagwörtern Bayern/Unterfranken abgeleitet, nicht bestätigt) | 5 |
 | Klingenthal | Sachsen | 14523160 | – | – | noch nicht gesucht | – |
 | Klötze | Sachsen-Anhalt | 15081280 | – | – | noch nicht gesucht | – |
 | Knittlingen | BW | 08236033 | – | – | noch nicht gesucht | – |
@@ -1623,10 +1623,10 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Kölleda | Thüringen | 16068034 | – | – | noch nicht gesucht | – |
 | Königsberg i.Bay. | Bayern | 09674164 | – | – | noch nicht gesucht | – |
 | Könnern | Sachsen-Anhalt | 15089195 | – | – | noch nicht gesucht | – |
-| Kühlungsborn | Mecklenburg-Vorpommern | 13072060 | – | – | noch nicht gesucht | – |
+| Kühlungsborn | Mecklenburg-Vorpommern | 13072060 | 5038741 | https://pixabay.com/de/photos/k%C3%BChlungsborn-seebr%C3%BCcke-5038741/ | Pixabay-Lizenz; Seebrücke bei Sonnenuntergang (Titel: "Kühlungsborn, Seebrücke, Sonnenuntergang") | 9 |
 | Külsheim | BW | 08128064 | – | – | noch nicht gesucht | – |
 | Langenburg | BW | 08127047 | 5668792 | https://pixabay.com/photos/castle-langenburg-castle-langenburg-5668792/ | Pixabay-Lizenz; Schloss Langenburg ("Castle Langenburg") | 8 |
-| Laubach | Hessen | 06531010 | – | – | noch nicht gesucht | – |
+| Laubach | Hessen | 06531010 | 2663397 | https://pixabay.com/de/photos/schlosspark-teich-schloss-laubach-2663397/ | Pixabay-Lizenz; Schlosspark mit Teich, Schloss Laubach (Hessen) laut Titel, nicht am Bild geprüft | 6 |
 | Lauchheim | BW | 08136038 | – | – | noch nicht gesucht | – |
 | Laufen | Bayern | 09172122 | – | – | noch nicht gesucht | – |
 | Laufenburg (Baden) | BW | 08337066 | 256417 | https://pixabay.com/de/photos/laufenburg-rheinbr%C3%BCcke-steinbr%C3%BCcke-256417/ | Pixabay-Lizenz; Rheinbrücke (Steinbrücke) Laufenburg. Der Ort liegt am Rhein und die Brücke verbindet Laufenburg (Baden) mit der Schweizer Seite. Das Bundesland steht nicht im Titel. | 7 |
@@ -1648,31 +1648,31 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Lommatzsch | Sachsen | 14627130 | – | – | noch nicht gesucht | – |
 | Lorch | Hessen | 06439010 | – | – | noch nicht gesucht | – |
 | Lucka | Thüringen | 16077028 | – | – | noch nicht gesucht | – |
-| Luckau | Brandenburg | 12061320 | – | – | noch nicht gesucht | – |
+| Luckau | Brandenburg | 12061320 | 5307448 | https://pixabay.com/de/photos/luckau-stadthaus-5307448/ | Pixabay-Lizenz; Stadthaus mit Sankt-Nikolai-Kirche (Nutzer geoworld) | 8 |
 | Ludwigsstadt | Bayern | 09476152 | – | – | noch nicht gesucht | – |
 | Lunzenau | Sachsen | 14522350 | 7369322 | https://pixabay.com/de/photos/g%C3%B6hrener-viadukt-br%C3%BCcke-7369322/ | Pixabay-Lizenz; Göhrener Viadukt über die Zwickauer Mulde. Göhren ist ein Ortsteil von Lunzenau (aus dem Ortswissen ergänzt, nicht aus dem Treffer). Ortsname Lunzenau steht nicht im Titel. | 5 |
-| Lychen | Brandenburg | 12073384 | – | – | noch nicht gesucht | – |
+| Lychen | Brandenburg | 12073384 | 793689 | https://pixabay.com/de/photos/see-wasser-angler-steg-bootssteg-793689/ | Pixabay-Lizenz; See mit Angler am Bootssteg (HorseBadorties). Nur über die Suche "Lychen" gefunden, der Ort ist nicht belegt. | 5 |
 | Löffingen | BW | 08315070 | – | – | noch nicht gesucht | – |
 | Löwenstein | BW | 08125059 | – | – | noch nicht gesucht | – |
 | Lößnitz | Sachsen | 14521370 | – | – | noch nicht gesucht | – |
-| Lübbenau/Spreewald | Brandenburg | 12066196 | – | – | noch nicht gesucht | – |
+| Lübbenau/Spreewald | Brandenburg | 12066196 | 2748203 | https://pixabay.com/de/photos/spreewald-l%C3%BCbbenau-deutschland-2748203/ | Pixabay-Lizenz; Spreewald-Wasserlandschaft, Schlagwort Lübbenau | 7 |
 | Lübtheen | Mecklenburg-Vorpommern | 13076088 | – | – | noch nicht gesucht | – |
 | Lügde | NRW | 05766052 | – | – | noch nicht gesucht | – |
 | Lützen | Sachsen-Anhalt | 15084315 | – | – | noch nicht gesucht | – |
 | Mahlberg | BW | 08317073 | – | – | noch nicht gesucht | – |
 | Mainbernheim | Bayern | 09675144 | – | – | noch nicht gesucht | – |
 | Mansfeld | Sachsen-Anhalt | 15087275 | – | – | noch nicht gesucht | – |
-| Marienmünster | NRW | 05762024 | – | – | noch nicht gesucht | – |
+| Marienmünster | NRW | 05762024 | 259318 | https://pixabay.com/de/photos/abtei-marienm%C3%BCnster-marienm%C3%BCnster-259318/ | Pixabay-Lizenz; Abtei Marienmünster (Titel "Abtei Marienmünster, Marienmünster") | 8 |
 | Markneukirchen | Sachsen | 14523200 | – | – | noch nicht gesucht | – |
 | Marktleuthen | Bayern | 09479135 | – | – | noch nicht gesucht | – |
 | Marlow | Mecklenburg-Vorpommern | 13073055 | 3434297 | https://pixabay.com/de/photos/vogelpark-marlow-natur-sittich-3434297/ | Pixabay-Lizenz; Sittich im Vogelpark Marlow. Der Park ist das Wahrzeichen, das Foto zeigt aber nur ein Tier und keine Stadtansicht. | 5 |
 | Maulbronn | BW | 08236038 | 2104354 | https://pixabay.com/de/photos/gew%C3%B6lbe-kloster-maulbronn-2104354/ | Pixabay-Lizenz; Gewölbe im Kloster Maulbronn (Innenaufnahme). | 6 |
 | Medebach | NRW | 05958028 | – | – | noch nicht gesucht | – |
-| Meersburg | BW | 08435036 | – | – | noch nicht gesucht | – |
+| Meersburg | BW | 08435036 | 5333921 | https://pixabay.com/photos/meersburg-lake-constance-wine-town-5333921/ | Pixabay-Lizenz; Meersburg am Bodensee, Weinstadt (Titel/Schlagwörter) | 8 |
 | Merkendorf | Bayern | 09571177 | – | – | noch nicht gesucht | – |
 | Meßkirch | BW | 08437078 | 612025 | https://pixabay.com/de/photos/stadtansicht-himmel-messkirch-612025/ | Pixabay-Lizenz; Stadtansicht Meßkirch | 7 |
-| Miltenberg | Bayern | 09676139 | – | – | noch nicht gesucht | – |
-| Mittenwalde | Brandenburg | 12061332 | – | – | noch nicht gesucht | – |
+| Miltenberg | Bayern | 09676139 | 2678206 | https://pixabay.com/de/photos/marktplatz-miltenberg-odenwald-2678206/ | Pixabay-Lizenz; Marktplatz Miltenberg (Titel) | 8 |
+| Mittenwalde | Brandenburg | 12061332 | 5283445 | https://pixabay.com/photos/germany-brandenburg-mittenwalde-5283445/ | Pixabay-Lizenz; Mittenwalde (Brandenburg), Motiv unklar (nur Schlagwörter) | 5 |
 | Moringen | Niedersachsen | 03155009 | – | – | noch nicht gesucht | – |
 | Munderkingen | BW | 08425081 | 268966 | https://pixabay.com/de/photos/munderkingen-altstadt-fachwerkbau-268966/ | Pixabay-Lizenz; Altstadt mit Fachwerkbau (Alternative) | 7 |
 | Möckmühl | BW | 08125063 | – | – | noch nicht gesucht | – |
@@ -1680,12 +1680,12 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Mügeln | Sachsen | 14730200 | – | – | noch nicht gesucht | – |
 | Mühlheim an der Donau | BW | 08327036 | – | – | noch nicht gesucht | – |
 | Müncheberg | Brandenburg | 12064317 | – | – | noch nicht gesucht | – |
-| Münnerstadt | Bayern | 09672135 | – | – | noch nicht gesucht | – |
-| Münzenberg | Hessen | 06440015 | – | – | noch nicht gesucht | – |
+| Münnerstadt | Bayern | 09672135 | 884261 | https://pixabay.com/de/photos/augustiner-klosterbr%C3%A4u-m%C3%BCnnerstadt-884261/ | Pixabay-Lizenz; Augustiner Klosterbräu, Münnerstadt | 6 |
+| Münzenberg | Hessen | 06440015 | 2130318 | https://pixabay.com/photos/m%C3%BCnzenburg-m%C3%BCnzenberg-castle-ruin-2130318/ | Pixabay-Lizenz; Burgruine Münzenberg (Luftbild, Sonnenuntergang) | 8 |
 | Naila | Bayern | 09475156 | – | – | noch nicht gesucht | – |
 | Naumburg | Hessen | 06633018 | – | – | noch nicht gesucht | – |
 | Neckarbischofsheim | BW | 08226055 | – | – | noch nicht gesucht | – |
-| Neckarsteinach | Hessen | 06431018 | – | – | noch nicht gesucht | – |
+| Neckarsteinach | Hessen | 06431018 | 568089 | https://pixabay.com/photos/neckarsteinach-castle-neckar-ruin-568089/ | Pixabay-Lizenz; Burgruine Neckarsteinach | 8 |
 | Neresheim | BW | 08136045 | 51293 | https://pixabay.com/de/photos/kloster-abtei-neresheim-kirche-51293/ | Pixabay-Lizenz; Abtei Neresheim, Kirche | 8 |
 | Neubukow | Mecklenburg-Vorpommern | 13072074 | – | – | noch nicht gesucht | – |
 | Neubulach | BW | 08235047 | – | – | noch nicht gesucht | – |
