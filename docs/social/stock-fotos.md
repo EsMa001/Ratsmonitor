@@ -1288,7 +1288,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1463 | Mandelbachtal | 10045116 | – | – | noch nicht gesucht | – |
 | 1464 | Grafschaft | 07131090 | – | – | noch nicht gesucht | – |
 | 1467 | Kleinblittersdorf | 10041514 | – | – | noch nicht gesucht | – |
-| 1468 | Haigerloch | 08417025 | – | – | noch nicht gesucht | – |
+| 1468 | Haigerloch | 08417025 | 5479 | https://pixabay.com/pl/photos/zamek-haigerloch-zamek-haigerloch-5479/ | Pixabay-Lizenz; Schloss Haigerloch | 8 |
 | 1470 | Hasbergen | 03459021 | – | – | noch nicht gesucht | – |
 | 1471 | Lichtenau | 05774028 | – | – | noch nicht gesucht | – |
 | 1472 | Lorch | 08136042 | – | – | noch nicht gesucht | – |
@@ -1300,11 +1300,11 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1481 | Dallgow-Döberitz | 12063056 | – | – | noch nicht gesucht | – |
 | 1482 | Nideggen | 05358044 | – | – | noch nicht gesucht | – |
 | 1483 | Meßstetten | 08417044 | – | – | noch nicht gesucht | – |
-| 1484 | Kenzingen | 08316020 | – | – | noch nicht gesucht | – |
+| 1484 | Kenzingen | 08316020 | 662624 | https://pixabay.com/photos/bagpipes-kenzingen-medieval-festival-662624/ | Pixabay-Lizenz; Mittelalterfest Kenzingen (Dudelsack), kein Wahrzeichen | 5 |
 | 1486 | Herbolzheim | 08316017 | – | – | noch nicht gesucht | – |
-| 1487 | Bad Staffelstein | 09478165 | – | – | noch nicht gesucht | – |
+| 1487 | Bad Staffelstein | 09478165 | 6551544 | https://pixabay.com/photos/fourteen-saints-basilica-church-6551544/ | Pixabay-Lizenz; Basilika Vierzehnheiligen | 8 |
 | 1488 | Hagen im Bremischen | 03352060 | – | – | noch nicht gesucht | – |
-| 1489 | Hammelburg | 09672127 | – | – | noch nicht gesucht | – |
+| 1489 | Hammelburg | 09672127 | 2794704 | https://pixabay.com/de/photos/kreuzweg-saaleck-hammelburg-2794704/ | Pixabay-Lizenz; Kreuzweg bei Schloss Saaleck | 6 |
 | 1490 | Mülsen | 14524200 | – | – | noch nicht gesucht | – |
 | 1491 | Emsbüren | 03454010 | – | – | noch nicht gesucht | – |
 | 1492 | Adendorf | 03355001 | – | – | noch nicht gesucht | – |
@@ -1315,24 +1315,24 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1498 | Karlsdorf-Neuthard | 08215103 | – | – | noch nicht gesucht | – |
 | 1499 | Bad Iburg | 03459004 | – | – | noch nicht gesucht | – |
 | 1500 | Hüttenberg | 06532014 | – | – | noch nicht gesucht | – |
-| 1504 | Donzdorf | 08117015 | – | – | noch nicht gesucht | – |
-| 1506 | Nordkirchen | 05558028 | – | – | noch nicht gesucht | – |
+| 1504 | Donzdorf | 08117015 | 80242 | https://pixabay.com/de/photos/burg-ramsberg-ramsberg-burg-80242/ | Pixabay-Lizenz; Burg Ramsberg (Ortsteil von Donzdorf). Der Ortsbezug ergibt sich aus der Suchtreffer-Seite "donzdorf", nicht aus dem Titel. | 6 |
+| 1506 | Nordkirchen | 05558028 | 1657072 | https://pixabay.com/photos/castle-north-churches-park-1657072/ | Pixabay-Lizenz; Schloss Nordkirchen mit Park und Wassergraben | 9 |
 | 1507 | Morbach | 07231502 | – | – | noch nicht gesucht | – |
 | 1508 | Gernsheim | 06433004 | – | – | noch nicht gesucht | – |
-| 1509 | Dießen am Ammersee | 09181114 | – | – | noch nicht gesucht | – |
+| 1509 | Dießen am Ammersee | 09181114 | 1279458 | https://pixabay.com/photos/marie-m%C3%BCnster-die%C3%9Fen-ammersee-1279458/ | Pixabay-Lizenz; Marienmünster Dießen | 9 |
 | 1513 | Plankstadt | 08226063 | – | – | noch nicht gesucht | – |
 | 1514 | Feldkirchen-Westerham | 09187130 | – | – | noch nicht gesucht | – |
 | 1515 | Burgau | 09774121 | – | – | noch nicht gesucht | – |
 | 1516 | Morsbach | 05374028 | – | – | noch nicht gesucht | – |
-| 1517 | Nossen | 14627180 | – | – | noch nicht gesucht | – |
+| 1517 | Nossen | 14627180 | 3404663 | https://pixabay.com/de/photos/kloster-altzella-nossen-eingangstor-3404663/ | Pixabay-Lizenz; Kloster Altzella, Eingangstor | 8 |
 | 1518 | Merzenich | 05358040 | – | – | noch nicht gesucht | – |
 | 1519 | Dissen am Teutoburger Wald | 03459015 | – | – | noch nicht gesucht | – |
 | 1520 | Böhl-Iggelheim | 07338005 | – | – | noch nicht gesucht | – |
 | 1522 | Aerzen | 03252001 | – | – | noch nicht gesucht | – |
-| 1524 | Klipphausen | 14627100 | – | – | noch nicht gesucht | – |
+| 1524 | Klipphausen | 14627100 | 58643 | https://pixabay.com/photos/sharfenberg-castle-hilltop-58643/ | Pixabay-Lizenz; Burg Scharfenberg auf bewaldetem Hügel. Titel nennt nur "Scharfenberg", der Ortsbezug zu Klipphausen ist nicht bestätigt, bitte prüfen. | 5 |
 | 1525 | Nauheim | 06433009 | – | – | noch nicht gesucht | – |
 | 1527 | Langenzenn | 09573120 | – | – | noch nicht gesucht | – |
-| 1530 | Bad Wildbad | 08235079 | – | – | noch nicht gesucht | – |
+| 1530 | Bad Wildbad | 08235079 | 15551954 | https://www.pexels.com/photo/the-baumwipfelpfad-schwarzwald-tower-in-bad-wildbad-black-forest-germany-15551954/ | Pexels-Lizenz; Turm des Baumwipfelpfads Schwarzwald in Bad Wildbad. | 8 |
 | 1531 | Bogen | 09278118 | – | – | noch nicht gesucht | – |
 | 1533 | Betzdorf | 07132006 | – | – | noch nicht gesucht | – |
 | 1534 | Büdelsdorf | 01058034 | – | – | noch nicht gesucht | – |
@@ -1358,8 +1358,8 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1561 | Bestwig | 05958008 | – | – | noch nicht gesucht | – |
 | 1562 | Meuselwitz | 16077032 | – | – | noch nicht gesucht | – |
 | 1564 | Hambühren | 03351012 | – | – | noch nicht gesucht | – |
-| 1567 | Kirkel | 10045115 | – | – | noch nicht gesucht | – |
-| 1568 | Kirchzarten | 08315064 | – | – | noch nicht gesucht | – |
+| 1567 | Kirkel | 10045115 | 405556 | https://pixabay.com/de/photos/himmel-burg-turm-kirkel-405556/ | Pixabay-Lizenz; Burg Kirkel mit Turm vor Himmel | 8 |
+| 1568 | Kirchzarten | 08315064 | 2275235 | https://pixabay.com/photos/town-hall-delicate-the-dreisamtal-2275235/ | Pixabay-Lizenz; Rathaus Kirchzarten im Dreisamtal | 8 |
 | 1569 | Lollar | 06531013 | – | – | noch nicht gesucht | – |
 | 1570 | Kirchlinteln | 03361005 | – | – | noch nicht gesucht | – |
 | 1571 | Oelsnitz/Vogtl. | 14523300 | – | – | noch nicht gesucht | – |
