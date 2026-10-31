@@ -2763,7 +2763,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Heideblick | Brandenburg | 12061219 | – | – | noch nicht gesucht | – |
 | Heidenrod | Hessen | 06439005 | – | – | noch nicht gesucht | – |
 | Heidesee | Brandenburg | 12061217 | – | – | noch nicht gesucht | – |
-| Heiligenberg | Baden-Württemberg | 08435020 | – | – | noch nicht gesucht | – |
+| Heiligenberg | Baden-Württemberg | 08435020 | 97522 | https://pixabay.com/pt/photos/castelo-heiligenberg-castelo-97522/ | Pixabay-Lizenz; Schloss Heiligenberg, Renaissance, Linzgau (Seite abgerufen; der Bodensee wird dort nicht genannt) | 8 |
 | Heiligengrabe | Brandenburg | 12068181 | – | – | noch nicht gesucht | – |
 | Heiligenstadt i.OFr. | Bayern | 09471142 | – | – | noch nicht gesucht | – |
 | Heiligkreuzsteinach | Baden-Württemberg | 08226029 | – | – | noch nicht gesucht | – |
@@ -2771,7 +2771,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Heinersreuth | Bayern | 09472150 | – | – | noch nicht gesucht | – |
 | Heiningen | Baden-Württemberg | 08117030 | – | – | noch nicht gesucht | – |
 | Helbedündorf | Thüringen | 16065032 | – | – | noch nicht gesucht | – |
-| Helgoland | Schleswig-Holstein | 01056025 | – | – | noch nicht gesucht | – |
+| Helgoland | Schleswig-Holstein | 01056025 | 6610128 | https://pixabay.com/de/photos/helgoland-nordsee-yachthafen-hafen-6610128/ | Pixabay-Lizenz; Yachthafen Helgoland (Titel "Helgoland Nordsee Yachthafen"; Inhalt nicht angesehen) | 7 |
 | Helmstadt-Bargen | Baden-Württemberg | 08226106 | – | – | noch nicht gesucht | – |
 | Helsa | Hessen | 06633012 | – | – | noch nicht gesucht | – |
 | Hemhofen | Bayern | 09572130 | – | – | noch nicht gesucht | – |
