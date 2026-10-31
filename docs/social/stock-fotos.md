@@ -3061,7 +3061,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Leutersdorf | Sachsen | 14626280 | – | – | noch nicht gesucht | – |
 | Lichtenau | Bayern | 09571175 | – | – | noch nicht gesucht | – |
 | Lichtenau | Sachsen | 14522330 | – | – | noch nicht gesucht | – |
-| Lichtenstein | Baden-Württemberg | 08415092 | – | – | noch nicht gesucht | – |
+| Lichtenstein | Baden-Württemberg | 08415092 | 4355921 | https://pixabay.com/photos/castle-lichtenstein-castle-romantic-4355921/ | Pixabay-Lizenz; Schloss Lichtenstein (Honau), nach dem Titel geschätzt | 6 |
 | Lichtentanne | Sachsen | 14524170 | – | – | noch nicht gesucht | – |
 | Lichtenwald | Baden-Württemberg | 08116037 | – | – | noch nicht gesucht | – |
 | Liebschützberg | Sachsen | 14730170 | – | – | noch nicht gesucht | – |
@@ -3073,7 +3073,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Litzendorf | Bayern | 09471155 | – | – | noch nicht gesucht | – |
 | Lobbach | Baden-Württemberg | 08226104 | – | – | noch nicht gesucht | – |
 | Loffenau | Baden-Württemberg | 08216029 | – | – | noch nicht gesucht | – |
-| Lohberg | Bayern | 09372178 | – | – | noch nicht gesucht | – |
+| Lohberg | Bayern | 09372178 | 6775340 | https://pixabay.com/photos/kleiner-arbersee-great-arber-lohberg-6775340/ | Pixabay-Lizenz; Kleiner Arbersee, Lohberg | 7 |
 | Lohra | Hessen | 06534013 | – | – | noch nicht gesucht | – |
 | Lohsa | Sachsen | 14625330 | – | – | noch nicht gesucht | – |
 | Loiching | Bayern | 09279124 | – | – | noch nicht gesucht | – |
@@ -3083,7 +3083,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Loßburg | Baden-Württemberg | 08237045 | – | – | noch nicht gesucht | – |
 | Ludwigsau | Hessen | 06632012 | – | – | noch nicht gesucht | – |
 | Luhe-Wildenau | Bayern | 09374133 | – | – | noch nicht gesucht | – |
-| Lupburg | Bayern | 09373143 | – | – | noch nicht gesucht | – |
+| Lupburg | Bayern | 09373143 | 4300311 | https://pixabay.com/de/photos/lupburg-dorf-bayern-oberpfalz-burg-4300311/ | Pixabay-Lizenz; Dorf mit Burg Lupburg | 8 |
 | Löbnitz | Sachsen | 14730180 | – | – | noch nicht gesucht | – |
 | Löchgau | Baden-Württemberg | 08118047 | – | – | noch nicht gesucht | – |
 | Löhnberg | Hessen | 06533010 | – | – | noch nicht gesucht | – |
@@ -3091,7 +3091,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Lützelbach | Hessen | 06437010 | – | – | noch nicht gesucht | – |
 | Machern | Sachsen | 14729250 | – | – | noch nicht gesucht | – |
 | Magstadt | Baden-Württemberg | 08115029 | – | – | noch nicht gesucht | – |
-| Mahlstetten | Baden-Württemberg | 08327033 | – | – | noch nicht gesucht | – |
+| Mahlstetten | Baden-Württemberg | 08327033 | 2648107 | https://pixabay.com/de/photos/kapelle-aggenhausen-mahlstetten-2648107/ | Pixabay-Lizenz; Kapelle Aggenhausen (Weiler bei Mahlstetten) | 6 |
 | Mainaschaff | Bayern | 09671140 | – | – | noch nicht gesucht | – |
 | Mainhardt | Baden-Württemberg | 08127052 | – | – | noch nicht gesucht | – |
 | Mainhausen | Hessen | 06438007 | – | – | noch nicht gesucht | – |
