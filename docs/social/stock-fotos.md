@@ -1874,7 +1874,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Steinheim | NRW | 05762032 | – | – | noch nicht gesucht | – |
 | Steinheim an der Murr | BW | 08118070 | – | – | noch nicht gesucht | – |
 | Stockach | BW | 08335079 | – | – | noch nicht gesucht | – |
-| Stolpen | Sachsen | 14628380 | – | – | noch nicht gesucht | – |
+| Stolpen | Sachsen | 14628380 | 1053500 | https://pixabay.com/de/photos/burg-burghof-ruine-stolpen-1053500/ | Pixabay-Lizenz; Burg Stolpen, Burghof, Ruine | 8 |
 | Storkow (Mark) | Brandenburg | 12067481 | – | – | noch nicht gesucht | – |
 | Straelen | NRW | 05154052 | – | – | noch nicht gesucht | – |
 | Strasburg (Uckermark) | Mecklenburg-Vorpommern | 13075130 | – | – | noch nicht gesucht | – |
@@ -1882,7 +1882,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Stühlingen | BW | 08337106 | – | – | noch nicht gesucht | – |
 | Sulingen | Niedersachsen | 03251040 | – | – | noch nicht gesucht | – |
 | Sulz am Neckar | BW | 08325057 | – | – | noch nicht gesucht | – |
-| Sulzbach-Rosenberg | Bayern | 09371151 | – | – | noch nicht gesucht | – |
+| Sulzbach-Rosenberg | Bayern | 09371151 | 2157353 | https://pixabay.com/de/photos/sulzbach-rosenberg-oberpfalz-bayern-2157353/ | Pixabay-Lizenz; Titel nennt Sulzbach-Rosenberg, Oberpfalz, Bayern | 7 |
 | Sulzbach/Saar | Saarland | 10041518 | – | – | noch nicht gesucht | – |
 | Sulzburg | BW | 08315111 | – | – | noch nicht gesucht | – |
 | Sömmerda | Thüringen | 16068051 | – | – | noch nicht gesucht | – |
@@ -1896,7 +1896,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Tanna | Thüringen | 16075132 | – | – | noch nicht gesucht | – |
 | Tauberbischofsheim | BW | 08128115 | 214905 | https://pixabay.com/photos/castle-tauberbischofsheim-germany-214905/ | Pixabay-Lizenz; Schloss mit Turm | 7 |
 | Taucha | Sachsen | 14730300 | – | – | noch nicht gesucht | – |
-| Tecklenburg | NRW | 05566088 | – | – | noch nicht gesucht | – |
+| Tecklenburg | NRW | 05566088 | 4171251 | https://pixabay.com/de/photos/tecklenburg-steinmauer-steinwand-4171251/ | Pixabay-Lizenz; Steinmauer mit Tür (laut Titel Tecklenburg) | 5 |
 | Tegernsee | Bayern | 09182132 | 905124 | https://pixabay.com/de/photos/steg-promenade-rathaus-tegernsee-905124/ | Pixabay-Lizenz; Promenade am Tegernsee und Rathaus | 8 |
 | Templin | Brandenburg | 12073572 | 4790682 | https://pixabay.com/de/photos/tor-m%C3%BChlentor-templin-historisch-4790682/ | Pixabay-Lizenz; Mühlentor (historisches Stadttor); Alternative: Schultor 5098478 | 7 |
 | Tengen | BW | 08335080 | – | – | noch nicht gesucht | – |
@@ -1923,7 +1923,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Trostberg | Bayern | 09189157 | 729900 | https://pixabay.com/de/photos/trostberg-chiemgau-alz-alzbr%C3%BCcke-729900/ | Pixabay-Lizenz; Alz und Alzbrücke in Trostberg, Chiemgau | 8 |
 | Twistringen | Niedersachsen | 03251042 | – | – | noch nicht gesucht | – |
 | Töging a.Inn | Bayern | 09171132 | – | – | noch nicht gesucht | – |
-| Tönning | Schleswig-Holstein | 01054138 | – | – | noch nicht gesucht | – |
+| Tönning | Schleswig-Holstein | 01054138 | 282626 | https://pixabay.com/de/photos/hafen-t%C3%B6nning-speicher-geb%C3%A4ude-282626/ | Pixabay-Lizenz; Hafen mit Speicher | 8 |
 | Ueckermünde | Mecklenburg-Vorpommern | 13075136 | – | – | noch nicht gesucht | – |
 | Uetersen | Schleswig-Holstein | 01056049 | – | – | noch nicht gesucht | – |
 | Uhingen | BW | 08117051 | – | – | noch nicht gesucht | – |
