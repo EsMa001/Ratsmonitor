@@ -95,6 +95,8 @@ def build_cfg(sheet, out):
             for (sz, col), p in zip(sizes, parts):
                 if not p: continue
                 sz = max(40, int(sz * scale)); pos, hgt = layout(p, sz)
+                while sz > 40 and max(w_ for _, _, _, w_ in pos) > CW - 4:  # ein langes Wort („Stadtteilgesundheitszentrum“) darf nicht über den Rand laufen
+                    sz -= 4; pos, hgt = layout(p, sz)
                 plan.append((sz, col, pos, hgt))
             return plan, sum(h_ + 24 for _, _, _, h_ in plan) + 110
         scale = 1.0; plan, used = build(scale)
@@ -147,7 +149,7 @@ def build_cfg(sheet, out):
         sz = 92
         while True:
             pos, hgt = layout(text, sz, tr=-0.02, lh=1.12)
-            if hgt <= 800 or sz <= 48: break
+            if (hgt <= 800 and max(w_ for _, _, _, w_ in pos) <= CW - 4) or sz <= 48: break
             sz -= 2
         y = 430 + max(0, (1340 - 430 - hgt - 110) // 2); sfx, punch = [], []
         for n, (wd, x, dy, w) in enumerate(pos):
