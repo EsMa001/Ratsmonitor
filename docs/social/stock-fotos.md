@@ -812,7 +812,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 778 | Lahnstein | 07141075 | 2169056 | https://pixabay.com/de/photos/burg-lahneck-lahnstein-schloss-2169056/ | Pixabay-Lizenz; Titel "Burg Lahneck Lahnstein" | 8 |
 | 779 | Gerlingen | 08118019 | – | – | kein Bild gefunden | – |
 | 780 | Kronberg im Taunus | 06434006 | – | – | kein Bild gefunden | – |
-| 782 | Bremervörde | 03357008 | – | – | kein Bild gefunden | – |
+| 782 | Bremervörde | 03357008 | 6741711 | https://pixabay.com/de/photos/bremerv%C3%B6rde-schloss-haus-fluss-6741711/ | Pixabay-Lizenz; Schlosshaus am Fluss (Oste), Titel nennt Bremervörde | 8 |
 | 784 | Hessisch Oldendorf | 03252007 | – | – | kein Bild gefunden | – |
 | 786 | Bergneustadt | 05374004 | – | – | kein Bild gefunden | – |
 | 788 | Marktoberdorf | 09777151 | 3132238 | https://pixabay.com/photos/marktoberdorf-linden-avenue-fall-3132238/ | Pixabay-Lizenz (Lindenallee im Herbst, Ortsname im Titel) | 7 |
@@ -822,11 +822,11 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 798 | Illertissen | 09775129 | – | – | kein Bild gefunden | – |
 | 800 | Bad Reichenhall | 09172114 | 210566 | https://pixabay.com/photos/bad-reichenhall-kurpark-palm-trees-210566/ | Pixabay-Lizenz; Kurpark mit Palmen, Ortsbezug im Titel | 6 |
 | 801 | Buchen (Odenwald) | 08225014 | – | – | kein Bild gefunden | – |
-| 802 | Bad Münstereifel | 05366004 | – | – | kein Bild gefunden | – |
+| 802 | Bad Münstereifel | 05366004 | 746924 | https://pixabay.com/de/photos/bad-m%C3%BCnstereifel-erft-stadt-746924/ | Pixabay-Lizenz; Stadtansicht an der Erft | 8 |
 | 803 | Pfinztal | 08215101 | 2183289 | https://pixabay.com/de/photos/sonnenaufgang-landschaft-pfinztal-2183289/ | Pixabay-Lizenz (Sonnenaufgang, Landschaft, Pfinztal) | 6 |
 | 804 | Großenhain | 14627060 | – | – | kein Bild gefunden | – |
 | 805 | Hoppegarten | 12064227 | – | – | kein Bild gefunden | – |
-| 806 | Bad Berleburg | 05970004 | – | – | kein Bild gefunden | – |
+| 806 | Bad Berleburg | 05970004 | 5248028 | https://pixabay.com/photos/bad-berleburg-castle-5248028/ | Pixabay-Lizenz; Schloss Berleburg | 8 |
 | 808 | Bad Aibling | 09187117 | – | – | kein Bild gefunden | – |
 | 809 | Konz | 07235068 | – | – | kein Bild gefunden | – |
 | 811 | Kreuzau | 05358028 | – | – | kein Bild gefunden | – |
@@ -838,10 +838,10 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 821 | Bobingen | 09772125 | – | – | kein Bild gefunden | – |
 | 822 | Bexbach | 10045111 | – | – | kein Bild gefunden | – |
 | 823 | Alzenau | 09671111 | 1927876 | https://pixabay.com/de/photos/alzenau-unterfranken-bayern-1927876/ | Pixabay-Lizenz (Alzenau Unterfranken Bayern) | 7 |
-| 824 | Diepholz | 03251012 | – | – | kein Bild gefunden | – |
+| 824 | Diepholz | 03251012 | 707556 | https://pixabay.com/de/photos/stadt-h%C3%A4user-d%C3%A4cher-kirche-707556/ | Pixabay-Lizenz; Stadtansicht mit Häusern, Dächern und Kirche (Titel nennt Diepholz) | 7 |
 | 827 | Holzwickede | 05978016 | 4837380 | https://pixabay.com/fi/photos/opherdicke-linna-unna-4837380/ | Pixabay-Lizenz; Schloss Opherdicke (Ortsteil von Holzwickede), Titel nennt Opherdicke und Unna, nicht Holzwickede selbst | 5 |
 | 828 | Garching b.München | 09184119 | – | – | kein Bild gefunden | – |
-| 829 | Bad Säckingen | 08337096 | – | – | kein Bild gefunden (nur Suchseiten) | – |
+| 829 | Bad Säckingen | 08337096 | 1989952 | https://pixabay.com/de/photos/holzbr%C3%BCcke-bad-s%C3%A4ckingen-rhein-1989952/ | Pixabay-Lizenz; Holzbrücke über den Rhein (Wahrzeichen) | 8 |
 | 832 | Frankenberg (Eder) | 06635011 | 2225323 | https://pixabay.com/nl/frankenberg-hessen-duitsland-2225323/ | Pixabay-Lizenz (Titel „Frankenberg, Hessen, Duitsland“) | 7 |
 | 833 | Bürstadt | 06431005 | – | – | kein Bild gefunden | – |
 | 834 | Ismaning | 09184130 | – | – | kein Bild gefunden | – |
@@ -854,7 +854,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 844 | Gescher | 05554016 | – | – | kein Bild gefunden | – |
 | 845 | Freudenberg | 05970016 | 4572407 | https://pixabay.com/photos/freudenberg-historic-old-town-4572407/ | Pixabay-Lizenz (Historische Altstadt; Freudenberg nicht eindeutig, Fachwerk-Stichwort) | 6 |
 | 846 | Auerbach/Vogtl. | 14523020 | – | – | kein Bild gefunden | – |
-| 848 | Bad Münder am Deister | 03252002 | – | – | kein Bild gefunden | – |
+| 848 | Bad Münder am Deister | 03252002 | 1180590 | https://pixabay.com/de/photos/kurpark-bad-m%C3%BCnder-deister-winter-1180590/ | Pixabay-Lizenz; Kurpark im Winter | 6 |
 | 849 | Cham | 09372116 | – | – | kein Bild gefunden | – |
 | 850 | Horn-Bad Meinberg | 05766032 | 3890940 | https://pixabay.com/de/photos/brunnentempel-bad-meinberg-3890940/ | Pixabay-Lizenz (Brunnentempel Bad Meinberg) | 7 |
 | 851 | Forst (Lausitz) | 12071076 | – | – | kein Bild gefunden (nur Suchseiten) | – |
