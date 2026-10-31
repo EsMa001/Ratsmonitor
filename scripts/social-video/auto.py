@@ -27,35 +27,77 @@ def build_cfg(sheet, out):
     hl = highlight((sheet['zitat2'] or sheet['zitat']) + ' ' + sheet['zitat'], sheet['titel2'])
     PET, INK, GRAY2, W, MX, CW = V_.PET, V_.INK, V_.GRAY2, V_.W, V_.MX, V_.CW
 
-    def kern(wt):  # Szene 2: Kernsatz, wird vorgelesen
+    from PIL import Image, ImageDraw
+
+    def dot(d, col):
+        S = d * 3; m = Image.new('L', (S, S), 0); ImageDraw.Draw(m).ellipse([0, 0, S - 1, S - 1], fill=255); m = m.resize((d, d), Image.LANCZOS)
+        im = Image.new('RGBA', (d, d), tuple(col) + (255,)); im.putalpha(m); return im
+
+    def grow_line(x, y0, y1, t0, dur=0.5):  # senkrechte Linie, die von oben nach unten wächst
+        hgt = max(2, y1 - y0); frames = []
+        for k in range(13):
+            fr = Image.new('RGBA', (8, hgt), (0, 0, 0, 0)); ImageDraw.Draw(fr).rectangle([0, 0, 7, int(hgt * k / 12)], fill=tuple(PET) + (140,)); frames.append(fr)
+        e = V_.E(frames[-1], x, y0, t0, dur=0.05, slide=0)
+        e.anim = lambda t: frames[min(12, int(max(0.0, (t - t0) / dur) * 12))]
+        return e
+
+    def count_el(text, x, y, t0, dur=0.9):  # Betrag zählt hoch
+        digits = ''.join(c for c in text if c.isdigit()); n = int(digits); tail = text[len(text.rstrip('€ ')) :] if False else ' €'
+        steps = 24; frames = []
+        for k in range(steps + 1):
+            v = int(n * k / steps); frames.append(V_.big(f"{v:,}".replace(',', '.') + tail, 150, PET, tr=-0.05))
+        e = V_.slam(frames[-1], x, y, t0, 0.2, 0.2)
+        e.anim = lambda t: frames[min(steps, int(max(0.0, (t - t0) / dur) * steps))]
+        return e, frames[-1].height
+
+    def split_quote(text):  # wörtlich in drei Teile: Subjekt und Verb groß, Gegenstand in Petrol, Rest klein
+        w = text.split(); idx = next((k for k, x in enumerate(w) if strip(x).lower() in VERBS or strip(x).lower() in ('wird', 'werden')), None)
+        if idx is None or idx > 6: return None
+        p1 = ' '.join(w[:idx + 1]); k = idx + 1; p2 = []
+        while k < len(w) and len(' '.join(p2 + [w[k]])) <= 34 and strip(w[k]).lower() not in ('gemäß', 'als', 'zur', 'zum', 'für', 'und', 'zu'): p2.append(w[k]); k += 1
+        if not p2: return None
+        return p1, ' '.join(p2), ' '.join(w[k:])
+
+    def kern(wt):  # Szene 2: Kernsatz, wird vorgelesen; Kern groß, Rest klein
         pill = b.pill(sheet['zitatHinweis'], 52, b.PETH, b.PETD, padx=36, pady=18)
-        qs = 84
-        while True:
-            q = V_.hl_block('„' + sheet['zitat'] + '“', qs, set(), INK, INK, CW - 20)
-            if q.height <= 800 or qs <= 52: break
-            qs -= 4
+        els = V_.chips(cfg) + [V_.E(pill, MX, 350, 0.0, slide=0)]
+        y = 450; text = sheet['zitat']
+        if sheet['betraege']:
+            e, hh = count_el(sheet['betraege'][0]['text'], MX - 4, y, 0.5); els.append(e); y += hh + 30
+        parts = split_quote(text)
+        if parts:
+            sizes = [(120, INK), (96, PET), (60, GRAY2)]; ims = []; tprev = 0.3
+            for (sz, col), p in zip(sizes, parts):
+                if not p: continue
+                im = V_.big(p, sz, col, maxw=CW, lh=1.05, tr=-0.03)
+                while im.height > 620 and sz > 48: sz -= 6; im = V_.big(p, sz, col, maxw=CW, lh=1.1, tr=-0.02)
+                tt = max(V_.find(wt, strip(p.split()[0]), 1.0) - 0.2, tprev + 0.7, 0.5); tprev = tt
+                els.append(V_.E(im, MX, y, tt, dur=0.5)); y += im.height + 24
+        else:
+            q = V_.hl_block('„' + text + '“', 76, set(), INK, INK, CW - 20); els.append(V_.E(q, MX, y, 0.5, dur=0.6)); y += q.height + 24
         cap = b.text_block(f"{sheet['ort']} · {sheet['meta'][0].split(' · ')[0]}" if sheet['meta'] else sheet['ort'], 54, 'R', GRAY2, maxw=CW - 84)
-        tc = max(V_.find(wt, strip(sheet['zitat'].split()[-1]), 4.0), V_.CUR_DUR - 4.0)
-        els = V_.chips(cfg) + [V_.E(pill, MX, 350, 0.0, slide=0), V_.E(q, MX, 450, 0.5, dur=0.6),
-                               V_.E(V_.ic.icon('doc', 64, PET), MX, 450 + q.height + 44, tc, dur=0.5, slide=0), V_.E(cap, MX + 84, 450 + q.height + 40, tc, dur=0.5)]
+        tc = max(V_.find(wt, strip(text.split()[-1]), 4.0), V_.CUR_DUR - 4.0)
+        els += [V_.E(V_.ic.icon('doc', 64, PET), MX, y + 20, tc, dur=0.5, slide=0), V_.E(cap, MX + 84, y + 16, tc, dur=0.5)]
+        print('AUTO_A_END', y + 20 + 64, flush=True)
         return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None)
 
-    def verlauf(wt):  # Szene 3: Verlauf der Sitzungen
+    def verlauf(wt):  # Szene 3: Zeitleiste der Sitzungen (Punkte, wachsende Linie)
         h = V_.big('Bisheriger Verlauf:', 74, INK, maxw=CW, w='S', tr=-0.02, lh=1.05)
         els = V_.chips(cfg) + [V_.E(h, MX, 360, 0.3, dur=0.6, slide=0)]
-        y, tprev = 540, 0.0
-        rows = sheet['verlauf']
+        y, tprev, prev_c = 540, 0.0, None
+        rows = sheet['verlauf']; D = 60; cx = MX + D // 2
         for k, v in enumerate(rows):
-            l1 = V_.big(f"{v['datum']} · {v['committee']}", 58, INK, maxw=CW - 170, lh=1.05, tr=-0.02)
-            l2 = b.text_block(v['result'], 52, 'R', GRAY2, maxw=CW - 170) if v['result'] else None
-            hgt = max(130, l1.height + (l2.height + 10 if l2 else 0))
+            l1 = V_.big(f"{v['datum']} · {v['committee']}", 58, INK, maxw=CW - 130, lh=1.05, tr=-0.02)
+            l2 = b.text_block(v['result'], 52, 'R', GRAY2, maxw=CW - 130) if v['result'] else None
+            hgt = max(D, l1.height + (l2.height + 10 if l2 else 0))
             tt = max(V_.find(wt, v['spokenDay'][:6], 1.5) - 0.3, 0.5, tprev + 0.8)
             if k == len(rows) - 1: tt = max(tt, V_.CUR_DUR - 4.0)
             tprev = tt
-            els += [V_.slam(V_.ibadge('hall', 130), MX, y + (hgt - 130) // 2, tt, 0.3, 0.3), V_.E(l1, MX + 170, y, tt + 0.2, dur=0.4, slide=0)]
-            if l2: els.append(V_.E(l2, MX + 170, y + l1.height + 10, tt + 0.2, dur=0.4, slide=0))
-            y += hgt + 70
-        print('AUTO_B_END', y - 70, flush=True)
+            if prev_c is not None: els.append(grow_line(cx - 4, prev_c, y + D // 2, tt - 0.5))
+            els += [V_.slam(dot(D, PET if k == len(rows) - 1 else GRAY2), MX, y, tt, 0.3, 0.3), V_.E(l1, MX + 100, y, tt + 0.2, dur=0.4, slide=0)]
+            if l2: els.append(V_.E(l2, MX + 100, y + l1.height + 10, tt + 0.2, dur=0.4, slide=0))
+            prev_c = y + D // 2; y += hgt + 90
+        print('AUTO_B_END', y - 90, flush=True)
         return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None)
 
     cfg = dict(source=sheet['quelle'], ort=sheet['ort'], out=out, ticker='', icon=sheet['themaIcon'], status=st['icon'], stamp=st['stamp'], stampcol=stampcol, ssize=160,
