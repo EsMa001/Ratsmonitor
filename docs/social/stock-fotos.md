@@ -2818,7 +2818,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Hohenfels | Bayern | 09373134 | – | – | noch nicht gesucht | – |
 | Hohenkammer | Bayern | 09178133 | – | – | noch nicht gesucht | – |
 | Hohenlinden | Bayern | 09175123 | – | – | noch nicht gesucht | – |
-| Hohenpeißenberg | Bayern | 09190130 | – | – | noch nicht gesucht | – |
+| Hohenpeißenberg | Bayern | 09190130 | 62006 | https://pixabay.com/photos/higher-pei%C3%9Fenberg-mountain-wireless-62006/ | Pixabay-Lizenz; Sendeturm auf der Wiese am Hohen Peißenberg (nur aus dem Titel geschätzt) | 6 |
 | Hohenroda | Hessen | 06632010 | – | – | noch nicht gesucht | – |
 | Hohenstadt | Baden-Württemberg | 08117031 | – | – | noch nicht gesucht | – |
 | Hohenstein | Hessen | 06439006 | – | – | noch nicht gesucht | – |
@@ -2833,7 +2833,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Hollenbach | Bayern | 09771140 | – | – | noch nicht gesucht | – |
 | Holzkirch | Baden-Württemberg | 08425062 | – | – | noch nicht gesucht | – |
 | Holzmaden | Baden-Württemberg | 08116029 | – | – | noch nicht gesucht | – |
-| Horben | Baden-Württemberg | 08315056 | – | – | noch nicht gesucht | – |
+| Horben | Baden-Württemberg | 08315056 | 109134 | https://pixabay.com/de/photos/horben-deutschland-stra%C3%9Fe-109134/ | Pixabay-Lizenz; Straße und Landschaft, Titel „Horben, Deutschland". Der Titel nennt kein Bundesland, deshalb nur schwach gesichert. | 5 |
 | Horgau | Bayern | 09772159 | – | – | noch nicht gesucht | – |
 | Horgenzell | Baden-Württemberg | 08436095 | – | – | noch nicht gesucht | – |
 | Hosenfeld | Hessen | 06631014 | – | – | noch nicht gesucht | – |
