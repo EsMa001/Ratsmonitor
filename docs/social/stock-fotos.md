@@ -408,25 +408,25 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 365 | Delbrück | 05774020 | – | – | kein Bild gefunden | – |
 | 366 | Achim | 03361001 | – | – | kein Bild gefunden | – |
 | 367 | Herrenberg | 08115021 | – | – | kein Bild gefunden | – |
-| 368 | Fürstenwalde/Spree | 12067144 | – | – | kein Bild gefunden | – |
+| 368 | Fürstenwalde/Spree | 12067144 | 180865 | https://pixabay.com/de/photos/st-marien-dom-kirche-f%C3%BCrstenwalde-180865/ | Pixabay-Lizenz; Dom St. Marien | 7 |
 | 369 | Geesthacht | 01053032 | 29031305 | https://www.pexels.com/photo/historic-train-station-in-geesthacht-germany-29031305/ | Pexels-Lizenz, historischer Bahnhof | 7 |
 | 370 | Naumburg (Saale) | 15084355 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite) | – |
 | 371 | Bernburg (Saale) | 15089030 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite) | – |
 | 372 | Itzehoe | 01061046 | – | – | kein Bild gefunden | – |
 | 373 | Georgsmarienhütte | 03459019 | – | – | kein Bild gefunden | – |
-| 374 | Bramsche | 03459014 | – | – | kein Bild gefunden | – |
+| 374 | Bramsche | 03459014 | 206405 | https://pixabay.com/photos/bramsche-germany-train-station-206405/ | Pixabay-Lizenz; nur Bahnhof, kein Wahrzeichen | 3 |
 | 375 | Nienburg/Weser | 03256022 | – | – | kein Bild gefunden | – |
-| 376 | Radolfzell | 08335063 | – | – | kein Bild gefunden | – |
+| 376 | Radolfzell | 08335063 | 802184 | https://pixabay.com/photos/sunset-lake-constance-radolfzell-802184/ | Pixabay-Lizenz; Bodensee-Sonnenuntergang bei Radolfzell, kein Wahrzeichen | 5 |
 | 377 | Wernigerode | 15085370 | 17251302 | https://www.pexels.com/photo/wernigerode-town-in-germany-17251302/ | Pexels-Lizenz, Stadtansicht | 8 |
 | 378 | Ganderkesee | 03458005 | – | – | kein Bild gefunden | – |
 | 379 | Oer-Erkenschwick | 05562028 | – | – | kein Bild gefunden | – |
 | 380 | Weyhe | 03251047 | – | – | kein Bild gefunden | – |
 | 381 | Emmerich am Rhein | 05154008 | 230946 | https://pixabay.com/photos/emmerich-snow-winter-church-230946/ | Pixabay-Lizenz, Winterbild mit Kirche | 6 |
 | 382 | Geestland | 03352062 | – | – | kein Bild gefunden | – |
-| 383 | Neuruppin | 12068320 | – | – | kein Bild gefunden | – |
+| 383 | Neuruppin | 12068320 | 4198666 | https://pixabay.com/photos/church-neuruppin-4198666/ | Pixabay-Lizenz; Klosterkirche | 7 |
 | 384 | Hoyerswerda | 14625240 | – | – | kein Bild gefunden | – |
 | 385 | Altenburg | 16077001 | 2547256 | https://pixabay.com/photos/thuringia-germany-street-tower-2547256/ | Pixabay-Lizenz, Rathausturm in historischer Straße | 7 |
-| 386 | Burgdorf (Region Hannover) | 03241003 | – | – | kein Bild gefunden | – |
+| 386 | Burgdorf (Region Hannover) | 03241003 | 4077172 | https://pixabay.com/de/photos/schloss-burg-burgdorf-architektur-4077172/ | Pixabay-Lizenz; Schloss Burgdorf laut URL, der Ort (Region Hannover oder ein anderes Burgdorf) ist unbestätigt | 5 |
 | 387 | Kreuztal | 05970024 | – | – | kein Bild gefunden | – |
 | 388 | Rheinberg | 05170032 | – | – | kein Bild gefunden | – |
 | 389 | Gevelsberg | 05954012 | – | – | kein Bild gefunden | – |
@@ -434,7 +434,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 391 | Lohmar | 05382028 | – | – | kein Bild gefunden | – |
 | 392 | Walsrode | 03358024 | 794302 | https://pixabay.com/photos/bird-park-walsrode-red-sickle-bird-794302/ | Pixabay-Lizenz, Vogelpark (Tierfoto) | 5 |
 | 393 | Friedberg (Hessen) | 06440008 | 3688760 | https://pixabay.com/photos/friedberg-hesse-castle-wall-tower-3688760/ | Pixabay-Lizenz, Burg Friedberg | 7 |
-| 394 | Taunusstein | 06439015 | – | – | kein Bild gefunden | – |
+| 394 | Taunusstein | 06439015 | 2702319 | https://pixabay.com/photos/wehener-castle-blow-taunusstein-2702319/ | Pixabay-Lizenz; Wehener Burg/Schloss, Taunusstein (nur aus dem Titel, Bild nicht geprüft) | 7 |
 | 395 | Weil am Rhein | 08336091 | – | – | kein Bild gefunden | – |
 | 396 | Einbeck | 03155013 | – | – | kein Bild gefunden | – |
 | 397 | Osterholz-Scharmbeck | 03356007 | 2463074 | https://pixabay.com/de/photos/w%C3%BCmme-fluss-bremen-osterholz-2463074/ | Pixabay-Lizenz, Wümme, Ortsbezug nur über "Osterholz" | 4 |
@@ -443,10 +443,10 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 400 | Haan (Rheinland) | 05158008 | – | – | kein Bild gefunden | – |
 | 401 | Neuburg an der Donau | 09185149 | 4457976 | https://pixabay.com/de/photos/neuburg-a-d-donau-schloss-bayern-4457976/ | Pixabay-Lizenz, Schloss (Alternative Pexels 5540346, Drohnenfoto Altstadt) | 8 |
 | 402 | Friedberg (Bayern) | 09771130 | – | – | kein Bild gefunden | – |
-| 403 | Schönebeck (Elbe) | 15089305 | – | – | kein Bild gefunden | – |
-| 404 | Andernach | 07137003 | – | – | kein Bild gefunden | – |
+| 403 | Schönebeck (Elbe) | 15089305 | 1178667 | https://pixabay.com/photos/sch%C3%B6nebeck-bad-salt-men-graduation-1178667/ | Pixabay-Lizenz; Gradierwerk Bad Salzelmen (nur aus dem Titel, Bild nicht geprüft) | 7 |
+| 404 | Andernach | 07137003 | 3371875 | https://pixabay.com/photos/geyser-andernach-nature-waters-3371875/ | Pixabay-Lizenz; Geysir Andernach unter blauem Himmel (Alternativen: 1607821, 88539) | 8 |
 | 405 | Gaggenau | 08216015 | – | – | kein Bild gefunden | – |
-| 406 | Bretten | 08215007 | – | – | kein Bild gefunden | – |
+| 406 | Bretten | 08215007 | 2160541 | https://pixabay.com/de/photos/bretten-baden-w%C3%BCrttemberg-2160541/ | Pixabay-Lizenz; historischer Marktplatz Bretten | 8 |
 | 407 | Merzig | 10042113 | – | – | kein Bild gefunden | – |
 | 408 | Meschede | 05958032 | 2594410 | https://pixabay.com/de/photos/sauerland-remblinghausen-meschede-2594410/ | Pixabay-Lizenz, Remblinghausen (Ortsteil), Sauerland | 5 |
 | 409 | Schwandorf | 09376161 | – | – | kein Bild gefunden | – |
@@ -474,7 +474,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 424 | Winnenden | 08119085 | – | – | kein Bild gefunden | – |
 | 425 | Saalfeld/Saale | 16073077 | 6031510 | https://pixabay.com/de/photos/feengrotte-saalfeld-bergwerk-6031510/ | Pixabay-Lizenz, Feengrotte | 7 |
 | 426 | Blankenfelde-Mahlow | 12072017 | – | – | kein Bild gefunden | – |
-| 427 | Bühl (Baden) | 08216007 | – | – | kein Bild gefunden | – |
+| 427 | Bühl (Baden) | 08216007 | 344226 | https://pixabay.com/photos/windeck-castle-b%C3%BChl-to-bathe-344226/ | Pixabay-Lizenz; Burgruine Windeck über Weinberg, Bühl im URL | 6 |
 | 428 | Springe | 03241017 | – | – | kein Bild gefunden | – |
 | 429 | Kelkheim (Taunus) | 06436008 | 2670780 | https://pixabay.com/photos/old-town-hall-kelkheim-taunus-hesse-2670780/ | Pixabay-Lizenz, Historisches Rathaus | 8 |
 | 430 | Riesa | 14627230 | – | – | kein Bild gefunden | – |
@@ -486,7 +486,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 436 | Schwelm | 05954024 | – | – | kein Bild gefunden | – |
 | 437 | Höxter | 05762020 | 2485409 | https://pixabay.com/de/photos/kirche-altstadt-h%c3%b6xter-2485409/ | Pixabay-Lizenz, Kirche in der Altstadt | 6 |
 | 438 | Geislingen an der Steige | 08117024 | 3848447 | https://pixabay.com/de/photos/geislinger-steige-filstalbahn-3848447/ | Pixabay-Lizenz, Filstalbahn (Bahnmotiv, kein Stadtbild) | 5 |
-| 439 | Mechernich | 05366028 | – | – | kein Bild gefunden | – |
+| 439 | Mechernich | 05366028 | 103070 | https://pixabay.com/photos/mechernich-germany-eicks-castle-103070/ | Pixabay-Lizenz; Burg Eicks mit Wassergraben, Mechernich im URL | 7 |
 | 440 | Reinbek | 01062060 | – | – | kein Bild gefunden | – |
 | 441 | Hattersheim am Main | 06436005 | – | – | kein Bild gefunden | – |
 | 442 | Verden (Aller) | 03361012 | 1130554 | https://pixabay.com/de/photos/verden-aller-dom-s%C3%A4ulen-kirche-1130554/ | Pixabay-Lizenz, Dom (Innenansicht) | 5 |
@@ -521,14 +521,14 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 470 | Leimen (Baden) | 08226041 | – | – | kein Bild gefunden | – |
 | 471 | Hohen Neuendorf | 12065144 | 22037229 | https://www.pexels.com/photo/himmelspagode-in-hohen-neuendorf-in-germany-22037229/ | Pexels-Lizenz, Himmelspagode | 6 |
 | 472 | Rheinbach | 05382048 | – | – | kein Bild gefunden | – |
-| 473 | Weinstadt | 08119091 | – | – | kein Bild gefunden | – |
+| 473 | Weinstadt | 08119091 | 5894929 | https://pixabay.com/photos/winery-wine-town-str%C3%BCmpfelbach-5894929/ | Pixabay-Lizenz; Weingut in Strümpfelbach (Ortsteil von Weinstadt), kein Wahrzeichen, Ortsbezug nur über den Stadtteil | 5 |
 | 474 | Wiesloch | 08226098 | – | – | kein Bild gefunden | – |
 | 475 | Werder (Havel) | 12069656 | 1985007 | https://pixabay.com/de/photos/werder-havel-sonne-plessow-see-1985007/ | Pixabay-Lizenz, Sonne am Plessower See | 7 |
 | 476 | Heppenheim | 06431011 | 5468392 | https://pixabay.com/photos/alley-paved-road-architecture-5468392/ | Pixabay-Lizenz, Gasse, Ortsbezug nur über Suchtreffer | 3 |
 | 477 | Pfaffenhofen an der Ilm | 09186143 | 204918 | https://pixabay.com/photos/pfaffenhofen-town-hall-ilm-flow-204918/ | Pixabay-Lizenz, Rathaus | 8 |
 | 478 | Hennigsdorf | 12065136 | – | – | kein Bild gefunden | – |
 | 479 | Heiligenhaus | 05158012 | – | – | kein Bild gefunden | – |
-| 480 | Bad Neuenahr-Ahrweiler | 07131007 | – | – | kein Bild gefunden | – |
+| 480 | Bad Neuenahr-Ahrweiler | 07131007 | 873395 | https://pixabay.com/de/photos/bad-neuenahr-haus-sommer-873395/ | Pixabay-Lizenz; "Historisches Stadthaus" in Bad Neuenahr, Motiv nach Titel nicht eindeutig | 4 |
 | 481 | Aschersleben | 15089015 | – | – | kein Bild gefunden | – |
 | 482 | Remseck am Neckar | 08118081 | – | – | kein Bild gefunden | – |
 | 483 | Neckarsulm | 08125065 | 6074128 | https://pixabay.com/photos/old-tower-neckarsulm-6074128/ | Pixabay-Lizenz, Deutschordensschloss | 6 |
