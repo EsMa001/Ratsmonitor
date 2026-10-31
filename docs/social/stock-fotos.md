@@ -3441,7 +3441,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Rauhenebrach | Bayern | 09674187 | – | – | noch nicht gesucht | – |
 | Rechberghausen | Baden-Württemberg | 08117038 | – | – | noch nicht gesucht | – |
 | Rechenberg-Bienenmühle | Sachsen | 14522470 | – | – | noch nicht gesucht | – |
-| Rechtenstein | Baden-Württemberg | 08425098 | – | – | noch nicht gesucht | – |
+| Rechtenstein | Baden-Württemberg | 08425098 | 1272018 | https://pixabay.com/de/photos/ruine-rechtenstein-burg-stein-ruine-1272018/ | Pixabay-Lizenz; Burgruine Rechtenstein (Titel „Ruine Rechtenstein, Burg Stein, Ruine“) | 7 |
 | Rednitzhembach | Bayern | 09576137 | – | – | noch nicht gesucht | – |
 | Regenstauf | Bayern | 09375190 | – | – | noch nicht gesucht | – |
 | Regnitzlosau | Bayern | 09475161 | – | – | noch nicht gesucht | – |
@@ -3449,19 +3449,19 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Rehlingen-Siersburg | Saarland | 10044114 | – | – | noch nicht gesucht | – |
 | Reichartshausen | Baden-Württemberg | 08226066 | – | – | noch nicht gesucht | – |
 | Reichelsheim (Odenwald) | Hessen | 06437013 | – | – | noch nicht gesucht | – |
-| Reichenau | Baden-Württemberg | 08335066 | – | – | noch nicht gesucht | – |
+| Reichenau | Baden-Württemberg | 08335066 | 2850345 | https://pixabay.com/de/photos/insel-reichenau-herbst-baum-2850345/ | Pixabay-Lizenz; Insel Reichenau, Herbstbaum | 6 |
 | Reichenbach am Heuberg | Baden-Württemberg | 08327040 | – | – | noch nicht gesucht | – |
 | Reichenbach an der Fils | Baden-Württemberg | 08116058 | – | – | noch nicht gesucht | – |
 | Reichenberg | Bayern | 09679176 | – | – | noch nicht gesucht | – |
 | Reichenschwand | Bayern | 09574150 | – | – | noch nicht gesucht | – |
 | Reichertshausen | Bayern | 09186146 | – | – | noch nicht gesucht | – |
-| Reilingen | Baden-Württemberg | 08226068 | – | – | noch nicht gesucht | – |
+| Reilingen | Baden-Württemberg | 08226068 | 839447 | https://pixabay.com/fr/photos/champ-doignon-agriculture-reilingen-839447/ | Pixabay-Lizenz; Zwiebelfeld bei Reilingen (Titel nennt den Ort; Alternative: 837765, Wegkreuz am Straßenrand) | 6 |
 | Reinhardshagen | Hessen | 06633022 | – | – | noch nicht gesucht | – |
 | Reinsberg | Sachsen | 14522480 | – | – | noch nicht gesucht | – |
 | Reinsdorf | Sachsen | 14524250 | – | – | noch nicht gesucht | – |
 | Reisbach | Bayern | 09279134 | – | – | noch nicht gesucht | – |
 | Reiskirchen | Hessen | 06531016 | – | – | noch nicht gesucht | – |
-| Reit im Winkl | Bayern | 09189139 | – | – | noch nicht gesucht | – |
+| Reit im Winkl | Bayern | 09189139 | 85886 | https://pixabay.com/de/photos/reit-im-winkl-deutschland-geb%C3%A4ude-85886/ | Pixabay-Lizenz; Gebäude in Reit im Winkl (Alternativen: 1016877 Regenbogen, 3338119 Oberbayern/Alpen) | 7 |
 | Rellingen | Schleswig-Holstein | 01056043 | – | – | noch nicht gesucht | – |
 | Remchingen | Baden-Württemberg | 08236071 | – | – | noch nicht gesucht | – |
 | Remptendorf | Thüringen | 16075134 | – | – | noch nicht gesucht | – |
