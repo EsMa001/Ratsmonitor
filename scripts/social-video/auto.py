@@ -86,16 +86,19 @@ def build_cfg(sheet, out):
             e, hh = count_el(sheet['betraege'][0]['text'], MX - 4, y, 0.5); els.append(e); y += hh + 30; sfx.append((0.5, 'hit')); punch.append(0.5)
         parts = split_quote(text) or (text, '', '')
         sizes = [(150, INK), (124, PET), (72, GRAY2)] if split_quote(text) else [(92, INK)]
-        scale = 1.0
-        while True:
+        def build(scale):
             plan = []
             for (sz, col), p in zip(sizes, parts):
                 if not p: continue
                 sz = max(40, int(sz * scale)); pos, hgt = layout(p, sz)
                 plan.append((sz, col, pos, hgt))
-            used = sum(h_ + 24 for _, _, _, h_ in plan) + 110
-            if y + used <= 1380 or scale <= 0.5: break
-            scale -= 0.04
+            return plan, sum(h_ + 24 for _, _, _, h_ in plan) + 110
+        scale = 1.0; plan, used = build(scale)
+        while y + used > 1380 and scale > 0.5: scale -= 0.04; plan, used = build(scale)
+        while scale < 1.7:  # kurze Sätze füllen das Bild: Größen schrittweise erhöhen, solange der Block bis y = 1380 reicht
+            p2, u2 = build(scale + 0.05)
+            if y + u2 > 1380: break
+            scale += 0.05; plan, used = p2, u2
         y = max(y, 430 + (1340 - 430 - used) // 2 + (y - 450)); y = min(y, 1380 - used)  # Block mittig, aber nicht tiefer als y=1380
         k0 = 0
         for sz, col, pos, hgt in plan:

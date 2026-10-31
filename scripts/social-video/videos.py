@@ -231,7 +231,7 @@ def make(cfg):
         yt2 = y0 + t1.height + G1; ys_ = yt2 + t2.height + G2
         fast = cfg.get('hook_fast')
         tst = min(1.0, max(0.25, find(wt, cfg['stkey'], 0.8) - 0.3)) if fast else min(4.2, max(1.8, find(wt, cfg['stkey'], 2.6) - 0.3))
-        tt2 = max(0.5, find(wt, cfg['t2'].split()[0].strip(',.:'), 1.2) - 0.25) if fast else 0.5
+        tt2 = 0.45 if fast else 0.5  # Thema sofort sichtbar, nicht erst beim Sprechen
         se, sh = shake_stamp(cfg['stamp'], cfg['stampcol'], cfg['ssize'], W // 2 + 5, ys_, tst)
         pe, pw = pulse_badge(cfg['icon'], IB, W // 2, ys_ + sh + G3 - 20, 0.5)
         els += [slam(t1, MX, y0, -1.0, 0, 0.01), slam(t2, MX, yt2, tt2, 0.2), se, pe]
