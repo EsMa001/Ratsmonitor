@@ -193,14 +193,16 @@ def wavlen(p):
     w = wave.open(p); return w.getnframes() / w.getframerate()
 
 
-def make_voices(sheet, vdir, fixed):
+def make_voices(sheet, vdir):
+    """Alle sechs Sprechdateien aus dem Datenblatt erzeugen, ohne vorgefertigte Dateien. Szene 4 ohne Sprechtext bekommt 0,1 s Stille.
+    Aussprache nach Bauplan: Betonung auf dem ersten „a“, deshalb wird „Plenarra“ gesprochen."""
     here = os.path.dirname(os.path.abspath(__file__)); os.makedirs(vdir, exist_ok=True)
-    for i in (4, 6):
-        if i == 4 and sheet['sprechtext'].get('4'): continue
-        shutil.copy(f'{fixed}/v{i}.wav', f'{vdir}/v{i}.wav')
-    for i in (1, 2, 3, 4, 5):
-        if i == 4 and not sheet['sprechtext'].get('4'): continue
-        subprocess.run([f'{here}/tts.sh', vdir, str(i), sheet['sprechtext'][str(i)]], check=True)
+    for i in range(1, 7):
+        text = sheet['sprechtext'].get(str(i), '')
+        if i == 4 and not text:
+            subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'lavfi', '-i', 'anullsrc=r=22050:cl=mono', '-t', '0.1', '-c:a', 'pcm_s16le', f'{vdir}/v4.wav'], check=True)
+            continue
+        subprocess.run([f'{here}/tts.sh', vdir, str(i), text.replace('Plenara', 'Plenarra')], check=True)
 
 
 def total_len(cfg, vdir):
@@ -215,10 +217,10 @@ if __name__ == '__main__':
     if not sheet.get('zitat2'): print('HINWEIS: kein zweites Zitat, Szene 4 wiederholt das erste', flush=True)
     if len([x for x in sheet.get('betraege', []) if x.get('label')][:3]) >= 2:
         sheet['sprechtext']['4'] = ' '.join(f"{x['label']}: {x['spoken']}." for x in [x for x in sheet['betraege'] if x.get('label')][:3])
-    work = V.S_; vdir = f'{work}/tts/auto'; fixed = f'{work}/tts/o7'
+    work = V.S_; vdir = f'{work}/tts/auto'
     while True:
         cfg = build_cfg(sheet, f'{work}/vid13a')
-        make_voices(sheet, vdir, fixed)
+        make_voices(sheet, vdir)
         tot = total_len(cfg, vdir)
         print('Gesamtlänge (geplant):', round(tot, 1), flush=True)
         if tot <= MAX_TOTAL or len(sheet['verlauf']) <= 2: break

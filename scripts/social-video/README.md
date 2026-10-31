@@ -16,7 +16,7 @@ Skripte, mit denen die Reels/TikTok/Shorts (1080×1920, 42 bis 65 s) entstanden 
 
 ## Stand
 
-- Die Konfigurationen sind von Hand geschrieben. Datenblatt und Sprechtext aus den Daten und dem Modell zu erzeugen, ist der nächste Schritt (noch nicht gebaut).
+- Datenblatt (`shared/social-video-sheet.mjs`) und Video (`auto.py`) entstehen ohne Handarbeit. Der Server-Job `social-videos` (`scripts/social-videos.mjs`, Betrieb: `docs/betrieb/node-server.md`, „Social-Videos“) baut sie je Vorschlag des Admin-Reiters; `tools.mjs` richtet Python-Pakete, Piper und die Stimme beim ersten Lauf selbst ein. Die handgeschriebenen Konfigurationen in `videos.py` sind die Vorlage der Szenen.
 - Die Maschinenprüfung aus dem Bauplan (Abschnitt 13) ist noch nicht eingebaut.
 - Ein Video braucht etwa 4,5 Minuten (3 Prozesse).
 - Lizenzen von Piper und der Stimme vor einer Veröffentlichung der Videos prüfen.

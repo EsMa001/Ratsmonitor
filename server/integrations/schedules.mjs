@@ -79,6 +79,11 @@ export const JOBS=Object.freeze([
   steps:['Modell anwenden: Art, Thema, Unterthemen, Vorgangsart, Status, Dokumente (nur geänderte Berichte)','Zusammenfassung und Fakten (nur Berichte mit neuen Eingaben)','Suche aktualisieren','Zahlen rechnen (plenara.X)','KI-Stand zählen, Wege zählen (Pipeline-Debug)'],
   limits:'Meist unter einer Stunde. Startet direkt nach „Extraktion, nachts“ (sie stößt ihn an); 08:50 Uhr nur als Rückfall.',
   cmd:['node','--no-warnings','scripts/rule-texts.mjs']},
+ {id:'social-videos',label:'Social-Videos',flow:'tages',icon:'megaphone',time:'10:30',
+  what:'Baut zu jedem Vorschlag des Reiters „Social Media“ ein Video (1080×1920, 40 bis 65 Sekunden) aus dem Datenblatt des Berichts, ohne KI, und löscht es, sobald der Vorschlag den Reiter verlässt. Im Reiter entscheidet die Administration nur über die Freigabe.',
+  steps:['Werkzeuge prüfen; fehlende Python-Pakete, Piper und die Stimme einmalig einrichten','Vorschläge des Reiters lesen und je Bericht das Datenblatt bauen (unvollständige werden nicht gebaut)','Neue oder geänderte Videos rendern (etwa 5 Minuten je Video), Freigabe entfällt bei Änderung','Videos veralteter Vorschläge löschen'],
+  limits:'Höchstens 150 Minuten je Lauf, der Rest folgt am nächsten Tag. Systempakete (python3-venv, ffmpeg) kann der Job nicht selbst installieren; fehlen sie, bricht er mit dem passenden apt-Befehl ab.',warn:'Ohne diesen Job gibt es keine Videos im Reiter „Social Media“.',
+  cmd:['node','--no-warnings','scripts/social-videos.mjs']},
  /* Nacharbeit (tagsüber, automatisch, nur Tagesbereich) */
  {id:'nacharbeit',label:'Nacharbeit',flow:'nacharbeit',icon:'clock',every:30,window:['09:00','23:00'],
   what:'Versucht erneut, was in der Tagespipeline gescheitert ist (Tagesbereich: Sitzungen der letzten 7 Tage, frühestens 12.10.2026), sobald der Abbruchgrund es erlaubt. Eine Quelle, die blockt, wird erst nach ihrer Wartezeit und dann mit einer Stichprobe wieder gefragt.',

@@ -390,6 +390,8 @@ Für Folgen ohne Handarbeit gilt dieselbe Bauart wie oben, mit den hier genannte
 | Aussprache | „P&R“ wird als „Park und Ride“ gesprochen, „&“ sonst als „und“; Beträge und Jahre ausgeschrieben |
 | Länge | 42 bis 65 s; bei mehr als 65 s wird der Verlauf gekürzt, sonst wird nicht gebaut |
 
+Der Server-Job `social-videos` (täglich 10:30 Uhr) baut zu jedem Vorschlag des Admin-Reiters „Social Media“ genau ein Video und löscht es, sobald der Vorschlag den Reiter verlässt; im Admin gibt es dazu nur die Freigabe (Betrieb: `docs/betrieb/node-server.md`, „Social-Videos“). Ein Datenblatt mit Warnungen wird nicht gebaut, der Grund steht im Reiter.
+
 Nicht in der Automatik: Fotos (die Liste `docs/social/stock-fotos.md` nennt nur IDs; die Bilder müssen auf einem Rechner mit Zugriff geladen und geprüft werden, Kennzeichnung „Symbolbild“), Abstimmungsbalken (der Bericht enthält keine Zahlen dazu), Karte, bessere Stimme (Thorsten medium oder high, Dateien nötig), Plenara-Moment.
 
 ## 16. Wirkung in den Netzen

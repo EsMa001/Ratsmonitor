@@ -1,0 +1,12 @@
+# Sofortstart aus der Administration (server/integrations/job-trigger.mjs): ein Knopfdruck schreibt
+# /srv/ratsmonitor/data/trigger/social-videos, systemd startet dann ratsmonitor-social-videos.service (scripts/schedule.mjs sieht den Wunsch).
+# Läuft der Dienst schon, passiert nichts; der laufende Job erledigt Wünsche selbst oder der nächste Timer-Aufruf.
+[Unit]
+Description=Ratsmonitor: social-videos sofort starten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/social-videos
+Unit=ratsmonitor-social-videos.service
+
+[Install]
+WantedBy=multi-user.target

@@ -22,7 +22,7 @@ type Job={id:string;label:string;flow:string;icon:string;time?:string;every?:num
 type Data={jobs:Job[];managed:boolean;error?:string};
 const EVERY=[10,20,30,60,120];
 /* Übliche Dauer, solange noch kein Lauf vermerkt ist (Minuten) */
-const TYPICAL:Record<string,number>={'import-nightly':170,backup:20,'startseite-trends':2,'pdf-nightly':180,'rule-texts':10,accounts:1,betrieb:1};
+const TYPICAL:Record<string,number>={'import-nightly':170,backup:20,'startseite-trends':2,'pdf-nightly':180,'rule-texts':10,accounts:1,betrieb:1,'social-videos':15};
 // Schreiben beide viel in die Datenbank: überlappen sie, kann einer an einer Sperre scheitern (so am 12.10.2026 um 02:00)
 const CLASH=[['import-nightly','pdf-nightly'],['import-nightly','backup'],['pdf-nightly','rule-texts']];
 const mins=(t:string)=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
@@ -61,12 +61,12 @@ function Status({job}:{job:Job}){
 
 /** Gruppen der Steuerung: die drei Abläufe (FLOWS), dazu der Betrieb (Sichern, Konten, Mails, Prüfung, Startseite) */
 // Betrieb: Sichern, Konten, Mails, Prüfung, Startseite und der Job der PDF-Aufträge und Messungen (Bahnen, Stand, Speicher)
-const BETRIEB=['backup','accounts','notify','betrieb','startseite-trends','pdf-job'];
+const BETRIEB=['backup','accounts','notify','betrieb','startseite-trends','social-videos','pdf-job'];
 const GROUPS:{id:string;title:string;sub:string;open:boolean;has:(j:Job)=>boolean}[]=[
  {id:'tages',title:FLOWS.tages.name,sub:'Jede Nacht: holt und verarbeitet, was neu ist.',open:true,has:j=>j.flow==='tages'&&!BETRIEB.includes(j.id)},
  {id:'nacharbeit',title:FLOWS.nacharbeit.name,sub:'Tagsüber von selbst: versucht erneut, was nachts gescheitert ist.',open:true,has:j=>j.flow==='nacharbeit'},
  {id:'altbestand',title:FLOWS.altbestand.name,sub:'Nur auf Knopfdruck: Älteres abrufen und aufarbeiten, Aufträge abarbeiten.',open:false,has:j=>j.flow==='altbestand'&&!BETRIEB.includes(j.id)},
- {id:'betrieb',title:'Betrieb',sub:'Sichern, Konten, Benachrichtigungen, Betriebsprüfung, Startseite, PDF-Bahnen und Messungen.',open:false,has:j=>BETRIEB.includes(j.id)},
+ {id:'betrieb',title:'Betrieb',sub:'Sichern, Konten, Benachrichtigungen, Betriebsprüfung, Startseite, Social-Videos, PDF-Bahnen und Messungen.',open:false,has:j=>BETRIEB.includes(j.id)},
 ];
 /** Wo man das Ergebnis eines Jobs ansieht */
 const RESULT_PAGE:Record<string,AdminPage>={'import-nightly':'nacht','pdf-nightly':'pdf','rule-texts':'regeltexte',nacharbeit:'fehler',ocr:'pdf',altbestand:'altbestand',import:'abruf','pdf-job':'pdf',backup:'speicher',betrieb:'start'};
