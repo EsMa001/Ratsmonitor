@@ -904,7 +904,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 913 | Hille | 05770012 | – | – | kein Bild gefunden | – |
 | 914 | Pocking | 09275141 | – | – | kein Bild gefunden | – |
 | 915 | Marienberg | 14521390 | 1824841 | https://pixabay.com/photos/marienberg-sage-dwarf-1824841/ | Pixabay-Lizenz, Ortsbezug unklar | 3 |
-| 916 | Bad Essen | 03459003 | – | – | kein Bild gefunden | – |
+| 916 | Bad Essen | 03459003 | 5150917 | https://pixabay.com/de/photos/schloss-h%C3%BCnnefeld-bad-essen-5150917/ | Pixabay-Lizenz, Schloss Hünnefeld | 7 |
 | 917 | Breisach am Rhein | 08315015 | 2355310 | https://pixabay.com/photos/rhine-breisach-ship-water-to-bathe-2355310/ | Pixabay-Lizenz, Rhein bei Breisach | 6 |
 | 919 | Markranstädt | 14729270 | – | – | kein Bild gefunden | – |
 | 920 | Brüggen | 05166004 | – | – | kein Bild gefunden | – |
@@ -919,19 +919,19 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 933 | Illingen | 10043112 | – | – | kein Bild gefunden | – |
 | 934 | Kelsterbach | 06433007 | – | – | kein Bild gefunden | – |
 | 935 | Bad Arolsen | 06635002 | – | – | kein Bild gefunden | – |
-| 938 | Dieburg | 06432004 | – | – | kein Bild gefunden | – |
+| 938 | Dieburg | 06432004 | 1144917 | https://pixabay.com/photos/hexenturm-the-castle-hesse-tower-1144917/ | Pixabay-Lizenz, Hexenturm, Ortsbezug nur Titel | 5 |
 | 941 | Kernen im Remstal | 08119093 | 54556 | https://pixabay.com/de/photos/y-burg-stetten-im-remstal-54556/ | Pixabay-Lizenz, Y-Burg Stetten (Ortsteil von Kernen) | 6 |
-| 944 | Odenthal | 05378020 | – | – | kein Bild gefunden | – |
+| 944 | Odenthal | 05378020 | 1707664 | https://pixabay.com/photos/dom-church-cathedral-1707664/ | Pixabay-Lizenz, Altenberger Dom, Ortsbezug indirekt | 6 |
 | 946 | Ascheberg | 05558004 | – | – | kein Bild gefunden | – |
 | 947 | Eppelheim | 08226018 | – | – | kein Bild gefunden | – |
 | 948 | Boppard | 07140501 | 4942786 | https://pixabay.com/photos/slate-peterslay-boppard-rock-abyss-4942786/ | Pixabay-Lizenz, Schiefer-Steinbruch Peterslay, kein Stadtbild | 5 |
 | 950 | Erlensee | 06435007 | – | – | kein Bild gefunden | – |
 | 952 | Finsterwalde | 12062140 | – | – | kein Bild gefunden | – |
 | 953 | Großenkneten | 03458007 | – | – | kein Bild gefunden | – |
-| 954 | Neustadt in Holstein | 01055032 | – | – | kein Bild gefunden | – |
+| 954 | Neustadt in Holstein | 01055032 | 2798522 | https://pixabay.com/photos/sunset-fur-hooks-2798522/ | Pixabay-Lizenz, Sonnenuntergang Pelzerhaken (Ortsteil), schwacher Bezug | 4 |
 | 955 | Baiersbronn | 08237004 | 343799 | https://pixabay.com/photos/tonbachtal-black-forest-hut-huts-343799/ | Pixabay-Lizenz, Tonbachtal (Ortsteil), Ortsbezug indirekt | 4 |
 | 958 | Blomberg | 05766016 | – | – | kein Bild gefunden | – |
-| 959 | Mindelheim | 09778173 | – | – | kein Bild gefunden | – |
+| 959 | Mindelheim | 09778173 | 7577292 | https://pixabay.com/photos/mindelheim-historic-center-urban-7577292/ | Pixabay-Lizenz, historisches Zentrum | 6 |
 | 960 | Freiberg am Neckar | 08118078 | 361485 | https://pixabay.com/photos/freiberg-am-neckar-china-house-361485/ | Pixabay-Lizenz, Chinesisches Haus | 6 |
 | 961 | Beckingen | 10042111 | – | – | kein Bild gefunden | – |
 | 962 | Alsfeld | 06535001 | – | – | kein Bild gefunden | – |
@@ -948,7 +948,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 981 | Mainburg | 09273147 | – | – | kein Bild gefunden | – |
 | 982 | Gehrden | 03241006 | – | – | kein Bild gefunden | – |
 | 985 | Mühlenbecker Land | 12065225 | – | – | kein Bild gefunden | – |
-| 986 | Brake (Unterweser) | 03461002 | – | – | kein Bild gefunden | – |
+| 986 | Brake (Unterweser) | 03461002 | 2257391 | https://pixabay.com/photos/weser-brake-sand-stedt-heaven-2257391/ | Pixabay-Lizenz / Weser bei Brake/Sandstedt (Titel nennt Brake), Landschaft statt Wahrzeichen | 5 |
 | 988 | Mering | 09771146 | – | – | kein Bild gefunden | – |
 | 989 | Munster | 03358016 | – | – | kein Bild gefunden | – |
 | 990 | Ober-Ramstadt | 06432016 | – | – | kein Bild gefunden | – |
