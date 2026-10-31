@@ -11,7 +11,7 @@ import {n,gb,size,when,dur} from '@/components/admin-format';
 type F={name:string;bytes:number;at?:string|null;kind?:string;files?:number;current?:boolean};
 type Disk={at:string;seconds:number;disk:{total:number;free:number;used:number}|null;
  parts:{database:number;pdfStore:number;backups:number;releases:number;ocr:number;other:number|null};
- database:{files:F[]};pdfStore:{dir:string;pdfPrimary:number|null;pdfOthers:number;text:number|null;index:number;bytes:number;at:string|null;budgetGb:number|null}|null;
+ database:{files:F[]};pdfStore:{dir:string;pdfPrimary:number|null;pdfOthers:number;text:number|null;index:number;docIndex?:number;bytes:number;at:string|null;budgetGb:number|null}|null;
  backups:{dir:string;list:F[];env:F[]};releases:F[];ocr:{label:string;dir:string;bytes:number;files:number}[];
  tables:{at:string;seconds:number;free:number;list:{name:string;bytes:number}[]}|null};
 type Data={disk:Disk|null;count:{requestedAt:string;tables:boolean;startedAt?:string;finishedAt?:string}|null;worker:boolean;error?:string};
@@ -97,7 +97,7 @@ export function AdminStorage(){
    </Abschnitt>
 
    <Abschnitt id="speicher-pdf" open={false} title="PDF-Ablage" sub={<>Original-PDFs und ihre Textfassungen, feste Grenze {d?.pdfStore?.budgetGb??80} GB (<Link href={adminHref('pdf')} className="text-teal-600">PDF-Import →</Link>). Aufteilung aus dessen letzter Zählung{d?.pdfStore?.at?` (${when(d.pdfStore.at)})`:''}.</>}>
-   {d?.pdfStore&&<Bars rows={[{key:'p',label:'PDFs der Hauptdokumente',bytes:d.pdfStore.pdfPrimary||0},{key:'o',label:'PDFs der übrigen Dokumente',bytes:d.pdfStore.pdfOthers||0},{key:'t',label:'Textfassungen',bytes:d.pdfStore.text||0},{key:'i',label:'Verzeichnis (index.sqlite)',bytes:d.pdfStore.index}]}/>}
+   {d?.pdfStore&&<Bars rows={[{key:'p',label:'PDFs der Hauptdokumente',bytes:d.pdfStore.pdfPrimary||0},{key:'o',label:'PDFs der übrigen Dokumente',bytes:d.pdfStore.pdfOthers||0},{key:'t',label:'Textfassungen',bytes:d.pdfStore.text||0},{key:'i',label:'Verzeichnis (index.sqlite)',bytes:d.pdfStore.index},{key:'f',label:'Dokumentindex (fts.sqlite, nicht gesichert)',bytes:d.pdfStore.docIndex||0}]}/>}
    </Abschnitt>
 
    <Abschnitt id="speicher-programm" open={false} title="Programmstände und Werkzeuge" sub="Jedes Ausrollen legt einen Programmstand an; behalten werden der neueste und die zwei davor (zum Zurückgehen). Ein Stand, den ein laufender Job noch nutzt, bleibt bis zum nächsten Ausrollen.">

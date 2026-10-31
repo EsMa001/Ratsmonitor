@@ -5,8 +5,9 @@ import { CountDots } from "./CountDots";
 import { IconViewCompact, IconViewFull } from "./icons";
 import { toggleSheetStage, useSheetStage } from "../lib/sheetStage";
 import { isPhone } from "../lib/usePhone";
+import { SearchModeSwitch } from "./SearchModeSwitch";
 
-/** Zeile über der Trefferliste: Trefferzahl und Stand, Sortierung, Export, Ansicht.
+/** Zeile über der Trefferliste: Umschalter Vorgänge/Dokumente, Trefferzahl und Stand, Sortierung, Export, Ansicht.
  *  Suche, Filter und aktive Filter liegen auf der Karte (SearchOverlay, FilterPanel, ActiveFilters). */
 export function SearchFilterPanel() {
   const search = useSearch();
@@ -26,6 +27,8 @@ export function SearchFilterPanel() {
       </button>
       {/* Trefferzahl, Datenstand und Sortierung; aktive Filter und Filter selbst liegen auf der Karte */}
       <div className="flex items-center gap-1 max-sm:flex-wrap sm:flex-wrap sm:gap-1.5">
+          {/* Vorgänge oder Dokumente (Dokumentsuche, Pro); am Handy eine eigene Zeile über der Trefferzahl */}
+          <div className="mr-1.5 max-sm:mb-2 max-sm:basis-full"><SearchModeSwitch mode="vorgaenge" /></div>
           <span aria-live="polite" className="mr-1 whitespace-nowrap max-sm:whitespace-normal max-sm:min-w-0 max-sm:flex-[1_1_0%] text-[14px] text-slate-600 sm:mr-1.5">
             {res.loading ? "…" : res.totalPending ? (res.showDots ? <CountDots /> : "…") : res.total.toLocaleString("de-DE")} Treffer
             {res.updatedAt && (

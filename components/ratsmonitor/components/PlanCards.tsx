@@ -6,6 +6,7 @@ import { freqsLabel, IS_DEV, LIMITS, OFFERED, priceLabel, rankOf, setTier, TIER_
 import { AccountApiError, api, reloadMe, shortDate, useMe } from "../lib/account";
 import { usePlusLink, type Bookable } from "../lib/booking";
 import { useClient } from "../lib/useClient";
+import { FEATURES as PLAN_FEATURES } from "@/shared/plans.mjs";
 
 /* Leistungen je Stufe aus den Grenzen in shared/plans.mjs (lib/tier.ts): Text, wenn enthalten, sonst null (steht in der Vergleichstabelle) */
 const many = (n: number, one: string, more: string) => (unlimited(n) ? `Unbegrenzt viele ${more}` : n === 1 ? `1 ${one}` : `${n} ${more}`);
@@ -28,6 +29,7 @@ const FEATURES: { label: string; text: (t: Tier) => string | null }[] = [
   },
   { label: "Sitzungskalender", text: (t) => (LIMITS[t].calendarAreas ? `Sitzungskalender mit Kalender-Abo, ${unlimited(LIMITS[t].calendarAreas) ? "unbegrenzt viele Gebiete" : LIMITS[t].calendarAreas === 1 ? "1 Gebiet" : `${LIMITS[t].calendarAreas} Gebiete`}` : null) },
   { label: "plenara.X", text: (t) => (t === "plus" || t === "pro" || t === "enterprise" ? "plenara.X: alle Analysen, bundesweit" : null) },
+  { label: "Dokumentsuche", text: (t) => ((PLAN_FEATURES as Record<string, { fulltext: boolean }>)[t]?.fulltext ? "Dokumentsuche: findet Begriffe in den Texten der Sitzungsunterlagen" : null) },
   { label: "E-Mail-Empfänger", text: (t) => (LIMITS[t].emails > 1 ? `Bis zu ${LIMITS[t].emails} E-Mail-Empfänger je Benachrichtigung` : null) },
 ];
 /** Leistungen einer Stufe als Sätze (Buchungsseite, Tarifkarten) */
@@ -36,7 +38,7 @@ const PLANS: { tier: Tier; note: string; nutzen: string }[] = [
   { tier: "guest", note: "Ohne Anmeldung", nutzen: "Suchen, lesen und teilen." },
   { tier: "basic", note: "Kostenlos, mit Anmeldung", nutzen: "Ein Thema speichern und per E-Mail im Blick behalten." },
   { tier: "plus", note: "Monatlich kündbar", nutzen: "Alle Treffer, plenara.X und jede Woche ein Bericht zu Ihren Suchen." },
-  { tier: "pro", note: "Monatlich kündbar", nutzen: "Alles unbegrenzt, Mails je Suche bis täglich." },
+  { tier: "pro", note: "Monatlich kündbar", nutzen: "Alles unbegrenzt, Dokumentsuche und Mails je Suche bis täglich." },
   { tier: "enterprise", note: "Noch nicht im Angebot", nutzen: "Später mit KI, Team und Schnittstelle." },
 ];
 /** Angebotene Stufen als Karten (Konto, Plus, Pro); ohne Anmeldung steht als Satz darüber, Enterprise gibt es noch nicht */

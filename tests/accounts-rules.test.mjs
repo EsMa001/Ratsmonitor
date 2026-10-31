@@ -92,7 +92,7 @@ test('Stufen: eine Quelle, gleich dem Frontend und stufen.md; Konto ohne Freisch
  assert.deepEqual(row('Wochenbericht über alle Suchen'),TIERS.map(t=>val(LIMITS[t].weeklyReport)));
  assert.deepEqual(row('Gebiete im Kalender'),TIERS.map(t=>val(LIMITS[t].calendarAreas)));
  assert.deepEqual(row('plenara.X'),TIERS.map(t=>val(FEATURES[t].analytics)));
- assert.deepEqual(row('Volltextsuche'),TIERS.map(t=>FEATURES[t].fulltext?'ja (folgt)':'nein'));
+ assert.deepEqual(row('Dokumentsuche'),TIERS.map(t=>val(FEATURES[t].fulltext)));
  assert.ok(TIERS.every(t=>!('mcp' in FEATURES[t])),'KI-Assistenten gehören zu keiner Stufe');
  assert.ok(TIERS.every(t=>LIMITS[t].calendarAreas>0===FEATURES[t].calendar),'Kalender genau mit Gebieten');
  assert.ok(TIERS.every(t=>!LIMITS[t].freqs.includes('instant')),'„sofort“ gibt es in keiner Stufe');

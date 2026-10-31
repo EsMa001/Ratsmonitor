@@ -21,7 +21,7 @@ test('Aufträge: Reihe, gleiche Art nie doppelt (wartend oder laufend), Entferne
  const c=await requestPdfJob(db,'others');assert.equal(c.created,true);assert.deepEqual(c.jobs.queue.map(j=>j.kind),['retry','others']);
  await assert.rejects(requestPdfJob(db,'delete'),/Unbekannter Auftrag/);
  const r=await removePdfJob(db,c.jobs.queue[0].id);assert.deepEqual(r.jobs.queue.map(j=>j.kind),['others']);
- for(const k of ['run','retry','texts','ocr'])assert.equal((await requestPdfJob(db,k)).created,true);
+ for(const k of ['run','retry','texts','ocr','index','index-full'])assert.equal((await requestPdfJob(db,k)).created,true);
  assert.equal((await pdfStoreState(db)).jobs.queue.length,QUEUE_MAX,'jede Art höchstens einmal, also nie mehr als QUEUE_MAX');
  for(const k of ['run','others','ocr'])assert.equal((await requestPdfJob(db,k)).reason,'waiting','dieselbe Art nie doppelt in der Reihe');
  const {sql:sql2,db:db2}=fresh(),at=new Date().toISOString();
@@ -32,7 +32,7 @@ test('Aufträge: Reihe, gleiche Art nie doppelt (wartend oder laufend), Entferne
 });
 
 test('Aufträge: zwei Bahnen (Laden und OCR), je Bahn einer; frühere Formen werden übernommen, verwaister Auftrag gilt als veraltet',async()=>{
- assert.deepEqual(['run','retry','others','texts','ocr'].map(laneOf),['chain','chain','chain','chain','ocr']);
+ assert.deepEqual(['run','retry','others','texts','ocr','index','index-full'].map(laneOf),['chain','chain','chain','chain','ocr','chain','chain'],'der Dokumentindex läuft in der Bahn Laden');
  assert.deepEqual(normalizeJobs({kind:'others',state:'waiting',requestedAt:'x'}).queue.map(j=>j.kind),['others']);
  assert.equal(normalizeJobs({kind:'run',state:'done',requestedAt:'x'}).recent.length,1);
  assert.equal(normalizeJobs({kind:'ocr',state:'running',requestedAt:'x'}).running.ocr.kind,'ocr','einzelner laufender Auftrag in seiner Bahn');

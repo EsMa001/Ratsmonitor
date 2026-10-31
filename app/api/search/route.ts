@@ -6,7 +6,7 @@ import {guestPageBlocked,trimResult,trimStream,withoutFilters} from '@/server/ac
 import {LIMITS} from '@/shared/plans.mjs';
 import {dataFailure} from '@/server/services/data-response.mjs';
 // Der Zwischenspeicher der Suche ist für alle gleich; gekürzt wird erst danach (shared/plans.mjs: Gast 10, Konto 20 Treffer).
-// Gäste suchen ohne Filter (nur Begriff und Ort); die Volltextsuche (volltext=1) gehört zu Pro und ist noch nicht gebaut.
+// Gäste suchen ohne Filter (nur Begriff und Ort). Die Suche in den Texten der Dokumente ist eine eigene Route (/api/dokumente, Pro).
 // Die Antwort hängt damit an der Sitzung: privat zwischenspeichern.
 const CACHE='private, max-age=30, stale-while-revalidate=120';
 const DENY={'Cache-Control':'private, no-store','Vary':'Cookie'};
@@ -21,10 +21,8 @@ export async function GET(request:Request){
   const limits=(LIMITS as Record<string,Limits>)[tier.tier]??LIMITS.guest;
   const max=limits.maxResults;
   const limited=tier.accounts&&!internal;
-  if(params.get('volltext')==='1'){
-   if(limited&&!(tier.features as {fulltext?:boolean}).fulltext)return Response.json({error:'Die Volltextsuche gehört zu Pro.',limit:'fulltext'},{status:403,headers:DENY});
-   return Response.json({error:'Die Volltextsuche folgt.'},{status:501,headers:DENY});
-  }
+  /* Früherer Platzhalter volltext=1: die Dokumentsuche hat eine eigene Route */
+  if(params.get('volltext')==='1')return Response.json({error:'Die Suche in den Dokumenten heißt jetzt Dokumentsuche.',moved:'/api/dokumente'},{status:410,headers:DENY});
   if(limited&&!limits.filters)params=withoutFilters(params);
   const guest=limited&&Number.isFinite(max);
   if(guest&&guestPageBlocked(params))return Response.json({error:tier.tier==='guest'?'Weitere Treffer gibt es mit einem Konto.':'Alle Treffer gibt es mit Plus.',limit:'results'},{status:403,headers:DENY});

@@ -17,6 +17,9 @@
 // Textebene und Stand; Laden bekommt die ganze Zeit bis auf 15 min.
 // --texts (Auftrag „Textebene lesen“): nichts laden, nur aus den schon abgelegten PDFs ohne Text die Textebene lesen, dann
 // den Stand.
+// --index (Aufträge „index“ und „index-full“ mit --full): nur den Dokumentindex der Dokumentsuche weiter- bzw. neu bauen
+// (scripts/pdf-store/doc-index.mjs), mit der ganzen Zeit; legt ihn beim ersten Mal an. Nachts (--daily, nach OCR) und nach der
+// OCR (--ocr-only, für die Berichte mit neuem Text) führt der Schritt „Dokumente indizieren“ ihn nach, aber nur, wenn es ihn gibt.
 // --ocr-only (Auftrag „OCR starten“, Bahn „OCR“): OCR aller PDFs, Hauptdokumente und übrige (text.mjs --ocr: leichte zuerst,
 // verdrängte kurz nachgeladen, Zeitgrenze je Datei --file-minutes, Standard 5), mit der ganzen Zeit bis auf die Reserve.
 // Zusammenfassungen, Fakten und Wortliste gehören nicht hierher (Entscheidung 13.10.2026): Job „rule-texts“
@@ -46,9 +49,9 @@ import {dailyBoundary} from '../../server/integrations/work-failures.mjs';
 import {JOBS,SCHEDULES_KEY,SCHEDULE_NOW_KEY,settingOf,slotAt} from '../../server/integrations/schedules.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
-const others=flag('others'),ocrOnly=!others&&flag('ocr-only'),texts=!others&&!ocrOnly&&flag('texts');
+const others=flag('others'),ocrOnly=!others&&flag('ocr-only'),texts=!others&&!ocrOnly&&flag('texts'),indexOnly=!others&&!ocrOnly&&!texts&&flag('index');
 // --daily: Tagespipeline pdf-daily (Job „pdf-nightly“): nur Berichte seit dem letzten Tageslauf ('pdf-daily-last'), mit OCR
-const daily=!others&&!ocrOnly&&!texts&&flag('daily'),DAILY_KEY='pdf-daily-last';
+const daily=!others&&!ocrOnly&&!texts&&!indexOnly&&flag('daily'),DAILY_KEY='pdf-daily-last';
 const lane=ocrOnly?'ocr':'chain';
 // --until HH:MM (deutsche Zeit): spätestens dann enden (Job „ocr“ im Fenster bis 22:00)
 const untilAt=/^\d{2}:\d{2}$/.test(opt('until')||'')?slotAt(Date.now(),opt('until')):0;
@@ -140,12 +143,17 @@ const end=()=>{
 };
 
 /* Schrittnamen: shared/pipeline-terms.mjs (gleich in Protokoll, Admin-Seiten, Konzept) */
-const N={pdf:stepName('pdf'),others:stepName('others'),text:stepName('text'),ocr:stepName('ocr'),doctype:stepName('doctype'),budget:stepName('budget'),stats:stepName('stats')};
+const N={pdf:stepName('pdf'),others:stepName('others'),text:stepName('text'),ocr:stepName('ocr'),doctype:stepName('doctype'),budget:stepName('budget'),stats:stepName('stats'),docindex:stepName('docindex')};
 const TAIL=[N.doctype,N.stats];
 // OCR-Lauf (Job „ocr“, alle 10 Minuten im Fenster): ohne „Stand“ (zählt Minuten lang; das macht die Nachtkette), Art nur nach gelesenen Dateien
-plan=others?[N.others,N.text,N.doctype,N.stats]:ocrOnly?[N.ocr,N.doctype,stepName('rules'),stepName('search')]:texts?[N.text,...TAIL]:daily?[N.pdf,N.others,N.text,N.ocr,...TAIL]:[N.pdf,...(retryAll?[N.others]:[]),N.text,...TAIL];
-say(`Start${others?' (übrige PDFs)':ocrOnly?' (OCR)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
+plan=indexOnly?[N.docindex]:others?[N.others,N.text,N.doctype,N.stats]:ocrOnly?[N.ocr,N.doctype,stepName('rules'),stepName('search'),N.docindex]:texts?[N.text,...TAIL]:daily?[N.pdf,N.others,N.text,N.ocr,N.docindex,...TAIL]:[N.pdf,...(retryAll?[N.others]:[]),N.text,...TAIL];
+say(`Start${others?' (übrige PDFs)':ocrOnly?' (OCR)':texts?' (nur Texte aus vorhandenen PDFs)':indexOnly?' (Dokumentindex)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
 
+/* Dokumentindex (Auftrag „index“ bzw. „index-full“): nur dieser Schritt, mit der ganzen Zeit */
+if(indexOnly){
+ await step(N.docindex,'scripts/pdf-store/doc-index.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-2))),...(flag('full')?['--full']:[])]);
+ end();
+}
 if(ocrOnly){
  // Im Fenster (--until) keine Reserve für Folgeschritte: OCR bis kurz vor Schluss
  const ocr=Math.floor(left()-(untilAt?2:reserve)),range=opt('range','all');
@@ -174,8 +182,10 @@ if(ocrOnly){
    const idFile=path.join(dir,`ocr-ids-${process.pid}.txt`);fs.writeFileSync(idFile,ids.join('\n'));
    await step(stepName('model'),'scripts/model/apply.mjs',['--ids',idFile]);
    await step(stepName('rules'),'scripts/pdf-store/read-reports.mjs',['--ids',idFile]);
-   try{fs.unlinkSync(idFile);}catch{/* weg */}
    await step(stepName('search'),'scripts/refresh-search-words.mjs',['--quiet']);
+   /* Dokumentsuche: die neuen Seiten in den Index (nur wenn es ihn gibt) */
+   await step(N.docindex,'scripts/pdf-store/doc-index.mjs',['--if-exists','--ids',idFile,'--max-minutes',String(Math.max(5,Math.floor(left()-2)))]);
+   try{fs.unlinkSync(idFile);}catch{/* weg */}
   }
  }
  end();
@@ -225,6 +235,10 @@ if(daily&&!stopped){
  else if(ocrMin<5)skip(N.ocr,`nur ${Math.max(0,ocrMin)} min übrig`);
  else await step(N.ocr,'scripts/pdf-store/text.mjs',['--ocr','--shas',shasFile,'--origin','daily','--workers',String(ocrWorkers),'--file-minutes',fileMinutes,'--max-minutes',String(ocrMin)]);
  try{fs.unlinkSync(shasFile);}catch{/* keine */}
+ /* Dokumentsuche: neue und geänderte Texte in den Index (nur wenn es ihn gibt; anlegen per Auftrag „index“), höchstens 45 min */
+ const indexMin=Math.min(Number(opt('daily-index-minutes',45)),Math.floor(left()-10));
+ if(indexMin<5)skip(N.docindex,`nur ${Math.max(0,indexMin)} min übrig`);
+ else await step(N.docindex,'scripts/pdf-store/doc-index.mjs',['--if-exists','--max-minutes',String(indexMin)]);
 }
 /* Dokumentart und Art laut Textanfang für den Score (nur Fehlendes; nach neuen Regeln einmal alles) */
 await step(N.doctype,'scripts/pdf-store/budget.mjs',['--backfill']);

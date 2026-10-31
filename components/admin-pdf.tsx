@@ -20,13 +20,16 @@ type Stats={at:string;seconds:number;linked:number;allPdfs:number;loaded:number;
  texts:{files:number;ocrWaiting:number;ocrPages?:number;ocrWaitingAll?:number;ocrPagesAll?:number;missing?:number;linked?:number;complete?:number};summaries?:{withText:number;done:number};
  others?:{linked:number;loaded:number;textOnly:number;failed:number;open:number;openBlocked?:number;withText:number;scans:number;reasons:Reason[];completeThrough?:string|null};
  quality?:Quality;months?:{primary:MonthRow[];others:MonthRow[]};hosts?:{total:number;blocked:number;stages?:boolean;top:Host[]};errorsCsv?:{rows:number}};
-type Job={id:string;kind:'run'|'retry'|'others'|'texts'|'ocr';state:string;requestedAt:string;startedAt?:string;finishedAt?:string;exit?:number|string};
+type Job={id:string;kind:'run'|'retry'|'others'|'texts'|'ocr'|'index'|'index-full';state:string;requestedAt:string;startedAt?:string;finishedAt?:string;exit?:number|string};
 type Progress={kind?:string;startedAt?:string;until?:string;step?:string;at:string;plan?:string[];stepIndex?:number;stepStartedAt?:string;stepUntil?:string;
  fetch?:{what:string;month:string;monthOpen:number;done:number;ok:number;unsupported:number;error:number;rate:number;bytes:number};
  text?:{done:number;total:number;failed:number;waiting:number};ocr?:{done:number;total:number;pages:number;failed:number;workers:number;perHour:number|null;fetched?:number;slow?:number}};
 type Lane='chain'|'ocr';
+/* Letzter Lauf des Dokumentindex der Dokumentsuche (scripts/pdf-store/doc-index.mjs, system_state 'doc-index-last') */
+type DocIndex={at:string;seconds:number;ids?:boolean;sourceFiles:number;files:number;pages:number;remaining:number;added:number;updated:number;removed:number;
+ rebuild:boolean;swapped?:boolean;bytes:number;indexFiles:number|null;indexPages:number|null;rebuildFiles:number|null;stopped?:boolean;late?:boolean};
 type Data={stats:Stats|null;jobs:{queue:Job[];running:Record<Lane,Job|null>;recent:Job[]};progress:{chain:Progress|null;ocr:Progress|null};runs:Run[];
- stop:{chain?:{requestedAt:string};ocr?:{requestedAt:string}};count:{requestedAt:string;startedAt?:string;finishedAt?:string;ok?:boolean}|null;worker:boolean;error?:string};
+ stop:{chain?:{requestedAt:string};ocr?:{requestedAt:string}};count:{requestedAt:string;startedAt?:string;finishedAt?:string;ok?:boolean}|null;worker:boolean;docIndex?:DocIndex|null;error?:string};
 const JOB:Record<string,string>=PDF_JOB_TERMS;
 /** Zwei Bahnen laufen nebeneinander, je Bahn ein Auftrag (server/integrations/pdf-store-admin.mjs, laneOf) */
 const LANE:Record<Lane,string>={chain:'Laden',ocr:'OCR'};
@@ -234,11 +237,27 @@ export function AdminPdf(){
    ]} when={['Tagespipeline: „Extraktion, nachts“ zur Zeit aus der Steuerung (Standard 05:30 Uhr), höchstens 2 Stunden, nach „Abruf, nachts“ (Standard 01:00 Uhr).','Nacharbeit: tagsüber automatisch, für Sitzungen der letzten 7 Tage (frühestens 12.10.2026).','Altbestand: Aufträge hier und auf der Seite Altbestand, nur zwischen 10 und 22 Uhr; jeder Lauf macht dort weiter, wo der vorige aufgehört hat.']}/>
    </Abschnitt>
 
+   <Abschnitt id="pdf-dokumentindex" open={false} title="Dokumentindex" sub="Index der Dokumentsuche (Pro, Seite Dokumente): jede Seite der Hauptdokumente mit Text. Angelegt per Auftrag in der Steuerung, danach nachts und nach der OCR nachgeführt.">
+   <DocIndexKpis d={data.docIndex??null}/>
+   </Abschnitt>
+
    <Abschnitt id="pdf-laeufe" open={false} title="Läufe" sub="Die letzten 20 Läufe (Nachtkette und von Hand); antippen für die Schritte.">
    {data&&<RunList runs={data.runs}/>}
    </Abschnitt>
   </>}
  </>;
+}
+
+/** Stand des Dokumentindex aus dem letzten Lauf; ohne Lauf der Hinweis, wie er entsteht */
+function DocIndexKpis({d}:{d:DocIndex|null}){
+ if(!d)return <p className="m-0 mt-3 text-[14px] text-slate-700">Noch kein Dokumentindex. Anlegen in der Steuerung mit „{JOB.index}“ (10 bis 22 Uhr, in Stücken, neueste Sitzungen zuerst).</p>;
+ const files=d.indexFiles??d.files,pages=d.indexPages??d.pages;
+ return <div className="mt-5"><Kpis label="Dokumentindex" items={[
+  {label:'Dokumente im Index',value:n(files),note:`${pct(files,d.sourceFiles)} der ${n(d.sourceFiles)} Hauptdokumente mit Text`},
+  {label:'Seiten',value:n(pages),note:`${gb(d.bytes)} belegt${d.rebuildFiles!=null?`; Neubau bei ${n(d.rebuildFiles)} Dokumenten`:''}`},
+  {label:'Rückstand',value:n(d.remaining),note:d.remaining?'neue oder geänderte Texte; der nächste Lauf nimmt sie auf':'alle Texte aufgenommen'},
+  {label:'Letzter Lauf',value:when(d.at),note:`${dur(d.seconds)}${d.ids?' (nach OCR)':''}: ${n(d.added)} neu, ${n(d.updated)} geändert, ${n(d.removed)} entfernt${d.late?', Zeit um':''}${d.stopped?', angehalten':''}${d.swapped?', Neubau übernommen':''}`},
+ ]}/></div>;
 }
 
 /** Aufträge der PDF-Ablage für die Steuerung, in zwei Teilen: „bahnen“ (Gruppe Betrieb, beim Job „PDF-Aufträge und Messungen“):
@@ -271,6 +290,10 @@ export function PdfSteuern({teil}:{teil:'bahnen'|'auftraege'}){
     <button type="button" className={side} disabled={!canAct} onClick={()=>void post({action:'queue',kind:'retry'})}>anfordern →</button></li>
    <li className={row}><span className="font-semibold">OCR aller PDFs</span><span className="text-slate-700">Einmal alle PDFs mit Seiten ohne Text, egal wie alt: Hauptdokumente vor Anlagen, neueste Sitzung zuerst (10 bis 22 Uhr); endet, wenn alles gelesen ist. Anders als „OCR des Altbestands“ oben, die nur ältere Berichte liest und Tag für Tag weiterläuft, bis jemand sie anhält.</span>
     <button type="button" className={side} disabled={!canAct} onClick={()=>void post({action:'queue',kind:'ocr'})}>anfordern →</button></li>
+   <li className={row}><span className="font-semibold">{JOB.index}</span><span className="text-slate-700">Index der Dokumentsuche (Pro): nimmt neue und geänderte Texte der Hauptdokumente auf, neueste Sitzungen zuerst; legt ihn beim ersten Mal an (rund 5 bis 7 GB neben der Ablage). Läuft 10 bis 22 Uhr in Stücken und setzt beim nächsten Auftrag fort; nachts führt die Tagespipeline ihn nach.</span>
+    <button type="button" className={side} disabled={!canAct} onClick={()=>void post({action:'queue',kind:'index'})}>anfordern →</button></li>
+   <li className={row}><span className="font-semibold">{JOB['index-full']}</span><span className="text-slate-700">Baut den Index in einer zweiten Datei neu (nach einer neuen Fassung des Index nötig, sonst nur bei Verdacht auf Fehler); die Suche liest bis zum Ende den alten.</span>
+    <button type="button" className={side} disabled={!canAct} onClick={()=>void post({action:'queue',kind:'index-full'},'Den Dokumentindex neu aufbauen? Das dauert mehrere Tage in Stücken und belegt währenddessen den doppelten Platz.')}>anfordern →</button></li>
    </>}
    {teil==='bahnen'&&<li className={row}><span className="font-semibold">Stand neu zählen</span><span className="text-slate-700">Zählt die Seite PDF-Import neu: verlinkt, geladen, Text, Fehler, Server, Platz.</span>
     <button type="button" className={side} disabled={!canAct||counting} onClick={()=>void post({action:'count'})}>{counting?(data?.count?.startedAt?'wird gezählt …':'angefordert …'):'anfordern →'}</button></li>}

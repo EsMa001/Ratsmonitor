@@ -7,3 +7,6 @@ export const ANALYTICS_PATHS = ["/analytics/graph", "/analytics/trends", "/analy
 export const brancheOf = (p: string) => (p.startsWith("/anwender/") ? brancheBySlug(p.slice(10)) : undefined);
 export const isInfoPath = (p: string) => (INFO_PATHS as readonly string[]).includes(p) || p === "/registrieren" || !!brancheOf(p);
 export const isAnalyticsPath = (p: string) => (ANALYTICS_PATHS as readonly string[]).includes(p);
+/** Dokumentsuche (Pro): eigene Seite neben der Suche, Modul pages/dokumente */
+export const DOCS_PATH = "/dokumente";
+export const isDocsPath = (p: string) => p === DOCS_PATH;

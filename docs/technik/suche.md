@@ -232,3 +232,46 @@ in `shared/rule-quality.json` (Thema 90 % bei 84 % Abdeckung, frische Stichprobe
 - Solange der Job `rule-texts` zwischen „Regeln anwenden“ und „Suche aktualisieren“ steht, ist die Wortliste veraltet und die Suche
   läuft über den Volltextindex oder alle Karten.
 - Verliert ein Nachführen die Sperre (harter Abbruch), ist die Wortliste bis zum Ablauf der Frist nicht nachführbar.
+
+## 7. Dokumentsuche (`/dokumente`, `GET /api/dokumente`, seit 31.10.2026)
+
+Eigenes Pro-Produkt neben der Suche (Konzept `requirements/dokumentsuche-konzept.md`): sucht in den **Texten der Hauptdokumente**
+aus der PDF-Ablage statt in Suchkarten und liefert Dokumente mit bis zu drei Fundstellen (Seite, Auszug von rund 160 Zeichen).
+Die Suche oben bleibt unverändert; `volltext=1` an `/api/search` antwortet seitdem 410 mit Verweis auf die neue Route.
+
+**Index** (`server/node/doc-index.mjs`): eigene Datei `RM_PDF_STORE/fts.sqlite`, nicht in der Hauptdatenbank und nicht in
+`index.sqlite`. `doc_files` (eine Zeile je Datei mit Stand der Textfassung `made_at`, Adresse, Bericht, Gebiet, Sitzungstag,
+Dokumentart nach Modell, sonst Titelregel), `doc_pages` (eine Zeile je Seite ab 20 Zeichen; `id` = rowid im FTS) und `doc_fts`
+(FTS5, `content=''` ohne Kopie des Textes, `contentless_delete=1`, `unicode61 remove_diacritics 2`, `detail=full` für Phrasen und
+NAHE). Text vor dem Einfügen: Trennstriche am Zeilenende zusammengezogen, ß → ss (`indexText`). Bindestriche trennen Wörter. Nur
+Hauptdokumente (`role` leer), auch verdrängte (`text-only`). Stand `version` (`INDEX_VERSION`), `revision` (wechselt nach jedem
+Lauf mit Änderungen), Sperre `lease` (2 h, frei, wenn ihr Prozess nicht mehr läuft).
+
+**Aufbau** (`indexDocuments`, Skript `scripts/pdf-store/doc-index.mjs`): liest `index.sqlite` kurz in eine temporäre Tabelle,
+vergleicht mit `doc_files` und arbeitet die geänderten Dateien ab, die jüngste Sitzung zuerst, 200 Dateien je Transaktion,
+wiederaufnehmbar (`--max-minutes`, Anhalten nach dem laufenden Stück). Nur die Angaben geändert: nur `doc_files`; neuer Text:
+alte Seiten weg (ohne den alten Text, den die OCR überschrieben hat), neue rein; nicht mehr in der Ablage: Datei raus. `--ids`:
+nur die Dateien dieser Berichte. Neue `INDEX_VERSION` oder `--full`: Neubau in `fts.next.sqlite`, die Suche liest derweil den alten
+Index, am Ende ersetzt die neue Datei die alte (`openDocReader` öffnet dann neu).
+
+**Anfrage** (`server/integrations/doc-search.mjs`): `toMatch` macht aus dem Suchtext einen FTS5-Ausdruck, nie Rohtext: Wörter (UND,
+auf einer Seite), `oder`, `"Phrase"`, `wort*` (ab 3 Zeichen), `a NAHE b` (10 Wörter), Wörter mit Bindestrich oder Schrägstrich als
+Phrase, Umlaute zusätzlich als ae/oe/ue. `-wort` (auch `NICHT wort`) schließt Dokumente aus, in denen das Wort auf irgendeiner
+Seite steht (eigener Ausdruck `exclude`). Höchstens 12 Begriffe, 200 Zeichen. Filter: Ort wie die Suche (`placeScope` und
+`regionCondition` aus `monitor-search.mjs`), Zeitraum (`from`, `to` nach Sitzungstag; ohne Angabe auch künftige Sitzungen),
+Dokumentart (`art`: vorlage, beschluss, niederschrift, einladung, anlage, sonstige), `level`, Sortierung Relevanz (bm25) oder
+Sitzungstag. Gefiltert wird **vor** dem Rang, dann höchstens `CAND_MAX` = 20.000 Seiten (`capped`): so findet ein häufiges Wort in
+einer kleinen Gemeinde auch dann ihre Dokumente, wenn sie nicht unter den besten des ganzen Landes sind. Seiten je Datei gruppiert;
+die Kandidaten liegen je Stand und Filter im Zwischenspeicher (40 je Prozess), Blättern (`page` bis 50, `revision`, 409 bei neuem
+Stand) liest nur noch Titel (aus `topics`: Unterlage, Nummer `docIndex` für `/api/dokument`, Gremium) und Fundstellen aus den
+`.txt`-Dateien (`snippetOf`, gefaltet gesucht, im Original geschnitten).
+
+**Route** `app/api/dokumente/route.ts`: `gated(…,{feature:'fulltext'})` (Pro, Enterprise; interne Aufrufe kommen durch), gerechnet
+im plenara.X-Worker-Thread (`x-worker.mjs`, eigene Nur-Lese-Verbindung auf `fts.sqlite`), sonst im Prozess über `env.DOC_INDEX`.
+Ohne Index (Cloudflare, Dev-Server unter Miniflare, Server ohne `fts.sqlite`) 503. Lokal ausprobieren: `node scripts/node-local.mjs`
+mit `RM_PDF_STORE` auf eine Ablage mit `fts.sqlite`.
+
+**Oberfläche**: Seite `/dokumente` (`components/ratsmonitor/pages/dokumente/`), Umschalter „Vorgänge | Dokumente“ über der
+Trefferliste und im Kopf der Seite (`SearchModeSwitch.tsx`), ohne Pro der Hinweis `fulltext` im Sperrdialog bzw. auf der Seite ein
+festes Beispiel. Tests: `tests/doc-index.test.mjs`, `tests/doc-search.test.mjs`. Messen vor dem Erstaufbau:
+`scripts/pdf-store/fts-probe.mjs`.

@@ -10,16 +10,18 @@
  *  - 'pdf-store-count'     Wunsch „Stand neu zählen“
  *  - 'pdf-store-heartbeat' Lebenszeichen von job.mjs; fehlt es, führt niemand Aufträge aus (etwa lokal)
  *  - 'pdf-store-errors-csv:N'  Fehlerliste als gepacktes CSV in Stücken (stats.mjs)
+ *  - 'doc-index-last'      letzter Lauf des Dokumentindex der Dokumentsuche (scripts/pdf-store/doc-index.mjs)
  * GETs lesen nur. Aufträge in zwei Bahnen, die nebeneinander laufen (je Bahn einer zur Zeit, weitere warten in der Reihe):
  *  - Bahn „Laden“ ('chain'): 'run' (Lauf wie nachts, ohne OCR), 'retry' (dazu fehlgeschlagene Abrufe erneut versuchen), 'others'
- *    (übrige PDFs der Berichte laden, nur Textebene), 'texts' (nichts laden, Texte aus abgelegten PDFs ohne Text)
+ *    (übrige PDFs der Berichte laden, nur Textebene), 'texts' (nichts laden, Texte aus abgelegten PDFs ohne Text), 'index'
+ *    (Dokumentindex der Dokumentsuche aufbauen bzw. weiterbauen, legt ihn beim ersten Mal an) und 'index-full' (neu bauen)
  *  - Bahn „OCR“ ('ocr'): 'ocr' (OCR aller PDFs, leichte zuerst, verdrängte kurz nachgeladen)
  * Sperren je Bahn in der Ablage (LANE_LOCKS). Zusammenfassungen, Fakten und Wortliste: Job „rule-texts“ (scripts/rule-texts.mjs).
  */
 export const STATS_KEY='pdf-store-stats',JOB_KEY='pdf-store-job',RUNS_KEY='pdf-store-runs',STOP_KEY='pdf-store-stop',
- COUNT_KEY='pdf-store-count',HEARTBEAT_KEY='pdf-store-heartbeat',ERRORS_KEY='pdf-store-errors-csv',
+ COUNT_KEY='pdf-store-count',HEARTBEAT_KEY='pdf-store-heartbeat',ERRORS_KEY='pdf-store-errors-csv',DOC_INDEX_KEY='doc-index-last',
  PROGRESS_KEYS=Object.freeze({chain:'pdf-store-progress-chain',ocr:'pdf-store-progress-ocr'}),
- JOB_KINDS=['run','retry','others','texts','ocr'],LANES=['chain','ocr'],
+ JOB_KINDS=['run','retry','others','texts','ocr','index','index-full'],LANES=['chain','ocr'],
  /** Sperrdatei je Bahn in der Ablage (nightly.mjs nimmt sie, job.mjs prüft sie); die Nachtkette nimmt die der Bahn „Laden“ */
  LANE_LOCKS=Object.freeze({chain:'nightly.lock',ocr:'ocr-lane.lock'});
 /** Bahn eines Auftrags */
@@ -68,7 +70,7 @@ export const active=(job,now=Date.now())=>!!job&&job.state==='running'&&age(job.
 
 /** Stand, Fortschritt, Aufträge, Protokoll (nur lesen) */
 export async function pdfStoreState(db,now=Date.now()){
- const keys=[STATS_KEY,JOB_KEY,RUNS_KEY,STOP_KEY,COUNT_KEY,HEARTBEAT_KEY,PROGRESS_KEYS.chain,PROGRESS_KEYS.ocr];
+ const keys=[STATS_KEY,JOB_KEY,RUNS_KEY,STOP_KEY,COUNT_KEY,HEARTBEAT_KEY,PROGRESS_KEYS.chain,PROGRESS_KEYS.ocr,DOC_INDEX_KEY];
  const {results}=await db.prepare(`SELECT key,value FROM system_state WHERE key IN (${keys.map(()=>'?').join(',')})`).bind(...keys).all();
  const by=new Map(results.map(r=>[r.key,parse(r.value)]));
  const jobs=normalizeJobs(by.get(JOB_KEY));
@@ -76,7 +78,7 @@ export async function pdfStoreState(db,now=Date.now()){
  const progress=Object.fromEntries(LANES.map(l=>{const p=by.get(PROGRESS_KEYS[l]);return [l,p&&age(p.at,now)<PROGRESS_STALE_MS?p:null];}));
  const heartbeat=by.get(HEARTBEAT_KEY)||null;
  return {stats:by.get(STATS_KEY)||null,jobs,progress,runs:by.get(RUNS_KEY)||[],stop:by.get(STOP_KEY)||{},count:by.get(COUNT_KEY)||null,
-  heartbeat,worker:!!heartbeat&&age(heartbeat.at,now)<HEARTBEAT_STALE_MS};
+  heartbeat,worker:!!heartbeat&&age(heartbeat.at,now)<HEARTBEAT_STALE_MS,docIndex:by.get(DOC_INDEX_KEY)||null};
 }
 
 /* Lesen und nur schreiben, wenn sich der Wert dazwischen nicht geändert hat (job.mjs nimmt gerade einen Auftrag); sonst

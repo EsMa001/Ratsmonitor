@@ -5,6 +5,7 @@
  * Cloudflare) liefert xOffload null, und xCached rechnet wie bisher im Prozess. Kein neues Datenmodell, nichts
  * vorgerechnet: dieselben Funktionen (x-registry.mjs), derselbe Zwischenspeicher (revision-cache.mjs). */
 import {AnalyticsError} from './analytics-diffusion.mjs';
+import {DocSearchError} from './doc-search.mjs';
 
 const STATE=Symbol.for('ratsmonitor.x-offload');
 const state=(globalThis[STATE]??={workers:[],queue:[],seq:0,unknown:new Set(),Worker:null});
@@ -40,7 +41,7 @@ function spawn(){
   slot.task=null;
   if(msg.ok)task.resolve(msg.value);
   else if(msg.unknown){state.unknown.add(task.kind);task.resolve(null);}
-  else task.reject(msg.analytics?new AnalyticsError(msg.message,msg.status):new Error(msg.message));
+  else task.reject(msg.analytics?new AnalyticsError(msg.message,msg.status):msg.docSearch?new DocSearchError(msg.message,msg.status):new Error(msg.message));
   pump().catch(()=>{});
  });
  const gone=err=>{

@@ -19,14 +19,14 @@ import {JOBS,CATCH_UP_MS,ZONE,settingOf,slotAt,unitsWarning} from './schedules.m
 export const OPS_KEY='ops-check';
 /** Der prüfende Job selbst (zählt bei „heute nicht gelaufen“ nicht mit) */
 export const OPS_JOB='betrieb';
-export const OPS_DEFAULTS=Object.freeze({backupHours:36,diskPercent:85,dbGrowthGb:3});
+export const OPS_DEFAULTS=Object.freeze({backupHours:36,diskPercent:85,dbGrowthGb:3,docIndexDays:2,docIndexBacklogPercent:5});
 const GB=1073741824,HOUR=3600000,DAY=86400000;
 const iso=ms=>new Date(ms).toISOString();
 const gb=bytes=>(bytes/GB).toFixed(1);
-/** Grenzen aus der Umgebung (OPS_BACKUP_HOURS, OPS_DISK_PERCENT, OPS_DB_GROWTH_GB), sonst Standard */
+/** Grenzen aus der Umgebung (OPS_BACKUP_HOURS, OPS_DISK_PERCENT, OPS_DB_GROWTH_GB), sonst Standard; Dokumentindex nur Standard */
 export function opsThresholds(env={}){
  const num=(v,d)=>{const n=Number(v);return v!==undefined&&v!==''&&Number.isFinite(n)&&n>0?n:d;};
- return {backupHours:num(env.OPS_BACKUP_HOURS,OPS_DEFAULTS.backupHours),diskPercent:num(env.OPS_DISK_PERCENT,OPS_DEFAULTS.diskPercent),dbGrowthGb:num(env.OPS_DB_GROWTH_GB,OPS_DEFAULTS.dbGrowthGb)};
+ return {...OPS_DEFAULTS,backupHours:num(env.OPS_BACKUP_HOURS,OPS_DEFAULTS.backupHours),diskPercent:num(env.OPS_DISK_PERCENT,OPS_DEFAULTS.diskPercent),dbGrowthGb:num(env.OPS_DB_GROWTH_GB,OPS_DEFAULTS.dbGrowthGb)};
 }
 /** Kalendertag deutscher Zeit (JJJJ-MM-TT) */
 export const berlinDay=now=>new Intl.DateTimeFormat('en-CA',{timeZone:ZONE,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(now));
@@ -35,9 +35,9 @@ export const berlinDay=now=>new Intl.DateTimeFormat('en-CA',{timeZone:ZONE,year:
  * Warnungen [{key,text}] aus den Eingaben:
  *  now; units: Stand 'systemd-units'; runs: 'schedule-runs'; schedules: 'schedules' (Einstellungen); backupAt: Zeitpunkt der
  *  jüngsten Sicherung (ISO) oder null; disk: {total,used} in Bytes oder null; dbBytes: Größe der Datenbank samt WAL;
- *  prev: {at,dbBytes} der vorigen Messung oder null.
+ *  prev: {at,dbBytes} der vorigen Messung oder null; docIndex: Stand 'doc-index-last' (Dokumentindex der Dokumentsuche) oder null.
  */
-export function opsWarnings({now=Date.now(),units=null,runs={},schedules=null,backupAt=null,disk=null,dbBytes=null,prev=null}={},t=OPS_DEFAULTS){
+export function opsWarnings({now=Date.now(),units=null,runs={},schedules=null,backupAt=null,disk=null,dbBytes=null,prev=null,docIndex=null}={},t=OPS_DEFAULTS){
  const out=[],warn=(key,text)=>out.push({key,text});
  /* 1. Auslöser */
  const u=unitsWarning(units,now);
@@ -71,6 +71,14 @@ export function opsWarnings({now=Date.now(),units=null,runs={},schedules=null,ba
  if(dbBytes!=null&&prev?.dbBytes!=null&&Number.isFinite(prevT)&&now-prevT>=DAY/2){
   const perDay=(dbBytes-prev.dbBytes)/((now-prevT)/DAY);
   if(perDay>=t.dbGrowthGb*GB)warn('db-growth',`Die Datenbank wächst um ${gb(perDay)} GB je Tag (jetzt ${gb(dbBytes)} GB, vorige Messung ${gb(prev.dbBytes)} GB am ${iso(prevT)}; Grenze ${t.dbGrowthGb} GB).`);
+ }
+ /* 6. Dokumentindex der Dokumentsuche (nur wenn eingerichtet): letzter ganzer Lauf zu alt; Rückstand erst, wenn er einmal ganz
+    aufgebaut war (completeAt), sonst meldete der Erstaufbau jeden Tag */
+ if(docIndex?.at){
+  const at=Date.parse(docIndex.at);
+  if(now-at>t.docIndexDays*DAY)warn('docindex-old',`Der Dokumentindex wurde seit ${iso(at)} nicht nachgeführt (Grenze ${t.docIndexDays} Tage; Schritt „Dokumente indizieren“ der Tagespipeline).`);
+  const share=docIndex.sourceFiles?docIndex.remaining/docIndex.sourceFiles*100:0;
+  if(docIndex.completeAt&&share>t.docIndexBacklogPercent)warn('docindex-backlog',`Der Dokumentindex hat ${docIndex.remaining} Dokumente Rückstand (${share.toFixed(1)} % der Hauptdokumente mit Text; Grenze ${t.docIndexBacklogPercent} %).`);
  }
  return out;
 }
