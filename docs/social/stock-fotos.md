@@ -1870,7 +1870,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Steinach | Thüringen | 16072019 | – | – | noch nicht gesucht | – |
 | Steinau an der Straße | Hessen | 06435028 | – | – | noch nicht gesucht | – |
 | Steinbach (Taunus) | Hessen | 06434010 | – | – | noch nicht gesucht | – |
-| Steinbach-Hallenberg | Thüringen | 16066069 | – | – | noch nicht gesucht | – |
+| Steinbach-Hallenberg | Thüringen | 16066069 | 654775 | https://pixabay.com/photos/castle-steinbach-hallenberg-heaven-654775/ | Pixabay-Lizenz; Burgruine Hallenburg (Castle ruin in Steinbach-Hallenberg) | 8 |
 | Steinheim | NRW | 05762032 | – | – | noch nicht gesucht | – |
 | Steinheim an der Murr | BW | 08118070 | – | – | noch nicht gesucht | – |
 | Stockach | BW | 08335079 | – | – | noch nicht gesucht | – |
@@ -1891,23 +1891,23 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Tambach-Dietharz/Thür.Wald | Thüringen | 16067065 | – | – | noch nicht gesucht | – |
 | Tamm | BW | 08118071 | – | – | noch nicht gesucht | – |
 | Tangerhütte | Sachsen-Anhalt | 15090546 | – | – | noch nicht gesucht | – |
-| Tangermünde | Sachsen-Anhalt | 15090550 | – | – | noch nicht gesucht | – |
+| Tangermünde | Sachsen-Anhalt | 15090550 | 4109577 | https://pixabay.com/photos/germany-saxony-anhalt-tangerm%C3%BCnde-4109577/ | Pixabay-Lizenz; historisches Rathaus (Sachsen-Anhalt im URL) | 8 |
 | Tann (Rhön) | Hessen | 06631023 | – | – | noch nicht gesucht | – |
 | Tanna | Thüringen | 16075132 | – | – | noch nicht gesucht | – |
-| Tauberbischofsheim | BW | 08128115 | – | – | noch nicht gesucht | – |
+| Tauberbischofsheim | BW | 08128115 | 214905 | https://pixabay.com/photos/castle-tauberbischofsheim-germany-214905/ | Pixabay-Lizenz; Schloss mit Turm | 7 |
 | Taucha | Sachsen | 14730300 | – | – | noch nicht gesucht | – |
 | Tecklenburg | NRW | 05566088 | – | – | noch nicht gesucht | – |
-| Tegernsee | Bayern | 09182132 | – | – | noch nicht gesucht | – |
-| Templin | Brandenburg | 12073572 | – | – | noch nicht gesucht | – |
+| Tegernsee | Bayern | 09182132 | 905124 | https://pixabay.com/de/photos/steg-promenade-rathaus-tegernsee-905124/ | Pixabay-Lizenz; Promenade am Tegernsee und Rathaus | 8 |
+| Templin | Brandenburg | 12073572 | 4790682 | https://pixabay.com/de/photos/tor-m%C3%BChlentor-templin-historisch-4790682/ | Pixabay-Lizenz; Mühlentor (historisches Stadttor); Alternative: Schultor 5098478 | 7 |
 | Tengen | BW | 08335080 | – | – | noch nicht gesucht | – |
 | Teterow | Mecklenburg-Vorpommern | 13072106 | – | – | noch nicht gesucht | – |
 | Teublitz | Bayern | 09376170 | – | – | noch nicht gesucht | – |
 | Teuchern | Sachsen-Anhalt | 15084490 | – | – | noch nicht gesucht | – |
-| Thale | Sachsen-Anhalt | 15085330 | – | – | noch nicht gesucht | – |
+| Thale | Sachsen-Anhalt | 15085330 | 1501400 | https://pixabay.com/photos/hexentanzplatz-thale-1501400/ | Pixabay-Lizenz; Hexentanzplatz, Haus auf dem Kopf | 6 |
 | Thalheim/Erzgeb. | Sachsen | 14521620 | – | – | noch nicht gesucht | – |
 | Thum | Sachsen | 14521640 | – | – | noch nicht gesucht | – |
 | Tirschenreuth | Bayern | 09377154 | – | – | noch nicht gesucht | – |
-| Titisee-Neustadt | BW | 08315113 | – | – | noch nicht gesucht | – |
+| Titisee-Neustadt | BW | 08315113 | 2925390 | https://pixabay.com/photos/titisee-black-forest-lake-nature-2925390/ | Pixabay-Lizenz; Titisee im Schwarzwald (Seemotiv, kein Stadtbild) | 6 |
 | Tittmoning | Bayern | 09189152 | – | – | noch nicht gesucht | – |
 | Todtnau | BW | 08336087 | – | – | noch nicht gesucht | – |
 | Tornesch | Schleswig-Holstein | 01056048 | – | – | noch nicht gesucht | – |
