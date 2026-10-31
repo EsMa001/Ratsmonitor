@@ -1481,7 +1481,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Dettelbach | Bayern | 09675117 | – | – | noch nicht gesucht | – |
 | Diemelstadt | Hessen | 06635008 | – | – | noch nicht gesucht | – |
 | Dietenheim | BW | 08425028 | – | – | noch nicht gesucht | – |
-| Dietfurt a.d.Altmühl | Bayern | 09373121 | – | – | noch nicht gesucht | – |
+| Dietfurt a.d.Altmühl | Bayern | 09373121 | 215188 | https://pixabay.com/de/photos/altm%C3%BChltal-t%C3%B6ging-dietfurt-215188/ | Pixabay-Lizenz; Altmühltal bei Töging (Ortsteil von Dietfurt), Titel nennt Dietfurt | 6 |
 | Dillingen/Saar | Saarland | 10044111 | – | – | noch nicht gesucht | – |
 | Doberlug-Kirchhain | Brandenburg | 12062092 | – | – | noch nicht gesucht | – |
 | Dornhan | BW | 08325012 | – | – | noch nicht gesucht | – |
@@ -1500,7 +1500,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Elze | Niedersachsen | 03254014 | – | – | noch nicht gesucht | – |
 | Erbendorf | Bayern | 09377116 | – | – | noch nicht gesucht | – |
 | Erlenbach a.Main | Bayern | 09676122 | – | – | noch nicht gesucht | – |
-| Falkenstein/Harz | Sachsen-Anhalt | 15085110 | – | – | noch nicht gesucht | – |
+| Falkenstein/Harz | Sachsen-Anhalt | 15085110 | 1374837 | https://pixabay.com/photos/falkenstein-castle-monument-resin-1374837/ | Pixabay-Lizenz; Burg Falkenstein im Harz (der Titel schreibt "Resin" statt Harz) | 8 |
 | Fellbach | BW | 08119020 | – | – | noch nicht gesucht | – |
 | Florstadt | Hessen | 06440007 | – | – | noch nicht gesucht | – |
 | Forchtenberg | BW | 08126028 | – | – | noch nicht gesucht | – |
@@ -1522,13 +1522,13 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Gefrees | Bayern | 09472139 | – | – | noch nicht gesucht | – |
 | Geiselhöring | Bayern | 09278123 | – | – | noch nicht gesucht | – |
 | Geisingen | BW | 08327018 | – | – | noch nicht gesucht | – |
-| Geislingen | BW | 08417022 | – | – | noch nicht gesucht | – |
+| Geislingen | BW | 08417022 | 2085525 | https://pixabay.com/de/photos/geislinger-steige-g%C3%BCterzug-2085525/ | Pixabay-Lizenz; Güterzug an der Geislinger Steige (Geislingen an der Steige, BW) | 6 |
 | Geithain | Sachsen | 14729150 | – | – | noch nicht gesucht | – |
 | Gemünden (Wohra) | Hessen | 06635012 | – | – | noch nicht gesucht | – |
 | Gerabronn | BW | 08127032 | – | – | noch nicht gesucht | – |
 | Gerbstedt | Sachsen-Anhalt | 15087165 | – | – | noch nicht gesucht | – |
 | Geringswalde | Sachsen | 14522190 | – | – | noch nicht gesucht | – |
-| Gersfeld (Rhön) | Hessen | 06631010 | – | – | noch nicht gesucht | – |
+| Gersfeld (Rhön) | Hessen | 06631010 | 2806015 | https://pixabay.com/de/photos/fliegerdenkmal-wasserkuppe-denkmal-2806015/ | Pixabay-Lizenz; Fliegerdenkmal auf der Wasserkuppe. Der Ortsname steht nicht im Titel, die Wasserkuppe gehört aber zum Gebiet von Gersfeld. | 5 |
 | Gladenbach | Hessen | 06534010 | – | – | noch nicht gesucht | – |
 | Glashütte | Sachsen | 14628130 | – | – | noch nicht gesucht | – |
 | Glücksburg (Ostsee) | Schleswig-Holstein | 01059113 | – | – | noch nicht gesucht | – |
