@@ -863,8 +863,8 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 854 | Eutin | 01055012 | 1744692 | https://pixabay.com/photos/castle-eutin-schleswig-holstein-1744692/ | Pixabay-Lizenz (Schloss Eutin) | 8 |
 | 855 | Bad Lippspringe | 05774008 | – | – | kein Bild gefunden | – |
 | 856 | Oerlinghausen | 05766056 | – | – | kein Bild gefunden | – |
-| 858 | Leopoldshöhe | 05766048 | – | – | noch nicht gesucht | – |
-| 860 | Finnentrop | 05966012 | – | – | noch nicht gesucht | – |
+| 858 | Leopoldshöhe | 05766048 | – | – | kein Bild gefunden | – |
+| 860 | Finnentrop | 05966012 | – | – | kein Bild gefunden | – |
 | 861 | Kamenz | 14625250 | – | – | noch nicht gesucht | – |
 | 863 | Marktredwitz | 09479136 | – | – | noch nicht gesucht | – |
 | 864 | Eltville am Rhein | 06439003 | – | – | noch nicht gesucht | – |
