@@ -3355,9 +3355,9 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Otterfing | Bayern | 09182127 | – | – | noch nicht gesucht | – |
 | Ottersweier | Baden-Württemberg | 08216041 | – | – | noch nicht gesucht | – |
 | Ottrau | Hessen | 06634020 | – | – | noch nicht gesucht | – |
-| Otzberg | Hessen | 06432017 | – | – | noch nicht gesucht | – |
+| Otzberg | Hessen | 06432017 | 2485929 | https://pixabay.com/photos/veste-otzberg-odenwald-hesse-2485929/ | Pixabay-Lizenz; Veste Otzberg (Festung), Hessen | 7 |
 | Owingen | Baden-Württemberg | 08435047 | – | – | noch nicht gesucht | – |
-| Oy-Mittelberg | Bayern | 09780128 | – | – | noch nicht gesucht | – |
+| Oy-Mittelberg | Bayern | 09780128 | 244874 | https://pixabay.com/de/photos/oy-mittelberg-244874/ | Pixabay-Lizenz; Titel „Oy-Mittelberg“, Allgäu (weitere Alternative: Kirche, ID 244482) | 6 |
 | Oßling | Sachsen | 14625420 | – | – | noch nicht gesucht | – |
 | Painten | Bayern | 09273159 | – | – | noch nicht gesucht | – |
 | Palling | Bayern | 09189134 | – | – | noch nicht gesucht | – |
@@ -3383,7 +3383,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Pfedelbach | Baden-Württemberg | 08126069 | – | – | noch nicht gesucht | – |
 | Pfeffenhausen | Bayern | 09274172 | – | – | noch nicht gesucht | – |
 | Pfronstetten | Baden-Württemberg | 08415058 | – | – | noch nicht gesucht | – |
-| Pfronten | Bayern | 09777159 | – | – | noch nicht gesucht | – |
+| Pfronten | Bayern | 09777159 | 4704721 | https://pixabay.com/photos/pfronten-church-town-4704721/ | Pixabay-Lizenz; Kirche und Ort Pfronten (Allgäu) | 8 |
 | Philippsthal (Werra) | Hessen | 06632016 | – | – | noch nicht gesucht | – |
 | Piding | Bayern | 09172128 | – | – | noch nicht gesucht | – |
 | Pilsting | Bayern | 09279132 | – | – | noch nicht gesucht | – |
