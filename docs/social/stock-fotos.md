@@ -1955,7 +1955,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Waibstadt | BW | 08226091 | – | – | noch nicht gesucht | – |
 | Waischenfeld | Bayern | 09472197 | – | – | noch nicht gesucht | – |
 | Waldbröl | NRW | 05374044 | – | – | noch nicht gesucht | – |
-| Waldeck | Hessen | 06635021 | – | – | noch nicht gesucht | – |
+| Waldeck | Hessen | 06635021 | 1103951 | https://pixabay.com/photos/edersee-hesse-waldeck-castle-1103951/ | Pixabay-Lizenz; Schloss Waldeck im Winter über dem Edersee (Titel: "Waldeck Castle in winter", Tags Edersee/Hesse). Alternative: 5865298, https://pixabay.com/de/photos/burg-waldeck-schloss-edersee-see-5865298/ (Burg Waldeck, Edersee) | 8 |
 | Waldenbuch | BW | 08115048 | – | – | noch nicht gesucht | – |
 | Waldenburg | BW | 08126085 | – | – | noch nicht gesucht | – |
 | Waldershof | Bayern | 09377157 | – | – | noch nicht gesucht | – |
@@ -1973,17 +1973,17 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Wassenberg | NRW | 05370036 | – | – | noch nicht gesucht | – |
 | Wasserburg a.Inn | Bayern | 09187182 | – | – | noch nicht gesucht | – |
 | Wassertrüdingen | Bayern | 09571214 | – | – | noch nicht gesucht | – |
-| Weener | Niedersachsen | 03457021 | – | – | noch nicht gesucht | – |
+| Weener | Niedersachsen | 03457021 | 3458951 | https://pixabay.com/de/photos/denkmal-weener-t%c3%b6rfwieven-tourismus-3458951/ | Pixabay-Lizenz; Denkmal Weener Törfwieven (Ortsbezug nur über das Denkmal im Titel) | 5 |
 | Wehr | BW | 08337116 | – | – | noch nicht gesucht | – |
-| Weikersheim | BW | 08128126 | – | – | noch nicht gesucht | – |
+| Weikersheim | BW | 08128126 | 6632353 | https://pixabay.com/hu/photos/kast%C3%A9ly-weikersheim-n%C3%A9metorsz%C3%A1g-6632353/ | Pixabay-Lizenz; Schloss Weikersheim (Titel ungarisch; Alternative: Zwerg im Schlossgarten, ID 870010) | 7 |
 | Weil der Stadt | BW | 08115050 | – | – | noch nicht gesucht | – |
 | Weilburg | Hessen | 06533017 | – | – | noch nicht gesucht | – |
-| Weilheim an der Teck | BW | 08116070 | – | – | noch nicht gesucht | – |
-| Weinsberg | BW | 08125102 | – | – | noch nicht gesucht | – |
+| Weilheim an der Teck | BW | 08116070 | 1464774 | https://pixabay.com/photos/swabian-alb-weilheim-on-the-teck-1464774/ | Pixabay-Lizenz; Schwäbische Alb, Panorama mit Limburg | 7 |
+| Weinsberg | BW | 08125102 | 2308328 | https://pixabay.com/de/photos/weinberg-burg-ruine-weibertreu-2308328/ | Pixabay-Lizenz; Burgruine Weibertreu | 8 |
 | Weismain | Bayern | 09478176 | – | – | noch nicht gesucht | – |
 | Weißenberg | Sachsen | 14625610 | – | – | noch nicht gesucht | – |
 | Weißenburg i.Bay. | Bayern | 09577177 | – | – | noch nicht gesucht | – |
-| Weißenhorn | Bayern | 09775164 | – | – | noch nicht gesucht | – |
+| Weißenhorn | Bayern | 09775164 | 247237 | https://pixabay.com/de/photos/wei%C3%9Fenhorn-oberes-tor-wegzeiger-247237/ | Pixabay-Lizenz; Oberes Tor mit Wegzeiger | 7 |
 | Weißensee | Thüringen | 16068058 | – | – | noch nicht gesucht | – |
 | Weißenstadt | Bayern | 09479166 | – | – | noch nicht gesucht | – |
 | Welzheim | BW | 08119084 | – | – | noch nicht gesucht | – |
