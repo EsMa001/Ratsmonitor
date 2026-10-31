@@ -3928,7 +3928,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Weischlitz | Sachsen | 14523450 | – | – | noch nicht gesucht | – |
 | Weisenbach | Baden-Württemberg | 08216059 | – | – | noch nicht gesucht | – |
 | Weisendorf | Bayern | 09572164 | – | – | noch nicht gesucht | – |
-| Weiskirchen | Saarland | 10042117 | – | – | noch nicht gesucht | – |
+| Weiskirchen | Saarland | 10042117 | 105068 | https://pixabay.com/de/photos/weiskirchen-saarland-kurpark-wasser-105068/ | Pixabay-Lizenz; Kurpark Weiskirchen, Saarland (nur aus dem Titel geschlossen, Foto nicht angesehen) | 8 |
 | Weissach | Baden-Württemberg | 08115052 | – | – | noch nicht gesucht | – |
 | Weissach im Tal | Baden-Württemberg | 08119083 | – | – | noch nicht gesucht | – |
 | Weisweil | Baden-Württemberg | 08316049 | – | – | noch nicht gesucht | – |
@@ -3943,10 +3943,10 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Wentorf bei Hamburg | Schleswig-Holstein | 01053129 | – | – | noch nicht gesucht | – |
 | Wenzenbach | Bayern | 09375208 | – | – | noch nicht gesucht | – |
 | Werbach | Baden-Württemberg | 08128128 | – | – | noch nicht gesucht | – |
-| Wermsdorf | Sachsen | 14730330 | – | – | noch nicht gesucht | – |
+| Wermsdorf | Sachsen | 14730330 | 5170759 | https://pixabay.com/fi/photos/linna-hubertusburg-wermsdorf-5170759/ | Pixabay-Lizenz; Schloss Hubertusburg | 8 |
 | Wernberg-Köblitz | Bayern | 09376150 | – | – | noch nicht gesucht | – |
 | Werneck | Bayern | 09678193 | – | – | noch nicht gesucht | – |
-| Wertach | Bayern | 09780145 | – | – | noch nicht gesucht | – |
+| Wertach | Bayern | 09780145 | 67314 | https://pixabay.com/photos/allg%C3%A4u-h%C3%B6rnle-wertacher-winter-snow-67314/ | Pixabay-Lizenz; Wertacher Hörnle im Winter, Berg bei Wertach | 5 |
 | Werther | Thüringen | 16062063 | – | – | noch nicht gesucht | – |
 | Wesertal | Hessen | 06633030 | – | – | noch nicht gesucht | – |
 | Wessobrunn | Bayern | 09190158 | – | – | noch nicht gesucht | – |
