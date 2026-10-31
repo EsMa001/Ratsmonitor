@@ -763,7 +763,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 
 ### Rang 706 bis 999 (Zensus 2022, A bis Po)
 
-Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wikipedia-Schätzung 2022 der Ränge oben; die Nummern können um wenige Plätze abweichen. Es fehlen die Orte von „Po“ bis „Z“ in diesem Bereich (keine Liste verfügbar). AGS aus BKG VG250.
+Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wikipedia-Schätzung 2022 der Ränge oben; die Nummern können um wenige Plätze abweichen. Alle Orte dieses Abschnitts sind durchsucht. Es fehlen die Orte von „Po“ bis „Z“ in diesem Bereich (keine Liste verfügbar). AGS aus BKG VG250.
 
 | Rang | Ort | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|---|
@@ -865,99 +865,99 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 856 | Oerlinghausen | 05766056 | – | – | kein Bild gefunden | – |
 | 858 | Leopoldshöhe | 05766048 | – | – | kein Bild gefunden | – |
 | 860 | Finnentrop | 05966012 | – | – | kein Bild gefunden | – |
-| 861 | Kamenz | 14625250 | – | – | noch nicht gesucht | – |
-| 863 | Marktredwitz | 09479136 | – | – | noch nicht gesucht | – |
-| 864 | Eltville am Rhein | 06439003 | – | – | noch nicht gesucht | – |
-| 867 | Künzell | 06631017 | – | – | noch nicht gesucht | – |
-| 868 | Kelheim | 09273137 | – | – | noch nicht gesucht | – |
-| 869 | Hünfeld | 06631015 | – | – | noch nicht gesucht | – |
-| 870 | Heilbad Heiligenstadt | 16061045 | – | – | noch nicht gesucht | – |
-| 871 | Penzberg | 09190141 | – | – | noch nicht gesucht | – |
-| 872 | Eggenstein-Leopoldshafen | 08215102 | – | – | noch nicht gesucht | – |
-| 873 | Brackenheim | 08125013 | – | – | noch nicht gesucht | – |
-| 874 | Königstein im Taunus | 06434005 | – | – | noch nicht gesucht | – |
-| 875 | Bad Langensalza | 16064003 | – | – | noch nicht gesucht | – |
-| 876 | Heidenau | 14628160 | – | – | noch nicht gesucht | – |
-| 877 | Hövelhof | 05774024 | – | – | noch nicht gesucht | – |
-| 879 | Bad Bentheim | 03456001 | – | – | noch nicht gesucht | – |
-| 880 | Bruckmühl | 09187122 | – | – | noch nicht gesucht | – |
-| 881 | Altena | 05962004 | – | – | noch nicht gesucht | – |
-| 882 | Eppelborn | 10043111 | – | – | noch nicht gesucht | – |
-| 883 | Bitburg | 07232018 | – | – | noch nicht gesucht | – |
-| 884 | Bad Wörishofen | 09778116 | – | – | noch nicht gesucht | – |
-| 885 | Kronach | 09476145 | – | – | noch nicht gesucht | – |
-| 887 | Losheim am See | 10042112 | – | – | noch nicht gesucht | – |
-| 888 | Gunzenhausen | 09577136 | – | – | noch nicht gesucht | – |
-| 890 | Kierspe | 05962028 | – | – | noch nicht gesucht | – |
-| 893 | Bassum | 03251007 | – | – | noch nicht gesucht | – |
-| 895 | Eilenburg | 14730110 | – | – | noch nicht gesucht | – |
-| 896 | Herzebrock-Clarholz | 05754020 | – | – | noch nicht gesucht | – |
-| 898 | Blaustein | 08425141 | – | – | noch nicht gesucht | – |
-| 899 | Kirchlengern | 05758020 | – | – | noch nicht gesucht | – |
-| 900 | Ginsheim-Gustavsburg | 06433005 | – | – | noch nicht gesucht | – |
-| 905 | Halver | 05962012 | – | – | noch nicht gesucht | – |
-| 906 | Kirchhain | 06534011 | – | – | noch nicht gesucht | – |
-| 907 | Oyten | 03361009 | – | – | noch nicht gesucht | – |
-| 910 | Erwitte | 05974016 | – | – | noch nicht gesucht | – |
-| 911 | Bargteheide | 01062006 | – | – | noch nicht gesucht | – |
-| 912 | Künzelsau | 08126046 | – | – | noch nicht gesucht | – |
-| 913 | Hille | 05770012 | – | – | noch nicht gesucht | – |
-| 914 | Pocking | 09275141 | – | – | noch nicht gesucht | – |
-| 915 | Marienberg | 14521390 | – | – | noch nicht gesucht | – |
-| 916 | Bad Essen | 03459003 | – | – | noch nicht gesucht | – |
-| 917 | Breisach am Rhein | 08315015 | – | – | noch nicht gesucht | – |
-| 919 | Markranstädt | 14729270 | – | – | noch nicht gesucht | – |
-| 920 | Brüggen | 05166004 | – | – | noch nicht gesucht | – |
-| 923 | Brakel | 05762016 | – | – | noch nicht gesucht | – |
-| 924 | Holzkirchen | 09182120 | – | – | noch nicht gesucht | – |
-| 925 | Drensteinfurt | 05570016 | – | – | noch nicht gesucht | – |
-| 926 | Loxstedt | 03352032 | – | – | noch nicht gesucht | – |
-| 927 | Karlsbad | 08215096 | – | – | noch nicht gesucht | – |
-| 928 | Guben | 12071160 | – | – | noch nicht gesucht | – |
-| 931 | Großostheim | 09671122 | – | – | noch nicht gesucht | – |
-| 932 | Hude (Oldb) | 03458010 | – | – | noch nicht gesucht | – |
-| 933 | Illingen | 10043112 | – | – | noch nicht gesucht | – |
-| 934 | Kelsterbach | 06433007 | – | – | noch nicht gesucht | – |
-| 935 | Bad Arolsen | 06635002 | – | – | noch nicht gesucht | – |
-| 938 | Dieburg | 06432004 | – | – | noch nicht gesucht | – |
-| 941 | Kernen im Remstal | 08119093 | – | – | noch nicht gesucht | – |
-| 944 | Odenthal | 05378020 | – | – | noch nicht gesucht | – |
-| 946 | Ascheberg | 05558004 | – | – | noch nicht gesucht | – |
-| 947 | Eppelheim | 08226018 | – | – | noch nicht gesucht | – |
-| 948 | Boppard | 07140501 | – | – | noch nicht gesucht | – |
-| 950 | Erlensee | 06435007 | – | – | noch nicht gesucht | – |
-| 952 | Finsterwalde | 12062140 | – | – | noch nicht gesucht | – |
-| 953 | Großenkneten | 03458007 | – | – | noch nicht gesucht | – |
-| 954 | Neustadt in Holstein | 01055032 | – | – | noch nicht gesucht | – |
-| 955 | Baiersbronn | 08237004 | – | – | noch nicht gesucht | – |
-| 958 | Blomberg | 05766016 | – | – | noch nicht gesucht | – |
-| 959 | Mindelheim | 09778173 | – | – | noch nicht gesucht | – |
-| 960 | Freiberg am Neckar | 08118078 | – | – | noch nicht gesucht | – |
-| 961 | Beckingen | 10042111 | – | – | noch nicht gesucht | – |
-| 962 | Alsfeld | 06535001 | – | – | noch nicht gesucht | – |
-| 963 | Michelstadt | 06437011 | – | – | noch nicht gesucht | – |
-| 964 | Marbach am Neckar | 08118049 | – | – | noch nicht gesucht | – |
-| 967 | Bad Bramstedt | 01060004 | – | – | noch nicht gesucht | – |
-| 969 | Königslutter am Elm | 03154013 | – | – | noch nicht gesucht | – |
-| 971 | Altdorf b.Nürnberg | 09574112 | – | – | noch nicht gesucht | – |
-| 973 | Ebersbach an der Fils | 08117018 | – | – | noch nicht gesucht | – |
-| 974 | Füssen | 09777129 | – | – | noch nicht gesucht | – |
-| 977 | Grenzach-Wyhlen | 08336105 | – | – | noch nicht gesucht | – |
-| 978 | Langenau | 08425072 | – | – | noch nicht gesucht | – |
-| 979 | Bad Neustadt a.d.Saale | 09673114 | – | – | noch nicht gesucht | – |
-| 981 | Mainburg | 09273147 | – | – | noch nicht gesucht | – |
-| 982 | Gehrden | 03241006 | – | – | noch nicht gesucht | – |
-| 985 | Mühlenbecker Land | 12065225 | – | – | noch nicht gesucht | – |
-| 986 | Brake (Unterweser) | 03461002 | – | – | noch nicht gesucht | – |
-| 988 | Mering | 09771146 | – | – | noch nicht gesucht | – |
-| 989 | Munster | 03358016 | – | – | noch nicht gesucht | – |
-| 990 | Ober-Ramstadt | 06432016 | – | – | noch nicht gesucht | – |
-| 993 | Abensberg | 09273111 | – | – | noch nicht gesucht | – |
-| 994 | Lohr a.Main | 09677155 | – | – | noch nicht gesucht | – |
-| 995 | Malsch | 08215046 | – | – | noch nicht gesucht | – |
-| 996 | Isny im Allgäu | 08436049 | – | – | noch nicht gesucht | – |
-| 997 | Bad Wurzach | 08436010 | – | – | noch nicht gesucht | – |
-| 999 | Grefrath | 05166008 | – | – | noch nicht gesucht | – |
+| 861 | Kamenz | 14625250 | – | – | kein Bild gefunden | – |
+| 863 | Marktredwitz | 09479136 | – | – | kein Bild gefunden | – |
+| 864 | Eltville am Rhein | 06439003 | 1159039 | https://pixabay.com/photos/rheingau-eltville-flood-1159039/ | Pixabay-Lizenz, Rheingau Eltville, Hochwasser am Rhein | 6 |
+| 867 | Künzell | 06631017 | – | – | kein Bild gefunden | – |
+| 868 | Kelheim | 09273137 | 8128755 | https://pixabay.com/photos/kelheim-befreiungshalle-8128755/ | Pixabay-Lizenz, Befreiungshalle Kelheim | 7 |
+| 869 | Hünfeld | 06631015 | – | – | kein Bild gefunden | – |
+| 870 | Heilbad Heiligenstadt | 16061045 | 5848092 | https://pixabay.com/de/photos/heiligenstadt-th%C3%BCringen-eichsfeld-5848092/ | Pixabay-Lizenz, Heiligenstadt Eichsfeld | 7 |
+| 871 | Penzberg | 09190141 | – | – | kein Bild gefunden | – |
+| 872 | Eggenstein-Leopoldshafen | 08215102 | – | – | kein Bild gefunden | – |
+| 873 | Brackenheim | 08125013 | – | – | kein Bild gefunden | – |
+| 874 | Königstein im Taunus | 06434005 | – | – | kein Bild gefunden | – |
+| 875 | Bad Langensalza | 16064003 | 775672 | https://pixabay.com/de/photos/bad-langensalza-kurpark-kur-h%C3%A4user-775672/ | Pixabay-Lizenz, Kurpark | 7 |
+| 876 | Heidenau | 14628160 | – | – | kein Bild gefunden | – |
+| 877 | Hövelhof | 05774024 | – | – | kein Bild gefunden | – |
+| 879 | Bad Bentheim | 03456001 | 1587946 | https://pixabay.com/de/burg-bentheim-pulverturm-bergfried-1587946 | Pixabay-Lizenz, Burg Bentheim | 7 |
+| 880 | Bruckmühl | 09187122 | – | – | kein Bild gefunden | – |
+| 881 | Altena | 05962004 | 6014053 | https://pixabay.com/photos/flower-nature-altena-rose-6014053/ | Pixabay-Lizenz, Blume, Ortsbezug nur Schlagwort | 3 |
+| 882 | Eppelborn | 10043111 | – | – | kein Bild gefunden | – |
+| 883 | Bitburg | 07232018 | – | – | kein Bild gefunden | – |
+| 884 | Bad Wörishofen | 09778116 | 4919786 | https://pixabay.com/de/photos/bad-w%C3%B6rishofen-herbst-natur-4919786/ | Pixabay-Lizenz, im Herbst | 6 |
+| 885 | Kronach | 09476145 | 5243020 | https://pixabay.com/de/photos/kronach-mittelalterliche-stadt-5243020/ | Pixabay-Lizenz, mittelalterliche Stadt | 8 |
+| 887 | Losheim am See | 10042112 | – | – | kein Bild gefunden | – |
+| 888 | Gunzenhausen | 09577136 | – | – | kein Bild gefunden | – |
+| 890 | Kierspe | 05962028 | – | – | kein Bild gefunden | – |
+| 893 | Bassum | 03251007 | – | – | kein Bild gefunden | – |
+| 895 | Eilenburg | 14730110 | – | – | kein Bild gefunden | – |
+| 896 | Herzebrock-Clarholz | 05754020 | – | – | kein Bild gefunden | – |
+| 898 | Blaustein | 08425141 | – | – | kein Bild gefunden | – |
+| 899 | Kirchlengern | 05758020 | – | – | kein Bild gefunden | – |
+| 900 | Ginsheim-Gustavsburg | 06433005 | – | – | kein Bild gefunden | – |
+| 905 | Halver | 05962012 | – | – | kein Bild gefunden | – |
+| 906 | Kirchhain | 06534011 | 5327983 | https://pixabay.com/de/photos/kirche-stadtkirche-kirchhain-5327983/ | Pixabay-Lizenz, Stadtkirche Kirchhain (Hessen oder Brandenburg nicht geprüft) | 5 |
+| 907 | Oyten | 03361009 | – | – | kein Bild gefunden | – |
+| 910 | Erwitte | 05974016 | – | – | kein Bild gefunden | – |
+| 911 | Bargteheide | 01062006 | – | – | kein Bild gefunden | – |
+| 912 | Künzelsau | 08126046 | 2856664 | https://pixabay.com/photos/castle-stetten-k%C3%BCnzelsau-2856664/ | Pixabay-Lizenz, Schloss Stetten bei Künzelsau | 6 |
+| 913 | Hille | 05770012 | – | – | kein Bild gefunden | – |
+| 914 | Pocking | 09275141 | – | – | kein Bild gefunden | – |
+| 915 | Marienberg | 14521390 | 1824841 | https://pixabay.com/photos/marienberg-sage-dwarf-1824841/ | Pixabay-Lizenz, Ortsbezug unklar | 3 |
+| 916 | Bad Essen | 03459003 | – | – | kein Bild gefunden | – |
+| 917 | Breisach am Rhein | 08315015 | 2355310 | https://pixabay.com/photos/rhine-breisach-ship-water-to-bathe-2355310/ | Pixabay-Lizenz, Rhein bei Breisach | 6 |
+| 919 | Markranstädt | 14729270 | – | – | kein Bild gefunden | – |
+| 920 | Brüggen | 05166004 | – | – | kein Bild gefunden | – |
+| 923 | Brakel | 05762016 | – | – | kein Bild gefunden | – |
+| 924 | Holzkirchen | 09182120 | – | – | kein Bild gefunden | – |
+| 925 | Drensteinfurt | 05570016 | – | – | kein Bild gefunden | – |
+| 926 | Loxstedt | 03352032 | – | – | kein Bild gefunden | – |
+| 927 | Karlsbad | 08215096 | – | – | kein Bild gefunden | – |
+| 928 | Guben | 12071160 | – | – | kein Bild gefunden | – |
+| 931 | Großostheim | 09671122 | – | – | kein Bild gefunden | – |
+| 932 | Hude (Oldb) | 03458010 | – | – | kein Bild gefunden | – |
+| 933 | Illingen | 10043112 | – | – | kein Bild gefunden | – |
+| 934 | Kelsterbach | 06433007 | – | – | kein Bild gefunden | – |
+| 935 | Bad Arolsen | 06635002 | – | – | kein Bild gefunden | – |
+| 938 | Dieburg | 06432004 | – | – | kein Bild gefunden | – |
+| 941 | Kernen im Remstal | 08119093 | 54556 | https://pixabay.com/de/photos/y-burg-stetten-im-remstal-54556/ | Pixabay-Lizenz, Y-Burg Stetten (Ortsteil von Kernen) | 6 |
+| 944 | Odenthal | 05378020 | – | – | kein Bild gefunden | – |
+| 946 | Ascheberg | 05558004 | – | – | kein Bild gefunden | – |
+| 947 | Eppelheim | 08226018 | – | – | kein Bild gefunden | – |
+| 948 | Boppard | 07140501 | 4942786 | https://pixabay.com/photos/slate-peterslay-boppard-rock-abyss-4942786/ | Pixabay-Lizenz, Schiefer-Steinbruch Peterslay, kein Stadtbild | 5 |
+| 950 | Erlensee | 06435007 | – | – | kein Bild gefunden | – |
+| 952 | Finsterwalde | 12062140 | – | – | kein Bild gefunden | – |
+| 953 | Großenkneten | 03458007 | – | – | kein Bild gefunden | – |
+| 954 | Neustadt in Holstein | 01055032 | – | – | kein Bild gefunden | – |
+| 955 | Baiersbronn | 08237004 | 343799 | https://pixabay.com/photos/tonbachtal-black-forest-hut-huts-343799/ | Pixabay-Lizenz, Tonbachtal (Ortsteil), Ortsbezug indirekt | 4 |
+| 958 | Blomberg | 05766016 | – | – | kein Bild gefunden | – |
+| 959 | Mindelheim | 09778173 | – | – | kein Bild gefunden | – |
+| 960 | Freiberg am Neckar | 08118078 | 361485 | https://pixabay.com/photos/freiberg-am-neckar-china-house-361485/ | Pixabay-Lizenz, Chinesisches Haus | 6 |
+| 961 | Beckingen | 10042111 | – | – | kein Bild gefunden | – |
+| 962 | Alsfeld | 06535001 | – | – | kein Bild gefunden | – |
+| 963 | Michelstadt | 06437011 | – | – | kein Bild gefunden | – |
+| 964 | Marbach am Neckar | 08118049 | – | – | kein Bild gefunden | – |
+| 967 | Bad Bramstedt | 01060004 | – | – | kein Bild gefunden | – |
+| 969 | Königslutter am Elm | 03154013 | – | – | kein Bild gefunden | – |
+| 971 | Altdorf b.Nürnberg | 09574112 | – | – | kein Bild gefunden | – |
+| 973 | Ebersbach an der Fils | 08117018 | – | – | kein Bild gefunden | – |
+| 974 | Füssen | 09777129 | mq3Q8NbCIZI | https://unsplash.com/photos/mq3Q8NbCIZI | Unsplash-Lizenz, Motiv nicht geprüft | 6 |
+| 977 | Grenzach-Wyhlen | 08336105 | – | – | kein Bild gefunden | – |
+| 978 | Langenau | 08425072 | 256450 | https://pixabay.com/photos/station-railroad-platform-track-256450/ | Pixabay-Lizenz, Bahnhof, unklar welches Langenau | 3 |
+| 979 | Bad Neustadt a.d.Saale | 09673114 | – | – | kein Bild gefunden | – |
+| 981 | Mainburg | 09273147 | – | – | kein Bild gefunden | – |
+| 982 | Gehrden | 03241006 | – | – | kein Bild gefunden | – |
+| 985 | Mühlenbecker Land | 12065225 | – | – | kein Bild gefunden | – |
+| 986 | Brake (Unterweser) | 03461002 | – | – | kein Bild gefunden | – |
+| 988 | Mering | 09771146 | – | – | kein Bild gefunden | – |
+| 989 | Munster | 03358016 | – | – | kein Bild gefunden | – |
+| 990 | Ober-Ramstadt | 06432016 | – | – | kein Bild gefunden | – |
+| 993 | Abensberg | 09273111 | 4383915 | https://pixabay.com/de/photos/kuchlbauer-hundertwasser-turm-4383915/ | Pixabay-Lizenz, Kuchlbauer-Turm, Ort nicht im Titel | 6 |
+| 994 | Lohr a.Main | 09677155 | – | – | kein Bild gefunden | – |
+| 995 | Malsch | 08215046 | – | – | kein Bild gefunden | – |
+| 996 | Isny im Allgäu | 08436049 | 3611385 | https://pixabay.com/de/photos/kleiner-wasserfall-eistobel-isny-3611385/ | Pixabay-Lizenz, Wasserfall Eistobel, kein Stadtbild | 5 |
+| 997 | Bad Wurzach | 08436010 | 4119763 | https://pixabay.com/de/photos/bad-wurzach-ried-hochmoor-4119763/ | Pixabay-Lizenz, Wurzacher Ried, kein Stadtbild | 5 |
+| 999 | Grefrath | 05166008 | – | – | kein Bild gefunden | – |
 
 ## Nicht verwenden
 
