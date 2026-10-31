@@ -2443,7 +2443,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Eckersdorf | Bayern | 09472131 | – | – | noch nicht gesucht | – |
 | Edelsfeld | Bayern | 09371119 | – | – | noch nicht gesucht | – |
 | Edermünde | Hessen | 06634002 | – | – | noch nicht gesucht | – |
-| Edertal | Hessen | 06635009 | – | – | noch nicht gesucht | – |
+| Edertal | Hessen | 06635009 | 3070302 | https://pixabay.com/photos/eder-dam-dam-wall-gate-building-3070302/ | Pixabay-Lizenz; Edertalsperre (Staumauer mit Torhaus), liegt in Edertal-Hemfurth | 7 |
 | Edling | Bayern | 09187124 | – | – | noch nicht gesucht | – |
 | Efringen-Kirchen | Baden-Württemberg | 08336014 | – | – | noch nicht gesucht | – |
 | Egenhausen | Baden-Württemberg | 08235022 | – | – | noch nicht gesucht | – |
@@ -2456,7 +2456,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Eging a.See | Bayern | 09275120 | – | – | noch nicht gesucht | – |
 | Egling | Bayern | 09173120 | – | – | noch nicht gesucht | – |
 | Egling a.d.Paar | Bayern | 09181116 | – | – | noch nicht gesucht | – |
-| Egloffstein | Bayern | 09474124 | – | – | noch nicht gesucht | – |
+| Egloffstein | Bayern | 09474124 | 316358 | https://pixabay.com/de/photos/egloffstein-deutschland-stadt-dorf-316358/ | Pixabay-Lizenz; Ortsansicht Egloffstein (Titel nennt den Ort) | 8 |
 | Ehekirchen | Bayern | 09185127 | – | – | noch nicht gesucht | – |
 | Ehningen | Baden-Württemberg | 08115013 | – | – | noch nicht gesucht | – |
 | Ehrenberg (Rhön) | Hessen | 06631005 | – | – | noch nicht gesucht | – |
