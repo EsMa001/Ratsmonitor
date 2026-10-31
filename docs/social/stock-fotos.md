@@ -1492,7 +1492,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Eisfeld | Thüringen | 16069012 | – | – | noch nicht gesucht | – |
 | Ellrich | Thüringen | 16062005 | – | – | noch nicht gesucht | – |
 | Elsfleth | Niedersachsen | 03461004 | – | – | noch nicht gesucht | – |
-| Elsterberg | Sachsen | 14523100 | – | – | noch nicht gesucht | – |
+| Elsterberg | Sachsen | 14523100 | 574892 | https://pixabay.com/de/photos/burgruine-elsterberg-landschaft-574892/ | Pixabay-Lizenz; Burgruine Elsterberg, Landschaft (Martin008) | 9 |
 | Elsterwerda | Brandenburg | 12062124 | – | – | noch nicht gesucht | – |
 | Elstra | Sachsen | 14625130 | – | – | noch nicht gesucht | – |
 | Eltmann | Bayern | 09674133 | – | – | noch nicht gesucht | – |
@@ -1501,18 +1501,18 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Erbendorf | Bayern | 09377116 | – | – | noch nicht gesucht | – |
 | Erlenbach a.Main | Bayern | 09676122 | – | – | noch nicht gesucht | – |
 | Falkenstein/Harz | Sachsen-Anhalt | 15085110 | 1374837 | https://pixabay.com/photos/falkenstein-castle-monument-resin-1374837/ | Pixabay-Lizenz; Burg Falkenstein im Harz (der Titel schreibt "Resin" statt Harz) | 8 |
-| Fellbach | BW | 08119020 | – | – | noch nicht gesucht | – |
+| Fellbach | BW | 08119020 | 1665496 | https://pixabay.com/photos/kappelberg-viticulture-fellbach-1665496/ | Pixabay-Lizenz; Kappelberg, Weinberge bei Fellbach | 8 |
 | Florstadt | Hessen | 06440007 | – | – | noch nicht gesucht | – |
 | Forchtenberg | BW | 08126028 | – | – | noch nicht gesucht | – |
 | Frankenau | Hessen | 06635010 | – | – | noch nicht gesucht | – |
-| Frauenstein | Sachsen | 14522170 | – | – | noch nicht gesucht | – |
+| Frauenstein | Sachsen | 14522170 | 5170614 | https://pixabay.com/de/photos/frauenstein-burg-schloss-ruine-5170614/ | Pixabay-Lizenz; Burgruine Frauenstein (Erzgebirge) | 8 |
 | Freudenberg | BW | 08128039 | – | – | noch nicht gesucht | – |
 | Freystadt | Bayern | 09373126 | – | – | noch nicht gesucht | – |
 | Freyung | Bayern | 09272118 | – | – | noch nicht gesucht | – |
 | Fridingen an der Donau | BW | 08327016 | – | – | noch nicht gesucht | – |
 | Friedland | Brandenburg | 12067137 | – | – | noch nicht gesucht | – |
 | Friedrichroda | Thüringen | 16067019 | 2901540 | https://pixabay.com/de/photos/kristall-h%c3%b6hle-marienglas-2901540/ | Pixabay-Lizenz; Marienglashöhle (Kristallhöhle) | 5 |
-| Friedrichstadt | Schleswig-Holstein | 01054033 | – | – | noch nicht gesucht | – |
+| Friedrichstadt | Schleswig-Holstein | 01054033 | 3550368 | https://pixabay.com/de/photos/friedrichstadt-kanal-gracht-3550368/ | Pixabay-Lizenz; Gracht in Friedrichstadt | 8 |
 | Furth im Wald | Bayern | 09372126 | – | – | noch nicht gesucht | – |
 | Furtwangen im Schwarzwald | BW | 08326017 | 7397776 | https://pixabay.com/photos/witch-hole-mill-sawmill-mill-wheel-7397776/ | Pixabay-Lizenz; Hexenlochmühle (Sägemühle mit Mühlrad) | 5 |
 | Fürstenberg/Havel | Brandenburg | 12065084 | – | – | noch nicht gesucht | – |
@@ -1531,15 +1531,15 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Gersfeld (Rhön) | Hessen | 06631010 | 2806015 | https://pixabay.com/de/photos/fliegerdenkmal-wasserkuppe-denkmal-2806015/ | Pixabay-Lizenz; Fliegerdenkmal auf der Wasserkuppe. Der Ortsname steht nicht im Titel, die Wasserkuppe gehört aber zum Gebiet von Gersfeld. | 5 |
 | Gladenbach | Hessen | 06534010 | – | – | noch nicht gesucht | – |
 | Glashütte | Sachsen | 14628130 | – | – | noch nicht gesucht | – |
-| Glücksburg (Ostsee) | Schleswig-Holstein | 01059113 | – | – | noch nicht gesucht | – |
-| Glückstadt | Schleswig-Holstein | 01061029 | – | – | noch nicht gesucht | – |
+| Glücksburg (Ostsee) | Schleswig-Holstein | 01059113 | 4205492 | https://pixabay.com/de/photos/schloss-gl%C3%BCcksburg-wasserschloss-4205492/ | Pixabay-Lizenz; Schloss Glücksburg, Wasserschloss | 9 |
+| Glückstadt | Schleswig-Holstein | 01061029 | 3311124 | https://pixabay.com/de/photos/segelboot-gl%C3%BCckstadt-elbe-3311124/ | Pixabay-Lizenz; Segelboot auf der Elbe bei Glückstadt | 7 |
 | Goldkronach | Bayern | 09472143 | – | – | noch nicht gesucht | – |
 | Gommern | Sachsen-Anhalt | 15086055 | – | – | noch nicht gesucht | – |
 | Grafenau | Bayern | 09272120 | – | – | noch nicht gesucht | – |
 | Grafenwöhr | Bayern | 09374124 | – | – | noch nicht gesucht | – |
 | Grebenau | Hessen | 06535006 | – | – | noch nicht gesucht | – |
 | Grebenstein | Hessen | 06633010 | – | – | noch nicht gesucht | – |
-| Greding | Bayern | 09576122 | – | – | noch nicht gesucht | – |
+| Greding | Bayern | 09576122 | 204958 | https://pixabay.com/photos/greding-historical-city-204958/ | Pixabay-Lizenz; Historische Stadt Greding | 7 |
 | Greußen | Thüringen | 16065089 | – | – | noch nicht gesucht | – |
 | Grimmen | Mecklenburg-Vorpommern | 13073035 | – | – | noch nicht gesucht | – |
 | Groitzsch | Sachsen | 14729170 | – | – | noch nicht gesucht | – |
@@ -1547,7 +1547,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Großalmerode | Hessen | 06636004 | – | – | noch nicht gesucht | – |
 | Großbottwar | BW | 08118021 | – | – | noch nicht gesucht | – |
 | Großbreitenbach | Thüringen | 16070058 | – | – | noch nicht gesucht | – |
-| Großräschen | Brandenburg | 12066112 | – | – | noch nicht gesucht | – |
+| Großräschen | Brandenburg | 12066112 | 5442143 | https://pixabay.com/de/photos/hafen-gro%C3%9Fr%C3%A4schen-iba-terrassen-5442143/ | Pixabay-Lizenz; Hafen an den IBA-Terrassen am Großräschener See | 8 |
 | Großröhrsdorf | Sachsen | 14625200 | – | – | noch nicht gesucht | – |
 | Großschirma | Sachsen | 14522210 | – | – | noch nicht gesucht | – |
 | Gröditz | Sachsen | 14627050 | – | – | noch nicht gesucht | – |
@@ -1555,12 +1555,12 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Grünsfeld | BW | 08128047 | – | – | noch nicht gesucht | – |
 | Gudensberg | Hessen | 06634007 | 748470 | https://pixabay.com/de/photos/gudensberg-grudda-schaf-nordhessen-748470/ | Pixabay-Lizenz; Gudensberg ("Grudda") mit Schaf, Nordhessen | 6 |
 | Gundelsheim | BW | 08125039 | – | – | noch nicht gesucht | – |
-| Güglingen | BW | 08125038 | – | – | noch nicht gesucht | – |
+| Güglingen | BW | 08125038 | 3670033 | https://pixabay.com/en/blankenhorn-burgruine-castle-ruin-3670033 | Pixabay-Lizenz; Burgruine Blankenhorn (Seitentitel "Medieval castle ruin in Germany", Tag "Güglingen") | 6 |
 | Hainichen | Sachsen | 14522230 | – | – | noch nicht gesucht | – |
 | Haiterbach | BW | 08235032 | – | – | noch nicht gesucht | – |
 | Hallenberg | NRW | 05958020 | – | – | noch nicht gesucht | – |
 | Hallstadt | Bayern | 09471140 | – | – | noch nicht gesucht | – |
-| Harburg (Schwaben) | Bayern | 09779155 | – | – | noch nicht gesucht | – |
+| Harburg (Schwaben) | Bayern | 09779155 | 4881853 | https://pixabay.com/photos/harburg-small-town-castle-river-4881853/ | Pixabay-Lizenz; Burg Harburg und Ort an der Wörnitz | 8 |
 | Hardegsen | Niedersachsen | 03155005 | – | – | noch nicht gesucht | – |
 | Hartenstein | Sachsen | 14524090 | – | – | noch nicht gesucht | – |
 | Hartha | Sachsen | 14522250 | – | – | noch nicht gesucht | – |
