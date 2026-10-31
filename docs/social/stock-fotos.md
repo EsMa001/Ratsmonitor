@@ -2946,7 +2946,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Kirchheim am Neckar | Baden-Württemberg | 08118040 | – | – | noch nicht gesucht | – |
 | Kirchheim am Ries | Baden-Württemberg | 08136037 | – | – | noch nicht gesucht | – |
 | Kirchroth | Bayern | 09278141 | – | – | noch nicht gesucht | – |
-| Kirchzell | Bayern | 09676131 | – | – | noch nicht gesucht | – |
+| Kirchzell | Bayern | 09676131 | 7961427 | https://pixabay.com/de/photos/deutschland-bayern-odenwald-7961427/ | Pixabay-Lizenz; Titel "Deutschland, Bayern, Odenwald, Kirchzell" (Fotograf JoakimMosebach). Weitere Fotos desselben Fotografen: 7961428 und 7961434 (gleicher Titel), 7961429 (Wildenburg). | 7 |
 | Kißlegg | Baden-Württemberg | 08436052 | – | – | noch nicht gesucht | – |
 | Kleines Wiesental | Baden-Württemberg | 08336107 | – | – | noch nicht gesucht | – |
 | Kleinostheim | Bayern | 09671136 | – | – | noch nicht gesucht | – |
