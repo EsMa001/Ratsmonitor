@@ -769,16 +769,16 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 |---|---|---|---|---|---|---|
 | 706 | Müllheim im Markgräflerland | 08315074 | – | – | kein Bild gefunden | – |
 | 711 | Bad Pyrmont | 03252003 | 27161997 | https://www.pexels.com/photo/der-hyllige-born-in-bad-pyrmont-in-germany-27161997/ | Pexels-Lizenz, keine Namensnennung nötig (Hyllige Born) | 7 |
-| 714 | Moosburg a.d.Isar | 09178143 | – | – | kein Bild gefunden | – |
+| 714 | Moosburg a.d.Isar | 09178143 | 3625700 | https://pixabay.com/cs/photos/moosburg-m%C4%9Bsto-kostel-st-kastulus-3625700/ | Pixabay-Lizenz; Kirche St. Kastulus (Wahrzeichen) | 8 |
 | 715 | Donauwörth | 09779131 | 1710359 | https://pixabay.com/photos/donauw%C3%B6rth-church-catholic-1710359/ | Pixabay-Lizenz, keine Namensnennung nötig (Kirche in Donauwörth) | 7 |
 | 716 | Lebach | 10044112 | – | – | kein Bild gefunden | – |
 | 717 | Borna | 14729050 | – | – | kein Bild gefunden | – |
 | 718 | Bad Friedrichshall | 08125005 | – | – | kein Bild gefunden | – |
 | 719 | Dillingen a.d.Donau | 09773125 | – | – | kein Bild gefunden | – |
 | 721 | Engelskirchen | 05374008 | – | – | kein Bild gefunden | – |
-| 722 | Ennigerloh | 05570020 | – | – | kein Bild gefunden | – |
+| 722 | Ennigerloh | 05570020 | 2274972 | https://pixabay.com/de/photos/ennigerloh-feuerwehr-%C3%BCbung-2274972/ | Pixabay-Lizenz; Feuerwehrübung, kein Wahrzeichenmotiv | 3 |
 | 724 | Hechingen | 08417031 | 3677696 | https://pixabay.com/de/photos/burg-hohenzollern-schw%C3%A4bische-alb-3677696/ | Pixabay-Lizenz, keine Namensnennung nötig (Burg Hohenzollern bei Hechingen, Ortsbezug nur indirekt) | 5 |
-| 725 | Bad Tölz | 09173112 | – | – | kein Bild gefunden | – |
+| 725 | Bad Tölz | 09173112 | 1730715 | https://pixabay.com/photos/bridge-isar-bad-t%C3%B6lz-bavaria-1730715/ | Pixabay-Lizenz; Isarbrücke in Bad Tölz | 7 |
 | 727 | Pfullingen | 08415059 | – | – | kein Bild gefunden | – |
 | 728 | Mölln | 01053090 | 4731627 | https://pixabay.com/photos/till-eulenspiegel-monument-m%C3%B6lln-4731627/ | Pixabay-Lizenz, keine Namensnennung nötig (Till-Eulenspiegel-Denkmal Mölln) | 6 |
 | 730 | Marsberg | 05958024 | – | – | kein Bild gefunden | – |
@@ -806,7 +806,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 766 | Oschersleben (Bode) | 15083415 | – | – | kein Bild gefunden | – |
 | 767 | Hemmingen | 03241007 | – | – | kein Bild gefunden | – |
 | 768 | Hohe Börde | 15083298 | – | – | kein Bild gefunden | – |
-| 771 | Eschwege | 06636003 | – | – | kein Bild gefunden | – |
+| 771 | Eschwege | 06636003 | 2841862 | https://pixabay.com/de/photos/werra-mei%C3%9Fner-eschwege-hessen-2841862/ | Pixabay-Lizenz; "Historische Fachwerkhäuser in Eschwege" (Fachwerk, Altstadt) | 7 |
 | 773 | Bad Driburg | 05762004 | – | – | kein Bild gefunden | – |
 | 774 | Crimmitschau | 14524030 | – | – | kein Bild gefunden | – |
 | 778 | Lahnstein | 07141075 | 2169056 | https://pixabay.com/de/photos/burg-lahneck-lahnstein-schloss-2169056/ | Pixabay-Lizenz; Titel "Burg Lahneck Lahnstein" | 8 |
@@ -820,7 +820,7 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 793 | Heusweiler | 10041513 | – | – | kein Bild gefunden | – |
 | 795 | Glinde | 01062018 | – | – | kein Bild gefunden | – |
 | 798 | Illertissen | 09775129 | – | – | kein Bild gefunden | – |
-| 800 | Bad Reichenhall | 09172114 | – | – | kein Bild gefunden | – |
+| 800 | Bad Reichenhall | 09172114 | 210566 | https://pixabay.com/photos/bad-reichenhall-kurpark-palm-trees-210566/ | Pixabay-Lizenz; Kurpark mit Palmen, Ortsbezug im Titel | 6 |
 | 801 | Buchen (Odenwald) | 08225014 | – | – | kein Bild gefunden | – |
 | 802 | Bad Münstereifel | 05366004 | – | – | kein Bild gefunden | – |
 | 803 | Pfinztal | 08215101 | 2183289 | https://pixabay.com/de/photos/sonnenaufgang-landschaft-pfinztal-2183289/ | Pixabay-Lizenz (Sonnenaufgang, Landschaft, Pfinztal) | 6 |
@@ -839,14 +839,14 @@ Rangbasis hier: laufende Nummer der Städtetag-Liste (Zensus 2022), nicht die Wi
 | 822 | Bexbach | 10045111 | – | – | kein Bild gefunden | – |
 | 823 | Alzenau | 09671111 | 1927876 | https://pixabay.com/de/photos/alzenau-unterfranken-bayern-1927876/ | Pixabay-Lizenz (Alzenau Unterfranken Bayern) | 7 |
 | 824 | Diepholz | 03251012 | – | – | kein Bild gefunden | – |
-| 827 | Holzwickede | 05978016 | – | – | kein Bild gefunden | – |
+| 827 | Holzwickede | 05978016 | 4837380 | https://pixabay.com/fi/photos/opherdicke-linna-unna-4837380/ | Pixabay-Lizenz; Schloss Opherdicke (Ortsteil von Holzwickede), Titel nennt Opherdicke und Unna, nicht Holzwickede selbst | 5 |
 | 828 | Garching b.München | 09184119 | – | – | kein Bild gefunden | – |
 | 829 | Bad Säckingen | 08337096 | – | – | kein Bild gefunden (nur Suchseiten) | – |
 | 832 | Frankenberg (Eder) | 06635011 | 2225323 | https://pixabay.com/nl/frankenberg-hessen-duitsland-2225323/ | Pixabay-Lizenz (Titel „Frankenberg, Hessen, Duitsland“) | 7 |
 | 833 | Bürstadt | 06431005 | – | – | kein Bild gefunden | – |
 | 834 | Ismaning | 09184130 | – | – | kein Bild gefunden | – |
 | 835 | Nümbrecht | 05374032 | 2745989 | https://pixabay.com/de/photos/n%c3%bcmbrecht-schloss-homburg-2745989/ | Pixabay-Lizenz (Schloss Homburg, Nümbrecht) | 7 |
-| 836 | Bendorf | 07137203 | – | – | kein Bild gefunden | – |
+| 836 | Bendorf | 07137203 | 5367867 | https://pixabay.com/photos/abbey-sayn-bendorf-germany-building-5367867/ | Pixabay-Lizenz; Abtei Sayn im Morgennebel, Titel/URL nennen Bendorf | 6 |
 | 839 | Damme | 03460002 | – | – | kein Bild gefunden | – |
 | 840 | Oberasbach | 09573122 | – | – | kein Bild gefunden | – |
 | 841 | Babenhausen | 06432002 | 1837699 | https://pixabay.com/photos/church-st-andreas-church-babenhausen-1837699/ | Pixabay-Lizenz (Kirche St. Andreas; Babenhausen nicht eindeutig, mehrere Orte gleichen Namens) | 5 |
