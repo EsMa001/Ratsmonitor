@@ -2361,7 +2361,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Cunewalde | Sachsen | 14625090 | – | – | noch nicht gesucht | – |
 | Cölbe | Hessen | 06534006 | – | – | noch nicht gesucht | – |
 | Dachsberg (Südschwarzwald) | Baden-Württemberg | 08337027 | – | – | noch nicht gesucht | – |
-| Dahme | Schleswig-Holstein | 01055010 | – | – | noch nicht gesucht | – |
+| Dahme | Schleswig-Holstein | 01055010 | 7281240 | https://pixabay.com/de/photos/leuchtturm-ostsee-dahme-deutschland-7281240/ | Pixabay-Lizenz; Leuchtturm in Dahme an der Ostsee | 8 |
 | Daisendorf | Baden-Württemberg | 08435010 | – | – | noch nicht gesucht | – |
 | Dauchingen | Baden-Württemberg | 08326010 | – | – | noch nicht gesucht | – |
 | Dautmergen | Baden-Württemberg | 08417014 | – | – | noch nicht gesucht | – |
@@ -2403,7 +2403,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Dorfprozelten | Bayern | 09676118 | – | – | noch nicht gesucht | – |
 | Dormettingen | Baden-Württemberg | 08417015 | – | – | noch nicht gesucht | – |
 | Dornburg | Hessen | 06533004 | – | – | noch nicht gesucht | – |
-| Dornstadt | Baden-Württemberg | 08425031 | – | – | noch nicht gesucht | – |
+| Dornstadt | Baden-Württemberg | 08425031 | 802129 | https://pixabay.com/photos/church-graveyard-dornstadt-802129/ | Pixabay-Lizenz; Kirche und Friedhof in Dornstadt (laut Schlagwort) | 6 |
 | Dotternhausen | Baden-Württemberg | 08417016 | – | – | noch nicht gesucht | – |
 | Drachselsried | Bayern | 09276120 | – | – | noch nicht gesucht | – |
 | Drackenstein | Baden-Württemberg | 08117016 | – | – | noch nicht gesucht | – |
@@ -2412,7 +2412,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Dummerstorf | Mecklenburg-Vorpommern | 13072029 | – | – | noch nicht gesucht | – |
 | Dunningen | Baden-Württemberg | 08325014 | – | – | noch nicht gesucht | – |
 | Durach | Bayern | 09780120 | – | – | noch nicht gesucht | – |
-| Durbach | Baden-Württemberg | 08317021 | – | – | noch nicht gesucht | – |
+| Durbach | Baden-Württemberg | 08317021 | 234351 | https://pixabay.com/photos/vineyard-wine-durbach-black-forest-234351/ | Pixabay-Lizenz; Weinberg bei Durbach, Schwarzwald | 7 |
 | Durchhausen | Baden-Württemberg | 08327012 | – | – | noch nicht gesucht | – |
 | Durlangen | Baden-Württemberg | 08136015 | – | – | noch nicht gesucht | – |
 | Dußlingen | Baden-Württemberg | 08416011 | – | – | noch nicht gesucht | – |
