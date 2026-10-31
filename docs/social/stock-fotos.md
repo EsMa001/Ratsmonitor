@@ -453,7 +453,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 
 ### Rang 410 bis 567 (Teilstand)
 
-Noch nicht durchsucht: Rang 568–711 (Wellen folgen); einzelne Lücken sind Orte, für die kein Treffer ohne Namensnennung gefunden wurde.
+Noch nicht durchsucht: Rang 668–711. Orte mit „kein Bild gefunden“ wurden durchsucht, ohne dass ein Treffer ohne Namensnennung auftauchte.
 
 | Rang | Ort | ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|
@@ -616,6 +616,106 @@ Noch nicht durchsucht: Rang 568–711 (Wellen folgen); einzelne Lücken sind Ort
 | 565 | Döbeln | – | – | kein Bild gefunden | – |
 | 566 | Starnberg | 1850767 | https://pixabay.com/photos/starnberger-lake-starnberg-lake-1850767/ | Pixabay-Lizenz, Starnberger See | 6 |
 | 567 | Husum | 2299109 | https://pixabay.com/en/husum-port-nordfriesland-city-2299109/ | Pixabay-Lizenz, Hafen | 7 |
+| 568 | Korbach | – | – | kein Bild gefunden | – |
+| 569 | Gelnhausen | 2501895 | https://pixabay.com/photos/unterer-marktplatz-gelnhausen-hesse-2501895/ | Pixabay-Lizenz, Unterer Marktplatz | 7 |
+| 570 | Salzwedel | – | – | kein Bild gefunden | – |
+| 571 | Kaltenkirchen | – | – | kein Bild gefunden | – |
+| 572 | Hann. Münden | 3784052 | https://pixabay.com/de/photos/welfen-schloss-hann-m%C3%BCnden-stadt-3784052/ | Pixabay-Lizenz, Welfenschloss | 7 |
+| 573 | Sonneberg | – | – | kein Bild gefunden | – |
+| 574 | Mosbach | – | – | kein Bild gefunden | – |
+| 575 | Dillenburg | – | – | kein Bild gefunden | – |
+| 576 | Senftenberg | 17178541 | https://www.pexels.com/photo/rostiger-nagel-by-bridge-in-senftenberg-germany-17178541/ | Pexels-Lizenz, Detail an Brücke, wenig repräsentativ | 4 |
+| 577 | Netphen | – | – | kein Bild gefunden | – |
+| 578 | Leutkirch im Allgäu | – | – | kein Bild gefunden | – |
+| 579 | Warburg | – | – | kein Bild gefunden | – |
+| 580 | Quedlinburg | 18947084 | https://www.pexels.com/photo/town-hall-in-quedlinburg-18947084/ | Pexels-Lizenz, Rathaus | 8 |
+| 581 | Gersthofen | – | – | kein Bild gefunden | – |
+| 582 | Wertheim | – | – | kein Bild gefunden | – |
+| 583 | Rastede | – | – | kein Bild gefunden | – |
+| 584 | Karben | – | – | kein Bild gefunden | – |
+| 585 | Bad Soden am Taunus | – | – | kein Bild gefunden | – |
+| 586 | Vreden | – | – | kein Bild gefunden | – |
+| 587 | Überlingen | 453804 | https://pixabay.com/photos/%C3%BCberlingen-lake-constance-panorama-453804/ | Pixabay-Lizenz, Panorama Bodensee | 8 |
+| 588 | Apolda | – | – | kein Bild gefunden | – |
+| 589 | Weilheim in Oberbayern | – | – | kein Bild gefunden | – |
+| 590 | Bad Kissingen | 1010874 | https://pixabay.com/de/photos/bad-kissingen-wasser-br%C3%BCcken-blumen-1010874/ | Pixabay-Lizenz, Wasser, Brücken, Blumen | 7 |
+| 591 | Bad Salzungen | 2246048 | https://pixabay.com/photos/bad-salzungen-thuringia-town-hall-2246048/ | Pixabay-Lizenz, Rathaus und Marktplatz | 8 |
+| 592 | Wallenhorst | – | – | kein Bild gefunden | – |
+| 593 | Nagold | – | – | kein Bild gefunden | – |
+| 594 | Lengerich | – | – | kein Bild gefunden | – |
+| 595 | Friesoythe | – | – | kein Bild gefunden | – |
+| 596 | Kitzingen | – | – | kein Bild gefunden | – |
+| 597 | Edewecht | – | – | kein Bild gefunden | – |
+| 598 | Senden (Bayern) | – | – | kein Bild gefunden | – |
+| 599 | Neusäß | – | – | kein Bild gefunden | – |
+| 600 | Laupheim | 228233 | https://pixabay.com/id/photos/jalan-castle-avenue-laupheim-228233/ | Pixabay-Lizenz, Castle Avenue | 6 |
+| 601 | Herdecke | – | – | kein Bild gefunden | – |
+| 602 | Burg bei Magdeburg | – | – | kein Bild gefunden | – |
+| 603 | Rotenburg (Wümme) | 2538981 | https://pixabay.com/da/photos/bullensee-rotenburg-w%C3%BCmme-2538981/ | Pixabay-Lizenz, Bullensee | 5 |
+| 604 | Stadthagen | 540567 | https://pixabay.com/photos/stadthagen-lower-saxony-540567/ | Pixabay-Lizenz, Schlosshof | 7 |
+| 605 | Lutherstadt Eisleben | – | – | kein Bild gefunden | – |
+| 606 | Büdingen | 350676 | https://pixabay.com/photos/b%C3%BCdingen-jerusalem-gate-fortress-350676/ | Pixabay-Lizenz, Jerusalemer Tor | 7 |
+| 607 | Haar | – | – | kein Bild gefunden | – |
+| 608 | Metzingen | – | – | kein Bild gefunden | – |
+| 609 | Neu Wulmstorf | – | – | kein Bild gefunden | – |
+| 610 | Donaueschingen | 2659782 | https://pixabay.com/photos/the-source-of-the-danube-2659782/ | Pixabay-Lizenz, Donauquelle, Ortsbezug indirekt | 4 |
+| 611 | Ottobrunn | – | – | kein Bild gefunden | – |
+| 612 | Bad Rappenau | – | – | kein Bild gefunden | – |
+| 613 | Versmold | – | – | kein Bild gefunden | – |
+| 614 | Eppingen | 1334648 | https://pixabay.com/illustrations/hge-eppingen-architecture-school-1334648/ | Pixabay-Lizenz, Illustration eines Schulgebäudes | 3 |
+| 615 | Radevormwald | – | – | kein Bild gefunden | – |
+| 616 | Ilsede | – | – | kein Bild gefunden | – |
+| 617 | Quickborn | – | – | kein Bild gefunden | – |
+| 618 | Waldkirch | 720831 | https://pixabay.com/photos/waldkirch-village-black-forest-720831/ | Pixabay-Lizenz, Blick auf Waldkirch im Schwarzwald | 7 |
+| 619 | Heide (Holstein) | – | – | kein Bild gefunden | – |
+| 620 | Eschborn | – | – | kein Bild gefunden | – |
+| 621 | Karlsfeld | – | – | kein Bild gefunden | – |
+| 622 | Schwetzingen | 3749037 | https://pixabay.com/photos/schwetzingen-palace-garden-3749037/ | Pixabay-Lizenz, Schloss und Schlossgarten | 8 |
+| 623 | Gardelegen | – | – | kein Bild gefunden | – |
+| 624 | Elsdorf (Rheinland) | – | – | kein Bild gefunden | – |
+| 625 | Halle (Westfalen) | – | – | kein Bild gefunden | – |
+| 626 | Glauchau | – | – | kein Bild gefunden | – |
+| 627 | Aichach | 197631 | https://pixabay.com/de/photos/aichach-stadt-bayern-historisch-197631/ | Pixabay-Lizenz, historische Ansicht | 7 |
+| 628 | Sonthofen | – | – | kein Bild gefunden | – |
+| 629 | Flörsheim am Main | – | – | kein Bild gefunden | – |
+| 630 | Soltau | 33661131 | https://www.pexels.com/photo/charming-street-view-in-soltau-germany-33661131/ | Pexels-Lizenz, Straßenansicht | 8 |
+| 631 | Eislingen/Fils | – | – | kein Bild gefunden | – |
+| 632 | Hockenheim | 836245 | https://pixabay.com/photos/water-tower-hockenheim-germany-836245/ | Pixabay-Lizenz, Wasserturm | 6 |
+| 633 | Bad Harzburg | 3020001 | https://pixabay.com/de/photos/waldwipfelpfad-harz-bad-harzburg-3020001/ | Pixabay-Lizenz, Waldwipfelpfad | 7 |
+| 634 | Mühldorf am Inn | – | – | kein Bild gefunden | – |
+| 635 | Geseke | – | – | kein Bild gefunden | – |
+| 636 | Bad Krozingen | – | – | kein Bild gefunden | – |
+| 637 | Westoverledingen | – | – | kein Bild gefunden | – |
+| 638 | Lindlar | 2687036 | https://pixabay.com/de/photos/burg-ruine-wasserburg-mittelalter-2687036/ | Pixabay-Lizenz, Burgruine, Ortsbezug unklar | 3 |
+| 639 | Spremberg | – | – | kein Bild gefunden | – |
+| 640 | Xanten | 2424098 | https://pixabay.com/photos/city-cityscape-xanten-germany-2424098/ | Pixabay-Lizenz, Park und Dom | 8 |
+| 641 | Seligenstadt | – | – | kein Bild gefunden | – |
+| 642 | Stadtallendorf | – | – | kein Bild gefunden | – |
+| 643 | Zerbst | 5118088 | https://pixabay.com/fr/photos/zerbst-roland-saxe-anhalt-anhalt-5118088/ | Pixabay-Lizenz, Roland von Zerbst | 7 |
+| 644 | Eckernförde | 2392657 | https://pixabay.com/photos/eckernf%c3%b6rde-the-outer-harbor-2392657/ | Pixabay-Lizenz, Außenhafen | 7 |
+| 645 | Günzburg | 392128 | https://pixabay.com/photos/legoland-lego-g%c3%bcnzburg-392128/ | Pixabay-Lizenz, Legoland (kein Stadtbild) | 5 |
+| 646 | Büren | – | – | kein Bild gefunden | – |
+| 647 | Rees | 5861467 | https://pixabay.com/photos/rees-niederrhein-rhine-promenade-5861467/ | Pixabay-Lizenz, Rhein-Promenade | 8 |
+| 648 | Osterode am Harz | – | – | kein Bild gefunden | – |
+| 649 | Waghäusel | 959129 | https://pixabay.com/photos/silo-sugar-sugar-silo-wagh%C3%A4usel-959129/ | Pixabay-Lizenz, Zuckersilo | 5 |
+| 650 | Zossen | – | – | kein Bild gefunden | – |
+| 651 | Puchheim | – | – | kein Bild gefunden | – |
+| 652 | Sondershausen | 1578214 | https://pixabay.com/de/photos/f%C3%B6rderturm-sondershausen-bergwerk-1578214/ | Pixabay-Lizenz, Förderturm Bergwerk | 7 |
+| 653 | Gauting | – | – | kein Bild gefunden | – |
+| 654 | Waren (Müritz) | – | – | kein Bild gefunden | – |
+| 655 | Traunstein | – | – | kein Bild gefunden (Treffer zeigen den Berg in Österreich) | – |
+| 656 | Wildeshausen | – | – | kein Bild gefunden | – |
+| 657 | Schramberg | – | – | kein Bild gefunden | – |
+| 658 | Wipperfürth | – | – | kein Bild gefunden | – |
+| 659 | Traunreut | – | – | kein Bild gefunden | – |
+| 660 | Wülfrath | – | – | kein Bild gefunden | – |
+| 661 | Germersheim | 612476 | https://pixabay.com/de/photos/fr%C3%BChling-germersheim-sigurd-r%C3%B6ber-612476/ | Pixabay-Lizenz, Frühling | 6 |
+| 662 | Groß-Umstadt | – | – | kein Bild gefunden | – |
+| 663 | Zülpich | 1281074 | https://pixabay.com/de/photos/z%C3%BClpich-gartenschaupark-garten-park-1281074/ | Pixabay-Lizenz, Gartenschaupark | 6 |
+| 664 | Nördlingen | 29174227 | https://www.pexels.com/photo/aerial-view-of-nordlingen-s-historic-tiled-rooftops-29174227/ | Pexels-Lizenz, Luftbild historische Dächer | 8 |
+| 665 | Mössingen | 3vlGNkDep4E | https://unsplash.com/photos/white-vans-parked-in-mossingen-3vlGNkDep4E | Unsplash-Lizenz, geparkte Transporter, wenig repräsentativ | 3 |
+| 666 | Senden (Westfalen) | – | – | kein Bild gefunden | – |
+| 667 | Herborn | – | – | kein Bild gefunden | – |
 
 ## Nicht verwenden
 
