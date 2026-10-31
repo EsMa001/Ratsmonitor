@@ -1713,16 +1713,16 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Oberkochen | BW | 08136050 | – | – | noch nicht gesucht | – |
 | Oberlungwitz | Sachsen | 14524230 | – | – | noch nicht gesucht | – |
 | Obernburg a.Main | Bayern | 09676145 | – | – | noch nicht gesucht | – |
-| Obernkirchen | Niedersachsen | 03257028 | – | – | noch nicht gesucht | – |
+| Obernkirchen | Niedersachsen | 03257028 | 1612472 | https://pixabay.com/photos/obernkirchen-sandstone-quarry-1612472/ | Pixabay-Lizenz; Obernkirchener Sandsteinbruch | 8 |
 | Oberriexingen | BW | 08118059 | – | – | noch nicht gesucht | – |
 | Oberviechtach | Bayern | 09376151 | – | – | noch nicht gesucht | – |
-| Oberwiesenthal | Sachsen | 14521440 | – | – | noch nicht gesucht | – |
+| Oberwiesenthal | Sachsen | 14521440 | 459287 | https://pixabay.com/p-459287/ | Pixabay-Lizenz; Winter, Frost, Fichtelberg (Ortsbezug nur über den Fichtelberg im Titel, Kurzlink) | 6 |
 | Oberzent | Hessen | 06437016 | – | – | noch nicht gesucht | – |
-| Ochsenhausen | BW | 08426087 | – | – | noch nicht gesucht | – |
-| Oederan | Sachsen | 14522440 | – | – | noch nicht gesucht | – |
+| Ochsenhausen | BW | 08426087 | 4485444 | https://pixabay.com/de/photos/ochsenhausen-turm-alt-historisch-4485444/ | Pixabay-Lizenz; Turm, alt, historisch | 7 |
+| Oederan | Sachsen | 14522440 | 1843936 | https://pixabay.com/photos/oederan-town-hall-tower-1843936/ | Pixabay-Lizenz; Rathausturm mit Uhr | 8 |
 | Oldenburg in Holstein | Schleswig-Holstein | 01055033 | – | – | noch nicht gesucht | – |
 | Oppenau | BW | 08317098 | – | – | noch nicht gesucht | – |
-| Oranienbaum-Wörlitz | Sachsen-Anhalt | 15091241 | – | – | noch nicht gesucht | – |
+| Oranienbaum-Wörlitz | Sachsen-Anhalt | 15091241 | 3547728 | https://pixabay.com/de/photos/landschaft-w%C3%B6rlitz-park-flu%C3%9F-natur-3547728/ | Pixabay-Lizenz; Pavillon am See im Wörlitzer Park | 7 |
 | Ortenberg | Hessen | 06440019 | – | – | noch nicht gesucht | – |
 | Osterburg (Altmark) | Sachsen-Anhalt | 15090415 | – | – | noch nicht gesucht | – |
 | Osterburken | BW | 08225075 | – | – | noch nicht gesucht | – |
@@ -1730,13 +1730,13 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Owen | BW | 08116054 | – | – | noch nicht gesucht | – |
 | Pappenheim | Bayern | 09577158 | – | – | noch nicht gesucht | – |
 | Parsberg | Bayern | 09373151 | – | – | noch nicht gesucht | – |
-| Pasewalk | Mecklenburg-Vorpommern | 13075105 | – | – | noch nicht gesucht | – |
+| Pasewalk | Mecklenburg-Vorpommern | 13075105 | 3432745 | https://pixabay.com/photos/loc-br91-pasewalk-locomotive-shed-3432745/ | Pixabay-Lizenz; Dampflok BR 91 im Lokschuppen Pasewalk (nur Ortsbezug im Titel, kein Stadtbild) | 4 |
 | Pausa-Mühltroff | Sachsen | 14523310 | – | – | noch nicht gesucht | – |
 | Penig | Sachsen | 14522460 | – | – | noch nicht gesucht | – |
 | Plön | Schleswig-Holstein | 01057057 | – | – | noch nicht gesucht | – |
-| Pockau-Lengefeld | Sachsen | 14521495 | – | – | noch nicht gesucht | – |
+| Pockau-Lengefeld | Sachsen | 14521495 | 854392 | https://pixabay.com/de/photos/lengefeld-erzgebirge-wasserspiel-854392/ | Pixabay-Lizenz; Wasserspiel in Lengefeld (Erzgebirge) | 5 |
 | Pohlheim | Hessen | 06531014 | – | – | noch nicht gesucht | – |
-| Pottenstein | Bayern | 09472179 | – | – | noch nicht gesucht | – |
+| Pottenstein | Bayern | 09472179 | 1142753 | https://pixabay.com/de/photos/burg-pottenstein-baum-ruine-alt-1142753/ | Pixabay-Lizenz; Burg Pottenstein (Ruine), Fränkische Schweiz | 7 |
 | Preetz | Schleswig-Holstein | 01057062 | – | – | noch nicht gesucht | – |
 | Premnitz | Brandenburg | 12063244 | – | – | noch nicht gesucht | – |
 | Prenzlau | Brandenburg | 12073452 | – | – | noch nicht gesucht | – |
@@ -1745,7 +1745,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Pritzwalk | Brandenburg | 12070316 | – | – | noch nicht gesucht | – |
 | Putbus | Mecklenburg-Vorpommern | 13073070 | – | – | noch nicht gesucht | – |
 | Pößneck | Thüringen | 16075085 | – | – | noch nicht gesucht | – |
-| Püttlingen | Saarland | 10041515 | – | – | noch nicht gesucht | – |
+| Püttlingen | Saarland | 10041515 | 5288265 | https://pixabay.com/de/photos/k%C3%B6llerbach-p%C3%BCttlingen-saarland-5288265/ | Pixabay-Lizenz; Köllerbach, Püttlingen, Saarland (Stadtteil) | 6 |
 | Querfurt | Sachsen-Anhalt | 15088305 | – | – | noch nicht gesucht | – |
 | Rabenau | Sachsen | 14628300 | – | – | noch nicht gesucht | – |
 | Radeberg | Sachsen | 14625480 | – | – | noch nicht gesucht | – |
