@@ -115,3 +115,13 @@ test('Doppelte Termine entfallen, Statuswörter sind keine Ergebnisse', () => {
  const s=videoSheet({title:'Thema',status:'approved',events:e,ruleSummary:{short:'Der Rat beschließt das Thema für alle Beteiligten im Ort.'}},{regionName:'Ort',today:'2026-10-31',titleShort:'Thema'});
  assert.deepEqual(s.verlauf.map(v=>[v.committee,v.result]),[['Ausschuss',null],['Stadtrat',null]]);
 });
+
+test('Starkregenschutz: Abkürzungen trennen keinen Satz, Kürzung nach „wird gestellt“, Hinweis „Vorschlag“', () => {
+ const t={title:'Starkregenschutz Weihgarten',status:'unknown',events:[{date:'2026-10-13',committee:'Rat der Stadt',result:'In Beratung'}],theme:{id:'umwelt'},
+  ruleSummary:{short:'Der Förderantrag bei der Bezirksregierung Münster zur Durchführung der Maßnahmen zum Starkregenschutz Weihgarten wird gestellt, die notwendigen Mittel im Haushalt eingestellt und die erforderlichen Planungen einschl. Bauüberwachung, Gutachten, UVP Prüfung bis zur Lph 9 (HOAI) beauftragt, die Baumaßnahme ausgeschrieben und an den günstigsten Bieter vergeben.'}};
+ const s=videoSheet(t,{regionName:'Billerbeck',today:'2026-10-31'});
+ assert.equal(s.zitat,'Der Förderantrag bei der Bezirksregierung Münster zur Durchführung der Maßnahmen zum Starkregenschutz Weihgarten wird gestellt […]');
+ assert.equal(s.zitatHinweis,'Vorschlag aus der Vorlage');
+ assert.equal(s.themaIcon,'sun');
+ assert.equal(s.sprechtext[1],'Stand offen in Billerbeck: Starkregenschutz Weihgarten.');
+});

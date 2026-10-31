@@ -52,10 +52,10 @@ export function spoken(text){
 
 const MAX_QUOTE=160;
 const STRONG=/\b(beauftragt|beschließt|beschlossen|genehmigt|bestätigt|empfiehlt|zugestimmt|stimmt)\b/i;
-const PROPOSAL=/\b(beschließt|empfiehlt|beauftragt|genehmigt|bestätigt|zugestimmt|beschlossen|vorgesehen|soll|sollen)\b/i;
+const PROPOSAL=/\b(beschließt|empfiehlt|beauftragt|genehmigt|bestätigt|zugestimmt|beschlossen|vorgesehen|soll|sollen)\b|\b(?:wird|werden)\s+(?:\S+\s+){0,6}?(?:gestellt|beauftragt|eingestellt|vergeben|ausgeschrieben|errichtet|gebaut|umgesetzt|angelegt|erteilt|bewilligt|durchgeführt)\b/i;
 const DECISION=/\b(bestätigt|beschließt|beschlossen|genehmigt|beauftragt|empfiehlt|stimmt|wird|werden|soll|sollen|ist vorgesehen)\b/i;
 /** Auszug in Sätze zerlegen: an „[…]“ und an Satzenden (Satzende = Punkt, dann Leerzeichen und Großbuchstabe oder Anführungszeichen) */
-const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])(?<!\b\d{1,2}\.)\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
+const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])(?<!\b\d{1,2}\.)(?<!\b(?:einschl|ggfls|ggf|bzw|ca|usw|Nr|Abs|Art|Zt|z|u|d|inkl|evtl|vgl|Std|Dr|Prof|Hr|Fr|ff|mind|max|insb|ggü|sog|zzgl|exkl)\.)\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
 /** Zitat: wörtlich aus dem Auszug. Erster Entscheidungssatz (Kernsatz zuerst, dann Auszug) mit höchstens 160 Zeichen; ist er länger,
  *  wird er vor einem Bindewort gekürzt und mit „[…]“ beendet. Nichts wird umformuliert. */
 export function pickQuote(summary,exclude=[]){
@@ -66,7 +66,10 @@ export function pickQuote(summary,exclude=[]){
  if(first.length<=MAX_QUOTE)return first;
  // zu lang: zuerst einen langen Satzanfang vor dem Entscheidungsverb (Gremiumsname) mit […] auslassen, damit der Beschluss selbst vollständig bleibt
  const sv=first.match(STRONG);
- if(sv&&sv.index>45){const cand=first.slice(0,sv.index).trim().split(/\s+/).slice(0,2).join(' ')+' […] '+first.slice(sv.index);if(cand.length<=MAX_QUOTE)return cand;}
+ if(sv&&sv.index>45&&!/;|\b(?:wird|werden|ist|sind)\b/.test(first.slice(0,sv.index))){const cand=first.slice(0,sv.index).trim().split(/\s+/).slice(0,2).join(' ')+' […] '+first.slice(sv.index);if(cand.length<=MAX_QUOTE)return cand;}
+ // dann nach dem ersten Komma hinter einem Verb kürzen („… wird gestellt […]“), wenn der Satzteil davor ein Verb enthält
+ const comma=[...first.matchAll(/,\s/g)].map(m=>m.index).find(i=>i>=60&&i<=MAX_QUOTE-6);
+ if(comma&&/\b(?:wird|werden|empfiehlt|beschließt|beauftragt|bestätigt|genehmigt|soll|sollen)\b/.test(first.slice(0,comma)))return first.slice(0,comma)+' […]';
  const head=first.slice(0,MAX_QUOTE-4),cut=[...head.matchAll(/\s(?:als|zum|zur|und|für|insbesondere|sowie|gemäß)\s/g)].at(-1);
  if(cut&&cut.index>60)return head.slice(0,cut.index).replace(/[,;]$/,'')+' […]';
  return dec.find(x=>x.length<=MAX_QUOTE)||null;
