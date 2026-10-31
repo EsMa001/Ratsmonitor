@@ -5,7 +5,7 @@
    Unvollständige Datenblätter (shared/social-video-sheet.mjs, `warnings`) werden nicht gebaut, sondern als „blocked“ vermerkt.
    Beim ersten Lauf richtet der Job fehlende Python-Pakete, Piper und die Stimme selbst ein (scripts/social-video/tools.mjs);
    Systempakete kann er ohne Root nicht installieren, dann steht in der Meldung der apt-Befehl.
-   Aufruf: node scripts/social-videos.mjs [--check] [--dry-run] [--only <Vorgangs-ID>] [--limit N] [--minutes N]
+   Aufruf: node scripts/social-videos.mjs [--check] [--dry-run] [--only <Vorgangs-ID[,ID…]>] [--limit N] [--minutes N] [--today JJJJ-MM-TT] [--also ID,ID]  (--also nur zum Ausprobieren: Berichte behandeln, als stünden sie im Reiter)
      --check     nur Werkzeuge prüfen, nichts bauen   --dry-run  nur sagen, was gebaut und gelöscht würde */
 import {DatabaseSync} from 'node:sqlite';
 import {spawn,spawnSync} from 'node:child_process';
@@ -35,11 +35,17 @@ const {REGIONS}=await import('../shared/regions.ts');
 const {POPULATION}=await import('../shared/catalog.mjs');
 const bkg=JSON.parse(fs.readFileSync(new URL('../shared/de-regions.json',import.meta.url),'utf8'));
 const extraNames=[...bkg.areas,...bkg.districts].map(a=>['de-'+a[0],a[2]]);
-const today=new Date().toISOString().slice(0,10);
-const data=await socialTopics(db,REGIONS,{today,extraNames,population:POPULATION});
-const topics=data.days.flatMap(d=>d.topics);
-const only=arg('--only');
+const today=arg('--today',new Date().toISOString().slice(0,10));
+const data=await socialTopics(db,REGIONS,{today,extraNames,population:POPULATION,...(arg('--per-day')?{perDay:Number(arg('--per-day'))}:{}),...(arg('--min-fit')?{minFit:Number(arg('--min-fit'))}:{})});
 const regionOf=id=>REGIONS.find(r=>r.id===id);
+const topics=data.days.flatMap(d=>d.topics);
+// Nur zum Ausprobieren: weitere Berichte so behandeln, als stünden sie im Reiter (--also ID,ID)
+for(const id of String(arg('--also','')).split(',').filter(Boolean)){
+ if(topics.some(t=>t.id===id))continue;
+ const r=await db.prepare('SELECT region_id,json_extract(payload,\'$.title\') title FROM topics WHERE id=?').bind(id).first();
+ if(r){const reg=regionOf(r.region_id);topics.push({id,regionId:r.region_id,region:reg?.shortName||reg?.name||r.region_id,title:r.title});}
+}
+const only=arg('--only');
 const sheets=new Map();
 for(const t of topics){
  const row=await db.prepare('SELECT payload FROM topics WHERE id=?').bind(t.id).first();
@@ -51,7 +57,7 @@ for(const t of topics){
 }
 const existing=await listVideos(db);
 const plan=planVideos([...sheets].map(([id,s])=>({id,key:s.key})),existing);
-if(only){plan.build=plan.build.filter(x=>x===only);plan.remove=[];}
+if(only){const ids=String(only).split(',');plan.build=plan.build.filter(x=>ids.includes(x));plan.remove=[];}
 const limit=Number(arg('--limit',99)),stopAt=Date.now()+Number(arg('--minutes',150))*60000;
 log(`${topics.length} Vorschläge: ${plan.build.length} zu bauen, ${plan.keep.length} bleiben, ${plan.remove.length} zu löschen.`);
 if(flag('--dry-run')){for(const id of plan.build)log('bauen: '+id+' '+sheets.get(id).t.title);for(const id of plan.remove)log('löschen: '+id);process.exit(0);}

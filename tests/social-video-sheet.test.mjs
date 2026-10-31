@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {videoSheet,spokenNumber,spokenDate,spoken,shortTitle} from '../shared/social-video-sheet.mjs';
+import {videoSheet,spokenNumber,spokenDate,spoken,shortTitle,dehyphen,pickQuote} from '../shared/social-video-sheet.mjs';
 
 test('Zahlen, Daten und Beträge werden ausgeschrieben', () => {
  assert.equal(spokenNumber(2027),'zweitausendsiebenundzwanzig');
@@ -124,4 +124,20 @@ test('Starkregenschutz: Abkürzungen trennen keinen Satz, Kürzung nach „wird 
  assert.equal(s.zitatHinweis,'Vorschlag aus der Vorlage');
  assert.equal(s.themaIcon,'sun');
  assert.equal(s.sprechtext[1],'Stand offen in Billerbeck: Starkregenschutz Weihgarten.');
+});
+
+test('Trennstriche aus PDFs werden entfernt, Aufzählungen bleiben; Standardsätze des Imports sind kein Zitat',()=>{
+ assert.equal(dehyphen('Sanierung und Erwei- terung der Anlage'),'Sanierung und Erweiterung der Anlage');
+ assert.equal(dehyphen('Bau- und Planungsamt, Ent- schädigung'),'Bau- und Planungsamt, Entschädigung');
+ assert.equal(dehyphen('Bund-Länder-Programm'),'Bund-Länder-Programm');
+ assert.equal(pickQuote({short:'Das Thema „Eine Boulebahn“ wird in Münster behandelt. Eine Vorlage steht zur Beratung.',long:''}),null);
+ assert.match(pickQuote({short:'',long:'Die Verwaltung wird beauftragt, die Erwei- terung zu planen.'}),/Erweiterung/);
+ assert.equal(videoSheet({title:'Den Apostelgarten jetzt zum kühlen Aufenthaltsort machen',status:'recommended',events:[{date:'2026-10-01',committee:'Rat',result:'zugestimmt'}],ruleSummary:{short:'Die Verwaltung wird beauftragt, den Apostelgarten zu gestalten.',long:''},theme:{id:'umwelt'}},{regionName:'Münster',today:'2026-10-06'}).ok,false,'kein zerhackter Titel');
+});
+
+test('Titel: Zusatz „wird beraten/geplant“ fällt vor dem Kürzen weg, Ortsname bleibt; Zitat mit offener Klammer wird nicht genommen',()=>{
+ assert.equal(shortTitle('Gesundheitszentrum für Berg Fidel wird beraten','Münster'),'Gesundheitszentrum für Berg Fidel');
+ assert.equal(shortTitle('Neuer Recyclinghof für Hiltrup geplant','Münster'),'Neuer Recyclinghof für Hiltrup');
+ const q=pickQuote({short:'',long:'Die Finanzierung erfolgt aus dem Sonderbudget „4294 Ortsmitten“ (max. 5.000 €. Die Blumenampeln werden von der Verwaltung beschafft und aufgehängt.'});
+ assert.ok(!q||(q.split('(').length===q.split(')').length),q);
 });

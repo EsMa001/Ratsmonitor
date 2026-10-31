@@ -55,12 +55,21 @@ const STRONG=/\b(beauftragt|beschließt|beschlossen|genehmigt|bestätigt|empfieh
 const PROPOSAL=/\b(beschließt|empfiehlt|beauftragt|genehmigt|bestätigt|zugestimmt|beschlossen|vorgesehen|soll|sollen)\b|\b(?:wird|werden)\s+(?:\S+\s+){0,6}?(?:gestellt|beauftragt|eingestellt|vergeben|ausgeschrieben|errichtet|gebaut|umgesetzt|angelegt|erteilt|bewilligt|durchgeführt)\b/i;
 const DECISION=/\b(bestätigt|beschließt|beschlossen|genehmigt|beauftragt|empfiehlt|stimmt|wird|werden|soll|sollen|ist vorgesehen)\b/i;
 /** Auszug in Sätze zerlegen: an „[…]“ und an Satzenden (Satzende = Punkt, dann Leerzeichen und Großbuchstabe oder Anführungszeichen) */
-const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])(?<!\b\d{1,2}\.)(?<!\b(?:einschl|ggfls|ggf|bzw|ca|usw|Nr|Abs|Art|Zt|z|u|d|inkl|evtl|vgl|Std|Dr|Prof|Hr|Fr|ff|mind|max|insb|ggü|sog|zzgl|exkl)\.)\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
+/** Trennstriche aus dem Zeilenumbruch der PDFs entfernen („Erwei- terung“ → „Erweiterung“); „Bau- und Planungsamt“ bleibt */
+export const dehyphen=t=>String(t||'').replace(/(\p{Ll})-\s+(?!(?:und|oder|bzw|sowie|beziehungsweise)\b)(\p{Ll})/gu,'$1$2');
+const sentencesOf=t=>dehyphen(String(t||'')).replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])(?<!\b\d{1,2}\.)(?<!\b(?:einschl|ggfls|ggf|bzw|ca|usw|Nr|Abs|Art|Zt|z|u|d|inkl|evtl|vgl|Std|Dr|Prof|Hr|Fr|ff|mind|max|insb|ggü|sog|zzgl|exkl)\.)\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
 /** Zitat: wörtlich aus dem Auszug. Erster Entscheidungssatz (Kernsatz zuerst, dann Auszug) mit höchstens 160 Zeichen; ist er länger,
  *  wird er vor einem Bindewort gekürzt und mit „[…]“ beendet. Nichts wird umformuliert. */
 export function pickQuote(summary,exclude=[]){return pickQuoteFull(summary,exclude)?.text||null;}
+const IMPORT_SENTENCE=/^(?:Ein Beschluss ist dokumentiert|Ein Gremium hat zugestimmt; die abschließende|Eine Ablehnung ist dokumentiert|Die Information wurde zur Kenntnis genommen|Die Behandlung wurde verschoben|Eine Vorlage steht zur Beratung|Ein dort enthaltener Beschlussvorschlag belegt|Das Thema ist angekündigt|Der Stand ist noch offen|Das Thema „.*“ wird in .* behandelt|Die Details stehen in den verlinkten|Zuständig ist in der zuletzt erfassten Beratung|Die Vorlage trägt das Aktenzeichen)/;
 export function pickQuoteFull(summary,exclude=[]){
- const list=[...sentencesOf(summary?.short),...sentencesOf(summary?.long)];
+ const r=pickQuoteRaw(summary,exclude);
+ if(r&&(r.text.split('(').length!==r.text.split(')').length||(r.text.match(/„/g)||[]).length!==(r.text.match(/“/g)||[]).length)&&exclude.length<8)return pickQuoteFull(summary,[...exclude,r.src]);
+ return r&&(r.text.split('(').length!==r.text.split(')').length||(r.text.match(/„/g)||[]).length!==(r.text.match(/“/g)||[]).length)?null:r;
+}
+function pickQuoteRaw(summary,exclude){
+ // Standardsätze des Imports („Das Thema … wird in … behandelt“, „Eine Vorlage steht zur Beratung“) sind kein Zitat aus der Vorlage
+ const list=[...sentencesOf(summary?.short),...sentencesOf(summary?.long)].filter(x=>!IMPORT_SENTENCE.test(x));
  const same=(a,b)=>a.slice(0,40)===b.slice(0,40);
  const dec0=list.filter(x=>DECISION.test(x)&&!exclude.some(e=>same(x,e))),dec=[...dec0.filter(x=>STRONG.test(x)),...dec0.filter(x=>!STRONG.test(x))],first=dec[0];
  if(!first)return null;
@@ -84,6 +93,7 @@ export function shortTitle(title,regionName){
  const ort=regionName.replace(/^(Stadt|Gemeinde|Kreis|Landkreis)\s+/,'');
  t=t.replace(new RegExp(`\\s+(?:der|des)\\s+(?:Stadt|Landeshauptstadt|Gemeinde|Hansestadt)\\s+${ort}`,'gi'),'').replace(new RegExp(`\\b${ort}\\b`,'g'),'');
  t=t.replace(/\s+/g,' ').replace(/^[\s:,-]+|[\s:,-]+$/g,'');
+ if(t.length>TITLE_PREF)t=t.replace(/\s+(?:wird|werden|soll|sollen)\s+\p{L}+$/u,'').replace(/\s+(?:geplant|beraten|vorgestellt|verschoben|vorgeschlagen)$/u,'');
  if(t.length>TITLE_PREF){const m=t.match(/^(.+?)\s+(?:für|zur|zum|zu|im|in)\s+(.*)$/);
   if(m){const yr=(m[2].match(/\b(20\d{2})\b/)||[])[1];const c=yr&&!m[1].includes(yr)?`${m[1]} ${yr}`:m[1];if(c.length<=TITLE_PREF)t=c;}}
  return t&&t.length<=TITLE_MAX?t[0].toUpperCase()+t.slice(1):null;
@@ -111,7 +121,7 @@ export function videoSheet(topic,{regionName,today,titleShort,kommune}){
  else if(norm(quote)===norm(topic.title)||norm(topic.title).startsWith(norm(quote)))warnings.push('Zitat wiederholt nur den Titel');
  const t2=(titleShort||shortTitle(topic.title,regionName)||'').trim();
  if(!t2)warnings.push(topic.title?`Titel lässt sich nicht auf ${TITLE_MAX} Zeichen kürzen`:'kein Titel');
- else if(/(?:^|\s)(?:\p{L}|und|oder|der|die|das|des|dem|den|für|zur|zum|von|im|in|an|am|auf|mit|zu|bei|nach)$/iu.test(t2))warnings.push('Titel wirkt abgeschnitten (endet mitten im Satz)');
+ else if(/(?:^|\s)(?:\p{L}|und|oder|der|die|das|des|dem|den|für|zur|zum|von|im|in|an|am|auf|mit|zu|bei|nach|jetzt|nun|bald|auch|noch|nicht|mehr|sehr|wieder|endlich|dann|so)$/iu.test(t2))warnings.push('Titel wirkt abgeschnitten (endet mitten im Satz)');
  else if(t2.length>TITLE_MAX)warnings.push(`Titelzeile 2 hat ${t2.length} Zeichen (höchstens ${TITLE_MAX}): Kurzform fehlt`);
  const proposal=!['approved','rejected'].includes(topic.status);
  const amounts=[];
