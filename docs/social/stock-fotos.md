@@ -3544,17 +3544,17 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Saarwellingen | Saarland | 10044116 | – | – | noch nicht gesucht | – |
 | Sachsen b.Ansbach | Bayern | 09571196 | – | – | noch nicht gesucht | – |
 | Sailauf | Bayern | 09671150 | – | – | noch nicht gesucht | – |
-| Salach | Baden-Württemberg | 08117042 | – | – | noch nicht gesucht | – |
+| Salach | Baden-Württemberg | 08117042 | 80241 | https://pixabay.com/photos/staufeneck-castle-burg-staufeneck-80241/ | Pixabay-Lizenz; Burg Staufeneck (Salach) | 8 |
 | Saldenburg | Bayern | 09272142 | – | – | noch nicht gesucht | – |
-| Salem | Baden-Württemberg | 08435052 | – | – | noch nicht gesucht | – |
+| Salem | Baden-Württemberg | 08435052 | 3735583 | https://pixabay.com/de/photos/schloss-salem-ausflugsziel-3735583/ | Pixabay-Lizenz; Schloss Salem (Bodensee) | 7 |
 | Salzatal | Sachsen-Anhalt | 15088319 | – | – | noch nicht gesucht | – |
 | Salzweg | Bayern | 09275146 | – | – | noch nicht gesucht | – |
-| Samerberg | Bayern | 09187172 | – | – | noch nicht gesucht | – |
+| Samerberg | Bayern | 09187172 | 2938893 | https://pixabay.com/de/photos/samerberg-chiemgau-heuberg-2938893/ | Pixabay-Lizenz; Landschaft Samerberg, Chiemgau, Heuberg | 8 |
 | Sand a.Main | Bayern | 09674195 | – | – | noch nicht gesucht | – |
 | Sandberg | Bayern | 09673162 | – | – | noch nicht gesucht | – |
-| Sandhausen | Baden-Württemberg | 08226076 | – | – | noch nicht gesucht | – |
+| Sandhausen | Baden-Württemberg | 08226076 | 837698 | https://pixabay.com/de/photos/dreifaltigkeitskirche-sandhausen-837698/ | Pixabay-Lizenz; Dreifaltigkeitskirche Sandhausen | 6 |
 | Sanitz | Mecklenburg-Vorpommern | 13072091 | – | – | noch nicht gesucht | – |
-| Sankt Englmar | Bayern | 09278184 | – | – | noch nicht gesucht | – |
+| Sankt Englmar | Bayern | 09278184 | 6815479 | https://pixabay.com/photos/sankt-englmar-forest-tree-top-trail-6815479/ | Pixabay-Lizenz; Baumwipfelpfad Sankt Englmar | 8 |
 | Sankt Oswald-Riedlhütte | Bayern | 09272143 | – | – | noch nicht gesucht | – |
 | Sankt Wolfgang | Bayern | 09177137 | – | – | noch nicht gesucht | – |
 | Sasbach | Baden-Württemberg | 08317116 | – | – | noch nicht gesucht | – |
@@ -3564,15 +3564,15 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Satteldorf | Baden-Württemberg | 08127073 | – | – | noch nicht gesucht | – |
 | Sauerlach | Bayern | 09184141 | – | – | noch nicht gesucht | – |
 | Sauldorf | Baden-Württemberg | 08437123 | – | – | noch nicht gesucht | – |
-| Schaafheim | Hessen | 06432021 | – | – | noch nicht gesucht | – |
+| Schaafheim | Hessen | 06432021 | 687790 | https://pixabay.com/de/photos/turm-wartturm-schaafheim-darmstadt-687790/ | Pixabay-Lizenz; Wartturm Schaafheim | 8 |
 | Schallbach | Baden-Württemberg | 08336075 | – | – | noch nicht gesucht | – |
 | Schallstadt | Baden-Württemberg | 08315098 | – | – | noch nicht gesucht | – |
-| Scharbeutz | Schleswig-Holstein | 01055044 | – | – | noch nicht gesucht | – |
+| Scharbeutz | Schleswig-Holstein | 01055044 | 4116610 | https://pixabay.com/de/photos/scharbeutz-see-strand-landschaft-4116610/ | Pixabay-Lizenz; Strand und Ostsee bei Scharbeutz | 7 |
 | Schauenburg | Hessen | 06633023 | – | – | noch nicht gesucht | – |
 | Schechen | Bayern | 09187142 | – | – | noch nicht gesucht | – |
 | Schechingen | Baden-Württemberg | 08136062 | – | – | noch nicht gesucht | – |
 | Schefflenz | Baden-Württemberg | 08225115 | – | – | noch nicht gesucht | – |
-| Scheidegg | Bayern | 09776125 | – | – | noch nicht gesucht | – |
+| Scheidegg | Bayern | 09776125 | 8055498 | https://pixabay.com/photos/kronberg-chapel-church-scheidegg-8055498/ | Pixabay-Lizenz; Kapelle Kronberg bei Scheidegg (Allgäu) | 6 |
 | Schemmerhofen | Baden-Württemberg | 08426134 | – | – | noch nicht gesucht | – |
 | Schenkendöbern | Brandenburg | 12071337 | – | – | noch nicht gesucht | – |
 | Schenkenzell | Baden-Württemberg | 08325050 | – | – | noch nicht gesucht | – |
