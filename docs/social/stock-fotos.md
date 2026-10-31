@@ -20,7 +20,7 @@ Stand: 30.10.2026. Für Social-Media-Videos von Plenara. Nur Bilder, bei denen w
 | Köln | 05315000 | Unsplash `nJiMgxaoTYc` | https://unsplash.com/photos/nJiMgxaoTYc | Unsplash-Lizenz, März 2022, Brücke mit Dom im Hintergrund, Sonnenuntergang | 7 |
 | Frankfurt | 06412000 | `Skyline_Frankfurt_am_Main_2019.jpg` | https://commons.wikimedia.org/wiki/File:Skyline_Frankfurt_am_Main_2019.jpg | CC0, April 2019, Skyline | 7 |
 | Frankfurt | 06412000 | `Frankfurt_Skyline_at_night_(Unsplash).jpg` | https://commons.wikimedia.org/wiki/File:Frankfurt_Skyline_at_night_(Unsplash).jpg | CC0 (ursprünglich Unsplash, vor 2017), Nachtskyline | 6 |
-| Stuttgart | 08111000 | noch offen | https://www.pexels.com/search/stuttgart/ | Pexels-Lizenz laut Suchseite. Einzelbild und Datum nicht geprüft. Motive: Schlossplatz/Neues Schloss, Fernsehturm-Panorama | offen |
+| Stuttgart | 08111000 | 69069 | https://pixabay.com/photos/stuttgart-television-tower-tower-69069/ | Pixabay-Lizenz, Fernsehturm (Lizenz aus Wissen über Pixabay, Seite nicht abgerufen) | 6 |
 | Düsseldorf | 05111000 | Unsplash `H1xqXWLh9m4` | https://unsplash.com/photos/H1xqXWLh9m4 | Unsplash-Lizenz, Jan. 2024, Rheinturm vor blauem Himmel | 6 |
 | Düsseldorf | 05111000 | Unsplash `a5o26-mXsCI` | https://unsplash.com/photos/a5o26-mXsCI | Unsplash-Lizenz, Feb. 2023, Rheinturm | 6 |
 | Leipzig | 14713000 | Unsplash `P7YYM3VHdyM` | https://unsplash.com/photos/P7YYM3VHdyM | Unsplash-Lizenz, April 2024, Neues Rathaus; unruhiger Ausschnitt möglich | 6 |
@@ -40,14 +40,14 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 
 | Rang | Ort | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|---|
-| 11 | Bremen | 04011000 | – | – | kein Bild gefunden | – |
+| 11 | Bremen | 04011000 | 3559469 | https://pixabay.com/de/photos/bremen-schnoor-altstadt-3559469/ | Pixabay-Lizenz, Schnoor-Viertel (Alternative Roland: 230846) | 7 |
 | 12 | Dresden | 14612000 | m9qz1NE1b5k | https://unsplash.com/photos/a-large-building-with-dresden-frauenkirche-m9qz1NE1b5k | Unsplash-Lizenz, Frauenkirche | 7 |
-| 13 | Hannover | 03241001 | – | – | kein Bild gefunden | – |
+| 13 | Hannover | 03241001 | 22813506 | https://www.pexels.com/de-de/foto/neues-rathaus-hannover-22813506/ | Pexels-Lizenz, Neues Rathaus | 8 |
 | 14 | Nürnberg | 09564000 | – | – | kein Bild gefunden | – |
 | 15 | Duisburg | 05112000 | – | – | kein Bild gefunden | – |
 | 16 | Bochum | 05911000 | – | – | kein Bild gefunden | – |
 | 17 | Wuppertal | 05124000 | RYZN50k333Q | https://unsplash.com/photos/a-blue-suspended-monorail-train-on-a-green-track-RYZN50k333Q | Unsplash-Lizenz, vermutlich Schwebebahn; Ort steht nicht im Titel, vorher prüfen | 6 |
-| 18 | Bielefeld | 05711000 | – | – | kein Bild gefunden | – |
+| 18 | Bielefeld | 05711000 | 2554694 | https://pixabay.com/photos/sparrenburg-bielefeld-historical-2554694/ | Pixabay-Lizenz, Sparrenburg | 8 |
 | 19 | Bonn | 05314000 | – | – | kein Bild gefunden | – |
 | 20 | Münster | 05515000 | – | – | kein Bild gefunden | – |
 | 21 | Mannheim | 08222000 | YNDNuGl7IBs | https://unsplash.com/photos/cityscape-of-mannheim-baden-wurttemberg-germany-friedrichsplatz-with-the-mannheim-water-tower-wasserturm-in-the-foreground-YNDNuGl7IBs | Unsplash-Lizenz, Wasserturm am Friedrichsplatz; möglicherweise Unsplash+, prüfen | 8 |
