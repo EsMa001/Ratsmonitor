@@ -7,6 +7,7 @@
 import {DatabaseSync} from 'node:sqlite';
 import {existsSync,readdirSync} from 'node:fs';
 import {refreshSearchWords} from '../server/integrations/search-words.mjs';
+import {syncSuggestIndex} from '../server/integrations/search-suggest.mjs';
 import {rollCardDates} from '../server/integrations/search-card-dates.mjs';
 import {sqliteAdapter} from './sqlite-adapter.mjs';
 const quiet=process.argv.includes('--quiet'),say=(...a)=>{if(!quiet)console.log(...a);};
@@ -26,3 +27,9 @@ try{
  if(result?.busy){say(result.lost?'Sperre abgelaufen und von einem anderen Lauf übernommen: abgebrochen, der nächste Lauf holt nach.':'Eine andere Nachführung läuft gerade (Import oder Skript), nichts zu tun.');process.exit(0);}
  say(JSON.stringify({...result,seconds:Math.round((Date.now()-t0)/100)/10}));
 }catch(e){say('Wortliste nicht aufgebaut:',e instanceof Error?e.message:e);process.exit(0);}
+/* Register der Tippfehler-Vorschläge nachführen (search-suggest.mjs); neue Wörter der Liste kommen so nachts dazu */
+try{
+ const t0=Date.now();let r,added=0;
+ do{r=await syncSuggestIndex(sqliteAdapter(db));added+=r.added??0;}while(r&&!r.done&&!r.skipped);
+ say(r?.skipped?'Tippfehler-Register: '+(r.busy?'ein anderer Lauf füllt es gerade':r.reason):JSON.stringify({suggest:{added,seconds:Math.round((Date.now()-t0)/100)/10}}));
+}catch(e){say('Tippfehler-Register nicht nachgeführt:',e instanceof Error?e.message:e);}
