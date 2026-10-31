@@ -6,7 +6,7 @@ Stand 31.10.2026. Gilt nur für Videos auf Instagram Reels, TikTok und YouTube S
 
 Jedes Video erklärt einen echten Ratsbeschluss (oder Vorgang) so, dass Bürger ihn in 42 bis 65 Sekunden verstehen. Plenara tritt als Quelle auf, nicht als Werbebotschaft: Logo und Ortschip stehen in den Szenen 1 bis 5 von Anfang an oben, die Schlusskarte zeigt das Logo groß und nennt plenara.de als einzigen Aufruf. Etwa vier Fünftel der Zeit gehören dem Beschluss.
 
-Die Videos kommen ohne Fotos und ohne Untertitel aus. Sie müssen auch stumm lesbar sein: Bildtext, Icons und Statusfarben tragen den Kern, die Stimme ergänzt.
+Die Videos kommen ohne Fotos und ohne eingebrannte Untertitelspur aus. Sie müssen auch stumm lesbar sein: Bildtext, Icons und Statusfarben tragen den Kern, die Stimme ergänzt. Was in den Netzen über Sehen, Weiterwischen und Teilen entscheidet (erste Sekunde, Sicherheitszonen, Länge, Beschreibung, Messung), steht in Abschnitt 16.
 
 ## 2. Technik
 
@@ -117,7 +117,7 @@ Themen-Icons im Hook und in Zeilen kommen aus dem vorhandenen Satz (ein Stil: Pe
 | Verfahren, Unterlagen | Dokument, Stift, Kran (Bau), Lupe |
 | Wohnen, Gebäude | Haus |
 | Kinder, Schule, Bildung | Kind |
-| Verkehr, Straße, Wege | Straße (Fahrbahn in Perspektive mit Mittelstrich, ergänzt am 31.10.2026 für „Billerbeck: Wirtschaftswege“); Park-and-Ride-Anlagen: Quadrat mit ausgeschnittenem P (`parking`, ergänzt am 31.10.2026 für „Billerbeck: P&R Weihgarten“); Pin nur für Orte. Wer ein Schild oder Auto braucht, ergänzt es im selben Stil und trägt es hier ein |
+| Verkehr, Straße, Wege | Straße (Fahrbahn in Perspektive mit Mittelstrich, `road`); Park-and-Ride-Anlagen: Quadrat mit ausgeschnittenem P (`parking`); Pin nur für Orte. Wer ein Schild oder Auto braucht, ergänzt es im selben Stil und trägt es hier ein |
 | Gremium, Rathaus | Halle |
 | Termin | Kalender |
 | Stand | Haken, Kreuz, Sanduhr |
@@ -379,7 +379,7 @@ Für Folgen ohne Handarbeit gilt dieselbe Bauart wie oben, mit den hier genannte
 
 | Teil | Regel in der Automatik |
 | --- | --- |
-| Hook-Satz | „<Standwort> in <Ort>: <Thema>.“ („Beschlossen in Dresden: …“, „In Beratung in Billerbeck: …“, „Stand offen in …“, „Zur Kenntnis genommen in …“). Das Standwort steht also am Satzanfang. Der Stempel schlägt 0,3 s davor ein, zwischen 0,25 und 1,0 s. Thema (Zeile 2) erscheint, wenn es gesprochen wird |
+| Hook-Satz | „<Standwort> in <Ort>: <Thema>.“ („Beschlossen in <Ort>: …“, „In Beratung in <Ort>: …“, „Stand offen in <Ort>: …“, „Zur Kenntnis genommen in <Ort>: …“). Das Standwort steht also am Satzanfang. Der Stempel schlägt 0,3 s davor ein, zwischen 0,25 und 1,0 s. Thema (Zeile 2) erscheint, wenn es gesprochen wird |
 | Kern (Szene 2) | Das Zitat erscheint Wort für Wort, jedes Wort zu dem Zeitpunkt, an dem es gesprochen wird. Drei Größen: Subjekt mit Verb 150 (Schwarzgrau), Gegenstand 124 (Petrol), Rest 72 (Nebenzeilenfarbe). Passt der Block nicht bis y = 1380, werden alle Größen gemeinsam verkleinert (Untergrenze 50 Prozent). Der Block steht mittig. Einzelner Betrag im Zitat: er zählt in 0,9 s hoch (Zahl 150, Petrol) |
 | Verlauf (Szene 3) | Zeitleiste: je Sitzung ein Punkt (60, grau, der letzte petrol), dazwischen eine petrolfarbene Linie (8, wächst 0,5 s lang), rechts „TT.MM.JJ · Gremium“ 64 und das Ergebnis 58. Höchstens drei Sitzungen; dauert das Video über 65 s, entfällt die älteste |
 | Beträge (Szene 4) | Nennt das Zitat mindestens zwei Beträge mit Bezeichnung (Kosten, Förderung, Zuschuss, Haushaltsmittel, Eigenanteil, Puffer), ersetzt eine Balkenszene die stumme Zitatszene: Balken (Länge nach Wert, höchstens drei, Höhe 130 oder 100) mit Bezeichnung und Betrag, gesprochen „Kosten: …“. Es wird nichts verrechnet, keine Differenz gezeigt. Ohne zwei bezeichnete Beträge bleibt es beim Zitat |
@@ -389,3 +389,52 @@ Für Folgen ohne Handarbeit gilt dieselbe Bauart wie oben, mit den hier genannte
 | Länge | 42 bis 65 s; bei mehr als 65 s wird der Verlauf gekürzt, sonst wird nicht gebaut |
 
 Nicht in der Automatik: Fotos (die Liste `docs/social/stock-fotos.md` nennt nur IDs; die Bilder müssen auf einem Rechner mit Zugriff geladen und geprüft werden, Kennzeichnung „Symbolbild“), Abstimmungsbalken (der Bericht enthält keine Zahlen dazu), Karte, bessere Stimme (Thorsten medium oder high, Dateien nötig), Plenara-Moment.
+
+## 16. Wirkung in den Netzen
+
+Dieser Abschnitt sagt, wie eine Folge in Instagram Reels, TikTok und YouTube Shorts gesehen, behalten und geteilt wird. Die Plattformangaben sind Arbeitswerte aus Drittquellen (Stand 31.10.2026: reap.video zu Sicherheitszonen, digitalapplied.com zur Hashtag-Grenze, klap.app zur Länge), keine offiziellen Vorgaben der Plattformen; sie sind unten als „Startwert“ gekennzeichnet und werden nach der Veröffentlichung an eigenen Zahlen geprüft.
+
+### Die ersten drei Sekunden
+
+Wer in den ersten Sekunden nicht erfährt, worum es geht und was daraus für ihn folgt, wischt weiter. Deshalb gilt für jede Folge:
+- Sekunde 0 bis 1: Ort (Zeile 1) steht schon, der Stempel mit dem Ergebnis schlägt ein (spätestens bei 1,0 s, mit Schlag), Zeile 2 nennt das Thema, sobald es gesprochen wird. Es gibt kein Logo-Intro, keine Begrüßung, keinen Vorlauf.
+- Der erste gesprochene Satz nennt Ergebnis, Ort und Thema in dieser Reihenfolge („Beschlossen in <Ort>: <Thema>.“). Er enthält keine Wertung, keine Frage mit Unterton und keine Zuspitzung („Skandal“, „Überraschung“).
+- Ein Betrag oder eine Frist darf im Hook stehen, wenn er wörtlich in der Vorlage steht; er steht dann als Zahl, nicht als Frage.
+- Das Titelbild (Bild bei 1,6 s, wird beim Bau mitgeschrieben) muss für sich lesbar sein: Ort, Thema und Stempel sichtbar, nichts halb eingeblendet. Prüfung: Bild ansehen, ohne das Video zu kennen.
+
+### Stumm lesbar
+
+Ein großer Teil der Zuschauer sieht ohne Ton. Jede Aussage der Stimme steht auch im Bild (Hook, Kernsatz, Verlauf, Stand). Der Kernsatz erscheint Wort für Wort, wenn er gesprochen wird; das ersetzt die Untertitelspur, die dann nicht zusätzlich eingebrannt wird.
+
+### Sicherheitszonen (Startwert)
+
+Die Oberfläche der Plattformen verdeckt Teile des Bildes. Arbeitswert aus der Quelle: oben etwa 15 Prozent (288 Pixel), unten 25 bis 35 Prozent (480 bis 672), seitlich 10 bis 15 Prozent (108 bis 162). Ist-Stand der Folgen: Unterkante des Inhalts bei 1450 (24,5 Prozent unten, am Rand der Vorgabe), seitlicher Rand 72 (6,7 Prozent), Logo und Ortschip bei y = 190 (innerhalb der oberen 15 Prozent). **Prüfpunkt:** eine Probefolge auf allen drei Plattformen hochladen (privat) und notieren, was verdeckt wird; danach Ränder und Chip-Position in Abschnitt 4 festlegen. Bis dahin gilt: Bedeutung trägt nie allein ein Element im Randstreifen.
+
+### Länge (Startwert)
+
+Zielwert 45 bis 55 Sekunden, Obergrenze 65 (Abschnitt 2). Die Quellen nennen keinen festen Wert: Kürzere Videos werden eher zu Ende gesehen, längere bringen mehr Sehzeit, wenn sie halten. Für erklärende Inhalte werden 30 bis 60 Sekunden genannt. Die Schlusskarte (8,5 s, etwa 14 Prozent der Länge) ist der erste Kandidat zum Kürzen; sie wird erst geändert, wenn die Haltequote an der Schlusskarte (Abschnitt „Messung“) zeigt, dass dort viele abspringen.
+
+### Beschreibung, Hashtags, Titelbild
+
+Jede Folge wird mit Text veröffentlicht, der aus dem Datenblatt kommt (keine eigene Deutung):
+
+| Teil | Regel |
+| --- | --- |
+| Zeile 1 (die ersten 125 Zeichen sind sichtbar) | Hook-Satz plus Kern in einem Satz: „<Standwort> in <Ort>: <Thema>. <Kernsatz verkürzt>“ |
+| Zeile 2 | Stand und Sitzung: „Zuletzt beraten: <Gremium>, <Datum>.“ und, wenn vorhanden, „Nächste Sitzung: <Datum>.“ |
+| Zeile 3 | Quelle wie im Bild („Quelle: öffentliche Ratsunterlagen …“) und Hinweis „Zusammenfassung von Plenara, kein amtliches Dokument.“ |
+| Zeile 4 | Aufruf ohne Druck: „Alle Beschlüsse zu <Ort>: Link im Profil / plenara.de“ |
+| Hashtags | drei bis fünf (Instagram begrenzt auf fünf, Startwert): #<Ort>, #Kommunalpolitik, ein Themen-Tag (#Verkehr, #Klima …), #Plenara. Keine Partei-, Personen- oder Wertungs-Tags |
+| Barrierefreiheit | Alternativtext und Transkript = Sprechtext der Folge |
+
+### Wiedererkennung
+
+Die Reihe wird an wenigen festen Zeichen erkannt: Stempel mit Standwort, Petrol auf Weiß, Zeitleiste, Soundlogo am Anfang und Ende, Ortschip. Diese Zeichen ändern sich nicht von Folge zu Folge; Neues kommt nur über den Inhalt.
+
+### Neutralität in der Verpackung
+
+Alles oben gilt auch für Beschreibung, Titelbild und Hashtags: wörtlich aus der Vorlage, keine Wertung, kein Parteiname, kein Antragsteller (Abschnitt 9). Wirkung entsteht durch Klarheit und Tempo, nicht durch Zuspitzung.
+
+### Freigabe und Messung
+
+Eine Person gibt jede Folge frei (Video, Titelbild, Beschreibung); das Programm veröffentlicht nichts selbst. Nach der Veröffentlichung werden je Folge erfasst: Anteil, der die ersten drei Sekunden sieht, Haltequote bei der Hälfte und an der Schlusskarte, Sehdauer im Mittel, Speichern, Teilen, Profilbesuche, Klicks auf plenara.de. Nach zehn Folgen werden Länge, Hook-Form und Schlusskarte verglichen und die Startwerte dieses Abschnitts angepasst. Bis dahin sind sie Annahmen, keine Ergebnisse.
