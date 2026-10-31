@@ -47,3 +47,9 @@ test('Fehlende Angaben stoppen das Video, statt zu raten', () => {
  const long=videoSheet({...wege,title:'Ein sehr langer Titel, der nicht in zwei Zeilen passt'},{regionName:'Billerbeck',today:'2026-10-31',titleShort:'Ein sehr langer Titel, der nicht in zwei Zeilen passt'});
  assert.ok(long.warnings.some(w=>/Kurzform/.test(w)));
 });
+
+test('Ein Zitat, das nur den Titel wiederholt, zählt nicht', () => {
+ const s=videoSheet({...wege,ruleSummary:{short:'Ausbau Wirtschaftswege ab 2027.'}},{regionName:'Billerbeck',today:'2026-10-31',titleShort:'Wirtschaftswege ab 2027'});
+ assert.equal(s.ok,false);
+ assert.ok(s.warnings.some(w=>/nur den Titel/.test(w)));
+});

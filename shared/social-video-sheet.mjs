@@ -66,7 +66,9 @@ export function videoSheet(topic,{regionName,today,titleShort}){
  const last=past.at(-1)||null,next=future[0]||null,before=past.length>1?past.at(-2):null;
  if(!last)warnings.push('keine beratene Sitzung');
  const quote=pickQuote(topic.ruleSummary);
+ const norm=x=>String(x||'').toLowerCase().replace(/[^a-zäöüß0-9]+/g,' ').trim();
  if(!quote)warnings.push('kein Zitat (Auszug fehlt oder zu lang)');
+ else if(norm(quote)===norm(topic.title)||norm(topic.title).startsWith(norm(quote)))warnings.push('Zitat wiederholt nur den Titel');
  const t2=(titleShort||topic.title||'').trim();
  if(!t2)warnings.push('kein Titel');
  else if(t2.length>34)warnings.push(`Titelzeile 2 hat ${t2.length} Zeichen (höchstens 34): Kurzform fehlt`);
