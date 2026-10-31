@@ -1670,11 +1670,11 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Medebach | NRW | 05958028 | – | – | noch nicht gesucht | – |
 | Meersburg | BW | 08435036 | – | – | noch nicht gesucht | – |
 | Merkendorf | Bayern | 09571177 | – | – | noch nicht gesucht | – |
-| Meßkirch | BW | 08437078 | – | – | noch nicht gesucht | – |
+| Meßkirch | BW | 08437078 | 612025 | https://pixabay.com/de/photos/stadtansicht-himmel-messkirch-612025/ | Pixabay-Lizenz; Stadtansicht Meßkirch | 7 |
 | Miltenberg | Bayern | 09676139 | – | – | noch nicht gesucht | – |
 | Mittenwalde | Brandenburg | 12061332 | – | – | noch nicht gesucht | – |
 | Moringen | Niedersachsen | 03155009 | – | – | noch nicht gesucht | – |
-| Munderkingen | BW | 08425081 | – | – | noch nicht gesucht | – |
+| Munderkingen | BW | 08425081 | 268966 | https://pixabay.com/de/photos/munderkingen-altstadt-fachwerkbau-268966/ | Pixabay-Lizenz; Altstadt mit Fachwerkbau (Alternative) | 7 |
 | Möckmühl | BW | 08125063 | – | – | noch nicht gesucht | – |
 | Mücheln (Geiseltal) | Sachsen-Anhalt | 15088235 | – | – | noch nicht gesucht | – |
 | Mügeln | Sachsen | 14730200 | – | – | noch nicht gesucht | – |
@@ -1686,28 +1686,28 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Naumburg | Hessen | 06633018 | – | – | noch nicht gesucht | – |
 | Neckarbischofsheim | BW | 08226055 | – | – | noch nicht gesucht | – |
 | Neckarsteinach | Hessen | 06431018 | – | – | noch nicht gesucht | – |
-| Neresheim | BW | 08136045 | – | – | noch nicht gesucht | – |
+| Neresheim | BW | 08136045 | 51293 | https://pixabay.com/de/photos/kloster-abtei-neresheim-kirche-51293/ | Pixabay-Lizenz; Abtei Neresheim, Kirche | 8 |
 | Neubukow | Mecklenburg-Vorpommern | 13072074 | – | – | noch nicht gesucht | – |
 | Neubulach | BW | 08235047 | – | – | noch nicht gesucht | – |
 | Neudenau | BW | 08125068 | – | – | noch nicht gesucht | – |
 | Neuenbürg | BW | 08236043 | – | – | noch nicht gesucht | – |
 | Neuenstein | BW | 08126058 | – | – | noch nicht gesucht | – |
-| Neuffen | BW | 08116046 | – | – | noch nicht gesucht | – |
+| Neuffen | BW | 08116046 | 2920246 | https://pixabay.com/de/photos/hohenneuffen-burg-schloss-2920246/ | Pixabay-Lizenz; Burg Hohenneuffen über Neuffen | 7 |
 | Neukirchen | Hessen | 06634017 | – | – | noch nicht gesucht | – |
 | Neunburg vorm Wald | Bayern | 09376147 | – | – | noch nicht gesucht | – |
 | Neustadt (Hessen) | Hessen | 06534016 | – | – | noch nicht gesucht | – |
 | Neustadt a.d.Waldnaab | Bayern | 09374139 | – | – | noch nicht gesucht | – |
-| Neuötting | Bayern | 09171125 | – | – | noch nicht gesucht | – |
+| Neuötting | Bayern | 09171125 | 238637 | https://pixabay.com/photos/fishing-ladder-fish-way-fish-pass-238637/ | Pixabay-Lizenz; Fischtreppe am Inn in Neuötting (Titel nennt Neuötting) | 5 |
 | Niddatal | Hessen | 06440017 | – | – | noch nicht gesucht | – |
 | Niedenstein | Hessen | 06634018 | – | – | noch nicht gesucht | – |
 | Niedernhall | BW | 08126060 | – | – | noch nicht gesucht | – |
 | Niederstetten | BW | 08128082 | – | – | noch nicht gesucht | – |
-| Niederstotzingen | BW | 08135027 | – | – | noch nicht gesucht | – |
+| Niederstotzingen | BW | 08135027 | 249818 | https://pixabay.com/photos/bird-stove-cave-lonetal-karst-cave-249818/ | Pixabay-Lizenz; Vogelherdhöhle im Lonetal bei Stetten, Ortsteil von Niederstotzingen (Ortsname fehlt im Titel, Zuordnung über das Wahrzeichen) | 4 |
 | Nieheim | NRW | 05762028 | – | – | noch nicht gesucht | – |
 | Nienburg (Saale) | Sachsen-Anhalt | 15089235 | – | – | noch nicht gesucht | – |
 | Niesky | Sachsen | 14626370 | – | – | noch nicht gesucht | – |
 | Nittenau | Bayern | 09376149 | – | – | noch nicht gesucht | – |
-| Norderney | Niedersachsen | 03452020 | – | – | noch nicht gesucht | – |
+| Norderney | Niedersachsen | 03452020 | 3950012 | https://pixabay.com/de/photos/norderney-sonne-wolken-sandstrand-3950012/ | Pixabay-Lizenz; Strand, Sonne und Wolken | 6 |
 | Oberharz am Brocken | Sachsen-Anhalt | 15085228 | – | – | noch nicht gesucht | – |
 | Oberhof | Thüringen | 16066047 | – | – | noch nicht gesucht | – |
 | Oberkochen | BW | 08136050 | – | – | noch nicht gesucht | – |
