@@ -2905,7 +2905,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Julbach | Bayern | 09277127 | – | – | noch nicht gesucht | – |
 | Jungingen | Baden-Württemberg | 08417036 | – | – | noch nicht gesucht | – |
 | Kabelsketal | Sachsen-Anhalt | 15088150 | – | – | noch nicht gesucht | – |
-| Kahl a.Main | Bayern | 09671134 | – | – | noch nicht gesucht | – |
+| Kahl a.Main | Bayern | 09671134 | 2071598 | https://pixabay.com/de/photos/schloss-emmerichshofen-kahl-bayern-2071598/ | Pixabay-Lizenz; Schloss Emmerichshofen in Kahl, Bayern (nur aus dem Titel geschlossen, Bild nicht angesehen) | 7 |
 | Kaisersbach | Baden-Württemberg | 08119037 | – | – | noch nicht gesucht | – |
 | Kaisheim | Bayern | 09779169 | – | – | noch nicht gesucht | – |
 | Kalbach | Hessen | 06631016 | – | – | noch nicht gesucht | – |
@@ -2921,14 +2921,14 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Karstädt | Brandenburg | 12070173 | – | – | noch nicht gesucht | – |
 | Kastl | Bayern | 09371132 | – | – | noch nicht gesucht | – |
 | Kefenrod | Hessen | 06440013 | – | – | noch nicht gesucht | – |
-| Kellenhusen (Ostsee) | Schleswig-Holstein | 01055025 | – | – | noch nicht gesucht | – |
+| Kellenhusen (Ostsee) | Schleswig-Holstein | 01055025 | 1595812 | https://pixabay.com/de/photos/ostsee-kellenhusen-seebr%C3%BCcke-1595812/ | Pixabay-Lizenz; Seebrücke Kellenhusen (Titel "Ostsee, Kellenhusen, Seebrücke") | 8 |
 | Keltern | Baden-Württemberg | 08236070 | – | – | noch nicht gesucht | – |
 | Kemmern | Bayern | 09471150 | – | – | noch nicht gesucht | – |
 | Kiedrich | Hessen | 06439009 | – | – | noch nicht gesucht | – |
 | Kiefersfelden | Bayern | 09187148 | – | – | noch nicht gesucht | – |
 | Kieselbronn | Baden-Württemberg | 08236031 | – | – | noch nicht gesucht | – |
 | Kinding | Bayern | 09176137 | – | – | noch nicht gesucht | – |
-| Kipfenberg | Bayern | 09176138 | – | – | noch nicht gesucht | – |
+| Kipfenberg | Bayern | 09176138 | 204961 | https://pixabay.com/de/photos/kipfenberg-naturpark-altm%C3%BChltal-204961/ | Pixabay-Lizenz; Ort im Naturpark Altmühltal (Titel "Kipfenberg, Naturpark Altmühltal") | 8 |
 | Kippenheim | Baden-Württemberg | 08317059 | – | – | noch nicht gesucht | – |
 | Kirchanschöring | Bayern | 09189127 | – | – | noch nicht gesucht | – |
 | Kirchardt | Baden-Württemberg | 08125049 | – | – | noch nicht gesucht | – |
