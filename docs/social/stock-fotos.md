@@ -321,7 +321,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 278 | Pirmasens | 07317000 | – | – | kein Bild gefunden | – |
 | 279 | Lemgo | 05766044 | 646464 | https://pixabay.com/de/photos/marktplatz-lemgo-hansestadt-646464/ | Pixabay-Lizenz, Marktplatz | 7 |
 | 280 | Freiberg (Sachsen) | 14522180 | 3696889 | https://pixabay.com/no/photos/freiberger-dom-freiberg-historisk-3696889/ | Pixabay-Lizenz, Freiberger Dom | 7 |
-| 281 | Halberstadt | 15085135 | – | – | kein Bild gefunden | – |
+| 281 | Halberstadt | 15085135 | 1803680 | https://pixabay.com/photos/dom-church-halberstadt-germany-1803680/ | Pixabay-Lizenz; Dom von Halberstadt (Titel "Historic cathedral in Halberstadt") | 7 |
 | 282 | Leinfelden-Echterdingen | 08116078 | 5808451 | https://pixabay.com/photos/leinfelden-echterdingen-airport-5808451/ | Pixabay-Lizenz, Flughafen Stuttgart | 4 |
 | 283 | Hofheim am Taunus | 06436007 | – | – | kein Bild gefunden | – |
 | 284 | Löhne | 05758024 | – | – | kein Bild gefunden | – |
@@ -350,7 +350,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 307 | Bautzen | 14625020 | 1749453 | https://pixabay.com/de/photos/bautzen-stadt-panorama-altstadt-1749453/ | Pixabay-Lizenz, Altstadt-Panorama | 8 |
 | 308 | Haltern am See | 05562016 | 2968148 | https://pixabay.com/photos/varus-monument-bronze-figure-2968148/ | Pixabay-Lizenz, Varus-Denkmal, Ortsbezug nur über Suchtreffer | 5 |
 | 309 | Backnang | 08119008 | 3005670 | https://pixabay.com/de/photos/skulptur-applaus-kunst-bronze-3005670/ | Pixabay-Lizenz, Skulptur "Applaus" | 5 |
-| 310 | Bitterfeld-Wolfen | 15082015 | – | – | kein Bild gefunden | – |
+| 310 | Bitterfeld-Wolfen | 15082015 | 5321627 | https://pixabay.com/de/photos/hafen-bitterfeld-see-wasser-5321627/ | Pixabay-Lizenz; Hafensteg und Segelboot am Bitterfelder See (Hafen Bitterfeld) | 6 |
 | 311 | Fürstenfeldbruck | 09179121 | 713669 | https://pixabay.com/it/photos/anagrafe-vecchio-municipio-713669/ | Pixabay-Lizenz, altes Rathaus, Ortsbezug unsicher | 4 |
 | 312 | Warendorf | 05570052 | – | – | kein Bild gefunden | – |
 | 313 | Tuttlingen | 08327050 | 1961181 | https://pixabay.com/photos/house-charlie-hotel-tuttlingen-1961181/ | Pixabay-Lizenz, Haus/Hotel | 5 |
