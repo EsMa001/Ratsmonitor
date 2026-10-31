@@ -3260,7 +3260,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Neustetten | Baden-Württemberg | 08416049 | – | – | noch nicht gesucht | – |
 | Neuweiler | Baden-Württemberg | 08235050 | – | – | noch nicht gesucht | – |
 | Niederaichbach | Bayern | 09274156 | – | – | noch nicht gesucht | – |
-| Niederalteich | Bayern | 09271138 | – | – | noch nicht gesucht | – |
+| Niederalteich | Bayern | 09271138 | 2481011 | https://pixabay.com/photos/niederalteich-monastery-benedictine-2481011/ | Pixabay-Lizenz; Klosterkirche Niederalteich, Innenraum | 8 |
 | Niederau | Sachsen | 14627170 | – | – | noch nicht gesucht | – |
 | Niederaula | Hessen | 06632015 | – | – | noch nicht gesucht | – |
 | Niederdorfelden | Hessen | 06435022 | – | – | noch nicht gesucht | – |
@@ -3274,8 +3274,8 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Niederwiesa | Sachsen | 14522420 | – | – | noch nicht gesucht | – |
 | Nieste | Hessen | 06633019 | – | – | noch nicht gesucht | – |
 | Nittendorf | Bayern | 09375175 | – | – | noch nicht gesucht | – |
-| Nonnenhorn | Bayern | 09776120 | – | – | noch nicht gesucht | – |
-| Nonnweiler | Saarland | 10046115 | – | – | noch nicht gesucht | – |
+| Nonnenhorn | Bayern | 09776120 | 834311 | https://pixabay.com/photos/nonnenhorn-lake-constance-834311/ | Pixabay-Lizenz; Titel "Nonnenhorn Lake Constance District" | 8 |
+| Nonnweiler | Saarland | 10046115 | 6104956 | https://pixabay.com/de/photos/talsperre-nonnweiler-6104956/ | Pixabay-Lizenz; Talsperre Nonnweiler (Fotograf sempics) | 8 |
 | Nordhalben | Bayern | 09476159 | – | – | noch nicht gesucht | – |
 | Nordharz | Sachsen-Anhalt | 15085227 | – | – | noch nicht gesucht | – |
 | Nordheim | Baden-Württemberg | 08125074 | – | – | noch nicht gesucht | – |
@@ -3287,13 +3287,13 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Nuthe-Urstromtal | Brandenburg | 12072312 | – | – | noch nicht gesucht | – |
 | Nuthetal | Brandenburg | 12069454 | – | – | noch nicht gesucht | – |
 | Nußdorf | Bayern | 09189130 | – | – | noch nicht gesucht | – |
-| Nußdorf a.Inn | Bayern | 09187156 | – | – | noch nicht gesucht | – |
+| Nußdorf a.Inn | Bayern | 09187156 | 5113366 | https://pixabay.com/de/photos/heuberg-nussdorf-h%C3%BCtte-stadl-wiese-5113366/ | Pixabay-Lizenz; Heuberg, Nussdorf, Hütte, Stadl, Wiese. Der Heuberg gehört zu Nußdorf am Inn. Das Land ist nur aus dem Titel geschlossen, nicht bestätigt. | 5 |
 | Nüdlingen | Bayern | 09672136 | – | – | noch nicht gesucht | – |
 | Nüsttal | Hessen | 06631019 | – | – | noch nicht gesucht | – |
 | Ober-Mörlen | Hessen | 06440018 | – | – | noch nicht gesucht | – |
-| Oberammergau | Bayern | 09180125 | – | – | noch nicht gesucht | – |
+| Oberammergau | Bayern | 09180125 | 4885419 | https://pixabay.com/no/photos/oberammergau-bayern-kirke-katolikk-4885419/ | Pixabay-Lizenz; Titel "Oberammergau Bayern Kirche (katholisch)" | 8 |
 | Oberau | Bayern | 09180126 | – | – | noch nicht gesucht | – |
-| Oberaudorf | Bayern | 09187157 | – | – | noch nicht gesucht | – |
+| Oberaudorf | Bayern | 09187157 | 5978961 | https://pixabay.com/de/photos/haus-gasthaus-restaurant-oberaudorf-5978961/ | Pixabay-Lizenz; Gasthaus in Oberaudorf (Ortsname im Titel) | 7 |
 | Oberaula | Hessen | 06634019 | – | – | noch nicht gesucht | – |
 | Oberaurach | Bayern | 09674159 | – | – | noch nicht gesucht | – |
 | Oberboihingen | Baden-Württemberg | 08116050 | – | – | noch nicht gesucht | – |
@@ -3302,11 +3302,11 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Oberelsbach | Bayern | 09673149 | – | – | noch nicht gesucht | – |
 | Obergröningen | Baden-Württemberg | 08136049 | – | – | noch nicht gesucht | – |
 | Oberhaid | Bayern | 09471165 | – | – | noch nicht gesucht | – |
-| Oberharmersbach | Baden-Württemberg | 08317088 | – | – | noch nicht gesucht | – |
+| Oberharmersbach | Baden-Württemberg | 08317088 | 3873402 | https://pixabay.com/nl/photos/winter-oberharmersbach-zwarte-woud-3873402/ | Pixabay-Lizenz; Winterlandschaft Oberharmersbach, Schwarzwald | 8 |
 | Oberhausen | Bayern | 09185150 | – | – | noch nicht gesucht | – |
 | Oberhausen-Rheinhausen | Baden-Württemberg | 08215107 | – | – | noch nicht gesucht | – |
-| Oberkotzau | Bayern | 09475158 | – | – | noch nicht gesucht | – |
-| Obermarchtal | Baden-Württemberg | 08425090 | – | – | noch nicht gesucht | – |
+| Oberkotzau | Bayern | 09475158 | 4646053 | https://pixabay.com/de/photos/fernwehpark-oberkotzau-signs-of-fame-4646053/ | Pixabay-Lizenz; Fernwehpark Oberkotzau | 8 |
+| Obermarchtal | Baden-Württemberg | 08425090 | 1698177 | https://pixabay.com/photos/upper-marchtal-church-monastery-1698177/ | Pixabay-Lizenz; Kirche und Kloster Obermarchtal | 8 |
 | Oberndorf a.Lech | Bayern | 09779196 | – | – | noch nicht gesucht | – |
 | Obernheim | Baden-Württemberg | 08417047 | – | – | noch nicht gesucht | – |
 | Obernzell | Bayern | 09275137 | – | – | noch nicht gesucht | – |
