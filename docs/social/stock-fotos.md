@@ -2862,7 +2862,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Igersheim | Baden-Württemberg | 08128058 | – | – | noch nicht gesucht | – |
 | Iggensbach | Bayern | 09271127 | – | – | noch nicht gesucht | – |
 | Iggingen | Baden-Württemberg | 08136034 | – | – | noch nicht gesucht | – |
-| Ihringen | Baden-Württemberg | 08315059 | – | – | noch nicht gesucht | – |
+| Ihringen | Baden-Württemberg | 08315059 | 3656736 | https://pixabay.com/de/photos/ihringen-kaiserstuhl-kirche-3656736/ | Pixabay-Lizenz; Kirche und Landschaft, Ihringen am Kaiserstuhl | 8 |
 | Illerkirchberg | Baden-Württemberg | 08425137 | – | – | noch nicht gesucht | – |
 | Illerrieden | Baden-Württemberg | 08425066 | – | – | noch nicht gesucht | – |
 | Illingen | Baden-Württemberg | 08236028 | – | – | noch nicht gesucht | – |
@@ -2872,18 +2872,18 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Ilvesheim | Baden-Württemberg | 08226036 | – | – | noch nicht gesucht | – |
 | Immendingen | Baden-Württemberg | 08327025 | – | – | noch nicht gesucht | – |
 | Immenreuth | Bayern | 09377127 | – | – | noch nicht gesucht | – |
-| Immenstaad am Bodensee | Baden-Württemberg | 08435024 | – | – | noch nicht gesucht | – |
+| Immenstaad am Bodensee | Baden-Württemberg | 08435024 | 3099081 | https://pixabay.com/de/photos/bodensee-immenstaad-sonnenuntergang-3099081/ | Pixabay-Lizenz; Bodensee bei Immenstaad, Sonnenuntergang | 8 |
 | Inchenhofen | Bayern | 09771141 | – | – | noch nicht gesucht | – |
 | Ingersheim | Baden-Württemberg | 08118077 | – | – | noch nicht gesucht | – |
 | Ingoldingen | Baden-Württemberg | 08426062 | – | – | noch nicht gesucht | – |
 | Inning a.Ammersee | Bayern | 09188126 | – | – | noch nicht gesucht | – |
-| Insel Poel | Mecklenburg-Vorpommern | 13074035 | – | – | noch nicht gesucht | – |
-| Inzell | Bayern | 09189124 | – | – | noch nicht gesucht | – |
-| Inzigkofen | Baden-Württemberg | 08437059 | – | – | noch nicht gesucht | – |
+| Insel Poel | Mecklenburg-Vorpommern | 13074035 | 3872689 | https://pixabay.com/de/photos/leuchtturm-insel-poel-timmendorf-3872689/ | Pixabay-Lizenz; Leuchtturm Timmendorf auf der Insel Poel | 9 |
+| Inzell | Bayern | 09189124 | 3310480 | https://pixabay.com/photos/inzell-chiemgau-church-village-3310480/ | Pixabay-Lizenz; Dorf mit Kirche, Chiemgau | 8 |
+| Inzigkofen | Baden-Württemberg | 08437059 | 2739512 | https://pixabay.com/photos/inzigkofen-monastery-school-nuns-2739512/ | Pixabay-Lizenz; Kloster Inzigkofen | 8 |
 | Inzlingen | Baden-Württemberg | 08336043 | – | – | noch nicht gesucht | – |
 | Ipsheim | Bayern | 09575135 | – | – | noch nicht gesucht | – |
 | Irndorf | Baden-Württemberg | 08327027 | – | – | noch nicht gesucht | – |
-| Irschenberg | Bayern | 09182123 | – | – | noch nicht gesucht | – |
+| Irschenberg | Bayern | 09182123 | 4789593 | https://pixabay.com/de/photos/irschenberg-bayern-wald-natur-4789593/ | Pixabay-Lizenz; Landschaft/Wald bei Irschenberg | 6 |
 | Isen | Bayern | 09177123 | – | – | noch nicht gesucht | – |
 | Ispringen | Baden-Württemberg | 08236030 | – | – | noch nicht gesucht | – |
 | Ittlingen | Baden-Württemberg | 08125047 | – | – | noch nicht gesucht | – |
