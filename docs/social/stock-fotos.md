@@ -1298,7 +1298,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1479 | Neuhof | 06631018 | – | – | noch nicht gesucht | – |
 | 1480 | Burgkirchen a.d.Alz | 09171113 | – | – | noch nicht gesucht | – |
 | 1481 | Dallgow-Döberitz | 12063056 | – | – | noch nicht gesucht | – |
-| 1482 | Nideggen | 05358044 | – | – | noch nicht gesucht | – |
+| 1482 | Nideggen | 05358044 | 5790746 | https://pixabay.com/photos/burg-nideggen-castle-historically-5790746/ | Pixabay-Lizenz; Burg Nideggen (Titel "Burg Nideggen", Wahrzeichen der Stadt) | 8 |
 | 1483 | Meßstetten | 08417044 | – | – | noch nicht gesucht | – |
 | 1484 | Kenzingen | 08316020 | 662624 | https://pixabay.com/photos/bagpipes-kenzingen-medieval-festival-662624/ | Pixabay-Lizenz; Mittelalterfest Kenzingen (Dudelsack), kein Wahrzeichen | 5 |
 | 1486 | Herbolzheim | 08316017 | – | – | noch nicht gesucht | – |
@@ -1322,7 +1322,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1509 | Dießen am Ammersee | 09181114 | 1279458 | https://pixabay.com/photos/marie-m%C3%BCnster-die%C3%9Fen-ammersee-1279458/ | Pixabay-Lizenz; Marienmünster Dießen | 9 |
 | 1513 | Plankstadt | 08226063 | – | – | noch nicht gesucht | – |
 | 1514 | Feldkirchen-Westerham | 09187130 | – | – | noch nicht gesucht | – |
-| 1515 | Burgau | 09774121 | – | – | noch nicht gesucht | – |
+| 1515 | Burgau | 09774121 | 6025360 | https://pixabay.com/photos/castle-moated-castle-schloss-burgau-6025360/ | Pixabay-Lizenz; Wasserschloss Schloss Burgau (nur aus der URL erkennbar, Ort nicht bestätigt) | 6 |
 | 1516 | Morsbach | 05374028 | – | – | noch nicht gesucht | – |
 | 1517 | Nossen | 14627180 | 3404663 | https://pixabay.com/de/photos/kloster-altzella-nossen-eingangstor-3404663/ | Pixabay-Lizenz; Kloster Altzella, Eingangstor | 8 |
 | 1518 | Merzenich | 05358040 | – | – | noch nicht gesucht | – |
@@ -1336,14 +1336,14 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1531 | Bogen | 09278118 | – | – | noch nicht gesucht | – |
 | 1533 | Betzdorf | 07132006 | – | – | noch nicht gesucht | – |
 | 1534 | Büdelsdorf | 01058034 | – | – | noch nicht gesucht | – |
-| 1535 | Burgstädt | 14522060 | – | – | noch nicht gesucht | – |
+| 1535 | Burgstädt | 14522060 | 4723227 | https://pixabay.com/cs/photos/burgst%C3%A4dt-jaro-v%C4%9B%C5%BEe-trh-l%C3%A9k%C3%A1rna-4723227/ | Pixabay-Lizenz; Stadtansicht mit Türmen, Marktplatz und Apotheke (Frühling). Tags nennen Burgstädt. | 7 |
 | 1537 | Bad Lauterberg im Harz | 03159003 | – | – | noch nicht gesucht | – |
 | 1538 | Hünstetten | 06439007 | – | – | noch nicht gesucht | – |
 | 1540 | Barmstedt | 01056002 | – | – | noch nicht gesucht | – |
 | 1542 | Braunsbedra | 15088065 | – | – | noch nicht gesucht | – |
 | 1543 | Felsberg | 06634003 | – | – | noch nicht gesucht | – |
 | 1544 | Appenweier | 08317005 | – | – | noch nicht gesucht | – |
-| 1545 | Endingen am Kaiserstuhl | 08316012 | – | – | noch nicht gesucht | – |
+| 1545 | Endingen am Kaiserstuhl | 08316012 | 5030754 | https://pixabay.com/de/photos/tor-kleinstadt-endingen-kaiserstuhl-5030754/ | Pixabay-Lizenz; Stadttor, Kleinstadt. Tags nennen Endingen und Kaiserstuhl. | 8 |
 | 1546 | Aulendorf | 08436008 | – | – | noch nicht gesucht | – |
 | 1548 | Anröchte | 05974004 | – | – | noch nicht gesucht | – |
 | 1549 | Kirchseeon | 09175124 | – | – | noch nicht gesucht | – |
@@ -1352,7 +1352,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1554 | Neuenstadt am Kocher | 08125069 | – | – | noch nicht gesucht | – |
 | 1555 | Friedeburg | 03462005 | – | – | noch nicht gesucht | – |
 | 1556 | Mörlenbach | 06431017 | – | – | noch nicht gesucht | – |
-| 1557 | Flöha | 14522140 | – | – | noch nicht gesucht | – |
+| 1557 | Flöha | 14522140 | 1411058 | https://pixabay.com/de/photos/fl%C3%B6ha-architektur-1411058/ | Pixabay-Lizenz; Industriearchitektur in Flöha (Titel „Flöha, Architektur, Industriearchitektur“) | 6 |
 | 1558 | Birkenfeld | 08236004 | – | – | noch nicht gesucht | – |
 | 1559 | Grevesmühlen | 13074026 | – | – | noch nicht gesucht | – |
 | 1561 | Bestwig | 05958008 | – | – | noch nicht gesucht | – |
@@ -1367,7 +1367,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1573 | Friedrichsthal | 10041511 | – | – | noch nicht gesucht | – |
 | 1576 | Niebüll | 01054088 | – | – | noch nicht gesucht | – |
 | 1579 | Mengen | 08437076 | – | – | noch nicht gesucht | – |
-| 1581 | Olbernhau | 14521460 | – | – | noch nicht gesucht | – |
+| 1581 | Olbernhau | 14521460 | 3418921 | https://pixabay.com/de/photos/marktplatz-olbernhau-erzgebirge-3418921/ | Pixabay-Lizenz; Marktplatz Olbernhau (weitere Olbernhau-Fotos: Stadtkirche 3418918, Saigerhütte 3418894) | 8 |
 | 1583 | Hilter am Teutoburger Wald | 03459022 | – | – | noch nicht gesucht | – |
 | 1584 | Königsbach-Stein | 08236076 | 2056120 | https://pixabay.com/de/photos/k%C3%B6nigsbach-k%C3%B6nigsbach-stein-2056120/ | Pixabay-Lizenz; Königsbach (Bach) in Königsbach-Stein. Alternativen derselben Serie: 2056118, 2056117 | 6 |
 | 1585 | Beilngries | 09176114 | – | – | noch nicht gesucht | – |
