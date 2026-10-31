@@ -159,6 +159,19 @@ async function warmTeasers() {
 if (process.env.RM_SKIP_WARM !== '1') {
   setTimeout(() => { warmData(); void warmTeasers(); setInterval(() => { warmData(); void warmTeasers(); }, 10 * 60e3).unref(); }, 5e3).unref();
 }
+// Register der Tippfehler-Vorschläge (server/integrations/search-suggest.mjs): nach dem Start in Stücken füllen bzw. nachführen,
+// bis die Wortliste einmal durch ist (beim ersten Mal einige Minuten, danach Sekunden). Läuft in der Anwendung selbst, jeder Aufruf
+// höchstens einige Sekunden, dazwischen kommen Anfragen dran. Ohne Wortliste oder Sperre endet es sofort.
+async function suggestIndex() {
+  for (let i = 0; i < 400; i++) {
+    if (stopping) return;
+    try {
+      const r = await (await fetch(`${base}/api/internal/search-suggest`, { method: 'POST', headers: internal })).json();
+      if (!r || r.done || r.skipped || r.error) return;
+    } catch { return; }
+  }
+}
+if (internal.authorization && process.env.RM_SKIP_WARM !== '1') setTimeout(() => { void suggestIndex(); }, 20e3).unref();
 // Postausgang der Kontomails: beim Start und jede Minute (Mails überstehen so einen Neustart)
 async function outbox() {
   if (stopping) return;

@@ -90,6 +90,28 @@ Lokal 650 MB bei 941.000 Karten. Genutzt nur, wenn die Wortliste keine Kandidate
 Treffer zählt; Zähler laufen ohne Grenze über den Index. Die Bedingung `instr(search,?)>0` bleibt zusätzlich bestehen, damit das
 Ergebnis dasselbe ist wie ohne Index (Test `tests/search-fts.test.mjs`).
 
+### Tippfehler-Register (`search-suggest.mjs`, keine Migration, seit 31.10.2026)
+
+„wrmeplsnung“ → „Meinten Sie Wärmeplanung?“. Grundlage ist die Wortliste: `search_suggest_words` (alle Wörter aus `search_words`
+mit mindestens `MIN_CARDS` = 2 Karten) und darüber `search_suggest_trg` (FTS5, Trigram, external content) plus `search_suggest_vocab`
+(fts5vocab: wie viele Wörter jedes Trigramm enthalten). Angelegt und gefüllt wird zur Laufzeit von `syncSuggestIndex`, in Stücken
+und wiederaufnehmbar (Stand `search-suggest` in `system_state`, Sperre `search-suggest-lease`): der Node-Server ruft nach dem Start
+`POST /api/internal/search-suggest` auf, bis die Wortliste einmal durch ist (serve.mjs; erstes Mal bei 1,5 Mio. Wörtern rund 10 bis
+20 s in Stücken von höchstens 4 s, danach Sekunden), nachts führt `scripts/refresh-search-words.mjs` nach. Mit `DATABASE_READONLY=1`
+füllt nur das Skript. Register gemessen (1,46 Mio. Kunstwörter): rund 150 MB.
+
+Vorschlag (`suggestWord`): nur Wörter aus Buchstaben ab 4 Zeichen, die in der Wortliste fehlen. Die seltensten Trigramme des
+Begriffs (zusammen höchstens `TRIGRAM_BUDGET` = 20.000 Register-Zeilen, mindestens zwei) liefern Kandidaten, die Editierdistanz
+(Damerau-Levenshtein; bis 5 Zeichen 1, bis 9 Zeichen 2, sonst 3) wählt, bei gleicher Distanz die größere Kartenzahl. Die
+Schreibweise mit Umlauten und Großbuchstaben kommt aus bis zu 20 Suchkarten, die das Wort enthalten (`displayForm`, über
+`search_fts` wie die Suche, sonst LIKE). Gemessen bei 1,46 Mio. Wörtern: 25 bis 105 ms je Wort.
+
+`GET /api/search/suggest?q=…` (`guard()`, für alle Stufen gleich, eine Stunde zwischenspeicherbar) zerlegt den Suchtext wie
+`parseMonitorSearch` und antwortet `{suggestions:[{from,to}]}` je unbekanntem Wort (höchstens 3). Die Oberfläche fragt nur,
+wenn die Suche ohne Treffer zu Ende ist (`ResultsPanel.tsx`, `useSuggestions`), zeigt „Meinten Sie …?“ und setzt beim Klick die
+Wörter im Suchtext ein (`applySearch`); nichts wird still korrigiert, Trefferzahl, Glocken und plenara.X bleiben unberührt.
+Ohne Wortliste oder Register gibt es keine Vorschläge und keinen Fehler. Test: `tests/search-suggest.test.mjs`.
+
 ## 3. Eine Anfrage an `GET /api/search`
 
 Route `app/api/search/route.ts` → `guard()` (Stufe des Kontos; Gäste bekommen höchstens 10 Treffer und keine Seite über 1,

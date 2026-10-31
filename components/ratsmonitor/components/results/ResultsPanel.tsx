@@ -12,6 +12,33 @@ import { LIMITS } from "../../lib/tier";
 import { AboModels } from "../AboModels";
 import { CountDots } from "../CountDots";
 import { isPhone } from "../../lib/usePhone";
+import { fetchJson } from "../../lib/fetchJson";
+
+/** Tippfehler-Vorschlag des Servers (/api/search/suggest): je unbekanntem Wort eine Ersetzung */
+type Suggestion = { from: string; to: string };
+/** Fragt nur, wenn die Suche ohne Treffer zu Ende ist (active) und ein Begriff da ist; dieselbe Frage nicht zweimal */
+function useSuggestions(text: string, active: boolean): Suggestion[] {
+  const key = active ? text.trim() : "";
+  const [found, setFound] = useState<{ key: string; items: Suggestion[] }>({ key: "", items: [] });
+  useEffect(() => {
+    if (!key) return;
+    const ctrl = new AbortController();
+    fetchJson<{ suggestions?: Suggestion[] }>("/api/search/suggest?q=" + encodeURIComponent(key), { signal: ctrl.signal })
+      .then((d) => { if (!ctrl.signal.aborted) setFound({ key, items: (d.suggestions ?? []).filter((x) => x && typeof x.from === "string" && typeof x.to === "string" && x.from && x.to) }); })
+      .catch(() => { if (!ctrl.signal.aborted) setFound({ key, items: [] }); });
+    return () => ctrl.abort();
+  }, [key]);
+  return found.key === key ? found.items : [];
+}
+/** Suchtext mit den Ersetzungen (ganze Wörter, Groß- und Kleinschreibung egal) */
+function corrected(q: string, items: Suggestion[]): string {
+  let out = q;
+  for (const { from, to } of items) {
+    const word = from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp(`(^|[^\\p{L}\\p{N}])${word}(?=$|[^\\p{L}\\p{N}])`, "giu"), `$1${to}`);
+  }
+  return out;
+}
 
 /** Beim Blättern: die Zeile mit der Trefferzahl (Suche und Filter) an den oberen Rand direkt unter der angehefteten Kopfzeile, darunter beginnen die Artikel */
 function scrollToResultsTop() {
@@ -84,6 +111,9 @@ export function ResultsPanel() {
   const n = res.total;
   const name = (ags: string) => geo?.info(ags).name ?? ags;
   const emptyWhere = state.radius ? ` im Umkreis von ${state.radius.km} km um ${name(state.radius.ags)}` : state.area ? ` für ${name(state.area)}` : "";
+  /* „Meinten Sie …?“: nur ohne Treffer und nur für Wörter, die es nirgends gibt (server/integrations/search-suggest.mjs) */
+  const suggestions = useSuggestions(res.text, articlesReady && !res.error && !res.totalPending && n === 0);
+  const suggested = suggestions.length ? corrected(state.q, suggestions) : "";
 
   return (
     <section aria-labelledby="results-title" className="card-shell flex flex-col">
@@ -121,6 +151,14 @@ export function ResultsPanel() {
                 <IconEmptySearch size={22} />
               </div>
               <h3 className="m-0 text-[16px] text-slate-900">Keine Vorgänge gefunden{emptyWhere}</h3>
+              {suggested && suggested !== state.q && (
+                <p className="m-0 text-[16px] text-slate-900">
+                  Meinten Sie{" "}
+                  <button type="button" onClick={() => search.applySearch(suggested)} className="font-medium text-teal-700 hover:underline">
+                    {suggestions.map((s) => s.to).join(", ")} →
+                  </button>
+                </p>
+              )}
               <p className="m-0 text-[14px]">Für diese Kombination aus Gebiet, Suchbegriff und Filtern gibt es keine Einträge. Versuchen Sie:</p>
               {/* Konkrete nächste Schritte statt nur „zurücksetzen“ */}
               <div className="mt-1 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[14px]">
