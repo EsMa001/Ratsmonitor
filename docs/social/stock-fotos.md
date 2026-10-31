@@ -435,25 +435,25 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 392 | Walsrode | 794302 | https://pixabay.com/photos/bird-park-walsrode-red-sickle-bird-794302/ | Pixabay-Lizenz, Vogelpark (Tierfoto) | 5 |
 | 393 | Friedberg (Hessen) | 3688760 | https://pixabay.com/photos/friedberg-hesse-castle-wall-tower-3688760/ | Pixabay-Lizenz, Burg Friedberg | 7 |
 | 394 | Taunusstein | – | – | kein Bild gefunden | – |
-| 395 | Weil am Rhein | – | – | noch nicht gesucht | – |
-| 396 | Einbeck | – | – | noch nicht gesucht | – |
-| 397 | Osterholz-Scharmbeck | – | – | noch nicht gesucht | – |
-| 398 | Bad Hersfeld | – | – | noch nicht gesucht | – |
-| 399 | Ennepetal | – | – | noch nicht gesucht | – |
-| 400 | Haan (Rheinland) | – | – | noch nicht gesucht | – |
-| 401 | Neuburg an der Donau | – | – | noch nicht gesucht | – |
-| 402 | Friedberg (Bayern) | – | – | noch nicht gesucht | – |
-| 403 | Schönebeck (Elbe) | – | – | noch nicht gesucht | – |
-| 404 | Andernach | – | – | noch nicht gesucht | – |
-| 405 | Gaggenau | – | – | noch nicht gesucht | – |
-| 406 | Bretten | – | – | noch nicht gesucht | – |
-| 407 | Merzig | – | – | noch nicht gesucht | – |
-| 408 | Meschede | – | – | noch nicht gesucht | – |
-| 409 | Schwandorf | – | – | noch nicht gesucht | – |
+| 395 | Weil am Rhein | – | – | kein Bild gefunden | – |
+| 396 | Einbeck | – | – | kein Bild gefunden | – |
+| 397 | Osterholz-Scharmbeck | 2463074 | https://pixabay.com/de/photos/w%C3%BCmme-fluss-bremen-osterholz-2463074/ | Pixabay-Lizenz, Wümme, Ortsbezug nur über "Osterholz" | 4 |
+| 398 | Bad Hersfeld | 1934781 | https://pixabay.com/de/photos/bad-hersfeld-lullusfest-riesenrad-1934781/ | Pixabay-Lizenz, Lullusfest mit Riesenrad | 5 |
+| 399 | Ennepetal | 4673131 | https://pixabay.com/de/photos/panorama-ennepetal-hohenstein-4673131/ | Pixabay-Lizenz, Panorama Hohenstein | 6 |
+| 400 | Haan (Rheinland) | – | – | kein Bild gefunden | – |
+| 401 | Neuburg an der Donau | 4457976 | https://pixabay.com/de/photos/neuburg-a-d-donau-schloss-bayern-4457976/ | Pixabay-Lizenz, Schloss (Alternative Pexels 5540346, Drohnenfoto Altstadt) | 8 |
+| 402 | Friedberg (Bayern) | – | – | kein Bild gefunden | – |
+| 403 | Schönebeck (Elbe) | – | – | kein Bild gefunden | – |
+| 404 | Andernach | – | – | kein Bild gefunden | – |
+| 405 | Gaggenau | – | – | kein Bild gefunden | – |
+| 406 | Bretten | – | – | kein Bild gefunden | – |
+| 407 | Merzig | – | – | kein Bild gefunden | – |
+| 408 | Meschede | 2594410 | https://pixabay.com/de/photos/sauerland-remblinghausen-meschede-2594410/ | Pixabay-Lizenz, Remblinghausen (Ortsteil), Sauerland | 5 |
+| 409 | Schwandorf | – | – | kein Bild gefunden | – |
 
 ### Rang 410 bis 567 (Teilstand)
 
-Nicht durchsucht (Suchbudget der Runde erschöpft): Rang 459–461, 463, 465, 466, 469, 470, 472–474, 478–539 (soweit nicht unten aufgeführt), 546–565 (außer 540–545), 568–711. Diese Orte haben noch keine Zeile und werden nachgeholt.
+Noch nicht durchsucht: Rang 568–711 (Wellen folgen); einzelne Lücken sind Orte, für die kein Treffer ohne Namensnennung gefunden wurde.
 
 | Rang | Ort | ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|
@@ -506,31 +506,114 @@ Nicht durchsucht (Suchbudget der Runde erschöpft): Rang 459–461, 463, 465, 46
 | 456 | Griesheim | 7360662 | https://pixabay.com/de/photos/wagenhalle-griesheim-7360662/ | Pixabay-Lizenz, Wagenhalle (Ortsbezug unklar, vermutlich Frankfurt-Griesheim) | 3 |
 | 457 | Lohne (Oldenburg) | – | – | kein Bild gefunden | – |
 | 458 | Sundern (Sauerland) | – | – | kein Bild gefunden | – |
-| 459 | Teltow | – | – | noch nicht gesucht | – |
+| 459 | Teltow | – | – | kein Bild gefunden | – |
+| 460 | Baesweiler | – | – | kein Bild gefunden | – |
+| 461 | Wetter (Ruhr) | – | – | kein Bild gefunden | – |
 | 462 | Garmisch-Partenkirchen | 12568191 | https://www.pexels.com/photo/mountain-at-zugspitze-during-sunset-12568191/ | Pexels-Lizenz, Zugspitze bei Sonnenuntergang, Ortsbezug nur über die Region | 5 |
 | 462 | Garmisch-Partenkirchen | 12568191 | https://www.pexels.com/photo/mountain-at-zugspitze-during-sunset-12568191/ | Pexels-Lizenz, Zugspitze bei Sonnenuntergang, Ortsbezug nur über die Region | 5 |
+| 463 | Schloß Holte-Stukenbrock | – | – | kein Bild gefunden | – |
 | 464 | Wangen im Allgäu | 141181 | https://pixabay.com/de/photos/wangen-allg%C3%A4u-geb%C3%A4ude-architektur-141181/ | Pixabay-Lizenz, Gebäude/Architektur | 7 |
+| 465 | Overath | – | – | kein Bild gefunden | – |
+| 466 | Butzbach | – | – | kein Bild gefunden | – |
 | 467 | Strausberg | 736883 | https://pixabay.com/photos/airport-check-in-hall-information-736883/ | Pixabay-Lizenz, Flughafenhalle, Ortsbezug fragwürdig | 2 |
 | 468 | Ehingen (Donau) | 1194802 | https://pixabay.com/de/photos/unterwilzingen-gemeinde-dorf-1194802/ | Pixabay-Lizenz, Unterwilzingen (Ortsteil), nur indirekter Ortsbezug | 3 |
+| 469 | Hamminkeln | – | – | kein Bild gefunden | – |
+| 470 | Leimen (Baden) | – | – | kein Bild gefunden | – |
 | 471 | Hohen Neuendorf | 22037229 | https://www.pexels.com/photo/himmelspagode-in-hohen-neuendorf-in-germany-22037229/ | Pexels-Lizenz, Himmelspagode | 6 |
+| 472 | Rheinbach | – | – | kein Bild gefunden | – |
+| 473 | Weinstadt | – | – | kein Bild gefunden | – |
+| 474 | Wiesloch | – | – | kein Bild gefunden | – |
 | 475 | Werder (Havel) | 1985007 | https://pixabay.com/de/photos/werder-havel-sonne-plessow-see-1985007/ | Pixabay-Lizenz, Sonne am Plessower See | 7 |
 | 476 | Heppenheim | 5468392 | https://pixabay.com/photos/alley-paved-road-architecture-5468392/ | Pixabay-Lizenz, Gasse, Ortsbezug nur über Suchtreffer | 3 |
 | 477 | Pfaffenhofen an der Ilm | 204918 | https://pixabay.com/photos/pfaffenhofen-town-hall-ilm-flow-204918/ | Pixabay-Lizenz, Rathaus | 8 |
+| 478 | Hennigsdorf | – | – | kein Bild gefunden | – |
+| 479 | Heiligenhaus | – | – | kein Bild gefunden | – |
+| 480 | Bad Neuenahr-Ahrweiler | – | – | kein Bild gefunden | – |
+| 481 | Aschersleben | – | – | kein Bild gefunden | – |
+| 482 | Remseck am Neckar | – | – | kein Bild gefunden | – |
+| 483 | Neckarsulm | 6074128 | https://pixabay.com/photos/old-tower-neckarsulm-6074128/ | Pixabay-Lizenz, Deutschordensschloss | 6 |
+| 484 | Achern | – | – | kein Bild gefunden | – |
+| 485 | Lauf an der Pegnitz | 33987979 | https://www.pexels.com/photo/historic-lauf-castle-by-the-pegnitz-river-33987979/ | Pexels-Lizenz, Wenzelschloss | 7 |
+| 486 | Groß-Gerau | – | – | kein Bild gefunden | – |
+| 487 | Mühlacker | – | – | kein Bild gefunden | – |
+| 488 | Weiterstadt | – | – | kein Bild gefunden | – |
 | 489 | Bingen am Rhein | 19429209 | https://www.pexels.com/photo/view-of-bingen-am-rhein-in-summer-19429209/ | Pexels-Lizenz, Ansicht im Sommer | 7 |
+| 490 | Nordenham | – | – | kein Bild gefunden | – |
 | 491 | Zirndorf | 2881286 | https://pixabay.com/photos/play-mobile-land-funpark-zirndorf-2881286/ | Pixabay-Lizenz, Playmobil-Funpark (kein Stadtbild) | 5 |
+| 492 | Selm | – | – | kein Bild gefunden | – |
 | 493 | Bad Honnef | 2651479 | https://pixabay.com/de/photos/rhein-bad-honnef-siebengebirge-2651479/ | Pixabay-Lizenz, Rhein mit Siebengebirge | 7 |
+| 494 | Lübbecke | – | – | kein Bild gefunden | – |
+| 495 | Harsewinkel | – | – | kein Bild gefunden | – |
+| 496 | Unterhaching | – | – | kein Bild gefunden | – |
 | 497 | Lindau (Bodensee) | 10977586 | https://www.pexels.com/photo/the-lindau-lighthouse-in-lake-constance-lindau-germany-10977586/ | Pexels-Lizenz, Leuchtturm am Hafen | 8 |
+| 498 | Schleswig | – | – | kein Bild gefunden | – |
 | 499 | Kulmbach | 2897132 | https://pixabay.com/photos/kulmbach-castle-plassenburg-2897132/ | Pixabay-Lizenz, Stadt mit Plassenburg | 8 |
+| 500 | Helmstedt | – | – | kein Bild gefunden | – |
 | 501 | Horb am Neckar | 17939738 | https://www.pexels.com/zh-cn/photo/17939738/ | Pexels-Lizenz, Ortsbezug nur über Schlagwörter | 6 |
+| 502 | Rinteln | – | – | kein Bild gefunden | – |
+| 503 | Ellwangen (Jagst) | – | – | kein Bild gefunden | – |
+| 504 | Friedrichsdorf | – | – | kein Bild gefunden | – |
+| 505 | Geretsried | – | – | kein Bild gefunden | – |
+| 506 | Sankt Wendel | – | – | kein Bild gefunden | – |
+| 507 | Idstein | – | – | kein Bild gefunden | – |
+| 508 | Vaterstetten | – | – | kein Bild gefunden | – |
+| 509 | Verl | 5345691 | https://pixabay.com/de/photos/verl-verler-see-rundgang-5345691/ | Pixabay-Lizenz, Verler See | 5 |
+| 510 | Rottweil | 2859971 | https://pixabay.com/photos/rottweil-baden-wuerttemberg-germany-2859971/ | Pixabay-Lizenz, Rottweil | 6 |
+| 511 | Brilon | – | – | kein Bild gefunden | – |
+| 512 | Sangerhausen | 5097009 | https://pixabay.com/photos/rose-garden-sangerhausen-rose-5097009/ | Pixabay-Lizenz, Rosengarten | 6 |
+| 513 | Öhringen | – | – | kein Bild gefunden | – |
+| 514 | Roth | – | – | kein Bild gefunden | – |
+| 515 | Lennestadt | – | – | kein Bild gefunden | – |
+| 516 | Wiehl | – | – | kein Bild gefunden | – |
 | 517 | Salzkotten | 8166770 | https://pixabay.com/photos/saline-salzkotten-nature-green-8166770/ | Pixabay-Lizenz, Saline Salzkotten | 6 |
+| 518 | Obertshausen | – | – | kein Bild gefunden | – |
 | 519 | Lüdinghausen | 3642642 | https://pixabay.com/photos/germany-burg-vischering-m%C3%BCnsterland-3642642/ | Pixabay-Lizenz, Burg Vischering | 6 |
 | 520 | Weingarten (Württemberg) | 1187779 | https://pixabay.com/photos/pl%C3%A4tzler-pl%C3%A4tzler-guild-vineyard-1187779/ | Pixabay-Lizenz, Fastnacht der Plätzler, Ortsbezug unsicher | 4 |
+| 521 | Delitzsch | – | – | kein Bild gefunden | – |
+| 522 | Pfungstadt | – | – | kein Bild gefunden | – |
+| 523 | Petershagen | – | – | kein Bild gefunden | – |
+| 524 | Stutensee | – | – | kein Bild gefunden | – |
+| 525 | Norden | 2463036 | https://pixabay.com/de/photos/landschaft-norden-niedersachsen-2463036/ | Pixabay-Lizenz, Ortsbezug unklar (Stadt oder Himmelsrichtung) | 3 |
+| 526 | Espelkamp | – | – | kein Bild gefunden | – |
+| 527 | Ditzingen | – | – | kein Bild gefunden | – |
+| 528 | Köthen (Anhalt) | – | – | kein Bild gefunden | – |
+| 529 | Olpe | – | – | kein Bild gefunden | – |
+| 530 | Plettenberg | – | – | kein Bild gefunden | – |
+| 531 | Bad Oldesloe | – | – | kein Bild gefunden | – |
+| 532 | Schmallenberg | – | – | kein Bild gefunden | – |
+| 533 | Meckenheim | – | – | kein Bild gefunden | – |
+| 534 | Sprockhövel | – | – | kein Bild gefunden | – |
+| 535 | Syke | – | – | kein Bild gefunden | – |
+| 536 | Markkleeberg | – | – | kein Bild gefunden | – |
+| 537 | Rudolstadt | 1284754 | https://pixabay.com/de/photos/schloss-heidecksburg-rudolstadt-1284754/ | Pixabay-Lizenz, Schloss Heidecksburg | 7 |
+| 538 | Meiningen | – | – | kein Bild gefunden | – |
+| 539 | Warstein | – | – | kein Bild gefunden | – |
 | 540 | Waldshut-Tiengen | – | – | kein Bild gefunden | – |
 | 541 | Rathenow | 259119 | https://pixabay.com/de/photos/rathenow-winter-schleusenspucker-259119/ | Pixabay-Lizenz, Winter/Schleuse | 5 |
 | 542 | Ronnenberg | – | – | kein Bild gefunden | – |
 | 543 | Bad Mergentheim | 29568743 | https://www.pexels.com/photo/aerial-view-of-bad-mergentheim-countryside-29568743/ | Pexels-Lizenz, Luftbild | 7 |
 | 544 | Isernhagen | – | – | kein Bild gefunden | – |
 | 545 | Zittau | 22619624 | https://www.pexels.com/photo/town-hall-in-zittau-germany-22619624/ | Pexels-Lizenz, Rathaus | 7 |
+| 546 | Haren (Ems) | – | – | kein Bild gefunden | – |
+| 547 | Waldkraiburg | – | – | kein Bild gefunden | – |
+| 548 | Attendorn | – | – | kein Bild gefunden | – |
+| 549 | Herzogenaurach | – | – | kein Bild gefunden | – |
+| 550 | Varel | 1479479 | https://pixabay.com/de/photos/nordsee-camping-varel-1479479/ | Pixabay-Lizenz, Nordsee-Camping | 5 |
+| 551 | Bedburg | – | – | kein Bild gefunden | – |
+| 552 | Freudenstadt | 2503810 | https://pixabay.com/de/photos/freudenstadt-historischer-marktplatz-2503810/ | Pixabay-Lizenz, Historischer Marktplatz | 8 |
+| 553 | Staßfurt | 2974592 | https://pixabay.com/de/photos/dampflok-traditionslok-sta%C3%9Ffurt-2974592/ | Pixabay-Lizenz, Traditionslok (kein Stadtbild) | 4 |
+| 554 | Calw | – | – | kein Bild gefunden | – |
+| 555 | Übach-Palenberg | 5214393 | https://pixabay.com/de/photos/wasserturm-%C3%BCbach-palenberg-himmel-5214393/ | Pixabay-Lizenz, Wasserturm | 6 |
+| 556 | Riedstadt | 2155184 | https://pixabay.com/de/photos/riedstadt-goddelau-hessen-2155184/ | Pixabay-Lizenz, Ortsteil Goddelau | 6 |
+| 557 | Sehnde | – | – | kein Bild gefunden | – |
+| 558 | Eisenhüttenstadt | – | – | kein Bild gefunden | – |
+| 559 | Wandlitz | – | – | kein Bild gefunden | – |
+| 560 | Moormerland | – | – | kein Bild gefunden | – |
+| 561 | Jüchen | 103073 | https://pixabay.com/de/photos/juchen-deutschland-schloss-dyck-103073/ | Pixabay-Lizenz, Schloss Dyck | 7 |
+| 562 | Alfter | – | – | kein Bild gefunden | – |
+| 563 | Westerstede | 3630226 | https://pixabay.com/photos/westerstede-city-park-thale-pasture-3630226/ | Pixabay-Lizenz, Stadtpark/Weide | 5 |
+| 564 | Limbach-Oberfrohna | – | – | kein Bild gefunden | – |
+| 565 | Döbeln | – | – | kein Bild gefunden | – |
 | 566 | Starnberg | 1850767 | https://pixabay.com/photos/starnberger-lake-starnberg-lake-1850767/ | Pixabay-Lizenz, Starnberger See | 6 |
 | 567 | Husum | 2299109 | https://pixabay.com/en/husum-port-nordfriesland-city-2299109/ | Pixabay-Lizenz, Hafen | 7 |
 
