@@ -388,8 +388,8 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 345 | Wedel | 01056050 | – | – | kein Bild gefunden | – |
 | 346 | Viernheim | 06431020 | – | – | kein Bild gefunden | – |
 | 347 | Zweibrücken | 07320000 | – | – | kein Bild gefunden | – |
-| 348 | Ahrensburg | 01062001 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite, Schloss Ahrensburg) | – |
-| 349 | Merseburg | 15088220 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite) | – |
+| 348 | Ahrensburg | 01062001 | 750556 | https://pixabay.com/photos/closed-ahrensburg-schleswig-holstein-750556/ | Pixabay-Lizenz; Schloss Ahrensburg im Park (Schleswig-Holstein) | 8 |
+| 349 | Merseburg | 15088220 | 4439598 | https://pixabay.com/de/photos/merseburg-sachsen-anhalt-altstadt-4439598/ | Pixabay-Lizenz; Altstadt Merseburg (Sachsen-Anhalt) | 8 |
 | 350 | Geldern | 05154012 | – | – | kein Bild gefunden | – |
 | 351 | Korschenbroich | 05162020 | – | – | kein Bild gefunden | – |
 | 352 | Kornwestheim | 08118046 | 1391681 | https://pixabay.com/photos/marshalling-yard-track-harp-1391681/ | Pixabay-Lizenz, Verschiebebahnhof, Ortsbezug unsicher | 3 |
@@ -401,7 +401,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 358 | Vechta | 03460009 | 1769423 | https://pixabay.com/de/photos/vechta-zitadellen-park-markt-1769423/ | Pixabay-Lizenz, Zitadellenpark mit Markt | 6 |
 | 359 | Rheinfelden (Baden) | 08336069 | – | – | kein Bild gefunden | – |
 | 360 | Schwedt/Oder | 12073532 | – | – | kein Bild gefunden | – |
-| 361 | Bad Nauheim | 06440002 | – | – | kein Bild gefunden | – |
+| 361 | Bad Nauheim | 06440002 | 3632442 | https://pixabay.com/photos/city-bad-nauheim-tilt-shift-3632442/ | Pixabay-Lizenz; Stadtansicht Bad Nauheim im Tilt-Shift-Stil | 7 |
 | 362 | Jülich | 05358024 | – | – | kein Bild gefunden | – |
 | 363 | Forchheim | 09474126 | 29099170 | https://www.pexels.com/photo/historic-street-view-in-forchheim-germany-29099170/ | Pexels-Lizenz, historische Straßenansicht | 7 |
 | 364 | Lampertheim | 06431013 | – | – | kein Bild gefunden | – |
@@ -411,7 +411,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 368 | Fürstenwalde/Spree | 12067144 | 180865 | https://pixabay.com/de/photos/st-marien-dom-kirche-f%C3%BCrstenwalde-180865/ | Pixabay-Lizenz; Dom St. Marien | 7 |
 | 369 | Geesthacht | 01053032 | 29031305 | https://www.pexels.com/photo/historic-train-station-in-geesthacht-germany-29031305/ | Pexels-Lizenz, historischer Bahnhof | 7 |
 | 370 | Naumburg (Saale) | 15084355 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite) | – |
-| 371 | Bernburg (Saale) | 15089030 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite) | – |
+| 371 | Bernburg (Saale) | 15089030 | 4865197 | https://pixabay.com/photos/bernburg-saale-saxony-anhalt-castle-4865197/ | Pixabay-Lizenz; Schloss Bernburg über der Saale (Sachsen-Anhalt) | 8 |
 | 372 | Itzehoe | 01061046 | – | – | kein Bild gefunden | – |
 | 373 | Georgsmarienhütte | 03459019 | – | – | kein Bild gefunden | – |
 | 374 | Bramsche | 03459014 | 206405 | https://pixabay.com/photos/bramsche-germany-train-station-206405/ | Pixabay-Lizenz; nur Bahnhof, kein Wahrzeichen | 3 |
