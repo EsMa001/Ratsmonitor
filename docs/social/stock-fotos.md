@@ -2279,7 +2279,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Boms | Baden-Württemberg | 08436019 | – | – | noch nicht gesucht | – |
 | Bondorf | Baden-Württemberg | 08115004 | – | – | noch nicht gesucht | – |
 | Borsdorf | Sachsen | 14729060 | – | – | noch nicht gesucht | – |
-| Bosau | Schleswig-Holstein | 01055007 | – | – | noch nicht gesucht | – |
+| Bosau | Schleswig-Holstein | 01055007 | 4855527 | https://pixabay.com/photos/sunset-lake-bosau-landscape-tree-4855527/ | Pixabay-Lizenz; Sonnenuntergang am See bei Bosau (Titel und Schlagwörter nennen Bosau) | 7 |
 | Bous | Saarland | 10044122 | – | – | noch nicht gesucht | – |
 | Boxberg/O.L. | Sachsen | 14626060 | – | – | noch nicht gesucht | – |
 | Brachttal | Hessen | 06435005 | – | – | noch nicht gesucht | – |
@@ -2289,7 +2289,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Breidenbach | Hessen | 06534005 | – | – | noch nicht gesucht | – |
 | Breitenbach a.Herzberg | Hessen | 06632004 | – | – | noch nicht gesucht | – |
 | Breitenberg | Bayern | 09275118 | – | – | noch nicht gesucht | – |
-| Breitenbrunn | Bayern | 09373115 | – | – | noch nicht gesucht | – |
+| Breitenbrunn | Bayern | 09373115 | 215534 | https://pixabay.com/photos/breitenbrunn-altm%C3%BChl-valley-215534/ | Pixabay-Lizenz; historisches Schlosstor im Herbst, Breitenbrunn im Altmühltal (Oberpfalz) | 7 |
 | Breitenbrunn/Erzgeb. | Sachsen | 14521110 | – | – | noch nicht gesucht | – |
 | Breitengüßbach | Bayern | 09471119 | – | – | noch nicht gesucht | – |
 | Breitingen | Baden-Württemberg | 08425024 | – | – | noch nicht gesucht | – |
@@ -2326,7 +2326,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Buttenwiesen | Bayern | 09773122 | – | – | noch nicht gesucht | – |
 | Buttstädt | Thüringen | 16068063 | – | – | noch nicht gesucht | – |
 | Buxheim | Bayern | 09176118 | – | – | noch nicht gesucht | – |
-| Buxheim | Bayern | 09778123 | – | – | noch nicht gesucht | – |
+| Buxheim | Bayern | 09778123 | 3469105 | https://pixabay.com/photos/buxheim-choir-stalls-charterhouse-3469105/ | Pixabay-Lizenz; Chorgestühl der Kartause Buxheim (Unterallgäu) | 6 |
 | Bärenthal | Baden-Württemberg | 08327004 | – | – | noch nicht gesucht | – |
 | Böbingen an der Rems | Baden-Württemberg | 08136009 | – | – | noch nicht gesucht | – |
 | Böbrach | Bayern | 09276118 | – | – | noch nicht gesucht | – |
@@ -2347,13 +2347,13 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Bühlertann | Baden-Württemberg | 08127012 | – | – | noch nicht gesucht | – |
 | Bühlerzell | Baden-Württemberg | 08127013 | – | – | noch nicht gesucht | – |
 | Büsingen am Hochrhein | Baden-Württemberg | 08335015 | – | – | noch nicht gesucht | – |
-| Calden | Hessen | 06633005 | – | – | noch nicht gesucht | – |
+| Calden | Hessen | 06633005 | 4945434 | https://pixabay.com/photos/wilhelmsthal-castle-calden-castle-4945434/ | Pixabay-Lizenz; Schloss Wilhelmsthal in Calden | 9 |
 | Callenberg | Sachsen | 14524020 | – | – | noch nicht gesucht | – |
 | Cavertitz | Sachsen | 14730050 | – | – | noch nicht gesucht | – |
 | Chamerau | Bayern | 09372117 | – | – | noch nicht gesucht | – |
-| Chieming | Bayern | 09189114 | – | – | noch nicht gesucht | – |
+| Chieming | Bayern | 09189114 | 168672 | https://pixabay.com/de/photos/chiemsee-chieming-bayern-alpen-see-168672/ | Pixabay-Lizenz; Chiemsee bei Chieming, Alpen | 8 |
 | Claußnitz | Sachsen | 14522070 | – | – | noch nicht gesucht | – |
-| Cleebronn | Baden-Württemberg | 08125017 | – | – | noch nicht gesucht | – |
+| Cleebronn | Baden-Württemberg | 08125017 | 1698853 | https://pixabay.com/de/photos/weinberg-michaelsberg-cleebronn-1698853/ | Pixabay-Lizenz; Weinberg am Michaelsberg bei Cleebronn | 8 |
 | Collenberg | Bayern | 09676117 | – | – | noch nicht gesucht | – |
 | Colmberg | Bayern | 09571130 | – | – | noch nicht gesucht | – |
 | Cornberg | Hessen | 06632005 | – | – | noch nicht gesucht | – |
