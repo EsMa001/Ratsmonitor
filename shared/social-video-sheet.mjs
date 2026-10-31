@@ -55,7 +55,7 @@ const STRONG=/\b(beauftragt|beschließt|beschlossen|genehmigt|bestätigt|empfieh
 const PROPOSAL=/\b(beschließt|empfiehlt|beauftragt|genehmigt|bestätigt|zugestimmt|beschlossen|vorgesehen|soll|sollen)\b/i;
 const DECISION=/\b(bestätigt|beschließt|beschlossen|genehmigt|beauftragt|empfiehlt|stimmt|wird|werden|soll|sollen|ist vorgesehen)\b/i;
 /** Auszug in Sätze zerlegen: an „[…]“ und an Satzenden (Satzende = Punkt, dann Leerzeichen und Großbuchstabe oder Anführungszeichen) */
-const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
+const sentencesOf=t=>String(t||'').replace(/\s+/g,' ').split(/\s*\[…\]\s*|(?<=[.!?])(?<!\b\d{1,2}\.)\s+(?=[A-ZÄÖÜ„])/).map(x=>x.replace(/^„|“$/g,'').trim()).filter(x=>x.length>=25);
 /** Zitat: wörtlich aus dem Auszug. Erster Entscheidungssatz (Kernsatz zuerst, dann Auszug) mit höchstens 160 Zeichen; ist er länger,
  *  wird er vor einem Bindewort gekürzt und mit „[…]“ beendet. Nichts wird umformuliert. */
 export function pickQuote(summary,exclude=[]){
@@ -64,6 +64,9 @@ export function pickQuote(summary,exclude=[]){
  const dec0=list.filter(x=>DECISION.test(x)&&!exclude.some(e=>same(x,e))),dec=[...dec0.filter(x=>STRONG.test(x)),...dec0.filter(x=>!STRONG.test(x))],first=dec[0];
  if(!first)return null;
  if(first.length<=MAX_QUOTE)return first;
+ // zu lang: zuerst einen langen Satzanfang vor dem Entscheidungsverb (Gremiumsname) mit […] auslassen, damit der Beschluss selbst vollständig bleibt
+ const sv=first.match(STRONG);
+ if(sv&&sv.index>45){const cand=first.slice(0,sv.index).trim().split(/\s+/).slice(0,2).join(' ')+' […] '+first.slice(sv.index);if(cand.length<=MAX_QUOTE)return cand;}
  const head=first.slice(0,MAX_QUOTE-4),cut=[...head.matchAll(/\s(?:als|zum|zur|und|für|insbesondere|sowie|gemäß)\s/g)].at(-1);
  if(cut&&cut.index>60)return head.slice(0,cut.index).replace(/[,;]$/,'')+' […]';
  return dec.find(x=>x.length<=MAX_QUOTE)||null;
@@ -71,20 +74,28 @@ export function pickQuote(summary,exclude=[]){
 /** Titel für Zeile 2: Teil vor „ - “ oder „:“, ohne „der Stadt/Landeshauptstadt <Ort>“ und ohne den Ortsnamen; höchstens 34 Zeichen, sonst null */
 export function shortTitle(title,regionName){
  let t=String(title||'').split(/\s+[-–]\s+|:\s/)[0];
+ t=t.replace(/^(?:Beratung und )?(?:Beschlussfassung|Beschluss)(?:\s+(?:über|zu|zur|zum))?\s+(?:(?:den|die|das|der|dem)\s+)?/i,'');
  const ort=regionName.replace(/^(Stadt|Gemeinde|Kreis|Landkreis)\s+/,'');
  t=t.replace(new RegExp(`\\s+(?:der|des)\\s+(?:Stadt|Landeshauptstadt|Gemeinde|Hansestadt)\\s+${ort}`,'gi'),'').replace(new RegExp(`\\b${ort}\\b`,'g'),'');
  t=t.replace(/\s+/g,' ').replace(/^[\s:,-]+|[\s:,-]+$/g,'');
- return t&&t.length<=34?t:null;
+ if(t.length>34){const m=t.match(/^(.+?)\s+(?:für|zur|zum|zu|im|in)\s+(.*)$/);
+  if(m){const yr=(m[2].match(/\b(20\d{2})\b/)||[])[1];const c=yr&&!m[1].includes(yr)?`${m[1]} ${yr}`:m[1];if(c.length<=34)t=c;}}
+ return t&&t.length<=34?t[0].toUpperCase()+t.slice(1):null;
 }
 
 /**
  * @param {{title:string,status?:string,committee?:string,events?:{date:string,committee:string}[],ruleSummary?:{short?:string},theme?:{id?:string}}} topic
  * @param {{regionName:string,today:string,titleShort?:string}} o  titleShort: gekürzter Titel (höchstens 34 Zeichen) für Zeile 2
  */
-export function videoSheet(topic,{regionName,today,titleShort}){
+export function videoSheet(topic,{regionName,today,titleShort,kommune}){
  const warnings=[],st=STATUS[topic.status]||STATUS.unknown;
  if(!STATUS[topic.status])warnings.push(`Status „${topic.status}“ unbekannt, gelesen als „Stand offen“`);
- const events=(topic.events||[]).filter(e=>/^\d{4}-\d\d-\d\d$/.test(e.date||'')).sort((a,b)=>a.date.localeCompare(b.date));
+ const ortName=regionName.replace(/^(Stadt|Gemeinde|Verbandsgemeinde|Kreis|Landkreis)\s+/,'');
+ const cleanC=c=>String(c||'').replace(new RegExp(`\\s+(?:(?:Stadt|Gemeinde|Verbandsgemeinde)\\s+)?${ortName}$`),'').trim();
+ const STATUSWORT=/^(stand offen|in beratung|beschlossen|abgelehnt|angekündigt|vertagt|empfehlung|zur kenntnis)$/i;
+ const seen=new Set();
+ const events=(topic.events||[]).filter(e=>/^\d{4}-\d\d-\d\d$/.test(e.date||'')).map(e=>({...e,committee:cleanC(e.committee),result:STATUSWORT.test(String(e.result||'').trim())?null:e.result}))
+  .filter(e=>{const k=e.date+'|'+e.committee;if(seen.has(k))return false;seen.add(k);return true;}).sort((a,b)=>a.date.localeCompare(b.date));
  const past=events.filter(e=>e.date<=today),future=events.filter(e=>e.date>today);
  const last=past.at(-1)||null,next=future[0]||null,before=past.length>1?past.at(-2):null;
  if(!last)warnings.push('keine beratene Sitzung');
@@ -125,6 +136,6 @@ export function videoSheet(topic,{regionName,today,titleShort}){
   stand:{word:st.word,stamp:st.stamp,icon:st.icon,extra:st.extra,statusKey:STATUS[topic.status]?topic.status:'unknown'},
   zitat:quote,zitat2:quote2,verlauf,themaIcon:THEME_ICON[topic.theme?.id]||'pin',zitatHinweis:proposal&&quote&&PROPOSAL.test(quote)?'Vorschlag aus der Vorlage':'Aus der Vorlage',
   betraege:amounts,naechste:next?{committee:next.committee,datum:shortDate(next.date),tage:days}:null,meta,
-  quelle:`Quelle: öffentliche Ratsunterlagen der Stadt ${regionName}`,
+  quelle:`Quelle: öffentliche Ratsunterlagen der ${kommune||`Stadt ${regionName}`}`,
   sprechtext:{1:hook,2:kern,3:verlaufText,4:'',5:stand,6:'Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenara.'}};
 }

@@ -100,3 +100,18 @@ test('Betrag mit „,-“ ohne Eurozeichen behält das Leerzeichen, nächste Sit
  const s=videoSheet({title:'Thema',status:'consulting',events:[{date:'2026-10-13',committee:'Rat'},{date:'2026-11-12',committee:'Rat'}],ruleSummary:{short:'Der Rat beschließt das Thema für alle Beteiligten im Ort.'}},{regionName:'Ort',today:'2026-10-31',titleShort:'Thema'});
  assert.match(s.sprechtext[5],/Nächste Sitzung: Rat, am zwölften November\./);
 });
+
+test('Zu langer Beschlusssatz: Gremiumsname wird ausgelassen, der Beschluss bleibt vollständig', () => {
+ const t={title:'Beratung und Beschlussfassung über den Forstwirtschaftsplan für das Forstwirtschaftsjahr 2027',status:'approved',events:[{date:'2026-10-31',committee:'Stadtrat Bad Hönningen'}],
+  ruleSummary:{short:'Der Ausschuss für Erneuerbare Energien, Umwelt- und Naturschutz empfiehlt dem Stadtrat zu beschließen: 1. Dem Forstwirtschaftsplan für das Jahr 2027 wird zugestimmt.'}};
+ const s=videoSheet(t,{regionName:'Bad Hönningen',today:'2026-10-31'});
+ assert.equal(s.zitat,'Der Ausschuss […] empfiehlt dem Stadtrat zu beschließen: 1. Dem Forstwirtschaftsplan für das Jahr 2027 wird zugestimmt.');
+ assert.equal(s.titel2,'Forstwirtschaftsplan 2027');
+ assert.equal(s.meta[0],'Stadtrat · zuletzt beraten am 31.10.26');
+});
+
+test('Doppelte Termine entfallen, Statuswörter sind keine Ergebnisse', () => {
+ const e=[{date:'2026-09-23',committee:'Ausschuss Stadt Ort',result:'Stand offen'},{date:'2026-09-23',committee:'Ausschuss Stadt Ort',result:'Stand offen'},{date:'2026-10-31',committee:'Stadtrat Ort',result:'In Beratung'}];
+ const s=videoSheet({title:'Thema',status:'approved',events:e,ruleSummary:{short:'Der Rat beschließt das Thema für alle Beteiligten im Ort.'}},{regionName:'Ort',today:'2026-10-31',titleShort:'Thema'});
+ assert.deepEqual(s.verlauf.map(v=>[v.committee,v.result]),[['Ausschuss',null],['Stadtrat',null]]);
+});
