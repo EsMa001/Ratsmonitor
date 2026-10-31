@@ -3199,7 +3199,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Münchhausen | Hessen | 06534015 | – | – | noch nicht gesucht | – |
 | Münchsmünster | Bayern | 09186139 | – | – | noch nicht gesucht | – |
 | Münsing | Bayern | 09173137 | – | – | noch nicht gesucht | – |
-| Münstertal/Schwarzwald | Baden-Württemberg | 08315130 | – | – | noch nicht gesucht | – |
+| Münstertal/Schwarzwald | Baden-Württemberg | 08315130 | 4453557 | https://pixabay.com/de/photos/kloster-kirche-st-trudpert-4453557/ | Pixabay-Lizenz; Kloster und Kirche St. Trudpert (Titel laut Suchseite "Münstertal") | 8 |
 | Nalbach | Saarland | 10044113 | – | – | noch nicht gesucht | – |
 | Namborn | Saarland | 10046113 | – | – | noch nicht gesucht | – |
 | Nandlstadt | Bayern | 09178144 | – | – | noch nicht gesucht | – |
@@ -3208,18 +3208,18 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Neckargerach | Baden-Württemberg | 08225064 | – | – | noch nicht gesucht | – |
 | Neckartailfingen | Baden-Württemberg | 08116041 | – | – | noch nicht gesucht | – |
 | Neckartenzlingen | Baden-Württemberg | 08116042 | – | – | noch nicht gesucht | – |
-| Neckarwestheim | Baden-Württemberg | 08125066 | – | – | noch nicht gesucht | – |
-| Neckarzimmern | Baden-Württemberg | 08225067 | – | – | noch nicht gesucht | – |
+| Neckarwestheim | Baden-Württemberg | 08125066 | 4710740 | https://pixabay.com/photos/castle-liebenstein-neckarwestheim-4710740/ | Pixabay-Lizenz; Schloss Liebenstein (URL nennt Neckarwestheim) | 8 |
+| Neckarzimmern | Baden-Württemberg | 08225067 | 7313091 | https://pixabay.com/photos/hornberg-castle-neckarzimmern-7313091/ | Pixabay-Lizenz; Burg Hornberg (URL nennt Neckarzimmern) | 9 |
 | Neenstetten | Baden-Württemberg | 08425083 | – | – | noch nicht gesucht | – |
 | Nehren | Baden-Württemberg | 08416026 | – | – | noch nicht gesucht | – |
 | Neidenstein | Baden-Württemberg | 08226058 | – | – | noch nicht gesucht | – |
-| Neidlingen | Baden-Württemberg | 08116043 | – | – | noch nicht gesucht | – |
+| Neidlingen | Baden-Württemberg | 08116043 | 2779415 | https://pixabay.com/de/photos/reu%C3%9Fenstein-burg-reu%C3%9Fenstein-ruine-2779415/ | Pixabay-Lizenz; Burg Reußenstein (Burgruine über Neidlingen) | 8 |
 | Nellingen | Baden-Württemberg | 08425084 | – | – | noch nicht gesucht | – |
 | Nentershausen | Hessen | 06632013 | – | – | noch nicht gesucht | – |
 | Nerenstetten | Baden-Württemberg | 08425085 | – | – | noch nicht gesucht | – |
 | Nersingen | Bayern | 09775134 | – | – | noch nicht gesucht | – |
-| Nesse-Apfelstädt | Thüringen | 16067087 | – | – | noch nicht gesucht | – |
-| Nesselwang | Bayern | 09777153 | – | – | noch nicht gesucht | – |
+| Nesse-Apfelstädt | Thüringen | 16067087 | 7498991 | https://pixabay.com/de/photos/apfelst%C3%A4dt-kirche-religion-himmel-7498991/ | Pixabay-Lizenz; Kirche in Apfelstädt (Ortsteil) | 6 |
+| Nesselwang | Bayern | 09777153 | 348515 | https://pixabay.com/de/photos/nesselwang-blumenwiese-allg%C3%A4u-348515/ | Pixabay-Lizenz; Blumenwiese bei Nesselwang, Allgäu | 7 |
 | Neu-Eichenberg | Hessen | 06636009 | – | – | noch nicht gesucht | – |
 | Neuberg | Hessen | 06435020 | – | – | noch nicht gesucht | – |
 | Neubeuern | Bayern | 09187154 | – | – | noch nicht gesucht | – |
@@ -3233,11 +3233,11 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Neuental | Hessen | 06634016 | – | – | noch nicht gesucht | – |
 | Neufahrn i.NB | Bayern | 09274153 | – | – | noch nicht gesucht | – |
 | Neufra | Baden-Württemberg | 08437082 | – | – | noch nicht gesucht | – |
-| Neuhaus a.Inn | Bayern | 09275134 | – | – | noch nicht gesucht | – |
+| Neuhaus a.Inn | Bayern | 09275134 | 6532744 | https://pixabay.com/de/photos/schloss-neuhaus-am-inn-deutschland-6532744/ | Pixabay-Lizenz; Schloss Neuhaus am Inn | 8 |
 | Neuhaus a.d.Pegnitz | Bayern | 09574140 | – | – | noch nicht gesucht | – |
 | Neuhausen | Baden-Württemberg | 08236044 | – | – | noch nicht gesucht | – |
 | Neuhausen ob Eck | Baden-Württemberg | 08327038 | – | – | noch nicht gesucht | – |
-| Neuhausen/Erzgeb. | Sachsen | 14522400 | – | – | noch nicht gesucht | – |
+| Neuhausen/Erzgeb. | Sachsen | 14522400 | 3658963 | https://pixabay.com/de/photos/neuhausen-erzgebirge-schloss-3658963/ | Pixabay-Lizenz; Schloss Neuhausen (Erzgebirge) | 8 |
 | Neuhausen/Spree | Brandenburg | 12071301 | – | – | noch nicht gesucht | – |
 | Neukieritzsch | Sachsen | 14729320 | – | – | noch nicht gesucht | – |
 | Neukirch | Baden-Württemberg | 08435042 | – | – | noch nicht gesucht | – |
