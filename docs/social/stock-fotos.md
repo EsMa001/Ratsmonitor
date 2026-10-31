@@ -3748,15 +3748,15 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Sulzbach-Laufen | Baden-Württemberg | 08127079 | – | – | noch nicht gesucht | – |
 | Sulzberg | Bayern | 09780140 | – | – | noch nicht gesucht | – |
 | Sulzemoos | Bayern | 09174146 | – | – | noch nicht gesucht | – |
-| Sulzfeld | Baden-Württemberg | 08215082 | – | – | noch nicht gesucht | – |
+| Sulzfeld | Baden-Württemberg | 08215082 | 7509483 | https://pixabay.com/photos/ravensburg-sulzfeld-castle-ruin-7509483/ | Pixabay-Lizenz; Burg Ravensburg (Burgruine) bei Sulzfeld, Kraichgau | 8 |
 | Surberg | Bayern | 09189148 | – | – | noch nicht gesucht | – |
-| Sylt | Schleswig-Holstein | 01054168 | – | – | noch nicht gesucht | – |
+| Sylt | Schleswig-Holstein | 01054168 | 4421076 | https://pixabay.com/photos/sylt-sunset-sea-north-sea-4421076/ | Pixabay-Lizenz; Sonnenuntergang am Meer, Sylt | 7 |
 | Söchtenau | Bayern | 09187174 | – | – | noch nicht gesucht | – |
 | Söhrewald | Hessen | 06633024 | – | – | noch nicht gesucht | – |
 | Sölden | Baden-Württemberg | 08315107 | – | – | noch nicht gesucht | – |
 | Südeichsfeld | Thüringen | 16064074 | – | – | noch nicht gesucht | – |
 | Süderholz | Mecklenburg-Vorpommern | 13073089 | – | – | noch nicht gesucht | – |
-| Südharz | Sachsen-Anhalt | 15087412 | – | – | noch nicht gesucht | – |
+| Südharz | Sachsen-Anhalt | 15087412 | 1346803 | https://pixabay.com/photos/stolberg-resin-truss-1346803/ | Pixabay-Lizenz; Fachwerkstraße in Stolberg (Harz), Ortsteil der Stadt Südharz | 6 |
 | Sülzetal | Sachsen-Anhalt | 15083490 | – | – | noch nicht gesucht | – |
 | Süsel | Schleswig-Holstein | 01055041 | – | – | noch nicht gesucht | – |
 | Tacherting | Bayern | 09189149 | – | – | noch nicht gesucht | – |
@@ -3770,7 +3770,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Taufkirchen | Bayern | 09184145 | – | – | noch nicht gesucht | – |
 | Taufkirchen (Vils) | Bayern | 09177139 | – | – | noch nicht gesucht | – |
 | Tegernheim | Bayern | 09375204 | – | – | noch nicht gesucht | – |
-| Teisendorf | Bayern | 09172134 | – | – | noch nicht gesucht | – |
+| Teisendorf | Bayern | 09172134 | 735894 | https://pixabay.com/photos/teisendorf-town-square-alley-735894/ | Pixabay-Lizenz; Marktplatz/Gasse in Teisendorf | 8 |
 | Teising | Bayern | 09171131 | – | – | noch nicht gesucht | – |
 | Teisnach | Bayern | 09276143 | – | – | noch nicht gesucht | – |
 | Teningen | Baden-Württemberg | 08316043 | – | – | noch nicht gesucht | – |
