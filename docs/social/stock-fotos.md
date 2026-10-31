@@ -1511,10 +1511,10 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Freyung | Bayern | 09272118 | – | – | noch nicht gesucht | – |
 | Fridingen an der Donau | BW | 08327016 | – | – | noch nicht gesucht | – |
 | Friedland | Brandenburg | 12067137 | – | – | noch nicht gesucht | – |
-| Friedrichroda | Thüringen | 16067019 | – | – | noch nicht gesucht | – |
+| Friedrichroda | Thüringen | 16067019 | 2901540 | https://pixabay.com/de/photos/kristall-h%c3%b6hle-marienglas-2901540/ | Pixabay-Lizenz; Marienglashöhle (Kristallhöhle) | 5 |
 | Friedrichstadt | Schleswig-Holstein | 01054033 | – | – | noch nicht gesucht | – |
 | Furth im Wald | Bayern | 09372126 | – | – | noch nicht gesucht | – |
-| Furtwangen im Schwarzwald | BW | 08326017 | – | – | noch nicht gesucht | – |
+| Furtwangen im Schwarzwald | BW | 08326017 | 7397776 | https://pixabay.com/photos/witch-hole-mill-sawmill-mill-wheel-7397776/ | Pixabay-Lizenz; Hexenlochmühle (Sägemühle mit Mühlrad) | 5 |
 | Fürstenberg/Havel | Brandenburg | 12065084 | – | – | noch nicht gesucht | – |
 | Gammertingen | BW | 08437031 | – | – | noch nicht gesucht | – |
 | Gedern | Hessen | 06440009 | – | – | noch nicht gesucht | – |
