@@ -660,10 +660,10 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 609 | Neu Wulmstorf | 03353026 | – | – | kein Bild gefunden | – |
 | 610 | Donaueschingen | 08326012 | 2659782 | https://pixabay.com/photos/the-source-of-the-danube-2659782/ | Pixabay-Lizenz, Donauquelle, Ortsbezug indirekt | 4 |
 | 611 | Ottobrunn | 09184136 | – | – | kein Bild gefunden | – |
-| 612 | Bad Rappenau | 08125006 | – | – | kein Bild gefunden | – |
+| 612 | Bad Rappenau | 08125006 | 2537667 | https://pixabay.com/photos/bad-rappenau-city-baden-w%C3%BCrttemberg-2537667/ | Pixabay-Lizenz; Wasserschloss Bad Rappenau im Frühling | 7 |
 | 613 | Versmold | 05754048 | – | – | kein Bild gefunden | – |
 | 614 | Eppingen | 08125026 | 1334648 | https://pixabay.com/illustrations/hge-eppingen-architecture-school-1334648/ | Pixabay-Lizenz, Illustration eines Schulgebäudes | 3 |
-| 615 | Radevormwald | 05374036 | – | – | kein Bild gefunden | – |
+| 615 | Radevormwald | 05374036 | 5059589 | https://pixabay.com/photos/pavillion-square-radevormwald-slate-5059589/ | Pixabay-Lizenz; historischer Gartenpavillon in Radevormwald, kein Wahrzeichen im engeren Sinn | 5 |
 | 616 | Ilsede | 03157009 | – | – | kein Bild gefunden | – |
 | 617 | Quickborn | 01056041 | – | – | kein Bild gefunden | – |
 | 618 | Waldkirch | 08316056 | 720831 | https://pixabay.com/photos/waldkirch-village-black-forest-720831/ | Pixabay-Lizenz, Blick auf Waldkirch im Schwarzwald | 7 |
@@ -676,7 +676,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 625 | Halle (Westfalen) | 05754012 | – | – | kein Bild gefunden | – |
 | 626 | Glauchau | 14524080 | – | – | kein Bild gefunden | – |
 | 627 | Aichach | 09771113 | 197631 | https://pixabay.com/de/photos/aichach-stadt-bayern-historisch-197631/ | Pixabay-Lizenz, historische Ansicht | 7 |
-| 628 | Sonthofen | 09780139 | – | – | kein Bild gefunden | – |
+| 628 | Sonthofen | 09780139 | 899292 | https://pixabay.com/photos/sonthofen-allg%C3%A4u-town-germany-899292 | Pixabay-Lizenz; Fußgängerzone Sonthofen, Allgäu (Wahrzeichen nicht getroffen) | 5 |
 | 629 | Flörsheim am Main | 06436004 | – | – | kein Bild gefunden | – |
 | 630 | Soltau | 03358021 | 33661131 | https://www.pexels.com/photo/charming-street-view-in-soltau-germany-33661131/ | Pexels-Lizenz, Straßenansicht | 8 |
 | 631 | Eislingen/Fils | 08117019 | – | – | kein Bild gefunden | – |
@@ -736,7 +736,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 685 | Neufahrn bei Freising | 09178145 | – | – | kein Bild gefunden | – |
 | 686 | Wachtberg | 05382072 | – | – | kein Bild gefunden | – |
 | 687 | Fröndenberg | 05978012 | – | – | kein Bild gefunden | – |
-| 688 | Coswig (Sachsen) | 14627010 | – | – | kein Bild gefunden | – |
+| 688 | Coswig (Sachsen) | 14627010 | 182433 | https://pixabay.com/de/photos/coswig-elbe-f%C3%A4hre-schloss-182433/ | Pixabay-Lizenz; Titel "Schloss an der Elbe in Coswig". Ort unsicher: Schloss und Elbfähre passen eher zu Coswig (Anhalt) als zu Coswig (Sachsen), vor Verwendung prüfen. | 3 |
 | 689 | Burgwedel | 03241004 | – | – | kein Bild gefunden | – |
 | 690 | Uetze | 03241018 | – | – | kein Bild gefunden | – |
 | 691 | Greiz | 16076022 | 3714178 | https://pixabay.com/de/photos/park-greiz-th%C3%BCringen-3714178/ | Pixabay-Lizenz, Park mit Seespiegelung | 7 |
@@ -759,7 +759,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 708 | Neunkirchen-Seelscheid | 05382040 | – | – | kein Bild gefunden | – |
 | 709 | Oberkirch | 08317089 | – | – | kein Bild gefunden | – |
 | 710 | Schmalkalden | 16066063 | 4169167 | https://pixabay.com/fr/photos/schmalkalden-luthier-luther-tour-4169167/ | Pixabay-Lizenz, Lutherturm | 6 |
-| 711 | Tettnang | 08435057 | – | – | kein Bild gefunden | – |
+| 711 | Tettnang | 08435057 | 5133197 | https://pixabay.com/de/photos/fenster-metzgerei-ort-tettnang-5133197/ | Pixabay-Lizenz; Fenster einer Metzgerei, Ortsbezug nur im Titel, kein Wahrzeichen | 3 |
 
 ### Rang 706 bis 999 (Zensus 2022, A bis Po)
 
