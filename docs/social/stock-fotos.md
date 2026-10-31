@@ -2167,7 +2167,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Bad Feilnbach | Bayern | 09187129 | – | – | noch nicht gesucht | – |
 | Bad Füssing | Bayern | 09275116 | – | – | noch nicht gesucht | – |
 | Bad Heilbrunn | Bayern | 09173111 | – | – | noch nicht gesucht | – |
-| Bad Hindelang | Bayern | 09780123 | – | – | noch nicht gesucht | – |
+| Bad Hindelang | Bayern | 09780123 | 1017614 | https://pixabay.com/de/photos/bad-hindelang-allg%C3%A4u-ostrachtal-1017614/ | Pixabay-Lizenz; Titel „Bad Hindelang, Allgäu, Ostrachtal“. Der Titel stammt nur aus dem Suchergebnis, die Seite habe ich nicht abgerufen. | 8 |
 | Bad Kohlgrub | Bayern | 09180112 | – | – | noch nicht gesucht | – |
 | Bad Neualbenreuth | Bayern | 09377142 | – | – | noch nicht gesucht | – |
 | Bad Peterstal-Griesbach | Baden-Württemberg | 08317008 | – | – | noch nicht gesucht | – |
@@ -2175,10 +2175,10 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Bad Salzschlirf | Hessen | 06631001 | – | – | noch nicht gesucht | – |
 | Bad Steben | Bayern | 09475112 | – | – | noch nicht gesucht | – |
 | Bad Tabarz | Thüringen | 16067064 | – | – | noch nicht gesucht | – |
-| Bad Wiessee | Bayern | 09182111 | – | – | noch nicht gesucht | – |
+| Bad Wiessee | Bayern | 09182111 | 1077343 | https://pixabay.com/de/photos/bad-wiessee-tegernsee-kurpark-1077343/ | Pixabay-Lizenz; Titel „Bad Wiessee, Tegernsee, Kurpark“. Der Titel stammt nur aus dem Suchergebnis, die Seite habe ich nicht abgerufen. | 8 |
 | Bad Zwesten | Hessen | 06634027 | – | – | noch nicht gesucht | – |
 | Bad Überkingen | Baden-Württemberg | 08117007 | – | – | noch nicht gesucht | – |
-| Badenweiler | Baden-Württemberg | 08315007 | – | – | noch nicht gesucht | – |
+| Badenweiler | Baden-Württemberg | 08315007 | 2925375 | https://pixabay.com/de/photos/badenweiler-burg-schwarzwald-2925375/ | Pixabay-Lizenz; Burg Badenweiler, Schwarzwald | 8 |
 | Bahlingen am Kaiserstuhl | Baden-Württemberg | 08316002 | – | – | noch nicht gesucht | – |
 | Baienfurt | Baden-Württemberg | 08436011 | – | – | noch nicht gesucht | – |
 | Baierbrunn | Bayern | 09184113 | – | – | noch nicht gesucht | – |
@@ -2195,7 +2195,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Bartholomä | Baden-Württemberg | 08136007 | – | – | noch nicht gesucht | – |
 | Bayerisch Eisenstein | Bayern | 09276115 | – | – | noch nicht gesucht | – |
 | Bayerisch Gmain | Bayern | 09172115 | – | – | noch nicht gesucht | – |
-| Bayrischzell | Bayern | 09182112 | – | – | noch nicht gesucht | – |
+| Bayrischzell | Bayern | 09182112 | 1693644 | https://pixabay.com/de/photos/wendelstein-sudelfeld-bayrischzell-1693644/ | Pixabay-Lizenz; Wendelstein und Sudelfeld bei Bayrischzell | 7 |
 | Bechhofen | Bayern | 09571115 | – | – | noch nicht gesucht | – |
 | Beimerstetten | Baden-Württemberg | 08425014 | – | – | noch nicht gesucht | – |
 | Bellenberg | Bayern | 09775115 | – | – | noch nicht gesucht | – |
@@ -2203,7 +2203,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Bennewitz | Sachsen | 14729030 | – | – | noch nicht gesucht | – |
 | Benningen am Neckar | Baden-Württemberg | 08118006 | – | – | noch nicht gesucht | – |
 | Beratzhausen | Bayern | 09375118 | – | – | noch nicht gesucht | – |
-| Berchtesgaden | Bayern | 09172116 | – | – | noch nicht gesucht | – |
+| Berchtesgaden | Bayern | 09172116 | 1531720 | https://pixabay.com/photos/berchtesgaden-bavaria-watzmann-1531720/ | Pixabay-Lizenz; Berchtesgaden mit Watzmann (nur am Titel erkannt, nicht geprüft) | 7 |
 | Berg | Baden-Württemberg | 08436013 | – | – | noch nicht gesucht | – |
 | Berg | Bayern | 09188113 | – | – | noch nicht gesucht | – |
 | Berg | Bayern | 09475113 | – | – | noch nicht gesucht | – |
