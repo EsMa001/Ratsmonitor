@@ -43,18 +43,18 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 11 | Bremen | 04011000 | 3559469 | https://pixabay.com/de/photos/bremen-schnoor-altstadt-3559469/ | Pixabay-Lizenz, Schnoor-Viertel (Alternative Roland: 230846) | 7 |
 | 12 | Dresden | 14612000 | m9qz1NE1b5k | https://unsplash.com/photos/a-large-building-with-dresden-frauenkirche-m9qz1NE1b5k | Unsplash-Lizenz, Frauenkirche | 7 |
 | 13 | Hannover | 03241001 | 22813506 | https://www.pexels.com/de-de/foto/neues-rathaus-hannover-22813506/ | Pexels-Lizenz, Neues Rathaus | 8 |
-| 14 | Nürnberg | 09564000 | – | – | kein Bild gefunden | – |
-| 15 | Duisburg | 05112000 | – | – | kein Bild gefunden | – |
-| 16 | Bochum | 05911000 | – | – | kein Bild gefunden | – |
+| 14 | Nürnberg | 09564000 | 18024007 | https://www.pexels.com/photo/view-of-nuremberg-old-town-germany-18024007/ | Pexels-Lizenz; Blick auf die Altstadt von Nürnberg | 8 |
+| 15 | Duisburg | 05112000 | 20001993 | https://www.pexels.com/photo/person-walking-on-the-tiger-and-turtle-magic-mountain-art-installation-in-duisburg-germany-20001993/ | Pexels-Lizenz; Tiger and Turtle, Duisburg | 7 |
+| 16 | Bochum | 05911000 | 1587977 | https://pixabay.com/photos/bochum-gelsenkirchen-bogestra-tram-1587977/ | Pixabay-Lizenz; Bogestra-Straßenbahn am U-Bahnhof | 6 |
 | 17 | Wuppertal | 05124000 | RYZN50k333Q | https://unsplash.com/photos/a-blue-suspended-monorail-train-on-a-green-track-RYZN50k333Q | Unsplash-Lizenz, vermutlich Schwebebahn; Ort steht nicht im Titel, vorher prüfen | 6 |
 | 18 | Bielefeld | 05711000 | 2554694 | https://pixabay.com/photos/sparrenburg-bielefeld-historical-2554694/ | Pixabay-Lizenz, Sparrenburg | 8 |
-| 19 | Bonn | 05314000 | – | – | kein Bild gefunden | – |
+| 19 | Bonn | 05314000 | 4826438 | https://pixabay.com/photos/bonn-altes-rathaus-city-hall-4826438/ | Pixabay-Lizenz; Altes Rathaus und Marktplatz | 8 |
 | 20 | Münster | 05515000 | 1662569 | https://pixabay.com/photos/muenster-principal-market-westphalia-1662569/ | Pixabay-Lizenz, Prinzipalmarkt | 8 |
 | 21 | Mannheim | 08222000 | YNDNuGl7IBs | https://unsplash.com/photos/cityscape-of-mannheim-baden-wurttemberg-germany-friedrichsplatz-with-the-mannheim-water-tower-wasserturm-in-the-foreground-YNDNuGl7IBs | Unsplash-Lizenz, Wasserturm am Friedrichsplatz; möglicherweise Unsplash+, prüfen | 8 |
 | 22 | Karlsruhe | 08212000 | 4028380 | https://pixabay.com/de/photos/karlsruhe-karlsruher-schloss-h%C3%A4ndel-4028380/ | Pixabay-Lizenz, Schloss | 8 |
-| 23 | Augsburg | 09761000 | – | – | kein Bild gefunden | – |
+| 23 | Augsburg | 09761000 | 2436930 | https://pixabay.com/photos/augsburg-historic-center-bavaria-2436930/ | Pixabay-Lizenz; historisches Zentrum | 8 |
 | 24 | Wiesbaden | 06414000 | 18883666 | https://www.pexels.com/photo/fountain-in-front-of-the-kurhaus-wiesbaden-in-germany-18883666/ | Pexels-Lizenz, Kurhaus | 8 |
-| 25 | Mönchengladbach | 05116000 | – | – | kein Bild gefunden | – |
+| 25 | Mönchengladbach | 05116000 | 1463086 | https://pixabay.com/photos/borussia-m%c3%b6nchengladbach-stadium-1463086/ | Pixabay-Lizenz; Eingang Borussia-Park-Stadion | 6 |
 | 26 | Gelsenkirchen | 05513000 | 1846803 | https://pixabay.com/de/photos/gelsenkirchen-rhein-herne-kanal-1846803/ | Pixabay-Lizenz, Rhein-Herne-Kanal, kein Wahrzeichen | 4 |
 | 27 | Aachen | 05334002 | 2693287 | https://pixabay.com/photos/aachen-dom-treasury-gold-religion-2693287/ | Pixabay-Lizenz, Domschatz (Innenmotiv, kein Stadtbild) | 5 |
 | 28 | Braunschweig | 03101000 | 3730275 | https://pixabay.com/de/photos/braunschweig-burgplatz-l%c3%b6we-3730275/ | Pixabay-Lizenz, Burgplatz mit Löwe | 7 |
@@ -72,12 +72,12 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 40 | Kassel | 06611000 | 1092038 | https://pixabay.com/photos/hercules-kassel-wilhelmsh%C3%B6he-1092038/ | Pixabay-Lizenz, Herkules, Wilhelmshöhe | 7 |
 | 41 | Hagen | 05914000 | – | – | kein Bild gefunden | – |
 | 42 | Potsdam | 12054000 | 29255447 | https://www.pexels.com/photo/classic-view-of-sanssouci-palace-in-potsdam-29255447/ | Pexels-Lizenz, Schloss Sanssouci | 8 |
-| 43 | Saarbrücken | 10041100 | – | – | kein Bild gefunden | – |
+| 43 | Saarbrücken | 10041100 | 5276319 | https://pixabay.com/photos/ludwigskirche-saarbr%C3%BCcken-church-5276319/ | Pixabay-Lizenz; Ludwigskirche | 8 |
 | 44 | Hamm | 05915000 | 2909698 | https://pixabay.com/photos/temple-hindu-temple-hamm-westphalia-2909698/ | Pixabay-Lizenz, Hindu-Tempel, eigenwilliges Motiv | 5 |
 | 45 | Ludwigshafen am Rhein | 07314000 | 365481 | https://pixabay.com/photos/ludwigshafen-rhine-industry-basf-365481/ | Pixabay-Lizenz, Rhein und BASF-Industrie, wohl älteres Foto | 6 |
 | 46 | Mülheim an der Ruhr | 05117000 | 5295799 | https://pixabay.com/de/photos/turm-rathaus-m%C3%BClheim-ruhr-fluss-5295799/ | Pixabay-Lizenz, Rathausturm an der Ruhr | 7 |
 | 47 | Oldenburg | 03403000 | 6711383 | https://pixabay.com/photos/oldenburg-palace-park-path-palace-6711383/ | Pixabay-Lizenz, Schloss/Schlosspark | 6 |
-| 48 | Osnabrück | 03404000 | – | – | kein Bild gefunden | – |
+| 48 | Osnabrück | 03404000 | 12642641 | https://pexels.com/photo/osnabruck-the-most-beautiful-city-in-the-world-12642641 | Pexels-Lizenz; Menschen vor einem Restaurant, Ortsbezug nur über die URL | 5 |
 | 49 | Leverkusen | 05316000 | 1286419 | https://pixabay.com/photos/bridge-line-curves-building-1286419/ | Pixabay-Lizenz, Brücke in Leverkusen, Ortsbezug im Text | 5 |
 | 50 | Darmstadt | 06411000 | 27951815 | https://www.pexels.com/photo/residential-palace-darmstadt-27951815/ | Pexels-Lizenz, Residenzschloss | 7 |
 | 51 | Heidelberg | 08221000 | wzAfU7fws6Y | https://unsplash.com/photos/heidelberg-germany-seen-from-above-wzAfU7fws6Y | Unsplash-Lizenz, Heidelberg von oben | 8 |
@@ -135,7 +135,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | Rang | Ort | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|---|
 | 82 | Kaiserslautern | 07312000 | 1402858 | https://pixabay.com/photos/kaiserslautern-japanese-1402858/ | Pixabay-Lizenz, Japanischer Garten; Stadtbezug nur über den Titel | 5 |
-| 101 | Minden | 05770024 | – | – | kein Bild gefunden | – |
+| 101 | Minden | 05770024 | 2889573 | https://pixabay.com/photos/minden-hbf-overview-station-building-2889573/ | Pixabay-Lizenz; Hauptbahnhof Minden mit Gleisanlage | 7 |
 | 102 | Velbert | 05158032 | – | – | kein Bild gefunden | – |
 | 103 | Norderstedt | 01060063 | – | – | kein Bild gefunden | – |
 | 104 | Bamberg | 09461000 | 646306 | https://pixabay.com/photos/bamberg-town-hall-cityscape-646306/ | Pixabay-Lizenz, Rathaus / Stadtansicht | 8 |
@@ -148,8 +148,8 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 111 | Lüneburg | 03355022 | 684823 | https://pixabay.com/de/photos/l%C3%BCneburg-fachwerkh%C3%A4user-fluss-684823/ | Pixabay-Lizenz, Fachwerkhäuser am Fluss | 7 |
 | 112 | Dorsten | 05562012 | – | – | kein Bild gefunden | – |
 | 113 | Troisdorf | 05382068 | – | – | kein Bild gefunden | – |
-| 114 | Wilhelmshaven | 03405000 | – | – | kein Bild gefunden | – |
-| 115 | Gladbeck | 05562014 | – | – | kein Bild gefunden | – |
+| 114 | Wilhelmshaven | 03405000 | 1386683 | https://pixabay.com/photos/kaiser-wilhelm-bridge-wilhelmshaven-1386683/ | Pixabay-Lizenz; Kaiser-Wilhelm-Brücke | 8 |
+| 115 | Gladbeck | 05562014 | 783267 | https://pixabay.com/de/photos/wasserschloss-wittringen-gladbeck-783267/ | Pixabay-Lizenz; Wasserschloss Wittringen | 8 |
 | 116 | Landshut | 09261000 | 3021474 | https://pixabay.com/de/photos/stadt-altstadt-landshut-architektur-3021474/ | Pixabay-Lizenz, Altstadt Landshut | 8 |
 | 117 | Detmold | 05766020 | 3358678 | https://pixabay.com/de/photos/hermannsdenkmal-cherusker-detmold-3358678/ | Pixabay-Lizenz, Hermannsdenkmal | 7 |
 | 118 | Bayreuth | 09462000 | 4074143 | https://pixabay.com/photos/bayreuth-hermitage-castle-4074143/ | Pixabay-Lizenz, Eremitage Bayreuth | 7 |
@@ -159,7 +159,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 122 | Aschaffenburg | 09661000 | 617589 | https://pixabay.com/photos/johannisburg-castle-aschaffenburg-617589/ | Pixabay-Lizenz, Schloss Johannisburg | 8 |
 | 123 | Bocholt | 05554008 | 567665 | https://pixabay.com/photos/bocholt-aerial-view-church-st-georg-567665/ | Pixabay-Lizenz, Luftbild mit St.-Georg-Kirche | 6 |
 | 124 | Lüdenscheid | 05962032 | – | – | kein Bild gefunden | – |
-| 125 | Celle | 03351006 | – | – | kein Bild gefunden | – |
+| 125 | Celle | 03351006 | 891471 | https://pixabay.com/photos/cell-lower-saxony-historic-center-891471/ | Pixabay-Lizenz; Altstadt aus der Luft. Das "cell" in der URL ist ein Schreibfehler für Celle, die Fundstelle war die Celle-Suche. | 7 |
 | 126 | Kempten | 09763000 | 1007420 | https://pixabay.com/photos/kempten-courtyard-garden-orangery-1007420/ | Pixabay-Lizenz, Hofgarten mit Orangerie | 6 |
 | 127 | Fulda | 06631009 | 3567816 | https://pixabay.com/photos/fulda-dom-boniface-st-salvator-3567816/ | Pixabay-Lizenz, Dom (Bonifatius) | 7 |
 | 128 | Lippstadt | 05974028 | 4327477 | https://www.pexels.com/de-de/foto/ziegel-tur-zaun-holzern-4327477/ | Pexels-Lizenz, Straßenszene mit Ziegelmauer, Tags nennen Lippstadt | 5 |
@@ -170,7 +170,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 133 | Kerpen | 05362032 | – | – | kein Bild gefunden | – |
 | 134 | Neuwied | 07138045 | 2251859 | https://pixabay.com/de/photos/rhein-engers-neuwied-hafen-kran-2251859/ | Pixabay-Lizenz, Rhein bei Engers/Neuwied, Hafenkran | 4 |
 | 135 | Weimar | 16055000 | 29256819 | https://www.pexels.com/photo/charming-street-view-of-weimar-germany-29256819/ | Pexels-Lizenz, Straßenansicht Weimar | 6 |
-| 136 | Dormagen | 05162004 | – | – | kein Bild gefunden | – |
+| 136 | Dormagen | 05162004 | 5333831 | https://pixabay.com/pl/photos/dormagen-nievenheim-ko%C5%9Bci%C3%B3%C5%82-5333831/ | Pixabay-Lizenz; Kirche in Nievenheim (Stadtteil). Alternative: Gohr-Felder, ID 5333839, https://pixabay.com/photos/dormagen-gohr-fields-nature-field-5333839/ | 6 |
 | 137 | Sindelfingen | 08115045 | – | – | kein Bild gefunden | – |
 | 138 | Plauen | 14523320 | – | – | kein Bild gefunden | – |
 | 139 | Grevenbroich | 05162008 | 512879 | https://pixabay.com/photos/villa-erckens-architecture-building-512879/ | Pixabay-Lizenz, Villa Erckens in Grevenbroich | 5 |
@@ -206,7 +206,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 169 | Langenhagen | 03241010 | – | – | kein Bild gefunden | – |
 | 170 | Nordhorn | 03456015 | 2080639 | https://pixabay.com/photos/almelo-nordhorn-canal-channel-water-2080639/ | Pixabay-Lizenz, Almelo-Nordhorn-Kanal (Ortsbezug nur über den Kanal) | 4 |
 | 171 | Bad Homburg | 06434001 | 2842579 | https://pixabay.com/de/photos/bad-homburg-wei%C3%9Fer-turm-wahrzeichen-2842579/ | Pixabay-Lizenz, Weißer Turm (Wahrzeichen) | 7 |
-| 172 | Bad Salzuflen | 05766008 | – | – | kein Bild gefunden | – |
+| 172 | Bad Salzuflen | 05766008 | 5150905 | https://pixabay.com/photos/bad-salzuflen-lippe-heilbad-5150905/ | Pixabay-Lizenz; verziertes Fachwerkhaus in Bad Salzuflen | 8 |
 | 173 | Schweinfurt | 09662000 | 4905516 | https://pixabay.com/photos/schweinfurt-historic-center-houses-4905516/ | Pixabay-Lizenz, historische Fassaden Altstadt | 6 |
 | 174 | Hattingen | 05954016 | 7591285 | https://pixabay.com/photos/ruhrtalsperre-hattingen-bochum-7591285/ | Pixabay-Lizenz, Ruhrtalsperre Hattingen/Bochum (kein Altstadtmotiv) | 5 |
 | 175 | Wetzlar | 06532023 | 2834808 | https://pixabay.com/de/photos/eisenmarkt-wetzlar-hessen-2834808/ | Pixabay-Lizenz, Eisenmarkt Altstadt | 7 |
@@ -234,7 +234,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 197 | Lörrach | 08336050 | – | – | kein Bild gefunden | – |
 | 198 | Gronau | 05554020 | 4230849 | https://pixabay.com/photos/gronau-flow-water-bridge-stone-4230849/ | Pixabay-Lizenz, Wasserlauf mit Brücke (Ortsbezug unklar, mehrere Orte heißen Gronau) | 3 |
 | 199 | Leonberg | 08115028 | 2077083 | https://pixabay.com/de/photos/leonberg-rathaus-marktplatz-2077083/ | Pixabay-Lizenz, Rathaus am Marktplatz | 8 |
-| 200 | Rheda-Wiedenbrück | 05754028 | – | – | kein Bild gefunden | – |
+| 200 | Rheda-Wiedenbrück | 05754028 | 2661925 | https://pixabay.com/photos/rheda-rheda-wiedenbr%C3%BCck-park-2661925/ | Pixabay-Lizenz; Parkanlage mit Bänken und Blumen, Rheda | 6 |
 
 ### Rang 201 bis 409
 
@@ -242,7 +242,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 
 | Rang | Ort | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|---|
-| 201 | Bad Oeynhausen | 05770004 | – | – | kein Bild gefunden | – |
+| 201 | Bad Oeynhausen | 05770004 | 5150911 | https://pixabay.com/photos/bad-oeynhausen-kurbad-minden-5150911/ | Pixabay-Lizenz; historisches Kurhaus in Bad Oeynhausen | 8 |
 | 202 | Singen (Hohentwiel) | 08335075 | 788398 | https://pixabay.com/de/photos/burg-ruine-mittelalter-hohentwiel-788398/ | Pixabay-Lizenz, Festungsruine Hohentwiel (Wahrzeichen) | 6 |
 | 203 | Freising | 09178124 | 1979218 | https://pixabay.com/photos/freising-bavaria-germany-church-1979218/ | Pixabay-Lizenz, historischer Platz | 7 |
 | 204 | Bergkamen | 05978004 | – | – | kein Bild gefunden | – |
@@ -259,7 +259,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 215 | Oranienburg | 12065256 | – | – | kein Bild gefunden | – |
 | 216 | Landau in der Pfalz | 07313000 | 2366466 | https://pixabay.com/photos/landau-in-der-pfalz-town-hall-square-2366466/ | Pixabay-Lizenz, Rathausplatz | 8 |
 | 217 | Dülmen | 05558016 | – | – | kein Bild gefunden | – |
-| 218 | Melle | 03459024 | – | – | kein Bild gefunden | – |
+| 218 | Melle | 03459024 | 5067452 | https://pixabay.com/photos/city-of-melle-germany-shop-building-5067452/ | Pixabay-Lizenz; Geschäft/Gebäude, Titel "City Of Melle Germany Shop" | 7 |
 | 219 | Oberursel (Taunus) | 06434008 | 2088518 | https://pixabay.com/photos/oberursel-hesse-germany-2088518/ | Pixabay-Lizenz, Fachwerkhäuser | 7 |
 | 220 | Herzogenrath | 05334016 | – | – | kein Bild gefunden | – |
 | 221 | Neunkirchen (Saar) | 10043114 | – | – | kein Bild gefunden | – |
@@ -290,7 +290,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 247 | Gifhorn | 03151009 | 6yfT6C3PS_k | https://unsplash.com/photos/a-church-with-a-golden-dome-and-blue-domes-6yfT6C3PS_k | Unsplash-Lizenz, vermutlich Kirche im Mühlenmuseum (Ortsbezug unsicher) | 4 |
 | 248 | Borken (Westfalen) | 05554012 | 732023 | https://pixabay.com/fr/photos/l-eau-lac-ch%C3%A2teau-tour-gemen-732023/ | Pixabay-Lizenz, Wasserschloss Gemen (Ortsteil) | 6 |
 | 249 | Heinsberg | 05370016 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
-| 250 | Nettetal | 05166016 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
+| 250 | Nettetal | 05166016 | 1991992 | https://pixabay.com/photos/nettetal-round-arch-hall-1991992/ | Pixabay-Lizenz; Halle mit Rundbogen. Das Motiv ist nur grob erkennbar. | 6 |
 | 251 | Kamen | 05978020 | – | – | kein Bild gefunden | – |
 | 252 | Weiden in der Oberpfalz | 09363000 | – | – | kein Bild gefunden (nur eine Suchrunde) | – |
 | 253 | Monheim am Rhein | 05158026 | – | – | kein Bild gefunden | – |
@@ -321,7 +321,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 278 | Pirmasens | 07317000 | – | – | kein Bild gefunden | – |
 | 279 | Lemgo | 05766044 | 646464 | https://pixabay.com/de/photos/marktplatz-lemgo-hansestadt-646464/ | Pixabay-Lizenz, Marktplatz | 7 |
 | 280 | Freiberg (Sachsen) | 14522180 | 3696889 | https://pixabay.com/no/photos/freiberger-dom-freiberg-historisk-3696889/ | Pixabay-Lizenz, Freiberger Dom | 7 |
-| 281 | Halberstadt | 15085135 | – | – | kein Bild gefunden | – |
+| 281 | Halberstadt | 15085135 | 1803680 | https://pixabay.com/photos/dom-church-halberstadt-germany-1803680/ | Pixabay-Lizenz; Dom von Halberstadt (Titel "Historic cathedral in Halberstadt") | 7 |
 | 282 | Leinfelden-Echterdingen | 08116078 | 5808451 | https://pixabay.com/photos/leinfelden-echterdingen-airport-5808451/ | Pixabay-Lizenz, Flughafen Stuttgart | 4 |
 | 283 | Hofheim am Taunus | 06436007 | – | – | kein Bild gefunden | – |
 | 284 | Löhne | 05758024 | – | – | kein Bild gefunden | – |
@@ -350,7 +350,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 307 | Bautzen | 14625020 | 1749453 | https://pixabay.com/de/photos/bautzen-stadt-panorama-altstadt-1749453/ | Pixabay-Lizenz, Altstadt-Panorama | 8 |
 | 308 | Haltern am See | 05562016 | 2968148 | https://pixabay.com/photos/varus-monument-bronze-figure-2968148/ | Pixabay-Lizenz, Varus-Denkmal, Ortsbezug nur über Suchtreffer | 5 |
 | 309 | Backnang | 08119008 | 3005670 | https://pixabay.com/de/photos/skulptur-applaus-kunst-bronze-3005670/ | Pixabay-Lizenz, Skulptur "Applaus" | 5 |
-| 310 | Bitterfeld-Wolfen | 15082015 | – | – | kein Bild gefunden | – |
+| 310 | Bitterfeld-Wolfen | 15082015 | 5321627 | https://pixabay.com/de/photos/hafen-bitterfeld-see-wasser-5321627/ | Pixabay-Lizenz; Hafensteg und Segelboot am Bitterfelder See (Hafen Bitterfeld) | 6 |
 | 311 | Fürstenfeldbruck | 09179121 | 713669 | https://pixabay.com/it/photos/anagrafe-vecchio-municipio-713669/ | Pixabay-Lizenz, altes Rathaus, Ortsbezug unsicher | 4 |
 | 312 | Warendorf | 05570052 | – | – | kein Bild gefunden | – |
 | 313 | Tuttlingen | 08327050 | 1961181 | https://pixabay.com/photos/house-charlie-hotel-tuttlingen-1961181/ | Pixabay-Lizenz, Haus/Hotel | 5 |
@@ -388,8 +388,8 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 345 | Wedel | 01056050 | – | – | kein Bild gefunden | – |
 | 346 | Viernheim | 06431020 | – | – | kein Bild gefunden | – |
 | 347 | Zweibrücken | 07320000 | – | – | kein Bild gefunden | – |
-| 348 | Ahrensburg | 01062001 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite, Schloss Ahrensburg) | – |
-| 349 | Merseburg | 15088220 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite) | – |
+| 348 | Ahrensburg | 01062001 | 750556 | https://pixabay.com/photos/closed-ahrensburg-schleswig-holstein-750556/ | Pixabay-Lizenz; Schloss Ahrensburg im Park (Schleswig-Holstein) | 8 |
+| 349 | Merseburg | 15088220 | 4439598 | https://pixabay.com/de/photos/merseburg-sachsen-anhalt-altstadt-4439598/ | Pixabay-Lizenz; Altstadt Merseburg (Sachsen-Anhalt) | 8 |
 | 350 | Geldern | 05154012 | – | – | kein Bild gefunden | – |
 | 351 | Korschenbroich | 05162020 | – | – | kein Bild gefunden | – |
 | 352 | Kornwestheim | 08118046 | 1391681 | https://pixabay.com/photos/marshalling-yard-track-harp-1391681/ | Pixabay-Lizenz, Verschiebebahnhof, Ortsbezug unsicher | 3 |
@@ -401,7 +401,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 358 | Vechta | 03460009 | 1769423 | https://pixabay.com/de/photos/vechta-zitadellen-park-markt-1769423/ | Pixabay-Lizenz, Zitadellenpark mit Markt | 6 |
 | 359 | Rheinfelden (Baden) | 08336069 | – | – | kein Bild gefunden | – |
 | 360 | Schwedt/Oder | 12073532 | – | – | kein Bild gefunden | – |
-| 361 | Bad Nauheim | 06440002 | – | – | kein Bild gefunden | – |
+| 361 | Bad Nauheim | 06440002 | 3632442 | https://pixabay.com/photos/city-bad-nauheim-tilt-shift-3632442/ | Pixabay-Lizenz; Stadtansicht Bad Nauheim im Tilt-Shift-Stil | 7 |
 | 362 | Jülich | 05358024 | – | – | kein Bild gefunden | – |
 | 363 | Forchheim | 09474126 | 29099170 | https://www.pexels.com/photo/historic-street-view-in-forchheim-germany-29099170/ | Pexels-Lizenz, historische Straßenansicht | 7 |
 | 364 | Lampertheim | 06431013 | – | – | kein Bild gefunden | – |
@@ -411,7 +411,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 368 | Fürstenwalde/Spree | 12067144 | 180865 | https://pixabay.com/de/photos/st-marien-dom-kirche-f%C3%BCrstenwalde-180865/ | Pixabay-Lizenz; Dom St. Marien | 7 |
 | 369 | Geesthacht | 01053032 | 29031305 | https://www.pexels.com/photo/historic-train-station-in-geesthacht-germany-29031305/ | Pexels-Lizenz, historischer Bahnhof | 7 |
 | 370 | Naumburg (Saale) | 15084355 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite) | – |
-| 371 | Bernburg (Saale) | 15089030 | – | – | kein Einzelfoto gefunden (nur Pixabay-Suchseite) | – |
+| 371 | Bernburg (Saale) | 15089030 | 4865197 | https://pixabay.com/photos/bernburg-saale-saxony-anhalt-castle-4865197/ | Pixabay-Lizenz; Schloss Bernburg über der Saale (Sachsen-Anhalt) | 8 |
 | 372 | Itzehoe | 01061046 | – | – | kein Bild gefunden | – |
 | 373 | Georgsmarienhütte | 03459019 | – | – | kein Bild gefunden | – |
 | 374 | Bramsche | 03459014 | 206405 | https://pixabay.com/photos/bramsche-germany-train-station-206405/ | Pixabay-Lizenz; nur Bahnhof, kein Wahrzeichen | 3 |
@@ -436,7 +436,7 @@ Zeilen mit „noch nicht gesucht“ hatten kein Suchbudget mehr und werden nachg
 | 393 | Friedberg (Hessen) | 06440008 | 3688760 | https://pixabay.com/photos/friedberg-hesse-castle-wall-tower-3688760/ | Pixabay-Lizenz, Burg Friedberg | 7 |
 | 394 | Taunusstein | 06439015 | 2702319 | https://pixabay.com/photos/wehener-castle-blow-taunusstein-2702319/ | Pixabay-Lizenz; Wehener Burg/Schloss, Taunusstein (nur aus dem Titel, Bild nicht geprüft) | 7 |
 | 395 | Weil am Rhein | 08336091 | – | – | kein Bild gefunden | – |
-| 396 | Einbeck | 03155013 | – | – | kein Bild gefunden | – |
+| 396 | Einbeck | 03155013 | 5010968 | https://pixabay.com/de/photos/fachwerk-geb%C3%A4ude-architektur-5010968/ | Pixabay-Lizenz; Fachwerkgebäude, Schlagwort Einbeck | 6 |
 | 397 | Osterholz-Scharmbeck | 03356007 | 2463074 | https://pixabay.com/de/photos/w%C3%BCmme-fluss-bremen-osterholz-2463074/ | Pixabay-Lizenz, Wümme, Ortsbezug nur über "Osterholz" | 4 |
 | 398 | Bad Hersfeld | 06632002 | 1934781 | https://pixabay.com/de/photos/bad-hersfeld-lullusfest-riesenrad-1934781/ | Pixabay-Lizenz, Lullusfest mit Riesenrad | 5 |
 | 399 | Ennepetal | 05954008 | 4673131 | https://pixabay.com/de/photos/panorama-ennepetal-hohenstein-4673131/ | Pixabay-Lizenz, Panorama Hohenstein | 6 |
@@ -460,7 +460,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 410 | Rietberg | 05754032 | – | – | kein Bild gefunden | – |
 | 411 | Wedemark | 03241019 | – | – | kein Bild gefunden | – |
 | 412 | Bad Zwischenahn | 03451002 | 5086428 | https://pixabay.com/photos/bad-zwischenahn-r%C3%BCgenwalder-m%C3%BChle-5086428/ | Pixabay-Lizenz, Rügenwalder Mühle (eher Firmengebäude) | 5 |
-| 413 | Rendsburg | 01058135 | – | – | kein Bild gefunden | – |
+| 413 | Rendsburg | 01058135 | 1504083 | https://pixabay.com/de/photos/schwebef%C3%A4hre-rendsburg-1504083/ | Pixabay-Lizenz; Schwebefähre Rendsburg | 8 |
 | 414 | Werne | 05978040 | – | – | kein Bild gefunden | – |
 | 415 | Waltrop | 05562036 | 22821155 | https://www.pexels.com/photo/schiffshebewerk-waltrop-22821155/ | Pexels-Lizenz, Schiffshebewerk | 7 |
 | 416 | Oelde | 05570028 | – | – | kein Bild gefunden | – |
@@ -477,7 +477,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 427 | Bühl (Baden) | 08216007 | 344226 | https://pixabay.com/photos/windeck-castle-b%C3%BChl-to-bathe-344226/ | Pixabay-Lizenz; Burgruine Windeck über Weinberg, Bühl im URL | 6 |
 | 428 | Springe | 03241017 | – | – | kein Bild gefunden | – |
 | 429 | Kelkheim (Taunus) | 06436008 | 2670780 | https://pixabay.com/photos/old-town-hall-kelkheim-taunus-hesse-2670780/ | Pixabay-Lizenz, Historisches Rathaus | 8 |
-| 430 | Riesa | 14627230 | – | – | kein Bild gefunden | – |
+| 430 | Riesa | 14627230 | 3415451 | https://pixabay.com/de/photos/riesa-stadtpark-b%C3%A4ume-herbst-3415451/ | Pixabay-Lizenz; Stadtpark Riesa im Herbst | 6 |
 | 431 | Meißen | 14627140 | 3398170 | https://pixabay.com/photos/meissen-elbe-saxony-albrechtsburg-3398170/ | Pixabay-Lizenz, Elbe, Albrechtsburg | 8 |
 | 432 | Rösrath | 05378028 | 5028434 | https://pixabay.com/photos/cologne-r%C3%B6srath-castle-owl-broich-5028434/ | Pixabay-Lizenz, Schloss Eulenbroich | 7 |
 | 433 | Emmendingen | 08316011 | 21358301 | https://www.pexels.com/photo/hochburg-castle-ruins-in-emmendingen-in-germany-21358301/ | Pexels-Lizenz, Ruine Hochburg | 7 |
@@ -1481,7 +1481,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Dettelbach | Bayern | 09675117 | – | – | noch nicht gesucht | – |
 | Diemelstadt | Hessen | 06635008 | – | – | noch nicht gesucht | – |
 | Dietenheim | BW | 08425028 | – | – | noch nicht gesucht | – |
-| Dietfurt a.d.Altmühl | Bayern | 09373121 | – | – | noch nicht gesucht | – |
+| Dietfurt a.d.Altmühl | Bayern | 09373121 | 215188 | https://pixabay.com/de/photos/altm%C3%BChltal-t%C3%B6ging-dietfurt-215188/ | Pixabay-Lizenz; Altmühltal bei Töging (Ortsteil von Dietfurt), Titel nennt Dietfurt | 6 |
 | Dillingen/Saar | Saarland | 10044111 | – | – | noch nicht gesucht | – |
 | Doberlug-Kirchhain | Brandenburg | 12062092 | – | – | noch nicht gesucht | – |
 | Dornhan | BW | 08325012 | – | – | noch nicht gesucht | – |
@@ -1500,7 +1500,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Elze | Niedersachsen | 03254014 | – | – | noch nicht gesucht | – |
 | Erbendorf | Bayern | 09377116 | – | – | noch nicht gesucht | – |
 | Erlenbach a.Main | Bayern | 09676122 | – | – | noch nicht gesucht | – |
-| Falkenstein/Harz | Sachsen-Anhalt | 15085110 | – | – | noch nicht gesucht | – |
+| Falkenstein/Harz | Sachsen-Anhalt | 15085110 | 1374837 | https://pixabay.com/photos/falkenstein-castle-monument-resin-1374837/ | Pixabay-Lizenz; Burg Falkenstein im Harz (der Titel schreibt "Resin" statt Harz) | 8 |
 | Fellbach | BW | 08119020 | – | – | noch nicht gesucht | – |
 | Florstadt | Hessen | 06440007 | – | – | noch nicht gesucht | – |
 | Forchtenberg | BW | 08126028 | – | – | noch nicht gesucht | – |
@@ -1522,13 +1522,13 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Gefrees | Bayern | 09472139 | – | – | noch nicht gesucht | – |
 | Geiselhöring | Bayern | 09278123 | – | – | noch nicht gesucht | – |
 | Geisingen | BW | 08327018 | – | – | noch nicht gesucht | – |
-| Geislingen | BW | 08417022 | – | – | noch nicht gesucht | – |
+| Geislingen | BW | 08417022 | 2085525 | https://pixabay.com/de/photos/geislinger-steige-g%C3%BCterzug-2085525/ | Pixabay-Lizenz; Güterzug an der Geislinger Steige (Geislingen an der Steige, BW) | 6 |
 | Geithain | Sachsen | 14729150 | – | – | noch nicht gesucht | – |
 | Gemünden (Wohra) | Hessen | 06635012 | – | – | noch nicht gesucht | – |
 | Gerabronn | BW | 08127032 | – | – | noch nicht gesucht | – |
 | Gerbstedt | Sachsen-Anhalt | 15087165 | – | – | noch nicht gesucht | – |
 | Geringswalde | Sachsen | 14522190 | – | – | noch nicht gesucht | – |
-| Gersfeld (Rhön) | Hessen | 06631010 | – | – | noch nicht gesucht | – |
+| Gersfeld (Rhön) | Hessen | 06631010 | 2806015 | https://pixabay.com/de/photos/fliegerdenkmal-wasserkuppe-denkmal-2806015/ | Pixabay-Lizenz; Fliegerdenkmal auf der Wasserkuppe. Der Ortsname steht nicht im Titel, die Wasserkuppe gehört aber zum Gebiet von Gersfeld. | 5 |
 | Gladenbach | Hessen | 06534010 | – | – | noch nicht gesucht | – |
 | Glashütte | Sachsen | 14628130 | – | – | noch nicht gesucht | – |
 | Glücksburg (Ostsee) | Schleswig-Holstein | 01059113 | – | – | noch nicht gesucht | – |
@@ -1553,7 +1553,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Gröditz | Sachsen | 14627050 | – | – | noch nicht gesucht | – |
 | Grünhain-Beierfeld | Sachsen | 14521260 | – | – | noch nicht gesucht | – |
 | Grünsfeld | BW | 08128047 | – | – | noch nicht gesucht | – |
-| Gudensberg | Hessen | 06634007 | – | – | noch nicht gesucht | – |
+| Gudensberg | Hessen | 06634007 | 748470 | https://pixabay.com/de/photos/gudensberg-grudda-schaf-nordhessen-748470/ | Pixabay-Lizenz; Gudensberg ("Grudda") mit Schaf, Nordhessen | 6 |
 | Gundelsheim | BW | 08125039 | – | – | noch nicht gesucht | – |
 | Güglingen | BW | 08125038 | – | – | noch nicht gesucht | – |
 | Hainichen | Sachsen | 14522230 | – | – | noch nicht gesucht | – |
@@ -1574,7 +1574,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Heideck | Bayern | 09576126 | – | – | noch nicht gesucht | – |
 | Heiligenhafen | Schleswig-Holstein | 01055021 | – | – | noch nicht gesucht | – |
 | Heilsbronn | Bayern | 09571165 | – | – | noch nicht gesucht | – |
-| Heimbach | NRW | 05358012 | – | – | noch nicht gesucht | – |
+| Heimbach | NRW | 05358012 | 268234 | https://pixabay.com/de/photos/burg-hengebach-burg-heimbach-268234/ | Pixabay-Lizenz; Burg Hengebach, Heimbach (Eifel). Ob NRW stimmt, ist aus dem Titel nicht belegt, die Eifel passt aber. | 7 |
 | Heimsheim | BW | 08236025 | – | – | noch nicht gesucht | – |
 | Heitersheim | BW | 08315050 | – | – | noch nicht gesucht | – |
 | Helmbrechts | Bayern | 09475136 | – | – | noch nicht gesucht | – |
@@ -1594,9 +1594,9 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Hornberg | BW | 08317051 | – | – | noch nicht gesucht | – |
 | Horstmar | NRW | 05566024 | – | – | noch nicht gesucht | – |
 | Hüfingen | BW | 08326027 | – | – | noch nicht gesucht | – |
-| Ilsenburg (Harz) | Sachsen-Anhalt | 15085190 | – | – | noch nicht gesucht | – |
+| Ilsenburg (Harz) | Sachsen-Anhalt | 15085190 | 2776179 | https://pixabay.com/de/photos/brocken-harz-ilsenburg-wernigerode-2776179/ | Pixabay-Lizenz; Brocken/Harz mit Ilsenburg im Titel (Bundesland nicht geprüft, Ilsenburg liegt im Harz in Sachsen-Anhalt) | 5 |
 | Ilshofen | BW | 08127043 | – | – | noch nicht gesucht | – |
-| Immenhausen | Hessen | 06633014 | – | – | noch nicht gesucht | – |
+| Immenhausen | Hessen | 06633014 | 2184567 | https://pixabay.com/photos/riseberg-bartholomew-immenhausen-2184567/ | Pixabay-Lizenz; Riseberg/Bartholomäus bei Immenhausen (Hessen), kein Wahrzeichen des Ortes selbst | 5 |
 | Ingelfingen | BW | 08126039 | – | – | noch nicht gesucht | – |
 | Jerichow | Sachsen-Anhalt | 15086080 | – | – | noch nicht gesucht | – |
 | Johanngeorgenstadt | Sachsen | 14521320 | – | – | noch nicht gesucht | – |
@@ -1625,11 +1625,11 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Könnern | Sachsen-Anhalt | 15089195 | – | – | noch nicht gesucht | – |
 | Kühlungsborn | Mecklenburg-Vorpommern | 13072060 | – | – | noch nicht gesucht | – |
 | Külsheim | BW | 08128064 | – | – | noch nicht gesucht | – |
-| Langenburg | BW | 08127047 | – | – | noch nicht gesucht | – |
+| Langenburg | BW | 08127047 | 5668792 | https://pixabay.com/photos/castle-langenburg-castle-langenburg-5668792/ | Pixabay-Lizenz; Schloss Langenburg ("Castle Langenburg") | 8 |
 | Laubach | Hessen | 06531010 | – | – | noch nicht gesucht | – |
 | Lauchheim | BW | 08136038 | – | – | noch nicht gesucht | – |
 | Laufen | Bayern | 09172122 | – | – | noch nicht gesucht | – |
-| Laufenburg (Baden) | BW | 08337066 | – | – | noch nicht gesucht | – |
+| Laufenburg (Baden) | BW | 08337066 | 256417 | https://pixabay.com/de/photos/laufenburg-rheinbr%C3%BCcke-steinbr%C3%BCcke-256417/ | Pixabay-Lizenz; Rheinbrücke (Steinbrücke) Laufenburg. Der Ort liegt am Rhein und die Brücke verbindet Laufenburg (Baden) mit der Schweizer Seite. Das Bundesland steht nicht im Titel. | 7 |
 | Lauscha | Thüringen | 16072011 | – | – | noch nicht gesucht | – |
 | Lauta | Sachsen | 14625310 | – | – | noch nicht gesucht | – |
 | Lauter-Bernsbach | Sachsen | 14521355 | – | – | noch nicht gesucht | – |
@@ -1650,7 +1650,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Lucka | Thüringen | 16077028 | – | – | noch nicht gesucht | – |
 | Luckau | Brandenburg | 12061320 | – | – | noch nicht gesucht | – |
 | Ludwigsstadt | Bayern | 09476152 | – | – | noch nicht gesucht | – |
-| Lunzenau | Sachsen | 14522350 | – | – | noch nicht gesucht | – |
+| Lunzenau | Sachsen | 14522350 | 7369322 | https://pixabay.com/de/photos/g%C3%B6hrener-viadukt-br%C3%BCcke-7369322/ | Pixabay-Lizenz; Göhrener Viadukt über die Zwickauer Mulde. Göhren ist ein Ortsteil von Lunzenau (aus dem Ortswissen ergänzt, nicht aus dem Treffer). Ortsname Lunzenau steht nicht im Titel. | 5 |
 | Lychen | Brandenburg | 12073384 | – | – | noch nicht gesucht | – |
 | Löffingen | BW | 08315070 | – | – | noch nicht gesucht | – |
 | Löwenstein | BW | 08125059 | – | – | noch nicht gesucht | – |
@@ -1665,16 +1665,16 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Marienmünster | NRW | 05762024 | – | – | noch nicht gesucht | – |
 | Markneukirchen | Sachsen | 14523200 | – | – | noch nicht gesucht | – |
 | Marktleuthen | Bayern | 09479135 | – | – | noch nicht gesucht | – |
-| Marlow | Mecklenburg-Vorpommern | 13073055 | – | – | noch nicht gesucht | – |
-| Maulbronn | BW | 08236038 | – | – | noch nicht gesucht | – |
+| Marlow | Mecklenburg-Vorpommern | 13073055 | 3434297 | https://pixabay.com/de/photos/vogelpark-marlow-natur-sittich-3434297/ | Pixabay-Lizenz; Sittich im Vogelpark Marlow. Der Park ist das Wahrzeichen, das Foto zeigt aber nur ein Tier und keine Stadtansicht. | 5 |
+| Maulbronn | BW | 08236038 | 2104354 | https://pixabay.com/de/photos/gew%C3%B6lbe-kloster-maulbronn-2104354/ | Pixabay-Lizenz; Gewölbe im Kloster Maulbronn (Innenaufnahme). | 6 |
 | Medebach | NRW | 05958028 | – | – | noch nicht gesucht | – |
 | Meersburg | BW | 08435036 | – | – | noch nicht gesucht | – |
 | Merkendorf | Bayern | 09571177 | – | – | noch nicht gesucht | – |
-| Meßkirch | BW | 08437078 | – | – | noch nicht gesucht | – |
+| Meßkirch | BW | 08437078 | 612025 | https://pixabay.com/de/photos/stadtansicht-himmel-messkirch-612025/ | Pixabay-Lizenz; Stadtansicht Meßkirch | 7 |
 | Miltenberg | Bayern | 09676139 | – | – | noch nicht gesucht | – |
 | Mittenwalde | Brandenburg | 12061332 | – | – | noch nicht gesucht | – |
 | Moringen | Niedersachsen | 03155009 | – | – | noch nicht gesucht | – |
-| Munderkingen | BW | 08425081 | – | – | noch nicht gesucht | – |
+| Munderkingen | BW | 08425081 | 268966 | https://pixabay.com/de/photos/munderkingen-altstadt-fachwerkbau-268966/ | Pixabay-Lizenz; Altstadt mit Fachwerkbau (Alternative) | 7 |
 | Möckmühl | BW | 08125063 | – | – | noch nicht gesucht | – |
 | Mücheln (Geiseltal) | Sachsen-Anhalt | 15088235 | – | – | noch nicht gesucht | – |
 | Mügeln | Sachsen | 14730200 | – | – | noch nicht gesucht | – |
@@ -1686,43 +1686,43 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Naumburg | Hessen | 06633018 | – | – | noch nicht gesucht | – |
 | Neckarbischofsheim | BW | 08226055 | – | – | noch nicht gesucht | – |
 | Neckarsteinach | Hessen | 06431018 | – | – | noch nicht gesucht | – |
-| Neresheim | BW | 08136045 | – | – | noch nicht gesucht | – |
+| Neresheim | BW | 08136045 | 51293 | https://pixabay.com/de/photos/kloster-abtei-neresheim-kirche-51293/ | Pixabay-Lizenz; Abtei Neresheim, Kirche | 8 |
 | Neubukow | Mecklenburg-Vorpommern | 13072074 | – | – | noch nicht gesucht | – |
 | Neubulach | BW | 08235047 | – | – | noch nicht gesucht | – |
 | Neudenau | BW | 08125068 | – | – | noch nicht gesucht | – |
 | Neuenbürg | BW | 08236043 | – | – | noch nicht gesucht | – |
 | Neuenstein | BW | 08126058 | – | – | noch nicht gesucht | – |
-| Neuffen | BW | 08116046 | – | – | noch nicht gesucht | – |
+| Neuffen | BW | 08116046 | 2920246 | https://pixabay.com/de/photos/hohenneuffen-burg-schloss-2920246/ | Pixabay-Lizenz; Burg Hohenneuffen über Neuffen | 7 |
 | Neukirchen | Hessen | 06634017 | – | – | noch nicht gesucht | – |
 | Neunburg vorm Wald | Bayern | 09376147 | – | – | noch nicht gesucht | – |
 | Neustadt (Hessen) | Hessen | 06534016 | – | – | noch nicht gesucht | – |
 | Neustadt a.d.Waldnaab | Bayern | 09374139 | – | – | noch nicht gesucht | – |
-| Neuötting | Bayern | 09171125 | – | – | noch nicht gesucht | – |
+| Neuötting | Bayern | 09171125 | 238637 | https://pixabay.com/photos/fishing-ladder-fish-way-fish-pass-238637/ | Pixabay-Lizenz; Fischtreppe am Inn in Neuötting (Titel nennt Neuötting) | 5 |
 | Niddatal | Hessen | 06440017 | – | – | noch nicht gesucht | – |
 | Niedenstein | Hessen | 06634018 | – | – | noch nicht gesucht | – |
 | Niedernhall | BW | 08126060 | – | – | noch nicht gesucht | – |
 | Niederstetten | BW | 08128082 | – | – | noch nicht gesucht | – |
-| Niederstotzingen | BW | 08135027 | – | – | noch nicht gesucht | – |
+| Niederstotzingen | BW | 08135027 | 249818 | https://pixabay.com/photos/bird-stove-cave-lonetal-karst-cave-249818/ | Pixabay-Lizenz; Vogelherdhöhle im Lonetal bei Stetten, Ortsteil von Niederstotzingen (Ortsname fehlt im Titel, Zuordnung über das Wahrzeichen) | 4 |
 | Nieheim | NRW | 05762028 | – | – | noch nicht gesucht | – |
 | Nienburg (Saale) | Sachsen-Anhalt | 15089235 | – | – | noch nicht gesucht | – |
 | Niesky | Sachsen | 14626370 | – | – | noch nicht gesucht | – |
 | Nittenau | Bayern | 09376149 | – | – | noch nicht gesucht | – |
-| Norderney | Niedersachsen | 03452020 | – | – | noch nicht gesucht | – |
+| Norderney | Niedersachsen | 03452020 | 3950012 | https://pixabay.com/de/photos/norderney-sonne-wolken-sandstrand-3950012/ | Pixabay-Lizenz; Strand, Sonne und Wolken | 6 |
 | Oberharz am Brocken | Sachsen-Anhalt | 15085228 | – | – | noch nicht gesucht | – |
 | Oberhof | Thüringen | 16066047 | – | – | noch nicht gesucht | – |
 | Oberkochen | BW | 08136050 | – | – | noch nicht gesucht | – |
 | Oberlungwitz | Sachsen | 14524230 | – | – | noch nicht gesucht | – |
 | Obernburg a.Main | Bayern | 09676145 | – | – | noch nicht gesucht | – |
-| Obernkirchen | Niedersachsen | 03257028 | – | – | noch nicht gesucht | – |
+| Obernkirchen | Niedersachsen | 03257028 | 1612472 | https://pixabay.com/photos/obernkirchen-sandstone-quarry-1612472/ | Pixabay-Lizenz; Obernkirchener Sandsteinbruch | 8 |
 | Oberriexingen | BW | 08118059 | – | – | noch nicht gesucht | – |
 | Oberviechtach | Bayern | 09376151 | – | – | noch nicht gesucht | – |
-| Oberwiesenthal | Sachsen | 14521440 | – | – | noch nicht gesucht | – |
+| Oberwiesenthal | Sachsen | 14521440 | 459287 | https://pixabay.com/p-459287/ | Pixabay-Lizenz; Winter, Frost, Fichtelberg (Ortsbezug nur über den Fichtelberg im Titel, Kurzlink) | 6 |
 | Oberzent | Hessen | 06437016 | – | – | noch nicht gesucht | – |
-| Ochsenhausen | BW | 08426087 | – | – | noch nicht gesucht | – |
-| Oederan | Sachsen | 14522440 | – | – | noch nicht gesucht | – |
+| Ochsenhausen | BW | 08426087 | 4485444 | https://pixabay.com/de/photos/ochsenhausen-turm-alt-historisch-4485444/ | Pixabay-Lizenz; Turm, alt, historisch | 7 |
+| Oederan | Sachsen | 14522440 | 1843936 | https://pixabay.com/photos/oederan-town-hall-tower-1843936/ | Pixabay-Lizenz; Rathausturm mit Uhr | 8 |
 | Oldenburg in Holstein | Schleswig-Holstein | 01055033 | – | – | noch nicht gesucht | – |
 | Oppenau | BW | 08317098 | – | – | noch nicht gesucht | – |
-| Oranienbaum-Wörlitz | Sachsen-Anhalt | 15091241 | – | – | noch nicht gesucht | – |
+| Oranienbaum-Wörlitz | Sachsen-Anhalt | 15091241 | 3547728 | https://pixabay.com/de/photos/landschaft-w%C3%B6rlitz-park-flu%C3%9F-natur-3547728/ | Pixabay-Lizenz; Pavillon am See im Wörlitzer Park | 7 |
 | Ortenberg | Hessen | 06440019 | – | – | noch nicht gesucht | – |
 | Osterburg (Altmark) | Sachsen-Anhalt | 15090415 | – | – | noch nicht gesucht | – |
 | Osterburken | BW | 08225075 | – | – | noch nicht gesucht | – |
@@ -1730,13 +1730,13 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Owen | BW | 08116054 | – | – | noch nicht gesucht | – |
 | Pappenheim | Bayern | 09577158 | – | – | noch nicht gesucht | – |
 | Parsberg | Bayern | 09373151 | – | – | noch nicht gesucht | – |
-| Pasewalk | Mecklenburg-Vorpommern | 13075105 | – | – | noch nicht gesucht | – |
+| Pasewalk | Mecklenburg-Vorpommern | 13075105 | 3432745 | https://pixabay.com/photos/loc-br91-pasewalk-locomotive-shed-3432745/ | Pixabay-Lizenz; Dampflok BR 91 im Lokschuppen Pasewalk (nur Ortsbezug im Titel, kein Stadtbild) | 4 |
 | Pausa-Mühltroff | Sachsen | 14523310 | – | – | noch nicht gesucht | – |
 | Penig | Sachsen | 14522460 | – | – | noch nicht gesucht | – |
 | Plön | Schleswig-Holstein | 01057057 | – | – | noch nicht gesucht | – |
-| Pockau-Lengefeld | Sachsen | 14521495 | – | – | noch nicht gesucht | – |
+| Pockau-Lengefeld | Sachsen | 14521495 | 854392 | https://pixabay.com/de/photos/lengefeld-erzgebirge-wasserspiel-854392/ | Pixabay-Lizenz; Wasserspiel in Lengefeld (Erzgebirge) | 5 |
 | Pohlheim | Hessen | 06531014 | – | – | noch nicht gesucht | – |
-| Pottenstein | Bayern | 09472179 | – | – | noch nicht gesucht | – |
+| Pottenstein | Bayern | 09472179 | 1142753 | https://pixabay.com/de/photos/burg-pottenstein-baum-ruine-alt-1142753/ | Pixabay-Lizenz; Burg Pottenstein (Ruine), Fränkische Schweiz | 7 |
 | Preetz | Schleswig-Holstein | 01057062 | – | – | noch nicht gesucht | – |
 | Premnitz | Brandenburg | 12063244 | – | – | noch nicht gesucht | – |
 | Prenzlau | Brandenburg | 12073452 | – | – | noch nicht gesucht | – |
@@ -1745,7 +1745,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Pritzwalk | Brandenburg | 12070316 | – | – | noch nicht gesucht | – |
 | Putbus | Mecklenburg-Vorpommern | 13073070 | – | – | noch nicht gesucht | – |
 | Pößneck | Thüringen | 16075085 | – | – | noch nicht gesucht | – |
-| Püttlingen | Saarland | 10041515 | – | – | noch nicht gesucht | – |
+| Püttlingen | Saarland | 10041515 | 5288265 | https://pixabay.com/de/photos/k%C3%B6llerbach-p%C3%BCttlingen-saarland-5288265/ | Pixabay-Lizenz; Köllerbach, Püttlingen, Saarland (Stadtteil) | 6 |
 | Querfurt | Sachsen-Anhalt | 15088305 | – | – | noch nicht gesucht | – |
 | Rabenau | Sachsen | 14628300 | – | – | noch nicht gesucht | – |
 | Radeberg | Sachsen | 14625480 | – | – | noch nicht gesucht | – |
@@ -1770,9 +1770,9 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Renningen | BW | 08115041 | – | – | noch nicht gesucht | – |
 | Rhede | NRW | 05554048 | – | – | noch nicht gesucht | – |
 | Rheinau | BW | 08317153 | – | – | noch nicht gesucht | – |
-| Rheinsberg | Brandenburg | 12068353 | – | – | noch nicht gesucht | – |
-| Riedenburg | Bayern | 09273164 | – | – | noch nicht gesucht | – |
-| Riedlingen | BW | 08426097 | – | – | noch nicht gesucht | – |
+| Rheinsberg | Brandenburg | 12068353 | 3814238 | https://pixabay.com/photos/castle-rheinsberg-brandenburg-3814238/ | Pixabay-Lizenz; Schloss Rheinsberg | 8 |
+| Riedenburg | Bayern | 09273164 | 646367 | https://pixabay.com/de/photos/kletterfelsen-altm%C3%BChltal-riedenburg-646367/ | Pixabay-Lizenz; Kletterfelsen im Altmühltal bei Riedenburg | 5 |
+| Riedlingen | BW | 08426097 | 6009485 | https://pixabay.com/de/photos/br%C3%BCcke-nordtangente-riedlingen-6009485/ | Pixabay-Lizenz; Brücke Nordtangente Riedlingen | 4 |
 | Rieneck | Bayern | 09677177 | – | – | noch nicht gesucht | – |
 | Rodewisch | Sachsen | 14523360 | – | – | noch nicht gesucht | – |
 | Roding | Bayern | 09372153 | – | – | noch nicht gesucht | – |
@@ -1782,35 +1782,35 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Rosenfeld | BW | 08417054 | – | – | noch nicht gesucht | – |
 | Rosenthal | Hessen | 06635017 | – | – | noch nicht gesucht | – |
 | Rotenburg a.d.Fulda | Hessen | 06632018 | – | – | noch nicht gesucht | – |
-| Rothenburg ob der Tauber | Bayern | 09571193 | – | – | noch nicht gesucht | – |
+| Rothenburg ob der Tauber | Bayern | 09571193 | 1622693 | https://pixabay.com/de/photos/rothenburg-ob-der-tauber-pl%C3%B6nlein-1622693/ | Pixabay-Lizenz; Plönlein | 10 |
 | Rottenburg a.d.Laaber | Bayern | 09274176 | – | – | noch nicht gesucht | – |
 | Roßleben-Wiehe | Thüringen | 16065087 | – | – | noch nicht gesucht | – |
 | Roßwein | Sachsen | 14522510 | – | – | noch nicht gesucht | – |
-| Runkel | Hessen | 06533013 | – | – | noch nicht gesucht | – |
+| Runkel | Hessen | 06533013 | 3096510 | https://pixabay.com/photos/germany-lahn-castle-runkel-waters-3096510/ | Pixabay-Lizenz; Burg Runkel an der Lahn | 8 |
 | Rutesheim | BW | 08115042 | – | – | noch nicht gesucht | – |
 | Rödental | Bayern | 09473159 | – | – | noch nicht gesucht | – |
 | Römhild | Thüringen | 16069062 | – | – | noch nicht gesucht | – |
 | Rötha | Sachsen | 14729370 | – | – | noch nicht gesucht | – |
 | Röthenbach a.d.Pegnitz | Bayern | 09574152 | – | – | noch nicht gesucht | – |
 | Rötz | Bayern | 09372154 | – | – | noch nicht gesucht | – |
-| Rüdesheim am Rhein | Hessen | 06439013 | – | – | noch nicht gesucht | – |
+| Rüdesheim am Rhein | Hessen | 06439013 | 4021822 | https://pixabay.com/ja/photos/%E3%83%88%E3%83%A9%E3%83%99%E3%83%AB-%E3%83%89%E3%82%A4%E3%83%84-4021822/ | Pixabay-Lizenz; Titel "Travel Germany Rudesheim", Motiv nicht näher bekannt | 6 |
 | Rüthen | NRW | 05974036 | – | – | noch nicht gesucht | – |
 | Saalburg-Ebersdorf | Thüringen | 16075135 | – | – | noch nicht gesucht | – |
 | Sachsenheim | BW | 08118076 | – | – | noch nicht gesucht | – |
 | Sandersdorf-Brehna | Sachsen-Anhalt | 15082340 | – | – | noch nicht gesucht | – |
 | Sarstedt | Niedersachsen | 03254028 | – | – | noch nicht gesucht | – |
 | Sassenberg | NRW | 05570036 | – | – | noch nicht gesucht | – |
-| Sassnitz | Mecklenburg-Vorpommern | 13073080 | – | – | noch nicht gesucht | – |
+| Sassnitz | Mecklenburg-Vorpommern | 13073080 | 1466437 | https://pixabay.com/de/photos/bornholm-f%C3%A4hre-f%C3%A4hrhafen-sassnitz-1466437/ | Pixabay-Lizenz; Bornholm-Fähre im Fährhafen Sassnitz | 7 |
 | Schalkau | Thüringen | 16072015 | – | – | noch nicht gesucht | – |
 | Scheer | BW | 08437101 | – | – | noch nicht gesucht | – |
 | Schelklingen | BW | 08425108 | – | – | noch nicht gesucht | – |
 | Schenefeld | Schleswig-Holstein | 01056044 | – | – | noch nicht gesucht | – |
 | Scheßlitz | Bayern | 09471185 | – | – | noch nicht gesucht | – |
-| Schieder-Schwalenberg | NRW | 05766060 | – | – | noch nicht gesucht | – |
+| Schieder-Schwalenberg | NRW | 05766060 | 31231421 | https://www.pexels.com/photo/charming-timbered-houses-in-schieder-schwalenberg-31231421/ | Pexels-Lizenz; Fachwerkhäuser in Schieder-Schwalenberg | 8 |
 | Schiltach | BW | 08325051 | – | – | noch nicht gesucht | – |
 | Schirgiswalde-Kirschau | Sachsen | 14625525 | – | – | noch nicht gesucht | – |
 | Schkeuditz | Sachsen | 14730270 | – | – | noch nicht gesucht | – |
-| Schleiden | NRW | 05366036 | – | – | noch nicht gesucht | – |
+| Schleiden | NRW | 05366036 | 5305733 | https://pixabay.com/de/photos/burg-museum-schleiden-eifel-5305733/ | Pixabay-Lizenz; Burg/Schloss Schleiden mit Museum, Eifel | 8 |
 | Schleiz | Thüringen | 16075098 | – | – | noch nicht gesucht | – |
 | Schleusingen | Thüringen | 16069043 | – | – | noch nicht gesucht | – |
 | Schlitz | Hessen | 06535015 | – | – | noch nicht gesucht | – |
@@ -1837,22 +1837,22 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Schwentinental | Schleswig-Holstein | 01057091 | – | – | noch nicht gesucht | – |
 | Schömberg | BW | 08417057 | – | – | noch nicht gesucht | – |
 | Schönau | BW | 08226080 | – | – | noch nicht gesucht | – |
-| Schönau im Schwarzwald | BW | 08336079 | – | – | noch nicht gesucht | – |
+| Schönau im Schwarzwald | BW | 08336079 | 726195 | https://pixabay.com/de/photos/belchen-gipfel-schwarzwald-726195/ | Pixabay-Lizenz; Belchen-Gipfel im Schwarzwald. Das ist nur die Landschaft der Umgebung, der Ortsname steht nicht im Titel. | 4 |
 | Schönewalde | Brandenburg | 12062461 | – | – | noch nicht gesucht | – |
 | Schöningen | Niedersachsen | 03154019 | – | – | noch nicht gesucht | – |
 | Schönwald | Bayern | 09479150 | – | – | noch nicht gesucht | – |
 | Sebnitz | Sachsen | 14628360 | – | – | noch nicht gesucht | – |
 | Seeland | Sachsen-Anhalt | 15089307 | – | – | noch nicht gesucht | – |
-| Seelow | Brandenburg | 12064448 | – | – | noch nicht gesucht | – |
+| Seelow | Brandenburg | 12064448 | 205450 | https://pixabay.com/nl/photos/seelow-duitsland-monument-205450/ | Pixabay-Lizenz; Denkmal in Seelow. Ortsname steht im Titel. | 7 |
 | Seesen | Niedersachsen | 03153012 | – | – | noch nicht gesucht | – |
 | Seifhennersdorf | Sachsen | 14626530 | – | – | noch nicht gesucht | – |
-| Selb | Bayern | 09479152 | – | – | noch nicht gesucht | – |
+| Selb | Bayern | 09479152 | 6614144 | https://pixabay.com/photos/bavaria-rosenthal-6614144/ | Pixabay-Lizenz; Rosenthal-Outlet in Bayern. Der Ortsname Selb steht nicht im Titel, nur das Rosenthal-Wahrzeichen. | 5 |
 | Selbitz | Bayern | 09475171 | – | – | noch nicht gesucht | – |
 | Sendenhorst | NRW | 05570040 | – | – | noch nicht gesucht | – |
 | Seßlach | Bayern | 09473165 | – | – | noch nicht gesucht | – |
 | Sigmaringen | BW | 08437104 | – | – | noch nicht gesucht | – |
 | Simbach a.Inn | Bayern | 09277145 | – | – | noch nicht gesucht | – |
-| Sinzig | Rheinland-Pfalz | 07131077 | – | – | noch nicht gesucht | – |
+| Sinzig | Rheinland-Pfalz | 07131077 | 1439217 | https://pixabay.com/de/photos/sinzig-kirche-rhein-rheinland-pfalz-1439217/ | Pixabay-Lizenz; Kirche in Sinzig am Rhein (Rheinland-Pfalz im URL) | 8 |
 | Solms | Hessen | 06532021 | – | – | noch nicht gesucht | – |
 | Sonnewalde | Brandenburg | 12062469 | – | – | noch nicht gesucht | – |
 | Sontra | Hessen | 06636011 | – | – | noch nicht gesucht | – |
@@ -1860,17 +1860,17 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Spalt | Bayern | 09576147 | – | – | noch nicht gesucht | – |
 | Spangenberg | Hessen | 06634024 | – | – | noch nicht gesucht | – |
 | Spenge | NRW | 05758032 | – | – | noch nicht gesucht | – |
-| St. Blasien | BW | 08337097 | – | – | noch nicht gesucht | – |
+| St. Blasien | BW | 08337097 | 213466 | https://pixabay.com/es/photos/dom-blaise-sankt-blasien-213466/ | Pixabay-Lizenz; Dom St. Blasien | 8 |
 | St. Georgen im Schwarzwald | BW | 08326052 | – | – | noch nicht gesucht | – |
 | Stadtbergen | Bayern | 09772202 | – | – | noch nicht gesucht | – |
-| Stadtilm | Thüringen | 16070048 | – | – | noch nicht gesucht | – |
-| Staufen im Breisgau | BW | 08315108 | – | – | noch nicht gesucht | – |
+| Stadtilm | Thüringen | 16070048 | 1281917 | https://pixabay.com/photos/viaduct-stadtilm-thuringia-1281917/ | Pixabay-Lizenz; historisches Eisenbahnviadukt Stadtilm (Thüringen) | 8 |
+| Staufen im Breisgau | BW | 08315108 | 2673085 | https://pixabay.com/photos/castle-to-staufen-castle-ruins-2673085/ | Pixabay-Lizenz; Burgruine Staufen. Der Titel nennt "Staufen" ohne "im Breisgau", die Zuordnung stammt aus den Suchtreffern. Vor Verwendung prüfen. | 6 |
 | Staufenberg | Hessen | 06531017 | – | – | noch nicht gesucht | – |
-| Stein | Bayern | 09573127 | – | – | noch nicht gesucht | – |
+| Stein | Bayern | 09573127 | 1908243 | https://pixabay.com/photos/castle-faber-castel-architecture-1908243/ | Pixabay-Lizenz; Faber-Castell-Schloss (Stein bei Nürnberg). Das Bundesland steht nicht im Titel. | 6 |
 | Steinach | Thüringen | 16072019 | – | – | noch nicht gesucht | – |
 | Steinau an der Straße | Hessen | 06435028 | – | – | noch nicht gesucht | – |
 | Steinbach (Taunus) | Hessen | 06434010 | – | – | noch nicht gesucht | – |
-| Steinbach-Hallenberg | Thüringen | 16066069 | – | – | noch nicht gesucht | – |
+| Steinbach-Hallenberg | Thüringen | 16066069 | 654775 | https://pixabay.com/photos/castle-steinbach-hallenberg-heaven-654775/ | Pixabay-Lizenz; Burgruine Hallenburg (Castle ruin in Steinbach-Hallenberg) | 8 |
 | Steinheim | NRW | 05762032 | – | – | noch nicht gesucht | – |
 | Steinheim an der Murr | BW | 08118070 | – | – | noch nicht gesucht | – |
 | Stockach | BW | 08335079 | – | – | noch nicht gesucht | – |
@@ -1891,23 +1891,23 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Tambach-Dietharz/Thür.Wald | Thüringen | 16067065 | – | – | noch nicht gesucht | – |
 | Tamm | BW | 08118071 | – | – | noch nicht gesucht | – |
 | Tangerhütte | Sachsen-Anhalt | 15090546 | – | – | noch nicht gesucht | – |
-| Tangermünde | Sachsen-Anhalt | 15090550 | – | – | noch nicht gesucht | – |
+| Tangermünde | Sachsen-Anhalt | 15090550 | 4109577 | https://pixabay.com/photos/germany-saxony-anhalt-tangerm%C3%BCnde-4109577/ | Pixabay-Lizenz; historisches Rathaus (Sachsen-Anhalt im URL) | 8 |
 | Tann (Rhön) | Hessen | 06631023 | – | – | noch nicht gesucht | – |
 | Tanna | Thüringen | 16075132 | – | – | noch nicht gesucht | – |
-| Tauberbischofsheim | BW | 08128115 | – | – | noch nicht gesucht | – |
+| Tauberbischofsheim | BW | 08128115 | 214905 | https://pixabay.com/photos/castle-tauberbischofsheim-germany-214905/ | Pixabay-Lizenz; Schloss mit Turm | 7 |
 | Taucha | Sachsen | 14730300 | – | – | noch nicht gesucht | – |
 | Tecklenburg | NRW | 05566088 | – | – | noch nicht gesucht | – |
-| Tegernsee | Bayern | 09182132 | – | – | noch nicht gesucht | – |
-| Templin | Brandenburg | 12073572 | – | – | noch nicht gesucht | – |
+| Tegernsee | Bayern | 09182132 | 905124 | https://pixabay.com/de/photos/steg-promenade-rathaus-tegernsee-905124/ | Pixabay-Lizenz; Promenade am Tegernsee und Rathaus | 8 |
+| Templin | Brandenburg | 12073572 | 4790682 | https://pixabay.com/de/photos/tor-m%C3%BChlentor-templin-historisch-4790682/ | Pixabay-Lizenz; Mühlentor (historisches Stadttor); Alternative: Schultor 5098478 | 7 |
 | Tengen | BW | 08335080 | – | – | noch nicht gesucht | – |
 | Teterow | Mecklenburg-Vorpommern | 13072106 | – | – | noch nicht gesucht | – |
 | Teublitz | Bayern | 09376170 | – | – | noch nicht gesucht | – |
 | Teuchern | Sachsen-Anhalt | 15084490 | – | – | noch nicht gesucht | – |
-| Thale | Sachsen-Anhalt | 15085330 | – | – | noch nicht gesucht | – |
+| Thale | Sachsen-Anhalt | 15085330 | 1501400 | https://pixabay.com/photos/hexentanzplatz-thale-1501400/ | Pixabay-Lizenz; Hexentanzplatz, Haus auf dem Kopf | 6 |
 | Thalheim/Erzgeb. | Sachsen | 14521620 | – | – | noch nicht gesucht | – |
 | Thum | Sachsen | 14521640 | – | – | noch nicht gesucht | – |
 | Tirschenreuth | Bayern | 09377154 | – | – | noch nicht gesucht | – |
-| Titisee-Neustadt | BW | 08315113 | – | – | noch nicht gesucht | – |
+| Titisee-Neustadt | BW | 08315113 | 2925390 | https://pixabay.com/photos/titisee-black-forest-lake-nature-2925390/ | Pixabay-Lizenz; Titisee im Schwarzwald (Seemotiv, kein Stadtbild) | 6 |
 | Tittmoning | Bayern | 09189152 | – | – | noch nicht gesucht | – |
 | Todtnau | BW | 08336087 | – | – | noch nicht gesucht | – |
 | Tornesch | Schleswig-Holstein | 01056048 | – | – | noch nicht gesucht | – |
@@ -1920,7 +1920,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Triberg im Schwarzwald | BW | 08326060 | – | – | noch nicht gesucht | – |
 | Trochtelfingen | BW | 08415073 | – | – | noch nicht gesucht | – |
 | Trossingen | BW | 08327049 | – | – | noch nicht gesucht | – |
-| Trostberg | Bayern | 09189157 | – | – | noch nicht gesucht | – |
+| Trostberg | Bayern | 09189157 | 729900 | https://pixabay.com/de/photos/trostberg-chiemgau-alz-alzbr%C3%BCcke-729900/ | Pixabay-Lizenz; Alz und Alzbrücke in Trostberg, Chiemgau | 8 |
 | Twistringen | Niedersachsen | 03251042 | – | – | noch nicht gesucht | – |
 | Töging a.Inn | Bayern | 09171132 | – | – | noch nicht gesucht | – |
 | Tönning | Schleswig-Holstein | 01054138 | – | – | noch nicht gesucht | – |
@@ -1928,7 +1928,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Uetersen | Schleswig-Holstein | 01056049 | – | – | noch nicht gesucht | – |
 | Uhingen | BW | 08117051 | – | – | noch nicht gesucht | – |
 | Ulrichstein | Hessen | 06535018 | – | – | noch nicht gesucht | – |
-| Usingen | Hessen | 06434011 | – | – | noch nicht gesucht | – |
+| Usingen | Hessen | 06434011 | 2355918 | https://pixabay.com/photos/usingen-taunus-hesse-germany-2355918/ | Pixabay-Lizenz; historischer Marktplatz in Usingen, Taunus | 8 |
 | Uslar | Niedersachsen | 03155012 | – | – | noch nicht gesucht | – |
 | Vacha | Thüringen | 16063082 | – | – | noch nicht gesucht | – |
 | Velburg | Bayern | 09373167 | – | – | noch nicht gesucht | – |
@@ -1944,7 +1944,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Vilshofen an der Donau | Bayern | 09275154 | – | – | noch nicht gesucht | – |
 | Visselhövede | Niedersachsen | 03357051 | – | – | noch nicht gesucht | – |
 | Vlotho | NRW | 05758036 | – | – | noch nicht gesucht | – |
-| Vogtsburg im Kaiserstuhl | BW | 08315133 | – | – | noch nicht gesucht | – |
+| Vogtsburg im Kaiserstuhl | BW | 08315133 | 32556353 | https://www.pexels.com/photo/lavender-fields-in-vogtsburg-im-kaiserstuhl-32556353/ | Pexels-Lizenz; Lavendelfelder in Vogtsburg im Kaiserstuhl (Ortsname im Titel). Alternative: 32556343 (https://www.pexels.com/photo/lavender-fields-in-vogtsburg-germany-32556343/) | 6 |
 | Vohburg a.d.Donau | Bayern | 09186158 | – | – | noch nicht gesucht | – |
 | Vohenstrauß | Bayern | 09374162 | – | – | noch nicht gesucht | – |
 | Volkmarsen | Hessen | 06635020 | – | – | noch nicht gesucht | – |
@@ -1955,7 +1955,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Waibstadt | BW | 08226091 | – | – | noch nicht gesucht | – |
 | Waischenfeld | Bayern | 09472197 | – | – | noch nicht gesucht | – |
 | Waldbröl | NRW | 05374044 | – | – | noch nicht gesucht | – |
-| Waldeck | Hessen | 06635021 | – | – | noch nicht gesucht | – |
+| Waldeck | Hessen | 06635021 | 1103951 | https://pixabay.com/photos/edersee-hesse-waldeck-castle-1103951/ | Pixabay-Lizenz; Schloss Waldeck im Winter über dem Edersee (Titel: "Waldeck Castle in winter", Tags Edersee/Hesse). Alternative: 5865298, https://pixabay.com/de/photos/burg-waldeck-schloss-edersee-see-5865298/ (Burg Waldeck, Edersee) | 8 |
 | Waldenbuch | BW | 08115048 | – | – | noch nicht gesucht | – |
 | Waldenburg | BW | 08126085 | – | – | noch nicht gesucht | – |
 | Waldershof | Bayern | 09377157 | – | – | noch nicht gesucht | – |
@@ -1973,17 +1973,17 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Wassenberg | NRW | 05370036 | – | – | noch nicht gesucht | – |
 | Wasserburg a.Inn | Bayern | 09187182 | – | – | noch nicht gesucht | – |
 | Wassertrüdingen | Bayern | 09571214 | – | – | noch nicht gesucht | – |
-| Weener | Niedersachsen | 03457021 | – | – | noch nicht gesucht | – |
+| Weener | Niedersachsen | 03457021 | 3458951 | https://pixabay.com/de/photos/denkmal-weener-t%c3%b6rfwieven-tourismus-3458951/ | Pixabay-Lizenz; Denkmal Weener Törfwieven (Ortsbezug nur über das Denkmal im Titel) | 5 |
 | Wehr | BW | 08337116 | – | – | noch nicht gesucht | – |
-| Weikersheim | BW | 08128126 | – | – | noch nicht gesucht | – |
+| Weikersheim | BW | 08128126 | 6632353 | https://pixabay.com/hu/photos/kast%C3%A9ly-weikersheim-n%C3%A9metorsz%C3%A1g-6632353/ | Pixabay-Lizenz; Schloss Weikersheim (Titel ungarisch; Alternative: Zwerg im Schlossgarten, ID 870010) | 7 |
 | Weil der Stadt | BW | 08115050 | – | – | noch nicht gesucht | – |
 | Weilburg | Hessen | 06533017 | – | – | noch nicht gesucht | – |
-| Weilheim an der Teck | BW | 08116070 | – | – | noch nicht gesucht | – |
-| Weinsberg | BW | 08125102 | – | – | noch nicht gesucht | – |
+| Weilheim an der Teck | BW | 08116070 | 1464774 | https://pixabay.com/photos/swabian-alb-weilheim-on-the-teck-1464774/ | Pixabay-Lizenz; Schwäbische Alb, Panorama mit Limburg | 7 |
+| Weinsberg | BW | 08125102 | 2308328 | https://pixabay.com/de/photos/weinberg-burg-ruine-weibertreu-2308328/ | Pixabay-Lizenz; Burgruine Weibertreu | 8 |
 | Weismain | Bayern | 09478176 | – | – | noch nicht gesucht | – |
 | Weißenberg | Sachsen | 14625610 | – | – | noch nicht gesucht | – |
 | Weißenburg i.Bay. | Bayern | 09577177 | – | – | noch nicht gesucht | – |
-| Weißenhorn | Bayern | 09775164 | – | – | noch nicht gesucht | – |
+| Weißenhorn | Bayern | 09775164 | 247237 | https://pixabay.com/de/photos/wei%C3%9Fenhorn-oberes-tor-wegzeiger-247237/ | Pixabay-Lizenz; Oberes Tor mit Wegzeiger | 7 |
 | Weißensee | Thüringen | 16068058 | – | – | noch nicht gesucht | – |
 | Weißenstadt | Bayern | 09479166 | – | – | noch nicht gesucht | – |
 | Welzheim | BW | 08119084 | – | – | noch nicht gesucht | – |
@@ -2000,7 +2000,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Wiesensteig | BW | 08117058 | – | – | noch nicht gesucht | – |
 | Wiesmoor | Niedersachsen | 03452025 | – | – | noch nicht gesucht | – |
 | Wildau | Brandenburg | 12061540 | – | – | noch nicht gesucht | – |
-| Wildberg | BW | 08235080 | – | – | noch nicht gesucht | – |
+| Wildberg | BW | 08235080 | 27421503 | https://www.pexels.com/photo/wildberg-in-the-black-forest-germany-27421503/ | Pexels-Lizenz; Wildberg im Schwarzwald (BW) | 7 |
 | Wildenfels | Sachsen | 14524310 | – | – | noch nicht gesucht | – |
 | Wilkau-Haßlau | Sachsen | 14524320 | – | – | noch nicht gesucht | – |
 | Willebadessen | NRW | 05762040 | – | – | noch nicht gesucht | – |
@@ -2017,14 +2017,14 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Wittstock/Dosse | Brandenburg | 12068468 | – | – | noch nicht gesucht | – |
 | Witzenhausen | Hessen | 06636016 | – | – | noch nicht gesucht | – |
 | Wolfach | BW | 08317145 | – | – | noch nicht gesucht | – |
-| Wolfhagen | Hessen | 06633028 | – | – | noch nicht gesucht | – |
+| Wolfhagen | Hessen | 06633028 | 2799484 | https://pixabay.com/photos/church-evangelical-wolf-hagen-tower-2799484/ | Pixabay-Lizenz; evangelische Kirche, Turm | 6 |
 | Wolfratshausen | Bayern | 09173147 | – | – | noch nicht gesucht | – |
 | Wolkenstein | Sachsen | 14521670 | – | – | noch nicht gesucht | – |
 | Wolmirstedt | Sachsen-Anhalt | 15083565 | – | – | noch nicht gesucht | – |
 | Wriezen | Brandenburg | 12064512 | – | – | noch nicht gesucht | – |
-| Wunsiedel | Bayern | 09479169 | – | – | noch nicht gesucht | – |
+| Wunsiedel | Bayern | 09479169 | 30069336 | https://www.pexels.com/photo/snow-covered-alpine-forest-in-wunsiedel-germany-30069336/ | Pexels-Lizenz; verschneiter Wald bei Wunsiedel | 5 |
 | Wurzbach | Thüringen | 16075133 | – | – | noch nicht gesucht | – |
-| Wurzen | Sachsen | 14729410 | – | – | noch nicht gesucht | – |
+| Wurzen | Sachsen | 14729410 | 406251 | https://pixabay.com/photos/church-heaven-locality-wurzen-406251/ | Pixabay-Lizenz; Kirche mit Himmel | 6 |
 | Wächtersbach | Hessen | 06435029 | – | – | noch nicht gesucht | – |
 | Wörth a.Main | Bayern | 09676169 | – | – | noch nicht gesucht | – |
 | Wörth am Rhein | Rheinland-Pfalz | 07334501 | – | – | noch nicht gesucht | – |
