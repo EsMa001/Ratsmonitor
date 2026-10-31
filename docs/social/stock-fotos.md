@@ -494,7 +494,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 444 | Baunatal | 06633003 | – | – | kein Bild gefunden | – |
 | 445 | Henstedt-Ulzburg | 01060039 | – | – | kein Bild gefunden | – |
 | 446 | Geilenkirchen | 05370012 | 17144608 | https://www.pexels.com/photo/secondary-school-in-geilenkirchen-17144608/ | Pexels-Lizenz, Schule (wenig repräsentativ) | 3 |
-| 447 | Kevelaer | 05154032 | – | – | kein Bild gefunden | – |
+| 447 | Kevelaer | 05154032 | 7390301 | https://pixabay.com/de/photos/kevelaer-kirche-architektur-fassade-7390301/ | Pixabay-Lizenz; Kirchenfassade in Kevelaer (Schlagwörter nennen Kevelaer ausdrücklich) | 9 |
 | 448 | Königsbrunn | 09772163 | – | – | kein Bild gefunden | – |
 | 449 | Grimma | 14729160 | 844731 | https://pixabay.com/de/photos/mulde-grimma-fluss-wasser-844731/ | Pixabay-Lizenz, Mulde | 6 |
 | 450 | Arnstadt | 16070004 | – | – | kein Bild gefunden | – |
@@ -506,12 +506,12 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 456 | Griesheim | 06432008 | 7360662 | https://pixabay.com/de/photos/wagenhalle-griesheim-7360662/ | Pixabay-Lizenz, Wagenhalle (Ortsbezug unklar, vermutlich Frankfurt-Griesheim) | 3 |
 | 457 | Lohne (Oldenburg) | 03460006 | – | – | kein Bild gefunden | – |
 | 458 | Sundern (Sauerland) | 05958044 | – | – | kein Bild gefunden | – |
-| 459 | Teltow | 12069616 | – | – | kein Bild gefunden | – |
-| 460 | Baesweiler | 05334008 | – | – | kein Bild gefunden | – |
+| 459 | Teltow | 12069616 | 7347996 | https://pixabay.com/de/photos/kanal-teltow-teltow-kanal-wolken-7347996/ | Pixabay-Lizenz; Teltowkanal mit Wolken (Schlagwort „Teltow“; der Kanal verläuft am Ort, Motiv ist nicht der Stadtkern) | 6 |
+| 460 | Baesweiler | 05334008 | 5214395 | https://pixabay.com/de/photos/weg-baesweiler-cap-park-hdr-5214395/ | Pixabay-Lizenz; Weg im Park (Schlagwort „Baesweiler“; das Motiv ist unspezifisch) | 5 |
 | 461 | Wetter (Ruhr) | 05954032 | – | – | kein Bild gefunden | – |
 | 462 | Garmisch-Partenkirchen | 09180117 | 12568191 | https://www.pexels.com/photo/mountain-at-zugspitze-during-sunset-12568191/ | Pexels-Lizenz, Zugspitze bei Sonnenuntergang, Ortsbezug nur über die Region | 5 |
 | 462 | Garmisch-Partenkirchen | 09180117 | 12568191 | https://www.pexels.com/photo/mountain-at-zugspitze-during-sunset-12568191/ | Pexels-Lizenz, Zugspitze bei Sonnenuntergang, Ortsbezug nur über die Region | 5 |
-| 463 | Schloß Holte-Stukenbrock | 05754036 | – | – | kein Bild gefunden | – |
+| 463 | Schloß Holte-Stukenbrock | 05754036 | 6001195 | https://pixabay.com/de/photos/ausflug-zugang-schloss-holte-burg-6001195/ | Pixabay-Lizenz; Zugang zum Schloss Holte (Schlagwort „Schloss Holte“; Ortsbezug nur aus dem Titel geschätzt) | 6 |
 | 464 | Wangen im Allgäu | 08436081 | 141181 | https://pixabay.com/de/photos/wangen-allg%C3%A4u-geb%C3%A4ude-architektur-141181/ | Pixabay-Lizenz, Gebäude/Architektur | 7 |
 | 465 | Overath | 05378024 | – | – | kein Bild gefunden | – |
 | 466 | Butzbach | 06440005 | – | – | kein Bild gefunden | – |
@@ -526,7 +526,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 475 | Werder (Havel) | 12069656 | 1985007 | https://pixabay.com/de/photos/werder-havel-sonne-plessow-see-1985007/ | Pixabay-Lizenz, Sonne am Plessower See | 7 |
 | 476 | Heppenheim | 06431011 | 5468392 | https://pixabay.com/photos/alley-paved-road-architecture-5468392/ | Pixabay-Lizenz, Gasse, Ortsbezug nur über Suchtreffer | 3 |
 | 477 | Pfaffenhofen an der Ilm | 09186143 | 204918 | https://pixabay.com/photos/pfaffenhofen-town-hall-ilm-flow-204918/ | Pixabay-Lizenz, Rathaus | 8 |
-| 478 | Hennigsdorf | 12065136 | – | – | kein Bild gefunden | – |
+| 478 | Hennigsdorf | 12065136 | 2168177 | https://pixabay.com/de/photos/schiff-kahn-wasser-havel-2168177/ | Pixabay-Lizenz; Schiff/Kahn auf der Havel, Titel nennt Hennigsdorf | 6 |
 | 479 | Heiligenhaus | 05158012 | – | – | kein Bild gefunden | – |
 | 480 | Bad Neuenahr-Ahrweiler | 07131007 | 873395 | https://pixabay.com/de/photos/bad-neuenahr-haus-sommer-873395/ | Pixabay-Lizenz; "Historisches Stadthaus" in Bad Neuenahr, Motiv nach Titel nicht eindeutig | 4 |
 | 481 | Aschersleben | 15089015 | – | – | kein Bild gefunden | – |
@@ -536,7 +536,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 485 | Lauf an der Pegnitz | 09574138 | 33987979 | https://www.pexels.com/photo/historic-lauf-castle-by-the-pegnitz-river-33987979/ | Pexels-Lizenz, Wenzelschloss | 7 |
 | 486 | Groß-Gerau | 06433006 | – | – | kein Bild gefunden | – |
 | 487 | Mühlacker | 08236040 | – | – | kein Bild gefunden | – |
-| 488 | Weiterstadt | 06432023 | – | – | kein Bild gefunden | – |
+| 488 | Weiterstadt | 06432023 | 1745268 | https://pixabay.com/de/photos/weiterstadt-darmstadt-hessen-1745268/ | Pixabay-Lizenz; Motiv unbekannt, Titel "Weiterstadt, Darmstadt, Hessen" | 5 |
 | 489 | Bingen am Rhein | 07339005 | 19429209 | https://www.pexels.com/photo/view-of-bingen-am-rhein-in-summer-19429209/ | Pexels-Lizenz, Ansicht im Sommer | 7 |
 | 490 | Nordenham | 03461007 | – | – | kein Bild gefunden | – |
 | 491 | Zirndorf | 09573134 | 2881286 | https://pixabay.com/photos/play-mobile-land-funpark-zirndorf-2881286/ | Pixabay-Lizenz, Playmobil-Funpark (kein Stadtbild) | 5 |
