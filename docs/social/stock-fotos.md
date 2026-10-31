@@ -3515,8 +3515,8 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Rot am See | Baden-Württemberg | 08127071 | – | – | noch nicht gesucht | – |
 | Rot an der Rot | Baden-Württemberg | 08426100 | – | – | noch nicht gesucht | – |
 | Rothenbuch | Bayern | 09671148 | – | – | noch nicht gesucht | – |
-| Rottach-Egern | Bayern | 09182129 | – | – | noch nicht gesucht | – |
-| Rottenacker | Baden-Württemberg | 08425104 | – | – | noch nicht gesucht | – |
+| Rottach-Egern | Bayern | 09182129 | 6169582 | https://pixabay.com/photos/rottach-egern-bavaria-germany-6169582/ | Pixabay-Lizenz; Ortsansicht Rottach-Egern (Tegernsee) | 8 |
+| Rottenacker | Baden-Württemberg | 08425104 | 243666 | https://pixabay.com/de/photos/wehr-staustufe-donau-rottenacker-243666/ | Pixabay-Lizenz; Wehr/Staustufe an der Donau bei Rottenacker | 6 |
 | Rottendorf | Bayern | 09679185 | – | – | noch nicht gesucht | – |
 | Roßbach | Bayern | 09277142 | – | – | noch nicht gesucht | – |
 | Roßdorf | Hessen | 06432020 | – | – | noch nicht gesucht | – |
@@ -3524,11 +3524,11 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Rudelzhausen | Bayern | 09178122 | – | – | noch nicht gesucht | – |
 | Rudersberg | Baden-Württemberg | 08119061 | – | – | noch nicht gesucht | – |
 | Ruderting | Bayern | 09275144 | – | – | noch nicht gesucht | – |
-| Ruhpolding | Bayern | 09189140 | – | – | noch nicht gesucht | – |
+| Ruhpolding | Bayern | 09189140 | 4391506 | https://pixabay.com/de/photos/pfarrkirche-st-georg-ruhpolding-4391506/ | Pixabay-Lizenz; Pfarrkirche St. Georg | 8 |
 | Ruhstorf a.d.Rott | Bayern | 09275145 | – | – | noch nicht gesucht | – |
 | Runding | Bayern | 09372155 | – | – | noch nicht gesucht | – |
 | Ruppertshofen | Baden-Württemberg | 08136061 | – | – | noch nicht gesucht | – |
-| Rust | Baden-Württemberg | 08317114 | – | – | noch nicht gesucht | – |
+| Rust | Baden-Württemberg | 08317114 | 413293 | https://pixabay.com/de/photos/eurosat-europapark-architektur-rust-413293/ | Pixabay-Lizenz; Europa-Park Rust, Eurosat | 7 |
 | Röderland | Brandenburg | 12062410 | – | – | noch nicht gesucht | – |
 | Röhrmoos | Bayern | 09174141 | – | – | noch nicht gesucht | – |
 | Röhrnbach | Bayern | 09272141 | – | – | noch nicht gesucht | – |
