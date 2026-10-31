@@ -46,7 +46,7 @@ export function spoken(text){
   .replace(AMOUNT,(_,n)=>spokenNumber(+n.replace(/\./g,''))+' Euro')
   .replace(/\b(\d+)\s?%/g,(_,n)=>spokenNumber(+n)+' Prozent')
   .replace(SPOKEN_YEAR,y=>spokenNumber(+y))
-  .replace(/\bP&R\b/g,'P und R').replace(/&/g,' und ').replace(/\bff\.?/g,'und folgende')
+  .replace(/\bP&R\b/g,'Park und Ride').replace(/&/g,' und ').replace(/\bff\.?/g,'und folgende')
   .replace(/\s+/g,' ').trim();
 }
 

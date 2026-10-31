@@ -11,7 +11,7 @@ test('Zahlen, Daten und Beträge werden ausgeschrieben', () => {
  assert.equal(spokenDate('2026-10-13'),'dreizehnten Oktober');
  assert.equal(spokenDate('2026-11-05'),'fünften November');
  assert.equal(spokenDate('2026-09-08'),'achten September');
- assert.equal(spoken('Gesamtkosten 241.000,- € geschätzt, 5 % Puffer, P&R'),'Gesamtkosten zweihunderteinundvierzigtausend Euro geschätzt, fünf Prozent Puffer, P und R');
+ assert.equal(spoken('Gesamtkosten 241.000,- € geschätzt, 5 % Puffer, P&R'),'Gesamtkosten zweihunderteinundvierzigtausend Euro geschätzt, fünf Prozent Puffer, Park und Ride');
 });
 
 // Beispiele aus den beiden Billerbeck-Berichten (Texte vom Nutzer, 31.10.2026)
@@ -36,7 +36,7 @@ test('Wirtschaftswege: Stand offen, Verlauf, Zitat', () => {
 test('P&R: In Beratung, Standwort im ersten Satz, gesprochene Haushaltsangabe', () => {
  const s=videoSheet(pr,{regionName:'Billerbeck',today:'2026-10-31',titleShort:'P&R Weihgarten'});
  assert.equal(s.ok,true,s.warnings.join('; '));
- assert.equal(s.sprechtext[1],'In Beratung in Billerbeck: P und R Weihgarten.');
+ assert.equal(s.sprechtext[1],'In Beratung in Billerbeck: Park und Ride Weihgarten.');
  assert.match(s.sprechtext[2],/Haushalt zweitausendsiebenundzwanzig und folgende zu verplanen/);
 });
 
