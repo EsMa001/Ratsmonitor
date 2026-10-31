@@ -43,18 +43,18 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 11 | Bremen | 04011000 | 3559469 | https://pixabay.com/de/photos/bremen-schnoor-altstadt-3559469/ | Pixabay-Lizenz, Schnoor-Viertel (Alternative Roland: 230846) | 7 |
 | 12 | Dresden | 14612000 | m9qz1NE1b5k | https://unsplash.com/photos/a-large-building-with-dresden-frauenkirche-m9qz1NE1b5k | Unsplash-Lizenz, Frauenkirche | 7 |
 | 13 | Hannover | 03241001 | 22813506 | https://www.pexels.com/de-de/foto/neues-rathaus-hannover-22813506/ | Pexels-Lizenz, Neues Rathaus | 8 |
-| 14 | Nürnberg | 09564000 | – | – | kein Bild gefunden | – |
-| 15 | Duisburg | 05112000 | – | – | kein Bild gefunden | – |
-| 16 | Bochum | 05911000 | – | – | kein Bild gefunden | – |
+| 14 | Nürnberg | 09564000 | 18024007 | https://www.pexels.com/photo/view-of-nuremberg-old-town-germany-18024007/ | Pexels-Lizenz; Blick auf die Altstadt von Nürnberg | 8 |
+| 15 | Duisburg | 05112000 | 20001993 | https://www.pexels.com/photo/person-walking-on-the-tiger-and-turtle-magic-mountain-art-installation-in-duisburg-germany-20001993/ | Pexels-Lizenz; Tiger and Turtle, Duisburg | 7 |
+| 16 | Bochum | 05911000 | 1587977 | https://pixabay.com/photos/bochum-gelsenkirchen-bogestra-tram-1587977/ | Pixabay-Lizenz; Bogestra-Straßenbahn am U-Bahnhof | 6 |
 | 17 | Wuppertal | 05124000 | RYZN50k333Q | https://unsplash.com/photos/a-blue-suspended-monorail-train-on-a-green-track-RYZN50k333Q | Unsplash-Lizenz, vermutlich Schwebebahn; Ort steht nicht im Titel, vorher prüfen | 6 |
 | 18 | Bielefeld | 05711000 | 2554694 | https://pixabay.com/photos/sparrenburg-bielefeld-historical-2554694/ | Pixabay-Lizenz, Sparrenburg | 8 |
-| 19 | Bonn | 05314000 | – | – | kein Bild gefunden | – |
+| 19 | Bonn | 05314000 | 4826438 | https://pixabay.com/photos/bonn-altes-rathaus-city-hall-4826438/ | Pixabay-Lizenz; Altes Rathaus und Marktplatz | 8 |
 | 20 | Münster | 05515000 | 1662569 | https://pixabay.com/photos/muenster-principal-market-westphalia-1662569/ | Pixabay-Lizenz, Prinzipalmarkt | 8 |
 | 21 | Mannheim | 08222000 | YNDNuGl7IBs | https://unsplash.com/photos/cityscape-of-mannheim-baden-wurttemberg-germany-friedrichsplatz-with-the-mannheim-water-tower-wasserturm-in-the-foreground-YNDNuGl7IBs | Unsplash-Lizenz, Wasserturm am Friedrichsplatz; möglicherweise Unsplash+, prüfen | 8 |
 | 22 | Karlsruhe | 08212000 | 4028380 | https://pixabay.com/de/photos/karlsruhe-karlsruher-schloss-h%C3%A4ndel-4028380/ | Pixabay-Lizenz, Schloss | 8 |
-| 23 | Augsburg | 09761000 | – | – | kein Bild gefunden | – |
+| 23 | Augsburg | 09761000 | 2436930 | https://pixabay.com/photos/augsburg-historic-center-bavaria-2436930/ | Pixabay-Lizenz; historisches Zentrum | 8 |
 | 24 | Wiesbaden | 06414000 | 18883666 | https://www.pexels.com/photo/fountain-in-front-of-the-kurhaus-wiesbaden-in-germany-18883666/ | Pexels-Lizenz, Kurhaus | 8 |
-| 25 | Mönchengladbach | 05116000 | – | – | kein Bild gefunden | – |
+| 25 | Mönchengladbach | 05116000 | 1463086 | https://pixabay.com/photos/borussia-m%c3%b6nchengladbach-stadium-1463086/ | Pixabay-Lizenz; Eingang Borussia-Park-Stadion | 6 |
 | 26 | Gelsenkirchen | 05513000 | 1846803 | https://pixabay.com/de/photos/gelsenkirchen-rhein-herne-kanal-1846803/ | Pixabay-Lizenz, Rhein-Herne-Kanal, kein Wahrzeichen | 4 |
 | 27 | Aachen | 05334002 | 2693287 | https://pixabay.com/photos/aachen-dom-treasury-gold-religion-2693287/ | Pixabay-Lizenz, Domschatz (Innenmotiv, kein Stadtbild) | 5 |
 | 28 | Braunschweig | 03101000 | 3730275 | https://pixabay.com/de/photos/braunschweig-burgplatz-l%c3%b6we-3730275/ | Pixabay-Lizenz, Burgplatz mit Löwe | 7 |
@@ -72,12 +72,12 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 40 | Kassel | 06611000 | 1092038 | https://pixabay.com/photos/hercules-kassel-wilhelmsh%C3%B6he-1092038/ | Pixabay-Lizenz, Herkules, Wilhelmshöhe | 7 |
 | 41 | Hagen | 05914000 | – | – | kein Bild gefunden | – |
 | 42 | Potsdam | 12054000 | 29255447 | https://www.pexels.com/photo/classic-view-of-sanssouci-palace-in-potsdam-29255447/ | Pexels-Lizenz, Schloss Sanssouci | 8 |
-| 43 | Saarbrücken | 10041100 | – | – | kein Bild gefunden | – |
+| 43 | Saarbrücken | 10041100 | 5276319 | https://pixabay.com/photos/ludwigskirche-saarbr%C3%BCcken-church-5276319/ | Pixabay-Lizenz; Ludwigskirche | 8 |
 | 44 | Hamm | 05915000 | 2909698 | https://pixabay.com/photos/temple-hindu-temple-hamm-westphalia-2909698/ | Pixabay-Lizenz, Hindu-Tempel, eigenwilliges Motiv | 5 |
 | 45 | Ludwigshafen am Rhein | 07314000 | 365481 | https://pixabay.com/photos/ludwigshafen-rhine-industry-basf-365481/ | Pixabay-Lizenz, Rhein und BASF-Industrie, wohl älteres Foto | 6 |
 | 46 | Mülheim an der Ruhr | 05117000 | 5295799 | https://pixabay.com/de/photos/turm-rathaus-m%C3%BClheim-ruhr-fluss-5295799/ | Pixabay-Lizenz, Rathausturm an der Ruhr | 7 |
 | 47 | Oldenburg | 03403000 | 6711383 | https://pixabay.com/photos/oldenburg-palace-park-path-palace-6711383/ | Pixabay-Lizenz, Schloss/Schlosspark | 6 |
-| 48 | Osnabrück | 03404000 | – | – | kein Bild gefunden | – |
+| 48 | Osnabrück | 03404000 | 12642641 | https://pexels.com/photo/osnabruck-the-most-beautiful-city-in-the-world-12642641 | Pexels-Lizenz; Menschen vor einem Restaurant, Ortsbezug nur über die URL | 5 |
 | 49 | Leverkusen | 05316000 | 1286419 | https://pixabay.com/photos/bridge-line-curves-building-1286419/ | Pixabay-Lizenz, Brücke in Leverkusen, Ortsbezug im Text | 5 |
 | 50 | Darmstadt | 06411000 | 27951815 | https://www.pexels.com/photo/residential-palace-darmstadt-27951815/ | Pexels-Lizenz, Residenzschloss | 7 |
 | 51 | Heidelberg | 08221000 | wzAfU7fws6Y | https://unsplash.com/photos/heidelberg-germany-seen-from-above-wzAfU7fws6Y | Unsplash-Lizenz, Heidelberg von oben | 8 |
@@ -135,7 +135,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | Rang | Ort | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|---|
 | 82 | Kaiserslautern | 07312000 | 1402858 | https://pixabay.com/photos/kaiserslautern-japanese-1402858/ | Pixabay-Lizenz, Japanischer Garten; Stadtbezug nur über den Titel | 5 |
-| 101 | Minden | 05770024 | – | – | kein Bild gefunden | – |
+| 101 | Minden | 05770024 | 2889573 | https://pixabay.com/photos/minden-hbf-overview-station-building-2889573/ | Pixabay-Lizenz; Hauptbahnhof Minden mit Gleisanlage | 7 |
 | 102 | Velbert | 05158032 | – | – | kein Bild gefunden | – |
 | 103 | Norderstedt | 01060063 | – | – | kein Bild gefunden | – |
 | 104 | Bamberg | 09461000 | 646306 | https://pixabay.com/photos/bamberg-town-hall-cityscape-646306/ | Pixabay-Lizenz, Rathaus / Stadtansicht | 8 |
@@ -148,8 +148,8 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 111 | Lüneburg | 03355022 | 684823 | https://pixabay.com/de/photos/l%C3%BCneburg-fachwerkh%C3%A4user-fluss-684823/ | Pixabay-Lizenz, Fachwerkhäuser am Fluss | 7 |
 | 112 | Dorsten | 05562012 | – | – | kein Bild gefunden | – |
 | 113 | Troisdorf | 05382068 | – | – | kein Bild gefunden | – |
-| 114 | Wilhelmshaven | 03405000 | – | – | kein Bild gefunden | – |
-| 115 | Gladbeck | 05562014 | – | – | kein Bild gefunden | – |
+| 114 | Wilhelmshaven | 03405000 | 1386683 | https://pixabay.com/photos/kaiser-wilhelm-bridge-wilhelmshaven-1386683/ | Pixabay-Lizenz; Kaiser-Wilhelm-Brücke | 8 |
+| 115 | Gladbeck | 05562014 | 783267 | https://pixabay.com/de/photos/wasserschloss-wittringen-gladbeck-783267/ | Pixabay-Lizenz; Wasserschloss Wittringen | 8 |
 | 116 | Landshut | 09261000 | 3021474 | https://pixabay.com/de/photos/stadt-altstadt-landshut-architektur-3021474/ | Pixabay-Lizenz, Altstadt Landshut | 8 |
 | 117 | Detmold | 05766020 | 3358678 | https://pixabay.com/de/photos/hermannsdenkmal-cherusker-detmold-3358678/ | Pixabay-Lizenz, Hermannsdenkmal | 7 |
 | 118 | Bayreuth | 09462000 | 4074143 | https://pixabay.com/photos/bayreuth-hermitage-castle-4074143/ | Pixabay-Lizenz, Eremitage Bayreuth | 7 |
@@ -159,7 +159,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 122 | Aschaffenburg | 09661000 | 617589 | https://pixabay.com/photos/johannisburg-castle-aschaffenburg-617589/ | Pixabay-Lizenz, Schloss Johannisburg | 8 |
 | 123 | Bocholt | 05554008 | 567665 | https://pixabay.com/photos/bocholt-aerial-view-church-st-georg-567665/ | Pixabay-Lizenz, Luftbild mit St.-Georg-Kirche | 6 |
 | 124 | Lüdenscheid | 05962032 | – | – | kein Bild gefunden | – |
-| 125 | Celle | 03351006 | – | – | kein Bild gefunden | – |
+| 125 | Celle | 03351006 | 891471 | https://pixabay.com/photos/cell-lower-saxony-historic-center-891471/ | Pixabay-Lizenz; Altstadt aus der Luft. Das "cell" in der URL ist ein Schreibfehler für Celle, die Fundstelle war die Celle-Suche. | 7 |
 | 126 | Kempten | 09763000 | 1007420 | https://pixabay.com/photos/kempten-courtyard-garden-orangery-1007420/ | Pixabay-Lizenz, Hofgarten mit Orangerie | 6 |
 | 127 | Fulda | 06631009 | 3567816 | https://pixabay.com/photos/fulda-dom-boniface-st-salvator-3567816/ | Pixabay-Lizenz, Dom (Bonifatius) | 7 |
 | 128 | Lippstadt | 05974028 | 4327477 | https://www.pexels.com/de-de/foto/ziegel-tur-zaun-holzern-4327477/ | Pexels-Lizenz, Straßenszene mit Ziegelmauer, Tags nennen Lippstadt | 5 |
@@ -170,7 +170,7 @@ Von 89 Orten haben 50 ein Bild und 39 keines ("–"). Bei Pixabay ist die ID die
 | 133 | Kerpen | 05362032 | – | – | kein Bild gefunden | – |
 | 134 | Neuwied | 07138045 | 2251859 | https://pixabay.com/de/photos/rhein-engers-neuwied-hafen-kran-2251859/ | Pixabay-Lizenz, Rhein bei Engers/Neuwied, Hafenkran | 4 |
 | 135 | Weimar | 16055000 | 29256819 | https://www.pexels.com/photo/charming-street-view-of-weimar-germany-29256819/ | Pexels-Lizenz, Straßenansicht Weimar | 6 |
-| 136 | Dormagen | 05162004 | – | – | kein Bild gefunden | – |
+| 136 | Dormagen | 05162004 | 5333831 | https://pixabay.com/pl/photos/dormagen-nievenheim-ko%C5%9Bci%C3%B3%C5%82-5333831/ | Pixabay-Lizenz; Kirche in Nievenheim (Stadtteil). Alternative: Gohr-Felder, ID 5333839, https://pixabay.com/photos/dormagen-gohr-fields-nature-field-5333839/ | 6 |
 | 137 | Sindelfingen | 08115045 | – | – | kein Bild gefunden | – |
 | 138 | Plauen | 14523320 | – | – | kein Bild gefunden | – |
 | 139 | Grevenbroich | 05162008 | 512879 | https://pixabay.com/photos/villa-erckens-architecture-building-512879/ | Pixabay-Lizenz, Villa Erckens in Grevenbroich | 5 |
