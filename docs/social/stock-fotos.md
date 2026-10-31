@@ -2498,7 +2498,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Engelsbrand | Baden-Württemberg | 08236013 | – | – | noch nicht gesucht | – |
 | Engstingen | Baden-Württemberg | 08415089 | – | – | noch nicht gesucht | – |
 | Ensdorf | Bayern | 09371120 | – | – | noch nicht gesucht | – |
-| Ensdorf | Saarland | 10044123 | – | – | noch nicht gesucht | – |
+| Ensdorf | Saarland | 10044123 | 5302405 | https://pixabay.com/de/photos/saarpolygon-denkmal-endsdorf-5302405/ | Pixabay-Lizenz; Saarpolygon (Denkmal auf der Halde Duhamel in Ensdorf). Der Titel schreibt den Ort "Endsdorf". | 7 |
 | Enzklösterle | Baden-Württemberg | 08235025 | – | – | noch nicht gesucht | – |
 | Epfenbach | Baden-Württemberg | 08226017 | – | – | noch nicht gesucht | – |
 | Epfendorf | Baden-Württemberg | 08325015 | – | – | noch nicht gesucht | – |
@@ -2538,7 +2538,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Fehrbellin | Brandenburg | 12068117 | – | – | noch nicht gesucht | – |
 | Feldafing | Bayern | 09188118 | – | – | noch nicht gesucht | – |
 | Feldatal | Hessen | 06535003 | – | – | noch nicht gesucht | – |
-| Feldberg (Schwarzwald) | Baden-Württemberg | 08315037 | – | – | noch nicht gesucht | – |
+| Feldberg (Schwarzwald) | Baden-Württemberg | 08315037 | 254359 | https://pixabay.com/de/photos/feldberg-turm-feldbergturm-254359/ | Pixabay-Lizenz; Feldbergturm | 7 |
 | Feldberger Seenlandschaft | Mecklenburg-Vorpommern | 13071033 | – | – | noch nicht gesucht | – |
 | Feldkirchen | Bayern | 09184118 | – | – | noch nicht gesucht | – |
 | Feldkirchen | Bayern | 09278121 | – | – | noch nicht gesucht | – |
@@ -2549,7 +2549,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Fichtenberg | Baden-Württemberg | 08127023 | – | – | noch nicht gesucht | – |
 | Finsing | Bayern | 09177118 | – | – | noch nicht gesucht | – |
 | Fischach | Bayern | 09772141 | – | – | noch nicht gesucht | – |
-| Fischbachau | Bayern | 09182114 | – | – | noch nicht gesucht | – |
+| Fischbachau | Bayern | 09182114 | 3900076 | https://pixabay.com/de/photos/fischbachau-bayern-land-b%C3%A4ume-3900076/ | Pixabay-Lizenz; Landschaft Fischbachau | 8 |
 | Fischbachtal | Hessen | 06432007 | – | – | noch nicht gesucht | – |
 | Fischerbach | Baden-Württemberg | 08317029 | – | – | noch nicht gesucht | – |
 | Fischingen | Baden-Württemberg | 08336024 | – | – | noch nicht gesucht | – |
