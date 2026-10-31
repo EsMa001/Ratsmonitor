@@ -229,11 +229,13 @@ def make(cfg):
         bottom = y0 + t1.height + G1 + t2.height + G2 + sh0 + G3 + IB
         if bottom > 1440: y0 = max(370, y0 - (bottom - 1440))
         yt2 = y0 + t1.height + G1; ys_ = yt2 + t2.height + G2
-        tst = min(4.2, max(1.8, find(wt, cfg['stkey'], 2.6) - 0.3))
+        fast = cfg.get('hook_fast')
+        tst = min(1.0, max(0.25, find(wt, cfg['stkey'], 0.8) - 0.3)) if fast else min(4.2, max(1.8, find(wt, cfg['stkey'], 2.6) - 0.3))
+        tt2 = max(0.5, find(wt, cfg['t2'].split()[0].strip(',.:'), 1.2) - 0.25) if fast else 0.5
         se, sh = shake_stamp(cfg['stamp'], cfg['stampcol'], cfg['ssize'], W // 2 + 5, ys_, tst)
         pe, pw = pulse_badge(cfg['icon'], IB, W // 2, ys_ + sh + G3 - 20, 0.5)
-        els += [slam(t1, MX, y0, -1.0, 0, 0.01), slam(t2, MX, yt2, 0.5, 0.2), se, pe]
-        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 120, 1000, PET, 22, 6), els=els, marquee=(PET, WHITE))
+        els += [slam(t1, MX, y0, -1.0, 0, 0.01), slam(t2, MX, yt2, tt2, 0.2), se, pe]
+        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 120, 1000, PET, 22, 6), els=els, marquee=(PET, WHITE), punch=[tst, tt2], sfx=[(tst, 'hit'), (tt2, 'tick')])
     # 2 Beats
     def beatsA(wt): return cfg['beatsA'](wt)
     def beatsB(wt): return cfg['beatsB'](wt)
@@ -268,7 +270,14 @@ def make(cfg):
             if k == nrows - 1: tm = max(tm, CUR_DUR - 4.0)
             els += [E(mi, MX, yy + 4, tm, dur=0.5), E(mt, MX + 90, yy, tm, dur=0.5)]
             yy += mt.height + 40
-        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 100, 300, PET, 22, -5), els=els, marquee=(PET, WHITE))
+        sfx = [(ta, 'hit'), (ta + 0.4, 'tick')]
+        if cfg.get('naechste'):
+            n_ = cfg['naechste']['tage']
+            txt = 'heute' if n_ == 0 else 'morgen' if n_ == 1 else f'in {n_} Tagen'
+            pl_ = b.pill('Nächste Sitzung ' + txt, 56, b.PETH, b.PETD, padx=40, pady=22)
+            tc_ = max(ta + 1.2 + 0.5 * nrows, CUR_DUR - 4.0)
+            els.append(slam(pl_, MX, yy + 10, tc_, 0.3, 0.3)); sfx.append((tc_, 'tick'))
+        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 100, 300, PET, 22, -5), els=els, marquee=(PET, WHITE), punch=[ta, ta + 0.4], sfx=sfx)
     # 4 Plenara + Ende
     def plen(wt):
         t = big('Beschlüsse zu Ihrem Ort', 100, INK, maxw=700, lh=1.0); t2 = big('finden Sie bei', 64, PET, w='S', tr=-0.01)
@@ -281,9 +290,10 @@ def make(cfg):
         els = [slam(t, MX, y0, -1.0, 0, 0.01), E(ic.icon('pin', 76, PET), MX, yp + 4, 0.4), E(t2, MX + 96, yp + 6, 0.4), slam(chip, MX, yc, 0.3, 0.45, 0.35),
                E(sl, MX, ys, 1.1, dur=0.5), url_pulse(u, MX, yu, 1.5),
                E(q, MX, yq, 1.6, slide=0), E(dis, MX, yq + q.height + 14, 1.6, slide=0)]
-        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W // 2, 1250, PET, 34, 5), els=els, marquee=None)
-    for f_ in (hook, beatsA, beatsB, quote_scene, status_scene, plen): f_.caption = False
-    return [hook, beatsA, beatsB, quote_scene, status_scene, plen]
+        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W // 2, 1250, PET, 34, 5), els=els, marquee=None, punch=[0.3, 1.5], sfx=[(0.3, 'hit'), (1.5, 'tick')])
+    for f_ in (hook, beatsA, beatsB, quote_scene, status_scene, plen, cfg.get('scene4')):
+        if f_: f_.caption = False
+    return [hook, beatsA, beatsB, cfg.get('scene4') or quote_scene, status_scene, plen]
 
 # ---------- Renderer ----------
 SCENES = []; CAPTIONS = []; CFG = None; CUR_DUR = 0
@@ -295,6 +305,8 @@ def render_scene(args):
     wt = word_times(text, vo) if text else []
     sd = SCENES[i](wt)
     bg = sd['bg']; els = sd['els']
+    punch = sd.get('punch', []) if CFG.get('sfx') else []
+    json.dump(sd.get('sfx', []) if CFG.get('sfx') else [], open(f"{CFG['out']}/sfx_{i + 1}.json", 'w'))
     chunks = [render_chunk(c) for c in cap_chunks(wt)] if SCENES[i].caption and wt else []
     for a_, b_ in zip(chunks, chunks[1:]): a_['t1'] = min(a_['t1'], b_['t0'] - 0.05)
     ring = None
@@ -340,6 +352,8 @@ def render_scene(args):
                 if a < 1: lay.putalpha(lay.getchannel('A').point(lambda v_, a=a: int(v_ * a)))
                 im.alpha_composite(lay, (MX, CAP_Y))
         zoom = 1 + 0.04 * min(1, t / dur)
+        for tp in punch:
+            if tp <= t < tp + 0.8: zoom += 0.028 * math.exp(-(t - tp) / 0.11)
         out = im.convert('RGB')
         if i != NS - 1:
             bw, bh = W / zoom, H / zoom; x0, y0 = (W - bw) / 2, (H - bh) / 2
@@ -367,7 +381,7 @@ def run(cfg, vdir, outfile):
         off += durs[i - 1]; starts.append(off)
         filt += f"{prev}[{i}:v]xfade=transition={TRANS[(i - 1) % 4]}:duration={FADE}:offset={off:.2f}[v{i}];"; prev = f'[v{i}]'
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', *inputs, '-filter_complex', filt.rstrip(';'), '-map', prev, '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', f"{cfg['out']}/video_only.mp4"], check=True)
-    json.dump({'durs': durs, 'starts': starts}, open(f"{cfg['out']}/timing.json", 'w'))
+    json.dump({'durs': durs, 'starts': starts, 'sfx': bool(cfg.get('sfx'))}, open(f"{cfg['out']}/timing.json", 'w'))
     subprocess.run(['python3', '-I', f'{b.HERE}/remix.py', cfg['out'], vdir, outfile], check=True)
     subprocess.run([f'{b.HERE}/loud.sh', outfile], check=True)
 

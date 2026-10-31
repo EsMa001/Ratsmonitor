@@ -58,33 +58,83 @@ def build_cfg(sheet, out):
         if not p2: return None
         return p1, ' '.join(p2), ' '.join(w[k:])
 
-    def kern(wt):  # Szene 2: Kernsatz, wird vorgelesen; Kern groß, Rest klein
+    def align(words, wt):  # Zeit, zu der die Stimme jedes Wortes des Zitats beginnt (Zahlen sind ausgesprochen, daher mit Rückfall)
+        out, j = [], 0
+        for w in words:
+            key = strip(w).lower()[:4]; hit = None
+            for jj in range(j, min(len(wt), j + 4)):
+                if strip(wt[jj][0]).lower()[:4] == key: hit = jj; break
+            if hit is None: hit = min(len(wt) - 1, j)
+            out.append(wt[hit][1]); j = min(len(wt) - 1, hit + 1)
+        return out
+
+    def layout(text, size, tr=-0.03, lh=1.05):
+        font = b.F(size, 'S'); trp = tr * size
+        lines = b.wrap(text, font, CW, trp); step = int(size * lh); sp = b.tlen(font, ' ', trp); pos = []
+        for n, l in enumerate(lines):
+            x = 0.0
+            for wd in l.split(' '):
+                w = b.tlen(font, wd, trp); pos.append((wd, x, n * step, w)); x += w + sp
+        return pos, step * len(lines) + int(size * 0.4)
+
+    def kern(wt):  # Szene 2: Kernsatz, jedes Wort erscheint, wenn es gesprochen wird; Kern groß, Rest klein
         pill = b.pill(sheet['zitatHinweis'], 52, b.PETH, b.PETD, padx=36, pady=18)
         els = V_.chips(cfg) + [V_.E(pill, MX, 350, 0.0, slide=0)]
-        y = 450; text = sheet['zitat']
-        if sheet['betraege']:
-            e, hh = count_el(sheet['betraege'][0]['text'], MX - 4, y, 0.5); els.append(e); y += hh + 30
-        parts = split_quote(text)
-        if parts:
-            sizes = [(120, INK), (96, PET), (60, GRAY2)]; ims = []; tprev = 0.3
-            for (sz, col), p in zip(sizes, parts):
-                if not p: continue
-                im = V_.big(p, sz, col, maxw=CW, lh=1.05, tr=-0.03)
-                while im.height > 620 and sz > 48: sz -= 6; im = V_.big(p, sz, col, maxw=CW, lh=1.1, tr=-0.02)
-                tt = max(V_.find(wt, strip(p.split()[0]), 1.0) - 0.2, tprev + 0.7, 0.5); tprev = tt
-                els.append(V_.E(im, MX, y, tt, dur=0.5)); y += im.height + 24
-        else:
-            q = V_.hl_block('„' + text + '“', 76, set(), INK, INK, CW - 20); els.append(V_.E(q, MX, y, 0.5, dur=0.6)); y += q.height + 24
+        sfx, punch = [], []
+        y = 450; text = sheet['zitat']; words = text.split(); times = align(words, wt)
+        if sheet['betraege'] and not bars_on:
+            e, hh = count_el(sheet['betraege'][0]['text'], MX - 4, y, 0.5); els.append(e); y += hh + 30; sfx.append((0.5, 'hit')); punch.append(0.5)
+        parts = split_quote(text) or (text, '', '')
+        sizes = [(120, INK), (96, PET), (60, GRAY2)] if split_quote(text) else [(76, INK)]
+        k0 = 0
+        for (sz, col), p in zip(sizes, parts):
+            if not p: continue
+            pos, hgt = layout(p, sz)
+            while hgt > 620 and sz > 48: sz -= 6; pos, hgt = layout(p, sz)
+            for n, (wd, x, dy, w) in enumerate(pos):
+                im = b.text_block(wd, sz, 'S', col, maxw=int(w) + sz, tr_em=-0.03, lh=1.0)
+                tw = max(times[min(k0 + n, len(times) - 1)] - 0.05, 0.3)
+                els.append(V_.E(im, MX + int(x), y + dy, tw, dur=0.25, slide=22))
+            tg = max(times[min(k0, len(times) - 1)] - 0.05, 0.3); sfx.append((tg, 'tick')); punch.append(tg)
+            k0 += len(pos); y += hgt + 24
         cap = b.text_block(f"{sheet['ort']} · {sheet['meta'][0].split(' · ')[0]}" if sheet['meta'] else sheet['ort'], 54, 'R', GRAY2, maxw=CW - 84)
         tc = max(V_.find(wt, strip(text.split()[-1]), 4.0), V_.CUR_DUR - 4.0)
         els += [V_.E(V_.ic.icon('doc', 64, PET), MX, y + 20, tc, dur=0.5, slide=0), V_.E(cap, MX + 84, y + 16, tc, dur=0.5)]
         print('AUTO_A_END', y + 20 + 64, flush=True)
-        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None)
+        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None, sfx=sfx, punch=punch)
+
+    items = [x for x in sheet.get('betraege', []) if x.get('label')][:3]
+    bars_on = len(items) >= 2
+
+    def bar_el(x, y, wpx, hpx, t0, dur=0.7):  # Balken wächst von links nach rechts
+        frames = []
+        for k in range(15):
+            fr = Image.new('RGBA', (max(2, wpx), hpx), (0, 0, 0, 0)); ImageDraw.Draw(fr).rounded_rectangle([0, 0, max(2, int(wpx * k / 14)), hpx - 1], radius=14, fill=tuple(PET) + (255,)); frames.append(fr)
+        e = V_.E(frames[-1], x, y, t0, dur=0.05, slide=0)
+        e.anim = lambda t: frames[min(14, int(max(0.0, (t - t0) / dur) * 14))]
+        return e
+
+    def bars_scene(wt):  # Szene 4: Beträge als Balken, Länge nach Wert
+        pill = b.pill('Beträge laut Vorlage', 52, b.PETH, b.PETD, padx=36, pady=18)
+        els = V_.chips(cfg) + [V_.E(pill, MX, 350, 0.0, slide=0)]
+        y = 470; mx = max(i_['value'] for i_ in items); sfx, punch = [], []; tprev = 0.0
+        lab_s, amt_s, bh = (62, 92, 84) if len(items) == 2 else (54, 76, 70)
+        for k, it in enumerate(items):
+            lab = V_.big(it['label'], lab_s, INK, maxw=CW, tr=-0.02); amt = V_.big(it['text'], amt_s, PET, tr=-0.04)
+            tl = max(V_.find(wt, it['label'][:5], 1.0) - 0.2, 0.4, tprev + 0.9)
+            if k == len(items) - 1: tl = max(tl, V_.CUR_DUR - 4.0)
+            tprev = tl; wpx = max(40, int(CW * it['value'] / mx))
+            els += [V_.E(lab, MX, y, tl, dur=0.4), bar_el(MX, y + lab.height + 14, wpx, bh, tl + 0.2),
+                    V_.slam(amt, MX, y + lab.height + 14 + bh + 10, tl + 0.9, 0.25, 0.3)]
+            sfx += [(tl + 0.2, 'tick'), (tl + 0.9, 'hit')]; punch += [tl + 0.2]
+            y += lab.height + 14 + bh + 10 + amt.height + 50
+        print('AUTO_C_END', y - 50, flush=True)
+        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None, sfx=sfx, punch=punch)
 
     def verlauf(wt):  # Szene 3: Zeitleiste der Sitzungen (Punkte, wachsende Linie)
         h = V_.big('Bisheriger Verlauf:', 74, INK, maxw=CW, w='S', tr=-0.02, lh=1.05)
         els = V_.chips(cfg) + [V_.E(h, MX, 360, 0.3, dur=0.6, slide=0)]
-        y, tprev, prev_c = 540, 0.0, None
+        y, tprev, prev_c = 540, 0.0, None; sfx, punch = [], []
         rows = sheet['verlauf']; D = 60; cx = MX + D // 2
         for k, v in enumerate(rows):
             l1 = V_.big(f"{v['datum']} · {v['committee']}", 58, INK, maxw=CW - 130, lh=1.05, tr=-0.02)
@@ -92,19 +142,20 @@ def build_cfg(sheet, out):
             hgt = max(D, l1.height + (l2.height + 10 if l2 else 0))
             tt = max(V_.find(wt, v['spokenDay'][:6], 1.5) - 0.3, 0.5, tprev + 0.8)
             if k == len(rows) - 1: tt = max(tt, V_.CUR_DUR - 4.0)
-            tprev = tt
+            tprev = tt; sfx.append((tt, 'tick')); punch.append(tt)
             if prev_c is not None: els.append(grow_line(cx - 4, prev_c, y + D // 2, tt - 0.5))
             els += [V_.slam(dot(D, PET if k == len(rows) - 1 else GRAY2), MX, y, tt, 0.3, 0.3), V_.E(l1, MX + 100, y, tt + 0.2, dur=0.4, slide=0)]
             if l2: els.append(V_.E(l2, MX + 100, y + l1.height + 10, tt + 0.2, dur=0.4, slide=0))
             prev_c = y + D // 2; y += hgt + 90
         print('AUTO_B_END', y - 90, flush=True)
-        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None)
+        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None, sfx=sfx, punch=punch)
 
     cfg = dict(source=sheet['quelle'], ort=sheet['ort'], out=out, ticker='', icon=sheet['themaIcon'], status=st['icon'], stamp=st['stamp'], stampcol=stampcol, ssize=160,
                t1=sheet['titel1'], t1s=100, t2=sheet['titel2'], t2s=90, beatsA=kern, beatsB=verlauf, stkey=STKEY[key],
                quote='„' + (sheet['zitat2'] or sheet['zitat']) + '“', quote_cap=sheet['zitatHinweis'], hl=hl, standword=st['word'], standkey=STKEY[key],
                standlab=STANDLAB.get(st['extra'], 'STAND'), stsize=150, metasize=52, meta='\n'.join(sheet['meta']),
-               texts=[sheet['sprechtext'][str(i)] or '' for i in range(1, 7)])
+               texts=[sheet['sprechtext'][str(i)] or '' for i in range(1, 7)],
+               hook_fast=True, sfx=True, naechste=sheet.get('naechste'), scene4=bars_scene if bars_on else None)
     return cfg
 
 
@@ -114,8 +165,11 @@ def wavlen(p):
 
 def make_voices(sheet, vdir, fixed):
     here = os.path.dirname(os.path.abspath(__file__)); os.makedirs(vdir, exist_ok=True)
-    for i in (4, 6): shutil.copy(f'{fixed}/v{i}.wav', f'{vdir}/v{i}.wav')
-    for i in (1, 2, 3, 5):
+    for i in (4, 6):
+        if i == 4 and sheet['sprechtext'].get('4'): continue
+        shutil.copy(f'{fixed}/v{i}.wav', f'{vdir}/v{i}.wav')
+    for i in (1, 2, 3, 4, 5):
+        if i == 4 and not sheet['sprechtext'].get('4'): continue
         subprocess.run([f'{here}/tts.sh', vdir, str(i), sheet['sprechtext'][str(i)]], check=True)
 
 
@@ -129,6 +183,8 @@ if __name__ == '__main__':
     sheet = json.load(open(sys.argv[1])); outfile = sys.argv[2]
     if not sheet.get('ok'): sys.exit('Datenblatt unvollständig: ' + '; '.join(sheet.get('warnings', [])))
     if not sheet.get('zitat2'): print('HINWEIS: kein zweites Zitat, Szene 4 wiederholt das erste', flush=True)
+    if len([x for x in sheet.get('betraege', []) if x.get('label')][:3]) >= 2:
+        sheet['sprechtext']['4'] = ' '.join(f"{x['label']}: {x['spoken']}." for x in [x for x in sheet['betraege'] if x.get('label')][:3])
     work = V.S_; vdir = f'{work}/tts/auto'; fixed = f'{work}/tts/o7'
     while True:
         cfg = build_cfg(sheet, f'{work}/vid13a')
