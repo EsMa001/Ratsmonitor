@@ -613,27 +613,27 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 562 | Alfter | 05382004 | – | – | kein Bild gefunden | – |
 | 563 | Westerstede | 03451007 | 3630226 | https://pixabay.com/photos/westerstede-city-park-thale-pasture-3630226/ | Pixabay-Lizenz, Stadtpark/Weide | 5 |
 | 564 | Limbach-Oberfrohna | 14524180 | – | – | kein Bild gefunden | – |
-| 565 | Döbeln | 14522080 | – | – | kein Bild gefunden | – |
+| 565 | Döbeln | 14522080 | 4339182 | https://pixabay.com/de/photos/d%C3%B6beln-rathaus-sachsen-obermarkt-4339182/ | Pixabay-Lizenz; Rathaus am Obermarkt, Altstadt (Tags: Döbeln, Rathaus, Sachsen) | 9 |
 | 566 | Starnberg | 09188139 | 1850767 | https://pixabay.com/photos/starnberger-lake-starnberg-lake-1850767/ | Pixabay-Lizenz, Starnberger See | 6 |
 | 567 | Husum | 01054056 | 2299109 | https://pixabay.com/en/husum-port-nordfriesland-city-2299109/ | Pixabay-Lizenz, Hafen | 7 |
 | 568 | Korbach | 06635015 | 30061180 | https://www.pexels.com/photo/historic-stone-building-in-korbach-germany-30061180/ | Pexels-Lizenz; Titel "Historic Stone Building in Korbach, Germany", Motiv nicht verifiziert (evtl. Kirche/Rathaus) | 5 |
 | 569 | Gelnhausen | 06435010 | 2501895 | https://pixabay.com/photos/unterer-marktplatz-gelnhausen-hesse-2501895/ | Pixabay-Lizenz, Unterer Marktplatz | 7 |
-| 570 | Salzwedel | 15081455 | – | – | kein Bild gefunden | – |
+| 570 | Salzwedel | 15081455 | 671581 | https://pixabay.com/de/photos/altstadt-salzwedel-gasse-671581/ | Pixabay-Lizenz; Altstadtgasse (Alternative: schiefer Kirchturm, ID 671591) | 7 |
 | 571 | Kaltenkirchen | 01060044 | – | – | kein Bild gefunden | – |
 | 572 | Hann. Münden | 03159017 | 3784052 | https://pixabay.com/de/photos/welfen-schloss-hann-m%C3%BCnden-stadt-3784052/ | Pixabay-Lizenz, Welfenschloss | 7 |
 | 573 | Sonneberg | 16072018 | – | – | kein Bild gefunden | – |
-| 574 | Mosbach | 08225058 | – | – | kein Bild gefunden | – |
-| 575 | Dillenburg | 06532006 | – | – | kein Bild gefunden | – |
+| 574 | Mosbach | 08225058 | 3551155 | https://pixabay.com/de/photos/mosbach-marktplatz-neckar-odenwald-3551155/ | Pixabay-Lizenz; Marktplatz mit Fachwerk (Tags: Neckar-Odenwald, Odenwald) | 9 |
+| 575 | Dillenburg | 06532006 | 3838435 | https://pixabay.com/photos/wilhelm-storm-dillenburg-castle-3838435/ | Pixabay-Lizenz; Wilhelmsturm und Kirche | 8 |
 | 576 | Senftenberg | 12066304 | 17178541 | https://www.pexels.com/photo/rostiger-nagel-by-bridge-in-senftenberg-germany-17178541/ | Pexels-Lizenz, Detail an Brücke, wenig repräsentativ | 4 |
 | 577 | Netphen | 05970032 | – | – | kein Bild gefunden | – |
 | 578 | Leutkirch im Allgäu | 08436055 | – | – | kein Bild gefunden | – |
-| 579 | Warburg | 05762036 | – | – | kein Bild gefunden | – |
+| 579 | Warburg | 05762036 | 2491767 | https://pixabay.com/de/photos/fluss-diemel-nrw-warburg-2491767/ | Pixabay-Lizenz; Diemel in Warburg, NRW (Alternative: Brücke über die Diemel, ID 2372604) | 6 |
 | 580 | Quedlinburg | 15085235 | 18947084 | https://www.pexels.com/photo/town-hall-in-quedlinburg-18947084/ | Pexels-Lizenz, Rathaus | 8 |
-| 581 | Gersthofen | 09772147 | – | – | kein Bild gefunden | – |
+| 581 | Gersthofen | 09772147 | 1882468 | https://pixabay.com/photos/tower-museum-balloon-museum-1882468/ | Pixabay-Lizenz; Turm des Ballonmuseums, laut Suchtreffer zu Gersthofen (nur aus den Suchbegriffen abgeleitet, nicht bestätigt) | 5 |
 | 582 | Wertheim | 08128131 | 5292076 | https://pixabay.com/de/photos/wertheim-burg-fluss-schiff-5292076/ | Pixabay-Lizenz; Burg Wertheim über dem Main (alternativ 869783: https://pixabay.com/de/photos/wertheim-am-main-burg-turm-869783/) | 7 |
 | 583 | Rastede | 03451005 | – | – | kein Bild gefunden | – |
 | 584 | Karben | 06440012 | – | – | kein Bild gefunden | – |
-| 585 | Bad Soden am Taunus | 06436001 | – | – | kein Bild gefunden | – |
+| 585 | Bad Soden am Taunus | 06436001 | 2505085 | https://pixabay.com/de/photos/hundertwasserhaus-bad-soden-taunus-2505085/ | Pixabay-Lizenz; Hundertwasserhaus | 8 |
 | 586 | Vreden | 05554068 | – | – | kein Bild gefunden | – |
 | 587 | Überlingen | 08435059 | 453804 | https://pixabay.com/photos/%C3%BCberlingen-lake-constance-panorama-453804/ | Pixabay-Lizenz, Panorama Bodensee | 8 |
 | 588 | Apolda | 16071001 | – | – | kein Bild gefunden | – |
@@ -649,7 +649,7 @@ Die AGS (8-stelliger Amtlicher Gemeindeschlüssel, Stand BKG VG250 aus `shared/d
 | 598 | Senden (Bayern) | 09775152 | – | – | kein Bild gefunden | – |
 | 599 | Neusäß | 09772184 | – | – | kein Bild gefunden | – |
 | 600 | Laupheim | 08426070 | 228233 | https://pixabay.com/id/photos/jalan-castle-avenue-laupheim-228233/ | Pixabay-Lizenz, Castle Avenue | 6 |
-| 601 | Herdecke | 05954020 | – | – | kein Bild gefunden | – |
+| 601 | Herdecke | 05954020 | 6254980 | https://pixabay.com/de/photos/viadukt-herdecke-steinbrücke-6254980/ | Pixabay-Lizenz; Viadukt Herdecke (Steinbrücke), Nutzer JAderhold | 7 |
 | 602 | Burg bei Magdeburg | 15086015 | – | – | kein Bild gefunden | – |
 | 603 | Rotenburg (Wümme) | 03357039 | 2538981 | https://pixabay.com/da/photos/bullensee-rotenburg-w%C3%BCmme-2538981/ | Pixabay-Lizenz, Bullensee | 5 |
 | 604 | Stadthagen | 03257035 | 540567 | https://pixabay.com/photos/stadthagen-lower-saxony-540567/ | Pixabay-Lizenz, Schlosshof | 7 |
