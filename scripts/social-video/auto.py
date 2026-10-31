@@ -86,14 +86,17 @@ def build_cfg(sheet, out):
             e, hh = count_el(sheet['betraege'][0]['text'], MX - 4, y, 0.5); els.append(e); y += hh + 30; sfx.append((0.5, 'hit')); punch.append(0.5)
         parts = split_quote(text) or (text, '', '')
         sizes = [(150, INK), (124, PET), (72, GRAY2)] if split_quote(text) else [(92, INK)]
-        plan = []
-        for (sz, col), p in zip(sizes, parts):
-            if not p: continue
-            pos, hgt = layout(p, sz)
-            while hgt > 560 and sz > 48: sz -= 6; pos, hgt = layout(p, sz)
-            plan.append((sz, col, pos, hgt))
-        used = sum(h_ + 24 for _, _, _, h_ in plan) + 110
-        y = max(y, 430 + (1340 - 430 - used) // 2 + (y - 450))  # Block mittig zwischen Kopfzeile und Unterkante
+        scale = 1.0
+        while True:
+            plan = []
+            for (sz, col), p in zip(sizes, parts):
+                if not p: continue
+                sz = max(40, int(sz * scale)); pos, hgt = layout(p, sz)
+                plan.append((sz, col, pos, hgt))
+            used = sum(h_ + 24 for _, _, _, h_ in plan) + 110
+            if y + used <= 1380 or scale <= 0.5: break
+            scale -= 0.04
+        y = max(y, 430 + (1340 - 430 - used) // 2 + (y - 450)); y = min(y, 1380 - used)  # Block mittig, aber nicht tiefer als y=1380
         k0 = 0
         for sz, col, pos, hgt in plan:
             for n, (wd, x, dy, w) in enumerate(pos):
@@ -122,8 +125,10 @@ def build_cfg(sheet, out):
     def bars_scene(wt):  # Szene 4: Beträge als Balken, Länge nach Wert
         pill = b.pill('Beträge laut Vorlage', 52, b.PETH, b.PETD, padx=36, pady=18)
         els = V_.chips(cfg) + [V_.E(pill, MX, 350, 0.0, slide=0)]
-        y = 470; mx = max(i_['value'] for i_ in items); sfx, punch = [], []; tprev = 0.0
-        lab_s, amt_s, bh = (62, 92, 84) if len(items) == 2 else (54, 76, 70)
+        mx = max(i_['value'] for i_ in items); sfx, punch = [], []; tprev = 0.0
+        lab_s, amt_s, bh = (70, 112, 130) if len(items) == 2 else (58, 92, 100)
+        _h = sum(V_.big(i_['label'], lab_s, INK, maxw=CW, tr=-0.02).height + 14 + bh + 10 + V_.big(i_['text'], amt_s, PET, tr=-0.04).height + 50 for i_ in items) - 50
+        y = 450 + max(0, (1320 - 450 - _h) // 2)  # Block mittig
         for k, it in enumerate(items):
             lab = V_.big(it['label'], lab_s, INK, maxw=CW, tr=-0.02); amt = V_.big(it['text'], amt_s, PET, tr=-0.04)
             tl = max(V_.find(wt, it['label'][:5], 1.0) - 0.2, 0.4, tprev + 0.9)
