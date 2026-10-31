@@ -966,11 +966,11 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | Rang | Ort | AGS | Foto-ID | Link | Lizenz / Info | Eignung (1–10) |
 |---|---|---|---|---|---|---|
 | 1001 | Garrel | 03453008 | – | – | noch nicht gesucht | – |
-| 1002 | Langerwehe | 05358032 | – | – | noch nicht gesucht | – |
+| 1002 | Langerwehe | 05358032 | 1516640 | https://pixabay.com/de/photos/burg-reiterhof-felder-burg-holzheim-1516640/ | Pixabay-Lizenz; Burg Holzheim, Reiterhof und Felder. Die Burg liegt bei Langerwehe, im Titel steht der Ort aber nicht. | 6 |
 | 1004 | Karlstadt | 09677148 | – | – | noch nicht gesucht | – |
 | 1007 | Münster (Hessen) | 06432015 | – | – | noch nicht gesucht | – |
 | 1008 | Landsberg | 15088195 | – | – | noch nicht gesucht | – |
-| 1009 | Montabaur | 07143048 | – | – | noch nicht gesucht | – |
+| 1009 | Montabaur | 07143048 | 2278452 | https://pixabay.com/photos/montabaur-castle-evening-atmosphere-2278452/ | Pixabay-Lizenz; Schloss Montabaur in Abendstimmung | 9 |
 | 1011 | Homberg (Efze) | 06634009 | – | – | noch nicht gesucht | – |
 | 1012 | Jever | 03455007 | 643515 | https://pixabay.com/de/photos/ems-jade-kanal-jever-pils-bier-643515/ | Pixabay-Lizenz, Ems-Jade-Kanal | 5 |
 | 1013 | Münsingen | 08415053 | – | – | noch nicht gesucht | – |
@@ -984,7 +984,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1022 | Niederkrüchten | 05166020 | – | – | noch nicht gesucht | – |
 | 1024 | Much | 05382036 | – | – | noch nicht gesucht | – |
 | 1025 | Büttelborn | 06433003 | – | – | noch nicht gesucht | – |
-| 1026 | Burbach | 05970008 | – | – | noch nicht gesucht | – |
+| 1026 | Burbach | 05970008 | 2652865 | https://pixabay.com/photos/town-hall-burbach-siegerland-2652865/ | Pixabay-Lizenz; Rathaus Burbach (Siegerland) in Hügellandschaft | 9 |
 | 1029 | Groß-Zimmern | 06432011 | – | – | noch nicht gesucht | – |
 | 1030 | Löbau | 14626290 | – | – | noch nicht gesucht | – |
 | 1031 | Eberbach | 08226013 | – | – | noch nicht gesucht | – |
@@ -993,7 +993,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1035 | Fredersdorf-Vogelsdorf | 12064136 | – | – | noch nicht gesucht | – |
 | 1036 | Eckental | 09572121 | – | – | noch nicht gesucht | – |
 | 1037 | Hofgeismar | 06633013 | 875806 | https://pixabay.com/photos/altst%c3%a4dter-church-hofgeismar-tower-875806/ | Pixabay-Lizenz, Altstädter Kirche (Turm) | 7 |
-| 1038 | Murrhardt | 08119044 | – | – | noch nicht gesucht | – |
+| 1038 | Murrhardt | 08119044 | 1615099 | https://pixabay.com/de/photos/murrhardt-stadtkirche-kirche-1615099/ | Pixabay-Lizenz; Stadtkirche Murrhardt (Titel nennt den Ort ausdrücklich) | 8 |
 | 1039 | Aßlar | 06532001 | – | – | noch nicht gesucht | – |
 | 1040 | Hilchenbach | 05970020 | – | – | noch nicht gesucht | – |
 | 1041 | Neubiberg | 09184146 | – | – | noch nicht gesucht | – |
@@ -1013,18 +1013,18 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1060 | Grünstadt | 07332024 | – | – | noch nicht gesucht | – |
 | 1061 | Neu-Anspach | 06434007 | 2212660 | https://pixabay.com/pl/photos/neu-anspach-hesja-niemcy-2212660/ | Pixabay-Lizenz, Motiv nicht erkennbar | 6 |
 | 1062 | Löningen | 03453011 | – | – | noch nicht gesucht | – |
-| 1064 | Lorsch | 06431016 | – | – | noch nicht gesucht | – |
+| 1064 | Lorsch | 06431016 | 863627 | https://pixabay.com/de/photos/lorsch-altstadt-rathaus-panorama-863627/ | Pixabay-Lizenz; Altstadt mit Rathaus, Panorama | 8 |
 | 1065 | Markdorf | 08435034 | – | – | noch nicht gesucht | – |
 | 1066 | Freigericht | 06435009 | – | – | noch nicht gesucht | – |
 | 1068 | Bad Camberg | 06533003 | 3752535 | https://pixabay.com/de/photos/deutschland-bad-camberg-stadttor-3752535/ | Pixabay-Lizenz, Stadttor | 7 |
 | 1069 | Lauda-Königshofen | 08128139 | – | – | noch nicht gesucht | – |
 | 1070 | Brühl | 08226009 | – | – | noch nicht gesucht | – |
 | 1071 | Angermünde | 12073008 | 1643475 | https://pixabay.com/de/photos/angerm%C3%BCnde-stolper-turm-gr%C3%BCtzpott-1643475/ | Pixabay-Lizenz, Stolper Turm (Grützpott) | 6 |
-| 1072 | Kalkar | 05154024 | – | – | noch nicht gesucht | – |
+| 1072 | Kalkar | 05154024 | 736294 | https://pixabay.com/de/photos/kalkar-historische-altstadt-kirche-736294/ | Pixabay-Lizenz; historische Altstadt mit Kirche | 8 |
 | 1073 | Gernsbach | 08216017 | – | – | noch nicht gesucht | – |
-| 1075 | Lauchhammer | 12066176 | – | – | noch nicht gesucht | – |
+| 1075 | Lauchhammer | 12066176 | 4909708 | https://pixabay.com/photos/brown-coal-smelting-towers-4909708/ | Pixabay-Lizenz; historische Biotürme (Wahrzeichen) | 8 |
 | 1076 | Aldenhoven | 05358004 | – | – | noch nicht gesucht | – |
-| 1077 | Plochingen | 08116056 | – | – | noch nicht gesucht | – |
+| 1077 | Plochingen | 08116056 | 2779300 | https://pixabay.com/cs/photos/plochingen-krk-tr%C5%BEi%C5%A1t%C4%9B-p%C4%9B%C5%A1%C3%AD-z%C3%B3na-2779300/ | Pixabay-Lizenz; Marktplatz und Fußgängerzone | 7 |
 | 1078 | Hatten | 03458009 | – | – | noch nicht gesucht | – |
 | 1079 | Clausthal-Zellerfeld | 03153018 | 11443366 | https://www.pexels.com/photo/facade-of-the-holy-spirit-market-church-in-clausthal-zellerfeld-germany-11443366/ | Pexels-Lizenz, Marktkirche zum Heiligen Geist | 8 |
 | 1081 | Markgröningen | 08118050 | – | – | noch nicht gesucht | – |
@@ -1047,7 +1047,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1106 | Dippoldiswalde | 14628060 | 7463886 | https://pixabay.com/de/photos/windm%C3%BChle-reichst%C3%A4dt-wahrzeichen-7463886/ | Pixabay-Lizenz, Windmühle Reichstädt (Ortsteil), indirekter Bezug | 5 |
 | 1108 | Hohenstein-Ernstthal | 14524120 | – | – | noch nicht gesucht | – |
 | 1109 | Mittweida | 14522360 | – | – | noch nicht gesucht | – |
-| 1110 | Grafing b.München | 09175122 | – | – | noch nicht gesucht | – |
+| 1110 | Grafing b.München | 09175122 | 6299882 | https://pixabay.com/photos/grafing-upper-bavaria-ebe-downtown-6299882/ | Pixabay-Lizenz; Innenstadt Grafing (Oberbayern), Pixabay-Seite mit Ortsnamen "Grafing" getaggt | 8 |
 | 1112 | Immenstadt i.Allgäu | 09780124 | 451385 | https://pixabay.com/photos/alpsee-immenstadt-allg%C3%A4u-sky-view-451385/ | Pixabay-Lizenz, Alpsee | 7 |
 | 1113 | Friesenheim | 08317031 | – | – | noch nicht gesucht | – |
 | 1114 | Höchstadt a.d.Aisch | 09572135 | – | – | noch nicht gesucht | – |
@@ -1069,10 +1069,10 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1136 | Barßel | 03453001 | – | – | noch nicht gesucht | – |
 | 1137 | Jessen (Elster) | 15091145 | 1277754 | https://pixabay.com/photos/moated-castle-hemsendorf-hemsendorf-1277754/ | Pixabay-Lizenz, Wasserschloss Hemsendorf (Ortsteil) | 6 |
 | 1138 | Denzlingen | 08316009 | 7352046 | https://pixabay.com/de/photos/denzlingen-mediathek-rocca-b%C3%BCcherei-7352046/ | Pixabay-Lizenz, Mediathek Rocca | 6 |
-| 1140 | Philippsburg | 08215066 | – | – | noch nicht gesucht | – |
+| 1140 | Philippsburg | 08215066 | 848866 | https://pixabay.com/nl/photos/philippsburg-kerncentrale-stoom-848866/ | Pixabay-Lizenz; Kernkraftwerk Philippsburg mit Dampf | 6 |
 | 1141 | Frankenberg/Sa. | 14522150 | – | – | noch nicht gesucht | – |
-| 1142 | Markt Schwaben | 09175127 | – | – | noch nicht gesucht | – |
-| 1143 | Beelitz | 12069017 | – | – | noch nicht gesucht | – |
+| 1142 | Markt Schwaben | 09175127 | 6548655 | https://pixabay.com/photos/markt-schwaben-town-street-road-6548655/ | Pixabay-Lizenz; Straße im Ort Markt Schwaben (Alternative: 6548657) | 8 |
+| 1143 | Beelitz | 12069017 | 1030609 | https://pixabay.com/de/photos/beelitz-heilst%C3%A4tten-ruine-1030609/ | Pixabay-Lizenz; Ruine der Beelitz-Heilstätten (Alternative: 1621445) | 6 |
 | 1144 | Bergen auf Rügen | 13073010 | – | – | noch nicht gesucht | – |
 | 1145 | Hilpoltstein | 09576127 | – | – | noch nicht gesucht | – |
 | 1146 | Bad Soden-Salmünster | 06435002 | – | – | noch nicht gesucht | – |
@@ -1091,16 +1091,16 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1168 | Neckargemünd | 08226056 | – | – | noch nicht gesucht | – |
 | 1169 | Marienheide | 05374024 | – | – | noch nicht gesucht | – |
 | 1170 | Bad Schönborn | 08215100 | – | – | noch nicht gesucht | – |
-| 1171 | Pfullendorf | 08437088 | – | – | noch nicht gesucht | – |
+| 1171 | Pfullendorf | 08437088 | 580356 | https://pixabay.com/de/photos/pfullendorf-stadt-nachtaufnahme-580356/ | Pixabay-Lizenz; Stadt bei Nacht (Nachtaufnahme), von blickpixel | 8 |
 | 1172 | Kalletal | 05766036 | – | – | noch nicht gesucht | – |
 | 1173 | Mutterstadt | 07338019 | – | – | noch nicht gesucht | – |
 | 1174 | Barsbüttel | 01062009 | – | – | noch nicht gesucht | – |
 | 1175 | Hüllhorst | 05770016 | – | – | noch nicht gesucht | – |
 | 1178 | Bad Salzdetfurth | 03254005 | – | – | noch nicht gesucht | – |
 | 1179 | Ergolding | 09274126 | – | – | noch nicht gesucht | – |
-| 1180 | Fehmarn | 01055046 | – | – | noch nicht gesucht | – |
+| 1180 | Fehmarn | 01055046 | 7231175 | https://pixabay.com/photos/fehmarn-beach-sunset-sea-ocean-7231175/ | Pixabay-Lizenz; Strand bei Sonnenuntergang, Insel Fehmarn | 7 |
 | 1181 | Lappersdorf | 09375165 | – | – | noch nicht gesucht | – |
-| 1182 | Herbrechtingen | 08135020 | – | – | noch nicht gesucht | – |
+| 1182 | Herbrechtingen | 08135020 | 2705718 | https://pixabay.com/photos/eselsburg-valley-stone-virgins-2705718/ | Pixabay-Lizenz; Eselsburger Tal, Steinerne Jungfrauen (Ortsteil Eselsburg von Herbrechtingen; einziger Treffer auf der Suchseite "herbrechtingen") | 5 |
 | 1183 | Bad Dürrheim | 08326003 | 824965 | https://pixabay.com/de/photos/rathaus-bad-d%C3%BCrrheim-deutschland-824965/ | Pixabay-Lizenz, Rathaus | 6 |
 | 1184 | Hagen am Teutoburger Wald | 03459020 | – | – | noch nicht gesucht | – |
 | 1185 | Linden | 06531012 | – | – | noch nicht gesucht | – |
@@ -1133,14 +1133,14 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1230 | Kirchheim b.München | 09184131 | – | – | noch nicht gesucht | – |
 | 1232 | Manching | 09186137 | – | – | noch nicht gesucht | – |
 | 1234 | Jüterbog | 12072169 | – | – | noch nicht gesucht | – |
-| 1235 | Ladenburg | 08226038 | – | – | noch nicht gesucht | – |
+| 1235 | Ladenburg | 08226038 | 636111 | https://pixabay.com/de/photos/ladenburg-altstadt-gasse-h%C3%A4user-636111/ | Pixabay-Lizenz; Altstadtgasse mit Häusern (Titel "Ladenburg, Altstadt, Gasse, Häuser"; ein zweites Foto, 1816926, trägt im Titel "Hessen" und wurde deshalb nicht genommen) | 7 |
 | 1236 | Bischofsheim | 06433002 | – | – | noch nicht gesucht | – |
 | 1237 | Kaufungen | 06633015 | – | – | noch nicht gesucht | – |
 | 1238 | Pfarrkirchen | 09277138 | – | – | noch nicht gesucht | – |
 | 1241 | Bad Urach | 08415078 | 4670014 | https://pixabay.com/photos/bad-urach-waterfall-bach-fall-4670014/ | Pixabay-Lizenz; Wasserfall Bad Urach | 7 |
 | 1242 | Neunkirchen | 05970036 | – | – | noch nicht gesucht | – |
 | 1243 | Beverungen | 05762008 | – | – | noch nicht gesucht | – |
-| 1245 | Brunsbüttel | 01051011 | – | – | noch nicht gesucht | – |
+| 1245 | Brunsbüttel | 01051011 | 2380594 | https://pixabay.com/photos/north-baltic-canal-2380594/ | Pixabay-Lizenz; Nord-Ostsee-Kanal (Titel nennt Brunsbüttel). Alternative: Wasserturm, ID 277513, https://pixabay.com/photos/water-tower-brunsb%C3%BCttel-building-277513/ | 6 |
 | 1247 | Hungen | 06531008 | – | – | noch nicht gesucht | – |
 | 1248 | Neuenburg am Rhein | 08315076 | – | – | noch nicht gesucht | – |
 | 1252 | Möckern | 15086140 | – | – | noch nicht gesucht | – |
@@ -1150,16 +1150,16 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1256 | Altenstadt | 06440001 | – | – | noch nicht gesucht | – |
 | 1258 | Feuchtwangen | 09571145 | – | – | noch nicht gesucht | – |
 | 1263 | Bretzfeld | 08126011 | – | – | noch nicht gesucht | – |
-| 1264 | Hirschaid | 09471145 | – | – | noch nicht gesucht | – |
+| 1264 | Hirschaid | 09471145 | 1051182 | https://pixabay.com/photos/landscape-village-locality-fall-1051182/ | Pixabay-Lizenz; Herbstlandschaft mit Ort (Titel der Suchtreffer: "Autumn landscape of Hirschaid"); nur der Treffertitel geprüft, die Seite selbst nicht abgerufen | 6 |
 | 1265 | Buseck | 06531003 | – | – | noch nicht gesucht | – |
 | 1266 | Niefern-Öschelbronn | 08236046 | – | – | noch nicht gesucht | – |
 | 1267 | Emstek | 03453005 | – | – | noch nicht gesucht | – |
 | 1268 | Gaimersheim | 09176126 | – | – | noch nicht gesucht | – |
 | 1269 | Fuldatal | 06633009 | – | – | noch nicht gesucht | – |
-| 1270 | Hersbruck | 09574132 | – | – | noch nicht gesucht | – |
+| 1270 | Hersbruck | 09574132 | 3112386 | https://pixabay.com/de/photos/altstadt-rathaus-marktplatz-3112386/ | Pixabay-Lizenz; Altstadt, Rathaus, Marktplatz (Ortsbezug nur aus der Suchtreffer-Zuordnung, Titel nennt Hersbruck nicht) | 6 |
 | 1271 | Ihlow | 03452012 | – | – | noch nicht gesucht | – |
-| 1272 | Bad Windsheim | 09575112 | – | – | noch nicht gesucht | – |
-| 1274 | Edemissen | 03157001 | – | – | noch nicht gesucht | – |
+| 1272 | Bad Windsheim | 09575112 | 2261953 | https://pixabay.com/de/photos/museum-freilandmuseum-franken-2261953/ | Pixabay-Lizenz; Fränkisches Freilandmuseum (Titel nennt Bad Windsheim nicht; es gibt auch andere Freilandmuseen in Franken) | 5 |
+| 1274 | Edemissen | 03157001 | 105453 | https://pixabay.com/pl/photos/edemissen-historyczny-dom-105453/ | Pixabay-Lizenz; historisches Fachwerkhaus, Tag "Edemissen" | 6 |
 | 1277 | Hessisch Lichtenau | 06636006 | – | – | noch nicht gesucht | – |
 | 1278 | Graben-Neudorf | 08215099 | – | – | noch nicht gesucht | – |
 | 1279 | Bad Wünnenberg | 05774040 | – | – | noch nicht gesucht | – |
@@ -1177,11 +1177,11 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1297 | Besigheim | 08118007 | 579853 | https://pixabay.com/photos/besigheim-historic-center-flow-579853/ | Pixabay-Lizenz; historische Häuser am Fluss (Alternative: 1581184, Altstadt mit Burg) | 8 |
 | 1300 | Oftersheim | 08226062 | – | – | noch nicht gesucht | – |
 | 1302 | Frohburg | 14729140 | – | – | noch nicht gesucht | – |
-| 1303 | Havixbeck | 05558020 | – | – | noch nicht gesucht | – |
+| 1303 | Havixbeck | 05558020 | 6990719 | https://pixabay.com/de/photos/schloss-h%C3%BClshoff-schloss-havixbeck-6990719/ | Pixabay-Lizenz; Schloss/Burg Hülshoff (Wasserburg in Havixbeck), Titel nennt Havixbeck | 8 |
 | 1304 | Ebersberg | 09175115 | 7267700 | https://pixabay.com/photos/alpine-foothills-village-ebersberg-7267700/ | Pixabay-Lizenz; Ort im Alpenvorland (Alternative: 6565051, Kirchturm) | 6 |
 | 1305 | Leutenbach | 08119042 | – | – | noch nicht gesucht | – |
 | 1306 | Meitingen | 09772177 | – | – | noch nicht gesucht | – |
-| 1307 | Bad Sassendorf | 05974008 | – | – | noch nicht gesucht | – |
+| 1307 | Bad Sassendorf | 05974008 | 2406127 | https://pixabay.com/photos/bad-sassendorf-spa-saline-2406127/ | Pixabay-Lizenz; Kurort/Saline (Gradierwerk), Titel nennt Bad Sassendorf | 8 |
 | 1308 | Kronshagen | 01058092 | – | – | noch nicht gesucht | – |
 | 1309 | Perleberg | 12070296 | – | – | noch nicht gesucht | – |
 | 1310 | Ludwigslust | 13076090 | 607718 | https://pixabay.com/photos/castle-ludwigslust-park-fixed-607718/ | Pixabay-Lizenz; Schloss Ludwigslust mit Park (Alternative: 1562957, Statuen am Schloss) | 8 |
@@ -1206,7 +1206,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1339 | Apen | 03451001 | – | – | noch nicht gesucht | – |
 | 1341 | Drolshagen | 05966008 | – | – | noch nicht gesucht | – |
 | 1342 | Nörvenich | 05358052 | 897117 | https://pixabay.com/de/photos/n%C3%B6rvenich-flugplatz-bundeswehr-897117/ | Pixabay-Lizenz; Fliegerhorst Nörvenich (Flugplatz, Bundeswehr) | 5 |
-| 1343 | Oberschleißheim | 09184135 | – | – | noch nicht gesucht | – |
+| 1343 | Oberschleißheim | 09184135 | 1354865 | https://pixabay.com/photos/schleissheim-castle-spring-blooming-1354865/ | Pixabay-Lizenz; Schloss Schleißheim mit Frühlingsblumen | 8 |
 | 1344 | Durmersheim | 08216009 | – | – | noch nicht gesucht | – |
 | 1345 | Bad Freienwalde (Oder) | 12064044 | – | – | noch nicht gesucht | – |
 | 1346 | Hallbergmoos | 09178130 | – | – | noch nicht gesucht | – |
@@ -1236,7 +1236,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1385 | Ammerbuch | 08416048 | 2052556 | https://pixabay.com/de/photos/steinbruch-reusten-gedenkpfad-2052556/ | Pixabay-Lizenz; Steinbruch Reusten, Gedenkpfad (Reusten ist meines Wissens ein Ortsteil von Ammerbuch, im Titel steht der Gemeindename nicht) | 4 |
 | 1386 | Bad Dürrenberg | 15088020 | – | – | noch nicht gesucht | – |
 | 1387 | Miesbach | 09182125 | 3747565 | https://pixabay.com/de/photos/miesbach-bayern-stadt-architektur-3747565/ | Pixabay-Lizenz; Stadtansicht Miesbach, Bayern | 7 |
-| 1389 | Möhnesee | 05974032 | – | – | noch nicht gesucht | – |
+| 1389 | Möhnesee | 05974032 | 99754 | https://pixabay.com/de/photos/m%C3%B6hnesee-see-deutschland-landschaft-99754/ | Pixabay-Lizenz; Möhnesee, Landschaft | 8 |
 | 1391 | Kirchhundem | 05966016 | – | – | noch nicht gesucht | – |
 | 1393 | Lindenberg im Allgäu | 09776117 | 3430034 | https://pixabay.com/de/photos/kirche-wolken-lindenberg-im-allg%C3%A4u-3430034/ | Pixabay-Lizenz; Kirche mit Wolken | 6 |
 | 1394 | Geisenfeld | 09186122 | – | – | noch nicht gesucht | – |
@@ -1245,21 +1245,21 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1398 | Handewitt | 01059183 | – | – | noch nicht gesucht | – |
 | 1400 | Dautphetal | 06534007 | – | – | noch nicht gesucht | – |
 | 1401 | Oestrich-Winkel | 06439012 | – | – | noch nicht gesucht | – |
-| 1402 | Geisenheim | 06439004 | – | – | noch nicht gesucht | – |
+| 1402 | Geisenheim | 06439004 | 4642086 | https://pixabay.com/es/photos/r%C3%ADo-rin-geisenheim-humor-oto%C3%B1al-4642086/ | Pixabay-Lizenz; Rhein bei Geisenheim, Herbststimmung | 8 |
 | 1404 | Nußloch | 08226060 | – | – | noch nicht gesucht | – |
-| 1406 | Extertal | 05766028 | – | – | noch nicht gesucht | – |
+| 1406 | Extertal | 05766028 | 7905209 | https://pixabay.com/photos/horses-field-extertal-7905209/ | Pixabay-Lizenz; Pferde auf Feld, Tag "extertal" | 5 |
 | 1407 | Krummhörn | 03452014 | 13215452 | https://www.pexels.com/photo/pilsum-lighthouse-in-krummhorn-germany-13215452/ | Pexels-Lizenz; Pilsumer Leuchtturm, Krummhörn | 9 |
 | 1408 | Ostbevern | 05570032 | 988507 | https://pixabay.com/de/photos/schloss-loburg-collegium-johanneum-988507/ | Pixabay-Lizenz; Schloss Loburg / Collegium Johanneum | 7 |
-| 1411 | Diez | 07141029 | – | – | noch nicht gesucht | – |
+| 1411 | Diez | 07141029 | 2704398 | https://pixabay.com/de/photos/diez-grafenschloss-lahn-lahntal-2704398/ | Pixabay-Lizenz; Grafenschloss Diez, Lahntal | 8 |
 | 1414 | Engen | 08335022 | – | – | noch nicht gesucht | – |
 | 1415 | Gräfenhainichen | 15091110 | 2156650 | https://pixabay.com/cs/photos/rypadlo-ferropolis-2156650/ | Pixabay-Lizenz; Schaufelradbagger in der Ferropolis | 8 |
 | 1418 | Coswig (Anhalt) | 15091060 | – | – | noch nicht gesucht | – |
 | 1420 | Drochtersen | 03359013 | 633021 | https://pixabay.com/photos/outside-you-north-kehdingen-elbe-633021/ | Pixabay-Lizenz; Kehdingen an der Elbe, nur Regionsbezug | 3 |
 | 1421 | Ochsenfurt | 09679170 | 3297384 | https://pixabay.com/de/photos/ochsenfurt-fachwerk-fachwerkhaus-3297384/ | Pixabay-Lizenz; Fachwerkhaus in Ochsenfurt | 7 |
-| 1422 | Balve | 05962008 | – | – | noch nicht gesucht | – |
+| 1422 | Balve | 05962008 | 3599626 | https://pixabay.com/de/photos/kirche-balve-sakral-alt-alte-3599626/ | Pixabay-Lizenz; Kirche in Balve, Titel nennt den Ort | 6 |
 | 1424 | Kranenburg | 05154040 | – | – | noch nicht gesucht | – |
 | 1425 | Kriftel | 06436009 | – | – | noch nicht gesucht | – |
-| 1426 | Cadolzburg | 09573114 | – | – | noch nicht gesucht | – |
+| 1426 | Cadolzburg | 09573114 | 6803716 | https://pixabay.com/photos/burg-cadolzburg-castle-6803716/ | Pixabay-Lizenz; Burg Cadolzburg | 9 |
 | 1428 | Isselburg | 05554032 | 179333 | https://pixabay.com/cs/photos/vodn%C3%AD-z%C3%A1mek-anholt-v%C4%9B%C5%BEe-179333/ | Pixabay-Lizenz; Wasserschloss Anholt, Türme | 8 |
 | 1429 | Mömbris | 09671143 | – | – | noch nicht gesucht | – |
 | 1432 | Kall | 05366024 | – | – | noch nicht gesucht | – |
@@ -1276,7 +1276,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1447 | Boizenburg/ Elbe | 13076014 | – | – | noch nicht gesucht | – |
 | 1448 | Bad Belzig | 12069020 | – | – | noch nicht gesucht | – |
 | 1450 | Niestetal | 06633020 | – | – | noch nicht gesucht | – |
-| 1451 | Oelsnitz/Erzgeb. | 14521450 | – | – | noch nicht gesucht | – |
+| 1451 | Oelsnitz/Erzgeb. | 14521450 | 2752981 | https://pixabay.com/sv/photos/manor-byggnad-oelsnitz-malmbergen-2752981/ | Pixabay-Lizenz; Herrenhaus/Gebäude in Oelsnitz, Erzgebirge (Titel nennt Oelsnitz und Erzgebirge) | 6 |
 | 1452 | Herrsching am Ammersee | 09188124 | 1009375 | https://pixabay.com/de/photos/dampfersteg-herrsching-ammersee-1009375/ | Pixabay-Lizenz; Dampfersteg Herrsching am Ammersee, Ortsbezug im Titel | 8 |
 | 1453 | Herxheim bei Landau/ Pfalz | 07337038 | – | – | noch nicht gesucht | – |
 | 1456 | Braunfels | 06532003 | 18543316 | https://www.pexels.com/photo/braunfels-castle-in-germany-18543316/ | Pexels-Lizenz; Schloss Braunfels (Hessen), nur aus dem Titel abgeleitet, "in Germany" spricht gegen New Braunfels in Texas | 7 |
@@ -1291,14 +1291,14 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1468 | Haigerloch | 08417025 | 5479 | https://pixabay.com/pl/photos/zamek-haigerloch-zamek-haigerloch-5479/ | Pixabay-Lizenz; Schloss Haigerloch | 8 |
 | 1470 | Hasbergen | 03459021 | – | – | noch nicht gesucht | – |
 | 1471 | Lichtenau | 05774028 | – | – | noch nicht gesucht | – |
-| 1472 | Lorch | 08136042 | – | – | noch nicht gesucht | – |
-| 1473 | Malente | 01055028 | – | – | noch nicht gesucht | – |
+| 1472 | Lorch | 08136042 | 5868473 | https://pixabay.com/de/photos/kloster-lorch-ostalbkreis-staufer-5868473/ | Pixabay-Lizenz; Kloster Lorch, Ostalbkreis (Titel nennt Ostalbkreis, also Lorch in BW) | 8 |
+| 1473 | Malente | 01055028 | 3412894 | https://pixabay.com/photos/lake-fog-mood-malente-3412894/ | Pixabay-Lizenz; See im Nebel, Titel enthält "Malente" | 6 |
 | 1474 | Gottmadingen | 08335028 | – | – | noch nicht gesucht | – |
 | 1476 | Fürth | 06431007 | – | – | noch nicht gesucht | – |
 | 1479 | Neuhof | 06631018 | – | – | noch nicht gesucht | – |
 | 1480 | Burgkirchen a.d.Alz | 09171113 | – | – | noch nicht gesucht | – |
 | 1481 | Dallgow-Döberitz | 12063056 | – | – | noch nicht gesucht | – |
-| 1482 | Nideggen | 05358044 | – | – | noch nicht gesucht | – |
+| 1482 | Nideggen | 05358044 | 5790746 | https://pixabay.com/photos/burg-nideggen-castle-historically-5790746/ | Pixabay-Lizenz; Burg Nideggen (Titel "Burg Nideggen", Wahrzeichen der Stadt) | 8 |
 | 1483 | Meßstetten | 08417044 | – | – | noch nicht gesucht | – |
 | 1484 | Kenzingen | 08316020 | 662624 | https://pixabay.com/photos/bagpipes-kenzingen-medieval-festival-662624/ | Pixabay-Lizenz; Mittelalterfest Kenzingen (Dudelsack), kein Wahrzeichen | 5 |
 | 1486 | Herbolzheim | 08316017 | – | – | noch nicht gesucht | – |
@@ -1322,7 +1322,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1509 | Dießen am Ammersee | 09181114 | 1279458 | https://pixabay.com/photos/marie-m%C3%BCnster-die%C3%9Fen-ammersee-1279458/ | Pixabay-Lizenz; Marienmünster Dießen | 9 |
 | 1513 | Plankstadt | 08226063 | – | – | noch nicht gesucht | – |
 | 1514 | Feldkirchen-Westerham | 09187130 | – | – | noch nicht gesucht | – |
-| 1515 | Burgau | 09774121 | – | – | noch nicht gesucht | – |
+| 1515 | Burgau | 09774121 | 6025360 | https://pixabay.com/photos/castle-moated-castle-schloss-burgau-6025360/ | Pixabay-Lizenz; Wasserschloss Schloss Burgau (nur aus der URL erkennbar, Ort nicht bestätigt) | 6 |
 | 1516 | Morsbach | 05374028 | – | – | noch nicht gesucht | – |
 | 1517 | Nossen | 14627180 | 3404663 | https://pixabay.com/de/photos/kloster-altzella-nossen-eingangstor-3404663/ | Pixabay-Lizenz; Kloster Altzella, Eingangstor | 8 |
 | 1518 | Merzenich | 05358040 | – | – | noch nicht gesucht | – |
@@ -1336,14 +1336,14 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1531 | Bogen | 09278118 | – | – | noch nicht gesucht | – |
 | 1533 | Betzdorf | 07132006 | – | – | noch nicht gesucht | – |
 | 1534 | Büdelsdorf | 01058034 | – | – | noch nicht gesucht | – |
-| 1535 | Burgstädt | 14522060 | – | – | noch nicht gesucht | – |
+| 1535 | Burgstädt | 14522060 | 4723227 | https://pixabay.com/cs/photos/burgst%C3%A4dt-jaro-v%C4%9B%C5%BEe-trh-l%C3%A9k%C3%A1rna-4723227/ | Pixabay-Lizenz; Stadtansicht mit Türmen, Marktplatz und Apotheke (Frühling). Tags nennen Burgstädt. | 7 |
 | 1537 | Bad Lauterberg im Harz | 03159003 | – | – | noch nicht gesucht | – |
 | 1538 | Hünstetten | 06439007 | – | – | noch nicht gesucht | – |
 | 1540 | Barmstedt | 01056002 | – | – | noch nicht gesucht | – |
 | 1542 | Braunsbedra | 15088065 | – | – | noch nicht gesucht | – |
 | 1543 | Felsberg | 06634003 | – | – | noch nicht gesucht | – |
 | 1544 | Appenweier | 08317005 | – | – | noch nicht gesucht | – |
-| 1545 | Endingen am Kaiserstuhl | 08316012 | – | – | noch nicht gesucht | – |
+| 1545 | Endingen am Kaiserstuhl | 08316012 | 5030754 | https://pixabay.com/de/photos/tor-kleinstadt-endingen-kaiserstuhl-5030754/ | Pixabay-Lizenz; Stadttor, Kleinstadt. Tags nennen Endingen und Kaiserstuhl. | 8 |
 | 1546 | Aulendorf | 08436008 | – | – | noch nicht gesucht | – |
 | 1548 | Anröchte | 05974004 | – | – | noch nicht gesucht | – |
 | 1549 | Kirchseeon | 09175124 | – | – | noch nicht gesucht | – |
@@ -1352,7 +1352,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1554 | Neuenstadt am Kocher | 08125069 | – | – | noch nicht gesucht | – |
 | 1555 | Friedeburg | 03462005 | – | – | noch nicht gesucht | – |
 | 1556 | Mörlenbach | 06431017 | – | – | noch nicht gesucht | – |
-| 1557 | Flöha | 14522140 | – | – | noch nicht gesucht | – |
+| 1557 | Flöha | 14522140 | 1411058 | https://pixabay.com/de/photos/fl%C3%B6ha-architektur-1411058/ | Pixabay-Lizenz; Industriearchitektur in Flöha (Titel „Flöha, Architektur, Industriearchitektur“) | 6 |
 | 1558 | Birkenfeld | 08236004 | – | – | noch nicht gesucht | – |
 | 1559 | Grevesmühlen | 13074026 | – | – | noch nicht gesucht | – |
 | 1561 | Bestwig | 05958008 | – | – | noch nicht gesucht | – |
@@ -1367,14 +1367,14 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1573 | Friedrichsthal | 10041511 | – | – | noch nicht gesucht | – |
 | 1576 | Niebüll | 01054088 | – | – | noch nicht gesucht | – |
 | 1579 | Mengen | 08437076 | – | – | noch nicht gesucht | – |
-| 1581 | Olbernhau | 14521460 | – | – | noch nicht gesucht | – |
+| 1581 | Olbernhau | 14521460 | 3418921 | https://pixabay.com/de/photos/marktplatz-olbernhau-erzgebirge-3418921/ | Pixabay-Lizenz; Marktplatz Olbernhau (weitere Olbernhau-Fotos: Stadtkirche 3418918, Saigerhütte 3418894) | 8 |
 | 1583 | Hilter am Teutoburger Wald | 03459022 | – | – | noch nicht gesucht | – |
 | 1584 | Königsbach-Stein | 08236076 | 2056120 | https://pixabay.com/de/photos/k%C3%B6nigsbach-k%C3%B6nigsbach-stein-2056120/ | Pixabay-Lizenz; Königsbach (Bach) in Königsbach-Stein. Alternativen derselben Serie: 2056118, 2056117 | 6 |
-| 1585 | Beilngries | 09176114 | – | – | noch nicht gesucht | – |
+| 1585 | Beilngries | 09176114 | 2874836 | https://pixabay.com/de/photos/beilngries-altm%C3%BChltal-kirche-2874836/ | Pixabay-Lizenz; Kirche in Beilngries (Titel "Beilngries, Altmühltal, Kirche"). Alternativen: 2874835 und 2874833 (Main-Donau-Kanal), 2874830 (Kloster). | 8 |
 | 1586 | Kaufering | 09181128 | – | – | noch nicht gesucht | – |
 | 1587 | Heubach | 08136028 | – | – | noch nicht gesucht | – |
 | 1588 | Gemünden a.Main | 09677131 | – | – | noch nicht gesucht | – |
-| 1590 | Nohfelden | 10046114 | – | – | noch nicht gesucht | – |
+| 1590 | Nohfelden | 10046114 | 4530506 | https://pixabay.com/de/photos/see-bostalsee-wasser-yachthafen-4530506/ | Pixabay-Lizenz; Bostalsee mit Yachthafen. Der See liegt in der Gemeinde Nohfelden, der Titel nennt den Ort aber nicht. Alternativen: 3204736 und 3771329 (Bostalsee). | 5 |
 | 1591 | Dettingen an der Erms | 08415014 | – | – | noch nicht gesucht | – |
 | 1592 | Blumberg | 08326005 | – | – | noch nicht gesucht | – |
 | 1593 | Lenggries | 09173135 | 1364563 | https://pixabay.com/photos/mountains-lenggries-snow-winter-1364563/ | Pixabay-Lizenz; Berge bei Lenggries im Schnee. Alternative: Brauneck, 5297643 | 7 |
