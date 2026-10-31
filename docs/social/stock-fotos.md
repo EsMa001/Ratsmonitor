@@ -1553,7 +1553,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Gröditz | Sachsen | 14627050 | – | – | noch nicht gesucht | – |
 | Grünhain-Beierfeld | Sachsen | 14521260 | – | – | noch nicht gesucht | – |
 | Grünsfeld | BW | 08128047 | – | – | noch nicht gesucht | – |
-| Gudensberg | Hessen | 06634007 | – | – | noch nicht gesucht | – |
+| Gudensberg | Hessen | 06634007 | 748470 | https://pixabay.com/de/photos/gudensberg-grudda-schaf-nordhessen-748470/ | Pixabay-Lizenz; Gudensberg ("Grudda") mit Schaf, Nordhessen | 6 |
 | Gundelsheim | BW | 08125039 | – | – | noch nicht gesucht | – |
 | Güglingen | BW | 08125038 | – | – | noch nicht gesucht | – |
 | Hainichen | Sachsen | 14522230 | – | – | noch nicht gesucht | – |
@@ -1574,7 +1574,7 @@ Städte aus den Gebietsdateien des Projekts, die oben noch nicht stehen (darunte
 | Heideck | Bayern | 09576126 | – | – | noch nicht gesucht | – |
 | Heiligenhafen | Schleswig-Holstein | 01055021 | – | – | noch nicht gesucht | – |
 | Heilsbronn | Bayern | 09571165 | – | – | noch nicht gesucht | – |
-| Heimbach | NRW | 05358012 | – | – | noch nicht gesucht | – |
+| Heimbach | NRW | 05358012 | 268234 | https://pixabay.com/de/photos/burg-hengebach-burg-heimbach-268234/ | Pixabay-Lizenz; Burg Hengebach, Heimbach (Eifel). Ob NRW stimmt, ist aus dem Titel nicht belegt, die Eifel passt aber. | 7 |
 | Heimsheim | BW | 08236025 | – | – | noch nicht gesucht | – |
 | Heitersheim | BW | 08315050 | – | – | noch nicht gesucht | – |
 | Helmbrechts | Bayern | 09475136 | – | – | noch nicht gesucht | – |
