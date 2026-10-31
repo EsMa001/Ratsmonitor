@@ -3619,10 +3619,10 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Schwalbach | Saarland | 10044118 | – | – | noch nicht gesucht | – |
 | Schwalmtal | Hessen | 06535017 | – | – | noch nicht gesucht | – |
 | Schwanau | Baden-Württemberg | 08317150 | – | – | noch nicht gesucht | – |
-| Schwangau | Bayern | 09777169 | – | – | noch nicht gesucht | – |
+| Schwangau | Bayern | 09777169 | 4203709 | https://pixabay.com/de/photos/schwangau-deutschland-berge-lake-4203709/ | Pixabay-Lizenz; Schwangau, Berge und See | 8 |
 | Schwanstetten | Bayern | 09576132 | – | – | noch nicht gesucht | – |
 | Schwarzach | Baden-Württemberg | 08225116 | – | – | noch nicht gesucht | – |
-| Schwarzach a.Main | Bayern | 09675165 | – | – | noch nicht gesucht | – |
+| Schwarzach a.Main | Bayern | 09675165 | 235631 | https://pixabay.com/de/photos/rathaus-schwarzach-am-main-235631/ | Pixabay-Lizenz; Rathaus Schwarzach am Main | 8 |
 | Schwarzenbruck | Bayern | 09574157 | – | – | noch nicht gesucht | – |
 | Schwebheim | Bayern | 09678176 | – | – | noch nicht gesucht | – |
 | Schweitenkirchen | Bayern | 09186152 | – | – | noch nicht gesucht | – |
@@ -3630,7 +3630,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Schwenningen | Baden-Württemberg | 08437102 | – | – | noch nicht gesucht | – |
 | Schwepnitz | Sachsen | 14625550 | – | – | noch nicht gesucht | – |
 | Schwieberdingen | Baden-Württemberg | 08118067 | – | – | noch nicht gesucht | – |
-| Schwielowsee | Brandenburg | 12069590 | – | – | noch nicht gesucht | – |
+| Schwielowsee | Brandenburg | 12069590 | 1827545 | https://pixabay.com/photos/sunset-schwielowsee-berlin-potsdam-1827545/ | Pixabay-Lizenz; Sonnenuntergang am Schwielowsee | 6 |
 | Schwindegg | Bayern | 09183144 | – | – | noch nicht gesucht | – |
 | Schwörstadt | Baden-Württemberg | 08336082 | – | – | noch nicht gesucht | – |
 | Schäftlarn | Bayern | 09184142 | – | – | noch nicht gesucht | – |
@@ -3638,11 +3638,11 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Schömberg | Baden-Württemberg | 08235065 | – | – | noch nicht gesucht | – |
 | Schönaich | Baden-Württemberg | 08115044 | – | – | noch nicht gesucht | – |
 | Schönau | Bayern | 09277144 | – | – | noch nicht gesucht | – |
-| Schönau a.Königssee | Bayern | 09172132 | – | – | noch nicht gesucht | – |
+| Schönau a.Königssee | Bayern | 09172132 | 7264505 | https://pixabay.com/de/photos/sch%C3%B6nau-am-k%C3%B6nigssee-7264505/ | Pixabay-Lizenz; Ortsansicht, Titel "Schönau Am Königssee" (Fotograf aleslanger) | 8 |
 | Schönbrunn | Baden-Württemberg | 08226081 | – | – | noch nicht gesucht | – |
 | Schöneck | Hessen | 06435026 | – | – | noch nicht gesucht | – |
-| Schönefeld | Brandenburg | 12061433 | – | – | noch nicht gesucht | – |
-| Schöneiche bei Berlin | Brandenburg | 12067440 | – | – | noch nicht gesucht | – |
+| Schönefeld | Brandenburg | 12061433 | 2089360 | https://pixabay.com/de/photos/flughafen-ber-architektur-geb%C3%A4ude-2089360/ | Pixabay-Lizenz; Flughafen BER, der in Schönefeld liegt, Gebäudeansicht | 6 |
+| Schöneiche bei Berlin | Brandenburg | 12067440 | 3505873 | https://pixabay.com/de/photos/kirche-sch%C3%B6neiche-schloss-himmel-3505873/ | Pixabay-Lizenz; Kirche mit Uhrturm, laut Seite "Schöneiche, Brandenburg". Der Zusatz "bei Berlin" steht nur als Tag "Berlin" dort; ein anderes Schöneiche in Brandenburg ist möglich. | 5 |
 | Schönenberg | Baden-Württemberg | 08336080 | – | – | noch nicht gesucht | – |
 | Schönheide | Sachsen | 14521540 | – | – | noch nicht gesucht | – |
 | Schöntal | Baden-Württemberg | 08126072 | – | – | noch nicht gesucht | – |
@@ -3651,8 +3651,8 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Schönwalde-Glien | Brandenburg | 12063273 | – | – | noch nicht gesucht | – |
 | Seckach | Baden-Württemberg | 08225091 | – | – | noch nicht gesucht | – |
 | Seddiner See | Brandenburg | 12069596 | – | – | noch nicht gesucht | – |
-| Seebach | Baden-Württemberg | 08317126 | – | – | noch nicht gesucht | – |
-| Seefeld | Bayern | 09188132 | – | – | noch nicht gesucht | – |
+| Seebach | Baden-Württemberg | 08317126 | 4566565 | https://pixabay.com/de/photos/seebach-schwarzwald-nordschwarzwald-4566565/ | Pixabay-Lizenz; Landschaft Seebach im Nordschwarzwald (Fotograf WaldWeitWeb; weitere gleiche Motive: 4566567, 4566568) | 5 |
+| Seefeld | Bayern | 09188132 | 7443392 | https://pixabay.com/de/photos/schloss-seefeld-bayern-natur-7443392/ | Pixabay-Lizenz; Schloss Seefeld, Titel nennt Bayern | 6 |
 | Seegebiet Mansfelder Land | Sachsen-Anhalt | 15087386 | – | – | noch nicht gesucht | – |
 | Seeheim-Jugenheim | Hessen | 06432022 | – | – | noch nicht gesucht | – |
 | Seekirch | Baden-Württemberg | 08426109 | – | – | noch nicht gesucht | – |
