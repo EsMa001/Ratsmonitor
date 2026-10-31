@@ -1137,16 +1137,16 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1236 | Bischofsheim | 06433002 | – | – | noch nicht gesucht | – |
 | 1237 | Kaufungen | 06633015 | – | – | noch nicht gesucht | – |
 | 1238 | Pfarrkirchen | 09277138 | – | – | noch nicht gesucht | – |
-| 1241 | Bad Urach | 08415078 | – | – | noch nicht gesucht | – |
+| 1241 | Bad Urach | 08415078 | 4670014 | https://pixabay.com/photos/bad-urach-waterfall-bach-fall-4670014/ | Pixabay-Lizenz; Wasserfall Bad Urach | 7 |
 | 1242 | Neunkirchen | 05970036 | – | – | noch nicht gesucht | – |
 | 1243 | Beverungen | 05762008 | – | – | noch nicht gesucht | – |
 | 1245 | Brunsbüttel | 01051011 | – | – | noch nicht gesucht | – |
 | 1247 | Hungen | 06531008 | – | – | noch nicht gesucht | – |
 | 1248 | Neuenburg am Rhein | 08315076 | – | – | noch nicht gesucht | – |
 | 1252 | Möckern | 15086140 | – | – | noch nicht gesucht | – |
-| 1253 | Blaubeuren | 08425020 | – | – | noch nicht gesucht | – |
+| 1253 | Blaubeuren | 08425020 | 840810 | https://pixabay.com/de/photos/blautopf-kirche-blaubeuren-840810/ | Pixabay-Lizenz; Blautopf und Kirche (Alternative) | 8 |
 | 1254 | Dossenheim | 08226012 | – | – | noch nicht gesucht | – |
-| 1255 | Mettlach | 10042114 | – | – | noch nicht gesucht | – |
+| 1255 | Mettlach | 10042114 | 3410864 | https://pixabay.com/photos/saar-loop-mettlach-orscholz-3410864/ | Pixabay-Lizenz; Saarschleife bei Mettlach-Orscholz | 9 |
 | 1256 | Altenstadt | 06440001 | – | – | noch nicht gesucht | – |
 | 1258 | Feuchtwangen | 09571145 | – | – | noch nicht gesucht | – |
 | 1263 | Bretzfeld | 08126011 | – | – | noch nicht gesucht | – |
@@ -1163,28 +1163,28 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1277 | Hessisch Lichtenau | 06636006 | – | – | noch nicht gesucht | – |
 | 1278 | Graben-Neudorf | 08215099 | – | – | noch nicht gesucht | – |
 | 1279 | Bad Wünnenberg | 05774040 | – | – | noch nicht gesucht | – |
-| 1280 | Neuhausen auf den Fildern | 08116047 | – | – | noch nicht gesucht | – |
+| 1280 | Neuhausen auf den Fildern | 08116047 | 3169014 | https://pixabay.com/de/photos/neuhausen-fildern-marktplatz-3169014/ | Pixabay-Lizenz; Marktplatz Neuhausen (Fildern) | 6 |
 | 1282 | Alpen | 05170004 | – | – | noch nicht gesucht | – |
 | 1283 | Ense | 05974012 | – | – | noch nicht gesucht | – |
 | 1284 | Bad Abbach | 09273116 | – | – | noch nicht gesucht | – |
-| 1285 | Monschau | 05334020 | – | – | noch nicht gesucht | – |
+| 1285 | Monschau | 05334020 | 2708454 | https://pixabay.com/de/photos/monschau-eifel-deutschland-fachwerk-2708454/ | Pixabay-Lizenz; Fachwerk in der Altstadt (Alternativen: 605770, 414232) | 8 |
 | 1286 | Linkenheim-Hochstetten | 08215105 | – | – | noch nicht gesucht | – |
-| 1287 | Laichingen | 08425071 | – | – | noch nicht gesucht | – |
+| 1287 | Laichingen | 08425071 | 184472 | https://pixabay.com/photos/cave-vertical-cave-of-laichingen-184472/ | Pixabay-Lizenz; Laichinger Tiefenhöhle (Alternative: 184468) | 7 |
 | 1289 | Borken (Hessen) | 06634001 | – | – | noch nicht gesucht | – |
-| 1290 | Dinkelsbühl | 09571136 | – | – | noch nicht gesucht | – |
+| 1290 | Dinkelsbühl | 09571136 | 4124608 | https://pixabay.com/de/photos/dinkelsbühl-fachwerkhaus-turm-4124608/ | Pixabay-Lizenz; Fachwerkhaus und Turm (Alternativen: 2422671, 1989144, 463887) | 8 |
 | 1291 | Issum | 05154020 | – | – | noch nicht gesucht | – |
 | 1295 | Heddesheim | 08226028 | – | – | noch nicht gesucht | – |
-| 1297 | Besigheim | 08118007 | – | – | noch nicht gesucht | – |
+| 1297 | Besigheim | 08118007 | 579853 | https://pixabay.com/photos/besigheim-historic-center-flow-579853/ | Pixabay-Lizenz; historische Häuser am Fluss (Alternative: 1581184, Altstadt mit Burg) | 8 |
 | 1300 | Oftersheim | 08226062 | – | – | noch nicht gesucht | – |
 | 1302 | Frohburg | 14729140 | – | – | noch nicht gesucht | – |
 | 1303 | Havixbeck | 05558020 | – | – | noch nicht gesucht | – |
-| 1304 | Ebersberg | 09175115 | – | – | noch nicht gesucht | – |
+| 1304 | Ebersberg | 09175115 | 7267700 | https://pixabay.com/photos/alpine-foothills-village-ebersberg-7267700/ | Pixabay-Lizenz; Ort im Alpenvorland (Alternative: 6565051, Kirchturm) | 6 |
 | 1305 | Leutenbach | 08119042 | – | – | noch nicht gesucht | – |
 | 1306 | Meitingen | 09772177 | – | – | noch nicht gesucht | – |
 | 1307 | Bad Sassendorf | 05974008 | – | – | noch nicht gesucht | – |
 | 1308 | Kronshagen | 01058092 | – | – | noch nicht gesucht | – |
 | 1309 | Perleberg | 12070296 | – | – | noch nicht gesucht | – |
-| 1310 | Ludwigslust | 13076090 | – | – | noch nicht gesucht | – |
+| 1310 | Ludwigslust | 13076090 | 607718 | https://pixabay.com/photos/castle-ludwigslust-park-fixed-607718/ | Pixabay-Lizenz; Schloss Ludwigslust mit Park (Alternative: 1562957, Statuen am Schloss) | 8 |
 | 1311 | Burladingen | 08417013 | – | – | noch nicht gesucht | – |
 | 1315 | Gundelfingen | 08315047 | – | – | noch nicht gesucht | – |
 | 1316 | Gaildorf | 08127025 | – | – | noch nicht gesucht | – |
@@ -1199,7 +1199,7 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1330 | Lippetal | 05974024 | – | – | noch nicht gesucht | – |
 | 1331 | Anklam | 13075005 | – | – | noch nicht gesucht | – |
 | 1332 | Lehre | 03154014 | – | – | noch nicht gesucht | – |
-| 1333 | Murnau a.Staffelsee | 09180124 | – | – | noch nicht gesucht | – |
+| 1333 | Murnau a.Staffelsee | 09180124 | 2437386 | https://pixabay.com/de/photos/bootshaus-staffelsee-boot-ruderboot-2437386/ | Pixabay-Lizenz; Bootshaus und Ruderboot am Staffelsee. Der Titel nennt den See, nicht Murnau, daher nur regionaler Bezug. | 5 |
 | 1334 | Essenbach | 09274128 | – | – | noch nicht gesucht | – |
 | 1335 | Neustadt in Sachsen | 14628260 | – | – | noch nicht gesucht | – |
 | 1337 | Nordstemmen | 03254026 | – | – | noch nicht gesucht | – |
