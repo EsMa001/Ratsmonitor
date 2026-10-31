@@ -138,6 +138,8 @@ test('Trennstriche aus PDFs werden entfernt, Aufzählungen bleiben; Standardsät
 test('Titel: Zusatz „wird beraten/geplant“ fällt vor dem Kürzen weg, Ortsname bleibt; Zitat mit offener Klammer wird nicht genommen',()=>{
  assert.equal(shortTitle('Gesundheitszentrum für Berg Fidel wird beraten','Münster'),'Gesundheitszentrum für Berg Fidel');
  assert.equal(shortTitle('Neuer Recyclinghof für Hiltrup geplant','Münster'),'Neuer Recyclinghof für Hiltrup');
+ // das Sachwort nach „zum“ bleibt, wenn es noch passt (sonst weiß man nicht, worum es geht)
+ assert.equal(shortTitle('Digitaler Zugang zum Recyclinghof Kinderhaus außerhalb der regulären Öffnungszeiten','Münster'),'Digitaler Zugang zum Recyclinghof');
  const q=pickQuote({short:'',long:'Die Finanzierung erfolgt aus dem Sonderbudget „4294 Ortsmitten“ (max. 5.000 €. Die Blumenampeln werden von der Verwaltung beschafft und aufgehängt.'});
  assert.ok(!q||(q.split('(').length===q.split(')').length),q);
 });

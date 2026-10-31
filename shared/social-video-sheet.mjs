@@ -95,7 +95,11 @@ export function shortTitle(title,regionName){
  t=t.replace(/\s+/g,' ').replace(/^[\s:,-]+|[\s:,-]+$/g,'');
  if(t.length>TITLE_PREF)t=t.replace(/\s+(?:wird|werden|soll|sollen)\s+\p{L}+$/u,'').replace(/\s+(?:geplant|beraten|vorgestellt|verschoben|vorgeschlagen)$/u,'');
  if(t.length>TITLE_PREF){const m=t.match(/^(.+?)\s+(?:für|zur|zum|zu|im|in)\s+(.*)$/);
-  if(m){const yr=(m[2].match(/\b(20\d{2})\b/)||[])[1];const c=yr&&!m[1].includes(yr)?`${m[1]} ${yr}`:m[1];if(c.length<=TITLE_PREF)t=c;}}
+  if(m){const yr=(m[2].match(/\b(20\d{2})\b/)||[])[1];let c=yr&&!m[1].includes(yr)?`${m[1]} ${yr}`:m[1];
+   // Das Sachwort nach „zum/zur/für“ trägt oft die Hauptsache („Digitaler Zugang zum Recyclinghof“): ein langes zusammengesetztes Hauptwort bleibt, wenn es noch passt (kurze Namen wie „Berg“ nicht)
+   const full=t.slice(m[1].length),pm=full.match(/^\s+(für|zur|zum|zu|im|in)\s+(?:(?:den|die|das|der|dem|einen|eine)\s+)?(\p{Lu}\p{L}{8,})(?=\s|$)/u);
+   if(pm&&!/\b20\d{2}$/.test(c)){const ext=`${m[1]}${pm[0]}`;if(ext.length<=TITLE_PREF)c=ext;}
+   if(c.length<=TITLE_PREF)t=c;}}
  return t&&t.length<=TITLE_MAX?t[0].toUpperCase()+t.slice(1):null;
 }
 
