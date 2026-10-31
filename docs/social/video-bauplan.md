@@ -62,15 +62,33 @@ Der Look folgt dem verbindlichen Farbschema „Petrol klar“ (`docs/farbschema-
 | --- | --- |
 | Hintergrund | Weiß mit zartem Petrol-Schimmer und drehendem Punktering, nie Petrol als Fläche, keine Fotos |
 | Schrift | IBM Plex Sans, Überschriften SemiBold, Text Regular |
-| Akzent | Petrol (#268478) für Icons, Hervorhebungen, Zahlen |
-| Status beschlossen | Blau (#0C4A6E) |
-| Status abgelehnt | Orange-Braun (#B45309) |
-| Status offen oder angekündigt | Graphit (#3F4850) |
+| Akzent | Petrol `--rm-fill` (#268478) für Icons, Hervorhebungen, Zahlen |
+| Text | Schwarzgrau `--rm-c900` (#18181B), Nebenzeilen `--rm-c600` (#52525B), Weiß `--rm-on` |
+| Status beschlossen | Dunkelblau `--rm-ok` (#0C4A6E) |
+| Status abgelehnt | Orange-Braun `--rm-no` (#B45309) |
+| Status offen (alle übrigen) | Grau `--rm-c700` (#3F3F46) |
 | Icons | Ein Stil: Kreis in Petrol (Statusfarbe im Stand) mit weißem Symbol |
 | Logo | Echtes Plenara-Logo mit Ortschip dauerhaft oben links, groß in der Schlusskarte |
 | Motto | Festes Motto der Reihe unter dem Logo, im Repo festgelegt |
 
-Status immer mit Wort und Icon, nie nur Farbe. Offene Vorgänge tragen den Zusatz „Noch nicht beschlossen“, damit eine Empfehlung nicht wie ein Beschluss wirkt.
+Es gelten nur die Farben des Farbschemas, die Werte stehen in `app/styles/tokens.css`. Die ersten vier Folgen verwenden für „offen“ ein etwas bläuliches Grau (#3F4850), das dort nicht vorkommt. Ab der nächsten Folge gilt `--rm-c700`, die vier Folgen werden bei Gelegenheit neu gerendert.
+
+### Status und Wortlaut
+
+Die Videos verwenden die Stände von Plenara (`STATUS` in `shared/types.ts`), mit demselben Wort. Der Stand wird immer mit Wort und Icon gezeigt, nie nur mit Farbe. Alles außer „Beschlossen“ und „Abgelehnt“ trägt den Zusatz „Noch nicht beschlossen“ (bei „Vertagt“ „Noch nicht entschieden“), damit eine Empfehlung oder Ankündigung nicht wie ein Beschluss wirkt.
+
+| Plenara-Stand | Wort im Video | Farbe | Icon | Zusatzzeile |
+| --- | --- | --- | --- | --- |
+| `approved` | Beschlossen | Dunkelblau | Haken | keine |
+| `rejected` | Abgelehnt | Orange-Braun | Kreuz | keine |
+| `announced` | Angekündigt | Grau | Kalender | Noch nicht beschlossen |
+| `consulting` | In Beratung | Grau | Sanduhr | Noch nicht beschlossen |
+| `recommended` | Empfehlung | Grau | Dokument | Noch nicht beschlossen |
+| `postponed` | Vertagt | Grau | Sanduhr | Noch nicht entschieden |
+| `unknown` | Stand offen | Grau | Sanduhr | Noch nicht beschlossen |
+| `info` | Zur Kenntnis | Grau | Dokument | Keine Sachentscheidung (nur in Ausnahmefällen als Folge) |
+
+Gebaut und gesehen sind bisher Beschlossen, Abgelehnt, Stand offen und Angekündigt. Die übrigen Zeilen sind noch nicht in einem Video erprobt. Wichtig: Ein Beschluss belegt laut Plenara noch keine Umsetzung, das Video sagt deshalb „beschlossen“ und nicht „umgesetzt“.
 
 ## 6. Bewegung und Takt
 
@@ -139,6 +157,8 @@ Jede Folge entsteht aus einem Datenblatt mit diesen Feldern. Ohne vollständiges
 - Aufnahme der echten Plenara-Seite („Plenara-Moment“) als Szene vor dem Schluss.
 - Menschliche oder hochwertige Stimme für die ganze Reihe.
 - Flaches Statusschild statt schräger Stempel, erst nach der ersten Aussage.
+- Graues „offen“ in den vier Folgen auf `--rm-c700` umstellen (neu rendern).
+- Die Status Empfehlung, In Beratung, Vertagt und Zur Kenntnis in je einer Folge erproben.
 - Messung von Sehdauer, Speichern, Teilen und Klicks nach der Veröffentlichung.
 
 ## 13. Prüfverfahren
