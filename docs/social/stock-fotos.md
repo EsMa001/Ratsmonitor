@@ -3394,14 +3394,14 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Pliening | Bayern | 09175133 | – | – | noch nicht gesucht | – |
 | Pliezhausen | Baden-Württemberg | 08415060 | – | – | noch nicht gesucht | – |
 | Plößberg | Bayern | 09377146 | – | – | noch nicht gesucht | – |
-| Plüderhausen | Baden-Württemberg | 08119055 | – | – | noch nicht gesucht | – |
+| Plüderhausen | Baden-Württemberg | 08119055 | 5325381 | https://pixabay.com/cs/photos/hr%C3%A1zd%C4%9Bn%C3%BD-d%C5%AFm-5325381/ | Pixabay-Lizenz; Fachwerkhaus, Altes Rathaus Plüderhausen | 8 |
 | Poing | Bayern | 09175135 | – | – | noch nicht gesucht | – |
 | Polling | Bayern | 09190142 | – | – | noch nicht gesucht | – |
 | Polsingen | Bayern | 09577162 | – | – | noch nicht gesucht | – |
 | Pommelsbrunn | Bayern | 09574147 | – | – | noch nicht gesucht | – |
-| Pommersfelden | Bayern | 09471172 | – | – | noch nicht gesucht | – |
+| Pommersfelden | Bayern | 09471172 | 588181 | https://pixabay.com/de/photos/wei%C3%9Fenstein-der-palast-pommersfelden-588181/ | Pixabay-Lizenz; Schloss Weißenstein Pommersfelden | 8 |
 | Poppenhausen | Bayern | 09678168 | – | – | noch nicht gesucht | – |
-| Poppenhausen (Wasserkuppe) | Hessen | 06631021 | – | – | noch nicht gesucht | – |
+| Poppenhausen (Wasserkuppe) | Hessen | 06631021 | 2806015 | https://pixabay.com/photos/aviator-monument-wasserkuppe-2806015/ | Pixabay-Lizenz; Fliegerdenkmal auf der Wasserkuppe | 7 |
 | Poppenricht | Bayern | 09371144 | – | – | noch nicht gesucht | – |
 | Postbauer-Heng | Bayern | 09373155 | – | – | noch nicht gesucht | – |
 | Postmünster | Bayern | 09277139 | – | – | noch nicht gesucht | – |
@@ -3409,7 +3409,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Presseck | Bayern | 09477148 | – | – | noch nicht gesucht | – |
 | Pressig | Bayern | 09476164 | – | – | noch nicht gesucht | – |
 | Pretzfeld | Bayern | 09474161 | – | – | noch nicht gesucht | – |
-| Prien a.Chiemsee | Bayern | 09187162 | – | – | noch nicht gesucht | – |
+| Prien a.Chiemsee | Bayern | 09187162 | 562432 | https://pixabay.com/de/photos/steg-chiemsee-prien-gstaad-see-562432/ | Pixabay-Lizenz; Steg am Chiemsee bei Prien | 7 |
 | Priestewitz | Sachsen | 14627200 | – | – | noch nicht gesucht | – |
 | Prutting | Bayern | 09187163 | – | – | noch nicht gesucht | – |
 | Pullach i.Isartal | Bayern | 09184139 | – | – | noch nicht gesucht | – |
@@ -3424,12 +3424,12 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Rackwitz | Sachsen | 14730250 | – | – | noch nicht gesucht | – |
 | Radibor | Sachsen | 14625490 | – | – | noch nicht gesucht | – |
 | Rainau | Baden-Württemberg | 08136089 | – | – | noch nicht gesucht | – |
-| Raisting | Bayern | 09190144 | – | – | noch nicht gesucht | – |
+| Raisting | Bayern | 09190144 | 3930778 | https://pixabay.com/de/photos/raisting-erdfunkstelle-antenne-3930778/ | Pixabay-Lizenz; Erdfunkstelle Raisting, Antenne | 9 |
 | Rammingen | Baden-Württemberg | 08425097 | – | – | noch nicht gesucht | – |
-| Ramsau b.Berchtesgaden | Bayern | 09172129 | – | – | noch nicht gesucht | – |
+| Ramsau b.Berchtesgaden | Bayern | 09172129 | 3761392 | https://pixabay.com/de/photos/ramsau-kirche-berge-architektur-3761392/ | Pixabay-Lizenz; Kirche in Ramsau vor Bergen (Zuordnung nur über Titel und Suchtreffer zu Ramsau Berchtesgaden, Ramsau gibt es auch in Österreich) | 6 |
 | Randersacker | Bayern | 09679175 | – | – | noch nicht gesucht | – |
 | Rangendingen | Baden-Württemberg | 08417051 | – | – | noch nicht gesucht | – |
-| Rangsdorf | Brandenburg | 12072340 | – | – | noch nicht gesucht | – |
+| Rangsdorf | Brandenburg | 12072340 | 5185373 | https://pixabay.com/photos/germany-brandenburg-rangsdorf-water-5185373/ | Pixabay-Lizenz; Kanal und Häuser im Frühling, Rangsdorf Brandenburg | 8 |
 | Ranstadt | Hessen | 06440020 | – | – | noch nicht gesucht | – |
 | Raschau-Markersbach | Sachsen | 14521500 | – | – | noch nicht gesucht | – |
 | Rasdorf | Hessen | 06631022 | – | – | noch nicht gesucht | – |
