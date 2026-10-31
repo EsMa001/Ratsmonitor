@@ -6,14 +6,14 @@ Stand 31.10.2026. Gilt nur für Videos auf Instagram Reels, TikTok und YouTube S
 
 Jedes Video erklärt einen echten Ratsbeschluss (oder Vorgang) so, dass Bürger ihn in 42 bis 65 Sekunden verstehen. Plenara tritt als Quelle auf, nicht als Werbebotschaft: Logo und Ortschip stehen in den Szenen 1 bis 5 von Anfang an oben, die Schlusskarte zeigt das Logo groß und nennt plenara.de als einzigen Aufruf. Etwa vier Fünftel der Zeit gehören dem Beschluss.
 
-Die Videos kommen ohne Fotos und ohne Untertitel aus. Sie müssen auch stumm lesbar sein: Bildtext, Icons und Statusfarben tragen den Kern, die Stimme ergänzt.
+Die Videos kommen ohne Fotos und ohne eingebrannte Untertitelspur aus. Sie müssen auch stumm lesbar sein: Bildtext, Icons und Statusfarben tragen den Kern, die Stimme ergänzt. Was in den Netzen über Sehen, Weiterwischen und Teilen entscheidet (erste Sekunde, Sicherheitszonen, Länge, Beschreibung, Messung), steht in Abschnitt 16.
 
 ## 2. Technik
 
 | Punkt | Vorgabe |
 | --- | --- |
 | Format | 1080 × 1920 (9:16), 30 Bilder pro Sekunde, MP4 mit H.264 (CRF 16 bis 17) und AAC |
-| Länge | 42 bis 65 Sekunden (untere Grenze folgt aus den Mindestdauern), Summe der Szenendauern (Abschnitt 3). Wird es mehr, wird der Sprechtext gekürzt, nicht die Lesezeit |
+| Länge | 36,5 bis 65 Sekunden (untere Grenze folgt aus den Mindestdauern), Summe der Szenendauern (Abschnitt 3). Wird es mehr, wird der Sprechtext gekürzt, nicht die Lesezeit |
 | Bildaufbau | Jedes Einzelbild wird per Skript gezeichnet (Python mit PIL) und an ffmpeg übergeben (H.264, CRF 16, Preset veryfast, 4:2:0). Szenen werden einzeln gerendert, jede außer der letzten 0,2 s länger als ihre Dauer, und mit `xfade` (0,2 s) verbunden. Die Überblendung liegt über dem Anfang der folgenden Szene, die Gesamtlänge ist deshalb die Summe der Szenendauern. Verbund: CRF 17, Preset medium, `yuv420p` |
 | Übergänge | Feste Folge für die Übergänge 1→2 bis 5→6: slideleft, wipeup, circleopen, slideup, slideleft |
 | Bewegung | Ganzes Bild (auch Logo und Ortschip) zoomt linear um die Bildmitte von 100 auf 104 Prozent über die Szenendauer, außer in der Schlusskarte. Gemessen wird immer vor dem Zoom: Nach dem Zoom liegt die Grenze 1450 bei etwa 1470 und der Rand von 72 bei etwa 53 Pixel, die freie Zone ab 1500 bleibt frei. Oben läuft ein Fortschrittsbalken (Petrol, 16 Pixel hoch, Breite wächst mit der Zeit über das ganze Video); er zoomt nicht mit |
@@ -42,29 +42,30 @@ Pulsieren und die Schwingung des Stempels zählen in der Prüfung nicht als „n
 | Musik | Eigens erzeugt auf die Länge des Videos (Skript, keine fremde Datei, keine Lizenzfragen): ruhiger Akkordteppich Cmaj7, Am7, Fmaj7, G, je Akkord 4 s, dazu leise gezupfte Töne. Einblenden 1 s, Ausblenden 2 s am Ende, Pegel 0,6 |
 | Stimmenbus auffüllen | Der Stimmenbus wird vor dem Ducking mit Stille auf die volle Videolänge aufgefüllt (`apad`). Sonst endet das Ducking mit der letzten Stimme, und die Datei wird um den stillen Rest der Schlusskarte (im Test 4,4 s) zu kurz |
 | Ducking | Sidechain von der Stimme auf die Musik: Schwelle 0,02, Verhältnis 10, Attack 15 ms, Release 400 ms |
-| Summe | Stimme und Musik gemischt, `loudnorm` auf −14 LUFS (Spitze −1,5 dB, LRA 7), danach genaue Pegelung auf −14 LUFS mit Begrenzer 0,84 (etwa −1,5 dB). AAC 192 kbit/s |
+| Töne (nur Automatik) | Eigens erzeugt (`sfx.py`, keine fremde Datei): „Schlag“ (tiefer Ton mit Knack, Spitze 0,8) beim Stempel und beim Statusbadge, „Klick“ (1,5 kHz, Spitze 0,3) bei jedem neuen Teil, „Wusch“ (Rauschen, Spitze 0,38) 0,22 s vor jedem Szenenwechsel, Soundlogo aus drei aufsteigenden Glockentönen (C, E, G) bei 0,1 s und zum Schluss 2,2 s vor dem Ende (E, G, hohes C). Pegel 0,8, gemischt nach dem Ducking, es duckt die Musik nicht |
+| Summe | Stimme und Musik (mit Tönen) gemischt, `loudnorm` auf −14 LUFS (Spitze −1,5 dB, LRA 7), danach genaue Pegelung auf −14 LUFS mit Begrenzer, der so lange um 15 Prozent abgesenkt wird (Start 0,84), bis die Spitze nach der AAC-Kodierung höchstens −1,5 dB erreicht (`loud.sh`; ohne diese Schleife lag sie mit den Tönen bei −0,1 dB). AAC 192 kbit/s |
 | Messung | EBU R128, integriert (`ebur128=peak=true`): Lautheit −14 ±1 LUFS, True Peak höchstens −1,5 dB |
 
 ## 3. Aufbau: sechs Szenen
 
 Jede Folge hat dieselben sechs Szenen. Die Dauer einer Szene ist
 **Szenendauer = Maximum aus Mindestdauer und (Stimmenlänge + 0,5 s Vorlauf + Nachlauf)**.
-Beispiel: Stimme 5,5 s, Mindestdauer 6 s, Nachlauf 1 s ergibt Maximum aus 6 und 7,0, also 7,0 s. Die Dauern werden auf ganze Bilder (1/30 s) aufgerundet. Die Länge des Videos ist die Summe der sechs Szenendauern. Mit den Mindestdauern allein sind es 42 s; kürzer wird ein Video nie.
+Beispiel: Stimme 5,5 s, Mindestdauer 6 s, Nachlauf 1 s ergibt Maximum aus 6 und 7,0, also 7,0 s. Die Dauern werden auf ganze Bilder (1/30 s) aufgerundet. Die Länge des Videos ist die Summe der sechs Szenendauern. Mit den Mindestdauern allein sind es 38,5 s; kürzer wird ein Video nie.
 
 | Nr. | Szene | Mindestdauer | Nachlauf | Inhalt |
 | --- | --- | --- | --- | --- |
-| 1 | Hook | 6 s | 1 s | Zeile 1: Ort oder Rubrik mit Doppelpunkt (Schwarzgrau), Zeile 2: Thema oder Name des Vorgangs (Petrol, bei voller Größe bis zu zwei Zeilen). Optional eine einzige Nebenzeile: der Antragsteller („Antrag: Fraktion Freie Wähler“, „Vorschlag der Verwaltung“), sonst das Stichwort; sie entfällt zuerst, wenn der Platz fehlt. Darunter der Stempel mit nur dem Standwort (kein Zusatz, kein Icon), Neigung −5 Grad (weiße Schrift auf Fläche in Statusfarbe, Radius 22, Polster 75 Pixel seitlich und 15 oben und unten), darunter das pulsierende Themen-Icon (Kreis 300). Zeile 1 steht von Beginn an, Zeile 2 und das Icon erscheinen bei 0,5 s, die Nebenzeile bei 1,2 s (einblenden), der Stempel beim Standwort. Abstände: Zeile 1 zu Zeile 2 40, Zeile 2 zum Stempel 90, Stempel zum Icon 70. Die Nebenzeile folgt 40 unter Zeile 2, der Stempel 90 unter der untersten Zeile. Bei Platznot weicht zuerst die Nebenzeile, dann schrumpft das Icon bis 220, dann die Abstände (Zeile 2 zum Stempel von 90 auf 50, Stempel zum Icon von 70 auf 40), dann beginnt der Hook statt bei y = 400 bei y = 370, zuletzt wird das Thema gekürzt. Das Standwort ist das 5. bis 8. gesprochene Wort |
+| 1 | Hook | 6 s | 1 s | Zeile 1: Ort oder Rubrik mit Doppelpunkt (Schwarzgrau), Zeile 2: Thema oder Name des Vorgangs (Petrol, bei voller Größe bis zu zwei Zeilen). Optional eine einzige Nebenzeile: der Antragsteller („Antrag: Fraktion Freie Wähler“, „Vorschlag der Verwaltung“), sonst das Stichwort; sie entfällt zuerst, wenn der Platz fehlt. Darunter der Stempel mit nur dem Standwort (kein Zusatz, kein Icon), Neigung −5 Grad (weiße Schrift auf Fläche in Statusfarbe, Radius 22, Polster 75 Pixel seitlich und 15 oben und unten), darunter das pulsierende Themen-Icon (Kreis 300). Zeile 1 steht von Beginn an, Zeile 2 und das Icon erscheinen bei 0,5 s, die Nebenzeile bei 1,2 s (einblenden), der Stempel beim Standwort. Abstände: Zeile 1 zu Zeile 2 40, Zeile 2 zum Stempel 90, Stempel zum Icon 70. Die Nebenzeile folgt 40 unter Zeile 2, der Stempel 90 unter der untersten Zeile. Bei Platznot weicht zuerst die Nebenzeile, dann schrumpft das Icon bis 220, dann die Abstände (Zeile 2 zum Stempel von 90 auf 50, Stempel zum Icon von 70 auf 40), dann beginnt der Hook statt bei y = 400 bei y = 370, zuletzt wird das Thema gekürzt. Das Standwort ist das 5. bis 8. gesprochene Wort (bei Handfolgen; die Automatik nennt es gleich im ersten Satz, Abschnitt 15) |
 | 2 | Kern | 7 s | 2,5 s | Die Kernaussage groß (Satz in Satzteilen). Bei mehreren Varianten steht darunter die Auswahl: Karten A, B mit Buchstaben-Kreis, Kreis zuerst, Text 0,25 s später, die Karten im Abstand von mindestens 1,4 s |
-| 3 | Details | 7 s | 3 s | Betroffene oder Maßnahmen als Zeilen mit Icon, bei Abläufen mit Verbindungslinie, oder Kernzahlen mit Beschriftung |
-| 4 | Zitat | Maximum aus 6,5 s und 0,07 s je Zeichen des Zitats (mit Leerzeichen und […], ohne äußere Anführungszeichen); die Szene ist stumm, es gibt keinen Nachlauf | – | Wörtlich aus der Vorlage, Schlüsselwörter (Datenblatt) in Petrol hervorgehoben, darunter „Aus der Vorlage · Ort“. Ist der zitierte Text ein Beschluss- oder Empfehlungsvorschlag („beschließt“, „empfiehlt“) und der Stand nicht „Beschlossen“, steht dort „Vorschlag aus der Vorlage · Ort“, damit er nicht wie ein Beschluss wirkt; ein bloßer Tagesordnungstext („berät über“) heißt „Aus der Vorlage · Ort“. Wird nicht gesprochen, damit Zeit zum Lesen bleibt. Hier ist Stillstand gewollt (Lesezeit), die Ruhebild-Prüfung gilt für diese Szene nicht (Abschnitt 13) |
+| 3 | Details (Verlauf) | 5 s | 1,5 s | Betroffene oder Maßnahmen als Zeilen mit Icon, bei Abläufen mit Verbindungslinie, oder Kernzahlen mit Beschriftung |
+| 4 | Zitat | Maximum aus 6,5 s und 0,05 s je Zeichen des Zitats (mit Leerzeichen und […], ohne äußere Anführungszeichen); die Szene ist stumm, es gibt keinen Nachlauf | – | Wörtlich aus der Vorlage, Schlüsselwörter (Datenblatt) in Petrol hervorgehoben, darunter „Aus der Vorlage · Ort“. Ist der zitierte Text ein Beschluss- oder Empfehlungsvorschlag („beschließt“, „empfiehlt“) und der Stand nicht „Beschlossen“, steht dort „Vorschlag aus der Vorlage · Ort“, damit er nicht wie ein Beschluss wirkt; ein bloßer Tagesordnungstext („berät über“) heißt „Aus der Vorlage · Ort“. Wird nicht gesprochen, damit Zeit zum Lesen bleibt. Hier ist Stillstand gewollt (Lesezeit), die Ruhebild-Prüfung gilt für diese Szene nicht (Abschnitt 13) |
 | 5 | Stand | 7 s | 1,5 s | Statuskarte mit Band in Statusfarbe, Badge, Statuswort, darunter Gremium und „zuletzt beraten am …“, bei Bedarf nächste Sitzung |
-| 6 | Schluss | 8,5 s | 1 s | Titel „Beschlüsse zu Ihrem Ort“, Logo groß, festes Motto, plenara.de als pulsierende Pille, Quelle und Hinweis „kein amtliches Dokument“ |
+| 6 | Schluss | 5 s | 1 s | Titel „Beschlüsse zu Ihrem Ort“, Logo groß, festes Motto, plenara.de als pulsierende Pille, Quelle und Hinweis „kein amtliches Dokument“ |
 
-Statuskarte (von oben, mit Logo-Chip und Ortschip bei y = 190): Beginn bei y = 430. Ein Band über die ganze Bildbreite in der Statusfarbe mit etwa 12 Prozent Deckkraft (Höhe: 100 + Badge 300 + 30 + Höhe des Statusworts + 30; das Badge liegt also 100 unter dem Bandanfang). In der linken oberen Ecke des Bandes (x = 72, y = 466) die Beschriftung in Großbuchstaben, 48, Nebenzeilenfarbe, weit gesetzt: bei „Beschlossen“ und „Abgelehnt“ „STAND“, sonst die Zusatzzeile der Tabelle in Abschnitt 5 („NOCH NICHT BESCHLOSSEN“). Darin mittig das Badge (Kreis 300 in der Statusfarbe mit weißem Symbol, y = 530) und darunter das Statuswort (Schwarzgrau, mittig, bis 190 und so klein, dass es in 936 Pixel passt). Unter dem Band höchstens zwei Meta-Zeilen im Abstand 40 zum Band (bei Platznot ersetzt „Nächster Schritt: …“, Dokument-Icon, höchstens zwei Textzeilen, vom Datenblatt gekürzt, die nächste Sitzung) mit je einem Icon (68, Petrol) links und zweizeiligem Text (52 bis 60, Schwarzgrau): Zeile 1 mit Kalender „Gremium / zuletzt beraten am TT.MM.JJ“, Zeile 2 mit Halle „Gremium / nächste Sitzung TT.MM.JJ“ (so gebaut; gab es noch keine gehaltene Sitzung, entfällt Zeile 1 und die nächste Sitzung steht allein als Zeile 1 mit Halle), Abstand zwischen den Zeilen 40. Ende bei etwa 1440; bei Platznot Meta 52 und Statuswort 140. Zeiten: Band und Beschriftung ab 0 s, Badge ab 0,3 bis 0,8 s (0,5 s vor dem gesprochenen Standwort), Statuswort 0,4 s später, Meta-Zeilen ab 1,2 s nach dem Beginn des Badges, im Abstand von mindestens 0,5 s; die letzte erscheint nicht vor Dauer − 4 s (bei 7 s also ab 3,0 s, bei nur einer Zeile erscheint diese dann erst dort).
+Statuskarte (von oben, mit Logo-Chip und Ortschip bei y = 190): Beginn bei y = 430. Ein Band über die ganze Bildbreite in der Statusfarbe mit etwa 12 Prozent Deckkraft. Das Badge sitzt mittig zwischen der Beschriftung und dem Statuswort (Abstand oben und unten etwa gleich, 46 und 36 Pixel). (Bandhöhe: 36 + Beschriftung + 46 + Badge 300 + 36 + Höhe des Statusworts + 44). In der linken oberen Ecke des Bandes (x = 72, y = 466) die Beschriftung in Großbuchstaben, 48, Nebenzeilenfarbe, weit gesetzt: bei „Beschlossen“ und „Abgelehnt“ „STAND“, sonst die Zusatzzeile der Tabelle in Abschnitt 5 („NOCH NICHT BESCHLOSSEN“). Darin mittig das Badge (Kreis 300 in der Statusfarbe mit weißem Symbol, y = 530) und darunter das Statuswort (Schwarzgrau, mittig, bis 190 und so klein, dass es in 936 Pixel passt). Unter dem Band höchstens zwei Meta-Zeilen im Abstand 40 zum Band (bei Platznot ersetzt „Nächster Schritt: …“, Dokument-Icon, höchstens zwei Textzeilen, vom Datenblatt gekürzt, die nächste Sitzung) mit je einem Icon (68, Petrol) links und zweizeiligem Text (52 bis 60, Schwarzgrau): Zeile 1 mit Kalender „Gremium / zuletzt beraten am TT.MM.JJ“, Zeile 2 mit Halle „Gremium / nächste Sitzung TT.MM.JJ“ (so gebaut; gab es noch keine gehaltene Sitzung, entfällt Zeile 1 und die nächste Sitzung steht allein als Zeile 1 mit Halle), Abstand zwischen den Zeilen 40. Ende bei etwa 1440; bei Platznot Meta 52 und Statuswort 140. Zeiten: Band und Beschriftung ab 0 s, Badge ab 0,3 bis 0,8 s (0,5 s vor dem gesprochenen Standwort), Statuswort 0,4 s später, Meta-Zeilen ab 1,2 s nach dem Beginn des Badges, im Abstand von mindestens 0,5 s; die letzte erscheint nicht vor Dauer − 4 s (bei 7 s also ab 3,0 s, bei nur einer Zeile erscheint diese dann erst dort).
 
 Schlusskarte (von oben, ohne Logo und Ortschip oben, Beginn bei y = 190, Abstände in Klammern): Titel „Beschlüsse zu Ihrem Ort“ 100 in Schwarzgrau, bricht bei 700 Pixel Breite in zwei Zeilen um (24), Zeile „finden Sie bei“ 64 mit Pin 76 (20), Logo 520 breit, etwa 134 hoch (40), Motto 64 in bis zu zwei Zeilen (40), Pille plenara.de 104 mit 55 Pixel Rand links und rechts, 20 oben und unten (46), Quelle 50, darunter (14) Hinweis „Zusammenfassung von Plenara, kein amtliches Dokument.“ 48. Quelle und Hinweis dürfen umbrechen. Das Ende liegt je nach Zeilenhöhe zwischen 1300 und 1400 und höchstens bei 1450 (das Bauskript meldet den Wert). Der Titel steht von Beginn an. „(24)“ usw. sind die Abstände unter dem jeweiligen Element in Pixel. „104“ bei der Pille ist die Schriftgröße. Das Motto lautet „Besser verstehen, was vor Ort beraten wird.“ Die Folge baut die Karte gestaffelt auf: Pin und Zeile ab 0,4 s, Logo ab 0,3 s, Motto ab 1,1 s, Pille ab 1,5 s, Quelle und Hinweis ab 1,6 s.
 
-Die Schlussszene verwendet in jeder Folge dieselbe Sprechdatei mit dem Wortlaut „Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenarra.“ (etwa 3,5 s; die Szene dauert deshalb immer 8,5 s). Gesprochen werden damit vier Teile (Hook, Kern, Details, Stand) plus die feste Schlussdatei; das Zitat bleibt stumm. Richtwert für die Planung: etwa 2 Wörter pro Sekunde (verlangsamt, lange Zahlwörter weniger); gemessen liegen kurze Sätze bei 2,5 bis 2,9 Wörtern je Sekunde (die Schlussdatei: 10 Wörter in 3,5 s). Maßgeblich ist immer die gemessene Länge der Sprechdatei. Wortbudget der vier Sprechteile zusammen: höchstens etwa 70 Wörter bei einem Zitat von 150 Zeichen (bei kürzerem Zitat etwas mehr), sonst wird das Video länger als 65 s.
+Die Schlussszene verwendet in jeder Folge dieselbe Sprechdatei mit dem Wortlaut „Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenarra.“ (etwa 3,5 s; die Szene dauert deshalb immer 5 s). Gesprochen werden damit vier Teile (Hook, Kern, Details, Stand) plus die feste Schlussdatei; das Zitat bleibt stumm. Richtwert für die Planung: etwa 2 Wörter pro Sekunde (verlangsamt, lange Zahlwörter weniger); gemessen liegen kurze Sätze bei 2,5 bis 2,9 Wörtern je Sekunde (die Schlussdatei: 10 Wörter in 3,5 s). Maßgeblich ist immer die gemessene Länge der Sprechdatei. Wortbudget der vier Sprechteile zusammen: höchstens etwa 70 Wörter bei einem Zitat von 150 Zeichen (bei kürzerem Zitat etwas mehr), sonst wird das Video länger als 65 s.
 
 ### Begriffe
 
@@ -116,7 +117,7 @@ Themen-Icons im Hook und in Zeilen kommen aus dem vorhandenen Satz (ein Stil: Pe
 | Verfahren, Unterlagen | Dokument, Stift, Kran (Bau), Lupe |
 | Wohnen, Gebäude | Haus |
 | Kinder, Schule, Bildung | Kind |
-| Verkehr, Straße, Wege | Straße (Fahrbahn in Perspektive mit Mittelstrich, ergänzt am 31.10.2026 für „Billerbeck: Wirtschaftswege“); Pin nur für Orte. Wer ein Schild oder Auto braucht, ergänzt es im selben Stil und trägt es hier ein |
+| Verkehr, Straße, Wege | Straße (Fahrbahn in Perspektive mit Mittelstrich, `road`); Park-and-Ride-Anlagen: Quadrat mit ausgeschnittenem P (`parking`); Pin nur für Orte. Wer ein Schild oder Auto braucht, ergänzt es im selben Stil und trägt es hier ein |
 | Gremium, Rathaus | Halle |
 | Termin | Kalender |
 | Stand | Haken, Kreuz, Sanduhr |
@@ -171,7 +172,7 @@ Gebaut und gesehen sind bisher Beschlossen, Abgelehnt, Stand offen und Angekünd
 - Jede Szene zeigt innerhalb von 0,8 s etwas Lesbares außer Logo, Ortschip und Balken (kein leerer Szenenanfang, kein Ruhebild über mehrere Sekunden).
 - Der Stempel im Hook erscheint 0,3 s vor dem gesprochenen Standwort, frühestens bei 1,8 s und spätestens bei 4,2 s. Das Standwort ist das 5. bis 8. gesprochene Wort (bei zwei Wörtern je Sekunde beginnt es zwischen 2,5 und 4,0 s; läge der Stempel dadurch vor 1,8 s, gilt 1,8 s). Bei einem Standwort aus mehreren Wörtern („In Beratung“) zählt das erste. In der Stand-Szene gilt die 5.-bis-8.-Regel nicht: Der Sprechtext beginnt dort mit „Stand: <Standwort>.“, das Badge erscheint 0,5 s vor dem Standwort, zwischen 0,3 und 0,8 s.
 - Wortzeiten: Jedes Wort wiegt Zeichenzahl plus 2. Ein Wort beginnt bei Szenenanfang + 0,5 s + Länge der Sprechdatei × (Gewicht aller Wörter davor ÷ Gewicht aller Wörter). Gemessene Wortzeiten ersetzen diese Schätzung, sobald es sie gibt.
-- Zahlen zählen nicht hoch, sie erscheinen fertig.
+- Zahlen zählen nicht hoch, sie erscheinen fertig. Ausnahme: ein einzelner Betrag in der Automatik zählt hoch (Abschnitt 15).
 - Die Schlussszene baut sich gestaffelt auf, die Adresse pulsiert, Quelle und Hinweis erscheinen früh genug, um gelesen zu werden.
 
 ## 7. Datenblatt je Folge
@@ -234,7 +235,7 @@ Jede Folge entsteht aus einem Datenblatt mit diesen Feldern. Ohne vollständiges
 5. Prüfen nach Abschnitt 13: erst die Maschinenprüfung, dann Panel mit Vergleich Alt gegen Neu, Befunde ins Register, höchstens drei pro Runde.
 6. Ton und Länge sind Teil der Maschinenprüfung.
 7. Gegenprüfung des Inhalts (Abschnitt 9, Punkt 6) mit Quelle und Datenblatt.
-8. Beschreibungstext schreiben: erster Satz ist der Kern, dann der Link zum Vorgang bei Plenara, drei bis fünf Hashtags (Ort, Thema, Kommunalpolitik).
+8. Beschreibungstext, Hashtags und Titelbild nach Abschnitt 16.
 
 ## 11. Typische Fehler aus den Prüfrunden
 
@@ -371,3 +372,84 @@ Der Bauplan wird wie eine Folge geprüft: Agenten ohne Vorwissen bauen aus ihm u
 | 2 | Folge „Bebauungsplan“ (vertagt), Folge „Photovoltaik“ (Empfehlung), Widerspruchsprüfung | 10 + 10 + 12, davon 3 + 4 + 2 blockierend | Ruhebild-Ausnahme für den Schluss, Standwort als 5. bis 8. Wort, Statuskarte mit Maßen, Definition „Element“ und Satzteile, Stand aus Plenara, Abstimmung nur mit Zahlen, Details entweder Zeilen oder Zahlen, Zitatgrenze 165, Kurzname und Quellenname getrennt, Datumsformate, Wortzeitformel, Hook bei Platznot, Zoom und Rahmen |
 | 3 | Folge „Haushalt“ (Paketbeschluss mit Abstimmung), Folge „Einwohnerantrag“ (Angekündigt, Varianten, lange Wörter), Widerspruchs- und Umsetzbarkeitsprüfung | 10 + 10 + 11, davon 3 + 3 + 5 blockierend | Letztes Element frühestens bei Dauer − 4 s, Stempelfenster 1,8 bis 4,2 s, Layoutprotokoll mit Schema, Unterkante nur in der Ruhelage, Tonspuren getrennt, Mindestschriften je Art, Abstimmung als ein Block, Paketbeschlüsse, Einwohnerantrag, Kern bei Varianten |
 | 4 | Folge „Zur Kenntnis“ (Kenntnisnahme ohne Beschluss), Folge „In Beratung“ (Paket aus zwei Teilen, Verbindungslinie), Widerspruchsprüfung | 11 + 10 + 12; blockierend zuletzt: Verbindungslinie und Position der Nebenzeile (Folge „In Beratung“) | Zeitgrenzen je Szene, Rollen im Layoutprotokoll (Spalte B, Bildrand, Pixelprobe), Zur Kenntnis, Begriffsliste, Farbabweichungen der Folgen 1 bis 4, Reihenfolge von Verkleinern und Umbrechen im Hook. Offen aus der „In Beratung“-Prüfung: Maße und Zeit der Verbindungslinie, Position der Nebenzeile im Hook, Präfixtabelle je Antragstellerart, Schriftmetrik |
+
+## 15. Automatik (Stand 31.10.2026)
+
+Für Folgen ohne Handarbeit gilt dieselbe Bauart wie oben, mit den hier genannten Abweichungen. Der Ablauf: Bericht → Datenblatt (`shared/social-video-sheet.mjs`, Version `sheet-v1`, Aufruf `scripts/social-video/sheet-cli.mjs`) → Video (`scripts/social-video/auto.py`). Das Datenblatt setzt nur feste Satzvorlagen ein und nimmt wörtliche Auszüge; fehlt etwas, steht es in `warnings`, `ok` ist falsch und es wird nicht gebaut. Freigabe bleibt Sache einer Person.
+
+| Teil | Regel in der Automatik |
+| --- | --- |
+| Hook-Satz | „<Standwort> in <Ort>: <Thema>.“ Das Thema (Zeile 2) steht ab 0,45 s im Bild, nicht erst, wenn es gesprochen wird. („Beschlossen in <Ort>: …“, „In Beratung in <Ort>: …“, „Stand offen in <Ort>: …“, „Zur Kenntnis genommen in <Ort>: …“). Das Standwort steht also am Satzanfang. Der Stempel schlägt 0,3 s davor ein, zwischen 0,25 und 1,0 s. Thema (Zeile 2) erscheint, wenn es gesprochen wird |
+| Kern (Szene 2) | Gewählt wird der Satz mit dem stärksten Entscheidungsverb („beauftragt“, „beschließt“, „bestätigt“, „empfiehlt“, „genehmigt“) vor schwächeren („wird“, „soll“). Das Zitat erscheint Wort für Wort, jedes Wort zu dem Zeitpunkt, an dem es gesprochen wird. Drei Größen: Subjekt mit Verb 150 (Schwarzgrau), Gegenstand 124 (Petrol), Rest 72 (Nebenzeilenfarbe). Passt der Block nicht bis y = 1380, werden alle Größen gemeinsam verkleinert (Untergrenze 50 Prozent). Der Block steht mittig. Einzelner Betrag im Zitat: er zählt in 0,9 s hoch (Zahl 150, Petrol) |
+| Verlauf (Szene 3) | Zeitleiste: je Sitzung ein Punkt (60, grau, der letzte petrol), dazwischen eine petrolfarbene Linie (8, wächst 0,5 s lang), rechts „TT.MM.JJ · Gremium“ 64 und das Ergebnis 58. Höchstens drei Sitzungen; dauert das Video über 65 s, entfällt die älteste. Die Stimme nennt je Sitzung nur Datum und Ergebnis („Am sechzehnten September: mehrheitlich beschlossen.“), das Gremium steht nur im Bild; so bleibt die Szene unter etwa 10 s |
+| Zitat (Szene 4) | Das Zitat erscheint im Lesetempo Wort für Wort (0,16 s je Wort), Schlüsselwörter petrol, Block mittig, Quellenzeile zuletzt. Die Szene ist stumm und dauert Maximum aus 6,5 s und 0,05 s je Zeichen |
+| Beträge (Szene 4) | Nennen die Auszüge mindestens zwei Beträge mit Bezeichnung aus der Vorlage (Gesamtkosten, Förderung, Zuschuss, Haushaltsmittel, Eigenanteil, Puffer; Zusätze wie „voraussichtlich“ oder „geschätzt“ gehören dazu), ersetzt eine Zahlenszene das Zitat: je Betrag Bezeichnung (70) und Zahl (150, Petrol), alle gleich groß und gleich gefärbt, nacheinander gesprochen („Geschätzte Gesamtkosten: …“). Keine Balken, keine Differenz, keine Gegenüberstellung (Abschnitt 9, Punkt 8 und 11). Ein einzelner Betrag im Kernsatz zählt hoch |
+| Stand (Szene 5) | Die nächste Sitzung steht als Datum („nächste Sitzung TT.MM.JJ“), nie als „in N Tagen“: Die Folge wird Tage nach dem Bau gesehen, ein Zählwert wäre dann falsch |
+| Hinweis über dem Zitat | „Vorschlag aus der Vorlage“ steht nur, wenn das Zitat selbst einen Vorschlag ausspricht („beschließt“, „beauftragt“, „soll“ …) und der Stand weder „Beschlossen“ noch „Abgelehnt“ ist; sonst „Aus der Vorlage“ (Abschnitt 9, Punkt 10) |
+| Zoomstoß | Bei jedem neuen Teil kurz 2,8 Prozent mehr Zoom, abklingend (Zeitkonstante 0,11 s, höchstens 0,8 s) |
+| Aussprache | „P&R“ wird als „Park und Ride“ gesprochen, „&“ sonst als „und“; Beträge und Jahre ausgeschrieben |
+| Länge | 42 bis 65 s; bei mehr als 65 s wird der Verlauf gekürzt, sonst wird nicht gebaut |
+
+Der Server-Job `social-videos` (täglich 10:30 Uhr) baut zu jedem Vorschlag des Admin-Reiters „Social Media“ genau ein Video und löscht es, sobald der Vorschlag den Reiter verlässt; im Admin gibt es dazu nur die Freigabe (Betrieb: `docs/betrieb/node-server.md`, „Social-Videos“). Ein Datenblatt mit Warnungen wird nicht gebaut, der Grund steht im Reiter.
+
+Nicht in der Automatik: Fotos (die Liste `docs/social/stock-fotos.md` nennt nur IDs; die Bilder müssen auf einem Rechner mit Zugriff geladen und geprüft werden, Kennzeichnung „Symbolbild“), Abstimmungsbalken (der Bericht enthält keine Zahlen dazu), Karte, bessere Stimme (Thorsten medium oder high, Dateien nötig), Plenara-Moment.
+
+## 16. Wirkung in den Netzen
+
+Dieser Abschnitt sagt, wie eine Folge in Instagram Reels, TikTok und YouTube Shorts gesehen, behalten und geteilt wird. Die Plattformangaben sind Arbeitswerte aus Drittquellen (Stand 31.10.2026: reap.video zu Sicherheitszonen, digitalapplied.com zur Hashtag-Grenze, klap.app zur Länge), keine offiziellen Vorgaben der Plattformen; sie sind unten als „Startwert“ gekennzeichnet und werden nach der Veröffentlichung an eigenen Zahlen geprüft.
+
+### Die ersten drei Sekunden
+
+Wer in den ersten Sekunden nicht erfährt, worum es geht und was daraus für ihn folgt, wischt weiter. Deshalb gilt für jede Folge:
+- Sekunde 0 bis 1: Ort (Zeile 1) steht schon, der Stempel mit dem Ergebnis schlägt ein (spätestens bei 1,0 s, mit Schlag), Zeile 2 nennt das Thema, sobald es gesprochen wird. Es gibt kein Logo-Intro, keine Begrüßung, keinen Vorlauf.
+- Der erste gesprochene Satz nennt Ergebnis, Ort und Thema in dieser Reihenfolge („Beschlossen in <Ort>: <Thema>.“). Er enthält keine Wertung, keine Frage mit Unterton und keine Zuspitzung („Skandal“, „Überraschung“).
+- Ein Betrag oder eine Frist darf im Hook stehen, wenn er wörtlich in der Vorlage steht; er steht dann als Zahl, nicht als Frage.
+- Das Titelbild (Bild bei 1,6 s, wird beim Bau mitgeschrieben) muss für sich lesbar sein: Ort, Thema und Stempel sichtbar, nichts halb eingeblendet. Prüfung: Bild ansehen, ohne das Video zu kennen.
+
+### Stumm lesbar
+
+Ein großer Teil der Zuschauer sieht ohne Ton. Jede Aussage der Stimme steht auch im Bild (Hook, Kernsatz, Verlauf, Stand). Der Kernsatz erscheint Wort für Wort, wenn er gesprochen wird; das ersetzt die Untertitelspur, die dann nicht zusätzlich eingebrannt wird.
+
+### Sicherheitszonen (Startwert)
+
+Die Oberfläche der Plattformen verdeckt Teile des Bildes. Arbeitswert aus der Quelle: oben etwa 15 Prozent (288 Pixel), unten 25 bis 35 Prozent (480 bis 672), seitlich 10 bis 15 Prozent (108 bis 162). Die Knopfspalte (Gefällt mir, Teilen) sitzt rechts und verdeckt dort die untere Bildhälfte; links ist es freier. Ist-Stand der Folgen: Unterkante des Inhalts bei 1450 (24,5 Prozent unten, am Rand der Vorgabe), seitlicher Rand 72 (6,7 Prozent), Logo und Ortschip bei y = 190 (innerhalb der oberen 15 Prozent). Das Instagram-Profilraster zeigt das Titelbild im Format 3:4 (Ausschnitt y = 240 bis 1680): Ort, Thema und Stempel müssen darin liegen. **Prüfpunkt:** eine Probefolge auf allen drei Plattformen hochladen (privat) und notieren, was verdeckt wird; danach Ränder und Chip-Position in Abschnitt 4 festlegen. Bis dahin gilt: Bedeutung trägt nie allein ein Element im Randstreifen.
+
+### Länge (Startwert)
+
+Zielwert 45 bis 55 Sekunden, Obergrenze 65 (Abschnitt 2). Die Quellen nennen keinen festen Wert: Kürzere Videos werden eher zu Ende gesehen, längere bringen mehr Sehzeit, wenn sie halten. Für erklärende Inhalte werden 30 bis 60 Sekunden genannt. Die Schlusskarte dauert 5 s (am 31.10.2026 von 8,5 s gekürzt, weil beide Prüfer sie als zu lang empfanden); die Haltequote an der Schlusskarte (Abschnitt „Freigabe und Messung“) zeigt, ob 5 s noch zu viel sind.
+
+### Beschreibung, Hashtags, Titelbild
+
+Jede Folge wird mit Text veröffentlicht, der aus dem Datenblatt kommt (keine eigene Deutung):
+
+| Teil | Regel |
+| --- | --- |
+| Zeile 1 (die ersten 125 Zeichen sind sichtbar) | Hook-Satz plus Kern in einem Satz: „<Standwort> in <Ort>: <Thema>. <Kernsatz verkürzt>“ |
+| Zeile 2 | Stand und Sitzung: „Zuletzt beraten: <Gremium>, <Datum>.“ und, wenn vorhanden, „Nächste Sitzung: <Datum>.“ |
+| Zeile 3 | Quelle wie im Bild („Quelle: öffentliche Ratsunterlagen …“) und Hinweis „Zusammenfassung von Plenara, kein amtliches Dokument.“ |
+| Zeile 4 | Aufruf ohne Druck: „Alle Beschlüsse zu <Ort>: Link im Profil / plenara.de“ |
+| Hashtags | drei bis fünf (Instagram begrenzt auf fünf, Startwert): #<Ort>, #Kommunalpolitik, ein Themen-Tag (#Verkehr, #Klima …), #Plenara. Keine Partei-, Personen- oder Wertungs-Tags |
+| Barrierefreiheit | Alternativtext und Transkript = Sprechtext der Folge |
+
+### Wiedererkennung
+
+Die Reihe wird an wenigen festen Zeichen erkannt: Stempel mit Standwort, Petrol auf Weiß, Zeitleiste, Soundlogo am Anfang und Ende, Ortschip. Diese Zeichen ändern sich nicht von Folge zu Folge; Neues kommt nur über den Inhalt.
+
+### Neutralität in der Verpackung
+
+Alles oben gilt auch für Beschreibung, Titelbild und Hashtags: wörtlich aus der Vorlage, keine Wertung, kein Parteiname, kein Antragsteller (Abschnitt 9). Wirkung entsteht durch Klarheit und Tempo, nicht durch Zuspitzung.
+
+### Freigabe und Messung
+
+Eine Person gibt jede Folge frei (Video, Titelbild, Beschreibung); das Programm veröffentlicht nichts selbst. Nach der Veröffentlichung werden je Folge erfasst: Anteil, der die ersten drei Sekunden sieht, Haltequote bei der Hälfte und an der Schlusskarte, Sehdauer im Mittel, Speichern, Teilen, Profilbesuche, Klicks auf plenara.de. Nach zehn Folgen werden Länge, Hook-Form und Schlusskarte verglichen und die Startwerte dieses Abschnitts angepasst. Bis dahin sind sie Annahmen, keine Ergebnisse.
+
+### Offene Prüfpunkte vor dem ersten Einsatz
+
+Diese Punkte sind nicht entschieden und brauchen eine Person mit Zuständigkeit oder eine Probe:
+- **Kennzeichnung:** Synthetische Stimme und maschinell erstellter Text: prüfen lassen, ob die Kennzeichnungspflichten der Plattformen und der KI-Verordnung (Artikel 50, gilt ab 2.8.2026) greifen oder die Ausnahme für redaktionell geprüfte Inhalte. Rechtsfrage, nicht vom Bauplan zu entscheiden.
+- **Untertitel und Transkript:** Plattform-Untertitel einschalten und Eigennamen korrigieren (YouTube: SRT-Datei); das Transkript (Sprechtext) steht in der Beschreibung oder im ersten Kommentar.
+- **Sichtbare Zeichen der Beschreibung:** Im Feed sind etwa 125 Zeichen sichtbar, in der Reels- und TikTok-Ansicht vermutlich weniger (60 bis 80, ungeprüft). Der Hook-Satz steht deshalb ganz vorn.
+- **Veröffentlichungszeit (Startwert):** innerhalb von 48 Stunden nach der Sitzung; die Uhrzeit wird nach den ersten Folgen aus den eigenen Statistiken gewählt.
+- **Kommentare:** Antworten nur mit Fundstelle in den Unterlagen, keine Bewertung, keine Parteinahme. Ein sachlicher Fehler wird mit einem angehefteten Korrekturkommentar benannt, und die Folge wird ersetzt.
+- **Gegenprüfung:** Vor jeder Freigabe prüft eine zweite Person Zahlen, Daten, Namen und Zitat gegen die Vorlage (Abschnitt 9, Punkt 6). Ein Verfahrenswort im Verlauf („punktweise Abstimmung“) wird nur gezeigt, wenn das Ergebnis der Sitzung im Verlauf steht oder klar ist.
+- **Vergleichbarkeit der Messung:** Mit einer Fassung je Folge gibt es keine Gegenprobe. Vergleich daher über Folgen mit gleichem Stand und ähnlicher Länge, nicht über beliebige Folgen.

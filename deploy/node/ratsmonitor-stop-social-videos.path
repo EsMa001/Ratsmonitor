@@ -1,0 +1,10 @@
+# Anhalten aus der Administration (server/integrations/job-trigger.mjs, triggerStop): /srv/ratsmonitor/data/trigger/stop-social-videos
+[Unit]
+Description=Ratsmonitor: social-videos anhalten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/stop-social-videos
+Unit=ratsmonitor-stop@social-videos.service
+
+[Install]
+WantedBy=multi-user.target

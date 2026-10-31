@@ -7,6 +7,8 @@ type Summary={count:number;avgFit:number|null;strong:number;daysWithTopic:number
 type Topic={fit:Fit;draft:Draft|null;id:string;title:string;date:string;status:string;region:string;regionId:string;gremium:string;group:string;term:string;score:number;why:string[];otherPlaces:number;link:string;search:string};
 type Day={date:string;topics:Topic[]};
 type Data={summary:Summary;computedAt:string;from:string;to:string;scanned:number;matched:number;days:Day[];error?:string};
+type Video={state:'ready'|'failed'|'blocked';seconds:number|null;note:string|null;madeAt:string;releasedAt:string|null;key:string};
+type Videos=Record<string,Video>;
 type Sort='datum'|'eignung';
 const full=(d:Draft)=>d.text+'\n'+d.question+'\n'+d.hashtags.join(' ');
 /** Textvorschlag mit Kopieren-Knopf; feste Vorlagen, Zahlen und Namen stammen aus dem Eintrag. */
@@ -27,7 +29,27 @@ const dayName=(d:string)=>WEEKDAY[new Date(d+'T12:00:00Z').getUTCDay()]+', '+dmy
 const STATUS:Record<string,string>={approved:'beschlossen',recommended:'empfohlen',rejected:'abgelehnt',consulting:'in Beratung',announced:'angekündigt',info:'zur Kenntnis',postponed:'vertagt'};
 const store={get(k:string){try{return window.localStorage.getItem(k);}catch{return null;}},set(k:string,v:string){try{window.localStorage.setItem(k,v);}catch{/* ohne Speicher geht es auch */}}};
 
-function TopicCard({t,showDate}:{t:Topic;showDate:boolean}){
+/** Video zum Vorschlag (Job „social-videos“): ansehen und freigeben; mehr entscheidet die Administration nicht. */
+function VideoBox({id,v,onChange}:{id:string;v?:Video;onChange:()=>void}){
+ const [busy,setBusy]=useState(false);const [err,setErr]=useState('');
+ const release=async(on:boolean)=>{
+  setBusy(true);setErr('');
+  try{const r=await fetch('/api/admin/social/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,on,key:v?.key})});const d=await r.json() as {error?:string};if(!r.ok)throw Error(d.error||'Nicht möglich.');onChange();}
+  catch(e){setErr(e instanceof Error?e.message:'Nicht möglich.');}
+  finally{setBusy(false);}
+ };
+ if(!v)return <p className="mt-3 text-[12px] text-slate-500">Video: noch nicht gebaut (der Job läuft täglich um 10:30 Uhr).</p>;
+ if(v.state==='blocked')return <p className="mt-3 text-[12px] leading-snug text-amber-700">Kein Video, weil das Datenblatt unvollständig ist: {v.note}</p>;
+ if(v.state==='failed')return <p className="mt-3 text-[12px] leading-snug text-amber-700">Video konnte nicht gebaut werden, nächster Versuch beim nächsten Lauf. {v.note}</p>;
+ return <div className="mt-3">
+  <video controls preload="none" playsInline className="w-full max-w-[240px] rounded-lg bg-slate-100" src={'/api/admin/social/videos?id='+encodeURIComponent(id)+'&v='+v.key} aria-label="Video zum Vorschlag"/>
+  <p className="mt-1 text-[12px] text-slate-500">{v.seconds?Math.round(v.seconds)+' s · ':''}gebaut am {dmy(v.madeAt.slice(0,10))}{v.releasedAt&&<> · <span className="font-semibold text-teal-700">freigegeben am {dmy(v.releasedAt.slice(0,10))}</span></>}</p>
+  <button type="button" disabled={busy} onClick={()=>void release(!v.releasedAt)} className={'mt-1 h-8 rounded-lg px-3 text-[14px] '+(v.releasedAt?'bg-slate-100 text-slate-700 hover:bg-slate-200':'bg-teal-600 text-white')}>{v.releasedAt?'Freigabe zurücknehmen':'Freigeben'}</button>
+  {err&&<p role="alert" className="mt-1 text-[12px] text-amber-700">{err}</p>}
+ </div>;
+}
+
+function TopicCard({t,showDate,v,onVideo}:{t:Topic;showDate:boolean;v?:Video;onVideo:()=>void}){
  return <li className="rounded-xl border border-slate-200 bg-white p-4">
   <div className="flex items-baseline justify-between gap-2">
    <h3 className="text-[18px] font-semibold">{t.region}</h3>
@@ -36,6 +58,7 @@ function TopicCard({t,showDate}:{t:Topic;showDate:boolean}){
   <p className="mt-1 text-[12px] text-slate-500">{showDate&&dayName(t.date)+' · '}{t.group} · Eignung für Social Media</p>
   <p className="mt-2 text-[16px] leading-snug"><a className="text-teal-600" href={t.link}>{t.title}</a></p>
   {t.draft&&<DraftBox d={t.draft}/>}
+  <VideoBox id={t.id} v={v} onChange={onVideo}/>
   {t.fit.evidence.length>0&&<ul className="mt-2 list-disc pl-4 text-[12px] leading-snug text-slate-600">{t.fit.evidence.map(e=><li key={e}>{e}</li>)}</ul>}
   <p className="mt-2 text-[12px] leading-snug text-slate-500">{t.fit.parts.map(p=>p.max?p.label+' '+p.points+'/'+p.max:p.label+' '+p.points).join(' · ')}</p>
   <p className="mt-2 text-[14px] text-slate-500">{t.gremium&&t.gremium+' · '}{STATUS[t.status]||t.status}</p>
@@ -58,6 +81,11 @@ export function AdminSocial(){
   if(g)setGroup(g);
  },[]);
  const pick=<T,>(key:string,set:(v:T)=>void)=>(v:T)=>{set(v);store.set(key,String(v));};
+ const [videos,setVideos]=useState<Videos>({});
+ const loadVideos=useCallback(async()=>{
+  try{const r=await fetch('/api/admin/social/videos',{cache:'no-store'});if(r.ok)setVideos(((await r.json()) as {videos?:Videos}).videos||{});}
+  catch{/* ohne Videostand zeigt der Reiter die Vorschläge trotzdem */}
+ },[]);
  const load=useCallback(async(fresh=false)=>{
   setBusy(true);setError('');
   try{const r=await fetch('/api/admin/social'+(fresh?'?neu=1':''),{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Die Vorschläge konnten nicht geladen werden.');setData(d);}
@@ -65,7 +93,7 @@ export function AdminSocial(){
   finally{setBusy(false);}
  },[]);
  // eslint-disable-next-line react-hooks/set-state-in-effect -- Abruf beim Öffnen; State wird erst nach dem await gesetzt
- useEffect(()=>{load();},[load]);
+ useEffect(()=>{load();void loadVideos();},[load,loadVideos]);
  const all=useMemo(()=>(data?.days||[]).flatMap(d=>d.topics),[data]);
  const groups=useMemo(()=>{const c=new Map<string,number>();for(const t of all)c.set(t.group,(c.get(t.group)||0)+1);return [...c.entries()].sort((a,b)=>b[1]-a[1]);},[all]);
  const shown=useMemo(()=>all.filter(t=>t.fit.percent>=minFit&&(!group||t.group===group)),[all,minFit,group]);
@@ -118,12 +146,12 @@ export function AdminSocial(){
 
   {data&&shown.length===0&&<p className="mt-6 text-[14px] text-slate-500">Kein Vorschlag erfüllt diese Auswahl. Eignung oder Thema lockern.</p>}
   {sort==='eignung'
-   ?<ul className="mt-4 grid gap-4 lg:grid-cols-3">{byFit.map(t=><TopicCard key={t.id} t={t} showDate/>)}</ul>
+   ?<ul className="mt-4 grid gap-4 lg:grid-cols-3">{byFit.map(t=><TopicCard key={t.id} t={t} showDate v={videos[t.id]} onVideo={loadVideos}/>)}</ul>
    :<div className="mt-4 space-y-8">
     {days.map(d=><section key={d.date} aria-label={dayName(d.date)}>
      <h2 className="text-[16px] font-semibold">{dayName(d.date)}</h2>
      {d.topics.length===0?<p className="mt-2 text-[14px] text-slate-500">{filtered?'Kein Vorschlag in dieser Auswahl.':'Kein auffälliges Thema.'}</p>:
-      <ul className="mt-3 grid gap-4 lg:grid-cols-3">{d.topics.map(t=><TopicCard key={t.id} t={t} showDate={false}/>)}</ul>}
+      <ul className="mt-3 grid gap-4 lg:grid-cols-3">{d.topics.map(t=><TopicCard key={t.id} t={t} showDate={false} v={videos[t.id]} onVideo={loadVideos}/>)}</ul>}
     </section>)}
    </div>}
  </>;

@@ -85,6 +85,7 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/backups/` | nächtliche Sicherung 00:30 Uhr (vor dem Import), mit zstd gepackt (`ratsmonitor-<Datum>.sqlite.zst`, zurück mit `zstd -d … -o ratsmonitor.sqlite`), höchstens zwei Stände, auch während einer neuen (`ratsmonitor-backup.service`, Zeitplaner) |
 | `ratsmonitor-rule-texts.service` | Themen & Texte, direkt nach der PDF-Nachtkette (sie stößt ihn an), sonst 08:50 Uhr (Zeitplaner, `scripts/rule-texts.mjs`): Regeln je Bericht (Art des Punkts, Thema, Regel-Zusammenfassung, Fakten; `read-reports.mjs`), Wortliste aus den Texten der PDF-Ablage und Zahlen für plenara.X (`x_cases`, Migration 0036, `build-x-cases.mjs`); Ergebnis je Schritt in `system_state` `rule-texts-last` (Protokoll `backups/rule-texts.log`) |
 | `ratsmonitor-startseite-trends.service` | Karte und Trends der Startseite vorab rechnen, 05:10 Uhr (nach dem spätesten Ende des Imports) (Zeitplaner, `scripts/startseite-trends.mjs`, Ergebnis in `system_state` `startseite-trends`, gelesen über `/api/startseite-trends`; Protokoll `backups/startseite-trends.log`) |
+| `ratsmonitor-social-videos.service` | Social-Videos zu den Vorschlägen des Reiters „Social Media“ bauen, 10:30 Uhr (nach „Einordnung, nachts“) (Zeitplaner, `scripts/social-videos.mjs`, Tabelle `social_videos` (Migration 0049), Dateien in `data/social-videos`, Protokoll `backups/social-videos.log`). Siehe Abschnitt „Social-Videos“ |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
 | `/srv/ratsmonitor/data/pdf-store/` | PDF-Ablage (`RM_PDF_STORE`): Originale, Textfassungen, `index.sqlite`; gefüllt von der nächtlichen Kette |
@@ -95,6 +96,17 @@ journalctl -u ratsmonitor -f
 | `/etc/systemd/system/ratsmonitor-betrieb.*` | tägliche Betriebsprüfung 09:30 Uhr mit Sammelmail (Zeitplaner, `scripts/ops-check.mjs`; Stand in `system_state` `ops-check`) |
 
 Der Server startet nicht ohne gültige Datenbank. Sonst würden die Seiten still den mitgelieferten, alten Stand zeigen.
+
+## Social-Videos
+
+Der Job `social-videos` (Zeitplaner, täglich 10:30 Uhr, `scripts/social-videos.mjs`) baut zu jedem Vorschlag des Admin-Reiters „Social Media“ genau ein Video aus dem Datenblatt des Berichts (`shared/social-video-sheet.mjs`, `scripts/social-video/auto.py`, ohne KI; Aufbau: `docs/social/video-bauplan.md`). Verlässt ein Vorschlag den Reiter, werden Zeile und Datei gelöscht. Ändert sich das Datenblatt, entsteht das Video neu und die Freigabe entfällt. Im Reiter entscheidet die Administration nur über die Freigabe.
+
+- **Einmal auf dem Server (Root):** `apt install python3 python3-venv ffmpeg tar` (ffmpeg mit libx264). Das kann der Job nicht selbst, er läuft ohne Root. Fehlt etwas, bricht er mit dieser Zeile ab und die Fehlermail geht raus.
+- **Alles andere richtet der Job beim ersten Lauf selbst ein** (`scripts/social-video/tools.mjs`): Python-Umgebung mit Pillow und numpy unter `data/social-videos/venv` (PyPI), Piper und die Stimme `de-thorsten-low` unter `data/social-videos/work/tts` (GitHub-Releases von rhasspy/piper). Dafür braucht der Server ausgehend `pypi.org` und `github.com`. Der erste Lauf braucht dadurch einige Minuten länger. Prüfen ohne Bau: `node scripts/social-videos.mjs --check`.
+- **Dateien:** `RM_SOCIAL_VIDEOS` (Standard: Ordner `social-videos` neben `DATABASE_FILE`), darin `videos/` (fertige Videos), `venv/`, `work/` (Zwischenstände). Nicht in Git, nicht in Sicherung und Übertragung nötig: alles lässt sich neu bauen.
+- **Einrichten:** Migration `drizzle/0049_social_videos.sql`, dann die Einheiten wie bei `startseite-trends` (`ratsmonitor-social-videos.{service,timer,path}`, `ratsmonitor-stop-social-videos.path`) nach `/etc/systemd/system/`, `daemon-reload`, `enable --now`. Erster Lauf: `node scripts/schedule.mjs social-videos --force`.
+- **Gescheiterte und unvollständige Datenblätter:** `failed` wird am nächsten Tag erneut versucht; `blocked` (Datenblatt unvollständig, Grund steht im Reiter) wird erst neu geprüft, wenn sich das Datenblatt ändert.
+- **Ressourcen:** etwa 5 Minuten und 3 Prozesse je Video, höchstens 150 Minuten je Lauf. Lizenzen von Piper und der Stimme vor einer Veröffentlichung der Videos prüfen.
 
 ## Datenbank übertragen
 

@@ -218,7 +218,11 @@ def make(cfg):
         for _s in range(cfg['t1s'] + 46, cfg['t1s'] - 20, -2):
             t1 = big(cfg['t1'], _s, INK, lh=1.0)
             if t1.width <= CW: break
-        t2 = big(cfg['t2'], cfg['t2s'] + 10, cfg.get('t2col', PET), maxw=CW, lh=1.02)
+        # Thema: möglichst zweizeilig; sonst in Schritten kleiner bis höchstens 72 (Bauplan Abschnitt 4), dann dreizeilig
+        for _s in range(cfg['t2s'] + 10, 71, -2):
+            t2 = big(cfg['t2'], _s, cfg.get('t2col', PET), maxw=CW, lh=1.02)
+            _f = b.F(_s, 'S')
+            if len(b.wrap(cfg['t2'], _f, CW, -0.04 * _s)) <= 2 and max(_f.getlength(w_) for w_ in cfg['t2'].split()) <= CW - 10: break
         sh0 = stamp(cfg['stamp'], cfg['stampcol'], cfg['ssize']).height + 30
         G1, G2, G3, IB = 40, 90, 70, 300
         y0 = 400
@@ -229,11 +233,13 @@ def make(cfg):
         bottom = y0 + t1.height + G1 + t2.height + G2 + sh0 + G3 + IB
         if bottom > 1440: y0 = max(370, y0 - (bottom - 1440))
         yt2 = y0 + t1.height + G1; ys_ = yt2 + t2.height + G2
-        tst = min(4.2, max(1.8, find(wt, cfg['stkey'], 2.6) - 0.3))
+        fast = cfg.get('hook_fast')
+        tst = min(1.0, max(0.25, find(wt, cfg['stkey'], 0.8) - 0.3)) if fast else min(4.2, max(1.8, find(wt, cfg['stkey'], 2.6) - 0.3))
+        tt2 = 0.45 if fast else 0.5  # Thema sofort sichtbar, nicht erst beim Sprechen
         se, sh = shake_stamp(cfg['stamp'], cfg['stampcol'], cfg['ssize'], W // 2 + 5, ys_, tst)
         pe, pw = pulse_badge(cfg['icon'], IB, W // 2, ys_ + sh + G3 - 20, 0.5)
-        els += [slam(t1, MX, y0, -1.0, 0, 0.01), slam(t2, MX, yt2, 0.5, 0.2), se, pe]
-        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 120, 1000, PET, 22, 6), els=els, marquee=(PET, WHITE))
+        els += [slam(t1, MX, y0, -1.0, 0, 0.01), slam(t2, MX, yt2, tt2, 0.2), se, pe]
+        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 120, 1000, PET, 22, 6), els=els, marquee=(PET, WHITE), punch=[tst, tt2], sfx=[(tst, 'hit'), (tt2, 'tick')])
     # 2 Beats
     def beatsA(wt): return cfg['beatsA'](wt)
     def beatsB(wt): return cfg['beatsB'](wt)
@@ -257,9 +263,11 @@ def make(cfg):
         ta = min(max(find(wt, cfg['standkey'], 1.2) - 0.5, 0.3), 0.8)
         lab = b.text_block(cfg.get('standlab', 'STAND'), 48, 'S', GRAY2, maxw=CW, tr_em=0.14)
         y = 430
-        band = Image.new('RGBA', (W, 60 + 300 + 30 + st.height + 70), tuple(cfg['stampcol']) + (30,))
-        els = chips(cfg) + [E(band, 0, y, 0, dur=0.4, slide=0), E(lab, MX, y + 36, 0, dur=0.4, slide=0), slam(sb, (W - 300) // 2, y + 100, ta, 0.5, 0.4), slam(st, (W - st.width) // 2, y + 100 + 300 + 30, ta + 0.4, 0.4, 0.4)]
-        yy = y + 60 + 300 + 30 + st.height + 50 + 60
+        # Zeichen mittig zwischen Beschriftung und Statuswort: gleicher Abstand oben und unten (das Statuswort hat oben etwas Luft im Bild, daher unten 10 weniger)
+        by = y + 36 + lab.height + 46; wy = by + 300 + 36
+        band = Image.new('RGBA', (W, wy - y + st.height + 44), tuple(cfg['stampcol']) + (30,))
+        els = chips(cfg) + [E(band, 0, y, 0, dur=0.4, slide=0), E(lab, MX, y + 36, 0, dur=0.4, slide=0), slam(sb, (W - 300) // 2, by, ta, 0.5, 0.4), slam(st, (W - st.width) // 2, wy, ta + 0.4, 0.4, 0.4)]
+        yy = y + band.height + 40
         nrows = len(cfg['meta'].split('\n'))
         for k, row in enumerate(cfg['meta'].split('\n')):
             row = row.replace(' · ', '\n')
@@ -268,7 +276,8 @@ def make(cfg):
             if k == nrows - 1: tm = max(tm, CUR_DUR - 4.0)
             els += [E(mi, MX, yy + 4, tm, dur=0.5), E(mt, MX + 90, yy, tm, dur=0.5)]
             yy += mt.height + 40
-        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 100, 300, PET, 22, -5), els=els, marquee=(PET, WHITE))
+        sfx = [(ta, 'hit'), (ta + 0.4, 'tick')]
+        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 100, 300, PET, 22, -5), els=els, marquee=(PET, WHITE), punch=[ta, ta + 0.4], sfx=sfx)
     # 4 Plenara + Ende
     def plen(wt):
         t = big('Beschlüsse zu Ihrem Ort', 100, INK, maxw=700, lh=1.0); t2 = big('finden Sie bei', 64, PET, w='S', tr=-0.01)
@@ -281,9 +290,10 @@ def make(cfg):
         els = [slam(t, MX, y0, -1.0, 0, 0.01), E(ic.icon('pin', 76, PET), MX, yp + 4, 0.4), E(t2, MX + 96, yp + 6, 0.4), slam(chip, MX, yc, 0.3, 0.45, 0.35),
                E(sl, MX, ys, 1.1, dur=0.5), url_pulse(u, MX, yu, 1.5),
                E(q, MX, yq, 1.6, slide=0), E(dis, MX, yq + q.height + 14, 1.6, slide=0)]
-        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W // 2, 1250, PET, 34, 5), els=els, marquee=None)
-    for f_ in (hook, beatsA, beatsB, quote_scene, status_scene, plen): f_.caption = False
-    return [hook, beatsA, beatsB, quote_scene, status_scene, plen]
+        return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W // 2, 1250, PET, 34, 5), els=els, marquee=None, punch=[0.3, 1.5], sfx=[(0.3, 'hit'), (1.5, 'tick')])
+    for f_ in (hook, beatsA, beatsB, quote_scene, status_scene, plen, cfg.get('scene4')):
+        if f_: f_.caption = False
+    return [hook, beatsA, beatsB, cfg.get('scene4') or quote_scene, status_scene, plen]
 
 # ---------- Renderer ----------
 SCENES = []; CAPTIONS = []; CFG = None; CUR_DUR = 0
@@ -295,6 +305,8 @@ def render_scene(args):
     wt = word_times(text, vo) if text else []
     sd = SCENES[i](wt)
     bg = sd['bg']; els = sd['els']
+    punch = sd.get('punch', []) if CFG.get('sfx') else []
+    json.dump(sd.get('sfx', []) if CFG.get('sfx') else [], open(f"{CFG['out']}/sfx_{i + 1}.json", 'w'))
     chunks = [render_chunk(c) for c in cap_chunks(wt)] if SCENES[i].caption and wt else []
     for a_, b_ in zip(chunks, chunks[1:]): a_['t1'] = min(a_['t1'], b_['t0'] - 0.05)
     ring = None
@@ -340,6 +352,8 @@ def render_scene(args):
                 if a < 1: lay.putalpha(lay.getchannel('A').point(lambda v_, a=a: int(v_ * a)))
                 im.alpha_composite(lay, (MX, CAP_Y))
         zoom = 1 + 0.04 * min(1, t / dur)
+        for tp in punch:
+            if tp <= t < tp + 0.8: zoom += 0.028 * math.exp(-(t - tp) / 0.11)
         out = im.convert('RGB')
         if i != NS - 1:
             bw, bh = W / zoom, H / zoom; x0, y0 = (W - bw) / 2, (H - bh) / 2
@@ -352,8 +366,8 @@ def run(cfg, vdir, outfile):
     global SCENES, CFG
     CFG = cfg; SCENES = make(cfg); os.makedirs(cfg['out'], exist_ok=True)
     vo = [v.wavlen(f'{vdir}/v{i + 1}.wav') for i in range(NS)]
-    mins = [6.0, 7.0, 7.0, max(6.5, 0.07 * len(cfg['quote'])), 7.0, 8.5]
-    tails = [1.0, 2.5, 3.0, 1.0, 1.5, 1.0]
+    mins = [6.0, 7.0, 5.0, max(6.5, 0.05 * len(cfg['quote'])), 7.0, 5.0]
+    tails = [1.0, 2.5, 1.5, 1.0, 1.5, 1.0]
     durs = [round(max(m, x + LEAD + t_), 2) for m, x, t_ in zip(mins, vo, tails)]
     print('durs', durs, round(sum(durs), 2), flush=True)
     tot = sum(durs); st_ = [sum(durs[:i]) for i in range(NS)]
@@ -367,7 +381,7 @@ def run(cfg, vdir, outfile):
         off += durs[i - 1]; starts.append(off)
         filt += f"{prev}[{i}:v]xfade=transition={TRANS[(i - 1) % 4]}:duration={FADE}:offset={off:.2f}[v{i}];"; prev = f'[v{i}]'
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', *inputs, '-filter_complex', filt.rstrip(';'), '-map', prev, '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', f"{cfg['out']}/video_only.mp4"], check=True)
-    json.dump({'durs': durs, 'starts': starts}, open(f"{cfg['out']}/timing.json", 'w'))
+    json.dump({'durs': durs, 'starts': starts, 'sfx': bool(cfg.get('sfx'))}, open(f"{cfg['out']}/timing.json", 'w'))
     subprocess.run(['python3', '-I', f'{b.HERE}/remix.py', cfg['out'], vdir, outfile], check=True)
     subprocess.run([f'{b.HERE}/loud.sh', outfile], check=True)
 
@@ -622,9 +636,48 @@ PARK = dict(source='Quelle: öffentliche Ratsunterlagen der Stadt Billerbeck', o
            'In Beratung. Noch kein Beschluss. Zuletzt beraten im Rat der Stadt am dreizehnten Oktober.',
            'Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenara.'])
 
+
+def dresden2_A(wt):
+    cfg = DRE2
+    pill = b.pill('Beschluss laut Vorlage', 52, b.PETH, b.PETD, padx=36, pady=18)
+    w1 = fitbig('Hitzeaktionsplan', 150, PET, CW - 230, tr=-0.05)
+    t = big('Der Stadtrat bestätigt den Plan 2026 bis 2030 als Grundlage für Maßnahmen gegen gesundheitliche Risiken durch Hitze.', 66, INK, maxw=CW, lh=1.12, tr=-0.015)
+    s_ = b.text_block('Gemäß Anlage 1 der Vorlage', 58, 'R', GRAY2, maxw=CW)
+    ts = max(find(wt, 'Grundlage', 4.0), CUR_DUR - 4.0)
+    els = chips(cfg) + [E(pill, MX, 350, 0.0, slide=0), slam(w1, MX - 4, 470, 0.4, 0.5, 0.3), slam(ibadge('thermo', 180), W - MX - 180, 470 + (w1.height - 180) // 2, 0.9, 0.5, 0.3),
+                        E(t, MX, 470 + w1.height + 70, max(find(wt, 'bestätigt', 1.5) - 0.2, 1.5), dur=0.6), E(s_, MX, 470 + w1.height + 70 + t.height + 40, ts, dur=0.6, slide=0)]
+    return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None)
+
+def dresden2_B(wt):
+    cfg = DRE2
+    els = chips(cfg)
+    h = big('Der Stadtrat beauftragt den Oberbürgermeister:', 70, INK, maxw=CW, w='S', tr=-0.02, lh=1.05)
+    els += [E(h, MX, 360, 0.3, dur=0.6, slide=0)]
+    y = 600
+    rows = [('Plan umsetzen', 'umzusetzen', 'crane'), ('Plan evaluieren', 'evaluieren', 'mag'), ('Fortschreibung am Ende des Zeitraums prüfen', 'Fortschreibung', 'calendar')]
+    for k_, (wd, k, icn) in enumerate(rows):
+        im = big(wd, 80 if k_ < 2 else 66, INK, maxw=CW - 240, lh=1.0, tr=-0.03)
+        tt = max(find(wt, k, 1.5) - 0.2, 0.5)
+        if k_ == len(rows) - 1: tt = max(tt, CUR_DUR - 4.0)
+        els += [slam(ibadge(icn, 176, dark=True), MX, y, tt, 0.3, 0.3), E(im, MX + 214, y + (176 - im.height) // 2, tt + 0.25, dur=0.4, slide=0)]
+        y += 176 + 62
+    return dict(bg=b.shimmer_bg().convert('RGB'), ring=(W - 60, 520, PET, 20, 5), els=els, marquee=None)
+
+DRE2 = dict(source='Quelle: öffentliche Ratsunterlagen der Landeshauptstadt Dresden', ort='Dresden', out=f'{S_}/vid12d', ticker='',
+    icon='thermo', status='check', stamp='BESCHLOSSEN', stampcol=BLUE, ssize=160, t1='Hitze in Dresden:', t1s=108, t2='Hitzeaktionsplan 2026 bis 2030', t2s=94, beatsA=dresden2_A, beatsB=dresden2_B, stkey='beschlossen',
+    quote='„Der Stadtrat bestätigt den Hitzeaktionsplan 2026 bis 2030 der Landeshauptstadt Dresden gemäß Anlage 1 als Grundlage für Maßnahmen zur Minderung gesundheitlicher Risiken durch Hitze […]“',
+    quote_cap='Aus der Vorlage', hl={'bestätigt','Hitzeaktionsplan','2026','2030','Minderung','Risiken','Hitze'}, standword='Beschlossen', standkey='beschlossen', stsize=170, metasize=52,
+    meta='Stadtrat · zuletzt beraten am 29.10.26\nDavor: Stadtrat · 24.09.26, vertagt',
+    texts=['Dresden: Hitzeaktionsplan zweitausendsechsundzwanzig bis zweitausenddreißig. Stand: beschlossen.',
+           'Der Stadtrat bestätigt den Plan als Grundlage für Maßnahmen gegen gesundheitliche Risiken durch Hitze.',
+           'Der Stadtrat beauftragt den Oberbürgermeister: den Plan umzusetzen, ihn zu evaluieren und am Ende des Zeitraums die Fortschreibung zu prüfen.', '',
+           'Beschlossen. Zuletzt beraten: Stadtrat, neunundzwanzigster Oktober. Am vierundzwanzigsten September war der Punkt vertagt worden.',
+           'Beschlüsse und Unterlagen zu Ihrem Ort finden Sie bei Plenara.'])
+
 if __name__ == '__main__':
     if sys.argv[1] == 'p': run(PARK, f'{S_}/tts/p1', f'{S_}/PundR_Weihgarten_Billerbeck_Social_v1.mp4'); sys.exit()
     if sys.argv[1] == 'w': run(WIRT, f'{S_}/tts/w1', f'{S_}/Wirtschaftswege_Billerbeck_Social_v1.mp4'); sys.exit()
+    if sys.argv[1] == 'd2': run(DRE2, f'{S_}/tts/d7', f'{S_}/Hitzeaktionsplan_Dresden_Social_v5.mp4'); sys.exit()
     if sys.argv[1] == 'b': run(BIL, f'{S_}/tts/b6', f'{S_}/Starkregenschutz_Billerbeck_Social_v4.mp4'); sys.exit()
     if sys.argv[1] == 'o': run(OST, f'{S_}/tts/o7', f'{S_}/Quartierswaermemanagement_Oststeinbek_Social_v5.mp4'); sys.exit()
     if sys.argv[1] == 'h': run(HAL, f'{S_}/tts/h6', f'{S_}/Baumschutz_Halle_Social_v4.mp4')

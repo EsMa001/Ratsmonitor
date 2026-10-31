@@ -1,0 +1,31 @@
+# Social-Videos zu den Vorschlägen des Reiters „Social Media“ bauen (scripts/social-videos.mjs, Tabelle social_videos, Dateien in
+# data/social-videos) über den Zeitplaner (scripts/schedule.mjs social-videos, Admin-Reiter „Jobs & Zeitpläne“, Standard 10:30 Uhr).
+# Richtet beim ersten Lauf Python-Pakete, Piper und die Stimme selbst ein (Netzzugang zu pypi.org und github.com). Protokoll in
+# backups/social-videos.log.
+[Unit]
+Description=Ratsmonitor Social-Videos
+OnFailure=ratsmonitor-fehlermail@%n.service
+After=ratsmonitor.service network-online.target
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=3h
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs social-videos
+StandardOutput=append:/srv/ratsmonitor/backups/social-videos.log
+StandardError=append:/srv/ratsmonitor/backups/social-videos.log
+MemoryHigh=4G
+MemoryMax=6G
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data /srv/ratsmonitor/backups
+# Konten: dieser Job sieht die Kontendatei nicht (requirements/konten-konzept.md 3.2)
+InaccessiblePaths=-/srv/ratsmonitor/accounts
