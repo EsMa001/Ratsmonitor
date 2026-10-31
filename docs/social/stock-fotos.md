@@ -3474,7 +3474,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Rheinhausen | Baden-Württemberg | 08316053 | – | – | noch nicht gesucht | – |
 | Rheinmünster | Baden-Württemberg | 08216063 | – | – | noch nicht gesucht | – |
 | Rhönblick | Thüringen | 16066093 | – | – | noch nicht gesucht | – |
-| Rickenbach | Baden-Württemberg | 08337090 | – | – | noch nicht gesucht | – |
+| Rickenbach | Baden-Württemberg | 08337090 | 377284 | https://pixabay.com/de/photos/wieladingen-murgtal-schwarzwald-377284/ | Pixabay-Lizenz; Wieladingen (Ortsteil von Rickenbach), Murgtal, Hotzenwald. Das Foto trägt den Tag „rickenbach“. | 5 |
 | Ried | Bayern | 09771160 | – | – | noch nicht gesucht | – |
 | Rieden | Bayern | 09371146 | – | – | noch nicht gesucht | – |
 | Riederich | Baden-Württemberg | 08415062 | – | – | noch nicht gesucht | – |
@@ -3482,7 +3482,7 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Riedhausen | Baden-Württemberg | 08436067 | – | – | noch nicht gesucht | – |
 | Riegel am Kaiserstuhl | Baden-Württemberg | 08316037 | – | – | noch nicht gesucht | – |
 | Riegelsberg | Saarland | 10041517 | – | – | noch nicht gesucht | – |
-| Rielasingen-Worblingen | Baden-Württemberg | 08335100 | – | – | noch nicht gesucht | – |
+| Rielasingen-Worblingen | Baden-Württemberg | 08335100 | 5960632 | https://pixabay.com/de/photos/worblingen-rielasingen-worblingen-5960632/ | Pixabay-Lizenz; Worblingen, Titel nennt Rielasingen-Worblingen | 7 |
 | Riesbürg | Baden-Württemberg | 08136087 | – | – | noch nicht gesucht | – |
 | Rietheim-Weilheim | Baden-Württemberg | 08327056 | – | – | noch nicht gesucht | – |
 | Rietz-Neuendorf | Brandenburg | 12067426 | – | – | noch nicht gesucht | – |
@@ -3496,14 +3496,14 @@ Näherung: Die Einwohnerzahlen liegen nicht vor, deshalb sind es die übrigen Ge
 | Ringsheim | Baden-Württemberg | 08317113 | – | – | noch nicht gesucht | – |
 | Rockenberg | Hessen | 06440022 | – | – | noch nicht gesucht | – |
 | Rodenbach | Hessen | 06435023 | – | – | noch nicht gesucht | – |
-| Roggenburg | Bayern | 09775149 | – | – | noch nicht gesucht | – |
+| Roggenburg | Bayern | 09775149 | 245605 | https://pixabay.com/photos/monastery-church-roggenburg-swabia-245605/ | Pixabay-Lizenz; Klosterkirche Roggenburg (Schwaben) | 8 |
 | Rohr | Bayern | 09576142 | – | – | noch nicht gesucht | – |
 | Rohr i.NB | Bayern | 09273165 | – | – | noch nicht gesucht | – |
 | Rohrbach | Bayern | 09186149 | – | – | noch nicht gesucht | – |
 | Rohrdorf | Baden-Württemberg | 08235060 | – | – | noch nicht gesucht | – |
 | Rohrdorf | Bayern | 09187169 | – | – | noch nicht gesucht | – |
 | Roigheim | Baden-Württemberg | 08125084 | – | – | noch nicht gesucht | – |
-| Ronneburg | Hessen | 06435024 | – | – | noch nicht gesucht | – |
+| Ronneburg | Hessen | 06435024 | 2581727 | https://pixabay.com/de/photos/ronneburg-hessen-deutschland-burg-2581727/ | Pixabay-Lizenz; Burg Ronneburg, Hessen (Titel nennt Hessen) | 8 |
 | Ronsberg | Bayern | 09777165 | – | – | noch nicht gesucht | – |
 | Ronshausen | Hessen | 06632017 | – | – | noch nicht gesucht | – |
 | Rosenbach/Vogtl. | Sachsen | 14523365 | – | – | noch nicht gesucht | – |
