@@ -2781,14 +2781,14 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Herbertingen | Baden-Württemberg | 08437044 | – | – | noch nicht gesucht | – |
 | Herdwangen-Schönach | Baden-Württemberg | 08437124 | – | – | noch nicht gesucht | – |
 | Hergatz | Bayern | 09776131 | – | – | noch nicht gesucht | – |
-| Heringsdorf | Mecklenburg-Vorpommern | 13075049 | – | – | noch nicht gesucht | – |
+| Heringsdorf | Mecklenburg-Vorpommern | 13075049 | 2255833 | https://pixabay.com/de/photos/ostsee-heringsdorf-usedom-uznam-2255833/ | Pixabay-Lizenz; Ostsee, Heringsdorf, Usedom | 7 |
 | Herleshausen | Hessen | 06636005 | – | – | noch nicht gesucht | – |
 | Hermaringen | Baden-Württemberg | 08135021 | – | – | noch nicht gesucht | – |
 | Heroldsbach | Bayern | 09474135 | – | – | noch nicht gesucht | – |
 | Heroldsberg | Bayern | 09572131 | – | – | noch nicht gesucht | – |
 | Heroldstatt | Baden-Württemberg | 08425139 | – | – | noch nicht gesucht | – |
 | Herrischried | Baden-Württemberg | 08337049 | – | – | noch nicht gesucht | – |
-| Hessigheim | Baden-Württemberg | 08118028 | – | – | noch nicht gesucht | – |
+| Hessigheim | Baden-Württemberg | 08118028 | 2805853 | https://pixabay.com/de/photos/hessigheim-felseng%C3%A4rten-2805853/ | Pixabay-Lizenz; Felsengärten Hessigheim | 8 |
 | Heuchelheim a.d.Lahn | Hessen | 06531007 | – | – | noch nicht gesucht | – |
 | Heuchlingen | Baden-Württemberg | 08136029 | – | – | noch nicht gesucht | – |
 | Heuweiler | Baden-Württemberg | 08315051 | – | – | noch nicht gesucht | – |
@@ -2797,7 +2797,7 @@ Gemeinden aus den Gebietsdateien des Projekts, die oben nicht stehen. Einwohnerr
 | Hilgertshausen-Tandern | Bayern | 09174147 | – | – | noch nicht gesucht | – |
 | Hilzingen | Baden-Württemberg | 08335035 | – | – | noch nicht gesucht | – |
 | Himmelkron | Bayern | 09477121 | – | – | noch nicht gesucht | – |
-| Hinterzarten | Baden-Württemberg | 08315052 | – | – | noch nicht gesucht | – |
+| Hinterzarten | Baden-Württemberg | 08315052 | 246515 | https://pixabay.com/de/photos/mathisleweiher-moorsee-spiegelung-246515/ | Pixabay-Lizenz; Mathisleweiher, Moorsee bei Hinterzarten | 6 |
 | Hirrlingen | Baden-Württemberg | 08416018 | – | – | noch nicht gesucht | – |
 | Hirschberg an der Bergstraße | Baden-Württemberg | 08226107 | – | – | noch nicht gesucht | – |
 | Hirschstein | Sachsen | 14627070 | – | – | noch nicht gesucht | – |
