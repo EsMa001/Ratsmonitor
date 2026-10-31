@@ -1069,10 +1069,10 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1136 | Barßel | 03453001 | – | – | noch nicht gesucht | – |
 | 1137 | Jessen (Elster) | 15091145 | 1277754 | https://pixabay.com/photos/moated-castle-hemsendorf-hemsendorf-1277754/ | Pixabay-Lizenz, Wasserschloss Hemsendorf (Ortsteil) | 6 |
 | 1138 | Denzlingen | 08316009 | 7352046 | https://pixabay.com/de/photos/denzlingen-mediathek-rocca-b%C3%BCcherei-7352046/ | Pixabay-Lizenz, Mediathek Rocca | 6 |
-| 1140 | Philippsburg | 08215066 | – | – | noch nicht gesucht | – |
+| 1140 | Philippsburg | 08215066 | 848866 | https://pixabay.com/nl/photos/philippsburg-kerncentrale-stoom-848866/ | Pixabay-Lizenz; Kernkraftwerk Philippsburg mit Dampf | 6 |
 | 1141 | Frankenberg/Sa. | 14522150 | – | – | noch nicht gesucht | – |
-| 1142 | Markt Schwaben | 09175127 | – | – | noch nicht gesucht | – |
-| 1143 | Beelitz | 12069017 | – | – | noch nicht gesucht | – |
+| 1142 | Markt Schwaben | 09175127 | 6548655 | https://pixabay.com/photos/markt-schwaben-town-street-road-6548655/ | Pixabay-Lizenz; Straße im Ort Markt Schwaben (Alternative: 6548657) | 8 |
+| 1143 | Beelitz | 12069017 | 1030609 | https://pixabay.com/de/photos/beelitz-heilst%C3%A4tten-ruine-1030609/ | Pixabay-Lizenz; Ruine der Beelitz-Heilstätten (Alternative: 1621445) | 6 |
 | 1144 | Bergen auf Rügen | 13073010 | – | – | noch nicht gesucht | – |
 | 1145 | Hilpoltstein | 09576127 | – | – | noch nicht gesucht | – |
 | 1146 | Bad Soden-Salmünster | 06435002 | – | – | noch nicht gesucht | – |
@@ -1091,16 +1091,16 @@ Rangbasis: laufende Nummer der Städtetag-Liste (Zensus 2022). Es sind nur die N
 | 1168 | Neckargemünd | 08226056 | – | – | noch nicht gesucht | – |
 | 1169 | Marienheide | 05374024 | – | – | noch nicht gesucht | – |
 | 1170 | Bad Schönborn | 08215100 | – | – | noch nicht gesucht | – |
-| 1171 | Pfullendorf | 08437088 | – | – | noch nicht gesucht | – |
+| 1171 | Pfullendorf | 08437088 | 580356 | https://pixabay.com/de/photos/pfullendorf-stadt-nachtaufnahme-580356/ | Pixabay-Lizenz; Stadt bei Nacht (Nachtaufnahme), von blickpixel | 8 |
 | 1172 | Kalletal | 05766036 | – | – | noch nicht gesucht | – |
 | 1173 | Mutterstadt | 07338019 | – | – | noch nicht gesucht | – |
 | 1174 | Barsbüttel | 01062009 | – | – | noch nicht gesucht | – |
 | 1175 | Hüllhorst | 05770016 | – | – | noch nicht gesucht | – |
 | 1178 | Bad Salzdetfurth | 03254005 | – | – | noch nicht gesucht | – |
 | 1179 | Ergolding | 09274126 | – | – | noch nicht gesucht | – |
-| 1180 | Fehmarn | 01055046 | – | – | noch nicht gesucht | – |
+| 1180 | Fehmarn | 01055046 | 7231175 | https://pixabay.com/photos/fehmarn-beach-sunset-sea-ocean-7231175/ | Pixabay-Lizenz; Strand bei Sonnenuntergang, Insel Fehmarn | 7 |
 | 1181 | Lappersdorf | 09375165 | – | – | noch nicht gesucht | – |
-| 1182 | Herbrechtingen | 08135020 | – | – | noch nicht gesucht | – |
+| 1182 | Herbrechtingen | 08135020 | 2705718 | https://pixabay.com/photos/eselsburg-valley-stone-virgins-2705718/ | Pixabay-Lizenz; Eselsburger Tal, Steinerne Jungfrauen (Ortsteil Eselsburg von Herbrechtingen; einziger Treffer auf der Suchseite "herbrechtingen") | 5 |
 | 1183 | Bad Dürrheim | 08326003 | 824965 | https://pixabay.com/de/photos/rathaus-bad-d%C3%BCrrheim-deutschland-824965/ | Pixabay-Lizenz, Rathaus | 6 |
 | 1184 | Hagen am Teutoburger Wald | 03459020 | – | – | noch nicht gesucht | – |
 | 1185 | Linden | 06531012 | – | – | noch nicht gesucht | – |
